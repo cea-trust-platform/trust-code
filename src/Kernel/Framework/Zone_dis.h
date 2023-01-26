@@ -16,6 +16,7 @@
 #ifndef Zone_dis_included
 #define Zone_dis_included
 
+#include <Zone.h>
 #include <Zone_dis_base.h>
 #include <TRUST_Deriv.h>
 

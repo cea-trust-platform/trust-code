@@ -78,7 +78,7 @@ Entree& IJK_discretization::readOn(Entree& is)
     }
 
   const Probleme_base& pb = ref_cast(Probleme_base, Interprete_bloc::objet_global(vdf_problem));
-  const Zone_VF& zone_vdf = ref_cast(Zone_VF, pb.domaine_dis().zone_dis(0).valeur());
+  const Zone_VF& zone_vdf = ref_cast(Zone_VF, pb.domaine_dis().valeur());
 
   IJK_Grid_Geometry grid_geom;
   grid_geom.initialize_from_unstructured(zone_vdf.zone(),

@@ -181,7 +181,7 @@ void Debog_Pb::write_geometry_data()
       Process::exit();
     }
   const Zone& dom = ref_pb_.valeur().domaine();
-  const Zone_dis_base& zd = ref_pb_.valeur().domaine_dis().zone_dis(0).valeur();
+  const Zone_dis_base& zd = ref_pb_.valeur().domaine_dis().valeur();
   const Zone_VF& zvf = ref_cast(Zone_VF, zd);
   {
     SFichier f(fichier_domaine_);
@@ -269,7 +269,7 @@ void Debog_Pb::add_renum_item(const DoubleTab& coord_ref, const DoubleTab& coord
 void Debog_Pb::read_geometry_data()
 {
   const Zone& dom = ref_pb_.valeur().domaine();
-  const Zone_dis_base& zd = ref_pb_.valeur().domaine_dis().zone_dis(0).valeur();
+  const Zone_dis_base& zd = ref_pb_.valeur().domaine_dis().valeur();
   const Zone_VF& zvf = ref_cast(Zone_VF, zd);
   {
     DoubleTab coord_som_seq; // sommets

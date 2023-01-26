@@ -46,7 +46,7 @@ Sortie& Pb_Multiphase::printOn(Sortie& os) const { return Pb_Fluide_base::printO
 
 Entree& Pb_Multiphase::readOn(Entree& is)
 {
-  if (domaine_dis().zone_dis(0).valeur().que_suis_je().debute_par("Zone_VEF"))
+  if (domaine_dis().valeur().que_suis_je().debute_par("Zone_VEF"))
     {
       Cerr << "Error: Problem of type " << que_suis_je() << " is not available for VEF discretization" << finl;
       Cerr << "It is only available for VDF, PolyMAC and PolyMAC_P0 discretizations." << finl;
@@ -143,7 +143,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
       eq.associer_pb_base(*this);
       eq.associer_milieu_base(milieu());
       eq.associer_sch_tps_base(le_schema_en_temps);
-      eq.associer_zone_dis(domaine_dis().zone_dis(0));
+      eq.associer_zone_dis(domaine_dis());
       eq.discretiser(); //a faire avant de lire l'equation
       is >> eq; //et c'est parti!
       eq.associer_milieu_equation(); //remontee vers le milieu

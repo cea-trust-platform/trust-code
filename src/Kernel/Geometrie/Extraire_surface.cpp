@@ -63,7 +63,7 @@ Entree& Extraire_surface::interpreter_(Entree& is)
       exit();
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().zone_dis(0).valeur());
+  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().valeur());
   const Zone& domaine_volumique = zone_vf.zone();
 
   extraire_surface(domaine_surfacique,domaine_volumique,nom_domaine_surfacique,zone_vf,expr_elements,expr_faces,avec_les_bords,noms_des_bords);

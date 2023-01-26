@@ -39,7 +39,7 @@ Entree& Champ_input_P0::readOn(Entree& is)
 
   valeurs_.resize(0, nb_compo_);
   mon_pb->domaine().creer_tableau_elements(valeurs_);
-  associer_zone_dis_base(mon_pb->domaine_dis().zone_dis(0));
+  associer_zone_dis_base(mon_pb->domaine_dis());
   mon_pb->addInputField(*this);
 
 

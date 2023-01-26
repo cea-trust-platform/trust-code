@@ -39,7 +39,7 @@ Entree& Diametre_bulles_constant::readOn(Entree& is)
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
-  const Zone_dis& z = ref_cast(Zone_dis, pb.domaine_dis().zone_dis(0));
+  const Zone_dis& z = ref_cast(Zone_dis, pb.domaine_dis());
   dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, diametres_);
 
   champs_compris_.ajoute_champ(diametres_);

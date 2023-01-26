@@ -179,7 +179,7 @@ Probleme_base& creer_zone_vdf(const IJK_Splitting& splitting, const Nom& nom_dom
 
   // Il faut construire une structure de donnees de la Zone_VF qui n'est pas construite par defaut:
   Probleme_base& pb =  ref_cast(Probleme_base, Interprete_bloc::objet_global(pb_name));
-  Zone& zone = pb.domaine_dis().zone_dis(0).valeur().zone();
+  Zone& zone = pb.domaine_dis().valeur().zone();
   zone.construire_elem_virt_pe_num();
 
   return pb;

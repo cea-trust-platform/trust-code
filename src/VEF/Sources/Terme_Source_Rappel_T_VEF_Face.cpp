@@ -124,7 +124,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       rch = pb->get_champ(nom_inco);
       l_inconnue=ref_cast(Champ_Inc_base, rch.valeur()) ;
 
-      zone_VEF_autre_pb = ref_cast(Zone_VEF,pb->domaine_dis().zone_dis(0).valeur());
+      zone_VEF_autre_pb = ref_cast(Zone_VEF,pb->domaine_dis().valeur());
       const int nb_elem_autre_pb = zone_VEF_autre_pb->nb_elem();
       const DoubleTab& xp_autre_pb = zone_VEF_autre_pb->xp() ;
       const DoubleVect& volumes = zone_VEF_autre_pb->volumes();

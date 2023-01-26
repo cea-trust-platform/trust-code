@@ -64,7 +64,7 @@ void Op_Moyenne::completer(const Probleme_base& Pb)
   if (!ch_moyenne_convergee_.non_nul())
     valeurs() = 0.;
   int nb_comp = source.nb_comp();
-  integrale_champ->associer_zone_dis_base(Pb.domaine_dis().zone_dis(0).valeur());
+  integrale_champ->associer_zone_dis_base(Pb.domaine_dis().valeur());
   integrale_champ->fixer_nb_comp(nb_comp);
   if (nb_comp == 1)
     integrale_champ->fixer_unite(source.unite());

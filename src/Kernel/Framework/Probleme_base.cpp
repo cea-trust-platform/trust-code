@@ -369,7 +369,7 @@ void Probleme_base::discretiser_equations()
   Cerr << "Discretization of the equations of problem " << que_suis_je() << " ..." <<  finl;
   for (int i = 0; i < nombre_d_equations(); i++)
     {
-      equation(i).associer_zone_dis(domaine_dis().zone_dis(0));
+      equation(i).associer_zone_dis(domaine_dis());
       equation(i).discretiser();
     }
 }

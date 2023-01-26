@@ -404,7 +404,7 @@ const Zone_dis_base& Champ_Generique_Extraction::get_ref_zone_dis_base() const
 {
   if (domaine_.non_nul())
     {
-      const Zone_dis_base& zone_dis = le_dom_dis.zone_dis(0).valeur();
+      const Zone_dis_base& zone_dis = le_dom_dis.valeur();
       return  zone_dis;
     }
   else

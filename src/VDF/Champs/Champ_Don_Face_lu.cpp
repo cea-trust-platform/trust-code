@@ -49,7 +49,7 @@ Entree& Champ_Don_Face_lu::readOn(Entree& is)
   Nom nom;
   is >> nom;
   Probleme_base& pb = ref_cast(Probleme_base, Interprete::objet(nom));
-  associer_zone_dis_base(pb.domaine_dis().zone_dis(0).valeur());
+  associer_zone_dis_base(pb.domaine_dis().valeur());
   const Zone_VDF& zvdf = ref_cast(Zone_VDF, zone_dis_base());
   int nb_faces = zvdf.nb_faces();
   is >> dim;

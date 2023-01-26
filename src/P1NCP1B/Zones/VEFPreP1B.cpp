@@ -287,6 +287,6 @@ void VEFPreP1B::zone_Cl_dis(Zone_dis& z,
 void VEFPreP1B::discretiser(Zone_dis& dom) const
 {
   Discretisation_base::discretiser(dom);
-  Zone_VEF_PreP1b& zvef = ref_cast(Zone_VEF_PreP1b, dom.zone_dis(0).valeur());
+  Zone_VEF_PreP1b& zvef = ref_cast(Zone_VEF_PreP1b, dom.valeur());
   zvef.discretiser_suite(*this);
 }

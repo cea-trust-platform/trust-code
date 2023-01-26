@@ -638,7 +638,7 @@ const Zone_dis_base& Champ_Generique_Interpolation::get_ref_zone_dis_base() cons
           Cerr << "The domain " << domaine_.le_nom() << " is not built." << finl;
           exit();
         }
-      const Zone_dis_base& zone_dis = le_dom_dis.zone_dis(0).valeur();
+      const Zone_dis_base& zone_dis = le_dom_dis.valeur();
       return zone_dis;
     }
   else

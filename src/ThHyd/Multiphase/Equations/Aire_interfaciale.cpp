@@ -92,7 +92,7 @@ void Aire_interfaciale::discretiser()
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
-  const Zone_dis& z = ref_cast(Zone_dis, probleme().domaine_dis().zone_dis(0));
+  const Zone_dis& z = ref_cast(Zone_dis, probleme().domaine_dis());
   dis.discretiser_champ(typeChamp, z.valeur(), multi_scalaire, noms , unites, N, 0, diametre_bulles);
 
   champs_compris_.ajoute_champ(diametre_bulles);

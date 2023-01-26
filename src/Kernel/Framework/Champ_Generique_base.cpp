@@ -292,7 +292,7 @@ const Zone_dis_base& Champ_Generique_base::get_ref_zone_dis_base() const
 {
   const Objet_U& ob = interprete().objet(nom_pb_);
   const Probleme_base& pb = ref_cast(Probleme_base,ob);
-  const Zone_dis_base& zone_dis = pb.domaine_dis().zone_dis(0).valeur();
+  const Zone_dis_base& zone_dis = pb.domaine_dis().valeur();
   return zone_dis;
 }
 

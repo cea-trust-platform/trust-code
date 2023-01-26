@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #ifndef Zone_dis_base_included
 #define Zone_dis_base_included
 
-#include <Ref_Zone_dis.h>
 #include <Zone.h>
+#include <Ref_Zone_dis.h>
 #include <Sous_zones_dis.h>
 
 class Frontiere_dis_base;
@@ -41,8 +41,6 @@ class Zone_dis_base : public Objet_U
 public :
   /// @@@@@@@ A VIRER
   inline int nombre_de_zones() const { return 1; }
-  inline const Zone_dis& zone_dis(int) const { return *this; }
-  inline Zone_dis& zone_dis(int) { return *this;}
   // associer_zone fait tout le taf:
   void associer_domaine(const Zone& dom) {  throw; }
   inline Zone& domaine()             {  return la_zone.valeur(); }
