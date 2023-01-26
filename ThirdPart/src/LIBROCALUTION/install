@@ -30,6 +30,8 @@ then
    export ROCM_DIR=`pwd`/rocm-cmake
    # Pour checker que le hack fonctionne:
    sed -i "1,$ s?https://github.com/RadeonOpenCompute/rocm-cmake/archive/??" cmake/Dependencies.cmake || exit -1
+   # Pour desactiver la recherche de git:
+   sed -i "s?find_package(Git REQUIRED)?#find_package(Git REQUIRED)?" cmake/Dependencies.cmake || exit -1
 fi
 
 # Build sans OpenMP et avec backend host si rocm pas installe:
