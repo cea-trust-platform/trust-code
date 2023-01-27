@@ -26,3 +26,27 @@ index 067073f2..47cf454e 100644
  
  namespace MEDCoupling
  {
+diff --git a/src/INTERP_KERNEL/GaussPoints/InterpKernelGaussCoords.cxx b/src/INTERP_KERNEL/GaussPoints/InterpKernelGaussCoords.cxx
+index 657e4a8..4fb9a25 100644
+--- a/src/INTERP_KERNEL/GaussPoints/InterpKernelGaussCoords.cxx
++++ b/src/INTERP_KERNEL/GaussPoints/InterpKernelGaussCoords.cxx
+@@ -25,6 +25,7 @@
+ #include <math.h>
+ #include <algorithm>
+ #include <sstream>
++#include <cmath>
+ 
+ using namespace INTERP_KERNEL;
+ 
+@@ -502,8 +503,9 @@ std::vector<double> GaussInfo::GetDefaultReferenceCoordinatesOf(NormalizedCellTy
+       return std::vector<double>(HEXA20A_REF,HEXA20A_REF+sizeof(HEXA20A_REF)/sizeof(double));
+     case INTERP_KERNEL::NORM_HEXA27:
+       return std::vector<double>(HEXA27A_REF,HEXA27A_REF+sizeof(HEXA27A_REF)/sizeof(double));
+-  }
+-  THROW_IK_EXCEPTION("Input type " << ct << "is not managed by GetDefaultReferenceCoordinatesOf")
++    default:
++      THROW_IK_EXCEPTION("Input type " << ct << "is not managed by GetDefaultReferenceCoordinatesOf")
++   } 
+ }
+ 
+ /*!
