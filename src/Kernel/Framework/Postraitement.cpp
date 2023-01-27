@@ -993,9 +993,16 @@ int Postraitement::cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& 
       // Activer pour lancer la sauvegarde et la reprise des statistiques
       stat_demande_definition_champs_ = 1;
       const Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,ch);
+      if (tstat_deb_>-1 && champ_stat.tstat_deb()!=tstat_deb_)
+        {
+          Cerr << "Error, the advanced field " << nom << " has a t_deb= " << champ_stat.tstat_deb() << finl;
+          Cerr << "Whereas another advanced field has t_deb= " << tstat_deb_ << finl;
+          Cerr << "You can't use different t_deb in a same post-processing block for the moment." << finl;
+          Cerr << "Tip: add a new post-processing block for your advanced fields with different t_deb value." << finl;
+          Process::exit();
+        }
       tstat_deb_ = champ_stat.tstat_deb();
       tstat_fin_ = champ_stat.tstat_fin();
-      //probleme().verifie_tdeb_tfin(nom);
     }
   else
     for (int i=0; i<ch.get_nb_sources(); i++)
