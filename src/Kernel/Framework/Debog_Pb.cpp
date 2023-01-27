@@ -78,13 +78,11 @@ Entree& Debog_Pb::readOn(Entree& is)
     }
 
   Probleme_base& pb = ref_cast(Probleme_base, obj);
-  if (pb.domaine_dis().nombre_de_zones() == 0)
+  if (!pb.domaine_dis().non_nul())
     {
       Cerr<<finl;
       Cerr<<"WARNING, problem in Debog"<<finl;
-      Cerr<<"It's maybe because you have put"<<finl;
-      Cerr<<"the command line Debog before to have associated"<<finl;
-      Cerr<<"the discretization to the problem."<<finl;
+      Cerr<<"It might be because you have put the command Debog before having associated the discretization to the problem."<<finl;
     }
   ref_pb_ = pb;
 

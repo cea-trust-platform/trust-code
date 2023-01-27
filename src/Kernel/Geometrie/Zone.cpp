@@ -2127,3 +2127,14 @@ void Zone::buildUFacesMesh(const Zone_dis_base& zone_dis_base) const
 #endif
 #endif
 }
+
+/*! @brief Initialize the renumerotation array for periodicity
+ */
+void Zone::init_renum_perio()
+{
+  const int nb_s = sommets_.dimension(0);
+  IntTab renum(nb_s);
+  for (int i = 0; i < nb_s; i++)
+    renum[i] = i;
+  set_renum_som_perio(renum);
+}

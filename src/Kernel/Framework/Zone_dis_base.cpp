@@ -16,35 +16,35 @@
 #include <Zone_dis_base.h>
 #include <Frontiere_dis_base.h>
 #include <Zone.h>
+#include <Sous_Zone.h>
+#include <Sous_zone_dis.h>
+#include <Sous_zones_dis.h>
 
 Implemente_base(Zone_dis_base,"Zone_dis_base",Objet_U);
 
-
-/*! @brief Surcharge Objet_U::printOn(Sortie&) NE FAIT RIEN
- *
- *     A surcharger dans les classes derivees.
- *     Imprime la zone discretisee sur un flot de sortie
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Zone_dis_base::printOn(Sortie& os) const
 {
   return os ;
 }
 
-
-/*! @brief Surcharge Objet_U::readOn(Sortie&) NE FAIT RIEN
- *
- *     A surcharger dans les classes derivees.
- *     Lit une zone discretisee a partir d'un flot d'entree
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Zone_dis_base::readOn(Entree& is)
 {
   return is ;
+}
+
+int Zone_dis_base::nombre_de_sous_zones_dis() const
+{
+  return les_sous_zones_dis.size();
+}
+
+const Sous_zone_dis& Zone_dis_base::sous_zone_dis(int i) const
+{
+  return les_sous_zones_dis[i];
+}
+
+Sous_zone_dis& Zone_dis_base::sous_zone_dis(int i)
+{
+  return les_sous_zones_dis[i];
 }
 
 /*! @brief Associe une Zone a l'objet.
@@ -54,15 +54,6 @@ Entree& Zone_dis_base::readOn(Entree& is)
 void Zone_dis_base::associer_zone(const Zone& une_zone)
 {
   la_zone=une_zone;
-}
-
-/*! @brief Associe un Zone_dis a l'objet.
- *
- * @param (Zone_dis& un_domaine_dis) le domaine discretise a associer.
- */
-void Zone_dis_base::associer_domaine_dis(const Zone_dis& un_domaine_dis)
-{
-  le_domaine_dis=un_domaine_dis;
 }
 
 /*! @brief Renvoie la frontiere de Nom nom.
@@ -110,6 +101,7 @@ int Zone_dis_base::rang_frontiere(const Nom& nom)
   exit();
   return -1;
 }
+
 /*! @brief Ecriture des noms des bords sur un flot de sortie.
  *
  * @param (Sortie& os) un flot de sortie
@@ -156,4 +148,47 @@ const IntTab& Zone_dis_base::face_voisins() const
        << finl;
   exit();
   throw;
+}
+
+void Zone_dis_base::discretiser_root(const Nom& typ)
+{
+//  const Domaine& dom=le_domaine.valeur();
+//  i_am_allocator_of_les_zones = domaine().le_nom()+"_"+type; // Nom unique
+//  if (domaines_dis.find(i_am_allocator_of_les_zones.getChar()) != domaines_dis.end()) //on a deja discretise ce domaine!
+//    {
+//      *this = domaines_dis[i_am_allocator_of_les_zones.getChar()].valeur();
+//      i_am_allocator_of_les_zones = "";
+//      return;
+//    }
+
+  // Should we handle faces
+  Nom ze_typ(typ);
+  ze_typ.suffix("NO_FACE_");
+  bool face_ok = (ze_typ == typ);
+
+  const Zone& dom = la_zone.valeur();
+
+  if (face_ok)
+    discretiser();
+  else
+    discretiser_no_face();
+
+  // Remplit les sous_zones_dis, les type, et leur associe les zone_dis et les sous_zone correspondantes.
+  Sous_zones_dis& sszd = sous_zones_dis();
+  sszd.dimensionner(dom.nb_ss_zones());
+
+  for (int i=0; i<dom.nb_ss_zones(); i++)
+    {
+      const Zone& zone_from_ss_zone = dom.ss_zone(i).zone();
+      if (!zone_from_ss_zone.est_egal_a(dom))
+        {
+          Cerr << "In Zone_dis_base::discretiser(), impossible to find a Domain corresponding to sous_zone " << i << finl;
+          exit();
+        }
+      if (face_ok)
+        typer_discretiser_ss_zone(i);
+    }
+  //    //memoization
+  //    domaines_dis[i_am_allocator_of_les_zones.getChar()] = *this;
+  //    domaines_dis[Nom(Nom("NO_FACE_") + i_am_allocator_of_les_zones).getChar()] = *this;
 }

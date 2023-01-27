@@ -44,10 +44,12 @@ public :
   virtual inline double surface(int i) const { return face_surfaces(i); }
 
   void discretiser() override;
+  void discretiser_no_face() override;
+  void typer_discretiser_ss_zone(int i) override;
   void infobord();
   void info_elem_som();
   void marquer_faces_double_contrib(const Conds_lim&);
-  virtual void typer_elem(Zone&);
+  virtual void typer_elem(Zone&) {}
 
   virtual void remplir_face_voisins_fictifs(const Zone_Cl_dis_base& ) ;
   virtual Faces* creer_faces();

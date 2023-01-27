@@ -100,7 +100,9 @@ void Zone_VF::reordonner(Faces& )
  */
 void Zone_VF::discretiser()
 {
-  Cerr << "<<<<<< Discretization VF >>>>>>>>>>" << finl;
+  Cerr << "<<<<<<<<<< Discretization VF >>>>>>>>>>" << finl;
+
+  Zone_dis_base::discretiser();
 
   Zone& lazone=zone();
   histogramme_angle(lazone,Cerr);
@@ -240,6 +242,24 @@ void Zone_VF::discretiser()
   infobord();                        // Aires des bords
   info_elem_som();                // Nombre elements et sommets
   Cerr << "<<<<<< End of Discretization VF >>>>>>>>>>" << finl;
+}
+
+void Zone_VF::discretiser_no_face()
+{
+  Zone& dom = zone();
+  typer_elem(dom);
+  // Calcul du volume de la zone discretisee
+  dom.calculer_volumes(volumes(), inverse_volumes());
+}
+
+void Zone_VF::typer_discretiser_ss_zone(int i)
+{
+  Zone& dom = zone();
+
+  sous_zone_dis(i).typer("Sous_zone_VF");
+  sous_zone_dis(i).associer_sous_zone(dom.ss_zone(i));
+  sous_zone_dis(i).associer_zone_dis(*this);
+  sous_zone_dis(i).discretiser();
 }
 
 void Zone_VF::remplir_face_voisins_fictifs(const Zone_Cl_dis_base& )
@@ -495,10 +515,6 @@ void Zone_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
           faces_doubles_[face_de_joint] = 1;
         }
     }
-}
-void Zone_VF::typer_elem(Zone& azone)
-{
-  //Ne fait rien
 }
 
 void Zone_VF::infobord()

@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Champ_Uniforme.h>
@@ -37,6 +38,11 @@ Sortie& Discretisation_base::printOn(Sortie& os) const
 Entree& Discretisation_base::readOn(Entree& is)
 {
   return is;
+}
+
+void Discretisation_base::associer_domaine(const Zone& dom)
+{
+  le_domaine_ = dom;
 }
 
 // Construction d'objets en fontion de la discretisation :
@@ -276,13 +282,16 @@ Sortie& Discretisation::printOn(Sortie& os) const
   return DERIV(Discretisation_base)::printOn(os);
 }
 
-
-void Discretisation_base::discretiser(Zone_dis& dom) const
+void Discretisation_base::discretiser(Zone_dis& dom_dis) const
 {
   Nom type="Zone_";
   type+=que_suis_je();
-  dom.discretiser(type);
+  dom_dis.typer(type);
+  const Zone& dom = le_domaine_.valeur();
+  dom_dis->associer_zone(dom);
+  dom_dis->discretiser_root(type);
 }
+
 void Discretisation_base::volume_maille(const Schema_Temps_base& sch,
 
                                         const Zone_dis& z,

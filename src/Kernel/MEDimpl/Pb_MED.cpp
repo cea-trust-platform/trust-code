@@ -134,8 +134,10 @@ Entree& Pb_MED::readOn(Entree& is )
   lire.lire_geom(nom_fic, dom, nom_dom, nom_dom);
   dom.reordonner();
 
-  le_domaine_dis.associer_domaine(dom);
-  le_domaine_dis.discretiser("NO_FACE_Zone_VF_inst");
+  Nom typ = "NO_FACE_Zone_VF_inst";
+  le_domaine_dis.typer(typ);
+  le_domaine_dis->associer_zone(dom);
+  le_domaine_dis->discretiser_root(typ);
 
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;
 #ifdef MED_

@@ -345,7 +345,7 @@ Schema_Temps_base& Probleme_Couple::schema_temps()
  *
  * @param (Discretisation_base& dis) une discretisation pour tous les problemes
  */
-void Probleme_Couple::discretiser(const Discretisation_base& dis)
+void Probleme_Couple::discretiser(Discretisation_base& dis)
 {
   // Loop to discretize each problem of the coupled problem:
   for(int i=0; i< nb_problemes(); i++)

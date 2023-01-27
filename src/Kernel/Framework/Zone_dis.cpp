@@ -26,3 +26,24 @@ Entree& Zone_dis::readOn(Entree& is)
 {
   return DERIV(Zone_dis_base)::readOn(is);
 }
+
+
+const Sous_zone_dis& Zone_dis::sous_zone_dis(int i) const
+{
+  return valeur().sous_zone_dis(i);
+}
+
+Sous_zone_dis& Zone_dis::sous_zone_dis(int i)
+{
+  return valeur().sous_zone_dis(i);
+}
+
+/*! @brief Type le Zone_dis.
+ */
+void Zone_dis::typer(const Nom& typ)
+{
+  Nom ze_typ(typ);
+  ze_typ.suffix("NO_FACE_");
+  DERIV(Zone_dis_base)::typer(ze_typ);
+}
+

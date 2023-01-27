@@ -632,7 +632,7 @@ const Zone_dis_base& Champ_Generique_Interpolation::get_ref_zone_dis_base() cons
 {
   if (domaine_.non_nul())
     {
-      if (le_dom_dis.nombre_de_zones()==0)
+      if (!le_dom_dis.non_nul())
         {
           Cerr << "Error in Interpolation definition:" << finl;
           Cerr << "The domain " << domaine_.le_nom() << " is not built." << finl;
@@ -680,7 +680,6 @@ void Champ_Generique_Interpolation::discretiser_domaine()
 {
   if (domaine_.non_nul())
     {
-      le_dom_dis.associer_domaine(domaine_.valeur());
       const Probleme_base& Pb = get_ref_pb_base();
       const Discretisation_base& discr = Pb.discretisation();
       const Nom& type_discr = discr.que_suis_je();
@@ -699,6 +698,8 @@ void Champ_Generique_Interpolation::discretiser_domaine()
             }
         }
       type += type_discr;
-      le_dom_dis.discretiser(type);
+      le_dom_dis.typer(type);
+      le_dom_dis->associer_zone(domaine_.valeur());
+      le_dom_dis->discretiser_root(type);
     }
 }

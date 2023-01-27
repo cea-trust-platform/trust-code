@@ -18,6 +18,7 @@
 
 #include <Ref_Champ_base.h>
 #include <Champ_base.h> // Pour Nature_du_champ
+#include <Ref_Zone.h>
 
 class Champ_Fonc_Tabule;
 class Schema_Temps_base;
@@ -26,6 +27,7 @@ class Champ_Inc_base;
 class Zone_dis_base;
 class Probleme_base;
 class Equation_base;
+class Zone;
 class Zone_dis;
 class Zone_Cl_dis;
 class Champ_base;
@@ -43,7 +45,6 @@ class Motcle;
  *
  * @sa Probleme_base, Classe abstraite dont toutes les discretisations en espace doivent, deriver., Methode abstraite:, void zone_Cl_dis(Zone_dis& , Zone_Cl_dis& ) const
  */
-
 class Discretisation_base : public Objet_U
 {
   Declare_base(Discretisation_base);
@@ -68,6 +69,7 @@ public :
   // FIN MODIF ELI LAUCOIN
 
 public :
+  void associer_domaine(const Zone& dom);
 
   virtual void discretiser_variables() const;
   virtual void discretiser_Zone_Cl_dis(const Zone_dis&, Zone_Cl_dis&) const;
@@ -114,6 +116,8 @@ public :
 protected:
   static const Motcle demande_description;
   static const Nom nom_vide;
+  REF(Zone) le_domaine_;
+
 private:
   void test_demande_description(const Motcle& , const Nom&) const;
   static void champ_fixer_membres_communs(Champ_base& ch, const Zone_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps);

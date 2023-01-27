@@ -402,7 +402,7 @@ void Echange_contact_Correlation_VEF::init()
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const DoubleTab& xv = ma_zvef.xv();
   const IntTab& face_sommets = ma_zvef.face_sommets();
-  const DoubleTab& coord_som = ma_zvef.domaine_dis().domaine().coord_sommets();
+  const DoubleTab& coord_som = ma_zvef.zone().coord_sommets();
 
   const int ndeb = ma_front_vf.num_premiere_face();
   const int nb_faces_bord = ma_front_vf.nb_faces();

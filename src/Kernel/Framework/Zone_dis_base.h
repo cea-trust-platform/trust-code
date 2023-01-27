@@ -20,75 +20,74 @@
 #include <Ref_Zone_dis.h>
 #include <Sous_zones_dis.h>
 
-class Frontiere_dis_base;
-class Zone_Cl_dis_base;
 class Conds_lim;
-
-Declare_ref(Sous_zones_dis);
+class Zone_Cl_dis_base;
+class Frontiere_dis_base;
 
 /*! @brief classe Zone_dis_base Cette classe est la base de la hierarchie des zones discretisees.
  *
  *      Un objet Zone est associe a la zone discretise.
- *      A chaque methode numerique de Trio U correspond une classe derivant
+ *      A chaque discretisation spatiale (VDF, VEF, PolyMAC, ...)  de TRUST correspond une classe derivant
  *      de Zone_dis_base implementant les outils necessaires a la methode.
- *
- * @sa Classe abstraite dont toutes les zones discretisees doivent deriver, Methodes abstraites:, void discretiser(), const Frontiere_dis_base& frontiere_dis(int ) const, void modifier_pour_Cl(const Conds_lim&)
  */
 class Zone_dis_base : public Objet_U
 {
   Declare_base(Zone_dis_base);
 
 public :
-  /// @@@@@@@ A VIRER
-  inline int nombre_de_zones() const { return 1; }
-  // associer_zone fait tout le taf:
-  void associer_domaine(const Zone& dom) {  throw; }
-  inline Zone& domaine()             {  return la_zone.valeur(); }
-  inline const Zone& domaine() const {  return la_zone.valeur(); }
-
   ///
-  /// Sous_zones_dis
+  /// Accessors and shortcuts
   ///
-  inline int nombre_de_sous_zones_dis() const              {  return les_sous_zones_dis->size();      }
-  inline const Sous_zone_dis& sous_zone_dis(int i) const   {  return les_sous_zones_dis.valeur()[i];  }
-  inline Sous_zone_dis& sous_zone_dis(int i)               {   return les_sous_zones_dis.valeur()[i]; }
-
-  void discretiser(const Nom& );
-  /// @@@@@@@
-
-
-  void ecrire_noms_bords(Sortie&) const;
-  void associer_zone(const Zone&);
-  void associer_domaine_dis(const Zone_dis&);
-  int rang_frontiere(const Nom& );
-  int rang_frontiere(const Nom& ) const;
-  const Frontiere_dis_base& frontiere_dis(const Nom& ) const;
-  Frontiere_dis_base& frontiere_dis(const Nom& );
-
-  virtual void creer_elements_fictifs(const Zone_Cl_dis_base&);
-  virtual IntTab& face_sommets();
-  virtual const IntTab& face_sommets() const;
-  virtual IntTab& face_voisins();
-  virtual const IntTab& face_voisins() const;
-
-  virtual void discretiser() =0;
-  virtual void modifier_pour_Cl(const Conds_lim&) =0;
-  virtual Frontiere_dis_base& frontiere_dis(int ) =0;
-  virtual const Frontiere_dis_base& frontiere_dis(int ) const =0;
-
   inline const Zone& zone() const { return la_zone.valeur(); }
   inline Zone& zone() { return la_zone.valeur(); }
-  inline const Zone_dis& domaine_dis() const { return le_domaine_dis.valeur(); }
-  inline Zone_dis& domaine_dis() { return le_domaine_dis.valeur(); }
 
-  // Raccourcis :
   inline int nb_elem() const { return zone().nb_elem(); }
   inline int nb_elem_tot() const { return zone().nb_elem_tot(); }
   inline int nb_som() const { return zone().nb_som(); }
   inline int nb_som_tot() const { return zone().nb_som_tot(); }
   inline int nb_front_Cl() const { return zone().nb_front_Cl(); }
 
-// Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
+  ///
+  /// Sous_zones_dis
+  ///
+  int nombre_de_sous_zones_dis() const;
+  const Sous_zone_dis& sous_zone_dis(int i) const;
+  Sous_zone_dis& sous_zone_dis(int i);
+  Sous_zones_dis& sous_zones_dis()             { return les_sous_zones_dis; }
+  const Sous_zones_dis& sous_zones_dis() const { return les_sous_zones_dis; }
+
+  ///
+  /// Bord and Frontiere
+  ///
+  void ecrire_noms_bords(Sortie&) const;
+  int rang_frontiere(const Nom& );
+  int rang_frontiere(const Nom& ) const;
+  const Frontiere_dis_base& frontiere_dis(const Nom& ) const;
+  Frontiere_dis_base& frontiere_dis(const Nom& );
+  virtual Frontiere_dis_base& frontiere_dis(int ) =0;
+  virtual const Frontiere_dis_base& frontiere_dis(int ) const =0;
+
+  ///
+  /// Mappings
+  ///
+  virtual IntTab& face_sommets();
+  virtual const IntTab& face_sommets() const;
+  virtual IntTab& face_voisins();
+  virtual const IntTab& face_voisins() const;
+
+  ///
+  /// Various
+  ///
+  void associer_zone(const Zone&);
+  void discretiser_root(const Nom& typ);
+  virtual void discretiser() {}
+  virtual void discretiser_no_face() = 0;
+  virtual void typer_discretiser_ss_zone(int i) = 0;
+  virtual void modifier_pour_Cl(const Conds_lim&) =0;
+  virtual void creer_elements_fictifs(const Zone_Cl_dis_base&);
+
+  // Methodes pour le calcul et l'appel de la distance au bord solide le plus proche
+  // en entree on met le tableau des CL de la QDM
   virtual const DoubleTab& y_elem()  const {return y_elem_;}
   virtual const DoubleTab& y_faces() const {return y_faces_;}
   virtual inline void init_dist_paroi_globale(const Conds_lim& conds_lim)
@@ -99,8 +98,7 @@ public :
 
 protected :
   REF(Zone) la_zone;
-  REF(Zone_dis) le_domaine_dis;
-  REF(Sous_zones_dis) les_sous_zones_dis;
+  Sous_zones_dis les_sous_zones_dis;
 
   int dist_paroi_initialisee_ = 0;
   DoubleTab y_elem_, y_faces_;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +15,7 @@
 
 #include <Perte_Charge_Reguliere_VEF_P1NC.h>
 #include <Zone_VEF.h>
+#include <Sous_Zone.h>
 #include <Fluide_Incompressible.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>

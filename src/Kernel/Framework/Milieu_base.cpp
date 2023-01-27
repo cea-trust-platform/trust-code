@@ -663,7 +663,7 @@ void Milieu_base::update_rho_cp(double temps)
     tab_multiply_any_shape(rho_cp,Cp.valeurs());
   rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_.valeur().changer_temps(temps);
-  const MD_Vector& md_som = rho_cp_elem_.zone_dis_base().domaine_dis().domaine().md_vector_sommets(),
+  const MD_Vector& md_som = rho_cp_elem_.zone_dis_base().zone().md_vector_sommets(),
                    &md_faces = ref_cast(Zone_VF,rho_cp_elem_.zone_dis_base()).md_vector_faces();
   if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_.valeurs().get_md_vector())
     rho_cp_comme_T_.valeurs() = rho_cp;

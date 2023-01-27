@@ -18,6 +18,7 @@
 #include <Schema_Temps_base.h>
 #include <Interprete.h>
 #include <Zone.h>
+#include <Sous_Zone.h>
 #include <ICoCoExceptions.h>
 
 #include <Convert_ICoCoTrioField.h>

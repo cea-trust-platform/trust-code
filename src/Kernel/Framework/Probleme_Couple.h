@@ -80,7 +80,7 @@ public :
   virtual const Schema_Temps_base& schema_temps() const;
   virtual Schema_Temps_base& schema_temps();
 
-  virtual void discretiser(const Discretisation_base&);
+  virtual void discretiser(Discretisation_base&);
   inline virtual void mettre_a_jour_modele_rayo(double temps);
   void initialize() override;
 

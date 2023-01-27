@@ -20,7 +20,9 @@
 #include <Probleme_base.h>
 #include <Zone.h>
 #include <Champ_Uniforme.h>
+#include <Sous_Zone.h>
 #include <Sous_zone_VF.h>
+#include <Sous_zone_dis.h>
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>
 #include <Param.h>
@@ -294,7 +296,7 @@ void Perte_Charge_VEF::completer()
     {
       sous_zone=false;
       const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(nom_sous_zone);
-      const Zone_dis& le_domaine_dis=la_zone_VEF->domaine_dis();
+      const Zone_dis_base& le_domaine_dis=la_zone_VEF.valeur();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
         {
           if (le_domaine_dis.sous_zone_dis(ssz)->sous_zone().est_egal_a(la_sous_zone))

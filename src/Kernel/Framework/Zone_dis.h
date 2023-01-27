@@ -20,7 +20,8 @@
 #include <Zone_dis_base.h>
 #include <TRUST_Deriv.h>
 
-class  Zone_Cl_dis_base;
+class Zone_Cl_dis_base;
+class Sous_zone_dis;
 
 /*! @brief classe Zone_dis Classe generique de la hierarchie des zones discretisees.
  *
@@ -34,16 +35,20 @@ class  Zone_Cl_dis_base;
  */
 class Zone_dis : public DERIV(Zone_dis_base)
 {
-
   Declare_instanciable(Zone_dis);
 
 public :
-
   inline void associer_zone(const Zone&);
-  inline void associer_domaine_dis(const Zone_dis&);
+
+  int nombre_de_sous_zones_dis() const { return valeur().nombre_de_sous_zones_dis(); }
+
+  const Sous_zone_dis& sous_zone_dis(int i) const;
+  Sous_zone_dis& sous_zone_dis(int i);
+
+  void typer(const Nom& nom);
+
   inline const Zone& zone() const;
   inline Zone& zone();
-  inline void discretiser();
   inline void creer_elements_fictifs(const Zone_Cl_dis_base&);
   inline const Frontiere_dis_base& frontiere_dis(int ) const;
 };
@@ -58,11 +63,6 @@ public :
 inline void Zone_dis::associer_zone(const Zone& une_zone)
 {
   valeur().associer_zone(une_zone);
-}
-
-inline void Zone_dis::associer_domaine_dis(const Zone_dis& un_domaine_dis)
-{
-  valeur().associer_domaine_dis(un_domaine_dis);
 }
 
 /*! @brief Appel a l'objet sous-jacent.
@@ -86,16 +86,6 @@ inline const Zone& Zone_dis::zone() const
 inline Zone& Zone_dis::zone()
 {
   return valeur().zone();
-}
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Se discretise cf Zone_dis_base
- *
- */
-inline void Zone_dis::discretiser()
-{
-  valeur().discretiser();
 }
 
 inline void Zone_dis::creer_elements_fictifs(const Zone_Cl_dis_base& zcl)

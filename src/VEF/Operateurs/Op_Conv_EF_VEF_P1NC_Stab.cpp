@@ -16,6 +16,8 @@
 #include <Op_Conv_EF_VEF_P1NC_Stab.h>
 #include <Champ_P1NC.h>
 #include <BilanQdmVEF.h>
+#include <Sous_Zone.h>
+#include <Sous_zone_dis.h>
 #include <Schema_Temps_base.h>
 #include <Debog.h>
 #include <Porosites_champ.h>
@@ -2096,7 +2098,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
         {
           REF(Sous_zone_VF) la_ssz;
           const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(noms_ssz_alpha[i]);
-          const Zone_dis& le_domaine_dis=la_zone_vef->domaine_dis();
+          const Zone_dis_base& le_domaine_dis=la_zone_vef.valeur();
           bool trouve=false;
           for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
             {
@@ -2131,7 +2133,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
     {
       sous_zone=false;
       const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(nom_sous_zone);
-      const Zone_dis& le_domaine_dis=la_zone_vef->domaine_dis();
+      const Zone_dis_base& le_domaine_dis=la_zone_vef.valeur();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
         {
           if (le_domaine_dis.sous_zone_dis(ssz)->sous_zone().est_egal_a(la_sous_zone))

@@ -16,72 +16,42 @@
 #ifndef Sous_zone_dis_base_included
 #define Sous_zone_dis_base_included
 
-#include <Zone_dis_base.h>
 #include <Ref_Zone_dis_base.h>
-#include <Sous_Zone.h>
 #include <Ref_Sous_Zone.h>
 
-//! Cette classe est a la base de la hierarchie des sous-zones discretisees.
-/**
-   Au moment de la discretisation du domaine, de meme qu'une
-   Zone_dis est creee pour chaque zone, une Sous_zone_dis est
-   creee pour chaque Sous_Zone et discretisee.
+class Zone_dis_base;
 
-   Les classes qui heritent de Sous_zone_dis_base doivent surcharger
-   la methode discretiser();
-
-   La Sous_Zone definit un sous-ensemble des elements de la Zone.
-   De meme, la Sous_zone_dis definit un sous_ensemble des attributs
-   de la Zone_dis, en particulier des faces.
-
-   Voir aussi Zone_dis, Sous_Zone, Zone_dis_base, Sous_Zone_VF
+/*! @brief Cette classe est a la base de la hierarchie des sous-zones discretisees.
+ * Au moment de la discretisation du domaine, de meme qu'une
+ * Zone_dis est creee pour chaque zone, une Sous_zone_dis est
+ * creee pour chaque Sous_Zone et discretisee.
+ *
+ * Les classes qui heritent de Sous_zone_dis_base doivent surcharger la methode discretiser();
+ *
+ * La Sous_Zone definit un sous-ensemble des elements de la Zone.
+ * De meme, la Sous_zone_dis definit un sous_ensemble des attributs
+ * de la Zone_dis, en particulier des faces.
+ *
+ * Voir aussi Zone_dis, Sous_Zone, Zone_dis_base, Sous_Zone_VF
 */
-
 class Sous_zone_dis_base : public Objet_U
 {
   Declare_base(Sous_zone_dis_base);
 
 public:
+  void associer_sous_zone(const Sous_Zone&);
+  void associer_zone_dis(const Zone_dis_base&);
 
   // Methodes d'acces aux REFs
-  void associer_sous_zone(const Sous_Zone&);
-  inline const Sous_Zone& sous_zone() const
-  {
-    return la_sous_zone.valeur();
-  }
-  inline Sous_Zone& sous_zone()
-  {
-    return la_sous_zone.valeur();
-  }
-  void associer_zone_dis(const Zone_dis_base&);
-  inline const Zone_dis_base& zone_dis() const
-  {
-    return la_zone_dis.valeur();
-  }
-  inline Zone_dis_base& zone_dis()
-  {
-    return la_zone_dis.valeur();
-  }
-
-  // Raccourcis vers la Sous_Zone :
-  inline int nb_elem_tot() const
-  {
-    return la_sous_zone->nb_elem_tot();
-  }
-  inline int operator()(int i) const
-  {
-    return la_sous_zone.valeur()(i);
-  }
-  inline int operator[](int i) const
-  {
-    return la_sous_zone.valeur()[i];
-  }
+  const Sous_Zone& sous_zone() const;
+  Sous_Zone& sous_zone();
+  const Zone_dis_base& zone_dis() const;
+  Zone_dis_base& zone_dis();
 
   // Methodes propres :
-  virtual void discretiser()=0;
+  virtual void discretiser() = 0;
 
 protected:
-
   REF(Sous_Zone) la_sous_zone;
   REF(Zone_dis_base) la_zone_dis;
 };

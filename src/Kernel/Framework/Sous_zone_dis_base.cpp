@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,7 +13,9 @@
 *
 *****************************************************************************/
 
+#include <Zone_dis_base.h>
 #include <Sous_zone_dis_base.h>
+#include <Sous_Zone.h>
 
 Implemente_base(Sous_zone_dis_base,"Sous_zone_dis_base",Objet_U);
 
@@ -23,10 +25,20 @@ Sortie& Sous_zone_dis_base::printOn(Sortie& os) const
   return os ;
 }
 
-
 Entree& Sous_zone_dis_base::readOn(Entree& is)
 {
   return is ;
+}
+
+// Not inlined to avoid cyclic includes
+const Sous_Zone& Sous_zone_dis_base::sous_zone() const
+{
+  return la_sous_zone.valeur();
+}
+
+Sous_Zone& Sous_zone_dis_base::sous_zone()
+{
+  return la_sous_zone.valeur();
 }
 
 /*! @brief Associe une Sous_Zone a l'objet.
@@ -43,5 +55,15 @@ void Sous_zone_dis_base::associer_sous_zone(const Sous_Zone& une_sous_zone)
 void Sous_zone_dis_base::associer_zone_dis(const Zone_dis_base& une_zone_dis)
 {
   la_zone_dis=une_zone_dis;
+}
+
+const Zone_dis_base& Sous_zone_dis_base::zone_dis() const
+{
+  return la_zone_dis.valeur();
+}
+
+Zone_dis_base& Sous_zone_dis_base::zone_dis()
+{
+  return la_zone_dis.valeur();
 }
 

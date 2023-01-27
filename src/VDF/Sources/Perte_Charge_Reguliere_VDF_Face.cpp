@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +15,7 @@
 
 #include <Perte_Charge_Reguliere_VDF_Face.h>
 #include <Zone_VDF.h>
+#include <Sous_Zone.h>
 #include <Champ_Face_VDF.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
@@ -23,18 +24,11 @@
 Implemente_instanciable(Perte_Charge_Reguliere_VDF_Face,"Perte_Charge_Reguliere_VDF_Face",Perte_Charge_VDF_Face);
 
 
-
-//// printOn
-//
-
 Sortie& Perte_Charge_Reguliere_VDF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-
-//// readOn
-//
 
 Entree& Perte_Charge_Reguliere_VDF_Face::readOn(Entree& s )
 {
@@ -82,10 +76,8 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
   num_loc = -1;
   int num_elem,num_face;
   for (num_elem=0; num_elem<nb_poly_ss_zone; num_elem++)
-    {
-      num_loc[la_sous_zone(num_elem)] = num_elem;
+    num_loc[la_sous_zone(num_elem)] = num_elem;
 
-    }
   for (int direction = 0; direction<dimension; direction++)
     {
       Cerr << " Perte_Charge_Reguliere_VDF_Face::remplir num_face en direction " << direction << finl ;

@@ -90,7 +90,7 @@ public:
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
   virtual void associer_domaine(const Zone&);
   virtual void associer_milieu_base(const Milieu_base&);
-  virtual void discretiser(const Discretisation_base&);
+  virtual void discretiser(Discretisation_base&);
   virtual void discretiser_equations();
   virtual void finir();
 
@@ -201,6 +201,7 @@ protected :
   std::vector<Milieu> le_milieu_;
   Zone_dis le_domaine_dis;
   Postraitements les_postraitements;
+  REF(Zone) le_domaine_;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;
 

@@ -16,6 +16,8 @@
 #ifndef TRUSTChamp_Morceaux_generique_TPP_included
 #define TRUSTChamp_Morceaux_generique_TPP_included
 
+#include <Sous_Zone.h>
+
 template<Champ_Morceaux_Type _TYPE_>
 Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& ch)
 {

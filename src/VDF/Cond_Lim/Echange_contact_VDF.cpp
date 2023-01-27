@@ -436,13 +436,13 @@ int Echange_contact_VDF::verifier_correspondance() const
           Cerr<<"Problem on the following faces:" << finl;
           if ( dimension==2 )
             {
-              Cerr << "Coordinates of the face 1: (" << x1[0] << " " << x1[1] << ") on the domain " << ma_zvdf.domaine_dis().domaine().le_nom() << finl;
-              Cerr << "Coordinates of the face 2: (" << x2[0] << " " << x2[1] << ") on the domain " << zvdf_2.domaine_dis().domaine().le_nom()  << finl;
+              Cerr << "Coordinates of the face 1: (" << x1[0] << " " << x1[1] << ") on the domain " << ma_zvdf.zone().le_nom() << finl;
+              Cerr << "Coordinates of the face 2: (" << x2[0] << " " << x2[1] << ") on the domain " << zvdf_2.zone().le_nom()  << finl;
             }
           else
             {
-              Cerr << "Coordinates of the face 1: (" << x1[0] << " " << x1[1] << x1[2] << ") on the domain " << ma_zvdf.domaine_dis().domaine().le_nom() << finl;
-              Cerr << "Coordinates of the face 2: (" << x2[0] << " " << x2[1] << x2[2] << ") on the domain " << zvdf_2.domaine_dis().domaine().le_nom()  << finl;
+              Cerr << "Coordinates of the face 1: (" << x1[0] << " " << x1[1] << x1[2] << ") on the domain " << ma_zvdf.zone().le_nom() << finl;
+              Cerr << "Coordinates of the face 2: (" << x2[0] << " " << x2[1] << x2[2] << ") on the domain " << zvdf_2.zone().le_nom()  << finl;
             }
           Cerr << "\nIn VDF, numbering of faces on each 'Raccord' must be identical (to a constant)." << finl;
           Cerr << "The faces of each sub frontier of the boundary " << ma_front_vf.le_nom() << " must be created in the same order on each domain, this process is sensitive to the reading sense of the faces." << finl;

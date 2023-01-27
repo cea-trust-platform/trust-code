@@ -266,7 +266,7 @@ const Zone& Champ_Generique_base::get_ref_domain() const
 {
   const Objet_U& ob = interprete().objet(nom_pb_);
   const Probleme_base& pb = ref_cast(Probleme_base,ob);
-  const Zone& dom = pb.domaine_dis().domaine();
+  const Zone& dom = pb.domaine_dis().zone();
   return dom;
 }
 
