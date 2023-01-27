@@ -869,10 +869,11 @@ then
    echo $ECHO_OPTS "tools:\n\t(source ./env_TRUST.sh && compile tools)" >> $TRUST_ROOT/Makefile
    echo  $ECHO_OPTS "optim:\t opt" 	>> $TRUST_ROOT/Makefile
    echo  $ECHO_OPTS "semi_optim:\t semi_opt" 	>> $TRUST_ROOT/Makefile
-   for cible in opt debug prof gcov opt_avx semi_opt custom
+   for cible in opt debug prof gcov  semi_opt custom
    do
      echo $ECHO_OPTS "${cible}:\n\t(source ./env_TRUST.sh && env cibles=\"micro_kernel_${cible} numeric_kernel_${cible} standard_kernel_${cible} ${cible}\" monodir)" >> $TRUST_ROOT/Makefile
    done
+   echo $ECHO_OPTS "opt_avx:\n\t@echo opt_avx target not available since TRUST v1.9.2" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "clean:\n\t(source ./env_TRUST.sh && compile clean)" >> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "depend:\n\t#fait_makefile" 			>> $TRUST_ROOT/Makefile
    echo $ECHO_OPTS "doxygen:\n\t(source ./env_TRUST.sh && env TRUST_ENABLE_DOC_DOXYGEN=1 make_Doxyfile)" 			>> $TRUST_ROOT/Makefile

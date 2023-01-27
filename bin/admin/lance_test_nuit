@@ -89,7 +89,7 @@ check_components()
             # Fait desormais via un post_configure dans Test_Baltik:
 	    #[ "$Composant" = Test_Baltik ] && echo "We call ./Configure_Tests for Test_Baltik from `pwd`" && ./Configure_Tests
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
-	    make optim module_optim debug module_debug optim_avx &&
+	    make optim module_optim debug module_debug &&
 	    $make_option && echo "$Composant OK" && COMPOSANT_OK=1
 	    MODIF_TRUST_OK=1
 	    if [ -d share/kernel_official_sources ]
@@ -221,8 +221,6 @@ check_components()
 	       gcov_machines="" && [ $* = tuleap/Maintenance ] && gcov_machines=`liste_machines "\-gcov"`
 	       # Machines en mode prof
 	       prof_machines="" && [ $* = tuleap/Maintenance ] && prof_machines=`liste_machines "\-prof"`
-	       # Machines en mode avx
-	       avx_machines=`liste_machines "\-avx"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       # Machines en mode valgrind
 	       valgrind_machines=`liste_machines "\-check-valgrind"` # | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
 	       valgrind_machines=$valgrind_machines" "`liste_machines "\-ctest_valgrind"`
@@ -369,9 +367,6 @@ check_components()
 		                 mode_option="--with-mode=optim"
 			      fi
 			   fi
-	                elif [[ "$avx_machines" = *"$machine"* ]] # Test si machine est dans la liste des machines avx
-		        then
-		           mode_option="--with-mode=optim_avx"
 		        else
 		           mode_option="--with-mode=optim"
 		        fi
@@ -1248,7 +1243,7 @@ echo "###############################################"
 	###################################################
 	# Boucle sur les differentes options de compilation
 	###################################################
-	for OPT in _semi_opt_ _opt_ _ _opt_pg_ _opt_gcov_ _opt_avx_
+	for OPT in _semi_opt_ _opt_ _ _opt_pg_ _opt_gcov_
 	do
            case $OPT in
 	   _semi_opt_) TYPE="semi_opt";;
@@ -1256,7 +1251,6 @@ echo "###############################################"
 	   _) TYPE="debug";;
 	   _opt_pg_) TYPE="prof";;
 	   _opt_gcov_) TYPE="gcov";;
-	   _opt_avx_) TYPE="opt_avx";;
            *) echo $OPT not coded in $0;  exit -1 ;;
 	   esac;
 	   OPT=${OPT%_} # <=> OPT=${OPT::-1}
@@ -3103,7 +3097,7 @@ KO=0
 let KO=$NB-$OK
 echo "    $OK keywords covered by test cases"
 echo "    $KO keywords NOT covered by test cases"
-keywords_minimal=80.02 #81.40 v1.8.4 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
+keywords_minimal=78.84 #80.02 v1.9.1 #81.40 v1.8.4 #80.03 v1.8.3 #78.89 v1.8.2 #78.70 v1.8.1 #78.60 v1.8.0 deplacement de la turbulence de TRUST a TrioCFD;  83.10 v1.7.8 suppression du mot-cle "espece lambda" ; 83.11 v1.7.7 classe de base avec ajout de commentaires XD ; 83.00 v1.7.6 ; 82.89 v1.7.5
 
 echo " "
 keywords=0
