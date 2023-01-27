@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,10 +56,15 @@ public:
   virtual void completer(const Probleme_base& ) =0;
   virtual DoubleTab calculer_valeurs() const =0;
   virtual int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
+  inline double tstat_deb() const { return tstat_deb_; }
+  inline double tstat_fin() const { return tstat_fin_; }
+  inline double tstat_dernier_calcul() const { return tstat_dernier_calcul_; }
 
 protected:
   Nom localisation_post_;
-
+  double tstat_deb_=-123.;         //
+  double tstat_dernier_calcul_=-123.;     // dernier temps auquel les statistiques ont ete calcules
+  double tstat_fin_=-123.;         // valeur choisie par l'utilisateur
 };
 
 #endif

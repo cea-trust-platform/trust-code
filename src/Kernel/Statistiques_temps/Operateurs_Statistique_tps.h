@@ -35,9 +35,6 @@ class Operateurs_Statistique_tps : public LIST(Operateur_Statistique_tps)
 
 public:
 
-  inline double tstat_deb() const;
-  inline double tstat_fin() const;
-  inline double tstat_dernier_calcul() const;
   inline int lserie() const;
   inline double dt_integr_serie() const;
   int sauvegarder(Sortie& os) const override;
@@ -46,28 +43,10 @@ public:
 protected:
 
   REF(Postraitement) mon_post;
-  double tstat_deb_;         //
-  double tstat_dernier_calcul_;     // dernier temps auquel les statistiques ont ete calcules
-  double tstat_fin_;         // valeur choisie par l'utilisateur
-  int lserie_;
-  double dt_integr_serie_;
+  int lserie_=-123;
+  double dt_integr_serie_=123.;
 
 };
-
-inline double Operateurs_Statistique_tps::tstat_deb() const
-{
-  return tstat_deb_;
-}
-
-inline double Operateurs_Statistique_tps::tstat_fin() const
-{
-  return tstat_fin_;
-}
-
-inline double Operateurs_Statistique_tps::tstat_dernier_calcul() const
-{
-  return tstat_dernier_calcul_;
-}
 
 inline int Operateurs_Statistique_tps::lserie() const
 {

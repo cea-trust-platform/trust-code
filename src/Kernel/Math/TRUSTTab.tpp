@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -580,6 +580,7 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
       else if (!ok)
         {
           // Si on cherche a relire un tableau de taille inconnue, le tableau doit etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
+          Cerr << finl;
           Cerr << "Error in DoubleTab::lit: array has wrong dimensions" << finl;
           Process::exit();
         }

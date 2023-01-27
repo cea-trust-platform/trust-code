@@ -943,8 +943,6 @@ int Postraitement::lire_champs_stat_a_postraiter(Entree& s)
       exit();
     }
 
-  probleme().verifie_tdeb_tfin("statistics block");
-
   s >> motlu;
 
   while (motlu != accolade_fermee)
@@ -997,7 +995,7 @@ int Postraitement::cherche_stat_dans_les_sources(const Champ_Gen_de_Champs_Gen& 
       const Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,ch);
       tstat_deb_ = champ_stat.tstat_deb();
       tstat_fin_ = champ_stat.tstat_fin();
-      probleme().verifie_tdeb_tfin(nom);
+      //probleme().verifie_tdeb_tfin(nom);
     }
   else
     for (int i=0; i<ch.get_nb_sources(); i++)

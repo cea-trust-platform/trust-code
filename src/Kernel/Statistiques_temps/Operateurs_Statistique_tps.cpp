@@ -19,9 +19,7 @@
 #include <Postraitement.h>
 
 
-Implemente_instanciable_sans_constructeur(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(Operateur_Statistique_tps));
-
-Operateurs_Statistique_tps::Operateurs_Statistique_tps(): tstat_deb_(-123.), tstat_dernier_calcul_(-123.), tstat_fin_(-123.), lserie_(-123),dt_integr_serie_(-123.) {}
+Implemente_instanciable(Operateurs_Statistique_tps,"Operateurs_Statistique_tps",LIST(Operateur_Statistique_tps));
 
 Sortie& Operateurs_Statistique_tps::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 Entree& Operateurs_Statistique_tps::readOn(Entree& s) { return s; }
@@ -55,8 +53,8 @@ int Operateurs_Statistique_tps::sauvegarder(Sortie& os) const
       os << mon_ident << finl;
       os << que_suis_je() << finl;
       os << size() << finl;
-      os << Nom(tstat_deb_, "%e") << finl;
-      os << Nom(tstat_dernier_calcul_, "%e") << finl;
+      os << Nom(this->dernier()->tstat_deb(), "%e") << finl;
+      os << Nom(this->dernier()->tstat_dernier_calcul(), "%e") << finl;
     }
 
   int bytes = 0;
@@ -102,17 +100,17 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
           Cerr << "One is not able to treat this case." << finl;
           exit();
         }
-      else if (!est_egal(tstat_deb_sauv,tstat_deb_))
+      else if (!est_egal(tstat_deb_sauv,this->dernier()->tstat_deb()))
         {
           // t_deb est modifie : on refait une statistique sans reprendre dans certains cas
-          if (inf_strict(tstat_deb_,tinit,1.e-5))
+          if (inf_strict(this->dernier()->tstat_deb(),tinit,1.e-5))
             {
               Cerr << "t_deb has been modified to carry out a new statistics calculation without restarting" << finl;
               Cerr << "but t_deb is lower than tinit : it is not possible." << finl;
               exit();
             }
           Cerr << "Statistics are not restarted and therefore the statistics calculation" << finl;
-          Cerr << "will restart a t_deb =" << tstat_deb_ << finl;
+          Cerr << "will restart a t_deb =" << this->dernier()->tstat_deb() << finl;
 
           Nom bidon2;
           double dbidon;
@@ -135,11 +133,9 @@ int Operateurs_Statistique_tps::reprendre(Entree& is)
               is >> bidon2 >> bidon2; // On saute l'identificateur et le type des champs
               itr.reprendre(is);
             }
-          // On modifie l'attribut tstat_deb_ et l'attribut t_debut_ des champs
-          // pour tenir compte de la reprise
-          tstat_deb_ = tstat_deb_sauv;
+          // On modifie l'attribut tstat_deb_ des champs pour tenir compte de la reprise
           for (auto &itr : *this)
-            itr.fixer_tstat_deb(tstat_deb_,temps_derniere_mise_a_jour_stats);
+            itr.fixer_tstat_deb(tstat_deb_sauv,temps_derniere_mise_a_jour_stats);
         }
     }
   else  // lecture pour sauter le bloc

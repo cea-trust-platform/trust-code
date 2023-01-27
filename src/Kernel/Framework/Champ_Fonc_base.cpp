@@ -134,11 +134,12 @@ int Champ_Fonc_base::reprendre(Entree& fich)
   if (nom_ != Nom("anonyme")) // lecture pour reprise
     {
       fich >> un_temps;
+      Cerr << "Resume of the field " << nom_;
       if (special)
         EcritureLectureSpecial::lecture_special(*this, fich);
       else
         valeurs().lit(fich);
-      Cerr << "Resume of the field " << nom_ << " performed " << finl;
+      Cerr << " performed." << finl;
     }
   else // lecture pour sauter le bloc
     {

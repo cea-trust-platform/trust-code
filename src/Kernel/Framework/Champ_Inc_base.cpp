@@ -459,18 +459,20 @@ int Champ_Inc_base::reprendre(Entree& fich)
     {
       fich >> un_temps;
       int nb_val_nodales_old = nb_valeurs_nodales();
+      Cerr << "Resume of the field " << nom_;
+
       if (special)
         EcritureLectureSpecial::lecture_special(*this, fich);
       else
         valeurs().lit(fich);
       if (nb_val_nodales_old != nb_valeurs_nodales())
         {
-          Cerr << "Problem in the resumption " << finl;
+          Cerr << finl << "Problem in the resumption " << finl;
           Cerr << "The field wich is read, does not have same number of nodal values" << finl;
           Cerr << "that the field created by the discretization " << finl;
           Process::exit();
         }
-      Cerr << "Resume of the field " << nom_ << " performed." << finl;
+      Cerr << " performed." << finl;
     }
   else // lecture pour sauter le bloc
     {
