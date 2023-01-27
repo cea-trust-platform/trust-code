@@ -1,12 +1,12 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
-XX/XX/23 (TRUST) Portability  : Adastra (CINES) cluster is supported
-XX/XX/23 (TRUST) Portability  : C++14 compilers are now mandatory so old GNU compilers (<5.0) are not supported anymore
-XX/XX/23 (TRUST) Portability  : NVidia compilers (nvc++, nvc, nvfortran) now fully supported for GPU offload with OpenMP-target (./configure -cuda -openmp)
-XX/XX/23 (TRUST) HPC          : VEF GPU kernels optimized with a reduction of host-device copy
-XX/XX/23 (TRUST) HPC          : OpenBLAS 0.3.21 (vectorized, threaded) is now used for Blas/Lapack library
-XX/XX/23 (TRUST) HPC          : Vectorization flag (-mavx2, -mavx, ...) determined during configure phase and used during build (opt_avx mode is then deprecated)
+27/01/23 (TRUST) Portability  : Adastra (CINES) cluster is supported
+27/01/23 (TRUST) Portability  : C++14 compilers are now mandatory so old GNU compilers (<5.0) are not supported anymore
+27/01/23 (TRUST) Portability  : NVidia compilers (nvc++, nvc, nvfortran) now fully supported for GPU offload with OpenMP-target (./configure -cuda -openmp)
+27/01/23 (TRUST) HPC          : VEF GPU kernels optimized with a reduction of host-device copy
+27/01/23 (TRUST) HPC          : OpenBLAS 0.3.21 (vectorized, threaded) is now used for Blas/Lapack library
+27/01/23 (TRUST) HPC          : Vectorization flag (-mavx2, -mavx, ...) determined during configure phase and used during build (opt_avx mode is then deprecated)
 27/01/23 (TRUST) Tools        : Upgrade to MEDCoupling 9.10.0
 23/01/23 (TRUST) Feature      : convertAllToPoly option in Lire_MED keyword may now be used to convert all MED mesh to polyedra not only MED mesh with different cell types
 19/01/23 (TRUST) Fix          : Pressure force was not computed at t=tinit and not correctly updated/printed for a probe if dt_impr value was greater than probe period

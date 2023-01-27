@@ -51,7 +51,7 @@ VisIt,zlib-1.2.11.tar.xz,,PL,"free zlib/libpng license",,https://sourceforge.net
 VisIt,glu-9.0.0.tar.gz,,PL,MIT,,https://archive.mesa3d.org/glu/glu-9.0.0.tar.gz,
 petsc,ml-6.2-p4.tar.gz,,PL,"GNU LGPL",,,
 lapack,lapack-3.4.1.tgz,,SV,BSD,http://www.netlib.org/lapack/,http://www.netlib.org/lapack/lapack-3.4.1.tgz,
-lapack,OpenBLAS-0.3.10.tar.gz,,PL,BSD,https://www.openblas.net/,http://github.com/xianyi/OpenBLAS/archive/v0.3.10.tar.gz,
+lapack,OpenBLAS-0.3.21.tar.gz,,PL,BSD,https://www.openblas.net/,http://github.com/xianyi/OpenBLAS/archive/v0.3.21.tar.gz,
 petsc,SuiteSparse-5.7.1.tar.gz,,,"voir remarque",http://faculty.cse.tamu.edu/davis/suitesparse.html,https://github.com/DrTimothyAldenDavis/SuiteSparse/archive/v5.7.1.tar.gz,"je ne sais pas quel est le type de licence, on peut voir http://www.netlib.org/linalg/SuiteSparse-README.txt"
 petsc,viennacl-dc552a8.tar.gz,,,"MIT License",http://viennacl.sourceforge.net/,http://downloads.sourceforge.net/project/viennacl/1.5.x/ViennaCL-1.5.1.tar.gz,"Hum option utilisee ????"
 petsc,scotch-6.0.9.tar.gz,,PL," CeCILL-C license",http://scotch.gforge.inria.fr/,https://gforge.inria.fr/frs/download.php/file/38187/scotch_6.0.9.tar.gz,
