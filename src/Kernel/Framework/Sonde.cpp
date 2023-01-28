@@ -585,7 +585,7 @@ Entree& Sonde::readOn(Entree& is)
             int m=-1;
             const Sondes& les_sondes=mon_post->les_sondes();
             for (int i=0; i<les_sondes.size(); i++)
-              if (les_sondes(i).get_nom()==autre_sonde)
+              if (les_sondes(i)->get_nom()==autre_sonde)
                 {
                   m=i;
                   break;

@@ -62,6 +62,7 @@ public :
   inline const Nom& get_nom() const { return nom_; }
   inline const Nom& get_type() const { return type_; }
   inline const int& get_dim() const { return dim ; }
+  inline void nommer(const Nom& n) override { nom_ = n; }
 
   // Traitement des bords (option "gravcl")
   void ajouter_bords(const DoubleTab& coords_bords);

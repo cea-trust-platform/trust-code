@@ -17,7 +17,7 @@
 #include <Postraitement.h>
 #include <Sondes.h>
 
-Implemente_instanciable(Sondes, "Sondes|Probes", LIST(Sonde));
+Implemente_instanciable(Sondes, "Sondes|Probes", LIST(DERIV(Sonde)));
 
 Sortie& Sondes::printOn(Sortie& s ) const { return s ; }
 
@@ -81,9 +81,11 @@ Entree& Sondes::readOn(Entree& s )
     {
       while (motlu != accolade_fermee)
         {
-          Sonde une_sonde(motlu);
-          une_sonde.associer_post(mon_post.valeur());
-          s >> une_sonde;
+          DERIV(Sonde) une_sonde;
+          une_sonde.typer("Sonde");
+          une_sonde->nommer(motlu);
+          une_sonde->associer_post(mon_post.valeur());
+          s >> une_sonde.valeur();
           add(une_sonde);
           s >> motlu;
         }
@@ -107,9 +109,11 @@ void Sondes::lire_fichier(const Nom& nom_fichier)
   f >> motlu;
   while (!f.eof())
     {
-      Sonde une_sonde(motlu);
-      une_sonde.associer_post(mon_post.valeur());
-      f >> une_sonde;
+      DERIV(Sonde) une_sonde;
+      une_sonde.typer("Sonde");
+      une_sonde->nommer(motlu);
+      une_sonde->associer_post(mon_post.valeur());
+      f >> une_sonde.valeur();
       add(une_sonde);
       f >> motlu;
     }
@@ -132,7 +136,7 @@ void Sondes::set_noms_champs_postraitables()
 void Sondes::completer()
 {
   set_noms_champs_postraitables();
-  for (auto &itr : *this) itr.completer();
+  for (auto &itr : *this) itr->completer();
 }
 
 /*! @brief Effectue le postraitement sur chacune des sondes de la liste.
@@ -140,7 +144,7 @@ void Sondes::completer()
  */
 void Sondes::postraiter()
 {
-  for (auto &itr : *this) itr.postraiter();
+  for (auto &itr : *this) itr->postraiter();
 
   clear_cache();
 }
@@ -179,7 +183,7 @@ REF(Champ_base) Sondes::get_from_cache(REF(Champ_Generique_base)& mon_champ, con
  */
 void Sondes::mettre_a_jour(double temps, double tinit)
 {
-  for (auto &itr : *this) itr.mettre_a_jour(temps, tinit);
+  for (auto &itr : *this) itr->mettre_a_jour(temps, tinit);
 
   clear_cache();
 }

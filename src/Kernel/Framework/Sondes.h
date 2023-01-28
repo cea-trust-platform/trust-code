@@ -27,7 +27,7 @@
  *
  * @sa Sonde Postraitement
  */
-class Sondes : public LIST(Sonde)
+class Sondes : public LIST(DERIV(Sonde))
 {
   Declare_instanciable(Sondes);
 public:
@@ -55,7 +55,7 @@ private:
 
 inline void Sondes::init_bords()
 {
-  for (auto& itr : *this) itr.init_bords();
+  for (auto& itr : *this) itr->init_bords();
 }
 
 /*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.
@@ -63,7 +63,7 @@ inline void Sondes::init_bords()
  */
 inline void Sondes::ouvrir_fichiers()
 {
-  for (auto &itr : *this) itr.ouvrir_fichier();
+  for (auto &itr : *this) itr->ouvrir_fichier();
 }
 
 /*! @brief Ferme tous les fichiers des sondes de la liste.
@@ -71,7 +71,7 @@ inline void Sondes::ouvrir_fichiers()
  */
 inline void Sondes::fermer_fichiers()
 {
-  for (auto &itr : *this) itr.fermer_fichier();
+  for (auto &itr : *this) itr->fermer_fichier();
 }
 
 #endif /* Sondes_included */
