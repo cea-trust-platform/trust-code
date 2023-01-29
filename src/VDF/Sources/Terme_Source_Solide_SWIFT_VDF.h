@@ -53,8 +53,6 @@ public :
   };
 
 protected :
-  /*   REF(Domaine_VDF) le_dom_VDF; */
-  /*   REF(Zone_VDF) la_zone_VDF; */
   REF2(Probleme_base) pb_swift;
   REF2(Probleme_base) pb_corse;
   REF(Conduction) eq_swift;

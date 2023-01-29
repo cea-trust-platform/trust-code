@@ -16,10 +16,9 @@
 #ifndef Evaluateur_Source_included
 #define Evaluateur_Source_included
 
-#include <Ref_Domaine_Cl_dis_base.h>
-#include <Ref_Domaine_dis_base.h>
 #include <Domaine_Cl_dis_base.h>
 #include <Domaine_dis_base.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
 class Evaluateur_Source
@@ -43,8 +42,8 @@ public:
   }
 
 protected:
-  REF(Domaine_dis_base) le_dom;
-  REF(Domaine_Cl_dis_base) la_zcl;
+  REF2(Domaine_dis_base) le_dom;
+  REF2(Domaine_Cl_dis_base) la_zcl;
 };
 
 #endif /* Evaluateur_Source_included */

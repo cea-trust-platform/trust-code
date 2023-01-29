@@ -216,7 +216,7 @@ protected:
   double temps_, dernier_temps; // temps du precedent appel a postraiter()
   static Motcles formats_supportes;
   REF(Domaine) le_domaine;
-  REF(Domaine_dis_base) domaine_dis_pour_faces;
+  REF2(Domaine_dis_base) domaine_dis_pour_faces;
 
 private :
 };

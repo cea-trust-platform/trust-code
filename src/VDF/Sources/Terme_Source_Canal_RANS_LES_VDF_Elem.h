@@ -13,9 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Canal_RANS_LES_VDF_Elem_included
 #define Terme_Source_Canal_RANS_LES_VDF_Elem_included
+
+#include <TRUSTTabs_forward.h>
+#include <Source_base.h>
+#include <Champ_Don.h>
+#include <TRUST_Ref.h>
+
+class Navier_Stokes_std;
+class Probleme_base;
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 /*! @brief class Terme_Source_Canal_RANS_LES_VDF_Elem Cette classe concerne un terme source calcule en partie grace
  *
@@ -23,16 +32,6 @@
  *
  *
  */
-#include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_Cl_VDF.h>
-#include <Ref_Domaine_VDF.h>
-#include <Source_base.h>
-#include <Champ_Don.h>
-
-class Probleme_base;
-class Navier_Stokes_std;
-
-
 class Terme_Source_Canal_RANS_LES_VDF_Elem : public Source_base
 {
   Declare_instanciable_sans_destructeur(Terme_Source_Canal_RANS_LES_VDF_Elem);
@@ -53,8 +52,8 @@ public :
 
 protected :
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
 
 private :
   int moyenne = 0; //type de moyenne

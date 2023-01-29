@@ -12,6 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Op_Rot_VEFP1B_included
 #define Op_Rot_VEFP1B_included
 
@@ -19,9 +20,10 @@
 #include <Champ_P1_isoP1Bulle.h>
 #include <Op_Grad_VEF_Face.h>
 #include <Operateur_base.h>
-#include <Ref_Domaine_VEF.h>
+#include <TRUST_Ref.h>
 
 class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 
 class Op_Rot_VEFP1B : public Operateur_base
 {
@@ -54,13 +56,8 @@ public:
 protected:
 
   ArrOfInt coins;
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
-
+  REF2(Domaine_VEF) le_dom_vef;
+  REF2(Domaine_Cl_VEF) la_zcl_vef;
 };
-
-
-
-
 
 #endif

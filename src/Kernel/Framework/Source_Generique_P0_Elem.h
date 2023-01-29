@@ -13,13 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_Generique_P0_Elem_included
 #define Source_Generique_P0_Elem_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Domaine_Cl_dis.h>
-#include <Ref_Domaine_VF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_dis;
+class Domaine_VF;
 
 /*! @brief class Source_Generique_VDF_Elem
  *
@@ -38,8 +39,8 @@ public:
 
 protected:
 
-  REF(Domaine_VF) le_dom;
-  REF(Domaine_Cl_dis) le_dom_cl;
+  REF2(Domaine_VF) le_dom;
+  REF2(Domaine_Cl_dis) le_dom_cl;
 };
 
 #endif

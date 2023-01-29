@@ -18,8 +18,10 @@
 #define Terme_Source_Acceleration_VDF_Face_included
 
 #include <Terme_Source_Acceleration.h>
-#include <Ref_Domaine_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 /*! @brief Terme source d'acceleration specialise pour la discretisation VDF
  *
@@ -45,8 +47,8 @@ protected:
 
 private:
   // References remplies par associer_champ_rho
-  REF(Domaine_VDF)    le_dom_VDF_;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
+  REF2(Domaine_VDF)    le_dom_VDF_;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF_;
   // Reference remplie par associer_champ_rho() et utilisee par ajouter()
   // La reference peut rester nulle (monophasique).
   REF(Champ_base)  ref_rho_;

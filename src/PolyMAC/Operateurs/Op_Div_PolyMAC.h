@@ -13,14 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Div_PolyMAC_included
 #define Op_Div_PolyMAC_included
 
-#include <Operateur_Div.h>
-#include <Ref_Domaine_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <Operateur_Div.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class Op_Div_PolyMAC
  *
@@ -33,11 +32,6 @@
  * @sa Operateur_Div_base
  */
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Div_PolyMAC
-//
-//////////////////////////////////////////////////////////////////////////////
 class Op_Div_PolyMAC : public Operateur_Div_base
 {
 
@@ -65,8 +59,8 @@ public:
 
 protected:
 
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
+  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF2(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
 };
 
 #endif

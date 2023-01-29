@@ -13,15 +13,16 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Qdm_VEF_Face_included
 #define Terme_Source_Qdm_VEF_Face_included
 
-#include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
+
 class Probleme_base;
+class Domaine_Cl_VEF;
+class Domaine_VEF;
 
 /*! @brief class Terme_Source_Qdm_VEF_Face
  *
@@ -43,8 +44,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };

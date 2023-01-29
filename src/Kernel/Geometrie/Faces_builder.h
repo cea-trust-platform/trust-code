@@ -16,9 +16,9 @@
 #ifndef Faces_builder_included
 #define Faces_builder_included
 
-#include <TRUSTTab.h>
 #include <Ref_IntTab.h>
-#include <Ref_Domaine.h>
+#include <TRUST_Ref.h>
+#include <TRUSTTab.h>
 
 class Domaine;
 class Static_Int_Lists;
@@ -65,7 +65,7 @@ private:
   IntTab faces_element_reference_old_;
   int is_polyedre_;
   // pour check_erreur_faces :
-  REF(Domaine)   ref_domaine_;
+  REF2(Domaine)   ref_domaine_;
   REF(IntTab) faces_sommets_;
   REF(IntTab) face_elem_;
 };

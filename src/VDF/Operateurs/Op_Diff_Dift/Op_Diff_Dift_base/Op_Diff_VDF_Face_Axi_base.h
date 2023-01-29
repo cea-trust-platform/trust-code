@@ -36,8 +36,8 @@ public:
 protected:
   static constexpr double deux_pi = M_PI*2.0;
   REF(Champ_Face_VDF) inconnue;
-  REF(Domaine_VDF) le_dom_vdf;
-  REF(Domaine_Cl_VDF) la_zcl_vdf;
+  REF2(Domaine_VDF) le_dom_vdf;
+  REF2(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;
   IntTab Qdm, face_voisins, elem_faces;
   DoubleVect surface, volumes_entrelaces, porosite;

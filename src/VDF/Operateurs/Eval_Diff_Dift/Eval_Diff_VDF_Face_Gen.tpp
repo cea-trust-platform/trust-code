@@ -100,8 +100,8 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::flux_arete(const DoubleTab& inco, const Doubl
 
       const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), dist = dist_norm_bord(fac1), tps = inconnue->temps();
 
-      const double vit_imp = is_PAROI ? 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl)) :
-                             0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang1,ori,la_zcl)+Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang2,ori,la_zcl));
+      const double vit_imp = is_PAROI ? 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl.valeur())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl.valeur())) :
+                             0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang1,ori,la_zcl.valeur())+Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang2,ori,la_zcl.valeur()));
 
       for (int k = 0; k < ncomp; k++)
         {
@@ -133,13 +133,13 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::flux_arete(const DoubleTab& inco, const Doubl
     {
       const int ind = DERIVED_T::IS_ANISO ? ori : k;
       const double visc_lam = nu_lam_mean_2pts(elem1,elem2,ind), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1,elem2,ind) : 0.0;
-      if (is_SYM_FL) vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang1,ori,la_zcl)+ Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang2,ori,la_zcl));
+      if (is_SYM_FL) vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang1,ori,la_zcl.valeur())+ Champ_Face_get_val_imp_face_bord_sym(inco,tps,rang2,ori,la_zcl.valeur()));
       else if (is_PAR_FL) // On ne sait pas qui de fac1 ou de fac2 est la face de paroi
         {
-          if (est_egal(inco(fac1,k),0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl); // fac1 est la face de paroi
-          else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl); // fac2 est la face de paroi
+          if (est_egal(inco(fac1,k),0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl.valeur()); // fac1 est la face de paroi
+          else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl.valeur()); // fac2 est la face de paroi
         }
-      else vit_imp =  0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl));
+      else vit_imp =  0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori,la_zcl.valeur())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori,la_zcl.valeur()));
 
       //         |
       // fac 3   | fac 2

@@ -19,7 +19,9 @@
 #include <Ref_Solveur_Masse_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
-#include <Ref_Domaine_VF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_VF;
 
 class Solveur_Masse_Elem_proto
 {
@@ -32,7 +34,7 @@ public:
 
 protected:
   REF(Solveur_Masse_base) solv_mass_;
-  REF(Domaine_VF) le_dom_;
+  REF2(Domaine_VF) le_dom_;
 };
 
 #endif /* Solveur_Masse_Elem_proto_included */

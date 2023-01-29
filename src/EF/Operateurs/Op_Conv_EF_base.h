@@ -17,14 +17,13 @@
 #ifndef Op_Conv_EF_base_included
 #define Op_Conv_EF_base_included
 
-#include <Operateur_Conv.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
-#include <Domaine_EF.h>
+#include <Operateur_Conv.h>
 #include <Domaine_Cl_EF.h>
-#include <Domaine.h>
 #include <Op_EF_base.h>
+#include <Domaine_EF.h>
+#include <TRUST_Ref.h>
+#include <Domaine.h>
 
 /*! @brief class Op_Conv_EF_base
  *
@@ -32,12 +31,6 @@
  *
  *
  */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_EF_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Conv_EF_base : public Operateur_Conv_base, public Op_EF_base
 {
@@ -63,8 +56,8 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) la_zcl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) la_zcl_EF;
   REF(Champ_Inc_base) vitesse_;
 
   mutable DoubleVect fluent;           // tableau qui sert pour le calcul du pas

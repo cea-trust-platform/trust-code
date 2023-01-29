@@ -17,10 +17,12 @@
 #define Terme_Boussinesq_VDF_Face_included
 
 #include <Terme_Boussinesq_base.h>
-#include <Ref_Domaine_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
+#include <TRUST_Ref.h>
 
 class Convection_Diffusion_std;
+class Domaine_Cl_VDF;
+class Domaine_VDF;
+
 /*! @brief class Terme_Boussinesq_scalaire_VDF_Face
  *
  *  Terme Source de Boussinesq pour une dicretisation VDF
@@ -43,8 +45,8 @@ public:
 
 protected:
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 };
 

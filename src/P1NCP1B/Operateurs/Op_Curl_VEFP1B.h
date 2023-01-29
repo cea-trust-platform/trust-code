@@ -16,33 +16,22 @@
 #ifndef Op_Curl_VEFP1B_included
 #define Op_Curl_VEFP1B_included
 
-#include <Ref_Domaine_Cl_VEF.h>
 #include <Operateur_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <TRUSTLists.h>
 #include <Domaine_VEF.h>
+#include <TRUSTLists.h>
+#include <TRUST_Ref.h>
 #include <Domaine.h>
 
 class Domaine_VEF_PreP1b;
+class Domaine_Cl_VEF;
 
 class Op_Curl_VEFP1B : public Operateur_base
 {
-
   Declare_instanciable(Op_Curl_VEFP1B);
-
-
 public:
-
-  ///////////////////////////////////////////////////
-  // 3 methodes a surcharger car heritees de Op_base.
-  ///////////////////////////////////////////////////
   DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
   DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
   void associer( const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
-
-  //////////////////////////////////////////////////////
-  // Autres methodes
-  /////////////////////////////////////////////////////
 
   DoubleTab vecteur_normal(const int face, const int elem) const;
   int elements_pour_sommet();
@@ -52,10 +41,9 @@ public:
   const Domaine_VEF_PreP1b& domaine_Vef() const;
 
 protected:
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF2(Domaine_VEF) le_dom_vef;
+  REF2(Domaine_Cl_VEF) la_zcl_vef;
   IntLists elements_pour_sommet_;
-  /*   DoubleTab flux_tangent_bords_; */
 };
 
 #endif

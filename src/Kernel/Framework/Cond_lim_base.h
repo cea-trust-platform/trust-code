@@ -16,13 +16,14 @@
 #ifndef Cond_lim_base_included
 #define Cond_lim_base_included
 
-#include <Ref_Domaine_Cl_dis_base.h>
 #include <Champ_front.h>
 #include <Champ_Inc.h>
+#include <TRUST_Ref.h>
 #include <Motcle.h>
 #include <vector>
 
 class Discretisation_base;
+class Domaine_Cl_dis_base;
 class Equation_base;
 class Champ_Inc;
 
@@ -75,7 +76,7 @@ protected:
   std::vector<Motcle> app_domains;
   std::vector<Nom> supp_discs;
   Champ_front le_champ_front;
-  REF(Domaine_Cl_dis_base) mon_dom_cl_dis;
+  REF2(Domaine_Cl_dis_base) mon_dom_cl_dis;
   void err_pas_compatible(const Equation_base&) const;
   void err_pas_compatible(const Discretisation_base&) const;
 

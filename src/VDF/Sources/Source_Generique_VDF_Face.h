@@ -13,13 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_Generique_VDF_Face_included
 #define Source_Generique_VDF_Face_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Domaine_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 /*! @brief class Source_Generique_VDF_Face
  *
@@ -41,8 +42,8 @@ public:
 
 protected:
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) la_zcl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) la_zcl_VDF;
 };
 
 #endif

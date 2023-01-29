@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,11 +12,16 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#ifndef Octree_Domaine_included
-#define Octree_Domaine_included
+
+#ifndef Octree_Zone_included
+#define Octree_Zone_included
+
 #include <Octree_Double.h>
-#include <Ref_Domaine.h>
-/*! @brief : Un octree permettant de retrouver l'element d'une domaine contenant point particulier.
+#include <TRUST_Ref.h>
+
+class Domaine;
+
+/*! @brief : Un octree permettant de retrouver l'element d'une zone contenant point particulier.
  *
  */
 class Octree_Domaine
@@ -26,13 +31,10 @@ public:
   void   build(const Domaine& domaine, const double epsilon);
   int rang_elem(double x, double y, double z) const;
   void   rang_elements(double x, double y, double z, ArrOfInt& elements) const;
-  const Octree_Double& octree_double() const
-  {
-    return octree_double_;
-  };
+  const Octree_Double& octree_double() const { return octree_double_; }
 protected:
   int find_elements(double x, double y, double z, ArrOfInt *elements) const;
-  REF(Domaine) ref_domaine_;
+  REF2(Domaine) ref_domaine_;
   Octree_Double octree_double_;
   mutable ArrOfDouble pos_;
 };

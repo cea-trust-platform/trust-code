@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -153,7 +153,7 @@ int Format_Post_base::ecrire_domaine(const Domaine& domaine,const int est_le_pre
   return 0;
 }
 
-int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
+int Format_Post_base::ecrire_domaine_dis(const Domaine& domaine,const REF2(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
 {
   return ecrire_domaine(domaine, est_le_premier_post);
 }

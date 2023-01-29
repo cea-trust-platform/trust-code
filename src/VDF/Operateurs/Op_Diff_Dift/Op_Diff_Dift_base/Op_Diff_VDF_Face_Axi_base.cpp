@@ -103,10 +103,10 @@ void  Op_Diff_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleTab& inco, Dou
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE) // arete paroi_fluide :il faut determiner qui est la face fluide
               {
-                if (est_egal(inco[fac1],0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf);
-                else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf);
+                if (est_egal(inco[fac1],0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf.valeur());
+                else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf.valeur());
               }
-            else vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf));
+            else vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf.valeur())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf.valeur()));
 
             const double db_diffusivite = nu_mean_2_pts_(face_voisins(fac3,0),face_voisins(fac3,1));
 
@@ -573,10 +573,10 @@ void Op_Diff_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu) cons
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE) // arete paroi_fluide :il faut determiner qui est la face fluide
               {
-                if (est_egal(inconnue.valeur()(fac1),0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf);
-                else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf);
+                if (est_egal(inconnue.valeur()(fac1),0)) vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf.valeur());
+                else vit_imp = Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf.valeur());
               }
-            else vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf)+Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf));
+            else vit_imp = 0.5*(Champ_Face_get_val_imp_face_bord(tps,rang1,ori3,la_zcl_vdf.valeur())+Champ_Face_get_val_imp_face_bord(tps,rang2,ori3,la_zcl_vdf.valeur()));
 
             const double db_diffusivite =  nu_mean_2_pts_(face_voisins(fac3,0),face_voisins(fac3,1));
 

@@ -13,13 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included
 #define Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included
 
 #include <Source_base.h>
-#include <Ref_Domaine_PolyMAC.h>
+#include <TRUST_Ref.h>
 #include <vector>
+
+class Domaine_PolyMAC;
 
 /*! @brief class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC
  *
@@ -50,7 +51,7 @@ protected:
 
   std::vector<double> lambda;
   int nb_groupes=0;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };

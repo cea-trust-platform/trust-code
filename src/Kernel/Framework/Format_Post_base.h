@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,16 +12,18 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Format_Post_base_included
 #define Format_Post_base_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_dis_base.h>
 #include <Champ_base.h>
+#include <TRUST_Ref.h>
 #include <Domaine.h>
 
-class Motcle;
+class Domaine_dis_base;
 class Domaine_dis;
+class Motcle;
 class Param;
 
 /*! @brief Classe de base des formats de postraitements pour les champs (lata, med, lml, meshtv).
@@ -120,7 +122,7 @@ public:
   virtual int finir(const int est_le_dernier_post);
 
   virtual int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post);
-  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post);
+  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF2(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post);
   virtual int ecrire_temps(const double temps);
 
   virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,

@@ -13,31 +13,23 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Div_EF_included
 #define Op_Div_EF_included
 
 #include <Operateur_Div.h>
-#include <Ref_Domaine_EF.h>
 #include <Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_EF;
 
 /*! @brief class Op_Div_EF
  *
- *   Cette classe represente l'operateur de divergence
- *   La discretisation est EF
+ *   Cette classe represente l'operateur de divergence. La discretisation est EF
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
- *
  *
  *
  * @sa Operateur_Div_base
  */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Div_EF
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Div_EF : public Operateur_Div_base
 {
@@ -55,8 +47,8 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) la_zcl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) la_zcl_EF;
 
   DoubleVect porosite_face;
 };

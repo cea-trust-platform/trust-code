@@ -39,7 +39,7 @@ public:
 
 protected:
   REF(Champ_Don) la_puissance;
-  REF(Domaine) mon_dom;
+  REF2(Domaine) mon_dom;
   double puissance, nb_dirac;
 
   template <typename Type_Double>

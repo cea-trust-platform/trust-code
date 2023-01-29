@@ -17,8 +17,10 @@
 #define Octree_included
 
 #include <TRUSTTabs_forward.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
-#include <Ref_Domaine.h>
+
+class Domaine;
 
 #define GaucheArriereBas 0
 #define DroitArriereBas 1
@@ -124,7 +126,7 @@ public :
   inline int reel() const { return reel_; }
 
 protected :
-  REF(Domaine) le_dom;
+  REF2(Domaine) le_dom;
   OctreeLoc loc;
   int valid_, reel_ = -1;
 };

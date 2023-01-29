@@ -83,7 +83,7 @@ void Masse_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
 //sert a imposer les CLs de Dirichlet en multiphase (ou la variation de P_bord ne permet de corriger que v_melange)
 DoubleTab& Masse_PolyMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
-  const Domaine_PolyMAC& domaine = le_dom_PolyMAC;
+  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleTab& nf = domaine.face_normales(), &vit = equation().inconnue().valeurs();

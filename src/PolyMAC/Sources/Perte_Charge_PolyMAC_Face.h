@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,40 +13,32 @@
 *
 *****************************************************************************/
 
-
 #ifndef Perte_Charge_PolyMAC_Face_included
 #define Perte_Charge_PolyMAC_Face_included
 
-#include <Source_base.h>
-#include <Terme_Source_Qdm.h>
-
-#include <Ref_Domaine_Poly_base.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
-#include <Ref_Fluide_base.h>
 #include <Ref_Champ_Inc_base.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Terme_Source_Qdm.h>
+#include <Ref_Fluide_base.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
 
-
+class Domaine_Poly_base;
 class Probleme_base;
 
 /*! @brief class Perte_Charge_PolyMAC_Face
  *
- *
- *
  * @sa Source_base
  */
-class Perte_Charge_PolyMAC_Face :  public Source_base,
-  public Terme_Source_Qdm
 
-
+class Perte_Charge_PolyMAC_Face: public Source_base, public Terme_Source_Qdm
 {
-
   Declare_base(Perte_Charge_PolyMAC_Face);
 
 public:
 
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double ) override;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double) override;
 
 protected:
 
@@ -55,8 +47,6 @@ protected:
   IntVect num_faces;
 
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { };
-
-
 
 };
 

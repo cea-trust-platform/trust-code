@@ -13,13 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_Generique_Face_PolyMAC_included
 #define Source_Generique_Face_PolyMAC_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Domaine_PolyMAC.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
 
 /*! @brief class Source_Generique_Face_PolyMAC
  *
@@ -38,8 +39,8 @@ public:
 
 protected:
 
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
+  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF2(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
 };
 
 #endif

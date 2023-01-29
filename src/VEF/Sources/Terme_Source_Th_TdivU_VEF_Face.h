@@ -18,10 +18,10 @@
 #define Terme_Source_Th_TdivU_VEF_Face_included
 
 #include <Terme_Source_Qdm.h>
-
 #include <Operateur_Conv.h>
-class Probleme_base;
 #include <Equation.h>
+
+class Probleme_base;
 /*! @brief class Terme_Source_Th_TdivU_VEF_Face
  *
  *
@@ -48,7 +48,7 @@ protected:
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   REF(Equation_base) eqn_t;
   Domaine_Cl_dis mon_domcl_;
-  REF(Domaine_Cl_dis_base) domainecl_sa;
+  REF2(Domaine_Cl_dis_base) domainecl_sa;
   int domaine_cl_mod_ = 0;
 };
 

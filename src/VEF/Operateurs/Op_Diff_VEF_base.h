@@ -20,8 +20,10 @@
 
 #include <Operateur_Diff_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+class Domaine_VEF;
+#include <TRUST_Ref.h>
+class Domaine_Cl_VEF;
+#include <TRUST_Ref.h>
 #include <Op_VEF_Face.h>
 #include <Milieu_base.h>
 #include <Domaine_VEF.h>
@@ -66,8 +68,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF2(Domaine_VEF) le_dom_vef;
+  REF2(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_Inc_base) inconnue_;
   //DoubleVect porosite_face;
   mutable DoubleTab nu_;

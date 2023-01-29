@@ -13,34 +13,22 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Grad_EF_included
 #define Op_Grad_EF_included
 
 #include <Operateur_Grad.h>
-#include <Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
 #include <Domaine_Cl_EF.h>
-
-#include <Ref_Domaine_EF.h>
+#include <Domaine_EF.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 
 /*! @brief class Op_Grad_EF
  *
- *   Cette classe represente l'operateur de gradient
- *   La discretisation est EF
+ *   Cette classe represente l'operateur de gradient. La discretisation est EF
  *   On calcule le gradient d'un champ_P0_EF (la pression)
- *
- *
  *
  * @sa Operateur_Grad_base
  */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Grad_EF
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Grad_EF : public Operateur_Grad_base
 {
@@ -57,8 +45,8 @@ public:
   void calculer_flux_bords() const override;
 
 protected:
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) la_zcl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) la_zcl_EF;
   Champ_Don int_P_bord_;
 
 };

@@ -18,8 +18,10 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
-#include <Ref_Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_EF;
+class Domaine_EF;
 
 class Assembleur_P_EF: public Assembleur_base
 {
@@ -41,8 +43,8 @@ public:
 
 protected:
   REF(Equation_base) mon_equation;
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) le_dom_Cl_EF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
 };

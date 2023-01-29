@@ -18,16 +18,17 @@
 
 #include <Champs_compris_interface.h>
 #include <Ref_Champ_Don_base.h>
-#include <Ref_Domaine_dis_base.h>
 #include <Porosites_champ.h>
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
 #include <Champs_compris.h>
 #include <Champ_Fonc.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 #include <Champ.h>
 
 class Discretisation_base;
+class Domaine_dis_base;
 class Probleme_base;
 class Motcle;
 class Param;
@@ -119,7 +120,7 @@ public:
   int id_composite = -1;
 
 protected:
-  REF(Domaine_dis_base) zdb_;
+  REF2(Domaine_dis_base) zdb_;
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
   Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ, diametre_hyd_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;

@@ -63,7 +63,7 @@ void EDO_Pression_th_VEF::completer()
   const DoubleTab& tab_ICh = le_fluide_->inco_chaleur().valeurs();
   double Pth=le_fluide_->pression_th();
   M0=masse_totale(Pth,tab_ICh);
-  le_fluide_->checkTraitementPth(le_dom_Cl);
+  le_fluide_->checkTraitementPth(le_dom_Cl.valeur());
 }
 
 void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)

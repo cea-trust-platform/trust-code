@@ -17,13 +17,14 @@
 #define Terme_Source_Canal_RANS_LES_VEF_Face_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_Cl_VEF.h>
-#include <Ref_Domaine_VEF.h>
 #include <Source_base.h>
 #include <Champ_Don.h>
+#include <TRUST_Ref.h>
 
-class Probleme_base;
 class Navier_Stokes_std;
+class Probleme_base;
+class Domaine_Cl_VEF;
+class Domaine_VEF;
 
 /*! @brief class Terme_Source_Canal_RANS_LES_VEF_Face Cette classe concerne un terme source calcule en partie grace a un calcul RANS preliminaire et applique au calcul LES en cours
  *
@@ -43,8 +44,8 @@ public :
 
 protected :
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
 private :
   int moyenne= 0; //type de moyenne

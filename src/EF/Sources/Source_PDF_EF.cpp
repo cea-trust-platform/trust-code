@@ -261,14 +261,14 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   nb_comp=9;
   Noms nom_c(nb_comp);
   Noms unites(nb_comp);
-  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF,vectoriel,nom_c,unites,nb_comp,0.,champ_rotation_);
+  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF.valeur(),vectoriel,nom_c,unites,nb_comp,0.,champ_rotation_);
   champ_rotation_.valeur().affecter(champ_rotation_lu_);
   nb_comp=3;
   Noms nom_c1(nb_comp);
   Noms unites1(nb_comp);
-  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF,"aire","m-1",1,0., champ_aire_);
+  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF.valeur(),"aire","m-1",1,0., champ_aire_);
   champ_aire_.valeur().affecter(champ_aire_lu_);
-  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF,"rho","kg.m-3",1,0., champ_rho_);
+  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF.valeur(),"rho","kg.m-3",1,0., champ_rho_);
   Source_PDF_base::updateChampRho();
   if (transpose_rotation_)
     {
@@ -293,7 +293,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   matrice_pression_variable_bool_ = false;
   if (temps_relax_ != 1.0e+12) matrice_pression_variable_bool_ = true;
   type_vitesse_imposee_ = modele_lu_.type_vitesse_imposee_;
-  pb.discretisation().discretiser_champ("vitesse",le_dom_EF,vectoriel,nom_c1,unites1,nb_comp,0.,modele_lu_.vitesse_imposee_);
+  pb.discretisation().discretiser_champ("vitesse",le_dom_EF.valeur(),vectoriel,nom_c1,unites1,nb_comp,0.,modele_lu_.vitesse_imposee_);
 
   if (interpolation_bool_)
     {
@@ -326,7 +326,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
       else
         {
           const DoubleTab& coords = le_dom_EF.valeur().domaine().coord_sommets();
-          modele_lu_.affecter_vitesse_imposee(le_dom_EF, coords);
+          modele_lu_.affecter_vitesse_imposee(le_dom_EF.valeur(), coords);
         }
     }
 
@@ -338,7 +338,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   /*pb.discretisation().discretiser_champ("vitesse",le_dom_EF,vectoriel,nom_c1,unites1,nb_comp,0.,vitesse_imposee_);
   vitesse_imposee_.valeur().affecter(mod_.vitesse_imposee_);*/
   vitesse_imposee_ = modele_lu_.vitesse_imposee_.valeur().valeurs();
-  pb.discretisation().discretiser_champ("champ_sommets",le_dom_EF,"","",1,0., champ_nodal_);
+  pb.discretisation().discretiser_champ("champ_sommets",le_dom_EF.valeur(),"","",1,0., champ_nodal_);
 
   compute_indicateur_nodal_champ_aire();
 

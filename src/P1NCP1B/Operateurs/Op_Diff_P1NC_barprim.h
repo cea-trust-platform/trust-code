@@ -13,22 +13,17 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Diff_P1NC_barprim_included
 #define Op_Diff_P1NC_barprim_included
 
 #include <Operateur_Diff_base.h>
 #include <Ref_Champ_Uniforme.h>
-#include <Ref_Domaine_VEF_PreP1b.h>
-#include <Ref_Domaine_Cl_VEFP1B.h>
-#include <Equation_base.h>
-#include <Matrice_Morse.h>
-#include <Op_VEF_Face.h>
 #include <Domaine_VEF_PreP1b.h>
 #include <Domaine_Cl_VEFP1B.h>
-
-
-
+#include <Matrice_Morse.h>
+#include <Equation_base.h>
+#include <Op_VEF_Face.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
  *
@@ -37,44 +32,36 @@
  *   Le champ de diffusivite est uniforme
  *
  *
- *
  */
 
-class Op_Diff_P1NC_barprim : public Operateur_Diff_base, public Op_VEF_Face
+class Op_Diff_P1NC_barprim: public Operateur_Diff_base, public Op_VEF_Face
 {
   Declare_instanciable(Op_Diff_P1NC_barprim);
 
 public:
 
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,
-                const Champ_Inc& ) override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
   const Champ_base& diffusivite() const override;
 
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
 
-  // Methodes pour l implicite.
-
-  inline void dimensionner(Matrice_Morse& ) const override;
+  inline void dimensionner(Matrice_Morse&) const override;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
   inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  inline void contribuer_au_second_membre(DoubleTab& ) const override;
-  void contribue_au_second_membre(DoubleTab& ) const;
+  inline void contribuer_au_second_membre(DoubleTab&) const override;
+  void contribue_au_second_membre(DoubleTab&) const;
 
   double calculer_dt_stab() const override;
 
-
-
-protected :
+protected:
 
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
-  REF(Domaine_VEF_PreP1b) le_dom_vef;
-  REF(Domaine_Cl_VEFP1B) la_zcl_vef;
+  REF2(Domaine_VEF_PreP1b) le_dom_vef;
+  REF2(Domaine_Cl_VEFP1B) la_zcl_vef;
   REF(Champ_Uniforme) diffusivite_;
-  //REF(Champ_Inc) inconnue_;
-
 };
 
 /*! @brief on dimensionne notre matrice.

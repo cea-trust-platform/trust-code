@@ -13,19 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_Qdm_EF_included
 #define Source_Qdm_EF_included
 
-#include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
+
 class Probleme_base;
+class Domaine_Cl_EF;
+class Domaine_EF;
 
 /*! @brief class Source_Qdm_EF
- *
- *
  *
  * @sa Source_base
  */
@@ -43,8 +42,8 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) le_dom_Cl_EF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };

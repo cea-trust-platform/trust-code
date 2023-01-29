@@ -16,9 +16,11 @@
 #ifndef Taux_cisaillement_P0_VDF_included
 #define Taux_cisaillement_P0_VDF_included
 
-#include <Champ_Fonc_P0_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
+#include <Champ_Fonc_P0_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VDF;
 
 /*! @brief classe Taux_cisaillement_P0_VDF
  *
@@ -31,7 +33,7 @@ public:
   void associer_champ(const Champ_Face_VDF&, const Domaine_Cl_dis_base&);
 
 private:
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   REF(Champ_Face_VDF) vitesse_;
 };
 

@@ -13,13 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_Generique_VEF_included
 #define Source_Generique_VEF_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VEF;
+class Domaine_VEF;
 
 /*! @brief class Source_Generique_VEF
  *
@@ -38,8 +39,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) la_zcl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) la_zcl_VEF;
 };
 
 #endif

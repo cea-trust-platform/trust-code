@@ -19,8 +19,8 @@
 #include <Ref_Champ_Face_PolyMAC_P0.h>
 #include <Champ_Fonc_Face_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class grad_Champ_Face_PolyMAC_P0 for the calculation of the gradient This field is a Champ_Fonc_Face_PolyMAC_P0 that calculates the gradient of a velocity field
  *
@@ -61,7 +61,7 @@ public:
   void init_grad();
 
 protected:
-  REF(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC;
+  REF2(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC;
   REF(Champ_Face_PolyMAC_P0) champ_;
 
   int is_init = 0;

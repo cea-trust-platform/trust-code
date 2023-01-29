@@ -19,8 +19,7 @@
 
 #include <Operateur_Conv.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
 #include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
 #include <Dirichlet.h>
@@ -72,8 +71,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF2(Domaine_VEF) le_dom_vef;
+  REF2(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_Inc_base) vitesse_;
 
   mutable DoubleVect fluent;           // tableau qui sert pour le calcul du pas

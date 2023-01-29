@@ -16,8 +16,11 @@
 #ifndef Frontiere_dis_base_included
 #define Frontiere_dis_base_included
 
-#include <Ref_Domaine_dis_base.h>
 #include <Ref_Frontiere.h>
+#include <TRUST_Ref.h>
+#include <Nom.h>
+
+class Domaine_dis_base;
 
 /*! @brief classe Frontiere_dis_base Classe representant une frontiere discretisee.
  *
@@ -43,7 +46,7 @@ public :
 protected :
 
   REF(Frontiere) la_frontiere;
-  REF(Domaine_dis_base) le_dom_dis;
+  REF2(Domaine_dis_base) le_dom_dis;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,6 @@
 #define Perte_Charge_Circulaire_VEF_P1NC_included
 
 #include <Perte_Charge_VEF.h>
-
 
 //!  Perte de charge anisotrope (selon un vecteur unitaire v et dans le plan orthogonal a ce vecteur)
 /**

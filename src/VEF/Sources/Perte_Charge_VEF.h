@@ -16,15 +16,16 @@
 #ifndef Perte_Charge_VEF_included
 #define Perte_Charge_VEF_included
 
-#include <Source_base.h>
+#include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
 #include <Ref_Sous_domaine_VF.h>
 #include <Ref_Fluide_base.h>
-#include <Ref_Champ_Inc_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
 
+class Domaine_Cl_VEF;
+class Domaine_VEF;
 class Param;
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
@@ -88,8 +89,8 @@ protected:
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
   //! Domaine dans laquelle s'applique la perte de charge
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
   // Cas d'une sous-domaine
   bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?

@@ -18,14 +18,10 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
-#include <Ref_Domaine_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
+#include <TRUST_Ref.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS:Assembleur_Pression_VDF_Q4
-//
-//////////////////////////////////////////////////////////////////////////////
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 class Assembleur_P_VDF_Q4 : public Assembleur_base
 {
@@ -43,8 +39,8 @@ public:
   void completer(const Equation_base& ) override;
 
 protected :
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   REF(Equation_base) eqn_;
 };
 

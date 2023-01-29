@@ -16,15 +16,16 @@
 #ifndef Perte_Charge_PolyMAC_included
 #define Perte_Charge_PolyMAC_included
 
-#include <Source_base.h>
-#include <Terme_Source_Qdm.h>
-#include <Ref_Sous_Domaine.h>
-#include <Ref_Fluide_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Domaine_Poly_base.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <Terme_Source_Qdm.h>
+#include <Ref_Fluide_base.h>
+#include <Sous_Domaine.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
 
+class Domaine_Cl_PolyMAC;
+class Domaine_Poly_base;
 class Param;
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
@@ -93,7 +94,7 @@ protected:
   // Cas d'une sous-domaine
   bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?
   Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
-  REF(Sous_Domaine) la_sous_domaine; //!< Initialise dans completer()
+  REF2(Sous_Domaine) la_sous_domaine; //!< Initialise dans completer()
   int implicite_;
 
   mutable Parser_U lambda;

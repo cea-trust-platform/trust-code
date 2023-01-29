@@ -16,18 +16,11 @@
 #ifndef Faces_VDF_included
 #define Faces_VDF_included
 
+#include <TRUST_Ref.h>
 #include <Faces.h>
-#include <Ref_Domaine_VDF.h>
 
-
-
-
+class Domaine_VDF;
 class Aretes;
-
-/*! @brief class Faces_VDF
- *
- */
-
 
 class Faces_VDF : public Faces
 {
@@ -49,7 +42,7 @@ private :
   //    0 pour une face d'equation x = cte
   //    1 pour une face d'equation y = cte
   //    2 pour une face d'equation z = cte
-  REF(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
   void swap(int, int);
 
 };

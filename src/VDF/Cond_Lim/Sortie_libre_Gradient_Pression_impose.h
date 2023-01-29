@@ -29,7 +29,9 @@
 
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P0_VDF.h>
-#include <Ref_Domaine_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_VDF;
 
 class Sortie_libre_Gradient_Pression_impose: public Neumann_sortie_libre
 {
@@ -42,7 +44,7 @@ public:
   virtual double grad_P_imp(int) const;
 
 protected:
-  REF(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
   REF(Champ_P0_VDF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;

@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Decroissance_Radioactive_VEF_Face_included
 #define Terme_Source_Decroissance_Radioactive_VEF_Face_included
 
 #include <Source_base.h>
-#include <Ref_Domaine_VEF.h>
+#include <TRUST_Ref.h>
 #include <vector>
 
+class Domaine_VEF;
 /*! @brief class Terme_Source_Decroissance_Radioactive_VEF_Face
  *
  *
@@ -28,10 +28,7 @@
  * @sa Source_base
  */
 class Terme_Source_Decroissance_Radioactive_VEF_Face :  public Source_base
-
-
 {
-
   Declare_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_VEF_Face);
 
 public:
@@ -47,7 +44,7 @@ protected:
 
   std::vector<double> lambda;
   int nb_groupes=0;
-  REF(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };

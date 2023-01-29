@@ -26,11 +26,12 @@
 
 #include <Terme_Source_Canal_perio.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_Cl_VEF.h>
-#include <Ref_Domaine_VEF.h>
+#include <TRUST_Ref.h>
 
 class Navier_Stokes_std;
 class Probleme_base;
+class Domaine_Cl_VEF;
+class Domaine_VEF;
 
 // La classe derive de Source_base et peut etre d'un terme source
 class Terme_Source_Canal_perio_VEF_P1NC : public Terme_Source_Canal_perio
@@ -42,8 +43,8 @@ public :
 
 protected :
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   void calculer_debit(double&) const override;
   // les attributs ont ete mis dans la classe mere

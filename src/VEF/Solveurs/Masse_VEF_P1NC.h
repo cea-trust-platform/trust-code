@@ -18,8 +18,10 @@
 
 
 #include <Solveur_Masse.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+class Domaine_VEF;
+#include <TRUST_Ref.h>
+class Domaine_Cl_VEF;
+#include <TRUST_Ref.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -46,8 +48,8 @@ public:
 
 private:
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 
 #endif

@@ -16,16 +16,11 @@
 #ifndef Solveur_Masse_EF_included
 #define Solveur_Masse_EF_included
 
-
 #include <Solveur_Masse.h>
-#include <Ref_Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
+#include <TRUST_Ref.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Solveur_Masse_EF
-//
-//////////////////////////////////////////////////////////////////////////////
+class Domaine_Cl_EF;
+class Domaine_EF;
 
 class Solveur_Masse_EF : public Solveur_Masse_base
 {
@@ -44,8 +39,8 @@ public:
 
 private:
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) le_dom_Cl_EF;
 };
 
 #endif

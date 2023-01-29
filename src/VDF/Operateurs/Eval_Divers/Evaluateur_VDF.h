@@ -16,10 +16,11 @@
 #ifndef Evaluateur_VDF_included
 #define Evaluateur_VDF_included
 
-#include <Ref_Domaine_Cl_VDF.h>
-#include <Ref_Domaine_VDF.h>
 #include <Domaine_VDF.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
+
+class Domaine_Cl_VDF;
 
 /*! @brief class Evaluateur_VDF Classe de base des evaluateurs VDF.
  *
@@ -46,8 +47,8 @@ public:
   }
 
 protected:
-  REF(Domaine_VDF) le_dom;
-  REF(Domaine_Cl_VDF) la_zcl;
+  REF2(Domaine_VDF) le_dom;
+  REF2(Domaine_Cl_VDF) la_zcl;
   int dimension = -100, premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face
   DoubleVect surface;          // surfaces des faces

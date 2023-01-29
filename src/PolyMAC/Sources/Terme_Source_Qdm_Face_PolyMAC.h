@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,15 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Qdm_Face_PolyMAC_included
 #define Terme_Source_Qdm_Face_PolyMAC_included
 
-#include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Domaine_PolyMAC.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
 class Probleme_base;
 
 /*! @brief class Terme_Source_Qdm_Face_PolyMAC

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ public:
   void mettre_a_jour(double) override;
 
 private:
-  REF(Domaine_dis_base) domainebidon;
+  REF2(Domaine_dis_base) domainebidon;
 };
 
 #endif /* Champ_Fonc_P0_MED_included */

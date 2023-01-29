@@ -20,7 +20,9 @@
 #include <Iterateur_Source_Elem.h>
 #include <Source_Neutronique.h>
 #include <Iterateur_Source.h>
-#include <Ref_Domaine_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_VDF;
 
 /*! @brief class Source_Neutronique_VDF Cette classe constitue l'implementation en VDF du terme source
  *
@@ -44,7 +46,7 @@ public:
 
 protected:
   Iterateur_Source iter;
-  REF(Domaine_VDF) le_dom;
+  REF2(Domaine_VDF) le_dom;
 };
 
 #endif /* Source_Neutronique_VDF_included */

@@ -16,23 +16,20 @@
 #ifndef Terme_Source_Coriolis_VDF_Face_included
 #define Terme_Source_Coriolis_VDF_Face_included
 
+#include <Source_base.h>
+#include <Terme_Source_Coriolis_base.h>
+#include <TRUSTTabs_forward.h>
+#include <TRUST_Ref.h>
+
+class Navier_Stokes_std;
+class Probleme_base;
+class Domaine_Cl_VDF;
+class Domaine_VDF;
+
 /*! @brief class Terme_Source_Coriolis_VDF_Face Cette classe permet de calculer la force de Coriolis en VDF
- *
- *
- *
  *
  * @sa Terme_Source_Coriolis
  */
-
-#include <Source_base.h>
-#include <Terme_Source_Coriolis_base.h>
-#include <Ref_Domaine_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
-#include <TRUSTTabs_forward.h>
-
-class Probleme_base;
-class Navier_Stokes_std;
-
 class Terme_Source_Coriolis_VDF_Face : public Terme_Source_Coriolis_base
 {
   Declare_instanciable(Terme_Source_Coriolis_VDF_Face);
@@ -55,8 +52,8 @@ public :
 
 protected :
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   DoubleTab la_source;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   void calculer_force_de_Coriolis() const;

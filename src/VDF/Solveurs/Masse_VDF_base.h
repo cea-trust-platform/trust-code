@@ -16,9 +16,11 @@
 #ifndef Masse_VDF_base_included
 #define Masse_VDF_base_included
 
-#include <Ref_Domaine_Cl_VDF.h>
 #include <Solveur_Masse.h>
-#include <Ref_Domaine_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 class Masse_VDF_base : public Solveur_Masse_base
 {
@@ -33,8 +35,8 @@ public:
 
 protected:
   mutable double penalisation_matrice_, penalisation_secmem_;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  REF(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
 };
 
 #endif /* Masse_VDF_base_included */

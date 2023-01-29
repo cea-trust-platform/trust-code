@@ -19,14 +19,9 @@
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
 #include <Domaine_PolyMAC.h>
-#include <Ref_Domaine_PolyMAC.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <TRUST_Ref.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS:Assembleur_Pression_PolyMAC
-//
-//////////////////////////////////////////////////////////////////////////////
+class Domaine_Cl_PolyMAC;
 
 class Assembleur_P_PolyMAC : public Assembleur_base
 {
@@ -57,8 +52,8 @@ public:
 
 protected :
   REF(Equation_base) mon_equation;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF2(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   int has_P_ref = 0;
   int stencil_done = 0;
   IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)

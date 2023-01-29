@@ -16,14 +16,16 @@
 #ifndef Op_Dift_EF_Q1_included
 #define Op_Dift_EF_Q1_included
 
+#include <Ref_Champ_Uniforme.h>
 #include <Op_Dift_EF_base.h>
 #include <Ref_Champ_Inc.h>
-#include <Ref_Champ_Uniforme.h>
-#include <Ref_Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
 #include <Matrice_Morse.h>
 #include <Op_EF_base.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
+
+class Domaine_Cl_EF;
+class Domaine_EF;
 
 /*! @brief class Op_Dift_EF_Q1 Cette classe represente l'operateur de diffusion
  *

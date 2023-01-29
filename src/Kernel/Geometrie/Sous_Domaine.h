@@ -18,7 +18,9 @@
 
 #include <TRUST_List.h>
 #include <TRUSTVect.h>
-#include <Ref_Domaine.h>
+#include <TRUST_Ref.h>
+
+class Domaine;
 
 /*! @brief Classe Sous_Domaine Represente une sous domaine volumique i.
  *
@@ -60,7 +62,7 @@ public :
 protected :
 
   IntVect les_polys_;
-  REF(Domaine) le_dom_;
+  REF2(Domaine) le_dom_;
   Nom nom_;
 };
 

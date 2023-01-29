@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,7 +64,7 @@ public:
   int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init) override;
   int finir(const int est_le_dernier_post) override;
   int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post) override;
-  int ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post) override;
+  int ecrire_domaine_dis(const Domaine& domaine,const REF2(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post) override;
   int ecrire_temps(const double temps) override;
 
   int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
@@ -78,7 +78,7 @@ protected:
   Nom med_basename_;
 
   // Methodes specifiques a ce format:
-  virtual int ecrire_domaine_med(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich);
+  virtual int ecrire_domaine_med(const Domaine& domaine,const REF2(Domaine_dis_base)& domaine_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich);
   virtual int ecrire_temps_med(const double temps,Nom& nom_fich);
   virtual int ecrire_champ_med(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& nom_pdb, const Nom& id_du_champ, const Nom& id_du_domaine,
                                const Nom& localisation, const DoubleTab& data, Nom& nom_fich);

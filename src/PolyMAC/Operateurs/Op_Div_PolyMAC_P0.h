@@ -13,14 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Div_PolyMAC_P0_included
 #define Op_Div_PolyMAC_P0_included
 
-#include <Operateur_Div.h>
-#include <Ref_Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <Operateur_Div.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class Op_Div_PolyMAC_P0
  *
@@ -29,15 +28,9 @@
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
  *
  *
- *
  * @sa Operateur_Div_base
  */
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Div_PolyMAC_P0
-//
-//////////////////////////////////////////////////////////////////////////////
 class Op_Div_PolyMAC_P0 : public Operateur_Div_base
 {
 
@@ -56,8 +49,8 @@ public:
 
 protected:
 
-  REF(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
-  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0;
+  REF2(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
+  REF2(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0;
 };
 
 #endif

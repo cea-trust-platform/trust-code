@@ -74,7 +74,7 @@ private :
 
   Nom nom;
   Faces les_faces;
-  REF(Domaine) le_dom;
+  REF2(Domaine) le_dom;
   ArrOfInt faces_virt;
   int num_premiere_face_ = -100;
   double aire_ = -100.;

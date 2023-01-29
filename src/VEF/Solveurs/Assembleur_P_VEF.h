@@ -18,8 +18,10 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+class Domaine_VEF;
+#include <TRUST_Ref.h>
+class Domaine_Cl_VEF;
+#include <TRUST_Ref.h>
 #include <Ref_Equation_base.h>
 
 class Assembleur_P_VEF: public Assembleur_base
@@ -50,8 +52,8 @@ public:
 
 protected:
   REF(Equation_base) mon_equation;
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
   void calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, const Domaine_Cl_VEF& domaine_Cl_VEF, const DoubleVect& volumes_entrelaces);

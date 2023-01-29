@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,8 +19,10 @@
 #include <Ref_Navier_Stokes_std.h>
 #include <Ref_Champ_P1NC.h>
 #include <Champ_Ostwald.h>
-#include <Ref_Domaine_VEF.h>
 #include <Champ_P1NC.h>
+#include <TRUST_Ref.h>
+
+class Domaine_VEF;
 
 /*! @brief classe Champ_Ostwald_VEF Represente un champ en discretisation VEF qui varie en fonction
  *

@@ -13,33 +13,25 @@
 *
 *****************************************************************************/
 
-
 #ifndef Force_Centrifuge_VDF_Face_Axi_included
 #define Force_Centrifuge_VDF_Face_Axi_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_Cl_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
-#include <Ref_Domaine_VDF.h>
 #include <Source_base.h>
+#include <TRUST_Ref.h>
 
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 /*! @brief class Force_Centrifuge_VDF_Face_Axi
  *
- *  Cette classe represente la force centrifuge
- *  a prendre en compte dans les equations de Navier-Stokes
+ *  Cette classe represente la force centrifuge a prendre en compte dans les equations de Navier-Stokes
  *  en coordonnees cylindriques pour une dicretisation VDF
  *
  *
  * @sa Source_base
  */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Force_Centrifuge_VDF_Face_Axi
-//
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Force_Centrifuge_VDF_Face_Axi : public Source_base
 {
@@ -65,8 +57,8 @@ public:
 
 protected:
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   REF(Champ_Face_VDF) la_vitesse;
 
   IntTab elem_faces;

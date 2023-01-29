@@ -13,15 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Grad_PolyMAC_P0_Face_included
 #define Op_Grad_PolyMAC_P0_Face_included
 
-#include <Operateur_Grad.h>
-#include <Ref_Domaine_PolyMAC_P0.h>
-#include <Domaine_PolyMAC_P0.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_P0.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Operateur_Grad.h>
+#include <TRUST_Ref.h>
 #include <cfloat>
 
 /*! @brief class Op_Grad_PolyMAC_P0_Face
@@ -61,8 +60,8 @@ public:
 private:
 
   mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
-  REF(Domaine_PolyMAC_P0) ref_domaine;
-  REF(Domaine_Cl_PolyMAC) ref_zcl;
+  REF2(Domaine_PolyMAC_P0) ref_domaine;
+  REF2(Domaine_Cl_PolyMAC) ref_zcl;
 };
 
 #endif

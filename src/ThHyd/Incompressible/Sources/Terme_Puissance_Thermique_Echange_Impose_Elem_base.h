@@ -13,23 +13,21 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Puissance_Thermique_Echange_Impose_Elem_base_included
 #define Terme_Puissance_Thermique_Echange_Impose_Elem_base_included
 
 #include <Source_base.h>
-#include <Ref_Domaine_VF.h>
-#include <Ref_Domaine_Cl_dis_base.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
 
+class Domaine_Cl_dis_base;
 class Probleme_base;
+class Zone_VF;
 
 class Terme_Puissance_Thermique_Echange_Impose_Elem_base: public Source_base
 {
-
   Declare_base(Terme_Puissance_Thermique_Echange_Impose_Elem_base);
-
 public:
   int has_interface_blocs() const override { return 1; }
   int lire_motcle_non_standard(const Motcle& mot, Entree& is) override;
@@ -40,8 +38,8 @@ public:
   void pid_process();
 
 protected:
-  REF(Domaine_VF) le_dom;
-  REF(Domaine_Cl_dis_base) le_dom_Cl;
+  REF2(Domaine_VF) le_dom;
+  REF2(Domaine_Cl_dis_base) le_dom_Cl;
   Champ_Don himp_,Text_;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   // PID controler

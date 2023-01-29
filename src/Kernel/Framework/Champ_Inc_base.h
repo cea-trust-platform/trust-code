@@ -17,17 +17,17 @@
 #define Champ_Inc_base_included
 
 #include <Interface_blocs.h>
-#include <Ref_Domaine_Cl_dis.h>
-#include <Ref_Domaine_VF.h>
 #include <Ref_Objet_U.h>
 #include <Champ_base.h>
 #include <TRUSTTrav.h>
+#include <TRUST_Ref.h>
 #include <Domaine_VF.h>
 #include <MorEqn.h>
 #include <Roue.h>
 
 class Frontiere_dis_base;
 class Domaine_dis_base;
+class Domaine_Cl_dis;
 class MD_Vector;
 class Domaine_dis;
 class Domaine;
@@ -144,8 +144,8 @@ protected:
   virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
 
   Roue_ptr les_valeurs;
-  REF(Domaine_Cl_dis) mon_dom_cl_dis;
-  REF(Domaine_VF) le_dom_VF;
+  REF2(Domaine_Cl_dis) mon_dom_cl_dis;
+  REF2(Domaine_VF) le_dom_VF;
 
   /* pour les champs dependant d'autres Champ_Inc */
   fonc_calc_t fonc_calc_;  //fonction de calcul

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,11 @@
 #define EcrMED_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_dis_base.h>
 #include <Interprete.h>
+#include <TRUST_Ref.h>
 #include <med++.h>
 #include <map>
-class Domaine;
+
 class Nom;
 class Noms;
 class Champ_Inc_base;
@@ -59,7 +59,7 @@ public :
   }
   Entree& interpreter(Entree&) override;
   void ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode=0);
-  void ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_dom,int mode=0);
+  void ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF2(Domaine_dis_base)& domaine_dis_base,const Nom& nom_dom,int mode=0);
   void ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Noms& noms_compo,const Nom& type_elem,double time,int compteur);
   void ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_champ);
 

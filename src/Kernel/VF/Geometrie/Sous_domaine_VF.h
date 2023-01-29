@@ -17,8 +17,8 @@
 #define Sous_domaine_VF_included
 
 #include <Sous_domaine_dis_base.h>
-#include <Ref_Domaine_VF.h>
 #include <Domaine_VF.h>
+#include <TRUST_Ref.h>
 
 //! Cette classe abstraite contient les informations geometrique de sous-domaine communes aux methodes de volumes finis (VDF et VEF par exemple)
 /**
@@ -84,7 +84,7 @@ public:
   void discretiser() override;
 
 protected:
-  REF(Domaine_VF) le_dom_VF;
+  REF2(Domaine_VF) le_dom_VF;
   IntTab les_faces_;
   int premiere_face_bord_0_ = -10;
   int premiere_face_bord_1_= -10;

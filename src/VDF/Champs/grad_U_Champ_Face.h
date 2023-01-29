@@ -18,7 +18,9 @@
 
 #include <Ref_Champ_Face_VDF.h>
 #include <Champ_Fonc_P0_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VDF;
 
 /*! @brief classe grad_U_Champ_Face
  *
@@ -37,7 +39,7 @@ public:
   }
 
 protected:
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   REF(Champ_Face_VDF) vitesse_;
 };
 

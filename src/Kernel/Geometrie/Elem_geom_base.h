@@ -55,7 +55,7 @@ public:
   virtual void get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const;
 
 protected:
-  REF(Domaine) mon_dom;
+  REF2(Domaine) mon_dom;
 };
 
 

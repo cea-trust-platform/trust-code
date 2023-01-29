@@ -17,9 +17,10 @@
 #define Op_Grad_VDF_Face_base_included
 
 #include <Operateur_Grad_base.h>
-#include <Ref_Domaine_Cl_VDF.h>
-#include <Ref_Domaine_VDF.h>
 #include <Domaine_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VDF;
 
 class Op_Grad_VDF_Face_base : public Operateur_Grad_base
 {
@@ -47,8 +48,8 @@ public:
   inline const double& xp_(int elem, int ori) const { return xp(elem,ori); }
 
 protected:
-  REF(Domaine_VDF) le_dom_vdf;
-  REF(Domaine_Cl_VDF) la_zcl_vdf;
+  REF2(Domaine_VDF) le_dom_vdf;
+  REF2(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation;
   IntTab face_voisins;
   DoubleVect porosite_surf, volume_entrelaces;

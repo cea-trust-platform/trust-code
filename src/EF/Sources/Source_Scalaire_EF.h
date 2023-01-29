@@ -13,19 +13,17 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_Scalaire_EF_included
 #define Source_Scalaire_EF_included
 
 #include <Source_base.h>
 #include <Champ_Don.h>
-#include <Ref_Domaine_EF.h>
+#include <TRUST_Ref.h>
 
 class Probleme_base;
+class Domaine_EF;
 
 /*! @brief class Source_Scalaire_EF
- *
- *
  *
  * @sa Source_base
  */
@@ -43,8 +41,7 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
-  //  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  REF2(Domaine_EF) le_dom_EF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
   Champ_Don la_source_,la_source_lu_;

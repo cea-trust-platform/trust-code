@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 
 #include <Champ_implementation_P0.h>
 #include <Champ_Inc_base.h>
-#include <Ref_Domaine_VF.h>
+#include <TRUST_Ref.h>
 #include <Domaine_VF.h>
 
 /*! @brief : class Champ_Inc_P0_base

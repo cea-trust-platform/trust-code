@@ -16,12 +16,13 @@
 #ifndef EOS_Tools_VDF_included
 #define EOS_Tools_VDF_included
 
-#include <Ref_Domaine_Cl_dis.h>
 #include <EOS_Tools_base.h>
-#include <Ref_Domaine_VDF.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
 class Fluide_Dilatable_base;
+class Domaine_Cl_dis;
+class Domaine_VDF;
 
 /*! @brief classe EOS_Tools_VDF Cette classe et specifique a discretisation de type VDF.
  *
@@ -44,8 +45,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF(Domaine_VDF) le_dom;
-  REF(Domaine_Cl_dis) le_dom_Cl;
+  REF2(Domaine_VDF) le_dom;
+  REF2(Domaine_Cl_dis) le_dom_Cl;
   DoubleTab tab_rho_face, tab_rho_face_demi, tab_rho_face_np1;
 };
 

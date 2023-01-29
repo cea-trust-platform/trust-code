@@ -17,17 +17,12 @@
 #define Assembleur_P_VDF_included
 
 #include <Assembleur_base.h>
-#include <Ref_Domaine_VDF.h>
-#include <Ref_Domaine_Cl_VDF.h>
+#include <TRUST_Ref.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS:Assembleur_Pression_VDF
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Neumann_sortie_libre;
 class Entree_fluide_vitesse_imposee;
+class Neumann_sortie_libre;
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 class Front_VF;
 
 class Assembleur_P_VDF: public Assembleur_base
@@ -57,8 +52,8 @@ protected:
   void modifier_secmem_vitesse_imposee(const Entree_fluide_vitesse_imposee& cond_lim, const Front_VF& frontiere_vf, DoubleTab& secmem);
   int liste_faces_periodiques(ArrOfInt& faces);
 
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   ArrOfDouble les_coeff_pression;
 
   // Drapeau, indique si la pression est imposee quelque part sur une C.L.

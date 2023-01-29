@@ -17,11 +17,12 @@
 #define Terme_Source_Qdm_VDF_Face_included
 
 #include <Terme_Source_Qdm.h>
-#include <Ref_Domaine_Cl_VDF.h>
-#include <Ref_Domaine_VDF.h>
 #include <Source_base.h>
+#include <TRUST_Ref.h>
 
 class Probleme_base;
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 /*! @brief class Terme_Source_Qdm_VDF_Face
  *
@@ -41,8 +42,8 @@ public:
   void check_multiphase_compatibility() const override { } // certooooooo
 
 protected:
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 };
 

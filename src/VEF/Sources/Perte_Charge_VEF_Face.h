@@ -13,20 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Perte_Charge_VEF_Face_included
 #define Perte_Charge_VEF_Face_included
 
-#include <Source_base.h>
-#include <Terme_Source_Qdm.h>
-
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
-#include <Ref_Fluide_base.h>
 #include <Ref_Champ_Inc_base.h>
-
+#include <Terme_Source_Qdm.h>
+#include <Ref_Fluide_base.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
 
 class Probleme_base;
+class Domaine_Cl_VEF;
+class Domaine_VEF;
 
 /*! @brief class Perte_Charge_VEF_Face
  *
@@ -52,8 +50,8 @@ public:
 protected:
 
   REF(Champ_Inc_base) la_vitesse;
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   REF(Fluide_base) le_fluide;
   IntVect num_faces;
 

@@ -19,11 +19,12 @@
 #include <Source_dep_inco_base.h>
 #include <Ref_Champ_Face_VDF.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_Cl_VDF.h>
 #include <Ref_Fluide_base.h>
-#include <Ref_Domaine_VDF.h>
+#include <TRUST_Ref.h>
 
 class Probleme_base;
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 class Perte_Charge_VDF_Face : public Source_dep_inco_base
 {
@@ -40,8 +41,8 @@ public:
 protected:
   REF(Champ_Face_VDF) la_vitesse;
   REF(Fluide_base) le_fluide;
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   IntVect num_faces;
   DoubleVect corr_front_ss;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;

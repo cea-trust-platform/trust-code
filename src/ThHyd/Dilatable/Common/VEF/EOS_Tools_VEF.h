@@ -17,10 +17,11 @@
 #define EOS_Tools_VEF_included
 
 #include <EOS_Tools_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_dis.h>
+#include <TRUST_Ref.h>
 
 class Fluide_Dilatable_base;
+class Domaine_Cl_dis;
+class Domaine_VEF;
 
 /*! @brief classe EOS_Tools_VEF Cette classe et specifique a discretisation de type VEF.
  *
@@ -42,8 +43,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF(Domaine_VEF) le_dom;
-  REF(Domaine_Cl_dis) le_dom_Cl;
+  REF2(Domaine_VEF) le_dom;
+  REF2(Domaine_Cl_dis) le_dom_Cl;
 };
 
 #endif /* EOS_Tools_VEF_included */

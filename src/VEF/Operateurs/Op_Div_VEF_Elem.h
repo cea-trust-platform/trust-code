@@ -18,10 +18,11 @@
 #define Op_Div_VEF_Elem_included
 
 #include <Operateur_Div.h>
-#include <Ref_Domaine_VEF.h>
+#include <TRUST_Ref.h>
 #include <Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
 
+class Domaine_Cl_VEF;
 /*! @brief class Op_Div_VEF_Elem
  *
  *   Cette classe represente l'operateur de divergence
@@ -55,8 +56,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF2(Domaine_VEF) le_dom_vef;
+  REF2(Domaine_Cl_VEF) la_zcl_vef;
 
   //DoubleVect porosite_face;
 };

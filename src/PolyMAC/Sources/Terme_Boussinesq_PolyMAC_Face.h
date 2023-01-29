@@ -17,10 +17,12 @@
 #define Terme_Boussinesq_PolyMAC_Face_included
 
 #include <Terme_Boussinesq_base.h>
-#include <Ref_Domaine_PolyMAC.h>
-#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <TRUST_Ref.h>
 
 class Convection_Diffusion_std;
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
+
 /*! @brief class Terme_Boussinesq_scalaire_PolyMAC_Face
  *
  *  Terme Source de Boussinesq pour une dicretisation PolyMAC
@@ -43,8 +45,8 @@ public:
 
 protected:
 
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF2(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 };
 

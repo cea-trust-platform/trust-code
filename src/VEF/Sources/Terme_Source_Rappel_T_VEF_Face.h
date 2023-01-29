@@ -18,13 +18,14 @@
 
 #include <Ref_Champ_Inc_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_Cl_VEF.h>
-#include <Ref_Domaine_VEF.h>
 #include <Source_base.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
 
-class Probleme_base;
 class Navier_Stokes_std;
+class Probleme_base;
+class Domaine_Cl_VEF;
+class Domaine_VEF;
 
 class Terme_Source_Rappel_T_VEF_Face : public Source_base
 {
@@ -40,8 +41,8 @@ public :
 
 protected :
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
 private :
 
@@ -50,7 +51,7 @@ private :
   mutable Parser_U force_rappel;
 
   REF(Champ_Inc_base) l_inconnue;
-  REF(Domaine_VEF) domaine_VEF_autre_pb;
+  REF2(Domaine_VEF) domaine_VEF_autre_pb;
   Nom nom_pb, nom_autre_pb;
   Motcle nom_inco;
 

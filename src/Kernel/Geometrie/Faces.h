@@ -16,9 +16,11 @@
 #ifndef Faces_included
 #define Faces_included
 
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
-#include <Ref_Domaine.h>
+
 class Motcle;
+class Domaine;
 
 /*! @brief enum Type_Face Les differents types geometriques de faces.
  *
@@ -27,8 +29,7 @@ class Motcle;
 
 /*! @brief Classe Faces Faces decrit un ensemble de faces par leur type (point ,segment,
  *
- *     triangle ou quadrangle), leurs sommets et leurs elements
- *     adjacents.
+ *     triangle ou quadrangle), leurs sommets et leurs elements adjacents.
  *
  * @sa IntTab Frontiere
  */
@@ -89,7 +90,7 @@ private :
   int nb_som_face = -123;
   IntTab sommets;
   IntTab faces_voisins;
-  REF(Domaine) mon_dom;
+  REF2(Domaine) mon_dom;
 };
 
 typedef Faces::Type_Face Type_Face;

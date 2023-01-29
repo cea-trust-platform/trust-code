@@ -907,14 +907,14 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_
 
 void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
 {
-  REF(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretisee
+  REF2(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretisee
   ecrire_domaine_dis(nom_fic, dom, domaine_dis_base, nom_dom, mode);
 }
 
 // ecrit le domaine dom dans le fichier nom_fic
 // mode = -1 nouveau fichier
 // mode = 0 ajout du domaine dans le fichier
-void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF2(Domaine_dis_base)& domaine_dis_base,const Nom& nom_dom,int mode)
 {
   //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
   const  DoubleTab& sommets=dom.les_sommets();
@@ -1049,7 +1049,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
       if (domaine_dis_base.non_nul() && ref_cast(Domaine_VF, domaine_dis_base.valeur()).elem_faces().size()>0)
         {
           // Faces mesh:
-          dom.buildUFacesMesh(domaine_dis_base);
+          dom.buildUFacesMesh(domaine_dis_base.valeur());
           MCAuto<MEDCouplingUMesh>& faces_mesh = dom.getUFacesMesh();
           faces_mesh->setCoords(mesh->getCoords());
           faces_mesh->setName(mesh->getName());

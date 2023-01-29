@@ -13,29 +13,25 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Dift_VEF_P1NCP1B_Face_included
 #define Op_Dift_VEF_P1NCP1B_Face_included
 
-#include <Op_Dift_VEF_base.h>
-#include <Ref_Champ_P1NC.h>
-#include <Ref_Domaine_VEF_PreP1b.h>
-#include <Ref_Domaine_Cl_VEFP1B.h>
 #include <Ref_Mod_turb_hyd_base.h>
 #include <Domaine_VEF_PreP1b.h>
 #include <Domaine_Cl_VEFP1B.h>
 #include <Matrice_Morse_Sym.h>
+#include <Op_Dift_VEF_base.h>
+#include <Ref_Champ_P1NC.h>
+#include <TRUST_Ref.h>
 #include <SolveurSys.h>
+
 /*! @brief class Op_Dift_VEF_P1NCP1B_Face Cette classe represente l'operateur de diffusion
  *
  *   La discretisation est VEF
  *   Le champ diffuse est scalaire
  *   Le champ de diffusivite est uniforme
  *
- *
- *
  */
-
 class Op_Dift_VEF_P1NCP1B_Face: public Op_Dift_VEF_base
 {
   Declare_instanciable(Op_Dift_VEF_P1NCP1B_Face);
@@ -76,8 +72,8 @@ protected:
   DoubleTab& calculer_divergence_som(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& corriger_div_pour_Cl(DoubleTab&) const;
   REF(Mod_turb_hyd_base) le_modele_turbulence;
-  REF(Domaine_VEF_PreP1b) le_dom_vef;
-  REF(Domaine_Cl_VEFP1B) la_zcl_vef;
+  REF2(Domaine_VEF_PreP1b) le_dom_vef;
+  REF2(Domaine_Cl_VEFP1B) la_zcl_vef;
   SolveurSys solveur;
   int trans = -10;
   double lambda = -100.;

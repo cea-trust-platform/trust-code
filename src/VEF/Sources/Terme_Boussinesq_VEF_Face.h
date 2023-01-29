@@ -17,11 +17,13 @@
 #define Terme_Boussinesq_VEF_Face_included
 
 #include <Terme_Boussinesq_base.h>
-#include <Ref_Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
 
 class Convection_Diffusion_std;
+class Domaine_Cl_VEF;
 class Champ_Don;
+class Domaine_VEF;
+
 /*! @brief Terme Source de Boussinesq pour une dicretisation VEF
  *
  */
@@ -37,8 +39,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_VEF;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_VEF) le_dom_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
 };
 

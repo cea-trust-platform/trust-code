@@ -18,11 +18,13 @@
 #define Op_Diff_EF_included
 
 #include <Op_Diff_EF_base.h>
-#include <Ref_Domaine_Cl_EF.h>
 #include <Matrice_Morse.h>
-#include <Ref_Domaine_EF.h>
 #include <Op_EF_base.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
+
+class Domaine_Cl_EF;
+class Domaine_EF;
 
 /*! @brief class Op_Diff_EF Cette classe represente l'operateur de diffusion
  *

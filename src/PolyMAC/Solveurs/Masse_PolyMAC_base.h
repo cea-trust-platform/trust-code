@@ -16,10 +16,12 @@
 #ifndef Masse_PolyMAC_base_included
 #define Masse_PolyMAC_base_included
 
-#include <Ref_Domaine_Cl_PolyMAC.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_PolyMAC.h>
 #include <Solveur_Masse.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
 
 class Masse_PolyMAC_base : public Solveur_Masse_base
 {
@@ -31,8 +33,8 @@ public:
   void check_multiphase_compatibility() const override { }
 
 protected:
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF2(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
 };
 
 #endif /* Masse_PolyMAC_base_included */

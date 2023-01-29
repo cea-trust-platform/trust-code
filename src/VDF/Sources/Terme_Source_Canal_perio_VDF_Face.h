@@ -24,8 +24,10 @@
  */
 #include <Terme_Source_Canal_perio.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine_Cl_VDF.h>
-#include <Ref_Domaine_VDF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VDF;
+class Domaine_VDF;
 
 class Navier_Stokes_std;
 class Probleme_base;
@@ -39,8 +41,8 @@ public :
   inline int has_interface_blocs() const override { return 1; }
 
 protected :
-  REF(Domaine_VDF) le_dom_VDF;
-  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF2(Domaine_VDF) le_dom_VDF;
+  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
   void calculer_debit(double&) const override;

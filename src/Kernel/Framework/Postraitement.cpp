@@ -1188,7 +1188,7 @@ void Postraitement::init()
 
   // S'il existe un champ a postraiter aux faces, on stocke ici une ref au domaine dis base du champ
   // PQ : 13/06/13 : mis en attribut de la classe pour gerer les champs FACES en maillage deformable
-  //REF(Domaine_dis_base) domaine_dis_pour_faces;
+  //REF2(Domaine_dis_base) domaine_dis_pour_faces;
 
   {
     Nom le_nom_champ_post;
@@ -1224,7 +1224,7 @@ void Postraitement::init()
             // PL: Ajout automatique du postraitement aux faces pour PolyMAC seul, sinon doit etre specifie par FACES
             if (Motcle(loc_post) == "FACES" || champ->get_ref_domaine_dis_base().que_suis_je().debute_par("Domaine_PolyMAC"))
               {
-                REF(Domaine_dis_base) ref_domaine_dis = champ->get_ref_domaine_dis_base();
+                REF2(Domaine_dis_base) ref_domaine_dis = champ->get_ref_domaine_dis_base();
                 if (ref_domaine_dis.non_nul())
                   domaine_dis_pour_faces = ref_domaine_dis;
               }

@@ -14,14 +14,14 @@
 *****************************************************************************/
 
 #include <Moyenne_volumique.h>
-#include <Param.h>
+#include <communications.h>
 #include <Equation_base.h>
 #include <Postraitement.h>
-#include <Domaine_VF.h>
-#include <Ref_Domaine_VF.h>
 #include <Octree_Double.h>
-#include <communications.h>
+#include <Domaine_VF.h>
+#include <TRUST_Ref.h>
 #include <algorithm>
+#include <Param.h>
 
 Implemente_instanciable(Moyenne_volumique,"Moyenne_volumique",Interprete);
 
@@ -289,7 +289,7 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
     return;
 
   REF(Champ_base) ref_champ;
-  REF(Domaine_VF) ref_domaine_vf;
+  REF2(Domaine_VF) ref_domaine_vf;
   int i_champ;
   // ************************************
   // Calcul du nombre total de composantes et de ref_domaine_vf

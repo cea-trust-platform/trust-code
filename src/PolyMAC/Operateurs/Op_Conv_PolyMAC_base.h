@@ -16,10 +16,12 @@
 #ifndef Op_Conv_PolyMAC_base_included
 #define Op_Conv_PolyMAC_base_included
 
-#include <Ref_Domaine_Cl_PolyMAC.h>
-#include <Ref_Domaine_Poly_base.h>
 #include <Operateur_Conv.h>
+#include <TRUST_Ref.h>
 #include <SFichier.h>
+
+class Domaine_Cl_PolyMAC;
+class Domaine_Poly_base;
 
 /*! @brief class Op_Conv_PolyMAC_base
  *
@@ -39,8 +41,8 @@ public:
   void associer_vitesse(const Champ_base& ) override;
 
 protected:
-  REF(Domaine_Poly_base) le_dom_poly_;
-  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
+  REF2(Domaine_Poly_base) le_dom_poly_;
+  REF2(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) vitesse_;
 
   mutable SFichier Flux, Flux_moment, Flux_sum;

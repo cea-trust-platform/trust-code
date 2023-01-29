@@ -18,7 +18,9 @@
 
 #include <Champ_Fonc_P0_VEF.h>
 #include <Ref_Champ_P1NC.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VEF;
 
 /*! @brief classe Taux_cisaillement_P0_VEF
  *
@@ -31,7 +33,7 @@ public:
   void associer_champ(const Champ_P1NC&, const Domaine_Cl_dis_base&);
 
 private:
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   REF(Champ_P1NC) vitesse_;
 };
 

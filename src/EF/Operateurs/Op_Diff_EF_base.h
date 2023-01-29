@@ -19,14 +19,14 @@
 #include <Neumann_sortie_libre.h>
 #include <Operateur_Diff_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Domaine_Cl_EF.h>
-#include <Ref_Domaine_EF.h>
-#include <Op_EF_base.h>
 #include <Domaine_Cl_EF.h>
+#include <Op_EF_base.h>
 #include <Domaine_EF.h>
-class Domaine_dis;
-class Domaine_Cl_dis;
+#include <TRUST_Ref.h>
+
 class Champ_Inc_base;
+class Domaine_Cl_dis;
+class Domaine_dis;
 class Sortie;
 
 enum class AJOUTE_SCAL { GEN , D3_8 , D2_4 };
@@ -49,8 +49,8 @@ public:
 
 protected:
 
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) la_zcl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) la_zcl_EF;
   REF(Champ_Inc_base) inconnue;
   mutable DoubleTab nu_;
 

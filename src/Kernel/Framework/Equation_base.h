@@ -24,7 +24,6 @@
 #include <TRUSTTab_parts.h>
 #include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
-#include <Ref_Domaine_dis.h>
 #include <Champs_Fonc.h>
 #include <Ref_Objet_U.h>
 #include <Domaine_Cl_dis.h>
@@ -36,6 +35,7 @@
 #include <vector>
 
 class Discretisation_base;
+class Domaine_dis;
 class Milieu_base;
 class Operateur;
 class Champ_Inc;
@@ -297,7 +297,7 @@ protected :
   Solveur_Masse solveur_masse;
   Sources les_sources;
   REF(Schema_Temps_base) le_schema_en_temps;
-  REF(Domaine_dis) le_dom_dis;
+  REF2(Domaine_dis) le_dom_dis;
   Domaine_Cl_dis le_dom_Cl_dis;
   REF2(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);

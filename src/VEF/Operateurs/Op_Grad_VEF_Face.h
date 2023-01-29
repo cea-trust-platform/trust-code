@@ -19,9 +19,9 @@
 
 #include <Operateur_Grad.h>
 #include <Domaine_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
 #include <Domaine_Cl_VEF.h>
-#include <Ref_Domaine_VEF.h>
+#include <TRUST_Ref.h>
 #include <Ref_Champ_P0_VEF.h>
 #include <Champ_P0_VEF.h>
 
@@ -56,8 +56,8 @@ public:
 
 protected:
 
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF2(Domaine_VEF) le_dom_vef;
+  REF2(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_P0_VEF)  la_pression_P0;
 
   DoubleVect porosite_surf;

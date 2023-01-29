@@ -17,7 +17,7 @@
 #define h_conv_Champ_P1NC_included
 
 #include <Champ_Fonc_P0_VEF.h>
-#include <Ref_Domaine_Cl_VEF.h>
+#include <TRUST_Ref.h>
 #include <Ref_Champ_P1NC.h>
 #include <Champ_h_conv.h>
 #include <Domaine_Cl_VEF.h>
@@ -46,7 +46,7 @@ public:
 
 protected:
   REF(Champ_P1NC) mon_champ_;
-  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   int temp_ref_ = -1;
 };
 

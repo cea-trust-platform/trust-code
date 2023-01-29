@@ -13,17 +13,17 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_PDF_EF_included
 #define Source_PDF_EF_included
 
 #include <Source_PDF_base.h>
-#include <Ref_Domaine_EF.h>
-#include <Ref_Domaine_Cl_EF.h>
 #include <Champ_Fonc.h>
+#include <TRUST_Ref.h>
 #include <Matrice.h>
 
 class Probleme_base;
+class Domaine_Cl_EF;
+class Domaine_EF;
 
 /*! @brief class Source_PDF_EF Source term for the penalisation of the momentum in the Immersed Boundary Method (IBM)
  *
@@ -74,8 +74,8 @@ protected:
   void calculer_vitesse_imposee_power_law_tbl_u_star() override;
   void rotate_imposed_velocity(DoubleTab&) override;
   DoubleTab compute_pond(const DoubleTab&, const DoubleTab&, const DoubleVect&, int&, int&) const ;
-  REF(Domaine_EF) le_dom_EF;
-  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  REF2(Domaine_EF) le_dom_EF;
+  REF2(Domaine_Cl_EF) le_dom_Cl_EF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   void compute_indicateur_nodal_champ_aire() override;
 
