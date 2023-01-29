@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,17 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Loi_Fermeture_base_included
 #define Loi_Fermeture_base_included
-#include <Ref_Probleme_base.h>
+
 #include <Champs_compris_interface.h>
 #include <Champs_compris.h>
+#include <TRUST_Ref.h>
 
-class Param;
+class Discretisation_base;
+class Probleme_base;
 class Champ_base;
 class Motcle;
-class Discretisation_base;
+class Param;
 
 /*! @brief : Classe de base des lois de fermetures.
  *
@@ -71,7 +72,7 @@ protected:
 private:
   Nom nom_;
   // Prive car ce membre donne acces au probleme non const. On le cache.
-  REF(Probleme_base) mon_probleme_;
+  REF2(Probleme_base) mon_probleme_;
 
 
 

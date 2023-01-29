@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,12 @@
 #ifndef Postraitement_base_included
 #define Postraitement_base_included
 
-#include <Ref_Probleme_base.h>
+#include <TRUST_Ref.h>
+#include <Nom.h>
 
+class Probleme_base;
 class Entree;
 class Sortie;
-class Nom;
 class Motcle;
 class Param;
 
@@ -56,7 +57,7 @@ public:
 
 protected:
   Nom le_nom_;
-  REF(Probleme_base) mon_probleme;
+  REF2(Probleme_base) mon_probleme;
   double temps_;
 };
 

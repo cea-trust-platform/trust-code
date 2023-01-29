@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,9 @@
 #ifndef Fluide_Dilatable_base_included
 #define Fluide_Dilatable_base_included
 
-#include <Ref_Probleme_base.h>
 #include <Ref_Champ_Inc.h>
 #include <Fluide_base.h>
+#include <TRUST_Ref.h>
 #include <Champ_Inc.h>
 #include <EOS_Tools.h>
 #include <Loi_Etat.h>
@@ -118,7 +118,7 @@ protected :
   int traitement_PTh; // flag pour le traitement de la pression thermo
   double Pth_, Pth_n, Pth1;
   REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
-  REF(Probleme_base) le_probleme_;
+  REF2(Probleme_base) le_probleme_;
   Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
   Loi_Etat loi_etat_;
   EOS_Tools eos_tools_;

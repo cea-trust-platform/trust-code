@@ -149,10 +149,10 @@ void Champ_input_P0::setValue(const TrioField& afield)
     {
       const Sous_Domaine& ssz=ma_sous_domaine.valeur();
       if (afield._nb_elems != nb_elems_reels_sous_domaine_)
-        throw WrongArgument(mon_pb.le_nom().getChar(),"setInputField","afield","should have the same _nb_elems as returned by getInputFieldTemplate");
+        throw WrongArgument(mon_pb->le_nom().getChar(),"setInputField","afield","should have the same _nb_elems as returned by getInputFieldTemplate");
       assert(valeurs_.dimension(1)==nb_compo_);
       if (afield._nb_field_components!=valeurs_.dimension(1))
-        throw WrongArgument(mon_pb.le_nom().getChar(),"setInputField","afield","should have the same _nb_field_components as returned by getInputFieldTemplate");
+        throw WrongArgument(mon_pb->le_nom().getChar(),"setInputField","afield","should have the same _nb_field_components as returned by getInputFieldTemplate");
       for (int i=0, j, k = -1; i<ssz.nb_elem_tot(); i++)
         if (ssz[i] < nb_elems_reels_loc_)
           for (j = 0, k++ ; j<nb_compo_; j++)

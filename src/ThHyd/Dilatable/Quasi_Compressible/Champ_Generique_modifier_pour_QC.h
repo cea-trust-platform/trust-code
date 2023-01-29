@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,9 @@
 #define Champ_Generique_modifier_pour_QC_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-#include <Ref_Milieu_base.h>
+#include <TRUST_Ref.h>
+
+class Milieu_base;
 
 /*! @brief class Champ_Generique_modifier_pour_QC Champ destine a post-traiter un champ d un probleme en quasi-compressible
  *
@@ -53,7 +55,7 @@ public:
 protected:
 
   int diviser_;
-  REF(Milieu_base) mon_milieu_;
+  REF2(Milieu_base) mon_milieu_;
 };
 
 #endif

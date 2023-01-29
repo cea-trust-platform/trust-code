@@ -111,7 +111,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       const int nb_elem = domaine_VEF.nb_elem();
 
       Objet_U& ob1=Interprete::objet(nom_autre_pb);
-      REF(Probleme_base) pb;
+      REF2(Probleme_base) pb;
       if( sub_type(Probleme_base, ob1) )
         pb = ref_cast(Probleme_base, ob1);
       else

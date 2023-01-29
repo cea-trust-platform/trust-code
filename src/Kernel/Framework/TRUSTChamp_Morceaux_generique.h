@@ -16,7 +16,6 @@
 #ifndef TRUSTChamp_Morceaux_generique_included
 #define TRUSTChamp_Morceaux_generique_included
 
-#include <Ref_Probleme_base.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don_base.h>
 #include <Probleme_base.h>
@@ -24,6 +23,7 @@
 #include <Ref_Sous_Domaine.h>
 #include <TRUST_Vector.h>
 #include <TRUST_List.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Domaine.h>
 
@@ -62,7 +62,7 @@ public:
 protected:
   LIST(REF(Sous_Domaine)) les_sous_domaines;
   REF(Domaine) mon_domaine;
-  REF(Probleme_base) ref_pb;
+  REF2(Probleme_base) ref_pb;
   VECT(Parser_U) parser; /* vecteur de tous les parsers */
   Nom nom_champ_parametre_; /* nom du champ dont les fonctions ont parametres */
   IntTab parser_idx; /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */

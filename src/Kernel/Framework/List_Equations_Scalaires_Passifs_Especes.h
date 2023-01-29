@@ -16,9 +16,11 @@
 #ifndef List_Equations_Scalaires_Passifs_Especes_included
 #define List_Equations_Scalaires_Passifs_Especes_included
 
-#include <Ref_Milieu_base.h>
 #include <TRUST_List.h>
+#include <TRUST_Ref.h>
 #include <Equation.h>
+
+class Milieu_base;
 
 /*! @brief classe List_Equations_Scalaires_Passifs_Especes Represente une liste d'equations de scalaires passifs ou especes
  *
@@ -85,7 +87,7 @@ public :
 
 protected :
   LIST(Equation) list_eq;
-  REF(Milieu_base) mil;
+  REF2(Milieu_base) mil;
   int complet;
 };
 

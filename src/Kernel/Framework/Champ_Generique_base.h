@@ -16,9 +16,9 @@
 #ifndef Champ_Generique_base_included
 #define Champ_Generique_base_included
 
+#include <TRUST_Ref.h>
 #include <Domaine.h>
 #include <Champ.h>
-#include <Ref_Probleme_base.h>
 
 class ArrOfBit;
 class Postraitement_base;
@@ -129,7 +129,7 @@ protected:
   Nom nom_post_;
   Nom identifiant_appel_;
   Nom nom_pb_;
-  REF(Probleme_base) ref_pb_;
+  REF2(Probleme_base) ref_pb_;
 };
 
 inline void Champ_Generique_base::fixer_identifiant_appel(const Nom& identifiant)

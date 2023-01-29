@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,11 @@
 #ifndef Value_Input_Int_included
 #define Value_Input_Int_included
 
-#include <Objet_U.h>
-#include <Ref_Probleme_base.h>
+#include <TRUST_Ref.h>
 #include <string>
+#include <Nom.h>
 
+class Probleme_base;
 class Param;
 
 /*! @brief : class Value_Input_Int
@@ -42,7 +43,7 @@ public :
 protected :
 
   Nom name;
-  REF(Probleme_base) mon_pb;
+  REF2(Probleme_base) mon_pb;
 
 };
 

@@ -241,7 +241,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
   //**************************************************
   if(nom_pb_rans != "non_couple")
     {
-      REF(Probleme_base) pb_rans;
+      REF2(Probleme_base) pb_rans;
       Objet_U& obj=Interprete::objet(nom_pb_rans);
 
       if( sub_type(Probleme_base, obj) )

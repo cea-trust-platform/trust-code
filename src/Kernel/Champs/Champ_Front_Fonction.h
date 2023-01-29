@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_Front_Fonction_included
 #define Champ_Front_Fonction_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-
+#include <TRUST_Ref.h>
 #include <Table.h>
-#include <Ref_Probleme_base.h>
+
+class Probleme_base;
 
 /*! @brief Classe Champ_Front_Fonction Classe derivee de Champ_front_var_instationnaire_dep qui represente les
  *
@@ -43,7 +43,7 @@ public:
 protected:
   Nom nom_champ_parametre_;
   Table la_table;
-  REF(Probleme_base) ref_pb;
+  REF2(Probleme_base) ref_pb;
 };
 
 

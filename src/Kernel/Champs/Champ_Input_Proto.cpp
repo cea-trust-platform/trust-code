@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -121,16 +121,16 @@ void Champ_Input_Proto::setValueOnTab(const TrioField& afield, DoubleTab& tab)
       if ((afield._nb_elems!=tab.dimension(0))&&(afield._nb_elems!=tab.dimension_tot(0)))
         {
 
-          throw WrongArgument(mon_pb.le_nom().getChar(),"setInputField",afield.getCharName(),"should have the same _nb_elems as returned by getInputFieldTemplate");
+          throw WrongArgument(mon_pb->le_nom().getChar(),"setInputField",afield.getCharName(),"should have the same _nb_elems as returned by getInputFieldTemplate");
         }
     }
   else
     {
       if (afield._nbnodes!=tab.dimension(0))
-        throw WrongArgument(mon_pb.le_nom().getChar(),"setInputField","afield","should have the same _nb_elems as returned by getInputFieldTemplate");
+        throw WrongArgument(mon_pb->le_nom().getChar(),"setInputField","afield","should have the same _nb_elems as returned by getInputFieldTemplate");
       if (afield._nb_field_components!=tab.dimension(1))
 
-        throw WrongArgument(mon_pb.le_nom().getChar(),"setInputField","afield","should have the same _nb_field_components as returned by getInputFieldTemplate");
+        throw WrongArgument(mon_pb->le_nom().getChar(),"setInputField","afield","should have the same _nb_field_components as returned by getInputFieldTemplate");
     }
   // order is   c1 c2 c3   c1 c2 c3   c1 c2 c3
   memcpy(tab.addr(),afield._field,tab.size()*sizeof(double));

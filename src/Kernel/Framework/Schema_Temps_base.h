@@ -16,12 +16,14 @@
 #ifndef Schema_Temps_base_included
 #define Schema_Temps_base_included
 
-#include <Ref_Probleme_base.h>
+#include <Interface_blocs.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Parser_U.h>
 #include <SFichier.h>
 #include <math.h>
-#include <Interface_blocs.h>
+
+class Probleme_base;
 class Equation_base;
 class Matrice_Base;
 class SFichier;
@@ -265,7 +267,7 @@ public :
   };
 protected :
 
-  REF(Probleme_base) mon_probleme;
+  REF2(Probleme_base) mon_probleme;
   Nom nom_;
   double dt_;                                // Pas de temps de calcul
   DoubleTab dt_locaux_;                     // Local time steps: Vector of size nb faces of the mesh

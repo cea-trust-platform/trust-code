@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,11 +18,12 @@
 
 #include <Ref_Fluide_Dilatable_base.h>
 #include <Champs_compris_interface.h>
-#include <Ref_Probleme_base.h>
 #include <Champs_compris.h>
 #include <Champ_Don.h>
+#include <TRUST_Ref.h>
 
 class Fluide_Dilatable_base;
+class Probleme_base;
 
 /*! @brief classe Loi_Etat_base Cette classe est la base de la hierarchie des lois d'etat.
  *
@@ -81,7 +82,7 @@ public :
 
 protected :
   REF(Fluide_Dilatable_base) le_fluide;
-  REF(Probleme_base) le_prob_;
+  REF2(Probleme_base) le_prob_;
   Champ_Don temperature_;
   DoubleTab tab_rho_n, tab_rho_np1;    //rho a l'etape precedente et l'etape suivante
   double Pr_;

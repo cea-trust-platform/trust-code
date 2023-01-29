@@ -16,14 +16,14 @@
 #ifndef Chimie_included
 #define Chimie_included
 
-#include <Objet_U.h>
-#include <Champ.h>
-#include <Champ_Don.h>
 #include <Champs_compris_interface.h>
 #include <TRUST_List.h>
-#include <Ref_Probleme_base.h>
-#include <Motcle.h>
+#include <Champ_Don.h>
+#include <TRUST_Ref.h>
 #include <Reaction.h>
+#include <Objet_U.h>
+#include <Motcle.h>
+#include <Champ.h>
 
 class Probleme_base;
 class Discretisation_base;
@@ -46,7 +46,7 @@ public:
 
 protected:
   LIST(Reaction) reactions_;
-  REF(Probleme_base) pb_;
+  REF2(Probleme_base) pb_;
   Motcles alias;
   VECT(REF(Champ_Inc_base)) liste_Y_,liste_ai_,liste_nd10_,liste_ngrains_,liste_C_;
   int nb_grains_ = -10;

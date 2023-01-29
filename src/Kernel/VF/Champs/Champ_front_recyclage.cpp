@@ -371,7 +371,7 @@ int Champ_front_recyclage::lire_info_moyenne_recyclee(Entree& is)
 void Champ_front_recyclage::associer_champ_evaluateur(const Nom& un_nom_pb1,const Motcle& un_nom_inco1)
 {
   Objet_U& ob1 = Interprete::objet(un_nom_pb1);
-  REF(Probleme_base) pb1;
+  REF2(Probleme_base) pb1;
   REF(Champ_base) rch1;
 
   if(sub_type(Probleme_base,ob1))

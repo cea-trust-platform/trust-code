@@ -59,7 +59,7 @@ Entree& Terme_Source_Solide_SWIFT_VDF::readOn(Entree& is )
           Nom swift;
           is >> swift;
           pb_swift=ref_cast(Probleme_base, Interprete::objet(swift));
-          Cerr << "pb_swift is: " << pb_swift.le_nom() << finl;
+          Cerr << "pb_swift is: " << pb_swift->le_nom() << finl;
         }
       else if(motlu == "pb_corse")
         {
@@ -67,7 +67,7 @@ Entree& Terme_Source_Solide_SWIFT_VDF::readOn(Entree& is )
           Nom corse;
           is >> corse;
           pb_corse=ref_cast(Probleme_base, Interprete::objet(corse));
-          Cerr << "pb_coarse is: " << pb_corse.le_nom() << finl;
+          Cerr << "pb_coarse is: " << pb_corse->le_nom() << finl;
         }
       else
         {
@@ -128,36 +128,17 @@ Entree& Terme_Source_Solide_SWIFT_VDF::readOn(Entree& is )
 
 }
 
-
-
-
-
-
-
-void Terme_Source_Solide_SWIFT_VDF::associer_domaines(const Domaine_dis& domaine_dis,
-                                                      const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Source_Solide_SWIFT_VDF::associer_domaines(const Domaine_dis &domaine_dis, const Domaine_Cl_dis &domaine_Cl_dis)
 {
-  /*    le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
-        le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur()) */
-  ;
 }
 
 void Terme_Source_Solide_SWIFT_VDF::associer_pb(const Probleme_base& pb)
 {
-  ;
 }
-
-
-
-
-
-
-
-
 
 void Terme_Source_Solide_SWIFT_VDF::init_calcul_moyenne(const Conduction& my_eqn, DoubleVect& Y, IntVect& corresp, IntVect& compt)
 {
-  int num_elem,j,indic,trouve;
+  int num_elem, j, indic, trouve;
   double y;
 
   const Domaine_dis_base& zdisbase = my_eqn.inconnue().domaine_dis_base();
@@ -168,9 +149,9 @@ void Terme_Source_Solide_SWIFT_VDF::init_calcul_moyenne(const Conduction& my_eqn
   int nb_faces_x = domaine_VDF.nb_faces_X();
   int nb_faces_z = domaine_VDF.nb_faces_Z();
 
-  int Nx        = nb_elems/(nb_faces_x-nb_elems);
-  int Nz        = nb_elems/(nb_faces_z-nb_elems);
-  int Ny        = nb_elems/Nx/Nz;
+  int Nx = nb_elems / (nb_faces_x - nb_elems);
+  int Nz = nb_elems / (nb_faces_z - nb_elems);
+  int Ny = nb_elems / Nx / Nz;
 
   Y.resize(Ny);
   compt.resize(Ny);
@@ -180,75 +161,57 @@ void Terme_Source_Solide_SWIFT_VDF::init_calcul_moyenne(const Conduction& my_eqn
   compt = 0;
   corresp = -1;
 
-  j=0;
+  j = 0;
   indic = 0;
-  for (num_elem=0; num_elem<nb_elems; num_elem++)
+  for (num_elem = 0; num_elem < nb_elems; num_elem++)
     {
-      y = xp(num_elem,1);
+      y = xp(num_elem, 1);
       trouve = 0;
-      for (j=0; j<indic+1; j++)
+      for (j = 0; j < indic + 1; j++)
         {
-          if(std::fabs(y-Y[j])<=1e-8)
+          if (std::fabs(y - Y[j]) <= 1e-8)
             {
               corresp[num_elem] = j;
-              compt[j] ++;
-              j=indic+1;
+              compt[j]++;
+              j = indic + 1;
               trouve = 1;
               break;
             }
         }
-      if (trouve==0)
+      if (trouve == 0)
         {
           corresp[num_elem] = indic;
-          Y[indic]=y;
-          compt[indic] ++;
+          Y[indic] = y;
+          compt[indic]++;
           indic++;
         }
     }
 }
 
-
-
-
-
-
-
-
-
-
-void Terme_Source_Solide_SWIFT_VDF::correspondance_SWIFT_coarse( )
+void Terme_Source_Solide_SWIFT_VDF::correspondance_SWIFT_coarse()
 {
   int t_S = Y_swift.size();
   int t_C = Y_corse.size();
   corresp_SC.resize(t_S);
 
-  for(int j=0; j<t_S; j++)
+  for (int j = 0; j < t_S; j++)
     {
-      int burk=1;
-      for(int i=0; i<t_C; i++)
+      int burk = 1;
+      for (int i = 0; i < t_C; i++)
         {
-          if(std::fabs(Y_swift[j]-Y_corse[i])<=1e-8)
+          if (std::fabs(Y_swift[j] - Y_corse[i]) <= 1e-8)
             {
-              burk=0;
-              corresp_SC[j]=i;
+              burk = 0;
+              corresp_SC[j] = i;
             }
         }
-      if(burk)
+      if (burk)
         {
           Cerr << "## ACHTUNG !!! On n'a pas trouve l'equivalence entre" << finl;
           Cerr << "## les deux domaines au niveau des Y !" << finl;
         }
     }
 }
-
-
-
-
-
-
-
-
-
 
 void Terme_Source_Solide_SWIFT_VDF::calcul_moyenne(const Conduction& my_eqn, DoubleVect& T_moy, const IntVect& corresp, const IntVect& compt) const
 {
@@ -260,24 +223,19 @@ void Terme_Source_Solide_SWIFT_VDF::calcul_moyenne(const Conduction& my_eqn, Dou
   int nb_faces_x = domaine_VDF.nb_faces_X();
   int nb_faces_z = domaine_VDF.nb_faces_Z();
 
-  int Nx        = nb_elems/(nb_faces_x-nb_elems);
-  int Nz        = nb_elems/(nb_faces_z-nb_elems);
-  int Ny        = nb_elems/Nx/Nz;
+  int Nx = nb_elems / (nb_faces_x - nb_elems);
+  int Nz = nb_elems / (nb_faces_z - nb_elems);
+  int Ny = nb_elems / Nx / Nz;
 
-
-  int j=0;
+  int j = 0;
   T_moy.resize(Ny);
   T_moy = 0.;
 
-  for (j=0; j<nb_elems; j++)  T_moy[corresp[j]] += Temp[j];
-  for (j=0; j<Ny; j++)  T_moy[j] /= compt[j];
+  for (j = 0; j < nb_elems; j++)
+    T_moy[corresp[j]] += Temp[j];
+  for (j = 0; j < Ny; j++)
+    T_moy[j] /= compt[j];
 }
-
-
-
-
-
-
 
 void Terme_Source_Solide_SWIFT_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const
 {
@@ -290,50 +248,19 @@ void Terme_Source_Solide_SWIFT_VDF::ajouter_blocs(matrices_t matrices, DoubleTab
   DoubleVect Tmoy_swift;        // Profils de temperature moyenne.
   DoubleVect Tmoy_corse;
 
-  /*  const Champ_base& rho_don = pb_swift->milieu().masse_volumique();
-      const Champ_Don& Cp_don  = pb_swift->milieu().capacite_calorifique();
-      double rho=1.,Cp=1.;
-
-      if (sub_type(Champ_Uniforme,rho_don.valeur()))  rho = rho_don(0,0);
-      else
-      {
-      Cerr << "### Rho is not uniform in the solid !" << finl;
-      Cerr << "### Problem in Terme_Source_Solide_SWIFT_VDF..." << finl;
-      exit();
-      }
-
-      if (sub_type(Champ_Uniforme,Cp_don.valeur()))  Cp = Cp_don(0,0);
-      else
-      {
-      Cerr << "### Cp is not uniform in the solid !" << finl;
-      Cerr << "### Problem in Terme_Source_Solide_SWIFT_VDF..." << finl;
-      exit();
-      }
-      Cerr << "Rho = " << rho << finl;
-      Cerr << "Cp = " << Cp << finl; */
-
-
   // On calcule les profils de temperature moyenne dans les deux solides.
-  calcul_moyenne(eq_swift.valeur(),Tmoy_swift,corresp_swift,compt_swift);
-  calcul_moyenne(eq_corse.valeur(),Tmoy_corse,corresp_corse,compt_corse);
+  calcul_moyenne(eq_swift.valeur(), Tmoy_swift, corresp_swift, compt_swift);
+  calcul_moyenne(eq_corse.valeur(), Tmoy_corse, corresp_corse, compt_corse);
 
-  for(int num_elem = 0 ; num_elem<nb_elems ; num_elem++)
+  for (int num_elem = 0; num_elem < nb_elems; num_elem++)
     {
-      resu(num_elem) += volume(num_elem)*(Tmoy_corse(corresp_SC[corresp_swift[num_elem]])-Tmoy_swift(corresp_swift[num_elem]))/tau;
+      resu(num_elem) += volume(num_elem) * (Tmoy_corse(corresp_SC[corresp_swift[num_elem]]) - Tmoy_swift(corresp_swift[num_elem])) / tau;
     }
 
 }
-
-
-
-
-
-
-
 
 DoubleTab& Terme_Source_Solide_SWIFT_VDF::calculer(DoubleTab& resu) const
 {
   resu = 0;
   return ajouter(resu);
 }
-

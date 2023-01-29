@@ -18,19 +18,21 @@
 
 #include <MD_Vector_composite.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Probleme_base.h>
 #include <Interprete_bloc.h>
 #include <MD_Vector_tools.h>
 #include <TRUSTTab_parts.h>
 #include <EcrFicCollecte.h>
 #include <MD_Vector_std.h>
 #include <TRUSTVects.h>
+#include <TRUST_Ref.h>
 #include <EFichier.h>
 #include <Motcle.h>
 #include <Debog.h>
 #include <Noms.h>
 
+class Probleme_base;
 class Debog_Pb;
+
 Declare_ref(Debog_Pb);
 
 class Debog_Pb : public Objet_U
@@ -82,7 +84,7 @@ protected:
   // Nombre de messages ecrits dans le fichier
   int debog_msg_count_ = 0;
   Nom nom_pb_;
-  REF(Probleme_base) ref_pb_;
+  REF2(Probleme_base) ref_pb_;
   Nom fichier_domaine_;
   Nom fichier_faces_;
   Nom fichier_debog_; // fichier contenant les valeurs a relire

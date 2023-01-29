@@ -365,7 +365,7 @@ void Champ_Generique_refChamp::get_copy_connectivity(Entity index1, Entity index
 // Renvoie le probleme qui porte le champ cible
 const Probleme_base& Champ_Generique_refChamp::get_ref_pb_base() const
 {
-  return ref_pb_;
+  return ref_pb_.valeur();
 }
 
 /*! @brief Renvoie le champ_base sous-jacent.

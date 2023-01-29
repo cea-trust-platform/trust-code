@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,10 +15,13 @@
 
 #ifndef Correlation_base_included
 #define Correlation_base_included
-#include <Param.h>
-#include <Ref_Probleme_base.h>
-#include <Champs_compris.h>
+
 #include <Champs_compris_interface.h>
+#include <Champs_compris.h>
+#include <TRUST_Ref.h>
+#include <Param.h>
+
+class Probleme_base;
 
 class Correlation_base : public Objet_U, public Champs_compris_interface
 {
@@ -38,7 +41,7 @@ public:
 
 
 protected:
-  REF(Probleme_base) pb_;
+  REF2(Probleme_base) pb_;
   Champs_compris champs_compris_;
 
 };

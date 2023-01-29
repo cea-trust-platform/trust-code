@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ void Champ_front_calc::creer(const Nom& nom_pb, const Nom& nom_bord, const Motcl
 {
   nom_autre_pb_ = nom_pb;
   nom_autre_bord_ = nom_bord;
-  REF(Probleme_base) autre_pb;
+  REF2(Probleme_base) autre_pb;
   Objet_U& ob = Interprete::objet(nom_autre_pb_);
   if (sub_type(Probleme_base, ob))
     {

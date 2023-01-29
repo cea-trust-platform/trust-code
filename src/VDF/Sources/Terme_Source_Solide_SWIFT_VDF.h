@@ -13,11 +13,8 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Solide_SWIFT_VDF_included
 #define Terme_Source_Solide_SWIFT_VDF_included
-
-
 
 /*! @brief class Terme_Source_Solide_SWIFT_VDF Cette classe permet le forcage d'un champ moyen de temperature
  *
@@ -26,14 +23,13 @@
  *
  *
  */
-#include <Source_base.h>
-#include <Ref_Probleme_base.h>
 #include <Ref_Conduction.h>
+#include <Source_base.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 
 class Probleme_base;
 class Conduction;
-
 
 class Terme_Source_Solide_SWIFT_VDF : public Source_base
 {
@@ -58,8 +54,9 @@ public :
 
 protected :
   /*   REF(Domaine_VDF) le_dom_VDF; */
-  REF(Probleme_base) pb_swift;
-  REF(Probleme_base) pb_corse;
+  /*   REF(Zone_VDF) la_zone_VDF; */
+  REF2(Probleme_base) pb_swift;
+  REF2(Probleme_base) pb_corse;
   REF(Conduction) eq_swift;
   REF(Conduction) eq_corse;
 

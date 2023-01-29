@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@ public:
 protected:
 
   // A terme d autres elements de Transport_Interfaces_FT_Disc sont susceptibles d etre factorises
-  // ex : REF(Probleme_base) probleme_base_;
+  // ex : REF2(Probleme_base) probleme_base_;
   // Cette factorisation pourra etre realisee quand les developpements recents
   // lies purement au Front-Tracking seront integres
 

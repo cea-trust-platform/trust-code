@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,12 +16,14 @@
 #ifndef Champ_Input_Proto_included
 #define Champ_Input_Proto_included
 
-#include <TRUSTArray.h>
-#include <Ref_Probleme_base.h>
-#include <ICoCoTrioField.h>
 #include <Ref_Sous_Domaine.h>
+#include <ICoCoTrioField.h>
+#include <TRUSTArray.h>
+#include <TRUST_Ref.h>
 
 using ICoCo::TrioField;
+
+class Probleme_base;
 
 /*! @brief This is the base class for all the Fields which can be written by a call to Problem::setInputField
  *
@@ -57,7 +59,7 @@ protected:
   virtual void set_nb_comp(int i)=0; // calls fixer_nb_comp
   virtual void set_name(const Nom& name)=0; // calls nommer
 
-  REF(Probleme_base) mon_pb;
+  REF2(Probleme_base) mon_pb;
   bool sous_domaine_ok; // This fields knows how to deal with a sous_domaine
   REF(Sous_Domaine) ma_sous_domaine;
   ArrOfDouble initial_value_;

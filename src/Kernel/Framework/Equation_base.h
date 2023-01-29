@@ -18,22 +18,22 @@
 
 #include <Ref_Schema_Temps_base.h>
 #include <Parametre_equation.h>
-#include <Ref_Probleme_base.h>
 #include <MD_Vector_tools.h>
 #include <Interface_blocs.h>
+#include <Value_Input_Int.h>
+#include <TRUSTTab_parts.h>
 #include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
 #include <Ref_Domaine_dis.h>
 #include <Champs_Fonc.h>
 #include <Ref_Objet_U.h>
 #include <Domaine_Cl_dis.h>
+#include <TRUST_Ref.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
-#include <TRUSTTab_parts.h>
 #include <Parser_U.h>
 #include <Sources.h>
 #include <vector>
-#include <Value_Input_Int.h>
 
 class Discretisation_base;
 class Milieu_base;
@@ -60,7 +60,7 @@ enum Type_modele { TURBULENCE };
  *      Sources sont les termes sources (eventuellement inexistant) de
  *              l'equation represente par des objets "Source".
  *      Une equation est lie a un probleme par une reference contenue
- *      dans le membre REF(Probleme_base) mon_probleme.
+ *      dans le membre REF2(Probleme_base) mon_probleme.
  *
  *      Classe abstraite dont toutes les equations doivent deriver.
  *      Methodes abstraites:
@@ -299,7 +299,7 @@ protected :
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Domaine_dis) le_dom_dis;
   Domaine_Cl_dis le_dom_Cl_dis;
-  REF(Probleme_base) mon_probleme;
+  REF2(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual Entree& lire_sources(Entree&);
