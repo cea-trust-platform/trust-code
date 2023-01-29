@@ -13,17 +13,16 @@
 *
 *****************************************************************************/
 
-
 #ifndef Convection_Diffusion_Temperature_included
 #define Convection_Diffusion_Temperature_included
 
 #include <Convection_Diffusion_std.h>
-#include <Ref_Fluide_base.h>
 #include <TRUST_Vector.h>
 #include <Ref_Objet_U.h>
 #include <Fluide_base.h>
 #include <Champ_Fonc.h>
 #include <TRUSTTabs.h>
+#include <TRUST_Ref.h>
 
 /*! @brief classe Convection_Diffusion_Temperature Cas particulier de Convection_Diffusion_std
  *
@@ -75,7 +74,7 @@ public :
 protected :
 
   Champ_Inc la_temperature;
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
 
   Champ_Fonc gradient_temperature;
   Champ_Fonc h_echange;

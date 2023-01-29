@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,13 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Masse_Multiphase_included
 #define Masse_Multiphase_included
 
 #include <Convection_Diffusion_std.h>
-#include <Ref_Fluide_base.h>
 #include <Operateur_Evanescence.h>
+#include <TRUST_Ref.h>
+
+class Fluide_base;
 
 /*! @brief classe Masse_Multiphase Cas particulier de Convection_Diffusion_std pour un fluide quasi conpressible
  *
@@ -78,7 +79,7 @@ public :
 protected :
 
   Champ_Inc l_inco_ch;
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
 
   Operateur_Evanescence evanescence;
 };

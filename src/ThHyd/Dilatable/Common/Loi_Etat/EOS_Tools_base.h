@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef EOS_Tools_base_included
 #define EOS_Tools_base_included
 
-#include <Ref_Fluide_Dilatable_base.h>
 #include <TRUSTTabs_forward.h>
+#include <TRUST_Ref.h>
+#include <Objet_U.h>
 
 class Fluide_Dilatable_base;
 class Domaine_Cl_dis;
@@ -44,7 +45,7 @@ public :
   virtual double moyenne_vol(const DoubleTab&) const =0;
 
 protected :
-  REF(Fluide_Dilatable_base) le_fluide_;
+  REF2(Fluide_Dilatable_base) le_fluide_;
 };
 
 #endif /* EOS_Tools_base_included */

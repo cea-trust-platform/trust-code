@@ -19,12 +19,12 @@
 #include <Ref_Champ_Inc_base.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Fluide_base.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Poly_base;
 class Probleme_base;
+class Fluide_base;
 
 /*! @brief class Perte_Charge_PolyMAC_Face
  *
@@ -43,7 +43,7 @@ public:
 protected:
 
   REF(Champ_Inc_base) la_vitesse;
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
   IntVect num_faces;
 
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { };

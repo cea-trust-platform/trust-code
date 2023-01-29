@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,11 @@
 #ifndef Champ_Ostwald_included
 #define Champ_Ostwald_included
 
-#include <Ref_Fluide_Ostwald.h>
 #include <Champ_Fonc_P0_base.h>
 #include <Champ_Don_base.h>
+#include <TRUST_Ref.h>
+
+class Fluide_Ostwald;
 
 /*! @brief classe Champ_Ostwald Represente un champ qui varie en fonction de la consistance et
  *
@@ -49,7 +51,7 @@ public :
   }
 
 protected:
-  REF(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
+  REF2(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
 };
 
 #endif /* Champ_Ostwald_included */

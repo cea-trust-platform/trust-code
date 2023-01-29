@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,9 @@
 
 #include <Convection_Diffusion_Fluide_Dilatable_Proto.h>
 #include <Convection_Diffusion_std.h>
-#include <Ref_Fluide_Dilatable_base.h>
+#include <TRUST_Ref.h>
+
+class Fluide_Dilatable_base;
 
 /*! @brief classe Convection_Diffusion_Fluide_Dilatable_base pour un fluide dilatable
  *
@@ -57,7 +59,7 @@ public :
 protected:
   Champ_Inc l_inco_ch;
   Domaine_Cl_dis zcl_modif_;
-  REF(Fluide_Dilatable_base) le_fluide;
+  REF2(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_base_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 
 #include <Convection_Diffusion_std.h>
 #include <Fluide_base.h>
-#include <Ref_Fluide_base.h>
+#include <TRUST_Ref.h>
 
 /*! @brief classe Aire_interfaciale Equation de transport de l'aire interfaciale
  *
@@ -58,7 +58,7 @@ protected :
   Champ_Inc l_inco_ch;
   Champ_Fonc diametre_bulles;
 
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
 
   int n_l=-1 ; // Number of the liquid phase (the one where no IA is stored)
 };

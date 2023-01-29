@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,10 @@
 #ifndef Echange_externe_impose_H_included
 #define Echange_externe_impose_H_included
 
-#include <Ref_Fluide_Dilatable_base.h>
 #include <Echange_externe_impose.h>
+#include <TRUST_Ref.h>
+
+class Fluide_Dilatable_base;
 
 /*! @brief Classe Echange_externe_impose_H: Cette classe represente le cas particulier de la classe Echange_externe_impose pour une equation en enthalpie..
  *
@@ -35,7 +37,7 @@ public:
   inline const Champ_front& T_ext() const override { return le_champ_front; }
 
 protected:
-  REF(Fluide_Dilatable_base) le_fluide;
+  REF2(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Echange_externe_impose_H_included */

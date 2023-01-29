@@ -17,9 +17,11 @@
 #define Champ_front_debit_QC_fonc_t_included
 
 #include <Ch_front_var_instationnaire_indep.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
 #include <TRUST_Vector.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
+
+class Fluide_Quasi_Compressible;
 
 /*! @brief classe Champ_front_debit_QC_fonc_t Classe derivee de Champ_front_base qui represente les
  *
@@ -40,7 +42,7 @@ public:
 
 protected :
   int ismoyen=0;
-  REF(Fluide_Quasi_Compressible) fluide;
+  REF2(Fluide_Quasi_Compressible) fluide;
 
 private :
   mutable VECT(Parser_U) f_debit_t;

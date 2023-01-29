@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef EDO_Pression_th_base_included
 #define EDO_Pression_th_base_included
 
-#include <Ref_Fluide_Quasi_Compressible.h>
 #include <TRUSTTabs_forward.h>
+#include <TRUST_Ref.h>
+#include <Objet_U.h>
 
 class Fluide_Quasi_Compressible;
 class Domaine_Cl_dis;
@@ -43,7 +44,7 @@ public :
   virtual double resoudre(double) =0;
 
 protected :
-  REF(Fluide_Quasi_Compressible) le_fluide_;
+  REF2(Fluide_Quasi_Compressible) le_fluide_;
 };
 
 #endif /* EDO_Pression_th_base_included */

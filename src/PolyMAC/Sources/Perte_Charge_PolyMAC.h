@@ -18,7 +18,6 @@
 
 #include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Fluide_base.h>
 #include <Sous_Domaine.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
@@ -26,6 +25,7 @@
 
 class Domaine_Cl_PolyMAC;
 class Domaine_Poly_base;
+class Fluide_base;
 class Param;
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
@@ -87,7 +87,7 @@ protected:
   //! Diametre hydraulique utilise dans le calcul de la perte de charge
   Champ_Don diam_hydr;
   //! Fluide associe au probleme
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
 

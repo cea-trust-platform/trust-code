@@ -18,7 +18,6 @@
 
 #include <Traitement_particulier_NS.h>
 #include <Navier_Stokes_IBM_impl.h>
-#include <Ref_Fluide_base.h>
 #include <Operateur_Grad.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
@@ -26,6 +25,9 @@
 #include <Assembleur.h>
 #include <Champ_Fonc.h>
 #include <Champ_Don.h>
+#include <TRUST_Ref.h>
+
+class Fluide_base;
 
 /*! @brief classe Navier_Stokes_std Cette classe porte les termes de l'equation de la dynamique
  *
@@ -156,7 +158,7 @@ public :
 
 protected:
   virtual void discretiser_assembleur_pression();
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
 
   Champ_Inc la_vitesse, la_pression, divergence_U, gradient_P, la_pression_en_pa;
   Champ_Fonc la_vorticite, grad_u, critere_Q, pression_hydrostatique_, porosite_volumique, combinaison_champ;

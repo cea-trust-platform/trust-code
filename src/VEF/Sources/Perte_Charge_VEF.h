@@ -18,14 +18,14 @@
 
 #include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Sous_domaine_VF.h>
-#include <Ref_Fluide_base.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 
+class Sous_domaine_VF;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
+class Fluide_base;
 class Param;
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
@@ -85,7 +85,7 @@ protected:
   //! Diametre hydraulique utilise dans le calcul de la perte de charge
   Champ_Don diam_hydr;
   //! Fluide associe au probleme
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
   //! Domaine dans laquelle s'applique la perte de charge
@@ -95,7 +95,7 @@ protected:
   // Cas d'une sous-domaine
   bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?
   Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
-  REF(Sous_domaine_VF) la_sous_domaine_dis; //!< Initialise dans completer()
+  REF2(Sous_domaine_VF) la_sous_domaine_dis; //!< Initialise dans completer()
   int implicite_;
 
   mutable Parser_U lambda;

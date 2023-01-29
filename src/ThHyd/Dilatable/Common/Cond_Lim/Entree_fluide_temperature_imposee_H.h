@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,9 @@
 #define Entree_fluide_temperature_imposee_H_included
 
 #include <Dirichlet_entree_fluide_leaves.h>
-#include <Ref_Fluide_Dilatable_base.h>
+#include <TRUST_Ref.h>
+
+class Fluide_Dilatable_base;
 
 /*! @brief classe Entree_fluide_temperature_imposee_H Cas particulier de la classe Dirichlet_entree_fluide pour une equation ayant l'enthalpie en inconnue
  *
@@ -32,7 +34,7 @@ public :
   double val_imp(int i, int j) const override;
 
 protected :
-  REF(Fluide_Dilatable_base) le_fluide;
+  REF2(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Entree_fluide_temperature_imposee_H_included */

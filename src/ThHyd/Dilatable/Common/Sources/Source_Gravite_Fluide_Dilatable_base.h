@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Source_Gravite_Fluide_Dilatable_base_included
 #define Source_Gravite_Fluide_Dilatable_base_included
 
-#include <Ref_Fluide_Dilatable_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Source_base.h>
+#include <TRUST_Ref.h>
 
+class Fluide_Dilatable_base;
 class Domaine_Cl_dis;
 class Domaine_dis;
 
@@ -51,7 +51,7 @@ public:
 
 protected:
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override = 0;
-  REF(Fluide_Dilatable_base) le_fluide;
+  REF2(Fluide_Dilatable_base) le_fluide;
   DoubleVect g;
 };
 

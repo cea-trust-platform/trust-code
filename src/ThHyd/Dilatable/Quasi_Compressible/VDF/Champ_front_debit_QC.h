@@ -13,13 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_front_debit_QC_included
 #define Champ_front_debit_QC_included
 
 #include <Ch_front_var_instationnaire_indep.h>
-#include <Ref_Fluide_Quasi_Compressible.h>
+#include <TRUST_Ref.h>
 
+class Fluide_Quasi_Compressible;
 
 /*! @brief classe Champ_front_debit_QC Classe derivee de Champ_front_base qui represente les
  *
@@ -40,7 +40,7 @@ public:
 protected :
   int ismoyen=0;
   DoubleVect Debit;
-  REF(Fluide_Quasi_Compressible) fluide;
+  REF2(Fluide_Quasi_Compressible) fluide;
 
 };
 

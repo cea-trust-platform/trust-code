@@ -18,13 +18,13 @@
 
 #include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Fluide_base.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 
 class Probleme_base;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
+class Fluide_base;
 
 /*! @brief class Perte_Charge_VEF_Face
  *
@@ -52,7 +52,7 @@ protected:
   REF(Champ_Inc_base) la_vitesse;
   REF2(Domaine_VEF) le_dom_VEF;
   REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
-  REF(Fluide_base) le_fluide;
+  REF2(Fluide_base) le_fluide;
   IntVect num_faces;
 
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;

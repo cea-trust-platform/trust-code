@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,8 @@
 #ifndef Pb_Dilatable_base_included
 #define Pb_Dilatable_base_included
 
-#include <Ref_Fluide_Dilatable_base.h>
 #include <Pb_Fluide_base.h>
+#include <TRUST_Ref.h>
 
 class Fluide_Dilatable_base;
 
@@ -44,7 +44,7 @@ public:
   virtual void solve_pressure_thermo() = 0;
 
 protected :
-  REF(Fluide_Dilatable_base) le_fluide_;
+  REF2(Fluide_Dilatable_base) le_fluide_;
 };
 
 #endif /* Pb_Dilatable_base_included */
