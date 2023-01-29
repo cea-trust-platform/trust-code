@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,10 @@
 #ifndef TRUST_Ref_included
 #define TRUST_Ref_included
 
-#include <Ref_.h>
+#include <type_traits>
+#include <assert.h>
+
+class Nom;
 
 /*! @brief Soit une classe _CLASSE_ qui derive de Objet_U.
  *
@@ -26,112 +29,96 @@
  *
  *   #include <TRUST_Ref.h>
  *   #include <_CLASSE_.h>
- *   TRUST_Ref<_CLASSE_>
+ *
+ *   Creation d'un objet de type REF(_CLASSE_) :
+ *
+ *    REF(_CLASSE_) la_ref_;
+ *
+ *    ou bien
+ *
+ *    TRUST_Ref<_CLASSE_>
  *
  */
-// MACRO to replace REF(THECLASS) by Ref_THECLASS & keep previous syntax for some developers
-#define REF2(_TYPE_) TRUST_Ref<_TYPE_>
+
+// MACRO to replace REF(_TYPE_) by TRUST_Ref<_TYPE_*> & keep previous syntax for some developers
+#define REF2(_TYPE_) TRUST_Ref<_TYPE_*>
 
 template<typename _CLASSE_>
-class TRUST_Ref: public Ref_
+class TRUST_Ref
 {
-protected:
-  unsigned taille_memoire() const override { throw; }
+  /*
+   * Elie & Adrien :
+   * Define the underlying (non-pointer) type
+   * For example if _CLASSE_ = 'Probleme_base*', value_type is 'Probleme_base' : https://en.cppreference.com/w/cpp/types/remove_pointer
+   */
+  using value_type = typename std::remove_pointer<_CLASSE_>::type;
 
-  int duplique() const override
-  {
-    TRUST_Ref *xxx = new TRUST_Ref(*this);
-    if (!xxx) Cerr << "Not enough memory " << finl, Process::exit();
-    return xxx->numero();
-  }
-
-  static Objet_U* cree_instance()
-  {
-    TRUST_Ref *instan = new TRUST_Ref();
-    if (!instan) Cerr << "Not enough memory " << finl, Process::exit();
-    return instan;
-  }
-
-  Sortie& printOn(Sortie& os) const override { return Ref_::printOn(os); }
-  Entree& readOn(Entree& is) override  { return Ref_::readOn(is); }
+private:
+  value_type * p_ = nullptr;
 
 public:
+
+  TRUST_Ref() = default;
+  TRUST_Ref(const value_type& t) :  p_((value_type*)&t) { }
+  TRUST_Ref(const TRUST_Ref& t) : p_(t.p_) { }
+
   ~TRUST_Ref() { }
 
-  TRUST_Ref() : Ref_() , pointeur_(0) { }
-  TRUST_Ref(const _CLASSE_ &t) : Ref_(), pointeur_(0) { set_Objet_U_ptr((_CLASSE_*) &t); }
-  TRUST_Ref(const TRUST_Ref& t) : Ref_(), pointeur_(0) { set_Objet_U_ptr(t.pointeur_); }
-
-  const TRUST_Ref& operator=(const _CLASSE_& t)
+  const TRUST_Ref& operator=(const value_type& t)
   {
-    set_Objet_U_ptr((_CLASSE_ *) &t);
+    p_ = const_cast<value_type *>(&t);
     return *this;
   }
 
   const TRUST_Ref& operator=(const TRUST_Ref& t)
   {
-    set_Objet_U_ptr(t.pointeur_);
+    p_ = t.p_;
     return *this;
   }
 
-  operator const _CLASSE_& () const { return valeur(); }
-  operator _CLASSE_& () { return valeur(); }
+  // pas delete car soucis dans les iterateurs de TRUST_List par exemple (LIST(REF ....)
+  operator const value_type& () const { return valeur(); }
+  operator value_type& () { return valeur(); }
 
-  inline const _CLASSE_& valeur() const
+  inline const value_type& valeur() const
   {
-    assert(pointeur_ != 0);
-    assert(get_Objet_U_ptr_check() || 1);
-    return *pointeur_;
+    assert(p_ != nullptr);
+    return *p_;
   }
 
-  inline _CLASSE_& valeur()
+  inline value_type& valeur()
   {
-    assert(pointeur_ != 0);
-    assert(get_Objet_U_ptr_check() || 1);
-    return *pointeur_;
+    assert(p_ != nullptr);
+    return *p_;
   }
 
-  inline const _CLASSE_* operator ->() const
+  inline const value_type* operator ->() const
   {
-    assert(pointeur_ != 0);
-    assert(get_Objet_U_ptr_check() || 1);
-    return pointeur_;
+    assert(p_ != nullptr);
+    return p_;
   }
 
-  inline _CLASSE_* operator ->()
+  inline value_type* operator ->()
   {
-    assert(pointeur_ != 0);
-    assert(get_Objet_U_ptr_check() || 1);
-    return pointeur_;
+    assert(p_ != nullptr);
+    return p_;
   }
 
-  const Type_info& get_info_ptr() const override
+  inline bool non_nul() const
   {
-    const Type_info *type_info = _CLASSE_::info();
-    return *type_info; /* type de base accepte par la ref */
+    return p_ != nullptr;
   }
 
-protected:
-  void set_Objet_U_ptr(Objet_U* objet) override
-  {
-    Objet_U_ptr::set_Objet_U_ptr(objet);
-    /* Attention: cette conversion de type est non triviale. si le _TYPE_ est issu d'un heritage multiple. */
-    if (objet) pointeur_ = (_CLASSE_*) objet;
-    else pointeur_ = (_CLASSE_*) 0;
-  }
-
-private:
-  _CLASSE_ *pointeur_;
+  const Nom& le_nom() const = delete;
+  void reset() {  p_ = nullptr; }
 };
 
 // Le resultat de == est positif si r1 et r2 pointent sur le meme objet (meme cle), ou si les deux references sont nulles
 template<typename _CLASSE_>
 inline int operator ==(const TRUST_Ref<_CLASSE_>& r1, const TRUST_Ref<_CLASSE_>& r2)
 {
-  if ((!r1.non_nul()) && (!r2.non_nul()))
-    return 1;
-  if (r1.valeur().numero() == r2.valeur().numero())
-    return 1;
+  if ((!r1.non_nul()) && (!r2.non_nul())) return 1;
+  if (r1->numero() == r2->numero()) return 1;
   return 0;
 }
 
