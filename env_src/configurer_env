@@ -565,6 +565,9 @@ then
    # Plus on efface le $TRUST_TMP
    rm -r -f $TRUST_TMP
    rm -r -f $TRUST_ROOT/Outils/Salome/SALOME-*
+   # on efface aussi les instancie_src_*  et src/**/CMakeLists.txt car generes automatiquement
+   rm -f $(find $TRUST_ROOT/src -name instancie_src_*)
+   rm -f $(find $TRUST_ROOT/src -name CMakeLists.txt)
    exit 0
 else
    rm -f prog.log
