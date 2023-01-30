@@ -571,8 +571,10 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
   assert(size_array()==y.size_array());
   _TYPE_* dx = data_;
   const _TYPE_* dy = y.data_;
+#ifdef _OPENMP
   bool dataOnDevice = isDataOnDevice(*this, y);
   #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+#endif
   for (int i = 0; i < size_array(); i++) dx[i] += dy[i];
   return *this;
 }
@@ -581,8 +583,10 @@ template <typename _TYPE_>
 inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
 {
   _TYPE_ * data = data_;
+#ifdef _OPENMP
   bool dataOnDevice = isDataOnDevice(*this);
-  //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+  #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+#endif
   for(int i = 0; i < size_array(); i++) data[i] += dy;
   return *this;
 }
@@ -594,8 +598,10 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
   assert(size_array() == y.size_array());
   _TYPE_ * data = data_;
   const _TYPE_ * data_y = y.data_;
+#ifdef _OPENMP
   bool dataOnDevice = isDataOnDevice(*this, y);
-  //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+  #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+#endif
   for (int i = 0; i < size_array(); i++) data[i] -= data_y[i];
   return *this;
 }
@@ -605,8 +611,10 @@ template <typename _TYPE_>
 inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
 {
   _TYPE_ * data = data_;
+#ifdef _OPENMP
   bool dataOnDevice = isDataOnDevice(*this);
-  //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+  #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+#endif
   for(int i = 0; i < size_array(); i++) data[i] -= dy;
   return *this;
 }
@@ -616,8 +624,10 @@ template <typename _TYPE_>
 inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
 {
   _TYPE_ * data = data_;
-  bool dataOnDevice = isDataOnDevice(*this);
+#ifdef _OPENMP
+  //bool dataOnDevice = isDataOnDevice(*this);
   //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+#endif
   for(int i=0; i < size_array(); i++) data[i] *= dy;
   return *this;
 }
@@ -628,7 +638,12 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
 {
   if (std::is_same<_TYPE_,int>::value) throw;
   const _TYPE_ i_dy = 1. / dy;
-  operator*=(i_dy);
+  _TYPE_ * data = data_;
+#ifdef _OPENMP
+  //bool dataOnDevice = isDataOnDevice(*this);
+  //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+#endif
+  for(int i=0; i < size_array(); i++) data[i] *= i_dy;
   return *this;
 }
 #endif /* TRUSTArray_TPP_included */

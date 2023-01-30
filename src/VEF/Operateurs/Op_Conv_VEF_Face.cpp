@@ -331,109 +331,111 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
   int nb_faces_ = domaine_VEF.nb_faces();
 
-  // Tableau gradient base sur gradient_elem selon schema
-  DoubleTab gradient_elem(nb_elem_tot,ncomp_ch_transporte,dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
-
   if(type_op==centre || type_op==muscl)
     {
-      Champ_P1NC::calcul_gradient(transporte_face,gradient_elem,domaine_Cl_VEF);
-    }
-  start_timer();
-  DoubleTab gradient;
-  if (type_op==centre)
-    {
-      gradient.ref(gradient_elem);
-    }
-  else if(type_op==muscl)
-    {
-      int cas=1;
-      if (type_lim_int==type_lim_minmod) cas=1;
-      if (type_lim_int==type_lim_vanleer) cas=2;
-      if (type_lim_int==type_lim_vanalbada) cas=3;
-      if (type_lim_int==type_lim_chakravarthy) cas=4;
-      if (type_lim_int==type_lim_superbee) cas=5;
-      //  application du limiteur
-      gradient.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
-      domaine_VEF.creer_tableau_faces(gradient);
-      for (int n_bord=0; n_bord<nb_bord; n_bord++)
-        {
-          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int num1 = le_bord.num_premiere_face();
-          int num2 = num1 + le_bord.nb_faces();
-          if (sub_type(Periodique,la_cl.valeur()))
-            {
-              for (int fac=num1; fac<num2; fac++)
-                {
-                  int elem1=face_voisins(fac,0);
-                  int elem2=face_voisins(fac,1);
-                  for (int comp0=0; comp0<ncomp_ch_transporte; comp0++)
-                    for (int i=0; i<dimension; i++)
-                      {
-                        double grad1=gradient_elem(elem1, comp0, i);
-                        double grad2=gradient_elem(elem2, comp0, i);
-                        gradient(fac, comp0, i) =(*LIMITEUR)(grad1, grad2);
-                      }
-                }
-            }
-          else if (sub_type(Symetrie,la_cl.valeur()))
-            {
-              for (int fac=num1; fac<num2; fac++)
-                {
-                  int elem1=face_voisins(fac,0);
-                  for (int comp0=0; comp0<ncomp_ch_transporte; comp0++)
-                    for (int i=0; i<dimension; i++)
-                      gradient(fac, comp0, i) = gradient_elem(elem1, comp0, i);
+      // Tableau gradient base sur gradient_elem selon schema
+      if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, ncomp_ch_transporte, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
+      Champ_P1NC::calcul_gradient(transporte_face, gradient_elem, domaine_Cl_VEF);
 
-                  if (ordre==3)
+      start_timer();
+      if (type_op == centre)
+        {
+          gradient.ref(gradient_elem);
+        }
+      else if (type_op == muscl)
+        {
+          int cas = 1;
+          if (type_lim_int == type_lim_minmod) cas = 1;
+          if (type_lim_int == type_lim_vanleer) cas = 2;
+          if (type_lim_int == type_lim_vanalbada) cas = 3;
+          if (type_lim_int == type_lim_chakravarthy) cas = 4;
+          if (type_lim_int == type_lim_superbee) cas = 5;
+          //  application du limiteur
+          if (gradient.size_array() == 0)
+            {
+              gradient.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
+              domaine_VEF.creer_tableau_faces(gradient);
+            }
+          for (int n_bord = 0; n_bord < nb_bord; n_bord++)
+            {
+              const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              int num1 = le_bord.num_premiere_face();
+              int num2 = num1 + le_bord.nb_faces();
+              if (sub_type(Periodique, la_cl.valeur()))
+                {
+                  for (int fac = num1; fac < num2; fac++)
                     {
-                      // On enleve la composante normale (on pourrait le faire pour les autres schemas...)
-                      // mais pour le moment, on ne veut pas changer le comportement par defaut du muscl...
-                      //const DoubleTab& facenormales = domaine_VEF.face_normales();
-                      for (int comp0=0; comp0<ncomp_ch_transporte; comp0++)
-                        for (int i=0; i<dimension; i++)
+                      int elem1 = face_voisins(fac, 0);
+                      int elem2 = face_voisins(fac, 1);
+                      for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                        for (int i = 0; i < dimension; i++)
                           {
-                            double carre_surface=0;
-                            double tmp=0;
-                            for (int j=0; j<dimension; j++)
-                              {
-                                double ndS=facenormales(fac,j);
-                                carre_surface += ndS*ndS;
-                                tmp += gradient(fac, comp0, j)*ndS;
-                              }
-                            gradient(fac, comp0, i) -= tmp*facenormales(fac,i)/carre_surface;
+                            double grad1 = gradient_elem(elem1, comp0, i);
+                            double grad2 = gradient_elem(elem2, comp0, i);
+                            gradient(fac, comp0, i) = (*LIMITEUR)(grad1, grad2);
                           }
                     }
                 }
-            }
-        }
-      end_timer("Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
-      // Need offload
-      const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
-      const int * face_voisins_addr = copyToDevice(face_voisins);
-      const double * gradient_elem_addr = copyToDevice(gradient_elem,"gradient_elem");
-      double* gradient_addr = computeOnTheDevice(gradient,"gradient");
-      start_timer();
-      #pragma omp target teams distribute parallel for if (computeOnDevice)
-      for (int fac=premiere_face_int; fac<nb_faces_; fac++)
-        {
-          int elem1=face_voisins_addr[fac*2];
-          int elem2=face_voisins_addr[fac*2+1];
-          int limiteur = cas;
-          if (ordre==3 && (traitement_pres_bord_addr[elem1] || traitement_pres_bord_addr[elem2])) limiteur = 1;
-          for (int comp0=0; comp0<ncomp_ch_transporte; comp0++)
-            for (int i=0; i<dimension; i++)
-              {
-                double grad1=gradient_elem_addr[(elem1*ncomp_ch_transporte+comp0)*dimension+i];
-                double grad2=gradient_elem_addr[(elem2*ncomp_ch_transporte+comp0)*dimension+i];
-                gradient_addr[(fac*ncomp_ch_transporte+comp0)*dimension+i] = FCT_LIMITEUR(grad1, grad2, limiteur);
-              }
-        } // fin du for faces
-      end_timer("Face loop in Op_Conv_VEF_Face::ajouter");
-      copyFromDevice(gradient, "gradient");
-      gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
-    }// fin if(type_op==muscl)
+              else if (sub_type(Symetrie, la_cl.valeur()))
+                {
+                  for (int fac = num1; fac < num2; fac++)
+                    {
+                      int elem1 = face_voisins(fac, 0);
+                      for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                        for (int i = 0; i < dimension; i++)
+                          gradient(fac, comp0, i) = gradient_elem(elem1, comp0, i);
 
+                      if (ordre == 3)
+                        {
+                          // On enleve la composante normale (on pourrait le faire pour les autres schemas...)
+                          // mais pour le moment, on ne veut pas changer le comportement par defaut du muscl...
+                          //const DoubleTab& facenormales = zone_VEF.face_normales();
+                          for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                            for (int i = 0; i < dimension; i++)
+                              {
+                                double carre_surface = 0;
+                                double tmp = 0;
+                                for (int j = 0; j < dimension; j++)
+                                  {
+                                    double ndS = facenormales(fac, j);
+                                    carre_surface += ndS * ndS;
+                                    tmp += gradient(fac, comp0, j) * ndS;
+                                  }
+                                gradient(fac, comp0, i) -= tmp * facenormales(fac, i) / carre_surface;
+                              }
+                        }
+                    }
+                }
+            }
+          end_timer("Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
+          // Need offload
+          const int *traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
+          const int *face_voisins_addr = copyToDevice(face_voisins);
+          const double *gradient_elem_addr = copyToDevice(gradient_elem, "gradient_elem");
+          double *gradient_addr = computeOnTheDevice(gradient, "gradient");
+          start_timer();
+          #pragma omp target teams distribute parallel for if (computeOnDevice)
+          for (int fac = premiere_face_int; fac < nb_faces_; fac++)
+            {
+              int elem1 = face_voisins_addr[fac * 2];
+              int elem2 = face_voisins_addr[fac * 2 + 1];
+              int limiteur = cas;
+              if (ordre == 3 && (traitement_pres_bord_addr[elem1] || traitement_pres_bord_addr[elem2])) limiteur = 1;
+              for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                for (int i = 0; i < dimension; i++)
+                  {
+                    double grad1 = gradient_elem_addr[(elem1 * ncomp_ch_transporte + comp0) * dimension + i];
+                    double grad2 = gradient_elem_addr[(elem2 * ncomp_ch_transporte + comp0) * dimension + i];
+                    gradient_addr[(fac * ncomp_ch_transporte + comp0) * dimension + i] = FCT_LIMITEUR(grad1, grad2,
+                                                                                                      limiteur);
+                  }
+            } // fin du for faces
+          end_timer("Face loop in Op_Conv_VEF_Face::ajouter");
+          copyFromDevice(gradient, "gradient");
+          gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
+        }// fin if(type_op==muscl)
+    }
 
   // Dimensionnement du tableau des flux convectifs au bord du domaine de calcul
   DoubleTab& flux_b = flux_bords_;
@@ -469,29 +471,29 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // boucle sur les polys
       if(nom_elem=="Tetra_VEF")
         {
-            const int * rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);
-            const int * elem_faces_addr = copyToDevice(elem_faces);
-            const double * porosite_face_addr = copyToDevice(porosite_face);
-            const double * porosite_elem_addr = copyToDevice(porosite_elem, "porosite_elem");
-            const double * coord_sommets_addr = copyToDevice(coord_sommets);
-            const int * les_elems_addr = copyToDevice(les_elems);
-            const double * facette_normales_addr = facette_normales.addr();
-            const int * est_une_face_de_dirichlet_addr = copyToDevice(est_une_face_de_dirichlet_);
-            const double * vecteur_face_facette_addr = copyToDevice(vecteur_face_facette);
-            const double * xv_addr = copyToDevice(xv);
-            const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
-            const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
-            const int * KEL_addr = copyToDevice(type_elemvef.KEL());
-            const double * normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
-            const double * vecteur_face_facette_Cl_addr = copyToDevice(vecteur_face_facette_Cl);
+          const int * rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);
+          const int * elem_faces_addr = copyToDevice(elem_faces);
+          const double * porosite_face_addr = copyToDevice(porosite_face);
+          const double * porosite_elem_addr = copyToDevice(porosite_elem, "porosite_elem"); // ToDo find why porosite_elem change, not normal !
+          const double * coord_sommets_addr = copyToDevice(coord_sommets);
+          const int * les_elems_addr = copyToDevice(les_elems);
+          const double * facette_normales_addr = facette_normales.addr();
+          const int * est_une_face_de_dirichlet_addr = copyToDevice(est_une_face_de_dirichlet_);
+          const double * vecteur_face_facette_addr = copyToDevice(vecteur_face_facette);
+          const double * xv_addr = copyToDevice(xv);
+          const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
+          const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
+          const int * KEL_addr = copyToDevice(type_elemvef.KEL());
+          const double * normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
+          const double * vecteur_face_facette_Cl_addr = copyToDevice(vecteur_face_facette_Cl);
 
-            const double * vitesse_addr = copyToDevice(la_vitesse.valeurs(), "la_vitesse");
-            const double * vitesse_face_absolue_addr = copyToDevice(vitesse_face_absolue, "vitesse_face_absolue");
-            const double * transporte_face_addr = copyToDevice(transporte_face, "transporte_face");
-            const double * gradient_addr = copyToDevice(gradient, "gradient");
+          const double * vitesse_addr = copyToDevice(la_vitesse.valeurs(), "la_vitesse");
+          const double * vitesse_face_absolue_addr = copyToDevice(vitesse_face_absolue, "vitesse_face_absolue");
+          const double * transporte_face_addr = copyToDevice(transporte_face, "transporte_face");
+          const double * gradient_addr = copyToDevice(gradient, "gradient");
 
-            double * resu_addr = computeOnTheDevice(resu, "resu");
-            double * flux_b_addr = computeOnTheDevice(flux_b, "flux_b");
+          double * resu_addr = computeOnTheDevice(resu, "resu");
+          double * flux_b_addr = computeOnTheDevice(flux_b, "flux_b");
 #if ( ( defined(_OPENMP) && defined(__clang__) && !defined(__cray__) && !defined(__APPLE__) ) || ( !defined(NDEBUG) && defined(_OPENMP) && defined(__clang__) && defined(__cray__) && !defined(__APPLE__) ) )
           // Provisoire crash sur compilateur offload clang++ non Cray:
           Cerr << "ToDo: No offload of Op_Conv_VEF_Face::ajouter() on GPU." << finl;

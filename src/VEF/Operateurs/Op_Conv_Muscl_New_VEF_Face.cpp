@@ -365,7 +365,8 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
 
-  DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
+  //DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
+  if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
   IntTab face(Objet_U::dimension+1);
 
   assert(Fij.nb_dim()==4);
@@ -638,7 +639,8 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   const int nb_faces_elem=elem_faces.dimension(1);
   const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
-  DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
+  //DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
+  if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, nb_comp, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
   IntTab face(Objet_U::dimension+1);
 
   assert(Fij.nb_dim()==4);

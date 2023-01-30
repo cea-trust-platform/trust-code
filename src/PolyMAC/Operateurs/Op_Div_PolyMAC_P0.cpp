@@ -124,7 +124,7 @@ DoubleTab& Op_Div_PolyMAC_P0::calculer(const DoubleTab& vit, DoubleTab& div) con
 int Op_Div_PolyMAC_P0::impr(Sortie& os) const
 {
 
-  const int impr_bord=(le_dom_PolyMAC_P0->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_PolyMAC_P0->domaine().bords_a_imprimer().est_vide() ? 0:1);
   //SFichier Flux_div;
   if (!Flux_div.is_open()) ouvrir_fichier(Flux_div,"",je_suis_maitre());
   EcrFicPartage Flux_face;
