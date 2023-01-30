@@ -370,9 +370,9 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   const double * face_normales_addr = copyToDevice(face_normales);
   const double * nu_addr = copyToDevice(nu, "nu");
   const double * inconnue_addr = copyToDevice(inconnue, "inconnue");
-  double * resu_addr = resu.addr();
+  double * resu_addr = computeOnTheDevice(resu, "resu");
   start_timer();
-  #pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:resu_addr[0:resu.size_array()])
+  #pragma omp target teams distribute parallel for if (computeOnDevice)
   for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)
@@ -417,6 +417,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
         }
     }// Fin faces internes
   end_timer("Face loop in Op_Diff_VEF_Face::ajouter");
+  copyFromDevice(resu,"resu");
 
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
