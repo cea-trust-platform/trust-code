@@ -1707,6 +1707,7 @@ case $TRUST_ARCH_CC in
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
 	CppFlags="-O3 $FPIC $PTHREAD -std=c++14 -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
+	CppFlags=$CppFlags=" -fno-math-errno" # Operations mathematiques optimisees sans ecarts crees (vient de F5)
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
 	[ "$TRUST_INT64" != "1" ] && CppFlags=$CppFlags" -Wconversion"
 	# flag -Wsuggest-override available on gcc version >= 5.1; on gcc 5.4.0 (ub 16) this flag suggests to fix mpich 3.2, so we do not add this flag
