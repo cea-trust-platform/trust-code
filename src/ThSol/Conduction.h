@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,15 @@
 #ifndef Conduction_included
 #define Conduction_included
 
-#include <Equation_base.h>
-#include <Operateur_Diff.h>
-#include <Schema_Temps.h>
-#include <Ref_Solide.h>
 #include <Traitement_particulier_Solide.h>
+#include <Operateur_Diff.h>
+#include <Equation_base.h>
+#include <Schema_Temps.h>
+#include <TRUST_Ref.h>
 
 class Milieu_base;
 class Champ_Don;
+class Solide;
 
 /*! @brief Classe Conduction Cette classe represente l'equation d'evolution
  *
@@ -74,7 +75,7 @@ public:
 
 private :
 
-  REF(Solide) le_solide;
+  REF2(Solide) le_solide;
   Champ_Inc la_temperature;
   Operateur_Diff terme_diffusif;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,19 +13,20 @@
 *
 *****************************************************************************/
 
+#include <Modele_turbulence_scal_base.h>
+#include <Schema_Euler_Implicite.h>
+#include <Turbulence_paroi_scal.h>
 #include <Echange_contact_VDF.h>
 #include <Champ_front_calc.h>
-#include <Probleme_base.h>
 #include <Champ_Uniforme.h>
-#include <Schema_Euler_Implicite.h>
-#include <Milieu_base.h>
-#include <Modele_turbulence_scal_base.h>
-#include <Domaine_VDF.h>
+#include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Ref_Turbulence_paroi_scal.h>
 #include <Schema_Comm.h>
-#include <ArrOfBit.h>
+#include <Milieu_base.h>
+#include <Domaine_VDF.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTrav.h>
+#include <ArrOfBit.h>
 
 Implemente_instanciable(Echange_contact_VDF,"Paroi_Echange_contact_VDF",Echange_global_impose);
 

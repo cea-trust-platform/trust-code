@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -103,7 +103,7 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
   motlu=nom;
   while (motlu != Motcle("}") )
     {
-      REF(Sous_Domaine) refssz=les_sous_domaines.add(le_domaine.ss_domaine(nom));
+      REF2(Sous_Domaine) refssz=les_sous_domaines.add(le_domaine.ss_domaine(nom));
       Sous_Domaine& ssz = refssz.valeur();
       for( k=0; k< dim; k++)
         {

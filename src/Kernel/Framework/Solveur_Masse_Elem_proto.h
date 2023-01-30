@@ -16,11 +16,11 @@
 #ifndef Solveur_Masse_Elem_proto_included
 #define Solveur_Masse_Elem_proto_included
 
-#include <Ref_Solveur_Masse_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
 #include <TRUST_Ref.h>
 
+class Solveur_Masse_base;
 class Domaine_VF;
 
 class Solveur_Masse_Elem_proto
@@ -33,7 +33,7 @@ public:
   void ajouter_blocs_proto(matrices_t , DoubleTab& , double , const tabs_t& , int ) const;
 
 protected:
-  REF(Solveur_Masse_base) solv_mass_;
+  REF2(Solveur_Masse_base) solv_mass_;
   REF2(Domaine_VF) le_dom_;
 };
 

@@ -16,14 +16,15 @@
 #ifndef Op_Dift_VEF_P1NCP1B_Face_included
 #define Op_Dift_VEF_P1NCP1B_Face_included
 
-#include <Ref_Mod_turb_hyd_base.h>
-#include <Domaine_VEF_PreP1b.h>
-#include <Domaine_Cl_VEFP1B.h>
 #include <Matrice_Morse_Sym.h>
 #include <Op_Dift_VEF_base.h>
 #include <Ref_Champ_P1NC.h>
-#include <TRUST_Ref.h>
 #include <SolveurSys.h>
+#include <TRUST_Ref.h>
+
+class Domaine_VEF_PreP1b;
+class Domaine_Cl_VEFP1B;
+class Mod_turb_hyd_base;
 
 /*! @brief class Op_Dift_VEF_P1NCP1B_Face Cette classe represente l'operateur de diffusion
  *
@@ -71,7 +72,7 @@ protected:
   DoubleTab& calculer_divergence_elem(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_divergence_som(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& corriger_div_pour_Cl(DoubleTab&) const;
-  REF(Mod_turb_hyd_base) le_modele_turbulence;
+  REF2(Mod_turb_hyd_base) le_modele_turbulence;
   REF2(Domaine_VEF_PreP1b) le_dom_vef;
   REF2(Domaine_Cl_VEFP1B) la_zcl_vef;
   SolveurSys solveur;

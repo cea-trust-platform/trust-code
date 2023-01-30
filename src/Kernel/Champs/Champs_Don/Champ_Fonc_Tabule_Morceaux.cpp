@@ -50,7 +50,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
     {
       CHTAB ch_lu;
       /* 1. lecture de la sous-domaine */
-      REF(Sous_Domaine) refssz = les_sous_domaines.add(mon_domaine->ss_domaine(nom));
+      REF2(Sous_Domaine) refssz = les_sous_domaines.add(mon_domaine->ss_domaine(nom));
       Sous_Domaine& ssz = refssz.valeur();
 
       /* 2. lecture des champs parametres */

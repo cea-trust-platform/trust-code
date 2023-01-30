@@ -16,17 +16,16 @@
 #ifndef Equation_base_included
 #define Equation_base_included
 
-#include <Ref_Schema_Temps_base.h>
 #include <Parametre_equation.h>
 #include <MD_Vector_tools.h>
 #include <Interface_blocs.h>
 #include <Value_Input_Int.h>
 #include <TRUSTTab_parts.h>
+#include <Domaine_Cl_dis.h>
 #include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
 #include <Champs_Fonc.h>
 #include <Ref_Objet_U.h>
-#include <Domaine_Cl_dis.h>
 #include <TRUST_Ref.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
@@ -35,6 +34,7 @@
 #include <vector>
 
 class Discretisation_base;
+class Schema_Temps_base;
 class Domaine_dis;
 class Milieu_base;
 class Operateur;
@@ -296,7 +296,7 @@ protected :
   Nom nom_;
   Solveur_Masse solveur_masse;
   Sources les_sources;
-  REF(Schema_Temps_base) le_schema_en_temps;
+  REF2(Schema_Temps_base) le_schema_en_temps;
   REF2(Domaine_dis) le_dom_dis;
   Domaine_Cl_dis le_dom_Cl_dis;
   REF2(Probleme_base) mon_probleme;

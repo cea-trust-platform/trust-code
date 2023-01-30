@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,64 +13,30 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Correlation_included
 #define Op_Correlation_included
 
 #include <Integrale_tps_produit_champs.h>
 #include <Ref_Integrale_tps_Champ.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Op_Moyenne.h>
 #include <Op_Moyenne.h>
+#include <TRUST_Ref.h>
 
 class Op_Correlation : public Operateur_Statistique_tps_base
 {
   Declare_instanciable(Op_Correlation);
 public:
-  inline const Nom& le_nom() const override
-  {
-    return integrale_tps_ab_.le_nom();
-  };
-  inline double temps() const override
-  {
-    return integrale_tps_ab_.temps();
-  };
-  inline const Integrale_tps_produit_champs& integrale() const override
-  {
-    return integrale_tps_ab_;
-  };
-  inline const Op_Moyenne& la_moyenne_a() const
-  {
-    return la_moyenne_a_.valeur();
-  };
-  inline const Op_Moyenne& la_moyenne_b() const
-  {
-    return la_moyenne_b_.valeur();
-  };
-  inline const DoubleTab& valeurs_a() const
-  {
-    return integrale_tps_a_->valeurs();
-  };
-  inline const DoubleTab& valeurs_b() const
-  {
-    return integrale_tps_b_->valeurs();
-  };
-  inline DoubleTab& valeurs_ab()
-  {
-    return integrale_tps_ab_.valeurs();
-  };
-  inline double dt_integration_a() const
-  {
-    return integrale_tps_a_->dt_integration();
-  };
-  inline double dt_integration_b() const
-  {
-    return integrale_tps_b_->dt_integration();
-  };
-  inline double dt_integration_ab() const
-  {
-    return integrale_tps_ab_.dt_integration();
-  };
+  inline const Nom& le_nom() const override { return integrale_tps_ab_.le_nom(); }
+  inline double temps() const override { return integrale_tps_ab_.temps(); }
+  inline const Integrale_tps_produit_champs& integrale() const override { return integrale_tps_ab_; }
+  inline const Op_Moyenne& la_moyenne_a() const { return la_moyenne_a_.valeur(); }
+  inline const Op_Moyenne& la_moyenne_b() const { return la_moyenne_b_.valeur(); }
+  inline const DoubleTab& valeurs_a() const { return integrale_tps_a_->valeurs(); }
+  inline const DoubleTab& valeurs_b() const { return integrale_tps_b_->valeurs(); }
+  inline DoubleTab& valeurs_ab() { return integrale_tps_ab_.valeurs(); }
+  inline double dt_integration_a() const { return integrale_tps_a_->dt_integration(); }
+  inline double dt_integration_b() const { return integrale_tps_b_->dt_integration(); }
+  inline double dt_integration_ab() const { return integrale_tps_ab_.dt_integration(); }
   inline void mettre_a_jour(double tps) override;
   inline void initialiser(double val) override;
   inline void associer(const Domaine_dis_base& , const Champ_base& , double t1, double t2 );
@@ -86,8 +52,8 @@ public:
   DoubleTab calculer_valeurs() const override;
 
 protected:
-  REF(Op_Moyenne) la_moyenne_a_;
-  REF(Op_Moyenne) la_moyenne_b_;
+  REF2(Op_Moyenne) la_moyenne_a_;
+  REF2(Op_Moyenne) la_moyenne_b_;
   REF(Integrale_tps_Champ) integrale_tps_a_;
   REF(Integrale_tps_Champ) integrale_tps_b_;
   Integrale_tps_produit_champs integrale_tps_ab_;

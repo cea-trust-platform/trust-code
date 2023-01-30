@@ -162,7 +162,7 @@ public:
   void verifie_nom_et_sources(const Champ_Generique& champ);
   static Nom get_nom_localisation(const Entity& loc);
 
-  int champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF(Operateur_Statistique_tps_base)&
+  int champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF2(Operateur_Statistique_tps_base)&
                  operateur_statistique) const;
 
   inline int& compteur_champ_stat();

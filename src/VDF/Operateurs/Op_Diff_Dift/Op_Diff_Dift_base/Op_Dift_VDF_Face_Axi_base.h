@@ -17,8 +17,10 @@
 #define Op_Dift_VDF_Face_Axi_base_included
 
 #include <Op_Dift_VDF_Face_base.h>
-#include <Ref_Mod_turb_hyd_base.h>
 #include <Ref_Champ_Face_VDF.h>
+#include <TRUST_Ref.h>
+
+class Mod_turb_hyd_base;
 
 class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base
 {
@@ -40,7 +42,7 @@ public:
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
-  REF(Mod_turb_hyd_base) le_modele_turbulence;
+  REF2(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Champ_Face_VDF) inconnue;
   REF2(Domaine_VDF) le_dom_vdf;
   REF2(Domaine_Cl_VDF) la_zcl_vdf;

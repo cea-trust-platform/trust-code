@@ -17,7 +17,6 @@
 #define Iterateur_VDF_base_included
 
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Operateur_base.h>
 #include <CL_Types_include.h>
 #include <Ref_Champ_base.h>
 #include <Operateur_base.h>
@@ -28,9 +27,12 @@
 #include <Matrice_Morse.h>
 #include <Domaine_Cl_VDF.h>
 #include <Domaine_Cl_dis.h>
+#include <Domaine_VDF.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
-#include <Domaine_VDF.h>
+#include <TRUST_Ref.h>
+
+class Operateur_base;
 
 enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT_ELEM , Op_DIFF_FACE , Op_DIFT_FACE } ; // ne touche pas !
 
@@ -105,7 +107,7 @@ public:
 protected:
   REF2(Domaine_VDF) le_dom;
   REF2(Domaine_Cl_VDF) la_zcl;
-  REF(Operateur_base) op_base;
+  REF2(Operateur_base) op_base;
   REF(Champ_Inc_base) le_champ_convecte_ou_inc;
   REF(Champ_base) le_ch_v;
   std::string nom_ch_inco_;

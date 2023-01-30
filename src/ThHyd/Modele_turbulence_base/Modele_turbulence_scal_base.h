@@ -16,17 +16,17 @@
 #ifndef Modele_turbulence_scal_base_included
 #define Modele_turbulence_scal_base_included
 
-
 #include <Turbulence_paroi_scal.h>
-#include <Ref_Convection_Diffusion_std.h>
 #include <Ref_Champ_base.h>
+#include <TRUST_Ref.h>
 
-class Motcle;
-class Equation_base;
-class Domaine_dis;
-class Domaine_Cl_dis;
-class Param;
+class Convection_Diffusion_std;
 class Schema_Temps_base;
+class Equation_base;
+class Zone_Cl_dis;
+class Zone_dis;
+class Motcle;
+class Param;
 
 /*! @brief Classe Modele_turbulence_scal_base Cette classe represente un modele de turbulence pour une equation de
  *
@@ -79,7 +79,7 @@ public:
 protected:
 
   Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
-  REF(Convection_Diffusion_std) mon_equation;
+  REF2(Convection_Diffusion_std) mon_equation;
   Turbulence_paroi_scal loipar;
   double dt_impr_nusselt_=DMAXFLOAT;
 

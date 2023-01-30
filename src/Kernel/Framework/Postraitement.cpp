@@ -197,7 +197,7 @@ Nom Postraitement::get_nom_localisation(const Entity& loc)
   return loc_post;
 }
 
-int Postraitement::champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF(Operateur_Statistique_tps_base)& operateur_statistique) const
+int Postraitement::champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF2(Operateur_Statistique_tps_base)& operateur_statistique) const
 {
 
   if (comprend_champ_post(nom_champ))

@@ -13,22 +13,18 @@
 *
 *****************************************************************************/
 
-#include <Loi_horaire.h>
-#include <Param.h>
-#include <Ref_Loi_horaire.h>
-#include <EChaine.h>
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
+#include <Loi_horaire.h>
+#include <TRUST_Ref.h>
 #include <SFichier.h>
 #include <sys/stat.h>
+#include <EChaine.h>
+#include <Param.h>
 
 Implemente_instanciable(Loi_horaire,"Loi_horaire",Objet_U);
-Implemente_ref(Loi_horaire);
 
-Sortie& Loi_horaire::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Loi_horaire::printOn(Sortie& os) const { return os; }
 
 Entree& Loi_horaire::readOn(Entree& is)
 {

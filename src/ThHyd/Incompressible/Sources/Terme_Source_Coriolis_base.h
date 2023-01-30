@@ -16,10 +16,11 @@
 #ifndef Terme_Source_Coriolis_base_included
 #define Terme_Source_Coriolis_base_included
 
-#include <Ref_Navier_Stokes_std.h>
 #include <Source_base.h>
 #include <TRUSTVect.h>
+#include <TRUST_Ref.h>
 
+class Navier_Stokes_std;
 class Param;
 
 class Terme_Source_Coriolis_base: public Source_base
@@ -34,7 +35,7 @@ public:
 
 protected :
   DoubleVect omega_;
-  REF(Navier_Stokes_std) eq_hydraulique_;
+  REF2(Navier_Stokes_std) eq_hydraulique_;
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   double dim = -10.;

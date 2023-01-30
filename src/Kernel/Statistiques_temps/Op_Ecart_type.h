@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,54 +18,24 @@
 
 #include <Ref_Integrale_tps_Champ.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Op_Moyenne.h>
 #include <Op_Moyenne.h>
+#include <TRUST_Ref.h>
 
 class Op_Ecart_type : public Operateur_Statistique_tps_base
 {
   Declare_instanciable(Op_Ecart_type);
 public:
-  inline const Nom& le_nom() const override
-  {
-    return integrale_carre_champ.le_nom();
-  };
-  inline double temps() const override
-  {
-    return integrale_carre_champ.temps();
-  };
-  inline const Integrale_tps_Champ& integrale() const override
-  {
-    return integrale_carre_champ;
-  };
-  inline const Op_Moyenne& moyenne() const
-  {
-    return la_moyenne.valeur();
-  };
-  inline DoubleTab& valeurs()
-  {
-    return integrale_champ->valeurs();
-  };
-  inline const DoubleTab& valeurs() const
-  {
-    return integrale_champ->valeurs();
-  };
+  inline const Nom& le_nom() const override { return integrale_carre_champ.le_nom(); }
+  inline double temps() const override { return integrale_carre_champ.temps(); }
+  inline const Integrale_tps_Champ& integrale() const override { return integrale_carre_champ; }
+  inline const Op_Moyenne& moyenne() const { return la_moyenne.valeur(); }
+  inline DoubleTab& valeurs() { return integrale_champ->valeurs(); }
+  inline const DoubleTab& valeurs() const { return integrale_champ->valeurs(); }
 
-  inline DoubleTab& valeurs_carre()
-  {
-    return integrale_carre_champ.valeurs();
-  };
-  inline const DoubleTab& valeurs_carre() const
-  {
-    return integrale_carre_champ.valeurs();
-  };
-  inline double dt_integration() const
-  {
-    return integrale_champ->dt_integration();
-  };
-  inline double dt_integration_carre() const
-  {
-    return integrale_carre_champ.dt_integration();
-  };
+  inline DoubleTab& valeurs_carre() { return integrale_carre_champ.valeurs(); }
+  inline const DoubleTab& valeurs_carre() const { return integrale_carre_champ.valeurs(); }
+  inline double dt_integration() const { return integrale_champ->dt_integration(); }
+  inline double dt_integration_carre() const { return integrale_carre_champ.dt_integration(); }
   inline void mettre_a_jour(double tps) override;
   inline void initialiser(double val) override;
   inline void associer(const Domaine_dis_base& , const Champ_Generique_base& ,double t1, double t2 ) override;
@@ -79,7 +49,7 @@ public:
 
 protected:
 
-  REF(Op_Moyenne) la_moyenne;
+  REF2(Op_Moyenne) la_moyenne;
   REF(Integrale_tps_Champ) integrale_champ;
   Integrale_tps_Champ integrale_carre_champ;
 

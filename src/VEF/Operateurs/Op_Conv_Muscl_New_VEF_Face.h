@@ -13,15 +13,16 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Conv_Muscl_New_VEF_Face_included
 #define Op_Conv_Muscl_New_VEF_Face_included
 
 #include <Op_Conv_VEF_Face.h>
-#include <Ref_Sous_domaine_VF.h>
 #include <Matrice_Morse.h>
 #include <TRUSTTabs.h>
 #include <TRUSTList.h>
+#include <TRUST_Ref.h>
+
+class Sous_domaine_VF;
 
 /*! @brief class Op_Conv_Muscl_New_VEF_Face
  *
@@ -103,7 +104,7 @@ private :
 
 //  bool sous_domaine;  // Cas d'une sous-domaine a definir pour que l'EF_Stab degenere en Amont
   Nom nom_sous_domaine;
-  REF(Sous_domaine_VF) la_sous_domaine_dis;
+  REF2(Sous_domaine_VF) la_sous_domaine_dis;
 
   double (*limiteur_)(double)=nullptr;
 

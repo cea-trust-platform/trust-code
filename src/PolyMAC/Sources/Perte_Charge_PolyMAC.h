@@ -18,13 +18,13 @@
 
 #include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Sous_Domaine.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 
 class Domaine_Cl_PolyMAC;
 class Domaine_Poly_base;
+class Sous_Domaine;
 class Fluide_base;
 class Param;
 

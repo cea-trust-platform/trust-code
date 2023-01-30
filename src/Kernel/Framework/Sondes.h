@@ -49,7 +49,7 @@ private:
   LIST(REF(Champ_base)) sourceList;
   LIST(Champ) espaceStockageList;
   Noms sourceNoms;
-  REF(Postraitement) mon_post;
+  REF2(Postraitement) mon_post;
   Motcles noms_champs_postraitables_;
 };
 

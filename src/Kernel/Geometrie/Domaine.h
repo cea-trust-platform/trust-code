@@ -16,20 +16,20 @@
 #ifndef Domaine_included
 #define Domaine_included
 
+#include <Interprete_geometrique_base.h>
 #include <Faces_Internes.h>
-#include <Ref_Domaine.h>
 #include <TRUSTArrays.h>
 #include <TRUST_Deriv.h>
+#include <TRUST_List.h>
 #include <TRUSTList.h>
 #include <Elem_geom.h>
 #include <TRUSTTabs.h>
+#include <TRUST_Ref.h>
 #include <Raccords.h>
 #include <Octree.h>
 #include <Joints.h>
 #include <Bords.h>
 #include <Noms.h>
-#include <Ref_Domaine.h>
-#include <Ref_Sous_Domaine.h>
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
@@ -344,7 +344,7 @@ protected:
 
   LIST(REF(Domaine)) domaines_frontieres_;
 
-  LIST(REF(Sous_Domaine)) les_ss_domaines_;
+  LIST(REF2(Sous_Domaine)) les_ss_domaines_;
 
   int moments_a_imprimer_;
   LIST(Nom) bords_a_imprimer_;

@@ -16,13 +16,13 @@
 #ifndef Terme_Source_Acceleration_included
 #define Terme_Source_Acceleration_included
 
-#include <Ref_Navier_Stokes_std.h>
 #include <Source_base.h>
 #include <Champ_Fonc.h>
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
 #include <Motcle.h>
 
+class Navier_Stokes_std;
 class Probleme_base;
 class Domaine_VF;
 

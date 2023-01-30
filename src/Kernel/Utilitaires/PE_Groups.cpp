@@ -13,14 +13,15 @@
 *
 *****************************************************************************/
 
-#include <Ref_Comm_Group.h>
+#include <Comm_Group.h>
 #include <PE_Groups.h>
+#include <TRUST_Ref.h>
 
 // Les trois variables suivantes sauvegardent la pile des groupes
 // (voir Comm_Group::enter_group() Comm_Group::current_group() Comm_Group::exit_group() )
 // Le haut de la pile est toujours groupe_TRUST(), fourni a initialize()
 // groups[0] pointe sur groupe_trio.
-static REF(Comm_Group) groups[100];
+static REF2(Comm_Group) groups[100];
 static int ngroups = 0;
 static int max_ngroups = 100;
 const Comm_Group * PE_Groups::current_group_ = 0;

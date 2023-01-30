@@ -19,7 +19,9 @@
 #include <Champ_Fonc_P0_VEF.h>
 #include <Ref_Champ_base.h>
 #include <TRUST_Vector.h>
-#include <Ref_Table.h>
+#include <TRUST_Ref.h>
+
+class Table;
 
 class Champ_Fonc_Tabule_P0_VEF : public Champ_Fonc_P0_VEF
 {
@@ -31,7 +33,7 @@ public:
 
 protected:
   VECT(REF(Champ_base)) les_ch_param;
-  REF(Table) la_table;
+  REF2(Table) la_table;
 };
 
 #endif /* Champ_Fonc_Tabule_P0_VEF_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,8 +18,8 @@
 
 #include <Champ_Generique_Statistiques_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Op_Ecart_type.h>
 #include <Op_Ecart_type.h>
+#include <TRUST_Ref.h>
 
 class Postraitement_base;
 
@@ -40,60 +40,25 @@ class Postraitement_base;
 
 class Champ_Generique_Ecart_Type : public Champ_Generique_Statistiques_base
 {
-
   Declare_instanciable(Champ_Generique_Ecart_Type);
-
 public:
-
   const Noms get_property(const Motcle& query) const override;
 
-  inline double temps() const override
-  {
-    return Op_Ecart_Type_.integrale().temps();
-  };
-  inline const Integrale_tps_Champ& integrale() const override
-  {
-    return Op_Ecart_Type_.integrale();
-  };
-
-  inline const DoubleTab& valeurs() const
-  {
-    return Op_Ecart_Type_.moyenne().integrale()->valeurs();
-  };
-  inline const DoubleTab& valeurs_carre() const
-  {
-    return Op_Ecart_Type_.integrale().valeurs();
-  };
-  inline double dt_integration() const
-  {
-    return Op_Ecart_Type_.moyenne().dt_integration();
-  };
-  inline double dt_integration_carre() const
-  {
-    return Op_Ecart_Type_.dt_integration_carre();
-  };
-
-  inline Operateur_Statistique_tps_base& Operateur_Statistique() override;
-  inline const Operateur_Statistique_tps_base& Operateur_Statistique() const override;
+  inline double temps() const override { return Op_Ecart_Type_.integrale().temps(); }
+  inline const Integrale_tps_Champ& integrale() const override { return Op_Ecart_Type_.integrale(); }
+  inline const DoubleTab& valeurs() const { return Op_Ecart_Type_.moyenne().integrale()->valeurs(); }
+  inline const DoubleTab& valeurs_carre() const { return Op_Ecart_Type_.integrale().valeurs(); }
+  inline double dt_integration() const { return Op_Ecart_Type_.moyenne().dt_integration(); }
+  inline double dt_integration_carre() const { return Op_Ecart_Type_.dt_integration_carre(); }
+  inline Operateur_Statistique_tps_base& Operateur_Statistique() override { return Op_Ecart_Type_; }
+  inline const Operateur_Statistique_tps_base& Operateur_Statistique() const override { return Op_Ecart_Type_; }
 
   const Champ_base&  get_champ(Champ& espace_stockage) const override;
   void completer(const Postraitement_base& post) override;
   void nommer_source() override;
 
 protected:
-
   Op_Ecart_type Op_Ecart_Type_;
-
 };
-
-inline Operateur_Statistique_tps_base& Champ_Generique_Ecart_Type::Operateur_Statistique()
-{
-  return Op_Ecart_Type_;
-}
-
-inline const Operateur_Statistique_tps_base& Champ_Generique_Ecart_Type::Operateur_Statistique() const
-{
-  return Op_Ecart_Type_;
-}
 
 #endif

@@ -16,12 +16,12 @@
 #ifndef Champ_Ostwald_VEF_included
 #define Champ_Ostwald_VEF_included
 
-#include <Ref_Navier_Stokes_std.h>
 #include <Ref_Champ_P1NC.h>
 #include <Champ_Ostwald.h>
 #include <Champ_P1NC.h>
 #include <TRUST_Ref.h>
 
+class Navier_Stokes_std;
 class Domaine_VEF;
 
 /*! @brief classe Champ_Ostwald_VEF Represente un champ en discretisation VEF qui varie en fonction
@@ -52,7 +52,7 @@ public :
 protected :
   void calculer_mu(DoubleTab& );
   REF(Champ_P1NC) mon_champ_;
-  REF(Navier_Stokes_std) eq_hydraulique;
+  REF2(Navier_Stokes_std) eq_hydraulique;
 };
 
 #endif /* Champ_Ostwald_VEF_included */

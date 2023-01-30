@@ -13,12 +13,11 @@
 *
 *****************************************************************************/
 
-#include <Ref_Comm_Group.h>
 #include <communications.h>
 #include <Comm_Group.h>
+#include <TRUST_Ref.h>
 #include <PE_Groups.h>
 
-Implemente_ref(Comm_Group);
 Implemente_base_sans_constructeur_ni_destructeur(Comm_Group,"Comm_Group",Objet_U);
 
 int Comm_Group::check_enabled_ = 0;

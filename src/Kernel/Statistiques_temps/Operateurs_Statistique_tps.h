@@ -17,10 +17,12 @@
 #define Operateurs_Statistique_tps_included
 
 #include <Operateur_Statistique_tps.h>
-#include <Ref_Postraitement.h>
 #include <TRUST_List.h>
+#include <TRUST_Ref.h>
 
+class Postraitement;
 class Motcle;
+
 /*! @brief classe Operateurs_Statistique_tps Cette classe represente une liste d'operateurs statistiques en temps.
  *
  *      Les objets Postraitement portent un objet de ce type.
@@ -43,7 +45,7 @@ public:
 
 protected:
 
-  REF(Postraitement) mon_post;
+  REF2(Postraitement) mon_post;
   double tstat_deb_;         //
   double tstat_dernier_calcul_;     // dernier temps auquel les statistiques ont ete calcules
   double tstat_fin_;         // valeur choisie par l'utilisateur

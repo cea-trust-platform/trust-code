@@ -17,12 +17,12 @@
 #define Terme_Boussinesq_base_included
 
 #include <Convection_Diffusion_Temperature.h>
-#include <Ref_Convection_Diffusion_std.h>
 #include <Ref_Champ_Don_base.h>
 #include <Ref_Champ_Don.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <TRUST_Vector.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
 #include <Domaine.h>
@@ -106,7 +106,7 @@ protected :
   Nom NomScalaire_; // Temperature ou Concentration
   VECT(Parser_U) fct_Scalaire0_;
   REF(Champ_Don) beta_;
-  REF(Convection_Diffusion_std) equation_scalaire_;
+  REF2(Convection_Diffusion_std) equation_scalaire_;
   inline void check() const;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,10 @@
 #ifndef Navier_Stokes_IBM_impl_included
 #define Navier_Stokes_IBM_impl_included
 
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
-#include <Ref_Navier_Stokes_std.h>
 
+class Navier_Stokes_std;
 class Entree;
 class Param;
 
@@ -65,7 +66,7 @@ protected:
   int i_source_pdf_=-1;
   DoubleTab champ_coeff_pdf_som_;
 
-  REF(Navier_Stokes_std) eq_NS;
+  REF2(Navier_Stokes_std) eq_NS;
 };
 
 

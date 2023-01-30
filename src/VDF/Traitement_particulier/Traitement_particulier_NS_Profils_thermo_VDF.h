@@ -18,7 +18,9 @@
 #define Traitement_particulier_NS_Profils_thermo_VDF_included
 
 #include <Traitement_particulier_NS_Profils_VDF.h>
-#include <Ref_Convection_Diffusion_std.h>
+#include <TRUST_Ref.h>
+
+class Convection_Diffusion_std;
 
 /*! @brief classe Traitement_particulier_NS_Profils_thermo_VDF
  *
@@ -47,7 +49,7 @@ public :
 
 protected :
 
-  REF(Convection_Diffusion_std) mon_equation_NRJ;
+  REF2(Convection_Diffusion_std) mon_equation_NRJ;
   int oui_stats_thermo = 0, oui_repr_stats_thermo = 0,tmin_tmax = 0;
   Nom fich_repr_stats_thermo;
   DoubleTab Tmoy_temp,Trms_temp ,upTp_temp,vpTp_temp,wpTp_temp;

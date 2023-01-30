@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,9 @@
 #define Convection_Diffusion_Concentration_included
 
 #include <Convection_Diffusion_std.h>
-#include <Ref_Constituant.h>
+#include <TRUST_Ref.h>
+
+class Constituant;
 
 /*! @brief classe Convection_Diffusion_Concentration Cas particulier de Convection_Diffusion_std
  *
@@ -57,7 +59,7 @@ protected :
 
   int nb_constituants_;
   Champ_Inc la_concentration;
-  REF(Constituant) le_constituant;
+  REF2(Constituant) le_constituant;
   double masse_molaire_;
 };
 

@@ -16,11 +16,11 @@
 #ifndef Sonde_Int_included
 #define Sonde_Int_included
 
-#include <Ref_Postraitement.h>
 #include <TRUST_Ref.h>
 #include <SFichier.h>
 #include <TRUSTTab.h>
 
+class Postraitement;
 class Domaine;
 
 /*! @brief classe Sonde_Int Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
@@ -58,7 +58,7 @@ public :
 
 private :
 
-  REF(Postraitement) mon_post;
+  REF2(Postraitement) mon_post;
   Nom nom_;                                // le nom de la sonde
   int dim = -1;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
   int nbre_points1= -1,nbre_points2= -1,nbre_points3= -1;        // faire des sonde_segment,sonde_plan,etc...

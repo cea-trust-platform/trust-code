@@ -16,10 +16,11 @@
 #ifndef Terme_Source_inc_base_included
 #define Terme_Source_inc_base_included
 
-#include <Ref_Navier_Stokes_std.h>
 #include <Ref_Champ_Don_base.h>
 #include <Source_base.h>
+#include <TRUST_Ref.h>
 
+class Navier_Stokes_std;
 class Probleme_base;
 class Domaine_VF;
 class Param;
@@ -35,7 +36,7 @@ public:
 
 protected :
   void set_param(Param& param);
-  REF(Navier_Stokes_std) eq_hydraulique_;
+  REF2(Navier_Stokes_std) eq_hydraulique_;
   int impr = 0;
 };
 

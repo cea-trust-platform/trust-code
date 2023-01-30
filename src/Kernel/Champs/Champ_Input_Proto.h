@@ -16,7 +16,6 @@
 #ifndef Champ_Input_Proto_included
 #define Champ_Input_Proto_included
 
-#include <Ref_Sous_Domaine.h>
 #include <ICoCoTrioField.h>
 #include <TRUSTArray.h>
 #include <TRUST_Ref.h>
@@ -24,6 +23,7 @@
 using ICoCo::TrioField;
 
 class Probleme_base;
+class Sous_Domaine;
 
 /*! @brief This is the base class for all the Fields which can be written by a call to Problem::setInputField
  *
@@ -61,7 +61,7 @@ protected:
 
   REF2(Probleme_base) mon_pb;
   bool sous_domaine_ok; // This fields knows how to deal with a sous_domaine
-  REF(Sous_Domaine) ma_sous_domaine;
+  REF2(Sous_Domaine) ma_sous_domaine;
   ArrOfDouble initial_value_;
 };
 

@@ -16,9 +16,9 @@
 #ifndef Couplage_U_included
 #define Couplage_U_included
 
-#include <Ref_Probleme_U.h>
 #include <Probleme_U.h>
 #include <TRUST_List.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class Couplage_U
  *
@@ -95,7 +95,7 @@ public:
 
 private:
 
-  LIST(REF(Probleme_U)) problems;
+  LIST(REF2(Probleme_U)) problems;
 
 };
 

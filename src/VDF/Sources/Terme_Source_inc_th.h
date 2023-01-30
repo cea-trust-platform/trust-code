@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,12 @@
 #ifndef Terme_Source_inc_th_included
 #define Terme_Source_inc_th_included
 
-#include <Ref_Convection_Diffusion_Temperature.h>
-#include <Ref_Navier_Stokes_std.h>
 #include <Ref_Champ_Don_base.h>
 #include <Ref_Champ_Don.h>
+#include <TRUST_Ref.h>
 
+class Convection_Diffusion_Temperature;
+class Navier_Stokes_std;
 class Probleme_base;
 class Domaine_VF;
 
@@ -32,20 +33,14 @@ public:
   void associer_eqn(const Convection_Diffusion_Temperature&) ;
   inline const Navier_Stokes_std& eq_hydraulique() const;
   inline const Convection_Diffusion_Temperature& eq_thermique() const;
-  void mettre_a_jour(double temps)
-  {
-    ;
-  }
+  void mettre_a_jour(double temps) { }
 
 protected :
-  REF(Navier_Stokes_std) eq_hydraulique_;
-  REF(Convection_Diffusion_Temperature) eq_thermique_;
+  REF2(Navier_Stokes_std) eq_hydraulique_;
+  REF2(Convection_Diffusion_Temperature) eq_thermique_;
   REF(Champ_Don) beta_t_;
-  /*   int dir_source,deb; */
-  /*    double h,coeff,u_etoile; */
   int impr;
   Entree& lire_donnees(Entree& );
-
 };
 
 inline const Navier_Stokes_std& Terme_Source_inc_th::eq_hydraulique() const

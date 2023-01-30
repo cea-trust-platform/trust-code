@@ -19,7 +19,9 @@
 #include <Convection_Diffusion_Espece_Multi_QC.h>
 #include <Loi_Etat_Multi_GP_base.h>
 #include <TRUST_List.h>
-#include <Ref_Espece.h>
+#include <TRUST_Ref.h>
+
+class Espece;
 
 /*! @brief classe Loi_Etat_Multi_GP_QC Cette classe represente la loi d'etat pour un melange de gaz parfaits.
  *
@@ -43,7 +45,7 @@ public :
 
 protected :
   void rabot(int futur = 0);
-  LIST(REF(Espece)) liste_especes;
+  LIST(REF2(Espece)) liste_especes;
   int correction_fraction_,ignore_check_fraction_;
   double Sc_,dtol_fraction_;
 

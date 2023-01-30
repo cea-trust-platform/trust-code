@@ -165,12 +165,8 @@ public:
   _CLASSE_& operator[](const Nom& nom)
   {
     assert (size() > 0);
-    int ind = 0;
     for (auto& itr : list_)
-      {
-        if (itr.le_nom() == nom) return itr;
-        ind++;
-      }
+      if (itr.le_nom() == nom) return itr;
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl;
     throw;
   }
@@ -178,12 +174,8 @@ public:
   const _CLASSE_& operator[](const Nom& nom) const
   {
     assert (size() > 0);
-    int ind = 0;
     for (auto& itr : list_)
-      {
-        if (itr.le_nom() == nom) return itr;
-        ind++;
-      }
+      if (itr.le_nom() == nom) return itr;
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl;
     throw;
   }

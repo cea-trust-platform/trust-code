@@ -16,20 +16,21 @@
 #ifndef Turbulence_paroi_scal_base_included
 #define Turbulence_paroi_scal_base_included
 
-
-#include <Champ_Inc.h>
-#include <Champ_Fonc.h>
-#include <Ref_Modele_turbulence_scal_base.h>
-#include <Champs_compris.h>
 #include <Champs_compris_interface.h>
+#include <Champs_compris.h>
+#include <Champ_Fonc.h>
 #include <TRUSTVects.h>
+#include <Champ_Inc.h>
+#include <TRUST_Ref.h>
 
-class Domaine_dis;
-class Domaine_Cl_dis;
+class Modele_turbulence_scal_base;
 class Probleme_base;
 class EcrFicPartage;
-class Domaine_VF;
+class Domaine_Cl_dis;
 class Champ_Don;
+class Domaine_dis;
+class Domaine_VF;
+
 /*! @brief Classe Turbulence_paroi_scal_base Classe de base pour la hierarchie des classes representant les modeles
  *
  *     de calcul des grandeurs turbulentes aux voisinages des parois.
@@ -107,7 +108,7 @@ public :
 
 protected:
 
-  REF(Modele_turbulence_scal_base) mon_modele_turb_scal;
+  REF2(Modele_turbulence_scal_base) mon_modele_turb_scal;
 
   mutable int nb_impr_;        // Compteur d'impression
   int calcul_ldp_en_flux_impose_; // flag defenissant si on utilise la ldp en flux impose 0 par defaut

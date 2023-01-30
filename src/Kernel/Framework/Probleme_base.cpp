@@ -18,7 +18,6 @@
 #include <Discretisation_base.h>
 #include <Loi_Fermeture_base.h>
 #include <EcrFicCollecteBin.h>
-#include <Ref_Postraitement.h>
 #include <LecFicDiffuseBin.h>
 #include <communications.h>
 #include <Probleme_base.h>
@@ -27,6 +26,7 @@
 #include <FichierHDFPar.h>
 #include <Milieu_base.h>
 #include <TRUST_Deriv.h>
+#include <TRUST_Ref.h>
 #include <sys/stat.h>
 #include <Equation.h>
 #include <Debog.h>
@@ -63,7 +63,7 @@ Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",P
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
 LIST(Nom) glob_noms_fichiers;
-LIST(REF(Postraitement)) glob_derniers_posts;
+LIST(REF2(Postraitement)) glob_derniers_posts;
 
 // Retourne la version du format de sauvegarde
 // 151 pour dire que c'est la version initiee a la version 1.5.1 de TRUST

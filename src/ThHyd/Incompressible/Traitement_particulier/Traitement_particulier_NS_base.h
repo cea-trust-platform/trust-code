@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,18 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Traitement_particulier_NS_base_included
 #define Traitement_particulier_NS_base_included
 
-#include <Ref_Navier_Stokes_std.h>
-#include <TRUSTTab.h>
-#include <Ref_Champ_base.h>
-#include <Motcle.h>
 #include <Support_Champ_Masse_Volumique.h>
-#include <Champs_compris.h>
 #include <Champs_compris_interface.h>
+#include <Champs_compris.h>
+#include <Ref_Champ_base.h>
+#include <TRUST_Ref.h>
+#include <TRUSTTab.h>
+#include <Motcle.h>
 
+class Navier_Stokes_std;
 class Equation_base;
 
 /*! @brief classe Traitement_particulier_NS_base Derive de Support_Champ_Masse_Volumique: utilisation de rho
@@ -61,7 +61,7 @@ public :
 
 protected :
 
-  REF(Navier_Stokes_std) mon_equation;
+  REF2(Navier_Stokes_std) mon_equation;
 
   Champs_compris champs_compris_;
 

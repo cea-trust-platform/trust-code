@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,10 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Schema_Comm_included
 #define Schema_Comm_included
+
 #include <TRUSTArray.h>
-#include <Ref_Comm_Group.h>
+#include <TRUST_Ref.h>
+
+class Comm_Group;
 
 // Ces objets stockent un graphe de conversation entre
 // processeurs : chaque proc. possede une liste de processeurs a qui
@@ -66,12 +70,12 @@
 //  les problemes rencontres sur supermuc dans la routine de lecture ecriture fichiers
 //  (schema tout le monde ecrit au processeur 0 => erreur d'allocation des MPI_requests).
 
+class OutputCommBuffer;
+class InOutCommBuffers;
+class InputCommBuffer;
 class Comm_Group;
 class Entree;
 class Sortie;
-class OutputCommBuffer;
-class InputCommBuffer;
-class InOutCommBuffers;
 
 class Schema_Comm
 {
@@ -119,7 +123,7 @@ protected:
   ArrOfInt send_pe_list_; // Liste des processeurs a qui envoyer
   ArrOfInt recv_pe_list_; // Liste des processeurs de qui recevoir
   int   me_to_me_;     // Drapeau: est-ce qu'on autorise a s'envoyer des messages a soi ?
-  REF(Comm_Group) ref_group_;// Groupe de processeurs qui vont discuter
+  REF2(Comm_Group) ref_group_;// Groupe de processeurs qui vont discuter
 
   int use_all_to_allv_; // Drapeau, quel type de communication faut-il utiliser ?
 private:

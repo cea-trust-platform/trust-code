@@ -18,8 +18,6 @@
 
 #include <Probleme_base_interface_proto.h>
 #include <Champs_compris_interface.h>
-#include <Ref_Loi_Fermeture_base.h>
-#include <Ref_Schema_Temps_base.h>
 #include <Sortie_Fichier_base.h>
 #include <Discretisation.h>
 #include <Ref_Field_base.h>
@@ -30,8 +28,11 @@
 #include <TRUST_List.h>
 #include <Probleme_U.h>
 #include <TRUST_Ref.h>
+#include <TRUST_Ref.h>
 #include <Milieu.h>
 
+class Loi_Fermeture_base;
+class Schema_Temps_base;
 class EcrFicPartageBin;
 class Equation_base;
 class Postraitement;
@@ -201,8 +202,8 @@ protected :
   std::vector<Milieu> le_milieu_;
   Domaine_dis le_domaine_dis;
   Postraitements les_postraitements;
-  REF(Domaine) le_domaine_;
-  REF(Schema_Temps_base) le_schema_en_temps;
+  REF2(Domaine) le_domaine_;
+  REF2(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;
 
   virtual void typer_lire_milieu(Entree& is) ;
@@ -221,7 +222,7 @@ protected :
   static int num_pb;                // numero du probleme
   mutable Nom error;                // Erreur d'allocation
 
-  LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
+  LIST(REF2(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

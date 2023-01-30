@@ -372,7 +372,7 @@ void Equation_base::ecrire_fichier_xyz() const
         }
       int champ_ok = 0;
       int champ_stat = 0;
-      REF(Operateur_Statistique_tps_base) op_stat;
+      REF2(Operateur_Statistique_tps_base) op_stat;
       if (ok && dt_ecrire_fic>0)
         {
           // On recherche le champ dans le probleme contenant l'equation, et les postraitements

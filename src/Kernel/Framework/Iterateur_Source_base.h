@@ -18,12 +18,12 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Domaine_Cl_dis_base.h>
-#include <Ref_Source_base.h>
 #include <Equation_base.h>
 #include <TRUST_Ref.h>
 
 class Evaluateur_Source;
 class Domaine_dis_base;
+class Source_base;
 
 class Iterateur_Source_base : public Objet_U
 {
@@ -68,7 +68,7 @@ public:
 protected:
   REF2(Domaine_Cl_dis_base) la_zcl;
   REF2(Domaine_dis_base) le_dom;
-  REF(Source_base) so_base;
+  REF2(Source_base) so_base;
 };
 
 #endif /* Iterateur_Source_base_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,21 +13,15 @@
 *
 *****************************************************************************/
 
-
-
 #ifndef Op_Dift_VEF_base_included
 #define Op_Dift_VEF_base_included
 
-#include <Op_Diff_VEF_base.h>
 #include <Op_Diff_Turbulent_base.h>
 #include <Mod_turb_hyd_base.h>
-#include <Ref_Modele_turbulence_scal_base.h>
+#include <Op_Diff_VEF_base.h>
+#include <TRUST_Ref.h>
 
-/*! @brief class  Op_Dift_VEF_base
- *
- *
- *
- */
+class Modele_turbulence_scal_base;
 
 class Op_Dift_VEF_base : public Op_Diff_VEF_base, public Op_Diff_Turbulent_base
 {
@@ -42,7 +36,7 @@ public:
   void completer() override;
 
 protected:
-  REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
+  REF2(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
   DoubleTab tau_tan_;
 };
 

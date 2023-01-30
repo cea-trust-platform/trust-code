@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,9 @@
 #define Traitement_particulier_NS_chmoy_faceperio_VEF_included
 
 #include <Traitement_particulier_NS_chmoy_faceperio.h>
-#include <Ref_Convection_Diffusion_std.h>
+#include <TRUST_Ref.h>
+
+class Convection_Diffusion_std;
 
 /*! @brief classe Traitement_particulier_NS_chmoy_faceperio_VEF Cette classe permet de faire les traitements particuliers
  *
@@ -32,14 +34,9 @@
 class Traitement_particulier_NS_chmoy_faceperio_VEF : public Traitement_particulier_NS_chmoy_faceperio
 {
   Declare_instanciable(Traitement_particulier_NS_chmoy_faceperio_VEF);
-
-
 protected :
   void init_calcul_stats(void) override;
   void calcul_chmoy_faceperio(double , double , double ) override;
-
-  // private:
 };
-
 
 #endif

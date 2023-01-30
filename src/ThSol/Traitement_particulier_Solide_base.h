@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,17 +13,18 @@
 *
 *****************************************************************************/
 
-
 #ifndef Traitement_particulier_Solide_base_included
 #define Traitement_particulier_Solide_base_included
 
 #include <Champs_compris_interface.h>
-#include <Ref_Conduction.h>
 #include <Ref_Champ_base.h>
 #include <Champs_compris.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Motcle.h>
+
 class Equation_base;
+class Conduction;
 
 /*! @brief classe Traitement_particulier_Solide_base
  *
@@ -49,7 +50,7 @@ public :
   /////////////////////////////////////////////////////
 protected :
 
-  REF(Conduction) mon_equation;
+  REF2(Conduction) mon_equation;
 
 private :
 

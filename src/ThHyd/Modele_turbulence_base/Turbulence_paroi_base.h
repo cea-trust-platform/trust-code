@@ -17,16 +17,17 @@
 #define Turbulence_paroi_base_included
 
 #include <Champs_compris_interface.h>
-#include <Ref_Mod_turb_hyd_base.h>
 #include <Champs_compris.h>
 #include <Champ_Fonc.h>
 #include <Champ_Inc.h>
+#include <TRUST_Ref.h>
 
-class Mod_turb_hyd;
-class Domaine_dis;
-class Domaine_Cl_dis;
+class Mod_turb_hyd_base;
 class Probleme_base;
 class EcrFicPartage;
+class Mod_turb_hyd;
+class Domaine_Cl_dis;
+class Domaine_dis;
 class Param;
 
 /*! @brief Classe Turbulence_paroi_base Classe de base pour la hierarchie des classes representant les modeles
@@ -94,7 +95,7 @@ public :
 
 protected:
 
-  REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
+  REF2(Mod_turb_hyd_base) mon_modele_turb_hyd;
   DoubleTab Cisaillement_paroi_;         //valeurs des contraintes tangentielles aux
   // parois calculees localement a partir de u*
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement

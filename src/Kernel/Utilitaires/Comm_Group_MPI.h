@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,9 @@
 #define Comm_Group_MPI_included
 
 #include <Comm_Group_Noparallel.h>
-#include <Ref_Comm_Group.h>
+#include <TRUST_Ref.h>
 
+class Comm_Group;
 
 //GF comm_incl inclu mpi.h mais il est plus facile de faire un atelier
 // ou l on change le mpi si on passe par ce fichier intermediaire
@@ -99,7 +100,7 @@ private:
   MPI_Comm  mpi_comm_; // Handle sur le communicateur mpi
 
   int must_finalize_; // Faut-il le faire dans le destructeur ?
-  REF(Comm_Group) groupe_pere_;
+  REF2(Comm_Group) groupe_pere_;
 #endif
 };
 

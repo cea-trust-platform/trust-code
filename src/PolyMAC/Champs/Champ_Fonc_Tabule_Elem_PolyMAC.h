@@ -19,7 +19,9 @@
 #include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Ref_Champ_base.h>
 #include <TRUST_Vector.h>
-#include <Ref_Table.h>
+#include <TRUST_Ref.h>
+
+class Table;
 
 class Champ_Fonc_Tabule_Elem_PolyMAC: public Champ_Fonc_Elem_PolyMAC
 {
@@ -31,7 +33,7 @@ public:
 
 protected:
   VECT(REF(Champ_base)) les_ch_param;
-  REF(Table) la_table;
+  REF2(Table) la_table;
 };
 
 #endif /* Champ_Fonc_Tabule_Elem_PolyMAC_included */

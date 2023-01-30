@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,11 @@
 #ifndef Courant_maille_Champ_Face_included
 #define Courant_maille_Champ_Face_included
 
-#include <Ref_Schema_Temps_base.h>
 #include <Champ_Fonc_Face_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
+#include <TRUST_Ref.h>
+
+class Schema_Temps_base;
 
 class Courant_maille_Champ_Face: public Champ_Fonc_Face_VDF
 {
@@ -30,7 +32,7 @@ public:
 
 protected:
   REF(Champ_Face_VDF) vitesse_;
-  REF(Schema_Temps_base) sch_;
+  REF2(Schema_Temps_base) sch_;
 };
 
 #endif /* Courant_maille_Champ_Face_included */

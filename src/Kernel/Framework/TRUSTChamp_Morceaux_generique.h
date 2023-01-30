@@ -19,13 +19,15 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Don_base.h>
 #include <Probleme_base.h>
-#include <Ref_Domaine.h>
-#include <Ref_Sous_Domaine.h>
 #include <TRUST_Vector.h>
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Domaine.h>
+
+class Sous_Domaine;
+class Domaine;
+class Sous_Zone;
 
 enum class Champ_Morceaux_Type { FONC , FONC_TXYZ , FONC_TABULE , UNIFORME };
 
@@ -56,11 +58,11 @@ public:
 
   const REF(Domaine)& domaine() const { return mon_domaine; }
   REF(Domaine)& domaine() { return mon_domaine; }
-  const LIST(REF(Sous_Domaine))& sous_domaines() const { return les_sous_domaines; }
-  LIST(REF(Sous_Domaine))& sous_domaines() { return les_sous_domaines; }
+  const LIST(REF2(Sous_Domaine))& sous_domaines() const { return les_sous_domaines; }
+  LIST(REF2(Sous_Domaine))& sous_domaines() { return les_sous_domaines; }
 
 protected:
-  LIST(REF(Sous_Domaine)) les_sous_domaines;
+  LIST(REF2(Sous_Domaine)) les_sous_domaines;
   REF(Domaine) mon_domaine;
   REF2(Probleme_base) ref_pb;
   VECT(Parser_U) parser; /* vecteur de tous les parsers */

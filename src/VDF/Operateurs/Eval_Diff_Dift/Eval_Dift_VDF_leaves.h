@@ -16,11 +16,13 @@
 #ifndef Eval_Dift_VDF_leaves_included
 #define Eval_Dift_VDF_leaves_included
 
-#include <Ref_Turbulence_paroi_base.h>
 #include <Eval_Diff_VDF_Face_Gen.h>
 #include <Eval_Diff_VDF_Elem_Gen.h>
 #include <Mod_turb_hyd_base.h>
 #include <Eval_Dift_VDF.h>
+#include <TRUST_Ref.h>
+
+class Turbulence_paroi_base;
 
 /// \cond DO_NOT_DOCUMENT
 class Eval_Dift_VDF_leaves
@@ -92,8 +94,8 @@ public:
   double tau_tan_impl(int face,int k) const;
 
 private:
-  REF(Mod_turb_hyd_base) le_modele_turbulence;
-  REF(Turbulence_paroi_base) loipar;
+  REF2(Mod_turb_hyd_base) le_modele_turbulence;
+  REF2(Turbulence_paroi_base) loipar;
   DoubleTab tau_tan_;
 };
 
