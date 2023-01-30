@@ -19,8 +19,8 @@
 
 #include <Champ_front_normal.h>
 #include <Champ_front_debit.h>
-#include <Ref_DoubleTab.h>
 #include <Champ_base.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class Champ_front_debit_massique
  *

@@ -952,7 +952,7 @@ const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) 
   return ref_champ;
 }
 
-int Probleme_base::a_pour_IntVect(const Motcle&, REF(IntVect)& ) const
+int Probleme_base::a_pour_IntVect(const Motcle&, REF2(IntVect)& ) const
 {
   return 0;
 }

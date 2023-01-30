@@ -22,7 +22,7 @@
 #include <MD_Vector_tools.h>
 #include <Ref_Champ_Inc.h>
 #include <Ref_Front_VF.h>
-#include <Ref_IntTab.h>
+#include <TRUST_Ref.h>
 
 class Domaine_PolyMAC;
 class Front_VF;

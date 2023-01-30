@@ -16,9 +16,11 @@
 #ifndef DomaineAxi1d_included
 #define DomaineAxi1d_included
 
+#include <TRUSTTabs_forward.h>
+#include <TRUST_Ref.h>
 #include <Domaine.h>
 #include <Champ.h>
-#include <Ref_DoubleTab.h>
+
 class Param;
 
 /*! @brief : class DomaineAxi1d
@@ -46,7 +48,7 @@ protected :
   void set_param(Param& param);
 
   Champ champ_orig;
-  Ref_DoubleTab ref_origine_;
+  REF2(DoubleTab) ref_origine_;
 };
 
 inline double DomaineAxi1d::origine_repere(int i,int j) { return ref_origine_.valeur()(i,j); }

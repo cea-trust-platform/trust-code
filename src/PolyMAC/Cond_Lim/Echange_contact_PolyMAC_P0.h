@@ -21,7 +21,7 @@
 #include <TRUSTTabs_forward.h>
 #include <MD_Vector_tools.h>
 #include <Ref_Front_VF.h>
-#include <Ref_IntTab.h>
+#include <TRUST_Ref.h>
 
 class Domaine_PolyMAC_P0;
 class Front_VF;

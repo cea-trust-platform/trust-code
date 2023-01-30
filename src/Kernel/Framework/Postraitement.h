@@ -22,12 +22,12 @@
 #include <Postraitement_base.h>
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
-#include <Ref_IntVect.h>
 #include <Format_Post.h>
 #include <Champs_Fonc.h>
 #include <Sondes_Int.h>
 #include <TRUST_List.h>
 #include <Interprete.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Sondes.h>
 
@@ -204,7 +204,7 @@ protected:
   int lserie_;
   double dt_integr_serie_;
 
-  LIST(REF(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
+  LIST(REF2(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
   LIST(Nom) noms_tableaux_;
 
   Format_Post format_post;

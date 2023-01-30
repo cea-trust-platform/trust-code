@@ -19,7 +19,7 @@
 #include <DomaineCutter_Correspondance.h>
 #include <Static_Int_Lists.h>
 #include <Ref_Domaine.h>
-#include <Ref_IntVect.h>
+#include <TRUST_Ref.h>
 #include <Decouper.h>
 #include <Noms.h>
 
@@ -69,7 +69,7 @@ private:
   REF(Domaine) ref_domaine_;
   // Reference au tableau de decoupage
   //  (pour chaque element du domaine global, numero de sous-domaine)
-  REF(IntVect) ref_elem_part_;
+  REF2(IntVect) ref_elem_part_;
   // Liste des noms des bords periodiques
   Noms liste_bords_periodiques_;
   // Nombre total de parties (>= a max_array(elem_part) + 1)

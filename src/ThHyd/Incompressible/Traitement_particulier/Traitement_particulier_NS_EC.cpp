@@ -18,8 +18,7 @@
 #include <Domaine_VF.h>
 #include <Terme_Source_Acceleration.h>
 #include <Milieu_base.h>
-#include <Ref_ArrOfDouble.h>
-#include <Ref_DoubleTab.h>
+#include <TRUST_Ref.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <sys/stat.h>
@@ -259,9 +258,9 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
   const DoubleVect& volumes_entrelaces = domaine_VF.volumes_entrelaces();
   const DoubleTab&  xv                 = domaine_VF.xv();
   const DoubleTab&  vitesse            = mon_equation->inconnue().valeurs();
-  REF(ArrOfDouble) translation(xv);
-  REF(ArrOfDouble) rotation(xv);
-  REF(DoubleTab) rho(xv);
+  REF2(ArrOfDouble) translation(xv);
+  REF2(ArrOfDouble) rotation(xv);
+  REF2(DoubleTab) rho(xv);
   DoubleVect rotation_nulle(dimension);
   rotation_nulle=0;
   if (repere_mobile_)

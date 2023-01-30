@@ -26,10 +26,10 @@
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
-#include <Ref_IntVect.h>
 #include <Domaine_dis.h>
 #include <TRUST_List.h>
 #include <Probleme_U.h>
+#include <TRUST_Ref.h>
 #include <Milieu.h>
 
 class EcrFicPartageBin;
@@ -130,7 +130,7 @@ public:
   virtual int verifie_tdeb_tfin(const Motcle& nom) const;
 
   // Fonctions de recherche de IntTab pour le postraitement
-  virtual int a_pour_IntVect(const Motcle&, REF(IntVect)& ) const;
+  virtual int a_pour_IntVect(const Motcle&, REF2(IntVect)& ) const;
   virtual void lire_postraitement_interfaces(Entree& is);
   virtual void postraiter_interfaces(const Nom& nom_fich, Sortie& s, const Nom& format, double temps);
 

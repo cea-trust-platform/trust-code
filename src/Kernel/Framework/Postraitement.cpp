@@ -1112,7 +1112,7 @@ int Postraitement::lire_tableaux_a_postraiter(Entree& s)
   while (motlu != accolade_fermee)
     {
       // Recherche du tableau a postraiter
-      REF(IntVect) ch_tab;
+      REF2(IntVect) ch_tab;
       Noms liste_noms;
       mon_probleme->get_noms_champs_postraitables(liste_noms);
 
@@ -1456,7 +1456,7 @@ int Postraitement::postraiter_tableaux()
       const Nom& id_domaine = dom.le_nom();
       const Nom localisation="";
       const Nom reference="";
-      const IntVect& val = itr1;
+      const IntVect& val = itr1.valeur();
       const int ref_size =0;
 
       format_post->ecrire_item_int(id_item,id_du_domaine,id_domaine,localisation,reference,val,ref_size);
