@@ -315,10 +315,9 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
     {
       Zone& dom=domaine(numero_domaine);
       Nom nom_dom(dom.le_nom());
-      Zone& zone=dom;
-      const IntTab& les_elems = zone.les_elems();
-      IntVect ch_som(zone.nb_som());
-      int nb_elem=zone.nb_elem();
+      const IntTab& les_elems = dom.les_elems();
+      IntVect ch_som(dom.nb_som());
+      int nb_elem=dom.nb_elem();
       IntVect ch_elem2(nb_elem);
       int num=0;
       // En format LATA V2, les frontieres et joints
@@ -333,11 +332,11 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
           if (ecrire_frontiere_)
             {
               int nglob=1;
-              int nb_bords = zone.nb_bords();
+              int nb_bords = dom.nb_bords();
               for (int i=0; i<nb_bords; i++)
                 {
                   num=i+nglob;
-                  Nom nom_fr=zone.bord(i).le_nom();
+                  Nom nom_fr=dom.bord(i).le_nom();
                   // le maitre envoit le nom de la frontiere
                   // afin que les processeurs traitent les bords dans le meme ordre
                   if (je_suis_maitre())
@@ -348,17 +347,17 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                   if (nb_domaine_==1)
                     nom_bord = nom_fr;
                   else
-                    nom_bord = zone.le_nom()+"_"+nom_fr;
-                  Faces& faces=zone.frontiere(zone.rang_frontiere(nom_fr)).faces();
-                  traite_bord(zone, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems, post,compteur,compteur0,compteur_reel,moi);
+                    nom_bord = dom.le_nom()+"_"+nom_fr;
+                  Faces& faces=dom.frontiere(dom.rang_frontiere(nom_fr)).faces();
+                  traite_bord(dom, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems, post,compteur,compteur0,compteur_reel,moi);
                 }
 
-              nglob+=zone.nb_bords();
-              int nb_raccords = zone.nb_raccords();
+              nglob+=dom.nb_bords();
+              int nb_raccords = dom.nb_raccords();
               for (int i=0; i<nb_raccords; i++)
                 {
                   num=i+nglob;
-                  Nom nom_fr=zone.raccord(i).valeur().le_nom();
+                  Nom nom_fr=dom.raccord(i).valeur().le_nom();
                   if (je_suis_maitre())
                     envoyer(nom_fr,0,-1,11);
                   else
@@ -367,23 +366,23 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                   if (nb_domaine_==1)
                     nom_bord = Nom("Raccord_")+nom_fr;
                   else
-                    nom_bord = zone.le_nom()+Nom("_Raccord_")+nom_fr;
+                    nom_bord = dom.le_nom()+Nom("_Raccord_")+nom_fr;
 
-                  Faces& faces=zone.frontiere(zone.rang_frontiere(nom_fr)).faces();
-                  traite_bord(zone, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems, post,compteur,compteur0,compteur_reel,moi);
+                  Faces& faces=dom.frontiere(dom.rang_frontiere(nom_fr)).faces();
+                  traite_bord(dom, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems, post,compteur,compteur0,compteur_reel,moi);
                 }
 
-              nglob+=zone.nb_raccords();
+              nglob+=dom.nb_raccords();
 
               // On ecrit un champ global
               Noms noms_post(1);
               if (nb_domaine_==1)
                 noms_post[0] = "Bord";
               else
-                noms_post[0] = zone.le_nom()+"_Bord";
+                noms_post[0] = dom.le_nom()+"_Bord";
               Noms unites(1);
               unites[0]="1";
-              int nb_som=zone.nb_som();
+              int nb_som=dom.nb_som();
               DoubleTab ch_som2(nb_som,1);
               for (int j=0; j<nb_som; j++)
                 ch_som2(j,0)=(ch_som(j));
@@ -396,7 +395,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
           if (!joint_non_ecrit_)
             for (int p=0; p<nproc(); p++)
               {
-                int nb_joint=zone.nb_joints();
+                int nb_joint=dom.nb_joints();
                 envoyer_broadcast(nb_joint, p);
                 for (int i=0; i<nb_joint; i++)
                   {
@@ -406,19 +405,19 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                         if (nb_domaine_==1)
                           nom_bord="Joint_Proc_";
                         else
-                          nom_bord=zone.le_nom()+"Joint_Proc_";
+                          nom_bord=dom.le_nom()+"Joint_Proc_";
                         Nom namep(p);
                         nom_bord+=namep;
                         nom_bord+="_avec_Proc_";
-                        nom_bord+=Nom(zone.joint(i).PEvoisin());
+                        nom_bord+=Nom(dom.joint(i).PEvoisin());
                       }
                     // Le processeur p envoie nom_bord a tout le monde
                     envoyer_broadcast(nom_bord, p);
                     Faces toto;
                     Cerr<< me()<<" INFO " << p<<" "<<nom_bord<<finl;
-                    Faces& faces=(me()==p?zone.joint(i).faces():toto);
+                    Faces& faces=(me()==p?dom.joint(i).faces():toto);
                     barrier();
-                    traite_bord(zone, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems,post,compteur,compteur0,compteur_reel,moi,1);
+                    traite_bord(dom, ch_som,ch_elem2, num, faces, nom_bord, fichier, les_elems,post,compteur,compteur0,compteur_reel,moi,1);
                     barrier();
                   }
 
@@ -428,7 +427,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
       // Ecriture des sous_zones
       //////////////////////////
       int nb_ss_zones=dom.nb_ss_zones();
-      int nb_elem_tot=zone.nb_elem_tot();
+      int nb_elem_tot=dom.nb_elem_tot();
       for (int i=0; i<nb_ss_zones; i++)
         {
           const Sous_Zone& la_ss_zone=dom.ss_zone(i);
@@ -457,7 +456,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
           Nom nom_post;
           nom_post="Sous_Zone_";
           nom_post+=la_ss_zone.le_nom();
-          traite_bord(zone,ch_som,ch_elemb2,1,bidon,nom_post,fichier,les_elems,post,compteur,compteur0,compteur_reel,moi,2);
+          traite_bord(dom,ch_som,ch_elemb2,1,bidon,nom_post,fichier,les_elems,post,compteur,compteur0,compteur_reel,moi,2);
         }
     }
   int fin=1;

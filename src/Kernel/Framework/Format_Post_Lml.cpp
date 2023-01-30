@@ -520,8 +520,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Zone& domaine,const Noms& unite_,con
         }
       else if(localisation=="ELEM")
         {
-          const Zone& zone=domaine;
-          int nb_elem=zone.nb_elem();
+          int nb_elem=domaine.nb_elem();
           int nb_elem_tot = Process::mp_sum(nb_elem);
           int nb_elem_PE = mppartial_sum(nb_elem);
           for (int comp=0; comp<nb_compo_; comp++)
@@ -575,8 +574,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Zone& domaine,const Noms& unite_,con
         }
       else if(localisation=="ELEM")
         {
-          const Zone& zone=domaine;
-          int nb_elem=zone.nb_elem();
+          int nb_elem=domaine.nb_elem();
           int nb_elem_tot = Process::mp_sum(nb_elem);
           int nb_elem_PE = mppartial_sum(nb_elem);
           if(je_suis_maitre())

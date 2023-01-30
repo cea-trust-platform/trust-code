@@ -55,12 +55,11 @@ Entree& RegroupeBord::interpreter_(Entree& is)
   Zone& dom=domaine();
   // test pour savoir si la frontiere a regrouper est valide
   // i.e : si frontiere est une frontiere du domaine  : on applique regroupe_bord()
-  Zone& zone=dom;
   LIST(Nom) nlistbord_dom; // liste stockant tous les noms de frontiere du domaine
-  int nbfr=zone.nb_front_Cl();
+  int nbfr=dom.nb_front_Cl();
   for (int b=0; b<nbfr; b++)
     {
-      Frontiere& org=zone.frontiere(b);
+      Frontiere& org=dom.frontiere(b);
       nlistbord_dom.add(org.le_nom());
     }
   for (int i=0; i<nlistbord.size(); i++)
@@ -81,23 +80,21 @@ Entree& RegroupeBord::interpreter_(Entree& is)
 
 void RegroupeBord::rassemble_bords(Zone& dom)
 {
-  Zone& zone=dom;
-
-  int nbfr=zone.nb_front_Cl();
+  int nbfr=dom.nb_front_Cl();
   for (int b=0; b<nbfr; b++)
     {
 
-      Frontiere& org=zone.frontiere(b);
+      Frontiere& org=dom.frontiere(b);
       const Nom& nom_bord=org.le_nom();
 
       LIST(Nom) listn;
       listn.add(nom_bord);
       regroupe_bord(dom,nom_bord,listn);
       // si on a detruit des bords on revient sur b
-      if (nbfr!=zone.nb_front_Cl())
+      if (nbfr!=dom.nb_front_Cl())
         {
           Cerr<<"Boundary "<<nom_bord<<" has been collected"<<finl;
-          nbfr=zone.nb_front_Cl();
+          nbfr=dom.nb_front_Cl();
           b--;
         }
     }
@@ -105,16 +102,13 @@ void RegroupeBord::rassemble_bords(Zone& dom)
 
 void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
 {
-
-  Zone& zone=dom;
-
-  int nbfr=zone.nb_front_Cl();
+  int nbfr=dom.nb_front_Cl();
   int nbfacestot=0;
   int prem_b=-1;
 
   for (int b=0; b<nbfr; b++)
     {
-      Frontiere& org=zone.frontiere(b);
+      Frontiere& org=dom.frontiere(b);
 
       if (nlistbord.contient(org.le_nom()))
         {
@@ -123,7 +117,7 @@ void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
           nbfacestot+=org.nb_faces();
         }
     }
-  Frontiere& newb=zone.frontiere(prem_b);
+  Frontiere& newb=dom.frontiere(prem_b);
 
 
   Faces& newfaces=newb.faces();
@@ -137,7 +131,7 @@ void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
     {
       if (b!=prem_b)
         {
-          Frontiere& org=zone.frontiere(b);
+          Frontiere& org=dom.frontiere(b);
           Nom nombord=org.le_nom();
 
           if (nlistbord.contient(nombord))
@@ -151,28 +145,28 @@ void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
             }
         }
     }
-  zone.frontiere(prem_b).nommer("bord_a_conserver_coute_que_coute");
-  Nom bordcons =zone.frontiere(prem_b).le_nom();
+  dom.frontiere(prem_b).nommer("bord_a_conserver_coute_que_coute");
+  Nom bordcons =dom.frontiere(prem_b).le_nom();
 
   for (int b=0; b<nbfr; b++)
     {
       // la recup des bords et des raccords est dans la boucle
       // pour pouvoir supprimer ...
-      Bords& listbord=zone.faces_bord();
-      Raccords& listrac=zone.faces_raccord();
+      Bords& listbord=dom.faces_bord();
+      Raccords& listrac=dom.faces_raccord();
       //const Nom& nombord=nlistbord[b];
-      Frontiere& org=zone.frontiere(b);
+      Frontiere& org=dom.frontiere(b);
       const Nom& nombord=org.le_nom();
 
       if (nlistbord.contient(nombord))
         if (nombord!=bordcons)
           {
 
-            int num_b=zone.rang_frontiere(nombord);
+            int num_b=dom.rang_frontiere(nombord);
             if (num_b<listbord.size())
-              listbord.suppr(zone.bord(nombord));
+              listbord.suppr(dom.bord(nombord));
             else
-              listrac.suppr(zone.raccord(nombord));
+              listrac.suppr(dom.raccord(nombord));
 
             // on supprime un bord
             nbfr--;
@@ -182,5 +176,5 @@ void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
 
     }
   newb.nommer(nom);
-  zone.fixer_premieres_faces_frontiere();
+  dom.fixer_premieres_faces_frontiere();
 }

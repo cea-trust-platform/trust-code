@@ -76,16 +76,16 @@ inline void check_boundary_name(const Nom& name)
  */
 void Extruder::extruder(Zone& dom)
 {
-  Zone& zone = dom;
 
-  if((zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() ==  "Quadrangle" ))
+
+  if((dom.type_elem()->que_suis_je() == "Rectangle" || dom.type_elem()->que_suis_je() ==  "Quadrangle" ))
     {
       extruder_hexa(dom);
     }
-  else if( zone.type_elem()->que_suis_je() == "Triangle")
+  else if( dom.type_elem()->que_suis_je() == "Triangle")
     {
-      int oldnbsom = zone.nb_som();
-      IntTab& les_elems=zone.les_elems();
+      int oldnbsom = dom.nb_som();
+      IntTab& les_elems=dom.les_elems();
       int oldsz=les_elems.dimension(0);
       double dx = direction[0]/NZ;
       double dy = direction[1]/NZ;
@@ -95,13 +95,13 @@ void Extruder::extruder(Zone& dom)
       //zone.creer_faces(les_faces);
       {
         // bloc a factoriser avec Zone_VF.cpp :
-        Type_Face type_face = zone.type_elem().type_face(0);
+        Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
-        les_faces.associer_zone(zone);
+        les_faces.associer_zone(dom);
 
         Static_Int_Lists connectivite_som_elem;
-        const int     nb_sommets_tot = zone.nb_som_tot();
-        const IntTab&    elements       = zone.les_elems();
+        const int     nb_sommets_tot = dom.nb_som_tot();
+        const IntTab&    elements       = dom.les_elems();
 
         construire_connectivite_som_elem(nb_sommets_tot,
                                          elements,
@@ -110,7 +110,7 @@ void Extruder::extruder(Zone& dom)
 
         Faces_builder faces_builder;
         IntTab elem_faces; // Tableau dont on aura pas besoin
-        faces_builder.creer_faces_reeles(zone,
+        faces_builder.creer_faces_reeles(dom,
                                          connectivite_som_elem,
                                          les_faces,
                                          elem_faces);
@@ -227,7 +227,7 @@ void Extruder::extruder(Zone& dom)
               new_elems(2*k*oldsz+2*i+1,3) = ig;
               cpt++;
 
-              mettre_a_jour_sous_zone(zone,i,2*k*oldsz+2*i,2);
+              mettre_a_jour_sous_zone(dom,i,2*k*oldsz+2*i,2);
 
               i0+=oldnbsom;
               i1+=oldnbsom;
@@ -288,8 +288,8 @@ void Extruder::extruder(Zone& dom)
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      zone.invalide_octree();
-      zone.typer("Tetraedre");
+      dom.invalide_octree();
+      dom.typer("Tetraedre");
 
       extruder_dvt(dom, les_faces,oldnbsom, oldsz);
 
@@ -297,7 +297,7 @@ void Extruder::extruder(Zone& dom)
   else
     {
       Cerr << "It is not known yet how to extrude "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+           << dom.type_elem()->que_suis_je() <<"s"<<finl;
       exit();
     }
 }
@@ -372,25 +372,25 @@ void Extruder::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, int ol
 
 void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
-  Zone& zone = dom;
-  const int nbfaces2D = les_faces.nb_faces();
-  IntTab& les_elems=zone.les_elems();
 
-  for (auto &itr : zone.faces_bord())
+  const int nbfaces2D = les_faces.nb_faces();
+  IntTab& les_elems=dom.les_elems();
+
+  for (auto &itr : dom.faces_bord())
     {
       check_boundary_name(itr.le_nom());
       Faces& les_faces_bord = itr.faces();
       traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
     }
 
-  for (auto &itr : zone.faces_raccord())
+  for (auto &itr : dom.faces_raccord())
     {
       check_boundary_name(itr.le_nom());
       Faces& les_faces_bord = itr->faces();
       traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
     }
 
-  Bord& devant = zone.faces_bord().add(Bord());
+  Bord& devant = dom.faces_bord().add(Bord());
   devant.nommer("devant");
   Faces& les_faces_dvt=devant.faces();
   les_faces_dvt.typer(Faces::triangle_3D);
@@ -399,7 +399,7 @@ void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz
   les_faces_dvt.voisins().resize(oldsz, 2);
   les_faces_dvt.voisins()=-1;
 
-  Bord& derriere = zone.faces_bord().add(Bord());
+  Bord& derriere = dom.faces_bord().add(Bord());
   derriere.nommer("derriere");
   Faces& les_faces_der=derriere.faces();
   les_faces_der.typer(Faces::triangle_3D);
@@ -432,9 +432,9 @@ void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz
 
 void Extruder::extruder_hexa(Zone& dom)
 {
-  Zone& zone = dom;
-  int oldnbsom = zone.nb_som();
-  IntTab& les_elems=zone.les_elems();
+
+  int oldnbsom = dom.nb_som();
+  IntTab& les_elems=dom.les_elems();
   int oldsz=les_elems.dimension(0);
   double dx = direction[0]/NZ;
   double dy = direction[1]/NZ;
@@ -443,13 +443,13 @@ void Extruder::extruder_hexa(Zone& dom)
   Faces les_faces;
   {
     // bloc a factoriser avec Zone_VF.cpp :
-    Type_Face type_face = zone.type_elem().type_face(0);
+    Type_Face type_face = dom.type_elem().type_face(0);
     les_faces.typer(type_face);
-    les_faces.associer_zone(zone);
+    les_faces.associer_zone(dom);
 
     Static_Int_Lists connectivite_som_elem;
-    const int     nb_sommets_tot = zone.nb_som_tot();
-    const IntTab&    elements       = zone.les_elems();
+    const int     nb_sommets_tot = dom.nb_som_tot();
+    const IntTab&    elements       = dom.les_elems();
 
     construire_connectivite_som_elem(nb_sommets_tot,
                                      elements,
@@ -458,7 +458,7 @@ void Extruder::extruder_hexa(Zone& dom)
 
     Faces_builder faces_builder;
     IntTab elem_faces; // Tableau dont on aura pas besoin
-    faces_builder.creer_faces_reeles(zone,
+    faces_builder.creer_faces_reeles(dom,
                                      connectivite_som_elem,
                                      les_faces,
                                      elem_faces);
@@ -529,11 +529,11 @@ void Extruder::extruder_hexa(Zone& dom)
   les_elems.ref(new_elems);
 
   // Reconstruction de l'octree
-  zone.invalide_octree();
-  if ((zone.type_elem()->que_suis_je()) ==  "Quadrangle")
-    zone.typer("Hexaedre_VEF");
+  dom.invalide_octree();
+  if ((dom.type_elem()->que_suis_je()) ==  "Quadrangle")
+    dom.typer("Hexaedre_VEF");
   else
-    zone.typer("Hexaedre");
+    dom.typer("Hexaedre");
 
   extruder_dvt_hexa(dom, les_faces,oldnbsom, oldsz);
 }
@@ -570,24 +570,24 @@ void Extruder::traiter_faces_dvt_hexa(Faces& les_faces_bord, int oldnbsom)
 
 void Extruder::extruder_dvt_hexa(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
-  Zone& zone = dom;
-  IntTab& les_elems=zone.les_elems();
 
-  for (auto &itr : zone.faces_bord())
+  IntTab& les_elems=dom.les_elems();
+
+  for (auto &itr : dom.faces_bord())
     {
       check_boundary_name(itr.le_nom());
       Faces& les_faces_bord = itr.faces();
       traiter_faces_dvt_hexa(les_faces_bord, oldnbsom);
     }
 
-  for (auto &itr : zone.faces_raccord())
+  for (auto &itr : dom.faces_raccord())
     {
       check_boundary_name(itr.le_nom());
       Faces& les_faces_bord = itr->faces();
       traiter_faces_dvt_hexa(les_faces_bord, oldnbsom);
     }
 
-  Bord& devant = zone.faces_bord().add(Bord());
+  Bord& devant = dom.faces_bord().add(Bord());
   devant.nommer("devant");
   Faces& les_faces_dvt=devant.faces();
   les_faces_dvt.typer(Faces::quadrangle_3D);
@@ -596,7 +596,7 @@ void Extruder::extruder_dvt_hexa(Zone& dom, Faces& les_faces, int oldnbsom, int 
   les_faces_dvt.voisins().resize(oldsz, 2);
   les_faces_dvt.voisins()=-1;
 
-  Bord& derriere = zone.faces_bord().add(Bord());
+  Bord& derriere = dom.faces_bord().add(Bord());
   derriere.nommer("derriere");
   Faces& les_faces_der=derriere.faces();
   les_faces_der.typer(Faces::quadrangle_3D);

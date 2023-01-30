@@ -35,19 +35,17 @@ Entree& DecoupeBord::readOn(Entree& is)
 void create_listb_from_domaine2(const Zone& dom1, const Zone& dom2,const Noms& nomdec)
 {
   const DoubleTab& xs1=dom1.coord_sommets();
-  const Zone& zone1=dom1;
   const DoubleTab& xs2=dom2.coord_sommets();
-  const Zone& zone2=dom2;
 
-  int nbfr=zone1.nb_front_Cl();
+  int nbfr=dom1.nb_front_Cl();
 
   SFichier listb(dom1.le_nom()+".boundary_list");
 
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr1=zone1.frontiere(l);
+      const Frontiere& fr1=dom1.frontiere(l);
       const Nom& nomfr1=fr1.le_nom();
-      int l2=zone2.rang_frontiere(nomfr1);
+      int l2=dom2.rang_frontiere(nomfr1);
 
       if(l2<0)
         {
@@ -56,7 +54,7 @@ void create_listb_from_domaine2(const Zone& dom1, const Zone& dom2,const Noms& n
           Cerr << " Make sure they were generated in a similar way (almost to the mesh size) " << finl;
           Process::exit();
         }
-      const Frontiere& fr2=zone2.frontiere(l2);
+      const Frontiere& fr2=dom2.frontiere(l2);
 
       if (nomdec.search(nomfr1)!=-1)
         {
@@ -141,7 +139,6 @@ void create_listb_from_xyz(const Zone& dom1,const Noms& nomdec,const Noms& expr)
     }
 
   const DoubleTab& xs1=dom1.coord_sommets();
-  const Zone& zone1=dom1;
   Parser_U parser;
   parser.setNbVar(Objet_U::dimension);
   parser.addVar("x");
@@ -150,13 +147,13 @@ void create_listb_from_xyz(const Zone& dom1,const Noms& nomdec,const Noms& expr)
     parser.addVar("z");
 
 
-  int nbfr=zone1.nb_front_Cl();
+  int nbfr=dom1.nb_front_Cl();
 
   SFichier listb(dom1.le_nom()+".boundary_list");
 
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr1=zone1.frontiere(l);
+      const Frontiere& fr1=dom1.frontiere(l);
       const Nom& nomfr1=fr1.le_nom();
 
       int inc=nomdec.search(nomfr1);
@@ -231,11 +228,10 @@ void create_listb_naif(const Zone& dom1,const Noms& nomdec,const ArrOfInt& nbdec
     }
 
   SFichier listb(dom1.le_nom()+".boundary_list");
-  const Zone& zone=dom1;
-  int nbfr=zone.nb_front_Cl();
+  int nbfr=dom1.nb_front_Cl();
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr=zone.frontiere(l);
+      const Frontiere& fr=dom1.frontiere(l);
       int nbfaces=fr.nb_faces();
       int compt=0;
       const Nom& nomfr=fr.le_nom();
@@ -292,8 +288,7 @@ void create_listb_geom(const Zone& dom1,const Noms& nomdec,const ArrOfInt& nbdec
     }
 
   const DoubleTab& xs=dom1.coord_sommets();
-  const Zone& zone=dom1;
-  int nbfr=zone.nb_front_Cl();
+  int nbfr=dom1.nb_front_Cl();
 
   Parser_U parser;
   parser.setNbVar(3);
@@ -304,7 +299,7 @@ void create_listb_geom(const Zone& dom1,const Noms& nomdec,const ArrOfInt& nbdec
 
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr=zone.frontiere(l);
+      const Frontiere& fr=dom1.frontiere(l);
       int nbfaces=fr.nb_faces();
       const Nom& nomfr=fr.le_nom();
       int inc=nomdec.search(nomfr);
@@ -528,20 +523,18 @@ void DecoupeBord::Decouper(Zone& dom, const Nom& nom_file)
   Noms nomborddec(nbtot);
   for (int nf=0; nf<nbtot; nf++) listb2>>nomborddec[nf];
 
-  Zone& zone=dom;
-
-  int nbfr=zone.nb_front_Cl();
-  Bords& listbord=zone.faces_bord();
-  Raccords& listrac=zone.faces_raccord();
+  int nbfr=dom.nb_front_Cl();
+  Bords& listbord=dom.faces_bord();
+  Raccords& listrac=dom.faces_raccord();
   Bords listbord2;
   Raccords listrac2;
-  int nbbord=zone.nb_bords();
+  int nbbord=dom.nb_bords();
   IntVect decoup(nbfr);
   Noms nomsdesbordsorg(nbfr);
   // on parcourt toutes les frontieres
   for (int b=0; b<nbfr; b++)
     {
-      Frontiere& org=zone.frontiere(b);
+      Frontiere& org=dom.frontiere(b);
       const Nom& nombord=org.le_nom();
       nomsdesbordsorg[b]=nombord;
       decoup(b)=0;
@@ -601,10 +594,10 @@ void DecoupeBord::Decouper(Zone& dom, const Nom& nom_file)
   // on supprime les bords decoupes du domaine
   for (int b2=0; b2<nbbord; b2++)
     if (decoup(b2))
-      listbord.suppr(zone.bord(nomsdesbordsorg[b2]));
+      listbord.suppr(dom.bord(nomsdesbordsorg[b2]));
   for (int r2=nbbord; r2<nbfr; r2++)
     if (decoup(r2))
-      listrac.suppr(zone.raccord(nomsdesbordsorg[r2]));
+      listrac.suppr(dom.raccord(nomsdesbordsorg[r2]));
   listbord.add(listbord2);
   listrac.add(listrac2);
 

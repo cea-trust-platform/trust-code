@@ -166,8 +166,7 @@ void Domain_Graph::construire_graph_elem_elem(const Zone& dom,
                                               Static_Int_Lists& graph_elements_perio)
 {
   Static_Int_Lists som_elem;
-  const Zone& zone = dom;
-  const Elem_geom_base& type_elem = zone.type_elem().valeur();
+  const Elem_geom_base& type_elem = dom.type_elem().valeur();
   IntTab faces_element_reference;
   const int is_regular =
     type_elem.get_tab_faces_sommets_locaux(faces_element_reference);
@@ -180,8 +179,8 @@ void Domain_Graph::construire_graph_elem_elem(const Zone& dom,
   int nb_faces_par_element = faces_element_reference.dimension(0);
   const int nb_sommets_par_face = faces_element_reference.dimension(1);
 
-  const IntTab& elem_som = zone.les_elems();
-  const int nb_elem = zone.nb_elem();
+  const IntTab& elem_som = dom.les_elems();
+  const int nb_elem = dom.nb_elem();
 
   ArrOfInt offsets(Process::nproc());
   offsets = mppartial_sum(nb_elem);
@@ -196,7 +195,7 @@ void Domain_Graph::construire_graph_elem_elem(const Zone& dom,
       //here, we add the connectivity of real nodes only with virtual elements
       // + we want som_elem to contain global numerotation for elements
       IntTab elem_virt_pe_num;
-      zone.construire_elem_virt_pe_num(elem_virt_pe_num);
+      dom.construire_elem_virt_pe_num(elem_virt_pe_num);
       construire_connectivite_real_som_virtual_elem(dom.nb_som(),
                                                     elem_som,
                                                     som_elem,
@@ -226,22 +225,22 @@ void Domain_Graph::construire_graph_elem_elem(const Zone& dom,
   // PREMIERE ETAPE: calcul du nombre de vertex et edges du graph:
 
   // Nombre total de faces de bord:
-  const int nb_faces_bord = zone.nb_faces_frontiere();
+  const int nb_faces_bord = dom.nb_faces_frontiere();
 
   // Chaque element du maillage est un "vertex" du graph.
   // Les "edges" du graph relient chaque element a ses voisins par une face.
   // Il y a autant d'edges que de faces ayant deux voisins, fois 2
   // Formule classique: nb_faces internes = nnn/2 avec :
   int nnn = nb_elem * nb_faces_par_element - nb_faces_bord + nb_connexions_perio;
-  if (sub_type(Poly_geom_base,zone.type_elem().valeur()))
+  if (sub_type(Poly_geom_base,dom.type_elem().valeur()))
     {
-      const Poly_geom_base& poly=ref_cast(Poly_geom_base,zone.type_elem().valeur());
+      const Poly_geom_base& poly=ref_cast(Poly_geom_base,dom.type_elem().valeur());
       nnn= poly.get_somme_nb_faces_elem() - nb_faces_bord + nb_connexions_perio;
     }
 
   const int nb_edges = nnn + nb_faces_bord;
 
-  nvtxs = nb_elem + zone.nb_faces_joint(); //each joint face is linked to a virtual element
+  nvtxs = nb_elem + dom.nb_faces_joint(); //each joint face is linked to a virtual element
   xadj.resize_array(nb_elem+1);
   xadj = -1;
   adjncy.resize_array(nb_edges+nb_faces_bord);

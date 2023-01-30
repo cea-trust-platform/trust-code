@@ -138,7 +138,7 @@ void EF_discretisation::discretiser_champ(
       break;
     }
 
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     Cerr << "EF_discretisation : " << motcles;
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)
@@ -303,7 +303,7 @@ void EF_discretisation::discretiser_champ_fonc_don(
       break;
     }
 
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     Cerr << "EF_discretisation : " << motcles;
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,6 @@ DoubleTab& Champ_som_lu::valeur_aux_elems(const DoubleTab& positions, const IntV
   else erreur_champ_(__func__);
 
   const DoubleTab& coord = mon_domaine->coord_sommets();
-  const Zone& zone = mon_domaine;
   const DoubleTab& ch = valeurs();
   int le_poly;
 
@@ -59,14 +58,14 @@ DoubleTab& Champ_som_lu::valeur_aux_elems(const DoubleTab& positions, const IntV
       else
         for (int ncomp = 0; ncomp < nb_compo_; ncomp++)
           {
-            int som1 = zone.sommet_elem(le_poly, 0);
-            int som2 = zone.sommet_elem(le_poly, 1);
-            int som3 = zone.sommet_elem(le_poly, 2);
-            int som4 = zone.sommet_elem(le_poly, 3);
-            int som5 = zone.sommet_elem(le_poly, 4);
-            int som6 = zone.sommet_elem(le_poly, 5);
-            int som7 = zone.sommet_elem(le_poly, 6);
-            int som8 = zone.sommet_elem(le_poly, 7);
+            int som1 = mon_domaine->sommet_elem(le_poly, 0);
+            int som2 = mon_domaine->sommet_elem(le_poly, 1);
+            int som3 = mon_domaine->sommet_elem(le_poly, 2);
+            int som4 = mon_domaine->sommet_elem(le_poly, 3);
+            int som5 = mon_domaine->sommet_elem(le_poly, 4);
+            int som6 = mon_domaine->sommet_elem(le_poly, 5);
+            int som7 = mon_domaine->sommet_elem(le_poly, 6);
+            int som8 = mon_domaine->sommet_elem(le_poly, 7);
 
             double xmin = coord(som1, 0);
             double xmax = coord(som2, 0);
@@ -98,7 +97,6 @@ DoubleVect& Champ_som_lu::valeur_aux_elems_compo(const DoubleTab& positions, con
 {
   assert(val.size() == les_polys.size_array());
   const DoubleTab& coord = mon_domaine->coord_sommets();
-  const Zone& zone = mon_domaine;
   const DoubleTab& ch = valeurs();
   int le_poly;
 
@@ -108,14 +106,14 @@ DoubleVect& Champ_som_lu::valeur_aux_elems_compo(const DoubleTab& positions, con
       if (le_poly == -1) val(rang_poly) = 0;
       else
         {
-          int som1 = zone.sommet_elem(le_poly, 0);
-          int som2 = zone.sommet_elem(le_poly, 1);
-          int som3 = zone.sommet_elem(le_poly, 2);
-          int som4 = zone.sommet_elem(le_poly, 3);
-          int som5 = zone.sommet_elem(le_poly, 4);
-          int som6 = zone.sommet_elem(le_poly, 5);
-          int som7 = zone.sommet_elem(le_poly, 6);
-          int som8 = zone.sommet_elem(le_poly, 7);
+          int som1 = mon_domaine->sommet_elem(le_poly, 0);
+          int som2 = mon_domaine->sommet_elem(le_poly, 1);
+          int som3 = mon_domaine->sommet_elem(le_poly, 2);
+          int som4 = mon_domaine->sommet_elem(le_poly, 3);
+          int som5 = mon_domaine->sommet_elem(le_poly, 4);
+          int som6 = mon_domaine->sommet_elem(le_poly, 5);
+          int som7 = mon_domaine->sommet_elem(le_poly, 6);
+          int som8 = mon_domaine->sommet_elem(le_poly, 7);
 
           double xmin = coord(som1, 0);
           double xmax = coord(som2, 0);

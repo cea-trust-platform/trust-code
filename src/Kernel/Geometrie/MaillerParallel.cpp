@@ -100,8 +100,7 @@ void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
   // Les elements
   {
     assert(dim==3);
-    Zone& zone = domaine;
-    IntTab& elements = zone.les_elems();
+    IntTab& elements = domaine.les_elems();
     const int nb_som_par_element = 8;
 
     // stride des indices de sommets:
@@ -112,7 +111,7 @@ void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
     const int nx = nb_elem(0);
     const int ny = nb_elem(1);
     const int nz = nb_elem(2);
-    const int nb_elem_old = zone.les_elems().dimension(0);
+    const int nb_elem_old = domaine.les_elems().dimension(0);
     const int nbelem = nx * ny * nz;
     elements.resize(nb_elem_old + nbelem, nb_som_par_element);
 
@@ -139,13 +138,12 @@ void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
       }
   }
   // Les bords
-  Zone& zone = domaine;
   for (int dir = 0; dir < 3; dir++)
     {
       if (xmin_[dir] == 0)
-        add_faces(zone, bord_xmin_[dir], old_nb_som, dir, 0);
+        add_faces(domaine, bord_xmin_[dir], old_nb_som, dir, 0);
       if (xmax_[dir] == xmax_tot_[dir])
-        add_faces(zone, bord_xmax_[dir], old_nb_som, dir, 1);
+        add_faces(domaine, bord_xmax_[dir], old_nb_som, dir, 1);
     }
 }
 

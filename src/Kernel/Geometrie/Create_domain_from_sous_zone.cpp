@@ -95,15 +95,14 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
     {
       Zone& dom = ref_cast(Zone, objet(noms_doms[i]));
       cutter.construire_sous_domaine(i + 1, dom);
-      Zone& zone=dom;
-      Bords& bords=zone.faces_bord();
+      Bords& bords=dom.faces_bord();
 
       if (cutter.bords_internes().size()>0)
-        zone.faces_joint().vide();
+        dom.faces_joint().vide();
       else
         {
           // on transforme les joints en bord
-          Joints& joints= zone.faces_joint();
+          Joints& joints= dom.faces_joint();
           for (int j=joints.size()-1; j>=0; j--)
             {
               Cout <<"The joint"<<j<<" becomes a boundary"<<finl;
@@ -122,7 +121,7 @@ Entree& Create_domain_from_sous_zone::interpreter_(Entree& is)
             Cout << bords(b).le_nom()<<" deleted"<<finl;
             bords.suppr(bords(b));
           }
-      Raccords& listrac=zone.faces_raccord();
+      Raccords& listrac=dom.faces_raccord();
 
       for (int b=bords.size()-1; b>=0; b--)
         {

@@ -34,10 +34,9 @@ Entree& Modif_bord_to_raccord::interpreter_(Entree& is)
   is>>nom_bord;
   Zone& dom=domaine();
 
-  Zone& zone=dom;
-  Bord& bord=zone.bord(nom_bord);
+  Bord& bord=dom.bord(nom_bord);
 
-  Raccords& listrac=zone.faces_raccord();
+  Raccords& listrac=dom.faces_raccord();
 
   Raccord racc_base;
   racc_base.typer("Raccord_local_homogene");
@@ -47,8 +46,8 @@ Entree& Modif_bord_to_raccord::interpreter_(Entree& is)
   ref_cast(Frontiere,racc)=ref_cast(Frontiere,bord);
   listrac.add(racc_base);
 
-  Bords& listbord=zone.faces_bord();
-  listbord.suppr(zone.bord(nom_bord));
-  zone.fixer_premieres_faces_frontiere();
+  Bords& listbord=dom.faces_bord();
+  listbord.suppr(dom.bord(nom_bord));
+  dom.fixer_premieres_faces_frontiere();
   return is;
 }

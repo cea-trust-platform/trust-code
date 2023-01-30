@@ -1569,9 +1569,8 @@ int Postraitement::postraiter_tableau(const Zone& dom,const Noms& unites,const N
         }
       else if (localisation == "ELEM")
         {
-          const Zone& zone=dom;
           DoubleTab coord;
-          zone.calculer_centres_gravite(coord);
+          dom.calculer_centres_gravite(coord);
           format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
         }
       else if (localisation == "FACES")

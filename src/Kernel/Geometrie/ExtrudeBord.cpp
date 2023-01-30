@@ -70,11 +70,10 @@ Entree& ExtrudeBord::interpreter_(Entree& is)
   associer_domaine(nom_dom_volumique);
 
   const Zone& dom=domaine();
-  const Zone& zone=dom;
 
-  if (zone.nb_som_elem()==8 && (hexa_old == 1))
+  if (dom.nb_som_elem()==8 && (hexa_old == 1))
     extruder_hexa_old(nom_front, nom_dom_surfacique, vect_dir, nbpas);
-  else if (zone.nb_som_elem()==4 || zone.nb_som_elem()==8)
+  else if (dom.nb_som_elem()==4 || dom.nb_som_elem()==8)
     extruder_bord(nom_front, nom_dom_surfacique, vect_dir, nbpas);
 
   Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
@@ -86,8 +85,7 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
 {
   const Zone& dom=domaine();
 
-  const Zone& zone=dom;
-  const Bord& front=zone.bord(nom_front);
+  const Bord& front=dom.bord(nom_front);
 
   Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
 
@@ -142,10 +140,9 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
       dom_surfacique.ajouter(dom_surfacique.coord_sommets(), num);
       extr3.extruder(dom_surfacique,num);
 
-      Zone& zone2 = dom_surfacique;
-      if ((zone2.type_elem()->que_suis_je())== "Rectangle")
+      if ((dom_surfacique.type_elem()->que_suis_je())== "Rectangle")
         {
-          Cerr << "It is not possible to apply ExtrudeBord with 3Tetra option to : "   <<  zone2.type_elem()->que_suis_je() << " mesh cells" << finl;
+          Cerr << "It is not possible to apply ExtrudeBord with 3Tetra option to : "   <<  dom_surfacique.type_elem()->que_suis_je() << " mesh cells" << finl;
           // exit();
         }
     }
@@ -186,13 +183,12 @@ void ExtrudeBord::extruder_bord(Nom& nom_front, Nom& nom_dom_surfacique, DoubleV
   // le domaine extrude, on impose les coordonnes de la frontiere nom_front du domaine
   // initial sur les coordonnees de la frontiere devant du domaine extrude
   // Il faut egalement recalculer proprement pour la frontiere derriere
-  const Faces& faces=zone.frontiere(zone.rang_frontiere(nom_front)).faces();
+  const Faces& faces=dom.frontiere(dom.rang_frontiere(nom_front)).faces();
   int nb_faces=faces.nb_faces();
   int nb_som_faces=faces.nb_som_faces();
 
-  const Zone& zone2=dom_surfacique;
-  const Faces& faces2=zone2.frontiere(zone2.rang_frontiere("devant")).faces();
-  const Faces& faces3=zone2.frontiere(zone2.rang_frontiere("derriere")).faces();
+  const Faces& faces2=dom_surfacique.frontiere(dom_surfacique.rang_frontiere("devant")).faces();
+  const Faces& faces3=dom_surfacique.frontiere(dom_surfacique.rang_frontiere("derriere")).faces();
   for (int j=0; j<nb_faces; j++)
     for (int k=0; k<nb_som_faces; k++)
       {
@@ -214,8 +210,7 @@ void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, Dou
 
   const Zone& dom=domaine();
 
-  const Zone& zone=dom;
-  int nbfr=zone.nb_front_Cl();
+  int nbfr=dom.nb_front_Cl();
 
 
   Zone& dom_surfacique=ref_cast(Zone, objet(nom_dom_surfacique));
@@ -227,7 +222,7 @@ void ExtrudeBord::extruder_hexa_old(Nom& nom_front, Nom& nom_dom_surfacique, Dou
 
   for (int l=0; l<nbfr; l++)
     {
-      const Frontiere& fr=zone.frontiere(l);
+      const Frontiere& fr=dom.frontiere(l);
       const Nom& nomfr=fr.le_nom();
 
       if(nomfr==nom_front)

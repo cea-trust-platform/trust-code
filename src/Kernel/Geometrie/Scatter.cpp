@@ -80,8 +80,7 @@ void dump_lata(const Zone& dom)
   Format_Post_Lata post;  // Lata V2
   Nom nom_fichier_lata("espaces_virtuels");
 
-  const Zone& zone = dom;
-  const int nb_joints = zone.nb_joints();
+  const int nb_joints = dom.nb_joints();
   constexpr int IS_FIRST = 1;
 
   post.initialize_lata(nom_fichier_lata, Format_Post_Lata::BINAIRE, Format_Post_Lata::SINGLE_FILE);
@@ -92,10 +91,10 @@ void dump_lata(const Zone& dom)
   Noms units, noms_compo;
   units.add("");
   noms_compo.add("I");
-  DoubleTab data(zone.nb_elem());
+  DoubleTab data(dom.nb_elem());
   for(int ij = 0; ij < nb_joints; ij++)
     {
-      const ArrOfInt& t1 = zone.joint(ij).joint_item(Joint::ELEMENT).items_distants();
+      const ArrOfInt& t1 = dom.joint(ij).joint_item(Joint::ELEMENT).items_distants();
       data = 0.;
       const int nt1 = t1.size_array();
       for (int i = 0; i < nt1; i++) data[t1[i]] += 1;
@@ -105,7 +104,7 @@ void dump_lata(const Zone& dom)
                         noms_compo,
                         1,           // ncomp,
                         0.0,         // temps,
-                        Nom("partition") + Nom(zone.joint(ij).PEvoisin()), // id_du_champ,
+                        Nom("partition") + Nom(dom.joint(ij).PEvoisin()), // id_du_champ,
                         dom.le_nom(), // id_du_domaine
                         "ELEM",       // localisation,
                         "scalar",     // nature,
@@ -1231,8 +1230,7 @@ void Scatter::calculer_espace_distant_sommets(Zone& dom, const Noms& liste_bords
   if (Process::je_suis_maitre())
     Cerr << "Scatter::calculer_espace_distant_sommets : start" << finl;
 
-  Zone&          zone                  = dom;
-  const IntTab& connectivite_elem_som = zone.les_elems();
+  const IntTab& connectivite_elem_som = dom.les_elems();
   const int   nb_sommets_reels      = dom.nb_som();
 
   ArrOfInt renum_som_perio(nb_sommets_reels);
@@ -1242,7 +1240,7 @@ void Scatter::calculer_espace_distant_sommets(Zone& dom, const Noms& liste_bords
   Reordonner_faces_periodiques::renum_som_perio(dom, liste_bords_perio, renum_som_perio,
                                                 0 /* ne pas calculer pour les sommets virtuels */);
 
-  calculer_espace_distant_item(zone,
+  calculer_espace_distant_item(dom,
                                Joint::SOMMET,
                                connectivite_elem_som,
                                nb_sommets_reels,
@@ -1990,9 +1988,8 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
   if (Process::je_suis_maitre())
     Cerr << "Correction of remote spaces of the elements for the periodic faces" << finl;
 
-  Zone& zone = dom;
-  const int nb_elem = zone.nb_elem();
-  const IntTab& les_elems = zone.les_elems();
+  const int nb_elem = dom.nb_elem();
+  const IntTab& les_elems = dom.les_elems();
 
   // Ce tableau contiendra pour un bord periodique donne:
   //  si l'element i est adjacent a une face de ce bord,
@@ -2008,12 +2005,12 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
                                    connectivite_som_elem,
                                    0 /* ne pas inclure les sommets virtuels */);
 
-  const int nb_som_face = zone.type_elem().nb_som_face();
+  const int nb_som_face = dom.type_elem().nb_som_face();
   ArrOfInt une_face(nb_som_face);
   ArrOfInt elems_voisins;
   elems_voisins.set_smart_resize(1);
 
-  const int nb_joints = zone.nb_joints();
+  const int nb_joints = dom.nb_joints();
 
   // Marqueurs des elements distants existants:
   ArrOfBit marqueurs_elements_distants(nb_elem);
@@ -2030,7 +2027,7 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
       for (auto& itr : liste_bords_periodiques)
         {
           const Nom& nom_bord = itr;
-          const Bord& bord = zone.bord(nom_bord);
+          const Bord& bord = dom.bord(nom_bord);
           const IntTab& faces_sommets = bord.les_sommets_des_faces();
           const int nb_faces = bord.nb_faces();
 
@@ -2073,7 +2070,7 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
           // dans les elements jumeaux, ajouter l'autre jumeau dans les elements distants
           for (int i_joint = 0; i_joint < nb_joints; i_joint++)
             {
-              ArrOfInt& elements_distants = zone.joint(i_joint).set_joint_item(Joint::ELEMENT).set_items_distants();
+              ArrOfInt& elements_distants = dom.joint(i_joint).set_joint_item(Joint::ELEMENT).set_items_distants();
               int n = elements_distants.size_array();
               // Marquer les elements distants existants:
               int i;
@@ -2108,7 +2105,7 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
   // Dernier tri des elements distants dans l'ordre croissant
   for (int i_joint = 0; i_joint < nb_joints; i_joint++)
     {
-      ArrOfInt& elements_distants = zone.joint(i_joint).set_joint_item(Joint::ELEMENT).set_items_distants();
+      ArrOfInt& elements_distants = dom.joint(i_joint).set_joint_item(Joint::ELEMENT).set_items_distants();
       elements_distants.set_smart_resize(0);
       elements_distants.ordonne_array();
     }
@@ -2136,16 +2133,15 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
  */
 void Scatter::calculer_espace_distant_elements(Zone& dom)
 {
-  Zone&        zone         = dom;
-  const int nbjoints    = zone.nb_joints();
-  const int nb_som_elem  = zone.nb_som_elem();
-  const IntTab& les_elems    = zone.les_elems();
+  const int nbjoints    = dom.nb_joints();
+  const int nb_som_elem  = dom.nb_som_elem();
+  const IntTab& les_elems    = dom.les_elems();
   const int nproc        = Process::nproc();
   // PL on doit avoir la meme epaisseur_joint sur chaque processeur pour l'algorithme suivant
   // utilisant un echange de donnees avec schema_comm.begin_comm() schema_comm.end_comm()
   // sinon il y'a un blocage en mode debug a cause de la sortie de la ligne 1866 (voir cas Quasi_Comp_Coupl_Incomp)
   //const int epaisseur_joint = (nb_joints > 0) ? zone.joint(0).epaisseur() : 1;
-  const int epaisseur_joint = (int) mp_max((nbjoints > 0) ? zone.joint(0).epaisseur() : 1);
+  const int epaisseur_joint = (int) mp_max((nbjoints > 0) ? dom.joint(0).epaisseur() : 1);
 
   if (Process::je_suis_maitre())
     Cerr << "Calculation of remote space of elements : thickness " << epaisseur_joint << finl;
@@ -2192,7 +2188,7 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
   {
     for (int i_joint = 0; i_joint < nbjoints; i_joint++)
       {
-        const Joint& joint = zone.joint(i_joint);
+        const Joint& joint = dom.joint(i_joint);
         const int pe = joint.PEvoisin();
         liste_pe_voisins[i_joint] = pe;
         const ArrOfInt& sommets_joint = joint.joint_item(Joint::SOMMET).items_communs();
@@ -2219,7 +2215,7 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
       // Etape 1 : avec combien de processeurs chaque sommet est-il partage ?
       for (int ijoint = 0; ijoint < nbjoints; ijoint++)
         {
-          const Joint& joint = zone.joint(ijoint);
+          const Joint& joint = dom.joint(ijoint);
           const ArrOfInt& sommets_joint = joint.joint_item(Joint::SOMMET).items_communs();
           const int n = sommets_joint.size_array();
           for (int i = 0; i < n; i++)
@@ -2233,7 +2229,7 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
       // Etape 2 : remplissage de la structure:
       for (int ijoint = 0; ijoint < nbjoints; ijoint++)
         {
-          const Joint& joint = zone.joint(ijoint);
+          const Joint& joint = dom.joint(ijoint);
           const int pe = joint.PEvoisin();
           const IntTab& renum_sommets = joint.joint_item(Joint::SOMMET).renum_items_communs();
           const int n = renum_sommets.dimension(0);
@@ -2368,7 +2364,7 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
     for (int pe = 0; pe < nproc; pe++)
       if (elements_distants[pe].size_array() > 0)
         voisins.append_array(pe);
-    ajouter_joints(zone, voisins);
+    ajouter_joints(dom, voisins);
 
 #ifdef CHECK_ALGO_ESPACE_VIRTUEL
     // On n'utilise pas les espaces virtuels calcules ci-dessus, on se
@@ -2377,10 +2373,10 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
     // Pour l'instant, l'algorithme parallele a l'air de fonctionner sans probleme
     // je desactive ce test. (Benoit Mathieu)
     int erreur = 0;
-    const int nbjoints = zone.nbjoints();
+    const int nbjoints = dom.nbjoints();
     for (int i = 0; i < nbjoints; i++)
       {
-        Joint& joint = zone.joint(i);
+        Joint& joint = dom.joint(i);
         const int pe = joint.PEvoisin();
         if (!(joint.joint_item(Joint::ELEMENT).items_distants() == elements_distants[pe]))
           {
@@ -2396,10 +2392,10 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
       Process::exit();
 #else
     // Stockage du resultat
-    const int nb_joints = zone.nb_joints();
+    const int nb_joints = dom.nb_joints();
     for (int i = 0; i < nb_joints; i++)
       {
-        Joint& joint = zone.joint(i);
+        Joint& joint = dom.joint(i);
         const int pe = joint.PEvoisin();
         joint.set_joint_item(Joint::ELEMENT).set_items_distants() = elements_distants[pe];
       }

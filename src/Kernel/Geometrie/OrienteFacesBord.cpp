@@ -41,21 +41,16 @@ Entree& OrienteFacesBord::interpreter_(Entree& is)
 
 void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
 {
-
   Zone& dom=ref_cast(Zone, objet(nom_dom));
-
-  Zone& zone=dom;
   Nom type=dom.type_elem()->que_suis_je();
-
-
   double e=0.001;
   IntVect elem(1);
   DoubleTab pos(1,dimension);
   const DoubleTab& coords=dom.coord_sommets();
-  int nombre_faces_rayonnantes=zone.nb_bords()+zone.nb_raccords();
+  int nombre_faces_rayonnantes=dom.nb_bords()+dom.nb_raccords();
   for (int iface=0; iface<nombre_faces_rayonnantes; iface++)
     {
-      const IntTab& som=(iface<zone.nb_bords()?zone.bord(iface).faces().les_sommets():zone.raccord(iface-zone.nb_bords()).valeur().faces().les_sommets());
+      const IntTab& som=(iface<dom.nb_bords()?dom.bord(iface).faces().les_sommets():dom.raccord(iface-dom.nb_bords()).valeur().faces().les_sommets());
       int nb_faces=som.dimension(0);
       IntTab new_faces(nb_faces,som.dimension(1));
 
@@ -253,10 +248,10 @@ void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
                 }
             }
         }
-      if (iface<zone.nb_bords())
-        zone.bord(iface).faces().les_sommets().ref(new_faces);
+      if (iface<dom.nb_bords())
+        dom.bord(iface).faces().les_sommets().ref(new_faces);
       else
-        zone.raccord(iface-zone.nb_bords()).valeur().faces().les_sommets().ref(new_faces);
+        dom.raccord(iface-dom.nb_bords()).valeur().faces().les_sommets().ref(new_faces);
     }
 
 }

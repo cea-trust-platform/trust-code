@@ -35,9 +35,6 @@ using ICoCo::WrongArgument;
 using ICoCo::TrioField;
 
 /*! @brief A surcharger.
- *
- * ..
- *
  */
 Sortie& Probleme_U::printOn(Sortie& os) const
 {
@@ -45,9 +42,6 @@ Sortie& Probleme_U::printOn(Sortie& os) const
 }
 
 /*! @brief A surcharger.
- *
- * ..
- *
  */
 Entree& Probleme_U::readOn(Entree& is)
 {

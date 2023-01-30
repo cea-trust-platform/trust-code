@@ -65,17 +65,15 @@ Entree& Extruder_en20::interpreter_(Entree& is)
  */
 void Extruder_en20::extruder(Zone& dom)
 {
-  Zone& zone = dom;
-
-  if (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() ==  "Quadrangle" )
+  if (dom.type_elem()->que_suis_je() == "Rectangle" || dom.type_elem()->que_suis_je() ==  "Quadrangle" )
     {
       Cerr << " The extrusion of quadrangle is made by Extruder and not by Extruder_en20 " << finl;
       exit();
     }
-  else if( zone.type_elem()->que_suis_je() == "Triangle")
+  else if( dom.type_elem()->que_suis_je() == "Triangle")
     {
-      int oldnbsom = zone.nb_som();
-      IntTab& les_elems=zone.les_elems();
+      int oldnbsom = dom.nb_som();
+      IntTab& les_elems=dom.les_elems();
       int oldsz=les_elems.dimension(0);
       double dx = direction[0]/NZ;
       double dy = direction[1]/NZ;
@@ -85,13 +83,13 @@ void Extruder_en20::extruder(Zone& dom)
       //zone.creer_faces(les_faces);
       {
         // bloc a factoriser avec Zone_VF.cpp :
-        Type_Face type_face = zone.type_elem().type_face(0);
+        Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
-        les_faces.associer_zone(zone);
+        les_faces.associer_zone(dom);
 
         Static_Int_Lists connectivite_som_elem;
-        const int     nb_sommets_tot = zone.nb_som_tot();
-        const IntTab&    elements       = zone.les_elems();
+        const int     nb_sommets_tot = dom.nb_som_tot();
+        const IntTab&    elements       = dom.les_elems();
 
         construire_connectivite_som_elem(nb_sommets_tot,
                                          elements,
@@ -100,7 +98,7 @@ void Extruder_en20::extruder(Zone& dom)
 
         Faces_builder faces_builder;
         IntTab elem_faces; // Tableau dont on aura pas besoin
-        faces_builder.creer_faces_reeles(zone,
+        faces_builder.creer_faces_reeles(dom,
                                          connectivite_som_elem,
                                          les_faces,
                                          elem_faces);
@@ -234,7 +232,7 @@ void Extruder_en20::extruder(Zone& dom)
               new_elems(2*k*oldsz+2*i+1,3) = ig;
               cpt++;
 
-              mettre_a_jour_sous_zone(zone,i,2*k*oldsz+2*i,2);
+              mettre_a_jour_sous_zone(dom,i,2*k*oldsz+2*i,2);
 
               i0+=oldnbsom;
               i1+=oldnbsom;
@@ -310,8 +308,8 @@ void Extruder_en20::extruder(Zone& dom)
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      zone.invalide_octree();
-      zone.typer("Tetraedre");
+      dom.invalide_octree();
+      dom.typer("Tetraedre");
 
       extruder_dvt(dom, les_faces,oldnbsom, oldsz);
 
@@ -319,7 +317,7 @@ void Extruder_en20::extruder(Zone& dom)
   else
     {
       Cerr << "It is not known yet how to extrude "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+           << dom.type_elem()->que_suis_je() <<"s"<<finl;
       exit();
     }
 }
@@ -405,23 +403,22 @@ void Extruder_en20::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, i
 
 void Extruder_en20::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
-  Zone& zone = dom;
   const int nbfaces2D = les_faces.nb_faces();
-  IntTab& les_elems = zone.les_elems();
+  IntTab& les_elems = dom.les_elems();
 
-  for (auto &itr : zone.faces_bord())
+  for (auto &itr : dom.faces_bord())
     {
       Faces& les_faces_bord = itr.faces();
       traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
     }
 
-  for (auto &itr : zone.faces_raccord())
+  for (auto &itr : dom.faces_raccord())
     {
       Faces& les_faces_bord = itr->faces();
       traiter_faces_dvt(les_faces_bord, les_faces, oldnbsom, oldsz, nbfaces2D);
     }
 
-  Bord& devant = zone.faces_bord().add(Bord());
+  Bord& devant = dom.faces_bord().add(Bord());
   devant.nommer("devant");
   Faces& les_faces_dvt=devant.faces();
   les_faces_dvt.typer(Faces::triangle_3D);
@@ -430,7 +427,7 @@ void Extruder_en20::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int 
   les_faces_dvt.voisins().resize(oldsz, 2);
   les_faces_dvt.voisins()=-1;
 
-  Bord& derriere = zone.faces_bord().add(Bord());
+  Bord& derriere = dom.faces_bord().add(Bord());
   derriere.nommer("derriere");
   Faces& les_faces_der=derriere.faces();
   les_faces_der.typer(Faces::triangle_3D);

@@ -59,8 +59,7 @@ void NettoieNoeuds::nettoie(Zone& dom)
   Scatter::uninit_sequential_domain(dom);
 
   DoubleTab& coord_sommets=dom.les_sommets();
-  Zone& zone=dom;
-  IntTab& les_elems=zone.les_elems();
+  IntTab& les_elems=dom.les_elems();
   int nb_som_init=coord_sommets.dimension(0);
   int nb_elem=les_elems.dimension(0);
   int nb_som_elem=les_elems.dimension(1);
@@ -84,10 +83,10 @@ void NettoieNoeuds::nettoie(Zone& dom)
             tmp=compteur++;
         }
     // ajout GF sinon un sommet double sur un bord devient -1
-    int nb_bords=zone.nb_front_Cl();
+    int nb_bords=dom.nb_front_Cl();
     for (int ii=0; ii<nb_bords; ii++)
       {
-        const Frontiere& front= zone.frontiere(ii);
+        const Frontiere& front= dom.frontiere(ii);
         const Faces& faces=front.faces();
         const IntTab& faces_sommets=faces.les_sommets();
         int nb_faces=faces_sommets.dimension(0);
@@ -138,7 +137,7 @@ void NettoieNoeuds::nettoie(Zone& dom)
       }
 
       // On recupere les bords :
-      for (auto &itr : zone.faces_bord())
+      for (auto &itr : dom.faces_bord())
         {
           Frontiere& front = itr;
           Faces& faces = front.faces();
@@ -157,7 +156,7 @@ void NettoieNoeuds::nettoie(Zone& dom)
               }
         }
       // Les Faces Internes :
-      for (auto &itr : zone.faces_int())
+      for (auto &itr : dom.faces_int())
         {
           Frontiere& front = itr;
           Faces& faces = front.faces();
@@ -170,7 +169,7 @@ void NettoieNoeuds::nettoie(Zone& dom)
               faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
         }
       // Les Raccords
-      for (auto &itr : zone.faces_raccord())
+      for (auto &itr : dom.faces_raccord())
         {
           Frontiere& front = itr.valeur();
           Faces& faces = front.faces();

@@ -28,8 +28,7 @@ Entree& Champ_Don_lu::readOn(Entree& is)
   is >> nom;
 
   Zone& domaine = interprete_get_domaine(nom);
-  const Zone& ma_zone = domaine;
-  int nb_elems = ma_zone.nb_elem();
+  int nb_elems = domaine.nb_elem();
   dim = lire_dimension(is, que_suis_je());
 
   dimensionner(nb_elems, dim);
@@ -131,7 +130,7 @@ Entree& Champ_Don_lu::readOn(Entree& is)
       if (Objet_U::dimension==3) z=point[2];
 
       // Recherche de l'element
-      elem2=ma_zone.chercher_elements(x,y,z);
+      elem2=domaine.chercher_elements(x,y,z);
       if ((elem2!=-1) && (elem2<nb_elems))
         {
           for (int k=0; k<dim; k++) mes_val(elem2,k) = val_lu[k];

@@ -27,8 +27,8 @@ Implemente_base(Discretisation_base,"Discretisation_base",Objet_U);
 Implemente_ref(Discretisation_base);
 Implemente_instanciable(Discretisation,"Discretisation",DERIV(Discretisation_base));
 
-const Motcle Discretisation_base::demande_description = Motcle("demande_description");
-const Nom    Discretisation_base::nom_vide = Nom("-");
+const Motcle Discretisation_base::DEMANDE_DESCRIPTION = Motcle("demande_description");
+const Nom    Discretisation_base::NOM_VIDE = Nom("-");
 
 Sortie& Discretisation_base::printOn(Sortie& os) const
 {
@@ -102,7 +102,7 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_
 void Discretisation_base::test_demande_description(const Motcle& directive,
                                                    const Nom& type_objet) const
 {
-  if (directive == Discretisation_base::demande_description)
+  if (directive == Discretisation_base::DEMANDE_DESCRIPTION)
     {
       Cerr << "Discr_base : none directive understood" << finl;
       // On a fait le tour, les descendants on ecrit toutes les directives
@@ -132,12 +132,12 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     {
       exit();
       throw;
     }
-  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp, nb_pas_dt, temps, champ, sous_type);
+  discretiser_champ(DEMANDE_DESCRIPTION, z, nature, noms, unites, nb_comp, nb_pas_dt, temps, champ, sous_type);
 }
 
 /*! @brief idem
@@ -148,12 +148,12 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     {
       exit();
       throw;
     }
-  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp, temps, champ);
+  discretiser_champ(DEMANDE_DESCRIPTION, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 /*! @brief idem
@@ -164,12 +164,12 @@ void Discretisation_base::discretiser_champ(const Motcle& directive, const Zone_
 {
   test_demande_description(directive, champ.que_suis_je());
   // Appel recursif pour produire l'affichage des directives :
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     {
       exit();
       throw;
     }
-  discretiser_champ(demande_description, z, nature, noms, unites, nb_comp, temps, champ);
+  discretiser_champ(DEMANDE_DESCRIPTION, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 void Discretisation_base::discretiser_variables() const

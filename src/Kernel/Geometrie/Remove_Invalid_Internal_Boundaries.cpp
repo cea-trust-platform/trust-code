@@ -31,12 +31,11 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
   associer_domaine(is);
 
   Zone& domain = domaine(0);
-  Zone&    zone   = domain;
 
   Scatter::uninit_sequential_domain(domain);
 
   Static_Int_Lists incidence;
-  construire_connectivite_som_elem(domain.nb_som_tot(), zone.les_elems(), incidence, 1);
+  construire_connectivite_som_elem(domain.nb_som_tot(), domain.les_elems(), incidence, 1);
 
   LIST(Nom) name_of_useless_boundaries;
   LIST(Nom) name_of_useless_connectors;
@@ -44,7 +43,7 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
   ArrOfInt cells_on_frontier_face;
   cells_on_frontier_face.set_smart_resize(1);
 
-  for (auto &itr : zone.faces_bord())
+  for (auto &itr : domain.faces_bord())
     {
       const Faces& frontier_faces    = itr.faces();
       const int nb_frontier_faces = frontier_faces.nb_faces_tot();
@@ -108,7 +107,7 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
         }
     }
 
-  for (auto &itr : zone.faces_raccord())
+  for (auto &itr : domain.faces_raccord())
     {
       const Faces& frontier_faces = itr->faces();
       const int nb_frontier_faces = frontier_faces.nb_faces_tot();
@@ -169,14 +168,14 @@ Entree& Remove_Invalid_Internal_Boundaries::interpreter_(Entree& is)
 
   for (auto& itr : name_of_useless_boundaries)
     {
-      Bords& boundaries = zone.faces_bord();
-      boundaries.suppr(zone.bord(itr));
+      Bords& boundaries = domain.faces_bord();
+      boundaries.suppr(domain.bord(itr));
     }
 
   for (auto& itr : name_of_useless_connectors)
     {
-      Raccords& connectors = zone.faces_raccord();
-      connectors.suppr(zone.raccord(itr));
+      Raccords& connectors = domain.faces_raccord();
+      connectors.suppr(domain.raccord(itr));
     }
 
   Scatter::init_sequential_domain(domain);

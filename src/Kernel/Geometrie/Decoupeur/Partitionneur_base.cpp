@@ -249,9 +249,8 @@ int Partitionneur_base::corriger_sommets_bord(const Zone& domaine,
                                               IntVect& elem_part)
 {
   const int nb_som_tot = domaine.nb_som_tot();
-  const Zone& zone = domaine;
-  const int nb_elem = zone.nb_elem();
-  const int nb_elem_tot = zone.nb_elem_tot();
+  const int nb_elem = domaine.nb_elem();
+  const int nb_elem_tot = domaine.nb_elem_tot();
 
   // Premiere etape :
   // Marquage des sommets de bord :
@@ -266,10 +265,10 @@ int Partitionneur_base::corriger_sommets_bord(const Zone& domaine,
   element_bord = 0;
   element_bord_perio = 0;
 
-  const int nb_bords = zone.nb_bords();
+  const int nb_bords = domaine.nb_bords();
   for (int i_bord = 0; i_bord < nb_bords; i_bord++)
     {
-      const Bord& bord = zone.bord(i_bord);
+      const Bord& bord = domaine.bord(i_bord);
       const IntTab& faces_sommets = bord.faces().les_sommets();
       const int nb_faces_bord = faces_sommets.dimension(0);
       const int nb_som_face = faces_sommets.dimension(1);
@@ -316,7 +315,7 @@ int Partitionneur_base::corriger_sommets_bord(const Zone& domaine,
     parties_autorisees.set_smart_resize(1);
     ArrOfInt tmp;
     tmp.set_smart_resize(1);
-    const IntTab& elements = zone.les_elems();
+    const IntTab& elements = domaine.les_elems();
     const int nb_som_elem = elements.dimension(1);
     for (int elem = 0; elem < nb_elem; elem++)
       {
@@ -410,8 +409,7 @@ int Partitionneur_base::corriger_multiperiodique(const Zone& domaine,
                                                  IntVect& elem_part)
 {
   const int nb_som = domaine.nb_som();
-  const Zone& zone = domaine;
-  const int nb_elem = zone.nb_elem();
+  const int nb_elem = domaine.nb_elem();
 
   // Pour chaque sommet periodique, selectionner une partie a laquelle il appartient
   // (la plus petite parmi les parties des elements periodiques adjacents)
@@ -426,7 +424,7 @@ int Partitionneur_base::corriger_multiperiodique(const Zone& domaine,
   int deux_puissance_i_bord = 1;
   for (auto& itr : liste_bords_perio)
     {
-      const Bord& bord = zone.bord(itr);
+      const Bord& bord = domaine.bord(itr);
       const IntTab& faces_sommets = bord.faces().les_sommets();
       const int nb_faces_bord = faces_sommets.dimension(0);
       const int nb_som_face = faces_sommets.dimension(1);
@@ -475,7 +473,7 @@ int Partitionneur_base::corriger_multiperiodique(const Zone& domaine,
     }
   // Deuxieme etape: affecter les elements adjacents a un sommet multiperiodique
   // a la partie associee au sommet renum_som_perio de ce sommet.
-  const IntTab& les_elems = zone.les_elems();
+  const IntTab& les_elems = domaine.les_elems();
   const int nb_som_elem = les_elems.dimension(1);
   int count = 0;
   for (int elem = 0; elem < nb_elem; elem++)
@@ -669,17 +667,16 @@ void Partitionneur_base::corriger_bords_avec_liste(const Zone& dom,
                                                    const int my_offset,
                                                    IntVect& elem_part)
 {
-  const Zone& zone = dom;
   Cerr << "Correction of the splitting for the periodicity" << finl;
   Static_Int_Lists som_elem;
   Cerr << " Construction of the connectivity som_elem" << finl;
   construire_connectivite_som_elem(dom.nb_som_tot(),
-                                   zone.les_elems(),
+                                   dom.les_elems(),
                                    som_elem,
                                    1 /* inclure les elements virtuels */);
   Cerr << " Construction of graph connectivity for periodic elements" << finl;
   Static_Int_Lists graph_elements_perio;
-  calculer_graphe_connexions_periodiques(zone,
+  calculer_graphe_connexions_periodiques(dom,
                                          liste_bords_periodiques,
                                          som_elem,
                                          my_offset,

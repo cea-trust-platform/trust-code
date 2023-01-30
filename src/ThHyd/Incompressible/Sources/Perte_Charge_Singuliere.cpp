@@ -250,18 +250,16 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
     {
       /* Surface algorithm */
       const Zone& le_domaine2D = ref_cast(Zone,le_domaine.interprete().objet(nom_surface));
-      const Zone& zone_2D = le_domaine2D;
       const DoubleTab& coord_sommets_2D=le_domaine2D.coord_sommets();
 
       DoubleTab xv2D;
-      zone_2D.calculer_centres_gravite(xv2D);
-      const int nb_elem_2D = zone_2D.nb_elem_tot();
-      int nse2D = zone_2D.nb_som_elem();
+      le_domaine2D.calculer_centres_gravite(xv2D);
+      const int nb_elem_2D = le_domaine2D.nb_elem_tot();
+      int nse2D = le_domaine2D.nb_som_elem();
 
       const DoubleTab& coord_sommets=le_domaine.coord_sommets();
       const IntTab& face_sommets = zvf.face_sommets();
-      const Zone& zone_vol = le_domaine;
-      const OctreeRoot& octree_vol = zone_vol.construit_octree();
+      const OctreeRoot& octree_vol = le_domaine.construit_octree();
 
       // Loop on faces on the surface domain
       Cerr << " Surface " << nom_surface << " with " << nb_elem_2D << " faces" << finl;
@@ -296,7 +294,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
                       if (Objet_U::dimension>2)
                         zcoord_vol=coord_sommets(numso,2);
 
-                      for (int i = 0, numso2D; i < nse2D && (numso2D = zone_2D.sommet_elem(ind_face, i)) >= 0; i++)
+                      for (int i = 0, numso2D; i < nse2D && (numso2D = le_domaine2D.sommet_elem(ind_face, i)) >= 0; i++)
                         {
                           double xcoord_2D=coord_sommets_2D(numso2D,0);
                           double ycoord_2D=coord_sommets_2D(numso2D,1);

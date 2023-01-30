@@ -102,8 +102,7 @@ Entree& TroisDto2D::interpreter_(Entree& is)
   }
   Zone& dom2D = ref_cast(Zone, objet(nom_dom2D));
   const Zone& dom3D = domaine();
-  const Zone& zone3D=dom3D;
-  const Bord& bord3D=zone3D.bord(nom_bord);
+  const Bord& bord3D=dom3D.bord(nom_bord);
   Scatter::uninit_sequential_domain(dom2D);
   extraire_2D(dom3D, dom2D, bord3D,nom_bord, test_axi);
   Scatter::init_sequential_domain(dom2D);

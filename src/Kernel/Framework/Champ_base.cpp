@@ -302,9 +302,8 @@ double Champ_base::valeur_a_sommet_compo(int sommet, int le_poly, int compo) con
 DoubleTab& Champ_base::valeur_aux_sommets(const Zone& dom, DoubleTab& val) const
 {
   const DoubleTab& positions=dom.coord_sommets();
-  const Zone& zone=dom;
   IntVect les_polys(positions.dimension(0));
-  zone.chercher_elements(positions, les_polys);
+  dom.chercher_elements(positions, les_polys);
   return valeur_aux_elems(positions, les_polys, val);
 }
 
@@ -315,9 +314,8 @@ DoubleVect& Champ_base::valeur_aux_sommets_compo(const Zone& dom,
                                                  DoubleVect& val, int compo) const
 {
   const DoubleTab& positions=dom.coord_sommets();
-  const Zone& zone=dom;
   IntVect les_polys(positions.dimension(0));
-  zone.chercher_elements(positions, les_polys);
+  dom.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, val, compo);
 }
 
@@ -417,7 +415,6 @@ void Champ_base::corriger_unite_nom_compo()
 
 int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,Nom& nom_post,const Zone& dom) const
 {
-  const Zone& zone=dom;
   //nom_post=le_nom();
   Nom nom_dom=dom.le_nom();
   Nom nom_dom_inc= dom.le_nom();
@@ -448,13 +445,13 @@ int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,No
               centres_de_gravites(i,k) = zvf.xp(i,k);
         }
       else
-        zone.calculer_centres_gravite(centres_de_gravites);
+        dom.calculer_centres_gravite(centres_de_gravites);
 
       valeur_aux_centres_de_gravite(centres_de_gravites,les_valeurs);
     }
   else
     {
-      zone.calculer_centres_gravite(centres_de_gravites);
+      dom.calculer_centres_gravite(centres_de_gravites);
       valeur_aux(centres_de_gravites, les_valeurs);
     }
 
@@ -479,7 +476,6 @@ int Champ_base::calculer_valeurs_elem_post(DoubleTab& les_valeurs,int nb_elem,No
 }
 int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncomp,int nb_elem,Nom& nom_post,const Zone& dom) const
 {
-  const Zone& zone=dom;
   //nom_post=nom_compo(ncomp);
   Nom nom_dom=dom.le_nom();
   Nom nom_dom_inc= dom.le_nom();
@@ -507,7 +503,7 @@ int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncom
               centres_de_gravites(i,k) = zvf.xp(i,k);
         }
       else
-        zone.calculer_centres_gravite(centres_de_gravites);
+        dom.calculer_centres_gravite(centres_de_gravites);
 
       IntVect les_polys(nb_elem);
       {
@@ -520,7 +516,7 @@ int Champ_base::calculer_valeurs_elem_compo_post(DoubleTab& les_valeurs,int ncom
     }
   else
     {
-      zone.calculer_centres_gravite(centres_de_gravites);
+      dom.calculer_centres_gravite(centres_de_gravites);
       valeur_aux_compo(centres_de_gravites, les_valeurs, ncomp);
     }
   nom_post+= Nom("_elem_");

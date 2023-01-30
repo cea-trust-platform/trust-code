@@ -63,8 +63,6 @@ Entree& Distanceparoi::interpreter_(Entree& is)
   Nom fichier = dom.le_nom();
   fichier += "_Wall_length.xyz";
 
-  Zone& la_zone=dom;
-
   if (Process::je_suis_maitre())
     Cerr << "In Distanceparoi::interpreter : Generate faces" << finl;
   Faces* les_faces_ptr=new(Faces);
@@ -74,13 +72,13 @@ Entree& Distanceparoi::interpreter_(Entree& is)
 
   {
     // bloc a factoriser avec Zone_VF.cpp :
-    Type_Face type_face = la_zone.type_elem().type_face(0);
+    Type_Face type_face = dom.type_elem().type_face(0);
     les_faces.typer(type_face);
-    les_faces.associer_zone(la_zone);
+    les_faces.associer_zone(dom);
 
     Static_Int_Lists connectivite_som_elem;
-    const int     nb_sommets_tot = la_zone.nb_som_tot();
-    const IntTab&    elements       = la_zone.les_elems();
+    const int     nb_sommets_tot = dom.nb_som_tot();
+    const IntTab&    elements       = dom.les_elems();
 
     construire_connectivite_som_elem(nb_sommets_tot,
                                      elements,
@@ -89,7 +87,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
 
     Faces_builder faces_builder;
     IntTab elem_faces; // Tableau dont on aura pas besoin
-    faces_builder.creer_faces_reeles(la_zone,
+    faces_builder.creer_faces_reeles(dom,
                                      connectivite_som_elem,
                                      les_faces,
                                      elem_faces);
@@ -102,7 +100,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
   const DoubleTab& xs=dom.coord_sommets();        // coordonnees des sommets
 
   les_faces.calculer_centres_gravite(xv);
-  la_zone.calculer_centres_gravite(xp);
+  dom.calculer_centres_gravite(xp);
 
   int nb_elem_tot = xp.dimension(0);
   int dim = xv.dimension(1);
@@ -124,8 +122,8 @@ Entree& Distanceparoi::interpreter_(Entree& is)
 
       for (int b=0; b<nb_paroi; b++)
         {
-          int rang=la_zone.rang_frontiere(nom_paroi[b]);
-          const Frontiere& la_frontiere=la_zone.frontiere(rang);
+          int rang=dom.rang_frontiere(nom_paroi[b]);
+          const Frontiere& la_frontiere=dom.frontiere(rang);
 
           // pas de methode const pour Frontiere::les_sommets_des_faces();
           const IntTab& sommets_face = (ref_cast(Frontiere,la_frontiere)).les_sommets_des_faces();
@@ -167,7 +165,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
                       exit();
                     }
 
-                  if ( (la_zone.chercher_elements(compx_0+nx, compy_0+ny)) < 0 ) norme*=-1.;
+                  if ( (dom.chercher_elements(compx_0+nx, compy_0+ny)) < 0 ) norme*=-1.;
 
                   nx/=norme;
                   ny/=norme;
@@ -226,7 +224,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
 
                   double norme=sqrt(nx*nx+ny*ny+nz*nz);
 
-                  if ( (la_zone.chercher_elements(compx_0+nx, compy_0+ny, compz_0+nz)) < 0 ) norme*=-1.;
+                  if ( (dom.chercher_elements(compx_0+nx, compy_0+ny, compz_0+nz)) < 0 ) norme*=-1.;
 
                   nx/=norme;
                   ny/=norme;

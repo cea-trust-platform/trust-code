@@ -138,9 +138,8 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
   //
   //                Restriction --> champs aux faces
 
-  const Zone& ma_zone = domaine;
-  int nb_elems = ma_zone.nb_elem();
-  int nbfacelem=ma_zone.nb_faces_elem();
+  int nb_elems = domaine.nb_elem();
+  int nbfacelem=domaine.nb_faces_elem();
   const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis());
   const IntTab& elem_faces=zvf.elem_faces();
   const DoubleTab& xv=zvf.xv();
@@ -170,7 +169,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
       int Case=-1;
       // Premier algorithme (le plus rapide) cherchant l'element
       // contenant le centre de gravite de la face
-      int num_elem=ma_zone.chercher_elements(x,y,z);
+      int num_elem=domaine.chercher_elements(x,y,z);
       if ((num_elem!=-1) && (num_elem<nb_elems))
         {
           // On cherche la face de l'element

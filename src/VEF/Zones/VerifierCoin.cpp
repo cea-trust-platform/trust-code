@@ -69,8 +69,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
 
   associer_domaine(is);
   Zone& dom=domaine();
-  Zone& zone=dom;
-  if (zone.type_elem()->que_suis_je() != "Triangle" && zone.type_elem()->que_suis_je() != "Tetraedre")
+  if (dom.type_elem()->que_suis_je() != "Triangle" && dom.type_elem()->que_suis_je() != "Tetraedre")
     {
       Cerr << "Error for "<<que_suis_je() <<" interpreter : it can be applied only for triangular or tetraedral meshing." << finl;
       exit();
@@ -96,12 +95,12 @@ Entree& VerifierCoin::interpreter_(Entree& is)
     {
       Scatter::uninit_sequential_domain(dom);
       DoubleTab xp;
-      zone.calculer_centres_gravite(xp);
+      dom.calculer_centres_gravite(xp);
       DoubleTab& sommets = dom.les_sommets();
       int nbsom=sommets.dimension(0);
 
-      IntTab& les_elems=zone.les_elems();
-      int nbelem=zone.nb_elem();
+      IntTab& les_elems=dom.les_elems();
+      int nbelem=dom.nb_elem();
       int elem,ns,ns1,ne,somm;
 
       IntLists sommets_associes(nbsom);
@@ -283,7 +282,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
                           les_elems(oldsz+2,3)=nouveau_sommet;
                         }
 
-                      mettre_a_jour_sous_zone(zone,elem,oldsz,dimension);
+                      mettre_a_jour_sous_zone(dom,elem,oldsz,dimension);
 
                       ++liste_elem;
                     }

@@ -123,7 +123,6 @@ void Zone_bord::extraire_domaine_bord(const Zone& src,
            << " (this will be done one day... ask to B.Mathieu)" << finl;
     }
 
-  const Zone& zone_src = src;
   // Le domaine destination doit etre vide:
   assert(dest.nb_elem() == 0);
   // Initialisation du domaine et d'une zone:
@@ -131,11 +130,11 @@ void Zone_bord::extraire_domaine_bord(const Zone& src,
   dest.nommer(src.le_nom() + Nom("_") + nom_bord);
   // Type des elements du domaine dest:
   Motcle type_elem;
-  type_face_to_type_elem(zone_src.type_elem().valeur(), zone_src.type_elem().valeur().type_face(), type_elem);
+  type_face_to_type_elem(src.type_elem().valeur(), src.type_elem().valeur().type_face(), type_elem);
   dest.type_elem().typer(type_elem);
   dest.type_elem().valeur().associer_zone(dest);
 
-  const Frontiere& front = zone_src.frontiere(nom_bord);
+  const Frontiere& front = src.frontiere(nom_bord);
   const int nb_faces = front.faces().nb_faces();
   const int nb_som_face = front.faces().nb_som_faces();
   const IntTab& faces_src = front.faces().les_sommets();

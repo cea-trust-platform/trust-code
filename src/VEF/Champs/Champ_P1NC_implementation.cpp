@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,16 +63,14 @@ static const double coeff_penalisation = 1e9;
  */
 DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Zone& dom)
 {
-  const Zone& mazone = dom;
-
-  int nb_elem_tot = mazone.nb_elem_tot();
-  int nb_som = mazone.nb_som_tot();
-  int nb_som_elem = mazone.nb_som_elem();
+  int nb_elem_tot = dom.nb_elem_tot();
+  int nb_som = dom.nb_som_tot();
+  int nb_som_elem = dom.nb_som_elem();
   const DoubleTab& ch = cha.valeurs();
 
   const Zone_VEF& zone_VEF = cha.zone_vef();
   const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF, cha.equation().zone_Cl_dis().valeur());
-  const IntTab& elem_som = mazone.les_elems();
+  const IntTab& elem_som = dom.les_elems();
   double mijK, miiK;
   DoubleTab& vit_som=cha.ch_som();
 
@@ -245,7 +243,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Zone& dom)
       // Fin Modif CD 15/04/03
 
       //mat.imprimer_formatte(Cerr);
-      //      Cerr<<"zone.nb_som_tot() = "<<mazone.nb_som_tot()<<", zone.nb_som() = "<<mazone.nb_som()<<finl;
+      //      Cerr<<"zone.nb_som_tot() = "<<dom.nb_som_tot()<<", zone.nb_som() = "<<dom.nb_som()<<finl;
       //      Cerr << "Matrice de filtrage OK" << finl;
       //       Cout << "Matrice de masse P1 : " << finl;
       //       mat.imprimer(Cout) << finl;
@@ -481,13 +479,12 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Zone& dom)
 
 DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Zone& dom)
 {
-  const Zone& mazone = dom;
-  int nb_elem_tot = mazone.nb_elem_tot();
-  int nb_som = mazone.nb_som_tot();
-  int nb_som_elem = mazone.nb_som_elem();
+  int nb_elem_tot = dom.nb_elem_tot();
+  int nb_som = dom.nb_som_tot();
+  int nb_som_elem = dom.nb_som_elem();
   const DoubleTab& ch = cha.valeurs();
   const Zone_VEF& zone_VEF = cha.zone_vef();
-  const IntTab& elem_som = mazone.les_elems();
+  const IntTab& elem_som = dom.les_elems();
   double mijK, miiK;
   DoubleTab& vit_som=cha.ch_som();
 
@@ -593,7 +590,7 @@ DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Zone& dom)
       // Fin Modif CD 15/04/03
 
       //mat.imprimer_formatte(Cerr);
-      //      Cerr<<"zone.nb_som_tot() = "<<mazone.nb_som_tot()<<", zone.nb_som() = "<<mazone.nb_som()<<finl;
+      //      Cerr<<"zone.nb_som_tot() = "<<dom.nb_som_tot()<<", zone.nb_som() = "<<dom.nb_som()<<finl;
       //      Cerr << "Matrice de filtrage OK" << finl;
       //       Cout << "Matrice de masse P1 : " << finl;
       //       mat.imprimer(Cout) << finl;
@@ -968,10 +965,10 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
                   const Zone_VEF& zone_VE_chF = ch_inc_P1NC.zone_vef();
                   const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,ch_inc_P1NC.equation().zone_Cl_dis().valeur());
                   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-                  const Zone& mazone = zone_VE_chF.zone();
+                  const Zone& domchF = zone_VE_chF.zone();
                   const IntTab& face_voisins = zone_VE_chF.face_voisins();
                   const IntTab& elem_faces = zone_VE_chF.elem_faces();
-                  int nfac = mazone.nb_faces_elem(0);
+                  int nfac = domchF.nb_faces_elem(0);
                   int nb_cl=les_cl.size();
                   IntVect num(nfac);
                   int num_cl,fac,ind_fac;
@@ -1129,8 +1126,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
                                             cha.equation().zone_Cl_dis().valeur());
   const Zone_VEF& zone_VEF = zone_vef();
   const DoubleVect& volumes_entrelaces= zone_VEF.volumes_entrelaces();
-  const Zone& mazone =zone_VEF.zone();
-  const Zone& dom=mazone;
+  const Zone& dom =zone_VEF.zone();
   const IntTab& face_sommets=zone_VEF.face_sommets();
   int nb_faces=resu.dimension(0);
   int nb_faces_tot=resu.dimension_tot(0);
@@ -1599,9 +1595,7 @@ DoubleTab& Champ_P1NC_implementation::
 valeur_aux_sommets(const Zone& dom,
                    DoubleTab& champ_som) const
 {
-  const Zone& mazone = dom;
-
-  int nb_som = mazone.nb_som_tot();
+  int nb_som = dom.nb_som_tot();
   int nb_som_return = champ_som.dimension_tot(0);
 
   const Champ_base& cha=le_champ();
@@ -1610,12 +1604,12 @@ valeur_aux_sommets(const Zone& dom,
   ArrOfInt compteur(nb_som);
 
   const Zone_VEF& zone_VEF = zone_vef();
-  assert(zone_vef().zone()==mazone);
+  assert(zone_vef().zone()==dom);
 
   if ( methode_calcul_valeurs_sommets>0)
     {
-      int nb_elem_tot = mazone.nb_elem_tot();
-      int nb_som_elem = mazone.nb_som_elem();
+      int nb_elem_tot = dom.nb_elem_tot();
+      int nb_som_elem = dom.nb_som_elem();
 
       const IntTab& elem_faces = zone_VEF.elem_faces();
 
@@ -1637,7 +1631,7 @@ valeur_aux_sommets(const Zone& dom,
         {
           for (j=0; j<nb_som_elem; j++)
             {
-              num_som = mazone.sommet_elem(num_elem,j);
+              num_som = dom.sommet_elem(num_elem,j);
               if(num_som < nb_som_return)
                 {
                   compteur[num_som]++;
@@ -1758,20 +1752,18 @@ valeur_aux_sommets_compo(const Zone& dom,
                          DoubleVect& champ_som,
                          int ncomp) const
 {
-  const Zone_dis_base& zone_dis = get_zone_dis();
-  const Zone& mazone = zone_dis.zone();
   const DoubleTab& ch = le_champ().valeurs();
 
   const Zone_VEF& zone_VEF = zone_vef();
 
 
-  int nb_som = mazone.nb_som();
+  int nb_som = dom.nb_som();
 
   IntVect compteur(nb_som);
   if (methode_calcul_valeurs_sommets>0)
     {
-      int nb_elem_tot = mazone.nb_elem_tot();
-      int nb_som_elem = mazone.nb_som_elem();
+      int nb_elem_tot = dom.nb_elem_tot();
+      int nb_som_elem = dom.nb_som_elem();
       int num_elem,num_som,j;
       champ_som = 0;
       compteur = 0;
@@ -1792,7 +1784,7 @@ valeur_aux_sommets_compo(const Zone& dom,
         {
           for (j=0; j<nb_som_elem; j++)
             {
-              num_som = mazone.sommet_elem(num_elem,j);
+              num_som = dom.sommet_elem(num_elem,j);
               if(num_som < nb_som)
                 {
                   compteur[num_som]++;

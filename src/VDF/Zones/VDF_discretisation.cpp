@@ -113,10 +113,10 @@ void VDF_discretisation::discretiser_champ(
       break;
     }
 
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     Cerr << "VDF_discretisation : " << motcles;
 
-  if (sous_type != nom_vide)
+  if (sous_type != NOM_VIDE)
     rang = verifie_sous_type(type,sous_type,directive);
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)
@@ -256,7 +256,7 @@ void VDF_discretisation::discretiser_champ_fonc_don(
       break;
     }
 
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     Cerr << "VDF_discretisation : " << motcles;
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)

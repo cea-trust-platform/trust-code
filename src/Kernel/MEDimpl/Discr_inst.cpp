@@ -130,7 +130,7 @@ void Discr_inst::discretiser_champ_fonc_don(
       break;
     }
 
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     Cerr << "Discr_inst : " << motcles;
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)

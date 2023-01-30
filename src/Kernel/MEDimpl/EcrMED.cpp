@@ -806,15 +806,14 @@ const Frontiere& mes_faces_fr(const Zone& zone,int i)
 // a partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
 void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
 {
-  const Zone& zone=dom;
-  int nb_type_face=zone.type_elem().nb_type_face();
+  int nb_type_face=dom.type_elem().nb_type_face();
   type_face.dimensionner(nb_type_face);
   all_faces_bord.dimensionner(nb_type_face);
   familles.dimensionner(nb_type_face);
 
 
-  int nb_faces_bord=zone.nb_faces_bord()+zone.nb_faces_raccord()+zone.nb_faces_int()+zone.nb_faces_joint();
-  int nb_bords=zone.nb_front_Cl()+zone.nb_joints();
+  int nb_faces_bord=dom.nb_faces_bord()+dom.nb_faces_raccord()+dom.nb_faces_int()+dom.nb_faces_joint();
+  int nb_bords=dom.nb_front_Cl()+dom.nb_joints();
   if (nb_bords==0)
     {
       // on n'a pas les bords
@@ -826,10 +825,10 @@ void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bor
   int nb_type_trouve=0;
   for (int ii=0; ii<nb_bords; ii++)
     {
-      if (mes_faces_fr(zone,ii).faces().nb_faces()!=0)
+      if (mes_faces_fr(dom,ii).faces().nb_faces()!=0)
         {
           Nom type_face_b;
-          type_face_b=mes_faces_fr(zone,ii).faces().type(mes_faces_fr(zone,ii).faces().type_face());
+          type_face_b=mes_faces_fr(dom,ii).faces().type(mes_faces_fr(dom,ii).faces().type_face());
           int existe=0;
           for (int j=0; j<nb_type_trouve; j++)
             if (type_face_b==type_face[j])
@@ -847,7 +846,7 @@ void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bor
     }
   //Cerr<<"type_face "<<type_face<<finl;
 
-  int nb_som_face_max=zone.type_elem().nb_som_face(0);
+  int nb_som_face_max=dom.type_elem().nb_som_face(0);
   for (int j=0; j<nb_type_face; j++)
     {
       all_faces_bord[j].resize(nb_faces_bord, nb_som_face_max);
@@ -863,20 +862,20 @@ void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bor
   ArrOfInt nb_som(nb_type_face);
   for(int i=0; i<nb_bords; i++)
     {
-      if (sub_type(Raccord_base,mes_faces_fr(zone,i)))
+      if (sub_type(Raccord_base,mes_faces_fr(dom,i)))
         {
           noms_bords[i]="type_raccord_";
-          noms_bords[i]+=mes_faces_fr(zone,i).le_nom();
+          noms_bords[i]+=mes_faces_fr(dom,i).le_nom();
         }
       else
-        noms_bords[i]=mes_faces_fr(zone,i).le_nom();
-      const IntTab& les_sommets_des_faces=mes_faces_fr(zone,i).les_sommets_des_faces();
+        noms_bords[i]=mes_faces_fr(dom,i).le_nom();
+      const IntTab& les_sommets_des_faces=mes_faces_fr(dom,i).les_sommets_des_faces();
       int nb_fac=les_sommets_des_faces.dimension(0);
       // on cherche de quel type est le bord
       int ref=0;
       if (nb_fac>0)
         {
-          Nom type_face_b=mes_faces_fr(zone,i).faces().type(mes_faces_fr(zone,i).faces().type_face());
+          Nom type_face_b=mes_faces_fr(dom,i).faces().type(mes_faces_fr(dom,i).faces().type_face());
           ref=type_face.search(type_face_b);
         }
       for(int j=0; j<nb_fac; j++)
@@ -919,10 +918,9 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zon
 {
   //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
   const  DoubleTab& sommets=dom.les_sommets();
-  const  Zone& zone=dom;
-  Nom type_elem=zone.type_elem()->que_suis_je();
+  Nom type_elem=dom.type_elem()->que_suis_je();
 
-  const IntTab& les_elems=zone.les_elems();
+  const IntTab& les_elems=dom.les_elems();
 
   Noms type_face;
   IntTabs all_faces_bord;
@@ -979,7 +977,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zon
         {
           // Polyedron is special, seepage 10:
           // http://trac.lecad.si/vaje/chrome/site/doc8.3.0/extra/Normalisation_pour_le_couplage_de_codes.pdf
-          const Polyedre& Poly = ref_cast(Polyedre, zone.type_elem().valeur());
+          const Polyedre& Poly = ref_cast(Polyedre, dom.type_elem().valeur());
           ArrOfInt Nodes_glob;
           Poly.remplir_Nodes_glob(Nodes_glob, les_elems2);
           const ArrOfInt& FacesIndex = Poly.getFacesIndex();
@@ -1040,8 +1038,8 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zon
       famArr->fillWithValue(global_family_id);
       file->setFamilyFieldArr(0, famArr);
       // Name the family and check unicity:
-      Nom family_name = noms_bords.search(zone.le_nom()) != -1 ? "cpy_" : "";
-      family_name += zone.le_nom();
+      Nom family_name = noms_bords.search(dom.le_nom()) != -1 ? "cpy_" : "";
+      family_name += dom.le_nom();
       file->addFamily(family_name.getString(), global_family_id);
 
       // Faces:
@@ -1141,7 +1139,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zon
     }
   else
 #endif
-    medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,zone.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,zone.le_nom(),mode, major_mode);
+    medecrgeom(nom_fic,nom_dom,dimension,sommets,type_elem,dom.type_elem(),les_elems2,type_face,all_faces_bord,familles,noms_bords,dom.le_nom(),mode, major_mode);
 //Cerr<<"Writing of the domain is ended"<<finl;
 
 }

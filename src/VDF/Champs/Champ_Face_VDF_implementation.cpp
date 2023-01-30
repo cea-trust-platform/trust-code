@@ -67,12 +67,11 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem_(const DoubleTab& val_f
   const Zone_VDF& zone_VDF = zone_vdf();
   const Zone& zone_geom = get_zone_geom();
   const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
-  const Zone& dom = zone_geom;
 
   for (int d = 0; d < D; d++)
     {
       const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
-      const double psi = (position(d) - dom.coord(som0, d)) / (dom.coord(som1, d) - dom.coord(som0, d));
+      const double psi = (position(d) - zone_geom.coord(som0, d)) / (zone_geom.coord(som1, d) - zone_geom.coord(som0, d));
       for (int n = 0; n < N; n++)
         {
           // TODO : FIXME : cas avec line_size 1 mais nb_dim != 2 ... vu dans cathare3D
@@ -144,9 +143,7 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_sommets(const Zone& dom, Do
       Process::exit();
     }
 
-  const Zone& mazone = dom;
-
-  const int nb_elem_tot = mazone.nb_elem_tot(), nb_som = mazone.nb_som(), nb_som_elem = mazone.nb_som_elem();
+  const int nb_elem_tot = dom.nb_elem_tot(), nb_som = dom.nb_som(), nb_som_elem = dom.nb_som_elem();
   const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
   IntVect compteur(nb_som);
   ch_som = 0, compteur = 0;
@@ -154,7 +151,7 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_sommets(const Zone& dom, Do
   DoubleVect position(D), val_e(N * D);
   for (int e = 0; e < nb_elem_tot; e++)
     for (int j = 0, s; j < nb_som_elem; j++)
-      if ((s = mazone.sommet_elem(e, j)) < nb_som)
+      if ((s = dom.sommet_elem(e, j)) < nb_som)
         {
           for(int d = 0; d < D; d++)
             position(d) = dom.coord(s, d);
@@ -185,10 +182,9 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Zone& 
     }
   assert(le_champ().valeurs().line_size() == 1); // not compatible with multiphase
 
-  const Zone& mazone = dom;
-  int nb_elem_tot = mazone.nb_elem_tot();
-  int nb_som = mazone.nb_som();
-  int nb_som_elem = mazone.nb_som_elem();
+  int nb_elem_tot = dom.nb_elem_tot();
+  int nb_som = dom.nb_som();
+  int nb_som_elem = dom.nb_som_elem();
   IntVect compteur(nb_som);
   int num_elem,num_som,j;
   ch_som = 0;
@@ -198,7 +194,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Zone& 
   for (num_elem=0; num_elem<nb_elem_tot; num_elem++)
     for (j=0; j<nb_som_elem; j++)
       {
-        num_som = mazone.sommet_elem(num_elem,j);
+        num_som = dom.sommet_elem(num_elem,j);
         for(int k=0; k<Objet_U::dimension; k++)
           position(k)=dom.coord(num_som,k);
         if(num_som < nb_som)

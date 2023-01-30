@@ -193,8 +193,7 @@ void Partitionneur_Tranche::construire_partition(IntVect& elem_part, int& nb_par
   assert(nb_tranches_[0] > 0);
 
   const Zone& dom = ref_domaine_.valeur();
-  const Zone& zone = dom;
-  const int nb_elem = zone.nb_elem();
+  const int nb_elem = dom.nb_elem();
 
   const int dim = dom.dimension;
 
@@ -206,10 +205,10 @@ void Partitionneur_Tranche::construire_partition(IntVect& elem_part, int& nb_par
   // Pour chaque dimension d'espace, cette direction est-elle
   // une direction de periodicite
   ArrOfInt directions_perio;
-  chercher_direction_perio(zone, liste_bords_periodiques_, directions_perio);
+  chercher_direction_perio(dom, liste_bords_periodiques_, directions_perio);
 
   Cerr << "Calculation of centers of gravity of the elements" << finl;
-  zone.calculer_centres_gravite(coord_g);
+  dom.calculer_centres_gravite(coord_g);
   assert(coord_g.dimension(0) == nb_elem);
   assert(coord_g.dimension(1) == dim);
 

@@ -128,7 +128,7 @@ void VEFPreP1B::discretiser_champ(
       break;
     }
 
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     Cerr << "VEFPreP1B : " << motcles;
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)
@@ -235,7 +235,7 @@ void VEFPreP1B::discretiser_champ_fonc_don(
       break;
     }
 
-  if (directive == demande_description)
+  if (directive == DEMANDE_DESCRIPTION)
     Cerr << "VEFPreP1B : " << motcles;
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)

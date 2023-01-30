@@ -117,35 +117,33 @@ Entree& ExtrudeParoi::interpreter_(Entree& is)
  */
 void ExtrudeParoi::extrude(Zone& dom)
 {
-  Zone& zone = dom;
-
-  if  (zone.type_elem()->que_suis_je() == "Tetraedre")
+  if  (dom.type_elem()->que_suis_je() == "Tetraedre")
     {
       Cerr << "ExtrudeParoi ..... " << finl;
     }
   else
     {
-      Cerr << "The " << zone.type_elem()->que_suis_je() <<"s are not treated with ExtrudeParoi"<<finl;
+      Cerr << "The " << dom.type_elem()->que_suis_je() <<"s are not treated with ExtrudeParoi"<<finl;
       exit();
     }
 
-  IntTab& les_elems = zone.les_elems();
+  IntTab& les_elems = dom.les_elems();
   int oldsz = les_elems.dimension(0);
-  int nbs = zone.nb_som();
+  int nbs = dom.nb_som();
   IntTab elem_traite(oldsz);
-  int oldnbsom = zone.nb_som();
+  int oldnbsom = dom.nb_som();
 
   Faces lesfaces;
   //zone.creer_faces(les_faces);
   {
     // bloc a factoriser avec Zone_VF.cpp :
-    Type_Face type_face = zone.type_elem().type_face(0);
+    Type_Face type_face = dom.type_elem().type_face(0);
     lesfaces.typer(type_face);
-    lesfaces.associer_zone(zone);
+    lesfaces.associer_zone(dom);
 
     Static_Int_Lists connectivite_som_elem;
-    const int     nb_sommets_tot = zone.nb_som_tot();
-    const IntTab&    elements       = zone.les_elems();
+    const int     nb_sommets_tot = dom.nb_som_tot();
+    const IntTab&    elements       = dom.les_elems();
 
     construire_connectivite_som_elem(nb_sommets_tot,
                                      elements,
@@ -154,7 +152,7 @@ void ExtrudeParoi::extrude(Zone& dom)
 
     Faces_builder faces_builder;
     IntTab elem_faces; // Tableau dont on aura pas besoin
-    faces_builder.creer_faces_reeles(zone,
+    faces_builder.creer_faces_reeles(dom,
                                      connectivite_som_elem,
                                      lesfaces,
                                      elem_faces);
@@ -175,9 +173,9 @@ void ExtrudeParoi::extrude(Zone& dom)
   IntTab new_elems;                 // les nouveaux elements
 
 
-  for (int l=0; l<zone.nb_front_Cl(); l++)
+  for (int l=0; l<dom.nb_front_Cl(); l++)
     {
-      const Frontiere& fr=zone.frontiere(l);
+      const Frontiere& fr=dom.frontiere(l);
       const Nom& nomfr=fr.le_nom();
 
       if(nomfr==nom_front)
@@ -319,9 +317,9 @@ void ExtrudeParoi::extrude(Zone& dom)
   ArrOfInt corresp_bord(nba_bord);
   corresp_bord=-1;
 
-  for (int num_front=0; num_front<zone.nb_front_Cl(); num_front++)
+  for (int num_front=0; num_front<dom.nb_front_Cl(); num_front++)
     {
-      const Frontiere& fr=zone.frontiere(num_front);
+      const Frontiere& fr=dom.frontiere(num_front);
       const Nom& nomfr=fr.le_nom();
 
       if(nomfr!=nom_front)
@@ -446,9 +444,9 @@ void ExtrudeParoi::extrude(Zone& dom)
 
   IntTab som_front;
 
-  for (int l=0; l<zone.nb_front_Cl(); l++)
+  for (int l=0; l<dom.nb_front_Cl(); l++)
     {
-      const Frontiere& fr=zone.frontiere(l);
+      const Frontiere& fr=dom.frontiere(l);
       const Nom& nomfr=fr.le_nom();
 
       if(nomfr==nom_front)
@@ -522,7 +520,7 @@ void ExtrudeParoi::extrude(Zone& dom)
                   new_elems(oldsz+cpt,3) = ii6;
                   cpt++;
 
-                  mettre_a_jour_sous_zone(zone,i,oldsz,0);
+                  mettre_a_jour_sous_zone(dom,i,oldsz,0);
                 }
             }
         }//if(nomfr==nom_front)
@@ -534,17 +532,17 @@ void ExtrudeParoi::extrude(Zone& dom)
   les_elems.ref(new_elems);
 
   // Reconstruction de l'octree
-  zone.invalide_octree();
-  zone.typer("Tetraedre");
+  dom.invalide_octree();
+  dom.typer("Tetraedre");
 
   Cerr << "  Reconstruction of the Octree" << finl;
-  zone.construit_octree();
+  dom.construit_octree();
   Cerr << "  Octree rebuilt" << finl;
 
   {
     Cerr << "Reconstruction of the boundaries" << finl;
     int num_front=0;
-    for (auto& itr : zone.faces_bord())
+    for (auto& itr : dom.faces_bord())
       {
         Faces& lesfacesbord=itr.faces();
         lesfacesbord.typer(Faces::triangle_3D);

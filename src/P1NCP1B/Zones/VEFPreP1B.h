@@ -33,7 +33,7 @@ public :
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,
                          int nb_comp, int nb_pas_dt, double temps,
-                         Champ_Inc& champ, const Nom& sous_type = nom_vide) const override;
+                         Champ_Inc& champ, const Nom& sous_type = NOM_VIDE) const override;
   void discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
                          Nature_du_champ nature,
                          const Noms& nom, const Noms& unite,

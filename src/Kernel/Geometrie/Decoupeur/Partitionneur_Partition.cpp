@@ -84,8 +84,7 @@ void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_p
       Cerr << "The domain \"" << dom_interpol.le_nom() << "\" to be split is empty !" << finl;
       exit();
     }
-  const Zone& zone_interpol = dom_interpol;
-  const int nb_elem_interpol = zone_interpol.nb_elem_tot();
+  const int nb_elem_interpol = dom_interpol.nb_elem_tot();
   const int dim_interpol = dom_interpol.dimension;
 
   // Zone dom_calcul
@@ -95,8 +94,7 @@ void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_p
       Cerr << "The reference domain \"" << dom_calcul.le_nom() << "\" is empty !" << finl;
       exit();
     }
-  const Zone& zone_calcul = dom_calcul;
-  const int nb_elem_calcul = zone_calcul.nb_elem();
+  const int nb_elem_calcul = dom_calcul.nb_elem();
   const int dim_calcul = dom_calcul.dimension;
 
   IntVect elem_part_calcul;
@@ -131,14 +129,14 @@ void Partitionneur_Partition::construire_partition(IntVect& elem_part, int& nb_p
   // Centre de gravite des elements de dom_interpol
   DoubleTab coord_g_interpol;
   //Calcul des centres de gravite des elements de dom_interpol
-  zone_interpol.calculer_centres_gravite(coord_g_interpol);
+  dom_interpol.calculer_centres_gravite(coord_g_interpol);
   assert(coord_g_interpol.dimension(0) == nb_elem_interpol);
   assert(coord_g_interpol.dimension(1) == dim_interpol);
 
   // Centre de gravite des elements de dom_calcul
   DoubleTab coord_g_calcul;
   //Calcul des centres de gravite des elements de dom_calcul
-  zone_calcul.calculer_centres_gravite(coord_g_calcul);
+  dom_calcul.calculer_centres_gravite(coord_g_calcul);
   assert(coord_g_calcul.dimension(0) == nb_elem_calcul);
   assert(coord_g_calcul.dimension(1) == dim_calcul);
 

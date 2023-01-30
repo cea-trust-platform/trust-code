@@ -47,7 +47,6 @@ Entree& SupprimeBord::interpreter_(Entree& is)
     }
   Zone& dom=domaine();
   Cout<<"HERE  "<<nlistbord<<finl;
-  Zone& zone=dom;
 
   for (int b=0; b<nlistbord.size(); b++)
     {
@@ -55,16 +54,15 @@ Entree& SupprimeBord::interpreter_(Entree& is)
       {
         // la recup des bords et des raccords est dans la boucle
         // pour pouvoir supprimer ...
-        Bords& listbord=zone.faces_bord();
-        Raccords& listrac=zone.faces_raccord();
+        Bords& listbord=dom.faces_bord();
+        Raccords& listrac=dom.faces_raccord();
         const Nom& nombord=nlistbord[b];
-        int num_b=zone.rang_frontiere(nombord);
+        int num_b=dom.rang_frontiere(nombord);
         if (num_b<listbord.size())
-          listbord.suppr(zone.bord(nombord));
+          listbord.suppr(dom.bord(nombord));
         else
-          listrac.suppr(zone.raccord(nombord));
+          listrac.suppr(dom.raccord(nombord));
       }
     }
-
   return is;
 }
