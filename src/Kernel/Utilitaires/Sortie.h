@@ -75,6 +75,8 @@ public:
   template <typename T>
   Sortie& operator<<(const TRUST_Ref<T>& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
 
+  Sortie& operator<<(const TRUST_Ref_Objet_U& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
+
   virtual Sortie& operator<<(const Separateur& );
   virtual Sortie& operator<<(const Objet_U&    ob);
   virtual Sortie& operator<<(const int    ob);

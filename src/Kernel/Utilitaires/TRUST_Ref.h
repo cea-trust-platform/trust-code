@@ -19,6 +19,7 @@
 #include <type_traits>
 #include <assert.h>
 
+class Objet_U;
 class Nom;
 
 /*! @brief Soit une classe _CLASSE_ qui derive de Objet_U.
@@ -57,12 +58,10 @@ private:
   value_type * p_ = nullptr;
 
 public:
-
+  ~TRUST_Ref() = default;
   TRUST_Ref() = default;
   TRUST_Ref(const value_type& t) :  p_((value_type*)&t) { }
   TRUST_Ref(const TRUST_Ref& t) : p_(t.p_) { }
-
-  ~TRUST_Ref() { }
 
   const TRUST_Ref& operator=(const value_type& t)
   {
@@ -80,35 +79,11 @@ public:
   operator const value_type& () const { return valeur(); }
   operator value_type& () { return valeur(); }
 
-  inline const value_type& valeur() const
-  {
-    assert(p_ != nullptr);
-    return *p_;
-  }
-
-  inline value_type& valeur()
-  {
-    assert(p_ != nullptr);
-    return *p_;
-  }
-
-  inline const value_type* operator ->() const
-  {
-    assert(p_ != nullptr);
-    return p_;
-  }
-
-  inline value_type* operator ->()
-  {
-    assert(p_ != nullptr);
-    return p_;
-  }
-
-  inline bool non_nul() const
-  {
-    return p_ != nullptr;
-  }
-
+  inline const value_type& valeur() const { assert(p_ != nullptr); return *p_; }
+  inline value_type& valeur() { assert(p_ != nullptr); return *p_; }
+  inline const value_type* operator ->() const { assert(p_ != nullptr); return p_; }
+  inline value_type* operator ->() { assert(p_ != nullptr); return p_; }
+  bool non_nul() const { return p_ != nullptr; }
   const Nom& le_nom() const = delete;
   void reset() {  p_ = nullptr; }
 };
@@ -121,5 +96,37 @@ inline int operator ==(const TRUST_Ref<_CLASSE_>& r1, const TRUST_Ref<_CLASSE_>&
   if (r1->numero() == r2->numero()) return 1;
   return 0;
 }
+
+/* ======================================================= *
+ * ======================================================= *
+ * ======================================================= */
+
+/*! @brief classe TRUST_Ref_Objet_U
+ *
+ * Cette classe est quasiment identique a TRUST_Ref<>,  sauf qu'elle ne contient pas les operateurs de conversion implicite
+ *
+ */
+class TRUST_Ref_Objet_U
+{
+private:
+  Objet_U * p_ = nullptr;
+
+public:
+  ~TRUST_Ref_Objet_U();
+  TRUST_Ref_Objet_U();
+  TRUST_Ref_Objet_U(const Objet_U& t);
+  TRUST_Ref_Objet_U(const TRUST_Ref_Objet_U& t);
+
+  const TRUST_Ref_Objet_U& operator=(const Objet_U& t);
+  const TRUST_Ref_Objet_U& operator=(const TRUST_Ref_Objet_U& t);
+  bool non_nul() const;
+
+  inline const Objet_U& valeur() const { assert(p_ != nullptr); return *p_; }
+  inline Objet_U& valeur() { assert(p_ != nullptr); return *p_; }
+  inline const Objet_U* operator ->() const { assert(p_ != nullptr); return p_; }
+  inline Objet_U* operator ->() { assert(p_ != nullptr); return p_; }
+};
+
+using RefObjU = TRUST_Ref_Objet_U;
 
 #endif /* TRUST_Ref_included */

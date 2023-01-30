@@ -25,7 +25,6 @@
 #include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
 #include <Champs_Fonc.h>
-#include <Ref_Objet_U.h>
 #include <TRUST_Ref.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
@@ -254,7 +253,7 @@ public :
   {
     return parametre_equation_ ;
   };
-  virtual const REF(Objet_U)& get_modele(Type_modele type) const;
+  virtual const RefObjU& get_modele(Type_modele type) const;
   virtual int equation_non_resolue() const;
   int disable_equation_residual() const { return disable_equation_residual_; };
 

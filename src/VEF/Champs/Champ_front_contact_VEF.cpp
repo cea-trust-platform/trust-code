@@ -30,7 +30,7 @@
 #include <Schema_Comm.h>
 #include <ArrOfBit.h>
 #include <SFichier.h>
-#include <Ref_Objet_U.h>
+#include <TRUST_Ref.h>
 #include <Constituant.h>
 #include <Convection_Diffusion_Concentration.h>
 

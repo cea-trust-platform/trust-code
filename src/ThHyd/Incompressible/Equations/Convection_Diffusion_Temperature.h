@@ -18,7 +18,6 @@
 
 #include <Convection_Diffusion_std.h>
 #include <TRUST_Vector.h>
-#include <Ref_Objet_U.h>
 #include <Fluide_base.h>
 #include <Champ_Fonc.h>
 #include <TRUSTTabs.h>

@@ -17,7 +17,6 @@
 #define Champ_Inc_base_included
 
 #include <Interface_blocs.h>
-#include <Ref_Objet_U.h>
 #include <Champ_base.h>
 #include <TRUSTTrav.h>
 #include <TRUST_Ref.h>
@@ -150,7 +149,7 @@ protected:
   /* pour les champs dependant d'autres Champ_Inc */
   fonc_calc_t fonc_calc_;  //fonction de calcul
   int fonc_calc_init_ = 0; //1 une fois qu'on a calcule le champ au moins une fois
-  REF(Objet_U) obj_calc_; //un objet a passer en argument
+  RefObjU obj_calc_; //un objet a passer en argument
   DoubleTab val_bord_;   //valeurs aux bords au temps courant
   tabs_t deriv_;        //derivees au temps courant
   bool bord_fluide_multiphase_ = false;

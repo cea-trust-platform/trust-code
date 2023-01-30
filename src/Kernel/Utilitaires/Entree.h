@@ -60,6 +60,8 @@ public:
   template <typename T>
   Entree& operator>>(const TRUST_Ref<T>& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
 
+  Entree& operator>>(const TRUST_Ref_Objet_U& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
+
   virtual Entree& operator>>(int& ob);
 #ifndef INT_is_64_
   virtual Entree& operator>>(long& ob);
