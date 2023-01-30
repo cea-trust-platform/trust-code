@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,7 @@
 #ifndef Entree_included
 #define Entree_included
 
-
-
+#include <TRUST_Ref.h>
 #include <stdio.h>
 #include <cstdio> // Pour EOF sur GNU >= 4.4
 #include <iostream>
@@ -54,6 +53,9 @@ public:
   Entree& operator >>(Entree& (*f)(Entree&));
   Entree& operator >>(istream& (*f)(istream&));
   Entree& operator >>(ios& (*f)(ios&));
+
+  template <typename T>
+  Entree& operator>>(const TRUST_Ref<T>& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
 
   virtual Entree& operator>>(int& ob);
 #ifndef INT_is_64_

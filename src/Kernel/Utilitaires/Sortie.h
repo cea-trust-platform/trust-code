@@ -16,6 +16,7 @@
 #ifndef Sortie_included
 #define Sortie_included
 
+#include <TRUST_Ref.h>
 #include <iostream>
 #include <assert.h>
 #include <arch.h>
@@ -70,6 +71,9 @@ public:
   virtual Sortie& syncfile();
   virtual void setf(IOS_FORMAT);
   virtual void precision(int);
+
+  template <typename T>
+  Sortie& operator<<(const TRUST_Ref<T>& ) { std::cerr << __func__ << " :: SHOULD NOT BE CALLED ! Use -> !! " << std::endl ; throw; }
 
   virtual Sortie& operator<<(const Separateur& );
   virtual Sortie& operator<<(const Objet_U&    ob);
