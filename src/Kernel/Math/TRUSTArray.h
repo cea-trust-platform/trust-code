@@ -270,7 +270,7 @@ private:
 
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
   Storage storage_type_;
-#pragma omp declare target
+  #pragma omp declare target
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
 #ifdef _OPENMP
@@ -284,8 +284,8 @@ private:
 #endif
 #endif
   }
-#pragma omp end declare target
-#pragma omp declare target
+  #pragma omp end declare target
+  #pragma omp declare target
   inline void checkDataOnHost(TRUSTArray& tab)
   {
 #ifdef _OPENMP
@@ -301,30 +301,32 @@ private:
       set_dataLocation(Host); // On va modifier le tableau sur le host
 #endif
   }
-#pragma omp end declare target
+  #pragma omp end declare target
   // Est ce que le tableau est le plus a jour sur le Device ?
   inline bool isDataOnDevice(TRUSTArray& tab)
   {
-     bool flag = tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice;
-     if (!flag)
-        checkDataOnHost(tab);
-     else
-        tab.set_dataLocation(Device); // non const array will be computed on device
-     return flag;
+    bool flag = tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice;
+    if (!flag)
+      checkDataOnHost(tab);
+    else
+      tab.set_dataLocation(Device); // non const array will be computed on device
+    return flag;
   }
-    inline bool isDataOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const) {
-        bool flag = (tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice) &&
-         (tab_const.get_dataLocation() == Device || tab_const.get_dataLocation() == HostDevice);
-        // Si un des deux tableaux n'est pas a jour sur le GPU
-        // alors l'operation se fera sur le device:
-        if (!flag) {
-            checkDataOnHost(tab);
-            checkDataOnHost(tab_const);
-        }
-        else
-           tab.set_dataLocation(Device); // non const array will be computed on device
-        return flag;
-    }
+  inline bool isDataOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const)
+  {
+    bool flag = (tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice) &&
+                (tab_const.get_dataLocation() == Device || tab_const.get_dataLocation() == HostDevice);
+    // Si un des deux tableaux n'est pas a jour sur le GPU
+    // alors l'operation se fera sur le device:
+    if (!flag)
+      {
+        checkDataOnHost(tab);
+        checkDataOnHost(tab_const);
+      }
+    else
+      tab.set_dataLocation(Device); // non const array will be computed on device
+    return flag;
+  }
 };
 
 using ArrOfDouble = TRUSTArray<double>;

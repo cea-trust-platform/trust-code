@@ -168,6 +168,31 @@ bool self_test()
       }
       assert(inco.get_dataLocation() == HostDevice);
 
+      // Test de operator+= sur GPU
+      {
+        ArrOfDouble a(10), b(10);
+        a=1;
+        b=2;
+        copyToDevice(a);
+        copyToDevice(b);
+        b+=a; // TRUSTArray& operator+=(const TRUSTArray& y) sur le device
+        assert(a.get_dataLocation() == HostDevice);
+        assert(b.get_dataLocation() == Device);
+#ifndef NDEBUG
+        const ArrOfDouble& const_b = b;
+#endif
+        // Operations sur le device:
+        // ToDo: Multiple definition of 'nvkernel__ZN10TRUST
+        //b+=3; // TRUSTArray& operator+=(const _TYPE_ dy)
+        //b-=2; // TRUSTArray& operator-=(const _TYPE_ dy)
+        //b*=10; // TRUSTArray& operator*= (const _TYPE_ dy)
+        //b/=2; // TRUSTArray& operator/= (const _TYPE_ dy)
+        //b-=a; // TRUSTArray& operator-=(const TRUSTArray& y)
+        // Retour sur le host pour verifier le resultat
+        copyFromDevice(b);
+        assert(const_b[0] == 3);
+      }
+
       // ToDo: Ameliorer DoubleTrav:
       {
         DoubleTrav a(N);

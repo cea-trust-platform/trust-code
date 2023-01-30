@@ -79,6 +79,10 @@ Stat_Counter_Id m3;
 Stat_Counter_Id probleme_fluide_;
 Stat_Counter_Id probleme_combustible_;
 
+Stat_Counter_Id gpu_copytodevice_counter_;
+Stat_Counter_Id gpu_copyfromdevice_counter_;
+Stat_Counter_Id gpu_kernel_counter_;
+
 // Initialisation des differents compteurs.
 // L'ordre d'impression des compteurs est le meme que l'ordre de creation.
 
@@ -170,6 +174,11 @@ void declare_stat_counters()
   mpi_minint_counter_    = statistiques().new_counter(2, "MPI_minint",    "MPI_allreduce", 1);
   mpi_maxint_counter_    = statistiques().new_counter(2, "MPI_maxint",    "MPI_allreduce", 1);
   mpi_barrier_counter_   = statistiques().new_counter(2, "MPI_barrier",   "MPI_allreduce", 1);
+
+  // GPU
+  gpu_copytodevice_counter_   = statistiques().new_counter(2, "GPU_copyToDevice",  "GPU_copy", 0);
+  gpu_copyfromdevice_counter_ = statistiques().new_counter(2, "GPU_copyFromDevice","GPU_copy", 0);
+  gpu_kernel_counter_         = statistiques().new_counter(2, "GPU_kernel",        "GPU_kernel", 0);
 
   // Compte le temps d'ecriture dans EcrireFicPartageXXX (gros volumes de donnees dans fichiers XYZ ou LATA)
   // quantity = nombre d'octets ecrits
@@ -273,6 +282,9 @@ void print_statistics_analyse(const char * message, int mode_append)
   Stat_Results pb_fluide;
   Stat_Results pb_combustible;
   Stat_Results IO_seq, IO_par;
+  Stat_Results gpu_copytodevice;
+  Stat_Results gpu_copyfromdevice;
+  Stat_Results gpu_kernel;
 
   // Stop the counters
   statistiques().stop_counters();
@@ -330,6 +342,9 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(probleme_combustible_, pb_combustible);
       statistiques().get_stats(IO_EcrireFicPartageBin_counter_, IO_seq);
       statistiques().get_stats(IO_EcrireFicPartageMPIIO_counter_, IO_par);
+      statistiques().get_stats(gpu_copytodevice_counter_, gpu_copytodevice);
+      statistiques().get_stats(gpu_copyfromdevice_counter_, gpu_copyfromdevice);
+      statistiques().get_stats(gpu_kernel_counter_, gpu_kernel);
 
       if (GET_COMM_DETAILS)
         {

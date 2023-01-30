@@ -128,6 +128,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
   // Cas du calcul du gradient d'un tableau de vecteurs
   if (nb_comp != 1)
     {
+      start_timer();
       for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -174,6 +175,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
                     }
               }
         }
+      end_timer("Boundary condition on gradient_elem in Champ_P1NC::calculer_gradientP1NC");
       gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
       start_timer();
       #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)

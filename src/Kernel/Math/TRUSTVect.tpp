@@ -272,7 +272,6 @@ inline void TRUSTVect<_TYPE_>::set_md_vector(const MD_Vector& md_vector)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::echange_espace_virtuel()
 {
-  this->checkDataOnHost();
   MD_Vector_tools::echange_espace_virtuel(*this);
 }
 
