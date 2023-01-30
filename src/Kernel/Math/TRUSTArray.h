@@ -190,64 +190,22 @@ public:
   inline void append_array(_TYPE_ valeur);
 
   // Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
-  TRUSTArray& operator+=(const TRUSTArray& y)
-  {
-    checkDataOnHost(y);
-    checkDataOnHost(*this);
-    assert(size_array()==y.size_array());
-    _TYPE_* dx = data_;
-    const _TYPE_* dy = y.data_;
-    for (int i = 0; i < size_array(); i++) dx[i] += dy[i];
-    return *this;
-  }
+  inline TRUSTArray& operator+=(const TRUSTArray& y);
+
   // ajoute la meme valeur a toutes les cases du tableau
-  TRUSTArray& operator+=(const _TYPE_ dy)
-  {
-    checkDataOnHost(*this);
-    _TYPE_ * data = data_;
-    for(int i = 0; i < size_array(); i++) data[i] += dy;
-    return *this;
-  }
+  inline TRUSTArray& operator+=(const _TYPE_ dy);
 
   // Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
-  TRUSTArray& operator-=(const TRUSTArray& y)
-  {
-    checkDataOnHost(y);
-    checkDataOnHost(*this);
-    assert(size_array() == y.size_array());
-    _TYPE_ * data = data_;
-    const _TYPE_ * data_y = y.data_;
-    for (int i = 0; i < size_array(); i++) data[i] -= data_y[i];
-    return *this;
-  }
+  inline TRUSTArray& operator-=(const TRUSTArray& y);
 
   // soustrait la meme valeur a toutes les cases
-  TRUSTArray& operator-=(const _TYPE_ dy)
-  {
-    checkDataOnHost(*this);
-    _TYPE_ * data = data_;
-    for(int i = 0; i < size_array(); i++) data[i] -= dy;
-    return *this;
-  }
+  inline TRUSTArray& operator-=(const _TYPE_ dy);
 
   // muliplie toutes les cases par dy
-  TRUSTArray& operator*= (const _TYPE_ dy)
-  {
-    checkDataOnHost(*this);
-    _TYPE_ * data = data_;
-    for(int i=0; i < size_array(); i++) data[i] *= dy;
-    return *this;
-  }
+  inline TRUSTArray& operator*= (const _TYPE_ dy);
 
   // divise toutes les cases par dy (pas pour TRUSTArray<int>)
-  TRUSTArray& operator/= (const _TYPE_ dy)
-  {
-    checkDataOnHost(*this);
-    if (std::is_same<_TYPE_,int>::value) throw;
-    const _TYPE_ i_dy = 1. / dy;
-    operator*=(i_dy);
-    return *this;
-  }
+  inline TRUSTArray& operator/= (const _TYPE_ dy);
 
   inline TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements = -1,  int first_element_dest = 0, int first_element_source = 0);
 
@@ -312,7 +270,7 @@ private:
 
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
   Storage storage_type_;
-
+#pragma omp declare target
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
 #ifdef _OPENMP
@@ -326,6 +284,8 @@ private:
 #endif
 #endif
   }
+#pragma omp end declare target
+#pragma omp declare target
   inline void checkDataOnHost(TRUSTArray& tab)
   {
 #ifdef _OPENMP
@@ -341,6 +301,30 @@ private:
       set_dataLocation(Host); // On va modifier le tableau sur le host
 #endif
   }
+#pragma omp end declare target
+  // Est ce que le tableau est le plus a jour sur le Device ?
+  inline bool isDataOnDevice(TRUSTArray& tab)
+  {
+     bool flag = tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice;
+     if (!flag)
+        checkDataOnHost(tab);
+     else
+        tab.set_dataLocation(Device); // non const array will be computed on device
+     return flag;
+  }
+    inline bool isDataOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const) {
+        bool flag = (tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice) &&
+         (tab_const.get_dataLocation() == Device || tab_const.get_dataLocation() == HostDevice);
+        // Si un des deux tableaux n'est pas a jour sur le GPU
+        // alors l'operation se fera sur le device:
+        if (!flag) {
+            checkDataOnHost(tab);
+            checkDataOnHost(tab_const);
+        }
+        else
+           tab.set_dataLocation(Device); // non const array will be computed on device
+        return flag;
+    }
 };
 
 using ArrOfDouble = TRUSTArray<double>;

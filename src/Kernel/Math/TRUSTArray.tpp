@@ -564,4 +564,71 @@ inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_O
     }
 }
 
+// Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
+template <typename _TYPE_>
+inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
+{
+    assert(size_array()==y.size_array());
+    _TYPE_* dx = data_;
+    const _TYPE_* dy = y.data_;
+    bool dataOnDevice = isDataOnDevice(*this, y);
+    #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+    for (int i = 0; i < size_array(); i++) dx[i] += dy[i];
+    return *this;
+}
+// ajoute la meme valeur a toutes les cases du tableau
+template <typename _TYPE_>
+inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
+{
+    _TYPE_ * data = data_;
+    bool dataOnDevice = isDataOnDevice(*this);
+    //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+    for(int i = 0; i < size_array(); i++) data[i] += dy;
+    return *this;
+}
+
+// Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
+template <typename _TYPE_>
+inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
+{
+    assert(size_array() == y.size_array());
+    _TYPE_ * data = data_;
+    const _TYPE_ * data_y = y.data_;
+    bool dataOnDevice = isDataOnDevice(*this, y);
+    //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+    for (int i = 0; i < size_array(); i++) data[i] -= data_y[i];
+    return *this;
+}
+
+// soustrait la meme valeur a toutes les cases
+template <typename _TYPE_>
+inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
+{
+    _TYPE_ * data = data_;
+    bool dataOnDevice = isDataOnDevice(*this);
+    //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+    for(int i = 0; i < size_array(); i++) data[i] -= dy;
+    return *this;
+}
+
+// muliplie toutes les cases par dy
+template <typename _TYPE_>
+inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
+{
+    _TYPE_ * data = data_;
+    bool dataOnDevice = isDataOnDevice(*this);
+    //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
+    for(int i=0; i < size_array(); i++) data[i] *= dy;
+    return *this;
+}
+
+// divise toutes les cases par dy (pas pour TRUSTArray<int>)
+template <typename _TYPE_>
+inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
+{
+    if (std::is_same<_TYPE_,int>::value) throw;
+    const _TYPE_ i_dy = 1. / dy;
+    operator*=(i_dy);
+    return *this;
+}
 #endif /* TRUSTArray_TPP_included */
