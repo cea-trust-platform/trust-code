@@ -16,24 +16,24 @@
 #ifndef Sortie_included
 #define Sortie_included
 
-#include <TRUST_Ref.h>
 #include <iostream>
 #include <assert.h>
 #include <arch.h>
 #include <string>
 
-using std::ios;
 using std::ostream;
-using std::cerr;
-using std::cout;
-using std::cin;
-using std::endl;
 using std::flush;
+using std::endl;
+using std::cerr;
 using std::ends;
+using std::cout;
+using std::ios;
+using std::cin;
 
-class Objet_U;
+template <typename T> class TRUST_Ref;
+class TRUST_Ref_Objet_U;
 class Separateur;
-
+class Objet_U;
 
 /*! @brief Classe de base des flux de sortie.
  *

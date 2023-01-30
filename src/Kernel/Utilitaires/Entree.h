@@ -16,15 +16,18 @@
 #ifndef Entree_included
 #define Entree_included
 
-#include <TRUST_Ref.h>
-#include <stdio.h>
-#include <cstdio> // Pour EOF sur GNU >= 4.4
+#include <Process.h>
 #include <iostream>
 #include <assert.h>
-#include <Process.h>
+#include <stdio.h>
+#include <cstdio> // Pour EOF sur GNU >= 4.4
 #include <arch.h> // pour LIBLATAFILTER int64
-using std::ios;
+
 using std::istream;
+using std::ios;
+
+template <typename T> class TRUST_Ref;
+class TRUST_Ref_Objet_U;
 class Objet_U;
 class Nom;
 
@@ -63,6 +66,9 @@ public:
 #endif
   virtual Entree& operator>>(float& ob);
   virtual Entree& operator>>(double& ob);
+
+  // final
+  virtual Entree& operator>>(Objet_U& ob) final;
 
   virtual int get(int *ob, int n);
 #ifndef INT_is_64_
@@ -118,7 +124,6 @@ private:
 };
 
 int is_a_binary_file(Nom&);
-Entree& operator>>(Entree&, Objet_U& ob);
 
 void convert_to(const char *s, int& ob);
 #ifndef INT_is_64_

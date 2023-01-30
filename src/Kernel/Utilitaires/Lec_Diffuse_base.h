@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,6 +38,8 @@ class Lec_Diffuse_base: public EFichier
 {
   Declare_base_sans_constructeur(Lec_Diffuse_base);
 public:
+  using Entree::operator>>;
+
   Entree& operator>>(int& ob) override;
 #ifndef INT_is_64_
   Entree& operator>>(long& ob) override;

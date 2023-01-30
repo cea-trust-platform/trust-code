@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -248,18 +248,7 @@ Entree& Entree::operator>>(long& ob) { return operator_template<long>(ob); }
 int Entree::get(long * ob, int n) { return get_template<long>(ob,n); }
 #endif
 
-/*! @brief Operateur hors classe permettant de lire un Objet_U dans une Entree.
- *
- * Cet operateur appelle ob.readOn(is).
- *   S'il fallait un jour implementer une methode particuliere pour lire
- *   un objet par une classe derivee de Entree particuliere, il faudrait
- *   deplacer cet operateur dans Entree et le rendre virtuel.
- *
- */
-Entree& operator >>(Entree& is, Objet_U& ob)
-{
-  return ob.readOn(is);
-}
+Entree& Entree::operator >>(Objet_U& ob) { return ob.readOn(*this); }
 
 int Entree::eof()
 {

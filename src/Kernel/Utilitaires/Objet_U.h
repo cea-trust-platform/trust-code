@@ -60,8 +60,8 @@ class Entree;
 class Objet_U : public Process
 {
 public:
-  friend Entree& operator>>(Entree&, Objet_U&);
   friend class Sortie;
+  friend class Entree;
 
   ~Objet_U() override;
   int        numero() const;
