@@ -52,7 +52,7 @@ public:
   inline const Domaine_Cl_VDF& get_la_zcl() const { return la_zcl.valeur(); }
 
 protected:
-  REF2(Champ_Face_VDF) vitesse_;
+  REF(Champ_Face_VDF) vitesse_;
   DoubleTab dt_vitesse;
 };
 

@@ -80,7 +80,7 @@ public:
 
 protected:
   int is_var_ = 0;
-  REF2(Champ_base) diffusivite_;
+  REF(Champ_base) diffusivite_;
 };
 
 inline double Op_Dift_VDF_Face_Axi::nu_mean_4_pts_(const int i, const int j) const

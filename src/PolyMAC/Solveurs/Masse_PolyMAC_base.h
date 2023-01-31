@@ -33,8 +33,8 @@ public:
   void check_multiphase_compatibility() const override { }
 
 protected:
-  REF2(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
-  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
 };
 
 #endif /* Masse_PolyMAC_base_included */

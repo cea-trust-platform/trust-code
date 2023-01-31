@@ -41,11 +41,11 @@ protected:
 
 private:
   // References remplies par associer_champ_rho
-  REF2(Domaine_VEF_PreP1b) le_dom_VEF_;
-  REF2(Domaine_Cl_VEFP1B)  le_dom_Cl_VEF_;
+  REF(Domaine_VEF_PreP1b) le_dom_VEF_;
+  REF(Domaine_Cl_VEFP1B)  le_dom_Cl_VEF_;
   // Reference remplie par associer_champ_rho() et utilisee par ajouter()
   // La reference peut rester nulle (monophasique).
-  REF2(Champ_base)  ref_rho_;
+  REF(Champ_base)  ref_rho_;
 };
 
 #endif

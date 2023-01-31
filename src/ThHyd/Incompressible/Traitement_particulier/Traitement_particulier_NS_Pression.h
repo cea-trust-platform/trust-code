@@ -39,7 +39,7 @@ public :
   void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override ;
   inline void sauver_stat(void)  const override ;
   inline void reprendre_stat(void) override  ;
-  inline int a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base)& ch_ref) const  ;
+  inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const  ;
   inline int comprend_champ(const Motcle& mot) const  ;
 
 
@@ -61,7 +61,7 @@ inline void Traitement_particulier_NS_Pression::reprendre_stat(void)
   ;
 }
 
-inline int Traitement_particulier_NS_Pression::a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base)& ch_ref) const
+inline int Traitement_particulier_NS_Pression::a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const
 {
   return 0 ;
 }

@@ -48,7 +48,7 @@ public:
 
 protected:
   // Parametres du partitionneur
-  REF2(Domaine) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   std::map<std::string, std::string> fic_ssz; //fic_ssz[nom de la sous domaine] = { fichier de decoupage }
 };
 #endif

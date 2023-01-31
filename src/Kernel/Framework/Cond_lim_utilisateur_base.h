@@ -54,7 +54,7 @@ public:
   virtual void ecrire(const Nom&);
 protected :
   Cond_lim* la_cl_;
-  REF2(Equation_base) mon_equation;
+  REF(Equation_base) mon_equation;
   Nom nom_bord_;
 };
 

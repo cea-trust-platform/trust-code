@@ -258,9 +258,9 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
   const DoubleVect& volumes_entrelaces = domaine_VF.volumes_entrelaces();
   const DoubleTab&  xv                 = domaine_VF.xv();
   const DoubleTab&  vitesse            = mon_equation->inconnue().valeurs();
-  REF2(ArrOfDouble) translation(xv);
-  REF2(ArrOfDouble) rotation(xv);
-  REF2(DoubleTab) rho(xv);
+  REF(ArrOfDouble) translation(xv);
+  REF(ArrOfDouble) rotation(xv);
+  REF(DoubleTab) rho(xv);
   DoubleVect rotation_nulle(dimension);
   rotation_nulle=0;
   if (repere_mobile_)

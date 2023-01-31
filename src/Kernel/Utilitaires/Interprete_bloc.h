@@ -48,6 +48,6 @@ protected:
   // Noms des objets lus dans le bloc:
   Noms les_noms_;
   // Reference a l'interprete courant avant la creation de celui-ci
-  REF2(Interprete_bloc) pere_;
+  REF(Interprete_bloc) pere_;
 };
 #endif

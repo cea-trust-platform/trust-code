@@ -39,7 +39,7 @@ private:
   int          support_ok_;
   // Reference au champ de masse volumique a utiliser.
   // La ref peut etre nulle.
-  REF2(Champ_base) ref_champ_rho_;
+  REF(Champ_base) ref_champ_rho_;
 };
 
 inline const int& Support_Champ_Masse_Volumique::support_ok() const

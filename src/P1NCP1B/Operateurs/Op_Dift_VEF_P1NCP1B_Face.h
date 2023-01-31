@@ -60,16 +60,16 @@ public:
   }
 
 protected:
-  REF2(Champ_base) diffusivite_;
+  REF(Champ_base) diffusivite_;
 
   DoubleTab& calculer_gradient_elem(const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_gradient_som(const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_divergence_elem(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_divergence_som(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& corriger_div_pour_Cl(DoubleTab&) const;
-  REF2(Mod_turb_hyd_base) le_modele_turbulence;
-  REF2(Domaine_VEF_PreP1b) le_dom_vef;
-  REF2(Domaine_Cl_VEFP1B) la_zcl_vef;
+  REF(Mod_turb_hyd_base) le_modele_turbulence;
+  REF(Domaine_VEF_PreP1b) le_dom_vef;
+  REF(Domaine_Cl_VEFP1B) la_zcl_vef;
   SolveurSys solveur;
   int trans = -10;
   double lambda = -100.;

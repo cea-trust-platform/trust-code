@@ -103,7 +103,7 @@ public:
 protected:
 
   LIST(Nom) noms_sources_ref_;
-  LIST(REF2(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
+  LIST(REF(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
   //champ generique deja defini a partir de son nom (noms_ource_ref_)
 
 private:

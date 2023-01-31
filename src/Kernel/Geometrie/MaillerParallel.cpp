@@ -488,7 +488,7 @@ static void auto_build_joints(Domaine& domaine, const int epaisseur_joint)
         const int n = list.size_array();
         if (n > 0)
           {
-            REF2(Joint) ref_joint;
+            REF(Joint) ref_joint;
             int ii;
             for (ii = 0; ii < domaine.faces_joint().size(); ii++)
               {

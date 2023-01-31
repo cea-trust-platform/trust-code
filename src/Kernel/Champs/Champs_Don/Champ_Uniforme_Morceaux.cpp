@@ -103,7 +103,7 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
   motlu=nom;
   while (motlu != Motcle("}") )
     {
-      REF2(Sous_Domaine) refssz=les_sous_domaines.add(le_domaine.ss_domaine(nom));
+      REF(Sous_Domaine) refssz=les_sous_domaines.add(le_domaine.ss_domaine(nom));
       Sous_Domaine& ssz = refssz.valeur();
       for( k=0; k< dim; k++)
         {

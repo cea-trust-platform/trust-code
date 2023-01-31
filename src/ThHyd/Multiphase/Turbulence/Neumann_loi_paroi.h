@@ -52,8 +52,8 @@ public:
   void verifie_ch_init_nb_comp() const override { }
 
 protected:
-  REF2(Correlation) correlation_loi_paroi_;
-  REF2(Frontiere_dis_base) la_frontiere_dis;
+  REF(Correlation) correlation_loi_paroi_;
+  REF(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1.e8;
 };
 

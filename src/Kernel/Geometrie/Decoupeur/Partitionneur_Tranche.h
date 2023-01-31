@@ -38,7 +38,7 @@ public:
 
 private:
   // Parametres du partitionneur
-  REF2(Domaine) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   // Pour chaque dimension d'espace, 2 ou 3, nombre de tranches
   // a creer dans cette direction (>=1)
   ArrOfInt nb_tranches_;

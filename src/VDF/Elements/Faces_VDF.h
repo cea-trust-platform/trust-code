@@ -42,7 +42,7 @@ private :
   //    0 pour une face d'equation x = cte
   //    1 pour une face d'equation y = cte
   //    2 pour une face d'equation z = cte
-  REF2(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
   void swap(int, int);
 
 };

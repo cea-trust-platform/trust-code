@@ -103,7 +103,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
     }
   // On recupere le pb, puis ensuite on cherche le champ; on recupere le domaine_dis
   const Probleme_base& pb =ref_cast(Probleme_base,Interprete::objet(nom_pb));
-  REF2(Champ_base) ref_ch;
+  REF(Champ_base) ref_ch;
   int reprend_champ_moyen=0;
   int reprend_modele_k_eps=0;
 

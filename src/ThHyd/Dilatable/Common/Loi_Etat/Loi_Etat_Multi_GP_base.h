@@ -55,7 +55,7 @@ public:
 
 protected :
   void calculer_tab_mu(const DoubleTab& mu, int size);
-  LIST(REF2(Champ_Inc_base)) liste_Y;
+  LIST(REF(Champ_Inc_base)) liste_Y;
   DoubleTab masse_mol_mel;
 };
 

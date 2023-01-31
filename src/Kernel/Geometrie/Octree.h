@@ -126,7 +126,7 @@ public :
   inline int reel() const { return reel_; }
 
 protected :
-  REF2(Domaine) le_dom;
+  REF(Domaine) le_dom;
   OctreeLoc loc;
   int valid_, reel_ = -1;
 };

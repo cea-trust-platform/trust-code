@@ -34,7 +34,7 @@ public:
 
 private:
   // Parametres du partitionneur
-  REF2(Domaine) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   // Noms des sous-domaines a utiliser
   Noms noms_sous_domaines_;
   // Noms de domaine a utiliser

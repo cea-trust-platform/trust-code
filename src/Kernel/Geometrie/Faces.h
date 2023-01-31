@@ -90,7 +90,7 @@ private :
   int nb_som_face = -123;
   IntTab sommets;
   IntTab faces_voisins;
-  REF2(Domaine) mon_dom;
+  REF(Domaine) mon_dom;
 };
 
 typedef Faces::Type_Face Type_Face;

@@ -36,7 +36,7 @@ public:
   void completer() override;
 
 protected:
-  REF2(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
+  REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
   DoubleTab tau_tan_;
 };
 

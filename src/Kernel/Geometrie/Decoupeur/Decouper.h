@@ -49,7 +49,7 @@ public:
 
   Nom nom_domaine;
   DERIV(Partitionneur_base) deriv_partitionneur;
-  REF2(Domaine) ref_domaine;
+  REF(Domaine) ref_domaine;
   int nb_parts_tot = -1;
   Noms liste_bords_periodiques;
 

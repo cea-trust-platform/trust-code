@@ -30,7 +30,7 @@ public:
   inline void mettre_a_jour() override { /* Do nothing */ }
 
 protected:
-  REF2(Champ_Don) la_source_constituant;
+  REF(Champ_Don) la_source_constituant;
   DoubleTab source_constituant;
 };
 

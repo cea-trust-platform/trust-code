@@ -43,8 +43,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF2(Domaine_VEF) le_dom;
-  REF2(Domaine_Cl_dis) le_dom_Cl;
+  REF(Domaine_VEF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_Cl;
 };
 
 #endif /* EOS_Tools_VEF_included */

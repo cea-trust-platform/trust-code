@@ -44,7 +44,7 @@ public:
   virtual void solve_pressure_thermo() = 0;
 
 protected :
-  REF2(Fluide_Dilatable_base) le_fluide_;
+  REF(Fluide_Dilatable_base) le_fluide_;
 };
 
 #endif /* Pb_Dilatable_base_included */

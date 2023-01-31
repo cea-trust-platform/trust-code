@@ -40,7 +40,7 @@ public:
 protected :
   int ismoyen=0;
   DoubleVect Debit;
-  REF2(Fluide_Quasi_Compressible) fluide;
+  REF(Fluide_Quasi_Compressible) fluide;
 
 };
 

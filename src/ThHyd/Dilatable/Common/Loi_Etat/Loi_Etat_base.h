@@ -80,8 +80,8 @@ public :
   inline double Prandt() const { return Pr_; }
 
 protected :
-  REF2(Fluide_Dilatable_base) le_fluide;
-  REF2(Probleme_base) le_prob_;
+  REF(Fluide_Dilatable_base) le_fluide;
+  REF(Probleme_base) le_prob_;
   Champ_Don temperature_;
   DoubleTab tab_rho_n, tab_rho_np1;    //rho a l'etape precedente et l'etape suivante
   double Pr_;

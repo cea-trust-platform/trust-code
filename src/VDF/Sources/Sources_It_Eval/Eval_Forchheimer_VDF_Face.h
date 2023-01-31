@@ -37,7 +37,7 @@ public:
   Modele_Permeabilite modK;
 
 protected:
-  REF2(Champ_Inc) vitesse;
+  REF(Champ_Inc) vitesse;
   double Cf, porosite;
 };
 

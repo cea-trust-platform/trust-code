@@ -51,7 +51,7 @@ protected:
 
   std::vector<double> lambda;
   int nb_groupes=0;
-  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };

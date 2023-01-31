@@ -72,7 +72,7 @@ public:
   static void check_consistancy_remote_items( Domaine& dom, const ArrOfInt& mergedDomaines );
 
 protected:
-  REF2(Domaine) le_domaine;
+  REF(Domaine) le_domaine;
 
   void read_domain_no_comm(Entree& fic );
 };

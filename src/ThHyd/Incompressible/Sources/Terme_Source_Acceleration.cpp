@@ -397,7 +397,7 @@ void Terme_Source_Acceleration::mettre_a_jour(double temps)
  *
  */
 int Terme_Source_Acceleration::a_pour_Champ_Fonc(const Motcle& mot,
-                                                 REF2(Champ_base) & ch_ref) const
+                                                 REF(Champ_base) & ch_ref) const
 {
   int ok = 0;
   if (mot == "ACCELERATION_TERME_SOURCE")

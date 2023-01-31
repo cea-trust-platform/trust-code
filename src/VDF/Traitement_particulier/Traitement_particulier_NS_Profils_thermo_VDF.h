@@ -49,7 +49,7 @@ public :
 
 protected :
 
-  REF2(Convection_Diffusion_std) mon_equation_NRJ;
+  REF(Convection_Diffusion_std) mon_equation_NRJ;
   int oui_stats_thermo = 0, oui_repr_stats_thermo = 0,tmin_tmax = 0;
   Nom fich_repr_stats_thermo;
   DoubleTab Tmoy_temp,Trms_temp ,upTp_temp,vpTp_temp,wpTp_temp;

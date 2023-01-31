@@ -39,7 +39,7 @@ public:
 
 private:
   // Parametres du partitionneur
-  REF2(Domaine) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   int nb_parties_;
 
   // Drapeau: utiliser ou pas la ponderation des edges dans metis.

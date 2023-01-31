@@ -68,7 +68,7 @@ protected:
   Nom type_morceau_;                //type du morceau d equation (ex : Operateur)
   Nom option_;                      //Pour selectionner la quantite a postraiter
   int compo_;                            //Pour identifier la composante a recuperer pour l option flux_bords
-  REF2(Equation_base) ref_eq_;       //REF vers l equation qui porte le morceau
+  REF(Equation_base) ref_eq_;       //REF vers l equation qui porte le morceau
   Motcle  localisation_;            //localisation correspondant au support du champ postraite
 };
 

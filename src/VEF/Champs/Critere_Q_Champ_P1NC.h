@@ -37,7 +37,7 @@ public:
   inline const Champ_P1NC& mon_champ() const { return mon_champ_.valeur(); }
 
 protected:
-  REF2(Champ_P1NC) mon_champ_;
+  REF(Champ_P1NC) mon_champ_;
 };
 
 #endif /* Critere_Q_Champ_P1NC_included */

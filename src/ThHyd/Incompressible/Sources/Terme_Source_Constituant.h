@@ -54,7 +54,7 @@ public :
 
 protected:
   int colw_;
-  REF2(Champ_base) rho_ref;
+  REF(Champ_base) rho_ref;
   Champ_Don la_source_constituant;
 
 };

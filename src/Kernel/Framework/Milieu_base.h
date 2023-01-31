@@ -120,7 +120,7 @@ public:
   int id_composite = -1;
 
 protected:
-  REF2(Domaine_dis_base) zdb_;
+  REF(Domaine_dis_base) zdb_;
   Champ rho; //peut etre un Champ_Don ou un Champ_Inc
   Champ_Don g, alpha, lambda, Cp, beta_th, porosites_champ, diametre_hyd_champ;
   Champ_Fonc rho_cp_elem_,rho_cp_comme_T_;
@@ -165,7 +165,7 @@ private:
   bool via_associer_ = false;
   inline bool g_via_associer() { return via_associer_; }
   void warn_old_syntax();
-  REF2(Champ_Don_base) g_via_associer_;
+  REF(Champ_Don_base) g_via_associer_;
   // FIN partie TEMPORAIRE
   // ***************************************************************************
 };

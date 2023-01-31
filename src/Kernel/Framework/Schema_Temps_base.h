@@ -267,7 +267,7 @@ public :
   };
 protected :
 
-  REF2(Probleme_base) mon_probleme;
+  REF(Probleme_base) mon_probleme;
   Nom nom_;
   double dt_;                                // Pas de temps de calcul
   DoubleTab dt_locaux_;                     // Local time steps: Vector of size nb faces of the mesh

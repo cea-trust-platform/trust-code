@@ -63,7 +63,7 @@ Implemente_base_sans_constructeur_ni_destructeur(Probleme_base,"Probleme_base",P
 // Variables globales pour initialiser est_le_premier_postraitement_pour_nom_fic
 // et est_le_dernier_postraitement_pour_nom_fic en une seule passe.
 LIST(Nom) glob_noms_fichiers;
-LIST(REF2(Postraitement)) glob_derniers_posts;
+LIST(REF(Postraitement)) glob_derniers_posts;
 
 // Retourne la version du format de sauvegarde
 // 151 pour dire que c'est la version initiee a la version 1.5.1 de TRUST
@@ -873,7 +873,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
   exit();
 
   //Pour compilation
-  REF2(Champ_base) ref_champ;
+  REF(Champ_base) ref_champ;
   return ref_champ;
 }
 
@@ -928,7 +928,7 @@ int Probleme_base::verifie_tdeb_tfin(const Motcle& un_nom) const
 
 const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) const
 {
-  REF2(Champ_Generique_base) ref_champ;
+  REF(Champ_Generique_base) ref_champ;
 
   for (const auto &itr : postraitements())
     {
@@ -952,7 +952,7 @@ const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) 
   return ref_champ;
 }
 
-int Probleme_base::a_pour_IntVect(const Motcle&, REF2(IntVect)& ) const
+int Probleme_base::a_pour_IntVect(const Motcle&, REF(IntVect)& ) const
 {
   return 0;
 }

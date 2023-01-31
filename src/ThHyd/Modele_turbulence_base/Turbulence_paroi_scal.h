@@ -50,7 +50,7 @@ public:
   inline const DoubleVect& tab_equivalent_distance(int bord) const;
 protected:
 
-  REF2(Modele_turbulence_scal_base) mon_modele_turb_scal;
+  REF(Modele_turbulence_scal_base) mon_modele_turb_scal;
 };
 
 

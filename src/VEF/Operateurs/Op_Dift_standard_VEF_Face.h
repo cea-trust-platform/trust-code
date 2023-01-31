@@ -34,7 +34,7 @@ public:
   void ajouter_cas_vectoriel(const DoubleTab&, DoubleTab& , DoubleTab& ,const DoubleTab& , const DoubleTab& ,const Domaine_Cl_VEF& ,const Domaine_VEF& ,const DoubleTab& ,int ) const;
 
 protected :
-  REF2(Champ_Inc) divergence_U;
+  REF(Champ_Inc) divergence_U;
   int grad_Ubar = 1;
   int nu_lu = 1, nut_lu = 1;
   int nu_transp_lu = 1, nut_transp_lu = 1;

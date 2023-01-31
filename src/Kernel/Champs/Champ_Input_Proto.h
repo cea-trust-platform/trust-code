@@ -59,9 +59,9 @@ protected:
   virtual void set_nb_comp(int i)=0; // calls fixer_nb_comp
   virtual void set_name(const Nom& name)=0; // calls nommer
 
-  REF2(Probleme_base) mon_pb;
+  REF(Probleme_base) mon_pb;
   bool sous_domaine_ok; // This fields knows how to deal with a sous_domaine
-  REF2(Sous_Domaine) ma_sous_domaine;
+  REF(Sous_Domaine) ma_sous_domaine;
   ArrOfDouble initial_value_;
 };
 

@@ -33,7 +33,7 @@ public:
   inline const Champ_Q1NC& mon_champ() const { return mon_champ_.valeur(); }
 
 protected:
-  REF2(Champ_Q1NC) mon_champ_;
+  REF(Champ_Q1NC) mon_champ_;
 };
 
 #endif /* Rotationnel_Champ_Q1NC_included */

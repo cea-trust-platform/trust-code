@@ -34,7 +34,7 @@ class Traitement_particulier_NS_temperature_VEF : public Traitement_particulier_
   Declare_instanciable(Traitement_particulier_NS_temperature_VEF);
 protected :
   void calcul_temperature( ) override;
-  REF2(Convection_Diffusion_std) mon_equation_NRJ;
+  REF(Convection_Diffusion_std) mon_equation_NRJ;
 };
 
 #endif

@@ -43,7 +43,7 @@ public :
 protected :
 
   Nom name;
-  REF2(Probleme_base) mon_pb;
+  REF(Probleme_base) mon_pb;
 
 };
 

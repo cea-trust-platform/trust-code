@@ -39,17 +39,17 @@ public:
   void postraiter();
   void mettre_a_jour(double temps, double tinit);
   void lire_fichier(const Nom& nom_fichier);
-  REF2(Champ_base) get_from_cache(REF2(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_);
+  REF(Champ_base) get_from_cache(REF(Champ_Generique_base)& mon_champ, const Nom& nom_champ_lu_);
   void clear_cache();
   void set_noms_champs_postraitables();
   const Motcles& get_noms_champs_postraitables() const { return noms_champs_postraitables_; }
 
 private:
   // Mecanisme de cache pour les sondes:
-  LIST(REF2(Champ_base)) sourceList;
+  LIST(REF(Champ_base)) sourceList;
   LIST(Champ) espaceStockageList;
   Noms sourceNoms;
-  REF2(Postraitement) mon_post;
+  REF(Postraitement) mon_post;
   Motcles noms_champs_postraitables_;
 };
 

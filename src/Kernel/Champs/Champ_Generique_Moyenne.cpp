@@ -70,7 +70,7 @@ void Champ_Generique_Moyenne::completer(const Postraitement_base& post)
 
 const Champ_base& Champ_Generique_Moyenne::get_champ(Champ& espace_stockage) const
 {
-  const REF2(Champ_Generique_base)& mon_champ = integrale().le_champ();
+  const REF(Champ_Generique_base)& mon_champ = integrale().le_champ();
   Champ espace_stockage_source;
   const Champ_base& source = mon_champ->get_champ(espace_stockage_source);
   Nature_du_champ nature_source = source.nature_du_champ();
@@ -150,7 +150,7 @@ void Champ_Generique_Moyenne::nommer_source()
 
 const Champ_Generique_base& Champ_Generique_Moyenne::get_champ_post(const Motcle& nom) const
 {
-  REF2(Champ_Generique_base) ref_champ;
+  REF(Champ_Generique_base) ref_champ;
   try
     {
       return Champ_Gen_de_Champs_Gen::get_champ_post(nom) ;

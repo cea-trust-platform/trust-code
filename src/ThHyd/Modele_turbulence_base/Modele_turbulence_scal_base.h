@@ -79,7 +79,7 @@ public:
 protected:
 
   Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
-  REF2(Convection_Diffusion_std) mon_equation;
+  REF(Convection_Diffusion_std) mon_equation;
   Turbulence_paroi_scal loipar;
   double dt_impr_nusselt_=DMAXFLOAT;
 

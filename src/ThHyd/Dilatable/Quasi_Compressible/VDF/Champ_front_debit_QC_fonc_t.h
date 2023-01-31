@@ -42,7 +42,7 @@ public:
 
 protected :
   int ismoyen=0;
-  REF2(Fluide_Quasi_Compressible) fluide;
+  REF(Fluide_Quasi_Compressible) fluide;
 
 private :
   mutable VECT(Parser_U) f_debit_t;

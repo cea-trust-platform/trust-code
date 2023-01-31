@@ -35,8 +35,8 @@ public:
 
 protected:
   mutable double penalisation_matrice_, penalisation_secmem_;
-  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  REF2(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
 };
 
 #endif /* Masse_VDF_base_included */

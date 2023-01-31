@@ -311,7 +311,7 @@ void Discretisation_base::residu(const Domaine_dis& , const Champ_Inc&, Champ_Fo
   exit();
 }
 
-void Discretisation_base::modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF2(Champ_base))& ch_inc) const
+void Discretisation_base::modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const
 {
   Cerr<<que_suis_je()<<" must overload Discretisation_base::modifier_champ_tabule"<<finl;
   Cerr<<__FILE__<<(int)__LINE__<<" uncoded"<<finl;
@@ -329,10 +329,10 @@ void Discretisation_base::nommer_completer_champ_physique(const Domaine_dis_base
     {
       Noms& noms_variables = ref_cast(Champ_Fonc_Tabule, le_champ).noms_champs_parametre();
       Noms& noms_pbs = ref_cast(Champ_Fonc_Tabule, le_champ).noms_problemes();
-      VECT(REF2(Champ_base)) les_ch_eq;
+      VECT(REF(Champ_base)) les_ch_eq;
       for (int i = 0; i < noms_variables.size(); i++)
         {
-          REF2(Champ_base) champ;
+          REF(Champ_base) champ;
           const Probleme_base& pb_ch = noms_pbs.size() == 0 ? pb : ref_cast(Probleme_base, Interprete::objet(noms_pbs[i]));
           champ = pb_ch.get_champ(Motcle(noms_variables[i]));
           les_ch_eq.add(champ);
@@ -348,7 +348,7 @@ void Discretisation_base::nommer_completer_champ_physique(const Domaine_dis_base
 
 
 // cela permet de specifier le comportement pour chaque discretisation
-Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn ,const REF2(Champ_base)& champ_sup) const
+Nom Discretisation_base::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn ,const REF(Champ_base)& champ_sup) const
 {
   Nom type;
   if (class_operateur == "Source")

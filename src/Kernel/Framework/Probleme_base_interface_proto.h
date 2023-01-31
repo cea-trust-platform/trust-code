@@ -45,11 +45,11 @@ public:
   double computeTimeStep_impl(const Probleme_base& pb,bool& stop) const;
   double futureTime_impl(const Probleme_base& pb) const;
 
-  REF2(Field_base) findInputField_impl(const Probleme_base& pb,const Nom& name) const;
-  REF2(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;
+  REF(Field_base) findInputField_impl(const Probleme_base& pb,const Nom& name) const;
+  REF(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;
 
 protected:
-  LIST(REF2(Field_base)) input_fields; // List of input fields inside this problem.
+  LIST(REF(Field_base)) input_fields; // List of input fields inside this problem.
   // Flags used to control the calling order and raise exceptions
   bool initialized = false;  // true if initialize was called
   bool terminated = false;   // true if terminate was called

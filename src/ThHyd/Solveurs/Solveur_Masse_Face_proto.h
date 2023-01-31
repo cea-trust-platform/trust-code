@@ -32,8 +32,8 @@ public:
   void ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const ;
 
 protected:
-  REF2(Solveur_Masse_base) solv_mass_;
-  REF2(Domaine_VF) le_dom_;
+  REF(Solveur_Masse_base) solv_mass_;
+  REF(Domaine_VF) le_dom_;
 };
 
 #endif /* Solveur_Masse_Face_proto_included */

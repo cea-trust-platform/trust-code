@@ -66,7 +66,7 @@ protected:
   int i_source_pdf_=-1;
   DoubleTab champ_coeff_pdf_som_;
 
-  REF2(Navier_Stokes_std) eq_NS;
+  REF(Navier_Stokes_std) eq_NS;
 };
 
 

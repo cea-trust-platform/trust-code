@@ -41,7 +41,7 @@ public:
 
 
 protected:
-  REF2(Probleme_base) pb_;
+  REF(Probleme_base) pb_;
   Champs_compris champs_compris_;
 
 };

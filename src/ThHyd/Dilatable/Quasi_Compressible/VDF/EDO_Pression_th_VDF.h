@@ -46,8 +46,8 @@ public :
   double getM0() { return M0; }
 
 protected :
-  REF2(Domaine_VDF) le_dom;
-  REF2(Domaine_Cl_dis) le_dom_Cl;
+  REF(Domaine_VDF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_Cl;
   double M0;// la masse totale initiale
 };
 

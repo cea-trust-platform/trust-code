@@ -47,8 +47,8 @@ public:
   }
 
 protected:
-  REF2(Domaine_VDF) le_dom;
-  REF2(Domaine_Cl_VDF) la_zcl;
+  REF(Domaine_VDF) le_dom;
+  REF(Domaine_Cl_VDF) la_zcl;
   int dimension = -100, premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face
   DoubleVect surface;          // surfaces des faces

@@ -48,9 +48,9 @@ public:
 
 protected:
 
-  REF2(Domaine_EF) le_dom_EF;
-  REF2(Domaine_Cl_EF) la_zcl_EF;
-  REF2(Champ_Inc_base) inconnue;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) la_zcl_EF;
+  REF(Champ_Inc_base) inconnue;
   mutable DoubleTab nu_;
 
 };

@@ -60,7 +60,7 @@ public:
   void init_grad();
 
 protected:
-  REF2(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC;
   REF(Champ_Face_PolyMAC_P0) champ_;
 
   int is_init = 0;

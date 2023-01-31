@@ -60,7 +60,7 @@ protected:
   virtual void update_inv_lambda();
 
   Champ_front h_gap_;
-  REF2(Champ_Don) lambda_ref_;   // reference to the field of thermic conductivity
+  REF(Champ_Don) lambda_ref_;   // reference to the field of thermic conductivity
   DoubleTab inv_lambda_;        // = e/lambda on the internal boundary
 };
 

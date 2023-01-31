@@ -80,7 +80,7 @@ public:
 protected :
 
 
-  REF2(Champ_base) diffusivite_;
+  REF(Champ_base) diffusivite_;
 
   //DoubleVect porosite_face;
 };

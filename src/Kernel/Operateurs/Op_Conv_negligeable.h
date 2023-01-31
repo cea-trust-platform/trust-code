@@ -59,7 +59,7 @@ public :
 
 protected :
 
-  REF2(Champ_base) la_vitesse;
+  REF(Champ_base) la_vitesse;
   inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& ) override ;
 };
 

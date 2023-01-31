@@ -46,7 +46,7 @@ public:
 
 protected:
   Iterateur_Source iter;
-  REF2(Domaine_VDF) le_dom;
+  REF(Domaine_VDF) le_dom;
 };
 
 #endif /* Source_Neutronique_VDF_included */

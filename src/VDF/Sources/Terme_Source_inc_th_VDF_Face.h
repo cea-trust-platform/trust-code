@@ -60,8 +60,8 @@ public :
 
 protected :
 
-  REF2(Domaine_VDF) le_dom_VDF;
-  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   /*    void calculer_cell_cent_vel(DoubleTab& ); */
   /*    void calculer_debit_ES(double& ,double&,double&  ) const; */

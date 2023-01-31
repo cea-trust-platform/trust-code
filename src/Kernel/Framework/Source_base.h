@@ -56,7 +56,7 @@ public:
   inline void associer_domaines_public(const Domaine_dis& zdis, const Domaine_Cl_dis& zcldis) { associer_domaines(zdis,zcldis); }
   virtual int initialiser(double temps);
   virtual void associer_champ_rho(const Champ_base& champ_rho);
-  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base) &ch_ref) const;
+  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
   virtual void contribuer_jacobienne(Matrice_Bloc&, int) const { }
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
@@ -68,7 +68,7 @@ public:
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, REF2(Champ_base) &ref_champ) const;
+  virtual bool has_champ(const Motcle& nom, REF(Champ_base) &ref_champ) const;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
 

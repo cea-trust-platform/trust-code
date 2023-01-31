@@ -61,8 +61,8 @@ public:
 private:
 
   mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
-  REF2(Domaine_PolyMAC_P0) ref_domaine;
-  REF2(Domaine_Cl_PolyMAC) ref_zcl;
+  REF(Domaine_PolyMAC_P0) ref_domaine;
+  REF(Domaine_Cl_PolyMAC) ref_zcl;
 };
 
 #endif

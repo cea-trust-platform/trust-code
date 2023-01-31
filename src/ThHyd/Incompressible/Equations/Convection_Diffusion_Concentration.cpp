@@ -232,7 +232,7 @@ int Convection_Diffusion_Concentration::impr(Sortie& os) const
  *     le type a ete specifie.
  *
  * @param (Motcle& mot) le type du champ dont on veut recuperer la reference
- * @param (REF2(Champ_base)& ch_ref) la reference sur le champ du type specifie
+ * @param (REF(Champ_base)& ch_ref) la reference sur le champ du type specifie
  * @return (int) renvoie 1 si le champ a ete trouve, 0 sinon
  */
 inline int string2int(char* digit, int& result)

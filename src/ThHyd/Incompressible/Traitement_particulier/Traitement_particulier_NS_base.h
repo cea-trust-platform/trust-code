@@ -61,7 +61,7 @@ public :
 
 protected :
 
-  REF2(Navier_Stokes_std) mon_equation;
+  REF(Navier_Stokes_std) mon_equation;
 
   Champs_compris champs_compris_;
 

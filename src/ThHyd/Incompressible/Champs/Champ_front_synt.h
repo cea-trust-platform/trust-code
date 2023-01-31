@@ -42,7 +42,7 @@ public:
   void mettre_a_jour(double temps) override;
 
 protected :
-  REF2(Champ_Inc_base) ref_inco_;
+  REF(Champ_Inc_base) ref_inco_;
 
   DoubleVect moyenne;
   DoubleVect dir_fluct;

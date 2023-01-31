@@ -57,7 +57,7 @@ public:
 
 protected:
   Nom le_nom_;
-  REF2(Probleme_base) mon_probleme;
+  REF(Probleme_base) mon_probleme;
   double temps_;
 };
 

@@ -58,7 +58,7 @@ protected :
   Nom dom_extrac_;                //Nom du domaine d extraction
   Nom nom_fr_;                        //Nom de la frontiere sur laquelle on fait l extraction
   Nom methode_;                        //Type de methode pour extraire ("trace" ou "champ_frontiere")
-  REF2(Domaine) domaine_;        //Reference sur le domaine d extraction
+  REF(Domaine) domaine_;        //Reference sur le domaine d extraction
   Domaine_dis le_dom_dis;        //Le domaine discretise correspondant a domaine_.valeur()
 };
 

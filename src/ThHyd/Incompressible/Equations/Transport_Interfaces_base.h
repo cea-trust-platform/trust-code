@@ -58,7 +58,7 @@ public:
 protected:
 
   // A terme d autres elements de Transport_Interfaces_FT_Disc sont susceptibles d etre factorises
-  // ex : REF2(Probleme_base) probleme_base_;
+  // ex : REF(Probleme_base) probleme_base_;
   // Cette factorisation pourra etre realisee quand les developpements recents
   // lies purement au Front-Tracking seront integres
 

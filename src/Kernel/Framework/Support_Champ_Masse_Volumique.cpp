@@ -68,7 +68,7 @@ void Support_Champ_Masse_Volumique::associer_champ_masse_volumique(const Champ_b
  */
 void Support_Champ_Masse_Volumique::dissocier_champ_masse_volumique()
 {
-  REF2(Champ_base) ref_nulle;
+  REF(Champ_base) ref_nulle;
   ref_champ_rho_ = ref_nulle;
 }
 

@@ -87,7 +87,7 @@ public :
 
 protected :
   LIST(Equation) list_eq;
-  REF2(Milieu_base) mil;
+  REF(Milieu_base) mil;
   int complet;
 };
 

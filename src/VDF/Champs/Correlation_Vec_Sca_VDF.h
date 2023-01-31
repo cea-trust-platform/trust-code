@@ -36,7 +36,7 @@ public:
   inline const Champ_base& mon_champ_Vec() const { return mon_champ_Vec_.valeur(); }
   inline const Champ_base& mon_champ_Sca() const { return mon_champ_Sca_.valeur(); }
 protected:
-  REF2(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
+  REF(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
 };
 
 #endif /* Correlation_Vec_Sca_VDF_included */

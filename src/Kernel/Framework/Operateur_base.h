@@ -108,7 +108,7 @@ public:
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, REF2(Champ_base) &ref_champ) const;
+  virtual bool has_champ(const Motcle& nom, REF(Champ_base) &ref_champ) const;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
   void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
@@ -138,7 +138,7 @@ protected:
   mutable DoubleTab flux_bords_;         // Tableau contenant les flux sur les bords de l'operateur
 
   Champs_compris champs_compris_;
-  REF2(Champ_Inc) le_champ_inco;
+  REF(Champ_Inc) le_champ_inco;
   std::string nom_inco_;
 };
 

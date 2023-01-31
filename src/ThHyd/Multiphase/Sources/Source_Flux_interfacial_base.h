@@ -49,7 +49,7 @@ public :
 
 private:
   mutable DoubleTab qpi_, dT_qpi_, da_qpi_, dp_qpi_;
-  REF2(Correlation) correlation_; //correlation donnant le coeff de flux interfacial
+  REF(Correlation) correlation_; //correlation donnant le coeff de flux interfacial
 };
 
 #endif /* Source_Flux_interfacial_base_included */

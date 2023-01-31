@@ -45,8 +45,8 @@ public :
 
 protected :
 
-  REF2(Frontiere) la_frontiere;
-  REF2(Domaine_dis_base) le_dom_dis;
+  REF(Frontiere) la_frontiere;
+  REF(Domaine_dis_base) le_dom_dis;
 };
 
 #endif

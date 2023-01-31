@@ -48,7 +48,7 @@ void Op_Diff_P1NC_barprim::associer(const Domaine_dis& domaine_dis,
   if (sub_type(Champ_P1NC,ch_diffuse.valeur()))
     {
       const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_diffuse.valeur());
-      REF2(Champ_P1NC) inconnue;
+      REF(Champ_P1NC) inconnue;
       inconnue = inco;
     }
 

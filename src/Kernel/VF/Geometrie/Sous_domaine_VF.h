@@ -84,7 +84,7 @@ public:
   void discretiser() override;
 
 protected:
-  REF2(Domaine_VF) le_dom_VF;
+  REF(Domaine_VF) le_dom_VF;
   IntTab les_faces_;
   int premiere_face_bord_0_ = -10;
   int premiere_face_bord_1_= -10;

@@ -95,7 +95,7 @@ public :
 
 protected:
 
-  REF2(Mod_turb_hyd_base) mon_modele_turb_hyd;
+  REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
   DoubleTab Cisaillement_paroi_;         //valeurs des contraintes tangentielles aux
   // parois calculees localement a partir de u*
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement

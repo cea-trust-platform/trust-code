@@ -79,7 +79,7 @@ protected:
   int last_time_only_=0;
 
   // Other:
-  REF2(Domaine) mon_dom;
+  REF(Domaine) mon_dom;
   Domaine dom_med_;
   Domaine_VF_inst domainebidon_inst;
   int numero_ch = -10;

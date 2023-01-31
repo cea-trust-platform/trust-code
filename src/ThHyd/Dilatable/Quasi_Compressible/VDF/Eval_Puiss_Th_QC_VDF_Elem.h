@@ -31,7 +31,7 @@ public:
   inline void mettre_a_jour() override { /* Do nothing */}
 
 protected:
-  REF2(Champ_Don) la_puissance;
+  REF(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
 

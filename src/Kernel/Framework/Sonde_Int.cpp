@@ -63,7 +63,7 @@ Entree& Sonde_Int::readOn(Entree& is )
     {
       if (liste_noms[i]==motlu)
         {
-          REF2(IntVect) ref_tab;
+          REF(IntVect) ref_tab;
           ////pb.a_pour_IntVect(motlu,ref_tab);
           if (pb.a_pour_IntVect(motlu,ref_tab))
             mon_tableau = ref_tab;

@@ -47,7 +47,7 @@ private:
   inline void calculer_terme_source(int , Type_Double& , const DoubleVect&) const;
 
   double Cf, porosite;
-  REF2(Champ_Inc) vitesse;
+  REF(Champ_Inc) vitesse;
 };
 
 // Compute -Cf.psi.U.|U|/sqrt(K).dvol

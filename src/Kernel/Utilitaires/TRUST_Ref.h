@@ -42,7 +42,7 @@ class Nom;
  */
 
 // MACRO to replace REF(_TYPE_) by TRUST_Ref<_TYPE_*> & keep previous syntax for some developers
-#define REF2(_TYPE_) TRUST_Ref<_TYPE_*>
+#define REF(_TYPE_) TRUST_Ref<_TYPE_*>
 
 template<typename _CLASSE_>
 class TRUST_Ref

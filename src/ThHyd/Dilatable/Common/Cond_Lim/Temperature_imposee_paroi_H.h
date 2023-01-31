@@ -35,7 +35,7 @@ public :
   double val_imp(int i, int j) const override;
 
 protected :
-  REF2(Fluide_Dilatable_base) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Temperature_imposee_paroi_H_included */

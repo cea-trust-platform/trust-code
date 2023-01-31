@@ -34,7 +34,7 @@ public:
   const Octree_Double& octree_double() const { return octree_double_; }
 protected:
   int find_elements(double x, double y, double z, ArrOfInt *elements) const;
-  REF2(Domaine) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   Octree_Double octree_double_;
   mutable ArrOfDouble pos_;
 };

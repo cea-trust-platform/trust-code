@@ -48,7 +48,7 @@ protected :
   void set_param(Param& param);
 
   Champ champ_orig;
-  REF2(DoubleTab) ref_origine_;
+  REF(DoubleTab) ref_origine_;
 };
 
 inline double DomaineAxi1d::origine_repere(int i,int j) { return ref_origine_.valeur()(i,j); }

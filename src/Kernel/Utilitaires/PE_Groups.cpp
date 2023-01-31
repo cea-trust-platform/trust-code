@@ -21,7 +21,7 @@
 // (voir Comm_Group::enter_group() Comm_Group::current_group() Comm_Group::exit_group() )
 // Le haut de la pile est toujours groupe_TRUST(), fourni a initialize()
 // groups[0] pointe sur groupe_trio.
-static REF2(Comm_Group) groups[100];
+static REF(Comm_Group) groups[100];
 static int ngroups = 0;
 static int max_ngroups = 100;
 const Comm_Group * PE_Groups::current_group_ = 0;

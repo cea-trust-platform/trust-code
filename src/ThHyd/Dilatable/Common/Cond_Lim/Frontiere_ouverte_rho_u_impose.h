@@ -37,7 +37,7 @@ public :
   double val_imp_au_temps(double temps, int i, int j) const override;
 
 protected :
-  REF2(Fluide_Dilatable_base) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Frontiere_ouverte_rho_u_impose_included */

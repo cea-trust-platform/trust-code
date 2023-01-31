@@ -41,7 +41,7 @@ public :
   void sauver_stat() const override;
   void post_traitement_particulier() override;
   inline void en_cours_de_resolution(int , DoubleTab&, DoubleTab& ,double) override { }
-  inline int a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base)& ch_ref) const { return 0 ; }
+  inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const { return 0 ; }
   inline int comprend_champ(const Motcle& mot) const { return 0 ; }
 
 protected :
@@ -70,7 +70,7 @@ protected :
   double temps_deb, temps_fin, debut_phase, dt_impr_moy_spat, dt_impr_moy_temp;
   Nom fich_repr;
 
-  REF2(Champ_base) Temp;
+  REF(Champ_base) Temp;
 
   DoubleVect uv_moy_temp, wv_moy_temp, uw_moy_temp, u2_moy_temp, v2_moy_temp, w2_moy_temp, nu_t_temp;
 };

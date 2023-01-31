@@ -67,7 +67,7 @@ public :
 protected:
 
   int init = -1;
-  REF2(Equation_base) mon_equation;
+  REF(Equation_base) mon_equation;
   void projete_L2(DoubleTab&);
   double alpha=0., beta=0.; // Coefficients du changement de base P0+P1<->P1Bulle
 };

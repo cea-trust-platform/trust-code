@@ -197,12 +197,12 @@ Nom Postraitement::get_nom_localisation(const Entity& loc)
   return loc_post;
 }
 
-int Postraitement::champ_fonc(Motcle& nom_champ, REF2(Champ_base)& mon_champ, REF2(Operateur_Statistique_tps_base)& operateur_statistique) const
+int Postraitement::champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF(Operateur_Statistique_tps_base)& operateur_statistique) const
 {
 
   if (comprend_champ_post(nom_champ))
     {
-      const REF2(Champ_Generique_base)& champ = get_champ_post(nom_champ);
+      const REF(Champ_Generique_base)& champ = get_champ_post(nom_champ);
       if (sub_type(Champ_Generique_Statistiques_base,champ.valeur()))
         {
           const Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,champ.valeur());
@@ -1112,7 +1112,7 @@ int Postraitement::lire_tableaux_a_postraiter(Entree& s)
   while (motlu != accolade_fermee)
     {
       // Recherche du tableau a postraiter
-      REF2(IntVect) ch_tab;
+      REF(IntVect) ch_tab;
       Noms liste_noms;
       mon_probleme->get_noms_champs_postraitables(liste_noms);
 
@@ -1188,14 +1188,13 @@ void Postraitement::init()
 
   // S'il existe un champ a postraiter aux faces, on stocke ici une ref au domaine dis base du champ
   // PQ : 13/06/13 : mis en attribut de la classe pour gerer les champs FACES en maillage deformable
-  //REF2(Domaine_dis_base) domaine_dis_pour_faces;
 
   {
     Nom le_nom_champ_post;
     for (auto& itr : noms_champs_a_post_)
       {
         const Nom& nom_post = itr;
-        const REF2(Champ_Generique_base)& champ = get_champ_post(nom_post);
+        const REF(Champ_Generique_base)& champ = get_champ_post(nom_post);
 
         int indic_correlation=0;
         if ((sub_type(Champ_Gen_de_Champs_Gen,champ.valeur())))
@@ -1224,7 +1223,7 @@ void Postraitement::init()
             // PL: Ajout automatique du postraitement aux faces pour PolyMAC seul, sinon doit etre specifie par FACES
             if (Motcle(loc_post) == "FACES" || champ->get_ref_domaine_dis_base().que_suis_je().debute_par("Domaine_PolyMAC"))
               {
-                REF2(Domaine_dis_base) ref_domaine_dis = champ->get_ref_domaine_dis_base();
+                REF(Domaine_dis_base) ref_domaine_dis = champ->get_ref_domaine_dis_base();
                 if (ref_domaine_dis.non_nul())
                   domaine_dis_pour_faces = ref_domaine_dis;
               }
@@ -1776,7 +1775,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
   Noms source_compos,source_syno;
   if (trouve==0)
     {
-      REF2(Champ_base) champ_ref;
+      REF(Champ_base) champ_ref;
       champ_ref = mon_probleme->get_champ(motlu1);
       nom_champ_ref = champ_ref->le_nom();
       source_compos = champ_ref->noms_compo();
@@ -1792,7 +1791,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
     }
   else
     {
-      REF2(Champ_Generique_base) champ_ref;
+      REF(Champ_Generique_base) champ_ref;
       champ_ref=get_champ_post(motlu1);
       nom_champ_ref = champ_ref->get_nom_post();
       source_compos = champ_ref->get_property("composantes");

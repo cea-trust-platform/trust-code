@@ -38,7 +38,7 @@ public :
   // Return the field if found, otherwise raises.
   virtual const Champ_base& get_champ(const Motcle& nom) const;
   // Same thing, but without raising:
-  virtual bool has_champ(const Motcle& nom, REF2(Champ_base)& ref_champ) const;
+  virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
   virtual void ajoute_champ(const Champ_base& champ);
   virtual void ajoute_nom_compris(const Nom& nom);
   virtual const Noms liste_noms_compris() const;
@@ -46,7 +46,7 @@ public :
 
 protected :
 
-  LIST(REF2(Champ_base)) liste_champs_;
+  LIST(REF(Champ_base)) liste_champs_;
   Noms liste_noms_;
   Noms liste_noms_construits_;
 

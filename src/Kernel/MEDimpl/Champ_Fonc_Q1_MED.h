@@ -31,7 +31,7 @@ public:
   void mettre_a_jour(double) override;
 
 private:
-  REF2(Domaine_dis_base) domainebidon;
+  REF(Domaine_dis_base) domainebidon;
 };
 
 #endif /* Champ_Fonc_Q1_MED_included */

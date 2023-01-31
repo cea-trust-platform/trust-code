@@ -65,13 +65,13 @@ void Op_Diff_VEF_base::associer(const Domaine_dis& domaine_dis,
   if (sub_type(Champ_P1NC,ch_transporte.valeur()))
     {
       const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_transporte.valeur());
-      REF2(Champ_P1NC) inconnue;
+      REF(Champ_P1NC) inconnue;
       inconnue = inco;
     }
   if (sub_type(Champ_Q1NC,ch_transporte.valeur()))
     {
       const Champ_Q1NC& inco = ref_cast(Champ_Q1NC,ch_transporte.valeur());
-      REF2(Champ_Q1NC) inconnue;
+      REF(Champ_Q1NC) inconnue;
       inconnue = inco;
     }
 

@@ -102,8 +102,8 @@ public:
 
 protected:
   int is_multi_ = 0;
-  REF2(Champ_Fonc) ref_diffusivite_turbulente_;
-  REF2(Turbulence_paroi_scal) loipar;
+  REF(Champ_Fonc) ref_diffusivite_turbulente_;
+  REF(Turbulence_paroi_scal) loipar;
   DoubleVects equivalent_distance;
   DoubleTab tab_diffusivite_turbulente;
 };

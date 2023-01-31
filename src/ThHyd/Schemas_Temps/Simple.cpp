@@ -360,7 +360,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   return (ok && converge==1);
 }
 
-bool Simple::iterer_eqs(LIST(REF2(Equation_base)) eqs, int nb_iter, int& ok)
+bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
 {
   // on recupere le solveur de systeme lineaire
   Parametre_implicite& param = get_and_set_parametre_implicite(eqs[0]);

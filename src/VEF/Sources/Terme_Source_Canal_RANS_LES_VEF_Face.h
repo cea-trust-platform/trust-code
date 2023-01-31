@@ -44,8 +44,8 @@ public :
 
 protected :
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
 private :
   int moyenne= 0; //type de moyenne

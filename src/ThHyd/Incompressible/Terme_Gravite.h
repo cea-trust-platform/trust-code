@@ -34,7 +34,7 @@ public :
   inline void associer_gravite(const Champ_Don_base& );
 
 protected:
-  REF2(Champ_Don_base) gravite;
+  REF(Champ_Don_base) gravite;
 };
 
 

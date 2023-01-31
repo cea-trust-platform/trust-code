@@ -38,8 +38,8 @@ public:
   void pid_process();
 
 protected:
-  REF2(Domaine_VF) le_dom;
-  REF2(Domaine_Cl_dis_base) le_dom_Cl;
+  REF(Domaine_VF) le_dom;
+  REF(Domaine_Cl_dis_base) le_dom_Cl;
   Champ_Don himp_,Text_;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   // PID controler

@@ -83,8 +83,8 @@ public :
   virtual bool run();
   virtual bool runUntil(double time);
 
-  virtual REF2(Field_base) findInputField(const Nom& name) const;
-  virtual REF2(Champ_Generique_base) findOutputField(const Nom& name) const;
+  virtual REF(Field_base) findInputField(const Nom& name) const;
+  virtual REF(Champ_Generique_base) findOutputField(const Nom& name) const;
   // Methodes d'acces aux membres :
 
   inline void nommer(const Nom&) override;

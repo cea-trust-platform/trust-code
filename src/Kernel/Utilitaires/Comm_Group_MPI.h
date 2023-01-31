@@ -100,7 +100,7 @@ private:
   MPI_Comm  mpi_comm_; // Handle sur le communicateur mpi
 
   int must_finalize_; // Faut-il le faire dans le destructeur ?
-  REF2(Comm_Group) groupe_pere_;
+  REF(Comm_Group) groupe_pere_;
 #endif
 };
 

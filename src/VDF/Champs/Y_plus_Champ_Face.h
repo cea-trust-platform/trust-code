@@ -45,8 +45,8 @@ public:
   }
 
 protected:
-  REF2(Champ_Face_VDF) mon_champ_;
-  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF(Champ_Face_VDF) mon_champ_;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
 };
 
 #endif /* Y_plus_Champ_Face_included */

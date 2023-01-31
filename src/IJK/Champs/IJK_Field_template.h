@@ -64,7 +64,7 @@ public:
   void echange_espace_virtuel(int ghost);
 
 protected:
-  REF2(IJK_Splitting) splitting_ref_;
+  REF(IJK_Splitting) splitting_ref_;
   IJK_Splitting::Localisation localisation_;
 
   void exchange_data(int pe_imin_, /* processor to send to */

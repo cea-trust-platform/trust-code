@@ -36,7 +36,7 @@ public:
   int initialiser(double temps, const Champ_Inc_base& inco) override;
   void mettre_a_jour(double temps) override ;
 protected:
-  REF2(Champ_Inc_base) ref_inco_;
+  REF(Champ_Inc_base) ref_inco_;
   Parser_U fonction_;
 };
 

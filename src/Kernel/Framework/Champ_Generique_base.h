@@ -129,7 +129,7 @@ protected:
   Nom nom_post_;
   Nom identifiant_appel_;
   Nom nom_pb_;
-  REF2(Probleme_base) ref_pb_;
+  REF(Probleme_base) ref_pb_;
 };
 
 inline void Champ_Generique_base::fixer_identifiant_appel(const Nom& identifiant)

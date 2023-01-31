@@ -41,8 +41,8 @@ public:
   const Domaine_VEF_PreP1b& domaine_Vef() const;
 
 protected:
-  REF2(Domaine_VEF) le_dom_vef;
-  REF2(Domaine_Cl_VEF) la_zcl_vef;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   IntLists elements_pour_sommet_;
 };
 

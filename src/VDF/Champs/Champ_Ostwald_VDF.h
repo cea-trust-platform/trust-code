@@ -42,7 +42,7 @@ public :
 
 protected :
   void calculer_mu(DoubleTab& );
-  REF2(Champ_Face_VDF) mon_champ_;
+  REF(Champ_Face_VDF) mon_champ_;
 };
 
 #endif /* Champ_Ostwald_VDF_included */

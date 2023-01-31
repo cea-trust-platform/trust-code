@@ -63,7 +63,7 @@ public:
   }
   inline const Champ_base& diffusivite() const override { return diffusivite_; }
 protected:
-  REF2(Champ_base) diffusivite_;
+  REF(Champ_base) diffusivite_;
   int is_var_ = 0;
 };
 

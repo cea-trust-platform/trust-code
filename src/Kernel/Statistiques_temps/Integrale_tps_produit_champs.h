@@ -32,11 +32,11 @@ class Integrale_tps_produit_champs : public Integrale_tps_Champ
   Declare_instanciable(Integrale_tps_produit_champs);
 public:
 
-  inline const REF2(Champ_Generique_base)& mon_premier_champ() const
+  inline const REF(Champ_Generique_base)& mon_premier_champ() const
   {
     return mon_champ;
   };
-  inline const REF2(Champ_Generique_base)& mon_second_champ() const
+  inline const REF(Champ_Generique_base)& mon_second_champ() const
   {
     return mon_second_champ_;
   };
@@ -63,7 +63,7 @@ public:
 
 protected :
 
-  REF2(Champ_Generique_base) mon_second_champ_;
+  REF(Champ_Generique_base) mon_second_champ_;
   int seconde_puissance_ = -10;
   int support_different_ = -10;
 };

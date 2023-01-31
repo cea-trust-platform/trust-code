@@ -79,7 +79,7 @@ public:
                                   int nb_comp) const;
 
 protected :
-  REF2(Champ_base) diffusivite_;
+  REF(Champ_base) diffusivite_;
 
   mutable DoubleTab grad_;  // grad
   //DoubleTab grad_transp_;

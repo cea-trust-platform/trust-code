@@ -980,7 +980,7 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_pre
   ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_elem);
 
   // Si on a des frontieres domaine, on les ecrit egalement
-  const LIST(REF2(Domaine)) bords= domaine.domaines_frontieres();
+  const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();
   for (int i=0; i<bords.size(); i++)
     ecrire_domaine(bords[i].valeur(),est_le_premier_post);
   return 1; // ok tout va bien

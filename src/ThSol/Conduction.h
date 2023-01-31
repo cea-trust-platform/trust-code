@@ -75,7 +75,7 @@ public:
 
 private :
 
-  REF2(Solide) le_solide;
+  REF(Solide) le_solide;
   Champ_Inc la_temperature;
   Operateur_Diff terme_diffusif;
 

@@ -50,7 +50,7 @@ public :
   /////////////////////////////////////////////////////
 protected :
 
-  REF2(Conduction) mon_equation;
+  REF(Conduction) mon_equation;
 
 private :
 

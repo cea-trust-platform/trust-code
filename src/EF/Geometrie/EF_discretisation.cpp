@@ -631,7 +631,7 @@ void EF_discretisation::h_conv(const Domaine_dis& z,const Domaine_Cl_dis& zcl,co
   ch_gt.changer_temps(ch_temperature.temps());
 #endif
 }
-void EF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF2(Champ_base))&  champs_param) const
+void EF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  champs_param) const
 {
   Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
   lambda_tab_dis.typer("Champ_Fonc_Tabule_P0_EF");
@@ -646,7 +646,7 @@ void EF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vd
   ch_tab_lambda_dis.changer_temps(champs_param[0].valeur().temps());
 }
 
-Nom  EF_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn,  const REF2(Champ_base)& champ_sup) const
+Nom  EF_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn,  const REF(Champ_base)& champ_sup) const
 {
   Nom type;
   if (class_operateur=="Source")

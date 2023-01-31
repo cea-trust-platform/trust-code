@@ -73,12 +73,12 @@ public :
 
 protected :
 
-  REF2(Postraitement) mon_post;
+  REF(Postraitement) mon_post;
   Nom nom_;                               // le nom de la sonde
   Nom nom_fichier_;                       // le nom du fichier contenant la sonde
   int dim;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
-  REF2(Champ_Generique_base) mon_champ;
-  REF2(Operateur_Statistique_tps_base) operateur_statistique_;        // Reference vers un operateur statistique eventuel
+  REF(Champ_Generique_base) mon_champ;
+  REF(Operateur_Statistique_tps_base) operateur_statistique_;        // Reference vers un operateur statistique eventuel
   int ncomp;                              // Numero de la composante a sonder
   // Si ncomp = -1 la sonde s'applique a toutes les
   // composantes du champ

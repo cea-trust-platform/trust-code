@@ -85,17 +85,17 @@ protected:
   //! Diametre hydraulique utilise dans le calcul de la perte de charge
   Champ_Don diam_hydr;
   //! Fluide associe au probleme
-  REF2(Fluide_base) le_fluide;
+  REF(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
-  REF2(Champ_Inc_base) la_vitesse;
+  REF(Champ_Inc_base) la_vitesse;
   //! Domaine dans laquelle s'applique la perte de charge
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
   // Cas d'une sous-domaine
   bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?
   Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
-  REF2(Sous_domaine_VF) la_sous_domaine_dis; //!< Initialise dans completer()
+  REF(Sous_domaine_VF) la_sous_domaine_dis; //!< Initialise dans completer()
   int implicite_;
 
   mutable Parser_U lambda;

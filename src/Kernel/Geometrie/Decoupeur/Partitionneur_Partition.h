@@ -36,8 +36,8 @@ public:
 
 private:
   // Parametres du partitionneur
-  REF2(Domaine) ref_domaine_interpol_;
-  REF2(Domaine) ref_domaine_calcul_;
+  REF(Domaine) ref_domaine_interpol_;
+  REF(Domaine) ref_domaine_calcul_;
   Nom dom_calcul_;
 };
 #endif

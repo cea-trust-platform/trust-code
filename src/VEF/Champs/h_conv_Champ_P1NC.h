@@ -47,8 +47,8 @@ public:
   }
 
 protected:
-  REF2(Champ_P1NC) mon_champ_;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Champ_P1NC) mon_champ_;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
   int temp_ref_ = -1;
 };
 

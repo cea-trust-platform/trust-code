@@ -108,7 +108,7 @@ public :
 
 protected:
 
-  REF2(Modele_turbulence_scal_base) mon_modele_turb_scal;
+  REF(Modele_turbulence_scal_base) mon_modele_turb_scal;
 
   mutable int nb_impr_;        // Compteur d'impression
   int calcul_ldp_en_flux_impose_; // flag defenissant si on utilise la ldp en flux impose 0 par defaut

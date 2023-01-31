@@ -37,7 +37,7 @@ public:
   inline void calculer_terme_source_non_standard(const int, Type_Double&) const;
 
 protected:
-  REF2(Champ_Don) la_puissance;
+  REF(Champ_Don) la_puissance;
   DoubleTab puissance;
   IntTab face_voisins;
   DoubleVect volumes;

@@ -82,7 +82,7 @@ public:
 
 protected:
   int is_var_ = 0;
-  REF2(Champ_base) ref_diffusivite_;
+  REF(Champ_base) ref_diffusivite_;
   DoubleTab tab_diffusivite_;
 };
 

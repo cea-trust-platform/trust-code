@@ -50,9 +50,9 @@ public:
   inline const Equation_base& equation() const;
 
 protected:
-  REF2(Equation_base) mon_equation;
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Equation_base) mon_equation;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
   void calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, const Domaine_Cl_VEF& domaine_Cl_VEF, const DoubleVect& volumes_entrelaces);

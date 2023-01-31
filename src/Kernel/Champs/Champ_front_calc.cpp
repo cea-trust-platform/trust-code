@@ -62,7 +62,7 @@ void Champ_front_calc::creer(const Nom& nom_pb, const Nom& nom_bord, const Motcl
 {
   nom_autre_pb_ = nom_pb;
   nom_autre_bord_ = nom_bord;
-  REF2(Probleme_base) autre_pb;
+  REF(Probleme_base) autre_pb;
   Objet_U& ob = Interprete::objet(nom_autre_pb_);
   if (sub_type(Probleme_base, ob))
     {
@@ -73,7 +73,7 @@ void Champ_front_calc::creer(const Nom& nom_pb, const Nom& nom_bord, const Motcl
       Cerr << "We did not find problem with name " << nom_pb << finl;
       exit();
     }
-  REF2(Champ_base) rch;
+  REF(Champ_base) rch;
   rch = autre_pb->get_champ(nom_inco);
   if (sub_type(Champ_Inc_base, rch.valeur()))
     {

@@ -60,9 +60,9 @@ public:
 protected:
 
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
-  REF2(Domaine_VEF_PreP1b) le_dom_vef;
-  REF2(Domaine_Cl_VEFP1B) la_zcl_vef;
-  REF2(Champ_Uniforme) diffusivite_;
+  REF(Domaine_VEF_PreP1b) le_dom_vef;
+  REF(Domaine_Cl_VEFP1B) la_zcl_vef;
+  REF(Champ_Uniforme) diffusivite_;
 };
 
 /*! @brief on dimensionne notre matrice.

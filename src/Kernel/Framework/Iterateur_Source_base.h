@@ -66,9 +66,9 @@ public:
   }
 
 protected:
-  REF2(Domaine_Cl_dis_base) la_zcl;
-  REF2(Domaine_dis_base) le_dom;
-  REF2(Source_base) so_base;
+  REF(Domaine_Cl_dis_base) la_zcl;
+  REF(Domaine_dis_base) le_dom;
+  REF(Source_base) so_base;
 };
 
 #endif /* Iterateur_Source_base_included */

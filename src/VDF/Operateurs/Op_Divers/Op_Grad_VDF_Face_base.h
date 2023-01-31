@@ -48,8 +48,8 @@ public:
   inline const double& xp_(int elem, int ori) const { return xp(elem,ori); }
 
 protected:
-  REF2(Domaine_VDF) le_dom_vdf;
-  REF2(Domaine_Cl_VDF) la_zcl_vdf;
+  REF(Domaine_VDF) le_dom_vdf;
+  REF(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation;
   IntTab face_voisins;
   DoubleVect porosite_surf, volume_entrelaces;

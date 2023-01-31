@@ -47,7 +47,7 @@ void Source_Echange_Th_VDF::associer_domaines(const Domaine_dis& domaine_dis, co
 
 void Source_Echange_Th_VDF::associer_pb(const Probleme_base& pb)
 {
-  REF2(Equation_base) eqn;
+  REF(Equation_base) eqn;
   Eval_Echange_Himp_VDF_Elem& eval = static_cast<Eval_Echange_Himp_VDF_Elem&> (iter->evaluateur());
   bool eq_OK = false;
 

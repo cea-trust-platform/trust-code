@@ -34,7 +34,7 @@ public:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
 private:
-  REF2(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
+  REF(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
 };
 
 #endif /* Masse_PolyMAC_P0_Face_included */

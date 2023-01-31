@@ -130,7 +130,7 @@ public:
   virtual int verifie_tdeb_tfin(const Motcle& nom) const;
 
   // Fonctions de recherche de IntTab pour le postraitement
-  virtual int a_pour_IntVect(const Motcle&, REF2(IntVect)& ) const;
+  virtual int a_pour_IntVect(const Motcle&, REF(IntVect)& ) const;
   virtual void lire_postraitement_interfaces(Entree& is);
   virtual void postraiter_interfaces(const Nom& nom_fich, Sortie& s, const Nom& format, double temps);
 
@@ -178,8 +178,8 @@ public:
   bool updateGivenFields() override { return updateGivenFields_impl(*this); }
   double futureTime() const override { return futureTime_impl(*this); }
 
-  REF2(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
-  REF2(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
+  REF(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
+  REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
   inline bool milieu_via_associer() { return milieu_via_associer_; }
 
@@ -201,9 +201,9 @@ protected :
   std::vector<Milieu> le_milieu_;
   Domaine_dis le_domaine_dis;
   Postraitements les_postraitements;
-  REF2(Domaine) le_domaine_;
-  REF2(Schema_Temps_base) le_schema_en_temps;
-  REF2(Discretisation_base) la_discretisation;
+  REF(Domaine) le_domaine_;
+  REF(Schema_Temps_base) le_schema_en_temps;
+  REF(Discretisation_base) la_discretisation;
 
   virtual void typer_lire_milieu(Entree& is) ;
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
@@ -221,7 +221,7 @@ protected :
   static int num_pb;                // numero du probleme
   mutable Nom error;                // Erreur d'allocation
 
-  LIST(REF2(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
+  LIST(REF(Loi_Fermeture_base)) liste_loi_fermeture_; // liste des fermetures associees au probleme
 };
 
 /*! @brief surcharge Objet_U::nommer(const Nom&) Donne un nom au probleme

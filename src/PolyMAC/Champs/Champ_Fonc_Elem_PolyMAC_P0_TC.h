@@ -43,7 +43,7 @@ public:
   inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const { return champ_.valeur(); }
 
 protected:
-  REF2(Champ_Face_PolyMAC_P0) champ_;
+  REF(Champ_Face_PolyMAC_P0) champ_;
 };
 
 #endif /* Champ_Fonc_Elem_PolyMAC_P0_TC_included */

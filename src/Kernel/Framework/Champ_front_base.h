@@ -105,7 +105,7 @@ protected:
   // n'est pas specifie. Ce sera en particulier
   // celui utilise par les operateurs et les
   // solveurs.
-  REF2(Frontiere_dis_base) la_frontiere_dis;
+  REF(Frontiere_dis_base) la_frontiere_dis;
   Roue_ptr les_valeurs; // Les valeurs du champ
 };
 

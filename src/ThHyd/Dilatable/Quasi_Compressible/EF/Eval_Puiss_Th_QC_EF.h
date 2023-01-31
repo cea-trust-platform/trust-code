@@ -33,7 +33,7 @@ public:
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& source) const;
 
 protected:
-  REF2(Champ_Don) la_puissance;
+  REF(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
 

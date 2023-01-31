@@ -41,7 +41,7 @@ public:
 
 protected:
 
-  REF2(Domaine_EF) le_dom_EF;
+  REF(Domaine_EF) le_dom_EF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
   Champ_Don la_source_,la_source_lu_;

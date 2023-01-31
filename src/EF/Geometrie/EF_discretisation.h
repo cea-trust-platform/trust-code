@@ -63,7 +63,7 @@ public :
   void h_conv(const Domaine_dis& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
   inline type_calcul_du_residu codage_du_calcul_du_residu(void) const override { return VIA_CONTRIBUER_AU_SECOND_MEMBRE; }
 
-  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF2(Champ_base)& champ_sup ) const override;
+  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const override;
 
 private:
   void discretiser_champ_fonc_don(
@@ -73,7 +73,7 @@ private:
     int nb_comp, double temps,
     Objet_U& champ) const;
 
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF2(Champ_base))&  ch_temper) const override;
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override;
 };
 
 #endif

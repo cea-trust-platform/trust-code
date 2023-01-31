@@ -37,7 +37,7 @@ public:
   inline const Champ_front& T_ext() const override { return le_champ_front; }
 
 protected:
-  REF2(Fluide_Dilatable_base) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Echange_externe_impose_H_included */

@@ -45,7 +45,7 @@ public:
 
 protected:
 
-  REF2(Postraitement) mon_post;
+  REF(Postraitement) mon_post;
   double tstat_deb_;         //
   double tstat_dernier_calcul_;     // dernier temps auquel les statistiques ont ete calcules
   double tstat_fin_;         // valeur choisie par l'utilisateur

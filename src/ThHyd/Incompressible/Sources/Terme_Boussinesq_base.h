@@ -82,13 +82,13 @@ protected :
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
-  REF2(Champ_Don_base) la_gravite_;
+  REF(Champ_Don_base) la_gravite_;
   int verif_=1;
   ArrOfDouble Scalaire0_; // T0=Scalaire0_(0) ou C0(i)=Scalaire0_(i)
   Nom NomScalaire_; // Temperature ou Concentration
   VECT(Parser_U) fct_Scalaire0_;
-  REF2(Champ_Don) beta_;
-  REF2(Convection_Diffusion_std) equation_scalaire_;
+  REF(Champ_Don) beta_;
+  REF(Convection_Diffusion_std) equation_scalaire_;
   inline void check() const;
 };
 

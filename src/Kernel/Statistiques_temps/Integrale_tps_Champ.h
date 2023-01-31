@@ -28,7 +28,7 @@ class Integrale_tps_Champ : public Champ_Fonc
 {
   Declare_instanciable(Integrale_tps_Champ);
 public:
-  inline const REF2(Champ_Generique_base)& le_champ() const { return mon_champ; }
+  inline const REF(Champ_Generique_base)& le_champ() const { return mon_champ; }
   inline double temps_integrale() const { return tps_integrale; } // le temps courant de l'integrale
   inline double t_debut() const { return t_debut_; } // le temps de debut d'integration
   inline double t_fin() const { return t_fin_; } //  le temps de fin d'integration
@@ -44,7 +44,7 @@ public:
 
 protected :
 
-  REF2(Champ_Generique_base) mon_champ;
+  REF(Champ_Generique_base) mon_champ;
   int puissance = -10;
   double t_debut_ = -100., t_fin_= -100.;
   double tps_integrale= -100., dt_integr_calcul= -100.;

@@ -37,7 +37,7 @@ public:
   double val_ext(int i,int j) const override;
 
 protected :
-  REF2(Fluide_Dilatable_base) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Neumann_sortie_libre_Temp_H_included */

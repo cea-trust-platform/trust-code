@@ -168,7 +168,7 @@ protected :
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
-  REF2(Champ_Inc_base) l_inconnue1;  //Reference au champ inconnu (ch1) qui sert d evaluateur
+  REF(Champ_Inc_base) l_inconnue1;  //Reference au champ inconnu (ch1) qui sert d evaluateur
   //dans le plan ou l on recupere les valeurs
 
   DoubleVect delt_dist;             //vecteur distance entre bord2 et le plan (plan1)

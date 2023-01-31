@@ -142,7 +142,7 @@ Entree& Create_domain_from_sous_domaine::interpreter_(Entree& is)
         }
 
       //et les sous-domaines?
-      const LIST(REF2(Sous_Domaine)) & liste_sous_domaines = domaine_org.ss_domaines();
+      const LIST(REF(Sous_Domaine)) & liste_sous_domaines = domaine_org.ss_domaines();
       int nb_sous_domaines = liste_sous_domaines.size();
       const Sous_Domaine& ssz=ref_cast(Sous_Domaine,objet(noms_sous_domaines[i]));
       ArrOfInt rev_ssz(domaine_org.nb_elem());

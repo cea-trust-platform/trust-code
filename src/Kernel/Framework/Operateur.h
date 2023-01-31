@@ -71,7 +71,7 @@ public :
 
 protected :
   std::string nom_inco_;
-  REF2(Champ_Inc) le_champ_inco;
+  REF(Champ_Inc) le_champ_inco;
   Motcle typ;
 };
 #endif

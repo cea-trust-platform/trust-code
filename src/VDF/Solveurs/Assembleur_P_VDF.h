@@ -52,8 +52,8 @@ protected:
   void modifier_secmem_vitesse_imposee(const Entree_fluide_vitesse_imposee& cond_lim, const Front_VF& frontiere_vf, DoubleTab& secmem);
   int liste_faces_periodiques(ArrOfInt& faces);
 
-  REF2(Domaine_VDF) le_dom_VDF;
-  REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
   ArrOfDouble les_coeff_pression;
 
   // Drapeau, indique si la pression est imposee quelque part sur une C.L.

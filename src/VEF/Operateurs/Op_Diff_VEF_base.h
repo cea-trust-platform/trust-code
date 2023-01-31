@@ -58,9 +58,9 @@ public:
 
 protected:
 
-  REF2(Domaine_VEF) le_dom_vef;
-  REF2(Domaine_Cl_VEF) la_zcl_vef;
-  REF2(Champ_Inc_base) inconnue_;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF(Champ_Inc_base) inconnue_;
   //DoubleVect porosite_face;
   mutable DoubleTab nu_;
 

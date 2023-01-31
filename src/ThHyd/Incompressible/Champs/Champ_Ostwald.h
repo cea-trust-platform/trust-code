@@ -51,7 +51,7 @@ public :
   }
 
 protected:
-  REF2(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
+  REF(Fluide_Ostwald) mon_fluide_;  // pour obtenir K et N
 };
 
 #endif /* Champ_Ostwald_included */

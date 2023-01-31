@@ -55,15 +55,15 @@ public:
 
   int initialiser(const double temps) override;
 
-  const REF2(Domaine)& domaine() const { return mon_domaine; }
-  REF2(Domaine)& domaine() { return mon_domaine; }
-  const LIST(REF2(Sous_Domaine))& sous_domaines() const { return les_sous_domaines; }
-  LIST(REF2(Sous_Domaine))& sous_domaines() { return les_sous_domaines; }
+  const REF(Domaine)& domaine() const { return mon_domaine; }
+  REF(Domaine)& domaine() { return mon_domaine; }
+  const LIST(REF(Sous_Domaine))& sous_domaines() const { return les_sous_domaines; }
+  LIST(REF(Sous_Domaine))& sous_domaines() { return les_sous_domaines; }
 
 protected:
-  LIST(REF2(Sous_Domaine)) les_sous_domaines;
-  REF2(Domaine) mon_domaine;
-  REF2(Probleme_base) ref_pb;
+  LIST(REF(Sous_Domaine)) les_sous_domaines;
+  REF(Domaine) mon_domaine;
+  REF(Probleme_base) ref_pb;
   VECT(Parser_U) parser; /* vecteur de tous les parsers */
   Nom nom_champ_parametre_; /* nom du champ dont les fonctions ont parametres */
   IntTab parser_idx; /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */

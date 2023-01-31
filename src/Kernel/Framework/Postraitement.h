@@ -162,7 +162,7 @@ public:
   void verifie_nom_et_sources(const Champ_Generique& champ);
   static Nom get_nom_localisation(const Entity& loc);
 
-  int champ_fonc(Motcle& nom_champ, REF2(Champ_base)& mon_champ, REF2(Operateur_Statistique_tps_base)&
+  int champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF(Operateur_Statistique_tps_base)&
                  operateur_statistique) const;
 
   inline int& compteur_champ_stat();
@@ -174,7 +174,7 @@ public:
    * @return -1 if nothing more was written, 1 otherwise.
    */
   virtual int write_extra_mesh() { return -1; }
-  const REF2(Domaine)& domaine() { return le_domaine; }
+  const REF(Domaine)& domaine() { return le_domaine; }
   int DeprecatedKeepDuplicatedProbes=0; // Ancien format des sondes dans les .son qui autorise les sondes dupliquees
 
 protected:
@@ -204,7 +204,7 @@ protected:
   int lserie_;
   double dt_integr_serie_;
 
-  LIST(REF2(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
+  LIST(REF(IntVect)) tableaux_a_postraiter_; // Liste de references a des tableaux a post-traiter
   LIST(Nom) noms_tableaux_;
 
   Format_Post format_post;
@@ -215,8 +215,8 @@ protected:
   Nom nom_fich_, format, option_para;
   double temps_, dernier_temps; // temps du precedent appel a postraiter()
   static Motcles formats_supportes;
-  REF2(Domaine) le_domaine;
-  REF2(Domaine_dis_base) domaine_dis_pour_faces;
+  REF(Domaine) le_domaine;
+  REF(Domaine_dis_base) domaine_dis_pour_faces;
 
 private :
 };

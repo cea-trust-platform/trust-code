@@ -68,7 +68,7 @@ public :
     return VIA_AJOUTER;
   }
 
-  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF2(Champ_base)& champ_sup ) const override;
+  Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const override;
 
 private:
   void discretiser_champ_fonc_don(
@@ -78,7 +78,7 @@ private:
     int nb_comp, double temps,
     Objet_U& champ) const;
 
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF2(Champ_base))&  ch_temper) const override;
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override;
 };
 
 #endif

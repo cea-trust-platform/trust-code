@@ -38,9 +38,8 @@ public:
   Nom localisation_source() override;
 
 protected:
-
-  REF2(Domaine_VF) le_dom;
-  REF2(Domaine_Cl_dis) le_dom_cl;
+  REF(Domaine_VF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_cl;
 };
 
 #endif

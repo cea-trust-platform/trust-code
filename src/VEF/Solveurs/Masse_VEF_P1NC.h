@@ -48,8 +48,8 @@ public:
 
 private:
 
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 
 #endif

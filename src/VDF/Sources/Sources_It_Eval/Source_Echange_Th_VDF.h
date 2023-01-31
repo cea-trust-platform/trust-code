@@ -35,7 +35,7 @@ public:
   void mettre_a_jour(double temps) override { /* Do nothing */ }
 
 private:
-  REF2(Probleme_base) pb_voisin;
+  REF(Probleme_base) pb_voisin;
   double h;
 };
 

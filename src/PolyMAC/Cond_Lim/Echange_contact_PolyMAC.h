@@ -41,9 +41,9 @@ public :
   void mettre_a_jour(double temps) override { }; //non utilise
   void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
 
-  mutable REF2(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
+  mutable REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
   mutable int i_fvf = -1 , i_o_fvf = -1;  //indices de frontiere de chaque cote
-  mutable REF2(Op_Diff_PolyMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
+  mutable REF(Op_Diff_PolyMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
   mutable int o_idx = -1; //indice de l'autre operateur dans le tableau op_ext de Op_Diff_PolyMAC_Elem (a remplir par celui-ci)
 
   /* faces de l'autre cote de la frontiere */

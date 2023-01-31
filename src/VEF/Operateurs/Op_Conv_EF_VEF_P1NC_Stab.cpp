@@ -2100,7 +2100,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
     {
       for (int i=0; i<nb_ssz_alpha; i++)
         {
-          REF2(Sous_domaine_VF) la_ssz;
+          REF(Sous_domaine_VF) la_ssz;
           const Sous_Domaine& la_sous_domaine=equation().probleme().domaine().ss_domaine(noms_ssz_alpha[i]);
           const Domaine_dis_base& le_domaine_dis=le_dom_vef.valeur();
           bool trouve=false;

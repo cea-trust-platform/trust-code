@@ -51,7 +51,7 @@ public:
 
 protected:
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override = 0;
-  REF2(Fluide_Dilatable_base) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
   DoubleVect g;
 };
 

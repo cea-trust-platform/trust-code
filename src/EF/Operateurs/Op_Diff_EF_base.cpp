@@ -60,19 +60,6 @@ void Op_Diff_EF_base::associer(const Domaine_dis& domaine_dis,
   const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis.valeur());
   const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF,domaine_cl_dis.valeur());
 
-  /*  if (sub_type(Champ_P1_VEF,ch_transporte.valeur()))
-    {
-      const Champ_P1_VEF& inco = ref_cast(Champ_P1_VEF,ch_transporte.valeur());
-      REF(Champ_P1_VEF) inconnue;
-      inconnue = inco;
-    }
-  if (sub_type(Champ_Q1_EF,ch_transporte.valeur()))
-    {
-      const Champ_Q1_EF& inco = ref_cast(Champ_Q1_EF,ch_transporte.valeur());
-      REF2(Champ_Q1_EF) inconnue;
-      inconnue = inco;
-    }
-  */
   le_dom_EF = zEF;
   la_zcl_EF = zclEF;
   inconnue = ch_transporte;
@@ -80,9 +67,6 @@ void Op_Diff_EF_base::associer(const Domaine_dis& domaine_dis,
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
 
   int nb_comp = 1;
-  //  int nb_dim = resu.nb_dim();
-  //  if(nb_dim==2)
-  //    nb_comp=resu.dimension(1);
 
   flux_bords_.resize(domaine_EF.nb_faces_bord(),nb_comp);
   flux_bords_=0.;

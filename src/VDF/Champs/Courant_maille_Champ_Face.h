@@ -31,8 +31,8 @@ public:
   void associer_champ(const Champ_Face_VDF&, const Schema_Temps_base&);
 
 protected:
-  REF2(Champ_Face_VDF) vitesse_;
-  REF2(Schema_Temps_base) sch_;
+  REF(Champ_Face_VDF) vitesse_;
+  REF(Schema_Temps_base) sch_;
 };
 
 #endif /* Courant_maille_Champ_Face_included */

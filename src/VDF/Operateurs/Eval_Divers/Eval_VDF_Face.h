@@ -38,7 +38,7 @@ public:
   inline void associer_inconnue(const Champ_base& );
 
 protected:
-  REF2(Champ_base) inconnue;
+  REF(Champ_base) inconnue;
 };
 
 inline void Eval_VDF_Face::associer_inconnue(const Champ_base& inco)

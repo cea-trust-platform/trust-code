@@ -158,7 +158,7 @@ public :
 
 protected:
   virtual void discretiser_assembleur_pression();
-  REF2(Fluide_base) le_fluide;
+  REF(Fluide_base) le_fluide;
 
   Champ_Inc la_vitesse, la_pression, divergence_U, gradient_P, la_pression_en_pa;
   Champ_Fonc la_vorticite, grad_u, critere_Q, pression_hydrostatique_, porosite_volumique, combinaison_champ;

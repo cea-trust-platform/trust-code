@@ -43,7 +43,7 @@ public:
 
 protected:
   // Parametres du partitionneur
-  REF2(Domaine) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   Nom filename_;
   int corriger_partition_;
 };

@@ -96,7 +96,7 @@ public:
   }
 
 protected:
-  REF2(Domaine) mon_domaine;
+  REF(Domaine) mon_domaine;
   void mettre_a_jour_positions(DoubleTab& );
 
 private:

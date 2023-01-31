@@ -43,8 +43,8 @@ public :
 
 protected :
 
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   void calculer_debit(double&) const override;
   // les attributs ont ete mis dans la classe mere

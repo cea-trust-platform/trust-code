@@ -16,10 +16,11 @@
 #ifndef Sous_domaine_dis_base_included
 #define Sous_domaine_dis_base_included
 
-#include <Ref_Domaine_dis_base.h>
-#include <Ref_Sous_Domaine.h>
+#include <TRUST_Ref.h>
+#include <Objet_U.h>
 
 class Domaine_dis_base;
+class Sous_Domaine;
 
 /*! @brief Cette classe est a la base de la hierarchie des sous-domaines discretisees.
  * Au moment de la discretisation du domaine, de meme qu'une

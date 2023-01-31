@@ -18,10 +18,10 @@ int test_Ref()
 {
   Cerr << "test_Ref" << finl;
   DoubleVect x(5);
-  REF2(DoubleVect) xx;                                //Constructeur par defaut.
+  REF(DoubleVect) xx;                                //Constructeur par defaut.
   assert(xx.non_nul() == 0);                        //non_nul
-  REF2(DoubleVect) yy(x);                        //Constructeur par const T&.
-  REF2(DoubleVect) zz(yy);                        //Constructeur par const T&.
+  REF(DoubleVect) yy(x);                        //Constructeur par const T&.
+  REF(DoubleVect) zz(yy);                        //Constructeur par const T&.
   xx=x;                                        //Operateur = const T&.
   xx=yy;                                        //Operateur = const Deriv<T>&.
   assert(xx->size() == x.size());                //Operateur ->

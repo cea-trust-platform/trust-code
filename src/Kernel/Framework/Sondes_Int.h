@@ -35,7 +35,7 @@ public:
   void mettre_a_jour(double temps, double tinit);
 
 private:
-  REF2(Postraitement) mon_post;
+  REF(Postraitement) mon_post;
 };
 
 /*! @brief Ouvre tous les fichiers associes a chacune des sondes de la liste.

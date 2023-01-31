@@ -23,7 +23,7 @@
 #include <Domaine.h>
 #include <Param.h>
 
-REF2(Debog_Pb) Debog_Pb::instance_debog_;
+REF(Debog_Pb) Debog_Pb::instance_debog_;
 
 Implemente_instanciable(Debog_Pb,"Debog_pb",Objet_U);
 Implemente_instanciable(Debog_Pb_Wrapper,"Debog",Interprete);

@@ -36,7 +36,7 @@ public:
   void associer_ch_inc_base(const Champ_Inc_base&);
   const Cond_lim_base& condition_limite(const Nom&);
 protected:
-  REF2(Champ_Inc_base) inconnue;
+  REF(Champ_Inc_base) inconnue;
 };
 
 #endif

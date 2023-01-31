@@ -50,8 +50,8 @@ public :
 
 protected :
   void calculer_mu(DoubleTab& );
-  REF2(Champ_P1NC) mon_champ_;
-  REF2(Navier_Stokes_std) eq_hydraulique;
+  REF(Champ_P1NC) mon_champ_;
+  REF(Navier_Stokes_std) eq_hydraulique;
 };
 
 #endif /* Champ_Ostwald_VEF_included */

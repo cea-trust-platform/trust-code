@@ -59,7 +59,7 @@ enum Type_modele { TURBULENCE };
  *      Sources sont les termes sources (eventuellement inexistant) de
  *              l'equation represente par des objets "Source".
  *      Une equation est lie a un probleme par une reference contenue
- *      dans le membre REF2(Probleme_base) mon_probleme.
+ *      dans le membre REF(Probleme_base) mon_probleme.
  *
  *      Classe abstraite dont toutes les equations doivent deriver.
  *      Methodes abstraites:
@@ -295,10 +295,10 @@ protected :
   Nom nom_;
   Solveur_Masse solveur_masse;
   Sources les_sources;
-  REF2(Schema_Temps_base) le_schema_en_temps;
-  REF2(Domaine_dis) le_dom_dis;
+  REF(Schema_Temps_base) le_schema_en_temps;
+  REF(Domaine_dis) le_dom_dis;
   Domaine_Cl_dis le_dom_Cl_dis;
-  REF2(Probleme_base) mon_probleme;
+  REF(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual Entree& lire_sources(Entree&);

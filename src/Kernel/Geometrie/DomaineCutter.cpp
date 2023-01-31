@@ -1531,7 +1531,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
             }
 
           // Ecritures des fichiers sous-domaines .ssz
-          const LIST(REF2(Sous_Domaine)) & liste_sous_domaines = domaine.ss_domaines();
+          const LIST(REF(Sous_Domaine)) & liste_sous_domaines = domaine.ss_domaines();
           const int nb_sous_domaines = liste_sous_domaines.size();
           if (nb_sous_domaines>0)
             {

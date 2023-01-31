@@ -64,8 +64,8 @@ private:
   IntTab faces_element_reference_old_;
   int is_polyedre_;
   // pour check_erreur_faces :
-  REF2(Domaine)   ref_domaine_;
-  REF2(IntTab) faces_sommets_;
-  REF2(IntTab) face_elem_;
+  REF(Domaine)   ref_domaine_;
+  REF(IntTab) faces_sommets_;
+  REF(IntTab) face_elem_;
 };
 #endif

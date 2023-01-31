@@ -48,7 +48,7 @@ public:
 protected:
   virtual const Champ_base& diffusivite_pour_pas_de_temps() const;
 
-  REF2(Champ_base) diffusivite_pour_pas_de_temps_;
+  REF(Champ_base) diffusivite_pour_pas_de_temps_;
 };
 
 #endif

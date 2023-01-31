@@ -43,8 +43,8 @@ public:
   virtual double Grad_P_lib_VEFPreP1B(int) const;
 
 protected:
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Champ_P1_isoP1Bulle) pression_interne;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Champ_P1_isoP1Bulle) pression_interne;
 
   DoubleVect pression_temps_moins_un;
   DoubleVect pression_temps_moins_deux;

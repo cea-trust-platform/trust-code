@@ -77,7 +77,7 @@ public:
 
 protected:
 
-  REF2(Champ_base) ref_champ_;
+  REF(Champ_base) ref_champ_;
 
   //temporaire voir utilite
   Motcle localisation_;

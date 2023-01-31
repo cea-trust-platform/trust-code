@@ -19,7 +19,7 @@
 Implemente_instanciable_sans_constructeur_ni_destructeur(Interprete_bloc,"Interprete_bloc",liste);
 
 // Voir Interprete_bloc::interprete_courant()
-static REF2(Interprete_bloc) interprete_courant_;
+static REF(Interprete_bloc) interprete_courant_;
 
 /*! @brief renvoie l'interprete_bloc en train d'etre lu dans le jeu de donnees.
  *
@@ -264,7 +264,7 @@ Objet_U& Interprete_bloc::ajouter(const Nom& nom, DerObjU& ob)
  */
 Objet_U& Interprete_bloc::objet_global(const Nom& nom)
 {
-  REF2(Interprete_bloc) ptr(interprete_courant());
+  REF(Interprete_bloc) ptr(interprete_courant());
   while (ptr.non_nul())
     {
       Interprete_bloc& interp = ptr.valeur();
@@ -287,7 +287,7 @@ Objet_U& Interprete_bloc::objet_global(const Nom& nom)
  */
 int Interprete_bloc::objet_global_existant(const Nom& nom)
 {
-  REF2(Interprete_bloc) ptr(interprete_courant());
+  REF(Interprete_bloc) ptr(interprete_courant());
   while (ptr.non_nul())
     {
       Interprete_bloc& interp = ptr.valeur();

@@ -143,8 +143,8 @@ protected:
   virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
 
   Roue_ptr les_valeurs;
-  REF2(Domaine_Cl_dis) mon_dom_cl_dis;
-  REF2(Domaine_VF) le_dom_VF;
+  REF(Domaine_Cl_dis) mon_dom_cl_dis;
+  REF(Domaine_VF) le_dom_VF;
 
   /* pour les champs dependant d'autres Champ_Inc */
   fonc_calc_t fonc_calc_;  //fonction de calcul

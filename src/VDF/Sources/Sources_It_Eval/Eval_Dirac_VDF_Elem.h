@@ -34,8 +34,8 @@ public:
   DoubleVect le_point;
 protected:
 
-  REF2(Champ_Don) la_puissance;
-  REF2(Domaine) mon_dom;
+  REF(Champ_Don) la_puissance;
+  REF(Domaine) mon_dom;
   double puissance, nb_dirac;
 };
 

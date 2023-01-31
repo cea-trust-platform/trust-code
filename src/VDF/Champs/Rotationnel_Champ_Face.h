@@ -36,7 +36,7 @@ public:
 
   inline const Champ_Face_VDF& mon_champ() const { return mon_champ_.valeur(); }
 protected:
-  REF2(Champ_Face_VDF) mon_champ_;
+  REF(Champ_Face_VDF) mon_champ_;
 };
 
 #endif /* Rotationnel_Champ_Face_included */

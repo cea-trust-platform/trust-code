@@ -123,7 +123,7 @@ protected:
   ArrOfInt send_pe_list_; // Liste des processeurs a qui envoyer
   ArrOfInt recv_pe_list_; // Liste des processeurs de qui recevoir
   int   me_to_me_;     // Drapeau: est-ce qu'on autorise a s'envoyer des messages a soi ?
-  REF2(Comm_Group) ref_group_;// Groupe de processeurs qui vont discuter
+  REF(Comm_Group) ref_group_;// Groupe de processeurs qui vont discuter
 
   int use_all_to_allv_; // Drapeau, quel type de communication faut-il utiliser ?
 private:

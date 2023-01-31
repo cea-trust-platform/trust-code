@@ -44,7 +44,7 @@ public :
   virtual double resoudre(double) =0;
 
 protected :
-  REF2(Fluide_Quasi_Compressible) le_fluide_;
+  REF(Fluide_Quasi_Compressible) le_fluide_;
 };
 
 #endif /* EDO_Pression_th_base_included */

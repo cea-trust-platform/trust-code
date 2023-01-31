@@ -57,7 +57,7 @@ public:
 
 protected:
 
-  REF2(Mod_turb_hyd_base) mon_modele_turb_hyd;
+  REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
 };
 
 /*! @brief Operateur d'affectation d'un objet Turbulence_paroi_base dans un objet Turbulence_paroi.

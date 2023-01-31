@@ -37,9 +37,9 @@ public:
   void mettre_a_jour(double temps) { }
 
 protected :
-  REF2(Navier_Stokes_std) eq_hydraulique_;
-  REF2(Convection_Diffusion_Temperature) eq_thermique_;
-  REF2(Champ_Don) beta_t_;
+  REF(Navier_Stokes_std) eq_hydraulique_;
+  REF(Convection_Diffusion_Temperature) eq_thermique_;
+  REF(Champ_Don) beta_t_;
   int impr;
   Entree& lire_donnees(Entree& );
 };

@@ -48,7 +48,7 @@ protected :
 
   int init = 1;
   int first_rand = 1;
-  REF2(Domaine) mon_domaine;
+  REF(Domaine) mon_domaine;
   Nom geom;
   double nu = -100., utau = -100.;
   double R = -100., Ox = -100., Oy = -100., Oz = -100., surf = -100.;

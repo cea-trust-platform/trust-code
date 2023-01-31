@@ -42,8 +42,8 @@ public:
 
 protected:
 
-  REF2(Domaine_VDF) le_dom_VDF;
-  REF2(Domaine_Cl_VDF) la_zcl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) la_zcl_VDF;
 };
 
 #endif

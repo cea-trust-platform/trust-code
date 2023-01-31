@@ -52,10 +52,10 @@ public :
   };
 
 protected :
-  REF2(Probleme_base) pb_swift;
-  REF2(Probleme_base) pb_corse;
-  REF2(Conduction) eq_swift;
-  REF2(Conduction) eq_corse;
+  REF(Probleme_base) pb_swift;
+  REF(Probleme_base) pb_corse;
+  REF(Conduction) eq_swift;
+  REF(Conduction) eq_corse;
 
   double tau = -123.;                                // tau est la constante de temps du forcage.
 

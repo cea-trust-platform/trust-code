@@ -105,11 +105,11 @@ public:
   }
 
 protected:
-  REF2(Domaine_VDF) le_dom;
-  REF2(Domaine_Cl_VDF) la_zcl;
-  REF2(Operateur_base) op_base;
-  REF2(Champ_Inc_base) le_champ_convecte_ou_inc;
-  REF2(Champ_base) le_ch_v;
+  REF(Domaine_VDF) le_dom;
+  REF(Domaine_Cl_VDF) la_zcl;
+  REF(Operateur_base) op_base;
+  REF(Champ_Inc_base) le_champ_convecte_ou_inc;
+  REF(Champ_base) le_ch_v;
   std::string nom_ch_inco_;
   bool is_conv_op_ = false, is_pb_multi = false, use_base_val_b_ = false;
   int incompressible_ = 1;

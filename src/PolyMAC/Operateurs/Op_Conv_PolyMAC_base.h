@@ -41,9 +41,9 @@ public:
   void associer_vitesse(const Champ_base& ) override;
 
 protected:
-  REF2(Domaine_Poly_base) le_dom_poly_;
-  REF2(Domaine_Cl_PolyMAC) la_zcl_poly_;
-  REF2(Champ_base) vitesse_;
+  REF(Domaine_Poly_base) le_dom_poly_;
+  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
+  REF(Champ_base) vitesse_;
 
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };

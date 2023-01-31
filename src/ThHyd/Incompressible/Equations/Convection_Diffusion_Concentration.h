@@ -59,7 +59,7 @@ protected :
 
   int nb_constituants_;
   Champ_Inc la_concentration;
-  REF2(Constituant) le_constituant;
+  REF(Constituant) le_constituant;
   double masse_molaire_;
 };
 

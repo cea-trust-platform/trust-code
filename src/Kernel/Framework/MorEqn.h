@@ -46,7 +46,7 @@ public:
   /* compatibilite avec les equations multiphase : par defaut, message d'erreur */
   virtual void check_multiphase_compatibility() const;
 protected :
-  REF2(Equation_base) mon_equation;
+  REF(Equation_base) mon_equation;
   inline virtual ~MorEqn();
 };
 

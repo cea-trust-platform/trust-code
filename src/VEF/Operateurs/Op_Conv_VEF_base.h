@@ -54,9 +54,9 @@ public:
   int  phi_u_transportant(const Equation_base& eq) const;
 
 protected:
-  REF2(Domaine_VEF) le_dom_vef;
-  REF2(Domaine_Cl_VEF) la_zcl_vef;
-  REF2(Champ_Inc_base) vitesse_;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF(Champ_Inc_base) vitesse_;
 
   mutable DoubleVect fluent;           // tableau qui sert pour le calcul du pas
   // Les jeton pour la permmutation des schemas de convection

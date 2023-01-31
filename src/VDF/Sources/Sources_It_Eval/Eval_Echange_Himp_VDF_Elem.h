@@ -29,7 +29,7 @@ public:
   inline void mettre_a_jour() override;
 
 protected:
-  REF2(Champ_Inc) T, T_voisin;
+  REF(Champ_Inc) T, T_voisin;
   DoubleTab Tcourant, Tvois;
   double h_;
 };

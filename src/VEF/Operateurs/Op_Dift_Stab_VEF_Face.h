@@ -62,7 +62,7 @@ protected :
   void ajouter_antidiffusion_vectoriel(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const;
 
   IntTab is_dirichlet_faces_;
-  REF2(Champ_Inc) divergence_U;
+  REF(Champ_Inc) divergence_U;
 
   int nu_lu_ = 1, nut_lu_ = 1;
   int nu_transp_lu_ = 0, nut_transp_lu_ = 1;

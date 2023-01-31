@@ -42,9 +42,9 @@ public:
   inline const Equation_base& equation() const;
 
 protected:
-  REF2(Equation_base) mon_equation;
-  REF2(Domaine_EF) le_dom_EF;
-  REF2(Domaine_Cl_EF) le_dom_Cl_EF;
+  REF(Equation_base) mon_equation;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) le_dom_Cl_EF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
 };

@@ -41,8 +41,8 @@ public:
   Modele_Permeabilite modK;
 
 protected:
-  REF2(Champ_Inc) vitesse;
-  REF2(Champ_Don_base) diffusivite_;
+  REF(Champ_Inc) vitesse;
+  REF(Champ_Don_base) diffusivite_;
   DoubleTab db_diffusivite;
   double porosite;
 };

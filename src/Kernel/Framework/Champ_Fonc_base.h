@@ -58,7 +58,7 @@ public:
 protected:
   // Par defaut on initialise les valeurs a zero
   virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
-  REF2(Domaine_VF) le_dom_VF;
+  REF(Domaine_VF) le_dom_VF;
 };
 
 #endif /* Champ_Fonc_base_included */

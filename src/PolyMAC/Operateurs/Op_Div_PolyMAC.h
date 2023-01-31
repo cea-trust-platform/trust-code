@@ -59,8 +59,8 @@ public:
 
 protected:
 
-  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF2(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
 };
 
 #endif

@@ -46,7 +46,7 @@ public:
   }
 
 protected :
-  REF2(Champ_Uniforme) diffusivite_;
+  REF(Champ_Uniforme) diffusivite_;
 };
 /*! @brief on dimensionne notre matrice.
  *

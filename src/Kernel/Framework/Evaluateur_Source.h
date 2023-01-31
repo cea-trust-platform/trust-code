@@ -42,8 +42,8 @@ public:
   }
 
 protected:
-  REF2(Domaine_dis_base) le_dom;
-  REF2(Domaine_Cl_dis_base) la_zcl;
+  REF(Domaine_dis_base) le_dom;
+  REF(Domaine_Cl_dis_base) la_zcl;
 };
 
 #endif /* Evaluateur_Source_included */

@@ -33,7 +33,7 @@ public:
   inline void calculer_terme_source(const int , Type_Double& ) const;
 
 protected:
-  REF2(Champ_Don) la_source_constituant;
+  REF(Champ_Don) la_source_constituant;
   DoubleTab source_constituant;
 };
 

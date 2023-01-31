@@ -154,7 +154,7 @@ const Champ_base& Loi_Fermeture_base::get_champ(const Motcle& nom) const
 {
   return champs_compris_.get_champ(nom);
 }
-bool Loi_Fermeture_base::has_champ(const Motcle& nom, REF2(Champ_base)& ref_champ) const
+bool Loi_Fermeture_base::has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const
 {
   return champs_compris_.has_champ(nom, ref_champ);
 }

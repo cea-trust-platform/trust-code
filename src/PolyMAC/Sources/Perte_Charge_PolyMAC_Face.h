@@ -41,8 +41,8 @@ public:
 
 protected:
 
-  REF2(Champ_Inc_base) la_vitesse;
-  REF2(Fluide_base) le_fluide;
+  REF(Champ_Inc_base) la_vitesse;
+  REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { }

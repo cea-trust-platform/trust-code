@@ -109,7 +109,7 @@ protected:
   double LeCmu;
   Champ_Fonc la_viscosite_turbulente;
   Champ_Fonc wall_length_;
-  REF2(Equation_base) mon_equation;
+  REF(Equation_base) mon_equation;
   Turbulence_paroi loipar;
   double dt_impr_ustar;
   double dt_impr_ustar_mean_only;

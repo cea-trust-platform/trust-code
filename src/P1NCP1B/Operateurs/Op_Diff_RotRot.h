@@ -113,9 +113,9 @@ protected:
   SolveurSys solveur_;
   //mutable Solv_GCP solveur_;
 
-  REF2(Domaine_VEF) le_dom_vef;
-  REF2(Domaine_Cl_VEF) la_zcl_vef;
-  REF2(Champ_Uniforme) diffusivite_;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
+  REF(Champ_Uniforme) diffusivite_;
 };
 
 

@@ -43,7 +43,7 @@ public:
 protected:
   Nom nom_champ_parametre_;
   Table la_table;
-  REF2(Probleme_base) ref_pb;
+  REF(Probleme_base) ref_pb;
 };
 
 

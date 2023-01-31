@@ -55,7 +55,7 @@ public:
 protected:
 
   int diviser_;
-  REF2(Milieu_base) mon_milieu_;
+  REF(Milieu_base) mon_milieu_;
 };
 
 #endif

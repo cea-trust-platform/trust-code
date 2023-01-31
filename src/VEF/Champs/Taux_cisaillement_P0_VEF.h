@@ -33,8 +33,8 @@ public:
   void associer_champ(const Champ_P1NC&, const Domaine_Cl_dis_base&);
 
 private:
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
-  REF2(Champ_P1NC) vitesse_;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Champ_P1NC) vitesse_;
 };
 
 #endif /* Taux_cisaillement_P0_VEF_included */

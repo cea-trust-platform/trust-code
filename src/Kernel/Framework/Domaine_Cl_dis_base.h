@@ -84,7 +84,7 @@ protected:
 
   Nom nom_;
   Conds_lim  les_conditions_limites_;
-  REF2(Champ_Inc) mon_inconnue;
+  REF(Champ_Inc) mon_inconnue;
   virtual void completer(const Domaine_dis& ) = 0;
 };
 

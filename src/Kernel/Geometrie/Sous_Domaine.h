@@ -62,7 +62,7 @@ public :
 protected :
 
   IntVect les_polys_;
-  REF2(Domaine) le_dom_;
+  REF(Domaine) le_dom_;
   Nom nom_;
 };
 

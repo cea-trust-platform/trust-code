@@ -90,7 +90,7 @@ protected :
 
   Champ_Inc l_inco_ch;
   Operateur_Evanescence evanescence;
-  REF2(Fluide_base) le_fluide;
+  REF(Fluide_base) le_fluide;
 };
 
 

@@ -42,10 +42,10 @@ public:
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
-  REF2(Mod_turb_hyd_base) le_modele_turbulence;
-  REF2(Champ_Face_VDF) inconnue;
-  REF2(Domaine_VDF) le_dom_vdf;
-  REF2(Domaine_Cl_VDF) la_zcl_vdf;
+  REF(Mod_turb_hyd_base) le_modele_turbulence;
+  REF(Champ_Face_VDF) inconnue;
+  REF(Domaine_VDF) le_dom_vdf;
+  REF(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;
   IntTab Qdm, face_voisins, elem_faces;
   DoubleVect surface, volumes_entrelaces, porosite;

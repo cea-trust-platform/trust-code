@@ -58,7 +58,7 @@ protected :
   Champ_Inc l_inco_ch;
   Champ_Fonc diametre_bulles;
 
-  REF2(Fluide_base) le_fluide;
+  REF(Fluide_base) le_fluide;
 
   int n_l=-1 ; // Number of the liquid phase (the one where no IA is stored)
 };

@@ -45,8 +45,8 @@ public:
 
 protected:
 
-  REF2(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF2(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 };
 

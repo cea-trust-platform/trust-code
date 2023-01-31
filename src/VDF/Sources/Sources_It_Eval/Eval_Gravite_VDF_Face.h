@@ -31,7 +31,7 @@ public:
   inline void mettre_a_jour() override { /* Do nothing */ }
 
 protected:
-  REF2(Champ_Don_base) la_gravite;
+  REF(Champ_Don_base) la_gravite;
   DoubleVect g;
 };
 

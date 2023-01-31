@@ -44,11 +44,11 @@ public :
   void associer_domaine(Entree& is);
   inline Domaine& domaine(int i=0) { return domains_(i).valeur(); }
   inline const Domaine& domaine(int i=0) const { return domains_(i).valeur(); }
-  inline LIST(REF2(Domaine))& domaines() { return domains_; }
+  inline LIST(REF(Domaine))& domaines() { return domains_; }
   void mettre_a_jour_sous_domaine(Domaine& domaine, int& elem, int num_premier_elem, int nb_elem) const;
 
 protected :
-  LIST(REF2(Domaine)) domains_; // List of reference to domains
+  LIST(REF(Domaine)) domains_; // List of reference to domains
 };
 
 #endif

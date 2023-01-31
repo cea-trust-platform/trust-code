@@ -44,10 +44,10 @@ public:
   void mettre_a_jour(double) override;
 
 protected:
-  REF2(Champ_Inc_base) la_vitesse;
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
-  REF2(Fluide_base) le_fluide;
+  REF(Champ_Inc_base) la_vitesse;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;

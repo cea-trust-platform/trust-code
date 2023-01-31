@@ -35,7 +35,7 @@ protected :
   Matrice_Morse_Sym la_matrice_locale_;
   Matrice_Morse_Sym matrice_de_travail_;
 
-  REF2(Matrice_Base) matrice_a_resoudre_;
+  REF(Matrice_Base) matrice_a_resoudre_;
 
   void res_syst_loc_simple(const Matrice_Morse_Sym& mat, const DoubleVect& secmem, DoubleVect& solution, const Champ_Inc_base& champ);
   void res_syst_loc_hybride(const Matrice_Morse_Sym& mat, const DoubleVect& secmem, DoubleVect& solution, const Champ_Inc_base& champ);

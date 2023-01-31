@@ -352,7 +352,7 @@ void Equation_base::ecrire_fichier_xyz() const
       const int nb_bords_post = nb_bords_post_xyz[numero_champ_xyz];
       const Noms& noms_bord = (nb_bords_post?noms_bord_xyz[numero_champ_xyz]:vide);
 
-      REF2(Champ_base) champ_a_ecrire;
+      REF(Champ_base) champ_a_ecrire;
       const double temps_courant = le_schema_en_temps->temps_courant();
       const double dt = le_schema_en_temps->pas_de_temps();
       const double tmax = le_schema_en_temps->temps_max();
@@ -372,7 +372,7 @@ void Equation_base::ecrire_fichier_xyz() const
         }
       int champ_ok = 0;
       int champ_stat = 0;
-      REF2(Operateur_Statistique_tps_base) op_stat;
+      REF(Operateur_Statistique_tps_base) op_stat;
       if (ok && dt_ecrire_fic>0)
         {
           // On recherche le champ dans le probleme contenant l'equation, et les postraitements

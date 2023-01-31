@@ -45,7 +45,7 @@ void Op_Moyenne::completer(const Probleme_base& Pb)
 {
   Nom nom_pour_post("Moyenne_");
 
-  const REF2(Champ_Generique_base)& mon_champ=integrale_champ.le_champ();
+  const REF(Champ_Generique_base)& mon_champ=integrale_champ.le_champ();
   const Noms noms = mon_champ->get_property("nom");
   nom_pour_post += Motcle(noms[0]);
 

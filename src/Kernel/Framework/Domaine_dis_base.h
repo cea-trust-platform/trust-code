@@ -98,7 +98,7 @@ public :
   }
 
 protected :
-  REF2(Domaine) le_dom;
+  REF(Domaine) le_dom;
   Sous_domaines_dis les_sous_domaines_dis;
 
   int dist_paroi_initialisee_ = 0;

@@ -134,7 +134,7 @@ void Sonde::completer()
     {
       if (nom_macro==Motcle(nom_champ_lu_))
         {
-          REF2(Champ_base) champ_ref = Pb.get_champ(nom_champ_lu_);
+          REF(Champ_base) champ_ref = Pb.get_champ(nom_champ_lu_);
           const Nom& nom_champ_base = champ_ref->le_nom();
           const Noms& compos_base = champ_ref->noms_compo();
           int ncomposante = Champ_Generique_base::composante(nom_champ_lu_,nom_champ_base,compos_base,champ_ref->get_synonyms());
@@ -236,7 +236,7 @@ Entree& Sonde::readOn(Entree& is)
       Pb.creer_champ(nom_champ_lu_);
       //On va creer un Champ_Generique_refChamp dont le nom a pour base
       //le nom du champ auquel on fait reference et non pas une composante de ce champ
-      REF2(Champ_base) champ_ref = Pb.get_champ(nom_champ_lu_);
+      REF(Champ_base) champ_ref = Pb.get_champ(nom_champ_lu_);
       const Nom& le_nom_champ = champ_ref->le_nom();
       const Motcle nom_domaine = mon_post->domaine()->le_nom();
       Motcle identifiant;
@@ -1217,7 +1217,7 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
     {
       // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
       // Implemente au niveau de Sondes
-      REF2(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
+      REF(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
 //      Champ espace_stockage;
 //      Champ_base& ma_source_mod = ref_cast_non_const(Champ_base,mon_champ->get_champ(espace_stockage));
 //        ma_source_mod.mettre_a_jour(un_temps);
@@ -1248,7 +1248,7 @@ void Sonde::postraiter()
 {
   // Mecanisme de cache du champ Source derriere le champ postraite (mon_champ)
   // Implemente au niveau de Sondes
-  REF2(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
+  REF(Champ_base) ma_source = mon_post->les_sondes().get_from_cache(mon_champ, nom_champ_lu_);
 
   if (chsom)
     {
@@ -1389,7 +1389,7 @@ void Sonde::init_bords()
   if (sub_type(Champ_Generique_refChamp,mon_champ.valeur()))
     {
       Probleme_base& Pb = mon_post->probleme();
-      REF2(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
+      REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
       const Domaine_Cl_dis& zcl = ch_inc.domaine_Cl_dis();
 
@@ -1464,7 +1464,7 @@ void Sonde::mettre_a_jour_bords()
   if (sub_type(Champ_Generique_refChamp,mon_champ.valeur()))
     {
       Probleme_base& Pb = mon_post->probleme();
-      REF2(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
+      REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
       const Domaine_Cl_dis& zcl = ch_inc.domaine_Cl_dis();
       const DoubleTab& vals_ch = ch_inc.valeurs();

@@ -41,8 +41,8 @@ public :
 
 protected :
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
 private :
 
@@ -50,8 +50,8 @@ private :
   int fct_ok=-1;
   mutable Parser_U force_rappel;
 
-  REF2(Champ_Inc_base) l_inconnue;
-  REF2(Domaine_VEF) domaine_VEF_autre_pb;
+  REF(Champ_Inc_base) l_inconnue;
+  REF(Domaine_VEF) domaine_VEF_autre_pb;
   Nom nom_pb, nom_autre_pb;
   Motcle nom_inco;
 

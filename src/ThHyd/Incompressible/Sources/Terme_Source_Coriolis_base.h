@@ -35,7 +35,7 @@ public:
 
 protected :
   DoubleVect omega_;
-  REF2(Navier_Stokes_std) eq_hydraulique_;
+  REF(Navier_Stokes_std) eq_hydraulique_;
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   double dim = -10.;

@@ -36,7 +36,7 @@ public:
 
 protected :
   void set_param(Param& param);
-  REF2(Navier_Stokes_std) eq_hydraulique_;
+  REF(Navier_Stokes_std) eq_hydraulique_;
   int impr = 0;
 };
 

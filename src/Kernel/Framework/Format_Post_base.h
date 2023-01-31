@@ -122,7 +122,7 @@ public:
   virtual int finir(const int est_le_dernier_post);
 
   virtual int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post);
-  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF2(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post);
+  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post);
   virtual int ecrire_temps(const double temps);
 
   virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,

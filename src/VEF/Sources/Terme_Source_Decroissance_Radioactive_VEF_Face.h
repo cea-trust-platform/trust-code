@@ -44,7 +44,7 @@ protected:
 
   std::vector<double> lambda;
   int nb_groupes=0;
-  REF2(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };

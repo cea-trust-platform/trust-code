@@ -39,8 +39,8 @@ public:
 
 protected:
 
-  REF2(Domaine_VEF) le_dom_VEF;
-  REF2(Domaine_Cl_VEF) la_zcl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) la_zcl_VEF;
 };
 
 #endif

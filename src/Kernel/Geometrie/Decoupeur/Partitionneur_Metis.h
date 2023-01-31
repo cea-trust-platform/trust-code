@@ -42,7 +42,7 @@ public:
 private:
 
   // Parametres du partitionneur
-  REF2(Domaine) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   int nb_parties_;
 
   // Options de metis

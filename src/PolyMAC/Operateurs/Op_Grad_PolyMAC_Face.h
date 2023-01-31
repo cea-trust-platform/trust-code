@@ -56,8 +56,8 @@ public:
 
 private:
 
-  REF2(Domaine_PolyMAC) ref_domaine;
-  REF2(Domaine_Cl_PolyMAC) ref_zcl;
+  REF(Domaine_PolyMAC) ref_domaine;
+  REF(Domaine_Cl_PolyMAC) ref_zcl;
 };
 
 #endif

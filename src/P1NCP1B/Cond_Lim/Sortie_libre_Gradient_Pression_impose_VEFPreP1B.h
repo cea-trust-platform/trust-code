@@ -40,7 +40,7 @@ public:
   virtual int calculer_trace_pression();
 
 protected:
-  REF2(Champ_P1_isoP1Bulle) pression_interne;
+  REF(Champ_P1_isoP1Bulle) pression_interne;
 };
 
 #endif

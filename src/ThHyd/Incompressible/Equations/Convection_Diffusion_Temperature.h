@@ -73,7 +73,7 @@ public :
 protected :
 
   Champ_Inc la_temperature;
-  REF2(Fluide_base) le_fluide;
+  REF(Fluide_base) le_fluide;
 
   Champ_Fonc gradient_temperature;
   Champ_Fonc h_echange;

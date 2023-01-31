@@ -38,7 +38,7 @@ class Traitement_particulier_NS_Pression_VEF : public Traitement_particulier_NS_
 
 public :
   Traitement_particulier_NS_Pression_VEF();
-  inline int a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base)& ch_ref) const ;
+  inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const ;
   inline int comprend_champ(const Motcle& mot) const ;
   inline void post_traitement_particulier(void) override ;
   Entree& lire(Entree& ) override;

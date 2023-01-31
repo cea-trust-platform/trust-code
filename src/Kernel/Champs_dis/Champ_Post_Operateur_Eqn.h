@@ -63,7 +63,7 @@ public:
 
 protected:
   int numero_source_,numero_op_;
-  REF2(Equation_base) ref_eq_;
+  REF(Equation_base) ref_eq_;
   int sans_solveur_masse_;
   Entity localisation_inco_=NODE;
   int compo_;                            //Pour identifier la composante a recuperer

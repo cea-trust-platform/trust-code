@@ -94,8 +94,8 @@ public:
   double tau_tan_impl(int face,int k) const;
 
 private:
-  REF2(Mod_turb_hyd_base) le_modele_turbulence;
-  REF2(Turbulence_paroi_base) loipar;
+  REF(Mod_turb_hyd_base) le_modele_turbulence;
+  REF(Turbulence_paroi_base) loipar;
   DoubleTab tau_tan_;
 };
 

@@ -34,7 +34,7 @@ public:
   inline void mettre_a_jour(double) override;
 
 protected:
-  REF2(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
+  REF(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
 };
 
 inline void Correlation_Vec_Sca_VEF::mettre_a_jour(double tps)

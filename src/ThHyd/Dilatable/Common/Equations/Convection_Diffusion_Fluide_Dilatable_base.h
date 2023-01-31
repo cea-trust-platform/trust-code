@@ -59,7 +59,7 @@ public :
 protected:
   Champ_Inc l_inco_ch;
   Domaine_Cl_dis zcl_modif_;
-  REF2(Fluide_Dilatable_base) le_fluide;
+  REF(Fluide_Dilatable_base) le_fluide;
 };
 
 #endif /* Convection_Diffusion_Fluide_Dilatable_base_included */
