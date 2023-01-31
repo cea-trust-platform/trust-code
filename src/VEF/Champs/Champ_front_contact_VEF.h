@@ -13,12 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_front_contact_VEF_included
 #define Champ_front_contact_VEF_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <Ref_Champ_front_contact_VEF.h>
 #include <Ref_Champ_Inc_base.h>
 #include <Domaine_VEF.h>
 #include <TRUST_Ref.h>
@@ -29,7 +27,11 @@ class Equation_base;
 class Milieu_base;
 class Domaine_dis_base;
 class Domaine_Cl_dis_base;
+class Champ_front_contact_VEF;
 class Front_dis_base;
+class Equation_base;
+class Zone_dis_base;
+class Milieu_base;
 
 /*! @brief classe Champ_front_contact_VEF Permet le couplage scalaire (temperature ou concentration) entre problemes en calculant
  *
@@ -102,7 +104,7 @@ protected :
   REF(Champ_Inc_base) l_inconnue2;
   REF(Champ_Inc_base) l_inconnue;
   REF2(Front_VF) fr_vf_autre_pb;
-  REF(Champ_front_contact_VEF) ch_fr_autre_pb;
+  REF2(Champ_front_contact_VEF) ch_fr_autre_pb;
 
   Nom nom_bord1;
   Nom nom_bord2;

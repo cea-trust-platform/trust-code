@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,8 @@
 #define Champ_Fonc_Elem_PolyMAC_P0_TC_included
 
 #include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Ref_Champ_Face_PolyMAC_P0.h>
 #include <Champ_Face_PolyMAC_P0.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class Champ_Fonc_Elem_PolyMAC_P0_TC for the calculation of the shear rate (taux de cisaillement)
  *
@@ -43,7 +43,7 @@ public:
   inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const { return champ_.valeur(); }
 
 protected:
-  REF(Champ_Face_PolyMAC_P0) champ_;
+  REF2(Champ_Face_PolyMAC_P0) champ_;
 };
 
 #endif /* Champ_Fonc_Elem_PolyMAC_P0_TC_included */

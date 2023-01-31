@@ -17,12 +17,12 @@
 #define Y_plus_Champ_Face_included
 
 #include <Domaine_Cl_dis_base.h>
-#include <Ref_Champ_Face_VDF.h>
 #include <Champ_Fonc_P0_VDF.h>
 #include <Champ_y_plus.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VDF;
+class Champ_Face_VDF;
 
 /*! @brief classe Y_plus_Champ_Face
  *
@@ -45,7 +45,7 @@ public:
   }
 
 protected:
-  REF(Champ_Face_VDF) mon_champ_;
+  REF2(Champ_Face_VDF) mon_champ_;
   REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
 };
 

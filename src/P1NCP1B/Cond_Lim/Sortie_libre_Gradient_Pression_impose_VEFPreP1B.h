@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,11 @@
 #ifndef Sortie_libre_Gradient_Pression_impose_VEFPreP1B_included
 #define Sortie_libre_Gradient_Pression_impose_VEFPreP1B_included
 
+#include <Sortie_libre_Gradient_Pression_impose_VEF.h>
+#include <TRUST_Ref.h>
+
+class Champ_P1_isoP1Bulle;
+
 /*! @brief Sortie_libre_Gradient_Pression_impose_VEFPreP1B
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
@@ -26,10 +31,6 @@
  *
  * @sa Milieu_base
  */
-
-#include <Sortie_libre_Gradient_Pression_impose_VEF.h>
-#include <Ref_Champ_P1_isoP1Bulle.h>
-
 class Sortie_libre_Gradient_Pression_impose_VEFPreP1B: public Sortie_libre_Gradient_Pression_impose_VEF
 {
   Declare_instanciable(Sortie_libre_Gradient_Pression_impose_VEFPreP1B);
@@ -39,7 +40,7 @@ public:
   virtual int calculer_trace_pression();
 
 protected:
-  REF(Champ_P1_isoP1Bulle) pression_interne;
+  REF2(Champ_P1_isoP1Bulle) pression_interne;
 };
 
 #endif

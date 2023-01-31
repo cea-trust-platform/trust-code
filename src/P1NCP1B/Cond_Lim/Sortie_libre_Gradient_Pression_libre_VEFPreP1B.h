@@ -25,10 +25,10 @@
  *     et de la pression a l'interieur du domaine.
  *
  */
-#include <Ref_Champ_P1_isoP1Bulle.h>
 #include <Neumann_sortie_libre.h>
 #include <TRUST_Ref.h>
 
+class Champ_P1_isoP1Bulle;
 class Domaine_VEF;
 
 class Sortie_libre_Gradient_Pression_libre_VEFPreP1B: public Neumann_sortie_libre
@@ -44,7 +44,7 @@ public:
 
 protected:
   REF2(Domaine_VEF) le_dom_VEF;
-  REF(Champ_P1_isoP1Bulle) pression_interne;
+  REF2(Champ_P1_isoP1Bulle) pression_interne;
 
   DoubleVect pression_temps_moins_un;
   DoubleVect pression_temps_moins_deux;

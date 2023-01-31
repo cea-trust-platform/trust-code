@@ -17,7 +17,9 @@
 #define Op_Diff_VDF_Face_Axi_base_included
 
 #include <Op_Diff_VDF_Face_base.h>
-#include <Ref_Champ_Face_VDF.h>
+#include <TRUST_Ref.h>
+
+class Champ_Face_VDF;
 
 class Op_Diff_VDF_Face_Axi_base : public Op_Diff_VDF_Face_base
 {
@@ -35,7 +37,7 @@ public:
 
 protected:
   static constexpr double deux_pi = M_PI*2.0;
-  REF(Champ_Face_VDF) inconnue;
+  REF2(Champ_Face_VDF) inconnue;
   REF2(Domaine_VDF) le_dom_vdf;
   REF2(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;

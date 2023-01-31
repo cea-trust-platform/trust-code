@@ -16,6 +16,12 @@
 #ifndef Sortie_libre_Gradient_Pression_impose_included
 #define Sortie_libre_Gradient_Pression_impose_included
 
+#include <Neumann_sortie_libre.h>
+#include <TRUST_Ref.h>
+
+class Champ_P0_VDF;
+class Domaine_VDF;
+
 /*! @brief Sortie_libre_Gradient_Pression_impose
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
@@ -26,13 +32,6 @@
  *
  * @sa Milieu_base
  */
-
-#include <Neumann_sortie_libre.h>
-#include <Ref_Champ_P0_VDF.h>
-#include <TRUST_Ref.h>
-
-class Domaine_VDF;
-
 class Sortie_libre_Gradient_Pression_impose: public Neumann_sortie_libre
 {
   Declare_instanciable(Sortie_libre_Gradient_Pression_impose);
@@ -45,7 +44,7 @@ public:
 
 protected:
   REF2(Domaine_VDF) le_dom_VDF;
-  REF(Champ_P0_VDF) pression_interne;
+  REF2(Champ_P0_VDF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;
 };

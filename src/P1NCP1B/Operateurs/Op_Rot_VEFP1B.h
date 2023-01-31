@@ -16,7 +16,6 @@
 #ifndef Op_Rot_VEFP1B_included
 #define Op_Rot_VEFP1B_included
 
-#include <Ref_Champ_P1_isoP1Bulle.h>
 #include <Champ_P1_isoP1Bulle.h>
 #include <Op_Grad_VEF_Face.h>
 #include <Operateur_base.h>
@@ -27,34 +26,19 @@ class Domaine_VEF;
 
 class Op_Rot_VEFP1B : public Operateur_base
 {
-
   Declare_instanciable(Op_Rot_VEFP1B);
-
 public:
-
-  ///////////////////////////////////////////////////
-  // 3 methodes a surcharger car heritees de Op_base.
-  ///////////////////////////////////////////////////
   void associer( const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
   DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
   DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
 
-  ///////////////////////////////////////////////////
-  // Methode rajoutee
-  //////////////////////////////////////////////////
-
   //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
   DoubleTab vecteur_normal(const int face, const int elem) const;
-
-  ///////////////////////////////////////////////////
-  // Fin methode rajoutee
-  //////////////////////////////////////////////////
   const Domaine_VEF_PreP1b& domaine_Vef() const;
 
   void associer_coins(const ArrOfInt&);
 
 protected:
-
   ArrOfInt coins;
   REF2(Domaine_VEF) le_dom_vef;
   REF2(Domaine_Cl_VEF) la_zcl_vef;

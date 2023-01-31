@@ -69,7 +69,7 @@ void Op_Diff_EF_base::associer(const Domaine_dis& domaine_dis,
   if (sub_type(Champ_Q1_EF,ch_transporte.valeur()))
     {
       const Champ_Q1_EF& inco = ref_cast(Champ_Q1_EF,ch_transporte.valeur());
-      REF(Champ_Q1_EF) inconnue;
+      REF2(Champ_Q1_EF) inconnue;
       inconnue = inco;
     }
   */

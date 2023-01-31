@@ -16,6 +16,13 @@
 #ifndef Sortie_libre_Pression_imposee_Orlansky_included
 #define Sortie_libre_Pression_imposee_Orlansky_included
 
+#include <Neumann_sortie_libre.h>
+#include <TRUST_Ref.h>
+
+class Champ_Face_VDF;
+class Champ_P0_VDF;
+class Domaine_VDF;
+
 /*! @brief Sortie_libre_Pression_imposee_Orlansky
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
@@ -25,14 +32,6 @@
  *     a l'exterieur calculee a partir du gradient de pression impose et de la pression a l'interieur du domaine.
  *
  */
-
-#include <Neumann_sortie_libre.h>
-#include <Ref_Champ_Face_VDF.h>
-#include <Ref_Champ_P0_VDF.h>
-#include <TRUST_Ref.h>
-
-class Domaine_VDF;
-
 class Sortie_libre_Pression_imposee_Orlansky: public Neumann_sortie_libre
 {
   Declare_instanciable(Sortie_libre_Pression_imposee_Orlansky);
@@ -44,8 +43,8 @@ public:
 
 protected:
   REF2(Domaine_VDF) le_dom_VDF;
-  REF(Champ_P0_VDF) pression_interne;
-  REF(Champ_Face_VDF) vitesse_interne;
+  REF2(Champ_P0_VDF) pression_interne;
+  REF2(Champ_Face_VDF) vitesse_interne;
 
   DoubleVect pression_temps_moins_un, pression_temps_moins_deux;
   DoubleVect pression_moins_un_temps_moins_un, pression_moins_un_temps_moins_deux;

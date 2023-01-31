@@ -16,11 +16,11 @@
 #ifndef Taux_cisaillement_P0_VDF_included
 #define Taux_cisaillement_P0_VDF_included
 
-#include <Ref_Champ_Face_VDF.h>
 #include <Champ_Fonc_P0_VDF.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VDF;
+class Champ_Face_VDF;
 
 /*! @brief classe Taux_cisaillement_P0_VDF
  *
@@ -34,7 +34,7 @@ public:
 
 private:
   REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  REF(Champ_Face_VDF) vitesse_;
+  REF2(Champ_Face_VDF) vitesse_;
 };
 
 #endif /* Taux_cisaillement_P0_VDF_included */

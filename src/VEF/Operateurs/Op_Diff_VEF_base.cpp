@@ -16,8 +16,6 @@
 #include <Op_Diff_VEF_base.h>
 #include <Champ_P1NC.h>
 #include <Champ_Q1NC.h>
-#include <Ref_Champ_P1NC.h>
-#include <Ref_Champ_Q1NC.h>
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
 #include <Probleme_base.h>
@@ -26,22 +24,14 @@
 #include <Discretisation_base.h>
 #include <Champ.h>
 #include <Check_espace_virtuel.h>
-
 #include <Echange_externe_impose.h>
 
 Implemente_base(Op_Diff_VEF_base,"Op_Diff_VEF_base",Operateur_Diff_base);
-
-//// printOn
-//
 
 Sortie& Op_Diff_VEF_base::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Op_Diff_VEF_base::readOn(Entree& s )
 {
@@ -75,13 +65,13 @@ void Op_Diff_VEF_base::associer(const Domaine_dis& domaine_dis,
   if (sub_type(Champ_P1NC,ch_transporte.valeur()))
     {
       const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_transporte.valeur());
-      REF(Champ_P1NC) inconnue;
+      REF2(Champ_P1NC) inconnue;
       inconnue = inco;
     }
   if (sub_type(Champ_Q1NC,ch_transporte.valeur()))
     {
       const Champ_Q1NC& inco = ref_cast(Champ_Q1NC,ch_transporte.valeur());
-      REF(Champ_Q1NC) inconnue;
+      REF2(Champ_Q1NC) inconnue;
       inconnue = inco;
     }
 

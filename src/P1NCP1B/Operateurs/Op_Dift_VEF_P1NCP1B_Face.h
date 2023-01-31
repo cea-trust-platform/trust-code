@@ -18,13 +18,13 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Op_Dift_VEF_base.h>
-#include <Ref_Champ_P1NC.h>
 #include <SolveurSys.h>
 #include <TRUST_Ref.h>
 
 class Domaine_VEF_PreP1b;
 class Domaine_Cl_VEFP1B;
 class Mod_turb_hyd_base;
+class Champ_P1NC;
 
 /*! @brief class Op_Dift_VEF_P1NCP1B_Face Cette classe represente l'operateur de diffusion
  *
@@ -41,11 +41,7 @@ public:
 
   void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
   void associer_diffusivite(const Champ_base&) override;
-  inline const Champ_base& diffusivite() const override
-  {
-    return diffusivite_;
-  }
-  ;
+  inline const Champ_base& diffusivite() const override { return diffusivite_; }
 
   void associer_modele_turbulence(const Mod_turb_hyd_base&);
 
@@ -62,7 +58,6 @@ public:
     Cerr << __FILE__ << ":" << (int) __LINE__ << finl;
     exit();
   }
-  ;
 
 protected:
   REF(Champ_base) diffusivite_;
@@ -82,4 +77,5 @@ protected:
   Matrice_Morse_Sym masse;
   DoubleTab savgrad;
 };
+
 #endif

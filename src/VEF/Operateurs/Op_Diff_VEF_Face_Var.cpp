@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,13 +14,6 @@
 *****************************************************************************/
 
 #include <Op_Diff_VEF_Face_Var.h>
-#include <Champ_P1NC.h>
-#include <Ref_Champ_P1NC.h>
-#include <Milieu_base.h>
-#include <TRUSTTrav.h>
-#include <Probleme_base.h>
-#include <Navier_Stokes_std.h>
-//#include <Ch_Fonc_P0.h>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_VEF_Face_Var,"Op_Diff_VEF_var_P1NC",Op_Diff_VEF_Face);
 
@@ -28,16 +21,11 @@ Op_Diff_VEF_Face_Var::Op_Diff_VEF_Face_Var()
 {
   declare_support_masse_volumique(1);
 }
-//// printOn
-//
 
 Sortie& Op_Diff_VEF_Face_Var::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Diff_VEF_Face_Var::readOn(Entree& s )
 {

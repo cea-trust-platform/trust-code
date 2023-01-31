@@ -17,10 +17,12 @@
 #define grad_T_Champ_P1NC_included
 
 #include <Champ_Fonc_P0_VEF.h>
-#include <TRUST_Ref.h>
-#include <Ref_Champ_P1NC.h>
-#include <Champ_grad_T.h>
 #include <Domaine_Cl_VEF.h>
+#include <Champ_grad_T.h>
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VEF;
+class Champ_P1NC;
 
 /*! @brief classe grad_T_Champ_P1NC
  *
@@ -43,7 +45,7 @@ public:
   }
 
 protected:
-  REF(Champ_P1NC) mon_champ_;
+  REF2(Champ_P1NC) mon_champ_;
   REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 

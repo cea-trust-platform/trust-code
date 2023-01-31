@@ -23,26 +23,19 @@
 #include <Neumann_paroi.h>
 #include <Echange_externe_impose.h>
 #include <Neumann_sortie_libre.h>
-#include <Ref_Champ_P1NC.h>
-
 #include <Milieu_base.h>
-
 #include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Porosites_champ.h>
 
-
 Implemente_instanciable( Op_Diff_VEF_Anisotrope_Face, "Op_Diff_VEFANISOTROPE_var_P1NC", Op_Diff_VEF_base) ;
 
-
-//// printOn
 Sortie& Op_Diff_VEF_Anisotrope_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
 Entree& Op_Diff_VEF_Anisotrope_Face::readOn(Entree& s )
 {
   return s ;

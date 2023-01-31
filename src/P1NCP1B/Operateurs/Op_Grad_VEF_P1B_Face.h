@@ -13,13 +13,11 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Grad_VEF_P1B_Face_included
 #define Op_Grad_VEF_P1B_Face_included
 
 #include <Op_Grad_VEF_Face.h>
 #include <Champ_P1_isoP1Bulle.h>
-#include <Ref_Champ_P1_isoP1Bulle.h>
 
 /*! @brief class Op_Grad_VEF_P1B_Face
  *
@@ -33,12 +31,6 @@
  */
 class Domaine_VEF_PreP1b;
 class Domaine_Cl_VEF;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Grad_VEF_P1B_Face
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Grad_VEF_P1B_Face : public Op_Grad_VEF_Face
 {
@@ -62,7 +54,6 @@ public:
 private:
   mutable ArrOfDouble coeff_som_;
   mutable IntTab som_;
-protected:
 
 };
 

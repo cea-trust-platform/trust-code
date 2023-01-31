@@ -16,11 +16,12 @@
 #ifndef Op_Grad_PolyMAC_Face_included
 #define Op_Grad_PolyMAC_Face_included
 
-#include <Ref_Champ_Face_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
 #include <Operateur_Grad.h>
 #include <TRUST_Ref.h>
+
+class Champ_Face_PolyMAC;
 
 /*! @brief class Op_Grad_PolyMAC_Face
  *

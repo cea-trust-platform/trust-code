@@ -15,7 +15,6 @@
 
 #include <Op_Diff_VEFP1NCP1B_Face.h>
 #include <Champ_P1NC.h>
-
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Periodique.h>
@@ -26,14 +25,12 @@
 #include <Symetrie.h>
 #include <Champ_Uniforme.h>
 #include <Domaine.h>
-#include <Ref_Champ_P1NC.h>
 #include <Debog.h>
 #include <TRUSTLists.h>
 #include <Champ_front_txyz.h>
 #include <Champ_Don_lu.h>
 #include <Champ_Don_Fonc_xyz.h>
 #include <Champ_Uniforme_Morceaux.h>
-
 #include <Porosites_champ.h>
 #include <Check_espace_virtuel.h>
 #include <Conduction.h>

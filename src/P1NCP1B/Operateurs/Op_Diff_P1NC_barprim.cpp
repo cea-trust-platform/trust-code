@@ -13,45 +13,31 @@
 *
 *****************************************************************************/
 
-
 #include <Op_Diff_P1NC_barprim.h>
 #include <Domaine_dis.h>
 #include <Domaine_Cl_dis.h>
 #include <Champ_Inc.h>
-
 #include <Champ_P1NC.h>
-
 #include <Champ_Uniforme.h>
-
 #include <TRUSTTrav.h>
 #include <Domaine.h>
-#include <Ref_Champ_P1NC.h>
-
 #include <TRUSTLists.h>
 #include <Periodique.h>
 #include <EFichier.h>
 #include <Schema_Temps_base.h>
+#include <TRUST_Ref.h>
 
 Implemente_instanciable(Op_Diff_P1NC_barprim,"Op_Diff_VEFBARPRIM_const_P1NC",Operateur_Diff_base);
-
-
-
 
 Sortie& Op_Diff_P1NC_barprim::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
 
-//// readOn
-//
 Entree& Op_Diff_P1NC_barprim::readOn(Entree& s )
 {
   return s;
 }
-
-//// associer
-//
-
 
 void Op_Diff_P1NC_barprim::associer(const Domaine_dis& domaine_dis,
                                     const Domaine_Cl_dis& domaine_cl_dis,
@@ -62,7 +48,7 @@ void Op_Diff_P1NC_barprim::associer(const Domaine_dis& domaine_dis,
   if (sub_type(Champ_P1NC,ch_diffuse.valeur()))
     {
       const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_diffuse.valeur());
-      REF(Champ_P1NC) inconnue;
+      REF2(Champ_P1NC) inconnue;
       inconnue = inco;
     }
 

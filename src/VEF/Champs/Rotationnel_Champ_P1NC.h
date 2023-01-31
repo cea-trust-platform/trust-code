@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,9 @@
 
 #include <Champ_Rotationnel.h>
 #include <Champ_Fonc_P0_VEF.h>
-#include <Ref_Champ_P1NC.h>
+#include <TRUST_Ref.h>
+
+class Champ_P1NC;
 
 class Rotationnel_Champ_P1NC: public Champ_Rotationnel, public Champ_Fonc_P0_VEF
 {
@@ -31,7 +33,7 @@ public:
   inline const Champ_P1NC& mon_champ() const { return mon_champ_.valeur(); }
 
 protected:
-  REF(Champ_P1NC) mon_champ_;
+  REF2(Champ_P1NC) mon_champ_;
 };
 
 #endif /* Rotationnel_Champ_P1NC_included */

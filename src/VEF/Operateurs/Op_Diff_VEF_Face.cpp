@@ -15,7 +15,6 @@
 
 #include <Op_Diff_VEF_Face.h>
 #include <Champ_P1NC.h>
-
 #include <Champ_Uniforme.h>
 #include <Periodique.h>
 #include <Symetrie.h>
@@ -23,32 +22,21 @@
 #include <Neumann_paroi.h>
 #include <Echange_externe_impose.h>
 #include <Neumann_sortie_libre.h>
-#include <Ref_Champ_P1NC.h>
-
 #include <Milieu_base.h>
-
 #include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Porosites_champ.h>
 #include <Device.h>
 #include <Echange_couplage_thermique.h>
-
 #include <Champ_front_calc_interne.h>
 
 Implemente_instanciable(Op_Diff_VEF_Face,"Op_Diff_VEF_const_P1NC",Op_Diff_VEF_base);
-
-
-//// printOn
-//
 
 Sortie& Op_Diff_VEF_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Diff_VEF_Face::readOn(Entree& s )
 {

@@ -13,21 +13,19 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Dift_VEF_Face_included
 #define Op_Dift_VEF_Face_included
 
 #include <Op_Dift_VEF_base.h>
-#include <Ref_Champ_P1NC.h>
 #include <Matrice_Morse.h>
 #include <Champ_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_P1NC;
 
 /*! @brief class Op_Dift_VEF_Face
  *
- *
- *
  */
-
 class Op_Dift_VEF_Face : public Op_Dift_VEF_base
 {
   Declare_instanciable(Op_Dift_VEF_Face);
@@ -48,8 +46,6 @@ public:
   double calculer_dt_stab() const override;
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
   Motcle get_localisation_pour_post(const Nom& option) const override;
-
-  // Methodes pour l implicite.
 
   inline void dimensionner(Matrice_Morse& ) const override;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;

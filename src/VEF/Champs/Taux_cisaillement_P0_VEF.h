@@ -17,10 +17,10 @@
 #define Taux_cisaillement_P0_VEF_included
 
 #include <Champ_Fonc_P0_VEF.h>
-#include <Ref_Champ_P1NC.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VEF;
+class Champ_P1NC;
 
 /*! @brief classe Taux_cisaillement_P0_VEF
  *
@@ -34,7 +34,7 @@ public:
 
 private:
   REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
-  REF(Champ_P1NC) vitesse_;
+  REF2(Champ_P1NC) vitesse_;
 };
 
 #endif /* Taux_cisaillement_P0_VEF_included */

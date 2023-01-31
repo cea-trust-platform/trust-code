@@ -18,10 +18,11 @@
 
 #include <Eval_Conv_VDF_tools.h>
 #include <Evaluateur_VDF.h>
-#include <Ref_Champ_Face_VDF.h>
 #include <Champ_Face_VDF.h>
+#include <TRUST_Ref.h>
 
 class Champ_Inc_base;
+class Champ_Face_VDF;
 
 /*! @brief class Eval_Conv_VDF classe de base des evaluateurs de convection VDF
  *
@@ -31,8 +32,7 @@ class Eval_Conv_VDF : public Evaluateur_VDF, public Eval_Conv_VDF_tools
 {
 
 public:
-  // Constructeurs
-  inline Eval_Conv_VDF() {}
+  inline Eval_Conv_VDF() { }
   inline Eval_Conv_VDF(const Eval_Conv_VDF& eval) : Evaluateur_VDF(eval), vitesse_(eval.vitesse_) { dt_vitesse.ref(eval.dt_vitesse); }
 
   inline void associer(const Champ_Face_VDF& );
@@ -52,7 +52,7 @@ public:
   inline const Domaine_Cl_VDF& get_la_zcl() const { return la_zcl.valeur(); }
 
 protected:
-  REF(Champ_Face_VDF) vitesse_;
+  REF2(Champ_Face_VDF) vitesse_;
   DoubleTab dt_vitesse;
 };
 

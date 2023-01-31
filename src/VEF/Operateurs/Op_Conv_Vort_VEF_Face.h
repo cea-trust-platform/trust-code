@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,12 +13,10 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Conv_Vort_VEF_Face_included
 #define Op_Conv_Vort_VEF_Face_included
 
 #include <Op_Conv_VEF_base.h>
-#include <Ref_Champ_P1NC.h>
 
 /*! @brief class Op_Conv_Vort_VEF_Face
  *
@@ -33,15 +31,9 @@
  */
 class Op_Conv_Vort_VEF_Face : public Op_Conv_VEF_base
 {
-
   Declare_instanciable(Op_Conv_Vort_VEF_Face);
-
 public:
-
   DoubleTab& ajouter(const DoubleTab& , DoubleTab& ) const override;
-
-protected:
 };
-
 
 #endif

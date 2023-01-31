@@ -16,7 +16,6 @@
 #ifndef Champ_Ostwald_VEF_included
 #define Champ_Ostwald_VEF_included
 
-#include <Ref_Champ_P1NC.h>
 #include <Champ_Ostwald.h>
 #include <Champ_P1NC.h>
 #include <TRUST_Ref.h>
@@ -51,7 +50,7 @@ public :
 
 protected :
   void calculer_mu(DoubleTab& );
-  REF(Champ_P1NC) mon_champ_;
+  REF2(Champ_P1NC) mon_champ_;
   REF2(Navier_Stokes_std) eq_hydraulique;
 };
 

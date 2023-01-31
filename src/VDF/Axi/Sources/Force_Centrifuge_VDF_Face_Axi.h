@@ -17,10 +17,10 @@
 #define Force_Centrifuge_VDF_Face_Axi_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Champ_Face_VDF.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 
+class Champ_Face_VDF;
 class Domaine_Cl_VDF;
 class Domaine_VDF;
 
@@ -43,23 +43,17 @@ public:
   void associer_pb(const Probleme_base& ) override;
   DoubleTab& calculer(DoubleTab& ) const override ;
   void completer() override;
-  void mettre_a_jour(double temps) override
-  {
-    ;
-  }
+  void mettre_a_jour(double temps) override { }
 
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  inline int has_interface_blocs() const override { return 1; }
 
 protected:
 
   REF2(Domaine_VDF) le_dom_VDF;
   REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  REF(Champ_Face_VDF) la_vitesse;
+  REF2(Champ_Face_VDF) la_vitesse;
 
   IntTab elem_faces;
   IntVect orientation;

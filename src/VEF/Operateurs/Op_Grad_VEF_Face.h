@@ -13,17 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Grad_VEF_Face_included
 #define Op_Grad_VEF_Face_included
 
 #include <Operateur_Grad.h>
+#include <Domaine_Cl_VEF.h>
+#include <Champ_P0_VEF.h>
 #include <Domaine_VEF.h>
 #include <TRUST_Ref.h>
-#include <Domaine_Cl_VEF.h>
-#include <TRUST_Ref.h>
-#include <Ref_Champ_P0_VEF.h>
-#include <Champ_P0_VEF.h>
 
 /*! @brief class Op_Grad_VEF_Face
  *
@@ -36,32 +33,20 @@
  * @sa Operateur_Grad_base
  */
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Grad_VEF_Face
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Op_Grad_VEF_Face : public Operateur_Grad_base
 {
-
   Declare_instanciable(Op_Grad_VEF_Face);
-
 public:
-
   void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
 
 protected:
-
   REF2(Domaine_VEF) le_dom_vef;
   REF2(Domaine_Cl_VEF) la_zcl_vef;
-  REF(Champ_P0_VEF)  la_pression_P0;
-
+  REF2(Champ_P0_VEF)  la_pression_P0;
   DoubleVect porosite_surf;
-
 };
 
 #endif

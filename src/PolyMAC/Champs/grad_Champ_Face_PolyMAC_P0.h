@@ -16,7 +16,6 @@
 #ifndef grad_Champ_Face_PolyMAC_P0_included
 #define grad_Champ_Face_PolyMAC_P0_included
 
-#include <Ref_Champ_Face_PolyMAC_P0.h>
 #include <Champ_Fonc_Face_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>

@@ -13,20 +13,12 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Dift_VEF_Face_Q1_included
 #define Op_Dift_VEF_Face_Q1_included
 
 #include <Op_Dift_VEF_base.h>
-#include <Ref_Champ_Q1NC.h>
 #include <Ref_Champ_Uniforme.h>
 #include <Matrice_Morse.h>
-
-/*! @brief class Op_Dift_VEF_FaceQ1
- *
- *
- *
- */
 
 class Op_Dift_VEF_Face_Q1 : public Op_Dift_VEF_base
 {

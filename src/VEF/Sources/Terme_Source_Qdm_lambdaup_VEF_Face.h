@@ -13,54 +13,44 @@
 *
 *****************************************************************************/
 
-
 #ifndef Terme_Source_Qdm_lambdaup_VEF_Face_included
 #define Terme_Source_Qdm_lambdaup_VEF_Face_included
 
 #include <Terme_Source_Qdm.h>
-#include <Ref_Champ_P1NC.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 
 class Probleme_base;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
+class Champ_P1NC;
 
 /*! @brief class Terme_Source_Qdm_lambdaup_VEF_Face
- *
- *
  *
  * @sa Source_base
  */
 class Terme_Source_Qdm_lambdaup_VEF_Face : public Source_base, public Terme_Source_Qdm
 {
-
   Declare_instanciable(Terme_Source_Qdm_lambdaup_VEF_Face);
-
 public:
-
   void associer_pb(const Probleme_base& ) override;
   DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& calculer(DoubleTab& ) const override;
   void mettre_a_jour(double ) override;
 
-  //Fonctions rajoutees pour faciliter les acces
   double norme_H1(const DoubleTab&) const;
   double norme_L2(const DoubleTab&) const;
   double norme_L2_H1(const DoubleTab&) const;
-  //Fin des fonctions rajoutees
 
 protected:
-
   mutable double lambda = -1.;
   double lambda_max = 2.;
   double lambda_min = 1.e-24;
   double cible = 0.01;
-  REF(Champ_P1NC) la_vitesse;
+  REF2(Champ_P1NC) la_vitesse;
   REF2(Domaine_VEF) le_dom_VEF;
   REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-
 };
 
 #endif

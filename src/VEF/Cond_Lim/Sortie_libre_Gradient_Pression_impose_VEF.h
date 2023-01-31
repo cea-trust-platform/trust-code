@@ -16,6 +16,12 @@
 #ifndef Sortie_libre_Gradient_Pression_impose_VEF_included
 #define Sortie_libre_Gradient_Pression_impose_VEF_included
 
+#include <Neumann_sortie_libre.h>
+#include <TRUST_Ref.h>
+
+class Champ_P0_VEF;
+class Domaine_VEF;
+
 /*! @brief Sortie_libre_Gradient_Pression_impose_VEF
  *
  *  Cette classe derive de la classe Neumann_sortie_libre
@@ -25,13 +31,6 @@
  *     a l'exterieur calculee a partir du gradient de pression impose et de la pression a l'interieur du domaine.
  *
  */
-
-#include <Neumann_sortie_libre.h>
-#include <Ref_Champ_P0_VEF.h>
-#include <TRUST_Ref.h>
-
-class Domaine_VEF;
-
 class Sortie_libre_Gradient_Pression_impose_VEF: public Neumann_sortie_libre
 {
   Declare_instanciable(Sortie_libre_Gradient_Pression_impose_VEF);
@@ -41,7 +40,7 @@ public:
 
 protected:
   REF2(Domaine_VEF) le_dom_VEF;
-  REF(Champ_P0_VEF) pression_interne;
+  REF2(Champ_P0_VEF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;
 };

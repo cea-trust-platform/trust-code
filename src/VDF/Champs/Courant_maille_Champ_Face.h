@@ -17,10 +17,10 @@
 #define Courant_maille_Champ_Face_included
 
 #include <Champ_Fonc_Face_VDF.h>
-#include <Ref_Champ_Face_VDF.h>
 #include <TRUST_Ref.h>
 
 class Schema_Temps_base;
+class Champ_Face_VDF;
 
 class Courant_maille_Champ_Face: public Champ_Fonc_Face_VDF
 {
@@ -31,7 +31,7 @@ public:
   void associer_champ(const Champ_Face_VDF&, const Schema_Temps_base&);
 
 protected:
-  REF(Champ_Face_VDF) vitesse_;
+  REF2(Champ_Face_VDF) vitesse_;
   REF2(Schema_Temps_base) sch_;
 };
 

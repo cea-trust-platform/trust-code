@@ -17,10 +17,10 @@
 #define Perte_Charge_VDF_Face_included
 
 #include <Source_dep_inco_base.h>
-#include <Ref_Champ_Face_VDF.h>
 #include <TRUSTTabs_forward.h>
 #include <TRUST_Ref.h>
 
+class Champ_Face_VDF;
 class Probleme_base;
 class Domaine_Cl_VDF;
 class Domaine_VDF;
@@ -33,13 +33,10 @@ public:
   void associer_pb(const Probleme_base& ) override;
   void mettre_a_jour(double temps) override { }
 
-  inline int has_interface_blocs() const override
-  {
-    return 1;
-  };
+  inline int has_interface_blocs() const override { return 1; }
 
 protected:
-  REF(Champ_Face_VDF) la_vitesse;
+  REF2(Champ_Face_VDF) la_vitesse;
   REF2(Fluide_base) le_fluide;
   REF2(Domaine_VDF) le_dom_VDF;
   REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
