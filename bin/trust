@@ -1274,18 +1274,24 @@ then
    advisor-gui `ls -art | grep e0 | tail -1`
 elif [ "$PERF" = 1 ] && [ -f $NOM.perf ]
 then
-   perf report -i $NOM.perf
+   if [ -f /usr/bin/hotspot ]
+   then
+      hotspot $NOM.perf
+   else
+      perf report -i $NOM.perf
+   fi
 elif [ "$VT_PCTRACE" != "" ] && [ -f `basename $binary`.stf ]
 then
    echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
 fi
 [ "$VTUNE" = 1 ] && vtune-gui `ls -art | grep hs | tail -1`
 [ "$ADVISOR" = 1 ] && advisor-gui `ls -art | grep e0 | tail -1`
-[ "$PERF" = 1 ] && [ -f $NOM.perf ] && perf report -i $NOM.perf
 [ "$VT_PCTRACE" != "" ] && [ -f `basename $binary`.stf ] && echo "Use -g flag or $exec_gcov binary for source code..." && traceanalyzer `basename $binary`.stf
-if [ "$NSYS" = 1 ] && [ -f $NOM.qdrep ]
+if [ "$NSYS" = 1 ]
 then
-   $CUDA_ROOT/*/bin/nsys-ui $NOM.qdrep
+   # Pas clair encore ces differentes versions de Nsys:
+   [ -f $NOM.qdrep ]    && $CUDA_ROOT/*/bin/nsys-ui $NOM.qdrep    # petra
+   [ -f $NOM.nsys-rep ] && $CUDA_ROOT/bin/nsys-ui   $NOM.nsys-rep # a6000
    #nm -D /lib64/libk5crypto.so.3 2>/dev/null | grep 'U EVP_KDF_ctrl' >/dev/null
    #if [[ ${PIPESTATUS[1]} -eq 0 ]]; then
    #   echo "libk5crypto.so.3 requires EVP_KDF_ctrl. Switching to system OpenSSL libraries" >&2
