@@ -87,7 +87,7 @@ protected:
   IntVect type_elem_Cl_;
   int modif_perio_fait_ = 0;
 
-  // Fonctions de creation des membres prives de la domaine:
+  // Fonctions de creation des membres prives du domaine:
 
   //  void remplir_volumes_entrelaces_Cl(const Domaine_VEF& );
   //  void remplir_normales_facettes_Cl(const Domaine_VEF& );

@@ -327,7 +327,7 @@ protected:
   Raccords mes_faces_raccord_;
   Faces_Internes mes_faces_int_;
   // Les faces de joint sont les faces communes avec les autres processeurs (bords
-  //  de la domaine locale a ce processeur qui se raccordent a un processeur voisin)
+  //  du domaine locale a ce processeur qui se raccordent a un processeur voisin)
   Joints mes_faces_joint_;
   // Pour les faces virtuelles de la Domaine_VF, indices de la meme face dans le tableau des faces de bord
   // (voir Domaine::init_faces_virt_bord())
@@ -365,22 +365,22 @@ protected:
   void duplique_faces_internes();
 
 private:
-  // Volume total de la domaine (somme sur tous les processeurs)
+  // Volume total du domaine (somme sur tous les processeurs)
   double volume_total_;
   // Cached infos to accelerate Domaine::chercher_elements():
   mutable DoubleTabs cached_positions_;
   mutable ArrsOfInt cached_elements_;
 };
 
-/*! @brief Renvoie le nombre d'elements de la domaine.
+/*! @brief Renvoie le nombre d'elements du domaine.
  *
- * @return (int) le nombre d'elements de la domaine
+ * @return (int) le nombre d'elements du domaine
  */
 inline int Domaine::nb_elem() const  { return mes_elems_.dimension(0); }
 
-/*! @brief Renvoie le nombre total d'elements de la domaine.
+/*! @brief Renvoie le nombre total d'elements du domaine.
  *
- * @return (int) le nombre total d'elements de la domaine
+ * @return (int) le nombre total d'elements du domaine
  */
 inline int Domaine::nb_elem_tot() const { return mes_elems_.dimension_tot(0); }
 
@@ -392,15 +392,15 @@ inline int Domaine::nb_elem_tot() const { return mes_elems_.dimension_tot(0); }
  */
 inline int Domaine::sommet_elem(int i, int j) const {  return mes_elems_(i,j); }
 
-/*! @brief Renvoie le nom de la domaine.
+/*! @brief Renvoie le nom du domaine.
  *
- * @return (Nom&) le nom de la domaine
+ * @return (Nom&) le nom du domaine
  */
 inline const Nom& Domaine::le_nom() const {   return nom_; }
 
-/*! @brief Donne un nom a la domaine.
+/*! @brief Donne un nom au domaine.
  *
- * @param (Nom& nom) le nom a donner a la domaine
+ * @param (Nom& nom) le nom a donner au domaine
  */
 inline void Domaine::nommer(const Nom& nom) {  nom_ = nom; }
 
@@ -416,66 +416,66 @@ inline IntTab& Domaine::les_elems() {  return mes_elems_; }
  */
 inline const IntTab& Domaine::les_elems() const {  return mes_elems_; }
 
-/*! @brief Renvoie le nombre de sommets des elements geometriques constituants la domaine.
+/*! @brief Renvoie le nombre de sommets des elements geometriques constituants le domaine.
  *
- * Tous les elements de la domaine etant
+ * Tous les elements du domaine etant
  *     du meme type ils ont tous le meme nombre de sommets
  *     qui est le nombre de sommet du type des elements geometriques
- *     de la domaine.
+ *     du domaine.
  *
  * @return (int) le nombre de sommets par element
  */
 inline int Domaine::nb_som_elem() const {   return elem_.nb_som(); }
 
-/*! @brief Renvoie le nombre de face de type i des elements geometriques constituants la domaine.
+/*! @brief Renvoie le nombre de face de type i des elements geometriques constituants le domaine.
  *
  *     Ex: les objets de la classe Prisme ont 2 types
  *         de faces: triangle ou quadrangle.
  *
  * @param (int i) le type de face
- * @return (int) le nombre de face de type i des elements geometriques constituants la domaine
+ * @return (int) le nombre de face de type i des elements geometriques constituants le domaine
  */
 inline int Domaine::nb_faces_elem(int i) const {  return elem_.nb_faces(i); }
 
-/*! @brief Renvoie un element geometrique du type de ceux qui constituent la domaine.
+/*! @brief Renvoie un element geometrique du type de ceux qui constituent le domaine.
  *
  *     (version const)
  *
- * @return (Elem_geom&) un element geometrique du type de ceux qui constituent la domaine
+ * @return (Elem_geom&) un element geometrique du type de ceux qui constituent le domaine
  */
 inline const Elem_geom& Domaine::type_elem() const { return elem_; }
 
-/*! @brief Renvoie un element geometrique du type de ceux qui constituent la domaine.
+/*! @brief Renvoie un element geometrique du type de ceux qui constituent le domaine.
  *
- * @return (Elem_geom&) un element geometrique du type de ceux qui constituent la domaine
+ * @return (Elem_geom&) un element geometrique du type de ceux qui constituent le domaine
  */
 inline Elem_geom& Domaine::type_elem() {  return elem_; }
 
-/*! @brief Renvoie le nombre de bords de la domaine.
+/*! @brief Renvoie le nombre de bords du domaine.
  *
- * @return (int) le nombre de bords de la domaine
+ * @return (int) le nombre de bords du domaine
  */
 inline int Domaine::nb_bords() const {  return mes_faces_bord_.nb_bords(); }
 
-/*! @brief Renvoie le nombre de joints de la domaine.
+/*! @brief Renvoie le nombre de joints du domaine.
  *
- * @return (int) le nombre de joints de la domaine
+ * @return (int) le nombre de joints du domaine
  */
 inline int Domaine::nb_joints() const { return mes_faces_joint_.nb_joints(); }
 
-/*! @brief Renvoie le nombre de raccords de la domaine.
+/*! @brief Renvoie le nombre de raccords du domaine.
  *
- * @return (int) le nombre de raccords de la domaine
+ * @return (int) le nombre de raccords du domaine
  */
 inline int Domaine::nb_raccords() const {  return mes_faces_raccord_.nb_raccords(); }
 
-/*! @brief Renvoie le nombre de frontieres internes de la domaine.
+/*! @brief Renvoie le nombre de frontieres internes du domaine.
  *
- * @return (int) le nombre de frontieres internes de la domaine
+ * @return (int) le nombre de frontieres internes du domaine
  */
 inline int Domaine::nb_frontieres_internes() const {  return mes_faces_int_.nb_faces_internes(); }
 
-/*! @brief Renvoie le nombre de faces frontiere de la domaine.
+/*! @brief Renvoie le nombre de faces frontiere du domaine.
  *
  * C'est la somme des nombres de  bords, de raccords et de faces internes
  *
@@ -489,10 +489,10 @@ inline int Domaine::nb_faces_frontiere() const { return nb_faces_bord() + nb_fac
  * @return (int) le nombre de frontieres ayant des conditions aux limites.
  */
 inline int Domaine::nb_front_Cl() const  {   return nb_bords() +nb_raccords() + nb_frontieres_internes(); }
-/*! @brief Type les elements de la domaine avec le nom passe en parametre.
+/*! @brief Type les elements du domaine avec le nom passe en parametre.
  *
- * Et associe le type d'element a la domaine.
- * @param (Nom& typ) le nom du type des elements geometriques de la domaine.
+ * Et associe le type d'element au domaine.
+ * @param (Nom& typ) le nom du type des elements geometriques du domaine.
  */
 inline void Domaine::typer(const Nom& typ)
 {
@@ -500,9 +500,9 @@ inline void Domaine::typer(const Nom& typ)
   elem_.associer_domaine(*this);
 }
 
-/*! @brief Calcule les centres de gravites des elements de la domaine.
+/*! @brief Calcule les centres de gravites des elements du domaine.
  *
- * @param (DoubleTab& xp) le tableau contenant les centres de gravites des elements de la domaine
+ * @param (DoubleTab& xp) le tableau contenant les centres de gravites des elements du domaine
  */
 inline void Domaine::calculer_centres_gravite(DoubleTab& xp) const {  elem_.calculer_centres_gravite(xp); }
 
@@ -564,10 +564,10 @@ inline const Faces_Interne& Domaine::faces_interne(const Nom& nom) const {   ret
  */
 inline Faces_Interne& Domaine::faces_interne(const Nom& nom) {   return mes_faces_int_(nom); }
 
-/*! @brief Renvoie le i-ieme bord de la domaine (version const)
+/*! @brief Renvoie le i-ieme bord du domaine (version const)
  *
  * @param (int i) l'indice du bord renvoyer
- * @return (Bord&) le i-ieme bord de la domaine
+ * @return (Bord&) le i-ieme bord du domaine
  */
 inline const Bord& Domaine::bord(int i) const {   return mes_faces_bord_(i); }
 
@@ -607,24 +607,24 @@ inline Frontiere& Domaine::frontiere(int i)
   return frontiere(i);
 }
 
-/*! @brief Renvoie le i-ieme bord de la domaine
+/*! @brief Renvoie le i-ieme bord du domaine
  *
  * @param (int i) l'indice du bord a renvoyer
- * @return (Bord&) le i-ieme bord de la domaine
+ * @return (Bord&) le i-ieme bord du domaine
  */
 inline Bord& Domaine::bord(int i) {  return mes_faces_bord_(i); }
 
-/*! @brief Renvoie le i-ieme joint de la domaine (version const)
+/*! @brief Renvoie le i-ieme joint du domaine (version const)
  *
  * @param (int i) l'indice du joint renvoyer
- * @return (Joint&) le i-ieme joint de la domaine
+ * @return (Joint&) le i-ieme joint du domaine
  */
 inline const Joint& Domaine::joint(int i) const { return mes_faces_joint_(i); }
 
-/*! @brief Renvoie le i-ieme joint de la domaine
+/*! @brief Renvoie le i-ieme joint du domaine
  *
  * @param (int i) l'indice du joint a renvoyer
- * @return (Joint&) le i-ieme joint de la domaine
+ * @return (Joint&) le i-ieme joint du domaine
  */
 inline Joint& Domaine::joint(int i) {   return mes_faces_joint_(i); }
 
@@ -654,83 +654,83 @@ inline Joint& Domaine::joint_of_pe(int pe)
   return mes_faces_joint_(i);
 }
 
-/*! @brief Renvoie le i-ieme raccord de la domaine (version const)
+/*! @brief Renvoie le i-ieme raccord du domaine (version const)
  *
  * @param (int i) l'indice du raccord renvoyer
- * @return (Raccord&) le i-ieme raccord de la domaine
+ * @return (Raccord&) le i-ieme raccord du domaine
  */
 inline const Raccord& Domaine::raccord(int i) const { return mes_faces_raccord_(i); }
 
-/*! @brief Renvoie le i-ieme raccord de la domaine
+/*! @brief Renvoie le i-ieme raccord du domaine
  *
  * @param (int i) l'indice du raccord a renvoyer
- * @return (Raccord&) le i-ieme raccord de la domaine
+ * @return (Raccord&) le i-ieme raccord du domaine
  */
 inline Raccord& Domaine::raccord(int i) {  return mes_faces_raccord_(i); }
 
-/*! @brief Renvoie les i-ieme faces internes de la domaine (version const)
+/*! @brief Renvoie les i-ieme faces internes du domaine (version const)
  *
  * @param (int i) l'indice des faces internes renvoyer
- * @return (Faces_Internes&) les i-ieme faces internes de la domaine
+ * @return (Faces_Internes&) les i-ieme faces internes du domaine
  */
 inline const Faces_Interne& Domaine::faces_interne(int i) const {  return mes_faces_int_(i); }
 
-/*! @brief Renvoie les i-ieme faces internes de la domaine
+/*! @brief Renvoie les i-ieme faces internes du domaine
  *
  * @param (int i) l'indice des faces internes a renvoyer
- * @return (Facesr_Internes&) les i-ieme faces internes de la domaine
+ * @return (Facesr_Internes&) les i-ieme faces internes du domaine
  */
 inline Faces_Interne& Domaine::faces_interne(int i) {   return mes_faces_int_(i); }
 
-/*! @brief Renvoie la liste des bords de la domaine.
+/*! @brief Renvoie la liste des bords du domaine.
  * (version const)
  *
- * @return (Bords&) la liste des bords de la domaine
+ * @return (Bords&) la liste des bords du domaine
  */
 inline const Bords& Domaine::faces_bord() const { return mes_faces_bord_; }
 
-/*! @brief Renvoie la liste des bords de la domaine.
+/*! @brief Renvoie la liste des bords du domaine.
  *
- * @return (Bords&) la liste des bords de la domaine
+ * @return (Bords&) la liste des bords du domaine
  */
 inline Bords& Domaine::faces_bord() {  return mes_faces_bord_; }
 
-/*! @brief Renvoie la liste des joints de la domaine.
+/*! @brief Renvoie la liste des joints du domaine.
  * (version const)
  *
- * @return (Joints&) la liste des joints de la domaine
+ * @return (Joints&) la liste des joints du domaine
  */
 inline const Joints& Domaine::faces_joint() const {  return mes_faces_joint_; }
 
-/*! @brief Renvoie la liste des joints de la domaine.
+/*! @brief Renvoie la liste des joints du domaine.
  *
- * @return (Joints&) la liste des joints de la domaine
+ * @return (Joints&) la liste des joints du domaine
  */
 inline Joints& Domaine::faces_joint() { return mes_faces_joint_; }
 
-/*! @brief Renvoie la liste des racoords de la domaine.
+/*! @brief Renvoie la liste des racoords du domaine.
  * (version const)
  *
- * @return (Raccords&) la liste des raccords de la domaine
+ * @return (Raccords&) la liste des raccords du domaine
  */
 inline const Raccords& Domaine::faces_raccord() const { return mes_faces_raccord_; }
 
-/*! @brief Renvoie la liste des racoords de la domaine.
+/*! @brief Renvoie la liste des racoords du domaine.
  *
- * @return (Raccords&) la liste des raccords de la domaine
+ * @return (Raccords&) la liste des raccords du domaine
  */
 inline Raccords& Domaine::faces_raccord() { return mes_faces_raccord_; }
 
-/*! @brief Renvoie la liste des faces internes de la domaine.
+/*! @brief Renvoie la liste des faces internes du domaine.
  * (version const)
  *
- * @return (Faces_Internes&) la liste des faces internes de la domaine
+ * @return (Faces_Internes&) la liste des faces internes du domaine
  */
 inline const Faces_Internes& Domaine::faces_int() const { return mes_faces_int_; }
 
-/*! @brief Renvoie la liste des faces internes de la domaine.
+/*! @brief Renvoie la liste des faces internes du domaine.
  *
- * @return (Faces_Internes&) la liste des faces internes de la domaine
+ * @return (Faces_Internes&) la liste des faces internes du domaine
  */
 inline Faces_Internes& Domaine::faces_int() { return mes_faces_int_; }
 
@@ -738,13 +738,13 @@ inline Faces_Internes& Domaine::faces_int() { return mes_faces_int_; }
  */
 inline void Domaine::reordonner() { elem_.reordonner(); }
 
-/*! @brief Renvoie le nombre de faces frontiere de la domaine du type specifie.
+/*! @brief Renvoie le nombre de faces frontiere du domaine du type specifie.
  *
  *     C'est la somme des nombres de  bords, de raccords
  *     et de faces internes du type specifie.
  *
  * @param (Type_Face type) un type de face (certains elements geometriques ont plusieurs types de faces)
- * @return (int) le nombre de faces frontiere de la domaine du type specifie
+ * @return (int) le nombre de faces frontiere du domaine du type specifie
  */
 inline int Domaine::nb_faces_frontiere(Type_Face type) const
 {

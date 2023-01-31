@@ -252,7 +252,7 @@ Champ_Fonc& Terme_Source_Acceleration::get_set_terme_source_post() const
  *   - domegadt_
  *   - centre_rotation_
  *
- * @param (champ_source) un champ discretise aux elements de la domaine_VF dans lequel on stocke le resultat du calcul. Espace virtuel a jour.
+ * @param (champ_source) un champ discretise aux elements du domaine_VF dans lequel on stocke le resultat du calcul. Espace virtuel a jour.
  */
 const DoubleTab&
 Terme_Source_Acceleration::calculer_la_source(DoubleTab& acceleration_aux_faces) const

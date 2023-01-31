@@ -998,7 +998,7 @@ void Probleme_base::mettre_a_jour(double temps)
 void Probleme_base::preparer_calcul()
 {
   const double temps = schema_temps().temps_courant();
-  // Modification du tableau Qdm porte par la domaine_dis() dans le cas
+  // Modification du tableau Qdm porte par le domaine_dis() dans le cas
   // ou il y a des conditions aux limites periodiques.
   // Rq : Si l'une des equations porte la condition a la limite periodique
   //      alors les autres doivent forcement la porter.

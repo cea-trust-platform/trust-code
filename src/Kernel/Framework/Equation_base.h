@@ -375,7 +375,7 @@ inline const Nom& Equation_base::le_nom() const
 }
 
 
-/*! @brief Renvoie la domaine des conditions aux limite discretisee associee a l'equation
+/*! @brief Renvoie le domaine des conditions aux limite discretisee associee a l'equation
  *
  * @return (Domaine_Cl_dis&) Domaine de condition aux limites discretisee
  */
@@ -384,7 +384,7 @@ inline Domaine_Cl_dis& Equation_base::domaine_Cl_dis()
   return le_dom_Cl_dis;
 }
 
-/*! @brief Renvoie la domaine des conditions aux limite discretisee associee a l'equation
+/*! @brief Renvoie le domaine des conditions aux limite discretisee associee a l'equation
  *
  *     (version const)
  *

@@ -127,7 +127,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
     }
 
 
-  //Probleme pour discretisation de la domaine du domaine d extraction (dimension)
+  //Probleme pour discretisation du domaine d extraction (dimension)
   ////const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
 
   int nb_comp_source = source_stockage.nb_comp();
@@ -250,7 +250,7 @@ void Champ_Generique_Extraction::nommer_source()
 // auquel la classe fait reference:
 // - ajout d une domaine (de type Pave)
 // - on determine les coordonnees des sommets contenus dans le plan d extraction
-// Actuellement on ne procede pas a la discretisation de la domaine du domaine d extraction (pb dimension)
+// Actuellement on ne procede pas a la discretisation du domaine d extraction (pb dimension)
 void Champ_Generique_Extraction::completer(const Postraitement_base& post)
 {
   Champ_Gen_de_Champs_Gen::completer(post);

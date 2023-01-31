@@ -61,7 +61,7 @@ int Assembleur::assembler_QC(const DoubleTab& rho, Matrice& mat)
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Permet d'associer l'objet a la domaine discretisee
+ * Permet d'associer l'objet au domaine discretisee
  *
  */
 void Assembleur::associer_domaine_dis_base(const Domaine_dis_base& zdis)
@@ -81,7 +81,7 @@ void Assembleur::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcldis)
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie la domaine discretisee associee a l'objet.
+ * Renvoie le domaine discretisee associee a l'objet.
  *
  * @return (int)
  */

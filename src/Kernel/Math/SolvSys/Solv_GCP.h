@@ -73,7 +73,7 @@ protected:
   Matrice_SuperMorse tmp_mat_virt_;
   // La domaine de memoire dans laquelle on stocke les vecteurs temporaires et eventuellement
   // les matrices (ne pas lire dedans, il y a aussi des entiers !)
-  // Je prends des double pour etre certain que la domaine alloueee est correctement alignee en memoire
+  // Je prends des double pour etre certain que le domaine alloueee est correctement alignee en memoire
   ArrOfDouble tmp_data_block_;
   // Tableau de renumerotation entre le second membre et les vecteurs temporaires
   // (suppression des items communs et virtuels non utilises)

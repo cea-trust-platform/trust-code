@@ -67,10 +67,10 @@ inline void Domaine_dis::associer_domaine(const Domaine& une_domaine)
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie la domaine associee.
+ * Renvoie le domaine associee.
  *     (version const)
  *
- * @return (Domaine&) la domaine associee
+ * @return (Domaine&) le domaine associee
  */
 inline const Domaine& Domaine_dis::domaine() const
 {
@@ -79,9 +79,9 @@ inline const Domaine& Domaine_dis::domaine() const
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie la domaine associee.
+ * Renvoie le domaine associee.
  *
- * @return (Domaine&) la domaine associee
+ * @return (Domaine&) le domaine associee
  */
 inline Domaine& Domaine_dis::domaine()
 {
@@ -97,7 +97,7 @@ inline void Domaine_dis::creer_elements_fictifs(const Domaine_Cl_dis_base& zcl)
  * Renvoie la ieme frontiere
  *
  * @param (int i) l'index de la frontiere a renvoyer
- * @return (Frontiere_dis_base&) la i-eme frontiere de la domaine discretisee
+ * @return (Frontiere_dis_base&) la i-eme frontiere du domaine discretisee
  */
 inline const Frontiere_dis_base& Domaine_dis::frontiere_dis(int i) const
 {

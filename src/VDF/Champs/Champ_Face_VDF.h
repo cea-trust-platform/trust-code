@@ -27,7 +27,7 @@ class Domaine_Cl_VDF;
  *   que les composantes normales aux faces en VDF.Il n'y a donc qu'un degre de
  *   liberte par face et l'attribut nb_comp_ d'un objet de type Champ_Face
  *   vaut 1. On peut neammoins imposer toutes les composantes du champ sur
- *   le bord. Si n est le nombre de faces total de la domaine et nb_faces_bord
+ *   le bord. Si n est le nombre de faces total du domaine et nb_faces_bord
  *   le nombre de faces de bord le tableau de valeurs associe au champ
  *   est construit comme suit:
  *       - n valeurs pour representer les composantes normales aux faces

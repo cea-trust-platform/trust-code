@@ -52,7 +52,7 @@ int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
   //
   // je suis tout de meme etonne du code utilise dans
   // Champ_Fonc_P0_base::fixer_nb_valeurs_nodales()
-  // pour recuperer la domaine discrete...
+  // pour recuperer le domaine discrete...
 
   const Champ_Inc_base& self = ref_cast(Champ_Inc_base, *this);
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,self.domaine_dis_base());

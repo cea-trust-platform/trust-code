@@ -88,7 +88,7 @@ void Periodique::completer()
   const MD_Vector& md_faces_front = tab_face_associee.get_md_vector();
   // On echange espace virtuel avec traduction des indices:
   Scatter::construire_espace_virtuel_traduction(md_faces_front, md_faces_front, tab_face_associee, 1 /* erreurs fatales */);
-  // Tableau qui donne pour chaque face virtuelle de la domaine, -1 si ce n'est pas une
+  // Tableau qui donne pour chaque face virtuelle du domaine, -1 si ce n'est pas une
   // face frontiere, sinon son indice dans les les frontieres.
   const ArrOfInt& ind_faces_virt_bord = domaine.ind_faces_virt_bord();
   // Creation d'un tableau qui donne, pour chaque face virtuelle des frontieres (toutes frontieres)
@@ -99,7 +99,7 @@ void Periodique::completer()
   const int nb_faces_domaine = domaine_Cl_dis().domaine_dis().valeur().face_sommets().dimension(0);
   for (i = 0; i < nb_faces_virt; i++)
     {
-      const int face_domaine = frontiere.face_virt(i); // Indice d'une face de la domaine
+      const int face_domaine = frontiere.face_virt(i); // Indice d'une face du domaine
       const int face_front = ind_faces_virt_bord[face_domaine - nb_faces_domaine]; // Indice dans les frontieres
       index[face_front] = nb_faces + i;
     }
@@ -116,7 +116,7 @@ void Periodique::completer()
       else
         {
           // Face virtuelle :
-          const int face_domaine = frontiere.face_virt(i - nb_faces); // Indice de la face de la domaine
+          const int face_domaine = frontiere.face_virt(i - nb_faces); // Indice de la face du domaine
           const int face_front = ind_faces_virt_bord[face_domaine - nb_faces_domaine]; // Indice dans les frontieres
           // Indice de la face associee dans le tableau face_associee:
           const int face_front_associee = tab_face_associee[face_front];

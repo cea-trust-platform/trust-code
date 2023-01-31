@@ -29,7 +29,7 @@ Entree& Champ_Fonc_Face_PolyMAC::readOn(Entree& is) { return is; }
 int Champ_Fonc_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
   // j'utilise le meme genre de code que dans Champ_Fonc_P0_base sauf que je recupere le nombre de faces au lieu du nombre d'elements
-  // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer la domaine discrete...
+  // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer le domaine discrete...
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
   const Domaine_VF& le_dom_vf = ref_cast(Domaine_VF, self.domaine_dis_base());
 

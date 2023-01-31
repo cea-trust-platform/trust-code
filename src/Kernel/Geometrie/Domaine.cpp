@@ -156,7 +156,7 @@ static void corriger_type(Faces& faces, const Elem_geom_base& type_elem)
 /*! @brief Lit les objets constituant une Domaine a partir d'un flot d'entree.
  *
  * Une fois les objets
- *     lus on les associe a la domaine.
+ *     lus on les associe au domaine.
  *
  * @param (Entree& s) un flot d'entree
  * @return (Entree&) le flot d'entree modifie
@@ -457,48 +457,48 @@ int Domaine::nb_faces_bord() const
   return mes_faces_bord_.nb_faces();
 }
 
-/*! @brief Renvoie le nombre de joints de la domaine.
+/*! @brief Renvoie le nombre de joints du domaine.
  *
- * @return (int) le nombre de joints de la domaine
+ * @return (int) le nombre de joints du domaine
  */
 int Domaine::nb_faces_joint() const
 {
   return mes_faces_joint_.nb_faces();
 }
 
-/*! @brief Renvoie le nombre de raccords de la domaine.
+/*! @brief Renvoie le nombre de raccords du domaine.
  *
- * @return (int) le nombre de raccords de la domaine
+ * @return (int) le nombre de raccords du domaine
  */
 int Domaine::nb_faces_raccord() const
 {
   return mes_faces_raccord_.nb_faces();
 }
 
-/*! @brief Renvoie le nombre de face internes de la domaine.
+/*! @brief Renvoie le nombre de face internes du domaine.
  *
- * @return (int) le nombre de face internes de la domaine
+ * @return (int) le nombre de face internes du domaine
  */
 int Domaine::nb_faces_int() const
 {
   return mes_faces_int_.nb_faces();
 }
 
-/*! @brief Renvoie le nombre de sommets de la domaine.
+/*! @brief Renvoie le nombre de sommets du domaine.
  *
- * @return (int) le nombre de sommets de la domaine
+ * @return (int) le nombre de sommets du domaine
  */
 int Domaine::nb_som() const
 {
   return sommets_.dimension(0);
 }
 
-/*! @brief Renvoie le nombre total de sommets de la domaine.
+/*! @brief Renvoie le nombre total de sommets du domaine.
  *
  * i.e. le nombre de sommets reels et virtuels
  *     sur le processeur courant.
  *
- * @return (int) le nombre total de sommets de la domaine
+ * @return (int) le nombre total de sommets du domaine
  */
 int Domaine::nb_som_tot() const
 {
@@ -760,7 +760,7 @@ int Domaine::comprimer()
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
-        front.associer_domaine(*this); // Au cas ou la domaine de la frontiere n'est pas la bonne domaine
+        front.associer_domaine(*this); // Au cas ou le domaine de la frontiere n'est pas la bonne domaine
         Journal() << "Domaine::comprimer() bord : " << front.le_nom() << finl;
 
         // second loop over list elements, starting from an incremented position
@@ -1141,7 +1141,7 @@ const IntTab& Domaine::elem_virt_pe_num() const
 {
   return elem_virt_pe_num_;
 }
-/*! @brief Calcule le centre de gravite de la domaine
+/*! @brief Calcule le centre de gravite du domaine
  *
  */
 void Domaine::calculer_mon_centre_de_gravite(ArrOfDouble& c)
@@ -1167,9 +1167,9 @@ void Domaine::calculer_mon_centre_de_gravite(ArrOfDouble& c)
   volume_total_ = mp_somme_vect(volumes);
 }
 
-/*! @brief Calcule les volumes des elements de la domaine.
+/*! @brief Calcule les volumes des elements du domaine.
  *
- * @param (DoubleVect& volumes) le tableau contenant les volumes des elements de la domaine
+ * @param (DoubleVect& volumes) le tableau contenant les volumes des elements du domaine
  */
 void Domaine::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes) const
 {
@@ -1194,9 +1194,9 @@ void Domaine::calculer_volumes(DoubleVect& volumes, DoubleVect& inverse_volumes)
     }
 }
 
-/*! @brief Calcule les centres de gravites des aretes de la domaine.
+/*! @brief Calcule les centres de gravites des aretes du domaine.
  *
- * @param (DoubleTab& xa) le tableau contenant les centres de gravites des aretes de la domaine
+ * @param (DoubleTab& xa) le tableau contenant les centres de gravites des aretes du domaine
  */
 void Domaine::calculer_centres_gravite_aretes(DoubleTab& xa) const
 {
@@ -1260,7 +1260,7 @@ void Domaine::creer_tableau_elements(Array_base& x, Array_base::Resize_Options o
   MD_Vector_tools::creer_tableau_distribue(md, x, opt);
 }
 
-/*! @brief renvoie le descripteur parallele des tableaux aux elements de la domaine
+/*! @brief renvoie le descripteur parallele des tableaux aux elements du domaine
  *
  */
 const MD_Vector& Domaine::md_vector_elements() const
@@ -1275,7 +1275,7 @@ const MD_Vector& Domaine::md_vector_elements() const
       exit();
     }
   // Pour l'instant je prends le descripteur dans le tableau mes_elems, mais on
-  // pourrait en stocker une copie dans la domaine si ca a un interet...
+  // pourrait en stocker une copie dans le domaine si ca a un interet...
   return md;
 }
 

@@ -99,19 +99,19 @@ public:
   int allocate_communication_tracking_times();
   int delete_communication_tracking_times();
 
-  /* Debut de la domaine de code dont on veut traquer les communications :
+  /* Debut du domaine de code dont on veut traquer les communications :
    * on sauvegarde toutes les donnees des compteurs de communication dans le tableau communication_tracking_times,
    * puis on les remet a zero
    * Donnee d'entree:
-   * 	- cid : identifiant de la domaine qu'on souhaite initialiser
+   * 	- cid : identifiant du domaine qu'on souhaite initialiser
    */
   void begin_communication_tracking(int cid);
 
-  /* Fin de la domaine de code dont on veut traquer les communications :
+  /* Fin du domaine de code dont on veut traquer les communications :
    * on recupere toutes les donnees des compteurs de communication qui ont ete produites
    * depuis la derniere remise a zero des compteurs
    * Donnee d'entree:
-   * 	- cid : identifiant de la domaine
+   * 	- cid : identifiant du domaine
    */
   void end_communication_tracking(int cid);
 

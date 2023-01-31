@@ -81,11 +81,11 @@ Entree& DomaineCutter::readOn(Entree& s)
  * C'est l'ensemble des sommets des elements appartenant a ce sous-domaine.
  *  On ne traite que les elements reels.
  *
- * @param (nb_sommets) nombre de sommets de la domaine globale
+ * @param (nb_sommets) nombre de sommets du domaine globale
  * @param (les_elems)
  * @param (elem_part) tableau de decoupage (pour chaque element i du domaine global, elem_part[i] est le numero du sous-domaine auquel il est affecte)
  * @param (partie) le numero du sous-domaine a construire
- * @param (liste_sommets) en sortie : liste des sommets du sous-domaine: liste_sommets[i] est l'indice dans la domaine_globale du i-ieme sommet du sous-domaine. Les indices sont classes dans l'ordre croissant.
+ * @param (liste_sommets) en sortie : liste des sommets du sous-domaine: liste_sommets[i] est l'indice dans le domaine_globale du i-ieme sommet du sous-domaine. Les indices sont classes dans l'ordre croissant.
  * @param (liste_inverse_sommets) en sortie : on lui donne la taille nb_sommets et on l'initialise. liste_inverse_sommet[i] est l'indice du sommet dans le sous-domaine ou -1 si le sommet i n'est pas dans le sous-domaine)
  */
 static void construire_liste_sommets_sousdomaine(const int nb_sommets,
@@ -188,7 +188,7 @@ static void remplir_coordsommets_sous_domaine(const DoubleTab& sommets_glob,
 // dans la partie part. On utilise la liste_inverse pour obtenir les
 // nouveaux numeros des sommets.
 // Les elements du domaine local sont crees dans l'ordre croissant de
-// leur indice dans la domaine globale.
+// leur indice dans le domaine globale.
 
 void construire_elems_sous_domaine(const IntTab&    elems_domaine_globale,
                                    const ArrOfInt& liste_elements,
@@ -230,7 +230,7 @@ void construire_elems_sous_domaine(const IntTab&    elems_domaine_globale,
     }
 }
 
-/*! @brief Pour une liste de "faces" de la domaine globale, compter le nombre de faces incluses dans la partie "part" et les copier dans la structure
+/*! @brief Pour une liste de "faces" du domaine globale, compter le nombre de faces incluses dans la partie "part" et les copier dans la structure
  *
  *  faces_partie en remplacant les numeros de sommets par les numeros locaux
  *  dans le sous-domaine.
@@ -387,7 +387,7 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
     }
 }
 
-/*! @brief Pour chaque pe mentionne dans le tableau "voisins", si un joint avec ce pe n'existe par encore dans la domaine, ajoute un joint et initialise ce joint avec "epaisseur".
+/*! @brief Pour chaque pe mentionne dans le tableau "voisins", si un joint avec ce pe n'existe par encore dans le domaine, ajoute un joint et initialise ce joint avec "epaisseur".
  *
  */
 static void ajouter_joints(Domaine& domaine, const ArrOfInt& voisins, const int epaisseur)

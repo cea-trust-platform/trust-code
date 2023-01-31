@@ -42,7 +42,7 @@ Entree& Marqueur_Lagrange_base::readOn(Entree& is)
 
 
 // -discretisation du champ densite_particules
-// -association de la domaine a l ensemble d points suivis
+// -association du domaine a l ensemble d points suivis
 // -t_debut_integr_ fixe par defaut a t_init si pas de valeur lue dans le jdd
 void Marqueur_Lagrange_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {

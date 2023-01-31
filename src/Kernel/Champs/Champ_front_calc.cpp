@@ -207,20 +207,20 @@ const Milieu_base& Champ_front_calc::milieu() const
   return equation().milieu();
 }
 
-/*! @brief Renvoie la domaine discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace.
+/*! @brief Renvoie le domaine discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace.
  *
- * @return (Domaine_dis_base&) la domaine discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace
+ * @return (Domaine_dis_base&) le domaine discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace
  */
 const Domaine_dis_base& Champ_front_calc::domaine_dis() const
 {
   return inconnue().domaine_dis_base();
 }
 
-/*! @brief Renvoie la domaine des conditions au limites discretisees portee par l'equation qui porte le champ inconnue
+/*! @brief Renvoie le domaine des conditions au limites discretisees portee par l'equation qui porte le champ inconnue
  *
  *     dont on prend la trace
  *
- * @return (Domaine_Cl_dis_base&) la domaine des conditions au limites discretisees portee par l'equation qui porte le champ inconnue dont on prend la trace
+ * @return (Domaine_Cl_dis_base&) le domaine des conditions au limites discretisees portee par l'equation qui porte le champ inconnue dont on prend la trace
  */
 const Domaine_Cl_dis_base& Champ_front_calc::domaine_Cl_dis() const
 {

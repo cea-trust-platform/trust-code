@@ -54,7 +54,7 @@ public:
 
 /*! @brief Appel a l'objet sous-jacent Associe l'element geometrique a sa domaine.
  *
- * @param (Domaine&  z) la domaine dont fait partie l'element
+ * @param (Domaine&  z) le domaine dont fait partie l'element
  */
 inline void Elem_geom::associer_domaine(const Domaine&  z)
 {
@@ -75,12 +75,12 @@ inline void Elem_geom::face_sommet(int i, int j) const
 }
 
 
-/*! @brief Appel a l'objet sous-jacent Cree les faces de l'element specifie de la domaine.
+/*! @brief Appel a l'objet sous-jacent Cree les faces de l'element specifie du domaine.
  *
  *     (sans specifier le type de face a creer)
  *
  * @param (Faces& les_faces) les faces de l'element
- * @param (int num_elem) le numero de l'element de la domaine dont on doit creer les faces
+ * @param (int num_elem) le numero de l'element du domaine dont on doit creer les faces
  */
 inline void Elem_geom::creer_faces_elem(Faces& les_faces,int num_elem) const
 {
@@ -88,12 +88,12 @@ inline void Elem_geom::creer_faces_elem(Faces& les_faces,int num_elem) const
 }
 
 
-/*! @brief Appel a l'objet sous-jacent Cree les faces de l'element specifie de la domaine
+/*! @brief Appel a l'objet sous-jacent Cree les faces de l'element specifie du domaine
  *
  *     en specifiant le type de de face a creer.
  *
  * @param (Faces& les_faces) les faces de l'element
- * @param (int num_elem) le numero de l'element de la domaine dont on doit creer les faces
+ * @param (int num_elem) le numero de l'element du domaine dont on doit creer les faces
  * @param (Type_Face typ) le type de face a creer
  */
 inline void Elem_geom::creer_faces_elem(Faces& les_faces,int num_elem,Type_Face typ) const
@@ -104,7 +104,7 @@ inline void Elem_geom::creer_faces_elem(Faces& les_faces,int num_elem,Type_Face 
 
 /*! @brief Appel a l'objet sous-jacent Calcule les centres de gravites de tous les elements
  *
- *     de la domaine geometrique associee.
+ *     du domaine geometrique associee.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des des centres de gravites.
  */
@@ -114,19 +114,19 @@ inline void Elem_geom::calculer_centres_gravite(DoubleTab& xp) const
 }
 
 
-/*! @brief Appel a l'objet sous-jacent Calcule les volumes des elements de la domaine associee.
+/*! @brief Appel a l'objet sous-jacent Calcule les volumes des elements du domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
 inline void Elem_geom::calculer_volumes(DoubleVect& volumes) const
 {
   valeur().calculer_volumes(volumes);
 }
 
-/*! @brief Appel a l'objet sous-jacent Calcule les normales aux faces des elements de la domaine associee.
+/*! @brief Appel a l'objet sous-jacent Calcule les normales aux faces des elements du domaine associee.
  *
- * @param (DoubleTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la domaine
- * @param (DoubleTab& face_normales) le vecteur contenant les normales aux faces des elements de la domaine
+ * @param (DoubleTab& face_sommets) les numeros des sommets des faces dans la liste des sommets du domaine
+ * @param (DoubleTab& face_normales) le vecteur contenant les normales aux faces des elements du domaine
  */
 inline void Elem_geom::calculer_normales(const IntTab& face_sommets, DoubleTab& face_normales) const
 {
@@ -194,14 +194,14 @@ inline const Nom& Elem_geom::nom_lml() const
 }
 
 
-/*! @brief Appel a l'objet sous-jacent Renvoie 1 si l'element i de la domaine associee a
+/*! @brief Appel a l'objet sous-jacent Renvoie 1 si l'element i du domaine associee a
  *
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int i) le numero de l'element de la domaine dans lequel on cherche le point.
+ * @param (int i) le numero de l'element du domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element i 0 sinon
  */
 inline int Elem_geom::contient(const ArrOfDouble& pos, int i ) const
@@ -212,11 +212,11 @@ inline int Elem_geom::contient(const ArrOfDouble& pos, int i ) const
 
 /*! @brief Appel a l'objet sous-jacent Renvoie 1 si les sommets specifies par le parametre "pos"
  *
- *     sont les sommets de l'element i de la domaine associee a
+ *     sont les sommets de l'element i du domaine associee a
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements i
- * @param (int i) le numero de l'element de la domaine dont on veut comparer les sommets
+ * @param (int i) le numero de l'element du domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element i, 0 sinon
  */
 inline int Elem_geom::contient(const ArrOfInt& pos, int i ) const

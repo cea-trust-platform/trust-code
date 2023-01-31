@@ -272,10 +272,10 @@ void Sonde_Int::associer_post(const Postraitement& le_post)
 /*! @brief Initialise la sonde.
  *
  * Dimensionne les tableaux, de valeurs, verifie si les points specifies sont
- *     bien dans la domaine de calcul.
+ *     bien dans le domaine de calcul.
  *
- * @param (Domaine& domaine_geom) la domaine de calcul qui sera sondee
- * @throws point de sondage en dehors de la domaine de calcul
+ * @param (Domaine& domaine_geom) le domaine de calcul qui sera sondee
+ * @throws point de sondage en dehors du domaine de calcul
  */
 void Sonde_Int::initialiser(const Domaine& domaine_geom)
 {

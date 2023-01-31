@@ -107,7 +107,7 @@ void Traitement_particulier_Solide_canal_VDF::calculer_moyennes_spatiales_thermo
   const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
   const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
-  // Le nombre d'elements de la domaine VDF.
+  // Le nombre d'elements du domaine VDF.
   int nb_elems = domaine_VDF.domaine().nb_elem();
 
   // On veut acceder aux valeurs de la temperature a partir de mon_equation_NRJ.

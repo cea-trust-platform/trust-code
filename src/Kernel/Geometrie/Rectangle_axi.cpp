@@ -41,7 +41,7 @@ Entree& Rectangle_axi::readOn(Entree& s )
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements de la domaine associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements du domaine associee a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
@@ -107,9 +107,9 @@ const Nom& Rectangle_axi::nom_lml() const
 
 
 
-/*! @brief Calcule les volumes des elements de la domaine associee.
+/*! @brief Calcule les volumes des elements du domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
 void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
 {
@@ -133,7 +133,7 @@ void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
     }
 }
 
-/*! @brief //    Renvoie 1 si l'element ielem de la domaine associee a //              l'element geometrique contient le point
+/*! @brief //    Renvoie 1 si l'element ielem du domaine associee a //              l'element geometrique contient le point
  *
  *  //              de coordonnees specifiees par le parametre "pos".
  *  //    Renvoie 0 sinon.
@@ -145,7 +145,7 @@ void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
  *  //    Contraintes: reference constante
  *  //    Acces: entree
  *  // Parametre: int ielem
- *  //    Signification: le numero de l'element de la domaine
+ *  //    Signification: le numero de l'element du domaine
  *  //                   dans lequel on cherche le point.
  *  //    Valeurs par defaut:
  *  //    Contraintes:
@@ -181,12 +181,12 @@ int Rectangle_axi::contient(const ArrOfDouble& pos, int element ) const
     return 0;
 }
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
+ * @param (int element) le numero de l'element du domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Rectangle_axi::contient(const ArrOfInt& pos, int element ) const

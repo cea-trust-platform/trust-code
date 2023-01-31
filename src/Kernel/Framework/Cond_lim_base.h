@@ -103,20 +103,20 @@ inline const Frontiere_dis_base& Cond_lim_base::frontiere_dis() const
   return le_champ_front.frontiere_dis();
 }
 
-/*! @brief Renvoie la domaine des conditions aux limites discretisee dont l'objet fait partie.
+/*! @brief Renvoie le domaine des conditions aux limites discretisee dont l'objet fait partie.
  *
- * @return (Domaine_Cl_dis_base&) la domaine des conditions aux limites discretisee dont l'objet fait partie
+ * @return (Domaine_Cl_dis_base&) le domaine des conditions aux limites discretisee dont l'objet fait partie
  */
 inline Domaine_Cl_dis_base& Cond_lim_base::domaine_Cl_dis()
 {
   return mon_dom_cl_dis.valeur();
 }
 
-/*! @brief Renvoie la domaine des conditions aux limites discretisee dont l'objet fait partie.
+/*! @brief Renvoie le domaine des conditions aux limites discretisee dont l'objet fait partie.
  *
  *     (version const)
  *
- * @return (Domaine_Cl_dis_base&) la domaine des conditions aux limites discretisee dont l'objet fait partie
+ * @return (Domaine_Cl_dis_base&) le domaine des conditions aux limites discretisee dont l'objet fait partie
  */
 inline const Domaine_Cl_dis_base& Cond_lim_base::domaine_Cl_dis() const
 {

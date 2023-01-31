@@ -104,7 +104,7 @@ private:
   /* Fonction membre qui retourne le Domaine du probleme. */
   inline const Domaine&  domaine() const;
 
-  /* Fonction membre qui renvoie la domaine de conditions aux limitex. */
+  /* Fonction membre qui renvoie le domaine de conditions aux limitex. */
   inline const Domaine_Cl_VEF& domaine_cl() const;
 
 };

@@ -60,7 +60,7 @@ void Rectangle_2D_axi::reordonner()
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements de la domaine associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements du domaine associee a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
@@ -92,13 +92,13 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 
 }
 
-/*! @brief Calcule les volumes des elements de la domaine associee.
+/*! @brief Calcule les volumes des elements du domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
 void Rectangle_2D_axi::calculer_volumes(DoubleVect& volumes) const
 {
-  const Domaine& domaine=mon_dom.valeur();// domaine.valeur() permet d'acceder a                                            // la domaine qui est en cours de traitement
+  const Domaine& domaine=mon_dom.valeur();// domaine.valeur() permet d'acceder a                                            // le domaine qui est en cours de traitement
   const Domaine& dom=domaine;
   double r,r1,r2,dr,dz;
   int S1,S2,S3;

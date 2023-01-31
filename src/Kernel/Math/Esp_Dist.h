@@ -23,7 +23,7 @@
 
 /*! @brief Espace distant utilise pour la gestion des tableaux distribues Cette classe permet de decrire un espace distant d'un vecteur de donnees.
  *
- *     Elle porte un int representant le numero de processeur a qui est destine la domaine decrite.
+ *     Elle porte un int representant le numero de processeur a qui est destine le domaine decrite.
  *     La description de cet espace distant consiste en un vecteur d'entiers contenant les indices des elements a envoyer.
  *
  */

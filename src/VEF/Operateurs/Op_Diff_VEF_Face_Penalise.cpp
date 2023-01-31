@@ -225,7 +225,7 @@ voisinage(const int Numero_face, IntList& Voisinage) const
   /* Declaration des principaux parametres locaux. */
   int numero_local;
 
-  /* Le nombre de faces des elements constituant la domaine
+  /* Le nombre de faces des elements constituant le domaine
    * de discretisation.
    * REM: on suppose que l'on ne travaille pas sur des prismes.
    */
@@ -354,7 +354,7 @@ signe(const int Face1, const int Face2) const
   int numero_local;
 
   /* On recupere le nombre de sommets des faces
-   * des elements constituant la domaine discretisee.
+   * des elements constituant le domaine discretisee.
    * REM: on exclut le prisme par convention.
    */
   const int nb_sommets_par_face = domaine_vef().nb_som_face();
@@ -590,7 +590,7 @@ const
   int numero_local,lautre_face=-1;
   int elem_commun = element_commun(Face1,Face2);
 
-  /* Le nombre de faces des elements constituant la domaine
+  /* Le nombre de faces des elements constituant le domaine
    * de discretisation.
    * REM: on suppose que l'on ne travaille pas sur des prismes.
    */

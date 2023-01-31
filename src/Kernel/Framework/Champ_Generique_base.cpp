@@ -283,7 +283,7 @@ void Champ_Generique_base::get_copy_domain(Domaine& domain) const
 }
 
 
-/*! @brief Renvoie une ref a la domaine_discretisee du domaine sur lequel sera evalue l espace de stockage.
+/*! @brief Renvoie une ref au domaine_discretisee du domaine sur lequel sera evalue l espace de stockage.
  *
  *  Par defaut le domaine associe au probleme.
  *
@@ -296,7 +296,7 @@ const Domaine_dis_base& Champ_Generique_base::get_ref_domaine_dis_base() const
   return domaine_dis;
 }
 
-/*! @brief Renvoie une ref a la domaine_cl_discretisee de l equation portant le champ cible.
+/*! @brief Renvoie une ref au domaine_cl_discretisee de l equation portant le champ cible.
  *
  */
 const Domaine_Cl_dis_base& Champ_Generique_base::get_ref_zcl_dis_base() const

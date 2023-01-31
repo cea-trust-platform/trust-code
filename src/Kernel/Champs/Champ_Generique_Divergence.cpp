@@ -49,7 +49,7 @@ void Champ_Generique_Divergence::completer(const Postraitement_base& post)
           Op_Div_.typer();
           Op_Div_.l_op_base().associer_eqn(eqn);
 
-          //La methode completer() lance l association de la domaine_discretisee
+          //La methode completer() lance l association du domaine_discretisee
           //qui est recuperre par l equation associee a l operateur
           Op_Div_->completer();
         }

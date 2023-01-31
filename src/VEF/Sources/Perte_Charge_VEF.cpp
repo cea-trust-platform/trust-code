@@ -125,7 +125,7 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
 
   for (int face=0; face<max_faces; face++)
     {
-      // indice de la face dans la domaine_VEF
+      // indice de la face dans le domaine_VEF
       int la_face = sous_domaine ? ssz.les_faces()[face] : face;
 
       if (la_face<zvef.nb_faces())
@@ -218,7 +218,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   for (int face=0; face<max_faces; face++)
     {
 
-      // indice de la face dans la domaine_VEF
+      // indice de la face dans le domaine_VEF
       int la_face=sous_domaine?
                   ssz.les_faces()[face] :
                   face;

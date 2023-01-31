@@ -231,7 +231,7 @@ int Champ_implementation_P0::imprime_P0(Sortie& os, int ncomp) const
 int Champ_implementation_P0::affecter_(const Champ_base& ch)
 {
   // if (le_champ().a_une_domaine_dis_base() && ch.a_une_domaine_dis_base() && le_champ().domaine_dis_base()==ch.domaine_dis_base())
-  // Plus general en comparant la domaine:
+  // Plus general en comparant le domaine:
   // Ajout de Champ_Uniforme_Morceaux/Champ_Fonc_Morceaux/Champ_Don_Fonc_txyz qui sont aux elements
   if (sub_type(Champ_Uniforme_Morceaux, ch) || sub_type(Champ_Fonc_Morceaux, ch) || sub_type(Champ_Don_Fonc_txyz, ch)
       || (le_champ().a_une_domaine_dis_base() && ch.a_une_domaine_dis_base() && le_champ().domaine_dis_base().domaine() == ch.domaine_dis_base().domaine()))

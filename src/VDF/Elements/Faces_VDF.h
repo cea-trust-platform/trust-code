@@ -64,7 +64,7 @@ inline int Faces_VDF::orientation(int i)
   return orientation_(i);
 }
 
-/*! @brief se lie a la domaine
+/*! @brief se lie au domaine
  *
  */
 inline void Faces_VDF::associer(const Domaine_VDF& une_domaine_VDF)
@@ -72,7 +72,7 @@ inline void Faces_VDF::associer(const Domaine_VDF& une_domaine_VDF)
   le_dom_VDF=une_domaine_VDF;
 }
 
-/*! @brief Renvoie la domaine
+/*! @brief Renvoie le domaine
  *
  */
 inline const Domaine_VDF& Faces_VDF::domaine_VDF() const

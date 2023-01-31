@@ -73,7 +73,7 @@ inline void TRUSTArray<_TYPE_>::set_mem_storage(const Storage storage)
 }
 
 //
-//    Fait pointer le tableau vers la domaine de memoire "data_". On detache la domaine de memoire existante.
+//    Fait pointer le tableau vers le domaine de memoire "data_". On detache le domaine de memoire existante.
 //    Le tableau devient de type "ref_data". Attention : ptr doit etre non nul. La taille est initialisee avec size.
 //   Attention: methode virtuelle: dans les classes derivee, cette methode initialise les structures pour creer
 //    un tableau sequentiel. Pour faire une ref sur un tableau parallele utiliser DoubleVect::ref()
@@ -216,7 +216,7 @@ inline int TRUSTArray<_TYPE_>::ref_count() const
 //  Ajoute une case en fin de tableau et y stocke la "valeur"
 // Precondition:
 //  Tableau doit etre de type "smart_resize" (sinon, ecroulement des performances). De plus, le tableau ne doit pas etre "ref_data",
-//  et il ne doit pas y avoir plus d'une reference a la domaine de memoire pointee (meme precondition que resize_array())
+//  et il ne doit pas y avoir plus d'une reference au domaine de memoire pointee (meme precondition que resize_array())
 //  Le tableau doit etre de type TRUSTArray (pas un type derive)
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
@@ -461,7 +461,7 @@ inline int TRUSTArray<_TYPE_>::detach_array()
   int retour = 0;
   if (p_)
     {
-      // Le tableau est de type "normal". Si la domaine de memoire n'est plus utilisee par personne, on la detruit.
+      // Le tableau est de type "normal". Si le domaine de memoire n'est plus utilisee par personne, on la detruit.
       if ((p_->suppr_one_ref()) == 0)
         {
 #ifdef _OPENMP

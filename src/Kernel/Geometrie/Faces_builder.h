@@ -54,7 +54,7 @@ private:
 
   // Tous les membres suivants sont initialises dans creer_faces_reeles:
 
-  // Raccourci vers les elements de la domaine
+  // Raccourci vers les elements du domaine
   const IntTab * les_elements_ptr_;
   // La connectivite elements-sommets (pour chaque sommet, liste des
   // elements adjacents, y compris les sommets et elements virtuels)

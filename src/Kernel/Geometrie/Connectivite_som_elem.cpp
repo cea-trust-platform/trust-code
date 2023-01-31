@@ -16,7 +16,7 @@
 #include <Static_Int_Lists.h>
 #include <TRUSTTabs.h>
 
-/*! @brief construction de la structure som_elem pour la domaine donnee On cree pour chaque sommet i la liste des elements adjacents a ce sommet
+/*! @brief construction de la structure som_elem pour le domaine donnee On cree pour chaque sommet i la liste des elements adjacents a ce sommet
  *
  *   (c'est la liste des elements k tels que il existe j tel que les_elems(k,j) == i)
  *

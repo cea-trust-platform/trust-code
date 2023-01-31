@@ -219,7 +219,7 @@ void Domaine_VF::discretiser()
   }
   // Centre de gravite des elements (tableau xp_)
   ladomaine.calculer_centres_gravite(xp_);
-  // Centre de gravite de la domaine
+  // Centre de gravite du domaine
   ArrOfDouble c(dimension);
   ladomaine.calculer_mon_centre_de_gravite(c);
 
@@ -248,7 +248,7 @@ void Domaine_VF::discretiser_no_face()
 {
   Domaine& dom = domaine();
   typer_elem(dom);
-  // Calcul du volume de la domaine discretisee
+  // Calcul du volume du domaine discretisee
   dom.calculer_volumes(volumes(), inverse_volumes());
 }
 

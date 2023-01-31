@@ -38,7 +38,7 @@ Entree& Extruder_en3::readOn(Entree& is) { return Interprete::readOn(is); }
 /*! @brief Fonction principale de l'interprete Extruder_en3
  *
  * Triangule 1 a 1 toutes les domaines du domaine specifie par la directive.
- *     On triangule la domaine grace a la methode:
+ *     On triangule le domaine grace a la methode:
  *       void Extruder_en3::extruder(Domaine& domaine) const
  *     Extruder_en3 signifie ici transformer en triangle des
  *     elements geometrique d'une domaine.

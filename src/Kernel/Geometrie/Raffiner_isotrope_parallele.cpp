@@ -178,7 +178,7 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
 
 /*! @brief Construction des tableaux joint_item(Joint::SOMMET).
  *
- * items_communs de tous les joints de la domaine(0) du domaine dom
+ * items_communs de tous les joints du domaine(0) du domaine dom
  *
  */
 

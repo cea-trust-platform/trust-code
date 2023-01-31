@@ -55,26 +55,26 @@ private:
   // uniquement avec les infos du joint.
   int nb_items_reels_;
 
-  // Liste des items communs avec la domaine voisine (la liste est
-  // classee dans le meme ordre sur la domaine locale et sur la domaine
+  // Liste des items communs avec le domaine voisine (la liste est
+  // classee dans le meme ordre sur le domaine locale et sur le domaine
   // voisine => items_communs[i] sur joint_j de domaine_k represente la meme
   // entite geometrique que items_communs[i] sur joint_k de domaine_j)
   ArrOfInt items_communs_;
 
-  // Liste des items distants a envoyer a la domaine voisine
+  // Liste des items distants a envoyer au domaine voisine
   // (l'ordre des items dans cette liste determine l'ordre d'apparition
   // de ces items dans l'espace virtuel du voisin)
   ArrOfInt items_distants_;
 
-  // Nombre d'items virtuels recus de la domaine voisine.
+  // Nombre d'items virtuels recus du domaine voisine.
   //  on a "nb_items_virtuels_ sur joint_j de domaine_k"
   //     = "items_distants.size_array() sur joint_k de domaine_j"
   int nb_items_virtuels_;
 
   // Correspondance entre l'indice local d'un item commun et l'indice
-  // du meme item sur la domaine voisine:
-  // colonne 0 = indice sur la domaine voisine,
-  // colonne 1 = indice sur la domaine locale
+  // du meme item sur le domaine voisine:
+  // colonne 0 = indice sur le domaine voisine,
+  // colonne 1 = indice sur le domaine locale
   // dimension(0) est egal a items_communs.size_array()
   // L'ordre des items dans le tableau n'est pas specifie
   IntTab renum_items_communs_;

@@ -121,16 +121,16 @@ inline double Champ_Fonc::changer_temps(const double t)
 
 /*! @brief Appel a l'objet sous-jacent Associe une domaine discretisee au champ.
  *
- * @param (Domaine_dis_base& domaine_dis) la domaine discretisee a associer au champ
+ * @param (Domaine_dis_base& domaine_dis) le domaine discretisee a associer au champ
  */
 inline void Champ_Fonc::associer_domaine_dis_base(const Domaine_dis_base& domaine_dis)
 {
   valeur().associer_domaine_dis_base(domaine_dis);
 }
 
-/*! @brief Appel a l'objet sous-jacent Renvoe la domaine discretisee associee
+/*! @brief Appel a l'objet sous-jacent Renvoe le domaine discretisee associee
  *
- * @return (Domaine_dis_base&) la domaine discretisee associee
+ * @return (Domaine_dis_base&) le domaine discretisee associee
  */
 inline const Domaine_dis_base& Champ_Fonc::domaine_dis_base() const
 {

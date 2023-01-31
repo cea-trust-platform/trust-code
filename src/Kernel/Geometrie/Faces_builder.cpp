@@ -46,10 +46,10 @@ void Faces_builder::reset()
   face_elem_.reset();
 }
 
-/*! @brief A partir de la description des elements de la domaine et des frontieres (bords, raccords, faces internes et joints) :
+/*! @brief A partir de la description des elements du domaine et des frontieres (bords, raccords, faces internes et joints) :
  *
  *   Remplissage des structures suivantes:
- *   - pour les frontieres de la domaine: fixer_num_premiere_face
+ *   - pour les frontieres du domaine: fixer_num_premiere_face
  *   - les_faces.faces_sommets (faces reeles)
  *   - les_faces.faces_voisins (faces reeles)
  *   - elem_faces              (pour les faces reeles des elements reels)
@@ -372,7 +372,7 @@ const IntTab& Faces_builder::faces_element_reference(int elem) const
 }
 
 
-/*! @brief Methode outil: on suppose que "une_face" contient les indices des sommets d'une face de l'element d'indice "elem" dans la domaine.
+/*! @brief Methode outil: on suppose que "une_face" contient les indices des sommets d'une face de l'element d'indice "elem" dans le domaine.
  *
  *   On cherche quel est le numero de cette face sur l'element
  *   de reference. Si les sommets ne correspondent a aucune face de
@@ -524,8 +524,8 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
   if (sub_type(Joint, frontiere))
     {
       // Deux sources d'erreur possibles: les faces de joint sont fausses
-      // ou bien la domaine ne contient pas les elements virtuels (il faut
-      // au moins que la domaine contienne les elements virtuels voisins des
+      // ou bien le domaine ne contient pas les elements virtuels (il faut
+      // au moins que le domaine contienne les elements virtuels voisins des
       // faces de joint).
       msg += "(Error in a Joint object: internal error in the mesh splitter or scatter ? )\n";
     }

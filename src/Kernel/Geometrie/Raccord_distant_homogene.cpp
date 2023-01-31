@@ -225,7 +225,7 @@ void Raccord_distant_homogene::completer()
   recv_pe_list_.ordonne_array();
 }
 
-/*! @brief Initialise le raccord distant avec la frontiere et la domaine discretisee opposees au raccord distant, et la domaine discretisee du raccord distant
+/*! @brief Initialise le raccord distant avec la frontiere et le domaine discretisee opposees au raccord distant, et le domaine discretisee du raccord distant
  *
  */
 void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, const Domaine_dis_base& opposed_domaine_dis, const Domaine_dis_base& domaine_dis)

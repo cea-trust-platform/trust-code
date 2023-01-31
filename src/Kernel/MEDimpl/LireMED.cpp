@@ -1780,7 +1780,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
     sommets=sommets2;
 
   //
-  // typage des elts de  la domaine et remplissage des elts
+  // typage des elts de  le domaine et remplissage des elts
   // Avant de typer on regarde si il ne faut pas transormer les hexa en Hexa_vef
   int err=verifier_modifier_type_elem(type_elem,les_elems2,sommets);
   if (err!=0) exit();

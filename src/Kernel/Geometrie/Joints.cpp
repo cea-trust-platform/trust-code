@@ -25,7 +25,7 @@ Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
  *
  * Les joints de la liste feront partie de cette domaine.
  *
- * @param (Domaine& une_domaine) la domaine a associer aux joint
+ * @param (Domaine& une_domaine) le domaine a associer aux joint
  */
 void Joints::associer_domaine(const Domaine& une_domaine)
 {

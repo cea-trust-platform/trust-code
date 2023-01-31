@@ -51,11 +51,11 @@ class Param;
 // int            est_le_dernier_post  : 1 si dernier postraitement pour un fichier d ecriture donne, 0 sinon
 // Domaine            dom                        : domaine de calcul
 // Nom                    id_domaine                : nom du domaine
-// Nom                   id_domaine                : nom de la domaine
+// Nom                   id_domaine                : nom du domaine
 // IntVect           faces_som                : connectivites faces-sommets
 // IntVect           elem_faces                : connectivites elements-faces
 // int           nb_som                : nombre de sommets du domaine dom
-// int            nb_faces                : nombre de faces de la domaine
+// int            nb_faces                : nombre de faces du domaine
 
 // double            t_init                : temps initial du calcul
 // double            temps_courant          : temps courant du calcul

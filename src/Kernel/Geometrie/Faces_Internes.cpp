@@ -23,7 +23,7 @@ Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(
 
 /*! @brief Associe une domaine a tous les objets Faces_Interne de la liste.
  *
- * @param (Domaine& une_domaine) la domaine a associer aux Faces_Interne de la liste
+ * @param (Domaine& une_domaine) le domaine a associer aux Faces_Interne de la liste
  */
 void Faces_Internes::associer_domaine(const Domaine& une_domaine)
 {

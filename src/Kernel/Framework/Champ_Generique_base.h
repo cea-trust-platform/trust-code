@@ -64,7 +64,7 @@ public:
 
   virtual const Domaine&    get_ref_domain() const; //rend une reference au domaine associe au champ
   virtual void              get_copy_domain(Domaine&) const;
-  virtual const Domaine_dis_base&  get_ref_domaine_dis_base() const; //rend la domaine discretisee liee au domaine
+  virtual const Domaine_dis_base&  get_ref_domaine_dis_base() const; //rend le domaine discretisee liee au domaine
   virtual const Domaine_Cl_dis_base&  get_ref_zcl_dis_base() const; //rend la zcl discretisee liee a l equation portant le champ cible
 
   virtual const DoubleTab&  get_ref_coordinates() const;

@@ -68,7 +68,7 @@ inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& 
           const MD_Vector& md_part = mdata.data_[i];
           shape_i[0] = md_part.valeur().get_nb_items_tot();
           TRUSTTab<_TYPE_>& part = parts[i];
-          // Fait pointer la domaine de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
+          // Fait pointer le domaine de memoire sur le sous-tableau (pour l'instant tableau monodimensionnel)
           part.ref_array(vect, offset * line_size, shape_i[0] * line_size * std::max(mdata.shapes_[i], un));
           // Change le "shape" du tableau pour mettre le nombre de lignes et de colonnes
           // (nombre total d'items inchange, donc resize autorise)

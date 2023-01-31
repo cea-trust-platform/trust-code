@@ -313,7 +313,7 @@ public:
   /* tableau stockant les temps de communication de chaque domaine du code souhaitee
    * 1ere dimension : les differents types de communication
    * 2eme dimension : le temps passe dans chaque domaine  de communication qu'on a definie pour chaque compteur
-   * ==> quand j different de 0 : l'element (i,j) du tableau contient le temps passe dans la domaine j par la communication i
+   * ==> quand j different de 0 : l'element (i,j) du tableau contient le temps passe dans le domaine j par la communication i
    * ==> quand j = 0 : l'element (i,j) contient le temps total (dans tout le code) consomme par la communication i
    */
   Stat_Results** communication_tracking_info;

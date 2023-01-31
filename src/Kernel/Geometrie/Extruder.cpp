@@ -32,7 +32,7 @@ Entree& Extruder::readOn(Entree& is) { return Interprete::readOn(is); }
 /*! @brief Fonction principale de l'interprete Extruder Triangule 1 a 1 toutes les domaines du domaine
  *
  *     specifie par la directive.
- *     On triangule la domaine grace a la methode:
+ *     On triangule le domaine grace a la methode:
  *       void Extruder::extruder(Domaine& domaine) const
  *     Extruder signifie ici transformer en triangle des
  *     elements geometrique d'une domaine.
@@ -67,12 +67,12 @@ inline void check_boundary_name(const Nom& name)
       Process::exit();
     }
 }
-/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques de la domaine en triangles.
+/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques du domaine en triangles.
  *
  *     Pour l'instant on ne sait raffiner que des Rectangles
  *     (on les coupe en 4).
  *
- * @param (Domaine& domaine) la domaine dont on veut raffiner les elements
+ * @param (Domaine& domaine) le domaine dont on veut raffiner les elements
  */
 void Extruder::extruder(Domaine& dom)
 {

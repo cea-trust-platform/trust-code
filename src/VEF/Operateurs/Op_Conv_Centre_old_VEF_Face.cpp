@@ -191,7 +191,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent
-  // dans la domaine
+  // dans le domaine
 
   // boucle sur les polys
   const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();

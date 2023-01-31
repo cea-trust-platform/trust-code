@@ -206,7 +206,7 @@ void Traitement_particulier_NS_Profils_thermo_VDF::calculer_moyennes_spatiales_t
   // Pour trouver les coordonnees des points de temperature max et min :
   const DoubleTab& xp = domaine_VDF.xp();
 
-  // Le nombre d'elements de la domaine VDF.
+  // Le nombre d'elements du domaine VDF.
   int nb_elems = domaine_VDF.domaine().nb_elem();
 
   // On veut acceder aux valeurs des 3 composantes de la vitesse a partir de mon_equation.

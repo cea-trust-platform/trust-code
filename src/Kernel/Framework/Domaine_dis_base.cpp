@@ -49,7 +49,7 @@ Sous_domaine_dis& Domaine_dis_base::sous_domaine_dis(int i)
 
 /*! @brief Associe une Domaine a l'objet.
  *
- * @param (Domaine& une_domaine) la domaine a associee a la domaine discretisee
+ * @param (Domaine& une_domaine) le domaine a associee au domaine discretisee
  */
 void Domaine_dis_base::associer_domaine(const Domaine& une_domaine)
 {

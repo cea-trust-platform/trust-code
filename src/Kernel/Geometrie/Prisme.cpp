@@ -83,13 +83,13 @@ const Nom& Prisme::nom_lml() const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0.
  *
- * Renvoie 1 si l'element "element" de la domaine associee a
+ * Renvoie 1 si l'element "element" du domaine associee a
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int element) le numero de l'element de la domaine dans lequel on cherche le point.
+ * @param (int element) le numero de l'element du domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
  */
 int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
@@ -181,11 +181,11 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0 Renvoie 1 si les sommets specifies par le parametre "pos"
  *
- *     sont les sommets de l'element "element" de la domaine associee a
+ *     sont les sommets de l'element "element" du domaine associee a
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
+ * @param (int element) le numero de l'element du domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Prisme::contient(const ArrOfInt& pos, int element ) const
@@ -196,9 +196,9 @@ int Prisme::contient(const ArrOfInt& pos, int element ) const
 }
 
 
-/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la domaine associee.
+/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements du domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
 void Prisme::calculer_volumes(DoubleVect& volumes) const
 {

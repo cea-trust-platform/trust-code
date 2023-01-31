@@ -62,7 +62,7 @@ const Nom& Hexaedre_axi::nom_lml() const
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements de la domaine associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements du domaine associee a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
@@ -111,13 +111,13 @@ void Hexaedre_axi::calculer_centres_gravite(DoubleTab& xp) const
 
 /*! @brief NE FAIT RIEN: A CODER,renvoie toujours 0
  *
- *     Renvoie 1 si l'element "elemen" de la domaine associee a
+ *     Renvoie 1 si l'element "elemen" du domaine associee a
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int element) le numero de l'element de la domaine dans lequel on cherche le point.
+ * @param (int element) le numero de l'element du domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
  */
 int Hexaedre_axi::contient(const ArrOfDouble& pos, int element ) const
@@ -139,12 +139,12 @@ int Hexaedre_axi::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
+ * @param (int element) le numero de l'element du domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Hexaedre_axi::contient(const ArrOfInt& som, int element ) const
@@ -165,9 +165,9 @@ int Hexaedre_axi::contient(const ArrOfInt& som, int element ) const
 
 
 
-/*! @brief Calcule les volumes des elements de la domaine associee.
+/*! @brief Calcule les volumes des elements du domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
 void Hexaedre_axi::calculer_volumes(DoubleVect& volumes) const
 {

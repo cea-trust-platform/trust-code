@@ -297,7 +297,7 @@ private:
   VTRUSTdata<_TYPE_>* p_;
 
   // Pointeur vers le premier element du tableau= Pointeur nul => le tableau est "detache". Pointeur non nul => le tableau est "normal" ou "ref_data"
-  // Si p_ est non nul, data_ pointe quelque part a l'interieur de la domaine allouee (en general au debut, sauf si le tableau a ete initialise avec ref() ou attach_array() avec start > 0)
+  // Si p_ est non nul, data_ pointe quelque part a l'interieur du domaine allouee (en general au debut, sauf si le tableau a ete initialise avec ref() ou attach_array() avec start > 0)
   _TYPE_* data_;
 
   // Nombre d'elements du tableau (inferieur ou egal a memory_size_). Si le tableau est "detache", alors size_array_=0

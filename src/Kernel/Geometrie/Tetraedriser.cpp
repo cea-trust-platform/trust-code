@@ -52,14 +52,14 @@ static void decoupe(Faces& faces)
   sommets.ref(nouveaux);
 }
 
-/*! @brief Tetraedrise tous les elements d'une domaine: transforme les elements goemetriques de la domaine en tetraedres.
+/*! @brief Tetraedrise tous les elements d'une domaine: transforme les elements goemetriques du domaine en tetraedres.
  *
  *     Pour l'instant on ne sait tetraedriser que des Hexaedre.
  *     (on les coupe en 2).
  *     Les elements sont tetraedrises et tous les bords
  *     sont types en Triangle_3D.
  *
- * @param (Domaine& domaine) la domaine dont on veut tetraedriser les elements
+ * @param (Domaine& domaine) le domaine dont on veut tetraedriser les elements
  * @throws on ne sait pas tetraedriser les elements
  * geometriques de ce type
  */

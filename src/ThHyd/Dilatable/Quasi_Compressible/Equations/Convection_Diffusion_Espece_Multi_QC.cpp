@@ -92,7 +92,7 @@ void Convection_Diffusion_Espece_Multi_QC::completer()
   loi_etat.associer_inconnue(l_inco_ch.valeur());
   loi_etat.associer_espece(*this);
 
-  // remplissage de la domaine cl modifiee avec 1 partout au bord...
+  // remplissage du domaine cl modifiee avec 1 partout au bord...
   zcl_modif_ = domaine_Cl_dis();
 
   Conds_lim& condlims = zcl_modif_.valeur().les_conditions_limites();

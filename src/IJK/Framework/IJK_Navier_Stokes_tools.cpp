@@ -70,7 +70,7 @@ static void extend_array(const IJK_Grid_Geometry& geom1,
 // split1 : Maillage d'origine sur lequel sont resolues les equations de NS.
 // split2 : Resultat etendu contenant le domaine ou vivent les interfaces.
 // n_cells : Nombre de cellules supplementaires crees de chaque cote.
-//           (doit etre inferieur au nombre de mailles dans la domaine decoupee).
+//           (doit etre inferieur au nombre de mailles dans le domaine decoupee).
 void build_extended_splitting(const IJK_Splitting& split1,
                               IJK_Splitting& split2,
                               int n_cells)

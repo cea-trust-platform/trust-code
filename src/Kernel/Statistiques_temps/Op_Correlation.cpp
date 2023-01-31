@@ -49,7 +49,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   integrale_tps_a_ = la_moyenne_a().integrale();
   integrale_tps_b_ = la_moyenne_b().integrale();
 
-  // On recupere la domaine discretisee
+  // On recupere le domaine discretisee
   const Domaine_dis_base& domaine = a->get_ref_domaine_dis_base();
 
   // Dimensionnement du champ integrale_champ a la meme taille que mon_champ

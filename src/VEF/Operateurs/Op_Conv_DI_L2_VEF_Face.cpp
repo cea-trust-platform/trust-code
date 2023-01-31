@@ -528,7 +528,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent
-  // dans la domaine
+  // dans le domaine
 
   // boucle sur les polys
 

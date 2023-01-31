@@ -47,7 +47,7 @@ int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
   //
   // je suis tout de meme etonne du code utilise dans
   // Champ_Fonc_P0_base::fixer_nb_valeurs_nodales()
-  // pour recuperer la domaine discrete...
+  // pour recuperer le domaine discrete...
 
   assert(n == domaine_PolyMAC_P0().nb_faces() || n < 0);
 

@@ -40,12 +40,12 @@ Entree& Trianguler_H::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques de la domaine en triangles.
+/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques du domaine en triangles.
  *
  *     Pour l'instant on ne sait trianguler que des Rectangles
  *     (on les coupe en 2).
  *
- * @param (Domaine& domaine) la domaine dont on veut trianguler les elements
+ * @param (Domaine& domaine) le domaine dont on veut trianguler les elements
  */
 void Trianguler_H::trianguler(Domaine& domaine) const
 {

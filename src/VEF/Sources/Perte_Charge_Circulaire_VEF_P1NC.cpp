@@ -241,7 +241,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
 
   for (int face=0;face<max_faces;face++) {
 
-  // indice de la face dans la domaine_VEF
+  // indice de la face dans le domaine_VEF
   int la_face=sous_domaine?
   ssz.les_faces()[face] :
   face;

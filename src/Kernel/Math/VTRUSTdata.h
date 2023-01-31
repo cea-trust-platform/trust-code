@@ -25,7 +25,7 @@ class Memoire;
 template<typename _TYPE_> class TRUSTArray;
 template<typename _TYPE_> class TRUST_ptr_trav;
 
-/*! @brief VTRUSTdata alloue une domaine de memoire de la taille specifiee au constructeur, et libere la domaine de memoire a la destruction.
+/*! @brief VTRUSTdata alloue une domaine de memoire de la taille specifiee au constructeur, et libere le domaine de memoire a la destruction.
  *
  * La memoire peut etre allouee sur le tas (avec new) ou par le mecanisme Memoire::add_trav_double.
  *  "ref_count" compte le nombre de pointeurs qui font reference a "this". (permet au dernier utilisateur de l'objet de le detruire)
@@ -42,8 +42,8 @@ public:
 
   VTRUSTdata(int size, Array_base::Storage storage);
 
-  // Detruit la domaine de memoire allouee.
-  // Precondition : ref_count == 0 (la domaine de memoire ne doit etre referencee nulle part)
+  // Detruit le domaine de memoire allouee.
+  // Precondition : ref_count == 0 (le domaine de memoire ne doit etre referencee nulle part)
   ~VTRUSTdata()
   {
     assert(ref_count_ == 0);
@@ -89,7 +89,7 @@ private:
   // "sz" est la taille du tableau "data_" alloue. On a sz >= 0.
   int size_;
 
-  // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference a la domaine allouee, sinon le pointeur est nul.
+  // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference au domaine allouee, sinon le pointeur est nul.
   TRUST_ptr_trav<_TYPE_> * d_ptr_trav_;
 
   // Drapeau du statut du data sur le Device:

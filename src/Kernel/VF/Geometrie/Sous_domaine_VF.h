@@ -28,11 +28,11 @@
    Le tableau les_faces contient l'ensemble des faces de la Domaine_dis qui
    appartiennent a cette sous-domaine, classees de la facon suivante :
    * Les faces internes a la sous-domaine
-   * Les faces internes a la domaine, mais dont seul le premier element voisin
+   * Les faces internes au domaine, mais dont seul le premier element voisin
    appartient a la sous-domaine
-   * Les faces internes a la domaine, mais dont seul le deuxieme element voisin
+   * Les faces internes au domaine, mais dont seul le deuxieme element voisin
    appartient a la sous-domaine
-   * Les faces qui ne presentent qu'un element dans la domaine.
+   * Les faces qui ne presentent qu'un element dans le domaine.
    Les separations sont indiquees respectivement par les variables
    premiere_face_bord_0, premiere_face_bord_1, et premiere_face_bord.
 
@@ -44,7 +44,7 @@
    volumes_entrelaces(int face) renvoie le volume entrelace restreint
    a la sous-domaine. Le numero de la face fait reference au tableau
    les_faces. Seuls sont stockes localement les volumes entrelaces
-   differents de ceux de la domaine.
+   differents de ceux du domaine.
 */
 
 class Sous_domaine_VF : public Sous_domaine_dis_base
@@ -80,7 +80,7 @@ public:
 
   // Methodes propres
 
-  //! Genere les_faces en parcourant les faces de la domaine_dis et en cherchant quels voisins appartiennent a la_sous_domaine.
+  //! Genere les_faces en parcourant les faces du domaine_dis et en cherchant quels voisins appartiennent a la_sous_domaine.
   void discretiser() override;
 
 protected:

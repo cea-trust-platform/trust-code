@@ -145,9 +145,9 @@ void Redistribute_Field::intersect(const int s1, const int n1, int& s2, int& n2,
 //  avec une ligne et trois colonnes: { 0, 0, n } ou n est le nombre d'elements global du champ
 // Si on veut redistribuer en periodisant (construction du champ etendu pour le front-tracking)
 //  on passe un tableau a trois lignes:
-//    ligne 0, la domaine centrale:  { 0, extend_size, ni }  (ni est la taille du champ non etendu)
-//    ligne 1, la domaine de gauche: { ni-extend_size, 0, extend_size }
-//    ligne 2, la domaine de droite: { 0, ni + extend_size, extend_size }
+//    ligne 0, le domaine centrale:  { 0, extend_size, ni }  (ni est la taille du champ non etendu)
+//    ligne 1, le domaine de gauche: { ni-extend_size, 0, extend_size }
+//    ligne 2, le domaine de droite: { 0, ni + extend_size, extend_size }
 //
 // On remplit le tableau send_blocs: liste de segments de donnees a envoyer aux autres processeurs
 //  (colonne 0: indice local du premier element a envoyer,

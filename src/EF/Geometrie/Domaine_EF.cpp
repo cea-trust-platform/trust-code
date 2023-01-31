@@ -278,7 +278,7 @@ void Domaine_EF::reordonner(Faces& les_faces)
 
   // Construction du tableau de renumerotation des faces. Ce tableau,
   // une fois trie dans l'ordre croissant donne l'ordre des faces dans
-  // la domaine_VF. La cle de tri est construite de sorte a pouvoir retrouver
+  // le domaine_VF. La cle de tri est construite de sorte a pouvoir retrouver
   // l'indice de la face a partir de la cle par la formule :
   //  indice_face = cle % nb_faces
   const int nbfaces = les_faces.nb_faces();

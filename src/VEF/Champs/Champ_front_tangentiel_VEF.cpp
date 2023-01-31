@@ -87,7 +87,7 @@ int Champ_front_tangentiel_VEF::initialiser(double temps, const Champ_Inc_base& 
 
           // WEC : Les indices etaient i+premiere.
           // Supprime car manifestement un bug !!
-          // Change aussi dans la domaine_Cl_VEF
+          // Change aussi dans le domaine_Cl_VEF
           for(int j=0; j<2; j++)
             {
               tab(i,j)=vecteur_tang(i,j);

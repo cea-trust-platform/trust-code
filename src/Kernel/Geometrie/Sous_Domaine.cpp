@@ -366,7 +366,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
       {
         // Lecture de la sous-domaine dans un fichier ascii.
         // Le fichier contient, pour chaque processeur dans l'ordre croissant,
-        // un IntVect contenant les indices dans la domaine(0) des elements reels
+        // un IntVect contenant les indices dans le domaine(0) des elements reels
         // qui constituent la sous-domaine.
         Nom nomfic;
         is >> nomfic;
@@ -1016,7 +1016,7 @@ int Sous_Domaine::remove_poly(const int poly)
  *
  * La sous-domaine sera une sous-domaine de la Domaine specifiee.
  *
- * @param (Domaine& domaine) la domaine a associe a la sous-domaine
+ * @param (Domaine& domaine) le domaine a associe a la sous-domaine
  */
 void Sous_Domaine::associer_domaine(const Domaine& une_domaine)
 {

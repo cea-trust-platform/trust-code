@@ -29,7 +29,7 @@
  *      herite de MorEqn, c'est grace a cet heritage que chaque objet
  *      Domaine_Cl_dis_base contient une reference vers l'equation a laquelle il
  *      se rapporte. Les conditions aux limites discretisees representent les
- *      conditions aux limites de la domaine discretisee associee a l'equation
+ *      conditions aux limites du domaine discretisee associee a l'equation
  *      reference par Domaine_Cl_dis_base.
  *      Domaine_Cl_dis_base a un membre representant les conditions aux limites.
  *

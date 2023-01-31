@@ -24,7 +24,7 @@
  *
  * e un sous ensemble
  *     de polyedres d'un objet de type Domaine.
- *     Un objet Sous_Domaine porte une reference vers la domaine qu'il
+ *     Un objet Sous_Domaine porte une reference vers le domaine qu'il
  *     subdivise.
  *
  * @sa Domaine Sous_Domaines
@@ -67,7 +67,7 @@ protected :
 
 /*! @brief Constructeur d'une sous-domaine a partir d'une domaine.
  *
- * @param (Domaine& domaine) la domaine dont la sous-domaine est une partie
+ * @param (Domaine& domaine) le domaine dont la sous-domaine est une partie
  */
 inline Sous_Domaine::Sous_Domaine(const Domaine& adomaine) : le_dom_(adomaine)
 {}

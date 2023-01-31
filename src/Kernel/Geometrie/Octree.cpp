@@ -308,9 +308,9 @@ int Octree::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, doub
 }
 
 
-/*! @brief Renvoie une reference sur la domaine associe a l'octree.
+/*! @brief Renvoie une reference sur le domaine associe a l'octree.
  *
- * @return (Domaine&) reference sur la domaine associe a l'octree
+ * @return (Domaine&) reference sur le domaine associe a l'octree
  */
 const Domaine& Octree::domaine() const
 {
@@ -687,9 +687,9 @@ int Octree::taille() const
 }
 
 
-/*! @brief Renvoie la domaine associe a l'octree.
+/*! @brief Renvoie le domaine associe a l'octree.
  *
- * @return (Domaine&) la domaine associe a l'octree
+ * @return (Domaine&) le domaine associe a l'octree
  */
 const Domaine& OctreeRoot::domaine() const
 {
@@ -699,7 +699,7 @@ const Domaine& OctreeRoot::domaine() const
 
 /*! @brief Associe une domaine a l'octree
  *
- * @param (Domaine& z) la domaine a associer a l'octree
+ * @param (Domaine& z) le domaine a associer a l'octree
  */
 void OctreeRoot::associer_Domaine(const Domaine& z)
 {
@@ -1107,14 +1107,14 @@ void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, doubl
 }
 
 
-/*! @brief Renvoie vrai si la domaine associee a l'octree est non nulle.
+/*! @brief Renvoie vrai si le domaine associee a l'octree est non nulle.
  *
  * @return (int) code de retour propage
  */
 int OctreeRoot::construit() const
 {
   if((le_dom.non_nul()==0)||(valid_!=1))
-    // L'Octree n'est pas construit ou la domaine est nulle
+    // L'Octree n'est pas construit ou le domaine est nulle
     return 0;
   else
     return 1;

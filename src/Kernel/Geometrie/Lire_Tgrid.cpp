@@ -247,7 +247,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               lecture >> motlu;        // Nombre d'element
               nb_elem=htoi(motlu);
               Cerr << "The total number of elements to read is " << nb_elem << finl;
-              lecture >> motlu;        // Type de la domaine (0=dead domaine; 1=active domaine; 32=inactive domaine) ou 0))
+              lecture >> motlu;        // Type du domaine (0=dead domaine; 1=active domaine; 32=inactive domaine) ou 0))
               if (motlu!="0))") lecture >> motlu; // On saut le type s'il existe
             }
           else if (motlu=="(id") lecture >> motlu;        // evite de lire la description de la balise (12
@@ -373,7 +373,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               // Informations obtenues lors de la premiere lecture
               fic >> motlu;        // Numero premier element
               fic >> motlu;        // Nombre d'element
-              fic >> motlu;        // Type de la domaine (0=dead domaine; 1=active domaine; 32=inactive domaine) ou 0))
+              fic >> motlu;        // Type du domaine (0=dead domaine; 1=active domaine; 32=inactive domaine) ou 0))
               if (motlu!="0))") fic >> motlu; // On saut le type s'il existe
             }
           else
@@ -641,13 +641,13 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
       else if ((motlu=="(45") || (motlu=="(39"))
         {
           Cerr << "Reading of a name:" << finl;
-          fic >> motlu;        // Numero de la domaine
-          // Attention le numero de la domaine est en decimal !
+          fic >> motlu;        // Numero du domaine
+          // Attention le numero du domaine est en decimal !
           //int idomaine=htoi(motlu.suffix("("));
           int idomaine=atoi(motlu.suffix("("));
-          fic >> motlu;        // Type de la domaine
+          fic >> motlu;        // Type du domaine
           Nom Nomdomaine;
-          fic >> Nomdomaine;        // Nom de la domaine)())
+          fic >> Nomdomaine;        // Nom du domaine)())
           Nom nom_domaine=Nomdomaine;
           nom_domaine.prefix(")())");
           if (nom_domaine==Nomdomaine)

@@ -487,7 +487,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       //  - polyedres bords et joints
       //  - polyedres bords et non joints
       // On traite les polyedres en suivant l'ordre dans lequel ils figurent
-      // dans la domaine
+      // dans le domaine
       // boucle sur les polys
       if(nom_elem=="Tetra_VEF")
         {
@@ -1231,7 +1231,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent
-  // dans la domaine
+  // dans le domaine
 
   // boucle sur les polys
   const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
@@ -1563,7 +1563,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent
-  // dans la domaine
+  // dans le domaine
   if (nom_elem=="Tetra_VEF")
     {
       const int *rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);

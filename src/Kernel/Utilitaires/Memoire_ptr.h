@@ -51,7 +51,7 @@ public :
 
   inline TRUST_ptr_trav() : sz(-1), data(0), lock_(0), next(0) { }
 
-  // Supprime les donnees attachees a la domaine de travail
+  // Supprime les donnees attachees au domaine de travail
   ~TRUST_ptr_trav()
   {
     if(sz!=-1)
@@ -61,8 +61,8 @@ public :
       }
   }
 
-  inline int unlock() { return lock_ = 0; } // Deverrouille la domaine de travail
-  inline _TYPE_* ptr_() const { return data ; } // Retourne un pointeur sur les donnees de la domaine de travail
+  inline int unlock() { return lock_ = 0; } // Deverrouille le domaine de travail
+  inline _TYPE_* ptr_() const { return data ; } // Retourne un pointeur sur les donnees du domaine de travail
   inline TRUST_ptr_trav* add(int n);
 
 private :
@@ -76,9 +76,9 @@ using Double_ptr_trav = TRUST_ptr_trav<double>;
 using Float_ptr_trav = TRUST_ptr_trav<float>;
 using Int_ptr_trav = TRUST_ptr_trav<int>;
 
-/*! @brief Ajout d'elements dans la domaine de travail
+/*! @brief Ajout d'elements dans le domaine de travail
  *
- * @param (int n) le nombre d'element a creer dans la domaine de travail
+ * @param (int n) le nombre d'element a creer dans le domaine de travail
  * @return (Double_ptr_trav*) pointeur sur le domaine de travail contenant les elements crees
  */
 template<typename _TYPE_>

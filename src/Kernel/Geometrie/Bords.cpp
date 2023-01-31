@@ -23,7 +23,7 @@ Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
 
 /*! @brief Associe une domaine a tous les bords de la liste.
  *
- * @param (Domaine& une_domaine) la domaine a associer aux bords de la liste
+ * @param (Domaine& une_domaine) le domaine a associer aux bords de la liste
  */
 void Bords::associer_domaine(const Domaine& une_domaine)
 {

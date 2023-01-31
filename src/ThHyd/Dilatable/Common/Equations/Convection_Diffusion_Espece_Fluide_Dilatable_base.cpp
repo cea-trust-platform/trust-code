@@ -34,7 +34,7 @@ int Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul()
 {
   Convection_Diffusion_Fluide_Dilatable_base::preparer_calcul();
 
-  // remplissage de la domaine cl modifiee avec 1 partout au bord...
+  // remplissage du domaine cl modifiee avec 1 partout au bord...
   zcl_modif_=(domaine_Cl_dis());
 
   Conds_lim& condlims=zcl_modif_.valeur().les_conditions_limites();

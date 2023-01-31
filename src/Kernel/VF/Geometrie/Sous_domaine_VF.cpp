@@ -97,21 +97,21 @@ void Sous_domaine_VF::discretiser()
       elem0=le_dom_VF->face_voisins(i,0);
       elem1=le_dom_VF->face_voisins(i,1);
       // Remplissage des tableaux temporaires.
-      if (elem1==-1)                           // face au bord de la domaine
+      if (elem1==-1)                           // face au bord du domaine
         {
           if (elem_app[elem0])                         // dans la sous_domaine
             {
               faces_bord(nb_faces_bord++)=i;
             }
         }
-      else if (elem0==-1)                      // face au bord de la domaine
+      else if (elem0==-1)                      // face au bord du domaine
         {
           if (elem_app[elem1])                         // dans la sous_domaine
             {
               faces_bord(nb_faces_bord++)=i;
             }
         }
-      else                                     // face interne a la domaine
+      else                                     // face interne au domaine
         {
           if (elem_app[elem0] && elem_app[elem1])          // interne a la sous_domaine
             {

@@ -170,12 +170,12 @@ int Domaine_Cl_dis_base::contient_Cl(const Nom& type)
 }
 
 
-/*! @brief Renvoie une reference sur la domaine discretisee associee aux conditions aux limites.
+/*! @brief Renvoie une reference sur le domaine discretisee associee aux conditions aux limites.
  *
  * Cette Domaine_dis est associee au travers de l'equation
  *     associee et pas directement a l'objet Domaine_Cl_dis_base.
  *
- * @return (Domaine_dis&) la domaine discretisee associee a l'equation associe aux conditions aux limites.
+ * @return (Domaine_dis&) le domaine discretisee associee a l'equation associe aux conditions aux limites.
  */
 Domaine_dis& Domaine_Cl_dis_base::domaine_dis()
 {
@@ -183,13 +183,13 @@ Domaine_dis& Domaine_Cl_dis_base::domaine_dis()
 }
 
 
-/*! @brief Renvoie une reference sur la domaine discretisee associee aux conditions aux limites.
+/*! @brief Renvoie une reference sur le domaine discretisee associee aux conditions aux limites.
  *
  * Cette Domaine_dis est associee au travers de l'equation
  *     associee et pas directement a l'objet Domaine_Cl_dis_base.
  *     (version const)
  *
- * @return (Domaine_dis&) la domaine discretisee associee a l'equation associe aux conditions aux limites.
+ * @return (Domaine_dis&) le domaine discretisee associee a l'equation associe aux conditions aux limites.
  */
 const Domaine_dis& Domaine_Cl_dis_base::domaine_dis() const
 {

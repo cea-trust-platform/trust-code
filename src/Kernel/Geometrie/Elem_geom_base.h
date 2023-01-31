@@ -61,7 +61,7 @@ protected:
 
 /*! @brief Associe l'element geometrique a sa domaine.
  *
- * @param (Domaine& une_domaine) la domaine a associee a l'element
+ * @param (Domaine& une_domaine) le domaine a associee a l'element
  */
 inline void Elem_geom_base::associer_domaine(const Domaine& une_domaine)
 {
@@ -69,10 +69,10 @@ inline void Elem_geom_base::associer_domaine(const Domaine& une_domaine)
 }
 
 
-/*! @brief Cree les faces de l'element de la domaine specifie.
+/*! @brief Cree les faces de l'element du domaine specifie.
  *
  * @param (Faces& faces) les faces de l'elements a creer
- * @param (int elem) le numero de element de la domaine dont veut creer les faces
+ * @param (int elem) le numero de element du domaine dont veut creer les faces
  */
 inline void Elem_geom_base::creer_faces_elem(Faces& faces, int elem) const
 {

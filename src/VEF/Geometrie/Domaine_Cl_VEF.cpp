@@ -94,7 +94,7 @@ void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
     IntVect renum;
     le_dom_VEF.creer_tableau_faces(renum, ArrOfInt::NOCOPY_NOINIT);
     renum = -1;
-    // Marquer les faces non standard reelles (premieres faces dans la domaine)
+    // Marquer les faces non standard reelles (premieres faces dans le domaine)
     int i;
     for (i = 0; i < nb_faces_non_std; i++)
       renum[i] = 0;

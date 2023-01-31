@@ -113,7 +113,7 @@ Entree& ExtrudeParoi::interpreter_(Entree& is)
 
 /*! @brief
  *
- * @param (Domaine& domaine) la domaine dont on veut raffiner les elements
+ * @param (Domaine& domaine) le domaine dont on veut raffiner les elements
  */
 void ExtrudeParoi::extrude(Domaine& dom)
 {

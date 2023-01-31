@@ -126,7 +126,7 @@ void Domaine_VEF_PreP1b::discretiser_arete()
 {
   const Domaine& dom = domaine();
 
-  // Creation des aretes reelles (informations geometriques construites et stockees dans la domaine)
+  // Creation des aretes reelles (informations geometriques construites et stockees dans le domaine)
   domaine().creer_aretes();
   md_vector_aretes_ = domaine().aretes_som().get_md_vector();
 
@@ -382,7 +382,7 @@ void Domaine_VEF_PreP1b::construire_ok_arete()
       }
   }
 
-  // Estimation du nombre d'aretes superflues a trouver sur la domaine
+  // Estimation du nombre d'aretes superflues a trouver sur le domaine
   // en comptant les sommets reels non periodiques dont le contenu vaut 0
   int nombre_aretes_superflues_prevues_sur_le_dom=0;
   for (int i=0; i<nb_som_reel; i++)

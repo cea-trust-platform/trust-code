@@ -205,7 +205,7 @@ void Mod_turb_hyd_base::associer_eqn(const Equation_base& eqn)
 
 /*! @brief NE FAIT RIEN a surcharger dans les classes derivees.
  *
- *     Associe la domaine discretisee et la domaine des conditions
+ *     Associe le domaine discretisee et le domaine des conditions
  *     aux limites discretisees au modele de turbulence.
  *
  * @param (Domaine_dis&) une domaine discretisee

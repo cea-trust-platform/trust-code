@@ -658,7 +658,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   barrier();
 }
 
-/*! @brief Construction des structures paralleles du domaine et de la domaine (determination des elements distants en fonction de l'epaisseur de joint,
+/*! @brief Construction des structures paralleles du domaine et du domaine (determination des elements distants en fonction de l'epaisseur de joint,
  *
  *    determination des sommets distants,
  *    creation des sommets et des elements virtuels)
@@ -1147,9 +1147,9 @@ void Scatter::ajouter_joints(Domaine& domaine,
  *   Scatter::calculer_espace_distant_sommets
  *   Scatter::calculer_espace_distant_faces
  *
- * @param (domaine) bah, la domaine quoi...
+ * @param (domaine) bah, le domaine quoi...
  * @param (type_item) le type des items dont on veut calculer l'espace distant
- * @param (connectivite_elem_item) le tableau qui donne pour chaque element de la domaine les indices des items de cet element. On n'utilise que la partie reele du tableau (logiquement, la partie virtuelle n'existe pas encore). (exemple: domaine().les_elems() pour type_item==SOMMET ou domaine_VF().face_sommets() pour type_item==FACE)
+ * @param (connectivite_elem_item) le tableau qui donne pour chaque element du domaine les indices des items de cet element. On n'utilise que la partie reele du tableau (logiquement, la partie virtuelle n'existe pas encore). (exemple: domaine().les_elems() pour type_item==SOMMET ou domaine_VF().face_sommets() pour type_item==FACE)
  * @param (nb_items_reels) le nombre de "type_item" reels
  * @param (items_lies) si le tableau est non vide, il doit etre de taille nb_items_reels. Dans ce cas, il permet de forcer la propriete suivante : "si l'item i est distant, alors l'item items_lies[i] est distant aussi". Ce tableau est utilise pour inclure les sommets periodiques virtuels associes. (voir calculer_espace_distant_sommets).
  */
@@ -2766,7 +2766,7 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
 
 /*! @brief Construction des tableaux joint_item(Joint::SOMMET).
  *
- * items_communs de tous les joints de la domaine(0) du domaine dom
+ * items_communs de tous les joints du domaine(0) du domaine dom
  *
  */
 
@@ -2777,7 +2777,7 @@ void Scatter::construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 
 /*! @brief Construction des tableaux joint_item(Joint::ARETE).
  *
- * items_communs de tous les joints de la domaine
+ * items_communs de tous les joints du domaine
  *
  */
 

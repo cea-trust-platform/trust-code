@@ -21,7 +21,7 @@
  *     c'est ici que :
  *     * l'on discretise les proprietes physiques du fluide et notemment celui du fluide
  *        d'Ostwald( K, N, Mu, ...)
- *     * l'on associe le champ d'Ostwald, le fluide et la domaine_dis_base
+ *     * l'on associe le champ d'Ostwald, le fluide et le domaine_dis_base
  *     ** ( nouvelles procedures :
  *   void proprietes_physiques_fluide_Ostwald(Domaine_dis& ,Fluide_Ostwald& ,
  *            const Navier_Stokes_std& , const Champ_Inc& ) const;

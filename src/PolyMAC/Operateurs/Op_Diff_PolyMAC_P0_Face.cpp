@@ -108,7 +108,7 @@ void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
   IntTrav stencil(0, 2), tpfa(0, N);
   stencil.set_smart_resize(1), domaine.creer_tableau_faces(tpfa);
 
-  /* stencils du flux : ceux (reduits) de update_nu si nu constant ou scalaire, ceux (complets) de la domaine sinon */
+  /* stencils du flux : ceux (reduits) de update_nu si nu constant ou scalaire, ceux (complets) du domaine sinon */
   update_phif(!nu_constant_); //si nu variable, stencil complet
   Cerr << "Op_Diff_PolyMAC_P0_Face::dimensionner() : ";
 

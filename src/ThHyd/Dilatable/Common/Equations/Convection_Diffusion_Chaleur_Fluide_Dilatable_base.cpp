@@ -147,7 +147,7 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul()
   return 1;
 }
 
-/*! @brief remplissage de la domaine cl modifiee avec 1 partout au bord.
+/*! @brief remplissage du domaine cl modifiee avec 1 partout au bord.
  *
  * ..
  *

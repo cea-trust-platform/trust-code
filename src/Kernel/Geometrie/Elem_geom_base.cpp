@@ -64,7 +64,7 @@ int Elem_geom_base::num_face(int face, Type_Face& type) const
   return face;
 }
 
-/*! @brief Cree les faces de l'element geometrique specifie de la domaine en precisant le type de face a creer.
+/*! @brief Cree les faces de l'element geometrique specifie du domaine en precisant le type de face a creer.
  *
  * @param (Faces& les_faces) les faces a creer
  * @param (int num_elem) le numero de l'element dont on veut creer les faces
@@ -94,7 +94,7 @@ void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements de la domaine associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements du domaine associee a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */

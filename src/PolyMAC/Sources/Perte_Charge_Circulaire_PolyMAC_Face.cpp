@@ -241,7 +241,7 @@ void  Perte_Charge_Circulaire_PolyMAC_Face::coeffs_perte_charge(const DoubleVect
 
   for (int face=0;face<max_faces;face++) {
 
-  // indice de la face dans la domaine_PolyMAC
+  // indice de la face dans le domaine_PolyMAC
   int la_face=sous_domaine?
   ssz.les_faces()[face] :
   face;

@@ -81,9 +81,9 @@ int Equation_base::equation_non_resolue() const
     }
 }
 
-/*! @brief Renvoie la domaine discretisee associee a l'equation.
+/*! @brief Renvoie le domaine discretisee associee a l'equation.
  *
- * @return (Domaine_dis&) la domaine discretisee asscoiee a l'equation
+ * @return (Domaine_dis&) le domaine discretisee asscoiee a l'equation
  * @throws l'objet domaine discretisee (Domaine_dis) est invalide,
  * probleme associe non discretise.
  */
@@ -99,11 +99,11 @@ Domaine_dis& Equation_base::domaine_dis()
   return le_dom_dis.valeur();
 }
 
-/*! @brief Renvoie la domaine discretisee associee a l'equation.
+/*! @brief Renvoie le domaine discretisee associee a l'equation.
  *
  * (version const)
  *
- * @return (Domaine_dis&) la domaine discretisee asssociee a l'equation
+ * @return (Domaine_dis&) le domaine discretisee asssociee a l'equation
  * @throws l'objet domaine discretisee (Domaine_dis) est invalide,
  * probleme associe non discretise.
  */
@@ -589,7 +589,7 @@ Entree& Equation_base::lire_cond_init(Entree& is)
  *
  * @param (Entree& is) le flot d'entree
  * @return (Entree&) le flot d'entree modifie
- * @throws la domaine des conditions aux limites discretisee est vide
+ * @throws le domaine des conditions aux limites discretisee est vide
  */
 Entree& Equation_base::lire_cl(Entree& is)
 {
@@ -883,9 +883,9 @@ void Equation_base::associer_pb_base(const Probleme_base& pb)
 
 /*! @brief Discretise l'equation.
  *
- * Type la domaine_Cl_dis, la formatte, l'associe a l'equation.
- *     Type le solveur masse, lui associe la domaine discretisee et
- *     la domaine des conditions aux limites discretisees.
+ * Type le domaine_Cl_dis, la formatte, l'associe a l'equation.
+ *     Type le solveur masse, lui associe le domaine discretisee et
+ *     le domaine des conditions aux limites discretisees.
  *
  */
 void Equation_base::discretiser()
@@ -964,9 +964,9 @@ const Schema_Temps_base& Equation_base::schema_temps() const
   return le_schema_en_temps.valeur();
 }
 
-/*! @brief Associe la domaine discretisee a l'equation.
+/*! @brief Associe le domaine discretisee a l'equation.
  *
- * @param (Domaine_dis& z) la domaine discretisee a associee
+ * @param (Domaine_dis& z) le domaine discretisee a associee
  */
 void Equation_base::associer_domaine_dis(const Domaine_dis& z)
 {

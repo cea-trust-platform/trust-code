@@ -65,7 +65,7 @@ void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   // Renseigne dans quel fichier le domaine a ete lu
   dom.set_fichier_lu(nomentree);
 
-  // On renomme la domaine (important pour le format lml:
+  // On renomme le domaine (important pour le format lml:
   // nom de la topologie utilise par lance_test_seq_par)
   const Nom& nom_dom = dom.le_nom();
   dom.nommer(nom_dom);

@@ -94,7 +94,7 @@ void Joint::affecte_epaisseur(int ep)
   epaisseur_ = ep;
 }
 
-/*! @brief Renvoie PEvoisin (numero de la domaine voisine)
+/*! @brief Renvoie PEvoisin (numero du domaine voisine)
  *
  */
 int Joint::PEvoisin() const

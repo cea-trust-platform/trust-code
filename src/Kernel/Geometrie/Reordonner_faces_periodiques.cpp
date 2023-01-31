@@ -97,7 +97,7 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
  *
  *   Attention, l'algorithme est en n carre (lent), et ne fonctionne qu'en sequentiel.
  *
- * @param (domaine) la domaine a laquelle appartiennent les faces
+ * @param (domaine) le domaine a laquelle appartiennent les faces
  * @param (direction_perio) le vecteur qui separe le centre d'une face au centre de la face opposee
  * @param (faces) le tableau des faces (pour chaque face, indices de ses sommets) a reordonner Valeur de retour: 1 si ok, 0 si on n'a pas trouve de face jumelle a une face a precision_geom pres.
  */

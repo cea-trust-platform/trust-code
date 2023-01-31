@@ -77,7 +77,7 @@ void Operateur_base::abortTimeStep()
 }
 
 
-/*! @brief Associe l'operateur a la domaine_dis, la domaine_Cl_dis, et a l'inconnue de son equation.
+/*! @brief Associe l'operateur au domaine_dis, le domaine_Cl_dis, et a l'inconnue de son equation.
  *
  * @throws pas d'equation associee
  */

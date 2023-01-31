@@ -161,12 +161,12 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   EFichier fic(nom1);
   fic.set_check_types(1); // Remplace UFichier
   Cerr << "Reading of the file : " << nom1 << finl;
-  // On definit les bords comme etant des faces de bords de la domaine
+  // On definit les bords comme etant des faces de bords du domaine
   // On fait Domaine --> les_bords
   //
   Bords& les_bords=dom.faces_bord();
   //
-  // Ici, on associe les bords a la domaine (on se refere a dom)
+  // Ici, on associe les bords au domaine (on se refere a dom)
   // On fait les_bords --> Domaine
   //
   les_bords.associer_domaine(dom);

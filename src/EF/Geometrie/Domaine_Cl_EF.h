@@ -68,7 +68,7 @@ protected:
 
   int modif_perio_fait_=0;
 
-  // Fonctions de creation des membres prives de la domaine:
+  // Fonctions de creation des membres prives du domaine:
 
   void remplir_type_elem_Cl(const Domaine_EF& );
   ArrOfInt type_sommet_;  // -1 interne 0 Neumann 1 Symetrie >2 Dirichlet

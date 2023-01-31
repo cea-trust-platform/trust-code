@@ -44,7 +44,7 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
       return;
     }
 
-  // on cherche a changer temporairement la domaine_cl
+  // on cherche a changer temporairement le domaine_cl
   Champ_Inc ch_unite = eqn.inconnue();
   ch_unite->valeurs() = 1.0;
   ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(ch_unite, true);

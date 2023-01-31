@@ -23,7 +23,7 @@ Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
 
 /*! @brief Associe une domaine a tous les raccords de la liste.
  *
- * @param (Domaine& une_domaine) la domaine a associer
+ * @param (Domaine& une_domaine) le domaine a associer
  */
 void Raccords::associer_domaine(const Domaine& une_domaine)
 {

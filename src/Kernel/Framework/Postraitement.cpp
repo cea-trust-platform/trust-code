@@ -1186,7 +1186,7 @@ void Postraitement::init()
     }
   ////////////////////////////////////////////////////////////////////////
 
-  // S'il existe un champ a postraiter aux faces, on stocke ici une ref a la domaine dis base du champ
+  // S'il existe un champ a postraiter aux faces, on stocke ici une ref au domaine dis base du champ
   // PQ : 13/06/13 : mis en attribut de la classe pour gerer les champs FACES en maillage deformable
   //REF(Domaine_dis_base) domaine_dis_pour_faces;
 
