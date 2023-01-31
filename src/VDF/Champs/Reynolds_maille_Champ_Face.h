@@ -17,10 +17,10 @@
 #define Reynolds_maille_Champ_Face_included
 
 #include <Champ_Fonc_Face_VDF.h>
-#include <Ref_Champ_Don.h>
 #include <TRUST_Ref.h>
 
 class Champ_Face_VDF;
+class Champ_Don;
 
 class Reynolds_maille_Champ_Face: public Champ_Fonc_Face_VDF
 {
@@ -32,7 +32,7 @@ public:
 
 protected:
   REF2(Champ_Face_VDF) vitesse_;
-  REF(Champ_Don) nu_;
+  REF2(Champ_Don) nu_;
 };
 
 #endif /* Reynolds_maille_Champ_Face_included */

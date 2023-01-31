@@ -354,7 +354,6 @@ void Mod_turb_hyd_base::creer_champ(const Motcle& motlu)
 
 const Champ_base& Mod_turb_hyd_base::get_champ(const Motcle& nom) const
 {
-  REF(Champ_base) ref_champ;
   try
     {
       return champs_compris_.get_champ(nom);
@@ -373,9 +372,7 @@ const Champ_base& Mod_turb_hyd_base::get_champ(const Motcle& nom) const
         {
         }
     }
-
   throw Champs_compris_erreur();
-
 }
 void Mod_turb_hyd_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
 {

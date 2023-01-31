@@ -17,8 +17,8 @@
 #define Eval_Diff_VDF_included
 
 #include <Champ_Uniforme.h>
-#include <Ref_Champ_base.h>
 #include <Champ_base.h>
+#include <TRUST_Ref.h>
 
 class Eval_Diff_VDF
 {
@@ -82,7 +82,7 @@ public:
 
 protected:
   int is_var_ = 0;
-  REF(Champ_base) ref_diffusivite_;
+  REF2(Champ_base) ref_diffusivite_;
   DoubleTab tab_diffusivite_;
 };
 

@@ -70,7 +70,7 @@ public:
 protected:
   REF2(Domaine_PolyMAC_P0) le_dom_poly_;
   REF2(Domaine_Cl_PolyMAC) la_zcl_poly_;
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
 
   double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad
 

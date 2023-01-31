@@ -200,7 +200,7 @@ void Op_Conv_EF::ajouter_contribution_sous_cond(const DoubleTab& transporte, Mat
   const DoubleTab& G=la_vitesse.valeurs();
 
   int transport_rhou=0;
-  if (vitesse_.le_nom()=="rho_u") transport_rhou=1;
+  if (vitesse_->le_nom()=="rho_u") transport_rhou=1;
 
   const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
                              equation().probleme().get_champ("masse_volumique").valeurs());
@@ -337,7 +337,7 @@ double Op_Conv_EF::calculer_dt_stab() const
   const DoubleTab& G=la_vitesse.valeurs();
 
   int transport_rhou=0;
-  if (vitesse_.le_nom()=="rho_u") transport_rhou=1;
+  if (vitesse_->le_nom()=="rho_u") transport_rhou=1;
 
   const DoubleTab& rho_elem=(transport_rhou==1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : \
                              equation().probleme().get_champ("masse_volumique").valeurs());

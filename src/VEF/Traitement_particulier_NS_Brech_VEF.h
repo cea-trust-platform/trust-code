@@ -13,15 +13,16 @@
 *
 *****************************************************************************/
 
-
 #ifndef Traitement_particulier_NS_Brech_VEF_included
 #define Traitement_particulier_NS_Brech_VEF_included
 
 #include <Traitement_particulier_NS_VEF.h>
 #include <Champ_Fonc_P1NC.h>
-#include <Ref_Champ_Inc_base.h>
-#include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <TRUST_Ref.h>
+
+class Champ_Inc_base;
 
 /*! @brief classe Traitement_particulier_Brech_VEF Cette classe permet de faire les traitements particuliers
  *
@@ -37,15 +38,8 @@ class Traitement_particulier_NS_Brech_VEF : public Traitement_particulier_NS_VEF
 public :
 
   Traitement_particulier_NS_Brech_VEF();
-  /*
-    inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const ;
-    inline int comprend_champ(const Motcle& mot) const ;
-  */
   inline void post_traitement_particulier(void) override ;
   Entree& lire(Entree& ) override;
-
-
-  /////////////////////////////////////////////////////
 
 protected :
   Champ_Fonc_P1NC ch_ri ;

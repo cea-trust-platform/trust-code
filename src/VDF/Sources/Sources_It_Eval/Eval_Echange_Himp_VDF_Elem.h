@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,8 @@
 #define Eval_Echange_Himp_VDF_Elem_included
 
 #include <Evaluateur_Source_Elem.h>
-#include <Ref_Champ_Inc.h>
 #include <Champ_Inc.h>
+#include <TRUST_Ref.h>
 
 class Eval_Echange_Himp_VDF_Elem: public Evaluateur_Source_Elem
 {
@@ -29,7 +29,7 @@ public:
   inline void mettre_a_jour() override;
 
 protected:
-  REF(Champ_Inc) T, T_voisin;
+  REF2(Champ_Inc) T, T_voisin;
   DoubleTab Tcourant, Tvois;
   double h_;
 };

@@ -41,7 +41,7 @@ inline int Traitement_particulier_NS_Pression_VEF::comprend_champ(const Motcle& 
 }
 
 int Traitement_particulier_NS_Pression_VEF::a_pour_Champ_Fonc(const Motcle& mot,
-                                                              REF(Champ_base)& ch_ref) const
+                                                              REF2(Champ_base)& ch_ref) const
 {
   if (mot == "Pression_porosite")
     {

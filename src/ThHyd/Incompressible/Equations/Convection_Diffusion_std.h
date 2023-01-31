@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,15 +13,16 @@
 *
 *****************************************************************************/
 
-
 #ifndef Convection_Diffusion_std_included
 #define Convection_Diffusion_std_included
 
-#include <Equation_base.h>
 #include <Operateur_Conv.h>
 #include <Operateur_Diff.h>
+#include <Equation_base.h>
 #include <Schema_Temps.h>
-#include <Ref_Champ_Inc_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_Inc_base;
 class Champ_Don;
 
 /*! @brief classe Convection_Diffusion_std Cette classe est la base des equations modelisant le transport
@@ -62,11 +63,9 @@ public :
 
 protected :
 
-  REF(Champ_Inc_base) la_vitesse_transportante;
+  REF2(Champ_Inc_base) la_vitesse_transportante;
   Operateur_Conv terme_convectif;
   Operateur_Diff terme_diffusif;
-
-
 };
 
 

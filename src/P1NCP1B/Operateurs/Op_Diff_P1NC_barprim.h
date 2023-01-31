@@ -17,13 +17,14 @@
 #define Op_Diff_P1NC_barprim_included
 
 #include <Operateur_Diff_base.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Domaine_VEF_PreP1b.h>
 #include <Domaine_Cl_VEFP1B.h>
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Op_VEF_Face.h>
 #include <TRUST_Ref.h>
+
+class Champ_Uniforme;
 
 /*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
  *
@@ -61,7 +62,7 @@ protected:
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
   REF2(Domaine_VEF_PreP1b) le_dom_vef;
   REF2(Domaine_Cl_VEFP1B) la_zcl_vef;
-  REF(Champ_Uniforme) diffusivite_;
+  REF2(Champ_Uniforme) diffusivite_;
 };
 
 /*! @brief on dimensionne notre matrice.

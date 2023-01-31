@@ -13,11 +13,9 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Conv_EF_base_included
 #define Op_Conv_EF_base_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <Operateur_Conv.h>
 #include <Domaine_Cl_EF.h>
 #include <Op_EF_base.h>
@@ -25,10 +23,11 @@
 #include <TRUST_Ref.h>
 #include <Domaine.h>
 
+class Champ_Inc_base;
+
 /*! @brief class Op_Conv_EF_base
  *
  *  Classe de base des operateurs de convection EF
- *
  *
  */
 
@@ -58,7 +57,7 @@ protected:
 
   REF2(Domaine_EF) le_dom_EF;
   REF2(Domaine_Cl_EF) la_zcl_EF;
-  REF(Champ_Inc_base) vitesse_;
+  REF2(Champ_Inc_base) vitesse_;
 
   mutable DoubleVect fluent;           // tableau qui sert pour le calcul du pas
   //de temps de stabilite

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,21 +13,20 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_front_xyz_debit_included
 #define Champ_front_xyz_debit_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <Champ_front_normal.h>
 #include <Champ_front.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Domaine_VF.h>
+
+class Champ_Inc_base;
 
 /*! @brief class Champ_front_xyz_debit
  *
  */
-
-
 class Champ_front_xyz_debit : public Champ_front_normal
 {
   Declare_instanciable(Champ_front_xyz_debit);
@@ -43,7 +42,7 @@ public:
   int reculer(double temps) override;
 
 protected:
-  REF(Champ_Inc_base) ch_inco_;
+  REF2(Champ_Inc_base) ch_inco_;
   Champ_front velocity_profil_;
   Champ_front flow_rate_;
   // in TRUST the normal vector to a surface is stocked weighted by the area of the surface via "face_normales"

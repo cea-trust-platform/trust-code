@@ -144,7 +144,7 @@ void Sources::associer_champ_rho(const Champ_base& champ_rho)
  *
  */
 int Sources::a_pour_Champ_Fonc(const Motcle& mot,
-                               REF(Champ_base)& ch_ref) const
+                               REF2(Champ_base)& ch_ref) const
 {
   int ok = 0;
   for (const auto& itr : *this)

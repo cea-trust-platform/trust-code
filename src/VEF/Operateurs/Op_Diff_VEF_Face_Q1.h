@@ -56,7 +56,7 @@ public:
 
 protected :
 
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
 };
 
 /*! @brief on dimensionne notre matrice.

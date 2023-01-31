@@ -16,19 +16,19 @@
 #ifndef Operateur_base_included
 #define Operateur_base_included
 
-#include <SolveurSys.h>
-#include <Matrice.h>
 #include <Equation_base.h>
-#include <Ref_Champ_Inc.h>
+#include <SolveurSys.h>
+#include <TRUST_Ref.h>
+#include <Matrice.h>
 
-class Domaine_dis;
-class Domaine_Cl_dis;
-//class Champ_Inc;
-class Matrice_Morse;
 class Frontiere_dis_base;
+class Domaine_Cl_dis;
+class Matrice_Morse;
+class EcrFicPartage;
+class Domaine_dis;
+class Champ_Inc;
 class Conds_lim;
 class SFichier;
-class EcrFicPartage;
 
 /*! @brief classe Operateur_base Classe est la base de la hierarchie des objets representant un
  *
@@ -108,7 +108,7 @@ public:
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, REF(Champ_base) &ref_champ) const;
+  virtual bool has_champ(const Motcle& nom, REF2(Champ_base) &ref_champ) const;
   void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
   /////////////////////////////////////////////////////
   void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
@@ -138,7 +138,7 @@ protected:
   mutable DoubleTab flux_bords_;         // Tableau contenant les flux sur les bords de l'operateur
 
   Champs_compris champs_compris_;
-  REF(Champ_Inc) le_champ_inco;
+  REF2(Champ_Inc) le_champ_inco;
   std::string nom_inco_;
 };
 

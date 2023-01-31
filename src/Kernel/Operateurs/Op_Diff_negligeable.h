@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,11 @@
 #ifndef Op_Diff_negligeable_included
 #define Op_Diff_negligeable_included
 
-#include <Operateur_Diff_base.h>
 #include <Operateur_negligeable.h>
-#include <Ref_Champ_base.h>
+#include <Operateur_Diff_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief Classe Op_Diff_negligeable Cette classe represente un operateur de diffusion negligeable.
  *
@@ -65,10 +67,7 @@ public :
 
 protected :
 
-  REF(Champ_base) la_diffusivite;
-  inline void associer(const Domaine_dis&,
-                       const Domaine_Cl_dis&,
-                       const Champ_Inc& ) override ;
+  REF2(Champ_base) la_diffusivite; inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& ) override ;
 };
 
 class Op_Dift_negligeable: public Op_Diff_negligeable

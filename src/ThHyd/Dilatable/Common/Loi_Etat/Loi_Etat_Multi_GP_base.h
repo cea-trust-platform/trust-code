@@ -17,8 +17,8 @@
 #define Loi_Etat_Multi_GP_base_included
 
 #include <Loi_Etat_Melange_GP_base.h>
-#include <Ref_Champ_Inc_base.h>
 #include <TRUST_List.h>
+#include <TRUST_Ref.h>
 
 class Champ_Inc_base;
 
@@ -55,7 +55,7 @@ public:
 
 protected :
   void calculer_tab_mu(const DoubleTab& mu, int size);
-  LIST(REF(Champ_Inc_base)) liste_Y;
+  LIST(REF2(Champ_Inc_base)) liste_Y;
   DoubleTab masse_mol_mel;
 };
 

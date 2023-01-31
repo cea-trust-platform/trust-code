@@ -75,7 +75,7 @@ int Champ_Generique_refChamp::lire_motcle_non_standard(const Motcle& mot, Entree
       Probleme_base& pb = ref_cast_non_const(Probleme_base, ob);
       ref_pb_ = pb;
       // Recherche du champ "nom_champ" dans le probleme:
-      REF(Champ_base) ref_champ;
+      REF2(Champ_base) ref_champ;
       Noms liste_noms;
       pb.get_noms_champs_postraitables(liste_noms);
       pb.creer_champ(nom_champ_);

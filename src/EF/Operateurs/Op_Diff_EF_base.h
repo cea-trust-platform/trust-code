@@ -18,7 +18,6 @@
 
 #include <Neumann_sortie_libre.h>
 #include <Operateur_Diff_base.h>
-#include <Ref_Champ_Inc_base.h>
 #include <Domaine_Cl_EF.h>
 #include <Op_EF_base.h>
 #include <Domaine_EF.h>
@@ -51,7 +50,7 @@ protected:
 
   REF2(Domaine_EF) le_dom_EF;
   REF2(Domaine_Cl_EF) la_zcl_EF;
-  REF(Champ_Inc_base) inconnue;
+  REF2(Champ_Inc_base) inconnue;
   mutable DoubleTab nu_;
 
 };

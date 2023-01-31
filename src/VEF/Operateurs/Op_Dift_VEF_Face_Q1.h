@@ -17,23 +17,20 @@
 #define Op_Dift_VEF_Face_Q1_included
 
 #include <Op_Dift_VEF_base.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Matrice_Morse.h>
+#include <TRUST_Ref.h>
+
+class Champ_Uniforme;
 
 class Op_Dift_VEF_Face_Q1 : public Op_Dift_VEF_base
 {
   Declare_instanciable(Op_Dift_VEF_Face_Q1);
-
 public:
-
   void associer_diffusivite(const Champ_base&) override;
   const Champ_base& diffusivite() const override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   double calculer_dt_stab() const override;
-
-
-  // Methodes pour l implicite.
 
   inline void dimensionner(Matrice_Morse& ) const override;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
@@ -46,11 +43,10 @@ public:
   {
     Cerr<<__FILE__<<":"<<(int)__LINE__<<finl;
     exit();
-  } ;
-
+  }
 
 protected :
-  REF(Champ_Uniforme) diffusivite_;
+  REF2(Champ_Uniforme) diffusivite_;
 };
 /*! @brief on dimensionne notre matrice.
  *
@@ -71,8 +67,7 @@ inline void Op_Dift_VEF_Face_Q1::modifier_pour_Cl(Matrice_Morse& matrice, Double
  *
  */
 
-inline void Op_Dift_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& inco,
-                                                   Matrice_Morse& matrice) const
+inline void Op_Dift_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   ajouter_contribution(inco, matrice);
 }
@@ -85,7 +80,6 @@ inline void Op_Dift_VEF_Face_Q1::contribuer_au_second_membre(DoubleTab& resu) co
 {
   contribue_au_second_membre(resu);
 }
-
 
 #endif
 

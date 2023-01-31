@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,45 +14,20 @@
 *****************************************************************************/
 
 #include <Op_Diff_negligeable.h>
-#include <Champ_base.h>
 #include <Discretisation_base.h>
+#include <Champ_base.h>
 #include <Champ.h>
 
 Implemente_instanciable(Op_Diff_negligeable,"Op_Diff_negligeable",Operateur_Diff_base);
 Implemente_instanciable(Op_Dift_negligeable,"Op_Dift_negligeable",Op_Diff_negligeable);
 
-Sortie& Op_Dift_negligeable::printOn(Sortie& os) const
-{
-  return  Op_Diff_negligeable::printOn(os);
-}
+Sortie& Op_Dift_negligeable::printOn(Sortie& os) const { return  Op_Diff_negligeable::printOn(os); }
 
+Entree& Op_Dift_negligeable::readOn(Entree& is) { return  Op_Diff_negligeable::readOn(is); }
 
-Entree& Op_Dift_negligeable::readOn(Entree& is)
-{
-  return  Op_Diff_negligeable::readOn(is);
-}
+Sortie& Op_Diff_negligeable::printOn(Sortie& os) const { return os; }
 
-/*! @brief Imprime la diffusivite sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Op_Diff_negligeable::printOn(Sortie& os) const
-{
-  return os << la_diffusivite;
-}
-
-
-/*! @brief Lit la diffusivite a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Op_Diff_negligeable::readOn(Entree& is)
-{
-  return is >> la_diffusivite;
-}
-
+Entree& Op_Diff_negligeable::readOn(Entree& is) { return is; }
 
 /*! @brief Associe la diffusivite a l'operateur.
  *
@@ -62,7 +37,6 @@ void Op_Diff_negligeable::associer_diffusivite(const Champ_base& ch)
 {
   la_diffusivite=ch;
 }
-
 
 /*! @brief Renvoie le champ representant la diffusivite.
  *

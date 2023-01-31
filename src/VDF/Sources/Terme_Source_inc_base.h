@@ -16,11 +16,11 @@
 #ifndef Terme_Source_inc_base_included
 #define Terme_Source_inc_base_included
 
-#include <Ref_Champ_Don_base.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 
 class Navier_Stokes_std;
+class Champ_Don_base;
 class Probleme_base;
 class Domaine_VF;
 class Param;

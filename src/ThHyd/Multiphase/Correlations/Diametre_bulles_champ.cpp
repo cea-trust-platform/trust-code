@@ -14,10 +14,9 @@
 *****************************************************************************/
 
 #include <Diametre_bulles_champ.h>
-#include <Ref_Champ_base.h>
-#include <Discret_Thyd.h>
 #include <Pb_Multiphase.h>
 #include <Domaine_dis.h>
+#include <Discret_Thyd.h>
 #include <Champ_Don.h>
 
 Implemente_instanciable(Diametre_bulles_champ, "Diametre_bulles_champ", Correlation_base);
@@ -53,7 +52,6 @@ Entree& Diametre_bulles_champ::readOn(Entree& is)
 
 const Champ_base& Diametre_bulles_champ::get_champ(const Motcle& nom) const
 {
-  REF(Champ_base) ref_champ;
   if (nom=="diametre_bulles")
     return champs_compris_.get_champ(nom);
 

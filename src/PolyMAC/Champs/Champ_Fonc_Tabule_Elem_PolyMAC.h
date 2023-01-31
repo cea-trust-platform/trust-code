@@ -17,22 +17,22 @@
 #define Champ_Fonc_Tabule_Elem_PolyMAC_included
 
 #include <Champ_Fonc_Elem_PolyMAC.h>
-#include <Ref_Champ_base.h>
 #include <TRUST_Vector.h>
 #include <TRUST_Ref.h>
 
+class Champ_base;
 class Table;
 
 class Champ_Fonc_Tabule_Elem_PolyMAC: public Champ_Fonc_Elem_PolyMAC
 {
   Declare_instanciable(Champ_Fonc_Tabule_Elem_PolyMAC);
 public:
-  void associer_param(const VECT(REF(Champ_base))&, const Table&);
+  void associer_param(const VECT(REF2(Champ_base))&, const Table&);
   void mettre_a_jour(double) override;
   int initialiser(const double temps) override;
 
 protected:
-  VECT(REF(Champ_base)) les_ch_param;
+  VECT(REF2(Champ_base)) les_ch_param;
   REF2(Table) la_table;
 };
 

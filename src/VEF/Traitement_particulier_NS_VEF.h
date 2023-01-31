@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public :
   inline void post_traitement_particulier(void) override ;
   void en_cours_de_resolution(int , DoubleTab& ,DoubleTab& ,double) override ;
   Entree& lire(Entree& ) override;
-  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const ;
+  virtual int a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base)& ch_ref) const ;
   virtual int comprend_champ(const Motcle& mot) const ;
 
   /////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ inline void Traitement_particulier_NS_VEF::en_cours_de_resolution(int nb_op, Dou
 }
 
 inline int Traitement_particulier_NS_VEF::a_pour_Champ_Fonc(const Motcle& mot,
-                                                            REF(Champ_base)& ch_ref) const
+                                                            REF2(Champ_base)& ch_ref) const
 {
   return 0 ;
 }

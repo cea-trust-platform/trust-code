@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,9 +17,11 @@
 #define Eval_VDF_Face_included
 
 #include <CL_Types_Aretes_enum.h> // For SFINAE later ...
-#include <Ref_Champ_base.h>
 #include <Champ_Face_VDF.h>
 #include <type_traits> // For SFINAE later ...
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief class Eval_VDF_Face Cette classe represente le prototype fonctionnel des evaluateurs
  *
@@ -36,7 +38,7 @@ public:
   inline void associer_inconnue(const Champ_base& );
 
 protected:
-  REF(Champ_base) inconnue;
+  REF2(Champ_base) inconnue;
 };
 
 inline void Eval_VDF_Face::associer_inconnue(const Champ_base& inco)

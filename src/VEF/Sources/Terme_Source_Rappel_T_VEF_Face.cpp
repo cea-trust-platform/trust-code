@@ -120,7 +120,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
           exit();
         }
 
-      REF(Champ_base) rch;
+      REF2(Champ_base) rch;
       rch = pb->get_champ(nom_inco);
       l_inconnue=ref_cast(Champ_Inc_base, rch.valeur()) ;
 

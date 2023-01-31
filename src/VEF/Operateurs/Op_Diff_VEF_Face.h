@@ -18,9 +18,11 @@
 #define Op_Diff_VEF_Face_included
 
 #include <Op_Diff_VEF_base.h>
-#include <Ref_Champ_Inc.h>
 #include <Matrice_Morse.h>
 #include <Champ_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_Inc;
 
 /*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
  *
@@ -31,7 +33,6 @@
  *
  *
  */
-
 
 class Op_Diff_VEF_Face : public Op_Diff_VEF_base
 {
@@ -81,7 +82,7 @@ public:
 protected :
 
 
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
 
   //DoubleVect porosite_face;
 };

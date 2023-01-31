@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,8 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-
-// gradient
 
 #ifndef Champ_front_fonc_gradient_VEF_included
 #define Champ_front_fonc_gradient_VEF_included
@@ -33,10 +31,6 @@ class Champ_front_fonc_gradient_VEF : public Champ_front_fonc_gradient
 public:
 
   void mettre_a_jour(double temps) override;
-protected:
-  //REF(Champ_front) coefficient;
-  //REF(Champ_front) inconnue_frontiere;
-  //Champ_Inc_base inconnue;
 };
 
 #endif

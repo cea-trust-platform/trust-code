@@ -19,7 +19,6 @@
 #include <Op_Dift_VDF_Face_Axi_base.h>
 #include <Op_Dift_VDF_Face_base.h>
 #include <Eval_Dift_VDF_leaves.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Op_Diff_Dift_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
@@ -81,7 +80,7 @@ public:
 
 protected:
   int is_var_ = 0;
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
 };
 
 inline double Op_Dift_VDF_Face_Axi::nu_mean_4_pts_(const int i, const int j) const

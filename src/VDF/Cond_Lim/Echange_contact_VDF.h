@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,11 +18,12 @@
 
 #include <Echange_global_impose.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Champ_Inc.h>
+#include <TRUST_Ref.h>
 #include <Motcle.h>
 #include <map>
 
 class Milieu_base;
+class Champ_Inc;
 class Front_VF;
 class Domaine_VDF;
 class Faces;

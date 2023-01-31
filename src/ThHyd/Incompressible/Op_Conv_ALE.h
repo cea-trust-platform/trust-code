@@ -17,11 +17,10 @@
 #define Op_Conv_ALE_included
 
 #include <Operateur_Conv.h>
-#include <Ref_Champ_Inc_base.h>
+#include <TRUST_Ref.h>
 
+class Champ_Inc_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
 class Op_Conv_ALE : public Operateur_Conv_base
 {
   Declare_base(Op_Conv_ALE);
@@ -40,7 +39,7 @@ protected :
                 const Domaine_Cl_dis&,
                 const Champ_Inc& inco) override ;//Classe abstraite de Operateur base
   REF2(Domaine) dom;
-  REF(Champ_Inc_base) la_vitesse;
+  REF2(Champ_Inc_base) la_vitesse;
 };
 
 #endif

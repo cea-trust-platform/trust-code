@@ -17,17 +17,19 @@
 #define Champ_front_recyclage_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <Ref_Champ_Inc_base.h>
 #include <TRUSTArrays.h>
 #include <TRUSTTabs.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Noms.h>
 
-class Equation_base;
-class Milieu_base;
-class Domaine_dis_base;
 class Domaine_Cl_dis_base;
+class Domaine_dis_base;
+class Champ_Inc_base;
 class Front_dis_base;
+class Equation_base;
+class Zone_dis_base;
+class Milieu_base;
 class Param;
 
 /*! @brief classe Champ_front_recyclage
@@ -166,7 +168,7 @@ protected :
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
-  REF(Champ_Inc_base) l_inconnue1;  //Reference au champ inconnu (ch1) qui sert d evaluateur
+  REF2(Champ_Inc_base) l_inconnue1;  //Reference au champ inconnu (ch1) qui sert d evaluateur
   //dans le plan ou l on recupere les valeurs
 
   DoubleVect delt_dist;             //vecteur distance entre bord2 et le plan (plan1)

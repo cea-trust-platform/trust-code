@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,12 @@
 #ifndef Terme_Source_Constituant_included
 #define Terme_Source_Constituant_included
 
-#include <Ref_Champ_base.h>
+#include <Equation_base.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 #include <SFichier.h>
-#include <Equation_base.h>
+
+class Champ_base;
 
 /*! @brief Classe Terme_Source_Constituant Cette classe represente un terme source de l'equation de transport des constituants
  *
@@ -52,7 +54,7 @@ public :
 
 protected:
   int colw_;
-  REF(Champ_base) rho_ref;
+  REF2(Champ_base) rho_ref;
   Champ_Don la_source_constituant;
 
 };
@@ -63,14 +65,6 @@ protected:
  * @param (Champ_Don& rho) champ donne representant la masse volumique
  * @param (Champ_Don& cp) champ donne representant la chaleur specifique
  */
-/*
-  inline void Terme_Source_Constituant::associer_champs(const Champ_base& rho,
-  const Champ_Don& cp)
-  {
-  rho_ref=rho;
-  Cp=cp;
-  }
-*/
 inline void Terme_Source_Constituant::associer_champs(const Champ_base& rho)
 {
   rho_ref=rho;

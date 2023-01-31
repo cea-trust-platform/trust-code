@@ -17,9 +17,11 @@
 #define Operateur_Diff_included
 
 #include <Operateur_Diff_base.h>
-#include <Ref_Champ_base.h>
 #include <TRUST_Deriv.h>
 #include <Operateur.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief classe Operateur_Diff Classe generique de la hierarchie des operateurs representant un terme
  *
@@ -45,7 +47,7 @@ public:
   inline int op_non_nul() const override;
 
 protected:
-  REF(Champ_base) la_diffusivite;
+  REF2(Champ_base) la_diffusivite;
 };
 
 inline int Operateur_Diff::op_non_nul() const

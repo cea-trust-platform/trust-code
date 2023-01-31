@@ -17,8 +17,10 @@
 #define Eval_Dirac_VEF_Face_included
 
 #include <Evaluateur_Source_VEF_Face.h>
-#include <Ref_Champ_Don.h>
+#include <TRUST_Ref.h>
 #include <Domaine.h>
+
+class Champ_Don;
 
 class Eval_Dirac_VEF_Face: public Evaluateur_Source_VEF_Face
 {
@@ -38,7 +40,7 @@ public:
   DoubleVect le_point;
 
 protected:
-  REF(Champ_Don) la_puissance;
+  REF2(Champ_Don) la_puissance;
   REF2(Domaine) mon_dom;
   double puissance, nb_dirac;
 

@@ -18,8 +18,8 @@
 
 #include <Evaluateur_Source_EF_Som.h>
 #include <Champ_Uniforme.h>
-#include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 
 class Eval_Puiss_Th_QC_EF: public Evaluateur_Source_EF_Som
@@ -33,7 +33,7 @@ public:
   template <typename Type_Double> void calculer_terme_source(const int , Type_Double& source) const;
 
 protected:
-  REF(Champ_Don) la_puissance;
+  REF2(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
 

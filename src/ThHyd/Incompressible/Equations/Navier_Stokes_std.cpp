@@ -1426,7 +1426,6 @@ void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hy
 
 const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
 {
-  REF(Champ_base) ref_champ;
   double temps_init = schema_temps().temps_init();
   if (nom=="gradient_pression") postraitement_gradient_P_=1;
   if (nom=="vorticite")

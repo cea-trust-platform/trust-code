@@ -24,7 +24,7 @@ Sortie& Champ_Fonc_Tabule_P0_VEF::printOn(Sortie& s) const { return s << que_sui
 
 Entree& Champ_Fonc_Tabule_P0_VEF::readOn(Entree& s) { return s; }
 
-void Champ_Fonc_Tabule_P0_VEF::associer_param(const VECT(REF(Champ_base)) &les_champs, const Table& une_table)
+void Champ_Fonc_Tabule_P0_VEF::associer_param(const VECT(REF2(Champ_base)) &les_champs, const Table& une_table)
 {
   les_ch_param = les_champs;
   la_table = une_table;

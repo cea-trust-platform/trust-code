@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,18 +13,14 @@
 *
 *****************************************************************************/
 
-// .NOM champ_front_normal : Champ a la frontiere uniforme normal
-// .ENTETE Trio_U VEF/Champs
-// .LIBRAIRIE libchvef
-// .FILE Champ_front_pression_from_u.h
-// .FILE Champ_front_pression_from_u.cpp
-
 #ifndef Champ_front_pression_from_u_included
 #define Champ_front_pression_from_u_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <Ref_Champ_Inc_base.h>
+#include <TRUST_Ref.h>
 #include <Parser_U.h>
+
+class Champ_Inc_base;
 
 /*! @brief class Champ_front_pression_from_u
  *
@@ -36,13 +32,11 @@
 class Champ_front_pression_from_u : public Ch_front_var_instationnaire_dep
 {
   Declare_instanciable(Champ_front_pression_from_u);
-
 public:
-
   int initialiser(double temps, const Champ_Inc_base& inco) override;
   void mettre_a_jour(double temps) override ;
 protected:
-  REF(Champ_Inc_base) ref_inco_;
+  REF2(Champ_Inc_base) ref_inco_;
   Parser_U fonction_;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,25 +13,21 @@
 *
 *****************************************************************************/
 
-// gradient
-
 #ifndef Champ_front_fonc_gradient_included
 #define Champ_front_fonc_gradient_included
 
 #include <Champ_front_tangentiel.h>
-#include <Ref_Champ_Inc_base.h>
 #include <Equation_base.h>
+#include <TRUST_Ref.h>
 
+class Champ_Inc_base;
 class Cond_lim_base;
+
 /*! @brief class Champ_front_fonc_gradient
  *
  *  Classe derivee de Champ_front_base
  *
  */
-
-//.SECTION voir aussi
-// Champ_front_base
-
 class Champ_front_fonc_gradient : public Champ_front_tangentiel
 {
   Declare_instanciable(Champ_front_fonc_gradient);
@@ -40,7 +36,7 @@ public:
   void associer_ch_inc_base(const Champ_Inc_base&);
   const Cond_lim_base& condition_limite(const Nom&);
 protected:
-  REF(Champ_Inc_base) inconnue;
+  REF2(Champ_Inc_base) inconnue;
 };
 
 #endif

@@ -17,7 +17,6 @@
 #define Traitement_particulier_Solide_base_included
 
 #include <Champs_compris_interface.h>
-#include <Ref_Champ_base.h>
 #include <Champs_compris.h>
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
@@ -25,6 +24,7 @@
 
 class Equation_base;
 class Conduction;
+class Champ_base;
 
 /*! @brief classe Traitement_particulier_Solide_base
  *

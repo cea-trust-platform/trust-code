@@ -16,10 +16,11 @@
 #ifndef Champ_Gen_de_Champs_Gen_included
 #define Champ_Gen_de_Champs_Gen_included
 
-#include <Ref_Champ_Generique_base.h>
 #include <Liste_Champ_Generique.h>
 #include <TRUST_List.h>
+#include <TRUST_Ref.h>
 
+class Champ_Generique_base;
 class Champ_Fonc;
 
 /*! @brief Classe de base des champs generiques ayant comme source d'autres champs generiques L'utilisation des methodes de la classe repose sur un principe de recursivite
@@ -102,7 +103,7 @@ public:
 protected:
 
   LIST(Nom) noms_sources_ref_;
-  LIST(REF(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
+  LIST(REF2(Champ_Generique_base)) sources_reference_; //permet de creer une source en faisant une reference a un
   //champ generique deja defini a partir de son nom (noms_ource_ref_)
 
 private:

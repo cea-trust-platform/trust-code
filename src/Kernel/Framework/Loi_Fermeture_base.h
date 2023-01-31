@@ -51,7 +51,7 @@ public:
   // Implementation des methodes de Champs_compris_interface:
   void  creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  virtual bool has_champ(const Motcle& nom, REF(Champ_base)& ref_champ) const;
+  virtual bool has_champ(const Motcle& nom, REF2(Champ_base)& ref_champ) const;
   void get_noms_champs_postraitables(Noms& nom, Option opt=NONE) const override;
   // Nouvelles methodes:
   virtual void associer_pb_base(const Probleme_base&);

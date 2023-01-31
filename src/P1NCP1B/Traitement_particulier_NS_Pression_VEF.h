@@ -13,16 +13,17 @@
 *
 *****************************************************************************/
 
-
 #ifndef Traitement_particulier_NS_Pression_VEF_included
 #define Traitement_particulier_NS_Pression_VEF_included
 
 #include <Traitement_particulier_NS_Pression.h>
-#include <Navier_Stokes_std.h>
-#include <Ref_Champ_Inc_base.h>
-#include <Champ_Fonc_P1NC.h>
 #include <Champ_Fonc_P1_isoP1Bulle.h>
 #include <Champ_P1_isoP1Bulle.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_Fonc_P1NC.h>
+#include <TRUST_Ref.h>
+
+class Champ_Inc_base;
 
 /*! @brief classe Traitement_particulier_NS_Pression_VEF Cette classe permet de faire les traitements particuliers
  *
@@ -37,11 +38,10 @@ class Traitement_particulier_NS_Pression_VEF : public Traitement_particulier_NS_
 
 public :
   Traitement_particulier_NS_Pression_VEF();
-  inline int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base)& ch_ref) const ;
+  inline int a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base)& ch_ref) const ;
   inline int comprend_champ(const Motcle& mot) const ;
   inline void post_traitement_particulier(void) override ;
   Entree& lire(Entree& ) override;
-  /////////////////////////////////////////////////////
 
 protected :
 // Champ_Fonc_P1NC ch_p ; => ca plante sur l'initialisation du module VEF!!!

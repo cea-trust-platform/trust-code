@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Support_Champ_Masse_Volumique.h>
+#include <Nom.h>
 
 /*! @brief Constructeur de la classe.
  *
@@ -67,7 +68,7 @@ void Support_Champ_Masse_Volumique::associer_champ_masse_volumique(const Champ_b
  */
 void Support_Champ_Masse_Volumique::dissocier_champ_masse_volumique()
 {
-  REF(Champ_base) ref_nulle;
+  REF2(Champ_base) ref_nulle;
   ref_champ_rho_ = ref_nulle;
 }
 

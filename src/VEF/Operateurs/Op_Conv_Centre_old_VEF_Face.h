@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public:
 
 protected:
 
-  REF(Champ_Inc_base) champ_transporte;
+  REF2(Champ_Inc_base) champ_transporte;
 //  DoubleVect porosite_face;
 };
 

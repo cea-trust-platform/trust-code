@@ -14,17 +14,14 @@
 *****************************************************************************/
 
 #include <Diametre_bulles_constant.h>
-#include <Ref_Champ_base.h>
-#include <Discret_Thyd.h>
 #include <Pb_Multiphase.h>
 #include <Domaine_dis.h>
+#include <Discret_Thyd.h>
+#include <Champ_base.h>
 
 Implemente_instanciable(Diametre_bulles_constant, "Diametre_bulles_constant", Correlation_base);
 
-Sortie& Diametre_bulles_constant::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Diametre_bulles_constant::printOn(Sortie& os) const { return os; }
 
 Entree& Diametre_bulles_constant::readOn(Entree& is)
 {
@@ -58,7 +55,6 @@ Entree& Diametre_bulles_constant::readOn(Entree& is)
 
 const Champ_base& Diametre_bulles_constant::get_champ(const Motcle& nom) const
 {
-  REF(Champ_base) ref_champ;
   if (nom=="diametre_bulles")
     return champs_compris_.get_champ(nom);
 

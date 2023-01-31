@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,9 @@
 #define Operateur_Conv_base_included
 
 #include <Operateur_base.h>
-#include <Ref_Champ_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief classe Operateur_Conv_base Cette classe est la base de la hierarchie des operateurs representant
  *
@@ -41,8 +43,8 @@ public :
   virtual void associer_champ_temp(const Champ_Inc&, bool) const { }
 
 protected :
-  REF(Champ_base) la_norme_vitesse;
-  REF(Champ_base) vitesse_pour_pas_de_temps_;
+  REF2(Champ_base) la_norme_vitesse;
+  REF2(Champ_base) vitesse_pour_pas_de_temps_;
   double dt_stab_conv_;
   int incompressible_ = 1; // incompressible_= 1 -> l'operateur discretise div(v x inco), incompressible_ = 0 -> il discretise v.grad(inco)
 };

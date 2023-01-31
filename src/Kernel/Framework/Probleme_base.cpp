@@ -873,7 +873,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
   exit();
 
   //Pour compilation
-  REF(Champ_base) ref_champ;
+  REF2(Champ_base) ref_champ;
   return ref_champ;
 }
 
@@ -928,7 +928,7 @@ int Probleme_base::verifie_tdeb_tfin(const Motcle& un_nom) const
 
 const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) const
 {
-  REF(Champ_Generique_base) ref_champ;
+  REF2(Champ_Generique_base) ref_champ;
 
   for (const auto &itr : postraitements())
     {

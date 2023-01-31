@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,9 @@
 
 #include <Evaluateur_Source_Face.h>
 #include <Modele_Permeabilite.h>
-#include <Ref_Champ_Inc.h>
+#include <TRUST_Ref.h>
+
+class Champ_Inc;
 
 class Eval_Forchheimer_VDF_Face: public Evaluateur_Source_Face
 {
@@ -35,7 +37,7 @@ public:
   Modele_Permeabilite modK;
 
 protected:
-  REF(Champ_Inc) vitesse;
+  REF2(Champ_Inc) vitesse;
   double Cf, porosite;
 };
 

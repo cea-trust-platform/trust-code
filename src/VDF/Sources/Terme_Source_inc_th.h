@@ -16,14 +16,15 @@
 #ifndef Terme_Source_inc_th_included
 #define Terme_Source_inc_th_included
 
-#include <Ref_Champ_Don_base.h>
-#include <Ref_Champ_Don.h>
 #include <TRUST_Ref.h>
 
 class Convection_Diffusion_Temperature;
 class Navier_Stokes_std;
+class Champ_Don_base;
 class Probleme_base;
 class Domaine_VF;
+class Champ_Don;
+class Entree;
 
 class Terme_Source_inc_th
 {
@@ -38,7 +39,7 @@ public:
 protected :
   REF2(Navier_Stokes_std) eq_hydraulique_;
   REF2(Convection_Diffusion_Temperature) eq_thermique_;
-  REF(Champ_Don) beta_t_;
+  REF2(Champ_Don) beta_t_;
   int impr;
   Entree& lire_donnees(Entree& );
 };

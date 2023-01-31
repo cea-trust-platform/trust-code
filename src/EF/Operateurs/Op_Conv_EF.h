@@ -115,7 +115,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_template(const DoubleTab& transporte, D
   const DoubleTab& G = la_vitesse.valeurs();
 
   int transport_rhou = 0;
-  if (vitesse_.le_nom() == "rho_u") transport_rhou = 1;
+  if (vitesse_->le_nom() == "rho_u") transport_rhou = 1;
 
   const DoubleTab& rho_elem = (transport_rhou == 1 ? equation().probleme().get_champ("masse_volumique_melange").valeurs() : equation().probleme().get_champ("masse_volumique").valeurs());
   int is_not_rho_unif = (rho_elem.size() == 1 ? 0 : 1);

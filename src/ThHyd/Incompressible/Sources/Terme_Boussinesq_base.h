@@ -17,8 +17,6 @@
 #define Terme_Boussinesq_base_included
 
 #include <Convection_Diffusion_Temperature.h>
-#include <Ref_Champ_Don_base.h>
-#include <Ref_Champ_Don.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <TRUST_Vector.h>
@@ -28,7 +26,9 @@
 #include <Domaine.h>
 
 class Convection_Diffusion_std;
+class Champ_Don_base;
 class Param;
+
 /*! @brief Classe Terme_Boussinesq_base Cette classe represente le terme de gravite qui figure dans l'equation
  *
  *     de la dynamique divisee par la masse volumique de reference.
@@ -58,31 +58,16 @@ class Terme_Boussinesq_base : public Source_base
 public :
 
   void associer_pb(const Probleme_base& pb) override ;
-  inline const Champ_Don_base& gravite() const
-  {
-    return la_gravite_.valeur();
-  };
-  inline int verification() const
-  {
-    return verif_;
-  };
-  inline double Scalaire0(int i) const
-  {
-    return Scalaire0_[i];
-  };
-  inline const Champ_Don& beta() const
-  {
-    return beta_.valeur();
-  } ;
-  inline const Convection_Diffusion_std& equation_scalaire() const
-  {
-    return equation_scalaire_.valeur();
-  };
+  inline const Champ_Don_base& gravite() const { return la_gravite_.valeur(); }
+  inline int verification() const { return verif_; }
+  inline double Scalaire0(int i) const { return Scalaire0_[i]; }
+  inline const Champ_Don& beta() const { return beta_.valeur(); }
+  inline const Convection_Diffusion_std& equation_scalaire() const { return equation_scalaire_.valeur(); }
   DoubleTab& calculer(DoubleTab& resu) const override
   {
     resu=0;
     return ajouter(resu);
-  };
+  }
   void mettre_a_jour(double temps) override
   {
     for (int i=0; i<Scalaire0_.size_array(); i++)
@@ -90,22 +75,19 @@ public :
         fct_Scalaire0_[i].setVar(0,temps);
         Scalaire0_[i] = fct_Scalaire0_[i].eval();
       }
-  };
-  inline const ArrOfDouble getScalaire0() const
-  {
-    return Scalaire0_;
   }
+  inline const ArrOfDouble getScalaire0() const { return Scalaire0_; }
 
 protected :
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
-  REF(Champ_Don_base) la_gravite_;
+  REF2(Champ_Don_base) la_gravite_;
   int verif_=1;
   ArrOfDouble Scalaire0_; // T0=Scalaire0_(0) ou C0(i)=Scalaire0_(i)
   Nom NomScalaire_; // Temperature ou Concentration
   VECT(Parser_U) fct_Scalaire0_;
-  REF(Champ_Don) beta_;
+  REF2(Champ_Don) beta_;
   REF2(Convection_Diffusion_std) equation_scalaire_;
   inline void check() const;
 };

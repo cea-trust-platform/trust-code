@@ -18,7 +18,6 @@
 
 #include <Correlation_base.h>
 #include <TRUST_Deriv.h>
-#include <Ref.h>
 
 /*! @brief classe Correlation Un objet Correlation peut referencer n'importe quel objet
  *

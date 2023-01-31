@@ -16,7 +16,6 @@
 #ifndef Probleme_base_interface_proto_included
 #define Probleme_base_interface_proto_included
 
-#include <Ref_Champ_Generique_base.h>
 #include <Schema_Temps_base.h>
 #include <TRUST_List.h>
 #include <TRUST_Ref.h>
@@ -47,7 +46,7 @@ public:
   double futureTime_impl(const Probleme_base& pb) const;
 
   REF2(Field_base) findInputField_impl(const Probleme_base& pb,const Nom& name) const;
-  REF(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;
+  REF2(Champ_Generique_base) findOutputField_impl(const Probleme_base& pb,const Nom& name) const;
 
 protected:
   LIST(REF2(Field_base)) input_fields; // List of input fields inside this problem.

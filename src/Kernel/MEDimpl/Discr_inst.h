@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ public:
     Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     exit();
   };
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  ch_temper) const override
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF2(Champ_base))&  ch_temper) const override
   {
     Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
     Process::exit();

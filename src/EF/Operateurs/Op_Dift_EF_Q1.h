@@ -16,16 +16,16 @@
 #ifndef Op_Dift_EF_Q1_included
 #define Op_Dift_EF_Q1_included
 
-#include <Ref_Champ_Uniforme.h>
 #include <Op_Dift_EF_base.h>
-#include <Ref_Champ_Inc.h>
 #include <Matrice_Morse.h>
 #include <Op_EF_base.h>
 #include <TRUST_Ref.h>
 #include <Champ_Don.h>
 
+class Champ_Uniforme;
 class Domaine_Cl_EF;
 class Domaine_EF;
+class Champ_Inc;
 
 /*! @brief class Op_Dift_EF_Q1 Cette classe represente l'operateur de diffusion
  *
@@ -72,7 +72,7 @@ protected :
   int transpose_;   // vaurt zero si on ne veut pas calculer grad u transpose
   int transpose_partout_; // vaut 1 si on veut calculer grad_u_transpose meme au bord
   int nouvelle_expression_;
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
 
   DoubleTab& ajouter_scalaire_dim3_nbn_8(const DoubleTab&, DoubleTab&) const;
   DoubleTab& ajouter_scalaire_dim2_nbn_4(const DoubleTab&, DoubleTab&) const;

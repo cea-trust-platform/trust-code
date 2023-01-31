@@ -20,10 +20,10 @@
 #include <Op_Diff_PolyMAC_Elem.h>
 #include <TRUSTTabs_forward.h>
 #include <MD_Vector_tools.h>
-#include <Ref_Champ_Inc.h>
 #include <TRUST_Ref.h>
 
 class Domaine_PolyMAC;
+class Champ_Inc;
 class Front_VF;
 class Faces;
 

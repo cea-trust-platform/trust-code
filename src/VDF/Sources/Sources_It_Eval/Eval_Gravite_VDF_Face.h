@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,8 @@
 #define Eval_Gravite_VDF_Face_included
 
 #include <Evaluateur_Source_Face.h>
-#include <Ref_Champ_Don_base.h>
 #include <Champ_Don_base.h>
+#include <TRUST_Ref.h>
 
 class Eval_Gravite_VDF_Face: public Evaluateur_Source_Face
 {
@@ -31,7 +31,7 @@ public:
   inline void mettre_a_jour() override { /* Do nothing */ }
 
 protected:
-  REF(Champ_Don_base) la_gravite;
+  REF2(Champ_Don_base) la_gravite;
   DoubleVect g;
 };
 

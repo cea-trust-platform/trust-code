@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,9 @@
 #define Echange_interne_global_impose_included
 
 #include <Echange_global_impose.h>
-#include <Ref_Champ_Don.h>
+#include <TRUST_Ref.h>
+
+class Champ_Don;
 
 /*! @brief Classe Echange_interne_global_impose: Cette classe represente le cas particulier de la classe
  *

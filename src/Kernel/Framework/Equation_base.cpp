@@ -352,7 +352,7 @@ void Equation_base::ecrire_fichier_xyz() const
       const int nb_bords_post = nb_bords_post_xyz[numero_champ_xyz];
       const Noms& noms_bord = (nb_bords_post?noms_bord_xyz[numero_champ_xyz]:vide);
 
-      REF(Champ_base) champ_a_ecrire;
+      REF2(Champ_base) champ_a_ecrire;
       const double temps_courant = le_schema_en_temps->temps_courant();
       const double dt = le_schema_en_temps->pas_de_temps();
       const double tmax = le_schema_en_temps->temps_max();
@@ -1199,8 +1199,6 @@ void Equation_base::creer_champ(const Motcle& motlu)
 
 const Champ_base& Equation_base::get_champ(const Motcle& nom) const
 {
-  REF(Champ_base) ref_champ;
-
   Nom inco_residu (inconnue()->le_nom());
   inco_residu += "_residu";
   if (nom=="volume_maille")

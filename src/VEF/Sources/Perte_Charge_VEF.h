@@ -16,7 +16,6 @@
 #ifndef Perte_Charge_VEF_included
 #define Perte_Charge_VEF_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
@@ -24,6 +23,7 @@
 
 class Sous_domaine_VF;
 class Domaine_Cl_VEF;
+class Champ_Inc_base;
 class Domaine_VEF;
 class Fluide_base;
 class Param;
@@ -87,7 +87,7 @@ protected:
   //! Fluide associe au probleme
   REF2(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
-  REF(Champ_Inc_base) la_vitesse;
+  REF2(Champ_Inc_base) la_vitesse;
   //! Domaine dans laquelle s'applique la perte de charge
   REF2(Domaine_VEF) le_dom_VEF;
   REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;

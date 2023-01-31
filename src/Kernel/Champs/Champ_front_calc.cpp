@@ -73,7 +73,7 @@ void Champ_front_calc::creer(const Nom& nom_pb, const Nom& nom_bord, const Motcl
       Cerr << "We did not find problem with name " << nom_pb << finl;
       exit();
     }
-  REF(Champ_base) rch;
+  REF2(Champ_base) rch;
   rch = autre_pb->get_champ(nom_inco);
   if (sub_type(Champ_Inc_base, rch.valeur()))
     {

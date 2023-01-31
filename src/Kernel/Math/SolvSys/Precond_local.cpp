@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -108,15 +108,7 @@ int Precond_local::precond(const Matrice_Base& mat,
       return 0;
     }
   else
-    {
-      /*
-        if (ref_champ_inc_.non_nul())
-
-        return le_precond_local_.resoudre_systeme(mat,secmem,solution,ref_champ_inc_.valeur());
-        else
-      */
-      return le_precond_local_.resoudre_systeme(mat,secmem,solution);
-    }
+    return le_precond_local_.resoudre_systeme(mat,secmem,solution);
 }
 
 void Precond_local::res_syst_loc_simple(const Matrice_Morse_Sym& mat,

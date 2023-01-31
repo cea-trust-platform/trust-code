@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,28 +18,9 @@
 
 Implemente_instanciable(Op_Conv_negligeable,"Op_Conv_negligeable",Operateur_Conv_base);
 
+Sortie& Op_Conv_negligeable::printOn(Sortie& os) const { return os; }
 
-/*! @brief Imprime la vitesse sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Op_Conv_negligeable::printOn(Sortie& os) const
-{
-  return os << la_vitesse;
-}
-
-
-/*! @brief Lit la vitesse a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Op_Conv_negligeable::readOn(Entree& is)
-{
-  return is >> la_vitesse;
-}
-
+Entree& Op_Conv_negligeable::readOn(Entree& is) { return is; }
 
 /*! @brief Associe la vitesse a l'operateur.
  *
@@ -49,7 +30,6 @@ void Op_Conv_negligeable::associer_vitesse(const Champ_base& ch)
 {
   la_vitesse = ch;
 }
-
 
 /*! @brief Renvoie le champ inconnue representant la vitesse
  *
@@ -69,4 +49,3 @@ void Op_Conv_negligeable::calculer_flux(const DoubleTab& inconnue, DoubleTab& fl
 {
   flux = 0.0;
 }
-

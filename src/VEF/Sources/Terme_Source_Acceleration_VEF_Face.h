@@ -45,7 +45,7 @@ private:
   REF2(Domaine_Cl_VEFP1B)  le_dom_Cl_VEF_;
   // Reference remplie par associer_champ_rho() et utilisee par ajouter()
   // La reference peut rester nulle (monophasique).
-  REF(Champ_base)  ref_rho_;
+  REF2(Champ_base)  ref_rho_;
 };
 
 #endif

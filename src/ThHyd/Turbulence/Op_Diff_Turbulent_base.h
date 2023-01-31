@@ -16,11 +16,11 @@
 #ifndef Op_Diff_Turbulent_base_included
 #define Op_Diff_Turbulent_base_included
 
-#include <Ref_Champ_Fonc.h>
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
 class Turbulence_paroi;
+class Champ_Fonc;
 
 /*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
  *
@@ -35,7 +35,7 @@ public :
   inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
 
 private:
-  REF(Champ_Fonc) la_diffusivite_turbulente;
+  REF2(Champ_Fonc) la_diffusivite_turbulente;
 };
 
 #endif /* Op_Diff_Turbulent_base_included */

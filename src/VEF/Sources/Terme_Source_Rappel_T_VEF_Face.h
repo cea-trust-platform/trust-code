@@ -16,13 +16,13 @@
 #ifndef Terme_Source_Rappel_T_VEF_Face_included
 #define Terme_Source_Rappel_T_VEF_Face_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 
 class Navier_Stokes_std;
+class Champ_Inc_base;
 class Probleme_base;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
@@ -50,7 +50,7 @@ private :
   int fct_ok=-1;
   mutable Parser_U force_rappel;
 
-  REF(Champ_Inc_base) l_inconnue;
+  REF2(Champ_Inc_base) l_inconnue;
   REF2(Domaine_VEF) domaine_VEF_autre_pb;
   Nom nom_pb, nom_autre_pb;
   Motcle nom_inco;

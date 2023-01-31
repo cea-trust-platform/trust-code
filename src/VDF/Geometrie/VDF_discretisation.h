@@ -87,7 +87,7 @@ private:
   void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z,
                                   Nature_du_champ nature, const Noms& noms, const Noms& unites,
                                   int nb_comp, double temps, Objet_U& champ) const;
-  void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const override;
+  void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF2(Champ_base))& ch_inc) const override;
 };
 
 #endif

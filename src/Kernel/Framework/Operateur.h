@@ -16,13 +16,13 @@
 #ifndef Operateur_included
 #define Operateur_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <Discretisation.h>
-#include <Ref_Champ_Inc.h>
+#include <TRUST_Ref.h>
 #include <Champ_Inc.h>
 #include <Motcle.h>
 
 class Operateur_base;
+class Champ_Inc_base;
 
 /*! @brief classe Operateur Classe generique de la hierarchie des operateurs.
  *
@@ -71,7 +71,7 @@ public :
 
 protected :
   std::string nom_inco_;
-  REF(Champ_Inc) le_champ_inco;
+  REF2(Champ_Inc) le_champ_inco;
   Motcle typ;
 };
 #endif

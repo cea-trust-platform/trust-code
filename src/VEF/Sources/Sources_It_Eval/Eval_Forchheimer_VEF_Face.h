@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,9 @@
 
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Modele_Permeabilite.h>
-#include <Ref_Champ_Inc.h>
+#include <TRUST_Ref.h>
+
+class Champ_Inc;
 
 class Eval_Forchheimer_VEF_Face: public Evaluateur_Source_VEF_Face
 {
@@ -45,7 +47,7 @@ private:
   inline void calculer_terme_source(int , Type_Double& , const DoubleVect&) const;
 
   double Cf, porosite;
-  REF(Champ_Inc) vitesse;
+  REF2(Champ_Inc) vitesse;
 };
 
 // Compute -Cf.psi.U.|U|/sqrt(K).dvol

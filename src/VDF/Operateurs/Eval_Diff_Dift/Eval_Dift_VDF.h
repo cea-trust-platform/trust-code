@@ -17,7 +17,6 @@
 #define Eval_Dift_VDF_included
 
 #include <Turbulence_paroi_scal.h>
-#include <Ref_Champ_Fonc.h>
 #include <Eval_Diff_VDF.h>
 #include <Champ_Fonc.h>
 #include <TRUSTVects.h>
@@ -103,7 +102,7 @@ public:
 
 protected:
   int is_multi_ = 0;
-  REF(Champ_Fonc) ref_diffusivite_turbulente_;
+  REF2(Champ_Fonc) ref_diffusivite_turbulente_;
   REF2(Turbulence_paroi_scal) loipar;
   DoubleVects equivalent_distance;
   DoubleTab tab_diffusivite_turbulente;

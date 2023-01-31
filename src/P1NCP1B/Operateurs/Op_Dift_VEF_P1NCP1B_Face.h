@@ -60,7 +60,7 @@ public:
   }
 
 protected:
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
 
   DoubleTab& calculer_gradient_elem(const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_gradient_som(const DoubleTab&, DoubleTab&) const;

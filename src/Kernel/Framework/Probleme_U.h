@@ -16,10 +16,10 @@
 #ifndef Probleme_U_included
 #define Probleme_U_included
 
-#include <Ref_Champ_Generique_base.h>
 #include <ScalarRegister.h>
 #include <TRUST_Ref.h>
 
+class Champ_Generique_base;
 class Field_base;
 class Noms;
 
@@ -84,7 +84,7 @@ public :
   virtual bool runUntil(double time);
 
   virtual REF2(Field_base) findInputField(const Nom& name) const;
-  virtual REF(Champ_Generique_base) findOutputField(const Nom& name) const;
+  virtual REF2(Champ_Generique_base) findOutputField(const Nom& name) const;
   // Methodes d'acces aux membres :
 
   inline void nommer(const Nom&) override;

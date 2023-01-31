@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,14 +17,16 @@
 #define Champ_front_calc_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <Ref_Champ_Inc_base.h>
+#include <TRUST_Ref.h>
 #include <Motcle.h>
 
-class Equation_base;
-class Milieu_base;
-class Domaine_dis_base;
 class Domaine_Cl_dis_base;
+class Domaine_dis_base;
+class Champ_Inc_base;
 class Front_dis_base;
+class Equation_base;
+class Zone_dis_base;
+class Milieu_base;
 
 /*! @brief classe Champ_front_calc Classe derivee de Champ_front_var qui represente les
  *
@@ -56,7 +58,7 @@ public:
   inline void set_distant(int d) { distant_=d ; }
 
 protected :
-  REF(Champ_Inc_base) l_inconnue;          // L'inconnue du probleme oppose
+  REF2(Champ_Inc_base) l_inconnue;          // L'inconnue du probleme oppose
   Nom nom_autre_bord_,nom_autre_pb_;       // Nom du bord et du probleme oppose
   Motcle nom_inco_;
   bool via_readon_ = false;

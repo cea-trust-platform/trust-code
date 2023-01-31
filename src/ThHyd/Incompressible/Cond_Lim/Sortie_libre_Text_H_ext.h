@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,10 @@
 #ifndef Sortie_libre_Text_H_ext_included
 #define Sortie_libre_Text_H_ext_included
 
-#include <Ref_Champ_Inc.h>
+#include <TRUST_Ref.h>
 #include <Neumann.h>
+
+class Champ_Inc;
 
 /*! @brief classe  Neumann_sortie_libre Cette classe represente une frontiere ouverte sans vitesse imposee
  *

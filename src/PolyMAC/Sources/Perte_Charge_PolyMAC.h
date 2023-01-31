@@ -16,7 +16,6 @@
 #ifndef Perte_Charge_PolyMAC_included
 #define Perte_Charge_PolyMAC_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
@@ -25,6 +24,7 @@
 class Domaine_Cl_PolyMAC;
 class Domaine_Poly_base;
 class Sous_Domaine;
+class Champ_Inc_base;
 class Fluide_base;
 class Param;
 
@@ -89,7 +89,7 @@ protected:
   //! Fluide associe au probleme
   REF2(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
-  REF(Champ_Inc_base) la_vitesse;
+  REF2(Champ_Inc_base) la_vitesse;
 
   // Cas d'une sous-domaine
   bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?

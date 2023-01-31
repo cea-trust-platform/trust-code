@@ -17,12 +17,13 @@
 #define Probleme_Couple_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Champ_base.h>
 #include <Schema_Temps.h>
 #include <Couplage_U.h>
+#include <TRUST_Ref.h>
 
-class Schema_Temps_base;
 class Discretisation_base;
+class Schema_Temps_base;
+class Champ_base;
 
 /*! @brief classe Probleme_Couple C'est la classe historique de couplage de TRUST.
  *

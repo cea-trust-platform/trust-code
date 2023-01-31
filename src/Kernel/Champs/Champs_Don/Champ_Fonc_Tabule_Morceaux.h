@@ -17,9 +17,11 @@
 #define Champ_Fonc_Tabule_Morceaux_included
 
 #include <TRUSTChamp_Morceaux_generique.h>
-#include <Ref_Champ_base.h>
 #include <TRUST_Vector.h>
+#include <TRUST_Ref.h>
 #include <Table.h>
+
+class Champ_base;
 
 /*! @brief classe Champ_Fonc_Tabule_Morceaux Cette classe represente un champ prenant par morceaux des valuers fonctions
  *

@@ -13,23 +13,19 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Diff_VEF_base_included
 #define Op_Diff_VEF_base_included
 
-
 #include <Operateur_Diff_base.h>
-#include <Ref_Champ_Inc_base.h>
-class Domaine_VEF;
-#include <TRUST_Ref.h>
-class Domaine_Cl_VEF;
-#include <TRUST_Ref.h>
+#include <Domaine_VEF.h>
 #include <Op_VEF_Face.h>
 #include <Milieu_base.h>
-#include <Domaine_VEF.h>
-class Domaine_dis;
+#include <TRUST_Ref.h>
+
+class Domaine_Cl_VEF;
 class Domaine_Cl_dis;
 class Champ_Inc_base;
+class Domaine_dis;
 class Sortie;
 
 /*! @brief class Op_Diff_VEF_base
@@ -38,12 +34,6 @@ class Sortie;
  *
  *
  */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_VEF_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Diff_VEF_base : public Operateur_Diff_base, public Op_VEF_Face
 {
@@ -70,7 +60,7 @@ protected:
 
   REF2(Domaine_VEF) le_dom_vef;
   REF2(Domaine_Cl_VEF) la_zcl_vef;
-  REF(Champ_Inc_base) inconnue_;
+  REF2(Champ_Inc_base) inconnue_;
   //DoubleVect porosite_face;
   mutable DoubleTab nu_;
 

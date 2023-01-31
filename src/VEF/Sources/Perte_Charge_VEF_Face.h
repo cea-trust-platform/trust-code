@@ -16,11 +16,11 @@
 #ifndef Perte_Charge_VEF_Face_included
 #define Perte_Charge_VEF_Face_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <Terme_Source_Qdm.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 
+class Champ_Inc_base;
 class Probleme_base;
 class Domaine_Cl_VEF;
 class Domaine_VEF;
@@ -29,36 +29,28 @@ class Fluide_base;
 /*! @brief class Perte_Charge_VEF_Face
  *
  *
- *
  * @sa Source_base
  */
-class Perte_Charge_VEF_Face :  public Source_base,
-  public Terme_Source_Qdm
-
-
+class Perte_Charge_VEF_Face: public Source_base, public Terme_Source_Qdm
 {
 
   Declare_base(Perte_Charge_VEF_Face);
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& )  const override =0;
-  DoubleTab& calculer(DoubleTab& ) const override =0;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double ) override;
+  DoubleTab& ajouter(DoubleTab&) const override =0;
+  DoubleTab& calculer(DoubleTab&) const override =0;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double) override;
 
 protected:
-
-  REF(Champ_Inc_base) la_vitesse;
+  REF2(Champ_Inc_base) la_vitesse;
   REF2(Domaine_VEF) le_dom_VEF;
   REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   REF2(Fluide_base) le_fluide;
   IntVect num_faces;
 
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-
-
-
 };
 
 #endif

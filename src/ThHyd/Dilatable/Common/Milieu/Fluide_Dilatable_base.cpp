@@ -403,7 +403,6 @@ void Fluide_Dilatable_base::calculer_pression_tot()
 
 const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
 {
-  REF(Champ_base) ref_champ;
   try
     {
       return Fluide_base::get_champ(nom);

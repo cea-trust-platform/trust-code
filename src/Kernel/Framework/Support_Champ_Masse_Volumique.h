@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,9 @@
 #ifndef Support_Champ_Masse_Volumique_included
 #define Support_Champ_Masse_Volumique_included
 
-#include <Ref_Champ_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 class Support_Champ_Masse_Volumique
 {
@@ -37,7 +39,7 @@ private:
   int          support_ok_;
   // Reference au champ de masse volumique a utiliser.
   // La ref peut etre nulle.
-  REF(Champ_base) ref_champ_rho_;
+  REF2(Champ_base) ref_champ_rho_;
 };
 
 inline const int& Support_Champ_Masse_Volumique::support_ok() const

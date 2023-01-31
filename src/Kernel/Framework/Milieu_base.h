@@ -17,7 +17,6 @@
 #define Milieu_base_included
 
 #include <Champs_compris_interface.h>
-#include <Ref_Champ_Don_base.h>
 #include <Porosites_champ.h>
 #include <Interface_blocs.h>
 #include <Champ_Inc_base.h>
@@ -29,6 +28,7 @@
 
 class Discretisation_base;
 class Domaine_dis_base;
+class Champ_Don_base;
 class Probleme_base;
 class Motcle;
 class Param;
@@ -165,7 +165,7 @@ private:
   bool via_associer_ = false;
   inline bool g_via_associer() { return via_associer_; }
   void warn_old_syntax();
-  REF(Champ_Don_base) g_via_associer_;
+  REF2(Champ_Don_base) g_via_associer_;
   // FIN partie TEMPORAIRE
   // ***************************************************************************
 };

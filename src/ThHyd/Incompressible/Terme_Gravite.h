@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,9 @@
 #ifndef Terme_Gravite_included
 #define Terme_Gravite_included
 
+#include <TRUST_Ref.h>
 
-#include <Ref_Champ_Don_base.h>
-
+class Champ_Don_base;
 
 /*! @brief Classe Terme_Gravite Cette represente un terme de gravite.
  *
@@ -30,13 +30,11 @@
 class Terme_Gravite
 {
 public :
-
   inline Terme_Gravite() {}
   inline void associer_gravite(const Champ_Don_base& );
 
 protected:
-
-  REF(Champ_Don_base) gravite;
+  REF2(Champ_Don_base) gravite;
 };
 
 

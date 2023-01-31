@@ -179,7 +179,7 @@ public:
   double futureTime() const override { return futureTime_impl(*this); }
 
   REF2(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
-  REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
+  REF2(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
   inline bool milieu_via_associer() { return milieu_via_associer_; }
 

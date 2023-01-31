@@ -64,7 +64,7 @@ protected :
   int transpose_;   // vaurt zero si on ne veut pas calculer grad u transpose
   int transpose_partout_ ; // vaut 1 si on veut calculer grad_u_transpose meme au bord
   int nouvelle_expression_;
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
 
   DoubleTab& ajouter_scalaire_dim3_nbn_8(const DoubleTab&, DoubleTab&) const;
   DoubleTab& ajouter_scalaire_dim2_nbn_4(const DoubleTab&, DoubleTab&) const;

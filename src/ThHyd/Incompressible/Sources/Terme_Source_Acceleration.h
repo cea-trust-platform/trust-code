@@ -35,7 +35,7 @@ public:
   Terme_Source_Acceleration();
   void associer_pb(const Probleme_base&) override;
   DoubleTab& calculer(DoubleTab&) const override;
-  int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const override;
+  int a_pour_Champ_Fonc(const Motcle& mot, REF2(Champ_base) &ch_ref) const override;
   inline const Champ_Don& champ_vitesse() const { return champ_vitesse_; }
   inline const Champ_Don& omega() const { return omega_; }
 

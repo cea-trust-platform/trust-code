@@ -19,13 +19,13 @@
 #include <Support_Champ_Masse_Volumique.h>
 #include <Champs_compris_interface.h>
 #include <Champs_compris.h>
-#include <Ref_Champ_base.h>
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Motcle.h>
 
 class Navier_Stokes_std;
 class Equation_base;
+class Champ_base;
 
 /*! @brief classe Traitement_particulier_NS_base Derive de Support_Champ_Masse_Volumique: utilisation de rho
  *

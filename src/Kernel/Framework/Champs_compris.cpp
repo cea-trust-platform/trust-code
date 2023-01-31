@@ -24,12 +24,12 @@ Entree& Champs_compris::readOn(Entree& is) { return is; }
 
 const Champ_base& Champs_compris::get_champ(const Motcle& motcle) const
 {
-  REF(Champ_base) ref_champ;
+  REF2(Champ_base) ref_champ;
   if (has_champ(motcle, ref_champ)) return ref_champ;
   throw Champs_compris_erreur();
 }
 
-bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ) const
+bool Champs_compris::has_champ(const Motcle& motcle, REF2(Champ_base)& ref_champ) const
 {
   if (motcle=="??")
     {
@@ -41,7 +41,7 @@ bool Champs_compris::has_champ(const Motcle& motcle, REF(Champ_base)& ref_champ)
   for (const auto& itr : liste_champs_)
     {
       ref_champ = itr.valeur();
-      if (ref_champ.le_nom() == motcle)  // case insensitive test
+      if (ref_champ->le_nom() == motcle)  // case insensitive test
         return true;
       else
         {
@@ -75,7 +75,7 @@ int new_liste_add_if_not(LIST(Nom)& new_list,const Nom& nom_champ)
   return 1;
 }
 
-void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& liste_noms_, Noms& liste_noms_construits_,int info=0)
+void rebuild_liste_noms(const LIST(REF2(Champ_base))& liste_champs_, const Noms& liste_noms_, Noms& liste_noms_construits_,int info=0)
 {
   if (liste_noms_construits_.size()<liste_noms_.size())
     liste_noms_construits_=liste_noms_;
@@ -83,8 +83,6 @@ void rebuild_liste_noms(const LIST(REF(Champ_base))& liste_champs_, const Noms& 
   int size = liste_noms_.size();
   for (int i=0; i<size; i++)
     new_liste.add(liste_noms_[i]);
-
-  REF(Champ_base) ref_champ;
 
   Nom nom_champ;
   for (const auto &itr : liste_champs_)

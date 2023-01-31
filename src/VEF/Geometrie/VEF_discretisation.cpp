@@ -675,7 +675,7 @@ void VEF_discretisation::taux_cisaillement(const Domaine_dis& z, const Domaine_C
   ch.changer_temps(ch_vitesse.temps());
 }
 
-void VEF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& le_champ_tabule, const VECT(REF(Champ_base))& ch_inc) const
+void VEF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_dis, Champ_Fonc_Tabule& le_champ_tabule, const VECT(REF2(Champ_base))& ch_inc) const
 {
   le_champ_tabule.le_champ_tabule_discretise().typer("Champ_Fonc_Tabule_P0_VEF");
   Champ_Fonc_Tabule_P0_VEF& le_champ_tabule_dis = ref_cast(Champ_Fonc_Tabule_P0_VEF,le_champ_tabule.le_champ_tabule_discretise().valeur());

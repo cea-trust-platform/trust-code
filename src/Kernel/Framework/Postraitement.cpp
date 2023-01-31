@@ -197,12 +197,12 @@ Nom Postraitement::get_nom_localisation(const Entity& loc)
   return loc_post;
 }
 
-int Postraitement::champ_fonc(Motcle& nom_champ, REF(Champ_base)& mon_champ, REF2(Operateur_Statistique_tps_base)& operateur_statistique) const
+int Postraitement::champ_fonc(Motcle& nom_champ, REF2(Champ_base)& mon_champ, REF2(Operateur_Statistique_tps_base)& operateur_statistique) const
 {
 
   if (comprend_champ_post(nom_champ))
     {
-      const REF(Champ_Generique_base)& champ = get_champ_post(nom_champ);
+      const REF2(Champ_Generique_base)& champ = get_champ_post(nom_champ);
       if (sub_type(Champ_Generique_Statistiques_base,champ.valeur()))
         {
           const Champ_Generique_Statistiques_base& champ_stat = ref_cast(Champ_Generique_Statistiques_base,champ.valeur());
@@ -1195,7 +1195,7 @@ void Postraitement::init()
     for (auto& itr : noms_champs_a_post_)
       {
         const Nom& nom_post = itr;
-        const REF(Champ_Generique_base)& champ = get_champ_post(nom_post);
+        const REF2(Champ_Generique_base)& champ = get_champ_post(nom_post);
 
         int indic_correlation=0;
         if ((sub_type(Champ_Gen_de_Champs_Gen,champ.valeur())))
@@ -1776,7 +1776,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
   Noms source_compos,source_syno;
   if (trouve==0)
     {
-      REF(Champ_base) champ_ref;
+      REF2(Champ_base) champ_ref;
       champ_ref = mon_probleme->get_champ(motlu1);
       nom_champ_ref = champ_ref->le_nom();
       source_compos = champ_ref->noms_compo();
@@ -1792,7 +1792,7 @@ void Postraitement::creer_champ_post(const Motcle& motlu1,const Motcle& motlu2,E
     }
   else
     {
-      REF(Champ_Generique_base) champ_ref;
+      REF2(Champ_Generique_base) champ_ref;
       champ_ref=get_champ_post(motlu1);
       nom_champ_ref = champ_ref->get_nom_post();
       source_compos = champ_ref->get_property("composantes");
@@ -2181,9 +2181,6 @@ int Postraitement::comprend_champ_post(const Motcle& identifiant) const
 
 const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) const
 {
-
-  REF(Champ_Generique_base) ref_champ;
-  //Cerr << "Provisoire searching for " << nom << finl;
   for (const auto& itr : champs_post_complet_)
     {
       try

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ Entree& Op_Ecart_type::readOn(Entree& s )
 void Op_Ecart_type::completer(const Probleme_base& Pb)
 {
   Nom nom_pour_post("Ecart_type_");
-  const REF(Champ_Generique_base)& mon_champ=integrale_carre_champ.le_champ();
+  const REF2(Champ_Generique_base)& mon_champ=integrale_carre_champ.le_champ();
   const Noms noms = mon_champ->get_property("nom");
   nom_pour_post += Motcle(noms[0]);
 

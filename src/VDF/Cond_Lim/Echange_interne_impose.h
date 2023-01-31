@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,9 @@
 #define Echange_interne_impose_included
 
 #include <Echange_externe_impose.h>
-#include <Ref_Champ_Don.h>
+#include <TRUST_Ref.h>
+
+class Champ_Don;
 
 /*! @brief Classe Echange_interne_impose: Cette classe represente le cas particulier de la classe
  *
@@ -58,7 +60,7 @@ protected:
   virtual void update_inv_lambda();
 
   Champ_front h_gap_;
-  REF(Champ_Don) lambda_ref_;   // reference to the field of thermic conductivity
+  REF2(Champ_Don) lambda_ref_;   // reference to the field of thermic conductivity
   DoubleTab inv_lambda_;        // = e/lambda on the internal boundary
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ public:
   inline void mettre_a_jour(double temps) override { gravite->mettre_a_jour(temps); }
 
 protected:
-  REF(Champ_Don_base) gravite;
+  REF2(Champ_Don_base) gravite;
   void associer_gravite(const Champ_Don_base& );
 };
 

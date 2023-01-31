@@ -18,11 +18,13 @@
 
 #include <Evaluateur_Source_Face.h>
 #include <Modele_Permeabilite.h>
-#include <Ref_Champ_Don_base.h>
 #include <Champ_Uniforme.h>
-#include <Ref_Champ_Inc.h>
-#include <Champ_Don.h>
 #include <Domaine_VDF.h>
+#include <Champ_Don.h>
+#include <TRUST_Ref.h>
+
+class Champ_Don_base;
+class Champ_Inc;
 
 class Eval_Darcy_VDF_Face: public Evaluateur_Source_Face
 {
@@ -39,8 +41,8 @@ public:
   Modele_Permeabilite modK;
 
 protected:
-  REF(Champ_Inc) vitesse;
-  REF(Champ_Don_base) diffusivite_;
+  REF2(Champ_Inc) vitesse;
+  REF2(Champ_Don_base) diffusivite_;
   DoubleTab db_diffusivite;
   double porosite;
 };

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,12 +16,11 @@
 #ifndef Domaine_Cl_dis_base_included
 #define Domaine_Cl_dis_base_included
 
-
-
-
 #include <Domaine_dis.h>
 #include <Conds_lim.h>
-#include <Ref_Champ_Inc.h>
+#include <TRUST_Ref.h>
+
+class Champ_Inc;
 
 /*! @brief classe Domaine_Cl_dis_base Les objets Domaine_Cl_dis_base representent les conditions aux limites
  *
@@ -85,7 +84,7 @@ protected:
 
   Nom nom_;
   Conds_lim  les_conditions_limites_;
-  REF(Champ_Inc) mon_inconnue;
+  REF2(Champ_Inc) mon_inconnue;
   virtual void completer(const Domaine_dis& ) = 0;
 };
 

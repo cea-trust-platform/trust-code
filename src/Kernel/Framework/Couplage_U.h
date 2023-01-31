@@ -73,7 +73,7 @@ public:
   double futureTime()const override;
 
   REF2(Field_base) findInputField(const Nom& name) const override;
-  REF(Champ_Generique_base) findOutputField(const Nom& name) const override;
+  REF2(Champ_Generique_base) findOutputField(const Nom& name) const override;
 
   ///////////////////////////////////////////////////////////
   //                                                       //

@@ -322,7 +322,7 @@ const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom)
     }
 
   throw Champs_compris_erreur();
-  REF(Champ_base) ref_champ;
+  REF2(Champ_base) ref_champ;
 
   return ref_champ;
 }

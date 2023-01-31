@@ -16,25 +16,23 @@
 #ifndef Discretisation_base_included
 #define Discretisation_base_included
 
-#include <Ref_Champ_base.h>
 #include <Champ_base.h> // Pour Nature_du_champ
-#include <Ref_Domaine.h>
+#include <TRUST_Ref.h>
 
 class Champ_Fonc_Tabule;
 class Schema_Temps_base;
-class Champ_Fonc_base;
-class Champ_Inc_base;
 class Domaine_dis_base;
+class Champ_Fonc_base;
+class Domaine_Cl_dis;
+class Champ_Inc_base;
 class Probleme_base;
 class Equation_base;
-class Domaine;
 class Domaine_dis;
-class Domaine_Cl_dis;
 class Champ_base;
 class Champ_Fonc;
 class Champ_Don;
 class Champ_Inc;
-class Domaine_dis;
+class Domaine;
 class Motcle;
 
 /*! @brief classe Discretisation_base Cette classe represente un schema de discretisation en espace, qui
@@ -105,18 +103,18 @@ public :
   static void creer_champ(Champ_Don& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive = NOM_VIDE,
                           const Nom& nom_discretisation=NOM_VIDE);
 
-  virtual Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operteur,const Equation_base& eqn, const REF(Champ_base)& champ_supp =REF(Champ_base)()) const;
+  virtual Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operteur,const Equation_base& eqn, const REF2(Champ_base)& champ_supp =REF2(Champ_base)()) const;
 
 protected:
   static const Motcle DEMANDE_DESCRIPTION;
   static const Nom NOM_VIDE;
-  REF(Domaine) le_domaine_;
+  REF2(Domaine) le_domaine_;
 
 private:
   void test_demande_description(const Motcle& , const Nom&) const;
   static void champ_fixer_membres_communs(Champ_base& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps);
 
-  virtual void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const ;
+  virtual void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF2(Champ_base))& ch_inc) const ;
 };
 
 #endif

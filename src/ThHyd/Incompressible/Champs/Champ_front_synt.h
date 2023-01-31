@@ -13,14 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_front_synt_included
 #define Champ_front_synt_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <Ref_Champ_Inc_base.h>
+#include <TRUST_Ref.h>
 
-
+class Champ_Inc_base;
 
 /*! @brief classe Champ_front_synt Classe derivee de Champ_front_base
  *
@@ -43,7 +42,7 @@ public:
   void mettre_a_jour(double temps) override;
 
 protected :
-  REF(Champ_Inc_base) ref_inco_;
+  REF2(Champ_Inc_base) ref_inco_;
 
   DoubleVect moyenne;
   DoubleVect dir_fluct;

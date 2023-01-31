@@ -17,7 +17,7 @@
 #define Eval_Dirac_VDF_Elem_included
 
 #include <Evaluateur_Source_Elem.h>
-#include <Ref_Champ_Don.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 #include <Domaine.h>
 
@@ -34,7 +34,7 @@ public:
   DoubleVect le_point;
 protected:
 
-  REF(Champ_Don) la_puissance;
+  REF2(Champ_Don) la_puissance;
   REF2(Domaine) mon_dom;
   double puissance, nb_dirac;
 };

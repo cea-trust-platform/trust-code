@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,12 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Fluide_base_included
 #define Fluide_base_included
 
 #include <Milieu_base.h>
-#include <Ref_Champ_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief classe Fluide_base Cette classe represente un d'un fluide incompressible ainsi que
  *
@@ -75,10 +76,7 @@ public :
   void creer_champs_non_lus() override;
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
   virtual void set_h0_T0(double h0, double T0);
-  virtual int is_incompressible() const
-  {
-    return 0;
-  }
+  virtual int is_incompressible() const { return 0; }
 
 protected :
 

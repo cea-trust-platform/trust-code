@@ -224,8 +224,6 @@ void Modele_turbulence_scal_base::creer_champ(const Motcle& motlu)
 
 const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) const
 {
-  //return champs_compris_.get_champ(nom);
-  REF(Champ_base) ref_champ;
   try
     {
       return champs_compris_.get_champ(nom);

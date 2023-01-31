@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,7 +17,9 @@
 #define Correlation_Vec_Sca_VDF_included
 
 #include <Champ_Fonc_P0_VDF.h>
-#include <Ref_Champ_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief classe Correlation_Vec_Sca_VDF
  *
@@ -34,7 +36,7 @@ public:
   inline const Champ_base& mon_champ_Vec() const { return mon_champ_Vec_.valeur(); }
   inline const Champ_base& mon_champ_Sca() const { return mon_champ_Sca_.valeur(); }
 protected:
-  REF(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
+  REF2(Champ_base) mon_champ_Vec_, mon_champ_Sca_;
 };
 
 #endif /* Correlation_Vec_Sca_VDF_included */

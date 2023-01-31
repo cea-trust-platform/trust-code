@@ -14,20 +14,14 @@
 *****************************************************************************/
 
 #include <Champ_Generique_base.h>
-#include <Ref_Champ_Generique_base.h>
 #include <Champs_compris.h>
-#include <Interprete.h>
 #include <Probleme_base.h>
+#include <Interprete.h>
+#include <TRUST_Ref.h>
 #include <Param.h>
 
 Implemente_base(Champ_Generique_base,"Champ_Generique_base",Objet_U);
 
-
-/*! @brief Imprime sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Champ_Generique_base::printOn(Sortie& os) const
 {
   return os;
@@ -306,7 +300,7 @@ const Domaine_Cl_dis_base& Champ_Generique_base::get_ref_zcl_dis_base() const
 
 const Champ_Generique_base& Champ_Generique_base::get_champ_post(const Motcle& nom) const
 {
-  REF(Champ_Generique_base) ref_champ;
+  REF2(Champ_Generique_base) ref_champ;
 
   Motcle nom_champ;
   const Noms nom_champ_post = get_property("nom");

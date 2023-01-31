@@ -17,14 +17,15 @@
 #define Moyenne_volumique_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Champ_base.h>
 #include <Interprete.h>
+#include <TRUST_Ref.h>
 #include <Parser.h>
 
 class Convolution_function_base;
-class Motcles;
 class Format_Post_base;
 class Domaine_VF;
+class Champ_base;
+class Motcles;
 
 /*! @brief : cet interprete permet, a la fin du calcul (apres "resoudre"), de calculer et de stocker dans un fichier lata le produit de convolution
  *
@@ -54,7 +55,7 @@ protected:
   void traiter_champs(const Motcles& noms_champs, const Nom& nom_pb, const Nom& nom_dom, const DoubleTab& coords, Format_Post_base& post, double temps, const Motcle& localisation);
 
   int get_champ(const Nom& nom_pb, const Nom& nom_champ,
-                REF(Champ_base) &ref_champ);
+                REF2(Champ_base) &ref_champ);
 
   virtual void calculer_convolution(const Domaine_VF& domaine_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 

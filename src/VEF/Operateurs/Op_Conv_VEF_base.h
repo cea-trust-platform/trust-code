@@ -13,19 +13,19 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Conv_VEF_base_included
 #define Op_Conv_VEF_base_included
 
 #include <Operateur_Conv.h>
-#include <Ref_Champ_Inc_base.h>
-#include <TRUST_Ref.h>
-#include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
-#include <Dirichlet.h>
-#include <Domaine.h>
+#include <Domaine_VEF.h>
 #include <Op_VEF_Face.h>
 #include <Milieu_base.h>
+#include <Dirichlet.h>
+#include <TRUST_Ref.h>
+#include <Domaine.h>
+
+class Champ_Inc_base;
 
 /*! @brief class Op_Conv_VEF_base
  *
@@ -33,29 +33,13 @@
  *
  *
  */
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_VEF_base
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Op_Conv_VEF_base : public Operateur_Conv_base, public Op_VEF_Face
 {
-
   Declare_base(Op_Conv_VEF_base);
-
 public:
-
   void associer_vitesse(const Champ_base& ) override;
-  inline const Champ_Inc_base& vitesse() const
-  {
-    return vitesse_.valeur();
-  };
-  inline       Champ_Inc_base& vitesse()
-  {
-    return vitesse_.valeur();
-  };
+  inline const Champ_Inc_base& vitesse() const { return vitesse_.valeur(); }
+  inline Champ_Inc_base& vitesse() { return vitesse_.valeur(); }
   void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   void abortTimeStep() override;
@@ -70,22 +54,14 @@ public:
   int  phi_u_transportant(const Equation_base& eq) const;
 
 protected:
-
   REF2(Domaine_VEF) le_dom_vef;
   REF2(Domaine_Cl_VEF) la_zcl_vef;
-  REF(Champ_Inc_base) vitesse_;
+  REF2(Champ_Inc_base) vitesse_;
 
   mutable DoubleVect fluent;           // tableau qui sert pour le calcul du pas
-  //de temps de stabilite
-
-
-  //************************************************************************
   // Les jeton pour la permmutation des schemas de convection
-  //************************************************************************
   mutable int jeton = -1;
   mutable int roue = -1;
-  //  int roue2;
-
 };
 
 #endif

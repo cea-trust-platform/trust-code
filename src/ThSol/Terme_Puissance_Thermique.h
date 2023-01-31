@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,14 +16,14 @@
 #ifndef Terme_Puissance_Thermique_included
 #define Terme_Puissance_Thermique_included
 
-
-#include <Ref_Champ_base.h>
+#include <TRUST_Ref.h>
 #include <Champ_Don.h>
 
-class Probleme_base;
-class Domaine_dis_base;
 class Domaine_Cl_dis_base;
+class Domaine_dis_base;
 class Equation_base;
+class Probleme_base;
+class Champ_base;
 
 /*! @brief Classe Terme_Puissance_Thermique Cette classe represente un terme source de l'equation de la thermique
  *
@@ -36,20 +36,15 @@ class Equation_base;
  */
 class Terme_Puissance_Thermique
 {
-
 public :
-
   void lire_donnees(Entree&,const Equation_base& eqn);
   void mettre_a_jour(double temps);
   void modify_name_file(Nom& ) const;
-  const DoubleTab& puissance_thermique() const
-  {
-    return la_puissance->valeurs();
-  }
+  const DoubleTab& puissance_thermique() const { return la_puissance->valeurs(); }
   void initialiser_champ_puissance(const Equation_base& eqn);
 
 protected:
   Champ_Don la_puissance_lu, la_puissance;
-
 };
+
 #endif

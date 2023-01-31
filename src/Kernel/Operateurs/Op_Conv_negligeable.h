@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,11 @@
 #ifndef Op_Conv_negligeable_included
 #define Op_Conv_negligeable_included
 
-#include <Operateur_Conv_base.h>
 #include <Operateur_negligeable.h>
-#include <Ref_Champ_base.h>
+#include <Operateur_Conv_base.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief Classe Op_Conv_negligeable Cette classe represente un opperateur de convection negligeable.
  *
@@ -39,15 +41,9 @@ public :
 
   inline void contribuer_au_second_membre(DoubleTab& ) const override;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
-  inline void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override
-  {
-    ;
-  } ;
+  inline void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override { }
   /* interface {dimensionner,ajouter}_blocs -> ne font rien */
-  int  has_interface_blocs() const override
-  {
-    return 1;
-  };
+  int  has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { };
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override { };
 
@@ -63,26 +59,9 @@ public :
 
 protected :
 
-  REF(Champ_base) la_vitesse;
-  inline void associer(const Domaine_dis&,
-                       const Domaine_Cl_dis&,
-                       const Champ_Inc& ) override ;
+  REF2(Champ_base) la_vitesse;
+  inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& ) override ;
 };
-
-/*! @brief on ajoute la contribution du second membre.
- *
- */
-
-inline void  Op_Conv_negligeable::contribuer_au_second_membre(DoubleTab& resu) const
-{
-  ;
-}
-
-// Modification des Cl
-inline void  Op_Conv_negligeable::modifier_pour_Cl(Matrice_Morse& amatrice, DoubleTab& resu) const
-{
-  ;
-}
 
 /*! @brief Mise a jour en temps d'un operateur negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::mettre_a_jour(double)
  *

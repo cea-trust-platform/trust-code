@@ -35,7 +35,7 @@ public:
   //Methodes de l interface des champs postraitables
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override {};
-  const Champ_base& get_champ(const Motcle& nom) const override { REF(Champ_base) ref_champ; throw Champs_compris_erreur();  /* return ref_champ;*/};
+  const Champ_base& get_champ(const Motcle& nom) const override { throw Champs_compris_erreur(); }
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override {};
   /////////////////////////////////////////////////////
 

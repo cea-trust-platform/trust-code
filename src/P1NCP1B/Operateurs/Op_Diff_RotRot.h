@@ -12,28 +12,25 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Op_Diff_RotRot_included
 #define Op_Diff_RotRot_included
 
 #include <Operateur_Diff_base.h>
 #include <Op_Curl_VEFP1B.h>
-#include <Op_Rot_VEFP1B.h>
-
-#include <Champ_base.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Equation_base.h>
+#include <Op_Rot_VEFP1B.h>
+#include <Champ_base.h>
 #include <SolveurSys.h>
-
+#include <TRUST_Ref.h>
 
 class Domaine_VEF_PreP1b;
+class Champ_Uniforme;
 
 class Op_Diff_RotRot : public Operateur_Diff_base
 {
-
   Declare_instanciable(Op_Diff_RotRot);
-
 public:
-
   ///////////////////////////////////////////////////
   // 5 methodes a surcharger car heritees de Op_base.
   ///////////////////////////////////////////////////
@@ -118,8 +115,7 @@ protected:
 
   REF2(Domaine_VEF) le_dom_vef;
   REF2(Domaine_Cl_VEF) la_zcl_vef;
-  REF(Champ_Uniforme) diffusivite_;
-
+  REF2(Champ_Uniforme) diffusivite_;
 };
 
 

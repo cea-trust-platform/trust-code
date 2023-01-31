@@ -19,7 +19,6 @@
 #include <Op_Diff_VDF_Face_Axi_base.h>
 #include <Op_Diff_VDF_Face_base.h>
 #include <Eval_Diff_VDF_leaves.h>
-#include <Ref_Champ_Uniforme.h>
 #include <Op_Diff_Dift_VDF.h>
 
 /// \cond DO_NOT_DOCUMENT
@@ -64,7 +63,7 @@ public:
   }
   inline const Champ_base& diffusivite() const override { return diffusivite_; }
 protected:
-  REF(Champ_base) diffusivite_;
+  REF2(Champ_base) diffusivite_;
   int is_var_ = 0;
 };
 

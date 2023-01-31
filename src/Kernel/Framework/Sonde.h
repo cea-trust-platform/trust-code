@@ -16,8 +16,6 @@
 #ifndef Sonde_included
 #define Sonde_included
 
-#include <Ref_Champ_Generique_base.h>
-#include <Ref_Champ_base.h>
 #include <TRUSTArrays.h>
 #include <TRUST_Ref.h>
 #include <TRUSTTab.h>
@@ -25,7 +23,9 @@
 #include <Motcle.h>
 
 class Operateur_Statistique_tps_base;
+class Champ_Generique_base;
 class Postraitement;
+class Champ_base;
 class Domaine;
 
 /*! @brief classe Sonde Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
@@ -77,7 +77,7 @@ protected :
   Nom nom_;                               // le nom de la sonde
   Nom nom_fichier_;                       // le nom du fichier contenant la sonde
   int dim;                                // la dimension de la sone (point:0,segment:1,plan:2,volume:3)
-  REF(Champ_Generique_base) mon_champ;
+  REF2(Champ_Generique_base) mon_champ;
   REF2(Operateur_Statistique_tps_base) operateur_statistique_;        // Reference vers un operateur statistique eventuel
   int ncomp;                              // Numero de la composante a sonder
   // Si ncomp = -1 la sonde s'applique a toutes les

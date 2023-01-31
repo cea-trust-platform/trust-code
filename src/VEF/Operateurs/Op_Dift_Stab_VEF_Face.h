@@ -13,17 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Dift_Stab_VEF_Face_included
 #define Op_Dift_Stab_VEF_Face_included
 
-#include <Ref_Champ_Uniforme.h>
 #include <Operateur_Div.h>
 #include <Op_Dift_VEF_Face.h>
 
 /*! @brief class Op_Dift_Stab_VEF_Face
- *
- *
  *
  */
 
@@ -66,7 +62,7 @@ protected :
   void ajouter_antidiffusion_vectoriel(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const;
 
   IntTab is_dirichlet_faces_;
-  REF(Champ_Inc) divergence_U;
+  REF2(Champ_Inc) divergence_U;
 
   int nu_lu_ = 1, nut_lu_ = 1;
   int nu_transp_lu_ = 0, nut_transp_lu_ = 1;

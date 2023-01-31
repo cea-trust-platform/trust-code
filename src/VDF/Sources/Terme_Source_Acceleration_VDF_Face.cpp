@@ -69,7 +69,7 @@ static void TSAVDF_ajouter_liste_faces(const int premiere_face, const int dernie
                                        const DoubleVect& porosite_surf,
                                        const IntVect&     orientation,
                                        const IntTab&      face_voisins,
-                                       const REF(Champ_base) & ref_rho,
+                                       const REF2(Champ_base) & ref_rho,
                                        const DoubleTab&   terme_source,
                                        DoubleTab& s_face,
                                        DoubleTab& resu)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,8 +44,8 @@ Entree& Op_Correlation::readOn(Entree& s )
 
 void Op_Correlation::completer(const Probleme_base& Pb)
 {
-  const REF(Champ_Generique_base)& a = la_moyenne_a().integrale().le_champ();
-  const REF(Champ_Generique_base)& b = la_moyenne_b().integrale().le_champ();
+  const REF2(Champ_Generique_base)& a = la_moyenne_a().integrale().le_champ();
+  const REF2(Champ_Generique_base)& b = la_moyenne_b().integrale().le_champ();
   integrale_tps_a_ = la_moyenne_a().integrale();
   integrale_tps_b_ = la_moyenne_b().integrale();
 

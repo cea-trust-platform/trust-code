@@ -16,7 +16,6 @@
 #ifndef Fluide_Dilatable_base_included
 #define Fluide_Dilatable_base_included
 
-#include <Ref_Champ_Inc.h>
 #include <Fluide_base.h>
 #include <TRUST_Ref.h>
 #include <Champ_Inc.h>
@@ -117,7 +116,7 @@ protected :
   virtual void remplir_champ_pression_tot(int n, const DoubleTab& PHydro, DoubleTab& PTot) = 0;
   int traitement_PTh; // flag pour le traitement de la pression thermo
   double Pth_, Pth_n, Pth1;
-  REF(Champ_Inc) inco_chaleur_, vitesse_, pression_;
+  REF2(Champ_Inc) inco_chaleur_, vitesse_, pression_;
   REF2(Probleme_base) le_probleme_;
   Champ_Don pression_tot_,mu_sur_Sc,nu_sur_Sc,rho_gaz,rho_comme_v;
   Loi_Etat loi_etat_;

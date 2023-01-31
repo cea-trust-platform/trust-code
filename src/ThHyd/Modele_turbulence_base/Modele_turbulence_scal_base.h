@@ -17,13 +17,13 @@
 #define Modele_turbulence_scal_base_included
 
 #include <Turbulence_paroi_scal.h>
-#include <Ref_Champ_base.h>
 #include <TRUST_Ref.h>
 
 class Convection_Diffusion_std;
 class Schema_Temps_base;
 class Equation_base;
 class Zone_Cl_dis;
+class Champ_base;
 class Zone_dis;
 class Motcle;
 class Param;

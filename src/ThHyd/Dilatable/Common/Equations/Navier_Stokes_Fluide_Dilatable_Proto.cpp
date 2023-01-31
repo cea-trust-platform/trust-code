@@ -125,7 +125,7 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navi
   rhoU.copy(vit, Array_base::NOCOPY_NOINIT); // copie la structure
 
   // Get champ gradP
-  REF(Champ_base) gradient_pression;
+  REF2(Champ_base) gradient_pression;
 
   try
     {

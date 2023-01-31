@@ -218,9 +218,9 @@ REF2(Field_base) Probleme_base_interface_proto::findInputField_impl(const Proble
   return ch;
 }
 
-REF(Champ_Generique_base) Probleme_base_interface_proto::findOutputField_impl(const Probleme_base& pb, const Nom& name) const
+REF2(Champ_Generique_base) Probleme_base_interface_proto::findOutputField_impl(const Probleme_base& pb, const Nom& name) const
 {
-  REF(Champ_Generique_base) ch;
+  REF2(Champ_Generique_base) ch;
   if (pb.comprend_champ_post(name)) ch = pb.get_champ_post(name);
   return ch;
 }

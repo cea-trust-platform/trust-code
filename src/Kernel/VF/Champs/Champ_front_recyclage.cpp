@@ -372,7 +372,7 @@ void Champ_front_recyclage::associer_champ_evaluateur(const Nom& un_nom_pb1,cons
 {
   Objet_U& ob1 = Interprete::objet(un_nom_pb1);
   REF2(Probleme_base) pb1;
-  REF(Champ_base) rch1;
+  REF2(Champ_base) rch1;
 
   if(sub_type(Probleme_base,ob1))
     {

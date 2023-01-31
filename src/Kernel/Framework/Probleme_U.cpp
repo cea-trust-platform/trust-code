@@ -499,9 +499,9 @@ void Probleme_U::getOutputFieldsNames(Noms& noms) const
 {
 }
 
-REF(Champ_Generique_base) Probleme_U::findOutputField(const Nom& name) const
+REF2(Champ_Generique_base) Probleme_U::findOutputField(const Nom& name) const
 {
-  REF(Champ_Generique_base) ch;
+  REF2(Champ_Generique_base) ch;
   return ch;
 }
 
@@ -550,7 +550,7 @@ void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
 void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 {
 
-  REF(Champ_Generique_base) ref_ch=findOutputField(name);
+  REF2(Champ_Generique_base) ref_ch=findOutputField(name);
   if (!ref_ch.non_nul())
     throw WrongArgument(le_nom().getChar(),"getOutputField",name.getString(),"no output field of that name");
 

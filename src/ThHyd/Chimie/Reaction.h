@@ -16,15 +16,16 @@
 #ifndef Reaction_included
 #define Reaction_included
 
-#include <Ref_Champ_Inc_base.h>
 #include <TRUST_Vector.h>
 #include <TRUSTArray.h>
 #include <Champ_Fonc.h>
 #include <TRUST_List.h>
+#include <TRUST_Ref.h>
 
-class Motcles;
-class Champ_base;
+class Champ_Inc_base;
 class Probleme_base;
+class Champ_base;
+class Motcles;
 
 class Reaction: public Objet_U
 {
@@ -33,7 +34,7 @@ public:
   friend class Chimie;
   void completer(const Motcles& list_var,const ArrOfDouble& masse_molaire);
 
-  void reagir(VECT(REF(Champ_Inc_base))& liste_c,const double deltat) const;
+  void reagir(VECT(REF2(Champ_Inc_base))& liste_c,const double deltat) const;
   double calcul_proportion_implicite(ArrOfDouble& C_temp,const ArrOfDouble& C0,double deltat, double seuil, double& poroportion_directe ) const;
   void extract_coef(ArrOfDouble& coeff_recactifs,ArrOfDouble& coeff_produits,const Motcles& list_var,const ArrOfDouble& masse_molaire) const;
   double calculer_pas_de_temps() const;

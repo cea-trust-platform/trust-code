@@ -17,9 +17,11 @@
 #define Operateur_Conv_included
 
 #include <Operateur_Conv_base.h>
-#include <Ref_Champ_base.h>
 #include <TRUST_Deriv.h>
 #include <Operateur.h>
+#include <TRUST_Ref.h>
+
+class Champ_base;
 
 /*! @brief classe Operateur_Conv Classe generique de la hierarchie des operateurs representant un terme
  *
@@ -45,7 +47,7 @@ public :
   void associer_norme_vitesse(const Champ_base&);
 protected :
 
-  REF(Champ_base) la_vitesse;
+  REF2(Champ_base) la_vitesse;
 };
 
 /*! @brief Renvoie l'objet sous-jacent upcaste en Operateur_base
