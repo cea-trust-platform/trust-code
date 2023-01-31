@@ -486,7 +486,7 @@ void VDF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_d
 
 
 void VDF_discretisation::domaine_Cl_dis(Domaine_dis& z,
-                                     Domaine_Cl_dis& zcl) const
+                                        Domaine_Cl_dis& zcl) const
 {
   Cerr << "Discretisation des conditions limites" << finl;
   Domaine_VDF& domaine_vdf=ref_cast(Domaine_VDF, z.valeur());

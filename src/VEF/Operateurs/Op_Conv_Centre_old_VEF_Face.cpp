@@ -240,7 +240,7 @@ DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
 
       // calcul de vc
       domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),
-                                     itypcl,porosite_face);
+                                        itypcl,porosite_face);
 
       // calcul du champ transporte aux sommets des polyedres ,tsom
       if(ncomp_ch_transporte == 1)

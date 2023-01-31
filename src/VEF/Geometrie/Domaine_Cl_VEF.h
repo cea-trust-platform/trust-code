@@ -144,15 +144,15 @@ inline const  DoubleTab& Domaine_Cl_VEF::vecteur_face_facette_Cl() const
 
 
 inline const double& Domaine_Cl_VEF::normales_facettes_Cl(int num_poly,
-                                                       int num_fa7,
-                                                       int ncomp) const
+                                                          int num_fa7,
+                                                          int ncomp) const
 {
   return normales_facettes_Cl_(num_poly,num_fa7,ncomp);
 }
 
 inline double& Domaine_Cl_VEF::normales_facettes_Cl(int num_poly,
-                                                 int num_fa7,
-                                                 int ncomp)
+                                                    int num_fa7,
+                                                    int ncomp)
 {
   return normales_facettes_Cl_(num_poly,num_fa7,ncomp);
 }

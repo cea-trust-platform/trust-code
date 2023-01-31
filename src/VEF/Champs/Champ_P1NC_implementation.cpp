@@ -1123,7 +1123,7 @@ void Champ_P1NC_implementation::filtrer_resu(DoubleTab& resu) const
     }
 
   const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,
-                                            cha.equation().domaine_Cl_dis().valeur());
+                                                  cha.equation().domaine_Cl_dis().valeur());
   const Domaine_VEF& domaine_VEF = domaine_vef();
   const DoubleVect& volumes_entrelaces= domaine_VEF.volumes_entrelaces();
   const Domaine& dom =domaine_VEF.domaine();

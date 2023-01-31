@@ -586,7 +586,6 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleT
   const Domaine_VEF_PreP1b& domaine_VEF =  domaine_Vef();
   const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
   const Domaine& domaine = domaine_VEF.domaine();
-  const Domaine& domaine = domaine;
 
   const int nb_cond_lim = domaine_Cl.nb_cond_lim();
   const int nb_elem_tot = (domaine_VEF.get_alphaE()?domaine.nb_elem_tot():0);

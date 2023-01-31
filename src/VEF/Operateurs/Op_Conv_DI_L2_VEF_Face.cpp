@@ -560,7 +560,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
 
       // calcul de vc
       domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(),
-                                     itypcl,porosite_face);
+                                        itypcl,porosite_face);
 
 
       /*    Cerr<<"premiere_face_int = "<<premiere_face_int<<", domaine_VEF.nb_faces_joint() = "<<domaine_VEF.nb_faces_joint()<<finl;

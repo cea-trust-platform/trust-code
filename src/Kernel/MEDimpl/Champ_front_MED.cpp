@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,7 +45,6 @@ void Champ_front_MED::remplir_tab(DoubleTab& tab,double temps) const
   const Frontiere_dis_base& fr_dis=frontiere_dis();
   const Frontiere& frontiere=fr_dis.frontiere();
   const Domaine& domaine=frontiere.domaine();
-  const Domaine& domaine=domaine;
   const Faces& faces=frontiere.faces();
   int nb_faces=frontiere.nb_faces();
   double x,y,z;

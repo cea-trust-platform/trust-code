@@ -56,15 +56,15 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
   // suite a la modification des domaines
   for (int j=0; j<domains_.size(); j++)
     {
-      Domaine& domaine = domaine(j);
-      domaine.invalide_octree();
-      domaine.faces_bord().associer_domaine(domaine);
-      domaine.faces_joint().associer_domaine(domaine);
-      domaine.faces_raccord().associer_domaine(domaine);
-      domaine.faces_int().associer_domaine(domaine);
-      domaine.type_elem().associer_domaine(domaine);
-      domaine.fixer_premieres_faces_frontiere();
-//      domaine.associer_domaine(domaine(j));
+      Domaine& dom = domaine(j);
+      dom.invalide_octree();
+      dom.faces_bord().associer_domaine(dom);
+      dom.faces_joint().associer_domaine(dom);
+      dom.faces_raccord().associer_domaine(dom);
+      dom.faces_int().associer_domaine(dom);
+      dom.type_elem().associer_domaine(dom);
+      dom.fixer_premieres_faces_frontiere();
+//      dom.associer_domaine(domaine(j));
     }
   return is;
 }

@@ -213,7 +213,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::
 modifier_grad_pour_Cl(DoubleTab& grad ) const
 {
   const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                             le_dom_vef.valeur());
+                                                   le_dom_vef.valeur());
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -279,7 +279,7 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
 {
   const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                             le_dom_vef.valeur());
+                                                   le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaE());
   const Domaine& domaine = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -345,7 +345,7 @@ ajouter_som(const DoubleTab& pre,
             DoubleTab& grad) const
 {
   const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                             le_dom_vef.valeur());
+                                                   le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaS());
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;
@@ -648,7 +648,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter(const DoubleTab& pre,
   assert_invalide_items_non_calcules(grad);
   //Debog::verifier("Op_Grad_VEF_P1B_Face::ajouter pre", pre);
   const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                             le_dom_vef.valeur());
+                                                   le_dom_vef.valeur());
   static int init=1;
   if(!init)
     verifier(*this, init, domaine_VEF, pre, grad);

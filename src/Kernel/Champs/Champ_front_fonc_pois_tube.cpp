@@ -72,7 +72,6 @@ int Champ_front_fonc_pois_tube::initialiser(double temps, const Champ_Inc_base& 
 
   const Frontiere& front=la_frontiere_dis->frontiere();
   const Domaine& domaine=front.domaine();
-  const Domaine& domaine=domaine;
   const Faces& faces=front.faces();
 
   int nb_faces=front.nb_faces();

@@ -1203,25 +1203,25 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
   if (partie < 0)
     {
       if (nb_parties_ > 10000)
-        snprintf(s, 30, "_p%05d.Domaines", (True_int)nb_parties_);
+        snprintf(s, 30, "_p%05d.Zones", (True_int)nb_parties_);
       else
-        snprintf(s, 30, "_p%04d.Domaines",(True_int) nb_parties_);
+        snprintf(s, 30, "_p%04d.Zones",(True_int) nb_parties_);
     }
   else
     {
       if (nb_parties_ > 10000)
         {
           if(original_proc < 0)
-            snprintf(s, 30, "_%05d.Domaines", (True_int)partie);
+            snprintf(s, 30, "_%05d.Zones", (True_int)partie);
           else
-            snprintf(s, 30, "_%05d_%d.Domaines", (True_int)partie, (True_int)original_proc);
+            snprintf(s, 30, "_%05d_%d.Zones", (True_int)partie, (True_int)original_proc);
         }
       else
         {
           if(original_proc < 0)
-            snprintf(s, 30, "_%04d.Domaines", (True_int)partie);
+            snprintf(s, 30, "_%04d.Zones", (True_int)partie);
           else
-            snprintf(s, 30, "_%04d_%d.Domaines", (True_int)partie, (True_int)original_proc);
+            snprintf(s, 30, "_%04d_%d.Zones", (True_int)partie, (True_int)original_proc);
         }
     }
   fichier += Nom(s);
@@ -1433,11 +1433,10 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine, som_raccord);
           // On affiche quelques informations...
           {
-            const Domaine& domaine = sous_domaine;
-            const Joints& joints = domaine.faces_joint();
+            const Joints& joints = sous_domaine.faces_joint();
             const int nb_joints = joints.size();
             Cerr << "  Number of nodes    : " << sous_domaine.nb_som() << finl;
-            Cerr << "  Number of elements : " << domaine.nb_elem() << finl;
+            Cerr << "  Number of elements : " << sous_domaine.nb_elem() << finl;
             Cerr << "  Number of joints   : " << nb_joints << finl;
             //            char s[200];
             int nbfaces_total=0;
@@ -1470,8 +1469,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
           }
           if (reorder && loop==0)
             {
-              const Domaine& domaine = sous_domaine;
-              const Joints& joints = domaine.faces_joint();
+              const Joints& joints = sous_domaine.faces_joint();
               const int nb_joints = joints.size();
               // Resize ja:
               ja.resize_array(nnz+nb_joints+1);
@@ -1552,21 +1550,21 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
               for (int i_sous_domaine = 0; i_sous_domaine < nb_sous_domaines; i_sous_domaine++)
                 {
                   // Indices des elements du sous-domaine qui sont dans la sous-domaine:
-                  const Sous_Domaine& sous_domaine = liste_sous_domaines[i_sous_domaine];
+                  const Sous_Domaine& sous_dom = liste_sous_domaines[i_sous_domaine];
                   ArrOfInt elements;
                   {
-                    const int n = sous_domaine.nb_elem_tot();
+                    const int n = sous_dom.nb_elem_tot();
                     elements.set_smart_resize(1);
                     int i;
                     for (i = 0; i < n; i++)
                       {
-                        const int i_elem_global = sous_domaine[i];
+                        const int i_elem_global = sous_dom[i];
                         const int i_elem_local = liste_inverse_elements[i_elem_global];
                         if (i_elem_local >= 0)
                           elements.append_array(i_elem_local);
                       }
                   }
-                  Nom nom_fichier(sous_domaine.le_nom() + Nom(".ssz"));
+                  Nom nom_fichier(sous_dom.le_nom() + Nom(".ssz"));
                   Cerr << " Subarea " << i_sous_domaine
                        << "  file_name " << nom_fichier
                        << "  nb_elements in this part " << elements.size_array()

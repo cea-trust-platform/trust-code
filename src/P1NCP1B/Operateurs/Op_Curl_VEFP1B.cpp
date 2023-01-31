@@ -193,15 +193,15 @@ DoubleTab& Op_Curl_VEFP1B::ajouter(const DoubleTab& vitesse,
 
                     //Partie (lambda_s,curl u)
                     curl(domaine.nb_elem()+numero_som) += -pow(-1.,modulo) *
-                                                       1./(dimension+1) *
-                                                       vitesse(face_globale,composante) *
-                                                       vecteur_normal0(modulo);
+                                                          1./(dimension+1) *
+                                                          vitesse(face_globale,composante) *
+                                                          vecteur_normal0(modulo);
 
                     //Partie (rot lambda_s, u)
                     curl(domaine.nb_elem()+numero_som) += pow(-1.,modulo)*
-                                                       1./(dimension*(dimension+1))*
-                                                       vitesse(face_globale,composante)*
-                                                       vecteur_normal1(modulo);
+                                                          1./(dimension*(dimension+1))*
+                                                          vitesse(face_globale,composante)*
+                                                          vecteur_normal1(modulo);
                   }
 
               } // fin du if

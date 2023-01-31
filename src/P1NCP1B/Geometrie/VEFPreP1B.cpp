@@ -272,7 +272,7 @@ void VEFPreP1B::discretiser_champ_fonc_don(
 }
 
 void VEFPreP1B::domaine_Cl_dis(Domaine_dis& z,
-                            Domaine_Cl_dis& zcl) const
+                               Domaine_Cl_dis& zcl) const
 {
   Cerr << "discretisation des conditions limites" << finl;
   assert(z.non_nul());

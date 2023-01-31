@@ -104,9 +104,6 @@ private:
   /* Fonction membre qui retourne le Domaine du probleme. */
   inline const Domaine&  domaine() const;
 
-  /* Fonction membre qui renvoie la domaine du probleme. */
-  inline const Domaine& domaine() const;
-
   /* Fonction membre qui renvoie la domaine de conditions aux limitex. */
   inline const Domaine_Cl_VEF& domaine_cl() const;
 
@@ -167,11 +164,6 @@ inline const Domaine_Cl_VEF& Op_Diff_VEF_Face_Penalise::domaine_cl() const
 inline const Domaine&  Op_Diff_VEF_Face_Penalise::domaine() const
 {
   return domaine_vef().domaine();
-}
-
-inline const Domaine&  Op_Diff_VEF_Face_Penalise::domaine() const
-{
-  return domaine();
 }
 
 

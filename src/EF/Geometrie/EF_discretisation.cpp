@@ -535,7 +535,7 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis& z
 
 
 void EF_discretisation::domaine_Cl_dis(Domaine_dis& z,
-                                    Domaine_Cl_dis& zcl) const
+                                       Domaine_Cl_dis& zcl) const
 {
   Cerr << "discretisation des conditions limites" << finl;
   assert(z.non_nul());
