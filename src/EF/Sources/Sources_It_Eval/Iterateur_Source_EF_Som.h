@@ -20,7 +20,7 @@
 #include <Champ_Uniforme.h>
 #include <TRUSTSingle.h>
 #include <Milieu_base.h>
-#include <Zone_EF.h>
+#include <Domaine_EF.h>
 
 template<typename _TYPE_>
 class Iterateur_Source_EF_Som: public Iterateur_Source_base
@@ -44,7 +44,7 @@ public:
     return eval;
   }
 
-  void completer_() override { nb_elems = le_dom->zone().nb_elem_tot(); }
+  void completer_() override { nb_elems = le_dom->domaine().nb_elem_tot(); }
 
   DoubleTab& ajouter(DoubleTab&) const override;
   int impr(Sortie&) const override;
@@ -92,9 +92,9 @@ template<typename _TYPE_> template<typename Type_Double>
 DoubleTab& Iterateur_Source_EF_Som<_TYPE_>::ajouter_elems_standard(const int ncomp, DoubleTab& resu) const
 {
   Type_Double source(ncomp);
-  const IntTab& elems = le_dom->zone().les_elems();
-  const DoubleTab& IPhi_thilde = ref_cast(Zone_EF,le_dom.valeur()).IPhi_thilde();
-  int nb_som_elem = le_dom->zone().nb_som_elem();
+  const IntTab& elems = le_dom->domaine().les_elems();
+  const DoubleTab& IPhi_thilde = ref_cast(Domaine_EF,le_dom.valeur()).IPhi_thilde();
+  int nb_som_elem = le_dom->domaine().nb_som_elem();
   for (int num_elem = 0; num_elem < nb_elems; num_elem++)
     {
       evaluateur_source_elem.calculer_terme_source(num_elem, source);

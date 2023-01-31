@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Quadrangle_VEF.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Triangle.h>
 
 // Definition des sommets :
@@ -80,24 +80,24 @@ const Nom& Quadrangle_VEF::nom_lml() const
 }
 
 
-/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element ielem de la domaine associee a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int ielem) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int ielem) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element ielem 0 sinon
  */
 int Quadrangle_VEF::contient(const ArrOfDouble& pos, int element) const
 {
   assert(pos.size_array()==2);
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
-  int som0 = zone.sommet_elem(element,0);
-  int som1 = zone.sommet_elem(element,1);
-  int som2 = zone.sommet_elem(element,2);
-  int som3 = zone.sommet_elem(element,3);
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
+  int som0 = domaine.sommet_elem(element,0);
+  int som1 = domaine.sommet_elem(element,1);
+  int som2 = domaine.sommet_elem(element,2);
+  int som3 = domaine.sommet_elem(element,3);
   // On regarde tout d'abord si le point cherche n'est pas un des
   // sommets du quadrangle
   if( (est_egal(dom.coord(som0,0),pos[0]) && est_egal(dom.coord(som0,1),pos[1]))
@@ -138,34 +138,34 @@ int Quadrangle_VEF::contient(const ArrOfDouble& pos, int element) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Quadrangle_VEF::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=mon_dom.valeur();
-  if((zone.sommet_elem(element,0)==som[0])&&
-      (zone.sommet_elem(element,1)==som[1])&&
-      (zone.sommet_elem(element,2)==som[2])&&
-      (zone.sommet_elem(element,3)==som[3]))
+  const Domaine& domaine=mon_dom.valeur();
+  if((domaine.sommet_elem(element,0)==som[0])&&
+      (domaine.sommet_elem(element,1)==som[1])&&
+      (domaine.sommet_elem(element,2)==som[2])&&
+      (domaine.sommet_elem(element,3)==som[3]))
     return 1;
   else
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const DoubleTab& coord = zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const DoubleTab& coord = domaine.coord_sommets();
   int S0,S1,S2,S3;
   ArrOfDouble xg(dimension);
   IntTab face_sommet_global;
@@ -173,14 +173,14 @@ void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
   DoubleTab pos(3,dimension);
   int numface;
 
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
-      S0 = zone.sommet_elem(num_poly,0);
-      S1 = zone.sommet_elem(num_poly,1);
-      S2 = zone.sommet_elem(num_poly,2);
-      S3 = zone.sommet_elem(num_poly,3);
+      S0 = domaine.sommet_elem(num_poly,0);
+      S1 = domaine.sommet_elem(num_poly,1);
+      S2 = domaine.sommet_elem(num_poly,2);
+      S3 = domaine.sommet_elem(num_poly,3);
 
       // on construit le tableau de travail face_sommet_global
       // les faces seront ordonnee suivant Xmin, Xmax, Ymin, Ymax, Zmin,Zmax
@@ -225,15 +225,15 @@ void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
  */
 void Quadrangle_VEF::reordonner()
 {
-  Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
-  IntTab& elem=zone.les_elems();
+  Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
+  IntTab& elem=domaine.les_elems();
 
   ArrOfInt S(4);
   ArrOfInt NS(4);
   DoubleTab co(4,2);
   int num_poly;
-  const int nb_elem=zone.nb_elem();
+  const int nb_elem=domaine.nb_elem();
   for (num_poly=0; num_poly<nb_elem; num_poly++)
     {
       for(int i=0; i<4; i++)

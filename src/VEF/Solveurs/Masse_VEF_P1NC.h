@@ -18,8 +18,8 @@
 
 
 #include <Solveur_Masse.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -34,8 +34,8 @@ class Masse_VEF_P1NC : public Solveur_Masse_base
 
 public:
 
-  void associer_domaine_dis_base(const Zone_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
 
   DoubleTab& appliquer_impl(DoubleTab& sm) const override;
 
@@ -46,8 +46,8 @@ public:
 
 private:
 
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 
 #endif

@@ -29,7 +29,7 @@ class Polyedriser : public Interprete_geometrique_base
   Declare_instanciable(Polyedriser);
 public :
 
-  void polyedriser(Zone&) const;
+  void polyedriser(Domaine&) const;
   inline int dimension_application() const
   {
     return 3;

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_var.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_base(Champ_front_var,"Champ_front_var",Champ_front_base);
 

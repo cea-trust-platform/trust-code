@@ -89,7 +89,7 @@ protected:
 
   // Le buffer global est-il en cours d'utilisation ?
   static int buffer_locked_;
-  // Zones temporaires de lecture/ecriture, renvoyees par get_next... et qui pointent dans buffer_
+  // Domaines temporaires de lecture/ecriture, renvoyees par get_next... et qui pointent dans buffer_
   static ArrOfDouble tmp_area_double_;
   static ArrOfFloat tmp_area_float_;
   static ArrOfInt tmp_area_int_;

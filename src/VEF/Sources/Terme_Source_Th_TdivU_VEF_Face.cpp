@@ -76,8 +76,8 @@ void Terme_Source_Th_TdivU_VEF_Face::associer_eqn_t()
   eqn_t = equation();
 }
 
-void Terme_Source_Th_TdivU_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                       const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Th_TdivU_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                       const Domaine_Cl_dis& domaine_Cl_dis)
 {
 }
 
@@ -87,15 +87,15 @@ void Terme_Source_Th_TdivU_VEF_Face::completer()
   associer_eqn_t();
 }
 
-void Terme_Source_Th_TdivU_VEF_Face::modifier_zone_cl()
+void Terme_Source_Th_TdivU_VEF_Face::modifier_domaine_cl()
 {
-  if (zone_cl_mod_) return;
-  zone_cl_mod_=1;
-  Zone_Cl_dis& mon_domcl=ref_cast(Zone_Cl_dis,mon_domcl_);
-  mon_domcl=eqn_t.valeur().zone_Cl_dis();
-  zonecl_sa=eqn_t.valeur().zone_Cl_dis().valeur();
+  if (domaine_cl_mod_) return;
+  domaine_cl_mod_=1;
+  Domaine_Cl_dis& mon_domcl=ref_cast(Domaine_Cl_dis,mon_domcl_);
+  mon_domcl=eqn_t.valeur().domaine_Cl_dis();
+  domainecl_sa=eqn_t.valeur().domaine_Cl_dis().valeur();
   Conds_lim& condlims=mon_domcl.les_conditions_limites();
-  Conds_lim& condlims_sa=zonecl_sa.valeur().les_conditions_limites();
+  Conds_lim& condlims_sa=domainecl_sa.valeur().les_conditions_limites();
   int nb=condlims.size();
 
   for (int i=0; i<nb*0; i++)
@@ -146,7 +146,7 @@ void Terme_Source_Th_TdivU_VEF_Face::modifier_zone_cl()
 DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
 {
   Terme_Source_Th_TdivU_VEF_Face& me_non_const=ref_cast_non_const(Terme_Source_Th_TdivU_VEF_Face,*this);
-  me_non_const.modifier_zone_cl();
+  me_non_const.modifier_domaine_cl();
   if(resu.line_size() > 1)
     {
       Cerr << "Error in " << que_suis_je()  << finl;
@@ -184,8 +184,8 @@ DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
   const double rhoCp = equation().milieu().capacite_calorifique().valeurs()(0, 0) * equation().milieu().masse_volumique().valeurs()(0, 0);
   TdivU *= rhoCp;
   resu-=TdivU;
-  // on remet la bonne zone_cl_dis
-  optype.associer_domaine_cl_dis(zonecl_sa.valeur());
+  // on remet la bonne domaine_cl_dis
+  optype.associer_domaine_cl_dis(domainecl_sa.valeur());
   // We reset flux_bords
   optype.flux_bords() = flux_bords_backup;
   return resu;

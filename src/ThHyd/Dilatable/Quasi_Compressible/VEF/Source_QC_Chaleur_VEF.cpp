@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Source_QC_Chaleur_VEF.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Source_QC_Chaleur_VEF,"Source_QC_Chaleur_VEF",Source_QC_Chaleur);
 
@@ -26,8 +26,8 @@ Sortie& Source_QC_Chaleur_VEF::printOn(Sortie& os) const
 
 Entree& Source_QC_Chaleur_VEF::readOn(Entree& is) { return is; }
 
-void Source_QC_Chaleur_VEF::associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& zcl)
+void Source_QC_Chaleur_VEF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl)
 {
-  associer_domaines_impl(zone,zcl);
-  associer_volume_porosite_impl(zone,volumes,porosites);
+  associer_domaines_impl(domaine,zcl);
+  associer_volume_porosite_impl(domaine,volumes,porosites);
 }

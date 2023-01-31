@@ -17,7 +17,7 @@
 #include <VerifierCoin.h>
 #include <TRUSTLists.h>
 #include <Scatter.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 #include <time.h>
 
@@ -68,7 +68,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
 
 
   associer_domaine(is);
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   if (dom.type_elem()->que_suis_je() != "Triangle" && dom.type_elem()->que_suis_je() != "Tetraedre")
     {
       Cerr << "Error for "<<que_suis_je() <<" interpreter : it can be applied only for triangular or tetraedral meshing." << finl;
@@ -212,7 +212,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
                     {
                       Cerr << "Error in VerifierCoin::interpreter" << finl;
                       Cerr << "The node " << somm << " is not found." << finl;
-                      Cerr << "Check the .Zones files are up to date with your mesh file." << finl;
+                      Cerr << "Check the .Domaines files are up to date with your mesh file." << finl;
                       Process::exit();
                     }
                 }
@@ -282,7 +282,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
                           les_elems(oldsz+2,3)=nouveau_sommet;
                         }
 
-                      mettre_a_jour_sous_zone(dom,elem,oldsz,dimension);
+                      mettre_a_jour_sous_domaine(dom,elem,oldsz,dimension);
 
                       ++liste_elem;
                     }

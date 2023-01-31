@@ -18,8 +18,8 @@
 #include <Champ_front_calc_interne.h>
 #include <Probleme_base.h>
 #include <Frontiere_dis_base.h>
-#include <Zone_Cl_dis_base.h>
-#include <Zone_VDF.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Domaine_VDF.h>
 #include <Front_VF.h>
 #include <Milieu_base.h>
 #include <Champ_front_uniforme.h>
@@ -117,10 +117,10 @@ void  Echange_interne_impose::associer_fr_dis_base(const Frontiere_dis_base& fr)
 // Finish building the champ_front_calc_interne
 void Echange_interne_impose::completer()
 {
-  Nom nom_pb(zone_Cl_dis().equation().probleme().le_nom());
+  Nom nom_pb(domaine_Cl_dis().equation().probleme().le_nom());
   Nom nom_bord(frontiere_dis().le_nom());
 
-  lambda_ref_ = zone_Cl_dis().equation().probleme().milieu().conductivite();
+  lambda_ref_ = domaine_Cl_dis().equation().probleme().milieu().conductivite();
 
   Champ_front_calc_interne& t_ext = ref_cast(Champ_front_calc_interne, T_ext().valeur());
   t_ext.creer(nom_pb, nom_bord, "temperature");
@@ -141,7 +141,7 @@ double Echange_interne_impose::calcul_h_imp(const double h_gap, const double inv
 //   - in Echange_interne_vargap for the computation of the h_gap correlation.
 void Echange_interne_impose::update_inv_lambda()
 {
-  bool isVDF = sub_type(Zone_VDF, frontiere_dis().zone_dis());
+  bool isVDF = sub_type(Domaine_VDF, frontiere_dis().domaine_dis());
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
 
   inv_lambda_ = 0.0;
@@ -150,7 +150,7 @@ void Echange_interne_impose::update_inv_lambda()
     {
       DoubleTab& lambdas = lambda_ref_->valeurs();
 
-      const Zone_VDF& zon = ref_cast(Zone_VDF, frontiere_dis().zone_dis());
+      const Domaine_VDF& zon = ref_cast(Domaine_VDF, frontiere_dis().domaine_dis());
       for (int numf=0; numf < fvf.nb_faces(); numf++)
         {
           int facei = fvf.num_face(numf);
@@ -168,7 +168,7 @@ void Echange_interne_impose::mettre_a_jour(double tps)
 
   update_inv_lambda();
 
-  bool isVDF = sub_type(Zone_VDF, frontiere_dis().zone_dis());
+  bool isVDF = sub_type(Domaine_VDF, frontiere_dis().domaine_dis());
 
   DoubleTab& h_impose = h_imp_.valeurs();
   DoubleTab& h_gap = h_gap_.valeurs();

@@ -80,7 +80,7 @@ Entree& Turbulence_paroi_scal::readOn(Entree& s)
   Cerr<<"et typage :"<<typ<<finl;
   DERIV(Turbulence_paroi_scal_base)::typer(typ);
   valeur().associer_modele(mon_modele_turb_scal.valeur());
-  valeur().associer(eqn.zone_dis(),eqn.zone_Cl_dis());
+  valeur().associer(eqn.domaine_dis(),eqn.domaine_Cl_dis());
 
   return s;
 }

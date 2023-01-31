@@ -15,7 +15,7 @@
 
 #include <Op_Grad_PolyMAC_Face.h>
 #include <Champ_Elem_PolyMAC.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Neumann_sortie_libre.h>
 
@@ -60,23 +60,23 @@ Entree& Op_Grad_PolyMAC_Face::readOn(Entree& s)
 /*! @brief
  *
  */
-void Op_Grad_PolyMAC_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch)
+void Op_Grad_PolyMAC_Face::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch)
 {
-  ref_zone = ref_cast(Zone_PolyMAC, zone_dis.valeur());
-  ref_zcl = ref_cast(Zone_Cl_PolyMAC, zone_cl_dis.valeur());
+  ref_domaine = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
+  ref_zcl = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
 }
 
 void Op_Grad_PolyMAC_Face::completer()
 {
   Operateur_Grad_base::completer();
-  const Zone_PolyMAC& zone = ref_zone.valeur();
+  const Domaine_PolyMAC& domaine = ref_domaine.valeur();
   /* initialisation des inconnues auxiliaires de la pression... */
   ref_cast(Champ_Elem_PolyMAC, ref_cast(Navier_Stokes_std, equation()).pression().valeur()).init_auxiliary_variables();
   /* et de grad P si la vitesse en a */
-  if (equation().inconnue().valeurs().get_md_vector() == zone.mdv_faces_aretes)
+  if (equation().inconnue().valeurs().get_md_vector() == domaine.mdv_faces_aretes)
     ref_cast(Champ_Face_PolyMAC, ref_cast(Navier_Stokes_std, equation()).grad_P().valeur()).init_auxiliary_variables();
   /* besoin d'un joint de 1 */
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
       Cerr << "Op_Grad_PolyMAC_Face : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
@@ -86,18 +86,18 @@ void Op_Grad_PolyMAC_Face::completer()
 void Op_Grad_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   if (!matrices.count("pression")) return; //rien a faire
-  const Zone_PolyMAC& zone = ref_zone.valeur();
+  const Domaine_PolyMAC& domaine = ref_domaine.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const IntTab& e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& vit = ch.valeurs(), &press = ref_cast(Navier_Stokes_std, equation()).pression().valeurs();
-  int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), n, N = vit.line_size(), m, M = press.line_size();
+  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = vit.line_size(), m, M = press.line_size();
   Matrice_Morse *mat = matrices["pression"], mat2;
   IntTrav sten(0, 2);
   DoubleTrav w2;
   sten.set_smart_resize(1), w2.set_smart_resize(1);
   for (e = 0; e < ne_tot; e++)
-    for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
-      if ((f = e_f(e, i)) < zone.nb_faces()) /* faces reelles seulement */
+    for (domaine.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+      if ((f = e_f(e, i)) < domaine.nb_faces()) /* faces reelles seulement */
         {
           for (n = 0, m = 0; n < N; n++, m += (M > 1)) sten.append_line(N * f + n, M * e + m); /* bloc (face, elem )*/
           for (j = 0; j < w2.dimension(1); j++)
@@ -113,20 +113,20 @@ void Op_Grad_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t&
 
 void Op_Grad_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = ref_zone.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
-  const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
+  const Domaine_PolyMAC& domaine = ref_domaine.valeur();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &pe = equation().milieu().porosite_elem();
-  int i, j, e, eb, f, fb, ne_tot = zone.nb_elem_tot(), n, N = secmem.line_size(), m, M = press.line_size();
+  const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces(), &pe = equation().milieu().porosite_elem();
+  int i, j, e, eb, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = secmem.line_size(), m, M = press.line_size();
 
   Matrice_Morse *mat = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL;
   DoubleTrav w2, alpha(N), coeff_e(N); //matrice W2 dans chaque element, taux de vide a la face
   w2.set_smart_resize(1);
 
   for (e = 0; e < ne_tot; e++)
-    for (zone.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
-      if ((f = e_f(e, i)) < zone.nb_faces())
+    for (domaine.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+      if ((f = e_f(e, i)) < domaine.nb_faces())
         {
           /* taux de vide a la face (identique a celui de Masse_PolyMAC_Face) */
           double prefac = (e == f_e(f, 0) ? 1 : -1) * pe(e) * vfd(f, e != f_e(f, 0)) / fs(f); /* ponderation pour elimner p_f si on est en TPFA */

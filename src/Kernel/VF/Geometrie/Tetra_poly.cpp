@@ -13,11 +13,11 @@
 *
 *****************************************************************************/
 
-#include <Zone_Poly_base.h>
+#include <Domaine_Poly_base.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Tetra_poly.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Tetra_poly,"Tetra_poly",Elem_poly_base);
 
@@ -47,11 +47,11 @@ void Tetra_poly::normale(int num_Face,DoubleTab& Face_normales,
                          const IntTab& Face_sommets,
                          const IntTab& Face_voisins,
                          const IntTab& elem_faces,
-                         const Zone& zone_geom) const
+                         const Domaine& domaine_geom) const
 {
 
   //Cerr << " num_Face " << num_Face << finl;
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   // Cerr << "les face sommet " << Face_sommets << finl;
   double x1,y1,z1,x2,y2,z2;

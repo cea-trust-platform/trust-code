@@ -17,7 +17,7 @@
 #include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Frottement_impose_base.h>
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <Champ_Fonc.h>
 #include <Dirichlet.h>
 #include <EChaine.h>
@@ -31,11 +31,11 @@ Entree& grad_Champ_Face_PolyMAC_P0::readOn(Entree& s) { return s; }
 int grad_Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
 {
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, self.zone_dis_base());
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, self.domaine_dis_base());
 
   assert(n < 0);
 
-  const MD_Vector& md = zone.mdv_ch_face;
+  const MD_Vector& md = domaine.mdv_ch_face;
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;
@@ -71,19 +71,19 @@ void grad_Champ_Face_PolyMAC_P0::me_calculer(double tps)
 void grad_Champ_Face_PolyMAC_P0::update_tab_grad(int full_stencil)
 {
   const IntTab& f_cl = champ_a_deriver().fcl();
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, zone_vf());
-  const Conds_lim& cls = champ_a_deriver().zone_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, domaine_vf());
+  const Conds_lim& cls = champ_a_deriver().domaine_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
 
-  zone.fgrad(champ_a_deriver().valeurs().line_size(), 0, cls, f_cl, NULL, NULL, 1, full_stencil, gradve_d, gradve_e, gradve_w);
+  domaine.fgrad(champ_a_deriver().valeurs().line_size(), 0, cls, f_cl, NULL, NULL, 1, full_stencil, gradve_d, gradve_e, gradve_w);
 }
 
 void grad_Champ_Face_PolyMAC_P0::calc_gradfve()
 {
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, zone_vf());
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, domaine_vf());
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
 
   const IntTab& fcl = champ_a_deriver().fcl();
-  const Conds_lim& cls = ch.zone_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
+  const Conds_lim& cls = ch.domaine_Cl_dis().les_conditions_limites(); // CAL du champ a deriver
 
   /*  const IntTab&                   fcl = fcl_g;
    const Conds_lim&                cls = cls_g;*/
@@ -91,7 +91,7 @@ void grad_Champ_Face_PolyMAC_P0::calc_gradfve()
   int d_U; //coordonnee de la vitesse
   int D = dimension;
   int N = champ_a_deriver().valeurs().line_size(); //nombre phases
-  int ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), nf = zone.nb_faces();
+  int ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces();
 
   const DoubleTab& tab_ch = ch.passe();
   DoubleTab& val = valeurs();
@@ -125,11 +125,11 @@ void grad_Champ_Face_PolyMAC_P0::calc_gradfve()
 void grad_Champ_Face_PolyMAC_P0::update_ge()
 {
   DoubleTab& val = valeurs();
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, zone_vf());
-  const DoubleVect& ve = zone.volumes(), &fs = zone.face_surfaces();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
-  int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, domaine_vf());
+  const DoubleVect& ve = domaine.volumes(), &fs = domaine.face_surfaces();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
+  const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
+  int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   double fac;
 
   for (e = 0; e < ne_tot; e++)

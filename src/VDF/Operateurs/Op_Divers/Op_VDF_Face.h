@@ -16,17 +16,17 @@
 #ifndef Op_VDF_Face_included
 #define Op_VDF_Face_included
 
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <TRUSTTab.h>
 
 class Matrice_Morse;
-class Zone_Cl_VDF;
+class Domaine_Cl_VDF;
 
 class Op_VDF_Face
 {
 public :
-  void dimensionner(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&) const;
-  void modifier_pour_Cl(const Zone_VDF&, const Zone_Cl_VDF&, Matrice_Morse&, DoubleTab&) const;
+  void dimensionner(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&) const;
+  void modifier_pour_Cl(const Domaine_VDF&, const Domaine_Cl_VDF&, Matrice_Morse&, DoubleTab&) const;
 
 private:
   void modifier_pour_Cl_(const int , const int , const int ,  Matrice_Morse& ) const;
@@ -54,7 +54,7 @@ inline void Op_VDF_Face::dimensionner_(const int num_face1, const int num_face2,
 }
 
 // methode interne pour la classe Op_VDF_Face !
-inline int face_bord_amont2(const Zone_VDF& le_dom , const int num_face , const int k , const int i)
+inline int face_bord_amont2(const Domaine_VDF& le_dom , const int num_face , const int k , const int i)
 {
   const int ori = le_dom.orientation(num_face);
   int elem = le_dom.face_voisins(num_face,0);

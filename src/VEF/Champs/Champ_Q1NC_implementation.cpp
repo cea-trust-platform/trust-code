@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_Q1NC_implementation.h>
-#include <Zone.h>
-#include <Zone_VEF.h>
+#include <Domaine.h>
+#include <Domaine_VEF.h>
 #include <Champ_Inc_base.h>
 #include <verif_cast.h>
 
@@ -69,7 +69,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_a_elem(const DoubleVect& position,
   int face, nb_compo_ = cha.nb_comp();
   double xs, ys, zs;
   const DoubleTab& ch = cha.valeurs();
-  const Zone_VEF& zone_VEF = zone_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   int init = tab_param.size(), D = Objet_U::dimension;
   if (init == 0 && D == 2)
     (verif_cast(Champ_Q1NC_implementation&, *this)).transforme_coord2D();
@@ -85,7 +85,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_a_elem(const DoubleVect& position,
 
       for (int i = 0; i < 2 * D; i++)
         {
-          face = zone_VEF.elem_faces(le_poly, i);
+          face = domaine_VEF.elem_faces(le_poly, i);
           for (int ncomp = 0; ncomp < nb_compo_; ncomp++)
             val(ncomp) += ch(face, ncomp)
                           * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
@@ -97,7 +97,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_a_elem(const DoubleVect& position,
 
 double Champ_Q1NC_implementation::calcule_valeur_a_elem_compo(double xs, double ys, double zs, int le_poly, int ncomp) const
 {
-  const Zone_VEF& zone_VEF = zone_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const DoubleTab& ch = le_champ().valeurs();
   int face, init = tab_param.size(), D = Objet_U::dimension;
 
@@ -116,7 +116,7 @@ double Champ_Q1NC_implementation::calcule_valeur_a_elem_compo(double xs, double 
       val = 0;
       for (int i = 0; i < 2 * D; i++)
         {
-          face = zone_VEF.elem_faces(le_poly, i);
+          face = domaine_VEF.elem_faces(le_poly, i);
           val += ch(face, ncomp)
                  * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
         }
@@ -141,7 +141,7 @@ double Champ_Q1NC_implementation::valeur_a_sommet_compo(int num_som, int le_poly
   // ne sont pas triviales au sommet des hexas... On repasse
   // par calcule_valeur_a_elem_compo
   double xs, ys, zs = 0;
-  const Zone& dom = get_zone_geom();
+  const Domaine& dom = get_domaine_geom();
   xs = dom.coord(num_som, 0);
   ys = dom.coord(num_som, 1);
   if (Objet_U::dimension == 3)
@@ -154,7 +154,7 @@ DoubleTab& Champ_Q1NC_implementation::valeur_aux_elems(const DoubleTab& position
   const Champ_base& cha = le_champ();
   int face, nb_compo_ = cha.nb_comp();
   double xs, ys, zs;
-  const Zone_VEF& zone_VEF = zone_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   int init = tab_param.size(), D = Objet_U::dimension;
 
   if (init == 0 && D == 2)
@@ -188,7 +188,7 @@ DoubleTab& Champ_Q1NC_implementation::valeur_aux_elems(const DoubleTab& position
               zs = (D == 3) ? positions(rang_poly, 2) : 0.;
               for (int i = 0; i < 2 * D; i++)
                 {
-                  face = zone_VEF.elem_faces(le_poly, i);
+                  face = domaine_VEF.elem_faces(le_poly, i);
                   val(rang_poly, ncomp) += ch(face, ncomp)
                                            * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
                 }
@@ -204,7 +204,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_elems_compo(const DoubleTab& p
   const Champ_base& cha = le_champ();
   double xs, ys, zs;
   int face;
-  const Zone_VEF& zone_VEF = zone_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   assert(val.size() == les_polys.size());
   int le_poly;
   const DoubleTab& ch = cha.valeurs();
@@ -229,7 +229,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_elems_compo(const DoubleTab& p
           zs = (D == 3) ? positions(rang_poly, 2) : 0.;
           for (int i = 0; i < 2 * D; i++)
             {
-              face = zone_VEF.elem_faces(le_poly, i);
+              face = domaine_VEF.elem_faces(le_poly, i);
               val(rang_poly) += ch(face, ncomp)
                                 * ((D == 2) ? (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_2D(xs, ys, le_poly, i) : (verif_cast(Champ_Q1NC_implementation&, *this)).fonction_forme_3D(xs, ys, zs, le_poly, i));
             }
@@ -238,11 +238,11 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_elems_compo(const DoubleTab& p
   return val;
 }
 
-DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Zone& dom, DoubleTab& ch_som) const
+DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
 {
   // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets " << finl;
-  const Zone_dis_base& zone_dis = get_zone_dis();
-  const Zone& mon_dom = zone_dis.zone();
+  const Domaine_dis_base& domaine_dis = get_domaine_dis();
+  const Domaine& mon_dom = domaine_dis.domaine();
   int nb_elem_tot = mon_dom.nb_elem_tot(), nb_som = mon_dom.nb_som(), nb_som_elem = mon_dom.nb_som_elem();
   const Champ_base& cha = le_champ();
   int nb_compo_ = cha.nb_comp();
@@ -277,11 +277,11 @@ DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Zone& dom, Double
 
   return ch_som;
 }
-DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Zone& dom, DoubleVect& ch_som, int ncomp) const
+DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const
 {
   // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets_compo " << finl;
-  const Zone_dis_base& zone_dis = get_zone_dis();
-  const Zone& mon_dom = zone_dis.zone();
+  const Domaine_dis_base& domaine_dis = get_domaine_dis();
+  const Domaine& mon_dom = domaine_dis.domaine();
   int nb_elem_tot = mon_dom.nb_elem_tot(), nb_som = mon_dom.nb_som(), nb_som_elem = mon_dom.nb_som_elem();
   IntVect compteur(nb_som);
   int num_elem, num_som, j;
@@ -310,7 +310,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Zone& dom,
 
 DoubleTab& Champ_Q1NC_implementation::remplir_coord_noeuds(DoubleTab& noeuds) const
 {
-  const Zone_VEF& zvef = zone_vef();
+  const Domaine_VEF& zvef = domaine_vef();
   const DoubleTab& xv = zvef.xv();
   int nb_fac = zvef.nb_faces();
   if ((xv.dimension(0) == nb_fac) && (xv.line_size() == Objet_U::dimension))
@@ -327,7 +327,7 @@ DoubleTab& Champ_Q1NC_implementation::remplir_coord_noeuds(DoubleTab& noeuds) co
 int Champ_Q1NC_implementation::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
   remplir_coord_noeuds(positions);
-  const Zone_VEF& zvef = zone_vef();
+  const Domaine_VEF& zvef = domaine_vef();
   const IntTab& face_voisins = zvef.face_voisins();
   int nb_faces = zvef.nb_faces();
   polys.resize(nb_faces);
@@ -345,13 +345,13 @@ int Champ_Q1NC_implementation::remplir_coord_noeuds_et_polys(DoubleTab& position
 //
 void Champ_Q1NC_implementation::transforme_coord2D()
 {
-  //  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = get_zone_geom();
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
-  const IntTab& sommet_face = zone_VEF.face_sommets();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Zone& dom = zone_geom;
+  //  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
+  const Domaine& domaine_geom = get_domaine_geom();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
+  const IntTab& sommet_face = domaine_VEF.face_sommets();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const Domaine& dom = domaine_geom;
   const DoubleTab& coords = dom.les_sommets();
   double lec0, lec1, alpha, beta;
   int i, poly, som0, som1;
@@ -413,12 +413,12 @@ void Champ_Q1NC_implementation::transforme_coord2D()
 
 void Champ_Q1NC_implementation::transforme_coord3D()
 {
-  const Zone_VEF& zone_VEF = zone_vef();
-  const Zone& zone_geom = get_zone_geom();
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
-  const IntTab& sommet_face = zone_VEF.face_sommets();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Zone& dom = zone_geom;
+  const Domaine_VEF& domaine_VEF = domaine_vef();
+  const Domaine& domaine_geom = get_domaine_geom();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
+  const IntTab& sommet_face = domaine_VEF.face_sommets();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const Domaine& dom = domaine_geom;
   const DoubleTab& coords = dom.les_sommets();
   double lec0, lec1, lec2;
   double alpha, beta;

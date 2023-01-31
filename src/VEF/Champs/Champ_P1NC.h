@@ -17,8 +17,8 @@
 #define Champ_P1NC_included
 
 #include <Champ_P1NC_implementation.h>
-#include <Zone_Cl_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_Inc.h>
 #include <Ok_Perio.h>
 
@@ -29,7 +29,7 @@
  * @sa Champ_Inc_base
  */
 
-extern void calculer_gradientP1NC(const DoubleTab&, const Zone_VEF&, const Zone_Cl_VEF&, DoubleTab&);
+extern void calculer_gradientP1NC(const DoubleTab&, const Domaine_VEF&, const Domaine_Cl_VEF&, DoubleTab&);
 
 class Champ_P1NC: public Champ_Inc_base, public Champ_P1NC_implementation
 {
@@ -38,11 +38,11 @@ public:
   int fixer_nb_valeurs_nodales(int nb_noeuds) override;
   void mettre_a_jour(double temps) override;
   void abortTimeStep() override;
-  void calcul_y_plus(const Zone_Cl_VEF&, DoubleVect&) const;
-  void calcul_y_plus_diphasique(const Zone_Cl_VEF& , DoubleVect&) const;
-  void calcul_grad_T(const Zone_Cl_VEF&, DoubleTab&) const;
-  void calcul_grad_U(const Zone_Cl_VEF&, DoubleTab&) const;
-  void calcul_h_conv(const Zone_Cl_VEF&, DoubleTab&, int temp_ref) const;
+  void calcul_y_plus(const Domaine_Cl_VEF&, DoubleVect&) const;
+  void calcul_y_plus_diphasique(const Domaine_Cl_VEF& , DoubleVect&) const;
+  void calcul_grad_T(const Domaine_Cl_VEF&, DoubleTab&) const;
+  void calcul_grad_U(const Domaine_Cl_VEF&, DoubleTab&) const;
+  void calcul_h_conv(const Domaine_Cl_VEF&, DoubleTab&, int temp_ref) const;
   int compo_normale_sortante(int) const;
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   void cal_rot_ordre1(DoubleTab&) const;
@@ -50,20 +50,20 @@ public:
   int imprime(Sortie&, int) const override;
   void calcul_critere_Q(DoubleVect&) const;
 
-  virtual double norme_L2(const Zone&) const;
+  virtual double norme_L2(const Domaine&) const;
   Champ_base& affecter_(const Champ_base&) override;
   void verifie_valeurs_cl() override;
 
-  static DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Zone_Cl_VEF&);
-  static DoubleTab& calcul_gradient(const DoubleTab&, DoubleTab&, const Zone_Cl_VEF&);
-  static DoubleTab& calcul_duidxj_paroi(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const Zone_Cl_VEF&);
+  static DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Domaine_Cl_VEF&);
+  static DoubleTab& calcul_gradient(const DoubleTab&, DoubleTab&, const Domaine_Cl_VEF&);
+  static DoubleTab& calcul_duidxj_paroi(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const Domaine_Cl_VEF&);
 
-  virtual double norme_H1(const Zone&) const;
-  virtual double norme_L2_H1(const Zone& dom) const;
-  static double calculer_integrale_volumique(const Zone_VEF&, const DoubleVect&, Ok_Perio ok);
+  virtual double norme_H1(const Domaine&) const;
+  virtual double norme_L2_H1(const Domaine& dom) const;
+  static double calculer_integrale_volumique(const Domaine_VEF&, const DoubleVect&, Ok_Perio ok);
 
   // Methodes inlines
-  inline const Zone_VEF& zone_vef() const override { return ref_cast(Zone_VEF, le_dom_VF.valeur()); }
+  inline const Domaine_VEF& domaine_vef() const override { return ref_cast(Domaine_VEF, le_dom_VF.valeur()); }
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
     return Champ_P1NC_implementation::valeur_a_elem(position, val, le_poly);
@@ -99,12 +99,12 @@ public:
     return Champ_P1NC_implementation::valeur_aux_elems_compo_smooth(positions, les_polys, tab_valeurs, ncomp);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& val) const override
+  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
   {
     return Champ_P1NC_implementation::valeur_aux_sommets(dom, val);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& val, int comp) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
   {
     return Champ_P1NC_implementation::valeur_aux_sommets_compo(dom, val, comp);
   }

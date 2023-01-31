@@ -16,17 +16,17 @@
 #define Partitionneur_Sous_Domaine_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 
-/*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sous_zone de maniere "conforme" : le sous-domaine est decoupe de maniere
+/*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sous_domaine de maniere "conforme" : le sous-domaine est decoupe de maniere
  *
  *   "conforme" avec le domaine complet.
  *
  *   Utilisation:
- *       - creer un domaine global, et deux sous-zones (qui se recouvrent partiellement) pour Domaine1 et Domaine2
+ *       - creer un domaine global, et deux sous-domaines (qui se recouvrent partiellement) pour Domaine1 et Domaine2
  *       - decouper le domaine global et ecrire le fichier de decoupe
- *       - creer Domaine1 et Domaine2 par Create_domain_from_sous_zone
+ *       - creer Domaine1 et Domaine2 par Create_domain_from_sous_domaine
  *       - decouper D1 et D2 par Partitionneur sous_domaine en prenant pour source le decoupage du domaine global.
  *
  *   Syntaxe:
@@ -35,25 +35,25 @@
  *         partitionneur sous_domaine
  *         {
  *              fichier     decoup/domaine_glob.txt
- *              fichier_ssz sous_zone_dom_N.file
+ *              fichier_ssz sous_domaine_dom_N.file
  *         }
- *         Nom_Zones decoup/dom_N
+ *         Nom_Domaines decoup/dom_N
  *     }
  *
  *
- * @sa Partitionneur_Union Create_domain_from_sous_zone
+ * @sa Partitionneur_Union Create_domain_from_sous_domaine
  */
 class Partitionneur_Sous_Domaine : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Sous_Domaine);
 public:
   void set_param(Param& param) override;
-  void associer_domaine(const Zone& dom) override { };
+  void associer_domaine(const Domaine& dom) override { };
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 protected:
   // Parametres du partitionneur
   Nom filename_;      ///! Nom du fichier de decoupe globale
-  Nom filename_ssz_;  ///! Nom du fichier de sous-zones
+  Nom filename_ssz_;  ///! Nom du fichier de sous-domaines
 };
 #endif

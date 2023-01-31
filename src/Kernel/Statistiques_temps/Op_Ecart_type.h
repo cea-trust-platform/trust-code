@@ -68,7 +68,7 @@ public:
   };
   inline void mettre_a_jour(double tps) override;
   inline void initialiser(double val) override;
-  inline void associer(const Zone_dis_base& , const Champ_Generique_base& ,double t1, double t2 ) override;
+  inline void associer(const Domaine_dis_base& , const Champ_Generique_base& ,double t1, double t2 ) override;
   inline void fixer_tstat_deb(double, double ) override;
   inline void fixer_tstat_fin(double ) override;
   inline void associer_op_stat(const Operateur_Statistique_tps_base& ) override;
@@ -100,7 +100,7 @@ inline void Op_Ecart_type::initialiser(double val_init)
   integrale_carre_champ.valeurs()= val_init;
 }
 
-inline void Op_Ecart_type::associer(const Zone_dis_base& une_zdis,const Champ_Generique_base& le_champ,double t1,double t2)
+inline void Op_Ecart_type::associer(const Domaine_dis_base& une_zdis,const Champ_Generique_base& le_champ,double t1,double t2)
 {
   Champ espace_stockage_source;
   const Champ_base& source = le_champ.get_champ(espace_stockage_source);

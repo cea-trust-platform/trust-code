@@ -29,7 +29,7 @@ class Joints : public LIST(Joint)
   Declare_instanciable(Joints);
 
 public :
-  void associer_domaine(const Zone&);
+  void associer_domaine(const Domaine&);
   int nb_faces() const;
   int nb_faces(Type_Face type) const;
   int nb_joints() const;

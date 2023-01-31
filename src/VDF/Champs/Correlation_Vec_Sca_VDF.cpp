@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Correlation_Vec_Sca_VDF.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Correlation_Vec_Sca_VDF,"Correlation_Vec_Sca_VDF",Champ_Fonc_P0_VDF);
 
@@ -34,7 +34,7 @@ void Correlation_Vec_Sca_VDF::associer_champ_Sca(const Champ_base& le_champ_Sca)
 
 void Correlation_Vec_Sca_VDF::mettre_a_jour(double tps)
 {
-  int nb_elem=le_dom_VF.valeur().zone().nb_elem();
+  int nb_elem=le_dom_VF.valeur().domaine().nb_elem();
 
   const DoubleTab& centres_de_gravites = le_dom_VF->xp();
 

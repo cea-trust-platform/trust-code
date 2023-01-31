@@ -18,7 +18,7 @@
 #include <Champ_Fonc_MED.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
-#include <Zone_dis_base.h>
+#include <Domaine_dis_base.h>
 #include <Param.h>
 
 Implemente_instanciable(Champ_Input_P0_Composite,"Champ_Input_P0_Composite",Champ_Fonc_P0_base);
@@ -47,21 +47,21 @@ Entree& Champ_Input_P0_Composite::readOn(Entree& is)
 
       const Discretisation_base& disc = champ_input_.z_probleme().discretisation();
       const int ncomp = champ_initial_->nb_comp();
-      if (zone_dis_base().nb_elem_tot() == champ_initial_->valeurs().dimension_tot(0)) { /* do nothing */ }
+      if (domaine_dis_base().nb_elem_tot() == champ_initial_->valeurs().dimension_tot(0)) { /* do nothing */ }
       else if (sub_type(Champ_Fonc_MED,champ_initial_.valeur()))
         {
           Champ_Don tmp_fld;
-          disc.discretiser_champ("champ_elem",zone_dis_base(),"neant","neant",ncomp ,0.,tmp_fld);
+          disc.discretiser_champ("champ_elem",domaine_dis_base(),"neant","neant",ncomp ,0.,tmp_fld);
           tmp_fld.affecter_(champ_initial_.valeur()); // interpolate ...
           champ_initial_.detach();
-          disc.discretiser_champ("champ_elem",zone_dis_base(),"neant","neant",ncomp,0.,champ_initial_);
+          disc.discretiser_champ("champ_elem",domaine_dis_base(),"neant","neant",ncomp,0.,champ_initial_);
           champ_initial_->valeurs() = tmp_fld->valeurs();
         }
       else if (sub_type(Champ_Uniforme,champ_initial_.valeur())) // blabla ...
         {
           const double val = champ_initial_->valeurs()(0,0);
           champ_initial_.detach();
-          disc.discretiser_champ("champ_elem",zone_dis_base(),"neant","neant",ncomp,0.,champ_initial_);
+          disc.discretiser_champ("champ_elem",domaine_dis_base(),"neant","neant",ncomp,0.,champ_initial_);
           champ_initial_->valeurs() = val;
         }
       else

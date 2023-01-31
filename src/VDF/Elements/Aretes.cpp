@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Aretes.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(Aretes,"Aretes",Objet_U);
 
@@ -98,16 +98,16 @@ void Aretes::affecter(int& numero_a, int dir, int type, int nb_face,
     }
 }
 
-void Aretes::calculer_centre_de_gravite(Zone_VDF& zone)
+void Aretes::calculer_centre_de_gravite(Domaine_VDF& domaine)
 {
-  const IntTab& so = zone.face_sommets();
-  const DoubleTab& co = zone.zone().les_sommets();
-  DoubleTab& xa_ = zone.xa();
+  const IntTab& so = domaine.face_sommets();
+  const DoubleTab& co = domaine.domaine().les_sommets();
+  DoubleTab& xa_ = domaine.xa();
   int i,j,k;
   int f0=-1,f1=-1,s00,s01,s10,s11;
   int type;
   int nb_aretes = faces_.dimension(0);
-  //const IntVect& orient =  zone.orientation();
+  //const IntVect& orient =  domaine.orientation();
   // Calcul des ccordonnees de l'arete
   if(dimension==2)
     {

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Triangulation_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 
 Implemente_base(Triangulation_base,"Triangulation_base",Interprete_geometrique_base);

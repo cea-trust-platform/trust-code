@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <EF_discretisation.h>
-#include <Zone_EF.h>
+#include <Domaine_EF.h>
 #include <Champ_P1_EF.h>
 #include <Champ_Q1_EF.h>
 #include <Champ_Fonc_P0_EF.h>
@@ -36,8 +36,8 @@
 
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
-#include <Zone_Cl_EF.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_EF.h>
+#include <Domaine_Cl_dis.h>
 
 Implemente_instanciable(EF_discretisation,"EF",Discret_Thyd);
 
@@ -60,19 +60,19 @@ Sortie& EF_discretisation::printOn(Sortie& s) const
  *  Cette methode determine le type du champ a creer en fonction du type d'element
  *  et de la directive de discretisation. Elle determine ensuite le nombre de ddl
  *  et fixe l'ensemble des parametres du champ (type, nb_compo, nb_ddl, nb_pas_dt,
- *  nom(s), unite(s) et nature du champ) et associe la Zone_dis au champ.
+ *  nom(s), unite(s) et nature du champ) et associe la Domaine_dis au champ.
  *  Voir le code pour avoir la correspondance entre les directives et
  *  le type de champ cree.
  *
  */
 void EF_discretisation::discretiser_champ(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, int nb_pas_dt, double temps,
   Champ_Inc& champ, const Nom& sous_type ) const
 {
-  const Zone_EF& zone_EF = ref_cast(Zone_EF, z);
+  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
 
   Motcles motcles(7);
   motcles[0] = "vitesse";     // Choix standard pour la vitesse
@@ -85,17 +85,17 @@ void EF_discretisation::discretiser_champ(
 
   // Le type de champ de vitesse depend du type d'element :
   Nom type_champ_vitesse;
-  if (sub_type(Tri_EF, zone_EF.type_elem().valeur())
-      || sub_type(Segment_EF,zone_EF.type_elem().valeur())
-      || sub_type(Tetra_EF,zone_EF.type_elem().valeur()))
+  if (sub_type(Tri_EF, domaine_EF.type_elem().valeur())
+      || sub_type(Segment_EF,domaine_EF.type_elem().valeur())
+      || sub_type(Tetra_EF,domaine_EF.type_elem().valeur()))
     type_champ_vitesse = "Champ_P1_EF";
-  else if (sub_type(Quadri_EF,zone_EF.type_elem().valeur())
-           || sub_type(Hexa_EF,zone_EF.type_elem().valeur()))
+  else if (sub_type(Quadri_EF,domaine_EF.type_elem().valeur())
+           || sub_type(Hexa_EF,domaine_EF.type_elem().valeur()))
     type_champ_vitesse = "Champ_Q1_EF";
   else
     {
       Cerr << "EF_discretisation::discretiser_champ :\n L'element geometrique ";
-      Cerr << zone_EF.type_elem().valeur().que_suis_je();
+      Cerr << domaine_EF.type_elem().valeur().que_suis_je();
       Cerr << " n'est pas supporte." << finl;
       exit();
     }
@@ -156,9 +156,9 @@ void EF_discretisation::discretiser_champ(
   if (type == "Champ_P0_EF")
     nb_ddl = z.nb_elem();
   else if (type == type_champ_vitesse)
-    nb_ddl = zone_EF.nb_som();
+    nb_ddl = domaine_EF.nb_som();
   else if (type == "Champ_P1_EF")
-    nb_ddl = zone_EF.nb_som();
+    nb_ddl = domaine_EF.nb_som();
   else
     assert(0);
 
@@ -188,7 +188,7 @@ void EF_discretisation::discretiser_champ(
  *
  */
 void EF_discretisation::discretiser_champ(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, double temps,
@@ -204,7 +204,7 @@ void EF_discretisation::discretiser_champ(
  * .. , Champ_Inc)
  *
  */
-void EF_discretisation::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
+void EF_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
                                           Nature_du_champ nature,
                                           const Noms& noms, const Noms& unites,
                                           int nb_comp, double temps,
@@ -223,7 +223,7 @@ void EF_discretisation::discretiser_champ(const Motcle& directive, const Zone_di
  *
  */
 void EF_discretisation::discretiser_champ_fonc_don(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, double temps,
@@ -238,7 +238,7 @@ void EF_discretisation::discretiser_champ_fonc_don(
   else
     champ_don  = & ref_cast(Champ_Don, champ);
 
-  const Zone_EF& zone_EF = ref_cast(Zone_EF, z);
+  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, z);
 
   Motcles motcles(7);
   motcles[0] = "pression";    // Choix standard pour la pression
@@ -252,7 +252,7 @@ void EF_discretisation::discretiser_champ_fonc_don(
   // Le type de champ de vitesse depend du type d'element :
   Nom type_champ_vitesse;
   {
-    const Elem_EF_base& elem_EF = zone_EF.type_elem().valeur();
+    const Elem_EF_base& elem_EF = domaine_EF.type_elem().valeur();
     if (sub_type(Tri_EF, elem_EF) || sub_type(Segment_EF,elem_EF) ||sub_type(Tetra_EF, elem_EF) ||  sub_type(Point_EF,elem_EF) )
       type_champ_vitesse = "Champ_Fonc_P1_EF";
     else if (sub_type(Quadri_EF, elem_EF) || sub_type(Hexa_EF, elem_EF))
@@ -322,7 +322,7 @@ void EF_discretisation::discretiser_champ_fonc_don(
   // Calcul du nombre de ddl
   int nb_ddl = 0;
   if (type == "Champ_Fonc_P0_EF")     nb_ddl = z.nb_elem();
-  else if (type == type_champ_vitesse) nb_ddl = zone_EF.nb_som();
+  else if (type == type_champ_vitesse) nb_ddl = domaine_EF.nb_som();
   else assert(0);
 
   /* // Si c'est un champ multiscalaire, uh !
@@ -363,34 +363,34 @@ void EF_discretisation::discretiser_champ_fonc_don(
 
 
 void EF_discretisation::distance_paroi(const Schema_Temps_base& sch,
-                                       Zone_dis& z, Champ_Fonc& ch) const
+                                       Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de la distance paroi" << finl;
-  Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
+  Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
   ch.typer("Champ_Fonc_P0_EF");
   Champ_Fonc_P0_EF& ch_dist_paroi=ref_cast(Champ_Fonc_P0_EF,ch.valeur());
-  ch_dist_paroi.associer_domaine_dis_base(zone_EF);
+  ch_dist_paroi.associer_domaine_dis_base(domaine_EF);
   ch_dist_paroi.nommer("distance_paroi");
   ch_dist_paroi.fixer_nb_comp(1);
-  ch_dist_paroi.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+  ch_dist_paroi.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_dist_paroi.fixer_unite("m");
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
 
 
-void EF_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
+void EF_discretisation::vorticite(Domaine_dis& z,const Champ_Inc& ch_vitesse,
                                   Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de la vorticite " << finl;
-  const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
 
-  if (sub_type(Tri_EF,zone_EF.type_elem().valeur()) || sub_type(Segment_EF,zone_EF.type_elem().valeur()) || sub_type(Tetra_EF,zone_EF.type_elem().valeur()))
+  if (sub_type(Tri_EF,domaine_EF.type_elem().valeur()) || sub_type(Segment_EF,domaine_EF.type_elem().valeur()) || sub_type(Tetra_EF,domaine_EF.type_elem().valeur()))
     {
       ch.typer("Rotationnel_Champ_P1_EF");
       const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
       Rotationnel_Champ_P1_EF& ch_W=ref_cast(Rotationnel_Champ_P1_EF,ch.valeur());
-      ch_W.associer_domaine_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(domaine_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -402,16 +402,16 @@ void EF_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
           ch_W.fixer_nom_compo(1,"vorticitey");
           ch_W.fixer_nom_compo(2,"vorticitez");
         }
-      ch_W.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+      ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(ch_vitesse.temps());
     }
-  else if (sub_type(Quadri_EF,zone_EF.type_elem().valeur()) || sub_type(Hexa_EF,zone_EF.type_elem().valeur()))
+  else if (sub_type(Quadri_EF,domaine_EF.type_elem().valeur()) || sub_type(Hexa_EF,domaine_EF.type_elem().valeur()))
     {
       ch.typer("Rotationnel_Champ_Q1_EF");
       const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF,ch_vitesse.valeur());
       Rotationnel_Champ_Q1_EF& ch_W=ref_cast(Rotationnel_Champ_Q1_EF,ch.valeur());
-      ch_W.associer_domaine_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(domaine_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -423,7 +423,7 @@ void EF_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
           ch_W.fixer_nom_compo(1,"vorticitey");
           ch_W.fixer_nom_compo(2,"vorticitez");
         }
-      ch_W.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+      ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(ch_vitesse.temps());
     }
@@ -442,9 +442,9 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
     {
       ch.typer("Rotationnel_Champ_P1_EF");
       const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
-      const Zone_EF& zone_EF = ref_cast(Zone_EF,vit.zone_dis_base());
+      const Domaine_EF& domaine_EF = ref_cast(Domaine_EF,vit.domaine_dis_base());
       Rotationnel_Champ_P1_EF& ch_W = ref_cast(Rotationnel_Champ_P1_EF,ch.valeur());
-      ch_W.associer_domaine_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(domaine_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -456,7 +456,7 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
           ch_W.fixer_nom_compo(1, "vorticitey");
           ch_W.fixer_nom_compo(2, "vorticitez");
         }
-      ch_W.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+      ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(sch.temps_courant());
     }
@@ -464,9 +464,9 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
     {
       ch.typer("Rotationnel_Champ_Q1_EF");
       const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF,ch_vitesse.valeur());
-      const Zone_EF& zone_EF = ref_cast(Zone_EF,vit.zone_dis_base());
+      const Domaine_EF& domaine_EF = ref_cast(Domaine_EF,vit.domaine_dis_base());
       Rotationnel_Champ_Q1_EF& ch_W = ref_cast(Rotationnel_Champ_Q1_EF,ch.valeur());
-      ch_W.associer_domaine_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(domaine_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -478,7 +478,7 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
           ch_W.fixer_nom_compo(1, "vorticitey");
           ch_W.fixer_nom_compo(2, "vorticitez");
         }
-      ch_W.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+      ch_W.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(sch.temps_courant());
     }
@@ -493,18 +493,18 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
 
 /*! @brief discretise en EF le fluide incompressible, donc  K e N
  *
- * @param (Zone_dis&) zone a discretiser
+ * @param (Domaine_dis&) domaine a discretiser
  * @param (Fluide_Ostwald&) fluide a discretiser
  * @param (Champ_Inc&) ch_vitesse
  * @param (Champ_Inc&) temperature
  */
-void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Zone_dis& z, Fluide_Ostwald& le_fluide,
+void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis& z, Fluide_Ostwald& le_fluide,
                                                             const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper ) const
 {
 
 #ifdef dependance
   Cerr << "Discretisation EF du fluide_Ostwald" << finl;
-  const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
   const Champ_Inc& ch_vitesse = eqn_hydr.inconnue();
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
 
@@ -515,17 +515,17 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Zone_dis& z, F
   //  mu est toujours un champ_Ostwald_EF , il faut toujours faire ce qui suit
   mu.typer("Champ_Ostwald_EF");
   Champ_Ostwald_EF& ch_mu = ref_cast(Champ_Ostwald_EF,mu.valeur());
-  Cerr<<"associe zonedisbase EF"<<finl;
-  ch_mu.associer_domaine_dis_base(zone_EF);
+  Cerr<<"associe domainedisbase EF"<<finl;
+  ch_mu.associer_domaine_dis_base(domaine_EF);
   ch_mu.associer_fluide(le_fluide);
   ch_mu.associer_champ(vit);
   ch_mu.associer_eqn(eqn_hydr);
-  Cerr<<"associations finies zone dis base, fluide, champ EF"<<finl;
+  Cerr<<"associations finies domaine dis base, fluide, champ EF"<<finl;
   ch_mu.fixer_nb_comp(1);
 
   Cerr<<"fait fixer_nb_valeurs_nodales"<<finl;
-  Cerr<<"nb_valeurs_nodales EF = "<<zone_EF.nb_elem()<<finl;
-  ch_mu.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+  Cerr<<"nb_valeurs_nodales EF = "<<domaine_EF.nb_elem()<<finl;
+  ch_mu.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
 
   Cerr<<"fait changer_temps"<<finl;
   ch_mu.changer_temps(vit.temps());
@@ -534,114 +534,114 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Zone_dis& z, F
 }
 
 
-void EF_discretisation::zone_Cl_dis(Zone_dis& z,
-                                    Zone_Cl_dis& zcl) const
+void EF_discretisation::domaine_Cl_dis(Domaine_dis& z,
+                                    Domaine_Cl_dis& zcl) const
 {
   Cerr << "discretisation des conditions limites" << finl;
   assert(z.non_nul());
-  Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
-  zcl.typer("Zone_Cl_EF");
+  Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  zcl.typer("Domaine_Cl_EF");
   assert(zcl.non_nul());
-  Zone_Cl_EF& zone_cl_EF=ref_cast(Zone_Cl_EF, zcl.valeur());
-  zone_cl_EF.associer(zone_EF);
+  Domaine_Cl_EF& domaine_cl_EF=ref_cast(Domaine_Cl_EF, zcl.valeur());
+  domaine_cl_EF.associer(domaine_EF);
   Cerr << "discretisation des conditions limites OK" << finl;
 }
 
 
-void EF_discretisation::critere_Q(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::critere_Q(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
   // mais on ne s'en sert pas!!!
   Cerr << "Discretisation du critere Q " << finl;
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
-  const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
   ch.typer("Critere_Q_Champ_P1_EF");
   Critere_Q_Champ_P1_EF& ch_cQ=ref_cast(Critere_Q_Champ_P1_EF,ch.valeur());
-  ch_cQ.associer_domaine_dis_base(zone_EF);
+  ch_cQ.associer_domaine_dis_base(domaine_EF);
   ch_cQ.associer_champ(vit);
   ch_cQ.nommer("Critere_Q");
   ch_cQ.fixer_nb_comp(1);
-  ch_cQ.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+  ch_cQ.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_cQ.fixer_unite("s-2");
   ch_cQ.changer_temps(ch_vitesse.temps());
 #endif
 }
 
 
-void EF_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void EF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 
 #ifdef dependance
   Cerr << "Discretisation de y_plus" << finl;
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
-  const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
-  const Zone_Cl_EF& zone_cl_EF=ref_cast(Zone_Cl_EF, zcl.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  const Domaine_Cl_EF& domaine_cl_EF=ref_cast(Domaine_Cl_EF, zcl.valeur());
   ch.typer("Y_plus_Champ_P1_EF");
   Y_plus_Champ_P1_EF& ch_yp=ref_cast(Y_plus_Champ_P1_EF,ch.valeur());
-  ch_yp.associer_domaine_dis_base(zone_EF);
-  ch_yp.associer_domaine_Cl_dis_base(zone_cl_EF);
+  ch_yp.associer_domaine_dis_base(domaine_EF);
+  ch_yp.associer_domaine_Cl_dis_base(domaine_cl_EF);
   ch_yp.associer_champ(vit);
   ch_yp.nommer("Y_plus");
   ch_yp.fixer_nb_comp(1);
-  ch_yp.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+  ch_yp.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_yp.fixer_unite("adimensionnel");
   ch_yp.changer_temps(ch_vitesse.temps());
 #endif
 }
 
-void EF_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
+void EF_discretisation::grad_T(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
   const Champ_P1_EF& temp = ref_cast(Champ_P1_EF,ch_temperature.valeur());
-  const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
-  const Zone_Cl_EF& zone_cl_EF=ref_cast(Zone_Cl_EF, zcl.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  const Domaine_Cl_EF& domaine_cl_EF=ref_cast(Domaine_Cl_EF, zcl.valeur());
   ch.typer("gradient_temperature_Champ_P1_EF");
   grad_T_Champ_P1_EF& ch_gt=ref_cast(grad_T_Champ_P1_EF,ch.valeur());
-  ch_gt.associer_domaine_dis_base(zone_EF);
-  ch_gt.associer_domaine_Cl_dis_base(zone_cl_EF);
+  ch_gt.associer_domaine_dis_base(domaine_EF);
+  ch_gt.associer_domaine_Cl_dis_base(domaine_cl_EF);
   ch_gt.associer_champ(temp);
   ch_gt.nommer("gradient_temperature");
   ch_gt.fixer_nb_comp(dimension);
-  ch_gt.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+  ch_gt.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_gt.fixer_unite("K/m");
   ch_gt.changer_temps(ch_temperature.temps());
 #endif
 }
 
-void EF_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void EF_discretisation::h_conv(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;
   const Champ_P1_EF& temp = ref_cast(Champ_P1_EF,ch_temperature.valeur());
-  const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
-  const Zone_Cl_EF& zone_cl_EF=ref_cast(Zone_Cl_EF, zcl.valeur());
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  const Domaine_Cl_EF& domaine_cl_EF=ref_cast(Domaine_Cl_EF, zcl.valeur());
   ch.typer("h_conv_Champ_P1_EF");
   h_conv_Champ_P1_EF& ch_gt=ref_cast(h_conv_Champ_P1_EF,ch.valeur());
-  ch_gt.associer_domaine_dis_base(zone_EF);
-  ch_gt.associer_domaine_Cl_dis_base(zone_cl_EF);
+  ch_gt.associer_domaine_dis_base(domaine_EF);
+  ch_gt.associer_domaine_Cl_dis_base(domaine_cl_EF);
   ch_gt.associer_champ(temp);
   ch_gt.temp_ref()=temp_ref;
   ////ch_gt.nommer("h_conv");
   ch_gt.nommer(nom);
   ch_gt.fixer_nb_comp(1);
-  ch_gt.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
+  ch_gt.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
   ch_gt.fixer_unite("W/m2.K");
   ch_gt.changer_temps(ch_temperature.temps());
 #endif
 }
-void EF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  champs_param) const
+void EF_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))&  champs_param) const
 {
   Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
   lambda_tab_dis.typer("Champ_Fonc_Tabule_P0_EF");
   Champ_Fonc_Tabule_P0_EF& ch_tab_lambda_dis =
     ref_cast(Champ_Fonc_Tabule_P0_EF,lambda_tab_dis.valeur());
   //ch_tab_lambda_dis.nommer(nom_champ);
-  ch_tab_lambda_dis.associer_domaine_dis_base(zone_vdf);
+  ch_tab_lambda_dis.associer_domaine_dis_base(domaine_vdf);
   ch_tab_lambda_dis.associer_param(champs_param, lambda_tab.table());
   ch_tab_lambda_dis.fixer_nb_comp(lambda_tab.nb_comp());
-  ch_tab_lambda_dis.fixer_nb_valeurs_nodales(zone_vdf.nb_elem());
+  ch_tab_lambda_dis.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
 // ch_tab_lambda_dis.fixer_unite(unite);
   ch_tab_lambda_dis.changer_temps(champs_param[0].valeur().temps());
 }

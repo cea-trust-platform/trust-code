@@ -20,7 +20,7 @@
 
 
 #include <Interprete.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Schema_Temps.h>
 
 /*! @brief classe Discretiser Discretise un probleme:

@@ -15,7 +15,7 @@
 #ifndef Ensemble_Lagrange_base_included
 #define Ensemble_Lagrange_base_included
 
-#include <Zone.h>
+#include <Domaine.h>
 
 class Equation_base;
 /*! @brief classe Ensemble_Lagrange_base Classe de base des classes representant une structure geometrique constituee
@@ -42,8 +42,8 @@ public :
   virtual void associer_equation_transport(const Equation_base&
                                            equation) = 0;
   virtual const Equation_base& equation_associee() const = 0;
-  void associer_domaine(const Zone& zone);
-  virtual inline const Zone& zone() const;
+  void associer_domaine(const Domaine& domaine);
+  virtual inline const Domaine& domaine() const;
   void remplir_sommets_tmp(DoubleTab& soms_tmp);
   void generer_marqueurs_sz(DoubleTab& soms_tmp);
   inline const IntVect& nb_marqs_par_sz() const;
@@ -52,11 +52,11 @@ public :
 
 protected :
 
-  Noms nom_sz;                //nom des sous zones ou l on genere des particules
-  IntVect nb_marqs_sz;        //nombre de marqueurs par sous zone
-  IntTab nb_marqs_par_dir;        //nombre de marqueurs dans chacune des directions d une sous zone
-  //si distribution uniforme sur la sous zone
-  REF(Zone) mon_dom_;                //REF a la Zone du maillage Eulerien
+  Noms nom_sz;                //nom des sous domaines ou l on genere des particules
+  IntVect nb_marqs_sz;        //nombre de marqueurs par sous domaine
+  IntTab nb_marqs_par_dir;        //nombre de marqueurs dans chacune des directions d une sous domaine
+  //si distribution uniforme sur la sous domaine
+  REF(Domaine) mon_dom_;                //REF a la Domaine du maillage Eulerien
 
   DoubleTab sommets_lu_;      //Coordonnees des sommets lus dans le cas d une lecture dans un fichier
 
@@ -64,7 +64,7 @@ private :
 
 };
 
-inline const Zone& Ensemble_Lagrange_base::zone() const
+inline const Domaine& Ensemble_Lagrange_base::domaine() const
 {
   return mon_dom_.valeur();
 }

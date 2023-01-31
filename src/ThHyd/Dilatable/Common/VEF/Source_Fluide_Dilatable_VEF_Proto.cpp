@@ -17,23 +17,23 @@
 #include <Neumann_sortie_libre.h>
 #include <Discretisation_base.h>
 #include <Equation_base.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Milieu_base.h>
 #include <Periodique.h>
 #include <TRUSTTab.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Symetrie.h>
 
 
-void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
+void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Zone_VEF,zone.valeur());
-  le_dom_Cl = ref_cast(Zone_Cl_VEF,zone_cl.valeur());
+  le_dom = ref_cast(Domaine_VEF,domaine.valeur());
+  le_dom_Cl = ref_cast(Domaine_Cl_VEF,domaine_cl.valeur());
 }
 
-void Source_Fluide_Dilatable_VEF_Proto::associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites)
+void Source_Fluide_Dilatable_VEF_Proto::associer_volume_porosite_impl(const Domaine_dis& domaine, DoubleVect& volumes, DoubleVect& porosites)
 {
-  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes_entrelaces());
+  volumes.ref(ref_cast(Domaine_VF,domaine.valeur()).volumes_entrelaces());
   porosites.ref(le_dom_Cl->equation().milieu().porosite_face());
 }
 

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexaedre.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 // Convention de numerotation
 //    sommets         faces         5(face z=1)
@@ -79,16 +79,16 @@ void Hexaedre::reordonner()
  */
 int Hexaedre::reordonner_elem()
 {
-  Zone& zone = mon_dom.valeur();
-  const Zone& dom = zone;
+  Domaine& domaine = mon_dom.valeur();
+  const Domaine& dom = domaine;
   const DoubleTab& dom_coord = dom.les_sommets();
-  IntTab& elem = zone.les_elems();
+  IntTab& elem = domaine.les_elems();
   ArrOfInt S(8);
   ArrOfInt NS(8);
   double coord[8][3];
   double xmin[3];
   int i, j;
-  const int nb_elem = zone.nb_elem();
+  const int nb_elem = domaine.nb_elem();
   const int delta[3] = {1, 2, 4};
   int changed_count = 0;
 
@@ -157,22 +157,22 @@ const Nom& Hexaedre::nom_lml() const
 }
 
 
-/*! @brief Renvoie 1 si l'element "elemen" de la zone associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element "elemen" de la domaine associee a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int element) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int element) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
  */
 int Hexaedre::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
-  int som0 = zone.sommet_elem(element,0);
-  int som7 = zone.sommet_elem(element,7);
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
+  int som0 = domaine.sommet_elem(element,0);
+  int som7 = domaine.sommet_elem(element,7);
   if (    inf_ou_egal(dom.coord(som0,0),pos[0]) && inf_ou_egal(pos[0],dom.coord(som7,0))
           && inf_ou_egal(dom.coord(som0,1),pos[1]) && inf_ou_egal(pos[1],dom.coord(som7,1))
           && inf_ou_egal(dom.coord(som0,2),pos[2]) && inf_ou_egal(pos[2],dom.coord(som7,2)) )
@@ -182,49 +182,49 @@ int Hexaedre::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Hexaedre::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=mon_dom.valeur();
-  if((zone.sommet_elem(element,0)==som[0])&&
-      (zone.sommet_elem(element,1)==som[1])&&
-      (zone.sommet_elem(element,2)==som[2])&&
-      (zone.sommet_elem(element,3)==som[3])&&
-      (zone.sommet_elem(element,4)==som[4])&&
-      (zone.sommet_elem(element,5)==som[5])&&
-      (zone.sommet_elem(element,6)==som[6])&&
-      (zone.sommet_elem(element,7)==som[7]))
+  const Domaine& domaine=mon_dom.valeur();
+  if((domaine.sommet_elem(element,0)==som[0])&&
+      (domaine.sommet_elem(element,1)==som[1])&&
+      (domaine.sommet_elem(element,2)==som[2])&&
+      (domaine.sommet_elem(element,3)==som[3])&&
+      (domaine.sommet_elem(element,4)==som[4])&&
+      (domaine.sommet_elem(element,5)==som[5])&&
+      (domaine.sommet_elem(element,6)==som[6])&&
+      (domaine.sommet_elem(element,7)==som[7]))
     return 1;
   else
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Hexaedre::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
   double dx,dy,dz;
   int S1,S2,S3,S4;
 
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
-      S1 = zone.sommet_elem(num_poly,0);
-      S2 = zone.sommet_elem(num_poly,1);
-      S3 = zone.sommet_elem(num_poly,2);
-      S4 = zone.sommet_elem(num_poly,4);
+      S1 = domaine.sommet_elem(num_poly,0);
+      S2 = domaine.sommet_elem(num_poly,1);
+      S3 = domaine.sommet_elem(num_poly,2);
+      S4 = domaine.sommet_elem(num_poly,4);
       dx = dom.coord(S2,0) - dom.coord(S1,0);
       dy = dom.coord(S3,1) - dom.coord(S1,1);
       dz = dom.coord(S4,2) - dom.coord(S1,2);
@@ -232,15 +232,15 @@ void Hexaedre::calculer_volumes(DoubleVect& volumes) const
     }
 }
 
-/*! @brief Calcule les normales aux faces des elements de la zone associee.
+/*! @brief Calcule les normales aux faces des elements de la domaine associee.
  *
- * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la zone associee
+ * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la domaine associee
  * @param (DoubleTab& face_normales)
  */
 void Hexaedre::calculer_normales(const IntTab& Face_sommets ,DoubleTab& face_normales) const
 {
-  const Zone& zone_geom = mon_dom.valeur();
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const Domaine& domaine_geom = mon_dom.valeur();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1,z1,x2,y2,z2;
   int n0,n1,n2;

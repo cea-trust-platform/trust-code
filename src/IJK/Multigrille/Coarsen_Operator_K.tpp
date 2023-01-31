@@ -169,8 +169,8 @@ void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_T
       Process::exit();
   }
   coarse_splitting.initialize(grid_geom, slice_size_i, slice_size_j, coarse_slice_size_k, processor_mapping);
-  const int ghost_zone_size = fine.get_ghost_size();
-  coarse.initialize(coarse_splitting, ghost_zone_size, additional_k_layers);
+  const int ghost_domaine_size = fine.get_ghost_size();
+  coarse.initialize(coarse_splitting, ghost_domaine_size, additional_k_layers);
 
   // Build "local" intersection data:
   {

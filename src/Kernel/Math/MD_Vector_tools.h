@@ -24,7 +24,7 @@
 class MD_Vector_renumber;
 class MD_Vector;
 class ArrOfBit;
-class Zone_VF;
+class Domaine_VF;
 
 //format de structure pour demander d'agrandir un MD_Vector : (proc, item sur le proc) -> item distant sur Process::me()
 typedef std::map<std::array<int, 2>, int> extra_item_t;

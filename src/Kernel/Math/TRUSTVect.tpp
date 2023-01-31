@@ -139,7 +139,7 @@ inline TRUSTVect<_TYPE_>& TRUSTVect<_TYPE_>::operator=(_TYPE_ x)
 }
 
 //  detache le tableau et l'attache a v (sauf si v==*this, ne fait rien)
-//  Fait pointer le tableau sur la meme zone de memoire que v et copie le MD_Vector (utilise ArrOfDouble/Int::attach_array())
+//  Fait pointer le tableau sur la meme domaine de memoire que v et copie le MD_Vector (utilise ArrOfDouble/Int::attach_array())
 //  Attention, il devient alors interdit de resizer le tableau v ainsi que *this
 //  Methode virtuelle reimplementee dans DoubleTab
 // Precondition:

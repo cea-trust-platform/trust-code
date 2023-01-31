@@ -38,7 +38,7 @@ public:
   void calculer_borne_locale(DoubleVect& ,double ,double ) const override;
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
   void mettre_a_jour(double temps) override;
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void completer() override;
 
 protected:

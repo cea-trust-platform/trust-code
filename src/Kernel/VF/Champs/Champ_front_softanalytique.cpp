@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_front_softanalytique.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_front_softanalytique,"Champ_front_fonc_xyz",Ch_front_var_stationnaire);
 // XD champ_front_fonc_xyz front_field_base champ_front_fonc_xyz 0 Boundary field which is not constant in space.
@@ -99,8 +99,8 @@ int Champ_front_softanalytique::initialiser(double temps, const Champ_Inc_base& 
   int k;
   DoubleTab& tab=valeurs();
 
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,frontiere_dis().zone_dis());
-  const DoubleTab& xv=zone_vf.xv();
+  const Domaine_VF& domaine_vf=ref_cast(Domaine_VF,frontiere_dis().domaine_dis());
+  const DoubleTab& xv=domaine_vf.xv();
 
   const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
   int nb_faces_bord_tot=le_bord.nb_faces_tot();

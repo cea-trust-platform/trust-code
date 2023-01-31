@@ -21,8 +21,8 @@
 #include <SFichier.h>
 
 //class Matrice_Morse;
-class Zone_EF;
-class Zone_Cl_EF;
+class Domaine_EF;
+class Domaine_Cl_EF;
 class Equation_base;
 class Sortie;
 class Operateur_base;
@@ -30,8 +30,8 @@ class Operateur_base;
 class Op_EF_base
 {
 public :
-  void dimensionner(const Zone_EF&, const Zone_Cl_EF&, Matrice_Morse&) const;
-  void modifier_pour_Cl(const Zone_EF&, const Zone_Cl_EF&, Matrice_Morse&, DoubleTab&)const ;
+  void dimensionner(const Domaine_EF&, const Domaine_Cl_EF&, Matrice_Morse&) const;
+  void modifier_pour_Cl(const Domaine_EF&, const Domaine_Cl_EF&, Matrice_Morse&, DoubleTab&)const ;
   void modifier_flux(const Operateur_base&) const;
   int impr(Sortie&, const Operateur_base&) const;
   int elem_contribue(const int elem) const;

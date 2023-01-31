@@ -24,8 +24,8 @@
 // generalisation du modele.
 #include <Support_Champ_Masse_Volumique.h>
 class Motcle;
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Equation_base;
 class Schema_Temps_base;
 class Param;
@@ -79,12 +79,12 @@ public:
   virtual bool initTimeStep(double dt);
   virtual void mettre_a_jour(double ) =0;
   virtual void discretiser();
-  void discretiser_visc_turb(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
-  void discretiser_corr_visc_turb(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
-  void discretiser_K(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
+  void discretiser_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
+  void discretiser_corr_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
+  void discretiser_K(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
   virtual void completer();
   void associer_eqn(const Equation_base& );
-  virtual void associer(const Zone_dis& , const Zone_Cl_dis& );
+  virtual void associer(const Domaine_dis& , const Domaine_Cl_dis& );
   int reprendre(Entree& ) override;
 
   //Methodes de l interface des champs postraitables

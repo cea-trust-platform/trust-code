@@ -16,7 +16,7 @@
 #define Raccord_distant_homogene_included
 
 #include <Raccord.h>
-class Zone_dis_base;
+class Domaine_dis_base;
 class Raccord_distant_homogene : public Raccord_distant
 {
   Declare_instanciable_sans_constructeur(Raccord_distant_homogene);
@@ -36,7 +36,7 @@ public:
   void trace_face_distant(const DoubleTab&, DoubleTab&) const override;
   void trace_face_distant(const DoubleVect&, DoubleVect&) const override;
   void completer();
-  void initialise(const Frontiere&, const Zone_dis_base&, const Zone_dis_base&);
+  void initialise(const Frontiere&, const Domaine_dis_base&, const Domaine_dis_base&);
 private :
   inline const IntTab& Tab_Envoi() const;
   inline const ArrOfInt& Tab_Recep() const;

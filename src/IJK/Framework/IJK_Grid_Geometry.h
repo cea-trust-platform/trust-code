@@ -18,7 +18,7 @@
 #include <IJK_Field_forward.h>
 #include <TRUSTArrays.h>
 
-class Zone;
+class Domaine;
 
 // This class stores the geometry of the entire ijk grid (number of cells, cell sizes, periodicity, etc).
 // The content of the object is identical on all processors of the group.
@@ -30,8 +30,8 @@ public:
   void nommer(const Nom& n) override { object_name_ = n; }
   const Nom& le_nom() const override { return object_name_; }
 
-  // Initializes the object by analysing the provided VDF zone (works for a distributed mesh)
-  void initialize_from_unstructured(const Zone&,
+  // Initializes the object by analysing the provided VDF domaine (works for a distributed mesh)
+  void initialize_from_unstructured(const Domaine&,
                                     int direction_for_x,
                                     int direction_for_y,
                                     int direction_for_z,

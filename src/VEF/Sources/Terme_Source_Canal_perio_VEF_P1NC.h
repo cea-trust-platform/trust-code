@@ -26,8 +26,8 @@
 
 #include <Terme_Source_Canal_perio.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_Cl_VEF.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
 
 class Navier_Stokes_std;
 class Probleme_base;
@@ -42,9 +42,9 @@ public :
 
 protected :
 
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   void calculer_debit(double&) const override;
   // les attributs ont ete mis dans la classe mere
 

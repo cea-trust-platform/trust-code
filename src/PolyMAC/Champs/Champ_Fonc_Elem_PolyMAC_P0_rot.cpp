@@ -17,7 +17,7 @@
 #include <grad_Champ_Face_PolyMAC_P0.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 
 Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot, "Champ_Fonc_Elem_PolyMAC_P0_rot", Champ_Fonc_Elem_PolyMAC);
 
@@ -40,10 +40,10 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::mettre_a_jour(double tps)
 void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_2D()
 {
   const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, vit.zone_vf());
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, vit.domaine_vf());
   int e, n;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
-  int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
+  int ne = domaine.nb_elem(), nf_tot = domaine.nb_faces_tot();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab& tab_rot = valeurs();
@@ -62,10 +62,10 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_2D()
 void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_3D()
 {
   const Champ_Face_PolyMAC_P0& vit = ref_cast(Champ_Face_PolyMAC_P0, champ_a_deriver());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, vit.zone_vf());
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, vit.domaine_vf());
   int e, n;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
-  int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
+  int ne = domaine.nb_elem(), nf_tot = domaine.nb_faces_tot();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab& tab_rot = valeurs();

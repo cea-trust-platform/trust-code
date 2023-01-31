@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Rectangle_axi.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Rectangle_axi,"Rectangle_axi",Rectangle);
 
@@ -41,14 +41,14 @@ Entree& Rectangle_axi::readOn(Entree& s )
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements de la zone associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements de la domaine associee a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
 void Rectangle_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
   const IntTab& les_Polys = mon_dom->les_elems();
-  const Zone& le_domaine = mon_dom.valeur();
+  const Domaine& le_domaine = mon_dom.valeur();
   int nb_elem = mon_dom->nb_elem();
   int num_som;
 
@@ -107,24 +107,24 @@ const Nom& Rectangle_axi::nom_lml() const
 
 
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
   double r,dr,d_teta;
   int S1,S2,S4;
 
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
-      S1 = zone.sommet_elem(num_poly,0);
-      S2 = zone.sommet_elem(num_poly,1);
-      S4 = zone.sommet_elem(num_poly,3);
+      S1 = domaine.sommet_elem(num_poly,0);
+      S2 = domaine.sommet_elem(num_poly,1);
+      S4 = domaine.sommet_elem(num_poly,3);
       r = 0.5*(dom.coord(S2,0) + dom.coord(S1,0));
       dr = dom.coord(S2,0) - dom.coord(S1,0);
       d_teta = dom.coord(S4,1) - dom.coord(S2,1);
@@ -133,7 +133,7 @@ void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
     }
 }
 
-/*! @brief //    Renvoie 1 si l'element ielem de la zone associee a //              l'element geometrique contient le point
+/*! @brief //    Renvoie 1 si l'element ielem de la domaine associee a //              l'element geometrique contient le point
  *
  *  //              de coordonnees specifiees par le parametre "pos".
  *  //    Renvoie 0 sinon.
@@ -145,7 +145,7 @@ void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
  *  //    Contraintes: reference constante
  *  //    Acces: entree
  *  // Parametre: int ielem
- *  //    Signification: le numero de l'element de la zone
+ *  //    Signification: le numero de l'element de la domaine
  *  //                   dans lequel on cherche le point.
  *  //    Valeurs par defaut:
  *  //    Contraintes:
@@ -164,10 +164,10 @@ void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
 int Rectangle_axi::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==2);
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
-  int som0 = zone.sommet_elem(element,0);
-  int som3 = zone.sommet_elem(element,3);
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
+  int som0 = domaine.sommet_elem(element,0);
+  int som3 = domaine.sommet_elem(element,3);
   double r0,r3,t0,t3;
   r0=dom.coord(som0,0);
   r3=dom.coord(som3,0);
@@ -181,12 +181,12 @@ int Rectangle_axi::contient(const ArrOfDouble& pos, int element ) const
     return 0;
 }
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Rectangle_axi::contient(const ArrOfInt& pos, int element ) const

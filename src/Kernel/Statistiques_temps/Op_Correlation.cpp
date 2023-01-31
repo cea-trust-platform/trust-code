@@ -49,8 +49,8 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   integrale_tps_a_ = la_moyenne_a().integrale();
   integrale_tps_b_ = la_moyenne_b().integrale();
 
-  // On recupere la zone discretisee
-  const Zone_dis_base& zone = a->get_ref_zone_dis_base();
+  // On recupere la domaine discretisee
+  const Domaine_dis_base& domaine = a->get_ref_domaine_dis_base();
 
   // Dimensionnement du champ integrale_champ a la meme taille que mon_champ
   const DoubleTab& tab_a = valeurs_a();
@@ -115,7 +115,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
       Nom Champ_Fonc_P0="Champ_Fonc_P0_";
       Champ_Fonc_P0+=Pb.discretisation().que_suis_je().substr_old(1,3);
       integrale_tps_ab_.typer(Champ_Fonc_P0);
-      nb_valeurs_nodales = zone.nb_elem();
+      nb_valeurs_nodales = domaine.nb_elem();
     }
   else
     {
@@ -169,7 +169,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   nom_pour_post+=nom_a+"_"+nom_b;
   integrale_tps_ab_->nommer(nom_pour_post);
 
-  integrale_tps_ab_.associer_domaine_dis_base(zone);
+  integrale_tps_ab_.associer_domaine_dis_base(domaine);
   integrale_tps_ab_->fixer_nb_comp(nb_comp);
 
   // BM: le parametre de fixer_nb_valeurs_nodales est inutile,
@@ -212,7 +212,7 @@ DoubleTab Op_Correlation::calculer_valeurs() const
   return correlation.valeurs();
 }
 
-int Op_Correlation::completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format)
+int Op_Correlation::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)
 {
   return 1;
 }

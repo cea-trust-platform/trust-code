@@ -16,7 +16,7 @@
 #ifndef Frontiere_dis_base_included
 #define Frontiere_dis_base_included
 
-#include <Ref_Zone_dis_base.h>
+#include <Ref_Domaine_dis_base.h>
 #include <Ref_Frontiere.h>
 
 /*! @brief classe Frontiere_dis_base Classe representant une frontiere discretisee.
@@ -34,16 +34,16 @@ class Frontiere_dis_base : public Objet_U
 public :
 
   void associer_frontiere(const Frontiere&);
-  void associer_Zone_dis(const Zone_dis_base&);
+  void associer_Domaine_dis(const Domaine_dis_base&);
   const Frontiere& frontiere() const;
   Frontiere& frontiere();
-  const Zone_dis_base& zone_dis() const;
+  const Domaine_dis_base& domaine_dis() const;
   const Nom& le_nom() const override;
 
 protected :
 
   REF(Frontiere) la_frontiere;
-  REF(Zone_dis_base) le_dom_dis;
+  REF(Domaine_dis_base) le_dom_dis;
 };
 
 #endif

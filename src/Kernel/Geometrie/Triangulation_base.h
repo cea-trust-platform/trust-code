@@ -31,7 +31,7 @@ class Triangulation_base : public Interprete_geometrique_base
 
 public :
 
-  virtual void trianguler(Zone&) const = 0;
+  virtual void trianguler(Domaine&) const = 0;
   virtual int dimension_application() const = 0;
   Entree& interpreter_(Entree&) override;
 

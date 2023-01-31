@@ -17,7 +17,7 @@
 #define Faces_included
 
 #include <TRUSTTab.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 class Motcle;
 
 /*! @brief enum Type_Face Les differents types geometriques de faces.
@@ -71,8 +71,8 @@ public:
   inline IntTab& voisins();
   inline const IntTab& voisins() const;
   void completer(int, int);
-  inline void associer_domaine(const Zone&);
-  inline const Zone& zone() const;
+  inline void associer_domaine(const Domaine&);
+  inline const Domaine& domaine() const;
   void calculer_surfaces(DoubleVect& ) const;
   void calculer_centres_gravite(DoubleTab& ) const;
   void reordonner();
@@ -89,7 +89,7 @@ private :
   int nb_som_face = -123;
   IntTab sommets;
   IntTab faces_voisins;
-  REF(Zone) mon_dom;
+  REF(Domaine) mon_dom;
 };
 
 typedef Faces::Type_Face Type_Face;
@@ -198,20 +198,20 @@ inline int& Faces::voisin(int face, int i)
   return faces_voisins(face,i);
 }
 
-/*! @brief Associe les faces a une Zone.
+/*! @brief Associe les faces a une Domaine.
  *
- * @param (Zone& z) la zone a laquelle l'objet s'associe
+ * @param (Domaine& z) la domaine a laquelle l'objet s'associe
  */
-inline void Faces::associer_domaine(const Zone& z)
+inline void Faces::associer_domaine(const Domaine& z)
 {
   mon_dom=z;
 }
 
-/*! @brief Renvoie la zone associee.
+/*! @brief Renvoie la domaine associee.
  *
- * @return (Zone&) la zone associee
+ * @return (Domaine&) la domaine associee
  */
-inline const Zone& Faces::zone() const
+inline const Domaine& Faces::domaine() const
 {
   return mon_dom.valeur();
 }

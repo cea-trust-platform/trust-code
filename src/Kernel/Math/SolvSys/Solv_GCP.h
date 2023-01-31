@@ -61,7 +61,7 @@ protected:
   // mais cela economise de la place dans le cache).
   DoubleVect resu_;
   DoubleVect residu_;
-  // tmp_p_ pointe sur la meme zone que tmp_p_avec_items_virt_
+  // tmp_p_ pointe sur la meme domaine que tmp_p_avec_items_virt_
   // (on cree cet alias car les operations entre vecteurs verifient que
   //  les tailles et structures paralleles sont identiques,
   //  par exemple le preconditionneur...)
@@ -71,9 +71,9 @@ protected:
   Matrice_Morse_Sym tmp_mat_;
   // Matrice des coefficients reels-virtuels (stockage sans les lignes vides)
   Matrice_SuperMorse tmp_mat_virt_;
-  // La zone de memoire dans laquelle on stocke les vecteurs temporaires et eventuellement
+  // La domaine de memoire dans laquelle on stocke les vecteurs temporaires et eventuellement
   // les matrices (ne pas lire dedans, il y a aussi des entiers !)
-  // Je prends des double pour etre certain que la zone alloueee est correctement alignee en memoire
+  // Je prends des double pour etre certain que la domaine alloueee est correctement alignee en memoire
   ArrOfDouble tmp_data_block_;
   // Tableau de renumerotation entre le second membre et les vecteurs temporaires
   // (suppression des items communs et virtuels non utilises)

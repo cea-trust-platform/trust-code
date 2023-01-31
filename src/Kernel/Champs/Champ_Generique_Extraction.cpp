@@ -15,11 +15,11 @@
 
 #include <Champ_Generique_Extraction.h>
 #include <Champ_Generique_refChamp.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Postraitement.h>
 #include <Discretisation_base.h>
 #include <TRUST_Deriv.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Equation_base.h>
 #include <Champ_front_uniforme.h>
 #include <Dirichlet_homogene.h>
@@ -107,15 +107,15 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   const Champ_base& source_stockage = source.get_champ(source_espace_stockage);
 
   const DoubleTab& source_valeurs = source_stockage.valeurs();
-  const Zone_dis_base& zone_dis_source = source.get_ref_zone_dis_base();
+  const Domaine_dis_base& domaine_dis_source = source.get_ref_domaine_dis_base();
   const Nature_du_champ& nature_source = source_stockage.nature_du_champ();
 
   //Le test suivant n est pas dans completer() car utilise equation() : la reference doit etre initialisee
   if (methode_=="champ_frontiere")
     {
-      int num_bord =  zone_dis_source.rang_frontiere(nom_fr_);
+      int num_bord =  domaine_dis_source.rang_frontiere(nom_fr_);
       const Champ_Inc_base& source_inconnue = ref_cast(Champ_Inc_base,source_stockage);
-      const Cond_lim& cl =  source_inconnue.equation().zone_Cl_dis().les_conditions_limites(num_bord);
+      const Cond_lim& cl =  source_inconnue.equation().domaine_Cl_dis().les_conditions_limites(num_bord);
       if (sub_type(Dirichlet_homogene,cl.valeur()))
         {
           Cerr<<"A boundary condition of type Dirichlet homogeneous does not use field boundary"<<finl;
@@ -127,8 +127,8 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
     }
 
 
-  //Probleme pour discretisation de la zone du domaine d extraction (dimension)
-  ////const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+  //Probleme pour discretisation de la domaine du domaine d extraction (dimension)
+  ////const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
 
   int nb_comp_source = source_stockage.nb_comp();
   double temps = source.get_time();
@@ -137,16 +137,16 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   int nb_comp = 0;
   int nb_ddl = 0;
 
-  if (zone_dis_source.que_suis_je().debute_par("Zone_VDF"))
+  if (domaine_dis_source.que_suis_je().debute_par("Domaine_VDF"))
     disc = "VDF";
-  else if (zone_dis_source.que_suis_je().debute_par("Zone_VEF"))
+  else if (domaine_dis_source.que_suis_je().debute_par("Domaine_VEF"))
     disc = "VEF";
-  else if (zone_dis_source.que_suis_je().debute_par("Zone_EF"))
+  else if (domaine_dis_source.que_suis_je().debute_par("Domaine_EF"))
     disc = "EF";
   else
     {
       Cerr<<"Champ_Generique_Extraction::get_champ()"<<finl;
-      Cerr<<"We do not recognize the type of area discretized"<<zone_dis_source.que_suis_je()<<finl;
+      Cerr<<"We do not recognize the type of area discretized"<<domaine_dis_source.que_suis_je()<<finl;
       exit();
     }
 
@@ -161,14 +161,14 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   //La trace rend systematiquement un tableau de valeurs aux faces de depart
   //et un champ frontiere discretise est dimensionne par rapport au nombre de faces
   //de la frontiere : dans les deux cas nb_ddl = nb_faces
-  const Frontiere_dis_base& fr_dis = zone_dis_source.frontiere_dis(nom_fr_);
+  const Frontiere_dis_base& fr_dis = domaine_dis_source.frontiere_dis(nom_fr_);
   const Frontiere& la_frontiere = fr_dis.frontiere();
   nb_ddl = la_frontiere.nb_faces();
 
-  //La zone discretisee a associer n est actuellement pas disponible
-  //On associe pas de zone_discretisee et on ne fixe pas nb_valeurs_nodales
+  //La domaine discretisee a associer n est actuellement pas disponible
+  //On associe pas de domaine_discretisee et on ne fixe pas nb_valeurs_nodales
   espace_stockage.typer(type_espace_stockage);
-  ////espace_stockage->associer_domaine_dis_base(zone_dis);
+  ////espace_stockage->associer_domaine_dis_base(domaine_dis);
   espace_stockage->fixer_nb_comp(nb_comp);
   ////espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
   espace_stockage->fixer_nature_du_champ(nature_source);
@@ -183,9 +183,9 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
     }
   else if (methode_=="champ_frontiere")                //On recupere le champ frontiere
     {
-      int num_bord =  zone_dis_source.rang_frontiere(nom_fr_);
+      int num_bord =  domaine_dis_source.rang_frontiere(nom_fr_);
       const Champ_Inc_base& source_inconnue = ref_cast(Champ_Inc_base,source_stockage);
-      const Champ_front& champ_fr =  source_inconnue.equation().zone_Cl_dis().les_conditions_limites(num_bord)->champ_front();
+      const Champ_front& champ_fr =  source_inconnue.equation().domaine_Cl_dis().les_conditions_limites(num_bord)->champ_front();
 
       if (sub_type(Champ_front_uniforme,champ_fr.valeur()))
         {
@@ -248,20 +248,20 @@ void Champ_Generique_Extraction::nommer_source()
 
 // La methode completer complete le domaine d extraction declare dans le jeu de donnes
 // auquel la classe fait reference:
-// - ajout d une zone (de type Pave)
+// - ajout d une domaine (de type Pave)
 // - on determine les coordonnees des sommets contenus dans le plan d extraction
-// Actuellement on ne procede pas a la discretisation de la zone du domaine d extraction (pb dimension)
+// Actuellement on ne procede pas a la discretisation de la domaine du domaine d extraction (pb dimension)
 void Champ_Generique_Extraction::completer(const Postraitement_base& post)
 {
   Champ_Gen_de_Champs_Gen::completer(post);
   const Objet_U& ob = interprete().objet(dom_extrac_);
-  if (!sub_type(Zone, ob))
+  if (!sub_type(Domaine, ob))
     {
       Cerr << "Error in  Champ_Generique_Extraction:get_champ"<<finl;
       Cerr<<"We do not retrieve domain"<<finl;
       exit();
     }
-  domaine_ = ref_cast(Zone,ob);
+  domaine_ = ref_cast(Domaine,ob);
   const Champ_Generique_base& source = get_source(0);
 
   if (methode_=="champ_frontiere")
@@ -287,15 +287,15 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
 
     }
 
-  const Zone& dom = source.get_ref_domain();
+  const Domaine& dom = source.get_ref_domain();
   if (dom==domaine_.valeur())
     {
       Cerr<<"Error in Champ_Generique_Extraction:get_champ"<<finl;
       Cerr<<"The domain is the same as the source's domain."<<finl;
       exit();
     }
-  const Zone_dis_base& zone_dis_source = source.get_ref_zone_dis_base();
-  const Zone_VF& zvf_source = ref_cast(Zone_VF,zone_dis_source);
+  const Domaine_dis_base& domaine_dis_source = source.get_ref_domaine_dis_base();
+  const Domaine_VF& zvf_source = ref_cast(Domaine_VF,domaine_dis_source);
   // Pour eviter un crash:
   if (zvf_source.nb_frontiere_dis()==0)
     {
@@ -308,7 +308,7 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
         }
       exit();
     }
-  const Frontiere_dis_base& fr_dis = zone_dis_source.frontiere_dis(nom_fr_);
+  const Frontiere_dis_base& fr_dis = domaine_dis_source.frontiere_dis(nom_fr_);
   const Frontiere& la_frontiere = fr_dis.frontiere();
   const Type_Face type_face_source = la_frontiere.faces().type_face();
   int nb_faces = la_frontiere.nb_faces();
@@ -335,13 +335,13 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   //Cas suivant possible en parallele
   else if ((type_face_source==Faces::vide_0D) && (nb_faces==0))
     {
-      if (zvf_source.que_suis_je().debute_par("Zone_VDF"))
+      if (zvf_source.que_suis_je().debute_par("Domaine_VDF"))
         type_elem = "Rectangle";
-      else if (zvf_source.que_suis_je().debute_par("Zone_VEF"))
+      else if (zvf_source.que_suis_je().debute_par("Domaine_VEF"))
         type_elem = "Triangle";
       else
         {
-          Cerr<<"The type of zone discretized"<<zvf_source.que_suis_je()<<" is not recognized"<<finl;
+          Cerr<<"The type of domaine discretized"<<zvf_source.que_suis_je()<<" is not recognized"<<finl;
           exit();
         }
     }
@@ -365,23 +365,23 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
     }
   domaine_->typer(type_elem);
 
-  IntTab& mes_elems_zone = domaine_->les_elems();
-  mes_elems_zone.reset();
-  mes_elems_zone.resize(nb_faces, nb_som_faces);
+  IntTab& mes_elems_domaine = domaine_->les_elems();
+  mes_elems_domaine.reset();
+  mes_elems_domaine.resize(nb_faces, nb_som_faces);
 
   // Destruction du descripteur parallele, et on reconstruit...
   domaine_->les_sommets().reset();
   domaine_->les_sommets() = sommets_source;
   for (int face = 0; face < nb_faces; face++)
     for (int s = 0; s < nb_som_faces; s++)
-      mes_elems_zone(face, s) = face_sommets(num_premiere_face + face, s);
+      mes_elems_domaine(face, s) = face_sommets(num_premiere_face + face, s);
   NettoieNoeuds::nettoie(domaine_);
 
   // Discretisation du domaine d'extraction
   discretiser_domaine();
 }
 
-const Zone& Champ_Generique_Extraction::get_ref_domain() const
+const Domaine& Champ_Generique_Extraction::get_ref_domain() const
 {
   if (domaine_.non_nul())
     return domaine_.valeur();
@@ -394,18 +394,18 @@ const Zone& Champ_Generique_Extraction::get_ref_domain() const
   return get_ref_domain();
 }
 
-void Champ_Generique_Extraction::get_copy_domain(Zone& domain) const
+void Champ_Generique_Extraction::get_copy_domain(Domaine& domain) const
 {
-  const Zone& dom = get_ref_domain();
+  const Domaine& dom = get_ref_domain();
   domain = dom;
 }
 
-const Zone_dis_base& Champ_Generique_Extraction::get_ref_zone_dis_base() const
+const Domaine_dis_base& Champ_Generique_Extraction::get_ref_domaine_dis_base() const
 {
   if (domaine_.non_nul())
     {
-      const Zone_dis_base& zone_dis = le_dom_dis.valeur();
-      return  zone_dis;
+      const Domaine_dis_base& domaine_dis = le_dom_dis.valeur();
+      return  domaine_dis;
     }
   else
     {
@@ -413,7 +413,7 @@ const Zone_dis_base& Champ_Generique_Extraction::get_ref_zone_dis_base() const
       exit();
     }
   //Pour compilation
-  return get_ref_zone_dis_base();
+  return get_ref_domaine_dis_base();
 }
 
 Entity Champ_Generique_Extraction::get_localisation(const int index) const
@@ -425,7 +425,7 @@ Entity Champ_Generique_Extraction::get_localisation(const int index) const
 
 
 //Discretisation du domaine d extraction
-//Cette discretisation est necessaire pour associer une zone discretisee
+//Cette discretisation est necessaire pour associer une domaine discretisee
 //a l espace de stockage dans la methode get_champ()
 void Champ_Generique_Extraction::discretiser_domaine()
 {
@@ -434,7 +434,7 @@ void Champ_Generique_Extraction::discretiser_domaine()
       const Probleme_base& Pb = get_ref_pb_base();
       const Discretisation_base& discr = Pb.discretisation();
       const Nom& type_discr = discr.que_suis_je();
-      Nom type = "NO_FACE_Zone_";
+      Nom type = "NO_FACE_Domaine_";
       type += type_discr;
       le_dom_dis.typer(type);
       le_dom_dis->associer_domaine(domaine_.valeur());

@@ -47,7 +47,7 @@ Entree& Modele_turbulence_scal::readOn(Entree& s )
   Cerr << nom1 << finl;
   DERIV(Modele_turbulence_scal_base)::typer(nom1);
   valeur().associer_eqn(equation());
-  valeur().associer(equation().zone_dis(), equation().zone_Cl_dis());
+  valeur().associer(equation().domaine_dis(), equation().domaine_Cl_dis());
   s >> valeur();
   return s;
 }

@@ -23,7 +23,7 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
       && !( sub_type(Operateur_Diff_base,op_base.valeur()) && ref_cast(Operateur_Diff_base,op_base.valeur()).diffusivite().le_nom() == "conductivite" ) )
     {
       DoubleTab& flux_bords=op_base->flux_bords();
-      const Zone_VDF& le_dom_vdf=ref_cast(Zone_VDF,op_base->equation().zone_dis().valeur());
+      const Domaine_VDF& le_dom_vdf=ref_cast(Domaine_VDF,op_base->equation().domaine_dis().valeur());
       const Champ_base& rho = (op_base->equation()).milieu().masse_volumique().valeur();
       const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
       const IntTab& face_voisins=le_dom_vdf.face_voisins();
@@ -50,9 +50,9 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
 template <class _TYPE_>
 int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
 {
-  const Zone_VDF& le_dom_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur());
-  const Zone& mazone=le_dom->zone();
-  const int impr_bord=(mazone.bords_a_imprimer().est_vide() ? 0:1);
+  const Domaine_VDF& le_dom_vdf=ref_cast(Domaine_VDF,op_base.valeur().equation().domaine_dis().valeur());
+  const Domaine& madomaine=le_dom->domaine();
+  const int impr_bord=(madomaine.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   double temps = sch.temps_courant();
   DoubleTab& flux_bords=op_base->flux_bords();
@@ -106,7 +106,7 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
         Flux.add_col(bilan(k));
       Flux << finl;
     }
-  const LIST(Nom)& Liste_bords_a_imprimer = le_dom->zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom->domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
@@ -117,7 +117,7 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
           const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
-          if (mazone.bords_a_imprimer().contient(la_fr.le_nom()))
+          if (madomaine.bords_a_imprimer().contient(la_fr.le_nom()))
             {
               Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
               for (face=ndeb; face<nfin; face++)
@@ -217,8 +217,8 @@ template <class _TYPE_> template <typename Type_Double>
 void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp, DoubleTab& resu) const
 {
   Type_Double flux(ncomp);
-  const Zone_VDF& zone_VDF = le_dom.valeur();
-  const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
+  const Domaine_VDF& domaine_VDF = le_dom.valeur();
+  const int ndeb = domaine_VDF.premiere_face_int(), nfin = domaine_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
     {
       const int elem0 = elem(face,0), elem1 = elem(face,1);

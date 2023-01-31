@@ -19,8 +19,8 @@
 
 #include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Zone_EF.h>
-#include <Ref_Zone_Cl_EF.h>
+#include <Ref_Domaine_EF.h>
+#include <Ref_Domaine_Cl_EF.h>
 class Probleme_base;
 
 /*! @brief class Source_Qdm_EF
@@ -43,9 +43,9 @@ public:
 
 protected:
 
-  REF(Zone_EF) le_dom_EF;
-  REF(Zone_Cl_EF) le_dom_Cl_EF;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) le_dom_Cl_EF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };
 

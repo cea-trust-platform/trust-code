@@ -15,9 +15,9 @@
 
 #include <Source_Neutronique_VDF.h>
 #include <Probleme_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Champ_Inc.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Source_Neutronique_VDF,"Source_Neutronique_VDF_P0_VDF",Source_Neutronique);
 
@@ -41,10 +41,10 @@ double Source_Neutronique_VDF::calculer_Tmoyenne()
   return T;
 }
 
-void Source_Neutronique_VDF::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Neutronique_VDF::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
   le_dom = zvdf;
   iter->associer_domaines(zvdf, zclvdf);
   Eval_Puiss_Neutr_VDF_Elem& eval_puis = static_cast<Eval_Puiss_Neutr_VDF_Elem&> (iter->evaluateur());

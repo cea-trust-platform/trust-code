@@ -18,9 +18,9 @@
 #define Op_Div_VEF_Elem_included
 
 #include <Operateur_Div.h>
-#include <Ref_Zone_VEF.h>
-#include <Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 
 /*! @brief class Op_Div_VEF_Elem
  *
@@ -46,7 +46,7 @@ class Op_Div_VEF_Elem : public Operateur_Div_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
@@ -55,8 +55,8 @@ public:
 
 protected:
 
-  REF(Zone_VEF) le_dom_vef;
-  REF(Zone_Cl_VEF) la_zcl_vef;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
 
   //DoubleVect porosite_face;
 };

@@ -61,44 +61,44 @@ int Assembleur::assembler_QC(const DoubleTab& rho, Matrice& mat)
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Permet d'associer l'objet a la zone discretisee
+ * Permet d'associer l'objet a la domaine discretisee
  *
  */
-void Assembleur::associer_domaine_dis_base(const Zone_dis_base& zdis)
+void Assembleur::associer_domaine_dis_base(const Domaine_dis_base& zdis)
 {
   valeur().associer_domaine_dis_base(zdis);
 }
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Permet d'associer l'objet a la Zone_Cl_dis
+ * Permet d'associer l'objet a la Domaine_Cl_dis
  *
  */
-void Assembleur::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& zcldis)
+void Assembleur::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcldis)
 {
   valeur().associer_domaine_cl_dis_base(zcldis);
 }
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie la zone discretisee associee a l'objet.
+ * Renvoie la domaine discretisee associee a l'objet.
  *
  * @return (int)
  */
-const Zone_dis_base& Assembleur::zone_dis_base() const
+const Domaine_dis_base& Assembleur::domaine_dis_base() const
 {
-  return valeur().zone_dis_base();
+  return valeur().domaine_dis_base();
 }
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie la Zone_Cl_dis associee a l'objet.
+ * Renvoie la Domaine_Cl_dis associee a l'objet.
  *
  * @return (int)
  */
-const Zone_Cl_dis_base& Assembleur::zone_Cl_dis_base() const
+const Domaine_Cl_dis_base& Assembleur::domaine_Cl_dis_base() const
 {
-  return valeur().zone_Cl_dis_base();
+  return valeur().domaine_Cl_dis_base();
 }
 
 /*! @brief Appel a l'objet sous-jacent.

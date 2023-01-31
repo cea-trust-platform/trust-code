@@ -57,7 +57,7 @@ public:
   };
   inline void mettre_a_jour(double temps) override;
   inline void initialiser(double val) override;
-  inline void associer(const Zone_dis_base& une_zdis,const Champ_Generique_base& le_champ, double t1,double t2) override;
+  inline void associer(const Domaine_dis_base& une_zdis,const Champ_Generique_base& le_champ, double t1,double t2) override;
   inline void fixer_tstat_deb(double , double) override;
   inline void fixer_tstat_fin(double tps) override;
   inline int sauvegarder(Sortie& os) const override;
@@ -88,7 +88,7 @@ inline void Op_Moyenne::initialiser(double val_init)
   integrale_champ.valeurs()= val_init;
 }
 
-inline void Op_Moyenne::associer(const Zone_dis_base& une_zdis, const Champ_Generique_base& le_champ,double t1,double t2)
+inline void Op_Moyenne::associer(const Domaine_dis_base& une_zdis, const Champ_Generique_base& le_champ,double t1,double t2)
 {
   Champ espace_stockage_source;
   const Champ_base& source = le_champ.get_champ(espace_stockage_source);

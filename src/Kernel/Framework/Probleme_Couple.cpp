@@ -20,7 +20,7 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <TRUSTTabs.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Probleme_Couple,"Probleme_Couple",Couplage_U);
 

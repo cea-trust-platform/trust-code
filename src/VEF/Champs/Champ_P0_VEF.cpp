@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_P0_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 Implemente_instanciable(Champ_P0_VEF,"Champ_P0_VEF",Champ_Inc_P0_base);
 
@@ -22,9 +22,9 @@ Sortie& Champ_P0_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " 
 
 Entree& Champ_P0_VEF::readOn(Entree& s) { return s ; }
 
-const Zone_VEF& Champ_P0_VEF::zone_VEF() const
+const Domaine_VEF& Champ_P0_VEF::domaine_VEF() const
 {
-  return ref_cast(Zone_VEF, le_dom_VF.valeur());
+  return ref_cast(Domaine_VEF, le_dom_VF.valeur());
 }
 
 int Champ_P0_VEF::imprime(Sortie& os, int ncomp) const

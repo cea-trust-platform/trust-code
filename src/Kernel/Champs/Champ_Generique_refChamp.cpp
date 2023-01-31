@@ -18,7 +18,7 @@
 #include <Champ_Inc_P1_base.h>
 #include <Champ_Fonc_P0_base.h>
 #include <Champ_Fonc_P1_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Inc_Q1_base.h>
 #include <Champ_Fonc_Q1_base.h>
@@ -221,7 +221,7 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
   loc = NODE;
 
   const Champ_base& ch = get_ref_champ_base();
-  const Zone_dis_base& z_dis_base = get_ref_zone_dis_base();
+  const Domaine_dis_base& z_dis_base = get_ref_domaine_dis_base();
 
   // Champs discrets a une seule localisation :
   if ((sub_type(Champ_Inc_P0_base, ch) || sub_type(Champ_Fonc_P0_base, ch)) && index <= 0)
@@ -233,7 +233,7 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
       loc = NODE;
     }
   else if ((ch.que_suis_je().debute_par("Champ_Face_PolyMAC")
-            || ch.valeurs().dimension(0) == ref_cast(Zone_VF,z_dis_base).nb_faces()) && index <= 0)
+            || ch.valeurs().dimension(0) == ref_cast(Domaine_VF,z_dis_base).nb_faces()) && index <= 0)
     {
       loc = FACE;
     }
@@ -280,11 +280,11 @@ void Champ_Generique_refChamp::get_xyz_values(const DoubleTab& coords, DoubleTab
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
 }
 
-const Zone_Cl_dis_base& Champ_Generique_refChamp::get_ref_zcl_dis_base() const
+const Domaine_Cl_dis_base& Champ_Generique_refChamp::get_ref_zcl_dis_base() const
 {
   const Champ_base& ch = get_ref_champ_base();
   if (sub_type(Champ_Inc_base,ch))
-    return ref_cast(Champ_Inc_base,ch).equation().zone_Cl_dis().valeur();
+    return ref_cast(Champ_Inc_base,ch).equation().domaine_Cl_dis().valeur();
   else
     {
       Cerr<<"No zcl_dis is available for the field "<<ch.que_suis_je()<<finl;
@@ -310,9 +310,9 @@ void Champ_Generique_refChamp::get_copy_coordinates(DoubleTab& coordinates) cons
 const IntTab& Champ_Generique_refChamp::get_ref_connectivity(Entity index1, Entity index2) const
 {
   const Champ_base& ch = get_ref_champ_base();
-  const Zone_dis_base& zone_dis_base = ch.zone_dis_base();
-  const Zone& zone = zone_dis_base.zone();
-  const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis_base);
+  const Domaine_dis_base& domaine_dis_base = ch.domaine_dis_base();
+  const Domaine& domaine = domaine_dis_base.domaine();
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis_base);
 
   switch(index1)
     {
@@ -321,9 +321,9 @@ const IntTab& Champ_Generique_refChamp::get_ref_connectivity(Entity index1, Enti
         switch(index2)
           {
           case NODE:
-            return zone.les_elems();
+            return domaine.les_elems();
           case FACE:
-            return zone_vf.elem_faces();
+            return domaine_vf.elem_faces();
           default :
             {
               exit();
@@ -336,9 +336,9 @@ const IntTab& Champ_Generique_refChamp::get_ref_connectivity(Entity index1, Enti
         switch(index2)
           {
           case NODE:
-            return zone_vf.face_sommets();
+            return domaine_vf.face_sommets();
           case ELEMENT:
-            return zone_vf.face_voisins();
+            return domaine_vf.face_voisins();
           default :
             {
               exit();

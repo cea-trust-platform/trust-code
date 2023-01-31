@@ -27,9 +27,9 @@
  */
 
 #include <Interprete_geometrique_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class Raffiner_anisotrope : public Interprete_geometrique_base
 {
@@ -38,7 +38,7 @@ class Raffiner_anisotrope : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void raffiner_(Zone&);
+  void raffiner_(Domaine&);
 
 };
 

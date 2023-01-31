@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Solveur_Masse_EF.h>
-#include <Zone_Cl_EF.h>
-#include <Zone_EF.h>
+#include <Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Debog.h>
@@ -53,13 +53,13 @@ Entree& Solveur_Masse_EF::readOn(Entree& s)
 DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
 {
   Debog::verifier("Solveur_Masse_EF::appliquer deb, sm=",sm);
-  const Zone_Cl_EF& zone_Cl_EF = ref_cast(Zone_Cl_EF,le_dom_Cl_EF.valeur());
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
-  const DoubleVect& volumes_sommets_thilde = zone_EF.volumes_sommets_thilde();
+  const Domaine_Cl_EF& domaine_Cl_EF = ref_cast(Domaine_Cl_EF,le_dom_Cl_EF.valeur());
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const DoubleVect& volumes_sommets_thilde = domaine_EF.volumes_sommets_thilde();
 
-  //  const DoubleVect& porosite_sommet = zone_EF.porosite_sommet();
-  int nfa = zone_EF.nb_som();
-  int nbsom=zone_EF.nb_som();
+  //  const DoubleVect& porosite_sommet = domaine_EF.porosite_sommet();
+  int nfa = domaine_EF.nb_som();
+  int nbsom=domaine_EF.nb_som();
   int face;
   if (nfa != sm.dimension(0))
     {
@@ -68,7 +68,7 @@ DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
            << " taille du second membre : " << sm.dimension(0) << finl;
       exit();
     }
-  const IntTab& faces_sommets=zone_EF.face_sommets();
+  const IntTab& faces_sommets=domaine_EF.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
   if (sm.nb_dim() == 1)
     {
@@ -85,11 +85,11 @@ DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
       // les faces internes non standard ne portent pas de C.L
 
       // On traite les conditions aux limites
-      int nb_cl=zone_Cl_EF.nb_cond_lim();
+      int nb_cl=domaine_Cl_EF.nb_cond_lim();
       for (int n_bord=0; n_bord<nb_cl; n_bord++)
         {
 
-          const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
@@ -126,13 +126,13 @@ DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
       // les faces internes non standard ne portent pas de C.L
 
       // On traite les conditions aux limites
-      if (zone_Cl_EF.equation().inconnue()->nature_du_champ()==vectoriel)
-        zone_Cl_EF.imposer_symetrie(sm);
-      int nb_cl=zone_Cl_EF.nb_cond_lim();
+      if (domaine_Cl_EF.equation().inconnue()->nature_du_champ()==vectoriel)
+        domaine_Cl_EF.imposer_symetrie(sm);
+      int nb_cl=domaine_Cl_EF.nb_cond_lim();
       for (int n_bord=0; n_bord<nb_cl; n_bord++)
         {
 
-          const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int num2 = num1 + le_bord.nb_faces();
@@ -160,14 +160,14 @@ DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
 
 
 //
-void Solveur_Masse_EF::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
+void Solveur_Masse_EF::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  le_dom_EF = ref_cast(Zone_EF, le_dom_dis_base);
+  le_dom_EF = ref_cast(Domaine_EF, le_dom_dis_base);
 }
 
-void Solveur_Masse_EF::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
+void Solveur_Masse_EF::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_EF = ref_cast(Zone_Cl_EF, le_dom_Cl_dis_base);
+  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, le_dom_Cl_dis_base);
 }
 
 

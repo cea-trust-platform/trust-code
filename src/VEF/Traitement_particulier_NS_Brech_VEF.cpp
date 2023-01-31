@@ -140,10 +140,10 @@ Entree& Traitement_particulier_NS_Brech_VEF::lire(Entree& is)
             case 1 :
               {
                 Cerr << " Lire Richardson " << finl;
-                const Zone_dis_base& zdis=mon_equation->inconnue().zone_dis_base();
-                const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zdis);
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
+                const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
-                const int nb_faces = zone_VEF.nb_faces() ;
+                const int nb_faces = domaine_VEF.nb_faces() ;
 
                 ch_ri.associer_domaine_dis_base(zdis);
                 ch_ri.nommer("Richardson");
@@ -158,10 +158,10 @@ Entree& Traitement_particulier_NS_Brech_VEF::lire(Entree& is)
             case 2 :
               {
                 Cerr << " Lire Pression_porosite " << finl;
-                const Zone_dis_base& zdis=mon_equation->inconnue().zone_dis_base();
-                const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zdis);
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
+                const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
-                const int nb_elem = zone_VEF.nb_elem() ;
+                const int nb_elem = domaine_VEF.nb_elem() ;
 
                 ch_p.associer_domaine_dis_base(zdis);
                 ch_p.nommer("Pression_porosite");
@@ -308,10 +308,10 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
       double fluxE ;
       // fin modifs VB
 
-      const Zone_dis_base& zdis=mon_equation->inconnue().zone_dis_base();
-      const Zone& zone=zdis.zone();
+      const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
+      const Domaine& domaine=zdis.domaine();
       IntVect les_polys(coord_trace.dimension(0));
-      zone.chercher_elements(coord_trace, les_polys);
+      domaine.chercher_elements(coord_trace, les_polys);
       mon_equation->inconnue()->valeur_aux_elems(coord_trace, les_polys, valeurs_);
 
       // Modifs VB pour prise en compte rho et calcul du flux enthalpique + Tmoy
@@ -322,7 +322,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
 
       // On annulle la partie virtuelle
       for (i=0 ; i<taille; i++)
-        if (les_polys(i)>=zone.nb_elem())
+        if (les_polys(i)>=domaine.nb_elem())
           {
             for (int k=0; k<dimension; k++)
               valeurs_(i,k)=0;
@@ -375,9 +375,9 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_flu
 
 void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson()
 {
-  const Zone_dis& zdis=mon_equation->zone_dis();
-  const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zdis.valeur());
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,mon_equation->zone_Cl_dis().valeur() );
+  const Domaine_dis& zdis=mon_equation->domaine_dis();
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis.valeur());
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
 
   REF(Champ_base) rch1 ;
   REF(Champ_Inc_base) l_inco ;
@@ -398,7 +398,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
   const DoubleVect& gravite = mon_equation->fluide().gravite().valeurs();
   const DoubleVect& beta     = mon_equation->fluide().beta_t().valeurs();
 
-  const int nb_faces = zone_VEF.nb_faces();
+  const int nb_faces = domaine_VEF.nb_faces();
 
   DoubleVect P(nb_faces) ;
   DoubleVect G(nb_faces) ;
@@ -406,10 +406,10 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
   DoubleVect beta_i(nb_faces) ;
   beta_i = beta(0) ;
 
-  calculer_terme_production_K( zone_VEF, zone_Cl_VEF,
+  calculer_terme_production_K( domaine_VEF, domaine_Cl_VEF,
                                P, vitesse);
 
-  calculer_terme_destruction_K( zone_VEF, zone_Cl_VEF,
+  calculer_terme_destruction_K( domaine_VEF, domaine_Cl_VEF,
                                 G, temperature,
                                 beta_i, gravite) ;
 
@@ -428,7 +428,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_Richardson
 
 void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pression()
 {
-  const Zone_VEF& zvef=ref_cast(Zone_VEF, mon_equation->zone_dis().valeur());
+  const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis().valeur());
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i,comp;
   int nb_face = zvef.nb_faces();
@@ -488,7 +488,7 @@ void Traitement_particulier_NS_Brech_VEF::post_traitement_particulier_calcul_pre
 
 
 void Traitement_particulier_NS_Brech_VEF::
-calculer_terme_production_K(const Zone_VEF& zone_VEF,const Zone_Cl_VEF& zcl_VEF,
+calculer_terme_production_K(const Domaine_VEF& domaine_VEF,const Domaine_Cl_VEF& zcl_VEF,
                             DoubleVect& P,
                             const DoubleTab& vit) const
 {
@@ -509,17 +509,17 @@ calculer_terme_production_K(const Zone_VEF& zone_VEF,const Zone_Cl_VEF& zcl_VEF,
 
   // Calcul de F(u,v,w):
 
-  //  const Zone& zone = zone_VEF.zone();
-  int nb_elem = zone_VEF.nb_elem();
-  //  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  //  const int nb_faces = zone_VEF.nb_faces();
-  const DoubleVect& volumes = zone_VEF.volumes();
-  //  int premiere_face_entier = zone_VEF.premiere_face_int();
-  //  const IntTab& les_Polys = zone.les_elems();
+  //  const Domaine& domaine = domaine_VEF.domaine();
+  int nb_elem = domaine_VEF.nb_elem();
+  //  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  //  const int nb_faces = domaine_VEF.nb_faces();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  //  int premiere_face_entier = domaine_VEF.premiere_face_int();
+  //  const IntTab& les_Polys = domaine.les_elems();
 
   int fac=0, poly1, poly2;
-  int nb_faces_ = zone_VEF.nb_faces();
+  int nb_faces_ = domaine_VEF.nb_faces();
 
   // (du/dx du/dy dv/dx dv/dy ...) pour un poly
 
@@ -553,7 +553,7 @@ calculer_terme_production_K(const Zone_VEF& zone_VEF,const Zone_Cl_VEF& zcl_VEF,
   // Boucle sur les bords pour traiter les faces de bord
   // en distinguant le cas periodicite
 
-  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = zcl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -667,8 +667,8 @@ calculer_terme_production_K(const Zone_VEF& zone_VEF,const Zone_Cl_VEF& zcl_VEF,
 
 
 void Traitement_particulier_NS_Brech_VEF::
-calculer_terme_destruction_K(const Zone_VEF& zone_VEF,
-                             const Zone_Cl_VEF& zcl_VEF,
+calculer_terme_destruction_K(const Domaine_VEF& domaine_VEF,
+                             const Domaine_Cl_VEF& zcl_VEF,
                              DoubleVect& G,const DoubleTab& temper,
                              const DoubleVect& beta,const DoubleVect& gravite) const
 {
@@ -678,31 +678,31 @@ calculer_terme_destruction_K(const Zone_VEF& zone_VEF,
   //                                       --> ----->
   // G(face) = beta alpha_t(face) G . gradT(face)
   //
-  int nb_elem = zone_VEF.nb_elem();
-  int nb_faces= zone_VEF.nb_faces();
+  int nb_elem = domaine_VEF.nb_elem();
+  int nb_faces= domaine_VEF.nb_faces();
   DoubleTrav u_teta(nb_faces,dimension);
   DoubleTrav gradient_elem(nb_elem,dimension);
   u_teta=0;
   gradient_elem=0;
 
-  //  const Zone& le_dom=zone_VEF.zone();
+  //  const Domaine& le_dom=domaine_VEF.domaine();
   //  int nb_faces_elem = le_dom.nb_faces_elem();
-  //  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  int premiere_face_entier = zone_VEF.premiere_face_int();
-  const DoubleVect& volumes = zone_VEF.volumes();
-  int nb_faces_ = zone_VEF.nb_faces();
+  //  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  int premiere_face_entier = domaine_VEF.premiere_face_int();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  int nb_faces_ = domaine_VEF.nb_faces();
   int elem1,elem2,fac;
 
   DoubleVect coef(Objet_U::dimension);
-  //  const IntTab& les_elem_faces = zone_VEF.elem_faces();
+  //  const IntTab& les_elem_faces = domaine_VEF.elem_faces();
 
   // Calcul du gradient de temperature :
 
   // On traite les bords
   int n_bord;
-  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = zcl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -753,7 +753,7 @@ calculer_terme_destruction_K(const Zone_VEF& zone_VEF,
 
   // On traite les bords
 
-  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = zcl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());

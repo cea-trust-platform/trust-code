@@ -16,7 +16,7 @@
 #include <Linear_algebra_tools_impl.h>
 #include <Champ_implementation_Q1.h>
 #include <Linear_algebra_tools.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 static int faces_sommets_quadra[4][2] =
 {
@@ -69,9 +69,9 @@ void calcul_plan_hexa(Vecteur3& coeff_plan, double& d, int cell, const IntTab& c
 
 void Champ_implementation_Q1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
-  const Zone& zone = get_zone_geom();
-  const IntTab& les_elems = zone.les_elems();
-  const DoubleTab& nodes = zone.les_sommets();
+  const Domaine& domaine = get_domaine_geom();
+  const IntTab& les_elems = domaine.les_elems();
+  const DoubleTab& nodes = domaine.les_sommets();
   const int nb_nodes_per_cell = les_elems.dimension(1);
   ArrOfDouble position(Objet_U::dimension);
 
@@ -222,12 +222,12 @@ double Champ_implementation_Q1::form_function(const ArrOfDouble& position, int c
       info = 1;
     }
 
-  const Zone& zone_geom = get_zone_geom();
+  const Domaine& domaine_geom = get_domaine_geom();
   int test_sommet = 1;
   if (test_sommet)
     {
-      const IntTab& cells = zone_geom.les_elems();
-      const DoubleTab& nodes = zone_geom.les_sommets();
+      const IntTab& cells = domaine_geom.les_elems();
+      const DoubleTab& nodes = domaine_geom.les_sommets();
 
       int nb_nodes_per_cell = cells.dimension(1);
       int sc = -1;
@@ -254,6 +254,6 @@ double Champ_implementation_Q1::form_function(const ArrOfDouble& position, int c
         }
 
     }
-  double factor = 1. / zone_geom.nb_som_elem();
+  double factor = 1. / domaine_geom.nb_som_elem();
   return factor;
 }

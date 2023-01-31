@@ -24,7 +24,7 @@ class Op_Diff_VDF_Face_Axi_base : public Op_Diff_VDF_Face_base
   Declare_base(Op_Diff_VDF_Face_Axi_base);
 public:
   double calculer_dt_stab() const override;
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
 
   inline void mettre_a_jour(double temps) override { }
@@ -36,8 +36,8 @@ public:
 protected:
   static constexpr double deux_pi = M_PI*2.0;
   REF(Champ_Face_VDF) inconnue;
-  REF(Zone_VDF) le_dom_vdf;
-  REF(Zone_Cl_VDF) la_zcl_vdf;
+  REF(Domaine_VDF) le_dom_vdf;
+  REF(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;
   IntTab Qdm, face_voisins, elem_faces;
   DoubleVect surface, volumes_entrelaces, porosite;

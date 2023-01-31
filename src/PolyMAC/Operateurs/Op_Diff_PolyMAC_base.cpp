@@ -26,7 +26,7 @@
 #include <Flux_parietal_base.h>
 #include <Schema_Temps_base.h>
 #include <MD_Vector_tools.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <communications.h>
 #include <TRUSTTab_parts.h>
@@ -34,7 +34,7 @@
 #include <Probleme_base.h>
 #include <Pb_Multiphase.h>
 #include <Simpler_Base.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Milieu_base.h>
 #include <Matrice33.h>
 #include <TRUSTTrav.h>
@@ -69,12 +69,12 @@ void Op_Diff_PolyMAC_base::completer()
   else if (N_nu == N * D) nu_.resize(0, N, D); //diagonal
   else if (N_nu == N * D * D) nu_.resize(0, N, D, D); //complet
   else Process::exit(Nom("Op_Diff_PolyMAC_base : diffusivity component count ") + Nom(N_nu) + "not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
-  le_dom_poly_.valeur().zone().creer_tableau_elements(nu_);
+  le_dom_poly_.valeur().domaine().creer_tableau_elements(nu_);
 }
 
 int Op_Diff_PolyMAC_base::impr(Sortie& os) const
 {
-  const Zone& mon_dom=le_dom_poly_->zone();
+  const Domaine& mon_dom=le_dom_poly_->domaine();
   const int impr_mom=mon_dom.moments_a_imprimer();
   const int impr_sum=(mon_dom.bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(mon_dom.bords_a_imprimer().est_vide() ? 0:1);
@@ -163,7 +163,7 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;
     }
-  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_poly_->zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_poly_->domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide() && nb_comp > 0)
     {
       EcrFicPartage Flux_face;
@@ -200,15 +200,15 @@ int Op_Diff_PolyMAC_base::impr(Sortie& os) const
   return 1;
 }
 /*
-void Op_Diff_PolyMAC_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zcl)
+void Op_Diff_PolyMAC_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  la_zcl_poly_ = ref_cast(Zone_Cl_PolyMAC,zcl);
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl);
 }
 */
-void Op_Diff_PolyMAC_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zcl,const Champ_Inc& )
+void Op_Diff_PolyMAC_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
-  le_dom_poly_ = ref_cast(Zone_PolyMAC,zone_dis.valeur());
-  la_zcl_poly_ = ref_cast(Zone_Cl_PolyMAC,zcl.valeur());
+  le_dom_poly_ = ref_cast(Domaine_PolyMAC,domaine_dis.valeur());
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl.valeur());
 }
 
 /*! @brief calcule la contribution de la diffusion, la range dans resu renvoie resu
@@ -233,22 +233,22 @@ const Champ_base& Op_Diff_PolyMAC_base::diffusivite() const
 
 void Op_Diff_PolyMAC_base::update_nu() const
 {
-  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
+  const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
   int e, i, m, n, N = equation().inconnue().valeurs().line_size(), N_nu = nu_.line_size(), N_nu_src = nu_src.line_size(), mult = N_nu / N, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
   assert(N_nu % N == 0);
 
   /* nu_ : si necessaire, on doit etendre la champ source */
   if (N_nu == N_nu_src)
-    for (e = 0; e < zone.nb_elem_tot(); e++)
+    for (e = 0; e < domaine.nb_elem_tot(); e++)
       for (n = 0; n < N_nu; n++) nu_.addr()[N_nu * e +  n] = nu_src(!c_nu * e, n); //facile
   else if (N_nu == N * D && N_nu_src == N)
-    for (e = 0; e < zone.nb_elem_tot(); e++)
+    for (e = 0; e < domaine.nb_elem_tot(); e++)
       for (n = 0; n < N; n++)
         for (d = 0; d < D; d++) //diagonal
           nu_(e, n, d) = nu_src(!c_nu * e, n);
   else if (N_nu == N * D * D && (N_nu_src == N || N_nu_src == N * D))
-    for (e = 0; e < zone.nb_elem_tot(); e++)
+    for (e = 0; e < domaine.nb_elem_tot(); e++)
       for (n = 0; n < N; n++) //complet
         for (d = 0; d < D; d++)
           for (db = 0; db < D; db++) nu_(e, n, d, db) = (d == db) * nu_src(!c_nu * e, N_nu_src == N ? n : D * n + d);
@@ -256,7 +256,7 @@ void Op_Diff_PolyMAC_base::update_nu() const
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
   const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  for (e = 0; e < zone.nb_elem_tot(); e++)
+  for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (n = 0, i = 0; n < N; n++)
       for (m = 0; m < mult; m++, i++)
         nu_.addr()[N_nu * e + i] *= equation().milieu().porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);

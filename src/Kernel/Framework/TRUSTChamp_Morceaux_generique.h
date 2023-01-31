@@ -20,12 +20,12 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Don_base.h>
 #include <Probleme_base.h>
-#include <Ref_Zone.h>
-#include <Ref_Sous_Zone.h>
+#include <Ref_Domaine.h>
+#include <Ref_Sous_Domaine.h>
 #include <TRUST_Vector.h>
 #include <TRUST_List.h>
 #include <Parser_U.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 enum class Champ_Morceaux_Type { FONC , FONC_TXYZ , FONC_TABULE , UNIFORME };
 
@@ -54,14 +54,14 @@ public:
 
   int initialiser(const double temps) override;
 
-  const REF(Zone)& domaine() const { return mon_domaine; }
-  REF(Zone)& domaine() { return mon_domaine; }
-  const LIST(REF(Sous_Zone))& sous_zones() const { return les_sous_zones; }
-  LIST(REF(Sous_Zone))& sous_zones() { return les_sous_zones; }
+  const REF(Domaine)& domaine() const { return mon_domaine; }
+  REF(Domaine)& domaine() { return mon_domaine; }
+  const LIST(REF(Sous_Domaine))& sous_domaines() const { return les_sous_domaines; }
+  LIST(REF(Sous_Domaine))& sous_domaines() { return les_sous_domaines; }
 
 protected:
-  LIST(REF(Sous_Zone)) les_sous_zones;
-  REF(Zone) mon_domaine;
+  LIST(REF(Sous_Domaine)) les_sous_domaines;
+  REF(Domaine) mon_domaine;
   REF(Probleme_base) ref_pb;
   VECT(Parser_U) parser; /* vecteur de tous les parsers */
   Nom nom_champ_parametre_; /* nom du champ dont les fonctions ont parametres */

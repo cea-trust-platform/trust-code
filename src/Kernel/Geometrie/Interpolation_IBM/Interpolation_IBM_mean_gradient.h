@@ -34,7 +34,7 @@ class Interpolation_IBM_mean_gradient : public Interpolation_IBM_base, public In
   Declare_instanciable( Interpolation_IBM_mean_gradient ) ;
 
 public :
-  void discretise(const Discretisation_base&, Zone_dis_base& le_dom_EF) override;
+  void discretise(const Discretisation_base&, Domaine_dis_base& le_dom_EF) override;
   inline IntList& getSommetsVoisinsOf(int i)
   {
     return sommets_voisins_[i];

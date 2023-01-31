@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Champ_implementation_P1.h>
-#include <Zone_Poly_base.h>
+#include <Domaine_Poly_base.h>
 #include <Octree_Double.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 double Champ_implementation_P1::form_function(const ArrOfDouble& position, const IntTab& les_elems, const DoubleTab& nodes, ArrOfInt& index, int cell, int ddl) const
 {
@@ -97,11 +97,11 @@ double Champ_implementation_P1::form_function(const ArrOfDouble& position, const
 }
 void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp) const
 {
-  const Zone& zone = get_zone_geom();
-  const Zone_Poly_base *zpoly = sub_type(Zone_Poly_base, get_zone_dis()) ? &ref_cast(Zone_Poly_base, get_zone_dis()) : NULL;
-  const IntTab& les_elems = zone.les_elems();
-  const DoubleTab& nodes = zone.les_sommets();
-  const int nb_nodes_per_cell = zone.nb_som_elem(), N = resu.line_size();
+  const Domaine& domaine = get_domaine_geom();
+  const Domaine_Poly_base *zpoly = sub_type(Domaine_Poly_base, get_domaine_dis()) ? &ref_cast(Domaine_Poly_base, get_domaine_dis()) : NULL;
+  const IntTab& les_elems = domaine.les_elems();
+  const DoubleTab& nodes = domaine.les_sommets();
+  const int nb_nodes_per_cell = domaine.nb_som_elem(), N = resu.line_size();
   ArrOfInt index(nb_nodes_per_cell);
   ArrOfDouble position(Objet_U::dimension);
   resu = 0;
@@ -174,7 +174,7 @@ void Champ_implementation_P1::value_interpolation(const DoubleTab& positions, co
  *   x y [z] compo1 [compo2 [compo3 ... ]]   (type double)
  *
  */
-void Champ_implementation_P1::init_from_file(DoubleTab& val, const Zone& dom, int nb_comp, double tolerance, Entree& input)
+void Champ_implementation_P1::init_from_file(DoubleTab& val, const Domaine& dom, int nb_comp, double tolerance, Entree& input)
 {
   val.resize(0, nb_comp);
   dom.creer_tableau_sommets(val, Array_base::NOCOPY_NOINIT);

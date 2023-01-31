@@ -27,7 +27,7 @@
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
 #include <Ref_IntVect.h>
-#include <Zone_dis.h>
+#include <Domaine_dis.h>
 #include <TRUST_List.h>
 #include <Probleme_U.h>
 #include <Milieu.h>
@@ -46,7 +46,7 @@ class Champ_Fonc;
  *      Un certains nombre d'objets sont associes au probleme pour
  *      le constituer:
  *        - 1 ou plusieurs equations: objet Equation
- *        - 1 Zone discretise: objet Domaine_Dis
+ *        - 1 Domaine discretise: objet Domaine_Dis
  *        - un postraitement: objet Postraitement
  *        - Une discretisation: objet Discretistaion
  *        - un schema en temps: objet Schema_temp
@@ -88,7 +88,7 @@ public:
   // Methodes d'acces aux membres prives.
   int associer_(Objet_U&) override;
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
-  virtual void associer_domaine(const Zone&);
+  virtual void associer_domaine(const Domaine&);
   virtual void associer_milieu_base(const Milieu_base&);
   virtual void discretiser(Discretisation_base&);
   virtual void discretiser_equations();
@@ -96,10 +96,10 @@ public:
 
   const Schema_Temps_base& schema_temps() const;
   Schema_Temps_base& schema_temps();
-  const Zone& domaine() const;
-  Zone& domaine();
-  const Zone_dis& domaine_dis() const;
-  Zone_dis& domaine_dis();
+  const Domaine& domaine() const;
+  Domaine& domaine();
+  const Domaine_dis& domaine_dis() const;
+  Domaine_dis& domaine_dis();
   int is_dilatable() const;
 
   virtual int allocate_file_size(long int& size) const;
@@ -199,9 +199,9 @@ protected :
   // ***************************************************************************
 
   std::vector<Milieu> le_milieu_;
-  Zone_dis le_domaine_dis;
+  Domaine_dis le_domaine_dis;
   Postraitements les_postraitements;
-  REF(Zone) le_domaine_;
+  REF(Domaine) le_domaine_;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;
 

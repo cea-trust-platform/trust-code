@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexa_EF.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Hexa_EF,"Hexa_EF",Elem_EF_base);
 
@@ -39,7 +39,7 @@ Hexa_EF::Hexa_EF()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_EF
+/*! @brief remplit le tableau face_normales dans la Domaine_EF
  *
  */
 
@@ -47,9 +47,9 @@ void Hexa_EF::normale(int num_Face,DoubleTab& Face_normales,
                       const  IntTab& Face_sommets,
                       const IntTab& Face_voisins,
                       const IntTab& elem_faces,
-                      const Zone& zone_geom) const
+                      const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   double x1,y1,z1,x2,y2,z2;
   double nx,ny,nz;

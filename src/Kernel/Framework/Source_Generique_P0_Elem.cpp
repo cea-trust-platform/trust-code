@@ -17,8 +17,8 @@
 #include <Synonyme_info.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_VF.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Source_Generique_P0_Elem,"Source_Generique_VDF_P0_VDF",Source_Generique_base);
 Add_synonym(Source_Generique_P0_Elem, "Source_Generique_Elem_PolyMAC");
@@ -52,10 +52,10 @@ DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-void Source_Generique_P0_Elem::associer_domaines(const Zone_dis& zone_dis,
-                                                 const Zone_Cl_dis& zcl_dis)
+void Source_Generique_P0_Elem::associer_domaines(const Domaine_dis& domaine_dis,
+                                                 const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom = ref_cast(Zone_VF,zone_dis.valeur());
+  le_dom = ref_cast(Domaine_VF,domaine_dis.valeur());
   le_dom_cl = zcl_dis;
 }
 

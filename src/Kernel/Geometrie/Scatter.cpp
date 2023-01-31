@@ -15,14 +15,14 @@
 
 
 #include <Scatter.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <LecFicDistribueBin.h>
 #include <Statistiques.h>
 #include <TRUSTTabs.h>
 #include <Connectivite_som_elem.h>
 #include <Schema_Comm.h>
 #include <Faces_builder.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Reordonner_faces_periodiques.h>
 #include <communications.h>
 #include <MD_Vector_tools.h>
@@ -67,7 +67,7 @@ Entree& Scatter::readOn(Entree& is)
 /*! @brief Renvoi le domaine associe
  *
  */
-Zone& Scatter::domaine()
+Domaine& Scatter::domaine()
 {
   return le_domaine.valeur();
 }
@@ -75,7 +75,7 @@ Zone& Scatter::domaine()
 namespace
 {
 // For debug:
-void dump_lata(const Zone& dom)
+void dump_lata(const Domaine& dom)
 {
   Format_Post_Lata post;  // Lata V2
   Nom nom_fichier_lata("espaces_virtuels");
@@ -140,12 +140,12 @@ Entree& Scatter::interpreter(Entree& is)
       Nom nomdomaine;
       is >> nomdomaine;
       Objet_U& obj = objet(nomdomaine);
-      if(!sub_type(Zone, obj))
+      if(!sub_type(Domaine, obj))
         {
           Cerr << "obj : " << obj << " is not an object of type Domain !" << finl;
           exit();
         }
-      Zone& dom = ref_cast(Zone, obj);
+      Domaine& dom = ref_cast(Domaine, obj);
       if (n == ";")
         init_sequential_domain(dom);
       else
@@ -201,12 +201,12 @@ Entree& Scatter::interpreter(Entree& is)
   Nom nomdomaine;
   is >> nomdomaine;
   Objet_U& obj = objet(nomdomaine);
-  if(!sub_type(Zone, obj))
+  if(!sub_type(Domaine, obj))
     {
       Cerr << "obj : " << obj << " is not an object of type Domain !" << finl;
       exit();
     }
-  Zone& dom = ref_cast(Zone, obj);
+  Domaine& dom = ref_cast(Domaine, obj);
   le_domaine = dom;
 
   // Lecture des fichiers de decoupage :
@@ -233,19 +233,19 @@ Entree& Scatter::interpreter(Entree& is)
     dump_lata(dom);
 
   barrier();
-  Cerr << "End Distribue_zones" << finl;
+  Cerr << "End Distribue_domaines" << finl;
 
   Cerr << "\nQuality of partitioning --------------------------------------------" << finl;
   int total_nb_elem = Process::mp_sum(dom.nb_elem());
   Cerr << "\nTotal number of elements = " << total_nb_elem << finl;
-  Cerr << "Number of Zones : " << Process::nproc() << finl;
-  double min_element_zone = mp_min(dom.nb_elem());
-  double max_element_zone = mp_max(dom.nb_elem());
-  double mean_element_zone = total_nb_elem / Process::nproc();
-  Cerr << "Min number of elements on a Zone = " << min_element_zone << finl;
-  Cerr << "Max number of elements on a Zone = " << max_element_zone << finl;
-  Cerr << "Mean number of elements per Zone = " << (int)(mean_element_zone) << finl;
-  double load_imbalance = max_element_zone / mean_element_zone;
+  Cerr << "Number of Domaines : " << Process::nproc() << finl;
+  double min_element_domaine = mp_min(dom.nb_elem());
+  double max_element_domaine = mp_max(dom.nb_elem());
+  double mean_element_domaine = total_nb_elem / Process::nproc();
+  Cerr << "Min number of elements on a Domaine = " << min_element_domaine << finl;
+  Cerr << "Max number of elements on a Domaine = " << max_element_domaine << finl;
+  Cerr << "Mean number of elements per Domaine = " << (int)(mean_element_domaine) << finl;
+  double load_imbalance = max_element_domaine / mean_element_domaine;
   Cerr << "Load imbalance = " << load_imbalance << "\n" << finl;
 
   Elem_geom_base& elem=dom.type_elem().valeur();
@@ -261,14 +261,14 @@ Entree& Scatter::interpreter(Entree& is)
   return is;
 }
 
-/*! @brief Merged zones receive joints information from their neighbours to ensure that their common items (vertices) appear in the same order
+/*! @brief Merged domaines receive joints information from their neighbours to ensure that their common items (vertices) appear in the same order
  *
- *  If it's not the case, the merged zone reorders its common items so that it matches the neighbour's order
- *  When 2 neighbouring zones have each been merged,
+ *  If it's not the case, the merged domaine reorders its common items so that it matches the neighbour's order
+ *  When 2 neighbouring domaines have each been merged,
  *  only the processor with the lowest rank proceeds to reordering
  *
  */
-void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZones)
+void Scatter::check_consistancy_remote_items(Domaine& dom, const ArrOfInt& mergedDomaines)
 {
   const Joints& joints     = dom.faces_joint();
   const int nb_joints = joints.size();
@@ -280,23 +280,23 @@ void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZo
   liste_recv.set_smart_resize(1);
 
   const int moi = Process::me();
-  const int myZoneWasMerged = mergedZones[moi];
+  const int myDomaineWasMerged = mergedDomaines[moi];
 
   for (int i_joint = 0; i_joint < nb_joints; i_joint++)
     {
 
       const int pe_voisin = joints[i_joint].PEvoisin();
-      const int neighbourZoneWasMerged = mergedZones[pe_voisin];
-      if(myZoneWasMerged && neighbourZoneWasMerged)
+      const int neighbourDomaineWasMerged = mergedDomaines[pe_voisin];
+      if(myDomaineWasMerged && neighbourDomaineWasMerged)
         {
           if(pe_voisin < moi)
             liste_recv.append_array(pe_voisin);
           else
             liste_send.append_array(pe_voisin);
         }
-      else if(myZoneWasMerged && !neighbourZoneWasMerged)
+      else if(myDomaineWasMerged && !neighbourDomaineWasMerged)
         liste_recv.append_array(pe_voisin);
-      else if(!myZoneWasMerged && neighbourZoneWasMerged)
+      else if(!myDomaineWasMerged && neighbourDomaineWasMerged)
         liste_send.append_array(pe_voisin);
       else
         {
@@ -327,8 +327,8 @@ void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZo
     for (int i = 0; i < nb_joints; i++)
       {
         const int pe_voisin = joints[i].PEvoisin();
-        const int neighbourZoneWasMerged = mergedZones[pe_voisin];
-        if( neighbourZoneWasMerged && !(myZoneWasMerged && pe_voisin<moi) )
+        const int neighbourDomaineWasMerged = mergedDomaines[pe_voisin];
+        if( neighbourDomaineWasMerged && !(myDomaineWasMerged && pe_voisin<moi) )
           {
             Sortie& buffer = schema_comm.send_buffer(pe_voisin);
             buffer << coord_items_locaux[i];
@@ -336,13 +336,13 @@ void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZo
       }
     schema_comm.echange_taille_et_messages();
 
-    if(myZoneWasMerged)
+    if(myDomaineWasMerged)
       {
         for (int i = 0; i < nb_joints; i++)
           {
             const int pe_voisin = joints[i].PEvoisin();
-            const int neighbourZoneWasMerged = mergedZones[pe_voisin];
-            if(!(neighbourZoneWasMerged && pe_voisin>moi))
+            const int neighbourDomaineWasMerged = mergedDomaines[pe_voisin];
+            if(!(neighbourDomaineWasMerged && pe_voisin>moi))
               {
                 Entree& buffer = schema_comm.recv_buffer(pe_voisin);
                 buffer >> coord_items_distants[i];
@@ -354,14 +354,14 @@ void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZo
   }
 
   // check if the vertices in my joints appear in the same order as my neighbour joint
-  if(myZoneWasMerged)
+  if(myDomaineWasMerged)
     {
       for (int i_joint = 0; i_joint < nb_joints; i_joint++)
         {
 
           const int pe_voisin = joints[i_joint].PEvoisin();
-          const int neighbourZoneWasMerged = mergedZones[pe_voisin];
-          if(neighbourZoneWasMerged && pe_voisin>moi)
+          const int neighbourDomaineWasMerged = mergedDomaines[pe_voisin];
+          if(neighbourDomaineWasMerged && pe_voisin>moi)
             continue;
           ArrOfInt& items_communs = dom.faces_joint()[i_joint].set_joint_item(Joint::SOMMET).set_items_communs();
           const ArrOfInt old_items_communs = joints[i_joint].joint_item(Joint::SOMMET).items_communs();
@@ -388,29 +388,29 @@ void Scatter::check_consistancy_remote_items(Zone& dom, const ArrOfInt& mergedZo
 }
 
 
-/*! @brief Does the exact same thing as the readOn of the class Zone but without collective communication
+/*! @brief Does the exact same thing as the readOn of the class Domaine but without collective communication
  *
  *  Necessary when the processors don't have the same numbers of file to read
  */
 void Scatter::read_domain_no_comm(Entree& fic)
 {
-  Zone& dom = le_domaine.valeur();
+  Domaine& dom = le_domaine.valeur();
 
   Cerr << "\treading vertices..." << finl;
-  Zone dom_tmp_for_vertices;
+  Domaine dom_tmp_for_vertices;
   dom_tmp_for_vertices.read_vertices(fic);
 
-  Cerr << "\tDone !\n\treading elem infos (zones)..." << finl;
+  Cerr << "\tDone !\n\treading elem infos (domaines)..." << finl;
 
   Nom accouverte="{", accfermee="}", virgule=",";
   Motcle nom;
   fic >> nom;
-  Zone zone_read;
+  Domaine domaine_read;
   if(nom!=(const char*)"vide")
     {
       if (nom!=accouverte)
         Process::exit("Error: Scatter::read_domain_no_comm() -- One expected an opened bracket { to start.");
-      zone_read.read_former_zone(fic);
+      domaine_read.read_former_domaine(fic);
       fic >> nom;
       if(nom!=accfermee)
         Process::exit("Error: Scatter::read_domain_no_comm() -- One expected a closing bracket } to end.");
@@ -420,7 +420,7 @@ void Scatter::read_domain_no_comm(Entree& fic)
   Cerr << "Done!" << finl;
 
   //
-  // Now merge the read zone with the current domain
+  // Now merge the read domaine with the current domain
   //
   int nb_elems = dom.nb_elem();
   IntVect nums;
@@ -429,21 +429,21 @@ void Scatter::read_domain_no_comm(Entree& fic)
   dom.ajouter(dom_tmp_for_vertices.les_sommets(), /*out*/ nums);
   if (nb_elems > 0)
     {
-      zone_read.renum(nums);
-      zone_read.renum_joint_common_items(nums, nb_elems);
+      domaine_read.renum(nums);
+      domaine_read.renum_joint_common_items(nums, nb_elems);
     }
 
-  // Merge zone_read into current domain, w/o taking care of the joints.
-  dom.merge_wo_vertices_with(zone_read);
+  // Merge domaine_read into current domain, w/o taking care of the joints.
+  dom.merge_wo_vertices_with(domaine_read);
 
   if(nb_elems > 0)  // Current domain already had something, so joints will need update
-    // Otherwise, joints were already read by "zone_read.read_former_zone(fic);" above and joints are OK.
+    // Otherwise, joints were already read by "domaine_read.read_former_domaine(fic);" above and joints are OK.
     {
       //merging common vertices and remote items
-      const int nb_joints = zone_read.nb_joints();
+      const int nb_joints = domaine_read.nb_joints();
       for (int i_joint = 0; i_joint < nb_joints; i_joint++)
         {
-          const Joint& joint_to_add  = zone_read.faces_joint()[i_joint];
+          const Joint& joint_to_add  = domaine_read.faces_joint()[i_joint];
 
           int my_joint_index = 0;
           while(joint_to_add.PEvoisin() != dom.faces_joint()[my_joint_index].PEvoisin())
@@ -467,16 +467,16 @@ void Scatter::read_domain_no_comm(Entree& fic)
 
 /*! @brief Lit le domaine dans le fichier de nom "nomentree", de type LecFicDistribueBin ou LecFicDistribue
  *
- *   Format attendu : Zone::ReadOn
+ *   Format attendu : Domaine::ReadOn
  */
 void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 {
   // On determine si le fichier est au nouveau format ou a l'ancien
   if (Process::je_suis_maitre())
-    Cerr << "Reading geometry from .Zones file(s) ..." << finl;
+    Cerr << "Reading geometry from .Domaines file(s) ..." << finl;
   barrier(); // Attendre que le message soit affiche
 
-  Zone& dom = domaine();
+  Domaine& dom = domaine();
   // Just in case - some dataset improperly build a Domain and then try to Scatter on it ...:
   dom.clear();
 
@@ -490,8 +490,8 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   static Stat_Counter_Id stats = statistiques().new_counter(0 /* Level */, "Scatter::lire_domaine", 0 /* Group */);
 
   statistiques().begin_count(stats);
-  ArrOfInt mergedZones(Process::nproc());
-  mergedZones = 0;
+  ArrOfInt mergedDomaines(Process::nproc());
+  mergedDomaines = 0;
   bool domain_not_built = true;
   if (is_hdf)
     {
@@ -500,11 +500,11 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       nomentree = copy;
       fic_hdf.open(nomentree, true);
 
-      std::string dname = "/zone_"  + std::to_string(Process::me());
+      std::string dname = "/domaine_"  + std::to_string(Process::me());
       bool ok = fic_hdf.exists(dname.c_str());
       if(!ok)
         {
-          mergedZones = 1;
+          mergedDomaines = 1;
           for(int i=0; i<Process::nproc(); i++)
             {
               Entree_Brute data_part;
@@ -530,7 +530,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       else
         {
           Entree_Brute data;
-          fic_hdf.read_dataset("/zone", Process::me(), data);
+          fic_hdf.read_dataset("/domaine", Process::me(), data);
 
           // Feed TRUST objects:
           read_domain_no_comm(data);
@@ -544,19 +544,19 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   else  // Not HDF
     {
       LecFicDistribueBin fichier_binaire;
-      int isSingleZone = fichier_binaire.ouvrir(nomentree);
-      if (!isSingleZone)
+      int isSingleDomaine = fichier_binaire.ouvrir(nomentree);
+      if (!isSingleDomaine)
         {
-          mergedZones = 1;
+          mergedDomaines = 1;
           Nom nomentree_with_suffix=nomentree.nom_me(Process::me());
           for(int i=0; i<Process::nproc(); i++)
             {
               EFichierBin fichier_binaire_part;
-              Zone part_dom;
-              std::string tmp = nomentree_with_suffix.getPrefix(".Zones").getString();
+              Domaine part_dom;
+              std::string tmp = nomentree_with_suffix.getPrefix(".Domaines").getString();
               tmp += "_";
               tmp += std::to_string(i);
-              tmp += ".Zones";
+              tmp += ".Domaines";
               Nom nomentree_part(tmp);
               int ok = fichier_binaire_part.ouvrir(nomentree_part);
               if(ok)
@@ -589,14 +589,14 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
     {
       Cerr << "Error in Scatter::lire_domaine\n";
       Cerr << "The domain on the current process hasn't been built" << finl;
-      Cerr << "The number of processes you mentionned is probaly higher than the number of zones" << finl;
+      Cerr << "The number of processes you mentionned is probaly higher than the number of domaines" << finl;
       Process::exit();
     }
 
-  // Verification sanitaire: nombre de processeurs = nombre de zones
+  // Verification sanitaire: nombre de processeurs = nombre de domaines
   // (on verifie qu'il n'y a pas de joint avec un processeur inexistant)
   // (le check precedent n'est pas suffisant:
-  // il verifie seulement que le nombre de processeurs n'est pas superieur au nombre de zones)
+  // il verifie seulement que le nombre de processeurs n'est pas superieur au nombre de domaines)
   {
 
     const Joints& joints = dom.faces_joint();
@@ -616,8 +616,8 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       {
         Cerr << "Error in Scatter::lire_domaine\n"
              << "The domain has been partitioned with at least " << max_pe_voisin << " "
-             << "zones whereas the number of processes asked is " << Process::nproc() << "." << finl;
-        Cerr << "The number of zones and number of processes must match." << finl;
+             << "domaines whereas the number of processes asked is " << Process::nproc() << "." << finl;
+        Cerr << "The number of domaines and number of processes must match." << finl;
         exit();
       }
   }
@@ -625,9 +625,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   //tri des joints dans l'ordre croissant des procs
   Joints& joints = dom.faces_joint();
   trier_les_joints(joints);
-  envoyer_all_to_all(mergedZones, mergedZones);
-  check_consistancy_remote_items( dom, mergedZones );
-  dom.check_zone();
+  envoyer_all_to_all(mergedDomaines, mergedDomaines);
+  check_consistancy_remote_items( dom, mergedDomaines );
+  dom.check_domaine();
 
   // PL : pas tout a fait exact le nombre affiche de sommets, on compte plusieurs fois les sommets des joints...
   int nbsom = mp_sum(dom.les_sommets().dimension(0));
@@ -635,9 +635,9 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 
   init_sequential_domain(dom);
 
-  // merged zones need to reorder faces of periodic borders
-  const int myZoneWasMerged = mergedZones[Process::me()];
-  if(myZoneWasMerged)
+  // merged domaines need to reorder faces of periodic borders
+  const int myDomaineWasMerged = mergedDomaines[Process::me()];
+  if(myDomaineWasMerged)
     {
       for(auto& itr : liste_bords_periodiques)
         {
@@ -658,13 +658,13 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   barrier();
 }
 
-/*! @brief Construction des structures paralleles du domaine et de la zone (determination des elements distants en fonction de l'epaisseur de joint,
+/*! @brief Construction des structures paralleles du domaine et de la domaine (determination des elements distants en fonction de l'epaisseur de joint,
  *
  *    determination des sommets distants,
  *    creation des sommets et des elements virtuels)
  *
  */
-void Scatter::construire_structures_paralleles(Zone& dom, const Noms& liste_bords_periodiques)
+void Scatter::construire_structures_paralleles(Domaine& dom, const Noms& liste_bords_periodiques)
 {
   // D'abord: supprimer les structures "sequentielles" associees aux sommets et elements lors de la lecture:
   {
@@ -803,9 +803,9 @@ static void array_retirer_elements(ArrOfInt& sorted_array, const ArrOfInt& sorte
 
 // Si un joint avec le "pe" existe, renvoie son indice,
 // sion cree un nouveau joint et renvoie son indice.
-static int ajouter_joint(Zone& zone, int pe)
+static int ajouter_joint(Domaine& domaine, int pe)
 {
-  Joints& joints = zone.faces_joint();
+  Joints& joints = domaine.faces_joint();
   const int i_joint = joints.size();
 
   {
@@ -816,7 +816,7 @@ static int ajouter_joint(Zone& zone, int pe)
 
   Joint& joint = joints.add(Joint());
   joint.nommer(Nom("Joint_")+Nom(pe));
-  joint.associer_domaine(zone);
+  joint.associer_domaine(domaine);
   int ep = (i_joint > 0) ? joints[0].epaisseur() : 1;
   joint.affecte_epaisseur(ep);
   joint.affecte_PEvoisin(pe);
@@ -885,7 +885,7 @@ static int ajouter_joint(Zone& zone, int pe)
  * @param (items_to_send) un vecteur de "nproc()" tableaux, pour chaque processeur, la liste des items qu'on veut lui envoyer (exemple:tous les sommets des elements distants, ou toutes les faces)
  * @param (type_item) les items dont on veut calculer l'espace distant
  */
-void Scatter::calculer_espace_distant(Zone&                  zone,
+void Scatter::calculer_espace_distant(Domaine&                  domaine,
                                       const int           nb_items_reels,
                                       const ArrsOfInt& items_to_send,
                                       const Joint::Type_Item type_item)
@@ -895,7 +895,7 @@ void Scatter::calculer_espace_distant(Zone&                  zone,
   Process::Journal() << "Scatter::calculer_espace_distant type_item="
                      << (int)type_item << finl;
 
-  Joints& joints = zone.faces_joint();
+  Joints& joints = domaine.faces_joint();
 
   // D'abord, on determine pour tous les items le numero du PE proprietaire:
   //  Pour chaque item du domaine:
@@ -1060,12 +1060,12 @@ void Scatter::calculer_espace_distant(Zone&                  zone,
         nouveaux_voisins.append_array(i);
 
     // On ajoute les nouveaux joints
-    ajouter_joints(zone, nouveaux_voisins);
+    ajouter_joints(domaine, nouveaux_voisins);
     Process::Journal() << " News joints created : (ArrOfInt) "
                        << nouveaux_voisins << finl;
   }
 
-  Joints& joints_non_const = zone.faces_joint();
+  Joints& joints_non_const = domaine.faces_joint();
   const int nb_new_joints = joints_non_const.size();
   // Remplissage des tableaux d'items distants
   for (int i_joint = 0; i_joint < nb_new_joints; i_joint++)
@@ -1099,10 +1099,10 @@ inline Nom endian()
  *   On met dans pe_voisins la liste des joints effectivement crees.
  *
  */
-void Scatter::ajouter_joints(Zone& zone,
+void Scatter::ajouter_joints(Domaine& domaine,
                              ArrOfInt& pe_voisins)
 {
-  Joints& joints = zone.faces_joint();
+  Joints& joints = domaine.faces_joint();
   ArrOfInt liste_pe;
   pe_voisins.set_smart_resize(1);
   liste_pe.set_smart_resize(1);
@@ -1132,7 +1132,7 @@ void Scatter::ajouter_joints(Zone& zone,
   {
     const int n = pe_voisins.size_array();
     for (int i = 0; i < n; i++)
-      ajouter_joint(zone, pe_voisins[i]);
+      ajouter_joint(domaine, pe_voisins[i]);
     trier_les_joints(joints);
   }
 }
@@ -1147,13 +1147,13 @@ void Scatter::ajouter_joints(Zone& zone,
  *   Scatter::calculer_espace_distant_sommets
  *   Scatter::calculer_espace_distant_faces
  *
- * @param (zone) bah, la zone quoi...
+ * @param (domaine) bah, la domaine quoi...
  * @param (type_item) le type des items dont on veut calculer l'espace distant
- * @param (connectivite_elem_item) le tableau qui donne pour chaque element de la zone les indices des items de cet element. On n'utilise que la partie reele du tableau (logiquement, la partie virtuelle n'existe pas encore). (exemple: zone().les_elems() pour type_item==SOMMET ou zone_VF().face_sommets() pour type_item==FACE)
+ * @param (connectivite_elem_item) le tableau qui donne pour chaque element de la domaine les indices des items de cet element. On n'utilise que la partie reele du tableau (logiquement, la partie virtuelle n'existe pas encore). (exemple: domaine().les_elems() pour type_item==SOMMET ou domaine_VF().face_sommets() pour type_item==FACE)
  * @param (nb_items_reels) le nombre de "type_item" reels
  * @param (items_lies) si le tableau est non vide, il doit etre de taille nb_items_reels. Dans ce cas, il permet de forcer la propriete suivante : "si l'item i est distant, alors l'item items_lies[i] est distant aussi". Ce tableau est utilise pour inclure les sommets periodiques virtuels associes. (voir calculer_espace_distant_sommets).
  */
-static void calculer_espace_distant_item(Zone& le_dom,
+static void calculer_espace_distant_item(Domaine& le_dom,
                                          const Joint::Type_Item type_item,
                                          const IntTab& connectivite_elem_item,
                                          const int nb_items_reels,
@@ -1225,7 +1225,7 @@ static void calculer_espace_distant_item(Zone& le_dom,
  *    dom.faces_joint(i).joint_item(Joint::SOMMET).items_distants();
  *
  */
-void Scatter::calculer_espace_distant_sommets(Zone& dom, const Noms& liste_bords_perio)
+void Scatter::calculer_espace_distant_sommets(Domaine& dom, const Noms& liste_bords_perio)
 {
   if (Process::je_suis_maitre())
     Cerr << "Scatter::calculer_espace_distant_sommets : start" << finl;
@@ -1250,7 +1250,7 @@ void Scatter::calculer_espace_distant_sommets(Zone& dom, const Noms& liste_bords
 /*! @brief Idem que Scatter::calculer_espace_distant_sommets pour les faces
  *
  */
-void Scatter::calculer_espace_distant_faces(Zone& zone,
+void Scatter::calculer_espace_distant_faces(Domaine& domaine,
                                             const int nb_faces_reelles,
                                             const IntTab& elem_faces)
 {
@@ -1259,7 +1259,7 @@ void Scatter::calculer_espace_distant_faces(Zone& zone,
 
   ArrOfInt tableau_vide;
 
-  calculer_espace_distant_item(zone,
+  calculer_espace_distant_item(domaine,
                                Joint::FACE,
                                elem_faces,
                                nb_faces_reelles,
@@ -1269,14 +1269,14 @@ void Scatter::calculer_espace_distant_faces(Zone& zone,
 /*! @brief Idem que Scatter::calculer_espace_distant_sommets pour les aretes
  *
  */
-void Scatter::calculer_espace_distant_aretes(Zone& zone,
+void Scatter::calculer_espace_distant_aretes(Domaine& domaine,
                                              const int nb_aretes_reelles,
                                              const IntTab& elem_aretes)
 {
   if (Process::je_suis_maitre())
     Cerr << "Scatter::calculer_espace_distant_aretes : start" << finl;
   ArrOfInt tableau_vide;
-  calculer_espace_distant_item(zone,
+  calculer_espace_distant_item(domaine,
                                Joint::ARETE,
                                elem_aretes,
                                nb_aretes_reelles,
@@ -1349,7 +1349,7 @@ void Scatter::calculer_renum_items_communs(Joints& joints,
 /*! @brief construction d'un MD_Vector_std a partir des informations de joint du domaine pour le type d'item demande.
  *
  */
-void Scatter::construire_md_vector(const Zone& dom, int nb_items_reels, const Joint::Type_Item type_item, MD_Vector& md_vector)
+void Scatter::construire_md_vector(const Domaine& dom, int nb_items_reels, const Joint::Type_Item type_item, MD_Vector& md_vector)
 {
   const Joints& joints  = dom.faces_joint();
   const int nb_joints = joints.size();
@@ -1695,7 +1695,7 @@ int Traduction_Indice_Global_Local::traduire_espace_virtuel(IntVect& tableau) co
  *
  *   Exemple: tableau indexe par md_indice, contenant des indices md_valeur:
  *      type_indice  type_valeur   exemple de tableau:
- *       element      sommet       zone.les_elems()
+ *       element      sommet       domaine.les_elems()
  *       face         sommet       faces_sommets
  *       element      face         elem_faces
  *       face         element      faces_voisins
@@ -1749,7 +1749,7 @@ void Scatter::construire_espace_virtuel_traduction(const MD_Vector& md_indice,
  *   de sommets locaux. Les faces de joint du PE2 ne sont donc pas utilisees.
  *
  */
-void Scatter::reordonner_faces_de_joint(Zone& dom)
+void Scatter::reordonner_faces_de_joint(Domaine& dom)
 {
   // Construction du dictionnaire indice global/indice local
   // pour les sommets du domaine:
@@ -1885,9 +1885,9 @@ static void calculer_liste_complete_aretes_joint(const Joint& joint, ArrOfInt& l
   int nb_faces_joint=joint.faces().nb_faces();
   int nb_som_faces=joint.faces().nb_som_faces();
   const IntTab& sommet=joint.faces().les_sommets();
-  const Zone& dom=joint.zone();
+  const Domaine& dom=joint.domaine();
   const DoubleTab& coord=dom.coord_sommets();
-  const IntTab& aretes_som=joint.zone().aretes_som();
+  const IntTab& aretes_som=joint.domaine().aretes_som();
   ArrOfInt aretes(1);
   int compteur=0;
   DoubleTab positions(1,Objet_U::dimension);
@@ -1982,7 +1982,7 @@ static void calculer_liste_complete_items_joint(const Joint& joint, const Joint:
  *   on ajoute a l'espace distant l'element adjacent a la face opposee.
  *
  */
-void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
+void Scatter::corriger_espace_distant_elements_perio(Domaine& dom,
                                                      const Noms& liste_bords_periodiques)
 {
   if (Process::je_suis_maitre())
@@ -2120,7 +2120,7 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
  *  sommet de joint (sommet sur un face de joint ou sommet isole).
  *  Pour un joint d'epaisseur n>1, ce sont tous les elements voisins d'un
  *  sommet d'un element du joint d'epaisseur n-1.
- *  Le voisinage s'entend sur le domaine global (toutes zones confondues)
+ *  Le voisinage s'entend sur le domaine global (toutes domaines confondues)
  *  Historique: premiere version B.Mathieu le 16/01/2007.
  *    Il existe une methode qui determine les elements distants au moment du decoupage
  *    (DomaineCutter::construire_elements_distants_ssdom).
@@ -2131,7 +2131,7 @@ void Scatter::corriger_espace_distant_elements_perio(Zone& dom,
  *  local. Difficulte resolue par l'algorithme ci-dessous.
  *
  */
-void Scatter::calculer_espace_distant_elements(Zone& dom)
+void Scatter::calculer_espace_distant_elements(Domaine& dom)
 {
   const int nbjoints    = dom.nb_joints();
   const int nb_som_elem  = dom.nb_som_elem();
@@ -2140,7 +2140,7 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
   // PL on doit avoir la meme epaisseur_joint sur chaque processeur pour l'algorithme suivant
   // utilisant un echange de donnees avec schema_comm.begin_comm() schema_comm.end_comm()
   // sinon il y'a un blocage en mode debug a cause de la sortie de la ligne 1866 (voir cas Quasi_Comp_Coupl_Incomp)
-  //const int epaisseur_joint = (nb_joints > 0) ? zone.joint(0).epaisseur() : 1;
+  //const int epaisseur_joint = (nb_joints > 0) ? domaine.joint(0).epaisseur() : 1;
   const int epaisseur_joint = (int) mp_max((nbjoints > 0) ? dom.joint(0).epaisseur() : 1);
 
   if (Process::je_suis_maitre())
@@ -2237,7 +2237,7 @@ void Scatter::calculer_espace_distant_elements(Zone& dom)
             {
               // Indice du sommet partage sur le pe voisin
               const int i_sommet_distant = renum_sommets(i, 0);
-              // Indice du sommet partage sur ma zone locale
+              // Indice du sommet partage sur ma domaine locale
               const int i_sommet_local = renum_sommets(i, 1);
               const int j = count[i_sommet_local]++;
               data_sommets_communs.set_value(i_sommet_local, j*2, pe);
@@ -2766,24 +2766,24 @@ void Scatter::construire_correspondance_items_par_coordonnees(Joints& joints, co
 
 /*! @brief Construction des tableaux joint_item(Joint::SOMMET).
  *
- * items_communs de tous les joints de la zone(0) du domaine dom
+ * items_communs de tous les joints de la domaine(0) du domaine dom
  *
  */
 
-void Scatter::construire_correspondance_sommets_par_coordonnees(Zone& dom)
+void Scatter::construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 {
   construire_correspondance_items_par_coordonnees(dom.faces_joint(), Joint::SOMMET, dom.coord_sommets());
 }
 
 /*! @brief Construction des tableaux joint_item(Joint::ARETE).
  *
- * items_communs de tous les joints de la zone
+ * items_communs de tous les joints de la domaine
  *
  */
 
-void Scatter::construire_correspondance_aretes_par_coordonnees(Zone_VF& zvf)
+void Scatter::construire_correspondance_aretes_par_coordonnees(Domaine_VF& zvf)
 {
-  construire_correspondance_items_par_coordonnees(zvf.zone().faces_joint(), Joint::ARETE, zvf.xa());
+  construire_correspondance_items_par_coordonnees(zvf.domaine().faces_joint(), Joint::ARETE, zvf.xa());
 }
 
 static void init_simple_md_vector(MD_Vector_std& md, const int n)
@@ -2847,7 +2847,7 @@ void Scatter::calculer_nb_items_virtuels(Joints& joints,
  *   domaines en sequentiel)
  *
  */
-void Scatter::init_sequential_domain(Zone& dom)
+void Scatter::init_sequential_domain(Domaine& dom)
 {
   MD_Vector_std mdstd;
   MD_Vector md;
@@ -2867,7 +2867,7 @@ void Scatter::init_sequential_domain(Zone& dom)
  *   la modification de ces tableaux.
  *
  */
-void Scatter::uninit_sequential_domain(Zone& dom)
+void Scatter::uninit_sequential_domain(Domaine& dom)
 {
   MD_Vector md; // descripteur nul
   dom.les_sommets().set_md_vector(md);

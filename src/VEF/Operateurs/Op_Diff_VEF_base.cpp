@@ -64,13 +64,13 @@ int Op_Diff_VEF_base::impr(Sortie& os) const
   return Op_VEF_Face::impr(os, *this);
 }
 
-void Op_Diff_VEF_base::associer(const Zone_dis& zone_dis,
-                                const Zone_Cl_dis& zone_cl_dis,
+void Op_Diff_VEF_base::associer(const Domaine_dis& domaine_dis,
+                                const Domaine_Cl_dis& domaine_cl_dis,
                                 const Champ_Inc& ch_transporte)
 {
 
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
 
   if (sub_type(Champ_P1NC,ch_transporte.valeur()))
     {
@@ -89,14 +89,14 @@ void Op_Diff_VEF_base::associer(const Zone_dis& zone_dis,
   la_zcl_vef = zclvef;
 
 
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   int nb_dim = ch_transporte->valeurs().nb_dim();
   int nb_comp = 1;
 
   if(nb_dim==2)
     nb_comp = ch_transporte->valeurs().dimension(1);
 
-  flux_bords_.resize(zone_VEF.nb_faces_bord(), nb_comp);
+  flux_bords_.resize(domaine_VEF.nb_faces_bord(), nb_comp);
   flux_bords_ = 0.;
 }
 double Op_Diff_VEF_base::calculer_dt_stab() const
@@ -107,7 +107,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
   //          dt_diff = h*h/diffusivite
 
   double dt_stab = DMAXFLOAT;
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   if (! has_champ_masse_volumique())
     {
 
@@ -121,7 +121,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
 
       // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
       double h_imp_max = -1, h_imp_temp=-2, max_conductivity = 0;
-      const Zone_Cl_VEF& le_dom_cl_vef = la_zcl_vef.valeur();
+      const Domaine_Cl_VEF& le_dom_cl_vef = la_zcl_vef.valeur();
       const Equation_base& mon_eqn = le_dom_cl_vef.equation();
 
       for(int i=0; i<le_dom_cl_vef.nb_cond_lim(); i++)
@@ -145,11 +145,11 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
 
       h_imp_max = Process::mp_max(h_imp_max);
 
-      if ((alpha_max == 0.)||(zone_VEF.nb_elem()==0))
+      if ((alpha_max == 0.)||(domaine_VEF.nb_elem()==0))
         dt_stab = DMAXFLOAT;
       else
         {
-          const double min_delta_h_carre = zone_VEF.carre_pas_du_maillage();
+          const double min_delta_h_carre = domaine_VEF.carre_pas_du_maillage();
           if (h_imp_max>0.0) //we have a BC with Paroi_echange_externe_impose
             {
               // get the thermal conductivity
@@ -175,12 +175,12 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
       const DoubleTab&       valeurs_rho   = champ_rho.valeurs();
       assert(sub_type(Champ_Fonc_P0_base, champ_rho));
       assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
-      const int nb_elem = zone_VEF.nb_elem();
-      assert(valeurs_rho.size_array()==zone_VEF.nb_elem_tot());
+      const int nb_elem = domaine_VEF.nb_elem();
+      assert(valeurs_rho.size_array()==domaine_VEF.nb_elem_tot());
       // Champ de masse volumique variable.
       for (int elem = 0; elem < nb_elem; elem++)
         {
-          const double h_carre = zone_VEF.carre_pas_maille(elem);
+          const double h_carre = domaine_VEF.carre_pas_maille(elem);
           const double diffu   = valeurs_diffu(elem);
           const double rho     = valeurs_rho(elem);
           const double dt      = h_carre * rho / (deux_dim * (diffu+DMINFLOAT));
@@ -202,7 +202,7 @@ void Op_Diff_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       if (le_dom_vef.non_nul())
         {
           remplir_nu(nu_);
-          const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+          const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
           if (! has_champ_masse_volumique())
             {
 
@@ -210,14 +210,14 @@ void Op_Diff_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
               const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
               double alpha_max = local_max_vect(valeurs_diffusivite);
 
-              if ((alpha_max == 0.)||(zone_VEF.nb_elem()==0))
+              if ((alpha_max == 0.)||(domaine_VEF.nb_elem()==0))
                 es_valeurs = DMAXFLOAT;
               else
                 {
-                  const int nb_elem = zone_VEF.nb_elem();
+                  const int nb_elem = domaine_VEF.nb_elem();
                   for (int elem = 0; elem < nb_elem; elem++)
                     {
-                      es_valeurs(elem) = zone_VEF.carre_pas_maille(elem) / (2. * dimension * alpha_max);
+                      es_valeurs(elem) = domaine_VEF.carre_pas_maille(elem) / (2. * dimension * alpha_max);
                     }
                 }
             }
@@ -230,12 +230,12 @@ void Op_Diff_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
               const DoubleTab&       valeurs_rho   = champ_rho.valeurs();
               assert(sub_type(Champ_Fonc_P0_base, champ_rho));
               assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
-              const int nb_elem = zone_VEF.nb_elem();
-              assert(valeurs_rho.size_array()==zone_VEF.nb_elem_tot());
+              const int nb_elem = domaine_VEF.nb_elem();
+              assert(valeurs_rho.size_array()==domaine_VEF.nb_elem_tot());
               // Champ de masse volumique variable.
               for (int elem = 0; elem < nb_elem; elem++)
                 {
-                  const double h_carre = zone_VEF.carre_pas_maille(elem);
+                  const double h_carre = domaine_VEF.carre_pas_maille(elem);
                   const double diffu   = valeurs_diffu(elem);
                   const double rho     = valeurs_rho(elem);
                   const double dt      = h_carre * rho / (deux_dim * diffu);
@@ -262,13 +262,13 @@ Motcle Op_Diff_VEF_base::get_localisation_pour_post(const Nom& option) const
 
 void Op_Diff_VEF_base::remplir_nu(DoubleTab& nu) const
 {
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   // On dimensionne nu
   const DoubleTab& diffu=diffusivite().valeurs();
   if (!nu.get_md_vector().non_nul())
     {
       nu.resize(0, diffu.line_size());
-      zone_VEF.zone().creer_tableau_elements(nu, Array_base::NOCOPY_NOINIT);
+      domaine_VEF.domaine().creer_tableau_elements(nu, Array_base::NOCOPY_NOINIT);
     }
   if (! diffu.get_md_vector().non_nul())
     {

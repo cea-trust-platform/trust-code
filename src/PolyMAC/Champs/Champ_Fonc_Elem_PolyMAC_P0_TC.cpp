@@ -16,7 +16,7 @@
 #include <Champ_Fonc_Elem_PolyMAC_P0_TC.h>
 #include <grad_Champ_Face_PolyMAC_P0.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Fonc.h>
 
 Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC, "Champ_Fonc_Elem_PolyMAC_P0_TC", Champ_Fonc_Elem_PolyMAC);
@@ -34,10 +34,10 @@ void Champ_Fonc_Elem_PolyMAC_P0_TC::mettre_a_jour(double tps)
 void Champ_Fonc_Elem_PolyMAC_P0_TC::me_calculer(double tps) //See Pope 2000 page 367 for ref
 {
   const Champ_Face_PolyMAC_P0& vitesse = ref_cast(Champ_Face_PolyMAC_P0, champ_.valeur());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, vitesse.zone_vf());
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, vitesse.domaine_vf());
   int e, d_U, d_X, n;
   int D = dimension, N = champ_a_deriver().valeurs().line_size();
-  int ne = zone.nb_elem(), nf_tot = zone.nb_faces_tot();
+  int ne = domaine.nb_elem(), nf_tot = domaine.nb_faces_tot();
 
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vitesse.equation());
   DoubleTab& tab_tc = valeurs();

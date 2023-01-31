@@ -18,8 +18,8 @@
 
 #include <EDO_Pression_th_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_Cl_dis.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_Cl_dis.h>
+#include <Ref_Domaine_VDF.h>
 
 class Fluide_Quasi_Compressible;
 
@@ -37,7 +37,7 @@ class EDO_Pression_th_VDF: public EDO_Pression_th_base
 public :
   EDO_Pression_th_VDF();
   const Fluide_Quasi_Compressible& le_fluide() const { return le_fluide_.valeur(); };
-  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;
   void completer() override;
   void calculer_grad(const DoubleTab&,DoubleTab&);
   double masse_totale(double P,const DoubleTab& T) override;
@@ -45,8 +45,8 @@ public :
   double getM0() { return M0; }
 
 protected :
-  REF(Zone_VDF) le_dom;
-  REF(Zone_Cl_dis) le_dom_Cl;
+  REF(Domaine_VDF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_Cl;
   double M0;// la masse totale initiale
 };
 

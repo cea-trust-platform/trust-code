@@ -19,7 +19,7 @@
 #include <Source_Fluide_Dilatable_VDF_Proto.h>
 #include <Source_WC_Chaleur.h>
 
-class Zone_VF;
+class Domaine_VF;
 
 /*! @brief class  Source_WC_Chaleur_VDF
  *
@@ -43,11 +43,11 @@ class Source_WC_Chaleur_VDF : public Source_WC_Chaleur, public Source_Fluide_Dil
     return 1;
   };
 protected:
-  void associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& zcl) override;
+  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl) override;
   void compute_interpolate_gradP(DoubleTab& gradP, const DoubleTab& Ptot) const override;
 
 private:
-  void face_to_elem(const Zone_VF& zone, const DoubleTab& UgradP,DoubleTab& UgradP_elem) const;
+  void face_to_elem(const Domaine_VF& domaine, const DoubleTab& UgradP,DoubleTab& UgradP_elem) const;
   // on l'utilise pas pour le moment mais bon pour debug ...
   void compute_interpolate_gradP_old(DoubleTab& gradP, const DoubleTab& Ptot) const;
 };

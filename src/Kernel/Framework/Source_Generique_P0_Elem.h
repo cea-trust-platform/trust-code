@@ -18,8 +18,8 @@
 #define Source_Generique_P0_Elem_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Zone_Cl_dis.h>
-#include <Ref_Zone_VF.h>
+#include <Ref_Domaine_Cl_dis.h>
+#include <Ref_Domaine_VF.h>
 
 /*! @brief class Source_Generique_VDF_Elem
  *
@@ -33,13 +33,13 @@ class Source_Generique_P0_Elem: public Source_Generique_base
 public:
 
   DoubleTab& ajouter(DoubleTab& ) const override;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
   Nom localisation_source() override;
 
 protected:
 
-  REF(Zone_VF) le_dom;
-  REF(Zone_Cl_dis) le_dom_cl;
+  REF(Domaine_VF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_cl;
 };
 
 #endif

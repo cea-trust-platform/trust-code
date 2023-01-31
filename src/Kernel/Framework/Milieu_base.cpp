@@ -127,7 +127,7 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
   Champ_Don& ch_lambda = conductivite();
   Champ_Don& ch_alpha = diffusivite();
   Champ_Don& ch_beta_th = beta_t();
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
   // PL: pas le temps de faire plus propre, je fais comme dans Fluide_Incompressible::discretiser
   // pour gerer une conductivite lue dans un fichier MED. Test: Reprise_grossier_fin_VEF
   // ToDo: reecrire ces deux methodes discretiser
@@ -148,24 +148,24 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           double temps=ch_lambda.valeur().temps();
           Cerr<<"Convert Champ_fonc_MED lambda in Champ_Don..."<<finl;
           Champ_Don ch_lambda_prov;
-          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda_prov);
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda_prov);
           ch_lambda_prov.affecter_(ch_lambda.valeur());
           ch_lambda.detach();
           ch_alpha.detach();
-          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda);
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_lambda);
           ch_lambda.valeur().valeurs()=ch_lambda_prov.valeur().valeurs();
         }
 
       if(lambda_nb_comp >1) // Pour anisotrope
         ch_lambda.valeur().fixer_nature_du_champ(multi_scalaire);
 
-      dis.nommer_completer_champ_physique(zone_dis,"conductivite","W/m/K",ch_lambda.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"conductivite","W/m/K",ch_lambda.valeur(),pb);
 
       // le vrai nom sera donne plus tard
       if (sub_type(Champ_Fonc_Tabule,ch_lambda.valeur()))
         {
           double temps=ch_lambda.valeur().temps();
-          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
         }
       champs_compris_.ajoute_champ(ch_lambda.valeur());
     }
@@ -173,26 +173,26 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     {
       double temps=ch_lambda.valeur().temps();
       // ch_alpha (i.e. diffusivite_thermique) will have same component number as ch_lambda
-      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",lambda_nb_comp,temps,ch_alpha);
     }
   if (ch_alpha.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"diffusivite_thermique","m2/s",ch_alpha.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"diffusivite_thermique","m2/s",ch_alpha.valeur(),pb);
       champs_compris_.ajoute_champ(ch_alpha.valeur());
     }
   if (ch_beta_th.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"dilatabilite","K-1",ch_beta_th.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"dilatabilite","K-1",ch_beta_th.valeur(),pb);
       champs_compris_.ajoute_champ(ch_beta_th.valeur());
     }
   if  (Cp.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"capacite_calorifique","J/kg/K",Cp.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"capacite_calorifique","J/kg/K",Cp.valeur(),pb);
       champs_compris_.ajoute_champ(Cp.valeur());
     }
   if  (rho.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"masse_volumique","kg/m^3",rho.valeur(),pb);
       champs_compris_.ajoute_champ(rho.valeur());
     }
   if (rho.non_nul() && Cp.non_nul())
@@ -205,8 +205,8 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
           // XXX : j'ai remis nb_comp = 1, sinon ca bloque dans Solveur_Masse_base => tab_divide_any_shape
           // parce qu'on a pas line_size % line_size_vx == 0 (cas nb_comp >1 pour rho et cp
           // TODO : FIXME : faut coder un cas generique dans DoubleVect::tab_divide_any_shape... bon courage
-          dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "J/m^3/K", 1 /* rho.nb_comp() */, temps, rho_cp_comme_T_);
-          dis.discretiser_champ( "champ_elem", zone_dis,    "rho_cp_elem", "J/m^3/K", 1 /* rho.nb_comp() */, temps,    rho_cp_elem_);
+          dis.discretiser_champ("temperature", domaine_dis, "rho_cp_comme_T", "J/m^3/K", 1 /* rho.nb_comp() */, temps, rho_cp_comme_T_);
+          dis.discretiser_champ( "champ_elem", domaine_dis,    "rho_cp_elem", "J/m^3/K", 1 /* rho.nb_comp() */, temps,    rho_cp_elem_);
         }
       champs_compris_.ajoute_champ(rho_cp_comme_T_.valeur());
       champs_compris_.ajoute_champ(rho_cp_elem_.valeur());
@@ -219,16 +219,16 @@ void Milieu_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
 // methode utile pour F5 ! F5 n'appelle pas Milieu_base::discretiser mais Milieu_base::discretiser_porosite ...
 void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisation_base& dis)
 {
-  if (!zdb_.non_nul()) zdb_ = pb.equation(0).zone_dis();
+  if (!zdb_.non_nul()) zdb_ = pb.equation(0).domaine_dis();
   const double temps = pb.schema_temps().temps_courant();
   Nom fld_name = "porosite_volumique", fld_unit = "rien";
 
   // On construit porosite_face_ avec un descripteur parallele
-  const MD_Vector& md = ref_cast(Zone_VF, zdb_.valeur()).md_vector_faces();
+  const MD_Vector& md = ref_cast(Domaine_VF, zdb_.valeur()).md_vector_faces();
   if (!porosite_face_.get_md_vector().non_nul())
     {
       MD_Vector_tools::creer_tableau_distribue(md, porosite_face_, Array_base::NOCOPY_NOINIT);
-      assert (ref_cast(Zone_VF, zdb_.valeur()).nb_faces_tot() == porosite_face_.size_totale());
+      assert (ref_cast(Domaine_VF, zdb_.valeur()).nb_faces_tot() == porosite_face_.size_totale());
     }
   porosite_face_ = 1.;
 
@@ -292,7 +292,7 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
       is_user_porosites_ = true;
       // On va utiliser porosites_champ maintenant !
       dis.discretiser_champ("champ_elem", zdb_.valeur(), fld_name, fld_unit, 1, temps, porosites_champ);
-      Zone_VF& zvf = ref_cast_non_const(Zone_VF, zdb_.valeur());
+      Domaine_VF& zvf = ref_cast_non_const(Domaine_VF, zdb_.valeur());
       porosites_champ->valeurs() = 1.; // On initialise a 1 ...
       porosites_.remplir_champ(zvf, porosites_champ->valeurs(), porosite_face_);
     }
@@ -319,16 +319,16 @@ void Milieu_base::discretiser_porosite(const Probleme_base& pb, const Discretisa
 
 void Milieu_base::discretiser_diametre_hydro(const Probleme_base& pb, const Discretisation_base& dis)
 {
-  if (!zdb_.non_nul()) zdb_ = pb.equation(0).zone_dis();
+  if (!zdb_.non_nul()) zdb_ = pb.equation(0).domaine_dis();
   const double temps = pb.schema_temps().temps_courant();
   Nom fld_name = "diametre_hydraulique", fld_unit = "m";
 
   // On construit porosite_face_ avec un descripteur parallele
-  const MD_Vector& md = ref_cast(Zone_VF, zdb_.valeur()).md_vector_faces();
+  const MD_Vector& md = ref_cast(Domaine_VF, zdb_.valeur()).md_vector_faces();
   if (!diametre_hydraulique_face_.get_md_vector().non_nul())
     {
       MD_Vector_tools::creer_tableau_distribue(md, diametre_hydraulique_face_, Array_base::NOCOPY_NOINIT);
-      assert (ref_cast(Zone_VF, zdb_.valeur()).nb_faces_tot() == diametre_hydraulique_face_.size_totale());
+      assert (ref_cast(Domaine_VF, zdb_.valeur()).nb_faces_tot() == diametre_hydraulique_face_.size_totale());
     }
   diametre_hydraulique_face_ = 0.; /* les diametres hydrauliques valent 0 */
 
@@ -369,7 +369,7 @@ void Milieu_base::discretiser_diametre_hydro(const Probleme_base& pb, const Disc
 void Milieu_base::calculate_face_hydr_diam()
 {
   assert(has_hydr_diam_);
-  const Zone_VF& zvf = ref_cast(Zone_VF, zdb_.valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, zdb_.valeur());
   const IntTab& f_e = zvf.face_voisins();
   const int nb_face_tot = zvf.nb_faces_tot();
   assert(diametre_hydraulique_face_.size_totale() == nb_face_tot);
@@ -578,7 +578,7 @@ void Milieu_base::calculer_alpha()
 void Milieu_base::calculate_face_porosity()
 {
   assert(is_field_porosites());
-  const Zone_VF& zvf = ref_cast(Zone_VF, zdb_.valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, zdb_.valeur());
 
   // update porosite_faces
   const int nb_face_tot = zvf.nb_faces_tot();
@@ -663,8 +663,8 @@ void Milieu_base::update_rho_cp(double temps)
     tab_multiply_any_shape(rho_cp,Cp.valeurs());
   rho_cp_comme_T_.changer_temps(temps);
   rho_cp_comme_T_.valeur().changer_temps(temps);
-  const MD_Vector& md_som = rho_cp_elem_.zone_dis_base().zone().md_vector_sommets(),
-                   &md_faces = ref_cast(Zone_VF,rho_cp_elem_.zone_dis_base()).md_vector_faces();
+  const MD_Vector& md_som = rho_cp_elem_.domaine_dis_base().domaine().md_vector_sommets(),
+                   &md_faces = ref_cast(Domaine_VF,rho_cp_elem_.domaine_dis_base()).md_vector_faces();
   if (rho_cp_comme_T_.valeurs().get_md_vector() == rho_cp_elem_.valeurs().get_md_vector())
     rho_cp_comme_T_.valeurs() = rho_cp;
   else if (rho_cp_comme_T_.valeurs().get_md_vector() == md_som)
@@ -770,7 +770,7 @@ int Milieu_base::initialiser_porosite(const double temps)
 
 void Milieu_base::fill_section_passage_face()
 {
-  const Zone_VF& zvf = ref_cast(Zone_VF, zdb_.valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, zdb_.valeur());
   const DoubleVect& fs = zvf.face_surfaces();
   section_passage_face_.resize(fs.size_array());
   for (int i = 0; i < fs.size_array(); i++) section_passage_face_[i] = fs[i] * porosite_face_[i];

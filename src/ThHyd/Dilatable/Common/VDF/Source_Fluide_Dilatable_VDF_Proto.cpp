@@ -17,21 +17,21 @@
 #include <Dirichlet_homogene.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VDF.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_VDF.h>
+#include <Domaine_Cl_dis.h>
 #include <Dirichlet.h>
 #include <TRUSTTab.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
-void Source_Fluide_Dilatable_VDF_Proto::associer_domaines_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
+void Source_Fluide_Dilatable_VDF_Proto::associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Zone_VDF,zone.valeur());
-  le_dom_Cl = ref_cast(Zone_Cl_VDF,zone_cl.valeur());
+  le_dom = ref_cast(Domaine_VDF,domaine.valeur());
+  le_dom_Cl = ref_cast(Domaine_Cl_VDF,domaine_cl.valeur());
 }
 
-void Source_Fluide_Dilatable_VDF_Proto::associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites)
+void Source_Fluide_Dilatable_VDF_Proto::associer_volume_porosite_impl(const Domaine_dis& domaine, DoubleVect& volumes, DoubleVect& porosites)
 {
-  volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes());
+  volumes.ref(ref_cast(Domaine_VF,domaine.valeur()).volumes());
   porosites.ref(le_dom_Cl->equation().milieu().porosite_elem());
 }
 

@@ -22,7 +22,7 @@ class Op_Conv_Amont_VPoly_VDF_Face : public Op_Conv_Amont_VDF_Face
 {
   Declare_instanciable_sans_constructeur(Op_Conv_Amont_VPoly_VDF_Face);
 public:
-  Op_Conv_Amont_VPoly_VDF_Face() : Op_Conv_Amont_VDF_Face() { /* on initialise l'iter juste pour les zones, cl, blabla */ }
+  Op_Conv_Amont_VPoly_VDF_Face() : Op_Conv_Amont_VDF_Face() { /* on initialise l'iter juste pour les domaines, cl, blabla */ }
   void dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const override { Op_Conv_VDF_base::dimensionner_blocs_face(mats, semi_impl); }
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };

@@ -18,7 +18,7 @@
 #include <Champ_Uniforme.h>
 
 #include <Probleme_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Param.h>
 #include <Debog.h>
 

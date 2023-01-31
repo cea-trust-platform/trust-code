@@ -99,27 +99,27 @@ public:
   int allocate_communication_tracking_times();
   int delete_communication_tracking_times();
 
-  /* Debut de la zone de code dont on veut traquer les communications :
+  /* Debut de la domaine de code dont on veut traquer les communications :
    * on sauvegarde toutes les donnees des compteurs de communication dans le tableau communication_tracking_times,
    * puis on les remet a zero
    * Donnee d'entree:
-   * 	- cid : identifiant de la zone qu'on souhaite initialiser
+   * 	- cid : identifiant de la domaine qu'on souhaite initialiser
    */
   void begin_communication_tracking(int cid);
 
-  /* Fin de la zone de code dont on veut traquer les communications :
+  /* Fin de la domaine de code dont on veut traquer les communications :
    * on recupere toutes les donnees des compteurs de communication qui ont ete produites
    * depuis la derniere remise a zero des compteurs
    * Donnee d'entree:
-   * 	- cid : identifiant de la zone
+   * 	- cid : identifiant de la domaine
    */
   void end_communication_tracking(int cid);
 
   /* Affichage des statistiques de communication collectees:
-   *  - pour chaque zone de communication declaree,
+   *  - pour chaque domaine de communication declaree,
    *  on affiche le temps qu'on y a passe en moyenne sur chaque proc dans chaque type de communication
    *  - pour chaque type de communication,
-   *   on affiche le temps passe en moyenne sur chaque proc dans chaque zone delcaree
+   *   on affiche le temps passe en moyenne sur chaque proc dans chaque domaine delcaree
    */
   void print_communciation_tracking_details(const char * message, int mode_append);
 

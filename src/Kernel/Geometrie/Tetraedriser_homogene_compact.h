@@ -27,9 +27,9 @@
  */
 
 #include <Triangulation_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class Tetraedriser_homogene_compact : public Triangulation_base
 {
@@ -37,9 +37,9 @@ class Tetraedriser_homogene_compact : public Triangulation_base
 
 public :
 
-  void decoupe(Zone& , Faces& , IntTab&, IntTab&, int ) const;
-  void trianguler(Zone&) const override;
-  int creer_sommet (Zone& ,Zone& ,DoubleTab& ,IntTab& ,IntTab& ,int ,
+  void decoupe(Domaine& , Faces& , IntTab&, IntTab&, int ) const;
+  void trianguler(Domaine&) const override;
+  int creer_sommet (Domaine& ,Domaine& ,DoubleTab& ,IntTab& ,IntTab& ,int ,
                     IntTab& , int& , int , int&, IntTab&, int&  ) const;
   inline int dimension_application() const override;
 };

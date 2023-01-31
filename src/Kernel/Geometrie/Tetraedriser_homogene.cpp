@@ -23,7 +23,7 @@ Entree& Tetraedriser_homogene::readOn(Entree& is) { return Interprete::readOn(is
 
 // Traitement des faces
 //
-static void decoupe(Zone& dom, Faces& faces, IntTab& new_soms_old_elems)
+static void decoupe(Domaine& dom, Faces& faces, IntTab& new_soms_old_elems)
 {
   const DoubleTab& coord=dom.coord_sommets();
   IntTab& sommets=faces.les_sommets();
@@ -117,14 +117,14 @@ static void decoupe(Zone& dom, Faces& faces, IntTab& new_soms_old_elems)
 // Pour definir un nouveau sommet, il faut regarder si il n'existe pas deja
 // On renvoie le numero "global" du sommet considere
 //
-// ATTENTION: ne considere qu'une seule zone pour l'instant...
+// ATTENTION: ne considere qu'une seule domaine pour l'instant...
 //
-int creer_sommet(Zone& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems,
+int creer_sommet(Domaine& dom, Domaine& domaine, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems,
 //                int i1, int i2,
                  int NbSom, IntTab& sommets, int& compteur, int oldnbsom, int& nbnewsoms)
 {
   const DoubleTab& coord_sommets = dom.coord_sommets();
-  //int nb_zones = dom.nb_zones();
+  //int nb_domaines = dom.nb_domaines();
   int _out;
 
   double x = 0, y = 0, z = 0;
@@ -204,24 +204,24 @@ int creer_sommet(Zone& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite
 //
 //
 //
-void Tetraedriser_homogene::trianguler(Zone& zone) const
+void Tetraedriser_homogene::trianguler(Domaine& domaine) const
 {
-  if (zone.type_elem()->que_suis_je() == "Hexaedre" || zone.type_elem()->que_suis_je() == "Hexaedre_VEF")
+  if (domaine.type_elem()->que_suis_je() == "Hexaedre" || domaine.type_elem()->que_suis_je() == "Hexaedre_VEF")
     {
-      IntTab& les_elems = zone.les_elems();
+      IntTab& les_elems = domaine.les_elems();
       int oldsz = les_elems.dimension(0);
       IntTab elem_traite(oldsz);
-      int oldnbsom = zone.nb_som();
+      int oldnbsom = domaine.nb_som();
       IntTab new_elems(40 * oldsz, 4);
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 19);
       IntTab sommets(8);
-      Zone& dom = zone;
+      Domaine& dom = domaine;
       int compteur = 0;
       int nbnewsoms = 0;
       int i;
       // Construction de l'Octree sur la grille "VDF" de base
-      zone.construit_octree();
+      domaine.construit_octree();
 
       //On dimensionne une premiere fois le tableau des sommets avec la dimension maximun
       //puis on redimensionnera seulement a la fin par la dimension exacte
@@ -259,110 +259,110 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           sommets(5) = i5;
           sommets(6) = i6;
           sommets(7) = i7;
-          indice(0) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i7, compteur, oldnbsom, nbnewsoms);
+          indice(0) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i0, i7, compteur, oldnbsom, nbnewsoms);
 
           //centres des faces
           //Cerr<<" --creer_sommet "<<i0<<" "<<i3<<finl;
-          indice(1) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i3, compteur, oldnbsom, nbnewsoms);
+          indice(1) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i0, i3, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i0<<" "<<i6<<finl;
           sommets(0) = i0;
           sommets(1) = i2;
           sommets(2) = i4;
           sommets(3) = i6;
-          indice(2) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i6, compteur, oldnbsom, nbnewsoms);
+          indice(2) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i0, i6, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i0<<" "<<i5<<finl;
           sommets(0) = i0;
           sommets(1) = i1;
           sommets(2) = i4;
           sommets(3) = i5;
-          indice(3) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i5, compteur, oldnbsom, nbnewsoms);
+          indice(3) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i0, i5, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i4<<" "<<i7<<finl;
           sommets(0) = i4;
           sommets(1) = i5;
           sommets(2) = i6;
           sommets(3) = i7;
-          indice(4) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i4, i7, compteur, oldnbsom, nbnewsoms);
+          indice(4) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i4, i7, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i1<<" "<<i7<<finl;
           sommets(0) = i1;
           sommets(1) = i3;
           sommets(2) = i5;
           sommets(3) = i7;
-          indice(5) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i1, i7, compteur, oldnbsom, nbnewsoms);
+          indice(5) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i1, i7, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i2<<" "<<i7<<finl;
           sommets(0) = i2;
           sommets(1) = i3;
           sommets(2) = i6;
           sommets(3) = i7;
-          indice(6) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i2, i7, compteur, oldnbsom, nbnewsoms);
+          indice(6) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i2, i7, compteur, oldnbsom, nbnewsoms);
 
           //centres des aretes
           //Cerr<<" --creer_sommet "<<i0<<" "<<i1<<finl;
           sommets(0) = i0;
           sommets(1) = i1;
-          indice(7) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i1, compteur, oldnbsom, nbnewsoms);
+          indice(7) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i0, i1, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i0<<" "<<i2<<finl;
           sommets(0) = i0;
           sommets(1) = i2;
-          indice(8) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i2, compteur, oldnbsom, nbnewsoms);
+          indice(8) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i0, i2, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i0<<" "<<i4<<finl;
           sommets(0) = i0;
           sommets(1) = i4;
-          indice(9) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i0, i4, compteur, oldnbsom, nbnewsoms);
+          indice(9) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i0, i4, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i1<<" "<<i3<<finl;
           sommets(0) = i1;
           sommets(1) = i3;
-          indice(10) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i1, i3, compteur, oldnbsom, nbnewsoms);
+          indice(10) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i1, i3, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i1<<" "<<i5<<finl;
           sommets(0) = i1;
           sommets(1) = i5;
-          indice(11) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i1, i5, compteur, oldnbsom, nbnewsoms);
+          indice(11) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i1, i5, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i2<<" "<<i3<<finl;
           sommets(0) = i2;
           sommets(1) = i3;
-          indice(12) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i2, i3, compteur, oldnbsom, nbnewsoms);
+          indice(12) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i2, i3, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i2<<" "<<i6<<finl;
           sommets(0) = i2;
           sommets(1) = i6;
-          indice(13) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i2, i6, compteur, oldnbsom, nbnewsoms);
+          indice(13) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i2, i6, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i3<<" "<<i7<<finl;
           sommets(0) = i3;
           sommets(1) = i7;
-          indice(14) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i3, i7, compteur, oldnbsom, nbnewsoms);
+          indice(14) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i3, i7, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i4<<" "<<i5<<finl;
           sommets(0) = i4;
           sommets(1) = i5;
-          indice(15) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i4, i5, compteur, oldnbsom, nbnewsoms);
+          indice(15) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i4, i5, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i4<<" "<<i6<<finl;
           sommets(0) = i4;
           sommets(1) = i6;
-          indice(16) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i4, i6, compteur, oldnbsom, nbnewsoms);
+          indice(16) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i4, i6, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i5<<" "<<i7<<finl;
           sommets(0) = i5;
           sommets(1) = i7;
-          indice(17) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i5, i7, compteur, oldnbsom, nbnewsoms);
+          indice(17) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i5, i7, compteur, oldnbsom, nbnewsoms);
           //Cerr<<" --creer_sommet "<<i6<<" "<<i7<<finl;
           sommets(0) = i6;
           sommets(1) = i7;
-          indice(18) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
-          //creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, i6, i7, compteur, oldnbsom, nbnewsoms);
+          indice(18) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms);
+          //creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, i6, i7, compteur, oldnbsom, nbnewsoms);
 
           // Liste des nouveaux sommets pour cet ancien cube
           for (int t = 0; t < 19; t++)
@@ -400,242 +400,242 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
           new_elems(i + oldsz, 1) = indice(9);
           new_elems(i + oldsz, 2) = indice(3);
           new_elems(i + oldsz, 3) = indice(2);
-          mettre_a_jour_sous_zone(zone, i, i + oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + oldsz, 1);
           //0 0-1 0-2 Bas 0-4 Arr Gauche Milieu ** 3
           new_elems(i + 2 * oldsz, 0) = les_elems(i, 0);
           new_elems(i + 2 * oldsz, 1) = indice(8);
           new_elems(i + 2 * oldsz, 2) = indice(1);
           new_elems(i + 2 * oldsz, 3) = indice(2);
-          mettre_a_jour_sous_zone(zone, i, i + 2 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 2 * oldsz, 1);
           //0 0-1 0-2 Bas 0-4 Arr Gauche Milieu ** 4
           new_elems(i + 3 * oldsz, 0) = indice(3);
           new_elems(i + 3 * oldsz, 1) = indice(0);
           new_elems(i + 3 * oldsz, 2) = indice(1);
           new_elems(i + 3 * oldsz, 3) = indice(2);
-          mettre_a_jour_sous_zone(zone, i, i + 3 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 3 * oldsz, 1);
           //0 0-1 0-2 Bas 0-4 Arr Gauche Milieu ** 5
           new_elems(i + 4 * oldsz, 0) = les_elems(i, 0);
           new_elems(i + 4 * oldsz, 1) = indice(3);
           new_elems(i + 4 * oldsz, 2) = indice(1);
           new_elems(i + 4 * oldsz, 3) = indice(2);
-          mettre_a_jour_sous_zone(zone, i, i + 4 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 4 * oldsz, 1);
 
           //0-1 1 Bas 1-3 Arr 1-5 Milieu Droit ** 1
           new_elems(i + 5 * oldsz, 0) = les_elems(i, 1);
           new_elems(i + 5 * oldsz, 1) = indice(7);
           new_elems(i + 5 * oldsz, 2) = indice(3);
           new_elems(i + 5 * oldsz, 3) = indice(1);
-          mettre_a_jour_sous_zone(zone, i, i + 5 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 5 * oldsz, 1);
           //0-1 1 Bas 1-3 Arr 1-5 Milieu Droit ** 2
           new_elems(i + 6 * oldsz, 0) = les_elems(i, 1);
           new_elems(i + 6 * oldsz, 1) = indice(11);
           new_elems(i + 6 * oldsz, 2) = indice(3);
           new_elems(i + 6 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 6 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 6 * oldsz, 1);
           //0-1 1 Bas 1-3 Arr 1-5 Milieu Droit ** 3
           new_elems(i + 7 * oldsz, 0) = les_elems(i, 1);
           new_elems(i + 7 * oldsz, 1) = indice(1);
           new_elems(i + 7 * oldsz, 2) = indice(10);
           new_elems(i + 7 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 7 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 7 * oldsz, 1);
           //0-1 1 Bas 1-3 Arr 1-5 Milieu Droit ** 4
           new_elems(i + 8 * oldsz, 0) = indice(1);
           new_elems(i + 8 * oldsz, 1) = indice(3);
           new_elems(i + 8 * oldsz, 2) = indice(0);
           new_elems(i + 8 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 8 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 8 * oldsz, 1);
           //0-1 1 Bas 1-3 Arr 1-5 Milieu Droit ** 5
           new_elems(i + 9 * oldsz, 0) = les_elems(i, 1);
           new_elems(i + 9 * oldsz, 1) = indice(1);
           new_elems(i + 9 * oldsz, 2) = indice(3);
           new_elems(i + 9 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 9 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 9 * oldsz, 1);
 
           //0-2 Bas 2 2-3 Gauche Milieu 2-6 Avant ** 1
           new_elems(i + 10 * oldsz, 0) = les_elems(i, 2);
           new_elems(i + 10 * oldsz, 1) = indice(1);
           new_elems(i + 10 * oldsz, 2) = indice(6);
           new_elems(i + 10 * oldsz, 3) = indice(12);
-          mettre_a_jour_sous_zone(zone, i, i + 10 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 10 * oldsz, 1);
           //0-2 Bas 2 2-3 Gauche Milieu 2-6 Avant ** 2
           new_elems(i + 11 * oldsz, 0) = les_elems(i, 2);
           new_elems(i + 11 * oldsz, 1) = indice(2);
           new_elems(i + 11 * oldsz, 2) = indice(8);
           new_elems(i + 11 * oldsz, 3) = indice(1);
-          mettre_a_jour_sous_zone(zone, i, i + 11 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 11 * oldsz, 1);
           //0-2 Bas 2 2-3 Gauche Milieu 2-6 Avant ** 3
           new_elems(i + 12 * oldsz, 0) = les_elems(i, 2);
           new_elems(i + 12 * oldsz, 1) = indice(2);
           new_elems(i + 12 * oldsz, 2) = indice(6);
           new_elems(i + 12 * oldsz, 3) = indice(13);
-          mettre_a_jour_sous_zone(zone, i, i + 12 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 12 * oldsz, 1);
           //0-2 Bas 2 2-3 Gauche Milieu 2-6 Avant ** 4
           new_elems(i + 13 * oldsz, 0) = indice(2);
           new_elems(i + 13 * oldsz, 1) = indice(0);
           new_elems(i + 13 * oldsz, 2) = indice(6);
           new_elems(i + 13 * oldsz, 3) = indice(1);
-          mettre_a_jour_sous_zone(zone, i, i + 13 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 13 * oldsz, 1);
           //0-2 Bas 2 2-3 Gauche Milieu 2-6 Avant ** 5
           new_elems(i + 14 * oldsz, 0) = les_elems(i, 2);
           new_elems(i + 14 * oldsz, 1) = indice(2);
           new_elems(i + 14 * oldsz, 2) = indice(6);
           new_elems(i + 14 * oldsz, 3) = indice(1);
-          mettre_a_jour_sous_zone(zone, i, i + 14 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 14 * oldsz, 1);
 
           //Bas 1-3 2-3 3 Milieu Droit Avant 3-7 ** 1
           new_elems(i + 15 * oldsz, 0) = les_elems(i, 3);
           new_elems(i + 15 * oldsz, 1) = indice(1);
           new_elems(i + 15 * oldsz, 2) = indice(10);
           new_elems(i + 15 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 15 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 15 * oldsz, 1);
           //Bas 1-3 2-3 3 Milieu Droit Avant 3-7 ** 2
           new_elems(i + 16 * oldsz, 0) = les_elems(i, 3);
           new_elems(i + 16 * oldsz, 1) = indice(14);
           new_elems(i + 16 * oldsz, 2) = indice(6);
           new_elems(i + 16 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 16 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 16 * oldsz, 1);
           //Bas 1-3 2-3 3 Milieu Droit Avant 3-7 ** 3
           new_elems(i + 17 * oldsz, 0) = les_elems(i, 3);
           new_elems(i + 17 * oldsz, 1) = indice(12);
           new_elems(i + 17 * oldsz, 2) = indice(6);
           new_elems(i + 17 * oldsz, 3) = indice(1);
-          mettre_a_jour_sous_zone(zone, i, i + 17 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 17 * oldsz, 1);
           //Bas 1-3 2-3 3 Milieu Droit Avant 3-7 ** 4
           new_elems(i + 18 * oldsz, 0) = indice(0);
           new_elems(i + 18 * oldsz, 1) = indice(5);
           new_elems(i + 18 * oldsz, 2) = indice(6);
           new_elems(i + 18 * oldsz, 3) = indice(1);
-          mettre_a_jour_sous_zone(zone, i, i + 18 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 18 * oldsz, 1);
           //Bas 1-3 2-3 3 Milieu Droit Avant 3-7 ** 5
           new_elems(i + 19 * oldsz, 0) = les_elems(i, 3);
           new_elems(i + 19 * oldsz, 1) = indice(5);
           new_elems(i + 19 * oldsz, 2) = indice(6);
           new_elems(i + 19 * oldsz, 3) = indice(1);
-          mettre_a_jour_sous_zone(zone, i, i + 19 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 19 * oldsz, 1);
 
           //0-4 Arr Gauche Milieu 4 4-5 4-6 Haut ** 1
           new_elems(i + 20 * oldsz, 0) = les_elems(i, 4);
           new_elems(i + 20 * oldsz, 1) = indice(9);
           new_elems(i + 20 * oldsz, 2) = indice(3);
           new_elems(i + 20 * oldsz, 3) = indice(2);
-          mettre_a_jour_sous_zone(zone, i, i + 20 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 20 * oldsz, 1);
           //0-4 Arr Gauche Milieu 4 4-5 4-6 Haut ** 2
           new_elems(i + 21 * oldsz, 0) = les_elems(i, 4);
           new_elems(i + 21 * oldsz, 1) = indice(4);
           new_elems(i + 21 * oldsz, 2) = indice(3);
           new_elems(i + 21 * oldsz, 3) = indice(15);
-          mettre_a_jour_sous_zone(zone, i, i + 21 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 21 * oldsz, 1);
           //0-4 Arr Gauche Milieu 4 4-5 4-6 Haut ** 3
           new_elems(i + 22 * oldsz, 0) = les_elems(i, 4);
           new_elems(i + 22 * oldsz, 1) = indice(4);
           new_elems(i + 22 * oldsz, 2) = indice(2);
           new_elems(i + 22 * oldsz, 3) = indice(16);
-          mettre_a_jour_sous_zone(zone, i, i + 22 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 22 * oldsz, 1);
           //0-4 Arr Gauche Milieu 4 4-5 4-6 Haut ** 4
           new_elems(i + 23 * oldsz, 0) = indice(0);
           new_elems(i + 23 * oldsz, 1) = indice(4);
           new_elems(i + 23 * oldsz, 2) = indice(2);
           new_elems(i + 23 * oldsz, 3) = indice(3);
-          mettre_a_jour_sous_zone(zone, i, i + 23 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 23 * oldsz, 1);
           //0-4 Arr Gauche Milieu 4 4-5 4-6 Haut ** 5
           new_elems(i + 24 * oldsz, 0) = les_elems(i, 4);
           new_elems(i + 24 * oldsz, 1) = indice(4);
           new_elems(i + 24 * oldsz, 2) = indice(2);
           new_elems(i + 24 * oldsz, 3) = indice(3);
-          mettre_a_jour_sous_zone(zone, i, i + 24 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 24 * oldsz, 1);
 
           //Arr 1-5 Milieu Droit 4-5 5 Haut 5-7 ** 1
           new_elems(i + 25 * oldsz, 0) = les_elems(i, 5);
           new_elems(i + 25 * oldsz, 1) = indice(3);
           new_elems(i + 25 * oldsz, 2) = indice(11);
           new_elems(i + 25 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 25 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 25 * oldsz, 1);
           //Arr 1-5 Milieu Droit 4-5 5 Haut 5-7 ** 2
           new_elems(i + 26 * oldsz, 0) = les_elems(i, 5);
           new_elems(i + 26 * oldsz, 1) = indice(3);
           new_elems(i + 26 * oldsz, 2) = indice(15);
           new_elems(i + 26 * oldsz, 3) = indice(4);
-          mettre_a_jour_sous_zone(zone, i, i + 26 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 26 * oldsz, 1);
           //Arr 1-5 Milieu Droit 4-5 5 Haut 5-7 ** 3
           new_elems(i + 27 * oldsz, 0) = les_elems(i, 5);
           new_elems(i + 27 * oldsz, 1) = indice(5);
           new_elems(i + 27 * oldsz, 2) = indice(17);
           new_elems(i + 27 * oldsz, 3) = indice(4);
-          mettre_a_jour_sous_zone(zone, i, i + 27 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 27 * oldsz, 1);
           //Arr 1-5 Milieu Droit 4-5 5 Haut 5-7 ** 4
           new_elems(i + 28 * oldsz, 0) = indice(0);
           new_elems(i + 28 * oldsz, 1) = indice(3);
           new_elems(i + 28 * oldsz, 2) = indice(5);
           new_elems(i + 28 * oldsz, 3) = indice(4);
-          mettre_a_jour_sous_zone(zone, i, i + 28 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 28 * oldsz, 1);
           //Arr 1-5 Milieu Droit 4-5 5 Haut 5-7 ** 5
           new_elems(i + 29 * oldsz, 0) = les_elems(i, 5);
           new_elems(i + 29 * oldsz, 1) = indice(5);
           new_elems(i + 29 * oldsz, 2) = indice(3);
           new_elems(i + 29 * oldsz, 3) = indice(4);
-          mettre_a_jour_sous_zone(zone, i, i + 29 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 29 * oldsz, 1);
 
           //Gauche Milieu 2-6 Avant 4-6 Haut 6 6-7 ** 1
           new_elems(i + 30 * oldsz, 0) = les_elems(i, 6);
           new_elems(i + 30 * oldsz, 1) = indice(2);
           new_elems(i + 30 * oldsz, 2) = indice(4);
           new_elems(i + 30 * oldsz, 3) = indice(16);
-          mettre_a_jour_sous_zone(zone, i, i + 30 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 30 * oldsz, 1);
           //Gauche Milieu 2-6 Avant 4-6 Haut 6 6-7 ** 2
           new_elems(i + 31 * oldsz, 0) = les_elems(i, 6);
           new_elems(i + 31 * oldsz, 1) = indice(6);
           new_elems(i + 31 * oldsz, 2) = indice(4);
           new_elems(i + 31 * oldsz, 3) = indice(18);
-          mettre_a_jour_sous_zone(zone, i, i + 31 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 31 * oldsz, 1);
           //Gauche Milieu 2-6 Avant 4-6 Haut 6 6-7 ** 3
           new_elems(i + 32 * oldsz, 0) = les_elems(i, 6);
           new_elems(i + 32 * oldsz, 1) = indice(6);
           new_elems(i + 32 * oldsz, 2) = indice(2);
           new_elems(i + 32 * oldsz, 3) = indice(13);
-          mettre_a_jour_sous_zone(zone, i, i + 32 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 32 * oldsz, 1);
           //Gauche Milieu 2-6 Avant 4-6 Haut 6 6-7 ** 4
           new_elems(i + 33 * oldsz, 0) = indice(0);
           new_elems(i + 33 * oldsz, 1) = indice(6);
           new_elems(i + 33 * oldsz, 2) = indice(2);
           new_elems(i + 33 * oldsz, 3) = indice(4);
-          mettre_a_jour_sous_zone(zone, i, i + 33 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 33 * oldsz, 1);
           //Gauche Milieu 2-6 Avant 4-6 Haut 6 6-7 ** 5
           new_elems(i + 34 * oldsz, 0) = les_elems(i, 6);
           new_elems(i + 34 * oldsz, 1) = indice(6);
           new_elems(i + 34 * oldsz, 2) = indice(2);
           new_elems(i + 34 * oldsz, 3) = indice(4);
-          mettre_a_jour_sous_zone(zone, i, i + 34 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 34 * oldsz, 1);
 
           //Milieu Droit Avant 3-7 Haut 5-7 6-7 7 ** 1
           new_elems(i + 35 * oldsz, 0) = les_elems(i, 7);
           new_elems(i + 35 * oldsz, 1) = indice(4);
           new_elems(i + 35 * oldsz, 2) = indice(5);
           new_elems(i + 35 * oldsz, 3) = indice(17);
-          mettre_a_jour_sous_zone(zone, i, i + 35 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 35 * oldsz, 1);
           //Milieu Droit Avant 3-7 Haut 5-7 6-7 7 ** 2
           new_elems(i + 36 * oldsz, 0) = les_elems(i, 7);
           new_elems(i + 36 * oldsz, 1) = indice(6);
           new_elems(i + 36 * oldsz, 2) = indice(5);
           new_elems(i + 36 * oldsz, 3) = indice(14);
-          mettre_a_jour_sous_zone(zone, i, i + 36 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 36 * oldsz, 1);
           //Milieu Droit Avant 3-7 Haut 5-7 6-7 7 ** 3
           new_elems(i + 37 * oldsz, 0) = les_elems(i, 7);
           new_elems(i + 37 * oldsz, 1) = indice(4);
           new_elems(i + 37 * oldsz, 2) = indice(6);
           new_elems(i + 37 * oldsz, 3) = indice(18);
-          mettre_a_jour_sous_zone(zone, i, i + 37 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 37 * oldsz, 1);
           //Milieu Droit Avant 3-7 Haut 5-7 6-7 7 ** 4
           new_elems(i + 38 * oldsz, 0) = indice(0);
           new_elems(i + 38 * oldsz, 1) = indice(4);
           new_elems(i + 38 * oldsz, 2) = indice(6);
           new_elems(i + 38 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 38 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 38 * oldsz, 1);
           //Milieu Droit Avant 3-7 Haut 5-7 6-7 7 ** 5
           new_elems(i + 39 * oldsz, 0) = les_elems(i, 7);
           new_elems(i + 39 * oldsz, 1) = indice(4);
           new_elems(i + 39 * oldsz, 2) = indice(6);
           new_elems(i + 39 * oldsz, 3) = indice(5);
-          mettre_a_jour_sous_zone(zone, i, i + 39 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 39 * oldsz, 1);
 
         }
       sommets_dom.resize(dim_som_old, 3);
@@ -644,35 +644,35 @@ void Tetraedriser_homogene::trianguler(Zone& zone) const
       // Reconstruction de l'octree
       Cerr << "We have split the cubes..." << finl;
 
-      zone.invalide_octree();
-      zone.typer("Tetraedre");
+      domaine.invalide_octree();
+      domaine.typer("Tetraedre");
 
       Cerr << "Splitting of the boundaries" << finl;
-      for (auto &itr : zone.faces_bord())
+      for (auto &itr : domaine.faces_bord())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::triangle_3D);
-          decoupe(zone, les_faces, new_soms_old_elems);
+          decoupe(domaine, les_faces, new_soms_old_elems);
         }
 
       Cerr << "Splitting of the connectors" << finl;
-      for (auto &itr : zone.faces_raccord())
+      for (auto &itr : domaine.faces_raccord())
         {
           Faces& les_faces = itr->faces();
           les_faces.typer(Faces::triangle_3D);
-          decoupe(zone, les_faces, new_soms_old_elems);
+          decoupe(domaine, les_faces, new_soms_old_elems);
         }
 
       Cerr << "Splitting of the internal faces" << finl;
-      for (auto &itr : zone.faces_int())
+      for (auto &itr : domaine.faces_int())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::triangle_3D);
-          decoupe(zone, les_faces, new_soms_old_elems);
+          decoupe(domaine, les_faces, new_soms_old_elems);
         }
       Cerr << "END of Tetraedriser_homogene..." << finl;
-      Cerr << "  1 NbElem=" << zone.les_elems().dimension(0) << "  NbNod=" << zone.nb_som() << finl;
+      Cerr << "  1 NbElem=" << domaine.les_elems().dimension(0) << "  NbNod=" << domaine.nb_som() << finl;
     }
   else
-    Cerr << "We do not yet know how to Tetraedriser_homogene the " << zone.type_elem()->que_suis_je() << "s" << finl;
+    Cerr << "We do not yet know how to Tetraedriser_homogene the " << domaine.type_elem()->que_suis_je() << "s" << finl;
 }

@@ -20,7 +20,7 @@
 #include <Ch_front_var_stationnaire.h>
 
 
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 /*! @brief classe Champ_front_lu Classe derivee de Champ_front_var qui represente les
  *
@@ -40,7 +40,7 @@ public:
   int is_bin(Nom name);
 
 protected :
-  REF(Zone) mon_domaine;
+  REF(Domaine) mon_domaine;
   Nom nom_fic;
 };
 

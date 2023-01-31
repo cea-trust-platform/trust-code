@@ -19,9 +19,9 @@
 
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <Zone.h>
-#include <Sous_zone_VF.h>
-#include <Zone_VEF.h>
+#include <Domaine.h>
+#include <Sous_domaine_VF.h>
+#include <Domaine_VEF.h>
 #include <Matrice_Morse.h>
 #include <Schema_Temps_base.h>
 #include <TRUSTTrav.h>
@@ -209,9 +209,9 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
   const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
-  // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-zone !
-  const Sous_zone_VF& ssz=sous_zone?la_sous_zone_dis.valeur():Sous_zone_VF();
-  const Zone_VEF& zvef=le_dom_VEF.valeur();
+  // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
+  const Sous_domaine_VF& ssz=sous_domaine?la_sous_domaine_dis.valeur():Sous_domaine_VF();
+  const Domaine_VEF& zvef=le_dom_VEF.valeur();
 
   // Parametres pour perte_charge()
   static DoubleVect u(dimension);
@@ -235,14 +235,14 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   double t=equation().schema_temps().temps_courant();
 
   // Nombre de faces a traiter.
-  int max_faces=sous_zone?
+  int max_faces=sous_domaine?
   ssz.les_faces().size() :
   zvef.nb_faces_tot();
 
   for (int face=0;face<max_faces;face++) {
 
-  // indice de la face dans la zone_VEF
-  int la_face=sous_zone?
+  // indice de la face dans la domaine_VEF
+  int la_face=sous_domaine?
   ssz.les_faces()[face] :
   face;
 
@@ -276,7 +276,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   reynolds=1e-10;
 
   // Calcul du volume d'integration
-  double volume=sous_zone?
+  double volume=sous_domaine?
   ssz.volumes_entrelaces(face) :
   zvef.volumes_entrelaces(la_face);
   volume*=zvef.porosite_face(la_face);

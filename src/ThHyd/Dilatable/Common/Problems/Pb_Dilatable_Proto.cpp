@@ -38,7 +38,7 @@ Equation_base& Pb_Dilatable_Proto::equation_impl(int i, Equation_base& eq1, Equa
 
 int Pb_Dilatable_Proto::verifier_impl(const Equation_base& eq1, const Equation_base& eq2, const bool is_thermal)
 {
-  const Zone_Cl_dis& zone_Cl_1 = eq1.zone_Cl_dis(), zone_Cl_2 = eq2.zone_Cl_dis();
-  return is_thermal == true ? tester_compatibilite_hydr_thermique(zone_Cl_1,zone_Cl_2) :
-         tester_compatibilite_hydr_fraction_massique(zone_Cl_1, zone_Cl_2);
+  const Domaine_Cl_dis& domaine_Cl_1 = eq1.domaine_Cl_dis(), domaine_Cl_2 = eq2.domaine_Cl_dis();
+  return is_thermal == true ? tester_compatibilite_hydr_thermique(domaine_Cl_1,domaine_Cl_2) :
+         tester_compatibilite_hydr_fraction_massique(domaine_Cl_1, domaine_Cl_2);
 }

@@ -50,12 +50,12 @@ inline void erreur()
 /*! @brief
  *
  */
-void Op_Grad_VEF_Face::associer(const Zone_dis& zone_dis,
-                                const Zone_Cl_dis& zone_Cl_dis,
+void Op_Grad_VEF_Face::associer(const Domaine_dis& domaine_dis,
+                                const Domaine_Cl_dis& domaine_Cl_dis,
                                 const Champ_Inc&)
 {
-  const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 

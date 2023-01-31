@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Masse_VEF_P1NC.h>
-#include <Zone_Cl_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
@@ -54,15 +54,15 @@ Entree& Masse_VEF_P1NC::readOn(Entree& s)
 
 DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,le_dom_Cl_VEF.valeur());
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,le_dom_Cl_VEF.valeur());
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  int nfa = zone_VEF.nb_faces();
-  int num_std = zone_VEF.premiere_face_std();
-  int num_int = zone_VEF.premiere_face_int();
+  int nfa = domaine_VEF.nb_faces();
+  int num_std = domaine_VEF.premiere_face_std();
+  int num_int = domaine_VEF.premiere_face_int();
   int nbcomp = sm.line_size();
 
   if (nfa != sm.dimension(0))
@@ -90,10 +90,10 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
 
   // On traite les conditions aux limites
 
-  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
 
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + le_bord.nb_faces();
@@ -108,9 +108,9 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
             sm(face,comp) =0;
       else
 
-        if ((sub_type(Symetrie,la_cl.valeur()))&&(zone_Cl_VEF.equation().inconnue()->nature_du_champ()==vectoriel))
+        if ((sub_type(Symetrie,la_cl.valeur()))&&(domaine_Cl_VEF.equation().inconnue()->nature_du_champ()==vectoriel))
           {
-            const DoubleTab& normales = zone_VEF.face_normales();
+            const DoubleTab& normales = domaine_VEF.face_normales();
             for (int face=num1; face<num2; face++)
               {
                 double psc=0;
@@ -161,14 +161,14 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
 
 
 //
-void Masse_VEF_P1NC::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
+void Masse_VEF_P1NC::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  le_dom_VEF = ref_cast(Zone_VEF, le_dom_dis_base);
+  le_dom_VEF = ref_cast(Domaine_VEF, le_dom_dis_base);
 }
 
-void Masse_VEF_P1NC::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
+void Masse_VEF_P1NC::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, le_dom_Cl_dis_base);
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_dis_base);
 }
 
 

@@ -15,7 +15,7 @@
 
 #include <Champ_Fonc_P0_VDF.h>
 #include <LecFicDiffuse.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_Fonc_P0_VDF, "Champ_Fonc_P0_VDF", Champ_Fonc_P0_base);
 

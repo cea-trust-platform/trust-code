@@ -82,7 +82,7 @@ int Cond_lim_base::reculer(double temps)
  */
 int Cond_lim_base::initialiser(double temps)
 {
-  return le_champ_front->initialiser(temps, zone_Cl_dis().inconnue());
+  return le_champ_front->initialiser(temps, domaine_Cl_dis().inconnue());
 }
 
 /*! @brief Effectue une mise a jour en temps de la condition aux limites.
@@ -149,14 +149,14 @@ void Cond_lim_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
   modifier_val_imp = 0;
 }
 
-/*! @brief Associe la Zone_Cl_dis_base (Zone des conditions aux limites discretisees) a l'objet.
+/*! @brief Associe la Domaine_Cl_dis_base (Domaine des conditions aux limites discretisees) a l'objet.
  *
- * Cette Zone_Cl_dis_base stocke (reference) toutes les conditions
- *     aux limites relative a une Zone geometrique.
+ * Cette Domaine_Cl_dis_base stocke (reference) toutes les conditions
+ *     aux limites relative a une Domaine geometrique.
  *
- * @param (Zone_Cl_dis_base& zcl) une Zone des conditions aux limites discretisees a laquelle l'objet Cond_lim_base se rapporte
+ * @param (Domaine_Cl_dis_base& zcl) une Domaine des conditions aux limites discretisees a laquelle l'objet Cond_lim_base se rapporte
  */
-void Cond_lim_base::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& zcl)
+void Cond_lim_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl)
 {
   mon_dom_cl_dis = zcl;
   le_champ_front.valeur().verifier(*this);

@@ -17,7 +17,7 @@
 #define Op_Grad_P0_to_Face_included
 
 #include <Op_Grad_VDF_Face_base.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 /*! @brief class Op_Grad_P0_to_Face Cette classe represente l'operateur de gradient
  *

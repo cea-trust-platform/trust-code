@@ -31,7 +31,7 @@ public:
 
   inline Elem_poly& operator =(const Elem_poly_base&);
   void typer(Nom);
-  inline void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const;
+  inline void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Domaine&) const;
 
 };
 
@@ -42,9 +42,9 @@ inline Elem_poly& Elem_poly::operator =(const Elem_poly_base& elem_base)
   return *this;
 }
 
-inline void Elem_poly::normale(int num_face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Zone& zone_geom) const
+inline void Elem_poly::normale(int num_face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Domaine& domaine_geom) const
 {
-  valeur().normale(num_face, Face_normales, Face_sommets, Face_voisins, elem_faces, zone_geom);
+  valeur().normale(num_face, Face_normales, Face_sommets, Face_voisins, elem_faces, domaine_geom);
 }
 
 

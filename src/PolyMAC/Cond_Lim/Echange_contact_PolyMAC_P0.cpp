@@ -19,7 +19,7 @@
 #include <Champ_Uniforme.h>
 #include <Schema_Euler_Implicite.h>
 #include <Milieu_base.h>
-#include <Zone_PolyMAC_P0.h>
+#include <Domaine_PolyMAC_P0.h>
 #include <Equation_base.h>
 #include <Champ_Elem_PolyMAC_P0.h>
 #include <Operateur.h>
@@ -54,8 +54,8 @@ void Echange_contact_PolyMAC_P0::init_op() const
   Champ_front_calc ch;
   ch.creer(nom_autre_pb_, nom_bord_, nom_champ_);
   fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis()); //frontieres
-  const Equation_base& eqn = zone_Cl_dis().equation(), &o_eqn = ch.equation(); //equations
-  i_fvf = eqn.zone_dis()->rang_frontiere(fvf.le_nom()), i_o_fvf = o_eqn.zone_dis()->rang_frontiere(nom_bord_);
+  const Equation_base& eqn = domaine_Cl_dis().equation(), &o_eqn = ch.equation(); //equations
+  i_fvf = eqn.domaine_dis()->rang_frontiere(fvf.le_nom()), i_o_fvf = o_eqn.domaine_dis()->rang_frontiere(nom_bord_);
 
   int i_op = -1, o_i_op = -1, i; //indice de l'operateur de diffusion dans l'autre equation
   for (i = 0; i < eqn.nombre_d_operateurs(); i++)
@@ -73,9 +73,9 @@ void Echange_contact_PolyMAC_P0::init_op() const
 void Echange_contact_PolyMAC_P0::init_fs_dist() const
 {
   if (fs_dist_init_) return; //deja fait
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, fvf->zone_dis()), &o_zone = ref_cast(Zone_PolyMAC_P0, o_fvf->zone_dis());
-  const DoubleTab& xv = zone.xv(), &o_xv = o_zone.xv(), &xs = zone.zone().coord_sommets(), &o_xs = o_zone.zone().coord_sommets();
-  const IntTab& f_s = zone.face_sommets(), &o_f_s = o_zone.face_sommets();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, fvf->domaine_dis()), &o_domaine = ref_cast(Domaine_PolyMAC_P0, o_fvf->domaine_dis());
+  const DoubleTab& xv = domaine.xv(), &o_xv = o_domaine.xv(), &xs = domaine.domaine().coord_sommets(), &o_xs = o_domaine.domaine().coord_sommets();
+  const IntTab& f_s = domaine.face_sommets(), &o_f_s = o_domaine.face_sommets();
 
   int i, j, f, o_f, s, o_s, nf_tot = fvf->nb_faces_tot(), o_nf_tot = o_fvf->nb_faces_tot(), d, D = dimension;
   f_dist.resize(nf_tot);
@@ -108,7 +108,7 @@ void Echange_contact_PolyMAC_P0::init_fs_dist() const
   for (i = 0; i < nf_tot; i++) //remplissage de f_dist : face distante si coincidence, -1 sinon
     {
       f = fvf->num_face(i), o_f = o_nf_tot ? o_fvf->num_face(f_idx->getIJ(i, 0)) : -1;
-      double d2 = o_f >= 0 ? zone.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
+      double d2 = o_f >= 0 ? domaine.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
       if (d2 < 1e-12) f_dist(i) = o_f;
       else f_dist(i) = -1;
       if (i < fvf->nb_faces() && d2 >= 1e-12)
@@ -118,7 +118,7 @@ void Echange_contact_PolyMAC_P0::init_fs_dist() const
   for (i = 0; i < ns_tot; i++) //remplissage de s_dist
     {
       s = som[i], o_s = o_ns_tot ? o_som[s_idx->getIJ(i, 0)] : -1;
-      if (o_s >= 0 && zone.dot(&xs(s, 0), &xs(s, 0), &o_xs(o_s, 0), &o_xs(o_s, 0)) < 1e-12) s_dist[s] = o_s;
+      if (o_s >= 0 && domaine.dot(&xs(s, 0), &xs(s, 0), &o_xs(o_s, 0), &o_xs(o_s, 0)) < 1e-12) s_dist[s] = o_s;
     }
 
 #else

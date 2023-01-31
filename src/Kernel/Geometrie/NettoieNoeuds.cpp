@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <NettoieNoeuds.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 
 Implemente_instanciable(NettoieNoeuds, "NettoiePasNoeuds", Interprete_geometrique_base);
@@ -50,7 +50,7 @@ Entree& NettoieNoeuds::interpreter_(Entree& is)
   return is;
 }
 
-void NettoieNoeuds::nettoie(Zone& dom)
+void NettoieNoeuds::nettoie(Domaine& dom)
 {
   if (NettoiePasNoeuds==1)
     return;
@@ -188,7 +188,7 @@ void NettoieNoeuds::nettoie(Zone& dom)
 /*! @brief regarde si on n'a pas des noeuds doubles
  *
  */
-void NettoieNoeuds::verifie_noeuds(const Zone& dom)
+void NettoieNoeuds::verifie_noeuds(const Domaine& dom)
 {
   Cerr<<finl<<"Beginning of the search of identical nodes (can be long, algorithm in n^2)..."<<finl;
   const DoubleTab& coord_sommets=dom.les_sommets();

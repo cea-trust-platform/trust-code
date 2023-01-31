@@ -21,8 +21,8 @@
 #include <Equation_base.h>
 #include <Ref_Champ_Inc.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 //class Champ_Inc;
 class Matrice_Morse;
 class Frontiere_dis_base;
@@ -40,7 +40,7 @@ class EcrFicPartage;
  *      Exemple de classe d'operateur: Op_Diff_K_Eps_negligeable,
  *                                     Operateur_Div_base
  *
- * @sa MorEqn Operateur Equation_base, Classe abstraite. Un certain nombre de methodes DOIVENT etre, surchargees dans les classes derivees., Methodes abstraites:, DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const, DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const, void associer(const Zone_dis&,, const Zone_Cl_dis&,, const Champ_Inc& inco)
+ * @sa MorEqn Operateur Equation_base, Classe abstraite. Un certain nombre de methodes DOIVENT etre, surchargees dans les classes derivees., Methodes abstraites:, DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const, DoubleTab& calculer(const DoubleTab&, DoubleTab& ) const, void associer(const Domaine_dis&,, const Domaine_Cl_dis&,, const Champ_Inc& inco)
  */
 class Operateur_base : public Objet_U, public MorEqn, public Champs_compris_interface
 {
@@ -49,8 +49,8 @@ public:
   virtual DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const;
   virtual DoubleTab& calculer(const DoubleTab&, DoubleTab&) const;
   virtual void associer_champ(const Champ_Inc&, const std::string& nom_ch);
-  virtual void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc& inco) =0;
-  virtual void associer_domaine_cl_dis(const Zone_Cl_dis_base&);
+  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& inco) =0;
+  virtual void associer_domaine_cl_dis(const Domaine_Cl_dis_base&);
   virtual void dimensionner(Matrice_Morse&) const /* =0 */;
   virtual void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const;
   virtual void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const /* =0 */;

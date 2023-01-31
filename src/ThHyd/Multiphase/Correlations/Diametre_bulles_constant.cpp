@@ -17,7 +17,7 @@
 #include <Ref_Champ_base.h>
 #include <Discret_Thyd.h>
 #include <Pb_Multiphase.h>
-#include <Zone_dis.h>
+#include <Domaine_dis.h>
 
 Implemente_instanciable(Diametre_bulles_constant, "Diametre_bulles_constant", Correlation_base);
 
@@ -39,7 +39,7 @@ Entree& Diametre_bulles_constant::readOn(Entree& is)
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
-  const Zone_dis& z = ref_cast(Zone_dis, pb.domaine_dis());
+  const Domaine_dis& z = ref_cast(Domaine_dis, pb.domaine_dis());
   dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, diametres_);
 
   champs_compris_.ajoute_champ(diametres_);

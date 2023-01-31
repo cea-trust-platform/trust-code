@@ -21,8 +21,8 @@
 #include <Matrice.h>
 
 class Frontiere_dis_base;
-class Zone_Cl_dis_base;
-class Zone_VEF_PreP1b;
+class Domaine_Cl_dis_base;
+class Domaine_VEF_PreP1b;
 
 class Champ_P1iP1B_implementation : public Champ_implementation_divers
 {
@@ -42,15 +42,15 @@ public:
 
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override;
 
-  DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const override;
+  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override;
 
-  DoubleVect& valeur_aux_sommets_compo(const Zone&, DoubleVect&, int) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override;
 
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
 
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
   int imprime_P1B(Sortie&, int) const;
-  DoubleTab& filtrage(const Zone_VEF_PreP1b&, const Champ_base&) const;        // Methode pour filtrer le champ
+  DoubleTab& filtrage(const Domaine_VEF_PreP1b&, const Champ_base&) const;        // Methode pour filtrer le champ
   const DoubleTab& champ_filtre() const { return champ_filtre_; }
 
   int Condition_Neumann_imposee_;        // Drapeau pour savoir s'il y'a des CL de Neumann (influe sur le filtrage)
@@ -61,9 +61,9 @@ protected:
   mutable double temps_filtrage_;                // Temps du dernier filtrage         (va servir a ne pas refiltrer inutilement)
   mutable const double *adresse_champ_filtre_;        // Adresse du champ filtre        (va servir a ne pas refiltrer inutilement)
 
-  void completer(const Zone_Cl_dis_base& zcl);
+  void completer(const Domaine_Cl_dis_base& zcl);
 
-  virtual const Zone_VEF_PreP1b& zone_vef() const =0;
+  virtual const Domaine_VEF_PreP1b& domaine_vef() const =0;
   DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
 };
 

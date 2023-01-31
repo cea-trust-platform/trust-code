@@ -17,13 +17,13 @@
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Op_VDF_Face.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
 
 // TODO : FIXME : a la poubelle
-void Op_VDF_Face::dimensionner(const Zone_VDF& le_dom, const Zone_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice) const
+void Op_VDF_Face::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des faces.
   // Cette matrice a une structure de matrice morse.
@@ -147,7 +147,7 @@ void Op_VDF_Face::modifier_pour_Cl_(const int face, const int comp, const int nb
   for (int k = 1; k < nbvois; k++) coeff[idiag + k] = 0.;
 }
 
-void Op_VDF_Face::modifier_pour_Cl(const Zone_VDF& le_dom, const Zone_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice, DoubleTab& secmem) const
+void Op_VDF_Face::modifier_pour_Cl(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice, DoubleTab& secmem) const
 {
   const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
   const IntVect& orientation = le_dom.orientation();

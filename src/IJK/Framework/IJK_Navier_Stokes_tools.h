@@ -25,7 +25,7 @@ double compute_fractionnal_timestep_rk3(const double dt_tot, int step);
 
 void build_extended_splitting(const IJK_Splitting& split, IJK_Splitting& split_ext, int n_cells);
 
-Probleme_base& creer_zone_vdf(const IJK_Splitting& splitting, const Nom& nom_domaine);
+Probleme_base& creer_domaine_vdf(const IJK_Splitting& splitting, const Nom& nom_domaine);
 
 void ijk_interpolate(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result);
 

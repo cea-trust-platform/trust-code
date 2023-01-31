@@ -32,7 +32,7 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   DoubleTab dudt(futur); // just for initializing the array structure ...
 
   // Boundary conditions applied on Un+1:
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
 
   // On tourne la roue pour que les operateurs utilisent les champs au temps futur
   eqn.inconnue().avancer();
@@ -44,7 +44,7 @@ int Schema_Euler_explicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   futur *= dt_;
   futur += present;
 
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
   update_critere_statio(dudt, eqn);
 
   return 1;

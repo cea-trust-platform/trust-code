@@ -15,8 +15,8 @@
 
 #include <Porosites_champ.h>
 #include <Champ_Don_base.h>
-#include <Sous_Zone.h>
-#include <Zone_VF.h>
+#include <Sous_Domaine.h>
+#include <Domaine_VF.h>
 
 /*! @brief renvoit le tableau res, res=org si flag=0, res= porosite*org sinon attention ne pas modifier res car sinon on ne sait pas ce que l'on fait sur org (d'ou le renvoi const)
  *
@@ -69,13 +69,13 @@ Entree& Porosites::readOn(Entree& is)
     }
   for (is >> mot; mot != "}"; is >> mot)
     {
-      // 1er truc a lire : nom sous-zone
-      les_sous_zones.push_back(mot);
+      // 1er truc a lire : nom sous-domaine
+      les_sous_domaines.push_back(mot);
       // 2eme truc a lire : accolade
       is >> mot;
       if (mot != "{")
         {
-          Cerr << "Porosites : { expected after the sous zone instead of " << mot << finl;
+          Cerr << "Porosites : { expected after the sous domaine instead of " << mot << finl;
           Process::exit();
         }
       for (is >> motcle; motcle != "}"; is >> motcle)
@@ -97,13 +97,13 @@ Entree& Porosites::readOn(Entree& is)
             }
         }
     }
-  assert(les_sous_zones.size() == porosites_volu.size() && les_sous_zones.size() == porosites_surf.size());
+  assert(les_sous_domaines.size() == porosites_volu.size() && les_sous_domaines.size() == porosites_surf.size());
 
   // quelques tests !
-  for (const auto &sz : les_sous_zones)
-    if (!sub_type(Sous_Zone, Interprete::objet(sz)))
+  for (const auto &sz : les_sous_domaines)
+    if (!sub_type(Sous_Domaine, Interprete::objet(sz)))
       {
-        Cerr << sz << " is of type " << Interprete::objet(sz).que_suis_je() << ". We waited an object of type Sous_Zone" << finl;
+        Cerr << sz << " is of type " << Interprete::objet(sz).que_suis_je() << ". We waited an object of type Sous_Domaine" << finl;
         Process::exit();
       }
 
@@ -117,21 +117,21 @@ Entree& Porosites::readOn(Entree& is)
   return is;
 }
 
-void Porosites::remplir_champ(const Zone_VF& zvf, DoubleVect& porosite_elem, DoubleVect& porosite_face)
+void Porosites::remplir_champ(const Domaine_VF& zvf, DoubleVect& porosite_elem, DoubleVect& porosite_face)
 {
-  if (zvf.que_suis_je().debute_par("Zone_VEF"))
+  if (zvf.que_suis_je().debute_par("Domaine_VEF"))
     {
       Cerr << "Porosites should no longer be used in VEF. Porosites_champ should be used instead." << finl;
       Process::exit();
     }
 
   const IntTab& elem_faces = zvf.elem_faces();
-  const int sz = (int)les_sous_zones.size();
-  int nb_faces_elem = zvf.zone().nb_faces_elem();
+  const int sz = (int)les_sous_domaines.size();
+  int nb_faces_elem = zvf.domaine().nb_faces_elem();
 
   for (int ind = 0; ind < sz; ind++)
     {
-      Sous_Zone& ssz = ref_cast(Sous_Zone, Interprete::objet(les_sous_zones[ind]));
+      Sous_Domaine& ssz = ref_cast(Sous_Domaine, Interprete::objet(les_sous_domaines[ind]));
       const double porsurfmin = porosites_surf[ind].local_min_vect();
 
       if ((porosites_volu[ind] != 1) && (porsurfmin != 1))
@@ -162,7 +162,7 @@ void Porosites::remplir_champ(const Zone_VF& zvf, DoubleVect& porosite_elem, Dou
               porosite_elem(elem) = porosites_volu[ind];
             }
 
-          const int nb_elem_tot = zvf.zone().nb_elem_tot();
+          const int nb_elem_tot = zvf.domaine().nb_elem_tot();
           for (int i = 0; i < nb_elem_tot; i++)
             {
               for (int j = 0; j < nb_faces_elem; j++)
@@ -198,6 +198,6 @@ void Porosites::remplir_champ(const Zone_VF& zvf, DoubleVect& porosite_elem, Dou
     }
 
   porosites_surf.clear();
-  les_sous_zones.clear();
+  les_sous_domaines.clear();
   porosites_volu.clear();
 }

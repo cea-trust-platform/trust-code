@@ -18,10 +18,10 @@
 #define Op_Grad_VEF_Face_included
 
 #include <Operateur_Grad.h>
-#include <Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
-#include <Zone_Cl_VEF.h>
-#include <Ref_Zone_VEF.h>
+#include <Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
 #include <Ref_Champ_P0_VEF.h>
 #include <Champ_P0_VEF.h>
 
@@ -49,15 +49,15 @@ class Op_Grad_VEF_Face : public Operateur_Grad_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
 
 protected:
 
-  REF(Zone_VEF) le_dom_vef;
-  REF(Zone_Cl_VEF) la_zcl_vef;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_P0_VEF)  la_pression_P0;
 
   DoubleVect porosite_surf;

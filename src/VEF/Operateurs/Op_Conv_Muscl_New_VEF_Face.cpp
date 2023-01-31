@@ -17,7 +17,7 @@
 #include <Champ_P1NC.h>
 #include <Schema_Temps_base.h>
 #include <Porosites_champ.h>
-#include <Sous_zone_VF.h>
+#include <Sous_domaine_VF.h>
 #include <Probleme_base.h>
 #include <ArrOfBit.h>
 #include <TRUSTTabs.h>
@@ -103,22 +103,22 @@ Entree& Op_Conv_Muscl_New_VEF_Face::readOn(Entree& s )
 
 void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTab& Kij, DoubleTab& Cij, DoubleTab& Sij, DoubleTab& Sij2, const int nb_comp, const DoubleTab& velocity) const
 {
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
-  const DoubleTab& facette_normales = zone_VEF.facette_normales();
-  const DoubleTab& facette_normales_Cl = zone_Cl_VEF.normales_facettes_Cl();
+  const DoubleTab& facette_normales = domaine_VEF.facette_normales();
+  const DoubleTab& facette_normales_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-  const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
+  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
 
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.dimension(1);
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
-  const int nb_som_elem = zone_VEF.zone().nb_som_elem();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  const int nb_som_elem = domaine_VEF.domaine().nb_som_elem();
   const int marq = phi_u_transportant(equation());
 
   ArrOfDouble vc(Objet_U::dimension);
@@ -153,7 +153,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
       int rang=rang_elem_non_std(elem);
-      int itypcl=(rang==-1)?0:zone_Cl_VEF.type_elem_Cl(rang);
+      int itypcl=(rang==-1)?0:domaine_Cl_VEF.type_elem_Cl(rang);
 
       for (int facei_loc=0; facei_loc<nb_faces_elem; facei_loc++)
         face[facei_loc]=elem_faces(elem,facei_loc);
@@ -169,7 +169,7 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
           vsom(facei_loc,dim)=vs[dim]-Objet_U::dimension*velocity(face[facei_loc],dim);
 
       vc=0.;
-      zone_VEF.type_elem().valeur().calcul_vc(face,vc,vs,vsom,(*this).vitesse(),itypcl,porosite_face);
+      domaine_VEF.type_elem().valeur().calcul_vc(face,vc,vs,vsom,(*this).vitesse(),itypcl,porosite_face);
       if (marq==0)
         {
           double porosite=1./porosite_elem(elem);
@@ -287,11 +287,11 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
   // Correction des Kij pour Dirichlet !
   //
   {
-    int nb_bord=zone_Cl_VEF.nb_cond_lim();
+    int nb_bord=domaine_Cl_VEF.nb_cond_lim();
 
     for (int n_bord=0; n_bord<nb_bord; n_bord++)
       {
-        const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+        const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
         if ( (sub_type(Dirichlet,la_cl.valeur()))
              || (sub_type(Dirichlet_homogene,la_cl.valeur()))
@@ -344,25 +344,25 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_coefficients_operateur_centre(DoubleTa
 void Op_Conv_Muscl_New_VEF_Face::
 calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleTab& Cij, const DoubleTab& Sij, const DoubleTab& Sij2, const int nb_comp, const DoubleTab& velocity, const DoubleTab& transporte) const
 {
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone& domaine = zone_VEF.zone();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine& domaine = domaine_VEF.domaine();
 
-  const DoubleTab& vecteur_face_facette = ref_cast_non_const(Zone_VEF,zone_VEF).vecteur_face_facette();
-  const DoubleTab& vecteur_face_facette_Cl = zone_Cl_VEF.vecteur_face_facette_Cl();
+  const DoubleTab& vecteur_face_facette = ref_cast_non_const(Domaine_VEF,domaine_VEF).vecteur_face_facette();
+  const DoubleTab& vecteur_face_facette_Cl = domaine_Cl_VEF.vecteur_face_facette_Cl();
   const DoubleTab& coord_sommets = domaine.coord_sommets();
-  const DoubleTab& xv = zone_VEF.xv();
+  const DoubleTab& xv = domaine_VEF.xv();
 
   const DoubleVect& transporteVect = transporte;
 
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  //   const IntTab& face_voisins = zone_VEF.face_voisins();
-  const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-  const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  //   const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
+  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
 
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.dimension(1);
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
 
   DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
@@ -377,7 +377,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   //
   //Calcul des flux de l'operateur
   //
-  Champ_P1NC::calcul_gradient(transporte,gradient_elem,zone_Cl_VEF);
+  Champ_P1NC::calcul_gradient(transporte,gradient_elem,domaine_Cl_VEF);
 
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
@@ -414,7 +414,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 else
                   face_amont=facej,dir=1;
 
-                int s=zone_VEF.zone().sommet_elem(elem,KEL(2,fa7));
+                int s=domaine_VEF.domaine().sommet_elem(elem,KEL(2,fa7));
 
                 for (int comp=0; comp<nb_comp; comp++)
                   {
@@ -467,7 +467,7 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 else
                   face_amont=facej,dir=1;
 
-                int s=zone_VEF.zone().sommet_elem(elem,KEL(2,fa7));
+                int s=domaine_VEF.domaine().sommet_elem(elem,KEL(2,fa7));
 
                 for (int comp=0; comp<nb_comp; comp++)
                   {
@@ -524,8 +524,8 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 else
                   face_amont=facej,dir=1;
 
-                int s=zone_VEF.zone().sommet_elem(elem,KEL(2,fa7));
-                int s2=zone_VEF.zone().sommet_elem(elem,KEL(3,fa7));
+                int s=domaine_VEF.domaine().sommet_elem(elem,KEL(2,fa7));
+                int s2=domaine_VEF.domaine().sommet_elem(elem,KEL(3,fa7));
 
                 for (int comp=0; comp<nb_comp; comp++)
                   {
@@ -583,8 +583,8 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
                 else
                   face_amont=facej,dir=1;
 
-                int s=zone_VEF.zone().sommet_elem(elem,KEL(2,fa7));
-                int s2=zone_VEF.zone().sommet_elem(elem,KEL(3,fa7));
+                int s=domaine_VEF.domaine().sommet_elem(elem,KEL(2,fa7));
+                int s2=domaine_VEF.domaine().sommet_elem(elem,KEL(3,fa7));
 
                 for (int comp=0; comp<nb_comp; comp++)
                   {
@@ -622,21 +622,21 @@ calculer_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
 void Op_Conv_Muscl_New_VEF_Face::
 modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleTab& Cij, const DoubleTab& Sij, const DoubleTab& Sij2, const int nb_comp, const DoubleTab& velocity, const DoubleTab& transporte) const
 {
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
-  const DoubleTab& vecteur_face_facette = ref_cast_non_const(Zone_VEF,zone_VEF).vecteur_face_facette();
-  const DoubleTab& vecteur_face_facette_Cl = zone_Cl_VEF.vecteur_face_facette_Cl();
+  const DoubleTab& vecteur_face_facette = ref_cast_non_const(Domaine_VEF,domaine_VEF).vecteur_face_facette();
+  const DoubleTab& vecteur_face_facette_Cl = domaine_Cl_VEF.vecteur_face_facette_Cl();
 
   const DoubleVect& transporteVect = transporte;
 
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-  const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
+  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
 
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.dimension(1);
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
   DoubleTab gradient_elem(nb_elem_tot,nb_comp,Objet_U::dimension);  //!< (du/dx du/dy dv/dx dv/dy) pour un poly  gradient_elem=0.;
   IntTab face(Objet_U::dimension+1);
@@ -650,7 +650,7 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
   //
   //Calcul des flux de l'operateur
   //
-  Champ_P1NC::calcul_gradient(transporte,gradient_elem,zone_Cl_VEF);
+  Champ_P1NC::calcul_gradient(transporte,gradient_elem,domaine_Cl_VEF);
 
   for(int elem=0; elem<nb_elem_tot; elem++)
     {
@@ -756,11 +756,11 @@ modifier_flux_operateur_centre(DoubleTab& Fij,const DoubleTab& Kij,const DoubleT
 
 void Op_Conv_Muscl_New_VEF_Face::remplir_fluent(DoubleVect& fluent_) const
 {
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& velocity=la_vitesse.valeurs();
-  const DoubleTab& face_normales=zone_VEF.face_normales();
-  const int nb_faces = zone_VEF.nb_faces();
+  const DoubleTab& face_normales=domaine_VEF.face_normales();
+  const int nb_faces = domaine_VEF.nb_faces();
   // calcul de la CFL.
   // On remet a zero le tableau qui sert pour
   // le calcul du pas de temps de stabilite
@@ -782,18 +782,18 @@ DoubleTab& Op_Conv_Muscl_New_VEF_Face::ajouter(const DoubleTab& transporte_2,
   DoubleTab sauv(resu);
   resu=0;
 
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   const DoubleTab& vitesse_2=la_vitesse.valeurs();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
-  const IntTab& elem_faces = zone_VEF.elem_faces();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
 
   const int marq=phi_u_transportant(equation());
   const int nb_faces_elem=elem_faces.dimension(1);
   assert(nb_faces_elem==(dimension+1));
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
   int nb_comp=1;
   if(resu.nb_dim()!=1)
@@ -825,7 +825,7 @@ DoubleTab& Op_Conv_Muscl_New_VEF_Face::ajouter(const DoubleTab& transporte_2,
   const DoubleTab& transporte=modif_par_porosite_si_flag(transporte_2,transporte_,!marq,porosite_face);
 
   //Initialisation du tableau flux_bords_ pour le calcul des pertes de charge
-  flux_bords_.resize(zone_VEF.nb_faces_bord(),nb_comp);
+  flux_bords_.resize(domaine_VEF.nb_faces_bord(),nb_comp);
   calculer_flux_bords(Kij,velocity,transporte);
 
   calculer_coefficients_operateur_centre(Kij,Cij,Sij,Sij2,nb_comp,velocity);
@@ -852,20 +852,20 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
     return Op_Conv_VEF_Face::calculer_dt_stab(); // Default true
   else
     {
-      const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-      const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+      const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+      const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
       const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
       const DoubleTab& vitesse_2=la_vitesse.valeurs();
       const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
-      const IntTab& elem_faces = zone_VEF.elem_faces();
+      const IntTab& elem_faces = domaine_VEF.elem_faces();
 
       const int marq=phi_u_transportant(equation());
       const int nb_faces_elem=elem_faces.dimension(1);
-      const int nb_elem_tot = zone_VEF.nb_elem_tot();
-      const int nfa7 = zone_VEF.type_elem().nb_facette();
-      const int nb_faces_tot = zone_VEF.nb_faces_tot();
-      const int nb_bord = zone_Cl_VEF.nb_cond_lim();
+      const int nb_elem_tot = domaine_VEF.nb_elem_tot();
+      const int nfa7 = domaine_VEF.type_elem().nb_facette();
+      const int nb_faces_tot = domaine_VEF.nb_faces_tot();
+      const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
 
       int nb_comp=1;
       if(equation().inconnue().valeurs().nb_dim()!=1)
@@ -912,7 +912,7 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
           }
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num2=le_bord.nb_faces_tot();
 
@@ -954,21 +954,21 @@ double Op_Conv_Muscl_New_VEF_Face::calculer_dt_stab() const
 void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const DoubleTab& velocity, const DoubleTab& transporte) const
 {
 
-  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
 
   const DoubleVect& transporteV = transporte;
-  const DoubleTab& face_normales=zone_VEF.face_normales();
+  const DoubleTab& face_normales=domaine_VEF.face_normales();
 
-  const int nb_bord = zone_Cl_VEF.nb_cond_lim();
+  const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
 
   int nb_comp=1;
   if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
 
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num2 = le_bord.nb_faces();//il ne faut boucler que sur les faces reelles ici
 
@@ -1096,17 +1096,17 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_flux_bords(const DoubleTab& Kij, const
 DoubleTab&
 Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& Kij, const DoubleTab& Fij, const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
 
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const IntTab& num_fac_loc = zone_VEF.get_num_fac_loc();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
 
-  const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
-  const int premiere_face_int = zone_VEF.premiere_face_int();
-  const int nb_faces = zone_VEF.nb_faces();
+  const int nb_elem_tot=domaine_VEF.nb_elem_tot();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
+  const int premiere_face_int = domaine_VEF.premiere_face_int();
+  const int nb_faces = domaine_VEF.nb_faces();
 
   int nb_comp=1;
   if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
@@ -1163,13 +1163,13 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& Kij, const
 
 
   //Faces de bord
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
-  const int nb_bord = zone_Cl_VEF.nb_cond_lim();
+  const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
 
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num2=le_bord.nb_faces();
 
@@ -1213,13 +1213,13 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_operateur_centre(const DoubleTab& Kij, const
 DoubleTab&
 Op_Conv_Muscl_New_VEF_Face::ajouter_diffusion(const DoubleTab& Kij,const DoubleTab& Fij, const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
 
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
 
-  const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
+  const int nb_elem_tot=domaine_VEF.nb_elem_tot();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
   int nb_comp=1;
   if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
@@ -1296,17 +1296,17 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion(const DoubleTab& Kij, const Do
 DoubleTab&
 Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const DoubleTab& Fij,const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
 
   const DoubleVect& transporteV = transporte;
 
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const IntTab& num_fac_loc = zone_VEF.get_num_fac_loc();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
 
-  const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
+  const int nb_elem_tot=domaine_VEF.nb_elem_tot();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
   int nb_comp=1;
   if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
@@ -1401,17 +1401,17 @@ Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v2(const DoubleTab& Kij, const
 DoubleTab&
 Op_Conv_Muscl_New_VEF_Face::ajouter_antidiffusion_v1(const DoubleTab& Kij, const DoubleTab& Fij,const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
 
   const DoubleVect& transporteV = transporte;
 
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& KEL=zone_VEF.type_elem().valeur().KEL();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const IntTab& num_fac_loc = zone_VEF.get_num_fac_loc();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& KEL=domaine_VEF.type_elem().valeur().KEL();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
 
-  const int nb_elem_tot=zone_VEF.nb_elem_tot();
-  const int nfa7 = zone_VEF.type_elem().nb_facette();
+  const int nb_elem_tot=domaine_VEF.nb_elem_tot();
+  const int nfa7 = domaine_VEF.type_elem().nb_facette();
 
   int nb_comp=1;
   if (transporte.nb_dim()!=1) nb_comp=transporte.dimension(1);
@@ -1592,22 +1592,22 @@ Op_Conv_Muscl_New_VEF_Face::calculer_senseur_v1(const DoubleTab& Kij, const Doub
 
 void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
-  const int nb_bord = zone_Cl_VEF.nb_cond_lim();
+  const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
   const int nb_comp = (resu.nb_dim()==1) ? 1 : resu.dimension(1);
 
   const DoubleVect& transporteV = transporte;
   DoubleVect& resuV = resu;
 
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const IntTab& num_fac_loc = zone_VEF.get_num_fac_loc();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const IntTab& num_fac_loc = domaine_VEF.get_num_fac_loc();
 
   //Faces de bord
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num2=le_bord.nb_faces();
 
@@ -1673,17 +1673,17 @@ void Op_Conv_Muscl_New_VEF_Face::mettre_a_jour_pour_periodicite(const DoubleTab&
 //contenu dans un element quelconque du maillage
 void Op_Conv_Muscl_New_VEF_Face::calculer_data_pour_dirichlet()
 {
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
-  const IntTab& face_sommets = zone_VEF.face_sommets();
-  const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-  const IntTab& elem_sommets = zone_VEF.zone().les_elems();
+  const IntTab& face_sommets = domaine_VEF.face_sommets();
+  const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
+  const IntTab& elem_sommets = domaine_VEF.domaine().les_elems();
 
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
-  const int nb_bord = zone_Cl_VEF.nb_cond_lim();
-  const int nb_som_faces = zone_VEF.nb_som_face();
-  const int nb_som_elem = zone_VEF.zone().nb_som_elem();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
+  const int nb_bord = domaine_Cl_VEF.nb_cond_lim();
+  const int nb_som_faces = domaine_VEF.nb_som_face();
+  const int nb_som_elem = domaine_VEF.domaine().nb_som_elem();
 
   //On rajoute un flag aux elements qui ont au moins un sommet qui appartient
   //une face de Dirichlet ou Dirichlet_homogene
@@ -1692,12 +1692,12 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_data_pour_dirichlet()
       is_element_for_upwinding_.resize(nb_elem_tot);
       is_element_for_upwinding_=0;
 
-      IntTab est_un_sommet_de_bord(zone_VEF.nb_som_tot());
+      IntTab est_un_sommet_de_bord(domaine_VEF.nb_som_tot());
       est_un_sommet_de_bord=0;
 
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int nb_faces_tot=le_bord.nb_faces_tot();
 
@@ -1728,12 +1728,12 @@ void Op_Conv_Muscl_New_VEF_Face::calculer_data_pour_dirichlet()
               }
         }
     }
-  is_dirichlet_faces_.resize(zone_VEF.nb_faces_tot());
+  is_dirichlet_faces_.resize(domaine_VEF.nb_faces_tot());
   is_dirichlet_faces_=0;
 
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int nb_faces_tot=le_bord.nb_faces_tot();
 

@@ -16,8 +16,8 @@
 #include <Eval_Puiss_Neutr_VDF_Elem.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don.h>
-#include <Sous_Zone.h>
-#include <Zone_VDF.h>
+#include <Sous_Domaine.h>
+#include <Domaine_VDF.h>
 #include <algorithm>
 #include <Parser.h>
 
@@ -30,8 +30,8 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& Q)
 void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& nom_ssz)
 {
   const int nb_elem = le_dom->nb_elem();
-  const DoubleTab& xp = ref_cast(Zone_VDF, le_dom.valeur()).xp();
-  const Sous_Zone& ssz = le_dom->zone().ss_zone(nom_ssz);
+  const DoubleTab& xp = ref_cast(Domaine_VDF, le_dom.valeur()).xp();
+  const Sous_Domaine& ssz = le_dom->domaine().ss_domaine(nom_ssz);
 
   fxyz = n;
 

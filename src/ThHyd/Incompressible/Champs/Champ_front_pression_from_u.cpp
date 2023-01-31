@@ -17,7 +17,7 @@
 #include <Champ_front_pression_from_u.h>
 #include <TRUSTTrav.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
 
@@ -90,7 +90,7 @@ void  Champ_front_pression_from_u::mettre_a_jour(double tps)
   // on recupere le flux_bord de l'op div c'est donc u
   const Navier_Stokes_std& eqns=ref_cast(Navier_Stokes_std,inco.equation());
   const Operateur_Div& opdiv=eqns.operateur_divergence();
-  const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF,domaine_dis());
 
   const DoubleTab& Flux0=opdiv.valeur().flux_bords();
   if (Flux0.size()==0)
@@ -108,7 +108,7 @@ void  Champ_front_pression_from_u::mettre_a_jour(double tps)
   for(int i=0; i<le_bord.nb_faces(); i++)
     {
       int face=premiere+i;
-      surf+=zone_VF.face_surfaces(face);
+      surf+=domaine_VF.face_surfaces(face);
       fluxb+=Flux(face,0);
     }
   surf=mp_sum(surf);

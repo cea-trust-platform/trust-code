@@ -22,11 +22,11 @@
 #include <Field_base.h>
 #include <Noms.h>
 class Motcle;
-class Zone;
-class Zone_dis_base;
+class Domaine;
+class Domaine_dis_base;
 class Format_Post_base;
 class Frontiere_dis_base;
-class Zone_Cl_dis_base;
+class Domaine_Cl_dis_base;
 
 /*! @brief classe Champ_base Cette classe est la base de la hierarchie des champs.
  *
@@ -63,10 +63,10 @@ public:
   // de fixer le nb_valeurs_nodales.
   virtual int fixer_nb_valeurs_nodales(int n);
   // Par defaut, ces deux methodes provoquent une erreur. L'appel
-  // est invalide sauf si le champ possede une Zone_dis
-  virtual void associer_domaine_dis_base(const Zone_dis_base&);
-  virtual const Zone_dis_base& zone_dis_base() const;
-  virtual int a_une_zone_dis_base() const { return 0; } // Par defaut, on ne sait pas si une zone_dis_base sera definie
+  // est invalide sauf si le champ possede une Domaine_dis
+  virtual void associer_domaine_dis_base(const Domaine_dis_base&);
+  virtual const Domaine_dis_base& domaine_dis_base() const;
+  virtual int a_une_domaine_dis_base() const { return 0; } // Par defaut, on ne sait pas si une domaine_dis_base sera definie
 
   virtual void mettre_a_jour(double);
   virtual void abortTimeStep();
@@ -91,22 +91,22 @@ public:
   virtual DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
   virtual DoubleTab& valeur_aux_elems_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs);
   virtual DoubleVect& valeur_aux_elems_compo_smooth(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp);
-  virtual DoubleVect& valeur_a_sommet(int, const Zone&, DoubleVect&) const;
+  virtual DoubleVect& valeur_a_sommet(int, const Domaine&, DoubleVect&) const;
   virtual double valeur_a_sommet_compo(int, int, int) const;
-  virtual DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const;
-  virtual DoubleVect& valeur_aux_sommets_compo(const Zone&, DoubleVect&, int) const;
+  virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
+  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const;
 
-  /* ces methodes ne s'appliquent que si a_une_zone_dis_base() */
+  /* ces methodes ne s'appliquent que si a_une_domaine_dis_base() */
   virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;
   virtual DoubleTab valeur_aux_bords() const;
 
-  int calculer_valeurs_som_post(DoubleTab& valeurs, int nbsom, Nom& nom_post, const Zone& dom) const;
-  int calculer_valeurs_som_compo_post(DoubleTab& valeurs, int ncomp, int nbsom, Nom& nom_post, const Zone& dom, int appliquer_cl = 0) const;
-  int calculer_valeurs_elem_post(DoubleTab& valeurs, int nbelem, Nom& nom_post, const Zone& dom) const;
-  int calculer_valeurs_elem_compo_post(DoubleTab& valeurs, int ncomp, int nbelem, Nom& nom_post, const Zone& dom) const;
+  int calculer_valeurs_som_post(DoubleTab& valeurs, int nbsom, Nom& nom_post, const Domaine& dom) const;
+  int calculer_valeurs_som_compo_post(DoubleTab& valeurs, int ncomp, int nbsom, Nom& nom_post, const Domaine& dom, int appliquer_cl = 0) const;
+  int calculer_valeurs_elem_post(DoubleTab& valeurs, int nbelem, Nom& nom_post, const Domaine& dom) const;
+  int calculer_valeurs_elem_compo_post(DoubleTab& valeurs, int ncomp, int nbelem, Nom& nom_post, const Domaine& dom) const;
   void corriger_unite_nom_compo();
-  virtual int completer_post_champ(const Zone& dom, const int axi, const Nom& loc_post, const Nom& le_nom_champ_post, Format_Post_base& format) const;
-  virtual void completer(const Zone_Cl_dis_base& zcl);
+  virtual int completer_post_champ(const Domaine& dom, const int axi, const Nom& loc_post, const Nom& le_nom_champ_post, Format_Post_base& format) const;
+  virtual void completer(const Domaine_Cl_dis_base& zcl);
 
 protected:
 

@@ -20,11 +20,11 @@
 #include <Dirichlet_homogene.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
 #include <Pb_Multiphase.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <Matrice33.h>
@@ -48,16 +48,16 @@ void Masse_PolyMAC_Face::completer()
 // XXX : a voir si on peut utiliser Solveur_Masse_Face_proto::appliquer_impl_proto ...
 DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
-  const Zone_PolyMAC& zone = le_dom_PolyMAC.valeur();
-  const IntTab& f_e = zone.face_voisins();
+  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
+  const IntTab& f_e = domaine.face_voisins();
   const DoubleVect& pf = equation().milieu().porosite_face();
   int i, e, f, n, N = equation().inconnue().valeurs().line_size();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
-                   &vfd = zone.volumes_entrelaces_dir();
+                   &vfd = domaine.volumes_entrelaces_dir();
   double fac;
 
   //vitesses aux faces
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     for (n = 0; n < N; n++)
       {
         for (fac = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++) fac += vfd(f, i) * (a_r ? (*a_r)(e, n) : 1);
@@ -83,14 +83,14 @@ void Masse_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
 //sert a imposer les CLs de Dirichlet en multiphase (ou la variation de P_bord ne permet de corriger que v_melange)
 DoubleTab& Masse_PolyMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
-  const Zone_PolyMAC& zone = le_dom_PolyMAC;
+  const Domaine_PolyMAC& domaine = le_dom_PolyMAC;
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
-  const DoubleTab& nf = zone.face_normales(), &vit = equation().inconnue().valeurs();
-  const DoubleVect& fs = zone.face_surfaces();
+  const DoubleTab& nf = domaine.face_normales(), &vit = equation().inconnue().valeurs();
+  const DoubleVect& fs = domaine.face_surfaces();
   int f, n, N = x.line_size(), d, D = dimension;
 
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (fcl(f, 0) == 2 || fcl(f, 0) == 4)
       for (n = 0; n < N; n++) x(f, n) = incr ? -vit(f, n) : 0; //Dirichlet homogene / Symetrie: on revient a 0
     else if (fcl(f, 0) == 3)

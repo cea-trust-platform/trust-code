@@ -14,12 +14,12 @@
 *****************************************************************************/
 
 #include <Marqueur_Lagrange_base.h>
-#include <Zone_dis_base.h>
+#include <Domaine_dis_base.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Ensemble_Lagrange_base.h>
 
 Implemente_base_sans_constructeur(Marqueur_Lagrange_base,"Marqueur_Lagrange_base",Objet_U);
@@ -42,19 +42,19 @@ Entree& Marqueur_Lagrange_base::readOn(Entree& is)
 
 
 // -discretisation du champ densite_particules
-// -association de la zone a l ensemble d points suivis
+// -association de la domaine a l ensemble d points suivis
 // -t_debut_integr_ fixe par defaut a t_init si pas de valeur lue dans le jdd
 void Marqueur_Lagrange_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
-  const Zone& zone = pb.domaine();
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
+  const Domaine& domaine = pb.domaine();
   double temps = pb.schema_temps().temps_courant();
   Nom nom="densite_particules";
   Nom unite="sans_dimension";
-  dis.discretiser_champ("champ_elem",zone_dis,nom,unite,1,temps,densite_particules_);
+  dis.discretiser_champ("champ_elem",domaine_dis,nom,unite,1,temps,densite_particules_);
   champs_compris_.ajoute_champ(densite_particules_.valeur());
 
-  ensemble_points().associer_domaine(zone);
+  ensemble_points().associer_domaine(domaine);
   if (t_debut_integr_==-1.)
     t_debut_integr_ = pb.schema_temps().temps_init();
 }

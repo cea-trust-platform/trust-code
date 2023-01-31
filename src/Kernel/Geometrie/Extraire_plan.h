@@ -19,7 +19,7 @@
 #include <Interprete_geometrique_base.h>
 
 class Nom;
-class Zone;
+class Domaine;
 
 /*! @brief Classe Extraire_plan Lecture d'un fichier
  *

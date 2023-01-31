@@ -17,10 +17,10 @@
 #include <TRUSTTab.h>
 #include <Schema_Comm.h>
 #include <ArrOfBit.h>
-#include <Zone_dis_base.h>
-#include <Zone_VF.h>
+#include <Domaine_dis_base.h>
+#include <Domaine_VF.h>
 #include <TRUSTTabs.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <communications.h>
 
 #include <medcoupling++.h>
@@ -225,10 +225,10 @@ void Raccord_distant_homogene::completer()
   recv_pe_list_.ordonne_array();
 }
 
-/*! @brief Initialise le raccord distant avec la frontiere et la zone discretisee opposees au raccord distant, et la zone discretisee du raccord distant
+/*! @brief Initialise le raccord distant avec la frontiere et la domaine discretisee opposees au raccord distant, et la domaine discretisee du raccord distant
  *
  */
-void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, const Zone_dis_base& opposed_zone_dis, const Zone_dis_base& zone_dis)
+void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, const Domaine_dis_base& opposed_domaine_dis, const Domaine_dis_base& domaine_dis)
 {
   Raccord_distant_homogene& raccord_distant = *this;
   if(raccord_distant.est_initialise())
@@ -239,7 +239,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
     }
   int dim=Objet_U::dimension;
   raccord_distant.nom_frontiere_voisine()=opposed_boundary.le_nom();
-  const Zone_VF& zone_dis_vf = ref_cast(Zone_VF, zone_dis);
+  const Domaine_VF& domaine_dis_vf = ref_cast(Domaine_VF, domaine_dis);
   // On va identifier les faces par leur centres de gravite
   int parts = Process::nproc();
   DoubleTabs remote_xv(parts);
@@ -251,7 +251,7 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
     {
       int face = prem_face2 + ind_face;
       for (int j=0 ; j<dim ; j++)
-        remote_xv[moi](ind_face,j) = zone_dis_vf.xv(face,j);
+        remote_xv[moi](ind_face,j) = domaine_dis_vf.xv(face,j);
     }
 
   // Puis on echange les tableaux des centres de gravites
@@ -270,8 +270,8 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   int nb_face1   = opposed_boundary.nb_faces();
   if (nb_face1>0)
     {
-      const Zone_VF& opposed_zone_dis_vf = ref_cast(Zone_VF,opposed_zone_dis);
-      const DoubleTab& local_xv = opposed_zone_dis_vf.xv();
+      const Domaine_VF& opposed_domaine_dis_vf = ref_cast(Domaine_VF,opposed_domaine_dis);
+      const DoubleTab& local_xv = opposed_domaine_dis_vf.xv();
 
       ArrOfInt& Recep=raccord_distant.Tab_Recep();
       Recep.resize_array(nb_face1);
@@ -355,5 +355,5 @@ void Raccord_distant_homogene::initialise(const Frontiere& opposed_boundary, con
   raccord_distant.e() = 0;
   raccord_distant.est_initialise() = 1;
   raccord_distant.completer();
-  Cerr <<"Initialize the remote connection " << zone_dis.zone().le_nom() << "/" << raccord_distant.le_nom() << "<-" << opposed_zone_dis.zone().le_nom() << "/" << opposed_boundary.le_nom() << finl;
+  Cerr <<"Initialize the remote connection " << domaine_dis.domaine().le_nom() << "/" << raccord_distant.le_nom() << "<-" << opposed_domaine_dis.domaine().le_nom() << "/" << opposed_boundary.le_nom() << finl;
 }

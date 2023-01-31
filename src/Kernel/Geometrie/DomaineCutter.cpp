@@ -15,13 +15,13 @@
 
 #include <DomaineCutter.h>
 #include <ArrOfBit.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Connectivite_som_elem.h>
 #include <SFichierBin.h>
 #include <Array_tools.h>
 #include <Scatter.h>
 #include <TRUSTArrays.h>
-#include <Sous_Zone.h>
+#include <Sous_Domaine.h>
 #include <Sparskit.h>
 #include <Poly_geom_base.h>
 #include <Sortie_Brute.h>
@@ -81,11 +81,11 @@ Entree& DomaineCutter::readOn(Entree& s)
  * C'est l'ensemble des sommets des elements appartenant a ce sous-domaine.
  *  On ne traite que les elements reels.
  *
- * @param (nb_sommets) nombre de sommets de la zone globale
+ * @param (nb_sommets) nombre de sommets de la domaine globale
  * @param (les_elems)
  * @param (elem_part) tableau de decoupage (pour chaque element i du domaine global, elem_part[i] est le numero du sous-domaine auquel il est affecte)
  * @param (partie) le numero du sous-domaine a construire
- * @param (liste_sommets) en sortie : liste des sommets du sous-domaine: liste_sommets[i] est l'indice dans la zone_globale du i-ieme sommet du sous-domaine. Les indices sont classes dans l'ordre croissant.
+ * @param (liste_sommets) en sortie : liste des sommets du sous-domaine: liste_sommets[i] est l'indice dans la domaine_globale du i-ieme sommet du sous-domaine. Les indices sont classes dans l'ordre croissant.
  * @param (liste_inverse_sommets) en sortie : on lui donne la taille nb_sommets et on l'initialise. liste_inverse_sommet[i] est l'indice du sommet dans le sous-domaine ou -1 si le sommet i n'est pas dans le sous-domaine)
  */
 static void construire_liste_sommets_sousdomaine(const int nb_sommets,
@@ -188,23 +188,23 @@ static void remplir_coordsommets_sous_domaine(const DoubleTab& sommets_glob,
 // dans la partie part. On utilise la liste_inverse pour obtenir les
 // nouveaux numeros des sommets.
 // Les elements du domaine local sont crees dans l'ordre croissant de
-// leur indice dans la zone globale.
+// leur indice dans la domaine globale.
 
-void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
+void construire_elems_sous_domaine(const IntTab&    elems_domaine_globale,
                                    const ArrOfInt& liste_elements,
                                    const ArrOfInt& liste_inverse_sommets,
-                                   IntTab&    elems_zone_locale,
+                                   IntTab&    elems_domaine_locale,
                                    ArrOfInt& liste_inverse_elements)
 {
-  const int nb_elem_tot                = elems_zone_globale.dimension_tot(0);
-  const int nb_sommets_par_element = elems_zone_globale.dimension(1);
+  const int nb_elem_tot                = elems_domaine_globale.dimension_tot(0);
+  const int nb_sommets_par_element = elems_domaine_globale.dimension(1);
 
   liste_inverse_elements.resize(nb_elem_tot,Array_base::NOCOPY_NOINIT);
   liste_inverse_elements = -1;
 
   // Premier passage: comptage du nombre d'elements de la partie
   const int nb_elem_part = liste_elements.size_array();
-  elems_zone_locale.resize(nb_elem_part, nb_sommets_par_element);
+  elems_domaine_locale.resize(nb_elem_part, nb_sommets_par_element);
 
   // Deuxieme passage: remplissage du tableau
   for (int i_elem = 0; i_elem < nb_elem_part; i_elem++)
@@ -217,20 +217,20 @@ void construire_elems_sous_domaine(const IntTab&    elems_zone_globale,
       // numero local dans le sous-domaine
       for (int i = 0; i < nb_sommets_par_element; i++)
         {
-          int sommet = elems_zone_globale(elem, i);
+          int sommet = elems_domaine_globale(elem, i);
           if (sommet<0)
-            elems_zone_locale(i_elem, i) =sommet;
+            elems_domaine_locale(i_elem, i) =sommet;
           else
             {
               int new_num = liste_inverse_sommets[sommet];
               assert(new_num >= 0);
-              elems_zone_locale(i_elem, i) = new_num;
+              elems_domaine_locale(i_elem, i) = new_num;
             }
         }
     }
 }
 
-/*! @brief Pour une liste de "faces" de la zone globale, compter le nombre de faces incluses dans la partie "part" et les copier dans la structure
+/*! @brief Pour une liste de "faces" de la domaine globale, compter le nombre de faces incluses dans la partie "part" et les copier dans la structure
  *
  *  faces_partie en remplacant les numeros de sommets par les numeros locaux
  *  dans le sous-domaine.
@@ -299,17 +299,17 @@ void construire_liste_faces_sous_domaine(const ArrOfInt& elements_voisins,
 // Remplissage des frontieres de la partie associee a un processeur.
 void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets,
                                                  const int partie,
-                                                 Zone& zone_partie) const
+                                                 Domaine& domaine_partie) const
 {
-  const Zone& zone = ref_domaine_.valeur();
+  const Domaine& domaine = ref_domaine_.valeur();
   int i_fr = 0;
   ArrOfInt elements_voisins;
-  for(const auto& itr: zone.faces_bord())
+  for(const auto& itr: domaine.faces_bord())
     {
       const Frontiere& frontiere = itr;
-      Frontiere& front_partie = zone_partie.faces_bord().add(Bord());
+      Frontiere& front_partie = domaine_partie.faces_bord().add(Bord());
       front_partie.nommer(frontiere.le_nom());
-      front_partie.associer_domaine(zone_partie);
+      front_partie.associer_domaine(domaine_partie);
       front_partie.faces().typer(frontiere.faces().type_face());
       voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
       construire_liste_faces_sous_domaine(elements_voisins,
@@ -329,23 +329,23 @@ void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_s
  */
 void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets,
                                                     const int partie,
-                                                    Zone& zone_partie) const
+                                                    Domaine& domaine_partie) const
 {
-  const Zone& zone = ref_domaine_.valeur();
-  int i_fr = zone.nb_bords();
+  const Domaine& domaine = ref_domaine_.valeur();
+  int i_fr = domaine.nb_bords();
   ArrOfInt elements_voisins;
-  for(const auto& itr: zone.faces_raccord())
+  for(const auto& itr: domaine.faces_raccord())
     {
       const Raccord& raccord = itr;
       const Frontiere& frontiere = raccord.valeur();
-      Raccord& raccord_partie = zone_partie.faces_raccord().add(Raccord());
+      Raccord& raccord_partie = domaine_partie.faces_raccord().add(Raccord());
       Nom type_raccord = frontiere.que_suis_je();
       if (type_raccord == "Raccord_local_homogene")
         type_raccord = "Raccord_distant_homogene";
       raccord_partie.typer(type_raccord);
       Frontiere& front_partie = raccord_partie.valeur();
       front_partie.nommer(frontiere.le_nom());
-      front_partie.associer_domaine(zone_partie);
+      front_partie.associer_domaine(domaine_partie);
       front_partie.faces().typer(frontiere.faces().type_face());
       voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
       construire_liste_faces_sous_domaine(elements_voisins,
@@ -360,21 +360,21 @@ void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_invers
 
 void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets,
                                                     const int partie,
-                                                    Zone& zone_partie) const
+                                                    Domaine& domaine_partie) const
 {
   // Rappel : les faces internes sont des "frontieres" a l'interieur du domaine
   // (par exemple une plaque d'epaisseur nulle dans l'ecoulement)
-  const Zone& zone = ref_domaine_.valeur();
-  int i_fr = zone.nb_bords()+zone.nb_raccords();
+  const Domaine& domaine = ref_domaine_.valeur();
+  int i_fr = domaine.nb_bords()+domaine.nb_raccords();
   ArrOfInt elements_voisins;
 
-  for(const auto& itr: zone.faces_int())
+  for(const auto& itr: domaine.faces_int())
     {
       const Frontiere& frontiere = itr;
       Frontiere& front_partie =
-        zone_partie.faces_int().add(Faces_Interne());
+        domaine_partie.faces_int().add(Faces_Interne());
       front_partie.nommer(frontiere.le_nom());
-      front_partie.associer_domaine(zone_partie);
+      front_partie.associer_domaine(domaine_partie);
       front_partie.faces().typer(frontiere.faces().type_face());
       voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
       construire_liste_faces_sous_domaine(elements_voisins,
@@ -387,12 +387,12 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
     }
 }
 
-/*! @brief Pour chaque pe mentionne dans le tableau "voisins", si un joint avec ce pe n'existe par encore dans la zone, ajoute un joint et initialise ce joint avec "epaisseur".
+/*! @brief Pour chaque pe mentionne dans le tableau "voisins", si un joint avec ce pe n'existe par encore dans la domaine, ajoute un joint et initialise ce joint avec "epaisseur".
  *
  */
-static void ajouter_joints(Zone& zone, const ArrOfInt& voisins, const int epaisseur)
+static void ajouter_joints(Domaine& domaine, const ArrOfInt& voisins, const int epaisseur)
 {
-  Joints& joints = zone.faces_joint();
+  Joints& joints = domaine.faces_joint();
 
   const int n = voisins.size_array();
   for (int i = 0; i < n; i++)
@@ -408,7 +408,7 @@ static void ajouter_joints(Zone& zone, const ArrOfInt& voisins, const int epaiss
           Cerr << " Adding of a new joint : " << pe << finl;
           Joint& joint = joints.add(Joint());
           joint.nommer(Nom("Joint_")+Nom(pe));
-          joint.associer_domaine(zone);
+          joint.associer_domaine(domaine);
           joint.affecte_epaisseur(epaisseur);
           joint.affecte_PEvoisin(pe);
           // Ces joints n'auront pas de sommets communs. Met le flag
@@ -478,7 +478,7 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
               const int elem = elem_som(sommet, i_elem);
               if (elements_parcourus[elem])
                 continue; // Cet element a deja ete visite
-              // Numero de zone de l'element voisin:
+              // Numero de domaine de l'element voisin:
               const int part = elem_part[elem];
               if (part == partie_a_ignorer)
                 continue; // Ne traiter que les elements des autres parties
@@ -501,7 +501,7 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
     }
 }
 
-/*! @brief calcul et remplissage de zone_partie.
+/*! @brief calcul et remplissage de domaine_partie.
  *
  * joint(i).set_joint_item(Joint::ELEMENT).set_items_distants()
  *    (liste des elements distants).
@@ -517,10 +517,10 @@ static void parcourir_epaisseurs_elements(const IntTab& elements,
 void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
                                                        const ArrOfInt& liste_sommets,
                                                        const ArrOfInt& liste_inverse_elements,
-                                                       Zone& zone_partie) const
+                                                       Domaine& domaine_partie) const
 {
-  const Zone& zone          = ref_domaine_.valeur();
-  const IntTab& elements    = zone.les_elems();
+  const Domaine& domaine          = ref_domaine_.valeur();
+  const IntTab& elements    = domaine.les_elems();
   const IntVect& elem_part = ref_elem_part_.valeur();
 
   const int nb_som_elem = elements.dimension(1);
@@ -533,10 +533,10 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
     // Construction d'un tableau contenant tous les sommets de tous les joints
     ArrOfInt sommets_joint;
     sommets_joint.set_smart_resize(1);
-    const int nb_joints = zone_partie.nb_joints();
+    const int nb_joints = domaine_partie.nb_joints();
     for (int i_joint = 0; i_joint < nb_joints; i_joint++)
       {
-        const ArrOfInt& sommets = zone_partie.joint(i_joint).joint_item(Joint::SOMMET).items_communs();
+        const ArrOfInt& sommets = domaine_partie.joint(i_joint).joint_item(Joint::SOMMET).items_communs();
         const int n = sommets.size_array();
         for (int i = 0; i < n; i++)
           {
@@ -553,7 +553,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
                                   elements_virtuels);
   }
   const int nb_elements_virtuels = elements_virtuels.size_array();
-  // Construire la liste des numeros de zones voisines et ajouter les joints manquants:
+  // Construire la liste des numeros de domaines voisines et ajouter les joints manquants:
   ArrOfInt parties_voisines;
   {
     parties_voisines.set_smart_resize(1);
@@ -564,7 +564,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
         parties_voisines.append_array(part);
       }
     array_trier_retirer_doublons(parties_voisines);
-    ajouter_joints(zone_partie, parties_voisines, epaisseur_joint_);
+    ajouter_joints(domaine_partie, parties_voisines, epaisseur_joint_);
   }
 
   // Pour chaque partie voisine, chercher les elements distants:
@@ -622,7 +622,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
       // Trier les elements dans l'ordre croissant des indices
       elements_distants.ordonne_array();
       // Stocker la liste des elements distants dans le joint
-      Joint&     joint = zone_partie.joint_of_pe(partie_voisine);
+      Joint&     joint = domaine_partie.joint_of_pe(partie_voisine);
       joint.set_joint_item(Joint::ELEMENT).set_items_distants() = elements_distants;
     }
 }
@@ -645,9 +645,9 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
                                                     const ArrOfInt& liste_inverse_sommets,
                                                     const int partie,
                                                     const Static_Int_Lists* som_raccord,
-                                                    Zone& zone_partie) const
+                                                    Domaine& domaine_partie) const
 {
-  Joints& les_joints = zone_partie.faces_joint();
+  Joints& les_joints = domaine_partie.faces_joint();
 
   const int parts = nb_parties_;
   const IntVect& elem_part = ref_elem_part_.valeur();
@@ -713,7 +713,7 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
           nom_joint+=nom_numero;
           joint.nommer(nom_joint);
           joint.affecte_epaisseur(epaisseur_joint_);
-          joint.associer_domaine(zone_partie);
+          joint.associer_domaine(domaine_partie);
           joint.affecte_PEvoisin(PEvoisin);
           ArrOfInt& sommets_locaux = joint.set_joint_item(Joint::SOMMET).set_items_communs();
           sommets_locaux.resize_array(nb_sommets2);
@@ -737,10 +737,10 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
 
 void DomaineCutter::construire_faces_joints_ssdom(const int partie,
                                                   const DomaineCutter_Correspondance& correspondance,
-                                                  Zone& zone_partie) const
+                                                  Domaine& domaine_partie) const
 {
-  const int nb_sommets_ssdom = zone_partie.nb_som();
-  const int nb_elem_ssdom = zone_partie.nb_elem();
+  const int nb_sommets_ssdom = domaine_partie.nb_som();
+  const int nb_elem_ssdom = domaine_partie.nb_elem();
   const ArrOfInt& liste_sommets = correspondance.get_liste_sommets();
   const ArrOfInt& liste_inverse_elements = correspondance.get_liste_inverse_elements();
   const Static_Int_Lists& som_elem = som_elem_;
@@ -751,7 +751,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
   ArrOfBit drapeaux_sommets_joints(nb_sommets_ssdom);
   {
     // Pour l'instant, on utilise les joints en const...
-    const Joints& joints_partie = zone_partie.faces_joint();
+    const Joints& joints_partie = domaine_partie.faces_joint();
 
     drapeaux_sommets_joints = 0;
     liste_elements_joint.set_smart_resize(1);
@@ -808,7 +808,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
 
     // Indices des sommets des faces sur l'element de reference
     IntTab faces_element_reference;
-    const Elem_geom_base& type_elem = zone_partie.type_elem().valeur();
+    const Elem_geom_base& type_elem = domaine_partie.type_elem().valeur();
     int is_regular = type_elem.get_tab_faces_sommets_locaux(faces_element_reference);
     // On ne sait pas traiter les elements non reguliers
     if (!is_regular)
@@ -824,7 +824,7 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
     const ArrOfInt& liste_inverse_sommets = correspondance.get_liste_inverse_sommets();
     const IntVect& elem_part = ref_elem_part_.valeur();
     // Sommets des elements du maillage global
-    const Zone& domaine = ref_domaine_.valeur();
+    const Domaine& domaine = ref_domaine_.valeur();
     const IntTab& elem_som = domaine.les_elems();
 
     ArrOfInt une_face(nb_sommets_par_face);
@@ -921,10 +921,10 @@ void DomaineCutter::construire_faces_joints_ssdom(const int partie,
   // Troisieme etape: ajout des faces dans les joints
   {
     // Le type des faces de joint
-    const Zone& zone_globale = ref_domaine_.valeur();
-    const Type_Face& type_face_joint = zone_globale.type_elem().type_face();
+    const Domaine& domaine_globale = ref_domaine_.valeur();
+    const Type_Face& type_face_joint = domaine_globale.type_elem().type_face();
     // On va modifier les joints:
-    Joints& joints_partie = zone_partie.faces_joint();
+    Joints& joints_partie = domaine_partie.faces_joint();
     const int nb_joints = joints_partie.size();
     int i_joint;
 
@@ -1005,24 +1005,24 @@ void  calculer_listes_elements_sous_domaines(const IntVect& elem_part,
     }
 }
 
-void calculer_elements_voisins_bords(const Zone& dom,
+void calculer_elements_voisins_bords(const Domaine& dom,
                                      const Static_Int_Lists& som_elem,
                                      Static_Int_Lists& voisins,const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
 {
-  const Zone& zone = dom;
-  const int nb_front = zone.nb_front_Cl();
+  const Domaine& domaine = dom;
+  const int nb_front = domaine.nb_front_Cl();
   ArrOfInt nb_faces(nb_front);
   for (int i = 0; i < nb_front; i++)
-    nb_faces[i] = zone.frontiere(i).nb_faces();
+    nb_faces[i] = domaine.frontiere(i).nb_faces();
   voisins.set_list_sizes(nb_faces);
-  const int nb_som_face = zone.frontiere(0).faces().nb_som_faces();
+  const int nb_som_face = domaine.frontiere(0).faces().nb_som_faces();
   ArrOfInt une_face(nb_som_face);
   ArrOfInt elems_voisins;
   elems_voisins.set_smart_resize(1);
   for (int i = 0; i < nb_front; i++)
     {
       int drap=0;
-      const IntTab& faces = zone.frontiere(i).les_sommets_des_faces();
+      const IntTab& faces = domaine.frontiere(i).les_sommets_des_faces();
       const int n = nb_faces[i];
       for (int j = 0; j < n; j++)
         {
@@ -1037,11 +1037,11 @@ void calculer_elements_voisins_bords(const Zone& dom,
                 {
                   if (permissif)
                     Cerr << "Message from DomaineCutter.cpp : calculer_elements_voisins_bords\n"
-                         << " boundary face "<<  zone.frontiere(i).le_nom()<<" with " << n_voisins << " neighbors." << finl;
+                         << " boundary face "<<  domaine.frontiere(i).le_nom()<<" with " << n_voisins << " neighbors." << finl;
                   else
                     Cerr << "Error in DomaineCutter.cpp : calculer_elements_voisins_bords\n"
-                         << " boundary face "<<  zone.frontiere(i).le_nom()<<" with " << n_voisins << " neighbors." << finl;
-                  bords_a_pb_.add( zone.frontiere(i).le_nom());
+                         << " boundary face "<<  domaine.frontiere(i).le_nom()<<" with " << n_voisins << " neighbors." << finl;
+                  bords_a_pb_.add( domaine.frontiere(i).le_nom());
                   if (elems_voisins.size_array()==0) Process::exit();
                 }
               drap=1;
@@ -1057,13 +1057,13 @@ void calculer_elements_voisins_bords(const Zone& dom,
 
 /*! @brief Prepare les structures de donnees pour la construction des sous-domaines en fonction d'un decoupage fourni dans elem_part.
  *
- * @param (domaine_global) le domaine a decouper (doit avoir une zone). On prend une ref a ce domaine (il doit donc rester valide).
+ * @param (domaine_global) le domaine a decouper (doit avoir une domaine). On prend une ref a ce domaine (il doit donc rester valide).
  * @param (elem_part) pour chaque element, numero du sous-domaine auquel il appartient, avec 0 <= elem_part[i] < nb_parts. Attention, on prend une ref a ce tableau, on ne fait pas une copie local. Le tableau doit continuer a exister jusqu'a ce qu'on a fini d'utiliser DomaineCutter.
  * @param (nb_parts) nombre total de sous-domaines
  * @param (les_faces)
  * @param (epaisseur_joint)
  */
-void DomaineCutter::initialiser(const Zone&   domaine_global,
+void DomaineCutter::initialiser(const Domaine&   domaine_global,
                                 const IntVect& elem_part,
                                 const int     nb_parts,
                                 const int     epaisseur_joint,
@@ -1108,10 +1108,10 @@ void DomaineCutter::initialiser(const Zone&   domaine_global,
  *   on calcule les tableaux de renumerotation des sommets et des elements entre numero
  *   global et numero local (structure correspondance), on remplit les structures de
  *   sous_domaine (sommets, elements, frontieres, joints, etc).
- *   Attention: sous_domaine doit etre un objet vierge (ne pas contenir de zone)
+ *   Attention: sous_domaine doit etre un objet vierge (ne pas contenir de domaine)
  *
  */
-void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance, Zone& sous_domain, const Static_Int_Lists *som_raccord) const
+void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance, Domaine& sous_domain, const Static_Int_Lists *som_raccord) const
 {
   // L'objet doit etre initialise:
   assert(nb_parties_ >= 0);
@@ -1122,7 +1122,7 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
 
   correspondance.partie_ = part;
 
-  const Zone& domain = ref_domaine_.valeur();
+  const Domaine& domain = ref_domaine_.valeur();
 
   ArrOfInt elements_sous_partie;
   liste_elems_sous_domaines_.copy_list_to_array(part, elements_sous_partie);
@@ -1178,10 +1178,10 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
 
 /*! @brief Build the name of the ".
  *
- * Zones" file for a given proc and a domain. If partie == -1 a single filename is returned. For example
- *           DOM.Zones
+ * Domaines" file for a given proc and a domain. If partie == -1 a single filename is returned. For example
+ *           DOM.Domaines
  *    instead of
- *           DOM_0001.Zones
+ *           DOM_0001.Domaines
  *
  */
 static void construire_nom_fichier_sous_domaine(const Nom& basename,
@@ -1199,65 +1199,65 @@ static void construire_nom_fichier_sous_domaine(const Nom& basename,
   char s[30];
   // single file name for all procs (HDF5)
   // the number of parts is still included in the file name
-  // (make_PAR.data needs to know how many zones there are)
+  // (make_PAR.data needs to know how many domaines there are)
   if (partie < 0)
     {
       if (nb_parties_ > 10000)
-        snprintf(s, 30, "_p%05d.Zones", (True_int)nb_parties_);
+        snprintf(s, 30, "_p%05d.Domaines", (True_int)nb_parties_);
       else
-        snprintf(s, 30, "_p%04d.Zones",(True_int) nb_parties_);
+        snprintf(s, 30, "_p%04d.Domaines",(True_int) nb_parties_);
     }
   else
     {
       if (nb_parties_ > 10000)
         {
           if(original_proc < 0)
-            snprintf(s, 30, "_%05d.Zones", (True_int)partie);
+            snprintf(s, 30, "_%05d.Domaines", (True_int)partie);
           else
-            snprintf(s, 30, "_%05d_%d.Zones", (True_int)partie, (True_int)original_proc);
+            snprintf(s, 30, "_%05d_%d.Domaines", (True_int)partie, (True_int)original_proc);
         }
       else
         {
           if(original_proc < 0)
-            snprintf(s, 30, "_%04d.Zones", (True_int)partie);
+            snprintf(s, 30, "_%04d.Domaines", (True_int)partie);
           else
-            snprintf(s, 30, "_%04d_%d.Zones", (True_int)partie, (True_int)original_proc);
+            snprintf(s, 30, "_%04d_%d.Domaines", (True_int)partie, (True_int)original_proc);
         }
     }
   fichier += Nom(s);
 }
 
 
-void DomaineCutter::writeData(const Zone& sous_domaine, Sortie& os) const
+void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 {
   os << sous_domaine;
   // Benoit Mathieu: Scatter a besoin de la liste des bords periodiques pour le
-  // calcul des elements distants. Je l'ecris apres le domaine dans le fichier .Zones.
+  // calcul des elements distants. Je l'ecris apres le domaine dans le fichier .Domaines.
   // Pas genial mais c'est pour depanner en attendant mieux.
   os << liste_bords_periodiques_;
 }
 
 /*! @brief Generation de tous les sous-domaines du calcul et ecriture sur disque des fichiers basename_000n.
  *
- * Zones pour 0 <= n < nb_parties_.
- *   Si des "sous-zones" sont definies (dans le champ domaine.ss_zones()),
- *   on genere aussi un fichier par sous-zone.
+ * Domaines pour 0 <= n < nb_parties_.
+ *   Si des "sous-domaines" sont definies (dans le champ domaine.ss_domaines()),
+ *   on genere aussi un fichier par sous-domaine.
  *
  */
-void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists* som_raccord)
+void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::DomainesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists* som_raccord)
 {
   assert(nb_parties_ >= 0);
-  const Zone& domaine = ref_domaine_.valeur();
+  const Domaine& domaine = ref_domaine_.valeur();
   DomaineCutter_Correspondance dc_correspondance;
 
-  // Needed for HDF5 Zones output:
+  // Needed for HDF5 Domaines output:
 #ifdef MPI_
   FichierHDFPar fic_hdf;
 #else
   FichierHDF fic_hdf;
 #endif
   Nom nom_fichier_hdf5(basename);
-  nom_fichier_hdf5+=Nom(".Zones");
+  nom_fichier_hdf5+=Nom(".Domaines");
   nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
 
   // Build temp arrays to eventually reorder the partition numbering
@@ -1268,19 +1268,19 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
   ia[0]=1;
 
   //To detect my parts (when running in parallel)
-  ArrOfInt myZones(nb_parties_);
-  myZones = 0;
-  ArrsOfInt otherProcZones(Process::nproc());
+  ArrOfInt myDomaines(nb_parties_);
+  myDomaines = 0;
+  ArrsOfInt otherProcDomaines(Process::nproc());
 
-  //if some zones are splitted between multiple procs,
+  //if some domaines are splitted between multiple procs,
   //we assign consecutive indices to each of its fragment
-  //(reading the .Zones files during Scatter will be more efficient)
-  // Possible values for zones_index[part]:
+  //(reading the .Domaines files during Scatter will be more efficient)
+  // Possible values for domaines_index[part]:
   // -2    : means that part is detained by multiple procs but not by me
   // -1    : means that part is detained by a single proc
   // i >=0 : means that my proc detains the i-th fragment of part
-  ArrOfInt zones_index(nb_parties_);
-  zones_index = -2;
+  ArrOfInt domaines_index(nb_parties_);
+  domaines_index = -2;
 
   const int nbelem = domaine.nb_elem();
 
@@ -1304,35 +1304,35 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         {
           // check to see which part is shared between multiple processors:
           // 1- everyone sends the number of the parts that belong to them to the master process
-          // 2- master process will assign a unique positive number to each fragment of a shared zone
+          // 2- master process will assign a unique positive number to each fragment of a shared domaine
           // 3- if a part is owned by a single process, it is indicated with the index -1
           // 4- the master process scatters the indices to all the proc
-          ArrsOfInt zones_indices(Process::nproc());
+          ArrsOfInt domaines_indices(Process::nproc());
 
           for(int i=0; i < nbelem; i++)
             {
               const int part = elem_part[i];
-              myZones[part] = 1;
+              myDomaines[part] = 1;
             }
 
           for(int p=0; p<Process::nproc(); p++)
             {
               if(p==0)
-                otherProcZones[p] = myZones;
+                otherProcDomaines[p] = myDomaines;
               else
                 {
-                  otherProcZones[p].resize_array(nb_parties_);
-                  otherProcZones[p] = 0;
+                  otherProcDomaines[p].resize_array(nb_parties_);
+                  otherProcDomaines[p] = 0;
                 }
             }
           if(Process::je_suis_maitre())
             {
               for(int p=0; p<Process::nproc(); p++)
                 {
-                  zones_indices[p].resize_array(nb_parties_);
-                  zones_indices[p] = -2;
+                  domaines_indices[p].resize_array(nb_parties_);
+                  domaines_indices[p] = -2;
                   if(p!=0)
-                    recevoir(otherProcZones[p], p, 0, p+2001);
+                    recevoir(otherProcDomaines[p], p, 0, p+2001);
                 }
 
               for(int part=0; part<nb_parties_; part++)
@@ -1340,33 +1340,33 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   int s = 0;
                   for(int proc=0; proc < Process::nproc(); proc++)
                     {
-                      if(otherProcZones[proc][part])
-                        zones_indices[proc][part] = s++;
+                      if(otherProcDomaines[proc][part])
+                        domaines_indices[proc][part] = s++;
                     }
 
                   if(s<=1)
                     {
                       if(s==0)   //empty part: master process will write it
-                        myZones[part] = 1;
+                        myDomaines[part] = 1;
 
                       //part is detained by a single proc
                       for(int proc=0; proc < Process::nproc(); proc++)
-                        zones_indices[proc][part] = -1;
+                        domaines_indices[proc][part] = -1;
                     }
                 }
 
               for(int p=0; p<Process::nproc(); p++)
                 {
                   if(p==0)
-                    zones_index = zones_indices[p];
+                    domaines_index = domaines_indices[p];
                   else
-                    envoyer(zones_indices[p], 0, p, p+2002);
+                    envoyer(domaines_indices[p], 0, p, p+2002);
                 }
             }
           else
             {
-              envoyer(myZones, Process::me(), 0, Process::me()+2001);
-              recevoir(zones_index, 0, Process::me(), Process::me()+2002);
+              envoyer(myDomaines, Process::me(), 0, Process::me()+2001);
+              recevoir(domaines_index, 0, Process::me(), Process::me()+2002);
             }
 
           if (format == Decouper::HDF5_SINGLE)  // create HDF5 file only once!
@@ -1380,9 +1380,9 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                     {
                       for(int part=0; part<nb_parties_; part++)
                         {
-                          if(zones_index[part] == -1)
+                          if(domaines_index[part] == -1)
                             {
-                              std::string dname = "/zone_"  + std::to_string(part);
+                              std::string dname = "/domaine_"  + std::to_string(part);
                               Nom dataset_name(dname);
                               dataset_names.add(dataset_name);
                             }
@@ -1390,9 +1390,9 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                             {
                               for(int proc=0; proc < Process::nproc(); proc++)
                                 {
-                                  if(zones_indices[proc][part] >=0)
+                                  if(domaines_indices[proc][part] >=0)
                                     {
-                                      std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(zones_indices[proc][part]);
+                                      std::string dname = "/domaine_"  + std::to_string(part) + "_" + std::to_string(domaines_indices[proc][part]);
                                       Nom dataset_name(dname);
                                       dataset_names.add(dataset_name);
                                     }
@@ -1404,8 +1404,8 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
 
                   // estimation of an upper bound of the datasets' size
                   int ipart = 0;
-                  while(!myZones[ipart]) ipart++;
-                  Zone dom_tmp;
+                  while(!myDomaines[ipart]) ipart++;
+                  Domaine dom_tmp;
                   construire_sous_domaine(ipart, dc_correspondance, dom_tmp);
                   Sortie_Brute os_tmp;
                   writeData(dom_tmp, os_tmp);
@@ -1421,23 +1421,23 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
         }
       for (int i_part = 0; i_part < nb_parties_; i_part++)
         {
-          if(!myZones[i_part])
+          if(!myDomaines[i_part])
             continue;
 
-          assert(zones_index[i_part] > -2);
+          assert(domaines_index[i_part] > -2);
           Cerr << " Construction of part number " << i_part << finl;
-          if(zones_index[i_part] >= 0)
+          if(domaines_index[i_part] >= 0)
             Cerr << "This part is shared between multiple processors" << finl;
 
-          Zone sous_domaine;
+          Domaine sous_domaine;
           construire_sous_domaine(i_part, dc_correspondance, sous_domaine, som_raccord);
           // On affiche quelques informations...
           {
-            const Zone& zone = sous_domaine;
-            const Joints& joints = zone.faces_joint();
+            const Domaine& domaine = sous_domaine;
+            const Joints& joints = domaine.faces_joint();
             const int nb_joints = joints.size();
             Cerr << "  Number of nodes    : " << sous_domaine.nb_som() << finl;
-            Cerr << "  Number of elements : " << zone.nb_elem() << finl;
+            Cerr << "  Number of elements : " << domaine.nb_elem() << finl;
             Cerr << "  Number of joints   : " << nb_joints << finl;
             //            char s[200];
             int nbfaces_total=0;
@@ -1470,8 +1470,8 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           }
           if (reorder && loop==0)
             {
-              const Zone& zone = sous_domaine;
-              const Joints& joints = zone.faces_joint();
+              const Domaine& domaine = sous_domaine;
+              const Joints& joints = domaine.faces_joint();
               const int nb_joints = joints.size();
               // Resize ja:
               ja.resize_array(nnz+nb_joints+1);
@@ -1489,13 +1489,13 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             }
           else
             {
-              // Write .Zones file(s):
+              // Write .Domaines file(s):
               if (format == Decouper::BINARY_MULTIPLE)
                 {
                   Nom nom_fichier(basename);
-                  nom_fichier+=Nom(".Zones");
+                  nom_fichier+=Nom(".Domaines");
                   //nom_fichier = nom_fichier.nom_me(i_part);
-                  construire_nom_fichier_sous_domaine(basename,i_part, nb_parties_, zones_index[i_part], nom_fichier);
+                  construire_nom_fichier_sous_domaine(basename,i_part, nb_parties_, domaines_index[i_part], nom_fichier);
                   Cerr << "Writing part " << i_part << " into the "
                        << (format == Decouper::BINARY_MULTIPLE ? "binary" : "ascii")
                        << " file " << nom_fichier << finl;
@@ -1505,7 +1505,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   const int ok = os.ouvrir(nom_fichier);
                   if (!ok)
                     {
-                      Cerr << "DomaineCutter::ecrire_zones : Error while opening file " << finl;
+                      Cerr << "DomaineCutter::ecrire_domaines : Error while opening file " << finl;
                       exit();
                     }
                   writeData(sous_domaine, os);
@@ -1515,9 +1515,9 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                   Sortie_Brute os_hdf;
                   writeData(sous_domaine, os_hdf);
 
-                  std::string dname = "/zone_" + std::to_string(i_part);
-                  if(zones_index[i_part] >=0)
-                    dname += "_" + std::to_string(zones_index[i_part]);
+                  std::string dname = "/domaine_" + std::to_string(i_part);
+                  if(domaines_index[i_part] >=0)
+                    dname += "_" + std::to_string(domaines_index[i_part]);
                   Nom datasetname(dname);
                   if(Process::nproc() > 1)
                     fic_hdf.fill_dataset(datasetname, os_hdf);
@@ -1527,18 +1527,18 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
                 }
               else
                 {
-                  Cerr << "DomaineCutter::ecrire_zones : Unsupported output file type!" << finl;
+                  Cerr << "DomaineCutter::ecrire_domaines : Unsupported output file type!" << finl;
                   Process::exit(1);
                 }
             }
 
-          // Ecritures des fichiers sous-zones .ssz
-          const LIST(REF(Sous_Zone)) & liste_sous_zones = domaine.ss_zones();
-          const int nb_sous_zones = liste_sous_zones.size();
-          if (nb_sous_zones>0)
+          // Ecritures des fichiers sous-domaines .ssz
+          const LIST(REF(Sous_Domaine)) & liste_sous_domaines = domaine.ss_domaines();
+          const int nb_sous_domaines = liste_sous_domaines.size();
+          if (nb_sous_domaines>0)
             {
               Cerr << " Writing of files .ssz ..." << finl;
-              // Un fichier par sous-zone, dans chaque fichier on trouve toutes les parties...
+              // Un fichier par sous-domaine, dans chaque fichier on trouve toutes les parties...
               // Si on est en train d'ecrire la premiere partie, on efface le fichier
               IOS_OPEN_MODE mode;
               if (i_part == 0)
@@ -1546,37 +1546,37 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
               else
                 mode = (ios::out | ios::app); // Mode append
 
-              // Boucle sur les sous-zones
+              // Boucle sur les sous-domaines
               const ArrOfInt& liste_inverse_elements = dc_correspondance.liste_inverse_elements_;
 
-              for (int i_sous_zone = 0; i_sous_zone < nb_sous_zones; i_sous_zone++)
+              for (int i_sous_domaine = 0; i_sous_domaine < nb_sous_domaines; i_sous_domaine++)
                 {
-                  // Indices des elements du sous-domaine qui sont dans la sous-zone:
-                  const Sous_Zone& sous_zone = liste_sous_zones[i_sous_zone];
+                  // Indices des elements du sous-domaine qui sont dans la sous-domaine:
+                  const Sous_Domaine& sous_domaine = liste_sous_domaines[i_sous_domaine];
                   ArrOfInt elements;
                   {
-                    const int n = sous_zone.nb_elem_tot();
+                    const int n = sous_domaine.nb_elem_tot();
                     elements.set_smart_resize(1);
                     int i;
                     for (i = 0; i < n; i++)
                       {
-                        const int i_elem_global = sous_zone[i];
+                        const int i_elem_global = sous_domaine[i];
                         const int i_elem_local = liste_inverse_elements[i_elem_global];
                         if (i_elem_local >= 0)
                           elements.append_array(i_elem_local);
                       }
                   }
-                  Nom nom_fichier(sous_zone.le_nom() + Nom(".ssz"));
-                  Cerr << " Subarea " << i_sous_zone
+                  Nom nom_fichier(sous_domaine.le_nom() + Nom(".ssz"));
+                  Cerr << " Subarea " << i_sous_domaine
                        << "  file_name " << nom_fichier
                        << "  nb_elements in this part " << elements.size_array()
                        << finl;
-                  // Le fichier sous-zones est toujours en ascii
+                  // Le fichier sous-domaines est toujours en ascii
                   SFichier os;
                   const int ok = os.ouvrir(nom_fichier, mode);
                   if (!ok)
                     {
-                      Cerr << "DomaineCutter::ecrire_zones :\n Error while opening file"
+                      Cerr << "DomaineCutter::ecrire_domaines :\n Error while opening file"
                            << nom_fichier << finl;
                       exit();
                     }
@@ -1647,7 +1647,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
             {
               for(int i_part=0; i_part<nb_parties_; i_part++)
                 {
-                  if(otherProcZones[proc][i_part])
+                  if(otherProcDomaines[proc][i_part])
                     {
                       ArrOfInt tmp_neighbours;
                       tmp_neighbours.set_smart_resize(1);
@@ -1674,13 +1674,13 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           Cout << "Total number of edge-cut (faces shared by processes) : " << total_edge_cut << finl;
           if (total_edge_cut>0)
             {
-              double mean_edgecut_zone = total_edge_cut / nb_parties_;
-              int max_edgecut_zone = local_min_vect(EdgeCut);
-              int min_edgecut_zone = local_max_vect(EdgeCut);
+              double mean_edgecut_domaine = total_edge_cut / nb_parties_;
+              int max_edgecut_domaine = local_min_vect(EdgeCut);
+              int min_edgecut_domaine = local_max_vect(EdgeCut);
 
-              double load_imbalance = double(max_edgecut_zone / mean_edgecut_zone);
-              Cout << "Number of edge-cut per Zone (min/mean/max) : " << min_edgecut_zone  << " / "
-                   << (int) (mean_edgecut_zone) << " / " << max_edgecut_zone  << " Load imbalance: " << load_imbalance
+              double load_imbalance = double(max_edgecut_domaine / mean_edgecut_domaine);
+              Cout << "Number of edge-cut per Domaine (min/mean/max) : " << min_edgecut_domaine  << " / "
+                   << (int) (mean_edgecut_domaine) << " / " << max_edgecut_domaine  << " Load imbalance: " << load_imbalance
                    << "\n" << finl;
             }
 
@@ -1700,7 +1700,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
           if (mean_neighbours>0)
             {
               double load_imbalance = double(max_neighbours / mean_neighbours);
-              Cout << "Number of neighbours per Zone (min/mean/max) : " << min_neighbours << " / "
+              Cout << "Number of neighbours per Domaine (min/mean/max) : " << min_neighbours << " / "
                    << (int) (mean_neighbours) << " / " <<max_neighbours << " Load imbalance: " << load_imbalance
                    << "\n" << finl;
             }
@@ -1708,7 +1708,7 @@ void DomaineCutter::ecrire_zones(const Nom& basename, const Decouper::ZonesFileO
       else
         {
           for(int i_part=0; i_part < nb_parties_; i_part++)
-            if(myZones[i_part])
+            if(myDomaines[i_part])
               envoyer(Neighbours[i_part], Process::me(), 0, Process::me()+2003);
           envoyer(EdgeCut, Process::me(), 0, Process::me()+2008);
         }

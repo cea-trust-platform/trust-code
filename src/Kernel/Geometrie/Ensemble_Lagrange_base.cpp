@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 #include <Ensemble_Lagrange_base.h>
-#include <Sous_Zone.h>
-#include <Zone.h>
+#include <Sous_Domaine.h>
+#include <Domaine.h>
 #include <communications.h>
 #include <StdFunction.h>
 Implemente_base_sans_constructeur(Ensemble_Lagrange_base,"Ensemble_Lagrange_base",Objet_U);
@@ -35,9 +35,9 @@ Entree& Ensemble_Lagrange_base::readOn(Entree& is)
   return is;
 }
 
-void Ensemble_Lagrange_base::associer_domaine(const Zone& une_zone)
+void Ensemble_Lagrange_base::associer_domaine(const Domaine& une_domaine)
 {
-  mon_dom_=une_zone;
+  mon_dom_=une_domaine;
 }
 
 void Ensemble_Lagrange_base::remplir_sommets_tmp(DoubleTab& soms_tmp)
@@ -54,15 +54,15 @@ void Ensemble_Lagrange_base::remplir_sommets_tmp(DoubleTab& soms_tmp)
       soms_tmp = som_lu;
     }
   else if (nb_marqs_par_sz().size()!=0)
-    //Deuxieme cas : les sommets sont crees dans des sous zones
+    //Deuxieme cas : les sommets sont crees dans des sous domaines
     //On remplit le tableau temporaire
     generer_marqueurs_sz(soms_tmp);
   else
     soms_tmp.resize(0,0);
 }
 
-//Generation des coordonnees des particules sur une ou plusieurs sous zones
-//Pour chacune des sous zones :
+//Generation des coordonnees des particules sur une ou plusieurs sous domaines
+//Pour chacune des sous domaines :
 // - Etape 1 : On determine le min et max pour x, y et z en tenant compte de tous les processeurs
 // - Etape 2  : Le processeur maitre va calculer les coordonnees des particules
 //                -soit avec une distribution uniforme
@@ -71,8 +71,8 @@ void Ensemble_Lagrange_base::remplir_sommets_tmp(DoubleTab& soms_tmp)
 
 void Ensemble_Lagrange_base::generer_marqueurs_sz(DoubleTab& soms_tmp)
 {
-  const Zone& mazone = mon_dom_.valeur();
-  const Zone& dom = mazone;
+  const Domaine& madomaine = mon_dom_.valeur();
+  const Domaine& dom = madomaine;
   int nb_sz,nb_marq_sz, old_size, dim;
   soms_tmp.resize(0);
   dim=Objet_U::dimension;
@@ -81,10 +81,10 @@ void Ensemble_Lagrange_base::generer_marqueurs_sz(DoubleTab& soms_tmp)
   for (int i=0; i<nb_sz; i++)
     {
       const Nom& nom = nom_sz[i];
-      const Sous_Zone& sz = dom.ss_zone(nom);
+      const Sous_Domaine& sz = dom.ss_domaine(nom);
       int nb_elem = sz.nb_elem_tot();
 
-      int nb_som = mazone.nb_som_elem();
+      int nb_som = madomaine.nb_som_elem();
       int le_poly,poly,le_som;
 
       double xmoy,ymoy,zmoy,deltax,deltay,deltaz;
@@ -103,10 +103,10 @@ void Ensemble_Lagrange_base::generer_marqueurs_sz(DoubleTab& soms_tmp)
           poly = sz(0);
           le_som = 0;
 
-          xmin=dom.coord(mazone.sommet_elem(poly,le_som),0);
-          ymin=dom.coord(mazone.sommet_elem(poly,le_som),1);
+          xmin=dom.coord(madomaine.sommet_elem(poly,le_som),0);
+          ymin=dom.coord(madomaine.sommet_elem(poly,le_som),1);
           if (dim==3)
-            zmin=dom.coord(mazone.sommet_elem(poly,le_som),2);
+            zmin=dom.coord(madomaine.sommet_elem(poly,le_som),2);
           xmax=xmin;
           ymax=ymin;
           if (dim==3)
@@ -116,14 +116,14 @@ void Ensemble_Lagrange_base::generer_marqueurs_sz(DoubleTab& soms_tmp)
             for(le_som=0; le_som<nb_som; le_som++)
               {
                 poly = sz(le_poly);
-                xmin=std::min(xmin,dom.coord(mazone.sommet_elem(poly,le_som),0));
-                ymin=std::min(ymin,dom.coord(mazone.sommet_elem(poly,le_som),1));
+                xmin=std::min(xmin,dom.coord(madomaine.sommet_elem(poly,le_som),0));
+                ymin=std::min(ymin,dom.coord(madomaine.sommet_elem(poly,le_som),1));
                 if (dim==3)
-                  zmin=std::min(zmin,dom.coord(mazone.sommet_elem(poly,le_som),2));
-                xmax=std::max(xmax,dom.coord(mazone.sommet_elem(poly,le_som),0));
-                ymax=std::max(ymax,dom.coord(mazone.sommet_elem(poly,le_som),1));
+                  zmin=std::min(zmin,dom.coord(madomaine.sommet_elem(poly,le_som),2));
+                xmax=std::max(xmax,dom.coord(madomaine.sommet_elem(poly,le_som),0));
+                ymax=std::max(ymax,dom.coord(madomaine.sommet_elem(poly,le_som),1));
                 if (dim==3)
-                  zmax=std::max(zmax,dom.coord(mazone.sommet_elem(poly,le_som),2));
+                  zmax=std::max(zmax,dom.coord(madomaine.sommet_elem(poly,le_som),2));
               }
         } //Fin if (nb_elem!=0)
 

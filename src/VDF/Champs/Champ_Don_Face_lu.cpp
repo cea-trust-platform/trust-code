@@ -15,7 +15,7 @@
 
 #include <Champ_Don_Face_lu.h>
 #include <Probleme_base.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <ArrOfBit.h>
 #include <EFichier.h>
 
@@ -50,7 +50,7 @@ Entree& Champ_Don_Face_lu::readOn(Entree& is)
   is >> nom;
   Probleme_base& pb = ref_cast(Probleme_base, Interprete::objet(nom));
   associer_domaine_dis_base(pb.domaine_dis().valeur());
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF, zone_dis_base());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF, domaine_dis_base());
   int nb_faces = zvdf.nb_faces();
   is >> dim;
   dimensionner(nb_faces, dim);

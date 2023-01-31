@@ -15,10 +15,10 @@
 
 #include <Champ_val_tot_sur_vol_VEF.h>
 #include <Equation_base.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Dirichlet.h>
-#include <Sous_Zone.h>
-#include <Zone_VEF.h>
+#include <Sous_Domaine.h>
+#include <Domaine_VEF.h>
 
 Implemente_instanciable(Champ_val_tot_sur_vol_VEF,"Valeur_totale_sur_volume_VEF",Champ_val_tot_sur_vol_base);
 
@@ -35,16 +35,16 @@ Entree& Champ_val_tot_sur_vol_VEF::readOn(Entree& is)
   return is;
 }
 
-DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis,DoubleVect& vol_glob_pond)
+DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Domaine_dis_base& zdis,const Domaine_Cl_dis_base& zcldis,DoubleVect& vol_glob_pond)
 {
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zdis);
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zcldis);
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF,zdis);
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,zcldis);
   const int nb_elem = zvef.nb_elem();
-  int size_vol = les_sous_zones.size()+1;
+  int size_vol = les_sous_domaines.size()+1;
   vol_glob_pond.resize(size_vol);
 
   const int nb_faces = zvef.nb_faces();
-  const int nb_fac_el = zvef.zone().nb_faces_elem();
+  const int nb_fac_el = zvef.domaine().nb_faces_elem();
   const IntTab& elem_faces = zvef.elem_faces();
   const DoubleVect& vol_entrelaces = zvef.volumes_entrelaces();
   const DoubleVect& vol_entrelaces_Cl =  zclvef.volumes_entrelaces_Cl();
@@ -57,9 +57,9 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
   int cpt=1;
   IntVect face_fait(nb_faces);
 
-  for (auto& itr : les_sous_zones)
+  for (auto& itr : les_sous_domaines)
     {
-      const Sous_Zone& sz = itr.valeur();
+      const Sous_Domaine& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();
       face_fait = 0;
       int el,elem0,elem1,elem_test;
@@ -78,7 +78,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
                     {
 
                       //Parmi les deux elements voisins de la face traitee on retient
-                      //celui qui n est pas l element courant dans la sous zone
+                      //celui qui n est pas l element courant dans la sous domaine
                       elem0 = zvef.face_voisins(face_g,0);
                       elem1 = zvef.face_voisins(face_g,1);
                       if (elem0==el)
@@ -88,14 +88,14 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
 
                       //Quatre situations possibles
                       //-elem_test=-1 condition limite
-                      //-elem_test est aussi dans la sous zone courante
-                      //-elem_test est dans une autre sous zone
-                      //-elem_test est dans la partie par defaut du domaine (pas dans une sous zone)
+                      //-elem_test est aussi dans la sous domaine courante
+                      //-elem_test est dans une autre sous domaine
+                      //-elem_test est dans la partie par defaut du domaine (pas dans une sous domaine)
 
                       int ok_trouve_loc = 0;
-                      //Recherche si elem_test est dans la sous zone courante
+                      //Recherche si elem_test est dans la sous domaine courante
                       //(1 si element reel-2 si virtuel-0 sinon)
-                      //ok_trouve_loc fixe a 1 si elem_test dans la sous zone courante 0 sinon
+                      //ok_trouve_loc fixe a 1 si elem_test dans la sous domaine courante 0 sinon
                       for (int poly=0; poly<size_sz; poly++)
                         {
                           if (elem_test==sz(poly))
@@ -107,11 +107,11 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Zone_dis_base& zdi
                             }
                         }
 
-                      //elem_test est dans la sous zone courante (en element reel) ou est en condition limite
+                      //elem_test est dans la sous domaine courante (en element reel) ou est en condition limite
                       if ((ok_trouve_loc==1) || (elem_test==-1))
                         fac_pond = 1.;
-                      //elem_test est dans une autre sous zone ou dans la partie par defaut
-                      //ou dans la sous zone courante mais en element virtuel
+                      //elem_test est dans une autre sous domaine ou dans la partie par defaut
+                      //ou dans la sous domaine courante mais en element virtuel
                       else
                         fac_pond = 0.5;
 

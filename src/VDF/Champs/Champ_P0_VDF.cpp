@@ -15,30 +15,30 @@
 
 #include <LecFicDiffuse.h>
 #include <Champ_P0_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(Champ_P0_VDF,"Champ_P0_VDF",Champ_Inc_P0_base);
 
 Sortie& Champ_P0_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 Entree& Champ_P0_VDF::readOn(Entree& s) { return s ; }
 
-const Zone_VDF& Champ_P0_VDF::zone_VDF() const
+const Domaine_VDF& Champ_P0_VDF::domaine_VDF() const
 {
-  return ref_cast(Zone_VDF, le_dom_VF.valeur());
+  return ref_cast(Domaine_VDF, le_dom_VF.valeur());
 }
 
 DoubleTab& Champ_P0_VDF::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone_VDF& zone_vdf = ref_cast(Zone_VDF, zone_dis_base());
-  const DoubleTab& xp = zone_vdf.xp();
-  int nb_poly = zone_vdf.nb_elem();
+  const Domaine_VDF& domaine_vdf = ref_cast(Domaine_VDF, domaine_dis_base());
+  const DoubleTab& xp = domaine_vdf.xp();
+  int nb_poly = domaine_vdf.nb_elem();
   if ((xp.dimension(0) == nb_poly) && (xp.dimension(1) == dimension))
     positions.ref(xp);
   else
     {
-      const Zone& zone = zone_vdf.zone();
+      const Domaine& domaine = domaine_vdf.domaine();
       positions.resize(nb_poly, dimension);
-      zone.calculer_centres_gravite(positions);
+      domaine.calculer_centres_gravite(positions);
     }
   return positions;
 }
@@ -51,7 +51,7 @@ DoubleTab& Champ_P0_VDF::remplir_coord_noeuds(DoubleTab& positions) const
  */
 DoubleVect Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem) const
 {
-  const DoubleVect& volumes = zone_VDF().volumes();
+  const DoubleVect& volumes = domaine_VDF().volumes();
   const DoubleTab& val = valeurs();
 
   int k, nb_compo = nb_comp();
@@ -59,7 +59,7 @@ DoubleVect Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem) const
   moy = 0;
   double coef, sum_vol = 0;
 
-  for (int num_elem = 0; num_elem < zone_VDF().nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < domaine_VDF().nb_elem(); num_elem++)
     {
       coef = porosite_elem(num_elem) * volumes(num_elem);
       for (k = 0; k < nb_compo; k++)
@@ -76,13 +76,13 @@ DoubleVect Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem) const
  */
 double Champ_P0_VDF::moyenne(const DoubleVect& porosite_elem, int ncomp) const
 {
-  const DoubleVect& volumes = zone_VDF().volumes();
+  const DoubleVect& volumes = domaine_VDF().volumes();
   const DoubleTab& val = valeurs();
 
   double moy = 0;
   double coef, sum_vol = 0;
 
-  for (int num_elem = 0; num_elem < zone_VDF().nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < domaine_VDF().nb_elem(); num_elem++)
     {
       coef = porosite_elem(num_elem) * volumes(num_elem);
       moy += val(num_elem, ncomp) * coef;
@@ -226,8 +226,8 @@ int Champ_P0_VDF::imprime(Sortie& os, int ncomp) const
 double Champ_P0_VDF::integrale_espace(int ncomp) const
 {
   double integr = 0.;
-  const DoubleVect& volumes = zone_VDF().volumes();
-  int nb_elem = zone_VDF().nb_elem();
+  const DoubleVect& volumes = domaine_VDF().volumes();
+  int nb_elem = domaine_VDF().nb_elem();
   int elem;
   const DoubleTab& val = valeurs();
   assert(ncomp < val.line_size());

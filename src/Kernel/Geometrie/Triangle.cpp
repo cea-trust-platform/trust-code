@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Triangle.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 /*! @brief des faces du triangle de reference: 3 faces de deux sommets.
  *
@@ -67,24 +67,24 @@ const Nom& Triangle::nom_lml() const
 }
 
 
-/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element ielem de la domaine associee a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int ielem) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int ielem) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element ielem 0 sinon
  */
 int Triangle::contient(const ArrOfDouble& pos, int ielem) const
 {
   assert(pos.size_array()==2);
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
-  assert(ielem<zone.nb_elem_tot());
-  int som0 = zone.sommet_elem(ielem,0);
-  int som1 = zone.sommet_elem(ielem,1);
-  int som2 = zone.sommet_elem(ielem,2);
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
+  assert(ielem<domaine.nb_elem_tot());
+  int som0 = domaine.sommet_elem(ielem,0);
+  int som1 = domaine.sommet_elem(ielem,1);
+  int som2 = domaine.sommet_elem(ielem,2);
   assert((som0>=0) && (som0<dom.nb_som_tot()));
   assert((som1>=0) && (som1<dom.nb_som_tot()));
   assert((som2>=0) && (som2<dom.nb_som_tot()));
@@ -132,41 +132,41 @@ int Triangle::contient(const ArrOfDouble& pos, int ielem) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Triangle::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=mon_dom.valeur();
-  if((zone.sommet_elem(element,0)==som[0])&&
-      (zone.sommet_elem(element,1)==som[1])&&
-      (zone.sommet_elem(element,2)==som[2]))
+  const Domaine& domaine=mon_dom.valeur();
+  if((domaine.sommet_elem(element,0)==som[0])&&
+      (domaine.sommet_elem(element,1)==som[1])&&
+      (domaine.sommet_elem(element,2)==som[2]))
     return 1;
   else
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Triangle::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const DoubleTab& coord = zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const DoubleTab& coord = domaine.coord_sommets();
   DoubleTab pos(3,dimension);
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
       for (int i=0; i<3; i++)
         {
-          int Si = zone.sommet_elem(num_poly,i);
+          int Si = domaine.sommet_elem(num_poly,i);
           for (int j=0; j<dimension; j++)
             pos(i,j) = coord(Si,j);
         }
@@ -174,16 +174,16 @@ void Triangle::calculer_volumes(DoubleVect& volumes) const
     }
 }
 
-/*! @brief Calcule les normales aux faces des elements de la zone associee.
+/*! @brief Calcule les normales aux faces des elements de la domaine associee.
  *
- * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la zone associee
+ * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la domaine associee
  * @param (DoubleTab& face_normales)
  */
 void Triangle::calculer_normales(const IntTab& Face_sommets ,
                                  DoubleTab& face_normales) const
 {
-  const Zone& zone_geom = mon_dom.valeur();
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const Domaine& domaine_geom = mon_dom.valeur();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1;
   int n0,n1;

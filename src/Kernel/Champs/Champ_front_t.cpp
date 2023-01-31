@@ -15,9 +15,9 @@
 //   Nouveau champ frontiere
 
 #include <Champ_front_t.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Frontiere_dis_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 
 Implemente_instanciable(Champ_front_t,"Champ_front_fonc_t",Ch_front_var_instationnaire_indep);

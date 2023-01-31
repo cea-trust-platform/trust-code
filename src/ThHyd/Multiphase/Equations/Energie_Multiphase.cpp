@@ -16,8 +16,8 @@
 #include <Energie_Multiphase.h>
 #include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
 #include <Champ_Uniforme.h>
 #include <Matrice_Morse.h>
@@ -134,7 +134,7 @@ void Energie_Multiphase::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Energy equation discretization " << finl;
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
-  dis.temperature(schema_temps(), zone_dis(), l_inco_ch, pb.nb_phases());
+  dis.temperature(schema_temps(), domaine_dis(), l_inco_ch, pb.nb_phases());
   l_inco_ch.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
   for (int i = 0; i < pb.nb_phases(); i++)
     l_inco_ch.valeur().fixer_nom_compo(i, Nom("temperature_") + pb.nom_phase(i));
@@ -297,11 +297,11 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
   for (i = 0; i < Nl; i++)
     for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * en(i, n);
 
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_en = ch_en.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
-  if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), b_rho);
+  if (ch_rho.a_une_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
 
@@ -340,11 +340,11 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
   for (i = 0; i < Nl; i++)
     for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * h(i, n);
 
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_h = ch_h.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
-  if (ch_rho.a_une_zone_dis_base()) b_rho = ch_rho.valeur_aux_bords();
-  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), b_rho);
+  if (ch_rho.a_une_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
+  else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_h(i, n);
 
@@ -373,7 +373,7 @@ void Energie_Multiphase::init_champ_convecte() const
   if (champ_convecte_.non_nul()) return; //deja fait
   int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue().valeurs().size_reelle_ok() ? inconnue().valeurs().dimension(0) : -1, Nc = inconnue().valeurs().line_size();
   //champ_convecte_ : meme type / support que l'inconnue
-  discretisation().creer_champ(champ_convecte_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
+  discretisation().creer_champ(champ_convecte_, domaine_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_convecte_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_convecte();
   champ_convecte_->nommer(nom_fonc.first);

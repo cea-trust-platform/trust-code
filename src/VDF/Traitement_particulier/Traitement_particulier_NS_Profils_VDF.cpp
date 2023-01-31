@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Traitement_particulier_NS_Profils_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Schema_Temps_base.h>
 #include <communications.h>
 #include <SFichier.h>
@@ -230,16 +230,16 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
   // utiles au calcul des differentes moyennes
   // Initialisation de : Yu,Yv,Yw,Yuv + compt_x,compt_y,compt_z,compt_uv
   // + corresp_u,corresp_v,corresp_w,corresp_uv
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
-  const DoubleTab& xv = zone_VDF.xv();
-  const DoubleTab& xp = zone_VDF.xp();
+  const DoubleTab& xv = domaine_VDF.xv();
+  const DoubleTab& xp = domaine_VDF.xp();
 
-  int nb_faces = zone_VDF.nb_faces();
-  int nb_elems = zone_VDF.zone().nb_elem();
+  int nb_faces = domaine_VDF.nb_faces();
+  int nb_elems = domaine_VDF.domaine().nb_elem();
 
-  const IntVect& orientation = zone_VDF.orientation();
+  const IntVect& orientation = domaine_VDF.orientation();
 
   int num_face,num_elem,ori,indic_m,indicv_m,indicw_m,indicuv_m,indic_p,indicv_p,indicw_p,indicuv_p,trouve;
   int i,j;
@@ -821,15 +821,15 @@ void Traitement_particulier_NS_Profils_VDF::init_calcul_moyenne(void)
 void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_nut(DoubleTab& u_moy, const IntTab& corresp, const IntTab& compt, const IntVect& tab_Nuv, const DoubleTab& xUV)
 {
   int i,j;
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  const DoubleTab& xp = zone_VDF.xp();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
+  const DoubleTab& xp = domaine_VDF.xp();
 
   const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
   const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
   const DoubleTab& nu_t = mod_turb.viscosite_turbulente()->valeurs();
 
-  int nb_elems = zone_VDF.zone().nb_elem();
+  int nb_elems = domaine_VDF.domaine().nb_elem();
   int num_elem;
 
   u_moy = 0.;
@@ -883,13 +883,13 @@ void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_nut(Double
 void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_vitesse(DoubleTab& u_moy,DoubleTab& u_moy_2,DoubleTab& u_moy_3,DoubleTab& u_moy_4, const IntTab& corresp, const IntTab& compt, const IntVect& NN, const int ori, const DoubleTab& xU)
 {
   int i,j;
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  const DoubleTab& xv = zone_VDF.xv();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
+  const DoubleTab& xv = domaine_VDF.xv();
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  int nb_faces = zone_VDF.nb_faces();
-  const IntVect& orientation = zone_VDF.orientation();
+  int nb_faces = domaine_VDF.nb_faces();
+  const IntVect& orientation = domaine_VDF.orientation();
 
   int num_face,ori_face;
   double vit;
@@ -985,14 +985,14 @@ void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_vitesse(Do
 void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_uv(DoubleTab& uv_moy, const IntTab& corresp, const IntTab& compt, const IntVect& NN , const DoubleTab& xUV)
 {
   int i,j;
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  const DoubleTab& xp = zone_VDF.xp();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
+  const DoubleTab& xp = domaine_VDF.xp();
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
 
-  int nb_elems = zone_VDF.zone().nb_elem();
+  int nb_elems = domaine_VDF.domaine().nb_elem();
   int num_elem;
   int face_u_0,face_u_1,face_v_0,face_v_1;
   double vitu,vitv;

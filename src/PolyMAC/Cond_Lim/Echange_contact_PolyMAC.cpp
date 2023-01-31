@@ -22,7 +22,7 @@
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Milieu_base.h>
 #include <Operateur.h>
 #include <Front_VF.h>
@@ -55,8 +55,8 @@ void Echange_contact_PolyMAC::init_op() const
   Champ_front_calc ch;
   ch.creer(nom_autre_pb_, nom_bord_, nom_champ_);
   fvf = ref_cast(Front_VF, frontiere_dis()), o_fvf = ref_cast(Front_VF, ch.front_dis()); //frontieres
-  const Equation_base& eqn = zone_Cl_dis().equation(), &o_eqn = ch.equation(); //equations
-  i_fvf = eqn.zone_dis()->rang_frontiere(fvf.le_nom()), i_o_fvf = o_eqn.zone_dis()->rang_frontiere(nom_bord_);
+  const Equation_base& eqn = domaine_Cl_dis().equation(), &o_eqn = ch.equation(); //equations
+  i_fvf = eqn.domaine_dis()->rang_frontiere(fvf.le_nom()), i_o_fvf = o_eqn.domaine_dis()->rang_frontiere(nom_bord_);
 
   int i_op = -1, o_i_op = -1, i; //indice de l'operateur de diffusion dans l'autre equation
   for (i = 0; i < eqn.nombre_d_operateurs(); i++)
@@ -73,8 +73,8 @@ void Echange_contact_PolyMAC::init_op() const
 void Echange_contact_PolyMAC::init_f_dist() const
 {
   if (f_dist_init_) return; //deja fait
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, fvf->zone_dis()), &o_zone = ref_cast(Zone_PolyMAC, o_fvf->zone_dis());
-  const DoubleTab& xv = zone.xv(), &o_xv = o_zone.xv();
+  const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC, fvf->domaine_dis()), &o_domaine = ref_cast(Domaine_PolyMAC, o_fvf->domaine_dis());
+  const DoubleTab& xv = domaine.xv(), &o_xv = o_domaine.xv();
 
   int i, f, o_f, nf_tot = fvf->nb_faces_tot(), o_nf_tot = o_fvf->nb_faces_tot(), d, D = dimension;
   f_dist.resize(nf_tot);
@@ -94,7 +94,7 @@ void Echange_contact_PolyMAC::init_f_dist() const
   for (i = 0; i < nf_tot; i++) //remplissage de f_dist : face distante si coincidence, -1 sinon
     {
       f = fvf->num_face(i), o_f = o_nf_tot ? o_fvf->num_face(f_idx->getIJ(i, 0)) : -1;
-      double d2 = o_f >= 0 ? zone.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
+      double d2 = o_f >= 0 ? domaine.dot(&xv(f, 0), &xv(f, 0), &o_xv(o_f, 0), &o_xv(o_f, 0)) : 1e8;
       if (d2 < 1e-12) f_dist(i) = o_f;
       else f_dist(i) = -1;
       if (i < fvf->nb_faces() && d2 >= 1e-12)

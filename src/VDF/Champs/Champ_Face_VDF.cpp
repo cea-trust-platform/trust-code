@@ -24,7 +24,7 @@
 #include <Equation_base.h>
 #include <Champ_Don_lu.h>
 #include <Fluide_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Periodique.h>
 #include <Symetrie.h>
 
@@ -41,8 +41,8 @@ Entree& Champ_Face_VDF::readOn(Entree& s)
 
 int Champ_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
-  assert(nb_noeuds == zone_vdf().nb_faces());
-  const MD_Vector& md = zone_vdf().md_vector_faces();
+  assert(nb_noeuds == domaine_vdf().nb_faces());
+  const MD_Vector& md = domaine_vdf().md_vector_faces();
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;
@@ -54,22 +54,22 @@ int Champ_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
 
 void Champ_Face_VDF::dimensionner_tenseur_Grad()
 {
-  tau_diag_.resize(zone_vdf().nb_elem(), dimension);
-  tau_croises_.resize(zone_vdf().nb_aretes(), 2);
+  tau_diag_.resize(domaine_vdf().nb_elem(), dimension);
+  tau_croises_.resize(domaine_vdf().nb_aretes(), 2);
 }
 
 Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
 {
   DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const IntVect& orientation = zone_VDF.orientation();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  const IntVect& orientation = domaine_VDF.orientation();
   const int N = val.dimension(1), unif = sub_type(Champ_Uniforme, ch), D = dimension;
 
   if ((sub_type(Champ_Uniforme_Morceaux, ch)) || (sub_type(Champ_Don_lu, ch)))
     {
       const DoubleTab& v = ch.valeurs();
-      int ndeb_int = zone_VDF.premiere_face_int();
-      const IntTab& f_e = zone_VDF.face_voisins();
+      int ndeb_int = domaine_VDF.premiere_face_int();
+      const IntTab& f_e = domaine_VDF.face_voisins();
 
       for (int f = 0; f < ndeb_int; f++)
         {
@@ -79,7 +79,7 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
             val(f, n) = v(e, N * ori + n);
         }
 
-      for (int f = ndeb_int; f < zone_VDF.nb_faces(); f++)
+      for (int f = ndeb_int; f < domaine_VDF.nb_faces(); f++)
         {
           const int ori = orientation(f);
           for (int n = 0; n < N; n++)
@@ -91,9 +91,9 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
 
       DoubleTab eval;
       if (unif) eval = ch.valeurs();
-      else eval.resize(val.dimension(0), N * D), ch.valeur_aux(zone_VDF.xv(), eval);
+      else eval.resize(val.dimension(0), N * D), ch.valeur_aux(domaine_VDF.xv(), eval);
 
-      for (int f = 0; f < zone_VDF.nb_faces(); f++)
+      for (int f = 0; f < domaine_VDF.nb_faces(); f++)
         for (int n = 0; n < N; n++)
           val(f, n) = eval(unif ? 0 : f, N * orientation(f) + n);
     }
@@ -103,7 +103,7 @@ Champ_base& Champ_Face_VDF::affecter_(const Champ_base& ch)
 
 const Champ_Proto& Champ_Face_VDF::affecter(const double x1, const double x2)
 {
-  const IntVect& orientation = zone_vdf().orientation();
+  const IntVect& orientation = domaine_vdf().orientation();
   DoubleTab& val = valeurs();
   for (int num_face = 0; num_face < val.size(); num_face++)
     {
@@ -123,7 +123,7 @@ const Champ_Proto& Champ_Face_VDF::affecter(const double x1, const double x2)
 
 const Champ_Proto& Champ_Face_VDF::affecter(const double x1, const double x2, const double x3)
 {
-  const IntVect& orientation = zone_vdf().orientation();
+  const IntVect& orientation = domaine_vdf().orientation();
   DoubleTab& val = valeurs();
   for (int num_face = 0; num_face < val.size(); num_face++)
     {
@@ -146,7 +146,7 @@ const Champ_Proto& Champ_Face_VDF::affecter(const double x1, const double x2, co
 
 const Champ_Proto& Champ_Face_VDF::affecter(const DoubleTab& v)
 {
-  const IntVect& orientation = zone_vdf().orientation();
+  const IntVect& orientation = domaine_vdf().orientation();
   DoubleTab& val = valeurs();
 
   if (v.nb_dim() == 2)
@@ -179,7 +179,7 @@ const Champ_Proto& Champ_Face_VDF::affecter(const DoubleTab& v)
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
 void Champ_Face_VDF::verifie_valeurs_cl()
 {
-  const Zone_Cl_dis_base& zcl = zone_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl = domaine_Cl_dis().valeur();
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int ndeb, nfin, num_face;
@@ -221,7 +221,7 @@ void Champ_Face_VDF::verifie_valeurs_cl()
  */
 double Champ_Face_VDF::val_imp_face_bord_private(int face, int comp) const
 {
-  const Zone_Cl_VDF& zclo = ref_cast(Zone_Cl_VDF, equation().zone_Cl_dis().valeur());
+  const Domaine_Cl_VDF& zclo = ref_cast(Domaine_Cl_VDF, equation().domaine_Cl_dis().valeur());
   return Champ_Face_get_val_imp_face_bord_sym(valeurs(), temps(), face, comp, zclo);
 }
 
@@ -242,7 +242,7 @@ int Champ_Face_VDF::compo_normale_sortante(int num_face) const
   double vit_norm;
   // signe vaut -1 si face_voisins(num_face,0) est a l'exterieur
   // signe vaut  1 si face_voisins(num_face,1) est a l'exterieur
-  if (zone_vdf().face_voisins(num_face, 0) == -1)
+  if (domaine_vdf().face_voisins(num_face, 0) == -1)
     signe = -1;
   vit_norm = (*this)(num_face) * signe;
   return (vit_norm > 0);
@@ -261,15 +261,15 @@ void Champ_Face_VDF::mettre_a_jour(double un_temps)
 void Champ_Face_VDF::calculer_rotationnel_ordre2_centre_element(DoubleTab& rot) const
 {
   const DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = zone_vdf();
-  int nb_elem = zone_VDF.nb_elem();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  int nb_elem = domaine_VDF.nb_elem();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
 
   if (dimension == 2)
-    calrotord2centelemdim2(rot, val, zone_VDF, nb_elem, face_voisins, elem_faces);
+    calrotord2centelemdim2(rot, val, domaine_VDF, nb_elem, face_voisins, elem_faces);
   else if (dimension == 3)
-    calrotord2centelemdim3(rot, val, zone_VDF, nb_elem, face_voisins, elem_faces);
+    calrotord2centelemdim3(rot, val, domaine_VDF, nb_elem, face_voisins, elem_faces);
 }
 
 int Champ_Face_VDF::imprime(Sortie& os, int ncomp) const
@@ -278,13 +278,13 @@ int Champ_Face_VDF::imprime(Sortie& os, int ncomp) const
   return 1;
 }
 
-void Champ_Face_VDF::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calcul_critere_Q(DoubleTab& Q, const Domaine_Cl_VDF& domaine_Cl_VDF)
 {
   // Q=0.5*(\Omega_{ij}*\Omega_{ij}-S_{ij}*S_{ij})=-0.25*du_i/dx_j*du_j/dx_i
 
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const int nb_elem = zone_VDF.nb_elem();
-  const int nb_elem_tot = zone_VDF.nb_elem_tot();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  const int nb_elem = domaine_VDF.nb_elem();
+  const int nb_elem_tot = domaine_VDF.nb_elem_tot();
   int num_elem, i, j;
   double crit, deriv1, deriv2;
 
@@ -294,7 +294,7 @@ void Champ_Face_VDF::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_V
   Champ_Face_VDF& vit = *this;
   const DoubleTab& vitesse = valeurs();
 
-  vit.calcul_duidxj(vitesse, gradient_elem, zone_Cl_VDF);
+  vit.calcul_duidxj(vitesse, gradient_elem, domaine_Cl_VDF);
 
   for (num_elem = 0; num_elem < nb_elem; num_elem++)
     {
@@ -311,7 +311,7 @@ void Champ_Face_VDF::calcul_critere_Q(DoubleTab& Q, const Zone_Cl_VDF& zone_Cl_V
     }
 }
 
-void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Domaine_Cl_VDF& domaine_Cl_VDF)
 {
   // On initialise le champ y_plus avec une valeur negative,
   // comme ca lorsqu'on veut visualiser le champ pres de la paroi,
@@ -323,9 +323,9 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl
   y_plus = -1.;
 
   const Champ_Face_VDF& vit = *this;
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntVect& orientation = zone_VDF.orientation();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntVect& orientation = domaine_VDF.orientation();
   const Equation_base& eqn_hydr = equation();
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
@@ -362,15 +362,15 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl
       const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
       if (loipar.use_shear())
         {
-          yplus_faces.resize(zone_vdf().nb_faces_tot());
+          yplus_faces.resize(domaine_vdf().nb_faces_tot());
           yplus_faces.ref(loipar.tab_d_plus());
           yplus_already_computed = 1;
         }
     }
 
-  for (int n_bord = 0; n_bord < zone_VDF.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
 
       if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur()))
         {
@@ -397,18 +397,18 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl
                   if (dimension == 2)
                     {
                       ori = orientation(num_face);
-                      norm_v = norm_2D_vit(vit.valeurs(), elem, ori, zone_VDF, val0);
+                      norm_v = norm_2D_vit(vit.valeurs(), elem, ori, domaine_VDF, val0);
                     }
                   else if (dimension == 3)
                     {
                       ori = orientation(num_face);
-                      norm_v = norm_3D_vit(vit.valeurs(), elem, ori, zone_VDF, val1, val2);
+                      norm_v = norm_3D_vit(vit.valeurs(), elem, ori, domaine_VDF, val1, val2);
                     } // dim 3
 
                   if (axi)
-                    dist = zone_VDF.dist_norm_bord_axi(num_face);
+                    dist = domaine_VDF.dist_norm_bord_axi(num_face);
                   else
-                    dist = zone_VDF.dist_norm_bord(num_face);
+                    dist = domaine_VDF.dist_norm_bord(num_face);
                   if (l_unif)
                     d_visco = visco;
                   else
@@ -437,27 +437,27 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Zone_Cl_VDF& zone_Cl
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Zone_Cl_VDF& zone_Cl_VDF) const
+DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Domaine_Cl_VDF& domaine_Cl_VDF) const
 {
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
-  const Zone_VDF& zone_VDF = zone_vdf();
-  int nb_elem = zone_VDF.zone().nb_elem_tot();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
-  const IntTab& Qdm = zone_VDF.Qdm();
-  const IntVect& orientation = zone_VDF.orientation();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  int nb_elem = domaine_VDF.domaine().nb_elem_tot();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
+  const IntTab& Qdm = domaine_VDF.Qdm();
+  const IntVect& orientation = domaine_VDF.orientation();
 
-  int premiere_arete_mixte = zone_VDF.premiere_arete_mixte();
-  int premiere_arete_interne = zone_VDF.premiere_arete_interne();
-  int derniere_arete_mixte = premiere_arete_mixte + zone_VDF.nb_aretes_mixtes();
-  int derniere_arete_interne = premiere_arete_interne + zone_VDF.nb_aretes_internes();
+  int premiere_arete_mixte = domaine_VDF.premiere_arete_mixte();
+  int premiere_arete_interne = domaine_VDF.premiere_arete_interne();
+  int derniere_arete_mixte = premiere_arete_mixte + domaine_VDF.nb_aretes_mixtes();
+  int derniere_arete_interne = premiere_arete_interne + domaine_VDF.nb_aretes_internes();
   int elem;
   int num_arete;
   IntVect element(4);
 
   int num0, num1, num2, num3, signe;
-  int ndeb = zone_VDF.premiere_arete_bord();
-  int nfin = ndeb + zone_VDF.nb_aretes_bord();
+  int ndeb = domaine_VDF.premiere_arete_bord();
+  int nfin = ndeb + domaine_VDF.nb_aretes_bord();
   int n_type;
 
   gij = 0.;
@@ -472,7 +472,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
 
   for (num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = zone_Cl_VDF.type_arete_bord(num_arete - ndeb);
+      n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
 
       if (n_type == 4) // arete de type periodicite
         {
@@ -485,8 +485,8 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
           i = orientation(num0);
           j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);            // dui/dxj
-          double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);            // duj/dxi
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dui/dxj
+          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // duj/dxi
           element(0) = face_voisins(num0, 0);
           element(1) = face_voisins(num0, 1);
           element(2) = face_voisins(num1, 0);
@@ -515,12 +515,12 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
           j = orientation(num2);
 
           double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);        // dui/dxj
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
           double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
           //Dans cette partie, on conserve le codage de Hyd_SGE_Wale_VDF (num1 et non num2)
           //pour calculer la distance entre le centre de la maille et le bord.
 
-          temp2 = -signe * (vitesse[num2] - vit_imp) / zone_VDF.dist_norm_bord(num1);
+          temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
           element(0) = face_voisins(num2, 0);
           element(1) = face_voisins(num2, 1);
@@ -543,12 +543,12 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
   //On parcourt les aretes coins
   //*******************************
 
-  ndeb = zone_VDF.premiere_arete_coin();
-  nfin = ndeb + zone_VDF.nb_aretes_coin();
+  ndeb = domaine_VDF.premiere_arete_coin();
+  nfin = ndeb + domaine_VDF.nb_aretes_coin();
 
   for (num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = zone_Cl_VDF.type_arete_coin(num_arete - ndeb);
+      n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
       //***************************************
       // Traitement des aretes coin perio-perio
       //***************************************
@@ -564,8 +564,8 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
           i = orientation(num0);
           j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);        // dui/dxj
-          double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);        // duj/dxi
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
+          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);        // duj/dxi
           element(0) = face_voisins(num0, 0);
           element(1) = face_voisins(num0, 1);
           element(2) = face_voisins(num1, 0);
@@ -601,10 +601,10 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
           j = orientation(num2);
 
           double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);                // dui/dxj
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);                // dui/dxj
           double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));        // vitesse tangentielle
 
-          temp2 = -signe * (vitesse[num2] - vit_imp) / zone_VDF.dist_norm_bord(num1);
+          temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
           element(0) = face_voisins(num2, 0);
           element(1) = face_voisins(num2, 1);
@@ -632,7 +632,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
   // vitesse[face] renvoie la vitesse NORMALE a la face
   //   for (num_arete = premiere_arete_bord ; num_arete<derniere_arete_bord ; num_arete ++)
   //     {
-  //       const IntVect& type_arete_bord = zone_Cl_VDF.type_arete_bord();
+  //       const IntVect& type_arete_bord = domaine_Cl_VDF.type_arete_bord();
 
   for (num_arete = premiere_arete_mixte; num_arete < derniere_arete_mixte; num_arete++)
     {
@@ -645,8 +645,8 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
       i = orientation(num0);
       j = orientation(num2);
 
-      double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);        // dui/dxj
-      double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);        // duj/dxi
+      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
+      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);        // duj/dxi
 
       element(0) = face_voisins(num0, 0);
       element(1) = face_voisins(num0, 1);
@@ -680,10 +680,10 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
       i = orientation(num0);
       j = orientation(num2);
 
-      double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);        // dui/dxj
-      assert(est_egal(zone_VDF.dist_face_period(num0, num1, j), zone_VDF.dist_face(num0, num1, j)));
-      double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);        // duj/dxi
-      assert(est_egal(zone_VDF.dist_face_period(num2, num3, j), zone_VDF.dist_face(num2, num3, j)));
+      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
+      assert(est_egal(domaine_VDF.dist_face_period(num0, num1, j), domaine_VDF.dist_face(num0, num1, j)));
+      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);        // duj/dxi
+      assert(est_egal(domaine_VDF.dist_face_period(num2, num3, j), domaine_VDF.dist_face(num2, num3, j)));
       element(0) = face_voisins(num0, 0);
       element(1) = face_voisins(num0, 1);
       element(2) = face_voisins(num1, 0);
@@ -708,7 +708,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
     {
       for (int i = 0; i < dimension; i++)
         {
-          double temp1 = (vitesse[elem_faces(elem, i)] - vitesse[elem_faces(elem, i + dimension)]) / zone_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
+          double temp1 = (vitesse[elem_faces(elem, i)] - vitesse[elem_faces(elem, i + dimension)]) / domaine_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
 
           gij(elem, i, i) = -temp1;
 
@@ -729,10 +729,10 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
 DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) const
 {
 
-  const Zone_VDF& zone_VDF = zone_vdf();
-  int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  int nb_elem_tot = domaine_VDF.domaine().nb_elem_tot();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
 
   int element_number;
   int num0, num1, num2, num3, num4, num5;
@@ -762,10 +762,10 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
           if (num3 == -1)
             num3 = element_number;
 
-          gij(element_number, 0, 0) = 0.5 * ((in_vel(num2, 0) - in_vel(num0, 0)) / zone_VDF.dim_elem(element_number, 0));
-          gij(element_number, 0, 1) = 0.5 * ((in_vel(num3, 0) - in_vel(num1, 0)) / zone_VDF.dim_elem(element_number, 1));
-          gij(element_number, 1, 0) = 0.5 * ((in_vel(num2, 1) - in_vel(num0, 1)) / zone_VDF.dim_elem(element_number, 0));
-          gij(element_number, 1, 1) = 0.5 * ((in_vel(num3, 1) - in_vel(num1, 1)) / zone_VDF.dim_elem(element_number, 1));
+          gij(element_number, 0, 0) = 0.5 * ((in_vel(num2, 0) - in_vel(num0, 0)) / domaine_VDF.dim_elem(element_number, 0));
+          gij(element_number, 0, 1) = 0.5 * ((in_vel(num3, 0) - in_vel(num1, 0)) / domaine_VDF.dim_elem(element_number, 1));
+          gij(element_number, 1, 0) = 0.5 * ((in_vel(num2, 1) - in_vel(num0, 1)) / domaine_VDF.dim_elem(element_number, 0));
+          gij(element_number, 1, 1) = 0.5 * ((in_vel(num3, 1) - in_vel(num1, 1)) / domaine_VDF.dim_elem(element_number, 1));
         }
     }
   else
@@ -797,21 +797,21 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
           if (num5 == -1)
             num5 = element_number;
 
-          gij(element_number, 0, 0) = 0.5 * ((in_vel(num3, 0) - in_vel(num0, 0)) / zone_VDF.dim_elem(element_number, 0));
+          gij(element_number, 0, 0) = 0.5 * ((in_vel(num3, 0) - in_vel(num0, 0)) / domaine_VDF.dim_elem(element_number, 0));
 
-          gij(element_number, 0, 1) = 0.5 * ((in_vel(num4, 0) - in_vel(num1, 0)) / zone_VDF.dim_elem(element_number, 1));
-          gij(element_number, 1, 0) = 0.5 * ((in_vel(num3, 1) - in_vel(num0, 1)) / zone_VDF.dim_elem(element_number, 0));
+          gij(element_number, 0, 1) = 0.5 * ((in_vel(num4, 0) - in_vel(num1, 0)) / domaine_VDF.dim_elem(element_number, 1));
+          gij(element_number, 1, 0) = 0.5 * ((in_vel(num3, 1) - in_vel(num0, 1)) / domaine_VDF.dim_elem(element_number, 0));
 
-          gij(element_number, 0, 2) = 0.5 * ((in_vel(num5, 0) - in_vel(num2, 0)) / zone_VDF.dim_elem(element_number, 2));
+          gij(element_number, 0, 2) = 0.5 * ((in_vel(num5, 0) - in_vel(num2, 0)) / domaine_VDF.dim_elem(element_number, 2));
 
-          gij(element_number, 2, 0) = 0.5 * ((in_vel(num3, 2) - in_vel(num0, 2)) / zone_VDF.dim_elem(element_number, 0));
+          gij(element_number, 2, 0) = 0.5 * ((in_vel(num3, 2) - in_vel(num0, 2)) / domaine_VDF.dim_elem(element_number, 0));
 
-          gij(element_number, 1, 1) = 0.5 * ((in_vel(num4, 1) - in_vel(num1, 1)) / zone_VDF.dim_elem(element_number, 1));
+          gij(element_number, 1, 1) = 0.5 * ((in_vel(num4, 1) - in_vel(num1, 1)) / domaine_VDF.dim_elem(element_number, 1));
 
-          gij(element_number, 1, 2) = 0.5 * ((in_vel(num5, 1) - in_vel(num2, 1)) / zone_VDF.dim_elem(element_number, 2));
-          gij(element_number, 2, 1) = 0.5 * ((in_vel(num4, 2) - in_vel(num1, 2)) / zone_VDF.dim_elem(element_number, 1));
+          gij(element_number, 1, 2) = 0.5 * ((in_vel(num5, 1) - in_vel(num2, 1)) / domaine_VDF.dim_elem(element_number, 2));
+          gij(element_number, 2, 1) = 0.5 * ((in_vel(num4, 2) - in_vel(num1, 2)) / domaine_VDF.dim_elem(element_number, 1));
 
-          gij(element_number, 2, 2) = 0.5 * ((in_vel(num5, 2) - in_vel(num2, 2)) / zone_VDF.dim_elem(element_number, 2));
+          gij(element_number, 2, 2) = 0.5 * ((in_vel(num5, 2) - in_vel(num2, 2)) / domaine_VDF.dim_elem(element_number, 2));
 
         }
     }
@@ -822,7 +822,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
 
 //Methode qui renvoie SMA_barre aux elements a partir de la vitesse aux faces
 //SMA_barre = Sij*Sij (sommation sur les indices i et j)
-DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF) const
+DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Domaine_Cl_VDF& domaine_Cl_VDF) const
 {
   // On calcule directement S_barre(num_elem)!!!!!!!!!!
   // Le parametre contribution_paroi (ici fixe a 0) permet de ne pas prendre en compte
@@ -832,30 +832,30 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
   contribution_paroi = 0;
 
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
-  const Zone_VDF& zone_VDF = zone_vdf();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
 
-  int nb_elem = zone_VDF.zone().nb_elem();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
-  const IntTab& Qdm = zone_VDF.Qdm();
-  const IntVect& orientation = zone_VDF.orientation();
+  int nb_elem = domaine_VDF.domaine().nb_elem();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
+  const IntTab& Qdm = domaine_VDF.Qdm();
+  const IntVect& orientation = domaine_VDF.orientation();
 
-  int premiere_arete_mixte = zone_VDF.premiere_arete_mixte();
-  int premiere_arete_interne = zone_VDF.premiere_arete_interne();
-  int derniere_arete_mixte = premiere_arete_mixte + zone_VDF.nb_aretes_mixtes();
-  int derniere_arete_interne = premiere_arete_interne + zone_VDF.nb_aretes_internes();
+  int premiere_arete_mixte = domaine_VDF.premiere_arete_mixte();
+  int premiere_arete_interne = domaine_VDF.premiere_arete_interne();
+  int derniere_arete_mixte = premiere_arete_mixte + domaine_VDF.nb_aretes_mixtes();
+  int derniere_arete_interne = premiere_arete_interne + domaine_VDF.nb_aretes_internes();
   int elem;
   int num_arete;
   ArrOfInt element(4);
 
   int num0, num1, num2, num3, signe;
-  int ndeb = zone_VDF.premiere_arete_bord();
-  int nfin = ndeb + zone_VDF.nb_aretes_bord();
+  int ndeb = domaine_VDF.premiere_arete_bord();
+  int nfin = ndeb + domaine_VDF.nb_aretes_bord();
   int n_type;
 
   for (num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = zone_Cl_VDF.type_arete_bord(num_arete - ndeb);
+      n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
 
       if (n_type == 4) // arete de type periodicite
         {
@@ -868,8 +868,8 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
           i = orientation(num0);
           j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);            // dv/dx
-          double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);            // du/dy
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
+          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
           element[0] = face_voisins(num0, 0);
           element[1] = face_voisins(num0, 1);
           element[2] = face_voisins(num1, 0);
@@ -898,13 +898,13 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
           j = orientation(num2);
 
           double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);        // dv/dx
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
           double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
 
           if (n_type == 0 && contribution_paroi == 0)
             temp2 = 0;
           else
-            temp2 = -signe * (vitesse[num2] - vit_imp) / zone_VDF.dist_norm_bord(num1);
+            temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
           element[0] = face_voisins(num2, 0);
           element[1] = face_voisins(num2, 1);
@@ -927,12 +927,12 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
   //On parcourt les aretes coins
   ////////////////////////////////
 
-  ndeb = zone_VDF.premiere_arete_coin();
-  nfin = ndeb + zone_VDF.nb_aretes_coin();
+  ndeb = domaine_VDF.premiere_arete_coin();
+  nfin = ndeb + domaine_VDF.nb_aretes_coin();
 
   for (num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = zone_Cl_VDF.type_arete_coin(num_arete - ndeb);
+      n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
       //////////////////////////////////////////
       // Traitement des aretes coin perio-perio
       //////////////////////////////////////////
@@ -948,8 +948,8 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
           i = orientation(num0);
           j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);            // dv/dx
-          double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);            // du/dy
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
+          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
           element[0] = face_voisins(num0, 0);
           element[1] = face_voisins(num0, 1);
           element[2] = face_voisins(num1, 0);
@@ -984,13 +984,13 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
           j = orientation(num2);
 
           double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);        // dv/dx
+          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
           double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));             // vitesse tangentielle
 
           if (contribution_paroi == 0)
             temp2 = 0;
           else
-            temp2 = -signe * (vitesse[num2] - vit_imp) / zone_VDF.dist_norm_bord(num1);
+            temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
           element[0] = face_voisins(num2, 0);
           element[1] = face_voisins(num2, 1);
@@ -1016,7 +1016,7 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
   // vitesse[face] renvoie la vitesse NORMALE a la face
   //   for (num_arete = premiere_arete_bord ; num_arete<derniere_arete_bord ; num_arete ++)
   //     {
-  //       const IntVect& type_arete_bord = zone_Cl_VDF.type_arete_bord();
+  //       const IntVect& type_arete_bord = domaine_Cl_VDF.type_arete_bord();
 
   for (num_arete = premiere_arete_mixte; num_arete < derniere_arete_mixte; num_arete++)
     {
@@ -1029,8 +1029,8 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
       i = orientation(num0);
       j = orientation(num2);
 
-      double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);          // dv/dx
-      double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);          // du/dy
+      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);          // dv/dx
+      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);          // du/dy
 
       element[0] = face_voisins(num0, 0);
       element[1] = face_voisins(num0, 1);
@@ -1064,8 +1064,8 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
       i = orientation(num0);
       j = orientation(num2);
 
-      double temp1 = (vitesse[num1] - vitesse[num0]) / zone_VDF.dist_face_period(num0, num1, j);            // dv/dx
-      double temp2 = (vitesse[num3] - vitesse[num2]) / zone_VDF.dist_face_period(num2, num3, i);            // du/dy
+      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
+      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
       element[0] = face_voisins(num0, 0);
       element[1] = face_voisins(num0, 1);
       element[2] = face_voisins(num1, 0);
@@ -1090,7 +1090,7 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
     {
       for (int i = 0; i < dimension; i++)
         {
-          double temp1 = (vitesse[elem_faces(elem, i)] - vitesse[elem_faces(elem, i + dimension)]) / zone_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
+          double temp1 = (vitesse[elem_faces(elem, i)] - vitesse[elem_faces(elem, i + dimension)]) / domaine_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
           SMA_barre(elem) += 2.0 * temp1 * temp1;
         }
     }
@@ -1101,11 +1101,11 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
   return SMA_barre;
 }
 
-DoubleVect& Champ_Face_VDF::calcul_S_barre(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Zone_Cl_VDF& zone_Cl_VDF) const
+DoubleVect& Champ_Face_VDF::calcul_S_barre(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Domaine_Cl_VDF& domaine_Cl_VDF) const
 {
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const int nb_elem_tot = zone_VDF.nb_elem_tot();
-  const int nb_elem = zone_VDF.nb_elem();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  const int nb_elem_tot = domaine_VDF.nb_elem_tot();
+  const int nb_elem = domaine_VDF.nb_elem();
 
   int i, j;
   int elem;
@@ -1113,7 +1113,7 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre(const DoubleTab& vitesse, DoubleVect&
 
   DoubleTab duidxj(nb_elem_tot, dimension, dimension);
 
-  calcul_duidxj(vitesse, duidxj, zone_Cl_VDF);
+  calcul_duidxj(vitesse, duidxj, domaine_Cl_VDF);
 
   for (elem = 0; elem < nb_elem; elem++)
     {
@@ -1131,16 +1131,16 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre(const DoubleTab& vitesse, DoubleVect&
 
 }
 
-void Champ_Face_VDF::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, const Domaine_Cl_VDF& domaine_Cl_VDF)
 {
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const int nb_elem = zone_VDF.nb_elem();
-  const int nb_elem_tot = zone_VDF.nb_elem_tot();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  const int nb_elem = domaine_VDF.nb_elem();
+  const int nb_elem_tot = domaine_VDF.nb_elem_tot();
 
   DoubleTab gradient_elem(nb_elem_tot, dimension, dimension);
   gradient_elem = 0.;
 
-  calcul_duidxj(vitesse, gradient_elem, zone_Cl_VDF);
+  calcul_duidxj(vitesse, gradient_elem, domaine_Cl_VDF);
 
   for (int elem = 0; elem < nb_elem; elem++)
     {
@@ -1157,29 +1157,29 @@ void Champ_Face_VDF::calcul_grad_u(const DoubleTab& vitesse, DoubleTab& grad_u, 
 void Champ_Face_VDF::calculer_dscald_centre_element(DoubleTab& dscald) const
 {
   const DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = zone_vdf();
-  int nb_elem = zone_VDF.nb_elem();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  int nb_elem = domaine_VDF.nb_elem();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
 
   if (dimension == 2)
-    caldscaldcentelemdim2(dscald, val, zone_VDF, nb_elem, face_voisins, elem_faces);
+    caldscaldcentelemdim2(dscald, val, domaine_VDF, nb_elem, face_voisins, elem_faces);
   else if (dimension == 3)
-    caldscaldcentelemdim3(dscald, val, zone_VDF, nb_elem, face_voisins, elem_faces);
+    caldscaldcentelemdim3(dscald, val, domaine_VDF, nb_elem, face_voisins, elem_faces);
 }
 
 // Fonctions de calcul des composantes du tenseur GradU (derivees covariantes de la vitesse)
 // dans le repere des coordonnees cylindriques
-void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
+void Champ_Face_VDF::calculer_dercov_axi(const Domaine_Cl_VDF& domaine_Cl_VDF)
 {
-  const Zone_VDF& zone_VDF = zone_vdf();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
   const DoubleTab& inco = valeurs();
-  const IntVect& orientation = zone_VDF.orientation();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
-  const IntTab& Qdm = zone_VDF.Qdm();
-  const DoubleTab& xv = zone_VDF.xv();
-  const DoubleTab& xp = zone_VDF.xp();
-  const IntVect& type_arete_bord = zone_Cl_VDF.type_arete_bord();
+  const IntVect& orientation = domaine_VDF.orientation();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
+  const IntTab& Qdm = domaine_VDF.Qdm();
+  const DoubleTab& xv = domaine_VDF.xv();
+  const DoubleTab& xp = domaine_VDF.xp();
+  const IntVect& type_arete_bord = domaine_Cl_VDF.type_arete_bord();
 
   double d_teta, R;
   double deux_pi = M_PI * 2.0;
@@ -1188,7 +1188,7 @@ void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
 
   int fx0, fx1, fy0, fy1;
   int num_elem;
-  for (num_elem = 0; num_elem < zone_VDF.nb_elem(); num_elem++)
+  for (num_elem = 0; num_elem < domaine_VDF.nb_elem(); num_elem++)
     {
       fx0 = elem_faces(num_elem, 0);
       fx1 = elem_faces(num_elem, dimension);
@@ -1209,7 +1209,7 @@ void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
   if (dimension == 3)
     {
       int fz0, fz1;
-      for (num_elem = 0; num_elem < zone_VDF.nb_elem(); num_elem++)
+      for (num_elem = 0; num_elem < domaine_VDF.nb_elem(); num_elem++)
         {
           fz0 = elem_faces(num_elem, 2);
           fz1 = elem_faces(num_elem, 2 + dimension);
@@ -1231,8 +1231,8 @@ void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
   // Boucle sur les aretes bord
 
   int n_arete;
-  int ndeb = zone_VDF.premiere_arete_bord();
-  int nfin = ndeb + zone_VDF.nb_aretes_bord();
+  int ndeb = domaine_VDF.premiere_arete_bord();
+  int nfin = ndeb + domaine_VDF.nb_aretes_bord();
   int ori1, ori3;
   int fac1, fac2, fac3, fac4, signe;
   double dist3;
@@ -1258,8 +1258,8 @@ void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
             signe = Qdm(n_arete, 3);
             ori1 = orientation(fac1);
             ori3 = orientation(fac3);
-            int rang1 = fac1 - zone_VDF.premiere_face_bord();
-            int rang2 = fac2 - zone_VDF.premiere_face_bord();
+            int rang1 = fac1 - domaine_VDF.premiere_face_bord();
+            int rang2 = fac2 - domaine_VDF.premiere_face_bord();
             double vit_imp;
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE)
@@ -1370,8 +1370,8 @@ void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
     }
 
   // Boucle sur les aretes mixtes et internes
-  ndeb = zone_VDF.premiere_arete_mixte();
-  nfin = zone_VDF.nb_aretes();
+  ndeb = domaine_VDF.premiere_arete_mixte();
+  nfin = domaine_VDF.nb_aretes();
   for (n_arete = ndeb; n_arete < nfin; n_arete++)
     {
       fac1 = Qdm(n_arete, 0);
@@ -1416,22 +1416,22 @@ void Champ_Face_VDF::calculer_dercov_axi(const Zone_Cl_VDF& zone_Cl_VDF)
 /*           METHODES UTILES MAIS HORS CLASSE            */
 /* ***************************************************** */
 
-double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp, int face, int comp, const Zone_Cl_VDF& zclo)
+double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp, int face, int comp, const Domaine_Cl_VDF& zclo)
 {
-  const Zone_VDF& zone_vdf = zclo.zone_VDF();
+  const Domaine_VDF& domaine_vdf = zclo.domaine_VDF();
   int face_globale, face_locale;
 
-  face_globale = face + zone_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
-  const Zone_Cl_dis_base& zcl = zclo; //equation().zone_Cl_dis().valeur();
+  face_globale = face + domaine_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
+  const Domaine_Cl_dis_base& zcl = zclo; //equation().domaine_Cl_dis().valeur();
   // On recupere la CL associee a la face et le numero local de la face dans la frontiere.
-  //assert(equation().zone_Cl_dis().valeur()==zclo);
+  //assert(equation().domaine_Cl_dis().valeur()==zclo);
 
-  const Cond_lim_base& cl = (face < zone_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
+  const Cond_lim_base& cl = (face < domaine_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
 
-  const IntTab& face_voisins = zone_vdf.face_voisins();
-  const IntTab& elem_faces = zone_vdf.elem_faces();
+  const IntTab& face_voisins = domaine_vdf.face_voisins();
+  const IntTab& elem_faces = domaine_vdf.elem_faces();
   const DoubleVect& porosite = zclo.equation().milieu().porosite_face();
-  int ori = zone_vdf.orientation()(face_globale);
+  int ori = domaine_vdf.orientation()(face_globale);
 
   const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
 
@@ -1463,18 +1463,18 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
   return 0; // All other cases
 }
 
-double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, const Zone_Cl_VDF& zclo)
+double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, const Domaine_Cl_VDF& zclo)
 {
-  const Zone_VDF& zone_vdf = zclo.zone_VDF();
+  const Domaine_VDF& domaine_vdf = zclo.domaine_VDF();
   int face_globale, face_locale;
 
-  face_globale = face + zone_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
-  const Zone_Cl_dis_base& zcl = zclo; //equation().zone_Cl_dis().valeur();
+  face_globale = face + domaine_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
+  const Domaine_Cl_dis_base& zcl = zclo; //equation().domaine_Cl_dis().valeur();
   // On recupere la CL associee a la face et le numero local de la face dans la frontiere.
-  //assert(equation().zone_Cl_dis().valeur()==zclo);
+  //assert(equation().domaine_Cl_dis().valeur()==zclo);
 
-  const Cond_lim_base& cl = (face < zone_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
-  int ori = zone_vdf.orientation()(face_globale);
+  const Cond_lim_base& cl = (face < domaine_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
+  int ori = domaine_vdf.orientation()(face_globale);
   const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
   int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
 
@@ -1499,7 +1499,7 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, c
   return 0; // All other cases
 }
 
-double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, int comp2, const Zone_Cl_VDF& zclo)
+double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, int comp2, const Domaine_Cl_VDF& zclo)
 {
   Cerr << "Champ_Face_VDF::val_imp_face_bord(,,) exit" << finl;
   Process::exit();

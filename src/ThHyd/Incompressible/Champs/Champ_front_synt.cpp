@@ -17,7 +17,7 @@
 #include <Frontiere_dis_base.h>
 #include <Frontiere.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Fluide_base.h>
 #include <Champ_Uniforme.h>
 #include <Schema_Temps.h>

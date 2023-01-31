@@ -16,8 +16,8 @@
 #include <Champ_implementation_sommet.h>
 #include <Champ_base.h>
 #include <TRUSTTrav.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 
 DoubleVect& Champ_implementation_sommet::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {
@@ -80,13 +80,13 @@ DoubleVect& Champ_implementation_sommet::valeur_aux_elems_compo(const DoubleTab&
 
 DoubleTab Champ_implementation_sommet::valeur_aux_bords() const
 {
-  const Zone_VF& zone = get_zone_dis();
-  const IntTab& f_s = zone.face_sommets();
+  const Domaine_VF& domaine = get_domaine_dis();
+  const IntTab& f_s = domaine.face_sommets();
   const DoubleTab& val = le_champ().valeurs();
   int i, f, fb, s, ns, n, N = val.line_size();
-  DoubleTrav result(zone.xv_bord().dimension_tot(0), N);
-  for (f = 0; f < zone.nb_faces_tot(); f++)
-    if ((fb = zone.fbord(f)) >= 0)
+  DoubleTrav result(domaine.xv_bord().dimension_tot(0), N);
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
+    if ((fb = domaine.fbord(f)) >= 0)
       {
         for (ns = 0, i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
           for (ns++, n = 0; n < N; n++)
@@ -98,18 +98,18 @@ DoubleTab Champ_implementation_sommet::valeur_aux_bords() const
 
 DoubleTab& Champ_implementation_sommet::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone& zone = get_zone_geom();
-  positions.resize(zone.nb_som(), Objet_U::dimension);
-  positions = zone.les_sommets();
+  const Domaine& domaine = get_domaine_geom();
+  positions.resize(domaine.nb_som(), Objet_U::dimension);
+  positions = domaine.les_sommets();
   return positions;
 }
 
 int Champ_implementation_sommet::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
-  const Zone& zone = get_zone_geom();
-  positions.resize(zone.nb_som(), Objet_U::dimension);
-  positions = zone.les_sommets();
-  zone.chercher_elements(positions, polys);
+  const Domaine& domaine = get_domaine_geom();
+  positions.resize(domaine.nb_som(), Objet_U::dimension);
+  positions = domaine.les_sommets();
+  domaine.chercher_elements(positions, polys);
   return 1;
 }
 

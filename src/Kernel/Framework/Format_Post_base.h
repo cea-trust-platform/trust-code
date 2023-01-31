@@ -16,12 +16,12 @@
 #define Format_Post_base_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_dis_base.h>
+#include <Ref_Domaine_dis_base.h>
 #include <Champ_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 class Motcle;
-class Zone_dis;
+class Domaine_dis;
 class Param;
 
 /*! @brief Classe de base des formats de postraitements pour les champs (lata, med, lml, meshtv).
@@ -49,13 +49,13 @@ class Param;
 // int            axi                        : 1 si calcul axi, 0 sinon
 // int            est_le_premier_post         : 1 si premier postraitement pour un fichier d ecriture donne, 0 sinon
 // int            est_le_dernier_post  : 1 si dernier postraitement pour un fichier d ecriture donne, 0 sinon
-// Zone            dom                        : domaine de calcul
+// Domaine            dom                        : domaine de calcul
 // Nom                    id_domaine                : nom du domaine
-// Nom                   id_zone                : nom de la zone
+// Nom                   id_domaine                : nom de la domaine
 // IntVect           faces_som                : connectivites faces-sommets
 // IntVect           elem_faces                : connectivites elements-faces
 // int           nb_som                : nombre de sommets du domaine dom
-// int            nb_faces                : nombre de faces de la zone
+// int            nb_faces                : nombre de faces de la domaine
 
 // double            t_init                : temps initial du calcul
 // double            temps_courant          : temps courant du calcul
@@ -89,8 +89,8 @@ class Param;
 // format_post.preparer_post(id_domaine,est_le_premier_post,reprise,t_init)
 // format_post.completer_post(dom,axi,nature_champ,nb_compo,noms_compo,loc_post,id_champ_post)
 // format_post.ecrire_domaine(dom,est_le_premier_post)
-// format_post.ecrire_item_int("FACES",id_domaine,id_zone,"FACES","SOMMETS",faces_som,nb_som);
-// format_post.ecrire_item_int("ELEM_FACES",id_domaine,id_zone,"ELEMENTS","FACES",elem_faces,nb_faces);
+// format_post.ecrire_item_int("FACES",id_domaine,id_domaine,"FACES","SOMMETS",faces_som,nb_som);
+// format_post.ecrire_item_int("ELEM_FACES",id_domaine,id_domaine,"ELEMENTS","FACES",elem_faces,nb_faces);
 // format_post.ecrire_temps(temps_courant)
 // format_post.init_ecriture(temps_courant,temps_post,est_le_premier_post,dom)
 // format_post.ecrire_champ(dom,unites,noms_compo,ncomp,temps_champ,temps_courant,id_champ_post,id_domaine,loc_post,data)
@@ -109,30 +109,30 @@ public:
   virtual int initialize(const Nom& file_basename, const int format, const Nom& option_para);
   virtual int modify_file_basename(const Nom file_basename, const int a_faire, const double tinit);
   virtual int ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post);
-  virtual int completer_post(const Zone& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post);
+  virtual int completer_post(const Domaine& dom, const int axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post, const Nom& le_nom_champ_post);
 
   virtual int preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init);
   virtual int test_coherence(const int champs, const int stat, const double dt_ch, const double dt_stat);
 
-  virtual int init_ecriture(double temps_courant, double temps_post, int est_le_premier_postraitement_pour_nom_fich_, const Zone& domaine);
+  virtual int init_ecriture(double temps_courant, double temps_post, int est_le_premier_postraitement_pour_nom_fich_, const Domaine& domaine);
 
   virtual int finir_ecriture(double temps_courant);
   virtual int finir(const int est_le_dernier_post);
 
-  virtual int ecrire_domaine(const Zone& domaine,const int est_le_premier_post);
-  virtual int ecrire_domaine_dis(const Zone& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post);
+  virtual int ecrire_domaine(const Domaine& domaine,const int est_le_premier_post);
+  virtual int ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post);
   virtual int ecrire_temps(const double temps);
 
-  virtual int ecrire_champ(const Zone& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
+  virtual int ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
                            const Nom& localisation, const Nom& nature, const DoubleTab& data);
 
-  virtual int ecrire_champ2(const Zone& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
+  virtual int ecrire_champ2(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps_, const Nom& id_du_champ, const Nom& id_du_domaine,
                             const Nom& localisation, const Nom& nature, const DoubleTab& data, const DoubleTab& coord);
 
-  virtual int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_zone, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size);
+  virtual int ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation, const Nom& reference, const IntVect& data, const int reference_size);
 
   //Methode qui postraite les valeurs d un champ discret a un instant donne
-  void postraiter_debug_valeurs_un_instant(const Nom& nom_fich, const Zone& dom, const Zone_dis_base& zone_dis, double temps_champ, double temps_courant, const Nom& id_champ_post,
+  void postraiter_debug_valeurs_un_instant(const Nom& nom_fich, const Domaine& dom, const Domaine_dis_base& domaine_dis, double temps_champ, double temps_courant, const Nom& id_champ_post,
                                            const Nature_du_champ& nature_champ, const Noms& noms_compos, const Noms& unites, const Motcle& loc_post, const DoubleTab& data, int ncomp = -1, int axi = 0,
                                            int champ = 1, int stat = 0, double dt_ch = 1., double dt_stat = 1., int reprise = 0, int est_le_premier_post = 1, int est_le_dernier_post = 1,
                                            double t_init = 0., double temps_post = -2);

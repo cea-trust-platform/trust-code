@@ -18,9 +18,9 @@
 #define Force_Centrifuge_VDF_Face_Axi_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_VDF.h>
 #include <Source_base.h>
 
 
@@ -65,8 +65,8 @@ public:
 
 protected:
 
-  REF(Zone_VDF) le_dom_VDF;
-  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
   REF(Champ_Face_VDF) la_vitesse;
 
   IntTab elem_faces;
@@ -76,7 +76,7 @@ protected:
   DoubleVect volume_entrelaces;
   DoubleVect porosite_surf;
 
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };
 

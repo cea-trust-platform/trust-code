@@ -17,8 +17,8 @@
 #include <Champ_Don.h>
 #include <Champ_Fonc.h>
 #include <Motcle.h>
-#include <Zone_dis_base.h>
-#include <Zone.h>
+#include <Domaine_dis_base.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Discr_inst,"VF_inst",Discretisation_base);
 
@@ -33,7 +33,7 @@ Sortie& Discr_inst::printOn(Sortie& s) const
 }
 
 
-void Discr_inst::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
+void Discr_inst::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
                                    Nature_du_champ nature,
                                    const Noms& nom, const Noms& unite,
                                    int nb_comp, int nb_pas_dt, double temps,
@@ -48,7 +48,7 @@ void Discr_inst::discretiser_champ(const Motcle& directive, const Zone_dis_base&
  *
  */
 void Discr_inst::discretiser_champ(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, double temps,
@@ -65,7 +65,7 @@ void Discr_inst::discretiser_champ(
  *
  */
 void Discr_inst::discretiser_champ(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, double temps,
@@ -84,7 +84,7 @@ void Discr_inst::discretiser_champ(
  *
  */
 void Discr_inst::discretiser_champ_fonc_don(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, double temps,
@@ -106,7 +106,7 @@ void Discr_inst::discretiser_champ_fonc_don(
   Nom type;
   int rang = motcles.search(directive);
   //int default_nb_comp = 1;
-  const Zone& domaine=z.zone();
+  const Domaine& domaine=z.domaine();
   int nb_som_elem = domaine.nb_som_elem();
   int nb_ddl=-1;
   switch(rang)

@@ -44,14 +44,14 @@ void Source_Force_Tchen_base::dimensionner_blocs(matrices_t matrices, const tabs
   if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
 
   Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
   const IntTab& fcl = ch.fcl();
 
   /* stencil : diagonal par bloc pour les vitesses aux faces, puis chaque composante des vitesses aux elems */
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
-  int N = inco.line_size(), nf = zone.nb_faces();
+  int N = inco.line_size(), nf = domaine.nb_faces();
 
   /* faces */
   for (int f = 0; f < nf; f++)
@@ -72,14 +72,14 @@ void Source_Force_Tchen_base::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 {
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
-  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
-                   &rho   = equation().milieu().masse_volumique().passe(), &vf_dir = zone.volumes_entrelaces_dir();
+                   &rho   = equation().milieu().masse_volumique().passe(), &vf_dir = domaine.volumes_entrelaces_dir();
 
   double pas_tps = equation().probleme().schema_temps().pas_de_temps();
-  int N = inco.line_size(), nf = zone.nb_faces();
+  int N = inco.line_size(), nf = domaine.nb_faces();
 
   /* elements si aux */
   ajouter_blocs_aux(matrices, secmem);

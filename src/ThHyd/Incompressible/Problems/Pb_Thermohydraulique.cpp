@@ -133,15 +133,15 @@ void Pb_Thermohydraulique::associer_milieu_base(const Milieu_base& mil)
  * Le test se fait sur les conditions
  *     aux limites discretisees de chaque equation.
  *     Appel la fonction de librairie hors classe:
- *       tester_compatibilite_hydr_thermique(const Zone_Cl_dis&,const Zone_Cl_dis&)
+ *       tester_compatibilite_hydr_thermique(const Domaine_Cl_dis&,const Domaine_Cl_dis&)
  *
  * @return (int) code de retour propage
  */
 int Pb_Thermohydraulique::verifier()
 {
-  const Zone_Cl_dis& zone_Cl_hydr = eq_hydraulique.zone_Cl_dis();
-  const Zone_Cl_dis& zone_Cl_th = eq_thermique.zone_Cl_dis();
-  return tester_compatibilite_hydr_thermique(zone_Cl_hydr,zone_Cl_th);
+  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
+  const Domaine_Cl_dis& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
+  return tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
 }
 
 

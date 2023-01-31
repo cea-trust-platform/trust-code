@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tetraedriser_par_prisme.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Tetraedriser_par_prisme, "Tetraedriser_par_prisme", Triangulation_base);
 
@@ -29,7 +29,7 @@ Entree& Tetraedriser_par_prisme::readOn(Entree& is) { return Interprete::readOn(
  *
  * @param (Faces& faces) l'ensemble des faces a decouper
  */
-static void decoupe(Zone& dom, Faces& faces)
+static void decoupe(Domaine& dom, Faces& faces)
 {
   const DoubleTab& coord = dom.coord_sommets();
 
@@ -82,7 +82,7 @@ static void decoupe(Zone& dom, Faces& faces)
   sommets.ref(nouveaux);
 }
 
-/*! @brief Tetraedrise tous les elements d'une zone : transforme les elements goemetriques de la zone en tetraedres IDENTIQUES
+/*! @brief Tetraedrise tous les elements d'une domaine : transforme les elements goemetriques de la domaine en tetraedres IDENTIQUES
  *
  *     par la methode des prismes.
  *     Pour l'instant on ne sait tetraedriser que des Hexaedre.
@@ -90,16 +90,16 @@ static void decoupe(Zone& dom, Faces& faces)
  *     Les elements sont tetraedrises et tous les bords
  *     sont types en Triangle_3D.
  *
- * @param (Zone& zone) la zone dont on veut tetraedriser les elements
+ * @param (Domaine& domaine) la domaine dont on veut tetraedriser les elements
  * @throws on ne sait pas Tetraedriser par prisme les elements
  * geometriques de ce type
  */
-void Tetraedriser_par_prisme::trianguler(Zone& zone) const
+void Tetraedriser_par_prisme::trianguler(Domaine& domaine) const
 {
-  if (zone.type_elem()->que_suis_je() == "Hexaedre")
+  if (domaine.type_elem()->que_suis_je() == "Hexaedre")
     {
-      zone.typer("Tetraedre");
-      IntTab& les_elems = zone.les_elems();
+      domaine.typer("Tetraedre");
+      IntTab& les_elems = domaine.les_elems();
       int oldsz = les_elems.dimension(0);
       IntTab new_elems(6 * oldsz, 4);
       for (int i = 0; i < oldsz; i++)
@@ -122,57 +122,57 @@ void Tetraedriser_par_prisme::trianguler(Zone& zone) const
             new_elems(i + oldsz, 1) = i2;
             new_elems(i + oldsz, 2) = i4;
             new_elems(i + oldsz, 3) = i5;
-            mettre_a_jour_sous_zone(zone, i, i + oldsz, 1);
+            mettre_a_jour_sous_domaine(domaine, i, i + oldsz, 1);
 
             new_elems(i + 2 * oldsz, 0) = i1;
             new_elems(i + 2 * oldsz, 1) = i2;
             new_elems(i + 2 * oldsz, 2) = i3;
             new_elems(i + 2 * oldsz, 3) = i5;
-            mettre_a_jour_sous_zone(zone, i, i + 2 * oldsz, 1);
+            mettre_a_jour_sous_domaine(domaine, i, i + 2 * oldsz, 1);
 
             new_elems(i + 3 * oldsz, 0) = i2;
             new_elems(i + 3 * oldsz, 1) = i3;
             new_elems(i + 3 * oldsz, 2) = i5;
             new_elems(i + 3 * oldsz, 3) = i7;
-            mettre_a_jour_sous_zone(zone, i, i + 3 * oldsz, 1);
+            mettre_a_jour_sous_domaine(domaine, i, i + 3 * oldsz, 1);
 
             new_elems(i + 4 * oldsz, 0) = i2;
             new_elems(i + 4 * oldsz, 1) = i4;
             new_elems(i + 4 * oldsz, 2) = i5;
             new_elems(i + 4 * oldsz, 3) = i6;
-            mettre_a_jour_sous_zone(zone, i, i + 4 * oldsz, 1);
+            mettre_a_jour_sous_domaine(domaine, i, i + 4 * oldsz, 1);
 
             new_elems(i + 5 * oldsz, 0) = i2;
             new_elems(i + 5 * oldsz, 1) = i5;
             new_elems(i + 5 * oldsz, 2) = i6;
             new_elems(i + 5 * oldsz, 3) = i7;
-            mettre_a_jour_sous_zone(zone, i, i + 5 * oldsz, 1);
+            mettre_a_jour_sous_domaine(domaine, i, i + 5 * oldsz, 1);
           }
         }
       les_elems.ref(new_elems);
     }
   else
-    Cerr << "We do not yet know how to Tetraedriser_par_prisme the " << zone.type_elem()->que_suis_je() << "s" << finl;
+    Cerr << "We do not yet know how to Tetraedriser_par_prisme the " << domaine.type_elem()->que_suis_je() << "s" << finl;
 
-  for (auto &itr : zone.faces_bord())
+  for (auto &itr : domaine.faces_bord())
     {
       Faces& les_faces = itr.faces();
       les_faces.typer(Faces::triangle_3D);
-      decoupe(zone, les_faces);
+      decoupe(domaine, les_faces);
     }
 
-  for (auto &itr : zone.faces_raccord())
+  for (auto &itr : domaine.faces_raccord())
     {
       Faces& les_faces = itr->faces();
       les_faces.typer(Faces::triangle_3D);
-      decoupe(zone, les_faces);
+      decoupe(domaine, les_faces);
     }
 
-  for (auto &itr : zone.faces_int())
+  for (auto &itr : domaine.faces_int())
     {
       Faces& les_faces = itr.faces();
       les_faces.typer(Faces::triangle_3D);
-      decoupe(zone, les_faces);
+      decoupe(domaine, les_faces);
     }
 }
 

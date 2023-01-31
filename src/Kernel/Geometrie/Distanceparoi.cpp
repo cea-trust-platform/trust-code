@@ -59,7 +59,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
     }
 
 
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   Nom fichier = dom.le_nom();
   fichier += "_Wall_length.xyz";
 
@@ -71,7 +71,7 @@ Entree& Distanceparoi::interpreter_(Entree& is)
   //le_dom.creer_faces(les_faces);
 
   {
-    // bloc a factoriser avec Zone_VF.cpp :
+    // bloc a factoriser avec Domaine_VF.cpp :
     Type_Face type_face = dom.type_elem().type_face(0);
     les_faces.typer(type_face);
     les_faces.associer_domaine(dom);

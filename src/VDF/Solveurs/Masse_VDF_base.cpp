@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Masse_VDF_base.h>
-#include <Zone_Cl_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_Cl_VDF.h>
+#include <Domaine_VDF.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
@@ -101,12 +101,12 @@ void Masse_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
     }
 }
 
-void Masse_VDF_base::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
+void Masse_VDF_base::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  le_dom_VDF = ref_cast(Zone_VDF, le_dom_dis_base);
+  le_dom_VDF = ref_cast(Domaine_VDF, le_dom_dis_base);
 }
 
-void Masse_VDF_base::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
+void Masse_VDF_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, le_dom_Cl_dis_base);
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_dis_base);
 }

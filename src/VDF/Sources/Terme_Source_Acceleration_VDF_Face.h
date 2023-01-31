@@ -18,8 +18,8 @@
 #define Terme_Source_Acceleration_VDF_Face_included
 
 #include <Terme_Source_Acceleration.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Domaine_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
 
 /*! @brief Terme source d'acceleration specialise pour la discretisation VDF
  *
@@ -41,12 +41,12 @@ public:
 
 protected:
   const DoubleTab& calculer_vitesse_faces(DoubleTab& v_faces_stockage) const override;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 private:
   // References remplies par associer_champ_rho
-  REF(Zone_VDF)    le_dom_VDF_;
-  REF(Zone_Cl_VDF) le_dom_Cl_VDF_;
+  REF(Domaine_VDF)    le_dom_VDF_;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF_;
   // Reference remplie par associer_champ_rho() et utilisee par ajouter()
   // La reference peut rester nulle (monophasique).
   REF(Champ_base)  ref_rho_;

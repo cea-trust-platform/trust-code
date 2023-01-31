@@ -82,7 +82,7 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
 {
   if (le_champ_front.non_nul())
     {
-      const Equation_base& eq = zone_Cl_dis().equation();
+      const Equation_base& eq = domaine_Cl_dis().equation();
       const int nb_comp = le_champ_front.valeur().nb_comp();
 
       if ((que_suis_je() == "Frontiere_ouverte") || (que_suis_je() == "Frontiere_ouverte_rayo_semi_transp") || (que_suis_je() == "Frontiere_Ouverte_Rayo_transp")
@@ -122,7 +122,7 @@ int Neumann_sortie_libre::initialiser(double temps)
 {
   Cond_lim_base::initialiser(temps);
   assert(le_champ_ext.non_nul());
-  return le_champ_ext->initialiser(temps, zone_Cl_dis().equation().inconnue());
+  return le_champ_ext->initialiser(temps, domaine_Cl_dis().equation().inconnue());
 }
 
 void Neumann_sortie_libre::associer_fr_dis_base(const Frontiere_dis_base& fr)

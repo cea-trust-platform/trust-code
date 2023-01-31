@@ -26,7 +26,7 @@ class VEF_1D : public VEF_discretisation
 
 public :
 
-  void vitesse(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
+  void vitesse(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const;
 
 };
 

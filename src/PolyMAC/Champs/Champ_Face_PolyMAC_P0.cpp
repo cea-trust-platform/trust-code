@@ -14,12 +14,12 @@
 *****************************************************************************/
 
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 #include <Champ_Uniforme.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
@@ -47,9 +47,9 @@ int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
   //
   // je suis tout de meme etonne du code utilise dans
   // Champ_Fonc_P0_base::fixer_nb_valeurs_nodales()
-  // pour recuperer la zone discrete...
+  // pour recuperer la domaine discrete...
 
-  assert(n == zone_PolyMAC_P0().nb_faces() || n < 0);
+  assert(n == domaine_PolyMAC_P0().nb_faces() || n < 0);
 
   // Probleme: nb_comp vaut dimension mais on ne veut qu'une dimension !!!
   // HACK :
@@ -57,7 +57,7 @@ int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
   if(nb_compo_ != 1) nb_compo_ /= dimension;
 
   /* variables : valeurs normales aux faces, puis valeurs aux elements par blocs -> pour que line_size() marche */
-  creer_tableau_distribue(zone_PolyMAC_P0().md_vector_faces());
+  creer_tableau_distribue(domaine_PolyMAC_P0().md_vector_faces());
   nb_compo_ = old_nb_compo;
   return n;
 }
@@ -68,22 +68,22 @@ void Champ_Face_PolyMAC_P0::init_auxiliary_variables()
     {
       DoubleTab& vals = futur(n);
       vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
-      vals.resize_dim0(zone_PolyMAC_P0().mdv_ch_face.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
-      vals.set_md_vector(zone_PolyMAC_P0().mdv_ch_face); //...et on remet le bon MD_Vector
+      vals.resize_dim0(domaine_PolyMAC_P0().mdv_ch_face.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
+      vals.set_md_vector(domaine_PolyMAC_P0().mdv_ch_face); //...et on remet le bon MD_Vector
       update_ve(vals);
     }
 }
 
 Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 {
-  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-  const DoubleVect& fs = zone.face_surfaces();
-  const DoubleTab& nf = zone.face_normales(), &xv = zone.xv();
+  const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+  const DoubleVect& fs = domaine.face_surfaces();
+  const DoubleTab& nf = domaine.face_normales(), &xv = domaine.xv();
   DoubleTab& val = valeurs(), eval;
 
   if (sub_type(Champ_Fonc_reprise, ch))
     {
-      for (int num_face=0; num_face<zone.nb_faces(); num_face++)
+      for (int num_face=0; num_face<domaine.nb_faces(); num_face++)
         val(num_face) = ch.valeurs()[num_face];
     }
   else
@@ -92,7 +92,7 @@ Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 
       if (unif) eval = ch.valeurs();
       else eval.resize(val.dimension_tot(0), N * D), ch.valeur_aux(xv,eval);
-      for (f = 0; f < zone.nb_faces_tot(); f++)
+      for (f = 0; f < domaine.nb_faces_tot(); f++)
         for (d = 0; d < D; d++)
           for (n = 0; n < N; n++)
             val(f, n) += eval(unif ? 0 : f, N * d + n) * nf(f, d) / fs(f);
@@ -107,12 +107,12 @@ Champ_base& Champ_Face_PolyMAC_P0::affecter_(const Champ_base& ch)
 
 void Champ_Face_PolyMAC_P0::update_ve(DoubleTab& val) const
 {
-  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-  if (valeurs().get_md_vector() != zone.mdv_ch_face) return; //pas de variables auxiliaires -> rien a faire
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL , *pe = pf ? &equation().milieu().porosite_elem() : NULL;
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
-  int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return; //pas de variables auxiliaires -> rien a faire
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), *pf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL , *pe = pf ? &equation().milieu().porosite_elem() : NULL;
+  const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
+  int e, f, j, d, D = dimension, n, N = val.line_size(), ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   double fac;
   for (e = 0; e < ne_tot; e++)
     {
@@ -130,35 +130,35 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
   Process::exit();
 #else
-  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-  if (ve2d.dimension(0) || valeurs().get_md_vector() != zone.mdv_ch_face) return; //deja initialise ou pas de variables auxiliaires
-  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
-  const DoubleTab& xp = zone.xp(), &xv = zone.xv(), &nf = zone.face_normales();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &e_s = zone.zone().les_elems(), &f_s = zone.face_sommets();
+  const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+  if (ve2d.dimension(0) || valeurs().get_md_vector() != domaine.mdv_ch_face) return; //deja initialise ou pas de variables auxiliaires
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
+  const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &nf = domaine.face_normales();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &e_s = domaine.domaine().les_elems(), &f_s = domaine.face_sommets();
   int i, j, jb, k, e, f, s, d, db, D = dimension, nc, nl = D * (D + 1), nw, infoo=0, un = 1, rank;
   double eps = 1e-8, fac;
   const double *xf;
   init_fcl();
 
   //position des points aux faces de bord : CG si interne ou Dirichlet, projection si Neumann
-  DoubleTrav xfb(zone.nb_faces_tot(), D), ve2, ve2i, A, B, P, W(1);
+  DoubleTrav xfb(domaine.nb_faces_tot(), D), ve2, ve2i, A, B, P, W(1);
   IntTrav pvt;
   ve2.set_smart_resize(1), A.set_smart_resize(1), B.set_smart_resize(1), P.set_smart_resize(1), W.set_smart_resize(1), pvt.set_smart_resize(1);
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2) //Neumann / Symetrie
       {
-        double scal = zone.dot(&xv(f, 0), &nf(f, 0), &xp(e = f_e(f, 0), 0)) / (fs(f) * fs(f));
+        double scal = domaine.dot(&xv(f, 0), &nf(f, 0), &xp(e = f_e(f, 0), 0)) / (fs(f) * fs(f));
         for (d = 0; d < D; d++) xfb(f, d) = xp(e, d) + scal * nf(f, d);
       }
     else if (fcl_(f, 0))
       for (d = 0; d < D; d++) xfb(f, d) = xv(f, d); //Dirichlet
 
   /* connectivites som-elem et elem-elem */
-  std::vector<std::set<int>> s_f(zone.zone().nb_som()), e_s_f(zone.nb_elem());
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  std::vector<std::set<int>> s_f(domaine.domaine().nb_som()), e_s_f(domaine.nb_elem());
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-      if (s < zone.zone().nb_som()) s_f[s].insert(f);
-  for (e = 0; e < zone.nb_elem(); e++)
+      if (s < domaine.domaine().nb_som()) s_f[s].insert(f);
+  for (e = 0; e < domaine.nb_elem(); e++)
     for (i = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++)
       for (auto &&fa : s_f[s]) e_s_f[e].insert(fa);
 
@@ -166,7 +166,7 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
   ve2c.set_smart_resize(1), ve2bc.set_smart_resize(1);
   std::map<std::array<int, 2>, int> v_i; // v_i[{f, -1 (interne) ou composante }] = indice
   std::vector<std::array<int, 2>> i_v; // v_i[i_v[f]] = f
-  for (e = 0; e < zone.nb_elem(); e++, v_i.clear(), i_v.clear())
+  for (e = 0; e < domaine.nb_elem(); e++, v_i.clear(), i_v.clear())
     {
       /* stencil : faces de l'element et de ses voisins par som-elem + toutes composantes a ses faces de bord */
       for (auto &&fa : e_s_f[e])
@@ -176,12 +176,12 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
           for (d = 0; d < D; d++)
             v_i[ {{f, d }}] = (int)i_v.size(), i_v.push_back({{f, d}});
 
-      /* coeffs de l'interpolation d'ordre 1, ponderations (comme dans Zone_PolyMAC_P0::{e,f}grad)  */
+      /* coeffs de l'interpolation d'ordre 1, ponderations (comme dans Domaine_PolyMAC_P0::{e,f}grad)  */
       ve2.resize(nc = (int)i_v.size(), D), A.resize(nc, nl), B.resize(nc), P.resize(nc), pvt.resize(nc);
       for (ve2 = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (fac = (e == f_e(f, 0) ? 1 : -1) * fs(f) / ve(e), j = v_i.at({{ f, -1 }}), d = 0; d < D; d++)
       ve2(j, d) += fac * (xv(f, d) - xp(e, d));
-      for (i = 0; i < nc; i++) f = i_v[i][0], xf = i_v[i][1] < 0 ? &xv(f, 0) : &xfb(f, 0), P(i) = 1. / sqrt(zone.dot(xf, xf, &xp(e, 0), &xp(e, 0)));
+      for (i = 0; i < nc; i++) f = i_v[i][0], xf = i_v[i][1] < 0 ? &xv(f, 0) : &xfb(f, 0), P(i) = 1. / sqrt(domaine.dot(xf, xf, &xp(e, 0), &xp(e, 0)));
 
       /* par composante : correction pour etre d'ordre 2 */
       for (d = 0; d < D; d++)
@@ -232,13 +232,13 @@ void Champ_Face_PolyMAC_P0::init_ve2() const
 /* met en coherence les composantes aux elements avec les vitesses aux faces : interpole sur phi * v */
 void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 {
-  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-  if (valeurs().get_md_vector() != zone.mdv_ch_face) return; //pas de variables auxiliaires -> on sort
-  const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
-  int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = zone.nb_faces_tot();
+  const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return; //pas de variables auxiliaires -> on sort
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
+  int i, j, e, ed, d, D = dimension, n, N = val.line_size(), nf_tot = domaine.nb_faces_tot();
   init_ve2(), init_fcl();
 
-  for (e = 0, ed = 0, i = nf_tot; e < zone.nb_elem(); e++)
+  for (e = 0, ed = 0, i = nf_tot; e < domaine.nb_elem(); e++)
     for (d = 0; d < D; d++, ed++, i++)
       for (n = 0; n < N; n++)
         {
@@ -258,7 +258,7 @@ void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 
 DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
-  if (valeurs().get_md_vector() != zone_PolyMAC_P0().mdv_ch_face)
+  if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face)
     return Champ_Face_PolyMAC::valeur_aux_elems_(valeurs(), positions, les_polys, val_elem);
   else
     return valeur_aux_elems_(le_champ().valeurs(), positions, les_polys, val_elem);
@@ -266,7 +266,7 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, c
 
 DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
-  if (valeurs().get_md_vector() != zone_PolyMAC_P0().mdv_ch_face)
+  if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face)
     return Champ_Face_PolyMAC::valeur_aux_elems_(passe(), positions, les_polys, val_elem);
   else
     return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
@@ -274,8 +274,8 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_passe(const DoubleTab& positi
 
 DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
-  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-  int nb_compo=le_champ().nb_comp(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = val_face.line_size();
+  const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+  int nb_compo=le_champ().nb_comp(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = val_face.line_size();
 
   // XXX : TODO Check this assert (positions and not val)
   assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
@@ -296,7 +296,7 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,c
     }
 
   for (int p = 0, e; p < les_polys.size(); p++)
-    for (e = les_polys(p), d = 0; e < zone.nb_elem() && d < D; d++)
+    for (e = les_polys(p), d = 0; e < domaine.nb_elem() && d < D; d++)
       for (n = 0; n < N; n++)
         val_elem(p, N * d + n) = val_face(nf_tot + D * e + d, n);
   return val_elem;
@@ -304,8 +304,8 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,c
 
 DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
-  if (valeurs().get_md_vector() != zone_PolyMAC_P0().mdv_ch_face) return Champ_Face_PolyMAC::valeur_aux_elems_compo(positions, polys, val, ncomp);
-  int nf_tot = zone_PolyMAC_P0().nb_faces_tot(), D = dimension, N = valeurs().line_size();
+  if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face) return Champ_Face_PolyMAC::valeur_aux_elems_compo(positions, polys, val, ncomp);
+  int nf_tot = domaine_PolyMAC_P0().nb_faces_tot(), D = dimension, N = valeurs().line_size();
   assert(val.size() == polys.size());
 
   DoubleTab vfe(valeurs());
@@ -319,12 +319,12 @@ DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& posit
 DoubleTab& Champ_Face_PolyMAC_P0::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   assert(distant==0);
-  const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-  if (valeurs().get_md_vector() != zone.mdv_ch_face) return Champ_Face_PolyMAC::trace(fr, x, t, distant);
+  const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return Champ_Face_PolyMAC::trace(fr, x, t, distant);
   const bool vectoriel = (le_champ().nb_comp() > 1);
-  const int dim = vectoriel ? dimension : 1, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
+  const int dim = vectoriel ? dimension : 1, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);
-  const IntTab& face_voisins = zone.face_voisins();
+  const IntTab& face_voisins = domaine.face_voisins();
   const DoubleTab& val = valeurs(t);
 
   for (int i = 0; i < fr_vf.nb_faces(); i++)

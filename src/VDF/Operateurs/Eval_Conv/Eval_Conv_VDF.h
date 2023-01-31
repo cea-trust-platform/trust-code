@@ -49,7 +49,7 @@ public:
   inline double get_surface(int face) const { return surface(face); }
   inline double get_porosite(int face) const { return porosite(face); }
   inline const DoubleTab& get_tab_vitesse() const { return dt_vitesse; }
-  inline const Zone_Cl_VDF& get_la_zcl() const { return la_zcl.valeur(); }
+  inline const Domaine_Cl_VDF& get_la_zcl() const { return la_zcl.valeur(); }
 
 protected:
   REF(Champ_Face_VDF) vitesse_;

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Terme_Source_Qdm_lambdaup_VEF_Face.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
@@ -115,7 +115,7 @@ void Terme_Source_Qdm_lambdaup_VEF_Face::associer_pb(const Probleme_base& pb)
       if  (sub_type(Navier_Stokes_std,eqn))
         {
           la_vitesse = ref_cast(Champ_P1NC,eqn.inconnue().valeur());
-          associer_domaines(eqn.zone_dis(),eqn.zone_Cl_dis());
+          associer_domaines(eqn.domaine_dis(),eqn.domaine_Cl_dis());
           i = nb_eqn;
           ok = 1;
         }
@@ -131,24 +131,24 @@ void Terme_Source_Qdm_lambdaup_VEF_Face::associer_pb(const Probleme_base& pb)
     }
 }
 
-void Terme_Source_Qdm_lambdaup_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                           const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Qdm_lambdaup_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 
 DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
 {
   static double rapport_old=1.;
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const DoubleVect& volumes_entrelaces=zone_VEF.volumes_entrelaces();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const DoubleVect& volumes_entrelaces=domaine_VEF.volumes_entrelaces();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vitesse=la_vitesse.valeur().valeurs();
   DoubleTab ubar(vitesse);
   DoubleTab uprime(vitesse);
-  const int nb_faces = zone_VEF.nb_faces();
+  const int nb_faces = domaine_VEF.nb_faces();
   int face, k;
 
   int nb_comp = resu.line_size();
@@ -204,8 +204,8 @@ void Terme_Source_Qdm_lambdaup_VEF_Face::mettre_a_jour(double temps)
 
 double Terme_Source_Qdm_lambdaup_VEF_Face::norme_H1(const DoubleTab& vitesse) const
 {
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const Zone& zone = zone_VEF.zone();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Domaine& domaine = domaine_VEF.domaine();
 
   double dnorme_H1,norme_H1_comp,int_grad_elem,norme_grad_elem;
   int face_globale;
@@ -221,25 +221,25 @@ double Terme_Source_Qdm_lambdaup_VEF_Face::norme_H1(const DoubleTab& vitesse) co
   for (int composante=0; composante<vitesse.line_size(); composante++)
     {
       norme_H1_comp=0.; //pour eviter les accumulations
-      for (int K=0; K<zone.nb_elem(); K++) //boucle sur les elements
+      for (int K=0; K<domaine.nb_elem(); K++) //boucle sur les elements
         {
           norme_grad_elem=0.; //pour eviter les accumulations
           for (int i=0; i<dimension; i++) //boucle sur la dimension du pb
             {
               int_grad_elem=0.; //pour eviter les accumulations
-              for (int face=0; face<zone.nb_faces_elem(); face++) //boucle sur les faces d'un "K"
+              for (int face=0; face<domaine.nb_faces_elem(); face++) //boucle sur les faces d'un "K"
                 {
-                  face_globale = zone_VEF.elem_faces(K,face);
+                  face_globale = domaine_VEF.elem_faces(K,face);
 
                   int_grad_elem += vitesse(face_globale,composante)*
-                                   zone_VEF.face_normales(face_globale,i)*
-                                   zone_VEF.oriente_normale(face_globale,K);
+                                   domaine_VEF.face_normales(face_globale,i)*
+                                   domaine_VEF.oriente_normale(face_globale,K);
                 } //fin du for sur "face"
 
               norme_grad_elem += int_grad_elem*int_grad_elem;
             } //fin du for sur "i"
 
-          norme_H1_comp += norme_grad_elem/zone_VEF.volumes(K);
+          norme_H1_comp += norme_grad_elem/domaine_VEF.volumes(K);
         } //fin du for sur "K"
 
       dnorme_H1 += norme_H1_comp;
@@ -257,9 +257,9 @@ double Terme_Source_Qdm_lambdaup_VEF_Face::norme_L2_H1(const DoubleTab& u) const
 
 double Terme_Source_Qdm_lambdaup_VEF_Face::norme_L2(const DoubleTab& u) const
 {
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const DoubleVect& volumes = zone_VEF.volumes_entrelaces();
-  const int nb_faces = zone_VEF.nb_faces();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const DoubleVect& volumes = domaine_VEF.volumes_entrelaces();
+  const int nb_faces = domaine_VEF.nb_faces();
 
   int i=0;
   double norme =0;

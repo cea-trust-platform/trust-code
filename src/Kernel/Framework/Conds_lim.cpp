@@ -17,7 +17,7 @@
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
 #include <Conds_lim.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Conds_lim,"Conds_lim",VECT(Cond_lim));
 
@@ -28,7 +28,7 @@ Entree& Conds_lim::readOn(Entree& s ) { return s ; }
 /*! @brief Appel Cond_lim::completer() sur chaque condition aux llimites du vecteur.
  *
  */
-void Conds_lim::completer(const Zone_dis& z)
+void Conds_lim::completer(const Domaine_dis& z)
 {
   if (!size()) return; //rien a faire
   // Completer les CL.
@@ -37,10 +37,10 @@ void Conds_lim::completer(const Zone_dis& z)
   // WEC : Fixer le nombre de valeurs temporelles des champ_front
   // Cela pourrait etre fait dans Cond_lim_base::completer(),
   // mais il faudrait retoucher a plein de classes derivees...
-  int nb_cases = (*this)[0]->zone_Cl_dis().equation().schema_temps().nb_valeurs_temporelles();
+  int nb_cases = (*this)[0]->domaine_Cl_dis().equation().schema_temps().nb_valeurs_temporelles();
 
   for (auto& itr : *this) itr->fixer_nb_valeurs_temporelles(nb_cases);
 
-  Zone& dom=(*this)[0].frontiere_dis().frontiere().zone();
+  Domaine& dom=(*this)[0].frontiere_dis().frontiere().domaine();
   dom.construire_renum_som_perio(*this, z);
 }

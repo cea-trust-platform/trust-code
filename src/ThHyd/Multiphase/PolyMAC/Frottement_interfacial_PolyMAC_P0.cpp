@@ -27,11 +27,11 @@ Entree& Frottement_interfacial_PolyMAC_P0::readOn(Entree& is) { return Source_Fr
 void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs_aux(IntTrav& stencil) const
 {
   const DoubleTab& inco = ref_cast(Champ_Face_base, equation().inconnue().valeur()).valeurs();
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
-  int i, j, e, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = zone.nb_faces_tot();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  int i, j, e, k, l, N = inco.line_size(), d, db, D = dimension, nf_tot = domaine.nb_faces_tot();
 
   /* elements */
-  for (e = 0, i = nf_tot; e < zone.nb_elem_tot(); e++)
+  for (e = 0, i = nf_tot; e < domaine.nb_elem_tot(); e++)
     for (d = 0; d < D; d++, i++)
       for (db = 0, j = nf_tot + D * e; db < D; db++, j++)
         for (k = 0; k < N; k++)
@@ -42,10 +42,10 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
-  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &dh_e = equation().milieu().diametre_hydraulique_elem();
-  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = zone.volumes_entrelaces_dir(),
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, equation().domaine_dis().valeur());
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &dh_e = equation().milieu().diametre_hydraulique_elem();
+  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, equation()).pression().passe(),
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
@@ -55,14 +55,14 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
 
   DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr ;
 
-  int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(),
+  int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot(),
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
   DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), ddv(N, N, 4), ddv_c(4), d_bulles_l(N), coeff(N, N, 2); //arguments pour coeff
   double dh;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
   /* faces */
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     if (fcl(f, 0) < 2)
       {
         for (a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, dh = 0, sigma_l = 0, dv = dv_min, ddv = 0, d_bulles_l=0, c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
@@ -109,7 +109,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
       }
 
   /* elements */
-  for (e = 0; e < zone.nb_elem_tot(); e++)
+  for (e = 0; e < domaine.nb_elem_tot(); e++)
     {
       /* arguments de coeff */
       for (n = 0; n < N; n++)

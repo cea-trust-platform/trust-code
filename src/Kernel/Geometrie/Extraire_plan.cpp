@@ -18,10 +18,10 @@
 #include <Extraire_plan.h>
 #include <Equation_base.h>
 #include <NettoieNoeuds.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <EChaine.h>
 #include <SChaine.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable(Extraire_plan,"Extraire_plan",Interprete_geometrique_base);
@@ -155,7 +155,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       return is;
     }
 
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   // on recupere le pb
   if(! sub_type(Probleme_base, objet(nom_pb)))
     {
@@ -164,10 +164,10 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       exit();
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().valeur());
-  dom.les_sommets()=zone_vf.zone().les_sommets();
+  const Domaine_VF& domaine_vf=ref_cast(Domaine_VF,pb.domaine_dis().valeur());
+  dom.les_sommets()=domaine_vf.domaine().les_sommets();
   const DoubleTab& coord=dom.les_sommets();
-  const Nom& type_elem=zone_vf.zone().type_elem().valeur().que_suis_je();
+  const Nom& type_elem=domaine_vf.domaine().type_elem().valeur().que_suis_je();
   if (type_elem==Motcle("Tetraedre"))
     dom.typer("Triangle");
   else
@@ -176,16 +176,16 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       exit();
     }
 
-  // creation d'une zone pipo pour pouvoir chercher les faces
-  Zone zone_test;
+  // creation d'une domaine pipo pour pouvoir chercher les faces
+  Domaine domaine_test;
   ArrOfDouble normal(3);
   {
     if (triangle)
-      zone_test.typer("Prisme");
+      domaine_test.typer("Prisme");
     else
-      zone_test.typer("Hexaedre_vef");
+      domaine_test.typer("Hexaedre_vef");
 
-    DoubleTab& somm_hexa=zone_test.les_sommets();
+    DoubleTab& somm_hexa=domaine_test.les_sommets();
     int nb_som=4;
     if (triangle) nb_som=3;
     somm_hexa.resize(nb_som*2,3);
@@ -209,7 +209,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
           somm_hexa(t,dir)=somm_hexa(t,dir)-d_epaisseur*normal[dir];
           somm_hexa(nb_som+t,dir)=somm_hexa(nb_som+t,dir)+d_epaisseur*normal[dir];
         }
-    IntTab& elem_test=zone_test.les_elems();
+    IntTab& elem_test=domaine_test.les_elems();
     elem_test.resize(1,nb_som*2);
     for (int s=0; s<nb_som*2; s++) elem_test(0,s)=s;
     /*
@@ -217,18 +217,18 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       es<<test;
     */
   }
-  const DoubleTab& xv =zone_vf.xv();
+  const DoubleTab& xv =domaine_vf.xv();
 
-  int nbfaces=zone_vf.nb_faces();
+  int nbfaces=domaine_vf.nb_faces();
 
   ArrOfInt marq(nbfaces);
   // on marque les joints
-  //const Joints& joints=zone_vf.face_joints();
-  int nbjoints=zone_vf.nb_joints();
+  //const Joints& joints=domaine_vf.face_joints();
+  int nbjoints=domaine_vf.nb_joints();
 
   for(int njoint=0; njoint<nbjoints; njoint++)
     {
-      const Joint& joint_temp = zone_vf.joint(njoint);
+      const Joint& joint_temp = domaine_vf.joint(njoint);
       int pe_voisin=joint_temp.PEvoisin();
       if (pe_voisin<me())
         {
@@ -245,7 +245,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
 
   for (int fac=0; fac<nbfaces; fac++)
     {
-      if (zone_test.chercher_elements(xv(fac,0),xv(fac,1),xv(fac,2))==0)
+      if (domaine_test.chercher_elements(xv(fac,0),xv(fac,1),xv(fac,2))==0)
         if (marq[fac]!=-1)
           {
             // tester si item_commun....
@@ -257,7 +257,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
   Cerr<<"Number of elements of the new domain "<<nb_t<<finl;
   IntTab& les_elems=dom.les_elems();
   les_elems.resize(nb_t,3);
-  const IntTab& face_sommets=zone_vf.face_sommets();
+  const IntTab& face_sommets=domaine_vf.face_sommets();
   int nb=0;
   for (int fac=0; fac<nbfaces; fac++)
     if (marq[fac]==1)

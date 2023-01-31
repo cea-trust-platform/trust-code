@@ -19,7 +19,7 @@
 #include <Champ_Uniforme.h>
 #include <Loi_Etat_base.h>
 #include <Probleme_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Debog.h>
 
 Implemente_base_sans_constructeur(Loi_Etat_base,"Loi_Etat_base",Objet_U);
@@ -187,7 +187,7 @@ void Loi_Etat_base::calculer_nu()
     }
   else // VEF
     {
-      const IntTab& elem_faces=ref_cast(Zone_VF,le_fluide->vitesse().zone_dis_base()).elem_faces();
+      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
       double rhoelem;
       int face, nfe = elem_faces.line_size();
       if (sub_type(Champ_Uniforme,mu.valeur()))

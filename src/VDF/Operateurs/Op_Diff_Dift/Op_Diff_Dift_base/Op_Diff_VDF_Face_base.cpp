@@ -29,7 +29,7 @@ void Op_Diff_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
-  Op_VDF_Face::dimensionner(iter->zone(), iter->zone_Cl(), mat2);
+  Op_VDF_Face::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 
 }
@@ -46,9 +46,9 @@ void Op_Diff_VDF_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   statistiques().end_count(diffusion_counter_);
 }
 
-double Op_Diff_VDF_Face_base::calculer_dt_stab() const { return Op_Diff_VDF_Face_base::calculer_dt_stab(iter->zone()); }
+double Op_Diff_VDF_Face_base::calculer_dt_stab() const { return Op_Diff_VDF_Face_base::calculer_dt_stab(iter->domaine()); }
 
-double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
+double Op_Diff_VDF_Face_base::calculer_dt_stab(const Domaine_VDF& domaine_VDF) const
 {
   // Calcul du pas de temps de stabilite :
   //
@@ -70,14 +70,14 @@ double Op_Diff_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
   const double Cdiffu = sub_type(Champ_Uniforme, ch_diffu);
 
   // Si la diffusivite est variable, ce doit etre un champ aux elements.
-  assert(Cdiffu || diffu.size() == diffu.line_size() * zone_VDF.nb_elem());
-  const int nb_elem = zone_VDF.nb_elem();
+  assert(Cdiffu || diffu.size() == diffu.line_size() * domaine_VDF.nb_elem());
+  const int nb_elem = domaine_VDF.nb_elem();
   for (int elem = 0; elem < nb_elem; elem++)
     {
       double diflo = 0.;
       for (int i = 0; i < dimension; i++)
         {
-          const double h = zone_VDF.dim_elem(elem, i);
+          const double h = domaine_VDF.dim_elem(elem, i);
           diflo += 1. / (h * h);
         }
       const int k = Cdiffu ? 0 : elem;

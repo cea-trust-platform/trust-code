@@ -21,7 +21,7 @@
 
 class Milieu_base;
 class Front_VF;
-class Zone_VDF;
+class Domaine_VDF;
 class Faces;
 class Param;
 
@@ -76,7 +76,7 @@ protected:
   void calculer_Vitesse();
   void calculer_Tfluide();
   void calculer_h_mon_pb(DoubleTab&);
-  void calculer_h_solide(DoubleTab&, const Equation_base&, const Zone_VDF&, const Front_VF&, const Milieu_base&);
+  void calculer_h_solide(DoubleTab&, const Equation_base&, const Domaine_VDF&, const Front_VF&, const Milieu_base&);
   void init_tab_echange();
 
   IntVect correspondance_solide_fluide;

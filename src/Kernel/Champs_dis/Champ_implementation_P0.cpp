@@ -19,8 +19,8 @@
 #include <Champ_Don_Fonc_txyz.h>
 #include <Champ_Uniforme.h>
 #include <Champ_base.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 
 DoubleVect& Champ_implementation_P0::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {
@@ -112,16 +112,16 @@ DoubleVect& Champ_implementation_P0::valeur_aux_elems_compo(const DoubleTab& pos
 
 DoubleTab& Champ_implementation_P0::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone& zone = get_zone_geom();
-  positions.resize(zone.nb_elem(), Objet_U::dimension);
-  zone.calculer_centres_gravite(positions);
+  const Domaine& domaine = get_domaine_geom();
+  positions.resize(domaine.nb_elem(), Objet_U::dimension);
+  domaine.calculer_centres_gravite(positions);
   return positions;
 }
 
 int Champ_implementation_P0::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
-  const Zone& zone = get_zone_geom();
-  int nb_elem = zone.nb_elem();
+  const Domaine& domaine = get_domaine_geom();
+  int nb_elem = domaine.nb_elem();
   polys.resize(nb_elem);
   remplir_coord_noeuds(positions);
   for (int i = 0; i < nb_elem; i++) polys(i) = i;
@@ -134,10 +134,10 @@ DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& result) c
   int nb_components = ch_base.nb_comp();
   const DoubleTab& values = ch_base.valeurs();
 
-  const Zone& zone = get_zone_geom();
-  int nb_cells = zone.nb_elem_tot();
-  int nb_nodes = zone.nb_som();
-  int nb_nodes_per_cell = zone.nb_som_elem();
+  const Domaine& domaine = get_domaine_geom();
+  int nb_cells = domaine.nb_elem_tot();
+  int nb_nodes = domaine.nb_som();
+  int nb_nodes_per_cell = domaine.nb_som_elem();
 
   ArrOfInt count(nb_nodes);
 
@@ -152,7 +152,7 @@ DoubleTab& Champ_implementation_P0::valeur_aux_sommets_impl(DoubleTab& result) c
   for (int i = 0; i < nb_cells; i++)
     for (int j = 0; j < nb_nodes_per_cell; j++)
       {
-        int node = zone.sommet_elem(i, j);
+        int node = domaine.sommet_elem(i, j);
         if (node < nb_nodes)
           {
             count[node]++;
@@ -176,10 +176,10 @@ DoubleVect& Champ_implementation_P0::valeur_aux_sommets_compo_impl(DoubleVect& r
   const Champ_base& ch_base = le_champ();
   const DoubleTab& values = ch_base.valeurs();
 
-  const Zone& zone = get_zone_geom();
-  int nb_cells = zone.nb_elem_tot();
-  int nb_nodes = zone.nb_som();
-  int nb_nodes_per_cell = zone.nb_som_elem();
+  const Domaine& domaine = get_domaine_geom();
+  int nb_cells = domaine.nb_elem_tot();
+  int nb_nodes = domaine.nb_som();
+  int nb_nodes_per_cell = domaine.nb_som_elem();
 
   ArrOfInt count(nb_nodes);
   // dvq ajout result=0;
@@ -192,7 +192,7 @@ DoubleVect& Champ_implementation_P0::valeur_aux_sommets_compo_impl(DoubleVect& r
   for (int i = 0; i < nb_cells; i++)
     for (int j = 0; j < nb_nodes_per_cell; j++)
       {
-        int node = zone.sommet_elem(i, j);
+        int node = domaine.sommet_elem(i, j);
         if (node < nb_nodes)
           {
             count[node]++;
@@ -207,7 +207,7 @@ DoubleVect& Champ_implementation_P0::valeur_aux_sommets_compo_impl(DoubleVect& r
 int Champ_implementation_P0::imprime_P0(Sortie& os, int ncomp) const
 {
   const Champ_base& cha = le_champ();
-  const Zone& le_dom = get_zone_geom();
+  const Domaine& le_dom = get_domaine_geom();
   int nb_elem_tot = le_dom.nb_elem_tot();
   const DoubleTab& val = cha.valeurs();
   int elem;
@@ -230,11 +230,11 @@ int Champ_implementation_P0::imprime_P0(Sortie& os, int ncomp) const
 
 int Champ_implementation_P0::affecter_(const Champ_base& ch)
 {
-  // if (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base()==ch.zone_dis_base())
-  // Plus general en comparant la zone:
+  // if (le_champ().a_une_domaine_dis_base() && ch.a_une_domaine_dis_base() && le_champ().domaine_dis_base()==ch.domaine_dis_base())
+  // Plus general en comparant la domaine:
   // Ajout de Champ_Uniforme_Morceaux/Champ_Fonc_Morceaux/Champ_Don_Fonc_txyz qui sont aux elements
   if (sub_type(Champ_Uniforme_Morceaux, ch) || sub_type(Champ_Fonc_Morceaux, ch) || sub_type(Champ_Don_Fonc_txyz, ch)
-      || (le_champ().a_une_zone_dis_base() && ch.a_une_zone_dis_base() && le_champ().zone_dis_base().zone() == ch.zone_dis_base().zone()))
+      || (le_champ().a_une_domaine_dis_base() && ch.a_une_domaine_dis_base() && le_champ().domaine_dis_base().domaine() == ch.domaine_dis_base().domaine()))
     {
       // Meme support donc on utilise une methode plus rapide pour affecter_
       // que la methode generale dans Champ_Fonc_base::affecter_ ou Champ_Inc_base::affecter_
@@ -246,8 +246,8 @@ int Champ_implementation_P0::affecter_(const Champ_base& ch)
     }
   else
     {
-      if ((le_champ().zone_dis_base().zone().nb_elem() > 10000) && (!sub_type(Champ_Uniforme, ch)))
-        Cerr << "Warning (if called each time step): computing field " << le_champ().le_nom() << " on domain " << le_champ().zone_dis_base().zone().le_nom() << " is not optimized... " << finl;
+      if ((le_champ().domaine_dis_base().domaine().nb_elem() > 10000) && (!sub_type(Champ_Uniforme, ch)))
+        Cerr << "Warning (if called each time step): computing field " << le_champ().le_nom() << " on domain " << le_champ().domaine_dis_base().domaine().le_nom() << " is not optimized... " << finl;
       return 0;
     }
 }

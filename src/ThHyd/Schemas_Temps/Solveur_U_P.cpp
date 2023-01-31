@@ -109,7 +109,7 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
 
   /* doit-on fixer P(elem 0) = 0 ? */
   int has_P_ref=0;
-  const Conds_lim& cls = eqnNS.zone_Cl_dis().les_conditions_limites();
+  const Conds_lim& cls = eqnNS.domaine_Cl_dis().les_conditions_limites();
   for (auto& itr : cls)
     if (sub_type(Neumann_sortie_libre,itr.valeur())) has_P_ref=1;
 

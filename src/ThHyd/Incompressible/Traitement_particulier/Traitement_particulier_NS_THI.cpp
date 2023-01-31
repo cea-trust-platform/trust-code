@@ -17,7 +17,7 @@
 #include <MD_Vector_tools.h>
 #include <ArrOfBit.h>
 #include <Scatter.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_base(Traitement_particulier_NS_THI,"Traitement_particulier_NS_THI",Traitement_particulier_NS_base);
 
@@ -144,13 +144,13 @@ void Traitement_particulier_NS_THI::en_cours_de_resolution(int nb_op, DoubleTab&
   return;
 }
 
-int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Zone& zone)
+int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Domaine& domaine)
 {
   const char* methode_actuelle="Traitement_particulier_NS_THI::calcul_nb_som_dir";
 
   // Sert a calculer le nombre de sommet commun en parallele
   ArrOfBit unused;
-  int nb_som = MD_Vector_tools::get_sequential_items_flags(zone.les_sommets().get_md_vector(), unused);
+  int nb_som = MD_Vector_tools::get_sequential_items_flags(domaine.les_sommets().get_md_vector(), unused);
   // Somme sur tous les processeurs
   nb_som = mp_sum(nb_som);
 
@@ -166,10 +166,10 @@ int& Traitement_particulier_NS_THI::calcul_nb_som_dir(const Zone& zone)
   return nb_som_dir;
 }
 
-int& Traitement_particulier_NS_THI::calcul_nb_elem_dir(const Zone& zone)
+int& Traitement_particulier_NS_THI::calcul_nb_elem_dir(const Domaine& domaine)
 {
   const char* methode_actuelle="Traitement_particulier_NS_THI::calcul_nb_elem_dir";
-  int nb_elem = zone.nb_elem();
+  int nb_elem = domaine.nb_elem();
 
   // Somme sur tous les processeurs
   nb_elem=mp_sum(nb_elem);

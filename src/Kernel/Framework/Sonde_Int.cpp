@@ -244,7 +244,7 @@ Entree& Sonde_Int::readOn(Entree& is )
       exit();
     }
 
-  const Zone& le_dom =pb.domaine();
+  const Domaine& le_dom =pb.domaine();
   initialiser(le_dom);
   return is;
 }
@@ -272,16 +272,16 @@ void Sonde_Int::associer_post(const Postraitement& le_post)
 /*! @brief Initialise la sonde.
  *
  * Dimensionne les tableaux, de valeurs, verifie si les points specifies sont
- *     bien dans la zone de calcul.
+ *     bien dans la domaine de calcul.
  *
- * @param (Zone& zone_geom) la zone de calcul qui sera sondee
- * @throws point de sondage en dehors de la zone de calcul
+ * @param (Domaine& domaine_geom) la domaine de calcul qui sera sondee
+ * @throws point de sondage en dehors de la domaine de calcul
  */
-void Sonde_Int::initialiser(const Zone& zone_geom)
+void Sonde_Int::initialiser(const Domaine& domaine_geom)
 {
   int nbre_points = les_positions_.dimension(0);
   elem_.resize(nbre_points);
-  zone_geom.chercher_elements(les_positions_,elem_);
+  domaine_geom.chercher_elements(les_positions_,elem_);
   for (int i=0; i<nbre_points; i++)
     if (mp_max(elem_[i])==-1 && je_suis_maitre())
       {

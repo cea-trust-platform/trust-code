@@ -71,15 +71,15 @@ void Source_base::mettre_a_jour(double )
 /*! @brief Met a jour les references internes a l'objet Source_base.
  *
  * Appelle 2 methodes virtuelles pures protegees:
- *        Source_base::associer_domaines(const Zone_dis& ,const Zone_Cl_dis&)
+ *        Source_base::associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&)
  *        Source_base::associer_pb(const Probleme_base&)
  *
  */
 void Source_base::completer()
 {
   const Equation_base& eqn = equation();
-  const Zone_dis& zdis= eqn.zone_dis();
-  const Zone_Cl_dis& zcldis = eqn.zone_Cl_dis();
+  const Domaine_dis& zdis= eqn.domaine_dis();
+  const Domaine_Cl_dis& zcldis = eqn.domaine_Cl_dis();
   associer_domaines(zdis, zcldis);
   associer_pb(eqn.probleme());
   // Initialize the bilan_ array:

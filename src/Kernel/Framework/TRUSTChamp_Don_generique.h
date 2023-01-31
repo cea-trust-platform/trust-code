@@ -18,9 +18,9 @@
 
 #include <Champ_Don_base.h>
 #include <Champ_Uniforme.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 #include <Parser_Eval.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Interprete.h>
 
 enum class Champ_Don_Type { XYZ , TXYZ , LU };
@@ -34,9 +34,9 @@ public:
   void mettre_a_jour(double) override;
   double valeur_a_compo(const DoubleVect& position, int ncomp) const override;
 
-  Zone& interprete_get_domaine(const Nom& nom)
+  Domaine& interprete_get_domaine(const Nom& nom)
   {
-    mon_domaine = ref_cast(Zone, Interprete::objet(nom));
+    mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
     return mon_domaine.valeur();
   }
 
@@ -96,7 +96,7 @@ public:
   }
 
 protected:
-  REF(Zone) mon_domaine;
+  REF(Domaine) mon_domaine;
   void mettre_a_jour_positions(DoubleTab& );
 
 private:

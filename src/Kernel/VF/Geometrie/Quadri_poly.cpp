@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Quadri_poly.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Quadri_poly,"Quadri_poly",Elem_poly_base);
 
@@ -39,16 +39,16 @@ Quadri_poly::Quadri_poly()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Domaine_poly
  *
  */
 void Quadri_poly::normale(int num_Face,DoubleTab& Face_normales,
                           const  IntTab& Face_sommets,
                           const IntTab& Face_voisins,
                           const IntTab& elem_faces,
-                          const Zone& zone_geom) const
+                          const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
   double x1,y1;
   double nx,ny;
   double x1g=0,y1g=0;

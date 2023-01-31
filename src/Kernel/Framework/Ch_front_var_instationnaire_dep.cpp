@@ -16,8 +16,8 @@
 #include <Ch_front_var_instationnaire_dep.h>
 #include <Champ_Inc_base.h>
 #include <Frontiere_dis_base.h>
-#include <Zone_dis_base.h>
-#include <Zone_VF.h>
+#include <Domaine_dis_base.h>
+#include <Domaine_VF.h>
 #include <TRUSTTab_parts.h>
 
 Implemente_instanciable(Ch_front_var_instationnaire_dep,"Ch_front_var_instationnaire_dep",Champ_front_var_instationnaire);
@@ -57,9 +57,9 @@ int Ch_front_var_instationnaire_dep::initialiser(double temps, const Champ_Inc_b
     {
       const Frontiere& MaFrontiere = frontiere_dis().frontiere();
       ConstDoubleTab_parts parts(inco.valeurs());
-      if (parts[0].dimension(0)==inco.zone_dis_base().nb_elem())
+      if (parts[0].dimension(0)==inco.domaine_dis_base().nb_elem())
         MaFrontiere.Frontiere::trace_elem_local(inco.valeurs(),tab);
-      else if (parts[0].dimension(0)==ref_cast(Zone_VF,inco.zone_dis_base()).nb_faces())
+      else if (parts[0].dimension(0)==ref_cast(Domaine_VF,inco.domaine_dis_base()).nb_faces())
         MaFrontiere.Frontiere::trace_face_local(inco.valeurs(),tab);
       else
         {

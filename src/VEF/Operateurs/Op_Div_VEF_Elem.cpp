@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Op_Div_VEF_Elem.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Periodique.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
@@ -47,12 +47,12 @@ inline void erreur()
 /*! @brief
  *
  */
-void Op_Div_VEF_Elem::associer(const Zone_dis& zone_dis,
-                               const Zone_Cl_dis& zone_Cl_dis,
+void Op_Div_VEF_Elem::associer(const Domaine_dis& domaine_dis,
+                               const Domaine_Cl_dis& domaine_Cl_dis,
                                const Champ_Inc&)
 {
-  const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 }
@@ -67,16 +67,16 @@ DoubleTab& Op_Div_VEF_Elem::calculer(const DoubleTab& vit, DoubleTab& div) const
 void Op_Div_VEF_Elem::volumique(DoubleTab& div) const
 {
   // PQ : 04/03
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const DoubleVect& vol = zone_VEF.volumes();
-  int nb_elem=zone_VEF.zone().nb_elem_tot();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const DoubleVect& vol = domaine_VEF.volumes();
+  int nb_elem=domaine_VEF.domaine().nb_elem_tot();
   for(int num_elem=0; num_elem<nb_elem; num_elem++)
     div(num_elem)/=vol(num_elem);
 }
 
 int Op_Div_VEF_Elem::impr(Sortie& os) const
 {
-  const int impr_bord=(le_dom_vef->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_vef->domaine().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   double temps = sch.temps_courant();
 
@@ -138,7 +138,7 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
       Flux_div << finl;
     }
 
-  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_vef->zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_vef->domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
@@ -150,7 +150,7 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
           const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
-          if (le_dom_vef->zone().bords_a_imprimer().contient(la_fr.le_nom()))
+          if (le_dom_vef->domaine().bords_a_imprimer().contient(la_fr.le_nom()))
             {
               Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
               for (int face=ndeb; face<nfin; face++)

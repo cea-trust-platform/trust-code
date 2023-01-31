@@ -17,22 +17,22 @@
 #define Source_Fluide_Dilatable_VDF_Proto_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_Cl_VDF.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
+#include <Ref_Domaine_VDF.h>
 
 class Equation_base;
-class Zone_Cl_dis;
-class Zone_dis;
+class Domaine_Cl_dis;
+class Domaine_dis;
 
 class Source_Fluide_Dilatable_VDF_Proto
 {
 protected:
-  void associer_domaines_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl);
-  void associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites);
+  void associer_domaines_impl(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl);
+  void associer_volume_porosite_impl(const Domaine_dis& domaine, DoubleVect& volumes, DoubleVect& porosites);
   void ajouter_impl( const DoubleVect& g, const double rho_m, const DoubleTab& tab_rho, DoubleTab& resu) const;
 
-  REF(Zone_Cl_VDF) le_dom_Cl;
-  REF(Zone_VDF) le_dom;
+  REF(Domaine_Cl_VDF) le_dom_Cl;
+  REF(Domaine_VDF) le_dom;
 };
 
 #endif /* Source_Fluide_Dilatable_VDF_Proto_included */

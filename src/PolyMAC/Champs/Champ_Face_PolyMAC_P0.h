@@ -17,7 +17,7 @@
 #define Champ_Face_PolyMAC_P0_included
 
 #include <Champ_Face_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
+#include <Domaine_PolyMAC_P0.h>
 #include <SolveurSys.h>
 
 /*! @brief : class Champ_Face_PolyMAC_P0
@@ -34,7 +34,7 @@ class Champ_Face_PolyMAC_P0 : public Champ_Face_PolyMAC
   Declare_instanciable(Champ_Face_PolyMAC_P0) ;
 
 public :
-  inline const Zone_PolyMAC_P0& zone_PolyMAC_P0() const { return ref_cast(Zone_PolyMAC_P0, le_dom_VF.valeur()); }
+  inline const Domaine_PolyMAC_P0& domaine_PolyMAC_P0() const { return ref_cast(Domaine_PolyMAC_P0, le_dom_VF.valeur()); }
 
   int fixer_nb_valeurs_nodales(int n) override;
   void init_auxiliary_variables() override; /* demande l'ajout des variables auxiliaires (\vec v aux elements) */
@@ -59,15 +59,15 @@ public :
   */
   inline double v_norm(const DoubleTab& val, const DoubleTab& val_f, int e, int f, int k, int l, double *v_ext, double *dnv) const
   {
-    const Zone_PolyMAC_P0& zone = zone_PolyMAC_P0();
-    int d, D = dimension, nf_tot = zone.nb_faces_tot();
-    const DoubleTab& nf = zone.face_normales();
-    const DoubleVect& fs = zone.face_surfaces();
+    const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
+    int d, D = dimension, nf_tot = domaine.nb_faces_tot();
+    const DoubleTab& nf = domaine.face_normales();
+    const DoubleVect& fs = domaine.face_surfaces();
     double scal = 0, vf = f >= 0 ? val_f(f, k) - (l >= 0 ? val_f(f, l) : 0) : 0, v_temp[3], *v = v_ext ? v_ext : v_temp;
     for (d = 0; d < D; d++) v[d] = val(nf_tot + D * e + d, k) - (l >= 0 ? val(nf_tot + D * e + d, l) : 0);
     if (f >= 0)
-      for (d = 0, scal = zone.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);
-    double nv = sqrt(zone.dot(v, v));
+      for (d = 0, scal = domaine.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);
+    double nv = sqrt(domaine.dot(v, v));
     if (dnv)
       for (d = 0; d < D; d++) dnv[d] = nv ? (v[d] - (f >= 0 ? vf * nf(f, d) / fs(f) : 0)) / nv : 0;
 #ifdef _COMPILE_AVEC_PGCC

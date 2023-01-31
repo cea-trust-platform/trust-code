@@ -16,7 +16,7 @@
 #ifndef Champ_Generique_base_included
 #define Champ_Generique_base_included
 
-#include <Zone.h>
+#include <Domaine.h>
 #include <Champ.h>
 #include <Ref_Probleme_base.h>
 
@@ -62,10 +62,10 @@ public:
   virtual void              get_copy_values(DoubleTab&) const;
   virtual void              get_xyz_values(const DoubleTab& coords, DoubleTab& values, ArrOfBit& validity_flag) const;
 
-  virtual const Zone&    get_ref_domain() const; //rend une reference au domaine associe au champ
-  virtual void              get_copy_domain(Zone&) const;
-  virtual const Zone_dis_base&  get_ref_zone_dis_base() const; //rend la zone discretisee liee au domaine
-  virtual const Zone_Cl_dis_base&  get_ref_zcl_dis_base() const; //rend la zcl discretisee liee a l equation portant le champ cible
+  virtual const Domaine&    get_ref_domain() const; //rend une reference au domaine associe au champ
+  virtual void              get_copy_domain(Domaine&) const;
+  virtual const Domaine_dis_base&  get_ref_domaine_dis_base() const; //rend la domaine discretisee liee au domaine
+  virtual const Domaine_Cl_dis_base&  get_ref_zcl_dis_base() const; //rend la zcl discretisee liee a l equation portant le champ cible
 
   virtual const DoubleTab&  get_ref_coordinates() const;
   virtual void              get_copy_coordinates(DoubleTab&) const;
@@ -93,7 +93,7 @@ public:
 
   // Les etapes de creation de l espace de stockage sont :
   // espace_stockage.typer(type_champ)
-  // espace_stockage.associer_domaine_dis_base(une_zone_dis)
+  // espace_stockage.associer_domaine_dis_base(une_domaine_dis)
   // espace_stockage->fixer_nb_comp(nb_comp);
   // espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
   // Calcul des valeurs par instruction de la forme

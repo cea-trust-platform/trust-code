@@ -22,7 +22,7 @@
 #include <Ref_Champ_Don.h>
 
 class Probleme_base;
-class Zone_VF;
+class Domaine_VF;
 
 class Terme_Source_inc_th
 {

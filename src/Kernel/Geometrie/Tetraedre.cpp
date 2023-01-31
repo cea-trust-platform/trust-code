@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tetraedre.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Linear_algebra_tools_impl.h>
 #include <algorithm>
 using std::swap;
@@ -65,26 +65,26 @@ const Nom& Tetraedre::nom_lml() const
 }
 
 
-/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element ielem de la domaine associee a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int ielem) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int ielem) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element ielem 0 sinon
  */
 int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
 {
   // 29/01/2010 Optimisation CPU de la methode (50% plus rapide) par PL
   assert(pos.size_array()==3);
-  const Zone& zone=mon_dom.valeur();
-  const DoubleTab& coord=zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const DoubleTab& coord=domaine.coord_sommets();
   double prod1,prod2,xn,yn,zn;
-  int som0 = zone.sommet_elem(ielem,0);
-  int som1 = zone.sommet_elem(ielem,1);
-  int som2 = zone.sommet_elem(ielem,2);
-  int som3 = zone.sommet_elem(ielem,3);
+  int som0 = domaine.sommet_elem(ielem,0);
+  int som1 = domaine.sommet_elem(ielem,1);
+  int som2 = domaine.sommet_elem(ielem,2);
+  int som3 = domaine.sommet_elem(ielem,3);
   double X0 = coord(som0,0);
   double Y0 = coord(som0,1);
   double Z0 = coord(som0,2);
@@ -113,10 +113,10 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
         {
         case 0 :
           // Inutile car deja fait quelques lignes plus haut
-          //som0 = zone.sommet_elem(ielem,0);
-          //som1 = zone.sommet_elem(ielem,1);
-          //som2 = zone.sommet_elem(ielem,2);
-          //som3 = zone.sommet_elem(ielem,3);
+          //som0 = domaine.sommet_elem(ielem,0);
+          //som1 = domaine.sommet_elem(ielem,1);
+          //som2 = domaine.sommet_elem(ielem,2);
+          //som3 = domaine.sommet_elem(ielem,3);
           break;
         case 1 :
           swap(som0,som1);
@@ -127,10 +127,10 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
           swap(X2,X3);
           swap(Y2,Y3);
           swap(Z2,Z3);
-          //som0 = zone.sommet_elem(ielem,1);
-          //som1 = zone.sommet_elem(ielem,0);
-          //som2 = zone.sommet_elem(ielem,3);
-          //som3 = zone.sommet_elem(ielem,2);
+          //som0 = domaine.sommet_elem(ielem,1);
+          //som1 = domaine.sommet_elem(ielem,0);
+          //som2 = domaine.sommet_elem(ielem,3);
+          //som3 = domaine.sommet_elem(ielem,2);
           break;
         case 2 :
           swap(som0,som1);
@@ -141,10 +141,10 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
           swap(X1,X3);
           swap(Y1,Y3);
           swap(Z1,Z3);
-          //som0 = zone.sommet_elem(ielem,0);
-          //som1 = zone.sommet_elem(ielem,2);
-          //som2 = zone.sommet_elem(ielem,3);
-          //som3 = zone.sommet_elem(ielem,1);
+          //som0 = domaine.sommet_elem(ielem,0);
+          //som1 = domaine.sommet_elem(ielem,2);
+          //som2 = domaine.sommet_elem(ielem,3);
+          //som3 = domaine.sommet_elem(ielem,1);
           break;
         case 3 :
           swap(som0,som1);
@@ -155,10 +155,10 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
           swap(X1,X3);
           swap(Y1,Y3);
           swap(Z1,Z3);
-          //som0 = zone.sommet_elem(ielem,2);
-          //som1 = zone.sommet_elem(ielem,1);
-          //som2 = zone.sommet_elem(ielem,3);
-          //som3 = zone.sommet_elem(ielem,0);
+          //som0 = domaine.sommet_elem(ielem,2);
+          //som1 = domaine.sommet_elem(ielem,1);
+          //som2 = domaine.sommet_elem(ielem,3);
+          //som3 = domaine.sommet_elem(ielem,0);
           break;
         }
 
@@ -181,34 +181,34 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Tetraedre::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=mon_dom.valeur();
-  if((zone.sommet_elem(element,0)==som[0])&&
-      (zone.sommet_elem(element,1)==som[1])&&
-      (zone.sommet_elem(element,1)==som[2])&&
-      (zone.sommet_elem(element,1)==som[3]))
+  const Domaine& domaine=mon_dom.valeur();
+  if((domaine.sommet_elem(element,0)==som[0])&&
+      (domaine.sommet_elem(element,1)==som[1])&&
+      (domaine.sommet_elem(element,1)==som[2])&&
+      (domaine.sommet_elem(element,1)==som[3]))
     return 1;
   else
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
 
   double x0,y0,z0;
   double x1,y1,z1;
@@ -216,12 +216,12 @@ void Tetraedre::calculer_volumes(DoubleVect& volumes) const
   double x3,y3,z3;
   int s[4];
 
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
       for (int i=0; i<4; i++)
-        s[i] = zone.sommet_elem(num_poly,i);
+        s[i] = domaine.sommet_elem(num_poly,i);
 
       x0 = dom.coord(s[0],0);
       y0 = dom.coord(s[0],1);
@@ -246,16 +246,16 @@ void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 }
 
 
-/*! @brief Calcule les normales aux faces des elements de la zone associee.
+/*! @brief Calcule les normales aux faces des elements de la domaine associee.
  *
- * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la zone associee
+ * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets de la domaine associee
  * @param (DoubleTab& face_normales)
  */
 void Tetraedre::calculer_normales(const IntTab& Face_sommets ,
                                   DoubleTab& face_normales) const
 {
-  const Zone& zone_geom = mon_dom.valeur();
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const Domaine& domaine_geom = mon_dom.valeur();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1,z1,x2,y2,z2;
   int n0,n1,n2;

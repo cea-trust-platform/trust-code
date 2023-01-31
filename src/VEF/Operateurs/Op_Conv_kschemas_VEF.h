@@ -36,7 +36,7 @@ class Op_Conv_kschemas_VEF : public Op_Conv_VEF_base
   Declare_base(Op_Conv_kschemas_VEF);
 
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   DoubleTab& ajouter( const DoubleTab& , DoubleTab& ) const override;
 
 protected:

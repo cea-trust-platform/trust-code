@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Verifier_Simplexes.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Motcle.h>
 
 Implemente_instanciable(Verifier_Simplexes,"Verifier_Simplexes",Interprete_geometrique_base) ;
@@ -31,12 +31,12 @@ Entree& Verifier_Simplexes::readOn(Entree& is)
   return is;
 }
 
-static void check_internal_diagonal_for_triangle(Zone& domain)
+static void check_internal_diagonal_for_triangle(Domaine& domain)
 {
   // nothing to do
 }
 
-static void check_internal_diagonal_for_tetrahedron(Zone& domain)
+static void check_internal_diagonal_for_tetrahedron(Domaine& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
   IntTab&           cells = domain.les_elems();
@@ -142,7 +142,7 @@ static void check_internal_diagonal_for_tetrahedron(Zone& domain)
     }
 }
 
-static void check_internal_diagonal(Zone& domain)
+static void check_internal_diagonal(Domaine& domain)
 {
   const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 
@@ -167,7 +167,7 @@ static void check_internal_diagonal(Zone& domain)
     }
 }
 
-static void check_positive_volumes_for_triangle(Zone& domain)
+static void check_positive_volumes_for_triangle(Domaine& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
   IntTab&           cells = domain.les_elems();
@@ -206,7 +206,7 @@ static void check_positive_volumes_for_triangle(Zone& domain)
     }
 }
 
-static void check_positive_volumes_for_tetrahedron(Zone& domain)
+static void check_positive_volumes_for_tetrahedron(Domaine& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
   IntTab&           cells = domain.les_elems();
@@ -260,7 +260,7 @@ static void check_positive_volumes_for_tetrahedron(Zone& domain)
 }
 
 
-static void check_positive_volumes(Zone& domain)
+static void check_positive_volumes(Domaine& domain)
 {
   const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 
@@ -285,7 +285,7 @@ static void check_positive_volumes(Zone& domain)
     }
 }
 
-void Verifier_Simplexes::check_domain(Zone& domain)
+void Verifier_Simplexes::check_domain(Domaine& domain)
 {
   check_internal_diagonal(domain);
   check_positive_volumes(domain);
@@ -295,7 +295,7 @@ Entree& Verifier_Simplexes::interpreter_(Entree& is)
 {
   associer_domaine(is);
 
-  Zone& domain = domaine();
+  Domaine& domain = domaine();
   check_domain(domain);
 
   return is;

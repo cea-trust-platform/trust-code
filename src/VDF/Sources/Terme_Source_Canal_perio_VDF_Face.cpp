@@ -18,11 +18,11 @@
 #include <Pb_Thermohydraulique.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet_homogene.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(Terme_Source_Canal_perio_VDF_Face, "Canal_perio_VDF_Face", Terme_Source_Canal_perio);
 Implemente_instanciable(Terme_Source_Canal_perio_QC_VDF_Face, "Canal_perio_QC_VDF_Face", Terme_Source_Canal_perio_VDF_Face);
@@ -35,32 +35,32 @@ Sortie& Terme_Source_Canal_perio_VDF_Face::printOn(Sortie& s) const { return s <
 
 Entree& Terme_Source_Canal_perio_VDF_Face::readOn(Entree& s) { return Terme_Source_Canal_perio::readOn(s); }
 
-void Terme_Source_Canal_perio_VDF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_perio_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 void Terme_Source_Canal_perio_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone_VF = le_dom_VDF.valeur();
-  const Zone_Cl_dis_base& zone_Cl_dis = le_dom_Cl_VDF.valeur();
+  const Domaine_VF& domaine_VF = le_dom_VDF.valeur();
+  const Domaine_Cl_dis_base& domaine_Cl_dis = le_dom_Cl_VDF.valeur();
   const IntVect& orientation = le_dom_VDF->orientation();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
-  const DoubleVect& volumes_entrelaces = zone_VF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces = domaine_VF.volumes_entrelaces();
   int ncomp;
   ArrOfDouble s(source());
 
   // Boucle sur les conditions limites pour traiter les faces de bord
   int n_bord, ndeb, nfin;
-  for (n_bord = 0; n_bord < zone_VF.nb_front_Cl(); n_bord++)
+  for (n_bord = 0; n_bord < domaine_VF.nb_front_Cl(); n_bord++)
     {
 
       // pour chaque Condition Limite on regarde son type
       // Si face de Dirichlet ou de Symetrie on ne fait rien
       // Si face de Neumann on calcule la contribution au terme source
 
-      const Cond_lim& la_cl = zone_Cl_dis.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_dis.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()) || sub_type(Periodique, la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()))
         {
@@ -83,8 +83,8 @@ void Terme_Source_Canal_perio_VDF_Face::ajouter_blocs(matrices_t matrices, Doubl
     }
 
   // Boucle sur les faces internes
-  ndeb = zone_VF.premiere_face_int();
-  int nb_faces = zone_VF.nb_faces();
+  ndeb = domaine_VF.premiere_face_int();
+  int nb_faces = domaine_VF.nb_faces();
   for (int num_face = ndeb; num_face < nb_faces; num_face++)
     {
       double vol = volumes_entrelaces(num_face) * porosite_surf(num_face);
@@ -96,15 +96,15 @@ void Terme_Source_Canal_perio_VDF_Face::ajouter_blocs(matrices_t matrices, Doubl
 
 void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
 {
-  const Zone_VF& zone_VF = le_dom_VDF.valeur();
-  const Zone_Cl_dis_base& zone_Cl_dis = le_dom_Cl_VDF.valeur();
+  const Domaine_VF& domaine_VF = le_dom_VDF.valeur();
+  const Domaine_Cl_dis_base& domaine_Cl_dis = le_dom_Cl_VDF.valeur();
   const DoubleTab& vitesse = equation().inconnue().valeurs();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   int ndeb, nfin, num_face;
-  int nb_bords = zone_VF.nb_front_Cl();
+  int nb_bords = domaine_VF.nb_front_Cl();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_dis.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_dis.les_conditions_limites(n_bord);
 
       if (sub_type(Periodique, la_cl.valeur()))
         {
@@ -129,7 +129,7 @@ void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
 
                   for (num_face = ndeb; num_face < nfin; num_face++)
                     {
-                      double debit_face = porosite_surf[num_face] * vitesse[num_face] * std::fabs(zone_VF.face_normales(num_face, axe));
+                      double debit_face = porosite_surf[num_face] * vitesse[num_face] * std::fabs(domaine_VF.face_normales(num_face, axe));
                       debit_e += tab_rho_face[num_face] * debit_face;
                     }
                 }
@@ -137,7 +137,7 @@ void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
                 {
                   for (num_face = ndeb; num_face < nfin; num_face++)
                     {
-                      double debit_face = porosite_surf[num_face] * vitesse[num_face] * std::fabs(zone_VF.face_normales(num_face, axe));
+                      double debit_face = porosite_surf[num_face] * vitesse[num_face] * std::fabs(domaine_VF.face_normales(num_face, axe));
                       debit_e += debit_face;
                     }
                 }

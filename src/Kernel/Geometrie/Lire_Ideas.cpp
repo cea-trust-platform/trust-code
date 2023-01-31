@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Lire_Ideas.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <EFichier.h>
 #include <Scatter.h>
 
@@ -37,7 +37,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   Nom nom_fic;
   associer_domaine(is);
   is >> nom_fic;
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   //
   int NDIM=dimension;
   int NNOEUDS=0;
@@ -161,13 +161,13 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   EFichier fic(nom1);
   fic.set_check_types(1); // Remplace UFichier
   Cerr << "Reading of the file : " << nom1 << finl;
-  // On definit les bords comme etant des faces de bords de la zone
-  // On fait Zone --> les_bords
+  // On definit les bords comme etant des faces de bords de la domaine
+  // On fait Domaine --> les_bords
   //
   Bords& les_bords=dom.faces_bord();
   //
-  // Ici, on associe les bords a la zone (on se refere a dom)
-  // On fait les_bords --> Zone
+  // Ici, on associe les bords a la domaine (on se refere a dom)
+  // On fait les_bords --> Domaine
   //
   les_bords.associer_domaine(dom);
   //

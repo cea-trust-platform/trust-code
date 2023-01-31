@@ -21,7 +21,7 @@
 #include <sys/stat.h>
 #include <Champ.h>
 #include <Front_VF.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Matrice_Morse.h>
 #include <TRUSTTrav.h>
 #include <Discretisation_base.h>
@@ -77,7 +77,7 @@ void Operateur_base::abortTimeStep()
 }
 
 
-/*! @brief Associe l'operateur a la zone_dis, la zone_Cl_dis, et a l'inconnue de son equation.
+/*! @brief Associe l'operateur a la domaine_dis, la domaine_Cl_dis, et a l'inconnue de son equation.
  *
  * @throws pas d'equation associee
  */
@@ -85,9 +85,9 @@ void Operateur_base::completer()
 {
   assert(mon_equation.non_nul());
   const Equation_base& eqn = equation();
-  const Zone_dis& zdis= eqn.zone_dis();
+  const Domaine_dis& zdis= eqn.domaine_dis();
 
-  const Zone_Cl_dis& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->zone_Cl_dis() : eqn.zone_Cl_dis();
+  const Domaine_Cl_dis& zcl = le_champ_inco.non_nul() ? le_champ_inco.valeur()->domaine_Cl_dis() : eqn.domaine_Cl_dis();
   const Champ_Inc& inco = le_champ_inco.non_nul() ? le_champ_inco.valeur() : eqn.inconnue();
   associer(zdis, zcl, inco);
   const Conds_lim& les_cl = zcl->les_conditions_limites();
@@ -273,7 +273,7 @@ int Operateur_base::systeme_invariant() const
 {
   return 1;
 }
-void Operateur_base::associer_domaine_cl_dis(const Zone_Cl_dis_base&)
+void Operateur_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base&)
 {
   Cerr<<"Operateur_base::associer_domaine_cl_dis must be overloaded "<<finl;
   exit();
@@ -331,7 +331,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       os.set_col_width(wcol - !gnuplot_header);
       os.add_col("Time");
       os.set_col_width(wcol);
-      const Conds_lim& les_cls=eqn.inconnue()->zone_Cl_dis().les_conditions_limites();
+      const Conds_lim& les_cls=eqn.inconnue()->domaine_Cl_dis().les_conditions_limites();
 
       if (flux_bords_.nb_dim()!=2)
         {
@@ -354,7 +354,7 @@ void Operateur_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag
       for (int num_cl=0; num_cl<les_cls.size(); num_cl++)
         {
           const Frontiere_dis_base& la_fr = les_cls[num_cl].frontiere_dis();
-          if (type!="sum" || eqn.zone_dis().zone().bords_a_imprimer_sum().contient(la_fr.le_nom()))
+          if (type!="sum" || eqn.domaine_dis().domaine().bords_a_imprimer_sum().contient(la_fr.le_nom()))
             {
               Nom ch = la_fr.le_nom();
               if (type=="moment")
@@ -476,8 +476,8 @@ void Operateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option
       bool surfacique = (Motcle(option)=="flux_surfacique_bords");
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 0.;
-      const Zone_Cl_dis_base& zcl_dis = equation().zone_Cl_dis();
-      const Zone_dis_base& zdis = equation().zone_dis().valeur();
+      const Domaine_Cl_dis_base& zcl_dis = equation().domaine_Cl_dis();
+      const Domaine_dis_base& zdis = equation().domaine_dis().valeur();
       int nb_front = zdis.nb_front_Cl();
 
       if (flux_bords_.nb_dim()==2)
@@ -508,8 +508,8 @@ Motcle Operateur_base::get_localisation_pour_post(const Nom& option) const
   Motcle loc;
   if (Motcle(option)=="flux_bords" || Motcle(option)=="flux_surfacique_bords")
     {
-      const Zone_dis_base& zdis = equation().zone_dis().valeur();
-      if (!zdis.que_suis_je().debute_par("Zone_VDF"))
+      const Domaine_dis_base& zdis = equation().domaine_dis().valeur();
+      if (!zdis.que_suis_je().debute_par("Domaine_VDF"))
         loc = "face";
       else
         loc = "elem";

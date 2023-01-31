@@ -24,9 +24,9 @@
  */
 
 #include <Interprete_geometrique_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class Modif_bord_to_raccord : public Interprete_geometrique_base
 {

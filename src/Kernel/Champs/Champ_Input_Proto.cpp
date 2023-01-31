@@ -20,7 +20,7 @@
 #include <Probleme_base.h>
 #include <Interprete.h>
 #include <TRUSTTab.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 using ICoCo::WrongArgument;
 
@@ -30,7 +30,7 @@ using ICoCo::WrongArgument;
  *      { nb_comp nombre_de_composantes_du_champ
  *        nom nom_du_champ
  *        probleme nom_du_probleme_base_associe
- *        [sous_zone nom_de_la_sous_zone_associee] }
+ *        [sous_domaine nom_de_la_sous_domaine_associee] }
  *
  * @param (Entree& is) flot d'entree
  * @return le flot d'entre modifie
@@ -42,7 +42,7 @@ void Champ_Input_Proto::read(Entree& is)
 {
   Nom nom_champ;
   Nom nom_pb;
-  Nom nom_sous_zone;
+  Nom nom_sous_domaine;
   int nbc=-1;
 
   // Lire nom_champ et nom_pb
@@ -75,9 +75,9 @@ void Champ_Input_Proto::read(Entree& is)
         {
           is >> nom_pb;
         }
-      else if (motlu=="sous_zone")
+      else if (motlu=="sous_domaine")
         {
-          is >> nom_sous_zone;
+          is >> nom_sous_domaine;
         }
       else if (motlu == accolade_fermee)
         break;
@@ -101,16 +101,16 @@ void Champ_Input_Proto::read(Entree& is)
   // Retrouver le probleme et s'inscrire dans sa liste
   mon_pb=ref_cast(Probleme_base,Interprete::objet(nom_pb));
 
-  ma_sous_zone.reset();
-  if (nom_sous_zone!="??")
+  ma_sous_domaine.reset();
+  if (nom_sous_domaine!="??")
     {
-      if (!sous_zone_ok)
+      if (!sous_domaine_ok)
         {
           Cerr << "Error in Ch_front_input_uniforme::readOn" << finl;
-          Cerr << "The sous_zones are not managed by this field" << finl;
+          Cerr << "The sous_domaines are not managed by this field" << finl;
           Process::exit();
         }
-      ma_sous_zone=mon_pb->domaine().ss_zone(nom_sous_zone);
+      ma_sous_domaine=mon_pb->domaine().ss_domaine(nom_sous_domaine);
     }
 }
 

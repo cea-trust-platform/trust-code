@@ -23,12 +23,12 @@
 #include <Ref_Front_VF.h>
 #include <Ref_Champ_front_contact_VEF.h>
 #include <Motcle.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 class Equation_base;
 class Milieu_base;
-class Zone_dis_base;
-class Zone_Cl_dis_base;
+class Domaine_dis_base;
+class Domaine_Cl_dis_base;
 class Front_dis_base;
 
 /*! @brief classe Champ_front_contact_VEF Permet le couplage scalaire (temperature ou concentration) entre problemes en calculant
@@ -54,8 +54,8 @@ public:
   void creer(const Nom&, const Nom&,const Nom&, const Nom&, const Motcle&);
   const Champ_Inc_base& inconnue() const;
   const Equation_base& equation() const;
-  const Zone_dis_base& zone_dis() const;
-  const Zone_Cl_dis_base& zone_Cl_dis() const ;
+  const Domaine_dis_base& domaine_dis() const;
+  const Domaine_Cl_dis_base& domaine_Cl_dis() const ;
   const Frontiere_dis_base& front_dis() const ;
   void associer_ch_inc_base(const Champ_Inc_base&);
   const Nom& nom_bord_oppose() const;
@@ -70,8 +70,8 @@ public:
   void verifier_scalaire_bord(double temps);
   void associer_front_vf_et_ch_front_autre_pb();
 
-  void connectivity_failed(const Zone_VEF&,  int&,  int&,
-                           const Zone_VEF&,  int&,  int&, Nom&, Nom&) ;
+  void connectivity_failed(const Domaine_VEF&,  int&,  int&,
+                           const Domaine_VEF&,  int&,  int&, Nom&, Nom&) ;
   void remplir_faces_coin();
   void remplir_elems_voisin_bord();
   void test_faces_coin();

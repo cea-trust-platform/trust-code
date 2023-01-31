@@ -21,9 +21,9 @@
 //
 // AJOUTER ICI
 
-class Zone;
+class Domaine;
 
-void histogramme_angle(const Zone&, Sortie&, int nb_histo=18 );
+void histogramme_angle(const Domaine&, Sortie&, int nb_histo=18 );
 
 class Analyse_Angle : public Interprete
 {

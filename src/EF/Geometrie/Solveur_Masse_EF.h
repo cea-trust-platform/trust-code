@@ -18,8 +18,8 @@
 
 
 #include <Solveur_Masse.h>
-#include <Ref_Zone_EF.h>
-#include <Ref_Zone_Cl_EF.h>
+#include <Ref_Domaine_EF.h>
+#include <Ref_Domaine_Cl_EF.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -34,8 +34,8 @@ class Solveur_Masse_EF : public Solveur_Masse_base
 
 public:
 
-  void associer_domaine_dis_base(const Zone_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
 
   Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const override;
   DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const override;
@@ -44,8 +44,8 @@ public:
 
 private:
 
-  REF(Zone_EF) le_dom_EF;
-  REF(Zone_Cl_EF) le_dom_Cl_EF;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) le_dom_Cl_EF;
 };
 
 #endif

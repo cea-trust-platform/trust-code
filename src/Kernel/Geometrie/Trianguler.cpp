@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Trianguler.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Trianguler,"Trianguler",Triangulation_base);
 
@@ -40,20 +40,20 @@ Entree& Trianguler::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-/*! @brief Triangule tous les element d'une zone: transforme les elements goemetriques de la zone en triangles.
+/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques de la domaine en triangles.
  *
  *     Pour l'instant on ne sait trianguler que des Rectangles
  *     (on les coupe en 2).
  *
- * @param (Zone& zone) la zone dont on veut trianguler les elements
+ * @param (Domaine& domaine) la domaine dont on veut trianguler les elements
  */
-void Trianguler::trianguler(Zone& zone) const
+void Trianguler::trianguler(Domaine& domaine) const
 {
-  if ((zone.type_elem()->que_suis_je() == "Rectangle") || (zone.type_elem()->que_suis_je() == "Quadrangle"))
+  if ((domaine.type_elem()->que_suis_je() == "Rectangle") || (domaine.type_elem()->que_suis_je() == "Quadrangle"))
     {
-      zone.typer("Triangle");
-      IntTab& les_elems=zone.les_elems();
-      const DoubleTab& som =zone.les_sommets();
+      domaine.typer("Triangle");
+      IntTab& les_elems=domaine.les_elems();
+      const DoubleTab& som =domaine.les_sommets();
       int oldsz=les_elems.dimension(0);
       IntTab new_elems(2*oldsz, 3);
       for(int i=0; i< oldsz; i++)
@@ -93,14 +93,14 @@ void Trianguler::trianguler(Zone& zone) const
               new_elems(i+oldsz,1)=i2;
               new_elems(i+oldsz,2)=i3;
             }
-          mettre_a_jour_sous_zone(zone,i,i+oldsz,1);
+          mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
         }
       les_elems.ref(new_elems);
     }
   else
     {
       Cerr << "We do not yet know how to Trianguler the "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+           << domaine.type_elem()->que_suis_je() <<"s"<<finl;
     }
 }
 

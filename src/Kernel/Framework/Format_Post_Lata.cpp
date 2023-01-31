@@ -19,7 +19,7 @@
 #include <Param.h>
 #include <communications.h>
 #include <EFichier.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 #include <sys/stat.h>
 #include <string> // Necessaire avec xlC pour std::getline
@@ -287,7 +287,7 @@ int Format_Post_Lata::ecrire_entete(const double temps_courant,const int reprise
   return 1;
 }
 
-int Format_Post_Lata::completer_post(const Zone& dom, const int is_axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post,
+int Format_Post_Lata::completer_post(const Domaine& dom, const int is_axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post,
                                      const Nom& le_nom_champ_post)
 {
   return 1;
@@ -940,7 +940,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         data(0, 1) = sommets.dimension(0);
         ecrire_item_int("JOINTS_SOMMETS",
                         id_domaine,
-                        "", /* id_zone */
+                        "", /* id_domaine */
                         "", /* localisation */
                         "", /* reference */
                         data,
@@ -949,7 +949,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         data(0, 1) = elements.dimension(0);
         ecrire_item_int("JOINTS_ELEMENTS",
                         id_domaine,
-                        "", /* id_zone */
+                        "", /* id_domaine */
                         "", /* localisation */
                         "", /* reference */
                         data,
@@ -967,7 +967,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
  *   ajoute une reference a ce fichier.
  *
  */
-int Format_Post_Lata::ecrire_domaine(const Zone& domaine,const int est_le_premier_post)
+int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
   if (status == RESET)
     {
@@ -980,7 +980,7 @@ int Format_Post_Lata::ecrire_domaine(const Zone& domaine,const int est_le_premie
   ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_elem);
 
   // Si on a des frontieres domaine, on les ecrit egalement
-  const LIST(REF(Zone)) bords= domaine.domaines_frontieres();
+  const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();
   for (int i=0; i<bords.size(); i++)
     ecrire_domaine(bords[i].valeur(),est_le_premier_post);
   return 1; // ok tout va bien
@@ -1001,7 +1001,7 @@ int Format_Post_Lata::ecrire_temps(const double temps)
 /*! @brief voir Format_Post_base::ecrire_champ
  *
  */
-int Format_Post_Lata::ecrire_champ(const Zone& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, const Nom& id_du_champ, const Nom& id_du_domaine,
+int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, const Nom& id_du_champ, const Nom& id_du_domaine,
                                    const Nom& localisation, const Nom& nature, const DoubleTab& valeurs)
 {
 
@@ -1100,7 +1100,7 @@ int Format_Post_Lata::ecrire_champ(const Zone& domaine, const Noms& unite_, cons
 int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
   const Nom&     id_item,
   const Nom&     id_du_domaine,
-  const Nom&     id_zone,
+  const Nom&     id_domaine,
   const Nom&     localisation,
   const Nom&     reference,
   //const IntTab & valeurs,
@@ -1198,7 +1198,7 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
       data(0, 1) = n;
       ecrire_item_int("JOINTS_FACES",
                       id_du_domaine,
-                      "", /* id_zone */
+                      "", /* id_domaine */
                       "", /* localisation */
                       "", /* reference */
                       data,

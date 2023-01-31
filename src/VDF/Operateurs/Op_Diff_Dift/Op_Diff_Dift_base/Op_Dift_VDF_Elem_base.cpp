@@ -31,13 +31,13 @@ Entree& Op_Dift_VDF_Elem_base::readOn(Entree& s ) { return s ; }
 double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
 {
   double dt_stab, coef = -1.e10;
-  const Zone_VDF& zone_VDF = iter->zone();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
   bool is_concentration = (equation().que_suis_je().debute_par("Convection_Diffusion_Concentration") || equation().que_suis_je().debute_par("Convection_Diffusion_Espece"));
 
   ArrOfInt numfa(2*dimension);
-  for (int elem = 0; elem < zone_VDF.nb_elem(); elem++)
+  for (int elem = 0; elem < domaine_VDF.nb_elem(); elem++)
     {
       // choix du facteur
       double rcp = 1.;
@@ -53,10 +53,10 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
       for (int i = 0; i < 2 * dimension; i++) numfa[i] = elem_faces(elem, i);
 
       // XXX : E Saikali j'ai corrige pour multi inco parce que c'etait 1/dx et pas 1/dx^2 ... donc attention si ecart !
-      // c'etait comme ca : for (int d = 0; d < dimension; d++) moy += 1. / (zone_VDF.dist_face(numfa[d], numfa[dimension + d], d));
+      // c'etait comme ca : for (int d = 0; d < dimension; d++) moy += 1. / (domaine_VDF.dist_face(numfa[d], numfa[dimension + d], d));
       for (int d = 0; d < dimension; d++)
         {
-          const double hd = zone_VDF.dist_face(numfa[d], numfa[dimension + d], d);
+          const double hd = domaine_VDF.dist_face(numfa[d], numfa[dimension + d], d);
           moy += 1. / (hd * hd);
         }
       const double alpha_local = (alpha_(elem) + alpha_t(elem)) / rcp * moy;
@@ -80,19 +80,19 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem() const
 double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
 {
   double dt_stab, coef = -1.e10;
-  const Zone_VDF& zone_VDF = iter->zone();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
   double alpha_local,h_x,h_y,h_z;
 
   if (dimension == 2)
     {
       int numfa[4];
-      for (int elem=0; elem<zone_VDF.nb_elem(); elem++)
+      for (int elem=0; elem<domaine_VDF.nb_elem(); elem++)
         {
           for (int i=0; i<4; i++) numfa[i] = elem_faces(elem,i);
-          h_x = zone_VDF.dist_face_axi(numfa[0],numfa[2],0);
-          h_y = zone_VDF.dist_face_axi(numfa[1],numfa[3],1);
+          h_x = domaine_VDF.dist_face_axi(numfa[0],numfa[2],0);
+          h_y = domaine_VDF.dist_face_axi(numfa[1],numfa[3],1);
           alpha_local = (alpha_(elem)+alpha_t(elem)) *(1/(h_x*h_x) + 1/(h_y*h_y));
           coef = std::max(coef,alpha_local);
         }
@@ -100,12 +100,12 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
   else if (dimension == 3)
     {
       int numfa[6];
-      for (int elem=0; elem<zone_VDF.nb_elem(); elem++)
+      for (int elem=0; elem<domaine_VDF.nb_elem(); elem++)
         {
           for (int i=0; i<6; i++) numfa[i] = elem_faces(elem,i);
-          h_x = zone_VDF.dist_face_axi(numfa[0],numfa[3],0);
-          h_y = zone_VDF.dist_face_axi(numfa[1],numfa[4],1);
-          h_z = zone_VDF.dist_face_axi(numfa[2],numfa[5],2);
+          h_x = domaine_VDF.dist_face_axi(numfa[0],numfa[3],0);
+          h_y = domaine_VDF.dist_face_axi(numfa[1],numfa[4],1);
+          h_z = domaine_VDF.dist_face_axi(numfa[2],numfa[5],2);
           alpha_local = (alpha_(elem)+alpha_t(elem)) *(1/(h_x*h_x) + 1/(h_y*h_y) + 1/(h_z*h_z));
           coef = std::max(coef,alpha_local);
         }
@@ -118,20 +118,20 @@ double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_axi() const
 double Op_Dift_VDF_Elem_base::calculer_dt_stab_elem_var_axi() const
 {
   double dt_stab, coef = -1.e10;
-  const Zone_VDF& zone_VDF = iter->zone();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleVect& alpha_t = diffusivite_turbulente()->valeurs();
   const int D = dimension;
 
   IntVect numfa(2 * D);
   DoubleVect h(D);
 
-  for (int e = 0; e < zone_VDF.nb_elem(); e++)
+  for (int e = 0; e < domaine_VDF.nb_elem(); e++)
     {
       for (int i = 0; i < 2 * D; i++)
         numfa(i) = elem_faces(e, i);
       for (int d = 0; d < D; d++)
-        h(d) = zone_VDF.dist_face_axi(numfa(d), numfa(d + D), d);
+        h(d) = domaine_VDF.dist_face_axi(numfa(d), numfa(d + D), d);
       double invh = 0.;
       for (int d = 0; d < D; d++)
         invh += 1. / (h(d) * h(d));
@@ -148,6 +148,6 @@ void Op_Dift_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
-  Op_VDF_Elem::dimensionner(iter->zone(), iter->zone_Cl(), mat2);
+  Op_VDF_Elem::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }

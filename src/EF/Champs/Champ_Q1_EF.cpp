@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_Q1_EF.h>
-#include <Zone_EF.h>
-#include <Zone.h>
+#include <Domaine_EF.h>
+#include <Domaine.h>
 #include <Equation.h>
 #include <Debog.h>
 
@@ -29,17 +29,17 @@ Entree& Champ_Q1_EF::readOn(Entree& s)
   return s ;
 }
 
-const Zone_EF& Champ_Q1_EF::zone_EF() const
+const Domaine_EF& Champ_Q1_EF::domaine_EF() const
 {
-  return ref_cast(Zone_EF, le_dom_VF.valeur());
+  return ref_cast(Domaine_EF, le_dom_VF.valeur());
 }
 
 int Champ_Q1_EF::imprime(Sortie& os, int ncomp) const
 {
-  const Zone_dis_base& zone_dis = zone_dis_base();
-  const Zone& zone = zone_dis.zone();
-  const DoubleTab& coord = zone.coord_sommets();
-  const int nb_som = zone.nb_som();
+  const Domaine_dis_base& domaine_dis = domaine_dis_base();
+  const Domaine& domaine = domaine_dis.domaine();
+  const DoubleTab& coord = domaine.coord_sommets();
+  const int nb_som = domaine.nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;
@@ -64,13 +64,13 @@ void Champ_Q1_EF::gradient(DoubleTab& gradient_elem)
   // Calcul du gradient de la vitesse pour le calcul de la vorticite
   // Gradient ordre 1 (valeur moyenne dans un element)
   // Order 1 gradient (mean value within an element)
-  const Zone_EF& zone_EF_ = zone_EF();
+  const Domaine_EF& domaine_EF_ = domaine_EF();
   const DoubleTab& vitesse = equation().inconnue().valeurs();
-  const IntTab& elems = zone_EF_.zone().les_elems();
-  int nb_som_elem = zone_EF_.zone().nb_som_elem();
-  int nb_elems = zone_EF_.zone().nb_elem_tot();
-  const DoubleVect& volume_thilde = zone_EF_.volumes_thilde();
-  const DoubleTab& Bij_thilde = zone_EF_.Bij_thilde();
+  const IntTab& elems = domaine_EF_.domaine().les_elems();
+  int nb_som_elem = domaine_EF_.domaine().nb_som_elem();
+  int nb_elems = domaine_EF_.domaine().nb_elem_tot();
+  const DoubleVect& volume_thilde = domaine_EF_.volumes_thilde();
+  const DoubleTab& Bij_thilde = domaine_EF_.Bij_thilde();
 
   assert(gradient_elem.dimension_tot(0) == nb_elems);
   assert(gradient_elem.dimension(1) == dimension); // line
@@ -97,12 +97,12 @@ void Champ_Q1_EF::gradient(DoubleTab& gradient_elem)
 
 void Champ_Q1_EF::cal_rot_ordre1(DoubleTab& vorticite)
 {
-  const Zone_EF& zone_EF_ = zone_EF();
-  int nb_elems = zone_EF_.zone().nb_elem_tot();
+  const Domaine_EF& domaine_EF_ = domaine_EF();
+  int nb_elems = domaine_EF_.domaine().nb_elem_tot();
 
   DoubleTab gradient_elem(0, dimension, dimension);
   // le tableau est initialise dans la methode gradient():
-  zone_EF_.zone().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
+  domaine_EF_.domaine().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
   gradient(gradient_elem);
   Debog::verifier("apres calcul gradient", gradient_elem);
   int num_elem;

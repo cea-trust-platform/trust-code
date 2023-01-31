@@ -22,8 +22,8 @@
 #include <distances_VEF.h>
 #include <Interprete.h>
 #include <Pb_Conduction.h>
-#include <Zone_Cl_VEF.h>
-#include <Zone.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine.h>
 #include <Champ_Fonc_P0_VEF.h>
 #include <Format_Post_Med.h>
 #include <Champ_front_contact_fictif_VEF.h>
@@ -82,20 +82,20 @@ int Champ_front_contact_VEF::initialiser(double temps, const Champ_Inc_base& inc
     {
       nom_bord = nom_bord2;
       associer_ch_inc_base(l_inconnue2.valeur());
-      const Zone_dis_base& zone_dis_opposee = front_dis().zone_dis();
-      const Zone_dis_base& zone_dis_locale = frontiere_dis().zone_dis();
+      const Domaine_dis_base& domaine_dis_opposee = front_dis().domaine_dis();
+      const Domaine_dis_base& domaine_dis_locale = frontiere_dis().domaine_dis();
       const Frontiere& frontiere_opposee = front_dis().frontiere();
       const Frontiere& frontiere_locale = frontiere_dis().frontiere();
       if (!sub_type(Raccord_distant_homogene, frontiere_opposee))
         {
-          const Nom& nom_domaine_oppose = zone_dis_opposee.zone().le_nom();
+          const Nom& nom_domaine_oppose = domaine_dis_opposee.domaine().le_nom();
           Cerr << "Error, the boundary " << frontiere_opposee.le_nom() << " should be a Raccord." << finl;
           Cerr << "Add in your data file between the definition and the partition of the domain " << nom_domaine_oppose << " :" << finl;
           Cerr << "Modif_bord_to_raccord " << nom_domaine_oppose << " " << frontiere_opposee.le_nom() << finl;
           exit();
         }
       Raccord_distant_homogene& raccord_distant = ref_cast_non_const(Raccord_distant_homogene, frontiere_opposee);
-      raccord_distant.initialise(frontiere_locale, zone_dis_locale, zone_dis_opposee);
+      raccord_distant.initialise(frontiere_locale, domaine_dis_locale, domaine_dis_opposee);
     }
 
   // remplissage du tableau de connectivite des numeros de faces de bord
@@ -204,7 +204,7 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
   const DoubleTab& inco_valeurs = l_inconnue->valeurs(temps);
   //const Equation_base& eq=l_inconnue->equation();
   assert (nom_bord != "??") ;
-  const Zone_VEF& le_dom_dis=ref_cast(Zone_VEF, zone_dis());
+  const Domaine_VEF& le_dom_dis=ref_cast(Domaine_VEF, domaine_dis());
   const Front_VF& la_front_vf=ref_cast(Front_VF, front_dis());
   const DoubleVect& vol = le_dom_dis.volumes();
   const IntTab& face_voisins = le_dom_dis.face_voisins();
@@ -244,7 +244,7 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
               d_equiv.resize(nb_faces);
               // Recherche du bord correspondant
               int i_bord=-1;
-              for (int n_bord=0; n_bord<le_dom_dis.zone().nb_front_Cl(); n_bord++)
+              for (int n_bord=0; n_bord<le_dom_dis.domaine().nb_front_Cl(); n_bord++)
                 if (le_dom_dis.front_VF(n_bord).le_nom() == la_front_vf.le_nom()) i_bord=n_bord;
               // Copie des donnees d'un bord dans les tableaux locaux temporaires positions_Pf et d_equiv
               for (int ind_face=0; ind_face<nb_faces; ind_face++)
@@ -262,7 +262,7 @@ void Champ_front_contact_VEF::calcul_grads_locaux(double temps)
   double coeff;
   int signe;
   double surface_pond, surface_face;
-  int nb_faces_elem = le_dom_dis.zone().nb_faces_elem();
+  int nb_faces_elem = le_dom_dis.domaine().nb_faces_elem();
   const DoubleTab& face_normale = le_dom_dis.face_normales();
 
   // calcul de grad_num_local et grad_fro_local
@@ -472,27 +472,27 @@ const Milieu_base& Champ_front_contact_VEF::milieu() const
 }
 
 
-const Zone_dis_base& Champ_front_contact_VEF::zone_dis() const
+const Domaine_dis_base& Champ_front_contact_VEF::domaine_dis() const
 {
-  return inconnue().zone_dis_base();
+  return inconnue().domaine_dis_base();
 }
 
 
-const Zone_Cl_dis_base& Champ_front_contact_VEF::zone_Cl_dis() const
+const Domaine_Cl_dis_base& Champ_front_contact_VEF::domaine_Cl_dis() const
 {
-  return equation().zone_Cl_dis().valeur();
+  return equation().domaine_Cl_dis().valeur();
 }
 
 
 const Frontiere_dis_base& Champ_front_contact_VEF::front_dis() const
 {
-  return zone_dis().frontiere_dis(nom_bord);
+  return domaine_dis().frontiere_dis(nom_bord);
 }
 
 
 void Champ_front_contact_VEF::calcul_coeff_amort()
 {
-  const Zone_VEF& le_dom_dis=ref_cast(Zone_VEF, l_inconnue1->equation().zone_dis().valeur());
+  const Domaine_VEF& le_dom_dis=ref_cast(Domaine_VEF, l_inconnue1->equation().domaine_dis().valeur());
   int rang_front = le_dom_dis.rang_frontiere(nom_bord1);
   const Front_VF& la_front_vf=ref_cast(Front_VF, le_dom_dis.frontiere_dis(rang_front));
   const DoubleVect& vol = le_dom_dis.volumes();
@@ -536,7 +536,7 @@ void Champ_front_contact_VEF::associer_front_vf_et_ch_front_autre_pb()
 {
   const Champ_Inc_base& temp_autre = l_inconnue2.valeur();
   const Equation_base& eqn = temp_autre.equation();
-  const Zone_Cl_dis_base& zcl = eqn.zone_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl = eqn.domaine_Cl_dis().valeur();
 
   int num_cl;
   for (num_cl = 0; num_cl<zcl.nb_cond_lim(); num_cl++)
@@ -605,7 +605,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   associer_ch_inc_base(l_inconnue1.valeur()) ;
 
   assert (nom_bord != "??") ;
-  const Zone_VEF& le_dom_dis1=ref_cast(Zone_VEF, l_inconnue1->equation().zone_dis().valeur());
+  const Domaine_VEF& le_dom_dis1=ref_cast(Domaine_VEF, l_inconnue1->equation().domaine_dis().valeur());
 
   int rang_front1 = le_dom_dis1.rang_frontiere(nom_bord1);
   const Front_VF& la_front_vf1=ref_cast(Front_VF, le_dom_dis1.frontiere_dis(rang_front1));
@@ -623,7 +623,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   associer_ch_inc_base(l_inconnue2.valeur()) ;
 
   assert (nom_bord != "??") ;
-  const Zone_VEF& le_dom_dis2=ref_cast(Zone_VEF, l_inconnue2->equation().zone_dis().valeur());
+  const Domaine_VEF& le_dom_dis2=ref_cast(Domaine_VEF, l_inconnue2->equation().domaine_dis().valeur());
 
   int rang_front2 = le_dom_dis2.rang_frontiere(nom_bord2);
   const Front_VF& la_front_vf2=ref_cast(Front_VF, le_dom_dis2.frontiere_dis(rang_front2));
@@ -665,9 +665,9 @@ void Champ_front_contact_VEF::remplir_connect_bords()
   if(nb_faces1!=nb_faces2)
     {
       Cerr << "Warning, the number of faces (" << nb_faces1 << ") on the boundary " << la_front_vf1.le_nom();
-      Cerr << " of the domain " << le_dom_dis1.zone().le_nom() << finl;
+      Cerr << " of the domain " << le_dom_dis1.domaine().le_nom() << finl;
       Cerr << "is different of the number of faces (" << nb_faces2 << ") on the boundary " << la_front_vf2.le_nom();
-      Cerr << " of the domain " << le_dom_dis2.zone().le_nom() << " ..." << finl;
+      Cerr << " of the domain " << le_dom_dis2.domaine().le_nom() << " ..." << finl;
       Cerr << "The exchange condition with the paroi_contact can't succeed!" << finl;
       Nom fichier="connectivity_failed_";
       Nom fichier_med="connectivity_failed_";
@@ -814,7 +814,7 @@ void Champ_front_contact_VEF::remplir_connect_bords()
 
 void Champ_front_contact_VEF::remplir_faces_coin()
 {
-  const Zone_Cl_VEF& la_zcl_dis1=ref_cast(Zone_Cl_VEF, l_inconnue1->equation().zone_Cl_dis().valeur());
+  const Domaine_Cl_VEF& la_zcl_dis1=ref_cast(Domaine_Cl_VEF, l_inconnue1->equation().domaine_Cl_dis().valeur());
   const Conds_lim& conds_lim = la_zcl_dis1.les_conditions_limites();
   int size_cl = conds_lim.size();
   int size = elems_voisin_bord_.size();
@@ -872,7 +872,7 @@ void Champ_front_contact_VEF::remplir_faces_coin()
 
 void Champ_front_contact_VEF::remplir_elems_voisin_bord()
 {
-  const Zone_VEF& le_dom_dis1=ref_cast(Zone_VEF, l_inconnue1->zone_dis_base());
+  const Domaine_VEF& le_dom_dis1=ref_cast(Domaine_VEF, l_inconnue1->domaine_dis_base());
   int rang_front1 = le_dom_dis1.rang_frontiere(nom_bord1);
   const Front_VF& la_front_vf1=ref_cast(Front_VF, le_dom_dis1.frontiere_dis(rang_front1));
   const IntTab& face_voisins1 = le_dom_dis1.face_voisins();
@@ -900,9 +900,9 @@ void Champ_front_contact_VEF::remplir_elems_voisin_bord()
 }
 void Champ_front_contact_VEF::test_faces_coin()
 {
-  const Zone_VEF& le_dom_dis1=ref_cast(Zone_VEF, l_inconnue1->zone_dis_base());
+  const Domaine_VEF& le_dom_dis1=ref_cast(Domaine_VEF, l_inconnue1->domaine_dis_base());
   const DoubleTab& xv1 = le_dom_dis1.xv();
-  const Zone_Cl_VEF& la_zcl_dis1=ref_cast(Zone_Cl_VEF, l_inconnue1->equation().zone_Cl_dis().valeur());
+  const Domaine_Cl_VEF& la_zcl_dis1=ref_cast(Domaine_Cl_VEF, l_inconnue1->equation().domaine_Cl_dis().valeur());
   const Conds_lim& conds_lim = la_zcl_dis1.les_conditions_limites();
   int size_cl = conds_lim.size();
 
@@ -941,8 +941,8 @@ void Champ_front_contact_VEF::test_faces_coin()
     }
 }
 
-void Champ_front_contact_VEF::connectivity_failed(const Zone_VEF& zvef1, int& nb_faces1, int& ndeb1,
-                                                  const Zone_VEF& zvef2, int& nb_faces2, int& ndeb2,
+void Champ_front_contact_VEF::connectivity_failed(const Domaine_VEF& zvef1, int& nb_faces1, int& ndeb1,
+                                                  const Domaine_VEF& zvef2, int& nb_faces2, int& ndeb2,
                                                   Nom& fichier, Nom& fichier_med)
 {
 
@@ -974,8 +974,8 @@ void Champ_front_contact_VEF::connectivity_failed(const Zone_VEF& zvef1, int& nb
 
       elem2=-1;
 
-      if (dimension==2)  elem2 = zvef2.zone().chercher_elements(xv1(face1,0),xv1(face1,1));
-      else                 elem2 = zvef2.zone().chercher_elements(xv1(face1,0),xv1(face1,1),xv1(face1,2));
+      if (dimension==2)  elem2 = zvef2.domaine().chercher_elements(xv1(face1,0),xv1(face1,1));
+      else                 elem2 = zvef2.domaine().chercher_elements(xv1(face1,0),xv1(face1,1),xv1(face1,2));
 
       if(elem2==-1)
         {
@@ -1036,7 +1036,7 @@ void Champ_front_contact_VEF::connectivity_failed(const Zone_VEF& zvef1, int& nb
   Nom bis(fichier_med);
   bis+="_index";
   fichier_med.prefix(".med");
-  const Zone& dom2 = zvef2.zone();
+  const Domaine& dom2 = zvef2.domaine();
   Noms unites_(1);
   unites_[0]="1";
   Noms nom_compos(1);

@@ -19,9 +19,9 @@
 #include <Source_Chaleur_Fluide_Dilatable_base.h>
 #include <Ref_Fluide_Weakly_Compressible.h>
 
-class Zone_Cl_dis;
-class Zone_dis;
-class Zone_VF;
+class Domaine_Cl_dis;
+class Domaine_dis;
+class Domaine_VF;
 
 /*! @brief class Source_WC_Chaleur
  *
@@ -41,7 +41,7 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const override;
 
 protected:
-  const DoubleTab& correct_grad_boundary(const Zone_VF& zone, DoubleTab& grad_Ptot) const;
+  const DoubleTab& correct_grad_boundary(const Domaine_VF& domaine, DoubleTab& grad_Ptot) const;
   virtual void compute_interpolate_gradP(DoubleTab& gradP, const DoubleTab& Ptot) const = 0;
   DoubleTab& ajouter_(DoubleTab& ) const;
 

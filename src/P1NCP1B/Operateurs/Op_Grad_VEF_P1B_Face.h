@@ -31,8 +31,8 @@
  *
  * @sa Operateur_Grad_base
  */
-class Zone_VEF_PreP1b;
-class Zone_Cl_VEF;
+class Domaine_VEF_PreP1b;
+class Domaine_Cl_VEF;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -47,7 +47,7 @@ class Op_Grad_VEF_P1B_Face : public Op_Grad_VEF_Face
 
 public:
 
-  const Zone_VEF_PreP1b& zone_Vef() const;
+  const Domaine_VEF_PreP1b& domaine_Vef() const;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& modifier_grad_pour_Cl(DoubleTab& ) const;
   DoubleTab& ajouter_elem(const DoubleTab& ,  DoubleTab& ) const;
@@ -55,8 +55,8 @@ public:
   DoubleTab& ajouter_aretes(const DoubleTab& ,  DoubleTab& ) const;
   int impr(Sortie& ) const override ;
 
-  static double calculer_coef_som(int elem,  const Zone_Cl_VEF& zcl,
-                                  const Zone_VEF_PreP1b& zone_VEF) ;
+  static double calculer_coef_som(int elem,  const Domaine_Cl_VEF& zcl,
+                                  const Domaine_VEF_PreP1b& domaine_VEF) ;
   void calculer_flux_bords() const override;
 
 private:

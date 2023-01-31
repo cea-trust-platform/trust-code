@@ -23,7 +23,7 @@
 #include <Ref_Front_VF.h>
 #include <Ref_IntTab.h>
 
-class Zone_PolyMAC_P0;
+class Domaine_PolyMAC_P0;
 class Front_VF;
 class Faces;
 

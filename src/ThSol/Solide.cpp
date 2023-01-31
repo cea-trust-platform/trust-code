@@ -101,27 +101,27 @@ void Solide::discretiser(const Probleme_base& pb, const Discretisation_base& dis
   if (mon_champ_.non_nul())
     {
       is_user_defined_ = true;
-      const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+      const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
       const double temps = pb.schema_temps().temps_courant();
       if (sub_type(Champ_Fonc_MED,mon_champ_.valeur()))
         {
           Cerr<<"Convert Champ_fonc_MED " << nom_champ_ << " to a Champ_Don ..."<<finl;
           Champ_Don tmp_fld;
-          dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,tmp_fld);
+          dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,tmp_fld);
           tmp_fld.affecter_(mon_champ_.valeur()); // interpolate ...
           mon_champ_.detach();
-          dis.discretiser_champ("champ_elem",zone_dis,nom_champ_,"neant",1,temps,mon_champ_);
+          dis.discretiser_champ("champ_elem",domaine_dis,nom_champ_,"neant",1,temps,mon_champ_);
           mon_champ_->valeurs() = tmp_fld->valeurs();
         }
       else if (sub_type(Champ_Uniforme,mon_champ_.valeur())) // blabla ...
         {
           const double val = mon_champ_->valeurs()(0,0);
           mon_champ_.detach();
-          dis.discretiser_champ("champ_elem",zone_dis,nom_champ_,"neant",1,temps,mon_champ_);
+          dis.discretiser_champ("champ_elem",domaine_dis,nom_champ_,"neant",1,temps,mon_champ_);
           mon_champ_->valeurs() = val;
         }
       else
-        dis.nommer_completer_champ_physique(zone_dis, nom_champ_, "neant", mon_champ_.valeur(), pb);
+        dis.nommer_completer_champ_physique(domaine_dis, nom_champ_, "neant", mon_champ_.valeur(), pb);
 
       champs_compris_.ajoute_champ(mon_champ_.valeur());
     }

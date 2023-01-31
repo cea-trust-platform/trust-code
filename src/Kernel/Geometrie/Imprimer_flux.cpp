@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Imprimer_flux.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 
 Implemente_instanciable(Imprimer_flux,"Imprimer_flux",Interprete_geometrique_base);

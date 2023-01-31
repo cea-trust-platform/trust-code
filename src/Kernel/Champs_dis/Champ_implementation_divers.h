@@ -22,8 +22,8 @@
 class Champ_implementation_divers : public Champ_implementation
 {
 public:
-  DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const override = 0;
-  virtual DoubleVect& valeur_aux_sommets_compo(const Zone&, DoubleVect&, int) const override = 0;
+  DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const override = 0;
+  virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const override = 0;
 
 protected:
   DoubleTab& valeur_aux_sommets_impl(DoubleTab& result) const override { throw; }

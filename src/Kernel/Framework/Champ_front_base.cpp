@@ -119,9 +119,9 @@ void Champ_front_base::valeurs_face(int num_face, DoubleVect& val) const
     val[i] = valeurs_a_copier(num_face, i);
 }
 
-const Zone_dis_base& Champ_front_base::zone_dis() const
+const Domaine_dis_base& Champ_front_base::domaine_dis() const
 {
-  return frontiere_dis().zone_dis();
+  return frontiere_dis().domaine_dis();
 }
 
 

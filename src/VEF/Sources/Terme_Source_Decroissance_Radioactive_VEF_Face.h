@@ -18,7 +18,7 @@
 #define Terme_Source_Decroissance_Radioactive_VEF_Face_included
 
 #include <Source_base.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_VEF.h>
 #include <vector>
 
 /*! @brief class Terme_Source_Decroissance_Radioactive_VEF_Face
@@ -47,8 +47,8 @@ protected:
 
   std::vector<double> lambda;
   int nb_groupes=0;
-  REF(Zone_VEF) le_dom_VEF;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Domaine_VEF) le_dom_VEF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };
 

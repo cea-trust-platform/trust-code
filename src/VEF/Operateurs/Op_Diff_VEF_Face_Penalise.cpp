@@ -94,7 +94,7 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
    */
   for (nb_composante = 0; nb_composante < dimension; nb_composante++)
     {
-      for (numero_global_face = 0; numero_global_face < zone_vef().nb_faces();
+      for (numero_global_face = 0; numero_global_face < domaine_vef().nb_faces();
            numero_global_face++)
         {
           /* Calcul des voisinages de numero_global_face */
@@ -102,7 +102,7 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
           voisinage(voisinage_ordre1,voisinage_ordre2);
           reduction(voisinage_ordre1,voisinage_ordre2,voisinage_ordre2_strict);
           //           Cerr << "Nombre iterations " << numero_global_face << finl;
-          //           Cerr << "Nombre de faces " << zone_vef().nb_faces() << finl;
+          //           Cerr << "Nombre de faces " << domaine_vef().nb_faces() << finl;
 
           /* Calcul de resu(numero_face_global,nb_comp)
            * pour le voisinage_ordre2_strict
@@ -159,7 +159,7 @@ ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
           /* Cas 1: la face consideree est au bord du domaine.
            * et numero_global_face = face
            */
-          if (numero_global_face < zone_vef().nb_faces_bord())
+          if (numero_global_face < domaine_vef().nb_faces_bord())
             for (local = 0; local < voisinage_ordre1.size(); local++)
               {
                 assert(voisinage_ordre1.size() == 3);
@@ -225,15 +225,15 @@ voisinage(const int Numero_face, IntList& Voisinage) const
   /* Declaration des principaux parametres locaux. */
   int numero_local;
 
-  /* Le nombre de faces des elements constituant la zone
+  /* Le nombre de faces des elements constituant la domaine
    * de discretisation.
    * REM: on suppose que l'on ne travaille pas sur des prismes.
    */
-  const int nb_faces_element = zone().nb_faces_elem();
+  const int nb_faces_element = domaine().nb_faces_elem();
 
   /* Les elements voisins de Numero_face */
-  const int voisin1 = zone_vef().face_voisins(Numero_face,1);
-  const int voisin2 = zone_vef().face_voisins(Numero_face,0);
+  const int voisin1 = domaine_vef().face_voisins(Numero_face,1);
+  const int voisin2 = domaine_vef().face_voisins(Numero_face,0);
 
   /* Ici, on recupere les faces de voisin*
    * que l'on injecte dans la liste Voisinage.
@@ -247,7 +247,7 @@ voisinage(const int Numero_face, IntList& Voisinage) const
            * faces de voisin*
            */
           const int numero_global_face =
-            zone_vef().elem_faces(voisin1,numero_local);
+            domaine_vef().elem_faces(voisin1,numero_local);
 
           /* Puis on place ce numero dans la liste Voisinage. */
           Voisinage.add_if_not(numero_global_face);
@@ -264,7 +264,7 @@ voisinage(const int Numero_face, IntList& Voisinage) const
            * faces de numero_element_*
            */
           const int numero_global_face =
-            zone_vef().elem_faces(voisin2,numero_local);
+            domaine_vef().elem_faces(voisin2,numero_local);
 
           /* Puis on place ce numero dans la liste Voisinage. */
           Voisinage.add_if_not(numero_global_face);
@@ -354,23 +354,23 @@ signe(const int Face1, const int Face2) const
   int numero_local;
 
   /* On recupere le nombre de sommets des faces
-   * des elements constituant la zone discretisee.
+   * des elements constituant la domaine discretisee.
    * REM: on exclut le prisme par convention.
    */
-  const int nb_sommets_par_face = zone_vef().nb_som_face();
+  const int nb_sommets_par_face = domaine_vef().nb_som_face();
 
   /* On cree une liste qui contient les sommets de la Face2 */
   IntList sommets_Face2;
 
   for (numero_local = 0 ; numero_local < nb_sommets_par_face ; numero_local++)
-    sommets_Face2.add(zone_vef().face_sommets(Face2,numero_local));
+    sommets_Face2.add(domaine_vef().face_sommets(Face2,numero_local));
 
   /* Enfin, on regarde si des sommets de la Face2 appartiennent
    * a la Face1.
    * Si oui, alors on retourne 1 sinon on retourne -1
    */
   for (numero_local = 0; numero_local < nb_sommets_par_face ; numero_local++)
-    if ( sommets_Face2.contient(zone_vef().face_sommets(Face1,numero_local)))
+    if ( sommets_Face2.contient(domaine_vef().face_sommets(Face1,numero_local)))
       return 1.;
 
   return -1.;
@@ -398,10 +398,10 @@ coefficient_penalisation(const int Numero_face) const
   double coefficientpenalisation = 0.;
 
   const int voisin1 =
-    zone_vef().face_voisins(Numero_face,1);
+    domaine_vef().face_voisins(Numero_face,1);
 
   const int voisin2 =
-    zone_vef().face_voisins(Numero_face,0);
+    domaine_vef().face_voisins(Numero_face,0);
 
   if (voisin1 == -1 && voisin2 == -1)
     {
@@ -544,12 +544,12 @@ element_commun(const int Face1,const int Face2) const
   //  Cerr << "J'entre dans element_commun" << finl;
 
   /* Les elements voisins de Face1 */
-  const int voisin1_Face1 = zone_vef().face_voisins(Face1,1);
-  const int voisin2_Face1 = zone_vef().face_voisins(Face1,0);
+  const int voisin1_Face1 = domaine_vef().face_voisins(Face1,1);
+  const int voisin2_Face1 = domaine_vef().face_voisins(Face1,0);
 
   /* Les elements voisins de Face2 */
-  const int voisin1_Face2 = zone_vef().face_voisins(Face2,1);
-  const int voisin2_Face2 = zone_vef().face_voisins(Face2,0);
+  const int voisin1_Face2 = domaine_vef().face_voisins(Face2,1);
+  const int voisin2_Face2 = domaine_vef().face_voisins(Face2,0);
 
   /* On cherche l'element commun */
   if (voisin1_Face1 != -1)
@@ -590,7 +590,7 @@ const
   int numero_local,lautre_face=-1;
   int elem_commun = element_commun(Face1,Face2);
 
-  /* Le nombre de faces des elements constituant la zone
+  /* Le nombre de faces des elements constituant la domaine
    * de discretisation.
    * REM: on suppose que l'on ne travaille pas sur des prismes.
    */
@@ -602,7 +602,7 @@ const
       return lautre_face;
     }
 
-  const int nb_faces_element = zone().nb_faces_elem();
+  const int nb_faces_element = domaine().nb_faces_elem();
 
   for (numero_local = 0; numero_local < nb_faces_element; numero_local++)
 
@@ -611,7 +611,7 @@ const
        * faces de Element
        */
       const int numero_global_face =
-        zone_vef().elem_faces(elem_commun,numero_local);
+        domaine_vef().elem_faces(elem_commun,numero_local);
 
       if ( numero_global_face != Face1 && numero_global_face != Face2)
         {

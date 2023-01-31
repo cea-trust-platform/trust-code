@@ -126,7 +126,7 @@ Entree& Pb_MED::readOn(Entree& is )
   // on retire _0000 si il existe et on cree le bon fichier
   traite_nom_fichier_med(nom_fic);
 
-  Zone& dom=ref_cast(Zone, Interprete::objet(nom_dom));
+  Domaine& dom=ref_cast(Domaine, Interprete::objet(nom_dom));
   associer_domaine(dom);
 
   // Read domain in MED file:
@@ -134,7 +134,7 @@ Entree& Pb_MED::readOn(Entree& is )
   lire.lire_geom(nom_fic, dom, nom_dom, nom_dom);
   dom.reordonner();
 
-  Nom typ = "NO_FACE_Zone_VF_inst";
+  Nom typ = "NO_FACE_Domaine_VF_inst";
   le_domaine_dis.typer(typ);
   le_domaine_dis->associer_domaine(dom);
   le_domaine_dis->discretiser_root(typ);
@@ -264,7 +264,7 @@ void Pb_MED::creer_champ(const Motcle& motlu)
         }
     }
   Champ_Fonc_MED& chmed=ref_cast(Champ_Fonc_MED,le_ch_fonc.valeur());
-  const Zone& dom_med = domaine();
+  const Domaine& dom_med = domaine();
   chmed.creer(nom_fic,dom_med,localisation, temps_sauv_);
 
   if (flag)

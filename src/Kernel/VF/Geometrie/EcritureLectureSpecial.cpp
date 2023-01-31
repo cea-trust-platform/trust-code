@@ -16,8 +16,8 @@
 #include <EcritureLectureSpecial.h>
 
 #include <Champ_Fonc_base.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 #include <MD_Vector_tools.h>
 #include <Octree_Double.h>
 #include <MD_Vector_composite.h>
@@ -37,22 +37,22 @@ Nom EcritureLectureSpecial::Output="EcrFicPartageBin";
 
 Implemente_instanciable(EcritureLectureSpecial,"EcritureLectureSpecial",Interprete);
 
-const DoubleTab& get_ref_coordinates_items(const Zone_VF& zvf, const MD_Vector& md)
+const DoubleTab& get_ref_coordinates_items(const Domaine_VF& zvf, const MD_Vector& md)
 {
   // j'aurais pris xv mais il n'a pas de structure parallele !!!
   if (md == zvf.face_sommets().get_md_vector())
     return zvf.xv(); // Descripteur des face
   // j'aurais pris xp mais il n'a pas de structure parallele !!!!!!$&
-  else if (md == zvf.zone().les_elems().get_md_vector())
+  else if (md == zvf.domaine().les_elems().get_md_vector())
     return zvf.xp(); // Descripteur des elements
   else if (md == zvf.xa().get_md_vector())
     return zvf.xa(); // Descripteur des aretes
-  else if (md == zvf.zone().les_sommets().get_md_vector())
-    return zvf.zone().les_sommets();
+  else if (md == zvf.domaine().les_sommets().get_md_vector())
+    return zvf.domaine().les_sommets();
   else
     {
       Cerr << "Error in get_ref_coordinates_items\n"
-           << " descriptor not found in this zone" << finl;
+           << " descriptor not found in this domaine" << finl;
       Process::exit();
     }
   return zvf.xv(); // for compiler
@@ -128,14 +128,14 @@ int EcritureLectureSpecial::is_ecriture_special(int& special,int& a_faire)
   return mode_ecr;
 }
 
-/*! @brief simple appel a EcritureLectureSpecial::ecriture_special (const Zone_VF& zvf,Sortie& fich,int nbval,const DoubleTab& val)
+/*! @brief simple appel a EcritureLectureSpecial::ecriture_special (const Domaine_VF& zvf,Sortie& fich,int nbval,const DoubleTab& val)
  *
  *     apres avoir recupere le tableau val
  *
  */
 int EcritureLectureSpecial::ecriture_special(const Champ_base& ch, Sortie& fich)
 {
-  const Zone_VF& zvf = ref_cast(Zone_VF, ch.zone_dis_base());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, ch.domaine_dis_base());
   const DoubleTab& val = ch.valeurs();
   return ecriture_special(zvf, fich, val);
 }
@@ -212,7 +212,7 @@ int ecrit(Sortie& fich, const ArrOfBit& items_to_write, const DoubleTab& pos, co
  * Methode recursive, si le tableau a ecrire a un descripteur MD_Vector_composite
  *
  */
-static int ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
+static int ecriture_special_part2(const Domaine_VF& zvf, Sortie& fich, const DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
   int bytes = 0;
@@ -220,7 +220,7 @@ static int ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const Double
     {
       // Champs p1bulles et autres: appel recursif pour les differents sous-tableaux:
       ConstDoubleTab_parts parts(val);
-      int n = zvf.que_suis_je() == "Zone_PolyMAC" || zvf.que_suis_je() == "Zone_PolyMAC_P0" ? 1 : parts.size();//on saute les variables auxiliaires de Champ_{P0,Face}_PolyMAC
+      int n = zvf.que_suis_je() == "Domaine_PolyMAC" || zvf.que_suis_je() == "Domaine_PolyMAC_P0" ? 1 : parts.size();//on saute les variables auxiliaires de Champ_{P0,Face}_PolyMAC
       for (int i = 0; i < n; i++)
         bytes += ecriture_special_part2(zvf, fich, parts[i]);
     }
@@ -244,7 +244,7 @@ static int ecriture_special_part2(const Zone_VF& zvf, Sortie& fich, const Double
 /*! @brief codage de l'ecriture des positions et des valeurs de val
  *
  */
-int EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, const DoubleTab& val)
+int EcritureLectureSpecial::ecriture_special(const Domaine_VF& zvf, Sortie& fich, const DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
   if (!md.non_nul())
@@ -291,12 +291,12 @@ int EcritureLectureSpecial::ecriture_special(const Zone_VF& zvf, Sortie& fich, c
   return bytes;
 }
 
-/*! @brief simple appel a EcritureLectureSpecial::lecture_special (const Zone_VF& zvf,Entree& fich,int nbval, DoubleTab& val )
+/*! @brief simple appel a EcritureLectureSpecial::lecture_special (const Domaine_VF& zvf,Entree& fich,int nbval, DoubleTab& val )
  *
  */
 void EcritureLectureSpecial::lecture_special(Champ_base& ch, Entree& fich)
 {
-  const Zone_VF& zvf=ref_cast(Zone_VF,ch.zone_dis_base());
+  const Domaine_VF& zvf=ref_cast(Domaine_VF,ch.domaine_dis_base());
   DoubleTab& val = ch.valeurs();
   lecture_special(zvf, fich, val);
 }
@@ -474,7 +474,7 @@ static int lire_special(Entree& fich, const DoubleTab& coords, DoubleTab& val, c
 }
 
 // Valeur de retour: nombre total d'items sequentiels lus (sur tous les procs)
-static int lecture_special_part2(const Zone_VF& zvf, Entree& fich, DoubleTab& val)
+static int lecture_special_part2(const Domaine_VF& zvf, Entree& fich, DoubleTab& val)
 {
   const MD_Vector& md = val.get_md_vector();
 
@@ -490,7 +490,7 @@ static int lecture_special_part2(const Zone_VF& zvf, Entree& fich, DoubleTab& va
   else if (sub_type(MD_Vector_std, md.valeur()))
     {
       const DoubleTab& coords = get_ref_coordinates_items(zvf, md);
-      const double epsilon = zvf.zone().epsilon();
+      const double epsilon = zvf.domaine().epsilon();
       ntot += lire_special(fich, coords, val, epsilon);
     }
   else
@@ -505,7 +505,7 @@ static int lecture_special_part2(const Zone_VF& zvf, Entree& fich, DoubleTab& va
 /*! @brief codage de la relecture d'un champ a partir d'un fichier special positions,valeurs
  *
  */
-void EcritureLectureSpecial::lecture_special(const Zone_VF& zvf, Entree& fich, DoubleTab& val)
+void EcritureLectureSpecial::lecture_special(const Domaine_VF& zvf, Entree& fich, DoubleTab& val)
 {
 
   const MD_Vector& md_vect = val.get_md_vector();

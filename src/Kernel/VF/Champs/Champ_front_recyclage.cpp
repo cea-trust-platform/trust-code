@@ -17,7 +17,7 @@
 #include <Interprete.h>
 #include <Probleme_base.h>
 #include <TRUSTTrav.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Equation_base.h>
 #include <communications.h>
 #include <Octree.h>
@@ -403,7 +403,7 @@ void Champ_front_recyclage::get_coord_faces(const Frontiere_dis_base& fr_vf,
                                             const DoubleVect& delt_dist)
 {
   const Front_VF&   fr_vf2    = ref_cast(Front_VF,fr_vf);
-  const Zone_VF&    le_dom2  = ref_cast(Zone_VF,fr_vf2.zone_dis());
+  const Domaine_VF&    le_dom2  = ref_cast(Domaine_VF,fr_vf2.domaine_dis());
   const DoubleTab&  xv2       = le_dom2.xv();
   const int      nb_faces2 = fr_vf2.nb_faces();
   const int      ndeb2     = fr_vf2.num_premiere_face();
@@ -471,7 +471,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
   // Remplissage de remote_coords[i]: coordonnees des centres des faces du bord nom_bord2
   // (bord destination) + delt_dist
   // du processeur i (tous les procs possedent le meme tableau remote_coords)
-  // Build a DoubleTabs containing the coordinates of the remote faces on zone 1 for each processor
+  // Build a DoubleTabs containing the coordinates of the remote faces on domaine 1 for each processor
   DoubleTabs remote_coords(nprocs);
   /*
   if (nom_bord!="??") // Improve this test
@@ -496,15 +496,15 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
   ArrOfInt elem_list;
   elem_list.set_smart_resize(1);
 
-  const Zone& zone1 = l_inconnue1.valeur().equation().zone_dis().valeur().zone();
-  const int nb_elem_zone1 = zone1.nb_elem();
+  const Domaine& domaine1 = l_inconnue1.valeur().equation().domaine_dis().valeur().domaine();
+  const int nb_elem_domaine1 = domaine1.nb_elem();
   const int dim = remote_coords[moi].dimension(1);
 
-  const Zone_dis_base& zdis = l_inconnue1.valeur().equation().zone_dis().valeur();
-  const Zone_VF& zvf = ref_cast(Zone_VF,zdis);
+  const Domaine_dis_base& zdis = l_inconnue1.valeur().equation().domaine_dis().valeur();
+  const Domaine_VF& zvf = ref_cast(Domaine_VF,zdis);
   const DoubleTab& xp = zvf.xp();
   DoubleVect remote_point(3);
-  const OctreeRoot& octree = zone1.construit_octree();
+  const OctreeRoot& octree = domaine1.construit_octree();
   // Loop on processes
   for (int pe = 0; pe < nprocs; pe++)
     {
@@ -559,15 +559,15 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
                   else
                     {
                       // Surely 2 elements surrounding an internal face so select one element:
-                      elem_identifie = Zone::identifie_item_unique(elems,coord_elems,remote_point);
+                      elem_identifie = Domaine::identifie_item_unique(elems,coord_elems,remote_point);
                     }
                 }
               else
                 {
                   // Find a unic remote elem:
-                  elem_identifie = Zone::identifie_item_unique(elems,coord_elems,remote_point);
+                  elem_identifie = Domaine::identifie_item_unique(elems,coord_elems,remote_point);
                 }
-              elem_list[ind_face] = (elem_identifie < nb_elem_zone1 ? elem_identifie : -1);
+              elem_list[ind_face] = (elem_identifie < nb_elem_domaine1 ? elem_identifie : -1);
             }
         }
 
@@ -584,7 +584,7 @@ int Champ_front_recyclage::initialiser(double temps, const Champ_Inc_base& inco)
       for (int face = 0; face < nb_faces_on_pe; face++)
         {
           const int elem = elem_list[face];
-          if (elem < 0 || elem >= nb_elem_zone1)
+          if (elem < 0 || elem >= nb_elem_domaine1)
             {
               // This coordinate is not on this processor...
             }
@@ -757,8 +757,8 @@ void Champ_front_recyclage::initialiser_moyenne_imposee(DoubleTab& moyenne)
     }
   else if (methode_moy_impos_==5)
     {
-      const Zone_dis_base& zone_dis2 = fr_vf2.zone_dis();
-      const Zone_VF& le_dom2        = ref_cast(Zone_VF,zone_dis2);
+      const Domaine_dis_base& domaine_dis2 = fr_vf2.domaine_dis();
+      const Domaine_VF& le_dom2        = ref_cast(Domaine_VF,domaine_dis2);
       const DoubleTab&  xv2          = le_dom2.xv();
 
       double Kappa = 0.41;
@@ -835,8 +835,8 @@ void Champ_front_recyclage::calcul_moyenne_imposee(const DoubleTab& tab,double t
   if (methode_moy_impos_==1)
     {
       const Front_VF& fr_vf2 = ref_cast(Front_VF,la_frontiere_dis.valeur());
-      const Zone_dis_base& zone_dis2 = fr_vf2.zone_dis();
-      const Zone_VF&  le_dom2 = ref_cast(Zone_VF,zone_dis2);
+      const Domaine_dis_base& domaine_dis2 = fr_vf2.domaine_dis();
+      const Domaine_VF&  le_dom2 = ref_cast(Domaine_VF,domaine_dis2);
       const DoubleTab&  xv2 = le_dom2.xv();
       int nb_faces_bord2 = fr_vf2.nb_faces();
       int ndeb = fr_vf2.num_premiere_face();
@@ -1083,8 +1083,8 @@ void Champ_front_recyclage::lire_fichier_format2(DoubleTab& moyenne,
   const Front_VF& fr_vf2 = ref_cast(Front_VF,fr_vf);
   int num1 = fr_vf2.num_premiere_face();
   int num2 = num1 + fr_vf2.nb_faces();
-  const Zone_dis_base& zone_dis2 = fr_vf2.zone_dis();
-  const Zone_VF& zvf2 = ref_cast(Zone_VF,zone_dis2);
+  const Domaine_dis_base& domaine_dis2 = fr_vf2.domaine_dis();
+  const Domaine_VF& zvf2 = ref_cast(Domaine_VF,domaine_dis2);
   const DoubleTab& xv2 = zvf2.xv();
 
   for (num_face2=num1; num_face2<num2; num_face2++)
@@ -1174,8 +1174,8 @@ void Champ_front_recyclage::lire_fichier_format3(DoubleTab& moyenne,
   const Front_VF& fr_vf2 = ref_cast(Front_VF,fr_vf);
   int num1 = fr_vf2.num_premiere_face();
   int num2 = num1 + fr_vf2.nb_faces();
-  const Zone_dis_base& zone_dis2 = fr_vf2.zone_dis();
-  const Zone_VF& zvf2 = ref_cast(Zone_VF,zone_dis2);
+  const Domaine_dis_base& domaine_dis2 = fr_vf2.domaine_dis();
+  const Domaine_VF& zvf2 = ref_cast(Domaine_VF,domaine_dis2);
   const DoubleTab& xv2 = zvf2.xv();
 
   // Reading and buffering the two input files

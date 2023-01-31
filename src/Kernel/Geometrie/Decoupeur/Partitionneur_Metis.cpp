@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Partitionneur_Metis.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Static_Int_Lists.h>
 
 #include <Param.h>
@@ -108,7 +108,7 @@ int Partitionneur_Metis::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     return Partitionneur_base::lire_motcle_non_standard(mot,is);
 }
 
-void Partitionneur_Metis::associer_domaine(const Zone& domaine)
+void Partitionneur_Metis::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
 }
@@ -157,7 +157,7 @@ void Partitionneur_Metis::construire_partition(IntVect& elem_part, int& nb_parts
   Cerr << "Partitionneur_Metis::construire_partition" << finl;
   Cerr << " Construction of graph connectivity..." << finl;
   Static_Int_Lists graph_elements_perio;
-  //const Zone& dom = ref_domaine_.valeur();
+  //const Domaine& dom = ref_domaine_.valeur();
   Domain_Graph graph;
   if (use_segment_to_build_connectivite_elem_elem_==0)
     {

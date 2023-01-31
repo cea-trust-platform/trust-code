@@ -60,7 +60,7 @@ Entree& Fluide_Quasi_Compressible::readOn(Entree& is)
   return is;
 }
 
-void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
+void Fluide_Quasi_Compressible::checkTraitementPth(const Domaine_Cl_dis& domaine_cl)
 {
   /*
    * traitement_PTh=0 => resolution classique de l'edo
@@ -75,11 +75,11 @@ void Fluide_Quasi_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
   else
     {
       int pression_imposee=0;
-      int size=zone_cl.les_conditions_limites().size();
+      int size=domaine_cl.les_conditions_limites().size();
       assert(size!=0);
       for (int n=0; n<size; n++)
         {
-          const Cond_lim& la_cl = zone_cl.les_conditions_limites(n);
+          const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n);
           if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
         }
 
@@ -196,16 +196,16 @@ void Fluide_Quasi_Compressible::preparer_pas_temps()
 
 void Fluide_Quasi_Compressible::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
   double temps=pb.schema_temps().temps_courant();
 
   // In *_Melange_Binaire_QC we do not even have a temperature variable ...
   // it is the species mass fraction Y1... Although named ch_temperature
   Champ_Don& ch_TK = ch_temperature();
   if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_QC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_QC")
-    dis.discretiser_champ("temperature",zone_dis,"fraction_massique","neant",1,temps,ch_TK);
+    dis.discretiser_champ("temperature",domaine_dis,"fraction_massique","neant",1,temps,ch_TK);
   else
-    dis.discretiser_champ("temperature",zone_dis,"temperature","K",1,temps,ch_TK);
+    dis.discretiser_champ("temperature",domaine_dis,"temperature","K",1,temps,ch_TK);
 
   if (type_fluide()!="Gaz_Parfait")
     loi_etat().valeur().champs_compris().ajoute_champ(ch_TK);
@@ -246,7 +246,7 @@ void Fluide_Quasi_Compressible::completer_edo(const Probleme_base& pb)
     typ += loi_etat_->type_fluide();
 
   EDO_Pth_.typer(typ);
-  EDO_Pth_->associer_domaines(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
+  EDO_Pth_->associer_domaines(pb.equation(0).domaine_dis(),pb.equation(0).domaine_Cl_dis());
   EDO_Pth_->associer_fluide(*this);
   EDO_Pth_->mettre_a_jour_CL(Pth_);
 

@@ -19,9 +19,9 @@
 #define Op_Diff_PolyMAC_P0_base_included
 
 #include <Operateur_Diff_base.h>
-#include <Ref_Zone_PolyMAC_P0.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
+#include <Ref_Domaine_PolyMAC_P0.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
 #include <SFichier.h>
 class Champ_Fonc;
 
@@ -46,7 +46,7 @@ class Op_Diff_PolyMAC_P0_base : public Operateur_Diff_base
   Declare_base(Op_Diff_PolyMAC_P0_base);
 
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
 
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
@@ -70,7 +70,7 @@ public:
     return nu_;
   }
 
-  /* flux aux faces (hors Echange_contact): cf. Zone_PolyMAC_P0::fgrad */
+  /* flux aux faces (hors Echange_contact): cf. Domaine_PolyMAC_P0::fgrad */
   void update_phif(int full_stencil = 0) const;
   //indices : elems locaux dans phif_e([phif_d(f), phif_d(f + 1)[)
   mutable IntTab phif_d, phif_e; //stencils
@@ -80,8 +80,8 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Zone_PolyMAC_P0) le_dom_poly_;
-  REF(Zone_Cl_PolyMAC) la_zcl_poly_;
+  REF(Domaine_PolyMAC_P0) le_dom_poly_;
+  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
 
   double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad
@@ -90,7 +90,7 @@ protected:
   void update_nu() const; //mise a jour
   mutable DoubleTab nu_;
 
-  /* liste de sommets traites directement par l'operateur et non par Zone_PolyMAC_P0::fgrad() (cf. Op_Diff_PolyMAC_P0_Elem) */
+  /* liste de sommets traites directement par l'operateur et non par Domaine_PolyMAC_P0::fgrad() (cf. Op_Diff_PolyMAC_P0_Elem) */
   mutable IntTab som_ext;
 
   mutable int nu_constant_ = 0 /* Elie : pour valgrind */, nu_a_jour_ = 0, s_dist_init_ = 0, som_ext_init_ = 0, phif_a_jour_ = 0; //nu constant / nu a jour / phif a jour

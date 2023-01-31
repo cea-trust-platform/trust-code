@@ -15,7 +15,7 @@
 
 #include <Op_Grad_PolyMAC_P0_Face.h>
 #include <Champ_Elem_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Neumann_sortie_libre.h>
 #include <Periodique.h>
@@ -37,18 +37,18 @@ Sortie& Op_Grad_PolyMAC_P0_Face::printOn(Sortie& s) const { return s << que_suis
 
 Entree& Op_Grad_PolyMAC_P0_Face::readOn(Entree& s) { return s ; }
 
-void Op_Grad_PolyMAC_P0_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch)
+void Op_Grad_PolyMAC_P0_Face::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch)
 {
-  ref_zone = ref_cast(Zone_PolyMAC_P0, zone_dis.valeur());
-  ref_zcl = ref_cast(Zone_Cl_PolyMAC, zone_cl_dis.valeur());
+  ref_domaine = ref_cast(Domaine_PolyMAC_P0, domaine_dis.valeur());
+  ref_zcl = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
 }
 
 void Op_Grad_PolyMAC_P0_Face::completer()
 {
   Operateur_Grad_base::completer();
-  const Zone_PolyMAC_P0& zone = ref_zone.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_domaine.valeur();
   /* besoin d'un joint de 1 */
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
       Cerr << "Op_Grad_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
@@ -62,7 +62,7 @@ void Op_Grad_PolyMAC_P0_Face::completer()
 
 void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const
 {
-  const Zone_PolyMAC_P0& zone = ref_zone.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_domaine.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const DoubleTab& press = le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
@@ -71,18 +71,18 @@ void Op_Grad_PolyMAC_P0_Face::update_grad(int full_stencil) const
   if (!full_stencil && (alp ? (last_gradp_ >= t_past) : (last_gradp_ != -DBL_MAX))) return; //deja calcule a ce temps -> rien a faire
 
   /* gradient */
-  zone.fgrad(M, 1, ref_zcl->les_conditions_limites(), ch.fcl(), NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
+  domaine.fgrad(M, 1, ref_zcl->les_conditions_limites(), ch.fcl(), NULL, NULL, 1, full_stencil, fgrad_d, fgrad_e, fgrad_c);
   last_gradp_ = t_past;
 }
 
 void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC_P0& zone = ref_zone.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_domaine.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
-  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
-  int i, j, e, eb, f, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size(),
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
+  const DoubleTab& nf = domaine.face_normales(), &xp = domaine.xp(), &xv = domaine.xv();
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
+  int i, j, e, eb, f, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = ch.valeurs().line_size(),
                       m, M = (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()).line_size();
   update_grad(sub_type(Pb_Multiphase, equation().probleme())); //provoque le calcul du gradient
 
@@ -93,7 +93,7 @@ void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
   Matrice_Morse *mat_p = matrices["pression"], *mat_v = !semi_impl.count(nom_inc) && matrices.count(nom_inc) ? matrices.at(nom_inc) : NULL, mat2_p, mat2_v;
   std::map<int, std::set<int>> dpb_v, dgp_pb; //dependances vitesses -(dpb_v)-> pressions au bord -(dgp_pb)-> gradient
   if (mat_v)
-    for (f = 0; f < zone.nb_faces_tot(); f++)
+    for (f = 0; f < domaine.nb_faces_tot(); f++)
       if (fcl(f, 0) > 1)
         for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
           for (d = 0, i = nf_tot + D * e; d < D; d++, i++)
@@ -103,23 +103,23 @@ void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 
   /* aux faces : gradient aux faces + remplissage de dgp_pb */
   std::vector<std::set<int>> dfgpf(N); //dfgpf[n][idx] = coeff : dependance en les pfb variables (presents dans dpf_ve)
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     {
       /* |f| grad p */
       for (i = fgrad_d(f); i < fgrad_d(f + 1); i++) //face interne -> flux multipoints
         for (e = fgrad_e(i), n = 0, m = 0; n < N; n++, m += (M > 1))
           {
-            if (f < zone.nb_faces() && e < ne_tot) sten_p.append_line(N * f + n, M * e + m);
+            if (f < domaine.nb_faces() && e < ne_tot) sten_p.append_line(N * f + n, M * e + m);
             if (e >= ne_tot && dpb_v.count(M * (e - ne_tot) + m)) dfgpf[n].insert(M * (e - ne_tot) + m);
           }
 
       /* face -> vf(f) * phi grad p */
-      if (fcl(f, 0) < 2 && f < zone.nb_faces())
+      if (fcl(f, 0) < 2 && f < domaine.nb_faces())
         for (n = 0, m = 0; n < N; n++, m += (M > 1))
           for (auto &c : dfgpf[n]) dgp_pb[N * f + n].insert(M * c + m);
       /* elems amont/aval -> ve(e) * phi grad p */
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        if (e < zone.nb_elem())
+        if (e < domaine.nb_elem())
           for (d = 0; d < D; d++)
             if (fs(f) * std::fabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e))
               for (n = 0, m = 0; n < N; n++, m += (M > 1))
@@ -129,7 +129,7 @@ void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
     }
 
   /* aux elements : gradient aux elems */
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
       for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
         if ((eb = fgrad_e(j)) < ne_tot)
@@ -151,15 +151,15 @@ void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 
 void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC_P0& zone = ref_zone.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_domaine.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Conds_lim& cls = ref_zcl->les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& nf = zone.face_normales(), &xp = zone.xp(), &xv = zone.xv(), &vfd = zone.volumes_entrelaces_dir(),
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
+  const DoubleTab& nf = domaine.face_normales(), &xp = domaine.xp(), &xv = domaine.xv(), &vfd = domaine.volumes_entrelaces_dir(),
                    &press = semi_impl.count("pression") ? semi_impl.at("pression") : (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : ref_cast(Navier_Stokes_std, equation()).pression().valeurs()),
                     *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face();
-  int i, j, e, f, fb, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size();
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face();
+  int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = secmem.line_size(), m, M = press.line_size();
   update_grad();
   const std::string& nom_inc = ch.le_nom().getString();
   Matrice_Morse *mat_p = !semi_impl.count("pression") && matrices.count("pression") ? matrices.at("pression") : NULL,
@@ -167,7 +167,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 
   DoubleTrav gb(nf_tot, M), gf(N), a_v(N); //-grad p aux bords , (grad p)_f, produit alpha * vol
   std::map<int, std::map<int, double>> dgp_gb, dgb_v; //dependances vitesses -(dgb_v)-> -grad p aux bords -(dgp_gb)-> grad p ailleurs
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (fcl(f, 0) > 1)  //Dirichlet/Symetrie : pression du voisin + correction en regardant l'eq de NS dans celui-ci
       for (e = f_e(f, 0), n = 0, m = 0; n < N; n++, m += (M > 1))
         {
@@ -183,11 +183,11 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
               }
         }
 
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     if (fgrad_d(f + 1) == fgrad_d(f)) abort();
   /* aux faces */
   std::vector<std::map<int, double>> dgf_pe(N), dgf_gb(N); //dependance de [grad p]_f en les pressions aux elements, en les grad p aux faces de bord
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     {
       for (a_v = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         for (n = 0; n < N; n++) a_v(n) += vfd(f, i) * (alp ? (*alp)(e, n) : 1);
@@ -203,7 +203,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
           }
 
       /* face -> vf(f) * phi grad p */
-      if (fcl(f, 0) < 2 && f < zone.nb_faces())
+      if (fcl(f, 0) < 2 && f < domaine.nb_faces())
         for (n = 0, m = 0; n < N; n++, m += (M > 1))
           {
             double fac = a_v(n) * pf(f);
@@ -213,7 +213,7 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
           }
       /* elems amont/aval -> ve(e) * phi grad p */
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        if (e < zone.nb_elem())
+        if (e < domaine.nb_elem())
           for (d = 0; d < D; d++)
             if (fs(f) * std::fabs(xv(f, d) - xp(e, d)) > 1e-6 * ve(e))
               for (n = 0, m = 0; n < N; n++, m += (M > 1))

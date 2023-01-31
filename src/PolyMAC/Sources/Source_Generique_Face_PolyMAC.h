@@ -18,8 +18,8 @@
 #define Source_Generique_Face_PolyMAC_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
 
 /*! @brief class Source_Generique_Face_PolyMAC
  *
@@ -33,13 +33,13 @@ class Source_Generique_Face_PolyMAC: public Source_Generique_base
 public:
 
   DoubleTab& ajouter(DoubleTab& ) const override;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
   Nom localisation_source() override;
 
 protected:
 
-  REF(Zone_PolyMAC) le_dom_PolyMAC;
-  REF(Zone_Cl_PolyMAC) la_zcl_PolyMAC;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
 };
 
 #endif

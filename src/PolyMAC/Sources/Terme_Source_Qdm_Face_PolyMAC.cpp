@@ -15,10 +15,10 @@
 
 #include <Terme_Source_Qdm_Face_PolyMAC.h>
 #include <Champ_Uniforme.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Op_Grad_PolyMAC_Face.h>
 #include <Equation_base.h>
@@ -45,19 +45,19 @@ Entree& Terme_Source_Qdm_Face_PolyMAC::readOn(Entree& s )
 
 void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = ref_cast(Zone_Poly_base, equation().zone_dis().valeur());
+  const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const DoubleTab& vals = la_source->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
-                   &rho = equation().milieu().masse_volumique().passe(), &nf = zone.face_normales(),
+  const DoubleTab& vals = la_source->valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
+                   &rho = equation().milieu().masse_volumique().passe(), &nf = domaine.face_normales(),
                     *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = zone.volumes(), &pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = zone.nb_faces_tot(),
-               n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, calc_cl = !sub_type(Zone_PolyMAC_P0, zone); //en PolyMAC V1, on calcule aux CL
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
+  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot(),
+               n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); //en PolyMAC V1, on calcule aux CL
 
   /* contributions aux faces (par chaque voisin), aux elems */
   DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
-  for (a_f = 1, f = 0; f < zone.nb_faces(); f++)
+  for (a_f = 1, f = 0; f < domaine.nb_faces(); f++)
     if (!fcl(f, 0)) //face interne
       {
         if (1)
@@ -93,8 +93,8 @@ void Terme_Source_Qdm_Face_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab
           secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 
   /* en PolyMAC V2 : partie aux elements */
-  if (sub_type(Zone_PolyMAC_P0, zone))
-    for (e = 0; e < zone.nb_elem_tot(); e++)
+  if (sub_type(Domaine_PolyMAC_P0, domaine))
+    for (e = 0; e < domaine.nb_elem_tot(); e++)
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           secmem(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
@@ -107,7 +107,7 @@ void Terme_Source_Qdm_Face_PolyMAC::mettre_a_jour(double temps)
 
 int Terme_Source_Qdm_Face_PolyMAC::initialiser(double temps)
 {
-  equation().discretisation().nommer_completer_champ_physique(equation().zone_dis(), "source_qdm", "", la_source.valeur(), equation().probleme());
+  equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(), "source_qdm", "", la_source.valeur(), equation().probleme());
   la_source->initialiser(temps);
   return Source_base::initialiser(temps);
 }

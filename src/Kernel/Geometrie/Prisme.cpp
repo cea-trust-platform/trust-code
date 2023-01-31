@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Prisme.h>
-#include <Zone.h>
+#include <Domaine.h>
 //      5
 //     /|
 //    3----4
@@ -83,13 +83,13 @@ const Nom& Prisme::nom_lml() const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0.
  *
- * Renvoie 1 si l'element "element" de la zone associee a
+ * Renvoie 1 si l'element "element" de la domaine associee a
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int element) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int element) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
  */
 int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
@@ -99,19 +99,19 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
   // coordonnees pos ?
   // adaptation de tetraedre contient
   assert(pos.size_array()==3);
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
   double prod1,prod2,xn,yn,zn;
   int som0, som1, som2, som3,som4,som5;
 
   // On regarde tout d'abord si le pintr cherche n'est pas un des
   // sommets du triangle
-  som0 = zone.sommet_elem(ielem,0);
-  som1 = zone.sommet_elem(ielem,1);
-  som2 = zone.sommet_elem(ielem,2);
-  som3 = zone.sommet_elem(ielem,3);
-  som4 = zone.sommet_elem(ielem,4);
-  som5 = zone.sommet_elem(ielem,5);
+  som0 = domaine.sommet_elem(ielem,0);
+  som1 = domaine.sommet_elem(ielem,1);
+  som2 = domaine.sommet_elem(ielem,2);
+  som3 = domaine.sommet_elem(ielem,3);
+  som4 = domaine.sommet_elem(ielem,4);
+  som5 = domaine.sommet_elem(ielem,5);
   if( ( est_egal(dom.coord(som0,0),pos[0]) && est_egal(dom.coord(som0,1),pos[1]) && est_egal(dom.coord(som0,2),pos[2]) )
       || (est_egal(dom.coord(som1,0),pos[0]) && est_egal(dom.coord(som1,1),pos[1]) && est_egal(dom.coord(som1,2),pos[2]))
       || (est_egal(dom.coord(som2,0),pos[0]) && est_egal(dom.coord(som2,1),pos[1]) && est_egal(dom.coord(som2,2),pos[2]))
@@ -126,34 +126,34 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
       switch(j)
         {
         case 0 :
-          som0 = zone.sommet_elem(ielem,0);
-          som1 = zone.sommet_elem(ielem,1);
-          som2 = zone.sommet_elem(ielem,3);
-          som3 = zone.sommet_elem(ielem,2);
+          som0 = domaine.sommet_elem(ielem,0);
+          som1 = domaine.sommet_elem(ielem,1);
+          som2 = domaine.sommet_elem(ielem,3);
+          som3 = domaine.sommet_elem(ielem,2);
           break;
         case 1 :
-          som0 = zone.sommet_elem(ielem,0);
-          som1 = zone.sommet_elem(ielem,2);
-          som2 = zone.sommet_elem(ielem,3);
-          som3 = zone.sommet_elem(ielem,4);
+          som0 = domaine.sommet_elem(ielem,0);
+          som1 = domaine.sommet_elem(ielem,2);
+          som2 = domaine.sommet_elem(ielem,3);
+          som3 = domaine.sommet_elem(ielem,4);
           break;
         case 2 :
-          som0 = zone.sommet_elem(ielem,1);
-          som1 = zone.sommet_elem(ielem,2);
-          som2 = zone.sommet_elem(ielem,4);
-          som3 = zone.sommet_elem(ielem,0);
+          som0 = domaine.sommet_elem(ielem,1);
+          som1 = domaine.sommet_elem(ielem,2);
+          som2 = domaine.sommet_elem(ielem,4);
+          som3 = domaine.sommet_elem(ielem,0);
           break;
         case 3 :
-          som0 = zone.sommet_elem(ielem,0);
-          som1 = zone.sommet_elem(ielem,1);
-          som2 = zone.sommet_elem(ielem,2);
-          som3 = zone.sommet_elem(ielem,3);
+          som0 = domaine.sommet_elem(ielem,0);
+          som1 = domaine.sommet_elem(ielem,1);
+          som2 = domaine.sommet_elem(ielem,2);
+          som3 = domaine.sommet_elem(ielem,3);
           break;
         case 4 :
-          som0 = zone.sommet_elem(ielem,3);
-          som1 = zone.sommet_elem(ielem,4);
-          som2 = zone.sommet_elem(ielem,5);
-          som3 = zone.sommet_elem(ielem,0);
+          som0 = domaine.sommet_elem(ielem,3);
+          som1 = domaine.sommet_elem(ielem,4);
+          som2 = domaine.sommet_elem(ielem,5);
+          som3 = domaine.sommet_elem(ielem,0);
           break;
         }
 
@@ -181,11 +181,11 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0 Renvoie 1 si les sommets specifies par le parametre "pos"
  *
- *     sont les sommets de l'element "element" de la zone associee a
+ *     sont les sommets de l'element "element" de la domaine associee a
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Prisme::contient(const ArrOfInt& pos, int element ) const
@@ -196,16 +196,16 @@ int Prisme::contient(const ArrOfInt& pos, int element ) const
 }
 
 
-/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la zone associee.
+/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Prisme::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
-  int size_tot = zone.nb_elem_tot();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {

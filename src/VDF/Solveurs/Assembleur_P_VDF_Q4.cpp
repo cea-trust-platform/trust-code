@@ -16,8 +16,8 @@
 #include <Assembleur_P_VDF_Q4.h>
 #include <Matrice_Bloc.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_Cl_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(Assembleur_P_VDF_Q4,"Assembleur_P_VDF_Q4",Assembleur_base);
 
@@ -42,7 +42,7 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
   int nbfaces = le_dom_VDF->nb_faces(),  nbsom = le_dom_VDF->nb_som();
   const DoubleVect& volumes_entrelaces = le_dom_VDF->volumes_entrelaces();
   const DoubleVect& porosite_face = eqn_->milieu().porosite_face();
-  const DoubleTab& CoordSom = le_dom_VDF->zone().coord_sommets();
+  const DoubleTab& CoordSom = le_dom_VDF->domaine().coord_sommets();
   double surf,vol,por,val, r;
   int ori, elem0,elem1;
   //construction matrice
@@ -142,11 +142,11 @@ int Assembleur_P_VDF_Q4::modifier_secmem(DoubleTab& secmem)
 
 int Assembleur_P_VDF_Q4::modifier_secmem(const DoubleTab& tab_secmem_, DoubleVect& secmem)
 {
-  const DoubleTab& CoordSommets = le_dom_VDF->zone().coord_sommets();
+  const DoubleTab& CoordSommets = le_dom_VDF->domaine().coord_sommets();
   const IntTab& FaceSoms = le_dom_VDF->face_sommets();
   const IntTab& FaceVois = le_dom_VDF->face_voisins();
   const IntVect& Orientation = le_dom_VDF->orientation();
-  const DoubleTab& CoordSom = le_dom_VDF->zone().coord_sommets();
+  const DoubleTab& CoordSom = le_dom_VDF->domaine().coord_sommets();
   int face, som0,som1, ori, invori, elem0,elem1;
   int nbfaces = le_dom_VDF->nb_faces(),  nbsom = le_dom_VDF->nb_som();
   double surf, r;
@@ -209,24 +209,24 @@ int Assembleur_P_VDF_Q4::modifier_solution(DoubleTab& pression)
   return 1;
 }
 
-const Zone_dis_base& Assembleur_P_VDF_Q4::zone_dis_base() const
+const Domaine_dis_base& Assembleur_P_VDF_Q4::domaine_dis_base() const
 {
   return le_dom_VDF.valeur();
 }
 
-const Zone_Cl_dis_base& Assembleur_P_VDF_Q4::zone_Cl_dis_base() const
+const Domaine_Cl_dis_base& Assembleur_P_VDF_Q4::domaine_Cl_dis_base() const
 {
   return le_dom_Cl_VDF.valeur();
 }
 
-void Assembleur_P_VDF_Q4::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis)
+void Assembleur_P_VDF_Q4::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis)
 {
-  le_dom_VDF = ref_cast(Zone_VDF, le_dom_dis);
+  le_dom_VDF = ref_cast(Domaine_VDF, le_dom_dis);
 }
 
-void Assembleur_P_VDF_Q4::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis)
+void Assembleur_P_VDF_Q4::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis)
 {
-  le_dom_Cl_VDF =ref_cast(Zone_Cl_VDF, le_dom_Cl_dis);
+  le_dom_Cl_VDF =ref_cast(Domaine_Cl_VDF, le_dom_Cl_dis);
 }
 
 void Assembleur_P_VDF_Q4::completer(const Equation_base& Eqn)

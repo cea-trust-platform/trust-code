@@ -16,7 +16,7 @@
 #define Partitionneur_Ptscotch_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 /*! @brief Partition d'un domaine en nb_parties parties equilibrees en utilisant la librairie Ptscotch.
  *
@@ -31,12 +31,12 @@ public:
 
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer_domaine(const Zone& domaine) override;
+  void associer_domaine(const Domaine& domaine) override;
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 private:
   // Parametres du partitionneur
-  REF(Zone) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   int nb_parties_;
 
   // Drapeau: utiliser ou pas la ponderation des edges dans metis.

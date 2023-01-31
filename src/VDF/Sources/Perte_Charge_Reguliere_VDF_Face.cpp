@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Perte_Charge_Reguliere_VDF_Face.h>
-#include <Zone_VDF.h>
-#include <Sous_Zone.h>
+#include <Domaine_VDF.h>
+#include <Sous_Domaine.h>
 #include <Champ_Face_VDF.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
@@ -33,10 +33,10 @@ Sortie& Perte_Charge_Reguliere_VDF_Face::printOn(Sortie& s ) const
 Entree& Perte_Charge_Reguliere_VDF_Face::readOn(Entree& s )
 {
   Perte_Charge_Reguliere::lire_donnees(s);
-  Nom nom_sous_zone;
-  s >> nom_sous_zone;
-  Cerr << " nom de la sous zone " << nom_sous_zone << finl ;
-  remplir_num_faces(nom_sous_zone);
+  Nom nom_sous_domaine;
+  s >> nom_sous_domaine;
+  Cerr << " nom de la sous domaine " << nom_sous_domaine << finl ;
+  remplir_num_faces(nom_sous_domaine);
   return s ;
 }
 
@@ -49,34 +49,34 @@ Entree& Perte_Charge_Reguliere_VDF_Face::readOn(Entree& s )
 //
 ////////////////////////////////////////////////////////////////////
 
-void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
+void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_domaine)
 {
-  const Zone& le_domaine = equation().probleme().domaine();
-  const Zone_VDF& zone_VDF = ref_cast(Zone_VDF,equation().zone_dis().valeur());
-  const IntTab& elem_faces = zone_VDF.elem_faces();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const DoubleVect& volumes = zone_VDF.volumes();
-  const DoubleTab& xv = zone_VDF.xv() ;
-  const Sous_Zone& la_sous_zone = le_domaine.ss_zone(nom_sous_zone);
-  int nb_poly_ss_zone = la_sous_zone.nb_elem_tot();
+  const Domaine& le_domaine = equation().probleme().domaine();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF,equation().domaine_dis().valeur());
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const DoubleVect& volumes = domaine_VDF.volumes();
+  const DoubleTab& xv = domaine_VDF.xv() ;
+  const Sous_Domaine& la_sous_domaine = le_domaine.ss_domaine(nom_sous_domaine);
+  int nb_poly_ss_domaine = la_sous_domaine.nb_elem_tot();
   int k = direction_perte_charge();
   DoubleVect xv_(dimension) ;
   int dir_a_faire ;
   int face_associee,nfac;
   int num_poly;
-  num_faces.resize(nb_poly_ss_zone*6);
-  corr_front_ss.resize(nb_poly_ss_zone*6);
+  num_faces.resize(nb_poly_ss_domaine*6);
+  corr_front_ss.resize(nb_poly_ss_domaine*6);
 
   corr_front_ss = 1. ;
 
   nfac = 0 ;
 
 
-  IntVect num_loc(zone_VDF.nb_elem_tot());
+  IntVect num_loc(domaine_VDF.nb_elem_tot());
   num_loc = -1;
   int num_elem,num_face;
-  for (num_elem=0; num_elem<nb_poly_ss_zone; num_elem++)
-    num_loc[la_sous_zone(num_elem)] = num_elem;
+  for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
+    num_loc[la_sous_domaine(num_elem)] = num_elem;
 
   for (int direction = 0; direction<dimension; direction++)
     {
@@ -86,9 +86,9 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
         {
           dir_a_faire = k ;
           if (dir[direction] == 1 ) dir_a_faire = direction ;
-          for (num_elem=0; num_elem<nb_poly_ss_zone; num_elem++)
+          for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
             {
-              num_poly = la_sous_zone(num_elem);
+              num_poly = la_sous_domaine(num_elem);
               num_face =  elem_faces(num_poly,dir_a_faire);
               num_faces[nfac++] = num_face;
               for (int ifa=0; ifa<dimension; ifa++) xv_(ifa)= xv(num_face,ifa) ;
@@ -96,7 +96,7 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
 
               int num_poly_vois0 = face_voisins(num_face,0);
               if (num_poly_vois0 != -1)
-                if (num_loc[num_poly_vois0] == -1)  // le poly voisin n'est pas dans la sous_zone
+                if (num_loc[num_poly_vois0] == -1)  // le poly voisin n'est pas dans la sous_domaine
                   {
                     corr_front_ss[nfac-1]*= volumes(num_poly)/(volumes(num_poly)+volumes(num_poly_vois0)) ;
                   }
@@ -104,7 +104,7 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
               int num_poly_vois1 = face_voisins(face_associee,1);
               if (num_poly_vois1 != -1)
                 {
-                  if (num_loc[num_poly_vois1] == -1)  // le poly voisin n'est pas dans la sous_zone
+                  if (num_loc[num_poly_vois1] == -1)  // le poly voisin n'est pas dans la sous_domaine
                     {
                       num_faces[nfac++] = face_associee;
                       for (int ifa=0; ifa<dimension; ifa++) xv_(ifa) = xv(face_associee,ifa) ;
@@ -127,13 +127,13 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
 DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,DoubleTab& resu) const
 {
 
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
-  int ndeb_faces_int = zone_VDF.premiere_face_int();
+  int ndeb_faces_int = domaine_VDF.premiere_face_int();
   // on prend nu et non mu
   const Champ_Don& nu = le_fluide->viscosite_cinematique();
 
@@ -185,7 +185,7 @@ DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,Doubl
               double U_res=0.,vit1,vit2,div,corr_sign=1.0;
               int ori,el,fa1,fa2,fa3,fa4 ;
               // modifications ajoutees par fabio :
-              ori = zone_VDF.orientation(numfa);
+              ori = domaine_VDF.orientation(numfa);
               vit1 = 0;
               vit2 = 0;
               div = 4.;

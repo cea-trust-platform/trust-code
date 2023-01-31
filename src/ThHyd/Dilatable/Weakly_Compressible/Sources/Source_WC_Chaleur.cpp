@@ -17,7 +17,7 @@
 #include <Source_WC_Chaleur.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_base(Source_WC_Chaleur,"Source_WC_Chaleur",Source_Chaleur_Fluide_Dilatable_base);
 
@@ -75,13 +75,13 @@ DoubleTab& Source_WC_Chaleur::ajouter_(DoubleTab& resu) const
   return resu;
 }
 
-const DoubleTab& Source_WC_Chaleur::correct_grad_boundary(const Zone_VF& zone, DoubleTab& grad_Ptot) const
+const DoubleTab& Source_WC_Chaleur::correct_grad_boundary(const Domaine_VF& domaine, DoubleTab& grad_Ptot) const
 {
   // We dont have a CL for Ptot => we apply explicitly to have a null gradient on the boundary ...
-  const Zone_Cl_dis& zone_cl = mon_equation->zone_Cl_dis();
-  for (int n_bord=0; n_bord<zone.nb_front_Cl(); n_bord++)
+  const Domaine_Cl_dis& domaine_cl = mon_equation->domaine_Cl_dis();
+  for (int n_bord=0; n_bord<domaine.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       // recuperer face et remplace gradient par 0
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();

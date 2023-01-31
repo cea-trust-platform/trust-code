@@ -18,8 +18,8 @@
 #define Source_Generique_VEF_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 
 /*! @brief class Source_Generique_VEF
  *
@@ -33,13 +33,13 @@ class Source_Generique_VEF: public Source_Generique_base
 public:
 
   DoubleTab& ajouter(DoubleTab& ) const override;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
   Nom localisation_source() override;
 
 protected:
 
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) la_zcl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) la_zcl_VEF;
 };
 
 #endif

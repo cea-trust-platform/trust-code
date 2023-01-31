@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Polygone_poly.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Poly_geom_base.h>
 
 Implemente_instanciable( Polygone_poly, "Polygone_poly", Elem_poly_base ) ;
@@ -29,16 +29,16 @@ Entree& Polygone_poly::readOn( Entree& is )
   Elem_poly_base::readOn( is );
   return is;
 }
-/*! @brief remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Domaine_poly
  *
  */
 void Polygone_poly::normale(int num_Face,DoubleTab& Face_normales,
                             const  IntTab& Face_sommets,
                             const IntTab& Face_voisins,
                             const IntTab& elem_faces,
-                            const Zone& zone_geom) const
+                            const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   double x1,y1;
   double nx,ny;
@@ -53,7 +53,7 @@ void Polygone_poly::normale(int num_Face,DoubleTab& Face_normales,
 
   /* DoubleTab xp;
 
-  zone_geom.Zone::calculer_centres_gravite(xp);
+  domaine_geom.Domaine::calculer_centres_gravite(xp);
   */
   /*
       int no3;
@@ -77,7 +77,7 @@ void Polygone_poly::normale(int num_Face,DoubleTab& Face_normales,
   int elem1=Face_voisins(num_Face,0);
 
   DoubleVect xp;
-  ref_cast(Poly_geom_base,zone_geom.type_elem().valeur()).calculer_un_centre_gravite(elem1,xp);
+  ref_cast(Poly_geom_base,domaine_geom.type_elem().valeur()).calculer_un_centre_gravite(elem1,xp);
   x1=xp(0)-les_coords(n0,0);
   y1=xp(1)-les_coords(n0,1);
 

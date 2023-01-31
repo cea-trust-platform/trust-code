@@ -59,8 +59,8 @@ DoubleTab& Op_Diff_VDF_base::calculer(const DoubleTab& inco, DoubleTab& resu) co
 
 void Op_Diff_VDF_base::init_op_ext() const
 {
-  const Zone_VDF& zvdf = iter->zone();
-  const Zone_Cl_VDF& zclvdf = iter->zone_Cl();
+  const Domaine_VDF& zvdf = iter->domaine();
+  const Domaine_Cl_VDF& zclvdf = iter->domaine_Cl();
   op_ext = { this };      //le premier op_ext est l'operateur local
 
   for (int n_bord = 0; n_bord < zvdf.nb_front_Cl(); n_bord++)
@@ -91,7 +91,7 @@ void Op_Diff_VDF_base::ajoute_terme_pour_axi(matrices_t matrices, DoubleTab& sec
 
       if (Objet_U::bidim_axi == 1)
         {
-          const Zone_VDF& zvdf = iter->zone();
+          const Domaine_VDF& zvdf = iter->domaine();
           const DoubleTab& xv = zvdf.xv();
           const IntVect& ori = zvdf.orientation();
           const IntTab& face_voisins = zvdf.face_voisins();

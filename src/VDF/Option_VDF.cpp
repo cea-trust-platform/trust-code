@@ -88,7 +88,7 @@ int Option_VDF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
       is >>motlu;
       if (test_mot(motlu))
         {
-          Cerr<< motlu <<" will affect the action of the method Zone_Cl_VDF::completer"<<finl;
+          Cerr<< motlu <<" will affect the action of the method Domaine_Cl_VDF::completer"<<finl;
           Option_VDF::traitement_coins=1;
         }
       else

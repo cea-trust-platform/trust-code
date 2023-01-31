@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Faces_VDF.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Faces_VDF,"Faces_VDF",Faces);
 
@@ -42,8 +42,8 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
   orientation_.ref(tab_orientation);
   nx=ny=nz=0;
 
-  const Zone& mazone=zone();
-  const Zone& dom=mazone;
+  const Domaine& madomaine=domaine();
+  const Domaine& dom=madomaine;
   double dx=0, dy=0, dz=1.e30;
 
   for(int face=0; face<nb_faces_tot(); face++)
@@ -89,12 +89,12 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
 
 void Faces_VDF::reordonner(IntVect& tab_orientation)
 {
-  const Zone& mazone=zone();
+  const Domaine& madomaine=domaine();
   int face, derniere, courante, ori;
 
-  int nb_faces_bord=mazone.nb_faces_bord();
-  int nb_faces_raccord=mazone.nb_faces_raccord();
-  int nb_faces_int=mazone.nb_faces_int();
+  int nb_faces_bord=madomaine.nb_faces_bord();
+  int nb_faces_raccord=madomaine.nb_faces_raccord();
+  int nb_faces_int=madomaine.nb_faces_int();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);
@@ -123,12 +123,12 @@ void Faces_VDF::reordonner(IntVect& tab_orientation)
 
 void Faces_VDF::reordonner_pour_debog(IntVect& tab_orientation)
 {
-  const Zone& mazone=zone();
+  const Domaine& madomaine=domaine();
   int face, derniere;
 
-  int nb_faces_bord=mazone.nb_faces_bord();
-  int nb_faces_raccord=mazone.nb_faces_raccord();
-  int nb_faces_int=mazone.nb_faces_int();
+  int nb_faces_bord=madomaine.nb_faces_bord();
+  int nb_faces_raccord=madomaine.nb_faces_raccord();
+  int nb_faces_int=madomaine.nb_faces_int();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);

@@ -18,7 +18,7 @@
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
 #include <TRUSTTab.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable_sans_constructeur(Sortie_libre_pression_moyenne_imposee, "Frontiere_ouverte_pression_moyenne_imposee", Neumann_sortie_libre);
 
@@ -59,7 +59,7 @@ void Sortie_libre_pression_moyenne_imposee::completer()
 
   surfaces.resize(nb_faces_);
 
-  Zone_VF& zvf = ref_cast(Zone_VF, mon_dom_cl_dis->zone_dis().valeur());
+  Domaine_VF& zvf = ref_cast(Domaine_VF, mon_dom_cl_dis->domaine_dis().valeur());
   for (i = 0; i < nb_faces_; i++)
     {
       surfaces(i) = zvf.face_surfaces(i + ndeb_);

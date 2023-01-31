@@ -17,10 +17,10 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <NettoieNoeuds.h>
-#include <Sous_Zone.h>
+#include <Sous_Domaine.h>
 #include <Parser_U.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -33,7 +33,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
 {
   Nom nom_pb;
   Nom nom_dom;
-  Nom nom_sous_zone;
+  Nom nom_sous_domaine;
   Parser_U condition_elements;
   Nom expr_elements("1");
   condition_elements.setNbVar(dimension);
@@ -48,7 +48,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   param.ajouter("domaine",&nom_dom,Param::REQUIRED);
   param.ajouter("probleme",&nom_pb,Param::REQUIRED);
   param.ajouter("condition_elements",&expr_elements);
-  param.ajouter("sous_zone",&nom_sous_zone);
+  param.ajouter("sous_domaine",&nom_sous_domaine);
   //param.ajouter("condition_faces",&expr_faces);
   // param.ajouter_flag("avec_les_bords",&avec_les_bords);
   param.lire_avec_accolades_depuis(is);
@@ -57,7 +57,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   condition_elements.parseString();
 
   associer_domaine(nom_dom);
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   // on recupere le pb
   if(! sub_type(Probleme_base, objet(nom_pb)))
     {
@@ -66,19 +66,19 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
       exit();
     }
   Probleme_base& pb=ref_cast(Probleme_base, objet(nom_pb));
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,pb.domaine_dis().valeur());
-  dom.les_sommets()=zone_vf.zone().les_sommets();
-  dom.typer(zone_vf.zone().type_elem().valeur().que_suis_je());
+  const Domaine_VF& domaine_vf=ref_cast(Domaine_VF,pb.domaine_dis().valeur());
+  dom.les_sommets()=domaine_vf.domaine().les_sommets();
+  dom.typer(domaine_vf.domaine().type_elem().valeur().que_suis_je());
 
-  const DoubleTab& xp =zone_vf.xp();
+  const DoubleTab& xp =domaine_vf.xp();
 
-  int nb_elem=zone_vf.nb_elem();
+  int nb_elem=domaine_vf.nb_elem();
   IntTab marq_elem;
 
   // on marque les elts qui nous interessent
-  zone_vf.zone().creer_tableau_elements(marq_elem);
+  domaine_vf.domaine().creer_tableau_elements(marq_elem);
   int nb_elem_m=0;
-  if (nom_sous_zone== Nom())
+  if (nom_sous_domaine== Nom())
     {
       for (int elem=0; elem<nb_elem; elem++)
         {
@@ -99,7 +99,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
     }
   else
     {
-      const Sous_Zone& ssz= ref_cast(Sous_Zone,objet(nom_sous_zone));
+      const Sous_Domaine& ssz= ref_cast(Sous_Domaine,objet(nom_sous_domaine));
       int npol=ssz.nb_elem_tot();
       for (int i=0; i<npol; i++)
         {
@@ -112,19 +112,19 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
     }
   // Attention grosse ruse on echange pas les espaces virtuels pour que le joint devienne un bord
   //marq_elem.echange_espace_virtuel();
-  // const DoubleTab& xv =zone_vf.xv();
+  // const DoubleTab& xv =domaine_vf.xv();
 
-  int nb_faces=zone_vf.nb_faces();
-  const IntTab& face_voisin=zone_vf.face_voisins();
+  int nb_faces=domaine_vf.nb_faces();
+  const IntTab& face_voisin=domaine_vf.face_voisins();
 
   ArrOfInt marq(nb_faces);
   // on marque les joints
-  //const Joints& joints=zone_vf.face_joints();
-  // int nbjoints=zone_vf.nb_joints();
+  //const Joints& joints=domaine_vf.face_joints();
+  // int nbjoints=domaine_vf.nb_joints();
 
   //  for(int njoint=0; njoint<nbjoints; njoint++)
   //    {
-  //      const Joint& joint_temp = zone_vf.joint(njoint);
+  //      const Joint& joint_temp = domaine_vf.joint(njoint);
   //      int pe_voisin=joint_temp.PEvoisin();
   //      if (pe_voisin<me())
   //        {
@@ -165,10 +165,10 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   Cerr<<me()<<" nb_elem_m "<<nb_elem_m<<finl;
   Cerr<<me()<<" nb_t "<<nb_t<<finl;
   IntTab& les_elems=dom.les_elems();
-  const IntTab& les_elems_old=zone_vf.zone().les_elems();
+  const IntTab& les_elems_old=domaine_vf.domaine().les_elems();
   int nb_som_elem=les_elems_old.dimension(1);
   les_elems.resize(nb_elem_m,nb_som_elem);
-  const IntTab& face_sommets=zone_vf.face_sommets();
+  const IntTab& face_sommets=domaine_vf.face_sommets();
   int nb=0;
   for (int ele=0; ele<nb_elem; ele++)
     {
@@ -182,9 +182,9 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   assert(nb==nb_elem_m);
   Bord faces;
   faces.nommer("Bord");
-  faces.typer_faces(zone_vf.zone().type_elem().type_face());
+  faces.typer_faces(domaine_vf.domaine().type_elem().type_face());
   Faces& les_faces=faces.faces();
-  // const IntTab& faces_sommets=zone_vf.faces_sommets();
+  // const IntTab& faces_sommets=domaine_vf.faces_sommets();
   int nb_som_face=face_sommets.dimension(1);
   IntTab& indfaces=les_faces.les_sommets();
   indfaces.resize(nb_t,nb_som_face);

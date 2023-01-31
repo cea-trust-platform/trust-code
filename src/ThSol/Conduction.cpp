@@ -216,7 +216,7 @@ void Conduction::discretiser()
 {
   const Discret_Thermique& dis=ref_cast(Discret_Thermique, discretisation());
   Cerr << "Conduction equation discretization" << finl;
-  dis.temperature(schema_temps(), zone_dis(), la_temperature);
+  dis.temperature(schema_temps(), domaine_dis(), la_temperature);
   champs_compris_.ajoute_champ(la_temperature);
   Equation_base::discretiser();
 }
@@ -271,7 +271,7 @@ void Conduction::creer_champ(const Motcle& motlu)
         if (!temperature_paroi.non_nul())
           {
             const Discret_Thermique& dis=ref_cast(Discret_Thermique, discretisation());
-            dis.t_paroi(zone_dis(),zone_Cl_dis(),*this,temperature_paroi);
+            dis.t_paroi(domaine_dis(),domaine_Cl_dis(),*this,temperature_paroi);
             champs_compris_.ajoute_champ(temperature_paroi);
           }
       } */

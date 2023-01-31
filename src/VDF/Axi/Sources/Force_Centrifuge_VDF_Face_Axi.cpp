@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Force_Centrifuge_VDF_Face_Axi.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Champ_Face_VDF.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
@@ -58,11 +58,11 @@ void Force_Centrifuge_VDF_Face_Axi::associer_pb(const Probleme_base& )
   Cerr << "Force_Centrifuge_VDF_Face_Axi::associer_pb" << finl;
 }
 
-void Force_Centrifuge_VDF_Face_Axi::associer_domaines(const Zone_dis& zone_dis,
-                                                      const Zone_Cl_dis& zone_Cl_dis)
+void Force_Centrifuge_VDF_Face_Axi::associer_domaines(const Domaine_dis& domaine_dis,
+                                                      const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF, zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
   le_dom_VDF = zvdf;
   le_dom_Cl_VDF = zclvdf;
   elem_faces.ref(zvdf.elem_faces());
@@ -75,8 +75,8 @@ void Force_Centrifuge_VDF_Face_Axi::associer_domaines(const Zone_dis& zone_dis,
 
 void Force_Centrifuge_VDF_Face_Axi::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zvdf = le_dom_VDF.valeur();
-  const Zone_Cl_VDF& zclvdf = le_dom_Cl_VDF.valeur();
+  const Domaine_VDF& zvdf = le_dom_VDF.valeur();
+  const Domaine_Cl_VDF& zclvdf = le_dom_Cl_VDF.valeur();
   const DoubleTab& vitesse = la_vitesse->valeurs();
 
   int nb_elem = zvdf.nb_elem();

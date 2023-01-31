@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Taux_cisaillement_P0_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Champ_P1NC.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Taux_cisaillement_P0_VEF, "Taux_cisaillement_P0_VEF", Champ_Fonc_P0_VEF);
 
@@ -24,9 +24,9 @@ Sortie& Taux_cisaillement_P0_VEF::printOn(Sortie& s) const { return s << que_sui
 
 Entree& Taux_cisaillement_P0_VEF::readOn(Entree& s) { return s; }
 
-void Taux_cisaillement_P0_VEF::associer_champ(const Champ_P1NC& la_vitesse, const Zone_Cl_dis_base& le_dom_Cl_dis_base)
+void Taux_cisaillement_P0_VEF::associer_champ(const Champ_P1NC& la_vitesse, const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, le_dom_Cl_dis_base);
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, le_dom_Cl_dis_base);
   vitesse_ = la_vitesse;
 }
 

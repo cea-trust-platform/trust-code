@@ -41,10 +41,10 @@ Entree& Decouper_Bord_coincident::interpreter_(Entree& is)
 }
 
 
-void Decouper_Bord_coincident::decouper_(Zone& zone)
+void Decouper_Bord_coincident::decouper_(Domaine& domaine)
 {
-  if  (zone.type_elem()->que_suis_je() == "Triangle")
-    //           ||(zone.type_elem()->que_suis_je() == "Tetraedre"))
+  if  (domaine.type_elem()->que_suis_je() == "Triangle")
+    //           ||(domaine.type_elem()->que_suis_je() == "Tetraedre"))
     {
       Nom fichier="connectivity_failed_";
       fichier+=nom_bord;
@@ -56,22 +56,22 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
           exit();
         }
 
-      const DoubleTab& xs = zone.coord_sommets();
-      IntTab& les_elems = zone.les_elems();
+      const DoubleTab& xs = domaine.coord_sommets();
+      IntTab& les_elems = domaine.les_elems();
       int oldsz = les_elems.dimension(0);
-      int oldnbsom = zone.nb_som();
+      int oldnbsom = domaine.nb_som();
 
       IntTab new_elems(3*oldsz, dimension+1); // tableau sur-dimensionne
 
       // Construction de l'Octree sur la grille VEF de base
-      zone.construit_octree();
+      domaine.construit_octree();
 
       //On dimensionne une premiere fois le tableau des sommets
       //puis on redimensionnera seulement a la fin par la dimension exacte
-      Scatter::uninit_sequential_domain(zone);
+      Scatter::uninit_sequential_domain(domaine);
 
-      DoubleTab& sommets_dom = zone.les_sommets();
-      //int dim_som_old=sommets_zone.dimension(0); // dim_som_old = oldnbsom
+      DoubleTab& sommets_dom = domaine.les_sommets();
+      //int dim_som_old=sommets_domaine.dimension(0); // dim_som_old = oldnbsom
       sommets_dom.resize(2*oldnbsom,dimension);
 
       // On initialise new_elem sur la base du maillage non redecoupe :
@@ -80,7 +80,7 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
         {
           for(int k=0; k<dimension+1; k++)
             new_elems(elem, k) = les_elems(elem,k);
-          mettre_a_jour_sous_zone(zone,elem,oldsz,0);
+          mettre_a_jour_sous_domaine(domaine,elem,oldsz,0);
         }
 
 
@@ -210,19 +210,19 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
 
       // Reconstruction de l'octree
       Cerr << "Splitting performs ..." << finl;
-      zone.invalide_octree();
+      domaine.invalide_octree();
       if(dimension==2)
-        zone.typer("Triangle");
+        domaine.typer("Triangle");
       else
-        zone.typer("Tetraedre");
+        domaine.typer("Tetraedre");
       Cerr << "  Reconstruction of the Octree" << finl;
-      zone.construit_octree();
+      domaine.construit_octree();
       Cerr << "  Octree rebuilt" << finl;
 
       {
         // Les Raccords
         Cerr << "Splitting of connections" << finl;
-        for (auto &itr : zone.faces_raccord())
+        for (auto &itr : domaine.faces_raccord())
           {
             if (itr->le_nom() == nom_bord)
               {
@@ -240,13 +240,13 @@ void Decouper_Bord_coincident::decouper_(Zone& zone)
               }
           }
       }
-      Scatter::init_sequential_domain(zone);
+      Scatter::init_sequential_domain(domaine);
       Cerr<<"END of Decouper_Bord_coincident..."<<finl;
-      Cerr<<"  1 NbElem="<<zone.les_elems().dimension(0)<<"  NbSom="<<zone.nb_som()<<finl;
+      Cerr<<"  1 NbElem="<<domaine.les_elems().dimension(0)<<"  NbSom="<<domaine.nb_som()<<finl;
     }
   else
     {
       Cerr << "We do not yet know how to Decouper_Bord_coincident the "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+           << domaine.type_elem()->que_suis_je() <<"s"<<finl;
     }
 }

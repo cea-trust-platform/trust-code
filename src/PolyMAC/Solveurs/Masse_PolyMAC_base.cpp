@@ -14,22 +14,22 @@
 *****************************************************************************/
 
 #include <Masse_PolyMAC_base.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 
 Implemente_base(Masse_PolyMAC_base,"Masse_PolyMAC_base",Solveur_Masse_base);
 
 Sortie& Masse_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 Entree& Masse_PolyMAC_base::readOn(Entree& s) { return s ; }
 
-void Masse_PolyMAC_base::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
+void Masse_PolyMAC_base::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  le_dom_PolyMAC = ref_cast(Zone_PolyMAC, le_dom_dis_base);
+  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, le_dom_dis_base);
 }
 
-void Masse_PolyMAC_base::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
+void Masse_PolyMAC_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, le_dom_Cl_dis_base);
+  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, le_dom_Cl_dis_base);
 }
 
 

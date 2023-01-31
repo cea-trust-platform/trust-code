@@ -45,7 +45,7 @@ protected:
   virtual const Nom& get_name() const; // calls le_nom
 
 private:
-  int nb_elems_reels_sous_zone_=0; //if sous-zone : number of elements of the sous-zone on this proc
+  int nb_elems_reels_sous_domaine_=0; //if sous-domaine : number of elements of the sous-domaine on this proc
   int nb_elems_reels_loc_=0;       //total number of local elements
 };
 

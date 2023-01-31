@@ -20,8 +20,8 @@
 #include <Operateur_Diff_base.h>
 #include <Matrice_Morse.h>
 #include <Op_Diff_VEF_Face.h>
-#include <Zone_VEF_PreP1b.h>
-#include <Zone_Cl_VEFP1B.h>
+#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_Cl_VEFP1B.h>
 #include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <ArrOfBit.h>
@@ -44,7 +44,7 @@ class Op_Diff_VEFP1NCP1B_Face : public Op_Diff_VEF_Face
 public:
 
   Op_Diff_VEFP1NCP1B_Face();
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,
                 const Champ_Inc& ) override;
   void completer() override;
 
@@ -53,9 +53,9 @@ public:
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   double calculer_dt_stab() const override;
 
-  //Acces aux zones
-  const Zone_VEF_PreP1b& zone_VEFPreP1B() const;
-  const Zone_Cl_VEFP1B& zone_Cl_VEFPreP1B() const;
+  //Acces aux domaines
+  const Domaine_VEF_PreP1b& domaine_VEFPreP1B() const;
+  const Domaine_Cl_VEFP1B& domaine_Cl_VEFPreP1B() const;
 
   //Methodes pour l'implicite.
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
@@ -154,13 +154,13 @@ inline void Op_Diff_VEFP1NCP1B_Face::contribuer_au_second_membre(DoubleTab& resu
   contribue_au_second_membre(resu);
 }
 
-inline const Zone_VEF_PreP1b& Op_Diff_VEFP1NCP1B_Face::zone_VEFPreP1B() const
+inline const Domaine_VEF_PreP1b& Op_Diff_VEFP1NCP1B_Face::domaine_VEFPreP1B() const
 {
-  return ref_cast(Zone_VEF_PreP1b,le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
 }
 
-inline const Zone_Cl_VEFP1B& Op_Diff_VEFP1NCP1B_Face::zone_Cl_VEFPreP1B() const
+inline const Domaine_Cl_VEFP1B& Op_Diff_VEFP1NCP1B_Face::domaine_Cl_VEFPreP1B() const
 {
-  return ref_cast(Zone_Cl_VEFP1B,la_zcl_vef.valeur());
+  return ref_cast(Domaine_Cl_VEFP1B,la_zcl_vef.valeur());
 }
 #endif

@@ -110,7 +110,7 @@ void test_imposer_cond_lim(Equation_base& eqn,DoubleTab& current2,const char * m
   DoubleTab& present = eqn.inconnue().futur();
   DoubleTab sauv(present);
   const Schema_Temps_base& sch = eqn.probleme().schema_temps();
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),sch.temps_courant()+sch.pas_de_temps());
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),sch.temps_courant()+sch.pas_de_temps());
   present -= sauv;
   // BM, je remplace max_abs par mp_pax_abs: du coup la methode doit etre appelee simultanement par tous les procs.
   double ecart_max=mp_max_abs_vect(present);

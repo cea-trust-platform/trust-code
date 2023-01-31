@@ -19,7 +19,7 @@
 #include <TRUSTTabs_forward.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Motcle.h>
 
 /*! @brief : class PDF_model
@@ -31,7 +31,7 @@ class PDF_model : public Objet_U
   Declare_instanciable(PDF_model) ;
 public :
   double get_vitesse_imposee(ArrOfDouble&,int);
-  void affecter_vitesse_imposee(Zone_VF&, const DoubleTab&);
+  void affecter_vitesse_imposee(Domaine_VF&, const DoubleTab&);
   double eta() const { return eta_; }
 
 protected :

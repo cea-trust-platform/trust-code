@@ -27,7 +27,7 @@
  */
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P0_VEF.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_VEF.h>
 
 class Sortie_libre_Gradient_Pression_libre_VEF: public Neumann_sortie_libre
 {
@@ -41,7 +41,7 @@ public:
   virtual double Grad_P_lib_VEF(int) const;
 
 protected:
-  REF(Zone_VEF) le_dom_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
   REF(Champ_P0_VEF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;

@@ -15,9 +15,9 @@
 
 #include <Champ_Fonc_P0_base.h>
 #include <Frontiere_dis_base.h>
-#include <Zone_dis_base.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine_dis_base.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 
 Implemente_base(Champ_Fonc_P0_base, "Champ_Fonc_P0_base", Champ_Fonc_base);
 
@@ -28,10 +28,10 @@ Entree& Champ_Fonc_P0_base::readOn(Entree& is) { return is; }
 int Champ_Fonc_P0_base::fixer_nb_valeurs_nodales(int n)
 {
   // Encore une syntaxe a la con, sinon on ne sait pas s'il faut appeler
-  // zone_dis_base() de champ_inc_base ou de champ_impl...
-  const Zone_dis_base& zonedis = ref_cast(Champ_Fonc_base, *this).zone_dis_base();
-  assert(n == zonedis.zone().nb_elem());
-  const MD_Vector& md = zonedis.zone().md_vector_elements();
+  // domaine_dis_base() de champ_inc_base ou de champ_impl...
+  const Domaine_dis_base& domainedis = ref_cast(Champ_Fonc_base, *this).domaine_dis_base();
+  assert(n == domainedis.domaine().nb_elem());
+  const MD_Vector& md = domainedis.domaine().md_vector_elements();
   creer_tableau_distribue(md);
   return 1;
 }
@@ -54,7 +54,7 @@ DoubleTab& Champ_Fonc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x,
 
 double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) const
 {
-  const Zone_VF& zvf = le_dom_VF.valeur();
+  const Domaine_VF& zvf = le_dom_VF.valeur();
   const DoubleVect& volumes = zvf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -74,7 +74,7 @@ double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) c
 
 DoubleVect Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem) const
 {
-  const Zone_VF& zvf = le_dom_VF.valeur();
+  const Domaine_VF& zvf = le_dom_VF.valeur();
   const DoubleVect& volumes = zvf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -110,7 +110,7 @@ double Champ_Fonc_P0_base::valeur_au_bord(int face) const
 {
   double val_bord;
   const DoubleTab& val = valeurs();
-  const Zone_VF& zvf = le_dom_VF.valeur();
+  const Domaine_VF& zvf = le_dom_VF.valeur();
 
   int n0 = zvf.face_voisins(face, 0);
   if (n0 != -1)

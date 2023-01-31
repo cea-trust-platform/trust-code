@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Segment_EF_axi.h>
-#include <Zone.h>
-#include <ZoneAxi1d.h>
+#include <Domaine.h>
+#include <DomaineAxi1d.h>
 
 Implemente_instanciable( Segment_EF_axi, "Segment_EF_axi", Segment_EF ) ;
 
@@ -35,12 +35,12 @@ void Segment_EF_axi::normale(int num_Face,DoubleTab& Face_normales,
                              const  IntTab& Face_sommets,
                              const IntTab& Face_voisins,
                              const IntTab& elem_faces,
-                             const Zone& zone_geom) const
+                             const Domaine& domaine_geom) const
 {
-  Segment_EF::normale(num_Face,Face_normales,Face_sommets,Face_voisins,elem_faces,zone_geom);
+  Segment_EF::normale(num_Face,Face_normales,Face_sommets,Face_voisins,elem_faces,domaine_geom);
 
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
-  const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zone_geom);
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
+  const DomaineAxi1d& domax = ref_cast(DomaineAxi1d,domaine_geom);
   int elem = Face_voisins(num_Face,0)==-1 ? Face_voisins(num_Face,1) : Face_voisins(num_Face,0);
 
   double x0 = domax.origine_repere(elem,0);

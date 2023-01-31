@@ -16,7 +16,7 @@
 #ifndef Cond_lim_base_included
 #define Cond_lim_base_included
 
-#include <Ref_Zone_Cl_dis_base.h>
+#include <Ref_Domaine_Cl_dis_base.h>
 #include <Champ_front.h>
 #include <Champ_Inc.h>
 #include <Motcle.h>
@@ -29,10 +29,10 @@ class Champ_Inc;
 /*! @brief classe Cond_lim_base Classe de base pour la hierarchie des classes qui representent les differentes conditions aux limites (Dirichlet, Neumann ...).
  *
  *      Un objet condition aux limite sert a definir, pour une equation donnee, les conditions aux limites a appliquer sur une frontiere d'un domaine.
- *      Chaque objet Cond_lim_base contient une reference vers l'objet Zone_Cl_dis_base dont il fait partie.
+ *      Chaque objet Cond_lim_base contient une reference vers l'objet Domaine_Cl_dis_base dont il fait partie.
  *      Chaque objet contient egalement un objet Champ_front contenant les valeurs a imposer sur la frontiere.
  *
- * @sa Cond_lim Zone_Cl_dis_base Frontiere_dis_base, Classe abstraite dont toutes les objets representant des conditions, aux limites doivent deriver.,
+ * @sa Cond_lim Domaine_Cl_dis_base Frontiere_dis_base, Classe abstraite dont toutes les objets representant des conditions, aux limites doivent deriver.,
  *     Methode abstraite:, int compatible_avec_eqn(const Equation_base&) const
  */
 class Cond_lim_base : public Objet_U
@@ -47,9 +47,9 @@ public:
   virtual inline Frontiere_dis_base& frontiere_dis();
   virtual inline const Frontiere_dis_base& frontiere_dis() const;
   virtual void associer_fr_dis_base(const Frontiere_dis_base&);
-  inline Zone_Cl_dis_base& zone_Cl_dis();
-  inline const Zone_Cl_dis_base& zone_Cl_dis() const;
-  virtual void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&);
+  inline Domaine_Cl_dis_base& domaine_Cl_dis();
+  inline const Domaine_Cl_dis_base& domaine_Cl_dis() const;
+  virtual void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base&);
   inline Champ_front& champ_front();
   inline const Champ_front& champ_front() const;
 
@@ -75,7 +75,7 @@ protected:
   std::vector<Motcle> app_domains;
   std::vector<Nom> supp_discs;
   Champ_front le_champ_front;
-  REF(Zone_Cl_dis_base) mon_dom_cl_dis;
+  REF(Domaine_Cl_dis_base) mon_dom_cl_dis;
   void err_pas_compatible(const Equation_base&) const;
   void err_pas_compatible(const Discretisation_base&) const;
 
@@ -103,22 +103,22 @@ inline const Frontiere_dis_base& Cond_lim_base::frontiere_dis() const
   return le_champ_front.frontiere_dis();
 }
 
-/*! @brief Renvoie la zone des conditions aux limites discretisee dont l'objet fait partie.
+/*! @brief Renvoie la domaine des conditions aux limites discretisee dont l'objet fait partie.
  *
- * @return (Zone_Cl_dis_base&) la zone des conditions aux limites discretisee dont l'objet fait partie
+ * @return (Domaine_Cl_dis_base&) la domaine des conditions aux limites discretisee dont l'objet fait partie
  */
-inline Zone_Cl_dis_base& Cond_lim_base::zone_Cl_dis()
+inline Domaine_Cl_dis_base& Cond_lim_base::domaine_Cl_dis()
 {
   return mon_dom_cl_dis.valeur();
 }
 
-/*! @brief Renvoie la zone des conditions aux limites discretisee dont l'objet fait partie.
+/*! @brief Renvoie la domaine des conditions aux limites discretisee dont l'objet fait partie.
  *
  *     (version const)
  *
- * @return (Zone_Cl_dis_base&) la zone des conditions aux limites discretisee dont l'objet fait partie
+ * @return (Domaine_Cl_dis_base&) la domaine des conditions aux limites discretisee dont l'objet fait partie
  */
-inline const Zone_Cl_dis_base& Cond_lim_base::zone_Cl_dis() const
+inline const Domaine_Cl_dis_base& Cond_lim_base::domaine_Cl_dis() const
 {
   return mon_dom_cl_dis.valeur();
 }

@@ -35,7 +35,7 @@ public :
   Entree& interpreter_(Entree& is) override;
 
 public :
-  static void orient_domain(Zone& domaine);
+  static void orient_domain(Domaine& domaine);
 
 };
 

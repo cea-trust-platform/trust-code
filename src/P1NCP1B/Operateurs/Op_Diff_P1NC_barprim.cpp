@@ -15,8 +15,8 @@
 
 
 #include <Op_Diff_P1NC_barprim.h>
-#include <Zone_dis.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <Champ_Inc.h>
 
 #include <Champ_P1NC.h>
@@ -24,7 +24,7 @@
 #include <Champ_Uniforme.h>
 
 #include <TRUSTTrav.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Ref_Champ_P1NC.h>
 
 #include <TRUSTLists.h>
@@ -53,12 +53,12 @@ Entree& Op_Diff_P1NC_barprim::readOn(Entree& s )
 //
 
 
-void Op_Diff_P1NC_barprim::associer(const Zone_dis& zone_dis,
-                                    const Zone_Cl_dis& zone_cl_dis,
+void Op_Diff_P1NC_barprim::associer(const Domaine_dis& domaine_dis,
+                                    const Domaine_Cl_dis& domaine_cl_dis,
                                     const Champ_Inc& ch_diffuse)
 {
-  const Zone_VEF_PreP1b& zvef = ref_cast(Zone_VEF_PreP1b,zone_dis.valeur());
-  const Zone_Cl_VEFP1B& zclvef = ref_cast(Zone_Cl_VEFP1B,zone_cl_dis.valeur());
+  const Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b,domaine_dis.valeur());
+  const Domaine_Cl_VEFP1B& zclvef = ref_cast(Domaine_Cl_VEFP1B,domaine_cl_dis.valeur());
   if (sub_type(Champ_P1NC,ch_diffuse.valeur()))
     {
       const Champ_P1NC& inco = ref_cast(Champ_P1NC,ch_diffuse.valeur());
@@ -91,12 +91,12 @@ const Champ_base& Op_Diff_P1NC_barprim::diffusivite() const
 double Op_Diff_P1NC_barprim::calculer_dt_stab() const
 {
   double dt_stab;
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   double alpha = 1.e-38;
   // pas mp_max ?
   if (diffusivite_pour_pas_de_temps().valeurs().size() > 0)
     alpha = local_max_vect(diffusivite_pour_pas_de_temps().valeurs());
-  dt_stab = zone_VEF.carre_pas_du_maillage()/(2.*dimension*(alpha+DMINFLOAT));
+  dt_stab = domaine_VEF.carre_pas_du_maillage()/(2.*dimension*(alpha+DMINFLOAT));
   return dt_stab;
 }
 
@@ -105,13 +105,13 @@ void Op_Diff_P1NC_barprim::calculer_divergence(const DoubleTab& grad,
                                                const DoubleVect& nu,
                                                DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone& zone = zone_VEF.zone();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  int nfe=zone.nb_faces_elem();
-  int nb_elem_tot=zone.nb_elem_tot();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine& domaine = domaine_VEF.domaine();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  int nfe=domaine.nb_faces_elem();
+  int nb_elem_tot=domaine.nb_elem_tot();
   int elem,indice,face,comp,comp2;
   ArrOfDouble sigma(dimension);
   double normale;
@@ -186,13 +186,13 @@ DoubleTab& Op_Diff_P1NC_barprim::ajouter(const DoubleTab& inconnue,
 }
 
 void calculer_gradientP1NC(const DoubleTab& vitesse,
-                           const Zone_VEF& zone_VEF,
-                           const Zone_Cl_VEF& zone_Cl_VEF,
+                           const Domaine_VEF& domaine_VEF,
+                           const Domaine_Cl_VEF& domaine_Cl_VEF,
                            DoubleTab& gradient_elem);
 DoubleTab& Op_Diff_P1NC_barprim::calculer(const DoubleTab& inconnue, DoubleTab& resu) const
 {
   //Cerr << "Op_Diff_P1NC_barprim::calculer" << finl;
-  int nb_elem = le_dom_vef->zone().nb_elem_tot();
+  int nb_elem = le_dom_vef->domaine().nb_elem_tot();
   //const DoubleTab& xp=le_dom_vef->xp();
   DoubleVect nu;
   {

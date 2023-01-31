@@ -34,8 +34,8 @@ int Convection_Diffusion_Espece_Fluide_Dilatable_base::preparer_calcul()
 {
   Convection_Diffusion_Fluide_Dilatable_base::preparer_calcul();
 
-  // remplissage de la zone cl modifiee avec 1 partout au bord...
-  zcl_modif_=(zone_Cl_dis());
+  // remplissage de la domaine cl modifiee avec 1 partout au bord...
+  zcl_modif_=(domaine_Cl_dis());
 
   Conds_lim& condlims=zcl_modif_.valeur().les_conditions_limites();
   int nb=condlims.size();
@@ -59,7 +59,7 @@ void Convection_Diffusion_Espece_Fluide_Dilatable_base::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Massic fraction equation discretization ..." << finl;
   //On utilise temperature pour la directive car discretisation identique
-  dis.discretiser_champ("temperature",zone_dis(),"fraction_massique","sans_dimension",
+  dis.discretiser_champ("temperature",domaine_dis(),"fraction_massique","sans_dimension",
                         1 /* nb_composantes */,nb_valeurs_temp,temps,l_inco_ch);
   Equation_base::discretiser();
   Cerr << "Convection_Diffusion_Espece_Fluide_Dilatable_base::discretiser() ok" << finl;

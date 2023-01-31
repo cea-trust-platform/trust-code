@@ -14,14 +14,14 @@
 *****************************************************************************/
 
 #include <Op_Rot_VEFP1B.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Front_VF.h>
-#include <Zone_dis.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_dis.h>
+#include <Domaine_Cl_dis.h>
 
 #include <Matrice_Morse.h>
 #include <Op_Div_VEFP1B_Elem.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 #include <TRUSTList.h>
 
@@ -47,9 +47,9 @@ void  Op_Rot_VEFP1B::associer_coins(const ArrOfInt& arr)
 }
 
 
-const Zone_VEF_PreP1b& Op_Rot_VEFP1B::zone_Vef() const
+const Domaine_VEF_PreP1b& Op_Rot_VEFP1B::domaine_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
 }
 
 //////////////////////////////////////////////////
@@ -67,11 +67,11 @@ int est_un_coin(int num, const ArrOfInt& coins)
 //
 ///////////////////////////////////////////////////
 
-void Op_Rot_VEFP1B::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis,
+void Op_Rot_VEFP1B::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis,
                              const Champ_Inc&)
 {
-  const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 }
@@ -90,9 +90,9 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
 {
   Cerr << "je suis dans OpRot" << finl;
 
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone& zone = zone_VEF.zone();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine& domaine = domaine_VEF.domaine();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int elem0,elem1;
   int sommet_global,face_opp;
@@ -111,8 +111,8 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
   // Sortie libre = pas de conditions aux limites ????
 
   // On traite les faces internes i.e. sans les conditions aux limites
-  int premiere_face_int = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces();
+  int premiere_face_int = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces();
 
   if (dimension > 2)
     {
@@ -153,12 +153,12 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
       if (!faces_opp_elem0.est_vide()) faces_opp_elem0.vide();
       if (!faces_opp_elem1.est_vide()) faces_opp_elem1.vide();
 
-      for (int i=0; i<zone.nb_som_elem(); i++)
+      for (int i=0; i<domaine.nb_som_elem(); i++)
         {
-          sommets_elem0.add_if_not(zone.sommet_elem(elem0,i));
-          faces_opp_elem0.add_if_not(zone_VEF.elem_faces(elem0,i));
-          sommets_elem1.add_if_not(zone.sommet_elem(elem1,i));
-          faces_opp_elem1.add_if_not(zone_VEF.elem_faces(elem1,i));
+          sommets_elem0.add_if_not(domaine.sommet_elem(elem0,i));
+          faces_opp_elem0.add_if_not(domaine_VEF.elem_faces(elem0,i));
+          sommets_elem1.add_if_not(domaine.sommet_elem(elem1,i));
+          faces_opp_elem1.add_if_not(domaine_VEF.elem_faces(elem1,i));
         }
 
       /* Maintenant, on calcule la contribution au rotationnel */
@@ -181,8 +181,8 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
               sommet_global = sommets_elem0[i];
 
               //Pour eliminer le dernier sommet
-              if (sommet_global != zone.nb_som()-1)
-                sommation_sommets += vorticite(zone.nb_elem()+sommet_global);
+              if (sommet_global != domaine.nb_som()-1)
+                sommation_sommets += vorticite(domaine.nb_elem()+sommet_global);
             }
 
           rot(face,composante) += -pow(-1.,modulo)/(dimension+1)*
@@ -195,8 +195,8 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
               sommet_global = sommets_elem1[i];
 
               //Pour eliminer le dernier sommet
-              if (sommet_global != zone.nb_som()-1)
-                sommation_sommets += vorticite(zone.nb_elem()+sommet_global);
+              if (sommet_global != domaine.nb_som()-1)
+                sommation_sommets += vorticite(domaine.nb_elem()+sommet_global);
             }
 
           rot(face,composante) += -pow(-1.,modulo)/(dimension+1)*
@@ -218,12 +218,12 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
               sommet_global = sommets_elem0[i];
 
               //Pour eliminer le dernier sommet
-              if (sommet_global != zone.nb_som()-1)
+              if (sommet_global != domaine.nb_som()-1)
                 {
                   face_opp = faces_opp_elem0[i];
                   vecteur_normal_opp_elem0 = vecteur_normal(face_opp,elem0);
 
-                  sommation_sommets += vorticite(zone.nb_elem()+sommet_global)
+                  sommation_sommets += vorticite(domaine.nb_elem()+sommet_global)
                                        * vecteur_normal_opp_elem0(modulo);
                 }
 
@@ -239,12 +239,12 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
               sommet_global = sommets_elem1[i];
 
               //Pour eliminer le dernier sommet
-              if (sommet_global != zone.nb_som()-1)
+              if (sommet_global != domaine.nb_som()-1)
                 {
                   face_opp = faces_opp_elem1[i];
                   vecteur_normal_opp_elem1 = vecteur_normal(face_opp,elem1);
 
-                  sommation_sommets += vorticite(zone.nb_elem()+sommet_global)
+                  sommation_sommets += vorticite(domaine.nb_elem()+sommet_global)
                                        * vecteur_normal_opp_elem1(modulo);
                 }
 
@@ -271,13 +271,13 @@ Op_Rot_VEFP1B::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   DoubleTab le_vecteur_normal(dimension);
 
   for (int composante = 0; composante<dimension; composante++)
 
-    le_vecteur_normal(composante) = zone_VEF.face_normales(face,composante)
-                                    * zone_VEF.oriente_normale(face,elem);
+    le_vecteur_normal(composante) = domaine_VEF.face_normales(face,composante)
+                                    * domaine_VEF.oriente_normale(face,elem);
 
   return le_vecteur_normal;
 }

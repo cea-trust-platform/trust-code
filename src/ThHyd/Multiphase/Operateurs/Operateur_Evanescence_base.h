@@ -28,7 +28,7 @@
 class Operateur_Evanescence_base  : public Operateur_base
 {
   Declare_base(Operateur_Evanescence_base);
-  void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc& inco) override { };
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& inco) override { };
 public:
   virtual double alpha_res() const {Process::exit( " Operateur_Evanescence_base::alpha_res must be overloaded !");  return -1.;};
 };

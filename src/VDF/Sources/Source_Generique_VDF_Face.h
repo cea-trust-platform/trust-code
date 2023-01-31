@@ -18,8 +18,8 @@
 #define Source_Generique_VDF_Face_included
 
 #include <Source_Generique_base.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Domaine_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
 
 /*! @brief class Source_Generique_VDF_Face
  *
@@ -32,7 +32,7 @@ class Source_Generique_VDF_Face: public Source_Generique_base
 
 public:
 
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
   Nom localisation_source() override;
   inline int has_interface_blocs() const override { return 1; };
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
@@ -41,8 +41,8 @@ public:
 
 protected:
 
-  REF(Zone_VDF) le_dom_VDF;
-  REF(Zone_Cl_VDF) la_zcl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) la_zcl_VDF;
 };
 
 #endif

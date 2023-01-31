@@ -141,22 +141,22 @@ Entree& Integrer_champ_med::interpreter(Entree& is)
       exit();
     }
   Champ_Fonc_MED& champ=ref_cast(Champ_Fonc_MED, objet(nom_champ_fonc_med));
-  const Zone& zone=champ.zone_dis_base().zone();
-  const DoubleTab& coord=zone.les_sommets();
+  const Domaine& domaine=champ.domaine_dis_base().domaine();
+  const DoubleTab& coord=domaine.les_sommets();
   // on fait une coie pour les modifier
-  IntTab les_elems_mod=zone.les_elems();
-  const IntTab&  les_elems=zone.les_elems();
+  IntTab les_elems_mod=domaine.les_elems();
+  const IntTab&  les_elems=domaine.les_elems();
 
   ArrOfDouble normal(3);
 
 
   const DoubleTab& valeurs= champ.valeurs();
-  assert(valeurs.dimension(0)==zone.nb_elem());
+  assert(valeurs.dimension(0)==domaine.nb_elem());
   assert(valeurs.dimension(1)==3);
   double dz=(zmax-zmin)/nb_tranche;
   ArrOfDouble res(nb_tranche),pos(nb_tranche),surface(nb_tranche);
   int nb_elem=les_elems.dimension(0);
-  Cerr<<" Field integration using the method "<<nom_methode<<" on the domain "<<zone.le_nom() <<finl;
+  Cerr<<" Field integration using the method "<<nom_methode<<" on the domain "<<domaine.le_nom() <<finl;
   if (nom_methode=="debit_total")
     {
       nb_tranche=1;

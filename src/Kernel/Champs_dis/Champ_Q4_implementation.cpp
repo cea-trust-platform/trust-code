@@ -15,7 +15,7 @@
 
 #include <Champ_Q4_implementation.h>
 #include <Champ_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 DoubleVect& Champ_Q4_implementation::valeur_a_elem(const DoubleVect& position, DoubleVect& val, int num_elem) const
 {
@@ -24,12 +24,12 @@ DoubleVect& Champ_Q4_implementation::valeur_a_elem(const DoubleVect& position, D
   const DoubleTab& ch = cha.valeurs();
   int nb_compo_ = cha.nb_comp();
 
-  int j, ncomp, num_som, nb_som_elem = get_zone_geom().nb_som_elem();
+  int j, ncomp, num_som, nb_som_elem = get_domaine_geom().nb_som_elem();
   if (nb_compo_ == 1)
     {
       for (j = 0; j < nb_som_elem; j++)
         {
-          num_som = get_zone_geom().sommet_elem(num_elem, j);
+          num_som = get_domaine_geom().sommet_elem(num_elem, j);
           val(0) += ch(num_som);
         }
       val(0) /= nb_som_elem;
@@ -40,7 +40,7 @@ DoubleVect& Champ_Q4_implementation::valeur_a_elem(const DoubleVect& position, D
         {
           for (j = 0; j < nb_som_elem; j++)
             {
-              num_som = get_zone_geom().sommet_elem(num_elem, j);
+              num_som = get_domaine_geom().sommet_elem(num_elem, j);
               val(ncomp) += ch(num_som, ncomp);
             }
           val(ncomp) /= nb_som_elem;
@@ -56,13 +56,13 @@ double Champ_Q4_implementation::valeur_a_elem_compo(const DoubleVect& position, 
   const DoubleTab& ch = cha.valeurs();
   int nb_compo_ = cha.nb_comp();
 
-  int j, num_som, nb_som_elem = get_zone_geom().nb_som_elem();
+  int j, num_som, nb_som_elem = get_domaine_geom().nb_som_elem();
   if (nb_compo_ == 1)
     {
       assert(ncomp == 0);
       for (j = 0; j < nb_som_elem; j++)
         {
-          num_som = get_zone_geom().sommet_elem(num_elem, j);
+          num_som = get_domaine_geom().sommet_elem(num_elem, j);
           val += ch(num_som);
         }
       val /= nb_som_elem;
@@ -71,7 +71,7 @@ double Champ_Q4_implementation::valeur_a_elem_compo(const DoubleVect& position, 
     {
       for (j = 0; j < nb_som_elem; j++)
         {
-          num_som = get_zone_geom().sommet_elem(num_elem, j);
+          num_som = get_domaine_geom().sommet_elem(num_elem, j);
           val += ch(num_som, ncomp);
         }
       val /= nb_som_elem;
@@ -87,7 +87,7 @@ DoubleTab& Champ_Q4_implementation::valeur_aux_elems(const DoubleTab&, const Int
   const DoubleTab& ch = cha.valeurs();
   int nb_compo_ = cha.nb_comp();
 
-  int j, ncomp, num_som, nb_som_elem = get_zone_geom().nb_som_elem(), ielem, num_elem, nb_elems = les_elems.size();
+  int j, ncomp, num_som, nb_som_elem = get_domaine_geom().nb_som_elem(), ielem, num_elem, nb_elems = les_elems.size();
   assert(val.size() == nb_elems);
   if (nb_compo_ == 1)
     {
@@ -96,7 +96,7 @@ DoubleTab& Champ_Q4_implementation::valeur_aux_elems(const DoubleTab&, const Int
           num_elem = les_elems(ielem);
           for (j = 0; j < nb_som_elem; j++)
             {
-              num_som = get_zone_geom().sommet_elem(num_elem, j);
+              num_som = get_domaine_geom().sommet_elem(num_elem, j);
               val(ielem, 0) += ch(num_som);
             }
           val(ielem, 0) /= nb_som_elem;
@@ -111,7 +111,7 @@ DoubleTab& Champ_Q4_implementation::valeur_aux_elems(const DoubleTab&, const Int
             {
               for (j = 0; j < nb_som_elem; j++)
                 {
-                  num_som = get_zone_geom().sommet_elem(num_elem, j);
+                  num_som = get_domaine_geom().sommet_elem(num_elem, j);
                   val(ielem, ncomp) += ch(num_som, ncomp);
                 }
               val(ielem, ncomp) /= nb_som_elem;
@@ -129,7 +129,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_elems_compo(const DoubleTab&, co
   const DoubleTab& ch = cha.valeurs();
   int nb_compo_ = cha.nb_comp();
 
-  int j, num_som, nb_som_elem = get_zone_geom().nb_som_elem(), ielem, num_elem, nb_elems = les_elems.size();
+  int j, num_som, nb_som_elem = get_domaine_geom().nb_som_elem(), ielem, num_elem, nb_elems = les_elems.size();
   assert(val.size() == nb_elems);
   if (nb_compo_ == 1)
     {
@@ -139,7 +139,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_elems_compo(const DoubleTab&, co
           num_elem = les_elems(ielem);
           for (j = 0; j < nb_som_elem; j++)
             {
-              num_som = get_zone_geom().sommet_elem(num_elem, j);
+              num_som = get_domaine_geom().sommet_elem(num_elem, j);
               val(ielem) += ch(num_som);
             }
           val(ielem) /= nb_som_elem;
@@ -152,7 +152,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_elems_compo(const DoubleTab&, co
           num_elem = les_elems(ielem);
           for (j = 0; j < nb_som_elem; j++)
             {
-              num_som = get_zone_geom().sommet_elem(num_elem, j);
+              num_som = get_domaine_geom().sommet_elem(num_elem, j);
               val(ielem) += ch(num_som, ncomp);
             }
           val(ielem) /= nb_som_elem;
@@ -162,7 +162,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_elems_compo(const DoubleTab&, co
   return val;
 }
 
-DoubleTab& Champ_Q4_implementation::valeur_aux_sommets(const Zone& dom, DoubleTab& val) const
+DoubleTab& Champ_Q4_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
 {
   const Champ_base& cha = le_champ();
   const DoubleTab& ch = cha.valeurs();
@@ -190,7 +190,7 @@ DoubleTab& Champ_Q4_implementation::valeur_aux_sommets(const Zone& dom, DoubleTa
     }
   return val;
 }
-DoubleVect& Champ_Q4_implementation::valeur_aux_sommets_compo(const Zone& dom, DoubleVect& val, int ncomp) const
+DoubleVect& Champ_Q4_implementation::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int ncomp) const
 {
   const Champ_base& cha = le_champ();
   const DoubleTab& ch = cha.valeurs();
@@ -218,7 +218,7 @@ DoubleVect& Champ_Q4_implementation::valeur_aux_sommets_compo(const Zone& dom, D
 
 DoubleTab& Champ_Q4_implementation::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const DoubleTab& coordsom = get_zone_geom().coord_sommets();
+  const DoubleTab& coordsom = get_domaine_geom().coord_sommets();
   positions = coordsom;
   return positions;
 }
@@ -228,7 +228,7 @@ int Champ_Q4_implementation::remplir_coord_noeuds_et_polys(DoubleTab& positions,
   Cerr << "Champ_Q4_implementation::remplir_coord_noeuds_et_polys not implemented" << finl;
   assert(0);
 
-  int nb_elem = get_zone_geom().nb_elem();
+  int nb_elem = get_domaine_geom().nb_elem();
   polys.resize(nb_elem);
   for (int i = 0; i < nb_elem; i++)
     polys(i) = i;
@@ -239,7 +239,7 @@ int Champ_Q4_implementation::imprime_Q4(Sortie& os, int ncomp) const
 {
   const Champ_base& cha = le_champ();
   int nb_compo_ = cha.nb_comp();
-  const Zone& le_dom = get_zone_geom();
+  const Domaine& le_dom = get_domaine_geom();
   int nb_som_tot = le_dom.nb_som_tot();
   const DoubleTab& val = cha.valeurs();
   int som;

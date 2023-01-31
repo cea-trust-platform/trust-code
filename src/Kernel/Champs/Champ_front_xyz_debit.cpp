@@ -93,19 +93,19 @@ int Champ_front_xyz_debit::initialiser(double tps, const Champ_Inc_base& inco)
 void Champ_front_xyz_debit::calculer_normales_et_integrale(const Front_VF& le_bord, DoubleTab& velocity_user)
 {
   const int N = flow_rate_.nb_comp();
-  const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF,domaine_dis());
   integrale_ = 0.;
 
   for(int i = 0; i < le_bord.nb_faces_tot(); i++)
     {
       int f = le_bord.num_face(i);
-      const double dS = zone_VF.face_surfaces(f);
+      const double dS = domaine_VF.face_surfaces(f);
       for (int n = 0; n < N; ++n)
         {
           double u_scal_n = 0;
           for(int j = 0; j < dimension; j++)
             {
-              normal_vectors_(i, j) = -zone_VF.normalized_boundaries_outward_vector(f, 1.)(j); // inward normal
+              normal_vectors_(i, j) = -domaine_VF.normalized_boundaries_outward_vector(f, 1.)(j); // inward normal
               u_scal_n += normal_vectors_(i, j) * (velocity_user.size() ? velocity_user(velocity_user.size() > dimension ? i : 0, j) : normal_vectors_(i, j));
             }
           if (i < le_bord.nb_faces()) integrale_(n) += dS * u_scal_n / coeff_(i, n) * ch_inco_->equation().milieu().porosite_face(f); //real faces only

@@ -18,7 +18,7 @@
 #include <Probleme_base.h>
 #include <Champ_Inc_base.h>
 #include <TRUSTTab.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Debog.h>
 #include <Param.h>
 

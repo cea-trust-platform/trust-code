@@ -18,7 +18,7 @@
 
 #include <Interprete_geometrique_base.h>
 
-/*! @brief Classe Mailler Un mailleur par agglomeration de zones (paves pour le moment)
+/*! @brief Classe Mailler Un mailleur par agglomeration de domaines (paves pour le moment)
  *
  *     Structure du jeu de donnee (en dimension 2) :
  *     Mailler dom

@@ -14,11 +14,11 @@
 *****************************************************************************/
 
 #include <Terme_Source_Acceleration.h>
-#include <Zone_dis.h>
+#include <Domaine_dis.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Discretisation_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Schema_Temps_base.h>
 
 Implemente_base_sans_constructeur(Terme_Source_Acceleration,"Terme_Source_Acceleration",Source_base);
@@ -220,9 +220,9 @@ void Terme_Source_Acceleration::lire_data(Entree& s)
         exit();
       }
     const Discretisation_base& dis   = eqn.discretisation();
-    const Zone_dis_base&        zone  = eqn.zone_dis().valeur();
+    const Domaine_dis_base&        domaine  = eqn.domaine_dis().valeur();
     const double                temps = eqn.schema_temps().temps_courant();
-    dis.discretiser_champ("vitesse", zone, "acceleration_terme_source", "kg/ms^2",
+    dis.discretiser_champ("vitesse", domaine, "acceleration_terme_source", "kg/ms^2",
                           Objet_U::dimension, /* composantes */
                           temps,
                           get_set_terme_source_post());
@@ -252,14 +252,14 @@ Champ_Fonc& Terme_Source_Acceleration::get_set_terme_source_post() const
  *   - domegadt_
  *   - centre_rotation_
  *
- * @param (champ_source) un champ discretise aux elements de la zone_VF dans lequel on stocke le resultat du calcul. Espace virtuel a jour.
+ * @param (champ_source) un champ discretise aux elements de la domaine_VF dans lequel on stocke le resultat du calcul. Espace virtuel a jour.
  */
 const DoubleTab&
 Terme_Source_Acceleration::calculer_la_source(DoubleTab& acceleration_aux_faces) const
 {
-  const Zone_VF&    zone_VF = ref_cast(Zone_VF, equation().zone_dis().valeur());;
+  const Domaine_VF&    domaine_VF = ref_cast(Domaine_VF, equation().domaine_dis().valeur());;
 
-  const DoubleTab& centre_faces = zone_VF.xv();
+  const DoubleTab& centre_faces = domaine_VF.xv();
 
   double a[3] = {0., 0., 0.};  // champ acceleration
   double w[3] = {0., 0., 0.};  // omega

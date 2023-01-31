@@ -20,7 +20,7 @@
 #include <Array_tools.h>
 #include <TRUSTList.h>
 #include <TRUSTTab.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -113,9 +113,9 @@ Entree& ExtrudeParoi::interpreter_(Entree& is)
 
 /*! @brief
  *
- * @param (Zone& zone) la zone dont on veut raffiner les elements
+ * @param (Domaine& domaine) la domaine dont on veut raffiner les elements
  */
-void ExtrudeParoi::extrude(Zone& dom)
+void ExtrudeParoi::extrude(Domaine& dom)
 {
   if  (dom.type_elem()->que_suis_je() == "Tetraedre")
     {
@@ -134,9 +134,9 @@ void ExtrudeParoi::extrude(Zone& dom)
   int oldnbsom = dom.nb_som();
 
   Faces lesfaces;
-  //zone.creer_faces(les_faces);
+  //domaine.creer_faces(les_faces);
   {
-    // bloc a factoriser avec Zone_VF.cpp :
+    // bloc a factoriser avec Domaine_VF.cpp :
     Type_Face type_face = dom.type_elem().type_face(0);
     lesfaces.typer(type_face);
     lesfaces.associer_domaine(dom);
@@ -270,7 +270,7 @@ void ExtrudeParoi::extrude(Zone& dom)
             }
 
         }//if(nomfr==nom_front)
-    }//for (l<zone.nb_front_Cl()
+    }//for (l<domaine.nb_front_Cl()
 
   calcul_tab_norme(normale_som);
 
@@ -520,11 +520,11 @@ void ExtrudeParoi::extrude(Zone& dom)
                   new_elems(oldsz+cpt,3) = ii6;
                   cpt++;
 
-                  mettre_a_jour_sous_zone(dom,i,oldsz,0);
+                  mettre_a_jour_sous_domaine(dom,i,oldsz,0);
                 }
             }
         }//if(nomfr==nom_front)
-    }//for (l<zone.nb_front_Cl()
+    }//for (l<domaine.nb_front_Cl()
 
 
   coord.reset();

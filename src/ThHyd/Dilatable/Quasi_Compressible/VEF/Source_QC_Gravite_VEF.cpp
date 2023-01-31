@@ -26,9 +26,9 @@ Sortie& Source_QC_Gravite_VEF::printOn(Sortie& os) const
 
 Entree& Source_QC_Gravite_VEF::readOn(Entree& is) { return is; }
 
-void Source_QC_Gravite_VEF::associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
+void Source_QC_Gravite_VEF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& domaine_cl)
 {
-  associer_domaines_impl(zone,zone_cl);
+  associer_domaines_impl(domaine,domaine_cl);
 }
 
 DoubleTab& Source_QC_Gravite_VEF::ajouter(DoubleTab& resu) const

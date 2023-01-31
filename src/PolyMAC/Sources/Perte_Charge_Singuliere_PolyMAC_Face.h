@@ -20,7 +20,7 @@
 #include <Perte_Charge_Singuliere.h>
 #include <TRUSTList.h>
 
-class Zone;
+class Domaine;
 
 /*! @brief class Perte_Charge_Singuliere_PolyMAC_Face
  *

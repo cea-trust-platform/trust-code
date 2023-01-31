@@ -28,7 +28,7 @@
 #include <med++.h>
 
 class Nom;
-class Zone;
+class Domaine;
 
 class LireMED : public Interprete_geometrique_base
 {
@@ -36,7 +36,7 @@ class LireMED : public Interprete_geometrique_base
 public :
   LireMED();
   Entree& interpreter_(Entree&) override;
-  void lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& nom_dom1, int isvef=0, int convertAllToPoly=0, int isfamilyshort=0);
+  void lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom1, int isvef=0, int convertAllToPoly=0, int isfamilyshort=0);
   ///! Set use_medcoupling flag void setMEDCoupling(bool mc) { use_medcoupling_ = mc; }
 
 protected:
@@ -54,7 +54,7 @@ void lire_nom_med(Nom& nom_champ,Entree& is);
 void test_version(Nom& nom) ;
 void dimensionne_char_ptr_taille(Char_ptr& nom ,int taille_d_un_mot,int nb=1);
 void traite_nom_fichier_med(Nom& nom_fic);
-void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Zone& dom,ArrOfDouble& temps_sauv);
+void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,ArrOfDouble& temps_sauv);
 #ifdef MED_
 Nom medinfo1champ(const Nom& nom_fic, const char* nomchamp,int& numero,int& nbcomp,int& ndt,med_entity_type& type_ent, med_geometry_type& type_geo,int& size, const Nom& nom_dom,int verifie_type,ArrOfDouble& temps_sauv);
 #endif

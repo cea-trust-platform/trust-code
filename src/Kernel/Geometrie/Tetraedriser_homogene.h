@@ -27,9 +27,9 @@
  */
 
 #include <Triangulation_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class Tetraedriser_homogene : public Triangulation_base
 {
@@ -37,7 +37,7 @@ class Tetraedriser_homogene : public Triangulation_base
 
 public :
 
-  void trianguler(Zone&) const override;
+  void trianguler(Domaine&) const override;
   inline int dimension_application() const override;
 };
 

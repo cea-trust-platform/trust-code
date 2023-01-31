@@ -38,7 +38,7 @@ public:
   virtual void associer_correlation(const Correlation& corr) { correlation_loi_paroi_ = corr; }
 
   void associer_fr_dis_base(const Frontiere_dis_base& fr) override { la_frontiere_dis = fr; }
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& zcl) override { mon_dom_cl_dis = zcl; }
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl) override { mon_dom_cl_dis = zcl; }
 
   // fonctions de cond_lim_base qui necessitent le champ_front qu'on met a zero car on fait abstraction du champ_front
   virtual void completer() override { }

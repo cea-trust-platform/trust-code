@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Joint.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Joint,"Joint",Frontiere);
 
@@ -54,7 +54,7 @@ Entree& Joint::readOn(Entree& s)
     {
       if (Process::je_suis_maitre())
         {
-          Cerr << "The format of .Zones is not recognized because probably too old." << finl;
+          Cerr << "The format of .Domaines is not recognized because probably too old." << finl;
           Cerr << "Split your mesh with an executable which is more recent" << finl;
           Cerr << "than the version 1.5.2 build 240507." << finl;
         }
@@ -94,7 +94,7 @@ void Joint::affecte_epaisseur(int ep)
   epaisseur_ = ep;
 }
 
-/*! @brief Renvoie PEvoisin (numero de la zone voisine)
+/*! @brief Renvoie PEvoisin (numero de la domaine voisine)
  *
  */
 int Joint::PEvoisin() const
@@ -146,7 +146,7 @@ const ArrOfInt&  Joint::esp_dist_faces() const
  *
  * Ces structures
  *   sont generalement remplies par la classe Scatter. Exceptions notables:
- *   Zone_VDF et Zone_VF pour la renumerotation des faces.
+ *   Domaine_VDF et Domaine_VF pour la renumerotation des faces.
  *
  */
 Joint_Items& Joint::set_joint_item(Type_Item item)

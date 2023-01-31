@@ -21,7 +21,7 @@
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <ArrOfBit.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_base(Partitionneur_base,"Partitionneur_base",Objet_U);
@@ -80,11 +80,11 @@ void Partitionneur_base::corriger_elem0_sur_proc0(IntVect& elem_part)
 
 }
 
-/*! @brief construction (taille et contenu) du tableau elements avec pour chaque face du bord donne, l'indice de l'element de la zone adjacent
+/*! @brief construction (taille et contenu) du tableau elements avec pour chaque face du bord donne, l'indice de l'element de la domaine adjacent
  *
  *   a cette face.
  *
- * @param (som_elem) connectivite sommet-elements de la zone, calculee a l'aide de construire_connectivite_som_elem
+ * @param (som_elem) connectivite sommet-elements de la domaine, calculee a l'aide de construire_connectivite_som_elem
  * @param (faces) les faces du bord a traiter (pour chaque face, indices des sommets)
  * @param (nom_faces) un nom de bord a imprimer en cas d'erreur
  * @param (elements) le tableau a remplir.
@@ -123,18 +123,18 @@ static void chercher_elems_voisins_faces(const Static_Int_Lists& som_elem,
  * Si l'element i est voisin de l'element j par une face periodique, alors il existe
  *   k tel que graph(i,k)==j et il existe k2 tel que graph(j,k2)==i.
  *
- * @param (zone) la zone a traiter
+ * @param (domaine) la domaine a traiter
  * @param (liste_bords_periodiques) liste des noms des bords periodiques. ATTENTION: on suppose que les faces des bords periodiques sont rangees selon la convention des bords periodiques. Voir check_faces_periodiques().
- * @param (som_elem) la connectivite sommets-elements pour la zone donnee.
+ * @param (som_elem) la connectivite sommets-elements pour la domaine donnee.
  * @param (graph) On y stocke le resultat. Valeur de retour: nombre d'elements dans le graphe (egal au nombre de faces periodiques)
  */
-int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
+int Partitionneur_base::calculer_graphe_connexions_periodiques(const Domaine& domaine,
                                                                const Noms& liste_bords_periodiques,
                                                                const Static_Int_Lists& som_elem,
                                                                const int my_offset,
                                                                Static_Int_Lists& graph)
 {
-  const int nb_elem = zone.nb_elem();
+  const int nb_elem = domaine.nb_elem();
 
   // Pour chaque element, combient a-t-il de faces periodiques ?
   ArrOfInt nb_faces_perio(nb_elem);
@@ -145,17 +145,17 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
 
   // Premiere etape: remplissage de nb_faces_perio et correspondances
   // Parcours des bords periodiques
-  const int nb_bords = zone.nb_bords();
+  const int nb_bords = domaine.nb_bords();
   for (int i_bord = 0; i_bord < nb_bords; i_bord++)
     {
-      const Bord& bord = zone.bord(i_bord);
+      const Bord& bord = domaine.bord(i_bord);
       if (!liste_bords_periodiques.contient_(bord.le_nom()))
         continue;
       Cerr << " Checking of the boundary " << bord.le_nom();
       {
         ArrOfDouble delta;
         ArrOfDouble erreur;
-        const int ok = Reordonner_faces_periodiques::check_faces_periodiques(zone.bord(i_bord),
+        const int ok = Reordonner_faces_periodiques::check_faces_periodiques(domaine.bord(i_bord),
                                                                              delta,
                                                                              erreur);
         const int d = delta.size_array();
@@ -242,7 +242,7 @@ int Partitionneur_base::calculer_graphe_connexions_periodiques(const Zone& zone,
  *   c'est faux. Avec cette correction, cet algorithme est correct.
  *
  */
-int Partitionneur_base::corriger_sommets_bord(const Zone& domaine,
+int Partitionneur_base::corriger_sommets_bord(const Domaine& domaine,
                                               const Noms& liste_bords_perio,
                                               const ArrOfInt& renum_som_perio,
                                               const Static_Int_Lists& som_elem,
@@ -402,7 +402,7 @@ int Partitionneur_base::corriger_sommets_bord(const Zone& domaine,
  *   tous les elements adjacents sont rattaches au meme processeur.
  *
  */
-int Partitionneur_base::corriger_multiperiodique(const Zone& domaine,
+int Partitionneur_base::corriger_multiperiodique(const Domaine& domaine,
                                                  const Noms& liste_bords_perio,
                                                  const ArrOfInt& renum_som_perio,
                                                  const Static_Int_Lists& som_elem,
@@ -612,7 +612,7 @@ int Partitionneur_base::corriger_multiperiodique(const Zone& domaine,
  */
 int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph_elements_perio,
                                                    const Static_Int_Lists& som_elem,
-                                                   const Zone& domaine,
+                                                   const Domaine& domaine,
                                                    const Noms& liste_bords_perio,
                                                    IntVect& elem_part)
 {
@@ -662,7 +662,7 @@ int Partitionneur_base::corriger_bords_avec_graphe(const Static_Int_Lists& graph
  *    appeler directement corriger_periodique_avec_graphe)
  *
  */
-void Partitionneur_base::corriger_bords_avec_liste(const Zone& dom,
+void Partitionneur_base::corriger_bords_avec_liste(const Domaine& dom,
                                                    const Noms& liste_bords_periodiques,
                                                    const int my_offset,
                                                    IntVect& elem_part)

@@ -16,14 +16,14 @@
 #ifndef Op_Curl_VEFP1B_included
 #define Op_Curl_VEFP1B_included
 
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 #include <Operateur_base.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_VEF.h>
 #include <TRUSTLists.h>
-#include <Zone_VEF.h>
-#include <Zone.h>
+#include <Domaine_VEF.h>
+#include <Domaine.h>
 
-class Zone_VEF_PreP1b;
+class Domaine_VEF_PreP1b;
 
 class Op_Curl_VEFP1B : public Operateur_base
 {
@@ -38,7 +38,7 @@ public:
   ///////////////////////////////////////////////////
   DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
   DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
-  void associer( const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&) override;
+  void associer( const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
 
   //////////////////////////////////////////////////////
   // Autres methodes
@@ -49,11 +49,11 @@ public:
   int elements_pour_sommet(const int sommet,const int indice) const;
   int elem_som_size(const int sommet) const;
 
-  const Zone_VEF_PreP1b& zone_Vef() const;
+  const Domaine_VEF_PreP1b& domaine_Vef() const;
 
 protected:
-  REF(Zone_VEF) le_dom_vef;
-  REF(Zone_Cl_VEF) la_zcl_vef;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   IntLists elements_pour_sommet_;
   /*   DoubleTab flux_tangent_bords_; */
 };

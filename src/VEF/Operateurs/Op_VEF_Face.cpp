@@ -41,8 +41,8 @@
  *
  */
 
-void Op_VEF_Face::dimensionner(const Zone_VEF& le_dom,
-                               const Zone_Cl_VEF& le_dom_cl,
+void Op_VEF_Face::dimensionner(const Domaine_VEF& le_dom,
+                               const Domaine_Cl_VEF& le_dom_cl,
                                Matrice_Morse& la_matrice) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
@@ -58,7 +58,7 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& le_dom,
   nfin=nnnn;
   int i,j,k,kk;
   int elem1,elem2;
-  int nb_faces_elem = le_dom.zone().nb_faces_elem();
+  int nb_faces_elem = le_dom.domaine().nb_faces_elem();
   //const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
   const int nb_comp = le_dom_cl.equation().inconnue().valeurs().line_size();
   la_matrice.dimensionner(nfin*nb_comp,nfin*nb_comp,0);
@@ -176,8 +176,8 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& le_dom,
  *
  */
 
-void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& le_dom,
-                                   const Zone_Cl_VEF& le_dom_cl,
+void Op_VEF_Face::modifier_pour_Cl(const Domaine_VEF& le_dom,
+                                   const Domaine_Cl_VEF& le_dom_cl,
                                    Matrice_Morse& la_matrice, DoubleTab& secmem) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
@@ -382,7 +382,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
     return;
   const Probleme_base& pb=op.equation().probleme();
 
-  const Zone_VEF& le_dom_vef=ref_cast(Zone_VEF,op.equation().zone_dis().valeur());
+  const Domaine_VEF& le_dom_vef=ref_cast(Domaine_VEF,op.equation().domaine_dis().valeur());
   int nb_compo=flux_bords_.dimension(1);
   // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
   if (op.equation().inconnue().le_nom()=="temperature"
@@ -448,7 +448,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
  */
 int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 {
-  const Zone_VEF& le_dom_vef=ref_cast(Zone_VEF,op.equation().zone_dis().valeur());
+  const Domaine_VEF& le_dom_vef=ref_cast(Domaine_VEF,op.equation().domaine_dis().valeur());
   DoubleTab& flux_bords_=op.flux_bords();
   if (flux_bords_.nb_dim()!=2)
     {
@@ -466,11 +466,11 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   const Schema_Temps_base& sch=pb.schema_temps();
   // On n'imprime les moments que si demande et si on traite l'operateur de diffusion de la vitesse
   int impr_mom=0;
-  if (le_dom_vef.zone().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
+  if (le_dom_vef.domaine().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
     impr_mom=1;
 
-  const int impr_sum=(le_dom_vef.zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(le_dom_vef.zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_sum=(le_dom_vef.domaine().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_vef.domaine().bords_a_imprimer().est_vide() ? 0:1);
 
   // Calcul des moments
   const int nb_faces =  le_dom_vef.nb_faces_tot();
@@ -479,7 +479,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   if (impr_mom)
     {
       const DoubleTab& xgrav = le_dom_vef.xv();
-      const ArrOfDouble& c_grav=le_dom_vef.zone().cg_moments();
+      const ArrOfDouble& c_grav=le_dom_vef.domaine().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<Objet_U::dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
@@ -499,7 +499,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   */
   for (int num_cl=0; num_cl<nb_cl; num_cl++)
     {
-      const Cond_lim& la_cl = op.equation().zone_Cl_dis().les_conditions_limites(num_cl);
+      const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
@@ -554,8 +554,8 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       // Write flux on boundaries
       for (int num_cl=0; num_cl<nb_cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = op.equation().zone_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
-          const Cond_lim& la_cl = op.equation().zone_Cl_dis().les_conditions_limites(num_cl);
+          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
+          const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
           int perio = (sub_type(Periodique,la_cl.valeur())?1:0);
           for(int k=0; k<nb_compo; k++)
             {
@@ -567,7 +567,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
               else
                 Flux.add_col(flux_bords(0,num_cl,k));
               if (impr_mom) Flux_moment.add_col(flux_bords(3,num_cl,k));
-              if (le_dom_vef.zone().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bords(0,num_cl,k));
+              if (le_dom_vef.domaine().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bords(0,num_cl,k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bords(0,num_cl,k);
@@ -582,7 +582,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       if (impr_sum) Flux_sum << finl;
     }
 
-  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_vef.zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_vef.domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
@@ -590,8 +590,8 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       // Impression sur chaque face si demande
       for (int num_cl=0; num_cl<nb_cl; num_cl++)
         {
-          const Frontiere_dis_base& la_fr = op.equation().zone_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
-          const Cond_lim& la_cl = op.equation().zone_Cl_dis().les_conditions_limites(num_cl);
+          const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
+          const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
           const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
@@ -627,15 +627,15 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 void modif_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice,const Equation_base& eqn)
 {
   const int nb_comp = eqn.inconnue().valeurs().line_size();
-  const Zone_Cl_dis_base& zone_Cl_VEF=eqn.zone_Cl_dis().valeur();
-  const Zone_VF& zone_VEF= ref_cast(Zone_VF,eqn.zone_dis().valeur());
-  int nb_bords=zone_VEF.nb_front_Cl();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_Cl_dis_base& domaine_Cl_VEF=eqn.domaine_Cl_dis().valeur();
+  const Domaine_VF& domaine_VEF= ref_cast(Domaine_VF,eqn.domaine_dis().valeur());
+  int nb_bords=domaine_VEF.nb_front_Cl();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nb_faces_elem = elem_faces.dimension(1);
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
@@ -691,16 +691,16 @@ void modif_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice,const
 void modif_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice,const Equation_base& eqn)
 {
   const int nb_comp = eqn.inconnue().valeurs().line_size();
-  const Zone_Cl_dis_base& zone_Cl_VEF=eqn.zone_Cl_dis().valeur();
-  const Zone_VF& zone_VEF= ref_cast(Zone_VF,eqn.zone_dis().valeur());
-  int nb_bords=zone_VEF.nb_front_Cl();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_Cl_dis_base& domaine_Cl_VEF=eqn.domaine_Cl_dis().valeur();
+  const Domaine_VF& domaine_VEF= ref_cast(Domaine_VF,eqn.domaine_dis().valeur());
+  int nb_bords=domaine_VEF.nb_front_Cl();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nb_faces_elem = elem_faces.dimension(1);
 
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
@@ -798,16 +798,16 @@ void Op_VEF_Face::modifier_matrice_pour_periodique_apres_contribuer(Matrice_Mors
 
   const int nb_comp = eqn.inconnue().valeurs().line_size();
 
-  const Zone_Cl_dis_base& zone_Cl_VEF=eqn.zone_Cl_dis().valeur();
-  const Zone_VF& zone_VEF= ref_cast(Zone_VF,eqn.zone_dis().valeur());
-  int nb_bords=zone_VEF.nb_front_Cl();
+  const Domaine_Cl_dis_base& domaine_Cl_VEF=eqn.domaine_Cl_dis().valeur();
+  const Domaine_VF& domaine_VEF= ref_cast(Domaine_VF,eqn.domaine_dis().valeur());
+  int nb_bords=domaine_VEF.nb_front_Cl();
 
   const IntVect& tab1=matrice.get_tab1();
   const IntVect& tab2=matrice.get_tab2();
 
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       //      int num2 = num1 + le_bord.nb_faces();

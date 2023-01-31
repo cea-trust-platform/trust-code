@@ -17,7 +17,7 @@
 #define Champ_Generique_Extraction_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-#include <Zone_dis.h>
+#include <Domaine_dis.h>
 
 /*! @brief Un champ generique qui effctue l extraction d un champ sur une frontiere
  *
@@ -47,9 +47,9 @@ public:
   const Noms        get_property(const Motcle& query) const override;
   void nommer_source() override;
   void completer(const Postraitement_base& post) override;
-  const Zone& get_ref_domain() const override;
-  void get_copy_domain(Zone&) const override;
-  const Zone_dis_base& get_ref_zone_dis_base() const override;
+  const Domaine& get_ref_domain() const override;
+  void get_copy_domain(Domaine&) const override;
+  const Domaine_dis_base& get_ref_domaine_dis_base() const override;
   void discretiser_domaine();
   const  Motcle  get_directive_pour_discr() const override;
 
@@ -58,8 +58,8 @@ protected :
   Nom dom_extrac_;                //Nom du domaine d extraction
   Nom nom_fr_;                        //Nom de la frontiere sur laquelle on fait l extraction
   Nom methode_;                        //Type de methode pour extraire ("trace" ou "champ_frontiere")
-  REF(Zone) domaine_;        //Reference sur le domaine d extraction
-  Zone_dis le_dom_dis;        //Le domaine discretise correspondant a domaine_.valeur()
+  REF(Domaine) domaine_;        //Reference sur le domaine d extraction
+  Domaine_dis le_dom_dis;        //Le domaine discretise correspondant a domaine_.valeur()
 };
 
 #endif

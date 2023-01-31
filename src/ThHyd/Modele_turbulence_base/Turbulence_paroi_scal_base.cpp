@@ -20,7 +20,7 @@
 #include <Schema_Temps_base.h>
 #include <EcrFicPartage.h>
 #include <SFichier.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Don.h>
 

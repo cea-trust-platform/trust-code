@@ -20,13 +20,13 @@
 
 #include <Operateur_Diff_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 #include <Op_VEF_Face.h>
 #include <Milieu_base.h>
-#include <Zone_VEF.h>
-class Zone_dis;
-class Zone_Cl_dis;
+#include <Domaine_VEF.h>
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Champ_Inc_base;
 class Sortie;
 
@@ -51,7 +51,7 @@ class Op_Diff_VEF_base : public Operateur_Diff_base, public Op_VEF_Face
 public:
 
   int impr(Sortie& os) const override;
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   inline double viscA(int face_i, int face_j, int num_elem, double diffu) const;
   // Anisotrope (tensor)
   // diffusivite considered as DoubleTab (case of scalair) or ArrOfDouble (in the case multi-scalar)
@@ -66,8 +66,8 @@ public:
 
 protected:
 
-  REF(Zone_VEF) le_dom_vef;
-  REF(Zone_Cl_VEF) la_zcl_vef;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_Inc_base) inconnue_;
   //DoubleVect porosite_face;
   mutable DoubleTab nu_;
@@ -79,16 +79,16 @@ protected:
 // nu <Si, Sj> / |K|
 inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, double diffu) const
 {
-  const Zone_VEF& zone=le_dom_vef.valeur();
-  const IntTab& face_voisins=zone.face_voisins();
-  const DoubleTab& face_normales=zone.face_normales();
-  const DoubleVect& inverse_volumes=zone.inverse_volumes();
+  const Domaine_VEF& domaine=le_dom_vef.valeur();
+  const IntTab& face_voisins=domaine.face_voisins();
+  const DoubleTab& face_normales=domaine.face_normales();
+  const DoubleVect& inverse_volumes=domaine.inverse_volumes();
   double pscal = face_normales(i,0)*face_normales(j,0)
                  + face_normales(i,1)*face_normales(j,1);
   if (Objet_U::dimension == 3)
     pscal += face_normales(i,2)*face_normales(j,2);
 
-  // *zone.porosite_elem(num_elem));
+  // *domaine.porosite_elem(num_elem));
   if ( (face_voisins(i,0) == face_voisins(j,0)) ||
        (face_voisins(i,1) == face_voisins(j,1)) )
     return -(pscal*diffu)*inverse_volumes(num_elem);
@@ -100,10 +100,10 @@ inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, double diffu) 
 // case of scalair
 inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, DoubleTab& diffu) const
 {
-  const Zone_VEF& zone=le_dom_vef.valeur();
-  const IntTab& face_voisins=zone.face_voisins();
-  const DoubleTab& face_normales=zone.face_normales();
-  const DoubleVect& inverse_volumes=zone.inverse_volumes();
+  const Domaine_VEF& domaine=le_dom_vef.valeur();
+  const IntTab& face_voisins=domaine.face_voisins();
+  const DoubleTab& face_normales=domaine.face_normales();
+  const DoubleVect& inverse_volumes=domaine.inverse_volumes();
 
   double DSiSj=0;
   for (int k=0; k<dimension; k++)
@@ -122,10 +122,10 @@ inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, DoubleTab& dif
 // case of multi-scalar
 inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, ArrOfDouble& diffu_ci_cj_elem) const
 {
-  const Zone_VEF& zone=le_dom_vef.valeur();
-  const IntTab& face_voisins=zone.face_voisins();
-  const DoubleTab& face_normales=zone.face_normales();
-  const DoubleVect& inverse_volumes=zone.inverse_volumes();
+  const Domaine_VEF& domaine=le_dom_vef.valeur();
+  const IntTab& face_voisins=domaine.face_voisins();
+  const DoubleTab& face_normales=domaine.face_normales();
+  const DoubleVect& inverse_volumes=domaine.inverse_volumes();
 
   double DSiSj=0;
   for (int k=0; k<dimension; k++)

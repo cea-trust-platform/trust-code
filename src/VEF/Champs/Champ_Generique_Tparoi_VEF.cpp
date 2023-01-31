@@ -17,8 +17,8 @@
 #include <Probleme_base.h>
 #include <Nom.h>
 #include <TRUSTTabs.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Equation_base.h>
 #include <Modele_turbulence_scal_base.h>
 
@@ -48,7 +48,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(Champ
   Champ source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(source_espace_stockage);
 
-  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+  const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
   Nature_du_champ nature_source = source.nature_du_champ();
   Noms noms;
   Noms unites;
@@ -61,7 +61,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ_without_evaluation(Champ
   Champ_Fonc espace_stockage_fonc;
   const Discretisation_base&  discr = get_discretisation();
   Motcle directive = get_directive_pour_discr();
-  discr.discretiser_champ(directive,zone_dis,nature_source,noms,unites,nb_comp,temps,espace_stockage_fonc);
+  discr.discretiser_champ(directive,domaine_dis,nature_source,noms,unites,nb_comp,temps,espace_stockage_fonc);
   espace_stockage = espace_stockage_fonc;
 
 
@@ -73,7 +73,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
   Champ source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
 
-  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+  const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
   Nature_du_champ nature_source = source.nature_du_champ();
   Noms noms;
   Noms unites;
@@ -86,7 +86,7 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
   Champ_Fonc espace_stockage_fonc;
   const Discretisation_base&  discr = get_discretisation();
   Motcle directive = get_directive_pour_discr();
-  discr.discretiser_champ(directive,zone_dis,nature_source,noms,unites,nb_comp,temps,espace_stockage_fonc);
+  discr.discretiser_champ(directive,domaine_dis,nature_source,noms,unites,nb_comp,temps,espace_stockage_fonc);
   espace_stockage = espace_stockage_fonc;
 
   DoubleTab& valeurs_espace = espace_stockage->valeurs();
@@ -107,18 +107,18 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
         {
           // const Paroi_scal_hyd_base_VEF& paroi_scal_vef = ref_cast(Paroi_scal_hyd_base_VEF,loiparth.valeur());
 
-          const Zone_VEF& zone_VEF=ref_cast(Zone_VEF,my_eqn.zone_dis().valeur());
-          const IntTab& elem_faces = zone_VEF.elem_faces();
-          const DoubleVect& vol = zone_VEF.volumes();
-          const IntTab& face_voisins = zone_VEF.face_voisins();
-          const DoubleTab& face_normale = zone_VEF.face_normales();
-          const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF,my_eqn.zone_Cl_dis().valeur());
+          const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF,my_eqn.domaine_dis().valeur());
+          const IntTab& elem_faces = domaine_VEF.elem_faces();
+          const DoubleVect& vol = domaine_VEF.volumes();
+          const IntTab& face_voisins = domaine_VEF.face_voisins();
+          const DoubleTab& face_normale = domaine_VEF.face_normales();
+          const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF,my_eqn.domaine_Cl_dis().valeur());
           int nb_dim_pb=Objet_U::dimension;
           DoubleVect le_mauvais_gradient(nb_dim_pb);
-          int nb_front=zone_VEF.nb_front_Cl();
+          int nb_front=domaine_VEF.nb_front_Cl();
           for (int n_bord=0; n_bord<nb_front; n_bord++)
             {
-              const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+              const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
               const Cond_lim_base& cl_base=la_cl.valeur();
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
 
@@ -154,9 +154,9 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
                       int num_face = le_bord.num_face(ind_face);
                       int elem1 = face_voisins(num_face,0);
                       if (elem1==-1) elem1 = face_voisins(num_face,1);
-                      double surface_face = zone_VEF.face_surfaces(num_face);
+                      double surface_face = domaine_VEF.face_surfaces(num_face);
 
-                      int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+                      int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
                       for (int i=0; i<nb_faces_elem; i++)
                         {
                           int j = elem_faces(elem1,i);
@@ -164,13 +164,13 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
                             {
                               double surface_pond = 0.;
                               for (int kk=0; kk<nb_dim_pb; kk++)
-                                surface_pond -= (face_normale(j,kk)*zone_VEF.oriente_normale(j,elem1)*face_normale(num_face,kk)*
-                                                 zone_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
+                                surface_pond -= (face_normale(j,kk)*domaine_VEF.oriente_normale(j,elem1)*face_normale(num_face,kk)*
+                                                 domaine_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
                               Tf+=inconnue(j)*surface_pond;
                             }
 
                           for(int kk=0; kk<nb_dim_pb; kk++)
-                            le_mauvais_gradient(kk)+=inconnue(j)*face_normale(j,kk)*zone_VEF.oriente_normale(j,elem1);
+                            le_mauvais_gradient(kk)+=inconnue(j)*face_normale(j,kk)*domaine_VEF.oriente_normale(j,elem1);
                         }
                       le_mauvais_gradient/=vol(elem1);
                       // mauvais_gradient = le_mauvais_gradient.n
@@ -183,10 +183,10 @@ const Champ_base& Champ_Generique_Tparoi_VEF::get_champ(Champ& espace_stockage) 
                       // de temperature dans l'element.
                       // Ensuite ce sera multiplie par le vecteur normal a la face de paroi
                       // qui lui a les bons signes.
-                      //bon_gradient=(Tf-inconnue(num_face))/d_equiv(ind_face)*(-zone_VEF.oriente_normale(num_face,elem1));
+                      //bon_gradient=(Tf-inconnue(num_face))/d_equiv(ind_face)*(-domaine_VEF.oriente_normale(num_face,elem1));
                       // on doit faire bon=mauvais...
                       // on fait le calcul de facon a avoir bon_grad =mauva
-                      valeurs_espace(num_face)=Tf-mauvais_gradient*d_equiv(ind_face)*(-zone_VEF.oriente_normale(num_face,elem1));
+                      valeurs_espace(num_face)=Tf-mauvais_gradient*d_equiv(ind_face)*(-domaine_VEF.oriente_normale(num_face,elem1));
                     }
                 }
             }

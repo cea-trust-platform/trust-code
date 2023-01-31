@@ -27,7 +27,7 @@
  */
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P1_isoP1Bulle.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_VEF.h>
 
 class Sortie_libre_Gradient_Pression_libre_VEFPreP1B: public Neumann_sortie_libre
 {
@@ -41,7 +41,7 @@ public:
   virtual double Grad_P_lib_VEFPreP1B(int) const;
 
 protected:
-  REF(Zone_VEF) le_dom_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
   REF(Champ_P1_isoP1Bulle) pression_interne;
 
   DoubleVect pression_temps_moins_un;

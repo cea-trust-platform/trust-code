@@ -17,7 +17,7 @@
 #include <NettoieNoeuds.h>
 #include <Lire_Tgrid.h>
 #include <EFichier.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -204,7 +204,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
 {
   Cerr << "Reading a mesh which comes from Tgrid" << finl;
   associer_domaine(is);
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   DoubleTab& coord_sommets=dom.les_sommets();
   // Declaration des variables
   int dim = -1;
@@ -247,7 +247,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               lecture >> motlu;        // Nombre d'element
               nb_elem=htoi(motlu);
               Cerr << "The total number of elements to read is " << nb_elem << finl;
-              lecture >> motlu;        // Type de la zone (0=dead zone; 1=active zone; 32=inactive zone) ou 0))
+              lecture >> motlu;        // Type de la domaine (0=dead domaine; 1=active domaine; 32=inactive domaine) ou 0))
               if (motlu!="0))") lecture >> motlu; // On saut le type s'il existe
             }
           else if (motlu=="(id") lecture >> motlu;        // evite de lire la description de la balise (12
@@ -255,7 +255,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
             {
               lecture >> motlu;        // Numero premier element
               lecture >> motlu;        // Nombre d'element
-              lecture >> motlu;        // Type de zone (1:fluid ou 0x11:solid)
+              lecture >> motlu;        // Type de domaine (1:fluid ou 0x11:solid)
               lecture >> motlu;        // Type des elements
               if (motlu=="1))")
                 {
@@ -343,12 +343,12 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
             }
           else
             {
-              int izone=htoi(motlu.suffix("("));
+              int idomaine=htoi(motlu.suffix("("));
               fic >> motlu;        // Debut
               int ideb=htoi(motlu);
               fic >> motlu;        // Fin
               int ifin=htoi(motlu);
-              Cerr << ifin-ideb+1 << " nodes are read in the area " << izone << finl;
+              Cerr << ifin-ideb+1 << " nodes are read in the area " << idomaine << finl;
               // Depend du format, on va donc a la paranthese ouvrante
               va_a_la_parenthese_ouvrante(fic);
               /*
@@ -373,19 +373,19 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
               // Informations obtenues lors de la premiere lecture
               fic >> motlu;        // Numero premier element
               fic >> motlu;        // Nombre d'element
-              fic >> motlu;        // Type de la zone (0=dead zone; 1=active zone; 32=inactive zone) ou 0))
+              fic >> motlu;        // Type de la domaine (0=dead domaine; 1=active domaine; 32=inactive domaine) ou 0))
               if (motlu!="0))") fic >> motlu; // On saut le type s'il existe
             }
           else
             {
-              int izone=htoi(motlu.suffix("("));
+              int idomaine=htoi(motlu.suffix("("));
               fic >> motlu;        // Debut
               //int ideb=htoi(motlu);
               fic >> motlu;        // Fin
               //int ifin=htoi(motlu);
               fic >> motlu;        // Type (1:fluid, Ox11:solid)
               int type=htoi(motlu);
-              Cerr << "The type of area " << izone << " is " << type << " (1:fluid, 17:solid)" << finl;
+              Cerr << "The type of area " << idomaine << " is " << type << " (1:fluid, 17:solid)" << finl;
               fic >> motlu;        // Type cell (0:mixed,1:tri,2:tetra,3:quad,4:hexa,5:pyramid,6:wedge)
               if (motlu=="2))")
                 {
@@ -434,7 +434,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
             }
           else
             {
-              int izone=htoi(motlu.suffix("("));
+              int idomaine=htoi(motlu.suffix("("));
               fic >> motlu;        // Debut
               int ideb=htoi(motlu);
               fic >> motlu;        // Fin
@@ -550,9 +550,9 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                         {
                           // C'est bien une frontiere donc on dimensionne le necessaire
                           type=3;
-                          Cerr << nb_face_lu << " faces are read from the boundary number " << izone << finl;
+                          Cerr << nb_face_lu << " faces are read from the boundary number " << idomaine << finl;
                           nouveau_bord=dom.faces_bord().add(Bord());
-                          nouveau_bord->nommer((Nom)izone);
+                          nouveau_bord->nommer((Nom)idomaine);
                           if (nb_som_face==3)
                             nouveau_bord->faces().typer(Faces::triangle_3D);
                           else if (nb_som_face==4)
@@ -569,7 +569,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                       else
                         {
                           type=2;
-                          Cerr << nb_face_lu << " internal faces are read in the area " << izone << finl;
+                          Cerr << nb_face_lu << " internal faces are read in the area " << idomaine << finl;
                         }
                     }
                   // Les faces internes sont lues mais pas stockees, les faces frontieres sont stockees
@@ -641,27 +641,27 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
       else if ((motlu=="(45") || (motlu=="(39"))
         {
           Cerr << "Reading of a name:" << finl;
-          fic >> motlu;        // Numero de la zone
-          // Attention le numero de la zone est en decimal !
-          //int izone=htoi(motlu.suffix("("));
-          int izone=atoi(motlu.suffix("("));
-          fic >> motlu;        // Type de la zone
-          Nom Nomzone;
-          fic >> Nomzone;        // Nom de la zone)())
-          Nom nom_zone=Nomzone;
-          nom_zone.prefix(")())");
-          if (nom_zone==Nomzone)
+          fic >> motlu;        // Numero de la domaine
+          // Attention le numero de la domaine est en decimal !
+          //int idomaine=htoi(motlu.suffix("("));
+          int idomaine=atoi(motlu.suffix("("));
+          fic >> motlu;        // Type de la domaine
+          Nom Nomdomaine;
+          fic >> Nomdomaine;        // Nom de la domaine)())
+          Nom nom_domaine=Nomdomaine;
+          nom_domaine.prefix(")())");
+          if (nom_domaine==Nomdomaine)
             if (1)
               {
                 // retour a la ligne ?
                 Nom app;
                 fic >> app;
-                Nomzone+=app;
-                nom_zone=Nomzone;
-                nom_zone.prefix(")())");
+                Nomdomaine+=app;
+                nom_domaine=Nomdomaine;
+                nom_domaine.prefix(")())");
 
               }
-          Cerr << "The area " << izone << " is called " << nom_zone << finl;
+          Cerr << "The area " << idomaine << " is called " << nom_domaine << finl;
           // On parcourt les bords pour renommer
           Bords& les_bords=dom.faces_bord();
           les_bords.associer_domaine(dom);
@@ -673,7 +673,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
             }
 
           for (auto& itr : les_bords)
-            if (itr.le_nom()==(Nom)izone) itr.nommer(nom_zone);
+            if (itr.le_nom()==(Nom)idomaine) itr.nommer(nom_domaine);
 
           Cerr << finl;
         }
@@ -712,7 +712,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
   dom.type_elem().reordonner();
 
   // Nettoie le domaine pour enlever les noeuds inutiles
-  // Mettre une methode a Zone::nettoie
+  // Mettre une methode a Domaine::nettoie
   // Attention: les lignes suivantes pas compatibles avec TRUST < v1.4.6
 
   if ( (Process::nproc()==1) && (NettoieNoeuds::NettoiePasNoeuds==0) )

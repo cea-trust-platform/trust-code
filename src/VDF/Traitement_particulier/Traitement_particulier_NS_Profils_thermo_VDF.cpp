@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Traitement_particulier_NS_Profils_thermo_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Probleme_base.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
@@ -199,15 +199,15 @@ void Traitement_particulier_NS_Profils_thermo_VDF::post_traitement_particulier()
 void Traitement_particulier_NS_Profils_thermo_VDF::calculer_moyennes_spatiales_thermo(DoubleTab& tmoy, DoubleTab& trms, DoubleTab& uptp, DoubleTab& vptp, DoubleTab& wptp, const IntTab& corresp, const IntTab& compt, const IntVect& NN, const DoubleTab& xUV)
 {
 
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
 
   // Pour trouver les coordonnees des points de temperature max et min :
-  const DoubleTab& xp = zone_VDF.xp();
+  const DoubleTab& xp = domaine_VDF.xp();
 
-  // Le nombre d'elements de la zone VDF.
-  int nb_elems = zone_VDF.zone().nb_elem();
+  // Le nombre d'elements de la domaine VDF.
+  int nb_elems = domaine_VDF.domaine().nb_elem();
 
   // On veut acceder aux valeurs des 3 composantes de la vitesse a partir de mon_equation.
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();

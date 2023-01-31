@@ -20,14 +20,14 @@
 #include <Objet_U.h>
 
 class Champ_Inc_base;
-class Zone_poly;
-class Zone;
+class Domaine_poly;
+class Domaine;
 
 class Elem_poly_base: public Objet_U
 {
   Declare_base(Elem_poly_base);
 public:
-  virtual void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const =0;
+  virtual void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Domaine&) const =0;
 };
 
 #endif

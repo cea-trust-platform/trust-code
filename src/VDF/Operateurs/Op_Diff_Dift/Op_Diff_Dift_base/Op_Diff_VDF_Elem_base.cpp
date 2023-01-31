@@ -44,7 +44,7 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
   //      le max de coeff est atteint sur l'element qui realise
   //      a la fois le min de dx le min de dy et le min de dz
   double dt_stab = DMAXFLOAT;
-  const Zone_VDF& zone_VDF = iter->zone();
+  const Domaine_VDF& domaine_VDF = iter->domaine();
   const DoubleTab& diffu = has_champ_masse_volumique() ? diffusivite().valeurs() : diffusivite_pour_pas_de_temps().valeurs();
 
 
@@ -53,9 +53,9 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
       // GF le max permet de traiter le multi_inco
       double alpha=max_array(diffu);
 
-      double coef = 1/(zone_VDF.h_x()*zone_VDF.h_x()) + 1/(zone_VDF.h_y()*zone_VDF.h_y());
+      double coef = 1/(domaine_VDF.h_x()*domaine_VDF.h_x()) + 1/(domaine_VDF.h_y()*domaine_VDF.h_y());
 
-      if (dimension == 3) coef += 1/(zone_VDF.h_z()*zone_VDF.h_z());
+      if (dimension == 3) coef += 1/(domaine_VDF.h_z()*domaine_VDF.h_z());
 
       if (alpha==0) dt_stab = DMAXFLOAT;
       else dt_stab = 0.5/(alpha*coef);
@@ -69,7 +69,7 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
           double h = 0;
           for (int i=0 ; i<dimension; i++)
             {
-              double l = zone_VDF.dim_elem(elem,i);
+              double l = domaine_VDF.dim_elem(elem,i);
               h += 1./(l*l);
             }
           alpha_loc = diffu(elem,0);
@@ -89,13 +89,13 @@ double Op_Diff_VDF_Elem_base::calculer_dt_stab() const
 
 void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, const Probleme_base& autre_pb, const DoubleTab& autre_inco, Matrice_Morse& matrice) const
 {
-  const Zone_VDF& zone = iter->zone();
-  const IntTab& f_e = zone.face_voisins();
-  const Zone_Cl_VDF& zcl = iter->zone_Cl();
+  const Domaine_VDF& domaine = iter->domaine();
+  const IntTab& f_e = domaine.face_voisins();
+  const Domaine_Cl_VDF& zcl = iter->domaine_Cl();
   int l;
 
   // boucle sur les cl pour trouver un paroi_contact
-  for (int i = 0; i < zone.nb_front_Cl(); i++)
+  for (int i = 0; i < domaine.nb_front_Cl(); i++)
     {
       const Cond_lim& la_cl = zcl.les_conditions_limites(i);
       if (!la_cl.valeur().que_suis_je().debute_par("Paroi_Echange_contact")) continue; //pas un Echange_contact
@@ -118,9 +118,9 @@ void Op_Diff_VDF_Elem_base::contribuer_termes_croises(const DoubleTab& inco, con
 void Op_Diff_VDF_Elem_base::dimensionner_termes_croises(Matrice_Morse& matrice, const Probleme_base& autre_pb, int nl, int nc) const
 {
   const Champ_P0_VDF& ch = ref_cast(Champ_P0_VDF, equation().inconnue().valeur());
-  const Zone_VDF& zone = iter->zone();
-  const IntTab& f_e = zone.face_voisins();
-  const Conds_lim& cls = iter->zone_Cl().les_conditions_limites();
+  const Domaine_VDF& domaine = iter->domaine();
+  const IntTab& f_e = domaine.face_voisins();
+  const Conds_lim& cls = iter->domaine_Cl().les_conditions_limites();
   int i, j, l, f, n, N = ch.valeurs().line_size();
 
   IntTab stencil(0, 2);
@@ -162,11 +162,11 @@ void Op_Diff_VDF_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
       if(!mat[i]) continue;
       Matrice_Morse mat2;
-      if(i==0) Op_VDF_Elem::dimensionner(iter->zone(), iter->zone_Cl(), mat2);
+      if(i==0) Op_VDF_Elem::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
       else
         {
-          int nl = N[0] * iter->zone().nb_elem_tot();
-          int nc = N[i] * op_ext[i]->equation().zone_dis()->nb_elem_tot();
+          int nl = N[0] * iter->domaine().nb_elem_tot();
+          int nc = N[i] * op_ext[i]->equation().domaine_dis()->nb_elem_tot();
           dimensionner_termes_croises(mat2, op_ext[i]->equation().probleme(),nl, nc);
         }
       mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;

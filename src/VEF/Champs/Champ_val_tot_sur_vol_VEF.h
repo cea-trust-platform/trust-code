@@ -33,7 +33,7 @@ class Champ_val_tot_sur_vol_VEF : public Champ_val_tot_sur_vol_base
 
 public:
 
-  DoubleVect& eval_contrib_loc(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis,DoubleVect& vol) override;
+  DoubleVect& eval_contrib_loc(const Domaine_dis_base& zdis,const Domaine_Cl_dis_base& zcldis,DoubleVect& vol) override;
 };
 
 #endif

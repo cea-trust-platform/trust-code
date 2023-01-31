@@ -17,12 +17,12 @@
 #define Decouper_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 #include <TRUST_Deriv.h>
 #include <Interprete.h>
 #include <vector>
 
-class Zone;
+class Domaine;
 
 /*! @brief Interprete Decouper.
  *
@@ -35,7 +35,7 @@ class Decouper : public Interprete
 {
   Declare_instanciable(Decouper);
 public:
-  enum ZonesFileOutputType { BINARY_MULTIPLE, HDF5_SINGLE };
+  enum DomainesFileOutputType { BINARY_MULTIPLE, HDF5_SINGLE };
 
   Entree& interpreter(Entree& is) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
@@ -49,17 +49,17 @@ public:
 
   Nom nom_domaine;
   DERIV(Partitionneur_base) deriv_partitionneur;
-  REF(Zone) ref_domaine;
+  REF(Domaine) ref_domaine;
   int nb_parts_tot = -1;
   Noms liste_bords_periodiques;
 
 private:
-  const Zone& find_domain(const Nom& nom);
+  const Domaine& find_domain(const Nom& nom);
   // Parametres du decoupage:
 
   //parametres remplis par lire()
   int epaisseur_joint = 1;
-  Nom nom_zones_decoup = "?";
+  Nom nom_domaines_decoup = "?";
   Nom nom_fichier_decoupage = "?";
   Nom nom_fichier_lata = "?";
   int format_binaire = 1;

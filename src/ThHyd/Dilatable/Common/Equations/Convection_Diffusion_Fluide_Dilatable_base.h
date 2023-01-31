@@ -51,12 +51,12 @@ public :
   // Methodes inlines
   inline const Champ_Inc& inconnue() const override { return l_inco_ch; }
   inline Champ_Inc& inconnue() override { return l_inco_ch; }
-  inline const Zone_Cl_dis& zone_cl_modif() const { return zcl_modif_ ;}
-  inline Zone_Cl_dis& zone_cl_modif() { return zcl_modif_ ;}
+  inline const Domaine_Cl_dis& domaine_cl_modif() const { return zcl_modif_ ;}
+  inline Domaine_Cl_dis& domaine_cl_modif() { return zcl_modif_ ;}
 
 protected:
   Champ_Inc l_inco_ch;
-  Zone_Cl_dis zcl_modif_;
+  Domaine_Cl_dis zcl_modif_;
   REF(Fluide_Dilatable_base) le_fluide;
 };
 

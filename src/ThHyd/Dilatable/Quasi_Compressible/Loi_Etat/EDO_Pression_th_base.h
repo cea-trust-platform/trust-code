@@ -20,8 +20,8 @@
 #include <TRUSTTabs_forward.h>
 
 class Fluide_Quasi_Compressible;
-class Zone_Cl_dis;
-class Zone_dis;
+class Domaine_Cl_dis;
+class Domaine_dis;
 
 /*! @brief classe EDO_Pression_th_base Cette classe est la base de la hierarchie des EDO sur la pression
  *
@@ -37,7 +37,7 @@ public :
   void associer_fluide(const Fluide_Quasi_Compressible&);
   // Virtuelles pure
   virtual void completer() =0;
-  virtual void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) =0;
+  virtual void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) =0;
   virtual void mettre_a_jour_CL(double) = 0;
   virtual double masse_totale(double P,const DoubleTab& T)=0;
   virtual double resoudre(double) =0;

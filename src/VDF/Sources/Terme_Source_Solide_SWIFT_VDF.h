@@ -47,7 +47,7 @@ public :
   void mettre_a_jour(double temps) override { }
 
   void associer_pb(const Probleme_base& ) override;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
@@ -57,7 +57,7 @@ public :
   };
 
 protected :
-  /*   REF(Zone_VDF) le_dom_VDF; */
+  /*   REF(Domaine_VDF) le_dom_VDF; */
   REF(Probleme_base) pb_swift;
   REF(Probleme_base) pb_corse;
   REF(Conduction) eq_swift;

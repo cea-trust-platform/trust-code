@@ -17,7 +17,7 @@
 #define Trianguler_fin_included
 
 #include <Triangulation_base.h>
-class Zone;
+class Domaine;
 
 /*! @brief Classe Trianguler_fin Cette classe est un interprete qui sert a lire et executer
  *
@@ -34,7 +34,7 @@ class Trianguler_fin : public Triangulation_base
 
 public :
 
-  void trianguler(Zone&) const override;
+  void trianguler(Domaine&) const override;
   inline int dimension_application() const override;
 };
 

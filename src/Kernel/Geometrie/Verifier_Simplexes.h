@@ -35,7 +35,7 @@ public :
   Entree& interpreter_(Entree& is) override;
 
 public :
-  static void check_domain(Zone& domain);
+  static void check_domain(Domaine& domain);
 
 };
 

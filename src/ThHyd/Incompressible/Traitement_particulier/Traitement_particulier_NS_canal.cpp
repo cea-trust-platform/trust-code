@@ -20,8 +20,8 @@
 #include <Mod_turb_hyd_base.h>
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
-#include <Zone_VF.h>
-#include <Zone_Cl_dis_base.h>
+#include <Domaine_VF.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Schema_Temps_base.h>
 #include <communications.h>
@@ -722,9 +722,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
 
   const RefObjU& modele_turbulence         = mon_equation.valeur().get_modele(TURBULENCE);
   const Equation_base& eqn                 = ref_cast(Equation_base,mon_equation.valeur()) ;
-  const Zone_Cl_dis_base& zone_Cl_dis_base = ref_cast(Zone_Cl_dis_base,eqn.zone_Cl_dis().valeur());
-  const Conds_lim& les_cl                  = zone_Cl_dis_base.les_conditions_limites();
-  const Zone_VF& zone_VF                   = ref_cast(Zone_VF,eqn.zone_dis().valeur());
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base = ref_cast(Domaine_Cl_dis_base,eqn.domaine_Cl_dis().valeur());
+  const Conds_lim& les_cl                  = domaine_Cl_dis_base.les_conditions_limites();
+  const Domaine_VF& domaine_VF                   = ref_cast(Domaine_VF,eqn.domaine_dis().valeur());
   double tps                               = mon_equation->inconnue().temps();
 
   double nb_pas_dt=mon_equation->schema_temps().nb_pas_dt();
@@ -808,9 +808,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                         {
                           tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0));
 
-                          int elem = zone_VF.face_voisins(fac,0);
+                          int elem = domaine_VF.face_voisins(fac,0);
                           if (elem == -1)
-                            elem = zone_VF.face_voisins(fac,1);
+                            elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
                             rho += fluide.masse_volumique().valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
@@ -824,9 +824,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                         {
                           tauw_diri_tmp += sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
 
-                          int elem = zone_VF.face_voisins(fac,0);
+                          int elem = domaine_VF.face_voisins(fac,0);
                           if (elem == -1)
-                            elem = zone_VF.face_voisins(fac,1);
+                            elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
                             rho += fluide.masse_volumique().valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
@@ -931,9 +931,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                         {
                           tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0));
 
-                          int elem = zone_VF.face_voisins(fac,0);
+                          int elem = domaine_VF.face_voisins(fac,0);
                           if (elem == -1)
-                            elem = zone_VF.face_voisins(fac,1);
+                            elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
                             rho+=fluide.masse_volumique().valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )
@@ -947,9 +947,9 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
                         {
                           tauw_robin_tmp+=sqrt(tau_tan(fac,0)*tau_tan(fac,0)+tau_tan(fac,2)*tau_tan(fac,2));
 
-                          int elem = zone_VF.face_voisins(fac,0);
+                          int elem = domaine_VF.face_voisins(fac,0);
                           if (elem == -1)
-                            elem = zone_VF.face_voisins(fac,1);
+                            elem = domaine_VF.face_voisins(fac,1);
                           if ( !sub_type(Champ_Uniforme,fluide.masse_volumique().valeur()) )
                             rho+=fluide.masse_volumique().valeurs()[elem];
                           if ( !sub_type(Champ_Uniforme,fluide.viscosite_dynamique().valeur()) )

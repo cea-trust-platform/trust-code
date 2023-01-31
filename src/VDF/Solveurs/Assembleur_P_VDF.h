@@ -17,8 +17,8 @@
 #define Assembleur_P_VDF_included
 
 #include <Assembleur_base.h>
-#include <Ref_Zone_VDF.h>
-#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Domaine_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -35,10 +35,10 @@ class Assembleur_P_VDF: public Assembleur_base
   Declare_instanciable(Assembleur_P_VDF);
 
 public:
-  void associer_domaine_dis_base(const Zone_dis_base&) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
+  void associer_domaine_dis_base(const Domaine_dis_base&) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base&) override;
+  const Domaine_dis_base& domaine_dis_base() const override;
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const override;
   int assembler(Matrice&) override;
   int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
   int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
@@ -57,8 +57,8 @@ protected:
   void modifier_secmem_vitesse_imposee(const Entree_fluide_vitesse_imposee& cond_lim, const Front_VF& frontiere_vf, DoubleTab& secmem);
   int liste_faces_periodiques(ArrOfInt& faces);
 
-  REF(Zone_VDF) le_dom_VDF;
-  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
   ArrOfDouble les_coeff_pression;
 
   // Drapeau, indique si la pression est imposee quelque part sur une C.L.

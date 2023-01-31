@@ -97,8 +97,8 @@ void Op_Conv_VDF_base::associer_champ_temp(const Champ_Inc& ch_unite, bool use_b
 
 void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone = iter->zone();
-  const IntTab& f_e = zone.face_voisins();
+  const Domaine_VDF& domaine = iter->domaine();
+  const IntTab& f_e = domaine.face_voisins();
   int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const int hcc = equation().has_champ_convecte();
   const Champ_Inc_base& cc = hcc ? equation().champ_convecte() : equation().inconnue().valeur();
@@ -114,15 +114,15 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
           {
             const IntTab& fcl_v = ref_cast(Champ_Face_VDF, vitesse()).fcl();
 
-            for (f = 0; f < zone.nb_faces_tot(); f++)
+            for (f = 0; f < domaine.nb_faces_tot(); f++)
               if (fcl_v(f, 0) < 2)
                 for (i = 0; i < 2; i++)
-                  if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem_tot())
+                  if ((e = f_e(f, i)) >= 0 && e < domaine.nb_elem_tot())
                     for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
           }
-        else for (f = 0; f < zone.nb_faces_tot(); f++)
+        else for (f = 0; f < domaine.nb_faces_tot(); f++)
             for (i = 0; i < 2; i++)
-              if ((e = f_e(f, i)) >= 0 && e < zone.nb_elem_tot()) /* inconnues scalaires */
+              if ((e = f_e(f, i)) >= 0 && e < domaine.nb_elem_tot()) /* inconnues scalaires */
                 for (j = 0; j < 2; j++)
                   if ((eb = f_e(f, j)) >= 0)
                     for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
@@ -137,9 +137,9 @@ void Op_Conv_VDF_base::dimensionner_blocs_elem(matrices_t mats, const tabs_t& se
 
 void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone = iter->zone();
+  const Domaine_VDF& domaine = iter->domaine();
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& inco = ch.valeurs();
 
   const std::string& nom_inco = ch.le_nom().getString();
@@ -155,7 +155,7 @@ void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t
   stencil.set_smart_resize(1);
 
   /* agit uniquement aux elements; diagonale omise */
-  for (int f = 0; f < zone.nb_faces_tot(); f++)
+  for (int f = 0; f < domaine.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
       for (int i = 0; i < 2; i++)
         if ((e = f_e(f, i)) >= 0)
@@ -164,7 +164,7 @@ void Op_Conv_VDF_base::dimensionner_blocs_face(matrices_t matrices, const tabs_t
             if (f_e(f, j) >= 0)
               for (int k = 0; k < e_f.dimension(1); k++)
                 if ((fb = e_f(e, k)) >= 0)
-                  if (fb < zone.nb_faces() && fcl(fb, 0) < 2)
+                  if (fb < domaine.nb_faces() && fcl(fb, 0) < 2)
                     for (int n = 0; n < N; n++)
                       for (int m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * f + m);
 
@@ -183,11 +183,11 @@ void Op_Conv_VDF_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const t
 
 double Op_Conv_VDF_base::calculer_dt_stab() const
 {
-  const Zone_VDF& zone_VDF = iter->zone();
-  const Zone_Cl_VDF& zone_Cl_VDF = iter->zone_Cl();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const DoubleVect& volumes = zone_VDF.volumes();
-  const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = iter->domaine_Cl();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const DoubleVect& volumes = domaine_VDF.volumes();
+  const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
   const DoubleTab& vit_associe = vitesse().valeurs();
   const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
   const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
@@ -195,16 +195,16 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
 
   DoubleTab fluent(0, N);
   // fluent est initialise a zero par defaut:
-  zone_VDF.zone().creer_tableau_elements(fluent);
+  domaine_VDF.domaine().creer_tableau_elements(fluent);
 
   // Remplissage du tableau fluent
   double psc;
   int num1, num2, face, elem1;
 
   // On traite les bords
-  for (int n_bord = 0; n_bord < zone_VDF.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
       if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur()) || sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -225,8 +225,8 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
     }
 
   // Boucle sur les faces internes pour remplir fluent
-  const int zone_VDF_nb_faces = zone_VDF.nb_faces(), premiere_face = zone_VDF.premiere_face_int();
-  for (face = premiere_face; face < zone_VDF_nb_faces; face++)
+  const int domaine_VDF_nb_faces = domaine_VDF.nb_faces(), premiere_face = domaine_VDF.premiere_face_int();
+  for (face = premiere_face; face < domaine_VDF_nb_faces; face++)
     for (int n = 0; n < N; n++)
       {
         psc = vit(face, n) * face_surfaces(face);
@@ -238,9 +238,9 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
     diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
   double dt_stab = 1.e30;
-  int zone_VDF_nb_elem=zone_VDF.nb_elem();
+  int domaine_VDF_nb_elem=domaine_VDF.nb_elem();
   // dt_stab = min ( 1 / ( |U|/dx + |V|/dy + |W|/dz ) )
-  for (int num_poly=0; num_poly<zone_VDF_nb_elem; num_poly++)
+  for (int num_poly=0; num_poly<domaine_VDF_nb_elem; num_poly++)
     for (int n = 0; n < N; n++)
       if ((!alp || (*alp)(num_poly, n) > 1e-3))
         {
@@ -259,19 +259,19 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
 // Calculation of local time: Vect of size number of faces of the domain This is the equivalent of "Op_Conv_VDF_base :: calculer_dt_stab ()"
 void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
 {
-  const Zone_VDF& zone_VDF = iter->zone();
-  const Zone_Cl_VDF& zone_Cl_VDF = iter->zone_Cl();
-  const DoubleVect& volumes_entrelaces= zone_VDF.volumes_entrelaces();
-  const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = iter->domaine_Cl();
+  const DoubleVect& volumes_entrelaces= domaine_VDF.volumes_entrelaces();
+  const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
   //const DoubleVect& vit= vitesse_pour_pas_de_temps_.valeur().valeurs();
   const DoubleVect& vit=equation().inconnue().valeurs();
   DoubleTrav fluent(volumes_entrelaces);
 
   // Remplissage du tableau fluent
   // On traite les bords
-  for (int n_bord = 0; n_bord < zone_VDF.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
 
       if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur()) || sub_type(Neumann_sortie_libre,la_cl.valeur())  )
         {
@@ -287,8 +287,8 @@ void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
     }
 
   // Boucle sur les faces internes pour remplir fluent
-  const int zone_VDF_nb_faces = zone_VDF.nb_faces(), premiere_face = zone_VDF.premiere_face_int();
-  for (int face = premiere_face; face < zone_VDF_nb_faces; face++)
+  const int domaine_VDF_nb_faces = domaine_VDF.nb_faces(), premiere_face = domaine_VDF.premiere_face_int();
+  for (int face = premiere_face; face < domaine_VDF_nb_faces; face++)
     {
       const double value = vit[face]*face_surfaces(face);
       if (value >0) fluent[face] = value;
@@ -302,9 +302,9 @@ void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
 
   dt_face=(volumes_entrelaces);
   // Boucle sur les faces de bords
-  for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VDF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
       for (int num_face = ndeb; num_face < nfin; num_face++)
@@ -315,7 +315,7 @@ void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
     }
 
   // Boucle sur les faces internes
-  for (int num_face = premiere_face; num_face<zone_VDF_nb_faces; num_face++)
+  for (int num_face = premiere_face; num_face<domaine_VDF_nb_faces; num_face++)
     {
       if( sup_strict(fluent[num_face], 1.e-16) ) dt_face(num_face)= volumes_entrelaces(num_face)/fluent[num_face];
       else dt_face(num_face) = -1.;
@@ -328,9 +328,9 @@ void Op_Conv_VDF_base::calculer_dt_local(DoubleTab& dt_face) const
 
   dt_face.echange_espace_virtuel();
 
-  for (int n_bord = 0; n_bord < zone_VDF.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
@@ -359,14 +359,14 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 1.e30;
 
-      const Zone_VDF& zone_VDF = iter->zone();
-      const Zone_Cl_VDF& zone_Cl_VDF = iter->zone_Cl();
-      const IntTab& face_voisins = zone_VDF.face_voisins();
-      const DoubleVect& volumes = zone_VDF.volumes();
-      const DoubleVect& face_surfaces = zone_VDF.face_surfaces();
+      const Domaine_VDF& domaine_VDF = iter->domaine();
+      const Domaine_Cl_VDF& domaine_Cl_VDF = iter->domaine_Cl();
+      const IntTab& face_voisins = domaine_VDF.face_voisins();
+      const DoubleVect& volumes = domaine_VDF.volumes();
+      const DoubleVect& face_surfaces = domaine_VDF.face_surfaces();
       const DoubleVect& vit = vitesse().valeurs();
       const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
-      DoubleTrav fluent(zone_VDF.zone().nb_elem_tot(), N);
+      DoubleTrav fluent(domaine_VDF.domaine().nb_elem_tot(), N);
       assert(N == 1); // en attendant de coder les boucles...
 
       // Remplissage du tableau fluent
@@ -375,9 +375,9 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       int num1, num2, face, elem1;
 
       // On traite les bords
-      for (int n_bord = 0; n_bord < zone_VDF.nb_front_Cl(); n_bord++)
+      for (int n_bord = 0; n_bord < domaine_VDF.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
           if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur()) || sub_type(Neumann_sortie_libre,la_cl.valeur())  )
             {
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -397,8 +397,8 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
         }
 
       // Boucle sur les faces internes pour remplir fluent
-      const int zone_VDF_nb_faces = zone_VDF.nb_faces();
-      for (face = zone_VDF.premiere_face_int(); face < zone_VDF_nb_faces; face++)
+      const int domaine_VDF_nb_faces = domaine_VDF.nb_faces();
+      for (face = domaine_VDF.premiere_face_int(); face < domaine_VDF_nb_faces; face++)
         {
           psc = vit[face]*face_surfaces(face);
           eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),0,fluent);
@@ -407,8 +407,8 @@ void Op_Conv_VDF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
         diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
-      const int zone_VDF_nb_elem=zone_VDF.nb_elem();
-      for (int num_poly=0; num_poly<zone_VDF_nb_elem; num_poly++)
+      const int domaine_VDF_nb_elem=domaine_VDF.nb_elem();
+      for (int num_poly=0; num_poly<domaine_VDF_nb_elem; num_poly++)
         es_valeurs(num_poly) = volumes(num_poly)/(fluent[num_poly]+1.e-30);
 
       //double dt_min = mp_min_vect(es_valeurs);
@@ -434,17 +434,17 @@ void Op_Conv_VDF_base::creer_champ(const Motcle& motlu)
       int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
       if (i >= 0 && !cc_phases_[i].non_nul())
         {
-          equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_cc_phases_[i], "kg/m2/s",dimension, 1, 0, cc_phases_[i]);
+          equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_cc_phases_[i], "kg/m2/s",dimension, 1, 0, cc_phases_[i]);
           champs_compris_.ajoute_champ(cc_phases_[i]);
         }
       if (j >= 0 && !vd_phases_[j].non_nul())
         {
-          equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_vd_phases_[j], "m/s",dimension, 1, 0, vd_phases_[j]);
+          equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_vd_phases_[j], "m/s",dimension, 1, 0, vd_phases_[j]);
           champs_compris_.ajoute_champ(vd_phases_[j]);
         }
       if (k >= 0 && !x_phases_[k].non_nul())
         {
-          equation().discretisation().discretiser_champ("temperature", equation().zone_dis(), noms_x_phases_[k], "m/s",1, 1, 0, x_phases_[k]);
+          equation().discretisation().discretiser_champ("temperature", equation().domaine_dis(), noms_x_phases_[k], "m/s",1, 1, 0, x_phases_[k]);
           champs_compris_.ajoute_champ(x_phases_[k]);
         }
     }
@@ -456,11 +456,11 @@ void Op_Conv_VDF_base::mettre_a_jour(double temps)
 
   if (sub_type(Masse_Multiphase, equation())) //convection dans Masse_Multiphase -> champs de debit / titre
     {
-      const Zone_VDF& zone = iter->zone();
-      const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+      const Domaine_VDF& domaine = iter->domaine();
+      const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
       const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();
-      const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
-      const DoubleTab& vit = vitesse().valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = zone.xv(), &xp = zone.xp();
+      const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
+      const DoubleTab& vit = vitesse().valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = domaine.xv(), &xp = domaine.xp();
       DoubleTab balp;
       if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
@@ -473,7 +473,7 @@ void Op_Conv_VDF_base::mettre_a_jour(double temps)
             {
               Champ_Face_VDF& c_ph = ref_cast(Champ_Face_VDF, cc_phases_[n].valeur());
               DoubleTab& v_ph = c_ph.valeurs();
-              for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+              for (f = 0; f < domaine.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
                 for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * 1.0 /* FIXME : amont */) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
               c_ph.changer_temps(temps);
             }
@@ -486,7 +486,7 @@ void Op_Conv_VDF_base::mettre_a_jour(double temps)
               Champ_Face_VDF& c_ph = ref_cast(Champ_Face_VDF, vd_phases_[n].valeur());
               DoubleTab& v_ph = c_ph.valeurs();
               /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
-              for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+              for (f = 0; f < domaine.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
                 for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * 1.0 /* FIXME : amont */) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
               c_ph.changer_temps(temps);
             }
@@ -494,13 +494,13 @@ void Op_Conv_VDF_base::mettre_a_jour(double temps)
       DoubleTrav G(N), v(N, D);
       double Gt;
       if (x_phases_.size())
-        for (e = 0; e < zone.nb_elem(); e++) //titre : aux elements
+        for (e = 0; e < domaine.nb_elem(); e++) //titre : aux elements
           {
             for (v = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
               for (n = 0; n < N; n++)
                 for (d = 0; d < D; d++)
                   v(n, d) += fs(f) * pf(f) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * vit(f, n) / (pe(e) * ve(e));
-            for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(zone.dot(&v(n, 0), &v(n, 0)));
+            for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(domaine.dot(&v(n, 0), &v(n, 0)));
             for (n = 0; n < N; n++)
               if (x_phases_[n].non_nul()) x_phases_[n]->valeurs()(e) = Gt ? G(n) / Gt : 0;
           }

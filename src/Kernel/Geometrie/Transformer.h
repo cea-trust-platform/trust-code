@@ -16,7 +16,7 @@
 #ifndef Transformer_included
 #define Transformer_included
 
-#include <Zone.h>
+#include <Domaine.h>
 
 
 
@@ -34,7 +34,7 @@ class Transformer : public Interprete_geometrique_base
 public :
   Entree& interpreter_(Entree&) override;
 
-  void transformer(Zone&, Noms&);
+  void transformer(Domaine&, Noms&);
   void transformation_complete(Noms& les_fcts);
   void verifie_type_elem();
 

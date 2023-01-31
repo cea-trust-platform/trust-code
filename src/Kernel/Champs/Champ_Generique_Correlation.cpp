@@ -45,7 +45,7 @@ void Champ_Generique_Correlation::completer(const Postraitement_base& post)
 
   const Champ_Generique_base& ch_integre = get_source(0);
   const Champ_Generique_base& ch_integre2 = get_source(1);
-  const Zone_dis_base& zdis = get_ref_zone_dis_base();
+  const Domaine_dis_base& zdis = get_ref_domaine_dis_base();
 
   Op_Correlation_.associer(zdis,ch_integre,ch_integre2,tstat_deb_,tstat_fin_);
   const Postraitement& mon_post = ref_cast(Postraitement,post);

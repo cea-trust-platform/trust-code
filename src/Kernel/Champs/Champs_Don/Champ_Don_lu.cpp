@@ -27,7 +27,7 @@ Entree& Champ_Don_lu::readOn(Entree& is)
   Nom nom;
   is >> nom;
 
-  Zone& domaine = interprete_get_domaine(nom);
+  Domaine& domaine = interprete_get_domaine(nom);
   int nb_elems = domaine.nb_elem();
   dim = lire_dimension(is, que_suis_je());
 

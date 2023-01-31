@@ -16,7 +16,7 @@
 
 #include <ScatterMED.h>
 #include <LireMED.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <SFichier.h>
 
 Implemente_instanciable(ScatterMED,"ScatterMED",Scatter);
@@ -40,10 +40,10 @@ Entree& ScatterMED::readOn(Entree& is)
 
 /*! @brief Lit le domaine dans le fichier de nom "nomentree", de type LecFicDistribueBin ou LecFicDistribue
  *
- *   (selon fichier_zone_format_binaire_)
+ *   (selon fichier_domaine_format_binaire_)
  *   Le format historique n'est plus supporte.
- *   Format attendu : Zone::ReadOn
- *   La zone est renommee comme le domaine (pour lance_test_seq_par)
+ *   Format attendu : Domaine::ReadOn
+ *   La domaine est renommee comme le domaine (pour lance_test_seq_par)
  *
  */
 void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
@@ -55,7 +55,7 @@ void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   Nom n(me()+1);
   fichiermed+=n;
   fichiermed+=".med";
-  Zone& dom = domaine();
+  Domaine& dom = domaine();
   LireMED lire_med;
   Nom nom_lu(dom.le_nom());
   nom_lu+="_";
@@ -65,7 +65,7 @@ void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   // Renseigne dans quel fichier le domaine a ete lu
   dom.set_fichier_lu(nomentree);
 
-  // On renomme la zone (important pour le format lml:
+  // On renomme la domaine (important pour le format lml:
   // nom de la topologie utilise par lance_test_seq_par)
   const Nom& nom_dom = dom.le_nom();
   dom.nommer(nom_dom);
@@ -75,7 +75,7 @@ void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   //fichier.close();
   if (0)
     {
-      Nom org=("debug.Zones");
+      Nom org=("debug.Domaines");
       org=org.nom_me(me());
       SFichier  file_out(org);
       file_out << dom << finl<<"0 "<<finl;

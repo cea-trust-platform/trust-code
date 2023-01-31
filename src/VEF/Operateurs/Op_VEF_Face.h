@@ -19,8 +19,8 @@
 #include <TRUSTTabs_forward.h>
 #include <SFichier.h>
 class Matrice_Morse;
-class Zone_VEF;
-class Zone_Cl_VEF;
+class Domaine_VEF;
+class Domaine_Cl_VEF;
 class Equation_base;
 class Sortie;
 class Operateur_base;
@@ -29,8 +29,8 @@ class Op_VEF_Face
 {
 public :
   inline Op_VEF_Face():controle_modifier_flux_(0) { };
-  void dimensionner(const Zone_VEF&, const Zone_Cl_VEF&, Matrice_Morse&) const;
-  void modifier_pour_Cl(const Zone_VEF&, const Zone_Cl_VEF&, Matrice_Morse&, DoubleTab&)const ;
+  void dimensionner(const Domaine_VEF&, const Domaine_Cl_VEF&, Matrice_Morse&) const;
+  void modifier_pour_Cl(const Domaine_VEF&, const Domaine_Cl_VEF&, Matrice_Morse&, DoubleTab&)const ;
   int impr(Sortie&, const Operateur_base&) const;
   void modifier_flux(const Operateur_base&) const;
   void modifier_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice, const Equation_base& ) const;

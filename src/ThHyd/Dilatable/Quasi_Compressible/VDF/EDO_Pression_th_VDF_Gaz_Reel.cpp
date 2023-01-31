@@ -15,8 +15,8 @@
 
 #include <EDO_Pression_th_VDF_Gaz_Reel.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Schema_Temps_base.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>

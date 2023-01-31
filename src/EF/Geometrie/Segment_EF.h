@@ -30,7 +30,7 @@ public:
   void calcul_xg(DoubleVect& ,const DoubleTab& ,const int ,int& ,
                  int& ,int& ,int& ) const override;
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const override ;
+               const IntTab& ,const Domaine& )  const override ;
 };
 
 #endif

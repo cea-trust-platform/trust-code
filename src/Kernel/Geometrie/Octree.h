@@ -18,7 +18,7 @@
 
 #include <TRUSTTabs_forward.h>
 #include <TRUSTTab.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 #define GaucheArriereBas 0
 #define DroitArriereBas 1
@@ -61,7 +61,7 @@ public :
   virtual int rang_elem_loc(const OctreeLoc&, double x, double y=0, double z=0) const;
   virtual int rang_elem_depuis_loc(const OctreeLoc&, int prems, double x, double y=0, double z=0) const;
 
-  virtual const Zone& zone() const;
+  virtual const Domaine& domaine() const;
   void construire(int, const ArrOfInt&, const OctreeLoc&, Octree* p=0);
   int niveau() const;
   virtual int taille() const;
@@ -91,16 +91,16 @@ class OctreeRoot :  public Objet_U, public Octree
 
 public :
   OctreeRoot():valid_(0) {}
-  OctreeRoot(const Zone& z)
+  OctreeRoot(const Domaine& z)
   {
-    associer_Zone(z);
+    associer_Domaine(z);
     construire();
   }
   OctreeRoot(const OctreeRoot& oc): Objet_U(oc),Octree(oc)
   {
     if(oc.construit())
       {
-        associer_Zone(oc.zone());
+        associer_Domaine(oc.domaine());
         construire();
       }
     else
@@ -116,15 +116,15 @@ public :
   int rang_elem_depuis(const DoubleTab&, const ArrOfInt&, ArrOfInt&) const;
   void rang_elems_sommet(ArrOfInt&, double x, double y=0, double z=0) const;
 
-  const Zone& zone() const override;
-  void associer_Zone(const Zone&);
+  const Domaine& domaine() const override;
+  void associer_Domaine(const Domaine&);
   void construire(int reel=0);
   int construit() const;
   void invalide();
   inline int reel() const { return reel_; }
 
 protected :
-  REF(Zone) le_dom;
+  REF(Domaine) le_dom;
   OctreeLoc loc;
   int valid_, reel_ = -1;
 };

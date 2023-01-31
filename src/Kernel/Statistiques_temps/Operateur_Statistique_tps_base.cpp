@@ -38,7 +38,7 @@ Entree& Operateur_Statistique_tps_base::readOn(Entree& s )
   return s ;
 }
 
-int Operateur_Statistique_tps_base::completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format)
+int Operateur_Statistique_tps_base::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)
 {
 
   const Nom nom_post = le_nom();

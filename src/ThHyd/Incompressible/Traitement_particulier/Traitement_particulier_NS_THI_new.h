@@ -20,7 +20,7 @@
 #include <Traitement_particulier_NS_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Champ_Don.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 
 /*! @brief classe Traitement_particulier_THI_new Cette classe permet de faire les traitements particuliers
@@ -51,7 +51,7 @@ protected :
   virtual void renorm_Ec(void) =0;
   virtual void init_calc_spectre(void)=0;
   virtual void calcul_spectre(void)=0;
-  int& calcul_nb_som_dir(const Zone&);
+  int& calcul_nb_som_dir(const Domaine&);
   void msg_erreur_maillage(const char*);
 
   int init = 0, oui_transf = 0, oui_calc_spectre = 0;

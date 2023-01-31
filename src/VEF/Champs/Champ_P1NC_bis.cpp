@@ -15,7 +15,7 @@
 
 #include <Champ_P1NC.h>
 
-void Champ_P1NC::calcul_y_plus_diphasique(const Zone_Cl_VEF& , DoubleVect& ) const
+void Champ_P1NC::calcul_y_plus_diphasique(const Domaine_Cl_VEF& , DoubleVect& ) const
 {
   /* Do nothing : implementation in trioCFD */
 }

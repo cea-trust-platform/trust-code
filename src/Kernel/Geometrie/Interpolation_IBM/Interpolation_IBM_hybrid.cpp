@@ -38,7 +38,7 @@ Entree& Interpolation_IBM_hybrid::readOn( Entree& is )
   return is;
 }
 
-void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Zone_dis_base& le_dom_EF)
+void Interpolation_IBM_hybrid::discretise(const Discretisation_base& dis, Domaine_dis_base& le_dom_EF)
 {
   Cerr << "(IBM) Warning! Interpolation IBM_hybrid has no validation test case." << finl;
 

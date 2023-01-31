@@ -18,16 +18,16 @@
 
 #include <Champ_Face_VDF_implementation.h>
 #include <Champ_Face_base.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
-class Zone_Cl_VDF;
+class Domaine_Cl_VDF;
 
 /*! @brief class Champ_Face_VDF Cette classe sert a representer un champ vectoriel dont on ne calcule
  *
  *   que les composantes normales aux faces en VDF.Il n'y a donc qu'un degre de
  *   liberte par face et l'attribut nb_comp_ d'un objet de type Champ_Face
  *   vaut 1. On peut neammoins imposer toutes les composantes du champ sur
- *   le bord. Si n est le nombre de faces total de la zone et nb_faces_bord
+ *   le bord. Si n est le nombre de faces total de la domaine et nb_faces_bord
  *   le nombre de faces de bord le tableau de valeurs associe au champ
  *   est construit comme suit:
  *       - n valeurs pour representer les composantes normales aux faces
@@ -43,7 +43,7 @@ class Champ_Face_VDF : public Champ_Face_base, public Champ_Face_VDF_implementat
 public:
   int fixer_nb_valeurs_nodales(int) override;
 
-  inline const Zone_VDF& zone_vdf() const override { return ref_cast(Zone_VDF, le_dom_VF.valeur()); }
+  inline const Domaine_VDF& domaine_vdf() const override { return ref_cast(Domaine_VDF, le_dom_VF.valeur()); }
   Champ_base& affecter_(const Champ_base&) override;
   virtual const Champ_Proto& affecter(const double x1, const double x2);
   virtual const Champ_Proto& affecter(const double x1, const double x2, const double x3);
@@ -63,16 +63,16 @@ public:
 
   void calculer_dscald_centre_element(DoubleTab&) const;
 
-  void calcul_critere_Q(DoubleTab&, const Zone_Cl_VDF&);
-  void calcul_grad_u(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&);
-  void calcul_y_plus(DoubleTab&, const Zone_Cl_VDF&);
-  void calcul_y_plus_diphasique(DoubleTab& , const Zone_Cl_VDF& );
+  void calcul_critere_Q(DoubleTab&, const Domaine_Cl_VDF&);
+  void calcul_grad_u(const DoubleTab&, DoubleTab&, const Domaine_Cl_VDF&);
+  void calcul_y_plus(DoubleTab&, const Domaine_Cl_VDF&);
+  void calcul_y_plus_diphasique(DoubleTab& , const Domaine_Cl_VDF& );
 
   DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&) const;
-  DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&, const Zone_Cl_VDF&) const;
-  DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&) const;
-  DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab&, DoubleVect&, const Zone_Cl_VDF&) const;
-  void calculer_dercov_axi(const Zone_Cl_VDF&);
+  DoubleTab& calcul_duidxj(const DoubleTab&, DoubleTab&, const Domaine_Cl_VDF&) const;
+  DoubleVect& calcul_S_barre(const DoubleTab&, DoubleVect&, const Domaine_Cl_VDF&) const;
+  DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab&, DoubleVect&, const Domaine_Cl_VDF&) const;
+  void calculer_dercov_axi(const Domaine_Cl_VDF&);
 
   // methodes inlines
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
@@ -100,12 +100,12 @@ public:
     return Champ_Face_VDF_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& val) const override
+  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
   {
     return Champ_Face_VDF_implementation::valeur_aux_sommets(dom, val);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& val, int comp) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
   {
     return Champ_Face_VDF_implementation::valeur_aux_sommets_compo(dom, val, comp);
   }
@@ -125,19 +125,19 @@ public:
   */
   inline double v_norm(const DoubleTab& val, const DoubleTab& val_f, int e, int f, int k, int l, double *v_ext, double *dnv) const
   {
-    const Zone_VDF& zone = zone_vdf();
+    const Domaine_VDF& domaine = domaine_vdf();
     int d, D = dimension;
-    const DoubleTab& nf = zone.face_normales();
-    const DoubleVect& fs = zone.face_surfaces();
+    const DoubleTab& nf = domaine.face_normales();
+    const DoubleVect& fs = domaine.face_surfaces();
 
     double scal = 0, vf = f >= 0 ? val_f(f, k) - (l >= 0 ? val_f(f, l) : 0) : 0, v_temp[3], *v = v_ext ? v_ext : v_temp;
     for (d = 0; d < D; d++)
       v[d] = val(e, k + d * D) - (l >= 0 ? val(e, l + d * D) : 0);
 
     if (f >= 0)
-      for (d = 0, scal = zone.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);
+      for (d = 0, scal = domaine.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);
 
-    double nv = sqrt(zone.dot(v, v));
+    double nv = sqrt(domaine.dot(v, v));
 
     if (dnv)
       for (d = 0; d < D; d++) dnv[d] = nv ? (v[d] - (f >= 0 ? vf * nf(f, d) / fs(f) : 0)) / nv : 0;
@@ -156,8 +156,8 @@ private:
   DoubleTab tau_croises_;    // termes extradiagonaux du tenseur Grad
 };
 
-double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp,int face,int comp, const Zone_Cl_VDF& zclo);
-double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, const Zone_Cl_VDF& zclo) ;
-double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, int comp2, const Zone_Cl_VDF& zclo) ;
+double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp,int face,int comp, const Domaine_Cl_VDF& zclo);
+double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, const Domaine_Cl_VDF& zclo) ;
+double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, int comp2, const Domaine_Cl_VDF& zclo) ;
 
 #endif /* Champ_Face_VDF_included */

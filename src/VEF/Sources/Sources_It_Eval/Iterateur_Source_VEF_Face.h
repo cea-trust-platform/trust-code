@@ -21,9 +21,9 @@
 #include <Champ_Uniforme.h>
 #include <TRUSTSingle.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Dirichlet.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 template<typename _TYPE_>
 class Iterateur_Source_VEF_Face: public Iterateur_Source_base
@@ -46,9 +46,9 @@ public:
 
   void completer_() override
   {
-    nb_faces = ref_cast(Zone_VEF,le_dom.valeur()).nb_faces();
-    nb_faces_elem = le_dom->zone().nb_faces_elem();
-    premiere_face_std = ref_cast(Zone_VEF,le_dom.valeur()).premiere_face_std();
+    nb_faces = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces();
+    nb_faces_elem = le_dom->domaine().nb_faces_elem();
+    premiere_face_std = ref_cast(Domaine_VEF,le_dom.valeur()).premiere_face_std();
   }
 
   inline Evaluateur_Source_VEF_Face& evaluateur() override
@@ -61,11 +61,11 @@ protected:
   int initialiser(double tps) override;
   void remplir_volumes_cl_dirichlet();
 
-  inline const int& faces_doubles(int num_face) const { return ref_cast(Zone_VEF,le_dom.valeur()).faces_doubles()[num_face]; }
+  inline const int& faces_doubles(int num_face) const { return ref_cast(Domaine_VEF,le_dom.valeur()).faces_doubles()[num_face]; }
   inline double volumes_entrelaces_Cl(int& num_face) const { return volumes_cl_dirichlet_[num_face]; }
-  inline double volumes_entrelaces(int& num_face) const { return ref_cast(Zone_VEF,le_dom.valeur()).volumes_entrelaces()[num_face]; }
-  inline int face_voisins(int num_face, int dir) const { return ref_cast(Zone_VEF,le_dom.valeur()).face_voisins(num_face, dir); }
-  inline int elem_faces(int num_elem, int i) const { return ref_cast(Zone_VEF,le_dom.valeur()).elem_faces(num_elem, i); }
+  inline double volumes_entrelaces(int& num_face) const { return ref_cast(Domaine_VEF,le_dom.valeur()).volumes_entrelaces()[num_face]; }
+  inline int face_voisins(int num_face, int dir) const { return ref_cast(Domaine_VEF,le_dom.valeur()).face_voisins(num_face, dir); }
+  inline int elem_faces(int num_elem, int i) const { return ref_cast(Domaine_VEF,le_dom.valeur()).elem_faces(num_elem, i); }
 
 private:
   _TYPE_ evaluateur_source_face;
@@ -96,7 +96,7 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
   DoubleVect& bilan = so_base->bilan();
   bilan.resize(ncomp);
   bilan = 0;
-  int nb_faces_tot = ref_cast(Zone_VEF,le_dom.valeur()).nb_faces_tot();
+  int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
   coef.resize(nb_faces_tot, Array_base::NOCOPY_NOINIT);
   coef = 1;
   if (equation_divisee_par_rho())
@@ -109,7 +109,7 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
         {
           const DoubleTab& val_rho = rho.valeurs();
           const IntTab& face_vois = le_dom.valeur().face_voisins();
-          const DoubleVect& volumes = ref_cast(Zone_VEF,le_dom.valeur()).volumes();
+          const DoubleVect& volumes = ref_cast(Domaine_VEF,le_dom.valeur()).volumes();
           coef = 0.;
           for (int fac = 0; fac < nb_faces_tot; fac++)
             {
@@ -146,8 +146,8 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter(DoubleTab& resu) const
 template<typename _TYPE_>
 void Iterateur_Source_VEF_Face<_TYPE_>::remplir_volumes_cl_dirichlet()
 {
-  Zone_VEF& zvef = ref_cast(Zone_VEF,le_dom.valeur());
-  Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,la_zcl.valeur());
+  Domaine_VEF& zvef = ref_cast(Domaine_VEF,le_dom.valeur());
+  Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,la_zcl.valeur());
   zvef.creer_tableau_faces(volumes_cl_dirichlet_);
   DoubleVect& marq = volumes_cl_dirichlet_;
   for (int f = 0; f < zvef.premiere_face_std(); f++)
@@ -207,7 +207,7 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_non_standard(const i
                     for (int k = 0; k < ncomp; k++)
                       {
                         resu(face_voisine, k) += source(k) / (nb_faces_elem - faces_dirichlet);
-                        if (face_voisine < ref_cast(Zone_VEF,le_dom.valeur()).nb_faces())
+                        if (face_voisine < ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces())
                           {
                             double contribution = (faces_doubles(face_voisine) == 1) ? 0.5 : 1;
                             bilan(k) += contribution * coef(face_voisine) * source(k) / (nb_faces_elem - faces_dirichlet);
@@ -220,7 +220,7 @@ DoubleTab& Iterateur_Source_VEF_Face<_TYPE_>::ajouter_faces_non_standard(const i
               for (int k = 0; k < ncomp; k++)
                 {
                   resu(num_face, k) += source(k);
-                  if (num_face < ref_cast(Zone_VEF,le_dom.valeur()).nb_faces())
+                  if (num_face < ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces())
                     {
                       double contribution = (faces_doubles(num_face) == 1) ? 0.5 : 1;
                       bilan(k) += (1. - type_CL) * contribution * coef(num_face) * source(k);

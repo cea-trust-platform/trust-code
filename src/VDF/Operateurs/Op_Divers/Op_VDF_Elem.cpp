@@ -17,13 +17,13 @@
 #include <Equation_base.h>
 #include <Matrix_tools.h>
 #include <Op_VDF_Elem.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Array_tools.h>
 #include <Periodique.h>
 
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
-void Op_VDF_Elem::dimensionner(const Zone_VDF& le_dom, const Zone_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice) const
+void Op_VDF_Elem::dimensionner(const Domaine_VDF& le_dom, const Domaine_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des elements.
   // Cette matrice a une structure de matrice morse.
@@ -32,7 +32,7 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& le_dom, const Zone_Cl_VDF& le_dom
   const IntTab& face_voisins = le_dom.face_voisins();
   const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
   const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
-  const int n1 = le_dom.zone().nb_elem_tot(), nb_comp = champ_inconnue.line_size();
+  const int n1 = le_dom.domaine().nb_elem_tot(), nb_comp = champ_inconnue.line_size();
 
   la_matrice.dimensionner(n1*nb_comp, n1*nb_comp, 0);
 
@@ -143,4 +143,4 @@ void Op_VDF_Elem::dimensionner(const Zone_VDF& le_dom, const Zone_Cl_VDF& le_dom
     }
 }
 
-void Op_VDF_Elem:: modifier_pour_Cl(const Zone_VDF& , const Zone_Cl_VDF& , Matrice_Morse& , DoubleTab& ) const { /* Do nothing */ }
+void Op_VDF_Elem:: modifier_pour_Cl(const Domaine_VDF& , const Domaine_Cl_VDF& , Matrice_Morse& , DoubleTab& ) const { /* Do nothing */ }

@@ -21,8 +21,8 @@
 
 //class Equation_base;
 //class Milieu_base;
-//class Zone_dis_base;
-//class Zone_Cl_dis_base;
+//class Domaine_dis_base;
+//class Domaine_Cl_dis_base;
 //class Front_dis_base;
 
 /*! @brief classe Champ_front_contact_fictif_VEF Classe derivee de Champ_front_contact_VEF elle-meme derivant de

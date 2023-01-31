@@ -17,7 +17,7 @@
 
 #include <EFichier.h>
 #include <TRUSTTab.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Champ_som_lu_VEF,"Champ_som_lu_VEF",Champ_som_lu);
 

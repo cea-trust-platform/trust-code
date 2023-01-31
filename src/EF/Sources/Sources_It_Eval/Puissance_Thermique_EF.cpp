@@ -17,8 +17,8 @@
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_EF.h>
-#include <Zone_EF.h>
+#include <Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
 
 Implemente_instanciable_sans_constructeur(Puissance_Thermique_EF, "Puissance_Thermique_EF", Terme_Source_EF_base);
 
@@ -32,10 +32,10 @@ Entree& Puissance_Thermique_EF::readOn(Entree& s)
   return s;
 }
 
-void Puissance_Thermique_EF::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Puissance_Thermique_EF::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Zone_EF& zEF = ref_cast(Zone_EF, zone_dis.valeur());
-  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF, zone_cl_dis.valeur());
+  const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_cl_dis.valeur());
   iter->associer_domaines(zEF, zclEF);
   Eval_Puiss_Th_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_EF&> (iter->evaluateur());
   eval_puis.associer_domaines(zEF, zclEF);
@@ -44,7 +44,7 @@ void Puissance_Thermique_EF::associer_domaines(const Zone_dis& zone_dis, const Z
 void Puissance_Thermique_EF::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(), la_puissance.le_nom(), "W/m3", la_puissance, pb);
+  eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(), la_puissance.le_nom(), "W/m3", la_puissance, pb);
   Eval_Puiss_Th_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_EF&> (iter->evaluateur());
   eval_puis.associer_champs(la_puissance);
 }

@@ -16,25 +16,25 @@
 #ifndef Masse_VDF_base_included
 #define Masse_VDF_base_included
 
-#include <Ref_Zone_Cl_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
 #include <Solveur_Masse.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_VDF.h>
 
 class Masse_VDF_base : public Solveur_Masse_base
 {
   Declare_base(Masse_VDF_base);
 public:
   void check_multiphase_compatibility() const override { } /* Et ouiiiiiiiiiii */
-  void associer_domaine_dis_base(const Zone_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
   inline int has_interface_blocs() const override { return 1; }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
 protected:
   mutable double penalisation_matrice_, penalisation_secmem_;
-  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
-  REF(Zone_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
 };
 
 #endif /* Masse_VDF_base_included */

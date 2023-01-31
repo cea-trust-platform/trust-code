@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexa_VEF.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Hexa_VEF,"Hexa_VEF",Elem_VEF_base);
 
@@ -50,7 +50,7 @@ Hexa_VEF::Hexa_VEF()
       KEL_(i,j)=tmp[i][j];
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_VEF
+/*! @brief remplit le tableau face_normales dans la Domaine_VEF
  *
  */
 
@@ -58,9 +58,9 @@ void Hexa_VEF::normale(int num_Face,DoubleTab& Face_normales,
                        const  IntTab& Face_sommets,
                        const IntTab& Face_voisins,
                        const IntTab& elem_faces,
-                       const Zone& zone_geom) const
+                       const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   double x1,y1,z1,x2,y2,z2;
   double nx,ny,nz;
@@ -187,13 +187,13 @@ void Hexa_VEF::normale(int num_Face,DoubleTab& Face_normales,
 /*! @brief // calcule les normales des facettes pour des elem standards
  *
  */
-void Hexa_VEF::creer_facette_normales(const Zone& zone_geom,
+void Hexa_VEF::creer_facette_normales(const Domaine& domaine_geom,
                                       DoubleTab& facette_normales,
                                       const IntVect& rang_elem_non_std) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
-  const IntTab& les_Polys = zone_geom.les_elems();
-  int nb_elem = zone_geom.nb_elem();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
+  const IntTab& les_Polys = domaine_geom.les_elems();
+  int nb_elem = domaine_geom.nb_elem();
   int i, fa7;
   int num_som[8];
   double x[8][3];
@@ -208,7 +208,7 @@ void Hexa_VEF::creer_facette_normales(const Zone& zone_geom,
   double pv[3];
   facette_normales.reset();
   facette_normales.resize(0, nb_facette(), 3);
-  zone_geom.creer_tableau_elements(facette_normales);
+  domaine_geom.creer_tableau_elements(facette_normales);
 
   for(i=0; i<nb_elem; i++)
     {
@@ -438,7 +438,7 @@ void Hexa_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                           int fa7,
                                           int num_elem,const DoubleTab& x,
                                           const DoubleVect& xg, const
-                                          Zone& zone_geom) const
+                                          Domaine& domaine_geom) const
 {
   double u[3];
   double v[3];
@@ -451,8 +451,8 @@ void Hexa_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
   double pv[3];
   double psc;
 
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
-  const IntTab& les_Polys = zone_geom.les_elems();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
+  const IntTab& les_Polys = domaine_geom.les_elems();
 
   int i2 = KEL_(2,fa7);
   int i3 = KEL_(3,fa7);
@@ -647,7 +647,7 @@ void Hexa_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
  *
  */
 void Hexa_VEF::modif_volumes_entrelaces(int j,int elem,
-                                        const Zone_VEF& le_dom_VEF,
+                                        const Domaine_VEF& le_dom_VEF,
                                         DoubleVect& volumes_entrelaces_Cl,
                                         int type_cl) const
 {
@@ -659,7 +659,7 @@ void Hexa_VEF::modif_volumes_entrelaces(int j,int elem,
  *
  */
 void Hexa_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
-                                                     const Zone_VEF& le_dom_VEF,
+                                                     const Domaine_VEF& le_dom_VEF,
                                                      DoubleVect& volumes_entrelaces_Cl,
                                                      int type_cl) const
 {

@@ -17,7 +17,7 @@
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
 
 Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_nul,"Modele_turbulence_hyd_nul",Mod_turb_hyd_base);
@@ -56,7 +56,7 @@ Entree& Modele_turbulence_hyd_nul::readOn(Entree& is)
       exit();
     }
   loipar.valeur().associer_modele(*this);
-  loipar.valeur().associer(eqn.zone_dis(),eqn.zone_Cl_dis());
+  loipar.valeur().associer(eqn.domaine_dis(),eqn.domaine_Cl_dis());
   return is;
 }
 

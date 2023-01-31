@@ -25,13 +25,13 @@ class Champ_Fonc_Q1_MED: public Champ_Fonc_Q1_base
 {
   Declare_instanciable(Champ_Fonc_Q1_MED);
 public:
-  void associer_domaine_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  const Zone_VF& zone_vf() const override { throw; }
+  void associer_domaine_dis_base(const Domaine_dis_base&) override;
+  const Domaine_dis_base& domaine_dis_base() const override;
+  const Domaine_VF& domaine_vf() const override { throw; }
   void mettre_a_jour(double) override;
 
 private:
-  REF(Zone_dis_base) zonebidon;
+  REF(Domaine_dis_base) domainebidon;
 };
 
 #endif /* Champ_Fonc_Q1_MED_included */

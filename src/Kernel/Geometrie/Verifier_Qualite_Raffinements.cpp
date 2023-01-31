@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Verifier_Qualite_Raffinements.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <TRUSTArray.h>
 #include <SFichier.h>
 
@@ -43,7 +43,7 @@ static void compute_triangle_side_lengths(const ArrOfDouble& x,const ArrOfDouble
     }
 }
 
-static void compute_cell_qualities_for_triangle(const Zone& domain, ArrOfDouble& quality)
+static void compute_cell_qualities_for_triangle(const Domaine& domain, ArrOfDouble& quality)
 {
   const IntTab&    cells = domain.les_elems();
   const DoubleTab& nodes = domain.les_sommets();
@@ -166,7 +166,7 @@ static double compute_tetrahedron_surface(const ArrOfDouble& x,const ArrOfDouble
   return surface;
 }
 
-static void compute_cell_qualities_for_tetrahedron(const Zone& domain, ArrOfDouble& quality)
+static void compute_cell_qualities_for_tetrahedron(const Domaine& domain, ArrOfDouble& quality)
 {
   const IntTab&    cells = domain.les_elems();
   const DoubleTab& nodes = domain.les_sommets();
@@ -198,7 +198,7 @@ static void compute_cell_qualities_for_tetrahedron(const Zone& domain, ArrOfDoub
     }
 }
 
-static void compute_cell_qualities(const Zone& domain, ArrOfDouble& quality)
+static void compute_cell_qualities(const Domaine& domain, ArrOfDouble& quality)
 {
   const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 

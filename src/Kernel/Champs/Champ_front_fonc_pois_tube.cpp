@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_fonc_pois_tube.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Frontiere_dis_base.h>
 
 Implemente_instanciable(Champ_front_fonc_pois_tube,"Champ_front_fonc_pois_tube",Champ_front_fonc);
@@ -71,8 +71,8 @@ int Champ_front_fonc_pois_tube::initialiser(double temps, const Champ_Inc_base& 
   int dim = nb_comp();
 
   const Frontiere& front=la_frontiere_dis->frontiere();
-  const Zone& zone=front.zone();
-  const Zone& domaine=zone;
+  const Domaine& domaine=front.domaine();
+  const Domaine& domaine=domaine;
   const Faces& faces=front.faces();
 
   int nb_faces=front.nb_faces();

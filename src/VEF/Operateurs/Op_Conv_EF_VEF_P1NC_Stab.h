@@ -20,7 +20,7 @@
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
 #include <Op_Conv_VEF_Face.h>
-#include <Ref_Sous_zone_VF.h>
+#include <Ref_Sous_domaine_VF.h>
 #include <TRUSTTabs.h>
 #include <TRUSTList.h>
 
@@ -107,10 +107,10 @@ private :
   int old_ = 0;
   int volumes_etendus_ = 1;
 
-  bool sous_zone = false;  // Cas d'une sous-zone a definir pour que l'EF_Stab degenere en Amont
+  bool sous_domaine = false;  // Cas d'une sous-domaine a definir pour que l'EF_Stab degenere en Amont
   int new_jacobienne_ = 0;
-  Nom nom_sous_zone;
-  REF(Sous_zone_VF) la_sous_zone_dis;
+  Nom nom_sous_domaine;
+  REF(Sous_domaine_VF) la_sous_domaine_dis;
 
   int nb_ssz_alpha = -1;
   DoubleVect alpha_ssz;

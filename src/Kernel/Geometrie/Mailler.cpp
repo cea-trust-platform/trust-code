@@ -16,9 +16,9 @@
 #include <NettoieNoeuds.h>
 #include <TRUST_Deriv.h>
 #include <Mailler.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 #include <list>
 #include <memory>
@@ -71,7 +71,7 @@ Entree& Mailler::interpreter_(Entree& is)
     }
   double precision_geom_sa=precision_geom;
   associer_domaine(is);
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
 
   // On debloque les structures pour modifier le domaine
   Scatter::uninit_sequential_domain(dom);
@@ -83,13 +83,13 @@ Entree& Mailler::interpreter_(Entree& is)
       Cerr << "We expected a {" << finl;
       exit();
     }
-  Nom typ_zone;
-  std::list<Zone*> dom_lst;  // the list of domains we will merge later when calling comprimer()
-  std::list<DERIV(Zone)> dom_lst2; // just for memory management
+  Nom typ_domaine;
+  std::list<Domaine*> dom_lst;  // the list of domains we will merge later when calling comprimer()
+  std::list<DERIV(Domaine)> dom_lst2; // just for memory management
   do
     {
-      is >> typ_zone;
-      motlu = typ_zone;
+      is >> typ_domaine;
+      motlu = typ_domaine;
       if(motlu=="epsilon")
         {
           double eps;
@@ -105,19 +105,19 @@ Entree& Mailler::interpreter_(Entree& is)
           Nom nom_dom;
           is >> nom_dom;
           Cerr << "Adding a domain " << nom_dom << finl;
-          Zone& added_dom=ref_cast(Zone, objet(nom_dom));
+          Domaine& added_dom=ref_cast(Domaine, objet(nom_dom));
           dom_lst.push_back(&added_dom);
           is >> motlu;
           verifie_syntaxe(motlu);
         }
       else
         {
-          dom_lst2.push_back(DERIV(Zone)()); // to keep them alive till the end of the method
-          DERIV(Zone)& une_zone = dom_lst2.back();
-          une_zone.typer(typ_zone); // Most likely a Pave ...
-          Zone& ze_zone = une_zone.valeur();
-          is >> ze_zone;
-          dom_lst.push_back(&ze_zone);
+          dom_lst2.push_back(DERIV(Domaine)()); // to keep them alive till the end of the method
+          DERIV(Domaine)& une_domaine = dom_lst2.back();
+          une_domaine.typer(typ_domaine); // Most likely a Pave ...
+          Domaine& ze_domaine = une_domaine.valeur();
+          is >> ze_domaine;
+          dom_lst.push_back(&ze_domaine);
           is >> motlu;
           verifie_syntaxe(motlu);
         }

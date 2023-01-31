@@ -22,7 +22,7 @@
 #include <Ref_Champ_base.h>
 #include <Champ_Fonc.h>
 
-class Zone_dis_base;
+class Domaine_dis_base;
 
 class Integrale_tps_Champ : public Champ_Fonc
 {

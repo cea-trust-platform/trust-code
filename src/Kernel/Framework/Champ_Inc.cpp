@@ -66,23 +66,23 @@ int Champ_Inc::nb_valeurs_nodales() const
   return valeur().nb_valeurs_nodales();
 }
 
-/*! @brief Appel a l'objet sous-jacent Associe le champ a une zone discretisee.
+/*! @brief Appel a l'objet sous-jacent Associe le champ a une domaine discretisee.
  *
- * @param (Zone_dis_base& z)
- * @return (Zone_dis_base&) la zone discretise associee au champ
+ * @param (Domaine_dis_base& z)
+ * @return (Domaine_dis_base&) la domaine discretise associee au champ
  */
-const Zone_dis_base& Champ_Inc::associer_domaine_dis_base(const Zone_dis_base& z)
+const Domaine_dis_base& Champ_Inc::associer_domaine_dis_base(const Domaine_dis_base& z)
 {
   valeur().associer_domaine_dis_base(z);
   return z;
 }
-/*! @brief Appel a l'objet sous-jacent Renvoie la zone discretisee associee au champ.
+/*! @brief Appel a l'objet sous-jacent Renvoie la domaine discretisee associee au champ.
  *
- * @return (Zone_dis_base&)
+ * @return (Domaine_dis_base&)
  */
-const Zone_dis_base& Champ_Inc::zone_dis_base() const
+const Domaine_dis_base& Champ_Inc::domaine_dis_base() const
 {
-  return valeur().zone_dis_base();
+  return valeur().domaine_dis_base();
 }
 
 /*! @brief Appel a l'objet sous-jacent Fixe le temps courant.

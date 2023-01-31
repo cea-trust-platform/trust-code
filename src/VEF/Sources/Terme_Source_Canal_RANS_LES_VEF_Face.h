@@ -17,8 +17,8 @@
 #define Terme_Source_Canal_RANS_LES_VEF_Face_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_Cl_VEF.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
 #include <Source_base.h>
 #include <Champ_Don.h>
 
@@ -42,9 +42,9 @@ public :
   void mettre_a_jour(double ) override;
 
 protected :
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
 private :
   int moyenne= 0; //type de moyenne

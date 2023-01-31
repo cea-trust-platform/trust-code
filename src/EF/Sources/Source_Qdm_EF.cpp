@@ -15,10 +15,10 @@
 
 #include <Source_Qdm_EF.h>
 #include <Champ_Uniforme.h>
-#include <Zone.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_EF.h>
-#include <Zone_Cl_EF.h>
+#include <Domaine.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_EF.h>
+#include <Domaine_Cl_EF.h>
 
 #include <Equation_base.h>
 
@@ -55,22 +55,22 @@ void Source_Qdm_EF::associer_pb(const Probleme_base& )
   ;
 }
 
-void Source_Qdm_EF::associer_domaines(const Zone_dis& zone_dis,
-                                      const Zone_Cl_dis& zone_Cl_dis)
+void Source_Qdm_EF::associer_domaines(const Domaine_dis& domaine_dis,
+                                      const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_EF = ref_cast(Zone_EF, zone_dis.valeur());
-  le_dom_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
+  le_dom_EF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
 }
 
 
 DoubleTab& Source_Qdm_EF::ajouter(DoubleTab& resu) const
 {
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int ncomp=dimension;
-  const IntTab& elems= zone_EF.zone().les_elems() ;
-  int nb_som_elem=zone_EF.zone().nb_som_elem();
-  int nb_elems=zone_EF.zone().nb_elem_tot();
-  const DoubleTab& IPhi_thilde=zone_EF.IPhi_thilde();
+  const IntTab& elems= domaine_EF.domaine().les_elems() ;
+  int nb_som_elem=domaine_EF.domaine().nb_som_elem();
+  int nb_elems=domaine_EF.domaine().nb_elem_tot();
+  const DoubleTab& IPhi_thilde=domaine_EF.IPhi_thilde();
   int is_source_unif=0;
 
   if (sub_type(Champ_Uniforme,la_source.valeur()))
@@ -86,7 +86,7 @@ DoubleTab& Source_Qdm_EF::ajouter(DoubleTab& resu) const
         for (int i=0; i<nb_som_elem; i++)
           {
             // assert faux si on a des porosites
-            //	assert(est_egal(zone_EF.volumes(num_elem)/nb_som_elem,IPhi_thilde(num_elem,i)));
+            //	assert(est_egal(domaine_EF.volumes(num_elem)/nb_som_elem,IPhi_thilde(num_elem,i)));
             resu(elems(num_elem,i),comp)+=sourcel*IPhi_thilde(num_elem,i);
           }
       }

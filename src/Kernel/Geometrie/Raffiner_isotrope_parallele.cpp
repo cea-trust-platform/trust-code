@@ -23,7 +23,7 @@
 #include <Schema_Comm.h>
 #include <TRUSTTabs.h>
 #include <SFichier.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>
 #include <Nom.h>
@@ -178,11 +178,11 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
 
 /*! @brief Construction des tableaux joint_item(Joint::SOMMET).
  *
- * items_communs de tous les joints de la zone(0) du domaine dom
+ * items_communs de tous les joints de la domaine(0) du domaine dom
  *
  */
 
-void mon_construire_correspondance_sommets_par_coordonnees(Zone& dom)
+void mon_construire_correspondance_sommets_par_coordonnees(Domaine& dom)
 {
   mon_construire_correspondance_items_par_coordonnees(dom.faces_joint(), Joint::SOMMET, dom.coord_sommets());
 }
@@ -195,13 +195,13 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
   Nom org,newd;
   Param param(que_suis_je());
 // XD Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele 1 Refine parallel mesh in parallel
-  param.ajouter("name_of_initial_zones",&org,Param::REQUIRED); // XD_ADD_P chaine name of initial Zones
-  param.ajouter("name_of_new_zones",&newd,Param::REQUIRED); // XD_ADD_P chaine name of new Zones
-  param.ajouter("ascii",&form);  // XD_ADD_P flag writing Zones in ascii format
-  param.ajouter_flag("single_hdf",&format_hdf); // XD_ADD_P flag writing Zones in hdf format
+  param.ajouter("name_of_initial_domaines",&org,Param::REQUIRED); // XD_ADD_P chaine name of initial Domaines
+  param.ajouter("name_of_new_domaines",&newd,Param::REQUIRED); // XD_ADD_P chaine name of new Domaines
+  param.ajouter("ascii",&form);  // XD_ADD_P flag writing Domaines in ascii format
+  param.ajouter_flag("single_hdf",&format_hdf); // XD_ADD_P flag writing Domaines in hdf format
   param.lire_avec_accolades(is);
   // Force un fichier unique au dela d'un certain nombre de rangs MPI:
-  if (Process::force_single_file(Process::nproc(), org+".Zones"))
+  if (Process::force_single_file(Process::nproc(), org+".Domaines"))
     format_hdf = 1;
   int binaire=!form;
   if (form && format_hdf)
@@ -209,9 +209,9 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       Cerr << "Raffiner_isotrope_parallele::interpreter(): options 'ascii' and 'single_hdf' are mutually exclusive!" << finl;
       Process::exit(1);
     }
-  Zone dom_org;
+  Domaine dom_org;
   Noms liste_bords_periodiques;
-  org+=".Zones";
+  org+=".Domaines";
 
   Nom copy(org);
   copy = copy.nom_me(Process::nproc(), "p", 1);
@@ -236,7 +236,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       fic_hdf.open(org, true);
       Entree_Brute data;
 
-      fic_hdf.read_dataset("/zone", Process::me(), data);
+      fic_hdf.read_dataset("/domaine", Process::me(), data);
 
       // Feed TRUST objects:
       data >> dom_org;
@@ -247,7 +247,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
     }
 
   Scatter::uninit_sequential_domain(dom_org);
-  Zone dom_new(dom_org);
+  Domaine dom_new(dom_org);
 
   refine_domain(dom_org,dom_new);
 
@@ -267,7 +267,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       if (0)
         {
           Nom debug(newd);
-          debug+="_debug.Zones";
+          debug+="_debug.Domaines";
           EcrFicCollecte os;
           os.set_bin(binaire);
 
@@ -313,7 +313,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
             dom_new.les_sommets().resize(nb_sommet_avant_completion,dimension);
 
             Scatter::uninit_sequential_domain(dom_new);
-            newd+=".Zones";
+            newd+=".Domaines";
 
             if( !format_hdf )
               {
@@ -336,7 +336,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
                 FichierHDFPar fic_hdf;
                 newd = newd.nom_me(Process::nproc(), "p", 1);
                 fic_hdf.create(newd);
-                fic_hdf.create_and_fill_dataset_MW("/zone", os_hdf);
+                fic_hdf.create_and_fill_dataset_MW("/domaine", os_hdf);
                 fic_hdf.close();
               }
           }

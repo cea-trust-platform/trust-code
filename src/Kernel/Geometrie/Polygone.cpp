@@ -16,7 +16,7 @@
 #include <TRUSTList.h>
 #include <Polygone.h>
 #include <Triangle.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <algorithm>
 using std::swap;
 
@@ -182,20 +182,20 @@ int contient_triangle(const ArrOfDouble& pos,int som0,int som1,int som2,const Do
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0.
  *
- * Renvoie 1 si l'element "element" de la zone associee a
+ * Renvoie 1 si l'element "element" de la domaine associee a
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int element) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int element) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
  */
 int Polygone::contient(const ArrOfDouble& pos_r, int num_poly ) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
   DoubleTab pos(3,dimension);
   // on decoupe le polygone en triangle ayany tous le sommet 0.
 
@@ -217,11 +217,11 @@ int Polygone::contient(const ArrOfDouble& pos_r, int num_poly ) const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0 Renvoie 1 si les sommets specifies par le parametre "pos"
  *
- *     sont les sommets de l'element "element" de la zone associee a
+ *     sont les sommets de l'element "element" de la domaine associee a
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Polygone::contient(const ArrOfInt& pos, int element ) const
@@ -233,20 +233,20 @@ int Polygone::contient(const ArrOfInt& pos, int element ) const
 }
 
 
-/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la zone associee.
+/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Polygone::calculer_volumes(DoubleVect& volumes) const
 {
 
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
-  int size = zone.nb_elem();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
+  int size = domaine.nb_elem();
 
 
-  assert(volumes.size_totale()==zone.nb_elem_tot());
+  assert(volumes.size_totale()==domaine.nb_elem_tot());
   DoubleTab pos(3,dimension);
   for (int num_poly=0; num_poly<size; num_poly++)
     {
@@ -396,9 +396,9 @@ void Polygone::reordonner()
 }
 void Polygone::calculer_centres_gravite(DoubleTab& xp) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
   int nb_elem;
   if(xp.dimension(0)==0)
     {
@@ -443,9 +443,9 @@ void Polygone::calculer_centres_gravite(DoubleTab& xp) const
 
 void Polygone::calculer_un_centre_gravite(const int num_poly,DoubleVect& xp) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
   xp.resize(dimension);
 
 

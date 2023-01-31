@@ -173,7 +173,7 @@ C
             Goto 70
          Endif
 C
-C---> On a trouve le debut de la zone des groupes
+C---> On a trouve le debut de la domaine des groupes
 C---> On les lit
 C         
          Read(1,1000) Ch

@@ -26,7 +26,7 @@
 
 class Champ_Fonc_P1NC;
 class Champ_P1NC;
-class Zone_VEF;
+class Domaine_VEF;
 
 class Champ_P1NC_implementation: public Champ_implementation_divers
 {
@@ -65,9 +65,9 @@ public:
   // Retourne les valeurs de la composante ncomp du champ interpolees aux coordonnees positions des elements les_polys
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const override ;
   // Retourne dans ch_som les valeurs du champ interpole aux sommets
-  DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& ch_som) const override;
+  DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const override;
   // Retourne dans ch_som les valeurs de la composante ncomp du champ interpole aux sommets
-  DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& ch_som, int ncomp) const override;
+  DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& ch_som, int ncomp) const override;
   // Retourne la valeur de la composante ncomp du champ au sommet num_som sur l'element le_poly
   double valeur_a_sommet_compo(int num_som, int le_poly, int ncomp) const;
 
@@ -105,25 +105,25 @@ protected :
   SolveurSys  solveur_L2;
   Matrice_Morse_Sym MatP1NC2P1_H1;
   SolveurSys  solveur_H1;
-  virtual const Zone_VEF& zone_vef() const =0;
-  friend DoubleTab& valeur_P1_L2(Champ_P1NC&, const Zone&);
-  friend DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC&, const Zone&);
-  friend DoubleTab& valeur_P1_H1(const Champ_P1NC&, const Zone&, DoubleTab&);
+  virtual const Domaine_VEF& domaine_vef() const =0;
+  friend DoubleTab& valeur_P1_L2(Champ_P1NC&, const Domaine&);
+  friend DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC&, const Domaine&);
+  friend DoubleTab& valeur_P1_H1(const Champ_P1NC&, const Domaine&, DoubleTab&);
   DoubleTab ch_som_;
   DoubleVect ch_som_vect_;
   int filtrer_L2_deja_appele_;
 
-  friend int construire_MatP1NC2P1_L2(Champ_P1NC&, const Zone&);
-  friend int construire_MatP1NC2P1_H1(Champ_P1NC&, const Zone&, double&);
+  friend int construire_MatP1NC2P1_L2(Champ_P1NC&, const Domaine&);
+  friend int construire_MatP1NC2P1_H1(Champ_P1NC&, const Domaine&, double&);
 
-  friend int construire_secmem_L2(Champ_P1NC&, const Zone&, DoubleTab&);
-  friend int construire_secmem_H1(Champ_P1NC&, const Zone&, DoubleTab&, const double);
+  friend int construire_secmem_L2(Champ_P1NC&, const Domaine&, DoubleTab&);
+  friend int construire_secmem_H1(Champ_P1NC&, const Domaine&, DoubleTab&, const double);
 
   Matrice_Morse_Sym MatP1NC2P1_L2_H1;
   SolveurSys solveur_L2_H1;
 
-  friend DoubleTab& valeur_P1_L2_H1(Champ_P1NC&,const Zone&,DoubleTab& );
-  friend int test(Champ_P1NC&,const Zone&);
+  friend DoubleTab& valeur_P1_L2_H1(Champ_P1NC&,const Domaine&,DoubleTab& );
+  friend int test(Champ_P1NC&,const Domaine&);
 
   inline DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x,int distant) const;
 };

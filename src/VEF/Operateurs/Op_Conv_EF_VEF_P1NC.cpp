@@ -95,17 +95,17 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
 {
   //Cerr << "Op_Conv_EF_VEF_P1NC::ajouter" << finl;
   DoubleTab sauv(resu);
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   const DoubleTab& vitesse_face_absolue=la_vitesse.valeurs();
   const Champ_P1NC& ch=ref_cast(Champ_P1NC,mon_equation->inconnue().valeur());
 
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleTab& face_normales=zone_VEF.face_normales();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normales=domaine_VEF.face_normales();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.dimension(1);
 
   assert(nb_faces_elem==(dimension+1));
@@ -117,7 +117,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
     // le calcul du pas de temps de stabilite
     fluent_ = 0;
 
-    const int nb_faces = zone_VEF.nb_faces();
+    const int nb_faces = domaine_VEF.nb_faces();
     for(int num_face=0; num_face<nb_faces; num_face++)
       {
         psc=0.;
@@ -208,9 +208,9 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
         }
     }
 
-  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int nb_faces_bord_tot=le_bord.nb_faces_tot();
       int num10 = 0, num20 = le_bord.nb_faces_tot();
@@ -278,11 +278,11 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
       DoubleTab uprime(transporte);
       uprime-=ubar;
 
-      const int nb_faces = zone_VEF.nb_faces();
-      const DoubleVect& volumes_entrelaces=zone_VEF.volumes_entrelaces();
+      const int nb_faces = domaine_VEF.nb_faces();
+      const DoubleVect& volumes_entrelaces=domaine_VEF.volumes_entrelaces();
       int face2, k;
       double psc=0., pscprim=0., ec=0., ecprime=0.;
-      int deb=zone_VEF.premiere_face_int();
+      int deb=domaine_VEF.premiere_face_int();
       for(face2=deb; face2<nb_faces; face2++)
         for(k=0; k< dimension; k++)
           {
@@ -310,9 +310,9 @@ DoubleTab& Op_Conv_EF_VEF_P1NC::ajouter(const DoubleTab& transporte_2,
 
 
 
-      for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+      for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int num1 = le_bord.num_premiere_face();
           int nb_faces_b=le_bord.nb_faces();

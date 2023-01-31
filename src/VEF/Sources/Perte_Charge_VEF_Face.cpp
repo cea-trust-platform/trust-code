@@ -17,7 +17,7 @@
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 
 Implemente_base(Perte_Charge_VEF_Face,"Perte_Charge_VEF_Face",Source_base);
@@ -67,7 +67,7 @@ void Perte_Charge_VEF_Face::associer_pb(const Probleme_base& pb)
         {
           la_vitesse = ref_cast(Champ_P1NC,eqn.inconnue().valeur());
           le_fluide = ref_cast(Fluide_base,eqn.milieu());
-          associer_domaines(eqn.zone_dis(),eqn.zone_Cl_dis());
+          associer_domaines(eqn.domaine_dis(),eqn.domaine_Cl_dis());
           i = nb_eqn;
           ok = 1;
         }
@@ -81,12 +81,12 @@ void Perte_Charge_VEF_Face::associer_pb(const Probleme_base& pb)
     }
 }
 
-void Perte_Charge_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                              const Zone_Cl_dis& zone_Cl_dis)
+void Perte_Charge_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                              const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << " Perte_Charge_VEF_Face::associer_domaines " << finl ;
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 

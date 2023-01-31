@@ -18,9 +18,9 @@
 #define Op_Grad_PolyMAC_P0_Face_included
 
 #include <Operateur_Grad.h>
-#include <Ref_Zone_PolyMAC_P0.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC_P0.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC_P0.h>
 #include <cfloat>
 
@@ -40,7 +40,7 @@ class Op_Grad_PolyMAC_P0_Face : public Operateur_Grad_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void completer() override;
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
@@ -61,8 +61,8 @@ public:
 private:
 
   mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
-  REF(Zone_PolyMAC_P0) ref_zone;
-  REF(Zone_Cl_PolyMAC) ref_zcl;
+  REF(Domaine_PolyMAC_P0) ref_domaine;
+  REF(Domaine_Cl_PolyMAC) ref_zcl;
 };
 
 #endif

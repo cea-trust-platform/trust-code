@@ -15,7 +15,7 @@
 
 #include <Echange_contact_VDF_Plaque_Flux_Cte.h>
 #include <Probleme_base.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Milieu_base.h>
 #include <Champ_Uniforme.h>
 #include <Conduction.h>

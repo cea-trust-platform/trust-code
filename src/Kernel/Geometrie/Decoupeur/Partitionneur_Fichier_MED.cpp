@@ -14,7 +14,7 @@
 *****************************************************************************/
 #include <Partitionneur_Fichier_MED.h>
 #include <EFichier.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <medcoupling++.h>
 #include <Param.h>
 #ifdef MEDCOUPLING_
@@ -63,7 +63,7 @@ void Partitionneur_Fichier_MED::set_param(Param& param)
   param.ajouter("field",&fieldname_,Param::REQUIRED); // XD_ADD_P chaine field name of the integer field to load
 }
 
-void Partitionneur_Fichier_MED::associer_domaine(const Zone& domaine)
+void Partitionneur_Fichier_MED::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
 }

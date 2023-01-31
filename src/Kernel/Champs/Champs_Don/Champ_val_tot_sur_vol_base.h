@@ -18,14 +18,14 @@
 
 #include <Champ_Uniforme_Morceaux.h>
 
-class Zone_dis_base;
-class Zone_Cl_dis_base;
+class Domaine_dis_base;
+class Domaine_Cl_dis_base;
 
 /*! @brief classe Champ_val_tot_sur_vol_base Classe de base derivee de Champ_Uniforme_Morceaux qui represente les champs
  *
  *      dont on veut une evaluation exprimee par val_lue_loc/(Somme_vol_poro_loc)
  *
- *      val_lue_loc designe la valeur lue pour une localisation de l espace (sous zone ou domaine par defaut)
+ *      val_lue_loc designe la valeur lue pour une localisation de l espace (sous domaine ou domaine par defaut)
  *      cas VDF : Somme_vol_poro_loc exprime la sommation de vol_element*poro_volumique
  *                pour les elements contenus dans la localisation loc
  *      cas VEF : Somme_vol_poro_loc exprime la sommation de vol_entrelaces*poro_surface
@@ -33,11 +33,11 @@ class Zone_Cl_dis_base;
  *      Somme_vol_poro_loc est evalue par la methode eval_contrib_loc() des classes derivees
  *
  *  La syntaxe utilisateur a respecter est la suivante :
- *                Valeur_totale_sur_volume nom_domaine nb_comp { defaut val_lue_dom ...zonei val_lue_szi ... }
+ *                Valeur_totale_sur_volume nom_domaine nb_comp { defaut val_lue_dom ...domainei val_lue_szi ... }
  *                nom_domaine : nom du domaine de calcul
  *                  nb_comp     : nombre de composantes du champ
  *                  val_lue_dom : valeur lue pour le domaine par defaut
- *                  val_lue_szi : valeur lue pour la sous zone zonei
+ *                  val_lue_szi : valeur lue pour la sous domaine domainei
  *
  *
  *
@@ -50,8 +50,8 @@ class Champ_val_tot_sur_vol_base : public Champ_Uniforme_Morceaux
 
 public:
 
-  void evaluer(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis);
-  virtual DoubleVect& eval_contrib_loc(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis,
+  void evaluer(const Domaine_dis_base& zdis,const Domaine_Cl_dis_base& zcldis);
+  virtual DoubleVect& eval_contrib_loc(const Domaine_dis_base& zdis,const Domaine_Cl_dis_base& zcldis,
                                        DoubleVect& vol)=0;
 };
 

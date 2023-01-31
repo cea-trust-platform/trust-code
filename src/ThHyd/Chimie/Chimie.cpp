@@ -18,7 +18,7 @@
 #include <Motcle.h>
 #include <Param.h>
 #include <Parser_U.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Discretisation_base.h>
 #include <Convection_Diffusion_Concentration.h>
 #include <dlsinterf.h>
@@ -207,9 +207,9 @@ void  Chimie::mettre_a_jour(double temps)
           return;
         }
       int vef=0;
-      Zone_VF& zvf = ref_cast(Zone_VF,liste_C_[0].valeur().equation().zone_dis().valeur());
-      //if (sub_type(Zone_VEF, zvf))
-      if (zvf.que_suis_je().debute_par("Zone_VEF"))
+      Domaine_VF& zvf = ref_cast(Domaine_VF,liste_C_[0].valeur().equation().domaine_dis().valeur());
+      //if (sub_type(Domaine_VEF, zvf))
+      if (zvf.que_suis_je().debute_par("Domaine_VEF"))
         vef=1;
 
       const IntTab& face_voisins = zvf.face_voisins();

@@ -15,7 +15,7 @@
 
 
 #include <Champ_front_fonc_gradient_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <TRUSTTrav.h>
 
 Implemente_instanciable(Champ_front_fonc_gradient_VEF,"Champ_front_fonc_gradient_VEF",Champ_front_fonc_gradient);
@@ -43,11 +43,11 @@ void Champ_front_fonc_gradient_VEF::mettre_a_jour(double temps)
   Cerr << "Non encore code..." << finl;
   exit();
 
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,zone_dis());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,domaine_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   int premiere=le_bord.num_premiere_face();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   DoubleTab& tab=valeurs_au_temps(temps);
 
@@ -60,7 +60,7 @@ void Champ_front_fonc_gradient_VEF::mettre_a_jour(double temps)
       int elem1=face_voisins(i+premiere,0);
       if (elem1 == -1)
         elem1=face_voisins(i+premiere,1);
-      int signe = zone_VEF.oriente_normale(i+premiere,elem1);
+      int signe = domaine_VEF.oriente_normale(i+premiere,elem1);
 
       vecteur_tang(i,2) = 0.0;
 

@@ -20,7 +20,7 @@
 #include <Dirichlet_homogene.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
 #include <TRUSTTrav.h>
@@ -48,9 +48,9 @@ Entree& Op_Grad_VEF_P1B_Face::readOn(Entree& s)
   return s ;
 }
 
-const Zone_VEF_PreP1b& Op_Grad_VEF_P1B_Face::zone_Vef() const
+const Domaine_VEF_PreP1b& Op_Grad_VEF_P1B_Face::domaine_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
 }
 
 static int chercher_arete(int elem, int somi, int somj,
@@ -78,35 +78,35 @@ static int chercher_arete(int elem, int somi, int somj,
 }
 static void verifier(const Op_Grad_VEF_P1B_Face& op,
                      int& init,
-                     const Zone_VEF_PreP1b& zone_VEF,
+                     const Domaine_VEF_PreP1b& domaine_VEF,
                      const DoubleTab& pre,
                      DoubleTab& grad)
 
 {
   // Methode verifier ne marche que pour P0+P1 en 2D et P0+P1+Pa en 3D
-  if (Objet_U::dimension==2 && zone_VEF.get_alphaE()+zone_VEF.get_alphaS()!=2)
+  if (Objet_U::dimension==2 && domaine_VEF.get_alphaE()+domaine_VEF.get_alphaS()!=2)
     {
       Cerr << "Methode verifier de Op_Grad_VEF_P1B_Face non valable pour cette discretisation." << finl;
       Process::exit();
     }
-  if (Objet_U::dimension==3 && zone_VEF.get_alphaE()+zone_VEF.get_alphaS()+zone_VEF.get_alphaA()!=3)
+  if (Objet_U::dimension==3 && domaine_VEF.get_alphaE()+domaine_VEF.get_alphaS()+domaine_VEF.get_alphaA()!=3)
     {
       Cerr << "Methode verifier de Op_Grad_VEF_P1B_Face non valable pour cette discretisation." << finl;
       Process::exit();
     }
-  const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone;
-  int nb_elem_tot=zone.nb_elem_tot();
+  const Domaine& domaine = domaine_VEF.domaine();
+  const Domaine& dom=domaine;
+  int nb_elem_tot=domaine.nb_elem_tot();
   int nb_som_tot=dom.nb_som_tot();
-  int nb_elem=zone.nb_elem();
+  int nb_elem=domaine.nb_elem();
   init=1;
-  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const DoubleTab& xp = zone_VEF.xp();
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+  const DoubleTab& xp = domaine_VEF.xp();
   const DoubleTab& coord_sommets=dom.coord_sommets();
 
   // Verification de la pression arete
   DoubleTab tab(pre);
-  exemple_champ_non_homogene(zone_VEF, tab);
+  exemple_champ_non_homogene(domaine_VEF, tab);
 
   DoubleTab r(grad);
   r=0;
@@ -180,8 +180,8 @@ static void verifier(const Op_Grad_VEF_P1B_Face& op,
   r.ecrit(Cerr);
 
   /*
-    const IntTab& som_elem=zone.les_elems();
-    int nfe=zone.nb_faces_elem();
+    const IntTab& som_elem=domaine.les_elems();
+    int nfe=domaine.nb_faces_elem();
     p=0;
     int ii=nb_elem_tot+nb_som_tot/2;
     p(ii)=1;
@@ -212,15 +212,15 @@ static void verifier(const Op_Grad_VEF_P1B_Face& op,
 DoubleTab& Op_Grad_VEF_P1B_Face::
 modifier_grad_pour_Cl(DoubleTab& grad ) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
                                              le_dom_vef.valeur());
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const Zone_Cl_VEF& zone_Cl_VEF=la_zcl_vef.valeur();
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_bords =les_cl.size();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
         int num1 = le_bord.num_premiere_face();
@@ -278,25 +278,25 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
                                              le_dom_vef.valeur());
-  assert(zone_VEF.get_alphaE());
-  const Zone& zone = zone_VEF.zone();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
+  assert(domaine_VEF.get_alphaE());
+  const Domaine& domaine = domaine_VEF.domaine();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  int nfe=zone.nb_faces_elem();
-  int nb_elem_tot=zone.nb_elem_tot();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  int nfe=domaine.nb_faces_elem();
+  int nb_elem_tot=domaine.nb_elem_tot();
   // Si pas de support P1, on impose Neumann sur P0
-  if (zone_VEF.get_alphaS()==0)
+  if (domaine_VEF.get_alphaS()==0)
     {
-      const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-      const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+      const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+      const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
       int nb_bords =les_cl.size();
       for (int n_bord=0; n_bord<nb_bords; n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
             {
               const Neumann_sortie_libre& la_sortie_libre = ref_cast(Neumann_sortie_libre,la_cl.valeur());
@@ -344,20 +344,20 @@ DoubleTab& Op_Grad_VEF_P1B_Face::
 ajouter_som(const DoubleTab& pre,
             DoubleTab& grad) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
                                              le_dom_vef.valeur());
-  assert(zone_VEF.get_alphaS());
-  const Zone& zone = zone_VEF.zone();
-  const Zone& dom=zone;
-  const DoubleTab& face_normales = zone_VEF.face_normales();
+  assert(domaine_VEF.get_alphaS());
+  const Domaine& domaine = domaine_VEF.domaine();
+  const Domaine& dom=domaine;
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
-  const IntTab& som_elem=zone.les_elems();
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  int nfe=zone.nb_faces_elem();
-  int nps=zone_VEF.numero_premier_sommet();
-  int nb_elem_tot=zone.nb_elem_tot();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
+  const IntTab& som_elem=domaine.les_elems();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  int nfe=domaine.nb_faces_elem();
+  int nps=domaine_VEF.numero_premier_sommet();
+  int nb_elem_tot=domaine.nb_elem_tot();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
   if (som_.size_array()==0)
     {
@@ -366,7 +366,7 @@ ajouter_som(const DoubleTab& pre,
       coeff_som_.resize(nb_elem_tot);
       for(int el=0; el<nb_elem_tot; el++)
         {
-          coeff_som_(el) = calculer_coef_som(el, zone_Cl_VEF, zone_VEF);
+          coeff_som_(el) = calculer_coef_som(el, domaine_Cl_VEF, domaine_VEF);
           for(int indice=0; indice<nfe; indice++)
             som_(el,indice) = nps+dom.get_renum_som_perio(som_elem(el,indice));
         }
@@ -407,12 +407,12 @@ ajouter_som(const DoubleTab& pre,
     }
   end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
 
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_sommets = zone_VEF.face_sommets();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_sommets = domaine_VEF.face_sommets();
   int nb_bords = les_cl.size();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if(sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -439,24 +439,24 @@ DoubleTab& Op_Grad_VEF_P1B_Face::
 ajouter_aretes(const DoubleTab& pre,
                DoubleTab& grad) const
 {
-  const Zone_VEF_PreP1b& zone_VEF =
-    ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
-  assert(zone_VEF.get_alphaA());
-  const Zone& zone = zone_VEF.zone();
-  //const Zone& dom=zone;
-  const DoubleTab& face_normales = zone_VEF.face_normales();
+  const Domaine_VEF_PreP1b& domaine_VEF =
+    ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  assert(domaine_VEF.get_alphaA());
+  const Domaine& domaine = domaine_VEF.domaine();
+  //const Domaine& dom=domaine;
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
-  const IntTab& som_elem=zone.les_elems();
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  int nfe=zone.nb_faces_elem();
-  int nb_elem_tot=zone.nb_elem_tot();
-  //  int nps=zone_VEF.numero_premier_sommet();
-  int npa=zone_VEF.numero_premiere_arete();
+  const IntTab& som_elem=domaine.les_elems();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const ArrOfInt& renum_arete_perio=domaine_VEF.get_renum_arete_perio();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  int nfe=domaine.nb_faces_elem();
+  int nb_elem_tot=domaine.nb_elem_tot();
+  //  int nps=domaine_VEF.numero_premier_sommet();
+  int npa=domaine_VEF.numero_premiere_arete();
   int indice;
   ArrOfDouble sigma(dimension);
   for(int elem=0; elem<nb_elem_tot; elem++)
@@ -525,13 +525,13 @@ ajouter_aretes(const DoubleTab& pre,
             }
         }
     }
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_sommets = zone_VEF.face_sommets();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_sommets = domaine_VEF.face_sommets();
   int nb_bords =les_cl.size();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
         int num1 = le_bord.num_premiere_face();
@@ -562,14 +562,14 @@ ajouter_aretes(const DoubleTab& pre,
   return grad;
 }
 
-double Op_Grad_VEF_P1B_Face::calculer_coef_som(int elem,  const Zone_Cl_VEF& zcl,
-                                               const Zone_VEF_PreP1b& zone_VEF)
+double Op_Grad_VEF_P1B_Face::calculer_coef_som(int elem,  const Domaine_Cl_VEF& zcl,
+                                               const Domaine_VEF_PreP1b& domaine_VEF)
 {
   double coef_std=1./(Objet_U::dimension*(Objet_U::dimension+1));
-  if (zone_VEF.get_modif_div_face_dirichlet()==0)
+  if (domaine_VEF.get_modif_div_face_dirichlet()==0)
     return coef_std;
   int type_elem=0;
-  int rang_elem=zone_VEF.rang_elem_non_std()(elem);
+  int rang_elem=domaine_VEF.rang_elem_non_std()(elem);
   if (rang_elem!=-1)
     type_elem=zcl.type_elem_Cl(rang_elem);
   double coef;
@@ -647,14 +647,14 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter(const DoubleTab& pre,
   // on va faire += sur l'espace virtuel, mais sans utiliser les valeurs
   assert_invalide_items_non_calcules(grad);
   //Debog::verifier("Op_Grad_VEF_P1B_Face::ajouter pre", pre);
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
                                              le_dom_vef.valeur());
   static int init=1;
   if(!init)
-    verifier(*this, init, zone_VEF, pre, grad);
-  if (zone_VEF.get_alphaE()) ajouter_elem(pre, grad);
-  if (zone_VEF.get_alphaS()) ajouter_som(pre, grad);
-  if (zone_VEF.get_alphaA()) ajouter_aretes(pre, grad);
+    verifier(*this, init, domaine_VEF, pre, grad);
+  if (domaine_VEF.get_alphaE()) ajouter_elem(pre, grad);
+  if (domaine_VEF.get_alphaS()) ajouter_som(pre, grad);
+  if (domaine_VEF.get_alphaA()) ajouter_aretes(pre, grad);
   modifier_grad_pour_Cl(grad);
   //calculer_flux_bords();
   //Optimisation car pas necessaire:
@@ -665,29 +665,29 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter(const DoubleTab& pre,
 
 void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 {
-  const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  if (flux_bords_.size_array()==0) flux_bords_.resize(zone_VEF.nb_faces_bord(),dimension);
+  const Domaine_VEF_PreP1b& domaine_VEF = domaine_Vef();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  if (flux_bords_.size_array()==0) flux_bords_.resize(domaine_VEF.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
 
-  int nse=zone_VEF.zone().nb_som_elem();
-  int nps=zone_VEF.numero_premier_sommet();
-  int npa=zone_VEF.numero_premiere_arete();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const IntTab& som_elem=le_dom_vef->zone().les_elems();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
+  int nse=domaine_VEF.domaine().nb_som_elem();
+  int nps=domaine_VEF.numero_premier_sommet();
+  int npa=domaine_VEF.numero_premiere_arete();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const IntTab& som_elem=le_dom_vef->domaine().les_elems();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
   const Champ_P1_isoP1Bulle& la_pression_P1B = ref_cast(Champ_P1_isoP1Bulle,eqn_hydr.pression_pa().valeur());
   // Si on filtre:
-  la_pression_P1B.filtrage(zone_VEF,la_pression_P1B);
+  la_pression_P1B.filtrage(domaine_VEF,la_pression_P1B);
   const DoubleVect& pression_P1B = la_pression_P1B.champ_filtre();
 
   double coeff_P1 = 1./dimension;
   double coeff_Pa = 1./dimension;
-  int nb_bord = zone_VEF.nb_front_Cl();
+  int nb_bord = domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
@@ -695,22 +695,22 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
         {
           int voisin = 0;
           int elem = face_voisins(face,voisin);
-          if (zone_VEF.get_num_fac_loc(face, voisin)==-1)
+          if (domaine_VEF.get_num_fac_loc(face, voisin)==-1)
             {
               voisin = 1;
               elem = face_voisins(face,voisin);
             }
-          int signe=zone_VEF.oriente_normale(face,elem);
+          int signe=domaine_VEF.oriente_normale(face,elem);
           int som_opp = le_dom_vef->get_num_fac_loc(face, voisin);
           som_opp = som_elem(elem, som_opp);
           double pres_tot = 0. ;
 
           // Contribution de la pression P0
-          if (zone_VEF.get_alphaE())
+          if (domaine_VEF.get_alphaE())
             pres_tot += pression_P1B(elem);
 
           // Contribution de la pression P1
-          if (zone_VEF.get_alphaS())
+          if (domaine_VEF.get_alphaS())
             {
               double pres_som = 0.;
               for(int som=0; som<nse; som++)
@@ -724,11 +724,11 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 
           // Contribution de la pression Pa
           // GF descativation car bilan incorret
-          if (zone_VEF.get_alphaA()*0!=0)
+          if (domaine_VEF.get_alphaA()*0!=0)
             {
               double pres_arete = 0.;
-              const IntTab& elem_aretes=le_dom_vef->zone().elem_aretes();
-              const IntTab& aretes_som=le_dom_vef->zone().aretes_som();
+              const IntTab& elem_aretes=le_dom_vef->domaine().elem_aretes();
+              const IntTab& aretes_som=le_dom_vef->domaine().aretes_som();
               for(int arete=0; arete<6; arete++)
                 {
                   int arete_glob = elem_aretes(elem, arete);
@@ -747,25 +747,25 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
 {
-  const int impr_mom=le_dom_vef->zone().moments_a_imprimer();
-  const int impr_sum=(le_dom_vef->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(le_dom_vef->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=le_dom_vef->domaine().moments_a_imprimer();
+  const int impr_sum=(le_dom_vef->domaine().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_vef->domaine().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
-  const int nb_faces = zone_VEF.nb_faces_tot();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF_PreP1b& domaine_VEF = domaine_Vef();
+  const int nb_faces = domaine_VEF.nb_faces_tot();
   DoubleTab xgr(nb_faces,dimension);
   xgr=0.;
   //DoubleVect moment(dimension);
   if (impr_mom)
     {
-      const DoubleTab& xgrav = zone_VEF.xv();
-      const ArrOfDouble& c_grav=le_dom_vef->zone().cg_moments();
+      const DoubleTab& xgrav = domaine_VEF.xv();
+      const ArrOfDouble& c_grav=le_dom_vef->domaine().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
-  DoubleTrav tab_flux_bords(3,zone_VEF.nb_front_Cl(),dimension);
+  DoubleTrav tab_flux_bords(3,domaine_VEF.nb_front_Cl(),dimension);
   tab_flux_bords=0.;
   /*
     fluxx_s       ->   flux_bords2(0,num_cl,0)
@@ -778,12 +778,12 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
     moment(1)     ->   flux_bords2(2,num_cl,1)
     moment(2)     ->   flux_bords2(2,num_cl,2)
   */
-  int nb_bord = zone_VEF.nb_front_Cl();
+  int nb_bord = domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int impr_boundary = (zone_VEF.zone().bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
+      int impr_boundary = (domaine_VEF.domaine().bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
       for (int face=ndeb; face<nfin; face++)
@@ -882,18 +882,18 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
       if (impr_mom) Flux_grad_moment << finl;
     }
 
-  const LIST(Nom)& Liste_bords_a_imprimer = zone_VEF.zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = domaine_VEF.domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_grad_face;
       ouvrir_fichier_partage(Flux_grad_face,"",impr_bord);
       for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
-          if (zone_VEF.zone().bords_a_imprimer().contient(le_bord.le_nom()))
+          if (domaine_VEF.domaine().bords_a_imprimer().contient(le_bord.le_nom()))
             {
               if (je_suis_maitre())
                 {
@@ -903,8 +903,8 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
                 }
               for (int face=ndeb; face<nfin; face++)
                 {
-                  Flux_grad_face << "# Face a x= " << zone_VEF.xv(face,0) << " y= " << zone_VEF.xv(face,1);
-                  if (dimension==3) Flux_grad_face << " z= " << zone_VEF.xv(face,2);
+                  Flux_grad_face << "# Face a x= " << domaine_VEF.xv(face,0) << " y= " << domaine_VEF.xv(face,1);
+                  if (dimension==3) Flux_grad_face << " z= " << domaine_VEF.xv(face,2);
                   Flux_grad_face << " : Fx= " << flux_bords_(face,0) << " Fy= " << flux_bords_(face,1);
                   if (dimension==3) Flux_grad_face << " Fz= " << flux_bords_(face,2);
                   Flux_grad_face << finl;

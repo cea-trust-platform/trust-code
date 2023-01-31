@@ -15,8 +15,8 @@
 
 #include <Traitement_particulier_NS_Pression.h>
 // #include <Navier_Stokes_std.h>
-// #include <Zone.h>
-// #include <Zone.h>
+// #include <Domaine.h>
+// #include <Domaine.h>
 
 
 Implemente_base(Traitement_particulier_NS_Pression,"Traitement_particulier_NS_Pression",Traitement_particulier_NS_base);

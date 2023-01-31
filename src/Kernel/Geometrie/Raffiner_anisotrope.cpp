@@ -51,26 +51,26 @@ Entree& Raffiner_anisotrope::interpreter_(Entree& is)
   return is;
 }
 
-void Raffiner_anisotrope::raffiner_(Zone& zone)
+void Raffiner_anisotrope::raffiner_(Domaine& domaine)
 {
-  if  ((zone.type_elem()->que_suis_je() == "Triangle")
-       ||(zone.type_elem()->que_suis_je() == "Tetraedre"))
+  if  ((domaine.type_elem()->que_suis_je() == "Triangle")
+       ||(domaine.type_elem()->que_suis_je() == "Tetraedre"))
     {
-      Zone& dom=zone;
-      IntTab& les_elems=zone.les_elems();
+      Domaine& dom=domaine;
+      IntTab& les_elems=domaine.les_elems();
       int oldsz=les_elems.dimension(0);
       DoubleTab& sommets=dom.les_sommets();
       int cpt=sommets.dimension(0);
       {
         DoubleTab sommets_ajoutes(oldsz, dimension);
-        zone.type_elem()->calculer_centres_gravite(sommets_ajoutes);
+        domaine.type_elem()->calculer_centres_gravite(sommets_ajoutes);
         sommets.resize(cpt+oldsz, dimension);
         for(int i=0; i<oldsz; i++)
           for(int j=0; j<dimension; j++)
             sommets(cpt+i,j)=sommets_ajoutes(i,j);
       }
 
-      zone.typer(zone.type_elem()->que_suis_je());
+      domaine.typer(domaine.type_elem()->que_suis_je());
       IntTab new_elems((dimension+1)*oldsz, dimension+1);
 
       if(dimension==2)
@@ -85,13 +85,13 @@ void Raffiner_anisotrope::raffiner_(Zone& zone)
               new_elems(i+oldsz, 1) = les_elems(i,0);
               new_elems(i+oldsz, 2) = les_elems(i,2);
 
-              mettre_a_jour_sous_zone(zone,i,i+oldsz,1);
+              mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
 
               new_elems(i+2*oldsz, 0) = i+cpt;
               new_elems(i+2*oldsz, 1) = les_elems(i,1);
               new_elems(i+2*oldsz, 2) = les_elems(i,2);
 
-              mettre_a_jour_sous_zone(zone,i,i+2*oldsz,1);
+              mettre_a_jour_sous_domaine(domaine,i,i+2*oldsz,1);
             }
         }
       else
@@ -108,21 +108,21 @@ void Raffiner_anisotrope::raffiner_(Zone& zone)
               new_elems(i+oldsz, 2) = les_elems(i,1);
               new_elems(i+oldsz, 3) = les_elems(i,3);
 
-              mettre_a_jour_sous_zone(zone,i,i+oldsz,1);
+              mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
 
               new_elems(i+2*oldsz, 0) = i+cpt;
               new_elems(i+2*oldsz, 1) = les_elems(i,0);
               new_elems(i+2*oldsz, 2) = les_elems(i,2);
               new_elems(i+2*oldsz, 3) = les_elems(i,3);
 
-              mettre_a_jour_sous_zone(zone,i,i+2*oldsz,1);
+              mettre_a_jour_sous_domaine(domaine,i,i+2*oldsz,1);
 
               new_elems(i+3*oldsz, 0) = i+cpt;
               new_elems(i+3*oldsz, 1) = les_elems(i,1);
               new_elems(i+3*oldsz, 2) = les_elems(i,2);
               new_elems(i+3*oldsz, 3) = les_elems(i,3);
 
-              mettre_a_jour_sous_zone(zone,i,i+3*oldsz,1);
+              mettre_a_jour_sous_domaine(domaine,i,i+3*oldsz,1);
             }
         }
 
@@ -133,15 +133,15 @@ void Raffiner_anisotrope::raffiner_(Zone& zone)
         Cerr << "We have split the triangles ..." << finl;
       else
         Cerr << "We have split the tetrahedra ..." << finl;
-      zone.invalide_octree();
+      domaine.invalide_octree();
 
       Cerr<<"END of Raffiner_anisotrope..."<<finl;
-      Cerr<<"  1 NbElem="<<zone.les_elems().dimension(0)<<"  NbNod="<<zone.nb_som()<<finl;
+      Cerr<<"  1 NbElem="<<domaine.les_elems().dimension(0)<<"  NbNod="<<domaine.nb_som()<<finl;
     }
   else
     {
       Cerr << "We do not yet know how to Raffiner_anisotrope the "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+           << domaine.type_elem()->que_suis_je() <<"s"<<finl;
       exit();
     }
 }

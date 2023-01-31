@@ -20,7 +20,7 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <EChaine.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <cfloat>
 #include <cmath>
 
@@ -49,7 +49,7 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
 {
   Cerr << "Medium discretization." << finl;
 
-  const Zone_dis_base& zone_dis = pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
   const double temps = pb.schema_temps().temps_courant();
 
   /* masse volumique, energie interne, enthalpie : champ_inc */
@@ -59,22 +59,22 @@ void Fluide_reel_base::discretiser(const Probleme_base& pb, const Discretisation
     {
       EChaine str(Nom("Champ_Uniforme 1 ") + Nom(_rho_(T_ref_, P_ref_) /* point-to-point */));
       str >> rho;
-      dis.nommer_completer_champ_physique(zone_dis, "masse_volumique", "kg/m^3", rho.valeur(), pb);
+      dis.nommer_completer_champ_physique(domaine_dis, "masse_volumique", "kg/m^3", rho.valeur(), pb);
     }
   else
-    dis.discretiser_champ("champ_elem", zone_dis, "masse_volumique", "kg/m^3", 1, nc, temps, rho_inc), rho = rho_inc;
+    dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique", "kg/m^3", 1, nc, temps, rho_inc), rho = rho_inc;
 
-  dis.discretiser_champ("champ_elem", zone_dis, "energie_interne", "J/kg", 1, nc, temps, ei_inc);
-  dis.discretiser_champ("champ_elem", zone_dis, "enthalpie", "J/kg", 1, nc, temps, h_inc);
+  dis.discretiser_champ("champ_elem", domaine_dis, "energie_interne", "J/kg", 1, nc, temps, ei_inc);
+  dis.discretiser_champ("champ_elem", domaine_dis, "enthalpie", "J/kg", 1, nc, temps, h_inc);
   e_int = ei_inc, h = h_inc;
 
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_dynamique", "kg/m/s", 1, temps, mu);
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique", "m2/s", 1, temps, nu);
-  dis.discretiser_champ("champ_elem", zone_dis, "diffusivite", "m2/s", 1, temps, alpha);
-  dis.discretiser_champ("champ_elem", zone_dis, "conductivite", "W/m/K", 1, temps, lambda);
-  dis.discretiser_champ("champ_elem", zone_dis, "capacite_calorifique", "J/kg/K", 1, temps, Cp);
-  dis.discretiser_champ("champ_elem", zone_dis, "dilatabilite", "K-1", 1, temps, beta_th);
-  dis.discretiser_champ("temperature", zone_dis, "rho_cp_comme_T", "  J/m^3/K", 1, temps, rho_cp_comme_T_);
+  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_dynamique", "kg/m/s", 1, temps, mu);
+  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_cinematique", "m2/s", 1, temps, nu);
+  dis.discretiser_champ("champ_elem", domaine_dis, "diffusivite", "m2/s", 1, temps, alpha);
+  dis.discretiser_champ("champ_elem", domaine_dis, "conductivite", "W/m/K", 1, temps, lambda);
+  dis.discretiser_champ("champ_elem", domaine_dis, "capacite_calorifique", "J/kg/K", 1, temps, Cp);
+  dis.discretiser_champ("champ_elem", domaine_dis, "dilatabilite", "K-1", 1, temps, beta_th);
+  dis.discretiser_champ("temperature", domaine_dis, "rho_cp_comme_T", "  J/m^3/K", 1, temps, rho_cp_comme_T_);
   for (auto &&pch : { &rho, &e_int, &h, (Champ*) &mu, (Champ*) &nu, (Champ*) &alpha, (Champ*) &lambda, (Champ*) &Cp, (Champ*) &beta_th, (Champ*) &rho_cp_comme_T_ })
     champs_compris_.ajoute_champ(pch->valeur());
 

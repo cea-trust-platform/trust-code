@@ -23,10 +23,10 @@
 #include <Interface_blocs.h>
 #include <Solveur_Masse.h>
 #include <Matrice_Morse.h>
-#include <Ref_Zone_dis.h>
+#include <Ref_Domaine_dis.h>
 #include <Champs_Fonc.h>
 #include <Ref_Objet_U.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <TRUSTList.h>
 #include <TRUSTTrav.h>
 #include <TRUSTTab_parts.h>
@@ -135,14 +135,14 @@ public :
   Schema_Temps_base& schema_temps();
   const Schema_Temps_base& schema_temps() const;
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
-  virtual void associer_domaine_dis(const Zone_dis&);
+  virtual void associer_domaine_dis(const Domaine_dis&);
 
   const Discretisation_base& discretisation() const;
 
-  virtual inline Zone_Cl_dis& zone_Cl_dis();
-  virtual inline const Zone_Cl_dis& zone_Cl_dis() const;
-  Zone_dis& zone_dis();
-  const Zone_dis& zone_dis() const;
+  virtual inline Domaine_Cl_dis& domaine_Cl_dis();
+  virtual inline const Domaine_Cl_dis& domaine_Cl_dis() const;
+  Domaine_dis& domaine_dis();
+  const Domaine_dis& domaine_dis() const;
   //
   inline const Nom& le_nom() const override;
   inline DoubleVect& get_residu()
@@ -297,8 +297,8 @@ protected :
   Solveur_Masse solveur_masse;
   Sources les_sources;
   REF(Schema_Temps_base) le_schema_en_temps;
-  REF(Zone_dis) le_dom_dis;
-  Zone_Cl_dis le_dom_Cl_dis;
+  REF(Domaine_dis) le_dom_dis;
+  Domaine_Cl_dis le_dom_Cl_dis;
   REF(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
@@ -375,22 +375,22 @@ inline const Nom& Equation_base::le_nom() const
 }
 
 
-/*! @brief Renvoie la zone des conditions aux limite discretisee associee a l'equation
+/*! @brief Renvoie la domaine des conditions aux limite discretisee associee a l'equation
  *
- * @return (Zone_Cl_dis&) Zone de condition aux limites discretisee
+ * @return (Domaine_Cl_dis&) Domaine de condition aux limites discretisee
  */
-inline Zone_Cl_dis& Equation_base::zone_Cl_dis()
+inline Domaine_Cl_dis& Equation_base::domaine_Cl_dis()
 {
   return le_dom_Cl_dis;
 }
 
-/*! @brief Renvoie la zone des conditions aux limite discretisee associee a l'equation
+/*! @brief Renvoie la domaine des conditions aux limite discretisee associee a l'equation
  *
  *     (version const)
  *
- * @return (Zone_Cl_dis&) Zone de condition aux limites discretisee
+ * @return (Domaine_Cl_dis&) Domaine de condition aux limites discretisee
  */
-inline const Zone_Cl_dis& Equation_base::zone_Cl_dis() const
+inline const Domaine_Cl_dis& Equation_base::domaine_Cl_dis() const
 {
   return le_dom_Cl_dis;
 }

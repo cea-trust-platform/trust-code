@@ -33,18 +33,18 @@ protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFF_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>::type
-  associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
+  associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
-    associer_<EVAL_TYPE>(zone_dis,zone_cl_dis).associer_inconnue(inco);
+    associer_<EVAL_TYPE>(domaine_dis,domaine_cl_dis).associer_inconnue(inco);
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>::type
-  associer_impl(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_diffuse)
+  associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_diffuse.valeur());
-    associer_<EVAL_TYPE>(zone_dis,zone_cl_dis).associer_inconnue(inco);
+    associer_<EVAL_TYPE>(domaine_dis,domaine_cl_dis).associer_inconnue(inco);
   }
 
   template <typename EVAL_TYPE>
@@ -138,10 +138,10 @@ private:
   inline Iterateur_VDF& iter_() { return static_cast<OP_TYPE *>(this)->get_iter(); }
 
   template <typename EVAL_TYPE>
-  inline EVAL_TYPE& associer_(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+  inline EVAL_TYPE& associer_(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
   {
-    const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-    const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
+    const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+    const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
     iter_()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this));
     EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
     eval_diff.associer_domaines(zvdf,zclvdf);

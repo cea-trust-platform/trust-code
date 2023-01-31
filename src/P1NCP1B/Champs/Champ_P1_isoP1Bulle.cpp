@@ -15,7 +15,7 @@
 
 #include <Champ_P1_isoP1Bulle.h>
 #include <TRUSTTab_parts.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Debog.h>
 
 Implemente_instanciable(Champ_P1_isoP1Bulle,"Champ_P1_isoP1Bulle",Champ_Inc_base);
@@ -32,16 +32,16 @@ int Champ_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
 {
   // On ne doit pas specifier nb_ddl !
   assert(n < 0);
-  const Zone_VEF_PreP1b& zvef = zone_vef();
+  const Domaine_VEF_PreP1b& zvef = domaine_vef();
   const MD_Vector& md = zvef.md_vector_p1b();
   creer_tableau_distribue(md);
   return n;
 }
 
-double Champ_P1_isoP1Bulle::norme_L2(const Zone& dom) const
+double Champ_P1_isoP1Bulle::norme_L2(const Domaine& dom) const
 {
-  const Zone_VEF_PreP1b& zvef = zone_vef();
-  const IntTab& som_elem = zvef.zone().les_elems();
+  const Domaine_VEF_PreP1b& zvef = domaine_vef();
+  const IntTab& som_elem = zvef.domaine().les_elems();
   const DoubleVect& volumes = zvef.volumes();
 
   int prs = zvef.numero_premier_sommet();
@@ -103,7 +103,7 @@ double Champ_P1_isoP1Bulle::norme_L2(const Zone& dom) const
 Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
 {
   DoubleTab noeuds;
-  const Zone_VEF_PreP1b& zvef = zone_vef();
+  const Domaine_VEF_PreP1b& zvef = domaine_vef();
 
   remplir_coord_noeuds(noeuds);
 
@@ -115,9 +115,9 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
       DoubleTab& Pk = parties_P[0];  // partie elements
       DoubleTab& Ps = parties_P[1];  // partie sommets
 
-      //const Zone_VEF_PreP1b& zvef=zone_vef();
-      const Zone& le_dom = zvef.zone();
-      const Zone& dom = le_dom;
+      //const Domaine_VEF_PreP1b& zvef=domaine_vef();
+      const Domaine& le_dom = zvef.domaine();
+      const Domaine& dom = le_dom;
       const DoubleTab& coord_sommets = dom.coord_sommets();
       const DoubleTab& xg = zvef.xp();
       ch.valeur_aux(xg, Pk);
@@ -139,7 +139,7 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
       /*
        // on regarde si Ps vaut 0 on recupere la p aux elems
        // bidouille ....
-       const DoubleTab& coord=zvef.zone().coord_sommets();
+       const DoubleTab& coord=zvef.domaine().coord_sommets();
        for (int s=0;s<nb_som;s++)
        if (Ps(s)==0)
        {
@@ -149,13 +149,13 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
        double z=0;
        if (dimension==3)
        z=coord(s,2);
-       int elem=zvef.zone().chercher_elements(x,y,z);
+       int elem=zvef.domaine().chercher_elements(x,y,z);
        Ps(s)=valeurs()(elem);
        }
        */
 
       // on retire d'abord la moyenne des sommets a chaque element
-      const IntTab& som_elem = zvef.zone().les_elems();
+      const IntTab& som_elem = zvef.domaine().les_elems();
 
       int prs = zvef.numero_premier_sommet();
       int i, k;
@@ -225,10 +225,10 @@ DoubleTab& Champ_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x
 double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const
 {
   const DoubleTab& val = valeurs();
-  const Zone_VEF_PreP1b& zone_VEF = zone_vef();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const IntTab& som_elem = zone_VEF.zone().les_elems();
-  int nps = zone_VEF.numero_premier_sommet();
+  const Domaine_VEF_PreP1b& domaine_VEF = domaine_vef();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const IntTab& som_elem = domaine_VEF.domaine().les_elems();
+  int nps = domaine_VEF.numero_premier_sommet();
 
   int elem = face_voisins(face, 0);
   if (face_voisins(face, 1) != -1)
@@ -238,7 +238,7 @@ double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const
       Process::exit();
     }
 
-  int som_opp = zone_VEF.get_num_fac_loc(face, 0);
+  int som_opp = domaine_VEF.get_num_fac_loc(face, 0);
   double la_val_bord = 0;
   for (int i = 0; i < (dimension + 1); i++)
     if (i != som_opp)
@@ -249,7 +249,7 @@ double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const
   return la_val_bord;
 }
 
-void Champ_P1_isoP1Bulle::completer(const Zone_Cl_dis_base& zcl)
+void Champ_P1_isoP1Bulle::completer(const Domaine_Cl_dis_base& zcl)
 {
   Champ_P1iP1B_implementation::completer(zcl);
 }

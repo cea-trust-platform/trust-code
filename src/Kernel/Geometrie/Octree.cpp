@@ -19,7 +19,7 @@
 
 #include <TRUSTVects.h>
 #include <RTabInt.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Octree.h>
 
 Implemente_instanciable_sans_constructeur(OctreeRoot,"OctreeRoot",Objet_U);
@@ -308,17 +308,17 @@ int Octree::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x, doub
 }
 
 
-/*! @brief Renvoie une reference sur la zone associe a l'octree.
+/*! @brief Renvoie une reference sur la domaine associe a l'octree.
  *
- * @return (Zone&) reference sur la zone associe a l'octree
+ * @return (Domaine&) reference sur la domaine associe a l'octree
  */
-const Zone& Octree::zone() const
+const Domaine& Octree::domaine() const
 {
-  return pere->zone();
+  return pere->domaine();
 }
 double Octree::get_epsilon() const
 {
-  return zone().epsilon();
+  return domaine().epsilon();
 }
 void Octree::ranger_elem_1D(ArrOfInt& ok, int elem, int i, int nb_som_elem, const DoubleTab& coord,
                             const IntTab& elems, ArrOfInt& compteur,
@@ -584,8 +584,8 @@ void Octree::construire(int nb_octrees, const ArrOfInt& Tab,
   else
     {
       //else
-      const Zone& z=zone();
-      const Zone& dom=z;
+      const Domaine& z=domaine();
+      const Domaine& dom=z;
       IntVects SousTab(nb_octrees);
       ArrOfInt compteur(nb_octrees);
       int nb_som_elem=z.nb_som_elem();
@@ -687,21 +687,21 @@ int Octree::taille() const
 }
 
 
-/*! @brief Renvoie la zone associe a l'octree.
+/*! @brief Renvoie la domaine associe a l'octree.
  *
- * @return (Zone&) la zone associe a l'octree
+ * @return (Domaine&) la domaine associe a l'octree
  */
-const Zone& OctreeRoot::zone() const
+const Domaine& OctreeRoot::domaine() const
 {
   return le_dom.valeur();
 }
 
 
-/*! @brief Associe une zone a l'octree
+/*! @brief Associe une domaine a l'octree
  *
- * @param (Zone& z) la zone a associer a l'octree
+ * @param (Domaine& z) la domaine a associer a l'octree
  */
-void OctreeRoot::associer_Zone(const Zone& z)
+void OctreeRoot::associer_Domaine(const Domaine& z)
 {
   le_dom=z;
 }
@@ -712,8 +712,8 @@ void OctreeRoot::construire(int reel_prec)
   valid_=1;
   reel_=reel_prec;
   pere=0;
-  const Zone& z=zone();
-  const Zone& dom=z;
+  const Domaine& z=domaine();
+  const Domaine& dom=z;
 
   {
     // Calcul du min et du max des coordonnees dans chaque direction
@@ -788,8 +788,8 @@ int OctreeRoot::rang_sommet(double x, double y, double z) const
   int elem=rang_elem(x, y, z);
   if (elem != -1)
     {
-      const Zone& zo=zone();
-      const Zone& dom=zo;
+      const Domaine& zo=domaine();
+      const Domaine& dom=zo;
       int nb_som_elem=zo.nb_som_elem();
       double epsilon=get_epsilon();
       for(int i=0; i<nb_som_elem; i++)
@@ -847,14 +847,14 @@ int OctreeRoot::rang_arete(double x, double y, double z) const
 {
   // Recherche l'element contenant le point x,y,z:
   int elem=rang_elem(x, y, z);
-  const IntTab& elem_aretes=zone().elem_aretes();
+  const IntTab& elem_aretes=domaine().elem_aretes();
   if (elem>=elem_aretes.dimension(0)) return -2;
   if (elem != -1 && elem<elem_aretes.dimension(0))
     {
       // Boucle sur les aretes de l'element
       double epsilon=get_epsilon();
-      const IntTab& aretes_som=zone().aretes_som();
-      const DoubleTab& coord=zone().coord_sommets();
+      const IntTab& aretes_som=domaine().aretes_som();
+      const DoubleTab& coord=domaine().coord_sommets();
       int nb_aretes_elem=elem_aretes.dimension(1);
       for(int i=0; i<nb_aretes_elem; i++)
         {
@@ -1107,14 +1107,14 @@ void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, doubl
 }
 
 
-/*! @brief Renvoie vrai si la zone associee a l'octree est non nulle.
+/*! @brief Renvoie vrai si la domaine associee a l'octree est non nulle.
  *
  * @return (int) code de retour propage
  */
 int OctreeRoot::construit() const
 {
   if((le_dom.non_nul()==0)||(valid_!=1))
-    // L'Octree n'est pas construit ou la zone est nulle
+    // L'Octree n'est pas construit ou la domaine est nulle
     return 0;
   else
     return 1;
@@ -1143,7 +1143,7 @@ int OctreeFloor::rang_elem_loc(const OctreeLoc& loc, double x, double y, double 
 {
   int sz=num_elem.size_array();
   int element=-1;
-  const Elem_geom& elemgeom=zone().type_elem();
+  const Elem_geom& elemgeom=domaine().type_elem();
   pos[0]=x;
   if(Objet_U::dimension>1) pos[1]=y;
   if(Objet_U::dimension>2) pos[2]=z;
@@ -1176,7 +1176,7 @@ int OctreeFloor::rang_elem_depuis_loc(const OctreeLoc& loc, int prems, double x,
 {
   int sz=num_elem.size_array();
   int element=-1;
-  const Elem_geom& elemgeom=zone().type_elem();
+  const Elem_geom& elemgeom=domaine().type_elem();
   pos[0]=x;
   if(Objet_U::dimension>1) pos[1]=y;
   if(Objet_U::dimension>2) pos[2]=z;

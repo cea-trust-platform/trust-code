@@ -15,7 +15,7 @@
 
 #include <Assembleur_P_VEFPreP1B.h>
 #include <Matrice_Bloc_Sym.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Dirichlet_entree_fluide_leaves.h>
@@ -89,7 +89,7 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
 {
   mon_equation=eqn;
   Assembleur_P_VEF::completer(eqn);
-  if (zone_Vef().get_P1Bulle())
+  if (domaine_Vef().get_P1Bulle())
     {
       // Pour changer de base et retrouver le P1Bulle
       alpha=1./Objet_U::dimension;
@@ -98,75 +98,75 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
   la_matrice_de_travail_.typer("Matrice_Bloc_Sym");
 }
 
-const Zone_VEF_PreP1b& Assembleur_P_VEFPreP1B::zone_Vef() const
+const Domaine_VEF_PreP1b& Assembleur_P_VEFPreP1B::domaine_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, le_dom_VEF.valeur());
+  return ref_cast(Domaine_VEF_PreP1b, le_dom_VEF.valeur());
 }
 
-extern void assemblerP0P0(const Zone_dis_base& z,
-                          const Zone_Cl_dis_base& zcl,
+extern void assemblerP0P0(const Domaine_dis_base& z,
+                          const Domaine_Cl_dis_base& zcl,
                           Matrice& matrice,
                           const DoubleTab& inverse_quantitee_entrelacee);
 
-extern void assemblerP1P1(const Zone_dis_base& z,
-                          const Zone_Cl_dis_base& zcl,
+extern void assemblerP1P1(const Domaine_dis_base& z,
+                          const Domaine_Cl_dis_base& zcl,
                           Matrice& matrice,
                           const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som);
 
-extern void assemblerPaPa(const Zone_dis_base& z,
-                          const Zone_Cl_dis_base& zcl,
+extern void assemblerPaPa(const Domaine_dis_base& z,
+                          const Domaine_Cl_dis_base& zcl,
                           Matrice& matrice, const DoubleTab& inverse_quantitee_entrelacee);
 
-extern void assemblerP0P1(const Zone_dis_base& z,
-                          const Zone_Cl_dis_base& zcl,
+extern void assemblerP0P1(const Domaine_dis_base& z,
+                          const Domaine_Cl_dis_base& zcl,
                           Matrice& matrice, const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som);
 
-extern void assemblerP0Pa(const Zone_dis_base& z,
-                          const Zone_Cl_dis_base& zcl,
+extern void assemblerP0Pa(const Domaine_dis_base& z,
+                          const Domaine_Cl_dis_base& zcl,
                           Matrice& matrice,
                           const DoubleTab& inverse_quantitee_entrelacee);
 
-extern  void assemblerP1Pa(const Zone_dis_base& z,
-                           const Zone_Cl_dis_base& zcl,
+extern  void assemblerP1Pa(const Domaine_dis_base& z,
+                           const Domaine_Cl_dis_base& zcl,
                            Matrice& matrice,
                            const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som);
 
-extern void updateP0P0(const Zone_dis_base& z,
-                       const Zone_Cl_dis_base& zcl,
+extern void updateP0P0(const Domaine_dis_base& z,
+                       const Domaine_Cl_dis_base& zcl,
                        Matrice& matrice,
                        const DoubleTab& inverse_quantitee_entrelacee);
 
-extern void updateP1P1(const Zone_dis_base& z,
-                       const Zone_Cl_dis_base& zcl,
+extern void updateP1P1(const Domaine_dis_base& z,
+                       const Domaine_Cl_dis_base& zcl,
                        Matrice& matrice,
                        const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som);
-extern void modifieP1P1neumann(const Zone_dis_base& z,
-                               const Zone_Cl_dis_base& zcl,
+extern void modifieP1P1neumann(const Domaine_dis_base& z,
+                               const Domaine_Cl_dis_base& zcl,
                                Matrice& matrice,
                                const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som);
-extern void updatePaPa(const Zone_dis_base& z,
-                       const Zone_Cl_dis_base& zcl,
+extern void updatePaPa(const Domaine_dis_base& z,
+                       const Domaine_Cl_dis_base& zcl,
                        Matrice& matrice,
                        const DoubleTab& inverse_quantitee_entrelacee);
 
-extern void updateP0P1(const Zone_dis_base& z,
-                       const Zone_Cl_dis_base& zcl,
+extern void updateP0P1(const Domaine_dis_base& z,
+                       const Domaine_Cl_dis_base& zcl,
                        Matrice& matrice,
                        const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som);
 
-extern void updateP0Pa(const Zone_dis_base& z,
-                       const Zone_Cl_dis_base& zcl,
+extern void updateP0Pa(const Domaine_dis_base& z,
+                       const Domaine_Cl_dis_base& zcl,
                        Matrice& matrice,
                        const DoubleTab& inverse_quantitee_entrelacee);
 
-extern  void updateP1Pa(const Zone_dis_base& z,
-                        const Zone_Cl_dis_base& zcl,
+extern  void updateP1Pa(const Domaine_dis_base& z,
+                        const Domaine_Cl_dis_base& zcl,
                         Matrice& matrice,
                         const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som);
 
 extern int verifier( const Assembleur_P_VEFPreP1B& ass,
                      const Matrice_Bloc_Sym& matrice,
-                     const Zone_VEF_PreP1b& zone_VEF,
+                     const Domaine_VEF_PreP1b& domaine_VEF,
                      const DoubleTab& inverse_quantitee_entrelacee);
 
 int Assembleur_P_VEFPreP1B::assembler(Matrice& la_matrice)
@@ -182,7 +182,7 @@ int Assembleur_P_VEFPreP1B::assembler_rho_variable(Matrice& la_matrice, const Ch
       Cerr << "La masse volumique n'est pas aux faces dans Assembleur_P_VEFPreP1B::assembler_rho_variable." << finl;
       Process::exit();
     }
-  const DoubleVect& volumes_entrelaces=zone_Vef().volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces=domaine_Vef().volumes_entrelaces();
   const DoubleVect& masse_volumique=rho.valeurs();
   DoubleVect quantitee_entrelacee(volumes_entrelaces);
   int size=quantitee_entrelacee.size_array();
@@ -229,36 +229,36 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
     }
   else // Assemblage de la matrice
     {
-      const Zone_VEF_PreP1b& zone_vef = zone_Vef();
-      Cerr << "Assemblage de la matrice de pression" << (zone_vef.get_alphaE() ? " P0" : "")
-           << (zone_vef.get_alphaS() ? " P1" : "") << (zone_vef.get_alphaA() ? " Pa" : "") << " en cours..." << finl;
+      const Domaine_VEF_PreP1b& domaine_vef = domaine_Vef();
+      Cerr << "Assemblage de la matrice de pression" << (domaine_vef.get_alphaE() ? " P0" : "")
+           << (domaine_vef.get_alphaS() ? " P1" : "") << (domaine_vef.get_alphaA() ? " Pa" : "") << " en cours..." << finl;
 
       // Les decoupages doivent etre de largeur de joint de 2
       // si le support P1 ou Pa est utilise...
       if (Process::nproc() > 1 &&
-          zone_vef.zone().nb_joints() &&
-          zone_vef.zone().joint(0).epaisseur() < 2 &&
-          (zone_vef.get_alphaS() || zone_vef.get_alphaA()))
+          domaine_vef.domaine().nb_joints() &&
+          domaine_vef.domaine().joint(0).epaisseur() < 2 &&
+          (domaine_vef.get_alphaS() || domaine_vef.get_alphaA()))
         {
-          Cerr << "Ghost cells width of " << zone_vef.zone().joint(0).epaisseur()
+          Cerr << "Ghost cells width of " << domaine_vef.domaine().joint(0).epaisseur()
                << " is not enough for assembling VEFPreP1B pressure matrix" << finl;
           Cerr << "for parallel calculation. Partition your mesh with larg_joint option set to 2." << finl;
           Process::exit();
         }
 
       DoubleTab inverse_quantitee_entrelacee;
-      const Zone_Cl_VEF& zone_Cl_VEF = le_dom_Cl_VEF.valeur();
-      calculer_inv_volume(inverse_quantitee_entrelacee, zone_Cl_VEF, quantitee_entrelacee);
+      const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
+      calculer_inv_volume(inverse_quantitee_entrelacee, domaine_Cl_VEF, quantitee_entrelacee);
       int P0 = 0;
-      int P1 = P0 + zone_vef.get_alphaE();
-      int Pa = P1 + zone_vef.get_alphaS();
-      int nombre_supports = Pa + zone_vef.get_alphaA();
+      int P1 = P0 + domaine_vef.get_alphaE();
+      int Pa = P1 + domaine_vef.get_alphaS();
+      int nombre_supports = Pa + domaine_vef.get_alphaA();
       DoubleVect coef_som;
-      if (zone_vef.get_alphaS())
+      if (domaine_vef.get_alphaS())
         {
-          zone_vef.zone().creer_tableau_elements(coef_som);
+          domaine_vef.domaine().creer_tableau_elements(coef_som);
           for (int elem = 0; elem < coef_som.size_totale(); elem++)
-            coef_som[elem] = Op_Grad_VEF_P1B_Face::calculer_coef_som(elem, zone_Cl_VEF, zone_vef);
+            coef_som[elem] = Op_Grad_VEF_P1B_Face::calculer_coef_som(elem, domaine_Cl_VEF, domaine_vef);
           coef_som.echange_espace_virtuel();
         }
 
@@ -267,28 +267,28 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
       if (la_matrice_bloc_sym_de_travail.nb_bloc_lignes()==0)
         {
           la_matrice_bloc_sym_de_travail.dimensionner(nombre_supports, nombre_supports);
-          if (zone_vef.get_alphaE())
-            assemblerP0P0(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P0),
+          if (domaine_vef.get_alphaE())
+            assemblerP0P0(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P0),
                           inverse_quantitee_entrelacee);
 
-          if (zone_vef.get_alphaS())
-            assemblerP1P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
+          if (domaine_vef.get_alphaS())
+            assemblerP1P1(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
                           inverse_quantitee_entrelacee, coef_som);
 
-          if (zone_vef.get_alphaE() && zone_vef.get_alphaS())
-            assemblerP0P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P1),
+          if (domaine_vef.get_alphaE() && domaine_vef.get_alphaS())
+            assemblerP0P1(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P1),
                           inverse_quantitee_entrelacee, coef_som);
 
-          if (zone_vef.get_alphaA())
-            assemblerPaPa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa, Pa),
+          if (domaine_vef.get_alphaA())
+            assemblerPaPa(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa, Pa),
                           inverse_quantitee_entrelacee);
 
-          if (zone_vef.get_alphaS() && zone_vef.get_alphaA())
-            assemblerP1Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, Pa),
+          if (domaine_vef.get_alphaS() && domaine_vef.get_alphaA())
+            assemblerP1Pa(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, Pa),
                           inverse_quantitee_entrelacee, coef_som);
 
-          if (zone_vef.get_alphaE() && zone_vef.get_alphaA())
-            assemblerP0Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, Pa),
+          if (domaine_vef.get_alphaE() && domaine_vef.get_alphaA())
+            assemblerP0Pa(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, Pa),
                           inverse_quantitee_entrelacee);
         }
       // On met a zero la matrice meme si elle a ete correctement construite et remplie dans les methodes
@@ -297,32 +297,32 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
       // methodes assemblerPiPi et updatePiPi
       zero(la_matrice_bloc_sym_de_travail);
       {
-        if (zone_vef.get_alphaE())
-          updateP0P0(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P0),
+        if (domaine_vef.get_alphaE())
+          updateP0P0(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P0),
                      inverse_quantitee_entrelacee);
 
-        if (zone_vef.get_alphaS())
+        if (domaine_vef.get_alphaS())
           {
-            updateP1P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
+            updateP1P1(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
                        inverse_quantitee_entrelacee, coef_som);
-            if (zone_vef.get_cl_pression_sommet_faible() == 0)
-              modifieP1P1neumann(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
+            if (domaine_vef.get_cl_pression_sommet_faible() == 0)
+              modifieP1P1neumann(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, P1),
                                  inverse_quantitee_entrelacee, coef_som);
           }
-        if (zone_vef.get_alphaE() && zone_vef.get_alphaS())
-          updateP0P1(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P1),
+        if (domaine_vef.get_alphaE() && domaine_vef.get_alphaS())
+          updateP0P1(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, P1),
                      inverse_quantitee_entrelacee, coef_som);
 
-        if (zone_vef.get_alphaA())
-          updatePaPa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa, Pa),
+        if (domaine_vef.get_alphaA())
+          updatePaPa(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(Pa, Pa),
                      inverse_quantitee_entrelacee);
 
-        if (zone_vef.get_alphaS() && zone_vef.get_alphaA())
-          updateP1Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, Pa),
+        if (domaine_vef.get_alphaS() && domaine_vef.get_alphaA())
+          updateP1Pa(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P1, Pa),
                      inverse_quantitee_entrelacee, coef_som);
 
-        if (zone_vef.get_alphaE() && zone_vef.get_alphaA())
-          updateP0Pa(zone_vef, zone_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, Pa),
+        if (domaine_vef.get_alphaE() && domaine_vef.get_alphaA())
+          updateP0Pa(domaine_vef, domaine_Cl_VEF, la_matrice_bloc_sym_de_travail.get_bloc(P0, Pa),
                      inverse_quantitee_entrelacee);
       }
       int ordre_matrice = mp_sum(la_matrice_bloc_sym_de_travail.nb_lignes());
@@ -330,7 +330,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
       // Methode verifier
       char *theValue = getenv("TRUST_VERIFIE_MATRICE_VEF");
-      if (theValue != NULL) verifier(*this, la_matrice_bloc_sym_de_travail, zone_vef, inverse_quantitee_entrelacee);
+      if (theValue != NULL) verifier(*this, la_matrice_bloc_sym_de_travail, domaine_vef, inverse_quantitee_entrelacee);
 
       ////////////////////////////////////////////
       // Changement de base eventuel P0P1->P1Bulle
@@ -345,7 +345,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
       // Conversion eventuelle en Matrice_Morse_Sym
       if (ref_cast(Navier_Stokes_std, mon_equation.valeur()).solveur_pression().supporte_matrice_morse_sym() &&
-          zone_vef.get_alphaE() != nombre_supports) // On n'est pas en P0
+          domaine_vef.get_alphaE() != nombre_supports) // On n'est pas en P0
         {
           //////////////////////////////////////////////////////////
           // La matrice retournee est une Matrice_Morse_Sym nettoyee
@@ -402,7 +402,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
 int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 {
-  const Zone_VEF_PreP1b& le_dom = zone_Vef();
+  const Domaine_VEF_PreP1b& le_dom = domaine_Vef();
 
   // Verification sur le support Pa
   if (le_dom.get_alphaA())
@@ -412,7 +412,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       const ArrOfInt& ok_arete=le_dom.get_ok_arete();
       int npa=le_dom.numero_premiere_arete();
       // b n'a pas forcement son espace virtuel a jour
-      int nb_aretes=le_dom.zone().nb_aretes();
+      int nb_aretes=le_dom.domaine().nb_aretes();
       for(int i=0; i<nb_aretes; i++)
         if(!ok_arete[i] && b(npa+i)!=0.) // Les aretes superflues ont une valeur nulle
           {
@@ -430,9 +430,9 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
   if (le_dom.get_alphaS())
     {
       // Verification que la pression sur les sommets periodiques est nulle
-      const Zone& dom=le_dom.zone();
+      const Domaine& dom=le_dom.domaine();
       int nps=le_dom.numero_premier_sommet();
-      int ns=le_dom.zone().nb_som();
+      int ns=le_dom.domaine().nb_som();
       for(int i=0; i<ns; i++)
         {
           int k=dom.get_renum_som_perio(i);
@@ -454,12 +454,12 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 
   if (get_resoudre_en_u())
     {
-      const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
-      const Zone_Cl_VEF& zone_Cl = le_dom_Cl_VEF.valeur();
+      const Domaine_VEF_PreP1b& domaine_VEF =  domaine_Vef();
+      const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
 
-      const DoubleVect& porosite_face = zone_Cl.equation().milieu().porosite_face();
+      const DoubleVect& porosite_face = domaine_Cl.equation().milieu().porosite_face();
 
-      const int nb_cond_lim = zone_Cl.nb_cond_lim();
+      const int nb_cond_lim = domaine_Cl.nb_cond_lim();
 
       /**************************/
       /* Recuperation de Gpoint */
@@ -469,7 +469,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       int Gpoint_nul = 1; // Drapeau pour economiser potentiellement un echange_espace_virtuel
       for (int cond_lim=0; cond_lim<nb_cond_lim; cond_lim++)
         {
-          const Cond_lim_base& cl_base = zone_Cl.les_conditions_limites(cond_lim).valeur();
+          const Cond_lim_base& cl_base = domaine_Cl.les_conditions_limites(cond_lim).valeur();
 
           const Front_VF& front_VF = ref_cast(Front_VF,cl_base.frontiere_dis());
           const Champ_front_base& champ_front = cl_base.champ_front().valeur();
@@ -523,9 +523,9 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
       /* Modification du second membre */
       /*********************************/
 
-      if (zone_VEF.get_alphaE()) modifier_secmem_elem(Gpoint,b);
-      if (zone_VEF.get_alphaS()) modifier_secmem_som(Gpoint,b);
-      if (zone_VEF.get_alphaA()) modifier_secmem_aretes(Gpoint,b);
+      if (domaine_VEF.get_alphaE()) modifier_secmem_elem(Gpoint,b);
+      if (domaine_VEF.get_alphaS()) modifier_secmem_som(Gpoint,b);
+      if (domaine_VEF.get_alphaA()) modifier_secmem_aretes(Gpoint,b);
 
       /**********************************/
       /* Fin modification second membre */
@@ -539,17 +539,17 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 
 int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, DoubleTab& b)
 {
-  const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
-  const Zone_Cl_VEF& zone_Cl = le_dom_Cl_VEF.valeur();
+  const Domaine_VEF_PreP1b& domaine_VEF =  domaine_Vef();
+  const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
 
-  const int nb_cond_lim = zone_Cl.nb_cond_lim();
+  const int nb_cond_lim = domaine_Cl.nb_cond_lim();
 
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
 
   for (int cond_lim=0; cond_lim<nb_cond_lim; cond_lim++)
     {
-      const Cond_lim_base& cl_base = zone_Cl.les_conditions_limites(cond_lim).valeur();
+      const Cond_lim_base& cl_base = domaine_Cl.les_conditions_limites(cond_lim).valeur();
 
       const Front_VF& front_VF = ref_cast(Front_VF,cl_base.frontiere_dis());
       const Champ_front_base& champ_front = cl_base.champ_front().valeur();
@@ -583,28 +583,28 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, Double
 
 int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleTab& b)
 {
-  const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
-  const Zone_Cl_VEF& zone_Cl = le_dom_Cl_VEF.valeur();
-  const Zone& zone = zone_VEF.zone();
-  const Zone& domaine = zone;
+  const Domaine_VEF_PreP1b& domaine_VEF =  domaine_Vef();
+  const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
+  const Domaine& domaine = domaine_VEF.domaine();
+  const Domaine& domaine = domaine;
 
-  const int nb_cond_lim = zone_Cl.nb_cond_lim();
-  const int nb_elem_tot = (zone_VEF.get_alphaE()?zone.nb_elem_tot():0);
-  const int nb_faces_elem = zone.nb_faces_elem();
+  const int nb_cond_lim = domaine_Cl.nb_cond_lim();
+  const int nb_elem_tot = (domaine_VEF.get_alphaE()?domaine.nb_elem_tot():0);
+  const int nb_faces_elem = domaine.nb_faces_elem();
 
   const double coeff_dim = Objet_U::dimension*(Objet_U::dimension+1);
 
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_sommets = zone_VEF.face_sommets();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const IntTab& elem_sommets = zone.les_elems();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_sommets = domaine_VEF.face_sommets();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const IntTab& elem_sommets = domaine.les_elems();
 
-  const DoubleTab& face_normales = zone_VEF.face_normales();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
   ArrOfDouble sigma(Objet_U::dimension);
 
   for (int cond_lim=0; cond_lim<nb_cond_lim; cond_lim++)
     {
-      const Cond_lim_base& cl_base = zone_Cl.les_conditions_limites(cond_lim).valeur();
+      const Cond_lim_base& cl_base = domaine_Cl.les_conditions_limites(cond_lim).valeur();
 
       const Front_VF& front_VF = ref_cast(Front_VF,cl_base.frontiere_dis());
       const Champ_front_base& champ_front = cl_base.champ_front().valeur();
@@ -682,7 +682,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
 {
 
   //  if (!has_P_ref) exit();
-  const Zone_VEF_PreP1b& le_dom = zone_Vef();
+  const Domaine_VEF_PreP1b& le_dom = domaine_Vef();
 
   // Verification sur les aretes
   if (le_dom.get_alphaA())
@@ -713,9 +713,9 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
   // On applique la periodicite sur les sommets pour la pression:
   if (le_dom.get_alphaS())
     {
-      const Zone& dom=le_dom.zone();
+      const Domaine& dom=le_dom.domaine();
       int nps=le_dom.numero_premier_sommet();
-      int ns=le_dom.zone().nb_som();
+      int ns=le_dom.domaine().nb_som();
       for(int i=0; i<ns; i++)
         {
           int k=dom.get_renum_som_perio(i);
@@ -735,17 +735,17 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
 
 void Assembleur_P_VEFPreP1B::verifier_dirichlet()
 {
-  if (zone_Vef().get_alphaE()+zone_Vef().get_alphaS()+zone_Vef().get_alphaA()!=dimension)
+  if (domaine_Vef().get_alphaE()+domaine_Vef().get_alphaS()+domaine_Vef().get_alphaA()!=dimension)
     {
       Cerr << "Assembleur_P_VEFPreP1B::verifier_dirichlet ne fonctionne pas encore avec votre discretisation" << finl;
       Process::exit();
     }
   // Verifications diverses des conditions limites
   // en postraitant le resultat dans le champ Divergence_U
-  IntVect Faces_de_Dirichlet(zone_Vef().nb_elem_tot());
-  IntTab faces(zone_Vef().nb_elem_tot(),2);
+  IntVect Faces_de_Dirichlet(domaine_Vef().nb_elem_tot());
+  IntTab faces(domaine_Vef().nb_elem_tot(),2);
   faces=-1;
-  const IntTab& face_sommets=zone_Vef().face_sommets();
+  const IntTab& face_sommets=domaine_Vef().face_sommets();
   Faces_de_Dirichlet=0;
   const Conds_lim& les_cl = le_dom_Cl_VEF.valeur().les_conditions_limites();
   for(int i=0; i<les_cl.size(); i++)
@@ -759,7 +759,7 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
         {
           for (int face=num1; face<num2; face++)
             {
-              int elem=zone_Vef().face_voisins(face,0);
+              int elem=domaine_Vef().face_voisins(face,0);
               if (elem!=-1)
                 {
                   Faces_de_Dirichlet(elem)++;
@@ -767,7 +767,7 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
                   else faces(elem,1)=face;
 
                 }
-              elem=zone_Vef().face_voisins(face,1);
+              elem=domaine_Vef().face_voisins(face,1);
               if (elem!=-1) Faces_de_Dirichlet(elem)++;
             }
         }
@@ -780,12 +780,12 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
       if (Faces_de_Dirichlet(elem)>1)
         {
           Cerr << "L'element " << elem << " a " << Faces_de_Dirichlet(elem) << " faces de Dirichlet separees par une ";
-          const IntVect& ok_arete=zone_Vef().get_ok_arete();
-          const IntTab& aretes_som=zone_Vef().zone().aretes_som();
+          const IntVect& ok_arete=domaine_Vef().get_ok_arete();
+          const IntTab& aretes_som=domaine_Vef().domaine().aretes_som();
           // Parcours des aretes pour verifier les aretes de bord
           for (int k=0; k<6; k++)
             {
-              int arete=zone_Vef().zone().elem_aretes(elem,k);
+              int arete=domaine_Vef().domaine().elem_aretes(elem,k);
               // Les 2 sommets de l'arete
               int S0=aretes_som(arete,0);
               int S1=aretes_som(arete,1);
@@ -812,24 +812,24 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
 
 void Assembleur_P_VEFPreP1B::projete_L2(DoubleTab& pression)
 {
-  if (zone_Vef().get_alphaE()+zone_Vef().get_alphaS()+zone_Vef().get_alphaA()!=3)
+  if (domaine_Vef().get_alphaE()+domaine_Vef().get_alphaS()+domaine_Vef().get_alphaA()!=3)
     {
       Cerr << "Assembleur_P_VEFPreP1B::projete_L2 ne fonctionne qu'en P0+P1+Pa" << finl;
       Process::exit();
     }
   //Cerr << "Projection L2" << finl;
-  const Zone_VEF_PreP1b& zone_vef = zone_Vef();
-  const Zone& zone = zone_vef.zone();
-  int nb_elem_tot=zone.nb_elem_tot();
-  int ns=zone.nb_som_tot();
-  int nb_elem=zone.nb_elem();
+  const Domaine_VEF_PreP1b& domaine_vef = domaine_Vef();
+  const Domaine& domaine = domaine_vef.domaine();
+  int nb_elem_tot=domaine.nb_elem_tot();
+  int ns=domaine.nb_som_tot();
+  int nb_elem=domaine.nb_elem();
   int i,j;
-  const IntTab& som_elem=zone_vef.zone().les_elems();
-  const DoubleVect& volumes=zone_vef.volumes();
+  const IntTab& som_elem=domaine_vef.domaine().les_elems();
+  const DoubleVect& volumes=domaine_vef.volumes();
   double volume_tot=0;
   double somme=0;
   int nsr=nb_elem_tot+ns;
-  int nse=zone.nb_som_elem();
+  int nse=domaine.nb_som_elem();
   for(i=nb_elem_tot; i<nsr; i++)
     somme+=pression(i);
   somme/=ns;
@@ -863,13 +863,13 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
   int matrice_modifiee=0;
   has_P_ref=0;
   const Conds_lim& les_cl = le_dom_Cl_VEF.valeur().les_conditions_limites();
-  const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
+  const Domaine_VEF_PreP1b& domaine_VEF = domaine_Vef();
   // Recherche s'il y'a une pression de reference, et si oui la matrice n'est pas modifiee
   for(int i=0; i<les_cl.size(); i++)
     if (sub_type(Neumann_sortie_libre,les_cl[i].valeur()))
       {
         has_P_ref=1;
-        if (zone_VEF.get_alphaA())
+        if (domaine_VEF.get_alphaA())
           {
             // On en profite pour verifier si la pression est bien nulle si support Pa
             const DoubleTab& val=ref_cast(Neumann_sortie_libre,les_cl[i].valeur()).champ_front().valeurs();
@@ -887,8 +887,8 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
 
   Matrice_Bloc_Sym& matrice=ref_cast(Matrice_Bloc_Sym, la_matrice.valeur());
   int P0 = 0;
-  int P1 = P0 + zone_VEF.get_alphaE();
-  int Pa = P1 + zone_VEF.get_alphaS();
+  int P1 = P0 + domaine_VEF.get_alphaE();
+  int Pa = P1 + domaine_VEF.get_alphaS();
 
 
 
@@ -896,7 +896,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
   ////////////
   // Partie P0
   ////////////
-  if (zone_VEF.get_alphaE())
+  if (domaine_VEF.get_alphaE())
     {
       // On impose une pression de reference sur un element si pas de CL de Neumann
       if (has_P_ref)
@@ -911,17 +911,17 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
   ////////////
   // Partie P1
   ////////////
-  if (zone_VEF.get_alphaS())
+  if (domaine_VEF.get_alphaS())
     {
       Matrice_Bloc& mat_bloc_p1_p1 = ref_cast(Matrice_Bloc, matrice.get_bloc(P1,P1).valeur());
       Matrice_Morse_Sym& A11RR = ref_cast(Matrice_Morse_Sym,mat_bloc_p1_p1.get_bloc(0,0).valeur());
       // On impose une pression de reference sur un sommet si support P0 ou si pas de CL de Neumann
-      if (((!(Process::mp_max(CL_neumann))) || ((zone_VEF.get_alphaE()) && (zone_VEF.get_cl_pression_sommet_faible()==1) ) ) && Process::je_suis_maitre())
+      if (((!(Process::mp_max(CL_neumann))) || ((domaine_VEF.get_alphaE()) && (domaine_VEF.get_cl_pression_sommet_faible()==1) ) ) && Process::je_suis_maitre())
         {
           int sommet_referent=0;
           double distance=DMAXFLOAT;
-          const DoubleTab& coord=zone_VEF.zone().coord_sommets();
-          int nb_som=zone_VEF.zone().nb_som();
+          const DoubleTab& coord=domaine_VEF.domaine().coord_sommets();
+          int nb_som=domaine_VEF.domaine().nb_som();
           for(int i=0; i<nb_som; i++)
             {
               double tmp=0;
@@ -944,17 +944,17 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
   ////////////
   // Partie Pa
   ////////////
-  if (zone_VEF.get_alphaA())
+  if (domaine_VEF.get_alphaA())
     {
       Matrice_Bloc& mat_bloc_pa_pa = ref_cast(Matrice_Bloc, matrice.get_bloc(Pa,Pa).valeur());
       Matrice_Morse_Sym& A22RR = ref_cast(Matrice_Morse_Sym,mat_bloc_pa_pa.get_bloc(0,0).valeur());
       // On impose une pression de reference sur une arete en P0+Pa uniquement
-      if ((zone_VEF.get_alphaE() && !zone_VEF.get_alphaS()) && Process::je_suis_maitre())
+      if ((domaine_VEF.get_alphaE() && !domaine_VEF.get_alphaS()) && Process::je_suis_maitre())
         {
           int arete_referente=0;
           double distance=DMAXFLOAT;
-          const DoubleTab& coord=zone_VEF.xa();
-          int nb_aretes=zone_VEF.zone().nb_aretes();
+          const DoubleTab& coord=domaine_VEF.xa();
+          int nb_aretes=domaine_VEF.domaine().nb_aretes();
           for(int i=0; i<nb_aretes; i++)
             {
               double tmp=0;
@@ -996,15 +996,15 @@ inline void range(double& prod, int& i, int& n, int& j, int& m, Matrice_Morse& A
     AVV(i-n,j-m)+=prod;
 }
 
-void operation11(Matrice_Bloc& A00, Matrice_Bloc& A01, Matrice_Bloc& A11, double beta, const Zone& zone)
+void operation11(Matrice_Bloc& A00, Matrice_Bloc& A01, Matrice_Bloc& A11, double beta, const Domaine& domaine)
 {
   //Cerr << "Operation11" << finl;
   Matrice_Morse_Sym& A11RR=ref_cast(Matrice_Morse_Sym, A11.get_bloc(0,0).valeur());
   Matrice_Morse& A11RV=ref_cast(Matrice_Morse, A11.get_bloc(0,1).valeur());
   Matrice_Morse& A11VR=ref_cast(Matrice_Morse, A11.get_bloc(1,0).valeur());
   Matrice_Morse& A11VV=ref_cast(Matrice_Morse, A11.get_bloc(1,1).valeur());
-  const IntTab& les_elems=zone.les_elems();
-  const Zone& dom=zone;
+  const IntTab& les_elems=domaine.les_elems();
+  const Domaine& dom=domaine;
   int nb_som=A11RR.nb_lignes();
   int nb_som_elem=les_elems.dimension(1);
   // On parcours les elements de la matrice A00
@@ -1095,15 +1095,15 @@ void operation11(Matrice_Bloc& A00, Matrice_Bloc& A01, Matrice_Bloc& A11, double
     }
 }
 
-void operation01(Matrice_Bloc& A00, Matrice_Bloc& A01, double alpha, double beta, const Zone& zone)
+void operation01(Matrice_Bloc& A00, Matrice_Bloc& A01, double alpha, double beta, const Domaine& domaine)
 {
   //Cerr << "[" << Process::me() << "] Operation01" << finl;
   Matrice_Morse& A01RR=ref_cast(Matrice_Morse, A01.get_bloc(0,0).valeur());
   Matrice_Morse& A01RV=ref_cast(Matrice_Morse, A01.get_bloc(0,1).valeur());
   Matrice_Morse& A01VR=ref_cast(Matrice_Morse, A01.get_bloc(1,0).valeur());
   Matrice_Morse& A01VV=ref_cast(Matrice_Morse, A01.get_bloc(1,1).valeur());
-  const IntTab& les_elems=zone.les_elems();
-  const Zone& dom=zone;
+  const IntTab& les_elems=domaine.les_elems();
+  const Domaine& dom=domaine;
   int nb_elem=A01RR.nb_lignes();
   int nb_som=A01RR.nb_colonnes();
   int nb_som_elem=les_elems.dimension(1);
@@ -1152,7 +1152,7 @@ void operation01(Matrice_Bloc& A00, Matrice_Bloc& A01, double alpha, double beta
 
 void Assembleur_P_VEFPreP1B::changer_base_matrice(Matrice& la_matrice)
 {
-  assert(zone_Vef().get_alphaE() && zone_Vef().get_alphaS() && !zone_Vef().get_alphaA()); // P0+P1 uniquement
+  assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   Cerr << "Changement de base pour la matrice: P0+P1->P1Bulle" << finl;
   Matrice_Bloc_Sym& matrice=ref_cast(Matrice_Bloc_Sym, la_matrice.valeur());
   Matrice_Bloc& A00=ref_cast(Matrice_Bloc, matrice.get_bloc(0,0).valeur());
@@ -1161,12 +1161,12 @@ void Assembleur_P_VEFPreP1B::changer_base_matrice(Matrice& la_matrice)
 
   // Modification du bloc A11
   // As1s2~=As1s2-beta*[somme(Ak1s2)(s1 appartient a k1)+somme(Ak1s1)(s2 appartenant a k1)]+beta*beta*somme(Ak1k2)(s1 appartenant a k1 et s2 appartenant a k2)
-  operation11(A00,A01,A11,beta,zone_Vef().zone());
+  operation11(A00,A01,A11,beta,domaine_Vef().domaine());
 
   // Modification du bloc A01
   // Ak1s~=alpha*Ak1s - alpha*beta*somme(Ak1k2)(s appartenant a k2)
   A01*=alpha;
-  operation01(A00,A01,alpha,beta,zone_Vef().zone());
+  operation01(A00,A01,alpha,beta,domaine_Vef().domaine());
 
   // Modification du bloc A00
   // Ak1k2~ = alpha * alpha * Ak1k2
@@ -1176,12 +1176,12 @@ void Assembleur_P_VEFPreP1B::changer_base_matrice(Matrice& la_matrice)
 
 void Assembleur_P_VEFPreP1B::changer_base_second_membre(DoubleVect& y)
 {
-  assert(zone_Vef().get_alphaE() && zone_Vef().get_alphaS() && !zone_Vef().get_alphaA()); // P0+P1 uniquement
+  assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   // ys~ = ys - beta * somme(yk)(s appartenant a k)
   // yk~ = alpha * yk
-  const IntTab& les_elems=zone_Vef().zone().les_elems();
-  const Zone& dom=zone_Vef().zone();
-  int nb_elem_tot=zone_Vef().nb_elem_tot();
+  const IntTab& les_elems=domaine_Vef().domaine().les_elems();
+  const Domaine& dom=domaine_Vef().domaine();
+  int nb_elem_tot=domaine_Vef().nb_elem_tot();
   int nb_som_elem=les_elems.dimension(1);
   for (int k=0; k<nb_elem_tot; k++)
     {
@@ -1197,12 +1197,12 @@ void Assembleur_P_VEFPreP1B::changer_base_second_membre(DoubleVect& y)
 
 void Assembleur_P_VEFPreP1B::changer_base_pression_inverse(DoubleVect& x) const
 {
-  assert(zone_Vef().get_alphaE() && zone_Vef().get_alphaS() && !zone_Vef().get_alphaA()); // P0+P1 uniquement
+  assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   // xk = alpha * xk~ - beta * somme(xs~)(s appartenant a k)
   // xs = xs~
-  const IntTab& les_elems=zone_Vef().zone().les_elems();
-  const Zone& dom=zone_Vef().zone();
-  int nb_elem_tot=zone_Vef().nb_elem_tot();
+  const IntTab& les_elems=domaine_Vef().domaine().les_elems();
+  const Domaine& dom=domaine_Vef().domaine();
+  int nb_elem_tot=domaine_Vef().nb_elem_tot();
   int nb_som_elem=les_elems.dimension(1);
   for (int k=0; k<nb_elem_tot; k++)
     {
@@ -1219,12 +1219,12 @@ void Assembleur_P_VEFPreP1B::changer_base_pression_inverse(DoubleVect& x) const
 
 void Assembleur_P_VEFPreP1B::changer_base_pression(DoubleVect& x)
 {
-  assert(zone_Vef().get_alphaE() && zone_Vef().get_alphaS() && !zone_Vef().get_alphaA()); // P0+P1 uniquement
+  assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   // xk~ = xk / alpha + beta / alpha * somme(xs)(s appartenant a k)
   // xs~ = xs
-  const IntTab& les_elems=zone_Vef().zone().les_elems();
-  const Zone& dom=zone_Vef().zone();
-  int nb_elem_tot=zone_Vef().nb_elem_tot();
+  const IntTab& les_elems=domaine_Vef().domaine().les_elems();
+  const Domaine& dom=domaine_Vef().domaine();
+  int nb_elem_tot=domaine_Vef().nb_elem_tot();
   int nb_som_elem=les_elems.dimension(1);
   for (int k=0; k<nb_elem_tot; k++)
     {

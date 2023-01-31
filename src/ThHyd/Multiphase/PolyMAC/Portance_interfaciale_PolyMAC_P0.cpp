@@ -27,10 +27,10 @@ Entree& Portance_interfaciale_PolyMAC_P0::readOn(Entree& is) {  return Source_Po
 void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, equation().zone_dis().valeur());
-  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl(), &e_f = zone.elem_faces();
-  const DoubleTab& n_f = zone.face_normales(), &vf_dir = zone.volumes_entrelaces_dir();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &vf = zone.volumes_entrelaces(), &fs = zone.face_surfaces();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, equation().domaine_dis().valeur());
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl(), &e_f = domaine.elem_faces();
+  const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
   const DoubleTab& pvit = ch.passe(),
                    &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
                     &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
@@ -44,14 +44,14 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
   int e, f, b, c, d, d2, i, k, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
-                                  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = zone.nb_faces();
+                                  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = domaine.nb_faces();
   DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), k_l(Nk), d_b_l(N), dv(N, N), ddv_c(4), coeff(N, N), //arguments pour coeff
              vr_l(N,D), scal_ur(N), scal_u(N), pvit_l(N, D), vort_l( D==2 ? 1 :D), grad_l(D,D), scal_grad(D); // Requis pour corrections vort et u_l-u-g
   double fac_e, fac_f, vl_norm;
   const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, correlation_.valeur());
 
   /* elements */
-  for (e = 0; e < zone.nb_elem_tot(); e++)
+  for (e = 0; e < domaine.nb_elem_tot(); e++)
     {
       /* arguments de coeff */
       for (n = 0; n < N; n++)
@@ -76,7 +76,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
       correlation_pi.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, k_l, d_b_l, dv, e, coeff);
 
       fac_e = beta_*pe(e) * ve(e);
-      i = zone.nb_faces_tot() + D * e;
+      i = domaine.nb_faces_tot() + D * e;
 
       // Experimentation sur la portance : on enleve la partie parallele a la vitesse du liquide
       vl_norm = 0;
@@ -106,7 +106,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
               } // 100% explicit
 
           for (b = 0; b < e_f.dimension(1) && (f = e_f(e, b)) >= 0; b++)
-            if (f<zone.nb_faces())
+            if (f<domaine.nb_faces())
               if (fcl(f, 0) < 2)
                 {
                   c = (e == f_e(f,0)) ? 0 : 1 ;
@@ -137,7 +137,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
               } // 100% explicit
           /* // test for lift force on faces
                     for (b = 0; b < e_f.dimension(1) && (f = e_f(e, b)) >= 0; b++)
-                      if (f<zone.nb_faces())
+                      if (f<domaine.nb_faces())
                         if (fcl(f, 0) < 2)
                           {
                             c = (e == f_e(f,0)) ? 0 : 1 ;
@@ -160,7 +160,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
     }
 
   if (D==3)
-    for (f = 0 ; f<zone.nb_faces() ; f++)
+    for (f = 0 ; f<domaine.nb_faces() ; f++)
       if (fcl(f, 0) < 2)
         {
           a_l = 0;
@@ -219,7 +219,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
           for (d = 0 ; d<D ; d++)
             for (k = 0 ; k<N ; k++)
               for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
-                pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit(zone.nb_faces_tot()+D*e+d, k) ;
+                pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit(domaine.nb_faces_tot()+D*e+d, k) ;
           scal_u = 0;
           for (k = 0 ; k<N ; k++)
             for (d = 0 ; d<D ; d++)

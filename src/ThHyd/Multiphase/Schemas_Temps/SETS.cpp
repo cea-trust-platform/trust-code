@@ -31,7 +31,7 @@
 #include <Array_tools.h>
 #include <TRUSTTrav.h>
 #include <Dirichlet.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <EChaine.h>
 #include <Lapack.h>
 #include <Debog.h>
@@ -328,8 +328,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
 
       /* reglage de p_degen si non lu : si incompressible sans CLs de pression imposee, alors la pression est degeneree */
       if (p_degen < 0)
-        for (p_degen = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.zone_Cl_dis().nb_cond_lim(); i++)
-          p_degen &= !sub_type(Neumann_val_ext, eq_qdm.zone_Cl_dis().les_conditions_limites(i).valeur());
+        for (p_degen = sub_type(Fluide_base, eq_qdm.milieu()), i = 0; i < eq_qdm.domaine_Cl_dis().nb_cond_lim(); i++)
+          p_degen &= !sub_type(Neumann_val_ext, eq_qdm.domaine_Cl_dis().les_conditions_limites(i).valeur());
     }
 
   /* increments et residus pour l'algorithme de Newton */
@@ -371,7 +371,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           /* expression des autres inconnues (x) en fonction de p : vitesse, puis temperature / pression */
           tabs_t b_p;
           std::vector<std::set<std::pair<std::string, int>>> ordre;
-          if (eq_qdm.zone_dis().valeur().le_nom() == "PolyMAC_P0") ordre.push_back({{ "vitesse", 1 }}); //si PolyMAC_P0: on commence par ve
+          if (eq_qdm.domaine_dis().valeur().le_nom() == "PolyMAC_P0") ordre.push_back({{ "vitesse", 1 }}); //si PolyMAC_P0: on commence par ve
           ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanément
           for (auto &&nom : noms)
             if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});

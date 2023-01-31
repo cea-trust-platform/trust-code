@@ -16,10 +16,10 @@
 #ifndef Evaluateur_Source_included
 #define Evaluateur_Source_included
 
-#include <Ref_Zone_Cl_dis_base.h>
-#include <Ref_Zone_dis_base.h>
-#include <Zone_Cl_dis_base.h>
-#include <Zone_dis_base.h>
+#include <Ref_Domaine_Cl_dis_base.h>
+#include <Ref_Domaine_dis_base.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Domaine_dis_base.h>
 #include <TRUSTTab.h>
 
 class Evaluateur_Source
@@ -35,16 +35,16 @@ public:
   virtual void mettre_a_jour() = 0;
   virtual void completer() = 0;
 
-  void associer_domaines(const Zone_dis_base& zone, const Zone_Cl_dis_base& zone_cl)
+  void associer_domaines(const Domaine_dis_base& domaine, const Domaine_Cl_dis_base& domaine_cl)
   {
-    le_dom = zone;
-    la_zcl = zone_cl;
+    le_dom = domaine;
+    la_zcl = domaine_cl;
     completer();
   }
 
 protected:
-  REF(Zone_dis_base) le_dom;
-  REF(Zone_Cl_dis_base) la_zcl;
+  REF(Domaine_dis_base) le_dom;
+  REF(Domaine_Cl_dis_base) la_zcl;
 };
 
 #endif /* Evaluateur_Source_included */

@@ -18,10 +18,10 @@
 #include <Milieu_base.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
-#include <Zone_EF.h>
-#include <Zone_Cl_EF.h>
+#include <Domaine_EF.h>
+#include <Domaine_Cl_EF.h>
 #include <Champ_Fonc_P0_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_base_sans_constructeur(Op_Diff_EF_base,"Op_Diff_EF_base",Operateur_Diff_base);
 
@@ -52,13 +52,13 @@ int Op_Diff_EF_base::impr(Sortie& os) const
   return Op_EF_base::impr(os, *this);
 }
 
-void Op_Diff_EF_base::associer(const Zone_dis& zone_dis,
-                               const Zone_Cl_dis& zone_cl_dis,
+void Op_Diff_EF_base::associer(const Domaine_dis& domaine_dis,
+                               const Domaine_Cl_dis& domaine_cl_dis,
                                const Champ_Inc& ch_transporte)
 {
 
-  const Zone_EF& zEF = ref_cast(Zone_EF,zone_dis.valeur());
-  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis.valeur());
+  const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis.valeur());
+  const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF,domaine_cl_dis.valeur());
 
   /*  if (sub_type(Champ_P1_VEF,ch_transporte.valeur()))
     {
@@ -77,14 +77,14 @@ void Op_Diff_EF_base::associer(const Zone_dis& zone_dis,
   la_zcl_EF = zclEF;
   inconnue = ch_transporte;
 
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
 
   int nb_comp = 1;
   //  int nb_dim = resu.nb_dim();
   //  if(nb_dim==2)
   //    nb_comp=resu.dimension(1);
 
-  flux_bords_.resize(zone_EF.nb_faces_bord(),nb_comp);
+  flux_bords_.resize(domaine_EF.nb_faces_bord(),nb_comp);
   flux_bords_=0.;
 }
 double Op_Diff_EF_base::calculer_dt_stab() const
@@ -95,7 +95,7 @@ double Op_Diff_EF_base::calculer_dt_stab() const
   //          dt_diff = h*h/diffusivite
 
   double dt_stab = DMAXFLOAT;
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   if (! has_champ_masse_volumique())
     {
       if (1)
@@ -108,22 +108,22 @@ double Op_Diff_EF_base::calculer_dt_stab() const
           const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
           double alpha_max = local_max_vect(valeurs_diffusivite);
 
-          if ((alpha_max == 0.)||(zone_EF.nb_elem()==0))
+          if ((alpha_max == 0.)||(domaine_EF.nb_elem()==0))
             dt_stab = DMAXFLOAT;
           else
             {
-              const double min_delta_h_carre = zone_EF.carre_pas_du_maillage();
+              const double min_delta_h_carre = domaine_EF.carre_pas_du_maillage();
               dt_stab = min_delta_h_carre / (2. * dimension * alpha_max);
             }
         }
       else
         {
-          const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-          const DoubleTab& coord=zone_ef.zone().les_sommets();
-          const IntTab& elems=zone_ef.zone().les_elems() ;
+          const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+          const DoubleTab& coord=domaine_ef.domaine().les_sommets();
+          const IntTab& elems=domaine_ef.domaine().les_elems() ;
           const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
           const DoubleVect&      valeurs_diffusivite = champ_diffusivite.valeurs();
-          const int nb_elem = zone_EF.nb_elem();
+          const int nb_elem = domaine_EF.nb_elem();
           int elem;
           // Champ de masse volumique variable.
           for (elem = 0; elem < nb_elem; elem++)
@@ -154,12 +154,12 @@ double Op_Diff_EF_base::calculer_dt_stab() const
       const DoubleTab&       valeurs_rho   = champ_rho.valeurs();
       assert(sub_type(Champ_Fonc_P0_base, champ_rho));
       assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
-      const int nb_elem = zone_EF.nb_elem();
+      const int nb_elem = domaine_EF.nb_elem();
       int elem;
       // Champ de masse volumique variable.
       for (elem = 0; elem < nb_elem; elem++)
         {
-          const double h_carre = zone_EF.carre_pas_maille(elem);
+          const double h_carre = domaine_EF.carre_pas_maille(elem);
           const double diffu   = valeurs_diffu(elem);
           const double rho     = valeurs_rho(elem);
           const double dt      = h_carre * rho / (deux_dim * diffu);

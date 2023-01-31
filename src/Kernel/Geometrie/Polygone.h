@@ -86,7 +86,7 @@ public :
   void compute_virtual_index() override;
 private :
   ArrOfInt FacesIndex_,PolygonIndex_;  //  PolygoneIndex_[ele] numero premiere face de ele (sert sutrout en diff)
-  // FaceIndex_ numerotation globale a la zone ne sert qu'a med
+  // FaceIndex_ numerotation globale a la domaine ne sert qu'a med
   int nb_som_elem_max_,nb_face_elem_max_;
 };
 

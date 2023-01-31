@@ -15,8 +15,8 @@
 
 #include <Terme_Source_inc_VDF_Face.h>
 #include <math.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Neumann_sortie_libre.h>
 #include <Symetrie.h>
 #include <Dirichlet.h>
@@ -60,17 +60,17 @@ void Terme_Source_inc_VDF_Face::associer_pb(const Probleme_base& pb)
     }
 }
 
-void Terme_Source_inc_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                  const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_inc_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                  const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 // void Terme_Source_inc_VDF_Face::mettre_a_jour(double temps)
 //   //void Turbulence_hyd_sous_maille_inc_VDF::mettre_a_jour(double )
 // {
-//   int nb_elem_tot = le_dom_VDF->zone().nb_elem_tot();
+//   int nb_elem_tot = le_dom_VDF->domaine().nb_elem_tot();
 //   DoubleTrav cell_cent_vel(nb_elem_tot,dimension);
 //   calculer_cell_cent_vel(cell_cent_vel);
 // }
@@ -78,22 +78,22 @@ void Terme_Source_inc_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
 
 void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  const Zone_Cl_VDF& zone_Cl_VDF = le_dom_Cl_VDF.valeur();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntVect& orientation = zone_VDF.orientation();
-  //const DoubleTab& xv = zone_VDF.xv();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const Domaine_Cl_VDF& domaine_Cl_VDF = le_dom_Cl_VDF.valeur();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntVect& orientation = domaine_VDF.orientation();
+  //const DoubleTab& xv = domaine_VDF.xv();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
-  const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
-  const Zone& zone = le_dom_VDF->zone();
-  int nb_elem = zone.nb_elem();
+  const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
+  const Domaine& domaine = le_dom_VDF->domaine();
+  int nb_elem = domaine.nb_elem();
 
   int ndeb,nfin,ncomp,num_face;
   //   double debit_e=0.,dt,vol,Surf;
   double vol;
   DoubleTrav s(3);
   s = 0.;
-  //int nb_elem_tot = le_dom_VDF->zone().nb_elem_tot();
+  //int nb_elem_tot = le_dom_VDF->domaine().nb_elem_tot();
   //   double dQij=0;
   //   double si;
 
@@ -112,7 +112,7 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   // Exemple XTOF
   //   Cerr << " debut de parallel " << finl;
   DoubleTab cell_cent_vel(0,dimension);
-  le_dom_VDF.valeur().zone().creer_tableau_elements(cell_cent_vel);
+  le_dom_VDF.valeur().domaine().creer_tableau_elements(cell_cent_vel);
   //    DoubleTrav toto(cell_cent_vel);
   DoubleTab temp1(cell_cent_vel);
   DoubleTab temp2(cell_cent_vel);
@@ -126,9 +126,9 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   // -------------------------------------------------------------------
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   //   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  //   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  //   int nb_elem_tot = domaine_VDF.domaine().nb_elem_tot();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
   int element_number;
   int num0=-1,num1,num2=-1,num3,num4=-1,num5=-1;
   //   Cerr << " vitesse " << vitesse << finl;
@@ -207,10 +207,10 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   //   DoubleTrav uij_filt(nb_elem_tot,dimension,dimension);
 
   // -------------------------------------------------------------------
-  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  //   const IntTab& face_voisins = zone_VDF.face_voisins();
-  //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
-  //   const IntTab& elem_faces = zone_VDF.elem_faces();
+  //   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  //   const IntTab& face_voisins = domaine_VDF.face_voisins();
+  //   int nb_elem_tot = domaine_VDF.domaine().nb_elem_tot();
+  //   const IntTab& elem_faces = domaine_VDF.elem_faces();
   //   int element_number;
   //   int num0,num1,num2,num3,num4,num5;
   int f0,f1,f2,f3,f4,f5;
@@ -458,8 +458,8 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   //   DoubleTrav Qij(nb_elem_tot,dimension,dimension);
 
   // -------------------------------------------------------------------
-  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
+  //   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  //   int nb_elem_tot = domaine_VDF.domaine().nb_elem_tot();
   //   int element_number;
 
   // This is to calculate the Qij tensor
@@ -482,8 +482,8 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   //   DoubleTrav Lij(nb_elem_tot,dimension,dimension);
 
   // -------------------------------------------------------------------
-  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
+  //   const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  //   int nb_elem_tot = domaine_VDF.domaine().nb_elem_tot();
   //   int element_number;
 
   //   DoubleTrav uij_filt(nb_elem_tot,dimension,dimension);
@@ -793,8 +793,8 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   //   dQij_j.resize(nb_elem_tot,dimension);
 
   // -------------------------------------------------------------------
-  //const IntTab& Qdm = zone_VDF.Qdm();
-  //   const IntVect& orientation = zone_VDF.orientation();
+  //const IntTab& Qdm = domaine_VDF.Qdm();
+  //   const IntVect& orientation = domaine_VDF.orientation();
 
   //
   // Calculate the source term dQij_j = d/dxj ( f Qij )
@@ -821,21 +821,21 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
           if (num3 == -1)
             num3 = element_number;
           //           dQij_j(element_number,0)=0.5*((f(num2)*Qij(num2,0,0)-f(num0)*Qij(num0,0,0))/
-          //                                            zone_VDF.dim_elem(element_number,0));
+          //                                            domaine_VDF.dim_elem(element_number,0));
           //           dQij_j(element_number,0)+=0.5*((f(num3)*Qij(num3,0,1)-f(num1)*Qij(num1,0,1))/
-          //                                            zone_VDF.dim_elem(element_number,1));
+          //                                            domaine_VDF.dim_elem(element_number,1));
           //           dQij_j(element_number,1)=0.5*((f(num2)*Qij(num2,1,0)-f(num0)*Qij(num0,1,0))/
-          //                                            zone_VDF.dim_elem(element_number,0));
+          //                                            domaine_VDF.dim_elem(element_number,0));
           //           dQij_j(element_number,1)+=0.5*((f(num3)*Qij(num3,1,1)-f(num1)*Qij(num1,1,1))/
-          //                                            zone_VDF.dim_elem(element_number,1));
+          //                                            domaine_VDF.dim_elem(element_number,1));
           dQij_j(element_number,0)=0.5*((f(num2)*Qij_1(num2,0)-f(num0)*Qij_1(num0,0))/
-                                        zone_VDF.dim_elem(element_number,0));
+                                        domaine_VDF.dim_elem(element_number,0));
           dQij_j(element_number,0)+=0.5*((f(num3)*Qij_2(num3,0)-f(num1)*Qij_2(num1,0))/
-                                         zone_VDF.dim_elem(element_number,1));
+                                         domaine_VDF.dim_elem(element_number,1));
           dQij_j(element_number,1)=0.5*((f(num2)*Qij_1(num2,1)-f(num0)*Qij_1(num0,1))/
-                                        zone_VDF.dim_elem(element_number,0));
+                                        domaine_VDF.dim_elem(element_number,0));
           dQij_j(element_number,1)+=0.5*((f(num3)*Qij_2(num3,1)-f(num1)*Qij_2(num1,1))/
-                                         zone_VDF.dim_elem(element_number,1));
+                                         domaine_VDF.dim_elem(element_number,1));
         }
     }
   else
@@ -885,44 +885,44 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
               num5 = element_number;
             }
           //           dQij_j(element_number,0)=0.5*((f(num3)*Qij(num3,0,0)-f(num0)*Qij(num0,0,0))/
-          //                                            zone_VDF.dim_elem(element_number,0));
+          //                                            domaine_VDF.dim_elem(element_number,0));
           //           dQij_j(element_number,0)+=0.5*((f(num4)*Qij(num4,0,1)-f(num1)*Qij(num1,0,1))/
-          //                                            zone_VDF.dim_elem(element_number,1));
+          //                                            domaine_VDF.dim_elem(element_number,1));
           //           dQij_j(element_number,0)+=0.5*((f(num5)*Qij(num5,0,2)-f(num2)*Qij(num2,0,2))/
-          //                                            zone_VDF.dim_elem(element_number,2));
+          //                                            domaine_VDF.dim_elem(element_number,2));
           dQij_j(element_number,0)=0.5*((f(num3)*Qij_1(num3,0)-f(num0)*Qij_1(num0,0))/
-                                        zone_VDF.dim_elem(element_number,0));
+                                        domaine_VDF.dim_elem(element_number,0));
           dQij_j(element_number,0)+=0.5*((f(num4)*Qij_2(num4,0)-f(num1)*Qij_2(num1,0))/
-                                         zone_VDF.dim_elem(element_number,1));
+                                         domaine_VDF.dim_elem(element_number,1));
           dQij_j(element_number,0)+=0.5*((f(num5)*Qij_3(num5,0)-f(num2)*Qij_3(num2,0))/
-                                         zone_VDF.dim_elem(element_number,2));
+                                         domaine_VDF.dim_elem(element_number,2));
 
 
           //           dQij_j(element_number,1)=0.5*((f(num3)*Qij(num3,1,0)-f(num0)*Qij(num0,1,0))/
-          //                                            zone_VDF.dim_elem(element_number,0));
+          //                                            domaine_VDF.dim_elem(element_number,0));
           //           dQij_j(element_number,1)+=0.5*((f(num4)*Qij(num4,1,1)-f(num1)*Qij(num1,1,1))/
-          //                                            zone_VDF.dim_elem(element_number,1));
+          //                                            domaine_VDF.dim_elem(element_number,1));
           //           dQij_j(element_number,1)+=0.5*((f(num5)*Qij(num5,1,2)-f(num2)*Qij(num2,1,2))/
-          //                                            zone_VDF.dim_elem(element_number,2));
+          //                                            domaine_VDF.dim_elem(element_number,2));
           dQij_j(element_number,1)=0.5*((f(num3)*Qij_1(num3,1)-f(num0)*Qij_1(num0,1))/
-                                        zone_VDF.dim_elem(element_number,0));
+                                        domaine_VDF.dim_elem(element_number,0));
           dQij_j(element_number,1)+=0.5*((f(num4)*Qij_2(num4,1)-f(num1)*Qij_2(num1,1))/
-                                         zone_VDF.dim_elem(element_number,1));
+                                         domaine_VDF.dim_elem(element_number,1));
           dQij_j(element_number,1)+=0.5*((f(num5)*Qij_3(num5,1)-f(num2)*Qij_3(num2,1))/
-                                         zone_VDF.dim_elem(element_number,2));
+                                         domaine_VDF.dim_elem(element_number,2));
 
           //           dQij_j(element_number,2)=0.5*((f(num3)*Qij(num3,2,0)-f(num0)*Qij(num0,2,0))/
-          //                                            zone_VDF.dim_elem(element_number,0));
+          //                                            domaine_VDF.dim_elem(element_number,0));
           //           dQij_j(element_number,2)+=0.5*((f(num4)*Qij(num4,2,1)-f(num1)*Qij(num1,2,1))/
-          //                                            zone_VDF.dim_elem(element_number,1));
+          //                                            domaine_VDF.dim_elem(element_number,1));
           //           dQij_j(element_number,2)+=0.5*((f(num5)*Qij(num5,2,2)-f(num2)*Qij(num2,2,2))/
-          //                                            zone_VDF.dim_elem(element_number,2));
+          //                                            domaine_VDF.dim_elem(element_number,2));
           dQij_j(element_number,2)=0.5*((f(num3)*Qij_1(num3,2)-f(num0)*Qij_1(num0,2))/
-                                        zone_VDF.dim_elem(element_number,0));
+                                        domaine_VDF.dim_elem(element_number,0));
           dQij_j(element_number,2)+=0.5*((f(num4)*Qij_2(num4,2)-f(num1)*Qij_2(num1,2))/
-                                         zone_VDF.dim_elem(element_number,1));
+                                         domaine_VDF.dim_elem(element_number,1));
           dQij_j(element_number,2)+=0.5*((f(num5)*Qij_3(num5,2)-f(num2)*Qij_3(num2,2))/
-                                         zone_VDF.dim_elem(element_number,2));
+                                         domaine_VDF.dim_elem(element_number,2));
         }
     }
   dQij_j.echange_espace_virtuel();
@@ -952,14 +952,14 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
 
   // Boucle sur les conditions limites pour traiter les faces de bord
   //   Cerr << me() << " cond lims " << finl;
-  for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VDF.nb_front_Cl(); n_bord++)
     {
 
       // pour chaque Condition Limite on regarde son type
       // Si face de Dirichlet ou de Symetrie on ne fait rien
       // Si face de Neumann on calcule la contribution au terme source
 
-      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
@@ -1016,8 +1016,8 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   double min_inc=1.e6, max_inc=-1.e6;
   int num_e1=-1, n_comp1=-1;
   int num_e2=-1, n_comp2=-1;
-  ndeb = zone_VDF.premiere_face_int();
-  for (num_face =zone_VDF.premiere_face_int(); num_face<zone_VDF.nb_faces(); num_face++)
+  ndeb = domaine_VDF.premiere_face_int();
+  for (num_face =domaine_VDF.premiere_face_int(); num_face<domaine_VDF.nb_faces(); num_face++)
     {
 
       vol = volumes_entrelaces(num_face)*porosite_surf(num_face);

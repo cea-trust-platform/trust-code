@@ -27,12 +27,12 @@ void Champ_Fonc_P1_MED::mettre_a_jour(double t)
   Process::exit();
 }
 
-const Zone_dis_base& Champ_Fonc_P1_MED::zone_dis_base() const
+const Domaine_dis_base& Champ_Fonc_P1_MED::domaine_dis_base() const
 {
-  return zonebidon.valeur();
+  return domainebidon.valeur();
 }
 
-void Champ_Fonc_P1_MED::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
+void Champ_Fonc_P1_MED::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  zonebidon = le_dom_dis_base;
+  domainebidon = le_dom_dis_base;
 }

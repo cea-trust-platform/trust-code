@@ -15,10 +15,10 @@
 
 #ifndef Pave_included
 #define Pave_included
-#include <Zone.h>
+#include <Domaine.h>
 
 
-/*! @brief Classe Pave Une zone particulierement facile a mailler!
+/*! @brief Classe Pave Une domaine particulierement facile a mailler!
  *
  *     La structure du jeu de donnee pour specifier un Pave est:
  *     Pave nom_pave
@@ -42,9 +42,9 @@
  *      ...
  *      }
  *
- * @sa Zone Mailler, Actuellemnt c'est le seul type d'objet reconnu par Trio-U pour mailler, un domaine
+ * @sa Domaine Mailler, Actuellemnt c'est le seul type d'objet reconnu par Trio-U pour mailler, un domaine
  */
-class Pave : public Zone
+class Pave : public Domaine
 {
   Declare_instanciable(Pave);
 public :

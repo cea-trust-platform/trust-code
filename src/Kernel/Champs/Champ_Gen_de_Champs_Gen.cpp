@@ -148,13 +148,13 @@ Champ_Fonc& Champ_Gen_de_Champs_Gen::creer_espace_stockage(const Nature_du_champ
   temps = get_time();
   const Discretisation_base&  discr = get_discretisation();
   Motcle directive = get_directive_pour_discr();
-  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+  const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
 
-  discr.discretiser_champ(directive,zone_dis,nature,noms,unites,nb_comp,temps,es_tmp);
+  discr.discretiser_champ(directive,domaine_dis,nature,noms,unites,nb_comp,temps,es_tmp);
 
   if (directive=="pression")
     {
-      const  Zone_Cl_dis_base& zcl = get_ref_zcl_dis_base();
+      const  Domaine_Cl_dis_base& zcl = get_ref_zcl_dis_base();
       es_tmp->completer(zcl);
     }
 
@@ -301,22 +301,22 @@ void Champ_Gen_de_Champs_Gen::get_xyz_values(const DoubleTab& coords, DoubleTab&
   throw Champ_Generique_erreur("NOT_IMPLEMENTED");
 }
 
-const Zone& Champ_Gen_de_Champs_Gen::get_ref_domain() const
+const Domaine& Champ_Gen_de_Champs_Gen::get_ref_domain() const
 {
   return get_source(0).get_ref_domain();
 }
 
-void Champ_Gen_de_Champs_Gen::get_copy_domain(Zone& domain) const
+void Champ_Gen_de_Champs_Gen::get_copy_domain(Domaine& domain) const
 {
   return get_source(0).get_copy_domain(domain);
 }
 
-const Zone_dis_base& Champ_Gen_de_Champs_Gen::get_ref_zone_dis_base() const
+const Domaine_dis_base& Champ_Gen_de_Champs_Gen::get_ref_domaine_dis_base() const
 {
-  return get_source(0).get_ref_zone_dis_base();
+  return get_source(0).get_ref_domaine_dis_base();
 }
 
-const Zone_Cl_dis_base& Champ_Gen_de_Champs_Gen::get_ref_zcl_dis_base() const
+const Domaine_Cl_dis_base& Champ_Gen_de_Champs_Gen::get_ref_zcl_dis_base() const
 {
   return get_source(0).get_ref_zcl_dis_base();
 }

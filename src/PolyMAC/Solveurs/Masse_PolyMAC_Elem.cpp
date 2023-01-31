@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Masse_PolyMAC_Elem.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Equation_base.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 
 Implemente_instanciable(Masse_PolyMAC_Elem, "Masse_PolyMAC_Elem|Masse_PolyMAC_P0_Elem", Masse_PolyMAC_base);
 

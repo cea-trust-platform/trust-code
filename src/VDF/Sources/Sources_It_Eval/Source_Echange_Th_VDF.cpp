@@ -17,10 +17,10 @@
 #include <Source_Echange_Th_VDF.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Interprete.h>
 #include <Conduction.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Source_Echange_Th_VDF,"Echange_thermique_h_imp_VDF_P0_VDF",Terme_Source_VDF_base);
 
@@ -36,10 +36,10 @@ Entree& Source_Echange_Th_VDF::readOn(Entree& s)
   return s;
 }
 
-void Source_Echange_Th_VDF::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Echange_Th_VDF::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
   iter->associer_domaines(zvdf, zclvdf);
   Eval_Echange_Himp_VDF_Elem& eval = static_cast<Eval_Echange_Himp_VDF_Elem&> (iter->evaluateur());
   eval.associer_domaines(zvdf, zclvdf );

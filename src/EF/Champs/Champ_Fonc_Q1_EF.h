@@ -18,13 +18,13 @@
 
 #include <Champ_Fonc_Q1_base.h>
 
-class Zone_EF;
+class Domaine_EF;
 
 class Champ_Fonc_Q1_EF: public Champ_Fonc_Q1_base
 {
   Declare_instanciable(Champ_Fonc_Q1_EF);
 public:
-  const Zone_EF& zone_EF() const;
+  const Domaine_EF& domaine_EF() const;
   int imprime(Sortie&, int) const override;
   void mettre_a_jour(double) override;
 };

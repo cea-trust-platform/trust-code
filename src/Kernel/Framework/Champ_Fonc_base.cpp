@@ -16,8 +16,8 @@
 #include <EcritureLectureSpecial.h>
 #include <Champ_Fonc_base.h>
 #include <MD_Vector_tools.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 
 Implemente_base(Champ_Fonc_base, "Champ_Fonc_base", Champ_Don_base);
 
@@ -25,17 +25,17 @@ Sortie& Champ_Fonc_base::printOn(Sortie& s) const { return s; }
 
 Entree& Champ_Fonc_base::readOn(Entree& s) { return s; }
 
-void Champ_Fonc_base::associer_domaine_dis_base(const Zone_dis_base& z_dis)
+void Champ_Fonc_base::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
 {
-  le_dom_VF = ref_cast(Zone_VF, z_dis);
+  le_dom_VF = ref_cast(Domaine_VF, z_dis);
 }
 
-const Zone_dis_base& Champ_Fonc_base::zone_dis_base() const
+const Domaine_dis_base& Champ_Fonc_base::domaine_dis_base() const
 {
-  return le_dom_VF.non_nul() ? le_dom_VF.valeur() : Champ_Don_base::zone_dis_base() /* throw */;
+  return le_dom_VF.non_nul() ? le_dom_VF.valeur() : Champ_Don_base::domaine_dis_base() /* throw */;
 }
 
-const Zone_VF& Champ_Fonc_base::zone_vf() const
+const Domaine_VF& Champ_Fonc_base::domaine_vf() const
 {
   assert (le_dom_VF.non_nul());
   return le_dom_VF.valeur();
@@ -95,7 +95,7 @@ int Champ_Fonc_base::sauvegarder(Sortie& fich) const
     {
       Nom mon_ident(nom_);
       mon_ident += que_suis_je();
-      mon_ident += zone_dis_base().zone().le_nom();
+      mon_ident += domaine_dis_base().domaine().le_nom();
       mon_ident += Nom(temps_, "%e");
       fich << mon_ident << finl;
       fich << que_suis_je() << finl;
@@ -227,15 +227,15 @@ int Champ_Fonc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab&, IntVect&, i
   return 0;
 }
 
-const Zone& Champ_Fonc_base::domaine() const
+const Domaine& Champ_Fonc_base::domaine() const
 {
-  return zone_dis_base().zone();
+  return domaine_dis_base().domaine();
 }
 
 DoubleTab& Champ_Fonc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
-  const Zone& zone = zone_dis_base().zone();
+  const Domaine& domaine = domaine_dis_base().domaine();
   IntVect les_polys(positions.dimension(0));
-  zone.chercher_elements(positions, les_polys);
+  domaine.chercher_elements(positions, les_polys);
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
 }

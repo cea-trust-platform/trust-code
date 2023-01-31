@@ -306,14 +306,14 @@ public:
   //is the counter a communication counter ?
   int counter_comm[MAXCOUNTERS];
   //est-ce qu'on traque les communications pour ce compteur ?
-  bool comm_zones_on[MAXCOUNTERS];
+  bool comm_domaines_on[MAXCOUNTERS];
   //if the counter is a communication, give its index inside the communication_tracking_info array (-1 otherwise)
   int index_in_communication_tracking_info[MAXCOUNTERS];
 
-  /* tableau stockant les temps de communication de chaque zone du code souhaitee
+  /* tableau stockant les temps de communication de chaque domaine du code souhaitee
    * 1ere dimension : les differents types de communication
-   * 2eme dimension : le temps passe dans chaque zone  de communication qu'on a definie pour chaque compteur
-   * ==> quand j different de 0 : l'element (i,j) du tableau contient le temps passe dans la zone j par la communication i
+   * 2eme dimension : le temps passe dans chaque domaine  de communication qu'on a definie pour chaque compteur
+   * ==> quand j different de 0 : l'element (i,j) du tableau contient le temps passe dans la domaine j par la communication i
    * ==> quand j = 0 : l'element (i,j) contient le temps total (dans tout le code) consomme par la communication i
    */
   Stat_Results** communication_tracking_info;
@@ -347,7 +347,7 @@ Stat_Internals::Stat_Internals() :
       family[i] = 0;
       counter_level[i] = 0;
       counter_comm[i] = 0;
-      comm_zones_on[i] = false;
+      comm_domaines_on[i] = false;
       index_in_communication_tracking_info[i] = -1;
 
       for(int j = 0; j < 5; j++)
@@ -1039,12 +1039,12 @@ void Statistiques::begin_communication_tracking(int cid)
       cumulate_stats(counter_id, comm_total_time);
       for (int j = 0; j < si.nb_counters; j++)
         {
-          //si d'autres zones de communication sont activees,
+          //si d'autres domaines de communication sont activees,
           //on met a jour leurs donnees
-          if (si.comm_zones_on[j])
+          if (si.comm_domaines_on[j])
             {
-              Stat_Results& comm_time_in_zone_j = si.communication_tracking_info[i][j + 1];
-              cumulate_stats(counter_id, comm_time_in_zone_j);
+              Stat_Results& comm_time_in_domaine_j = si.communication_tracking_info[i][j + 1];
+              cumulate_stats(counter_id, comm_time_in_domaine_j);
 
             }
         }
@@ -1052,7 +1052,7 @@ void Statistiques::begin_communication_tracking(int cid)
 
     }
 
-  si.comm_zones_on[cid] = true;
+  si.comm_domaines_on[cid] = true;
 
 }
 void Statistiques::end_communication_tracking(int cid)
@@ -1063,7 +1063,7 @@ void Statistiques::end_communication_tracking(int cid)
 
   assert(cid >=0);
 
-  if (si.comm_zones_on[cid] == false)
+  if (si.comm_domaines_on[cid] == false)
     {
       if (si.counter_nb[cid]<=3) // Moins verbeux
         Process::Journal() << "Error! end_communication_tracking (" << si.description[cid] << ") has not been activated" <<finl;
@@ -1075,12 +1075,12 @@ void Statistiques::end_communication_tracking(int cid)
       // correspondance entre l'indice dans le tableau communication_tracking_times et l'id du compteur associe
       int counter_id = get_counter_id_from_index_in_comm_tracking_info(i);
 
-      Stat_Results& comm_time_in_zone_cid = si.communication_tracking_info[i][cid + 1];
-      cumulate_stats(counter_id, comm_time_in_zone_cid);
+      Stat_Results& comm_time_in_domaine_cid = si.communication_tracking_info[i][cid + 1];
+      cumulate_stats(counter_id, comm_time_in_domaine_cid);
 
     }
 
-  si.comm_zones_on[cid] = false;
+  si.comm_domaines_on[cid] = false;
 }
 
 
@@ -1117,30 +1117,30 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
 
   comm << finl;
 
-  //parcours des zones de communication
+  //parcours des domaines de communication
   //on laisse tomber temps total
   for (int i = 1; i < si.nb_counters; i++)
     {
 
-      double tot_communication_in_zone_i = 0;
+      double tot_communication_in_domaine_i = 0;
       for(int j = 0; j < si.nb_comm_counters; j++)
         {
           //on ne compte pas echange_espace_vectoriel (redondant avec send_recv)
           int counter_id = get_counter_id_from_index_in_comm_tracking_info(j);
           if( strcmp(si.description[counter_id], "DoubleVect/IntVect::echange_espace_virtuel") )
-            tot_communication_in_zone_i += si.communication_tracking_info[j][i+1].time;
+            tot_communication_in_domaine_i += si.communication_tracking_info[j][i+1].time;
         }
 
-      double tot_avg_communication_in_zone_i = Process::mp_sum(tot_communication_in_zone_i);
-      tot_avg_communication_in_zone_i /= Process::nproc();
+      double tot_avg_communication_in_domaine_i = Process::mp_sum(tot_communication_in_domaine_i);
+      tot_avg_communication_in_domaine_i /= Process::nproc();
 
-      double tot_time_in_zone_i = si.counter_time[i].second();
-      int comm_pourcent = tot_time_in_zone_i != 0.0 ?  (int)std::lrint(tot_communication_in_zone_i / tot_time_in_zone_i * 100) : 0;
+      double tot_time_in_domaine_i = si.counter_time[i].second();
+      int comm_pourcent = tot_time_in_domaine_i != 0.0 ?  (int)std::lrint(tot_communication_in_domaine_i / tot_time_in_domaine_i * 100) : 0;
       int avg_comm_pourcent = Process::mp_sum(comm_pourcent) / Process::nproc();
 
-      if (tot_avg_communication_in_zone_i)
+      if (tot_avg_communication_in_domaine_i)
         {
-          comm << si.description[i] << " : " << tot_avg_communication_in_zone_i << "s de communications (soit ";
+          comm << si.description[i] << " : " << tot_avg_communication_in_domaine_i << "s de communications (soit ";
           comm << avg_comm_pourcent << "% du temps total consomme par ce compteur)\n";
 
           for(int j = 0; j < si.nb_comm_counters; j++)
@@ -1153,7 +1153,7 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
                   double avg_communication_of_type_j = Process::mp_sum(communication_of_type_j.time);
                   avg_communication_of_type_j /= Process::nproc();
 
-                  int communication_type_pourcentage = tot_communication_in_zone_i != 0.0 ? (int)std::lrint(communication_of_type_j.time / tot_communication_in_zone_i * 100) : 0;
+                  int communication_type_pourcentage = tot_communication_in_domaine_i != 0.0 ? (int)std::lrint(communication_of_type_j.time / tot_communication_in_domaine_i * 100) : 0;
                   int avg_communication_type_pourcentage = Process::mp_sum(communication_type_pourcentage);
                   avg_communication_type_pourcentage /= Process::nproc();
 
@@ -1211,23 +1211,23 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
       // first counter is "Temps total", we can skip it
       for (int j = 1; j < si.nb_counters; j++)
         {
-          double communication_in_zone_j = si.communication_tracking_info[i][j+1].time;
-          double avg_communication_in_zone_j = Process::mp_sum(communication_in_zone_j);
-          avg_communication_in_zone_j /= Process::nproc();
+          double communication_in_domaine_j = si.communication_tracking_info[i][j+1].time;
+          double avg_communication_in_domaine_j = Process::mp_sum(communication_in_domaine_j);
+          avg_communication_in_domaine_j /= Process::nproc();
 
-          int pourcentage = total_time_of_communication_i != 0.0 ? (int)std::lrint(communication_in_zone_j / total_time_of_communication_i * 100) : 0;
+          int pourcentage = total_time_of_communication_i != 0.0 ? (int)std::lrint(communication_in_domaine_j / total_time_of_communication_i * 100) : 0;
           int avg_pourcentage = Process::mp_sum(pourcentage);
           avg_pourcentage /= Process::nproc();
           if(avg_pourcentage)
-            comm << "\tdont " << si.description[j] << " : " << avg_communication_in_zone_j << "s (" << avg_pourcentage << "%) \n";
+            comm << "\tdont " << si.description[j] << " : " << avg_communication_in_domaine_j << "s (" << avg_pourcentage << "%) \n";
 
           if (si.family[counter_id] != 0)
             {
               if( !strcmp(si.family[counter_id], "MPI_allreduce" ) )
-                all_reduce_family[j+1] += communication_in_zone_j;
+                all_reduce_family[j+1] += communication_in_domaine_j;
 
               else if ( !strcmp(si.family[counter_id], "MPI_sendrecv" ) )
-                send_recv_family[j+1] += communication_in_zone_j;
+                send_recv_family[j+1] += communication_in_domaine_j;
             }
 
         }
@@ -1251,15 +1251,15 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
 
   for (int i = 1; i < si.nb_counters; i++)
     {
-      double avg_all_reduce_in_zone_i = Process::mp_sum(all_reduce_family[i]);
-      avg_all_reduce_in_zone_i /= Process::nproc();
+      double avg_all_reduce_in_domaine_i = Process::mp_sum(all_reduce_family[i]);
+      avg_all_reduce_in_domaine_i /= Process::nproc();
 
       int pourcentage = all_reduce_family[0] != 0.0 ? (int)std::lrint(all_reduce_family[i] / all_reduce_family[0] * 100) : 0;
       int avg_pourcentage = Process::mp_sum(pourcentage);
       avg_pourcentage /= Process::nproc();
 
       if(avg_pourcentage)
-        comm << "\tdont " << si.description[i-1] << " : " << avg_all_reduce_in_zone_i << "s (" << avg_pourcentage << "%) \n";
+        comm << "\tdont " << si.description[i-1] << " : " << avg_all_reduce_in_domaine_i << "s (" << avg_pourcentage << "%) \n";
 
     }
 
@@ -1280,15 +1280,15 @@ void Statistiques::print_communciation_tracking_details(const char* message, int
 
   for (int i = 1; i < si.nb_counters; i++)
     {
-      double avg_send_recv_in_zone_i = Process::mp_sum(send_recv_family[i]);
-      avg_send_recv_in_zone_i /= Process::nproc();
+      double avg_send_recv_in_domaine_i = Process::mp_sum(send_recv_family[i]);
+      avg_send_recv_in_domaine_i /= Process::nproc();
 
       int pourcentage = send_recv_family[0] != 0.0 ? (int)std::lrint(send_recv_family[i] / send_recv_family[0] * 100) : 0;
       int avg_pourcentage = Process::mp_sum(pourcentage);
       avg_pourcentage /= Process::nproc();
 
       if(avg_pourcentage)
-        comm << "\tdont " << si.description[i-1] << " : " << avg_send_recv_in_zone_i << "s (" << avg_pourcentage << "%) \n";
+        comm << "\tdont " << si.description[i-1] << " : " << avg_send_recv_in_domaine_i << "s (" << avg_pourcentage << "%) \n";
 
     }
   comm << "\n\n";

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Inc_Q1_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 
 Implemente_base(Champ_Inc_Q1_base,"Champ_Inc_Q1_base",Champ_Inc_base);

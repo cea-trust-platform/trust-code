@@ -16,7 +16,7 @@
 #include <Discretisation_tools.h>
 #include <TRUSTTrav.h>
 #include <Champ_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
 
@@ -24,14 +24,14 @@ void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
 {
   const DoubleTab& tabHn=Hn.valeurs();
   DoubleTab& tabHe=He.valeurs();
-  const Zone_dis_base& zone_dis_base=He.zone_dis_base();
+  const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
 
-  assert(tabHe.dimension_tot(0)==zone_dis_base.nb_elem_tot());
-  assert(tabHn.dimension_tot(0)==zone_dis_base.nb_som_tot());
+  assert(tabHe.dimension_tot(0)==domaine_dis_base.nb_elem_tot());
+  assert(tabHn.dimension_tot(0)==domaine_dis_base.nb_som_tot());
 
-  const IntTab& les_elems=zone_dis_base.zone().les_elems();
+  const IntTab& les_elems=domaine_dis_base.domaine().les_elems();
   int nb_som_elem=les_elems.dimension(1);
-  int nb_elem=zone_dis_base.nb_elem();
+  int nb_elem=domaine_dis_base.nb_elem();
 
   tabHe=0;
   for (int ele=0; ele<nb_elem; ele++)
@@ -53,18 +53,18 @@ void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
   const DoubleTab& tabHe=He.valeurs();
   Debog::verifier("elno entreee",tabHe);
   assert_espace_virtuel_vect(tabHe);
-  const Zone_dis_base& zone_dis_base=He.zone_dis_base();
+  const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
 
-  assert(tabHe.dimension_tot(0)==zone_dis_base.nb_elem_tot());
-  assert(tabHn.dimension_tot(0)==zone_dis_base.nb_som_tot());
+  assert(tabHe.dimension_tot(0)==domaine_dis_base.nb_elem_tot());
+  assert(tabHn.dimension_tot(0)==domaine_dis_base.nb_som_tot());
 
-  const IntTab& les_elems=zone_dis_base.zone().les_elems();
-  const DoubleVect& volumes=ref_cast(Zone_VF,zone_dis_base).volumes();
+  const IntTab& les_elems=domaine_dis_base.domaine().les_elems();
+  const DoubleVect& volumes=ref_cast(Domaine_VF,domaine_dis_base).volumes();
 
   tabHn=0;
   DoubleTrav vsom(tabHn.dimension_tot(0));
   int nb_som_elem=les_elems.dimension(1);
-  int nb_elem_tot=zone_dis_base.nb_elem_tot();
+  int nb_elem_tot=domaine_dis_base.nb_elem_tot();
   int N = tabHn.line_size();
 
   for (int e = 0; e < nb_elem_tot; e++)
@@ -75,7 +75,7 @@ void Discretisation_tools::cells_to_nodes(const Champ_base& He,  Champ_base& Hn)
         vsom(sglob) += volumes(e);
       }
 
-  for (int s = 0; s < zone_dis_base.nb_som(); s++)
+  for (int s = 0; s < domaine_dis_base.nb_som(); s++)
     for (int n = 0; n < N; n++)
       tabHn(s, n) /= vsom(s);
 
@@ -86,14 +86,14 @@ void Discretisation_tools::faces_to_cells(const Champ_base& Hf,  Champ_base& He)
 {
   const DoubleTab& tabHf=Hf.valeurs();
   DoubleTab& tabHe=He.valeurs();
-  const Zone_dis_base& zone_dis_base=He.zone_dis_base();
-  const Zone_VF& zone_vf= ref_cast(Zone_VF,zone_dis_base);
-  assert(tabHe.dimension_tot(0)==zone_dis_base.nb_elem_tot());
-  assert(tabHf.dimension_tot(0)==zone_vf.nb_faces_tot());
+  const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
+  const Domaine_VF& domaine_vf= ref_cast(Domaine_VF,domaine_dis_base);
+  assert(tabHe.dimension_tot(0)==domaine_dis_base.nb_elem_tot());
+  assert(tabHf.dimension_tot(0)==domaine_vf.nb_faces_tot());
 
-  const IntTab& elem_faces=zone_vf.elem_faces();
+  const IntTab& elem_faces=domaine_vf.elem_faces();
   int nb_face_elem=elem_faces.dimension(1);
-  int nb_elem=zone_dis_base.nb_elem();
+  int nb_elem=domaine_dis_base.nb_elem();
 
   tabHe=0;
   for (int ele=0; ele<nb_elem; ele++)
@@ -115,24 +115,24 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
   const DoubleTab& tabHe=He.valeurs();
   Debog::verifier("element_face entreee",tabHe);
   assert_espace_virtuel_vect(tabHe);
-  const Zone_dis_base& zone_dis_base=He.zone_dis_base();
+  const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
 
-  const Zone_VF& zone_vf= ref_cast(Zone_VF,zone_dis_base);
+  const Domaine_VF& domaine_vf= ref_cast(Domaine_VF,domaine_dis_base);
   // en realite on fait P1B vers face
-  //assert(tabHe.dimension_tot(0)==zone_dis_base.nb_elem_tot());
-  assert(tabHf.dimension_tot(0)==zone_vf.nb_faces_tot());
+  //assert(tabHe.dimension_tot(0)==domaine_dis_base.nb_elem_tot());
+  assert(tabHf.dimension_tot(0)==domaine_vf.nb_faces_tot());
 
-  const IntTab& elem_faces=zone_vf.elem_faces();
-  const DoubleVect& volumes=zone_vf.volumes();
-  const DoubleVect& volumes_entrelaces=zone_vf.volumes_entrelaces();
+  const IntTab& elem_faces=domaine_vf.elem_faces();
+  const DoubleVect& volumes=domaine_vf.volumes();
+  const DoubleVect& volumes_entrelaces=domaine_vf.volumes_entrelaces();
 
   tabHf=0;
   int nb_face_elem=elem_faces.dimension(1);
-  int nb_elem_tot=zone_dis_base.nb_elem_tot();
+  int nb_elem_tot=domaine_dis_base.nb_elem_tot();
 
   double coeffb=nb_face_elem;
   double coeffi=coeffb;
-  if (zone_vf.que_suis_je()=="Zone_VDF")
+  if (domaine_vf.que_suis_je()=="Domaine_VDF")
     {
       coeffb=1;
       coeffi=2;
@@ -149,7 +149,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
             tabHf(elem_faces(ele,s))+=tabHe(ele,0)*volumes(ele);
             vol_tot(elem_faces(ele,s)) += volumes(ele);
           }
-      for (int f = 0; f < zone_vf.nb_faces(); f++)
+      for (int f = 0; f < domaine_vf.nb_faces(); f++)
         tabHf(f) /= vol_tot(f);
     }
   else
@@ -166,18 +166,18 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
               for (int s=0; s<nb_face_elem; s++)
                 {
                   int face=elem_faces(ele,s);
-                  for (int r = 0; r < zone_vf.dimension; r++)
+                  for (int r = 0; r < domaine_vf.dimension; r++)
                     {
                       // Change of basis N.K.N, with N the normal of the face, and K the tensorial coefficient to get the value of the diffusivity
                       // on the direction of the surface normal.
-                      double normOnSurf = zone_vf.face_normales(face, r) / zone_vf.face_surfaces(face);
+                      double normOnSurf = domaine_vf.face_normales(face, r) / domaine_vf.face_surfaces(face);
                       tabHf(face) += tabHe(ele, r) * normOnSurf * normOnSurf * volumes(ele);
                     }
                 }
             }
-          for (int f=0; f<zone_vf.premiere_face_int(); f++)
+          for (int f=0; f<domaine_vf.premiere_face_int(); f++)
             tabHf(f)/=volumes_entrelaces(f)*coeffb;
-          for (int f=zone_vf.premiere_face_int(); f<zone_vf.nb_faces(); f++)
+          for (int f=domaine_vf.premiere_face_int(); f<domaine_vf.nb_faces(); f++)
             tabHf(f)/=volumes_entrelaces(f)*coeffi;
         }
       else
@@ -194,10 +194,10 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
                 }
             }
 
-          for (int f=0; f<zone_vf.premiere_face_int(); f++)
+          for (int f=0; f<domaine_vf.premiere_face_int(); f++)
             for (int comp=0; comp<nb_comp; comp++)
               tabHf(f,comp)/=volumes_entrelaces(f)*coeffb;
-          for (int f=zone_vf.premiere_face_int(); f<zone_vf.nb_faces(); f++)
+          for (int f=domaine_vf.premiere_face_int(); f<domaine_vf.nb_faces(); f++)
             for (int comp=0; comp<nb_comp; comp++)
               tabHf(f,comp)/=volumes_entrelaces(f)*coeffi;
 

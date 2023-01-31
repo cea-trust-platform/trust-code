@@ -18,7 +18,7 @@
 #include <Discretisation_base.h>
 #include <Convection_Diffusion_std.h>
 #include <Mod_turb_hyd_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
 #include <Param.h>
 
@@ -109,10 +109,10 @@ void Modele_turbulence_scal_base::associer_eqn(const Equation_base& eqn)
 
 /*! @brief NE FAIT RIEN
  *
- * @param (Zone_dis&) une zone discretisee
- * @param (Zone_Cl_dis&) une zone de conditions aux limites discretisees
+ * @param (Domaine_dis&) une domaine discretisee
+ * @param (Domaine_Cl_dis&) une domaine de conditions aux limites discretisees
  */
-void Modele_turbulence_scal_base::associer(const Zone_dis& , const Zone_Cl_dis& )
+void Modele_turbulence_scal_base::associer(const Domaine_dis& , const Domaine_Cl_dis& )
 {
   ;
 }
@@ -126,7 +126,7 @@ void Modele_turbulence_scal_base::discretiser()
   Cerr << "Turbulence scalar model discretization" << finl;
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   const Discretisation_base& dis = mon_equation->discretisation();
-  const Zone_dis& z = mon_equation->zone_dis();
+  const Domaine_dis& z = mon_equation->domaine_dis();
   dis.discretiser_champ("champ_elem",z.valeur(),"diffusivite_turbulente","m2/s",1, sch.temps_courant(),diffusivite_turbulente_);
   dis.discretiser_champ("champ_elem",z.valeur(),"conductivite_turbulente","W/m/K",1, sch.temps_courant(),conductivite_turbulente_);
   champs_compris_.ajoute_champ(diffusivite_turbulente_);

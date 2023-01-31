@@ -17,8 +17,8 @@
 #define Terme_Boussinesq_VEF_Face_included
 
 #include <Terme_Boussinesq_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 
 class Convection_Diffusion_std;
 class Champ_Don;
@@ -37,9 +37,9 @@ public:
 
 protected:
 
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis&) override;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
 };
 
 #endif

@@ -23,8 +23,8 @@
 
 class Motcle;
 class Equation_base;
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Param;
 class Schema_Temps_base;
 
@@ -54,10 +54,10 @@ public:
   inline int loi_paroi_non_nulle() const;
   inline Turbulence_paroi_scal& loi_paroi();
   virtual void discretiser();
-  //void discretiser_diff_turb(const Schema_Temps_base&, Zone_dis&, Champ_Fonc&) const;
+  //void discretiser_diff_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
   void associer_eqn(const Equation_base& );
   virtual void completer();
-  virtual void associer(const Zone_dis& , const Zone_Cl_dis& );
+  virtual void associer(const Domaine_dis& , const Domaine_Cl_dis& );
   void a_faire(Sortie&) const;
   int sauvegarder(Sortie& ) const override;
   int reprendre(Entree& ) override;

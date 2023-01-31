@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Reordonner.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Reordonner,"Reordonner",Interprete_geometrique_base);
 

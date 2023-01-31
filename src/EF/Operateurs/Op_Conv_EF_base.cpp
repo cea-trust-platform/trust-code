@@ -79,10 +79,10 @@ double Op_Conv_EF_base::calculer_dt_stab() const
 {
   Cerr<<__FILE__<<(int)__LINE__<<" dt_stab mal code "<<finl;
   double dt_stab=1e30;
-  /*  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
-  const DoubleVect& volumes_entrelaces = zone_EF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_EF.volumes_entrelaces_Cl();
+  /*  const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const DoubleVect& volumes_entrelaces = domaine_EF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_EF.volumes_entrelaces_Cl();
   remplir_fluent(fluent);
 
 
@@ -91,9 +91,9 @@ double Op_Conv_EF_base::calculer_dt_stab() const
   // On traite les conditions aux limites
   // Si une face porte une condition de Dirichlet on n'en tient pas compte
   // dans le calcul de dt_stab
-  for (int n_bord=0; n_bord<zone_EF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_EF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
       if ( (sub_type(Dirichlet,la_cl.valeur()))
      ||
      (sub_type(Dirichlet_homogene,la_cl.valeur()))
@@ -112,8 +112,8 @@ double Op_Conv_EF_base::calculer_dt_stab() const
     }
 
   // On traite les faces internes non standard
-  int ndeb = zone_EF.premiere_face_int();
-  int nfin = zone_EF.premiere_face_std();
+  int ndeb = domaine_EF.premiere_face_int();
+  int nfin = domaine_EF.premiere_face_std();
 
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
@@ -123,7 +123,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
 
   // On traite les faces internes standard
   ndeb = nfin;
-  nfin = zone_EF.nb_faces();
+  nfin = domaine_EF.nb_faces();
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
       dt_face = volumes_entrelaces(num_face)/(fluent[num_face]+1.e-30);
@@ -152,18 +152,18 @@ void Op_Conv_EF_base::calculer_pour_post(Champ& espace_stockage,const Nom& optio
 
 }
 
-void Op_Conv_EF_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zone_cl_dis)
+void Op_Conv_EF_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& domaine_cl_dis)
 {
-  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis);
+  const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF,domaine_cl_dis);
   la_zcl_EF = zclEF;
 }
 
-void Op_Conv_EF_base::associer(const Zone_dis& zone_dis,
-                               const Zone_Cl_dis& zone_cl_dis,
+void Op_Conv_EF_base::associer(const Domaine_dis& domaine_dis,
+                               const Domaine_Cl_dis& domaine_cl_dis,
                                const Champ_Inc& )
 {
-  const Zone_EF& zEF = ref_cast(Zone_EF,zone_dis.valeur());
-  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis.valeur());
+  const Domaine_EF& zEF = ref_cast(Domaine_EF,domaine_dis.valeur());
+  const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF,domaine_cl_dis.valeur());
 
   le_dom_EF = zEF;
   la_zcl_EF = zclEF;

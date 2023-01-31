@@ -27,7 +27,7 @@
 
 class Probleme_base;
 class Discretisation_base;
-class Zone_dis_base;
+class Domaine_dis_base;
 class Motcles;
 
 class Chimie : public Objet_U

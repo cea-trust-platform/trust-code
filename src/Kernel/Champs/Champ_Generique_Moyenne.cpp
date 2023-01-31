@@ -62,7 +62,7 @@ void Champ_Generique_Moyenne::completer(const Postraitement_base& post)
 
   const Probleme_base& Pb = get_ref_pb_base();
   const Champ_Generique_base& ch_integre = get_source(0);
-  const Zone_dis_base& zdis = get_ref_zone_dis_base();
+  const Domaine_dis_base& zdis = get_ref_domaine_dis_base();
 
   Op_Moyenne_.associer(zdis,ch_integre,tstat_deb_,tstat_fin_);
   Op_Moyenne_.completer(Pb);

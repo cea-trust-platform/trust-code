@@ -17,9 +17,9 @@
 #include <Equation_base.h>
 #include <Champ_front_calc_interne.h>
 #include <Probleme_base.h>
-#include <Zone_Cl_dis_base.h>
-#include <Zone_VF.h>
-#include <ZoneAxi1d.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Domaine_VF.h>
+#include <DomaineAxi1d.h>
 
 
 Implemente_instanciable(Echange_interne_global_impose,"Paroi_echange_interne_global_impose",Echange_global_impose);
@@ -81,7 +81,7 @@ void Echange_interne_global_impose::verifie_ch_init_nb_comp() const
 // Finish building the champ_front_calc_interne
 void Echange_interne_global_impose::completer()
 {
-  Nom nom_pb(zone_Cl_dis().equation().probleme().le_nom());
+  Nom nom_pb(domaine_Cl_dis().equation().probleme().le_nom());
   Nom nom_bord(frontiere_dis().le_nom());
   Champ_front_calc_interne& t_ext = ref_cast(Champ_front_calc_interne, T_ext().valeur());
 
@@ -90,14 +90,14 @@ void Echange_interne_global_impose::completer()
   Echange_global_impose::completer();
 
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
-  const Zone_VF& zvf = ref_cast(Zone_VF, zone_Cl_dis().zone_dis().valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis().valeur());
 
   frontiere_dis().frontiere().creer_tableau_faces(surface_gap_, Array_base::NOCOPY_NOINIT);
 
 
-  if (zvf.zone().axi1d())
+  if (zvf.domaine().axi1d())
     {
-      const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,zvf.zone());
+      const DomaineAxi1d& domax = ref_cast(DomaineAxi1d,zvf.domaine());
       const IntTab& face_voisins = zvf.face_voisins();
       const DoubleTab& xv = zvf.xv();
       const IntTab& fmap = t_ext.face_map();

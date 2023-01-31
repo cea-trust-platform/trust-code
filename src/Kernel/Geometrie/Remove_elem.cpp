@@ -75,7 +75,7 @@ Entree& Remove_elem::interpreter_(Entree& is)
   return is;
 }
 
-void Remove_elem::recreer_faces(Zone& zone, Faces& faces, IntTab& som_face) const
+void Remove_elem::recreer_faces(Domaine& domaine, Faces& faces, IntTab& som_face) const
 {
   IntTab& sommets = faces.les_sommets();
   int nb_faces = sommets.dimension(0);
@@ -130,7 +130,7 @@ void Remove_elem::recreer_faces(Zone& zone, Faces& faces, IntTab& som_face) cons
   sommets.ref(faces_recreees);
 }
 
-void Remove_elem::creer_faces(Zone& zone, Faces& faces, IntTab& som_face) const
+void Remove_elem::creer_faces(Domaine& domaine, Faces& faces, IntTab& som_face) const
 {
   faces.dimensionner(1);
   IntTab& sommets = faces.les_sommets();
@@ -203,12 +203,12 @@ void Remove_elem::remplir_liste(IntTab& som_face, int ind1, int ind2, int ind3, 
     }
 }
 
-void Remove_elem::remove_elem_(Zone& zone)
+void Remove_elem::remove_elem_(Domaine& domaine)
 {
-  if (zone.type_elem()->que_suis_je() == "Rectangle" || zone.type_elem()->que_suis_je() == "Hexaedre")
+  if (domaine.type_elem()->que_suis_je() == "Rectangle" || domaine.type_elem()->que_suis_je() == "Hexaedre")
     {
 
-      IntTab& les_elems = zone.les_elems();
+      IntTab& les_elems = domaine.les_elems();
       int oldsz = les_elems.dimension(0);
       ArrOfInt marq_remove(oldsz);
       int nbsom = domaine().les_sommets().dimension(0);
@@ -223,7 +223,7 @@ void Remove_elem::remove_elem_(Zone& zone)
       if (f_ok)
         {
           DoubleTab xg(oldsz, dimension);
-          zone.type_elem()->calculer_centres_gravite(xg);
+          domaine.type_elem()->calculer_centres_gravite(xg);
           for (int i = 0; i < oldsz; i++)
             {
               f.setVar(0, xg(i, 0));
@@ -298,54 +298,54 @@ void Remove_elem::remove_elem_(Zone& zone)
       les_elems.ref(new_elems);
 
       // Reconstruction de l'octree
-      zone.invalide_octree();
-      zone.construit_octree();
-      zone.reordonner();
+      domaine.invalide_octree();
+      domaine.construit_octree();
+      domaine.reordonner();
 
       {
         Cerr << " Regeneration of boundaries" << finl;
-        for (auto &itr : zone.faces_bord())
+        for (auto &itr : domaine.faces_bord())
           {
             Faces& les_faces = itr.faces();
             if (dimension == 2)
               les_faces.typer(Faces::segment_2D);
             else
               les_faces.typer(Faces::quadrangle_3D);
-            recreer_faces(zone, les_faces, som_face);
+            recreer_faces(domaine, les_faces, som_face);
           }
         Cerr << " addition of a new boundary issued from removed elements" << finl;
-        Bord& new_bord = zone.faces_bord().add(Bord());
+        Bord& new_bord = domaine.faces_bord().add(Bord());
         new_bord.nommer("newBord");
         if (dimension == 2)
           new_bord.typer_faces(Faces::segment_2D);
         else
           new_bord.typer_faces(Faces::quadrangle_3D);
         Faces& les_faces = new_bord.faces();
-        creer_faces(zone, les_faces, som_face);
+        creer_faces(domaine, les_faces, som_face);
       }
 
       {
         // Les Faces internes
         Cerr << "Regeneration of internal faces" << finl;
-        for (auto &itr : zone.faces_int())
+        for (auto &itr : domaine.faces_int())
           {
             Faces& les_faces = itr.faces();
             if (dimension == 2)
               les_faces.typer(Faces::segment_2D);
             else
               les_faces.typer(Faces::quadrangle_3D);
-            recreer_faces(zone, les_faces, som_face);
+            recreer_faces(domaine, les_faces, som_face);
           }
       }
 
       Cerr << "END of Remove_elem..." << finl;
-      Cerr << "  1 NbElem=" << zone.les_elems().dimension(0) << "  NbNod=" << zone.nb_som() << finl;
+      Cerr << "  1 NbElem=" << domaine.les_elems().dimension(0) << "  NbNod=" << domaine.nb_som() << finl;
     }
 
   else
 
     {
-      Cerr << "We do not yet know how to Remove_elem the " << zone.type_elem()->que_suis_je() << "s" << finl;
+      Cerr << "We do not yet know how to Remove_elem the " << domaine.type_elem()->que_suis_je() << "s" << finl;
       exit();
     }
 }

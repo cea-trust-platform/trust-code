@@ -24,12 +24,12 @@ Entree& Op_Evanescence_Homogene_PolyMAC_P0_Face::readOn(Entree& is) { return Op_
 
 void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs_aux(std::set<int>& idx, IntTrav& sten,  Matrice_Morse& mat ) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const int nf_tot = zone.nb_faces_tot(), D = dimension, N = ch.valeurs().line_size() ;
+  const int nf_tot = domaine.nb_faces_tot(), D = dimension, N = ch.valeurs().line_size() ;
   int i, j, l, e, d, n;
 
-  for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++)
+  for (e = 0, l = nf_tot; e < domaine.nb_elem_tot(); e++)
     for (d = 0; d < D; d++, l++, idx.clear())
       {
         for (i = N * l, n = 0; n < N; n++, i++)
@@ -43,14 +43,14 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs_aux(std::set<in
 
 void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, DoubleTrav coeff, matrices_t matrices, DoubleTab& secmem) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   const DoubleTab& inco = ch.valeurs(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
 
-  int e, i, j, k, l, n, N = inco.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot();
-  for (e = 0; e < zone.nb_elem_tot(); e++) /* elements : a faire D fois par element */
+  int e, i, j, k, l, n, N = inco.line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot();
+  for (e = 0; e < domaine.nb_elem_tot(); e++) /* elements : a faire D fois par element */
     {
       /* phase majoritaire : directement dans l'element */
       for (a_max = 0, k = -1, n = 0; n < N; n++)
@@ -76,7 +76,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
       {
         int diag = (n_m.first == ch.le_nom().getString()); //est-on sur le bloc diagonal?
         Matrice_Morse& mat = *n_m.second;
-        for (e = 0, l = nf_tot; e < zone.nb_elem_tot(); e++) /* elements : l est l'indice de ligne */
+        for (e = 0, l = nf_tot; e < domaine.nb_elem_tot(); e++) /* elements : l est l'indice de ligne */
           for (d = 0; d < D; d++, l++)
             for (n = 0; n < N; n++)
               if (coeff(l, n, 0))

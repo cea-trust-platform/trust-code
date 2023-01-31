@@ -17,7 +17,7 @@
 #define Champ_Fonc_P1_isoP1Bulle_included
 
 #include <Champ_P1iP1B_implementation.h>
-#include <Zone_VEF_PreP1b.h>
+#include <Domaine_VEF_PreP1b.h>
 #include <Champ_Fonc_base.h>
 
 /*! @brief classe Champ_Fonc_P1_isoP1Bulle
@@ -33,7 +33,7 @@ public:
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
 
   // Methodes inlines
-  inline const Zone_VEF_PreP1b& zone_vef() const override { return ref_cast(Zone_VEF_PreP1b,le_dom_VF.valeur()); }
+  inline const Domaine_VEF_PreP1b& domaine_vef() const override { return ref_cast(Domaine_VEF_PreP1b,le_dom_VF.valeur()); }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
@@ -55,12 +55,12 @@ public:
     return Champ_P1iP1B_implementation::valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& val) const override
+  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const override
   {
     return Champ_P1iP1B_implementation::valeur_aux_sommets(dom, val);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& val, int comp) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& val, int comp) const override
   {
     return Champ_P1iP1B_implementation::valeur_aux_sommets_compo(dom, val, comp);
   }
@@ -76,7 +76,7 @@ public:
   }
 
 protected:
-  void completer(const Zone_Cl_dis_base& zcl) override;
+  void completer(const Domaine_Cl_dis_base& zcl) override;
   inline const Champ_base& le_champ() const override { return *this; }
   inline Champ_base& le_champ() override { return *this; }
 };

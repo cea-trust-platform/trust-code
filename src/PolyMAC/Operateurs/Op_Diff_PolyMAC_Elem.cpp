@@ -21,14 +21,14 @@
 #include <Schema_Temps_base.h>
 #include <Champ_Elem_PolyMAC.h>
 #include <Champ_front_calc.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <MD_Vector_base.h>
 #include <communications.h>
 #include <Synonyme_info.h>
 #include <Pb_Multiphase.h>
 #include <Neumann_paroi.h>
 #include <Matrix_tools.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
@@ -62,13 +62,13 @@ void Op_Diff_PolyMAC_Elem::completer()
   Equation_base& eq = equation();
   Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue().valeur());
   ch.init_auxiliary_variables();
-  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
+  const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
       Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
     }
-  flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
+  flux_bords_.resize(domaine.premiere_face_int(), ch.valeurs().line_size());
 }
 
 void Op_Diff_PolyMAC_Elem::init_op_ext() const
@@ -80,7 +80,7 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
     {
       const Op_Diff_PolyMAC_Elem* op = *ops_tbd.begin();
       ops_tbd.erase(ops_tbd.begin()), ops.insert(op);
-      const Conds_lim& cls = op->equation().zone_Cl_dis().les_conditions_limites();
+      const Conds_lim& cls = op->equation().domaine_Cl_dis().les_conditions_limites();
       for (const auto& itr : cls)
         if (sub_type(Echange_contact_PolyMAC, itr.valeur()))
           {
@@ -94,7 +94,7 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
     if (op != this) op_ext.push_back(op); /* remplissage de op_ext avec l'operateur local en 1er */
 
   /* remplissage des o_idx des Echange_Contact_PolyMAC connectes */
-  const Conds_lim& cls = equation().zone_Cl_dis().les_conditions_limites();
+  const Conds_lim& cls = equation().domaine_Cl_dis().les_conditions_limites();
   for (int i = 0; i < cls.size(); i++)
     if (sub_type(Echange_contact_PolyMAC, cls[i].valeur()))
       {
@@ -105,22 +105,22 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
 
 double Op_Diff_PolyMAC_Elem::calculer_dt_stab() const
 {
-  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
-  const IntTab& e_f = zone.elem_faces();
-  const DoubleTab& nf = zone.face_normales(),
+  const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
+  const IntTab& e_f = domaine.elem_faces();
+  const DoubleTab& nf = domaine.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
   int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
   double dt = 1e10;
   DoubleTrav flux(N);
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (n = 0; n < N; n++)
-          flux(n) += zone.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+          flux(n) += domaine.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, pe(e) * ve(e) * (alp ? (*alp)(e, n) : 1) * (lambda(!cL * e, n) / diffu(!cD * e, n)) / flux(n));
@@ -137,7 +137,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
   long p;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes, nombre d'elements total par pb
-  std::vector<std::reference_wrapper<const Zone_PolyMAC>> zone; //zones
+  std::vector<std::reference_wrapper<const Domaine_PolyMAC>> domaine; //domaines
   std::vector<std::reference_wrapper<const Conds_lim>> cls; //conditions aux limites
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_e; //tableaux "fcl", "elem_faces", "faces_voisins"
   std::vector<std::reference_wrapper<const DoubleTab>> diffu, inco; //inconnues, normales aux faces, positions elems / faces / sommets
@@ -147,39 +147,39 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
-      zone.push_back(std::ref(ref_cast(Zone_PolyMAC, op_ext[i]->equation().zone_dis().valeur())));
-      f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces()));
-      cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC, op_ext[i]->equation().domaine_dis().valeur())));
+      f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces()));
+      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
       const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
 
-      N.push_back(ch.valeurs().line_size()), fcl.push_back(std::ref(ch.fcl())), ne_tot.push_back(zone[i].get().nb_elem_tot());
+      N.push_back(ch.valeurs().line_size()), fcl.push_back(std::ref(ch.fcl())), ne_tot.push_back(domaine[i].get().nb_elem_tot());
       inco.push_back(ch.valeurs()), v_part.emplace_back(ch.valeurs());
       stencil[i].resize(0, 2), stencil[i].set_smart_resize(1);
     }
 
   IntTrav tpfa(0, N[0]); //pour suivre quels flux sont a deux points
-  zone[0].get().creer_tableau_faces(tpfa), tpfa = 1;
+  domaine[0].get().creer_tableau_faces(tpfa), tpfa = 1;
 
   if (!aux_only) Cerr << "Op_Diff_PolyMAC_Elem::dimensionner() : ";
   DoubleTrav w2;
   /* probleme local */
   for (w2.set_smart_resize(1), e = 0; e < ne_tot[0]; e++)
     {
-      zone[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
+      domaine[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
       //element <-> toutes ses faces (non Dirichlet)
       if (!aux_only && !semi)
         for (i = 0; i < w2.dimension(0); i++)
           if (!semi && fcl[0](f = e_f[0](e, i), 0) < 6)
             {
-              if (e < zone[0].get().nb_elem())
+              if (e < domaine[0].get().nb_elem())
                 for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * e + n, N[0] * (ne_tot[0] + f) + n);
-              if (f < zone[0].get().nb_faces())
+              if (f < domaine[0].get().nb_faces())
                 for (n = 0; n < N[0]; n++) stencil[0].append_line(N[0] * (ne_tot[0] + f) + n, N[0] * e + n);
             }
       //face <-> face (si les deux sont non Dirichlet)
       for (i = 0; i < w2.dimension(0); i++)
-        if ((f = e_f[0](e, i)) >= zone[0].get().nb_faces()) continue; //face virtuelle -> rien
+        if ((f = e_f[0](e, i)) >= domaine[0].get().nb_faces()) continue; //face virtuelle -> rien
         else if (semi || fcl[0](f = e_f[0](e, i), 0) > 5)
           for (n = 0; n < N[0]; n++) //Dirichlet ou semi-implicite -> diagonale
             stencil[0].append_line(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[0] + f) + n);
@@ -195,7 +195,7 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
         for (pcl->init_f_dist(), j = 0, p = std::find(op_ext.begin(), op_ext.end(), &pcl->o_diff.valeur()) - op_ext.begin(); j < pcl->fvf->nb_faces(); j++)
           {
             f = pcl->fvf->num_face(j), o_f = pcl->f_dist(j), o_e = f_e[p](o_f, 0); //faces cote local/distant, elem cote distant
-            zone[p].get().W2(&diffu[p].get(), o_e, w2); //matrice w2 de l'autre cote
+            domaine[p].get().W2(&diffu[p].get(), o_e, w2); //matrice w2 de l'autre cote
             k = (int)(std::find(&e_f[p](o_e, 0), &e_f[p](o_e, 0) + w2.dimension(0), o_f) - &e_f[p](o_e, 0)); //indice de o_f dans o_e
             if (!aux_only)
               for (n = 0; n < N[0]; n++)
@@ -218,8 +218,8 @@ void Op_Diff_PolyMAC_Elem::dimensionner_blocs_ext(int aux_only, matrices_t matri
       }
 
   for (auto &&st : stencil) n_sten += st.dimension(0); //n_sten : nombre total de points du stencil de l'operateur
-  if (!aux_only) Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N[0] * zone[0].get().mdv_elems_faces.valeur().nb_items_seq_tot())
-                        << " " << mp_somme_vect(tpfa) * 100. / (N[0] * zone[0].get().md_vector_faces().valeur().nb_items_seq_tot()) << "% TPFA " << finl;
+  if (!aux_only) Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N[0] * domaine[0].get().mdv_elems_faces.valeur().nb_items_seq_tot())
+                        << " " << mp_somme_vect(tpfa) * 100. / (N[0] * domaine[0].get().md_vector_faces().valeur().nb_items_seq_tot()) << "% TPFA " << finl;
 }
 
 void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
@@ -229,7 +229,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   int i, j, k1, k2, e, f, fb, n, M, n_ext = (int)op_ext.size(), semi = (int)semi_impl.count(nom_inco), d, D = dimension;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N, ne_tot; //composantes
-  std::vector<std::reference_wrapper<const Zone_PolyMAC>> zone; //zones
+  std::vector<std::reference_wrapper<const Domaine_PolyMAC>> domaine; //domaines
   std::vector<std::reference_wrapper<const Conds_lim>> cls; //conditions aux limites
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_e, f_s; //tableaux "fcl", "elem_faces", "faces_voisins"
   std::vector<std::reference_wrapper<const DoubleVect>> fs, pf, pe, ve; //surfaces
@@ -240,18 +240,18 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
-      zone.push_back(std::ref(ref_cast(Zone_PolyMAC, op_ext[i]->equation().zone_dis().valeur())));
-      f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces())), f_s.push_back(std::ref(zone[i].get().face_sommets()));
-      fs.push_back(std::ref(zone[i].get().face_surfaces()));
-      xp.push_back(std::ref(zone[i].get().xp())), xv.push_back(std::ref(zone[i].get().xv()));
-      pe.push_back(std::ref(equation().milieu().porosite_elem())), pf.push_back(std::ref(equation().milieu().porosite_face())), ve.push_back(std::ref(zone[i].get().volumes()));
-      cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC, op_ext[i]->equation().domaine_dis().valeur())));
+      f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces())), f_s.push_back(std::ref(domaine[i].get().face_sommets()));
+      fs.push_back(std::ref(domaine[i].get().face_surfaces()));
+      xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv()));
+      pe.push_back(std::ref(equation().milieu().porosite_elem())), pf.push_back(std::ref(equation().milieu().porosite_face())), ve.push_back(std::ref(domaine[i].get().volumes()));
+      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_Elem, *op_ext[i]).nu());
       const Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue().valeur() : op_ext[i]->equation().inconnue().valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs())), v_part.emplace_back(inco.back());
       corr.push_back(sub_type(Energie_Multiphase, op_ext[i]->equation()) && ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).has_correlation("flux_parietal")
                      ? &ref_cast(Flux_parietal_base, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).get_correlation("flux_parietal").valeur()) : NULL);
-      N.push_back(inco[i].get().line_size()), ne_tot.push_back(zone[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
+      N.push_back(inco[i].get().line_size()), ne_tot.push_back(domaine[i].get().nb_elem_tot()), fcl.push_back(std::ref(ch.fcl()));
     }
 
   /* que faire avec les variables auxiliaires ? */
@@ -264,7 +264,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
   DoubleTrav w2, flux(N[0]), acc(N[0]);
   for (w2.set_smart_resize(1), e = 0; e < ne_tot[0]; e++)
     {
-      zone[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
+      domaine[0].get().W2(&diffu[0].get(), e, w2); //interpolation : [n_ef.nu grad T]_f = w2_{ff'} (T_f' - T_e)
 
       for (i = 0; i < w2.dimension(0); i++) //seconds membres
         {
@@ -276,7 +276,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
               secmem(!aux_only * ne_tot[0] + f, n) -= flux(n);
           if (!aux_only)
             for (n = 0; n < N[0]; n++) secmem(e, n) += flux(n);
-          if (!aux_only && f < zone[0].get().premiere_face_int())
+          if (!aux_only && f < domaine[0].get().premiere_face_int())
             for (n = 0; n < N[0]; n++) flux_bords_(f, n) = -flux(n); //flux aux bords
         }
 
@@ -285,7 +285,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
       for (acc = 0, i = 0; i < w2.dimension(0); i++)
         for (j = 0; j < w2.dimension(1); j++)
           for (n = 0; n < N[0]; n++) acc(n) += w2(i, j, n);
-      if (!aux_only && e < zone[0].get().nb_elem())
+      if (!aux_only && e < domaine[0].get().nb_elem())
         for (n = 0; n < N[0]; n++) (*mat[0])(N[0] * e + n, N[0] * e + n) += acc(n);
       //matrice: elem-face
       if (!aux_only)
@@ -294,14 +294,14 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
             {
               for (acc = 0, j = 0; j < w2.dimension(1); j++)
                 for (n = 0; n < N[0]; n++) acc(n) += w2(i, j, n);
-              if (f < zone[0].get().nb_faces())
+              if (f < domaine[0].get().nb_faces())
                 for (n = 0; n < N[0]; n++) (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * e + n) -= acc(n);
-              if (e < zone[0].get().nb_elem())
+              if (e < domaine[0].get().nb_elem())
                 for (n = 0; n < N[0]; n++) (*mat[0])(N[0] * e + n, N[0] * (ne_tot[0] + f) + n) -= acc(n);
             }
       //matrice : face-face
       for (i = 0; i < w2.dimension(0); i++)
-        if (fcl[0](f = e_f[0](e, i), 0) < 6 && f < zone[0].get().nb_faces())
+        if (fcl[0](f = e_f[0](e, i), 0) < 6 && f < domaine[0].get().nb_faces())
           for (j = 0; j < w2.dimension(1); j++)
             if (fcl[0](fb = e_f[0](e, j), 0) < 6)
               for (n = 0; n < N[0]; n++)
@@ -310,7 +310,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
     }
 
   //contributions restantes aux equations aux faces
-  for (f = 0; f < zone[0].get().nb_faces(); f++)
+  for (f = 0; f < domaine[0].get().nb_faces(); f++)
     if (!aux_only && semi && mat[0])
       for (n = 0; n < N[0]; n++) //semi-implicite : T_f^+ = var_aux
         secmem(ne_tot[0] + f, n) += v_aux[0](f, n) - (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs())(ne_tot[0] + f, n), (*mat[0])(N[0] * (ne_tot[0] + f) + n, N[0] * (ne_tot[0] + f) + n)++;
@@ -333,7 +333,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
           for (prefac = fs[0](fb) * pf[0](fb) * (e == f_e[0](fb, 0) ? 1 : -1) / (pe[0](e) * ve[0](e)), n = 0; n < N[0]; n++)
             for (fac = prefac * vit(fb, n), d = 0; d < D; d++)
               v(n, d) += fac * (xv[0](fb, d) - xp[0](e, d));
-        for (n = 0; n < N[0]; n++) nv(n) = sqrt(zone[0].get().dot(&v(n, 0), &v(n, 0)));
+        for (n = 0; n < N[0]; n++) nv(n) = sqrt(domaine[0].get().dot(&v(n, 0), &v(n, 0)));
         //Tparoi : estimation initiale + Newton si on ne la connait pas
         double h_imp = fcl[0](f, 0) == 1 ? ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur()).h_imp(fcl[0](f, 2), 0) : 0,
                T_ext = fcl[0](f, 0) == 1 ? ref_cast(Echange_impose_base, cls[0].get()[fcl[0](f, 1)].valeur()).T_ext(fcl[0](f, 2), 0) : 0, dTp, FT, dFTp;
@@ -377,7 +377,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
               for (prefac = fs[o_p](fb) * pf[o_p](fb) * (o_e == f_e[o_p](fb, 0) ? 1 : -1) / (pe[o_p](o_e) * ve[o_p](o_e)), n = 0; n < N[o_p]; n++)
                 for (fac = prefac * vit(fb, n), d = 0; d < D; d++)
                   v(n, d) += fac * (xv[o_p](fb, d) - xp[o_p](o_e, d));
-            for (n = 0; n < N[o_p]; n++) nv(n) = sqrt(zone[0].get().dot(&v(n, 0), &v(n, 0)));
+            for (n = 0; n < N[o_p]; n++) nv(n) = sqrt(domaine[0].get().dot(&v(n, 0), &v(n, 0)));
             //appel : on n'est implicite qu'en les temperatures
             Flux_parietal_base::input_t in;
             Flux_parietal_base::output_t out;
@@ -401,7 +401,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
               if (mat[0])   (*mat[0])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[0] * (!aux_only * ne_tot[0] + f) + n) += fs[0](f) / ech.invh_paroi; //derivees
               if (mat[o_p]) (*mat[o_p])(N[0] * (!aux_only * ne_tot[0] + f) + n, N[o_p] * (!aux_only * ne_tot[o_p] + o_f) + n) -= fs[0](f) / ech.invh_paroi;
             }
-        else for (zone[o_p].get().W2(&diffu[o_p].get(), o_e, w2), i = 0; i < w2.dimension(0); i++) /* pas de resistance -> ajout du flux de l'autre cote */
+        else for (domaine[o_p].get().W2(&diffu[o_p].get(), o_e, w2), i = 0; i < w2.dimension(0); i++) /* pas de resistance -> ajout du flux de l'autre cote */
             if (e_f[o_p](o_e, i) == o_f)
               for (j = 0; j < w2.dimension(1); j++)
                 for (n = 0; n < N[0]; n++)

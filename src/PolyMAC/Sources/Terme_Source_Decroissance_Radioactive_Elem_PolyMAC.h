@@ -18,7 +18,7 @@
 #define Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included
 
 #include <Source_base.h>
-#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC.h>
 #include <vector>
 
 /*! @brief class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC
@@ -50,8 +50,8 @@ protected:
 
   std::vector<double> lambda;
   int nb_groupes=0;
-  REF(Zone_PolyMAC) le_dom_PolyMAC;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };
 

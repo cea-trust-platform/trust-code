@@ -15,10 +15,10 @@
 
 #include <Champ_Fonc_Face_PolyMAC.h>
 #include <Champ_Uniforme.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <TRUSTTab.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_Fonc_Face_PolyMAC,"Champ_Fonc_Face_PolyMAC",Champ_Fonc_base);
 
@@ -29,9 +29,9 @@ Entree& Champ_Fonc_Face_PolyMAC::readOn(Entree& is) { return is; }
 int Champ_Fonc_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
   // j'utilise le meme genre de code que dans Champ_Fonc_P0_base sauf que je recupere le nombre de faces au lieu du nombre d'elements
-  // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer la zone discrete...
+  // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer la domaine discrete...
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
-  const Zone_VF& le_dom_vf = ref_cast(Zone_VF, self.zone_dis_base());
+  const Domaine_VF& le_dom_vf = ref_cast(Domaine_VF, self.domaine_dis_base());
 
   assert(n == le_dom_vf.nb_faces());
 
@@ -49,10 +49,10 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
-  const Zone_PolyMAC& zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_vf());
-  int nb_faces = zone_PolyMAC.nb_faces();
-  const DoubleVect& surface = zone_PolyMAC.face_surfaces();
-  const DoubleTab& normales = zone_PolyMAC.face_normales();
+  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_vf());
+  int nb_faces = domaine_PolyMAC.nb_faces();
+  const DoubleVect& surface = domaine_PolyMAC.face_surfaces();
+  const DoubleTab& normales = domaine_PolyMAC.face_normales();
 
   if (sub_type(Champ_Uniforme, ch))
     {
@@ -68,9 +68,9 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
     }
   else if (nb_compo_ == dimension)
     {
-      //      int ndeb_int = zone_PolyMAC.premiere_face_int();
-      //      const IntTab& face_voisins = zone_PolyMAC.face_voisins();
-      const DoubleTab& xv = zone_PolyMAC.xv();
+      //      int ndeb_int = domaine_PolyMAC.premiere_face_int();
+      //      const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
+      const DoubleTab& xv = domaine_PolyMAC.xv();
       DoubleTab eval(val.dimension_tot(0), dimension);
       ch.valeur_aux(xv, eval);
       for (int num_face = 0; num_face < nb_faces; num_face++)
@@ -85,9 +85,9 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
     }
   else if (nb_compo_ == 1)
     {
-      //      int ndeb_int = zone_PolyMAC.premiere_face_int();
-      //      const IntTab& face_voisins = zone_PolyMAC.face_voisins();
-      const DoubleTab& xv = zone_PolyMAC.xv();
+      //      int ndeb_int = domaine_PolyMAC.premiere_face_int();
+      //      const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
+      const DoubleTab& xv = domaine_PolyMAC.xv();
       ch.valeur_aux(xv, val);
     }
   else
@@ -126,11 +126,11 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
       Process::exit();
     }
 
-  const Zone_PolyMAC& zone_VF = ref_cast(Zone_PolyMAC, zone_vf());
-  //  const Zone& zone_geom = zone_VDF.zone();
-  const DoubleTab& normales = zone_VF.face_normales();
-  //  const DoubleVect& surfaces = zone_VF.face_surfaces();
-  const IntTab& elem_faces = zone_VF.elem_faces();
+  const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC, domaine_vf());
+  //  const Domaine& domaine_geom = domaine_VDF.domaine();
+  const DoubleTab& normales = domaine_VF.face_normales();
+  //  const DoubleVect& surfaces = domaine_VF.face_surfaces();
+  const IntTab& elem_faces = domaine_VF.elem_faces();
 
   const DoubleTab& ch = cha.valeurs();
 
@@ -192,12 +192,12 @@ int Champ_Fonc_Face_PolyMAC::remplir_coord_noeuds_et_polys(DoubleTab& positions,
   throw;
 }
 
-DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets(const Zone& domain, DoubleTab& result) const
+DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
 {
   throw;
 }
 
-DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const
+DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
 {
   throw;
 }

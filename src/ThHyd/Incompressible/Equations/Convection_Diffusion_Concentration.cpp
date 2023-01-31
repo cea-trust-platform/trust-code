@@ -136,7 +136,7 @@ void Convection_Diffusion_Concentration::discretiser()
   const Discret_Thyd& dis = ref_cast(Discret_Thyd, discretisation());
   Cerr << "Transport concentration(s) equation discretization " << finl;
   nb_constituants_ = constituant().nb_constituants();
-  dis.concentration(schema_temps(), zone_dis(), la_concentration, nb_constituants_);
+  dis.concentration(schema_temps(), domaine_dis(), la_concentration, nb_constituants_);
   champs_compris_.ajoute_champ(la_concentration);
   Equation_base::discretiser();
 }

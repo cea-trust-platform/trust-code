@@ -31,12 +31,12 @@ class Op_Div_VDF_Elem : public Op_Div_VDF_base
   Declare_instanciable_sans_constructeur(Op_Div_VDF_Elem);
 public:
   Op_Div_VDF_Elem();
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void volumique(DoubleTab& ) const override;
 
 protected:
-  REF(Zone_VDF) le_dom_vdf;
-  REF(Zone_Cl_VDF) la_zcl_vdf;
+  REF(Domaine_VDF) le_dom_vdf;
+  REF(Domaine_Cl_VDF) la_zcl_vdf;
 };
 
 #endif /* Op_Div_VDF_Elem_included */

@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <MaillerParallel.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Motcle.h>
 #include <Scatter.h>
 #include <Statistiques.h>
@@ -46,7 +46,7 @@ Sortie& MaillerParallel::printOn(Sortie& os) const
 
 struct BlocData
 {
-  void add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const;
+  void add_bloc(Domaine& domaine, const ArrsOfDouble& coord_ijk) const;
   // xmin_tot = 0 implicitement
   // xmax_tot = nombre total de sommets dans le maillage
   // xmax = indice du dernier sommet + 1
@@ -62,10 +62,10 @@ struct BlocData
   {
     return xmax_[i] - xmin_[i] - 1;
   }
-  void add_faces(Zone& zone, const Nom& nombord, int offset_sommets, int dir, int cote_max) const;
+  void add_faces(Domaine& domaine, const Nom& nombord, int offset_sommets, int dir, int cote_max) const;
 };
 
-void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
+void BlocData::add_bloc(Domaine& domaine, const ArrsOfDouble& coord_ijk) const
 {
   if (nb_elem(0) < 1 || nb_elem(1) < 1 || nb_elem(2) < 1)
     {
@@ -147,7 +147,7 @@ void BlocData::add_bloc(Zone& domaine, const ArrsOfDouble& coord_ijk) const
     }
 }
 
-void BlocData::add_faces(Zone& zone, const Nom& nombord, int offset_sommets, int dir, int cote_max) const
+void BlocData::add_faces(Domaine& domaine, const Nom& nombord, int offset_sommets, int dir, int cote_max) const
 {
   int nfaces1, nfaces2;
   int increment1, increment2;
@@ -179,9 +179,9 @@ void BlocData::add_faces(Zone& zone, const Nom& nombord, int offset_sommets, int
   if (cote_max)
     offset_sommets += increment_dir * (nb_som(dir)-1);
 
-  IntTab& faces = zone.frontiere(nombord).faces().les_sommets();
+  IntTab& faces = domaine.frontiere(nombord).faces().les_sommets();
   int count = faces.dimension(0);
-  zone.frontiere(nombord).faces().dimensionner(count + nfaces1 * nfaces2);
+  domaine.frontiere(nombord).faces().dimensionner(count + nfaces1 * nfaces2);
   for (int i = 0; i < nfaces2; i++)
     {
       int sommet = offset_sommets;
@@ -346,17 +346,17 @@ void find_matching_coordinates(const DoubleTab& coords,
  *  Fills "faces" with the local node numbers of the faces that have been found.
  *
  */
-static void find_joint_faces(const Zone& zone, IntTab& faces)
+static void find_joint_faces(const Domaine& domaine, IntTab& faces)
 {
   Static_Int_Lists som_elem;
-  const IntTab& elements = zone.les_elems();
-  const int nb_som = zone.nb_som();
+  const IntTab& elements = domaine.les_elems();
+  const int nb_som = domaine.nb_som();
   construire_connectivite_som_elem(nb_som, elements, som_elem, 0 /* do not include virtual elements */);
-  const int nb_som_faces = zone.type_elem().valeur().nb_som_face();
+  const int nb_som_faces = domaine.type_elem().valeur().nb_som_face();
   faces.resize(0, nb_som_faces);
   faces.set_smart_resize(1);
   IntTab faces_element_reference;
-  zone.type_elem().valeur().get_tab_faces_sommets_locaux(faces_element_reference);
+  domaine.type_elem().valeur().get_tab_faces_sommets_locaux(faces_element_reference);
   const int nb_faces_elem = faces_element_reference.dimension(0);
   // Mark faces of elements that are on a boundary
   const int nb_elem = elements.dimension(0);
@@ -365,10 +365,10 @@ static void find_joint_faces(const Zone& zone, IntTab& faces)
   ArrOfInt une_face(nb_som_faces);
   ArrOfInt liste_elements;
   liste_elements.set_smart_resize(1);
-  const int nb_boundaries = zone.nb_front_Cl();
+  const int nb_boundaries = domaine.nb_front_Cl();
   for (int i_boundary = 0; i_boundary < nb_boundaries; i_boundary++)
     {
-      const IntTab& faces_front = zone.frontiere(i_boundary).faces().les_sommets();
+      const IntTab& faces_front = domaine.frontiere(i_boundary).faces().les_sommets();
       const int nb_faces_bord = faces_front.dimension(0);
       for (int j = 0; j < nb_faces_bord; j++)
         {
@@ -409,18 +409,18 @@ static void find_joint_faces(const Zone& zone, IntTab& faces)
             }
         }
     }
-  Process::Journal() << "Domain " << zone.le_nom() << " has " << faces.dimension(0) << " undeclared boundary faces candidates for joint faces" << finl;
+  Process::Journal() << "Domain " << domaine.le_nom() << " has " << faces.dimension(0) << " undeclared boundary faces candidates for joint faces" << finl;
 }
 
-static void auto_build_joints(Zone& zone, const int epaisseur_joint)
+static void auto_build_joints(Domaine& domaine, const int epaisseur_joint)
 {
   const double epsilon = 1e-10;
   int i, j;
   // Find joint faces (faces with 1 neighbour element not registered in boundary faces)
   IntTab faces;
-  find_joint_faces(zone, faces);
+  find_joint_faces(domaine, faces);
 
-  const DoubleTab& sommets = zone.les_sommets();
+  const DoubleTab& sommets = domaine.les_sommets();
   // List of unique local boundary node numbers
   const int dim = sommets.dimension(1);
 
@@ -447,12 +447,12 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
         const int n = list.size_array();
         if (n > 0)
           {
-            Joint& joint = zone.faces_joint().add(Joint());
+            Joint& joint = domaine.faces_joint().add(Joint());
             joint.nommer("Joint_i");
-            joint.associer_domaine(zone);
+            joint.associer_domaine(domaine);
             joint.affecte_epaisseur(epaisseur_joint);
             joint.affecte_PEvoisin(pe);
-            joint.faces().typer(zone.type_elem().valeur().type_face());
+            joint.faces().typer(domaine.type_elem().valeur().type_face());
             ArrOfInt& sommets_joint = joint.set_joint_item(Joint::SOMMET).set_items_communs();
             sommets_joint.resize_array(n, Array_base::NOCOPY_NOINIT);
             for (i = 0; i < n; i++)
@@ -489,9 +489,9 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
           {
             REF(Joint) ref_joint;
             int ii;
-            for (ii = 0; ii < zone.faces_joint().size(); ii++)
+            for (ii = 0; ii < domaine.faces_joint().size(); ii++)
               {
-                Joint& joint = zone.faces_joint()[ii];
+                Joint& joint = domaine.faces_joint()[ii];
                 if (joint.PEvoisin() == pe)
                   {
                     ref_joint = joint;
@@ -500,12 +500,12 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
               }
             if (!ref_joint.non_nul())
               {
-                Joint& joint = zone.faces_joint().add(Joint());
+                Joint& joint = domaine.faces_joint().add(Joint());
                 joint.nommer("Joint_i");
-                joint.associer_domaine(zone);
+                joint.associer_domaine(domaine);
                 joint.affecte_epaisseur(epaisseur_joint);
                 joint.affecte_PEvoisin(pe);
-                joint.faces().typer(zone.type_elem().valeur().type_face());
+                joint.faces().typer(domaine.type_elem().valeur().type_face());
                 ref_joint = joint;
               }
             Faces& les_faces = ref_joint.valeur().faces();
@@ -522,7 +522,7 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
       }
   }
   // Tri des joints dans l'ordre croissant des processeurs
-  Scatter::trier_les_joints(zone.faces_joint());
+  Scatter::trier_les_joints(domaine.faces_joint());
 }
 
 Entree& MaillerParallel::interpreter(Entree& is)
@@ -630,13 +630,13 @@ Entree& MaillerParallel::interpreter(Entree& is)
     }
 
   Objet_U& obj = objet(nom_domaine);
-  if(!sub_type(Zone, obj))
+  if(!sub_type(Domaine, obj))
     {
-      Cerr << "obj : " << nom_domaine << " is not an object of type Zone !" << finl;
+      Cerr << "obj : " << nom_domaine << " is not an object of type Domaine !" << finl;
       exit();
     }
 
-  Zone& domaine = ref_cast(Zone, obj);
+  Domaine& domaine = ref_cast(Domaine, obj);
 
   const int numproc = Process::me();
 
@@ -720,8 +720,8 @@ Entree& MaillerParallel::interpreter(Entree& is)
       }
   }
 
-  // On cree une zone pour le domaine
-  Zone empty_zone;
+  // On cree une domaine pour le domaine
+  Domaine empty_domaine;
   Elem_geom& elem = domaine.type_elem();
   switch(dim)
     {
@@ -829,7 +829,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
   statistiques().end_count(stats);
   double maxtime = mp_max(statistiques().last_time(stats));
   if (Process::je_suis_maitre())
-    Cerr << "Ending of the construction of the zones, time:" << maxtime << finl;
+    Cerr << "Ending of the construction of the domaines, time:" << maxtime << finl;
 
   if (nproc() > 1)
     {

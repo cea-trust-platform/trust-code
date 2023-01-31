@@ -25,7 +25,7 @@
 #include <EcrFicPartage.h>
 #include <Champ_P0_VDF.h>
 #include <Matrix_tools.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Array_tools.h>
 #include <Option_VDF.h>
 #include <TRUSTTrav.h>
@@ -43,10 +43,10 @@ Entree& Op_Grad_VDF_Face::readOn(Entree& s) { return s; }
 
 void Op_Grad_VDF_Face::calculer_flux_bords() const
 {
-  const Zone_VDF& zvdf = le_dom_vdf.valeur();
+  const Domaine_VDF& zvdf = le_dom_vdf.valeur();
   if (flux_bords_.size_array()==0) flux_bords_.resize(zvdf.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
-  const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
+  const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
   const Champ_P0_VDF& la_pression_P0 = ref_cast(Champ_P0_VDF,eqn_hydr.pression_pa().valeur());
   const DoubleTab& pression_P0 = la_pression_P0.valeurs();
@@ -75,12 +75,12 @@ void Op_Grad_VDF_Face::calculer_flux_bords() const
 
 int Op_Grad_VDF_Face::impr(Sortie& os) const
 {
-  const int impr_mom=le_dom_vdf->zone().moments_a_imprimer();
-  const int impr_sum=(le_dom_vdf->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(le_dom_vdf->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=le_dom_vdf->domaine().moments_a_imprimer();
+  const int impr_sum=(le_dom_vdf->domaine().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_vdf->domaine().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
-  const Zone_VDF& zvdf = le_dom_vdf.valeur();
-  const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
+  const Domaine_VDF& zvdf = le_dom_vdf.valeur();
+  const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   int face, ori;
   const int nb_faces =  zvdf.nb_faces_tot();
   DoubleTab xgr(nb_faces,dimension);
@@ -88,7 +88,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
   if (impr_mom)
     {
       const DoubleTab& xgrav = zvdf.xv();
-      const ArrOfDouble& c_grav=zvdf.zone().cg_moments();
+      const ArrOfDouble& c_grav=zvdf.domaine().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++) xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
@@ -104,7 +104,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
     {
       const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      int impr_boundary = (zvdf.zone().bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
+      int impr_boundary = (zvdf.domaine().bords_a_imprimer_sum().contient(le_bord.le_nom()) ? 1 : 0);
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
 
@@ -194,7 +194,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
       if (impr_mom) Flux_grad_moment << finl;
     }
 
-  const LIST(Nom)& Liste_bords_a_imprimer = zvdf.zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = zvdf.domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_grad_face;
@@ -205,7 +205,7 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = le_bord.num_premiere_face();
           int nfin = ndeb + le_bord.nb_faces();
-          if (zvdf.zone().bords_a_imprimer().contient(le_bord.le_nom()))
+          if (zvdf.domaine().bords_a_imprimer().contient(le_bord.le_nom()))
             {
               if (je_suis_maitre())
                 {
@@ -232,7 +232,7 @@ void Op_Grad_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& sem
 {
   if (!matrices.count("pression")) return; //rien a faire
 
-  const Zone_VDF& zvdf = le_dom_vdf.valeur();
+  const Domaine_VDF& zvdf = le_dom_vdf.valeur();
   IntTab sten(0, 2);
   sten.set_smart_resize(1);
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
@@ -261,8 +261,8 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 
   assert_espace_virtuel_vect(inco);
 
-  const Zone_VDF& zvdf = le_dom_vdf.valeur();
-  const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
+  const Domaine_VDF& zvdf = le_dom_vdf.valeur();
+  const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& face_surfaces = zvdf.face_surfaces(), &vf = zvdf.volumes_entrelaces();
   const DoubleTab& vfd = zvdf.volumes_entrelaces_dir();
   const int M = inco.line_size(), N = secmem.line_size();

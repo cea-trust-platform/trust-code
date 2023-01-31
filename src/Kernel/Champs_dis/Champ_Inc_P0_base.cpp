@@ -14,11 +14,11 @@
 *****************************************************************************/
 
 #include <Champ_Inc_P0_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Equation_base.h>
-#include <Zone_dis_base.h>
+#include <Domaine_dis_base.h>
 #include <Frontiere_dis_base.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
 #include <Dirichlet_homogene.h>
@@ -45,10 +45,10 @@ Entree& Champ_Inc_P0_base::readOn(Entree& is)
 int Champ_Inc_P0_base::fixer_nb_valeurs_nodales(int n)
 {
   // Encore une syntaxe a la con, sinon on ne sait pas s'il faut appeler
-  // zone_dis_base() de champ_inc_base ou de champ_impl...
-  const Zone_dis_base& zonedis = ref_cast(Champ_Inc_base, *this).zone_dis_base();
-  assert(n == zonedis.zone().nb_elem());
-  const MD_Vector& md = zonedis.zone().md_vector_elements();
+  // domaine_dis_base() de champ_inc_base ou de champ_impl...
+  const Domaine_dis_base& domainedis = ref_cast(Champ_Inc_base, *this).domaine_dis_base();
+  assert(n == domainedis.domaine().nb_elem());
+  const MD_Vector& md = domainedis.domaine().md_vector_elements();
   creer_tableau_distribue(md);
   return 1;
 }
@@ -86,8 +86,8 @@ void Champ_Inc_P0_base::init_fcl() const
   const Conds_lim& cls = mon_dom_cl_dis.valeur().les_conditions_limites();
   int i, f, n;
 
-  const Zone_VF& zone = ref_cast(Zone_VF, mon_equation->zone_dis().valeur());
-  fcl_.resize(zone.nb_faces_tot(), 3);
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, mon_equation->domaine_dis().valeur());
+  fcl_.resize(domaine.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());

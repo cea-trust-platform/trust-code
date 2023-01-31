@@ -18,11 +18,11 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Perte_Charge.h>
-#include <Zone_dis.h>
+#include <Domaine_dis.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
-class Zone;
-class Zone_dis_base;
+class Domaine;
+class Domaine_dis_base;
 class Equation_base;
 class Source_base;
 
@@ -40,7 +40,7 @@ public :
 
   virtual ~Perte_Charge_Singuliere() {}
   Entree& lire_donnees(Entree&);
-  virtual void lire_surfaces(Entree&, const Zone&, const Zone_dis_base&, IntVect&, IntVect&);
+  virtual void lire_surfaces(Entree&, const Domaine&, const Domaine_dis_base&, IntVect&, IntVect&);
   inline double K() const;
   double calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const; //met a jour le debit a travers la surface et le renvoie
   void update_K(const Equation_base& eqn, double deb, DoubleVect& bilan);                  //regule K_ a partir du debit calcule par update_Q
@@ -50,7 +50,7 @@ protected :
   double K_;
 
   //pour la regulation de K;
-  Nom identifiant_;          //nom pour le fichier de sortie : celui de la surface, ou celui de la sous-zone et de la coupe
+  Nom identifiant_;          //nom pour le fichier de sortie : celui de la surface, ou celui de la sous-domaine et de la coupe
   int regul_;                //1 si regulation activee
   Parser_U deb_cible_, eps_; //K_ peut varier entre [K_ * (1 - eps_(t)), K_ * (1 + eps_(t))] par seconde pour atteindre deb_cible_(t)
 };

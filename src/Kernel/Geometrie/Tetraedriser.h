@@ -17,7 +17,7 @@
 #define Tetraedriser_included
 
 #include <Triangulation_base.h>
-class Zone;
+class Domaine;
 
 /*! @brief Classe Tetraedriser Cette classe est un interprete qui sert a lire et executer
  *
@@ -34,7 +34,7 @@ class Tetraedriser : public Triangulation_base
 
 public :
 
-  void trianguler(Zone&) const override;
+  void trianguler(Domaine&) const override;
   inline int dimension_application() const override;
 };
 

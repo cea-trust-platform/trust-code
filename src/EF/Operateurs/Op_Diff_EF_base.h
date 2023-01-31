@@ -19,13 +19,13 @@
 #include <Neumann_sortie_libre.h>
 #include <Operateur_Diff_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Zone_Cl_EF.h>
-#include <Ref_Zone_EF.h>
+#include <Ref_Domaine_Cl_EF.h>
+#include <Ref_Domaine_EF.h>
 #include <Op_EF_base.h>
-#include <Zone_Cl_EF.h>
-#include <Zone_EF.h>
-class Zone_dis;
-class Zone_Cl_dis;
+#include <Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Champ_Inc_base;
 class Sortie;
 
@@ -43,31 +43,31 @@ class Op_Diff_EF_base : public Operateur_Diff_base, public Op_EF_base
 public:
 
   int impr(Sortie& os) const override;
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   double calculer_dt_stab() const override;
   virtual void remplir_nu(DoubleTab&) const=0;
 
 protected:
 
-  REF(Zone_EF) le_dom_EF;
-  REF(Zone_Cl_EF) la_zcl_EF;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) la_zcl_EF;
   REF(Champ_Inc_base) inconnue;
   mutable DoubleTab nu_;
 
 };
 
-inline void remplir_marqueur_sommet_neumann(ArrOfInt& marqueur,const Zone_EF& zone_EF,const Zone_Cl_EF& zone_Cl_EF , int transpose_partout)
+inline void remplir_marqueur_sommet_neumann(ArrOfInt& marqueur,const Domaine_EF& domaine_EF,const Domaine_Cl_EF& domaine_Cl_EF , int transpose_partout)
 {
-  marqueur.resize_array(zone_EF.nb_som_tot());
+  marqueur.resize_array(domaine_EF.nb_som_tot());
   if ( transpose_partout) return;
   // Neumann :
   int n_bord;
-  int nb_bords=zone_EF.nb_front_Cl();
-  const IntTab& face_sommets=zone_EF.face_sommets();
-  int nb_som_face=zone_EF.nb_som_face();
+  int nb_bords=domaine_EF.nb_front_Cl();
+  const IntTab& face_sommets=domaine_EF.face_sommets();
+  int nb_som_face=domaine_EF.nb_som_face();
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {

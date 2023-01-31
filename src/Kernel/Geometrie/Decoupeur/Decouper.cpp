@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Decouper.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <DomaineCutter.h>
 #include <Format_Post_Lata.h>
 #include <EChaine.h>
@@ -39,15 +39,15 @@ Entree& Decouper::readOn(Entree& is)
  *
  * @throws si le domaine n'a pas ete trouve, exit.
  */
-const Zone& Decouper::find_domain(const Nom& le_nom_domaine)
+const Domaine& Decouper::find_domain(const Nom& le_nom_domaine)
 {
-  const Zone * domaine_ptr = 0;
+  const Domaine * domaine_ptr = 0;
 
   if (objet_existant(le_nom_domaine))
     {
       const Objet_U& objet_domaine = objet(le_nom_domaine);
-      if (sub_type(Zone, objet_domaine))
-        domaine_ptr = & ref_cast(Zone, objet_domaine);
+      if (sub_type(Domaine, objet_domaine))
+        domaine_ptr = & ref_cast(Domaine, objet_domaine);
     }
 
   if (domaine_ptr == 0)
@@ -64,7 +64,7 @@ const Zone& Decouper::find_domain(const Nom& le_nom_domaine)
  *
  */
 static void lire_partitionneur(DERIV(Partitionneur_base) & d_part,
-                               const Zone& domaine, Entree& is)
+                               const Domaine& domaine, Entree& is)
 {
   Nom n;
   is >> n;
@@ -100,7 +100,7 @@ static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
 }
 
 static void postraiter_decoupage(const Nom& nom_fichier_lata,
-                                 const Zone& domaine,
+                                 const Domaine& domaine,
                                  const IntVect& elem_part)
 {
   Cerr << "Postprocessing of the splitting at the lata (V2) format: " << nom_fichier_lata << finl;
@@ -148,25 +148,25 @@ static void postraiter_decoupage(const Nom& nom_fichier_lata,
   post.finir(1);
 }
 
-static void ecrire_sous_zones(const Nom& nom_zones_decoup,
-                              const Decouper::ZonesFileOutputType format,
-                              const Zone& domaine,
-                              IntVect& elem_part,
-                              const int nb_parties,
-                              const int epaisseur_joint,
-                              const int reorder,
-                              const Noms& bords_periodiques,
-                              const Static_Int_Lists* som_raccord)
+static void ecrire_sous_domaines(const Nom& nom_domaines_decoup,
+                                 const Decouper::DomainesFileOutputType format,
+                                 const Domaine& domaine,
+                                 IntVect& elem_part,
+                                 const int nb_parties,
+                                 const int epaisseur_joint,
+                                 const int reorder,
+                                 const Noms& bords_periodiques,
+                                 const Static_Int_Lists* som_raccord)
 {
   DomaineCutter cutter;
   cutter.initialiser(domaine, elem_part, nb_parties, epaisseur_joint,
                      bords_periodiques);
   // Reflexion provisoire:
-  // Les joints sont construits dans ecrire_zones -> construire_sous_domaine
+  // Les joints sont construits dans ecrire_domaines -> construire_sous_domaine
   // Donc apres renumerotation des PEs et donc de elem_part, il faudrait
   // reinitialiser ? Ou bien, tout renumeroter apres le calcul des joints...
   // Cela parait mieux...
-  cutter.ecrire_zones(nom_zones_decoup, format, elem_part, reorder, som_raccord);
+  cutter.ecrire_domaines(nom_domaines_decoup, format, elem_part, reorder, som_raccord);
 }
 
 // XD partition interprete decouper -1 Class for parallel calculation to cut a domain for each processor. By default, this keyword is commented in the reference test cases.
@@ -174,14 +174,14 @@ static void ecrire_sous_zones(const Nom& nom_zones_decoup,
 // XD attr bloc_decouper bloc_decouper bloc_decouper 0 Description how to cut a domain.
 // XD bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
 // XD attr partitionneur|Partition_tool partitionneur_deriv partitionneur 1 Defines the partitionning algorithm (the effective C++ object used is \'Partitionneur_ALGORITHM_NAME\').
-// XD attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost zone (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
-// XD attr nom_zones|zones_name chaine nom_zones 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disk (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
-// XD attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the zone number for each element\'s mesh. Then you can easily permute zone numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
+// XD attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost domaine (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
+// XD attr nom_domaines|domaines_name chaine nom_domaines 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Domaines NL2 name_0002.Domaines NL2 ... NL2 name_000n.Domaines. If this keyword is not specified, the geometry is not written on disk (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
+// XD attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the domaine number for each element\'s mesh. Then you can easily permute domaine numbers in this file. Then read the new partition to create the .Domaines files with the Fichier_Decoupage keyword.
 // XD attr ecrire_lata chaine ecrire_lata 1 not_set
-// XD attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Zone files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty zones from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
+// XD attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Domaine files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty domaines from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
 // XD attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
 // XD attr reorder entier reorder 1 If this option is set to 1 (0 by default), the partition is renumbered in order that the processes which communicate the most are nearer on the network. This may slighlty improves parallel performance.
-// XD attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned zones in a single file in hdf5 format.
+// XD attr single_hdf rien single_hdf 1 Optional keyword to enable you to write the partitioned domaines in a single file in hdf5 format.
 // XD attr print_more_infos entier print_more_infos 1 If this option is set to 1 (0 by default), print infos about number of remote elements (ghosts) and additional infos about the quality of partitionning. Warning, it slows down the cutting operations.
 int Decouper::print_more_infos = 0;
 Entree& Decouper::interpreter(Entree& is)
@@ -217,7 +217,7 @@ Entree& Decouper::lire(Entree& is)
   param.ajouter_non_std("partitionneur|partition_tool",(this),Param::REQUIRED);
   param.ajouter("larg_joint",&epaisseur_joint);
   param.ajouter_condition("value_of_larg_joint_ge_1","The joint thickness must greater or equal to 1.");
-  param.ajouter("nom_zones|zones_name",&nom_zones_decoup);
+  param.ajouter("nom_domaines|domaines_name",&nom_domaines_decoup);
   param.ajouter("ecrire_decoupage",&nom_fichier_decoupage);
   param.ajouter("ecrire_lata",&nom_fichier_lata);
   param.ajouter("nb_parts_tot",&nb_parts_tot);
@@ -252,21 +252,21 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
            << "\nGeneration of " << nb_parts_tot - nb_parties << " empty parts." << finl;
       nb_parties = nb_parts_tot;
     }
-  // Force un seul fichier .Zones au dela d'un certain nombre de rangs MPI:
-  if (Process::force_single_file(nb_parties, nom_zones_decoup+".Zones"))
+  // Force un seul fichier .Domaines au dela d'un certain nombre de rangs MPI:
+  if (Process::force_single_file(nb_parties, nom_domaines_decoup+".Domaines"))
     format_hdf = 1;
 
   if (nom_fichier_decoupage != "?")
     ecrire_fichier_decoupage(nom_fichier_decoupage, elem_part, nb_parts_tot);
 
-  if (nom_zones_decoup != "?")
+  if (nom_domaines_decoup != "?")
     {
-      Decouper::ZonesFileOutputType typ;
+      Decouper::DomainesFileOutputType typ;
       if (format_binaire) typ = BINARY_MULTIPLE;
       if (format_hdf) typ = HDF5_SINGLE;
-      ecrire_sous_zones(nom_zones_decoup, typ,
-                        ref_domaine.valeur(), elem_part, nb_parties, epaisseur_joint, reorder,
-                        liste_bords_periodiques, som_raccord);
+      ecrire_sous_domaines(nom_domaines_decoup, typ,
+                           ref_domaine.valeur(), elem_part, nb_parties, epaisseur_joint, reorder,
+                           liste_bords_periodiques, som_raccord);
     }
 
   if (nom_fichier_lata != "?")
@@ -275,7 +275,7 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
   Cout << "\nQuality of partitioning --------------------------------------------" << finl;
   int total_elem = Process::mp_sum(elem_part.size_reelle());
   Cout << "\nTotal number of elements = " << total_elem << finl;
-  Cout << "Number of Zones : " << nb_parties << finl;
+  Cout << "Number of Domaines : " << nb_parties << finl;
 
   if (Decouper::print_more_infos)
     {
@@ -297,11 +297,11 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
             }
 
 
-          double mean_element_zone = total_elem/nb_parties;
-          if (mean_element_zone>0)
+          double mean_element_domaine = total_elem/nb_parties;
+          if (mean_element_domaine>0)
             {
-              double load_imbalance = double(local_max_vect(A) / mean_element_zone);
-              Cout << "Number of cells per Zone (min/mean/max) : " << local_min_vect(A) << " / " << mean_element_zone << " / "
+              double load_imbalance = double(local_max_vect(A) / mean_element_domaine);
+              Cout << "Number of cells per Domaine (min/mean/max) : " << local_min_vect(A) << " / " << mean_element_domaine << " / "
                    << local_max_vect(A) << " Load imbalance: " << load_imbalance << "\n" << finl;
 
             }
@@ -332,7 +332,7 @@ int Decouper::lire_motcle_non_standard(const Motcle& mot, Entree& is)
   if (mot=="partitionneur|partition_tool")
     {
       Cerr<<"domaine = "<<nom_domaine<<finl;
-      const Zone& domaine = find_domain(nom_domaine);
+      const Domaine& domaine = find_domain(nom_domaine);
       lire_partitionneur(deriv_partitionneur,domaine,is);
     }
   else retval = -1;

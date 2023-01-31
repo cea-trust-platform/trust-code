@@ -17,7 +17,7 @@
 #define Faces_VDF_included
 
 #include <Faces.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_VDF.h>
 
 
 
@@ -37,8 +37,8 @@ public:
 
   inline int orientation(int) const;
   inline int orientation(int);
-  inline void associer(const Zone_VDF&);
-  inline const Zone_VDF& zone_VDF() const;
+  inline void associer(const Domaine_VDF&);
+  inline const Domaine_VDF& domaine_VDF() const;
   void calculer_orientation(IntVect&, int&, int&, int& );
   void reordonner(IntVect& );
   void reordonner_pour_debog(IntVect& );
@@ -49,7 +49,7 @@ private :
   //    0 pour une face d'equation x = cte
   //    1 pour une face d'equation y = cte
   //    2 pour une face d'equation z = cte
-  REF(Zone_VDF) le_dom_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
   void swap(int, int);
 
 };
@@ -64,18 +64,18 @@ inline int Faces_VDF::orientation(int i)
   return orientation_(i);
 }
 
-/*! @brief se lie a la zone
+/*! @brief se lie a la domaine
  *
  */
-inline void Faces_VDF::associer(const Zone_VDF& une_zone_VDF)
+inline void Faces_VDF::associer(const Domaine_VDF& une_domaine_VDF)
 {
-  le_dom_VDF=une_zone_VDF;
+  le_dom_VDF=une_domaine_VDF;
 }
 
-/*! @brief Renvoie la zone
+/*! @brief Renvoie la domaine
  *
  */
-inline const Zone_VDF& Faces_VDF::zone_VDF() const
+inline const Domaine_VDF& Faces_VDF::domaine_VDF() const
 {
   return le_dom_VDF.valeur();
 }

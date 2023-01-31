@@ -24,12 +24,12 @@ Entree& Force_Tchen_PolyMAC_P0::readOn(Entree& is) { return Source_Force_Tchen_b
 
 void Force_Tchen_PolyMAC_P0::dimensionner_blocs_aux(IntTrav& stencil) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const DoubleTab& inco = ref_cast(Champ_Face_base, equation().inconnue().valeur()).valeurs();
-  int N = inco.line_size(), D = dimension, nf_tot = zone.nb_faces_tot();
+  int N = inco.line_size(), D = dimension, nf_tot = domaine.nb_faces_tot();
 
   /* elements */
-  for (int e = 0; e < zone.nb_elem_tot(); e++)
+  for (int e = 0; e < domaine.nb_elem_tot(); e++)
     for (int d = 0 ; d <D ; d++)
       for (int k = 0 ; k<N ; k++)
         if (k != n_l) //phase gazeuse
@@ -40,16 +40,16 @@ void Force_Tchen_PolyMAC_P0::ajouter_blocs_aux(matrices_t matrices, DoubleTab& s
 {
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
                    &rho   = equation().milieu().masse_volumique().passe();
 
   double pas_tps = equation().probleme().schema_temps().pas_de_temps();
-  int N = inco.line_size(), D = dimension, nf_tot = zone.nb_faces_tot();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = zone.volumes();
+  int N = inco.line_size(), D = dimension, nf_tot = domaine.nb_faces_tot();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
 
   /* elements */
-  for (int e = 0; e < zone.nb_elem_tot(); e++)
+  for (int e = 0; e < domaine.nb_elem_tot(); e++)
     for (int d = 0 ; d <D ; d++)
       for (int k = 0 ; k<N ; k++)
         if (k != n_l) //phase gazeuse

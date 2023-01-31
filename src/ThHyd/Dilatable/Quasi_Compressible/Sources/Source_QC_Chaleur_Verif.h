@@ -19,8 +19,8 @@
 #include <Source_Chaleur_Fluide_Dilatable_base.h>
 #include <Ref_Fluide_Quasi_Compressible.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 
 /*! @brief class Source_QC_Chaleur_Verif
  *
@@ -40,7 +40,7 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const override ;
 
 protected:
-  void associer_domaines(const Zone_dis&, const Zone_Cl_dis&) override { }
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override { }
   int mode;
 };
 

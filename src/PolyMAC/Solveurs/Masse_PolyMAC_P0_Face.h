@@ -16,14 +16,14 @@
 #ifndef Masse_PolyMAC_P0_Face_included
 #define Masse_PolyMAC_P0_Face_included
 
-#include <Ref_Zone_PolyMAC_P0.h>
+#include <Ref_Domaine_PolyMAC_P0.h>
 #include <Masse_PolyMAC_Face.h>
 
 class Masse_PolyMAC_P0_Face : public Masse_PolyMAC_Face
 {
   Declare_instanciable(Masse_PolyMAC_P0_Face);
 public:
-  void associer_domaine_dis_base(const Zone_dis_base& ) override;
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
   void completer() override;
 
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
@@ -32,7 +32,7 @@ public:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
 private:
-  REF(Zone_PolyMAC_P0) le_dom_PolyMAC_P0;
+  REF(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
 };
 
 #endif /* Masse_PolyMAC_P0_Face_included */

@@ -16,8 +16,8 @@
 #include <Aire_interfaciale.h>
 #include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 #include <Avanc.h>
 #include <Debog.h>
 #include <Frontiere_dis_base.h>
@@ -81,7 +81,7 @@ void Aire_interfaciale::discretiser()
 
   Cerr << "Interfacial area discretization" << finl;
   //On utilise temperature pour la directive car discretisation identique
-  dis.discretiser_champ("temperature",zone_dis(),"interfacial_area","m-1", N,nb_valeurs_temp,temps,l_inco_ch);//une aire interfaciale par phase
+  dis.discretiser_champ("temperature",domaine_dis(),"interfacial_area","m-1", N,nb_valeurs_temp,temps,l_inco_ch);//une aire interfaciale par phase
   l_inco_ch.valeur().fixer_nature_du_champ(multi_scalaire);
   l_inco_ch.valeur().fixer_nom_compo(0, Nom("tau"));
   champs_compris_.ajoute_champ(l_inco_ch);
@@ -92,7 +92,7 @@ void Aire_interfaciale::discretiser()
   noms[0] = "diametre_bulles";
   unites[0] = "m";
   Motcle typeChamp = "champ_elem" ;
-  const Zone_dis& z = ref_cast(Zone_dis, probleme().domaine_dis());
+  const Domaine_dis& z = ref_cast(Domaine_dis, probleme().domaine_dis());
   dis.discretiser_champ(typeChamp, z.valeur(), multi_scalaire, noms , unites, N, 0, diametre_bulles);
 
   champs_compris_.ajoute_champ(diametre_bulles);

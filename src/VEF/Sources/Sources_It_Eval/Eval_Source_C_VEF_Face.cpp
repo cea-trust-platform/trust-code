@@ -14,14 +14,14 @@
 *****************************************************************************/
 
 #include <Eval_Source_C_VEF_Face.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 void Eval_Source_C_VEF_Face::completer()
 {
   Evaluateur_Source_VEF_Face::completer();
   face_voisins.ref(le_dom->face_voisins());
-  volumes.ref(ref_cast(Zone_VEF,le_dom.valeur()).volumes());
-  nb_faces_elem = le_dom->zone().nb_faces_elem();
+  volumes.ref(ref_cast(Domaine_VEF,le_dom.valeur()).volumes());
+  nb_faces_elem = le_dom->domaine().nb_faces_elem();
 }
 
 void Eval_Source_C_VEF_Face::associer_champs(const Champ_Don& Q)

@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <EcrMED.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <med++.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Champ_Inc_base.h>
 #include <TRUSTTabs.h>
 #include <LireMED.h>
@@ -93,23 +93,23 @@ Entree& EcrMED::interpreter(Entree& is)
       Cerr<<" Adding "<<nom_dom<<finl;
     }
   is >> nom_fic;
-  if(! sub_type(Zone, objet(nom_dom)))
+  if(! sub_type(Domaine, objet(nom_dom)))
     {
       Cerr << nom_dom << " type is " << objet(nom_dom).que_suis_je() << finl;
-      Cerr << "Only Zone type objects can be meshed" << finl;
+      Cerr << "Only Domaine type objects can be meshed" << finl;
       exit();
     }
-  const Zone& dom=ref_cast(Zone, objet(nom_dom));
+  const Domaine& dom=ref_cast(Domaine, objet(nom_dom));
   ecrire_domaine(nom_fic,dom,nom_dom,mode);
   return is;
 }
 
 #ifndef MED_
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Zone& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time,int compteur)
+void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time,int compteur)
 {
   med_non_installe();
 }
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Zone& dom,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
 {
   med_non_installe();
 }
@@ -372,7 +372,7 @@ int medecrirefaces(IntTab& all_faces_bord,const Nom& type_face,med_idt fid,const
 
 void affecte_nom_med(Char_ptr& nom_med,const Nom& mot);
 // ecrit la geom appele par EcrMED::ecrire_domaine
-int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleTab& sommets,const Nom& type_elem,const Elem_geom& ele,const IntTab& les_elems,const Noms& type_face,IntTabs& all_faces_bord,const ArrsOfInt& familles,Noms& noms_bords,const Nom& nom_zone,int mode, bool major_mode)
+int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleTab& sommets,const Nom& type_elem,const Elem_geom& ele,const IntTab& les_elems,const Noms& type_face,IntTabs& all_faces_bord,const ArrsOfInt& familles,Noms& noms_bords,const Nom& nom_domaine,int mode, bool major_mode)
 {
   // creation d'un mot de longueur MED_NAME_SIZE
   Char_ptr med_taille_nom;
@@ -535,24 +535,24 @@ int medecrgeom(const Nom& nom_fic,const Nom& nom_dom,int dimension,const DoubleT
     attide[0]=1;
     // ajout de la famille 0
     Nom nomfz(med_taille_nom);
-    Nom nom_zone_bis;
-    nom_zone_bis="";
-    if (noms_bords.search(nom_zone)!=-1)
+    Nom nom_domaine_bis;
+    nom_domaine_bis="";
+    if (noms_bords.search(nom_domaine)!=-1)
       {
-        Cerr<<"The zone name is also a boundary name"<<finl;
-        nom_zone_bis="cpy_";
+        Cerr<<"The domaine name is also a boundary name"<<finl;
+        nom_domaine_bis="cpy_";
       }
-    nom_zone_bis+=nom_zone;
-    //strcpy(nomfz,nom_zone_bis);
+    nom_domaine_bis+=nom_domaine;
+    //strcpy(nomfz,nom_domaine_bis);
     nomfz="elems";
     ret=MEDfamilyCr(fid,nom_dom,nomfz,0,0,NULL);
     if (ret<0)
       {
-        Cerr<<"Problem when writing nom_zone family in "<<nom_fic<<finl;
+        Cerr<<"Problem when writing nom_domaine family in "<<nom_fic<<finl;
         Process::exit();
       }
-    if (nom_zone_bis=="elems") nom_zone_bis+="_cpy";
-    nomfz=nom_zone_bis;
+    if (nom_domaine_bis=="elems") nom_domaine_bis+="_cpy";
+    nomfz=nom_domaine_bis;
     //strcpy(nomfz,"elems");
     ret=MEDfamilyCr(fid,nom_dom,nomfz,famglob,0,NULL);
     if (ret<0)
@@ -793,18 +793,18 @@ void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens)
 
 
 // permet de boucler sur les bords,raccords,joints
-const Frontiere& mes_faces_fr(const Zone& zone,int i)
+const Frontiere& mes_faces_fr(const Domaine& domaine,int i)
 {
-  //int nb_faces_joint=zone.nb_faces_joint();
-  int nb_std=zone.nb_front_Cl();
+  //int nb_faces_joint=domaine.nb_faces_joint();
+  int nb_std=domaine.nb_front_Cl();
   if (i<nb_std)
-    return zone.frontiere(i);
-  else return zone.joint(i-nb_std);
+    return domaine.frontiere(i);
+  else return domaine.joint(i-nb_std);
 }
 
 
 // a partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
-void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
+void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
 {
   int nb_type_face=dom.type_elem().nb_type_face();
   type_face.dimensionner(nb_type_face);
@@ -905,16 +905,16 @@ void creer_all_faces_bord(const Zone& dom,Noms& type_face,IntTabs& all_faces_bor
     }
 }
 
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Zone& dom,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
 {
-  REF(Zone_dis_base) zone_dis_base; // Pas de zone discretisee
-  ecrire_domaine_dis(nom_fic, dom, zone_dis_base, nom_dom, mode);
+  REF(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretisee
+  ecrire_domaine_dis(nom_fic, dom, domaine_dis_base, nom_dom, mode);
 }
 
 // ecrit le domaine dom dans le fichier nom_fic
 // mode = -1 nouveau fichier
 // mode = 0 ajout du domaine dans le fichier
-void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_dom,int mode)
 {
   //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
   const  DoubleTab& sommets=dom.les_sommets();
@@ -1046,10 +1046,10 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Zone& dom,const REF(Zon
       int nfaces;
       MCAuto<DataArrayInt> renum_boundary_cell(DataArrayInt::New());
       // If the domain has faces (eg:domain computation), we can create a faces mesh, else only a boundary mesh
-      if (zone_dis_base.non_nul() && ref_cast(Zone_VF, zone_dis_base.valeur()).elem_faces().size()>0)
+      if (domaine_dis_base.non_nul() && ref_cast(Domaine_VF, domaine_dis_base.valeur()).elem_faces().size()>0)
         {
           // Faces mesh:
-          dom.buildUFacesMesh(zone_dis_base);
+          dom.buildUFacesMesh(domaine_dis_base);
           MCAuto<MEDCouplingUMesh>& faces_mesh = dom.getUFacesMesh();
           faces_mesh->setCoords(mesh->getCoords());
           faces_mesh->setName(mesh->getName());
@@ -1304,7 +1304,7 @@ int medecrchamp(const Nom& nom_fic,const Nom& nom_dom,const Nom& nomcha1,const D
 // time le temps
 // compteur le numero du pas de temps (ne sert pas pour l'instant)
 // ToDo: suppress compteur variable (set to 1 and NEVER used !)
-void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Zone& dom, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
+void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& dom, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
                           const Noms& noms_compo, const Nom& type_elem, double time, int compteur)
 {
   const Nom& nom_dom = dom.le_nom();

@@ -27,7 +27,7 @@
 #include <Statistiques.h>
 #include <TRUSTTrav.h>
 #include <Operateur.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Avanc.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
@@ -44,19 +44,19 @@ void Convection_Diffusion_Fluide_Dilatable_Proto::calculer_div_rho_u_impl
       return;
     }
 
-  // on cherche a changer temporairement la zone_cl
+  // on cherche a changer temporairement la domaine_cl
   Champ_Inc ch_unite = eqn.inconnue();
   ch_unite->valeurs() = 1.0;
   ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(ch_unite, true);
 
   if (eqn.discretisation().que_suis_je() != "VDF")
-    ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_domaine_cl_dis(eqn.zone_cl_modif());
+    ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_domaine_cl_dis(eqn.domaine_cl_modif());
 
   op_conv.ajouter(ch_unite->valeurs(), Div);
   ref_cast_non_const(Operateur_Conv_base,op_conv.l_op_base()).associer_champ_temp(eqn.inconnue(), false);
 
   if (eqn.discretisation().que_suis_je() != "VDF")
-    ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_domaine_cl_dis(eqn.zone_Cl_dis());
+    ref_cast_non_const(Operateur_base,op_conv.l_op_base()).associer_domaine_cl_dis(eqn.domaine_Cl_dis());
 }
 
 /*! @brief Renvoie la derivee en temps de l'inconnue de l'equation.
@@ -96,7 +96,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
 
   const Schema_Temps_base& sch = eqn.schema_temps();
   int diffusion_implicite=sch.diffusion_implicite();
-  eqn.zone_Cl_dis().les_conditions_limites().set_modifier_val_imp(0);
+  eqn.domaine_Cl_dis().les_conditions_limites().set_modifier_val_imp(0);
 
   /*
    * FIRST TERM : diffusive
@@ -117,7 +117,7 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
         }
     }
 
-  eqn.zone_Cl_dis().les_conditions_limites().set_modifier_val_imp(1);
+  eqn.domaine_Cl_dis().les_conditions_limites().set_modifier_val_imp(1);
   derivee.echange_espace_virtuel();
 
   // Add source term (if any, but for temperatur eit is sure !!! )

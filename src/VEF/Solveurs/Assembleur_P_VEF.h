@@ -18,8 +18,8 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 #include <Ref_Equation_base.h>
 
 class Assembleur_P_VEF: public Assembleur_base
@@ -27,10 +27,10 @@ class Assembleur_P_VEF: public Assembleur_base
   Declare_instanciable(Assembleur_P_VEF);
 
 public:
-  void associer_domaine_dis_base(const Zone_dis_base&) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
+  void associer_domaine_dis_base(const Domaine_dis_base&) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base&) override;
+  const Domaine_dis_base& domaine_dis_base() const override;
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const override;
   int assembler(Matrice&) override;
   int assembler_mat(Matrice&, const DoubleVect&, int, int) override;
   int remplir(Matrice&, const DoubleTab&);
@@ -50,11 +50,11 @@ public:
 
 protected:
   REF(Equation_base) mon_equation;
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
-  void calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, const Zone_Cl_VEF& zone_Cl_VEF, const DoubleVect& volumes_entrelaces);
+  void calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, const Domaine_Cl_VEF& domaine_Cl_VEF, const DoubleVect& volumes_entrelaces);
 
 };
 

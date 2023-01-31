@@ -15,7 +15,7 @@
 
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Fluide_base.h>
 #include <Discret_Thyd.h>
 #include <Avanc.h>
@@ -36,7 +36,7 @@
 #include <MD_Vector_composite.h>
 #include <MD_Vector_tools.h>
 #include <TRUSTTab_parts.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable_sans_constructeur(Navier_Stokes_std,"Navier_Stokes_standard",Equation_base);
 
@@ -329,7 +329,7 @@ void Navier_Stokes_std::completer()
 
   la_pression.associer_eqn(*this);
   la_pression->completer(le_dom_Cl_dis.valeur());
-  // [ABN] make sure the pressure knows the zone_Cl_dis to be able to use specific postreatment like 'gravcl'
+  // [ABN] make sure the pressure knows the domaine_Cl_dis to be able to use specific postreatment like 'gravcl'
   la_pression->associer_domaine_cl_dis(le_dom_Cl_dis);
 
   divergence_U.associer_eqn(*this);
@@ -339,16 +339,16 @@ void Navier_Stokes_std::completer()
   la_pression_en_pa->associer_domaine_cl_dis(le_dom_Cl_dis);
   divergence.completer();
   gradient.completer();
-  assembleur_pression_.associer_domaine_cl_dis_base(zone_Cl_dis().valeur());
+  assembleur_pression_.associer_domaine_cl_dis_base(domaine_Cl_dis().valeur());
   assembleur_pression_.completer(*this);
 
   if (distance_paroi_globale.non_nul())// On initialize la distance au bord au debut du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
     {
-      Zone_dis_base& zone = zone_dis().valeur();
-      zone.init_dist_paroi_globale(zone_Cl_dis().les_conditions_limites());
+      Domaine_dis_base& domaine = domaine_dis().valeur();
+      domaine.init_dist_paroi_globale(domaine_Cl_dis().les_conditions_limites());
       Cerr << "Initializing distance_paroi_globale ... " << finl;
-      const DoubleTab& dist_calc = zone.y_elem();
-      for (int e = 0 ; e < zone.nb_elem() ; e++) distance_paroi_globale->valeurs()(e, 0) = dist_calc(e);
+      const DoubleTab& dist_calc = domaine.y_elem();
+      for (int e = 0 ; e < domaine.nb_elem() ; e++) distance_paroi_globale->valeurs()(e, 0) = dist_calc(e);
       distance_paroi_globale->valeurs().echange_espace_virtuel();
     }
 
@@ -371,16 +371,16 @@ void Navier_Stokes_std::discretiser()
   champs_compris_.ajoute_champ(la_vitesse);
   la_vitesse.valeur().add_synonymous(Nom("velocity"));
 
-  dis.pression(schema_temps(), zone_dis(), la_pression);
+  dis.pression(schema_temps(), domaine_dis(), la_pression);
   champs_compris_.ajoute_champ(la_pression);
   la_pression.valeur().add_synonymous(Nom("P_star"));
 
-  dis.pression_en_pa(schema_temps(), zone_dis(), la_pression_en_pa);
+  dis.pression_en_pa(schema_temps(), domaine_dis(), la_pression_en_pa);
   champs_compris_.ajoute_champ(la_pression_en_pa);
 
   la_pression_en_pa.valeur().add_synonymous(Nom("Pressure"));
 
-  dis.divergence_U(schema_temps(), zone_dis(), divergence_U);
+  dis.divergence_U(schema_temps(), domaine_dis(), divergence_U);
   discretiser_grad_p();
   divergence.typer();
   divergence.l_op_base().associer_eqn(*this);
@@ -400,13 +400,13 @@ void Navier_Stokes_std::discretiser()
 void Navier_Stokes_std::discretiser_vitesse()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-  dis.vitesse(schema_temps(), zone_dis(), la_vitesse);
+  dis.vitesse(schema_temps(), domaine_dis(), la_vitesse);
 }
 
 void Navier_Stokes_std::discretiser_grad_p()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-  dis.gradient_P(schema_temps(), zone_dis(), gradient_P);
+  dis.gradient_P(schema_temps(), domaine_dis(), gradient_P);
   champs_compris_.ajoute_champ(gradient_P);
 }
 
@@ -425,7 +425,7 @@ void Navier_Stokes_std::discretiser_assembleur_pression()
   type += discretisation().que_suis_je();
   Cerr << "Navier_Stokes_std::discretiser_assembleur_pression : type="<< type << finl;
   assembleur_pression_.typer(type);
-  assembleur_pression_.associer_domaine_dis_base(zone_dis().valeur());
+  assembleur_pression_.associer_domaine_dis_base(domaine_dis().valeur());
 }
 
 /*! @brief Renvoie le nombre d'operateurs de l'equation: Pour Navier Stokes Standard c'est 2.
@@ -1320,7 +1320,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!critere_Q.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-          dis.critere_Q(zone_dis(),zone_Cl_dis(),la_vitesse,critere_Q);
+          dis.critere_Q(domaine_dis(),domaine_Cl_dis(),la_vitesse,critere_Q);
           champs_compris_.ajoute_champ(critere_Q);
         }
     }
@@ -1329,7 +1329,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!y_plus.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
-          dis.y_plus(zone_dis(),zone_Cl_dis(),la_vitesse,y_plus);
+          dis.y_plus(domaine_dis(),domaine_Cl_dis(),la_vitesse,y_plus);
           champs_compris_.ajoute_champ(y_plus);
         }
     }
@@ -1338,7 +1338,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!distance_paroi_globale.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
-          dis.distance_paroi_globale(schema_temps(), zone_dis(), distance_paroi_globale);
+          dis.distance_paroi_globale(schema_temps(), domaine_dis(), distance_paroi_globale);
           champs_compris_.ajoute_champ(distance_paroi_globale);
         }
     }
@@ -1347,7 +1347,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!Reynolds_maille.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
-          dis.reynolds_maille(zone_dis(),fluide(),la_vitesse,Reynolds_maille);
+          dis.reynolds_maille(domaine_dis(),fluide(),la_vitesse,Reynolds_maille);
           champs_compris_.ajoute_champ(Reynolds_maille);
         }
     }
@@ -1356,7 +1356,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!Courant_maille.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
-          dis.courant_maille(zone_dis(),schema_temps(),la_vitesse,Courant_maille);
+          dis.courant_maille(domaine_dis(),schema_temps(),la_vitesse,Courant_maille);
           champs_compris_.ajoute_champ(Courant_maille);
         }
     }
@@ -1365,7 +1365,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!Taux_cisaillement.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
-          dis.taux_cisaillement(zone_dis(),zone_Cl_dis(),la_vitesse,Taux_cisaillement);
+          dis.taux_cisaillement(domaine_dis(),domaine_Cl_dis(),la_vitesse,Taux_cisaillement);
           champs_compris_.ajoute_champ(Taux_cisaillement);
         }
     }
@@ -1374,7 +1374,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!pression_hydrostatique_.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
-          dis.discretiser_champ("Champ_sommets",zone_dis(),"pression_hydrostatique","Pa",1,0.,pression_hydrostatique_);
+          dis.discretiser_champ("Champ_sommets",domaine_dis(),"pression_hydrostatique","Pa",1,0.,pression_hydrostatique_);
           champs_compris_.ajoute_champ(pression_hydrostatique_);
         }
     }
@@ -1384,7 +1384,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
       if (!grad_u.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-          dis.grad_u(zone_dis(),zone_Cl_dis(),la_vitesse,grad_u);
+          dis.grad_u(domaine_dis(),domaine_Cl_dis(),la_vitesse,grad_u);
           champs_compris_.ajoute_champ(grad_u);
         }
     }
@@ -1397,7 +1397,7 @@ void  Navier_Stokes_std::calculer_pression_hydrostatique(Champ_base& pression_hy
 {
   //  abort();
   DoubleTab& val= pression_hydro.valeurs();
-  const DoubleTab& coords = zone_dis().zone().les_sommets();
+  const DoubleTab& coords = domaine_dis().domaine().les_sommets();
   if (!milieu().a_gravite())
     {
       Cerr<<"postprocessing of presion_hydrostatique needs gravity"<<finl;

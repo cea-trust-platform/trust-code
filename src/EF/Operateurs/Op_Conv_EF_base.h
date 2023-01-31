@@ -19,11 +19,11 @@
 
 #include <Operateur_Conv.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Zone_EF.h>
-#include <Ref_Zone_Cl_EF.h>
-#include <Zone_EF.h>
-#include <Zone_Cl_EF.h>
-#include <Zone.h>
+#include <Ref_Domaine_EF.h>
+#include <Ref_Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
+#include <Domaine_Cl_EF.h>
+#include <Domaine.h>
 #include <Op_EF_base.h>
 
 /*! @brief class Op_Conv_EF_base
@@ -49,7 +49,7 @@ public:
   void associer_vitesse(const Champ_base& ) override;
   const Champ_Inc_base& vitesse() const;
   Champ_Inc_base& vitesse();
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   void abortTimeStep() override;
   double calculer_dt_stab() const override ;
@@ -57,14 +57,14 @@ public:
 
   virtual void remplir_fluent(DoubleVect& ) const;
   int impr(Sortie& os) const override;
-  void associer_domaine_cl_dis(const Zone_Cl_dis_base&) override;
+  void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override;
   int  phi_u_transportant(const Equation_base& eq) const;
   void completer() override;
 
 protected:
 
-  REF(Zone_EF) le_dom_EF;
-  REF(Zone_Cl_EF) la_zcl_EF;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) la_zcl_EF;
   REF(Champ_Inc_base) vitesse_;
 
   mutable DoubleVect fluent;           // tableau qui sert pour le calcul du pas

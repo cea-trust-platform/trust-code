@@ -20,7 +20,7 @@
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 
 Implemente_instanciable(Champ_front_debit_massique,"Champ_front_debit_massique",Champ_front_debit);
@@ -49,9 +49,9 @@ void Champ_front_debit_massique::update_coeff(double temps)
 {
   int i, fb, n, N = coeff_.line_size(), cR = sub_type(Champ_Uniforme, *ch_rho);
   DoubleTab rho_bord = cR ? ch_rho->valeurs() : ch_rho->valeur_aux_bords(); /* si rho uniforme, on ne peut pas appeler valeur_aux_bords() */
-  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   for(i = 0; i < le_bord.nb_faces_tot(); i++)
-    for (fb = zone.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
+    for (fb = domaine.fbord(le_bord.num_face(i)), n = 0; n < N; ++n)
       coeff_(i, n) = 1. / rho_bord(!cR * fb, n);
 }

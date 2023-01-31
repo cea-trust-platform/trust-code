@@ -21,7 +21,7 @@
 #include <SFichier.h>
 #include <TRUSTTab.h>
 
-class Zone;
+class Domaine;
 
 /*! @brief classe Sonde_Int Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
  *
@@ -40,7 +40,7 @@ public :
 
   inline Sonde_Int(const Nom& );
   void associer_post(const Postraitement& );
-  void initialiser(const Zone& );
+  void initialiser(const Domaine& );
   void mettre_a_jour(double temps, double tinit);
   void postraiter(double );
   void ouvrir_fichier();

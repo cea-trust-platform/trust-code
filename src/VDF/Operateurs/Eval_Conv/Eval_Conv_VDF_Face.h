@@ -101,7 +101,7 @@ private:
   inline double dist_face_(int n1,int n2,int k) const { return static_cast<const DERIVED_T *>(this)->dist_face(n1,n2,k); }
   inline double dist_face_period_(int n1,int n2,int k) const { return static_cast<const DERIVED_T *>(this)->dist_face_period(n1,n2,k); }
   inline double dist_elem_period_(int n1, int n2, int k) const { return static_cast<const DERIVED_T *>(this)->dist_elem_period(n1,n2,k); }
-  inline const Zone_Cl_VDF& la_zcl() const { return static_cast<const DERIVED_T *>(this)->get_la_zcl(); }
+  inline const Domaine_Cl_VDF& la_zcl() const { return static_cast<const DERIVED_T *>(this)->get_la_zcl(); }
 
   inline double conv_quick_sharp_plus_(const double psc,const double vit_0, const double vit_1, const double vit_0_0, const double dx, const double dm, const double dxam) const
   { return static_cast<const DERIVED_T *>(this)->conv_quick_sharp_plus(psc,vit_0,vit_1,vit_0_0,dx,dm,dxam); }

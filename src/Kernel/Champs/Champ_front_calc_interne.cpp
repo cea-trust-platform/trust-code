@@ -17,8 +17,8 @@
 #include <Interprete.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
 #endif
@@ -70,7 +70,7 @@ void Champ_front_calc_interne::completer()
 
   // Get barycenters of the concerned faces:
   const Front_VF& fvf = ref_cast(Front_VF, front_dis());
-  const Zone_VF& zvf = ref_cast(Zone_VF, fvf.zone_dis());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, fvf.domaine_dis());
   const DoubleTab& xv = zvf.xv();
   int nbfaces = fvf.nb_faces();
 

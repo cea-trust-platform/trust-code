@@ -34,11 +34,11 @@ Entree& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::readOn(Entree& s)
 int Sortie_libre_Gradient_Pression_impose_VEFPreP1B::initialiser(double temps)
 {
   Cond_lim_base::initialiser(temps);
-  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
   const Champ_P1_isoP1Bulle& pression = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression().valeur());
-  const Zone_VEF& mon_dom_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis().valeur());
   const IntTab& face_voisins = mon_dom_VEF.face_voisins();
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
   pression_interne = pression;

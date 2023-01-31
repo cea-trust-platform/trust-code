@@ -18,7 +18,7 @@
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Param.h>
 #include <SETS.h>
 
@@ -38,7 +38,7 @@ Entree& Op_Evanescence_Homogene_Face_base::readOn(Entree& is)
 void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
   const IntTab& fcl = ch.fcl();
 
@@ -54,7 +54,7 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
         std::set<int> idx;
         Matrice_Morse& mat = *n_m.second, mat2;
         /* equations aux faces : celles calculees seulement */
-        for (f = 0; f < zone.nb_faces(); f++, idx.clear())
+        for (f = 0; f < domaine.nb_faces(); f++, idx.clear())
           if (fcl(f, 0) < 2)
             {
               for (i = N * f, n = 0; n < N; n++, i++)
@@ -77,10 +77,10 @@ void Op_Evanescence_Homogene_Face_base::dimensionner_blocs(matrices_t matrices, 
 void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
-  const IntTab& f_e = zone.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& inco = ch.valeurs(), &vfd = zone.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
-  const DoubleVect& vf = zone.volumes_entrelaces();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
+  const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
+  const DoubleVect& vf = domaine.volumes_entrelaces();
   int e, f, i, j, k, n, N = inco.line_size(), iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration : 0;
   if (N == 1) return; //pas d'evanescence en simple phase!
 
@@ -90,7 +90,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   IntTrav maj(inco.dimension_tot(0)); //maj(i) : phase majoritaire de la ligne i
   DoubleTrav coeff(inco.dimension_tot(0), inco.line_size(), 2); //coeff(i, n, 0/1) : coeff a appliquer a l'equation existante / a l'eq. "inco = v_maj"
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     if (fcl(f, 0) < 2)
       {
         /* phase majoritaire : avec alpha interpole par defaut, avec alpha amont pour les ierations de SETS / ICE */
@@ -134,7 +134,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
         int diag = (n_m.first == ch.le_nom().getString()); //est-on sur le bloc diagonal?
         Matrice_Morse& mat = *n_m.second;
         /* faces */
-        for (f = 0; f < zone.nb_faces(); f++)
+        for (f = 0; f < domaine.nb_faces(); f++)
           if (fcl(f, 0) < 2)
             for (n = 0; n < N; n++)
               if (coeff(f, n, 0))

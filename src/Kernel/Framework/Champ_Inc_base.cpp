@@ -24,8 +24,8 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Dirichlet.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 
 Implemente_base_sans_constructeur(Champ_Inc_base,"Champ_Inc_base",Champ_base);
 
@@ -489,11 +489,11 @@ int Champ_Inc_base::reprendre(Entree& fich)
  */
 DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
-  const Zone& zone = zone_dis_base().zone();
+  const Domaine& domaine = domaine_dis_base().domaine();
   IntVect les_polys;
   les_polys.resize(tab_valeurs.dimension_tot(0), Array_base::NOCOPY_NOINIT);
 
-  zone.chercher_elements(positions, les_polys);
+  domaine.chercher_elements(positions, les_polys);
 
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
@@ -507,9 +507,9 @@ DoubleTab& Champ_Inc_base::valeur_aux(const DoubleTab& positions, DoubleTab& tab
  */
 DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
-  const Zone& zone = zone_dis_base().zone();
+  const Domaine& domaine = domaine_dis_base().domaine();
   IntVect les_polys(positions.dimension(0));
-  zone.chercher_elements(positions, les_polys);
+  domaine.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
 
@@ -521,9 +521,9 @@ DoubleVect& Champ_Inc_base::valeur_aux_compo(const DoubleTab& positions, DoubleV
  */
 DoubleVect& Champ_Inc_base::valeur_a(const DoubleVect& position, DoubleVect& tab_valeurs) const
 {
-  const Zone& zone = zone_dis_base().zone();
+  const Domaine& domaine = domaine_dis_base().domaine();
   IntVect le_poly(1);
-  zone.chercher_elements(position, le_poly);
+  domaine.chercher_elements(position, le_poly);
   return valeur_a_elem(position, tab_valeurs, le_poly(0));
 }
 
@@ -631,9 +631,9 @@ int Champ_Inc_base::remplir_coord_noeuds_et_polys_compo(DoubleTab& coord, IntVec
   return remplir_coord_noeuds_et_polys(coord, poly);
 }
 
-const Zone& Champ_Inc_base::domaine() const
+const Domaine& Champ_Inc_base::domaine() const
 {
-  return zone_dis_base().zone();
+  return domaine_dis_base().domaine();
 }
 
 int Champ_Inc_base::imprime(Sortie& os, int ncomp) const
@@ -672,28 +672,28 @@ void Champ_Inc_base::associer_eqn(const Equation_base& eqn)
   MorEqn::associer_eqn(eqn);
 }
 
-void Champ_Inc_base::associer_domaine_cl_dis(const Zone_Cl_dis& zcl)
+void Champ_Inc_base::associer_domaine_cl_dis(const Domaine_Cl_dis& zcl)
 {
   mon_dom_cl_dis = zcl;
 }
 
-void Champ_Inc_base::associer_domaine_dis_base(const Zone_dis_base& z_dis)
+void Champ_Inc_base::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
 {
-  le_dom_VF = ref_cast(Zone_VF, z_dis);
+  le_dom_VF = ref_cast(Domaine_VF, z_dis);
 }
 
-const Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis() const
+const Domaine_Cl_dis& Champ_Inc_base::domaine_Cl_dis() const
 {
   if (!mon_dom_cl_dis.non_nul())
-    return equation().zone_Cl_dis();
+    return equation().domaine_Cl_dis();
   else
     return mon_dom_cl_dis.valeur();
 }
 
-Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis()
+Domaine_Cl_dis& Champ_Inc_base::domaine_Cl_dis()
 {
   if (!mon_dom_cl_dis.non_nul())
-    return equation().zone_Cl_dis();
+    return equation().domaine_Cl_dis();
   else
     return mon_dom_cl_dis.valeur();
 }
@@ -706,7 +706,7 @@ void Champ_Inc_base::init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc)
 
 void Champ_Inc_base::resize_val_bord()
 {
-  val_bord_.resize(ref_cast(Zone_VF, zone_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
+  val_bord_.resize(ref_cast(Domaine_VF, domaine_dis_base()).xv_bord().dimension_tot(0), valeurs().line_size());
 }
 
 DoubleTab Champ_Inc_base::valeur_aux_bords() const
@@ -719,11 +719,11 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
       return result;
     }
   //sinon, calcul a partir des CLs
-  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis_base());
-  const IntTab& f_e = zone.face_voisins(), &f_s = zone.face_sommets();
-  DoubleTrav result(zone.xv_bord().dimension_tot(0), valeurs().line_size());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis_base());
+  const IntTab& f_e = domaine.face_voisins(), &f_s = domaine.face_sommets();
+  DoubleTrav result(domaine.xv_bord().dimension_tot(0), valeurs().line_size());
 
-  const Conds_lim& cls = zone_Cl_dis().valeur().les_conditions_limites();
+  const Conds_lim& cls = domaine_Cl_dis().valeur().les_conditions_limites();
   int j, k, f, fb, s, n, N = result.line_size(), is_p = (le_nom().debute_par("pression") || le_nom().debute_par("pressure")), n_som;
   for (const auto& itr : cls)
     {
@@ -731,20 +731,20 @@ DoubleTab Champ_Inc_base::valeur_aux_bords() const
       //valeur au bord imposee, sauf si c'est une paroi (dans ce cas, la CL peut avoir moins de composantes que le champ -> Energie_Multiphase)
       if (is_p ? sub_type(Neumann, itr.valeur()) : (sub_type(Dirichlet, itr.valeur()) && !sub_type(Scalaire_impose_paroi, itr.valeur())))
         for (j = 0; j < fr.nb_faces_tot(); j++)
-          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
+          for (f = fr.num_face(j), fb = domaine.fbord(f), n = 0; n < N; n++)
             result(fb, n) = is_p ? ref_cast(Neumann, itr.valeur()).flux_impose(j, n) : ref_cast(Dirichlet, itr.valeur()).val_imp(j, n);
       else if (sub_type(Neumann_val_ext, itr.valeur())) //valeur externe imposee
         for (j = 0; j < fr.nb_faces_tot(); j++)
-          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
+          for (f = fr.num_face(j), fb = domaine.fbord(f), n = 0; n < N; n++)
             result(fb, n) = ref_cast(Neumann_val_ext, itr.valeur()).val_ext(j, n);
       else if (sub_type(Champ_Inc_P0_base, *this))
         for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P0 : on peut prendre la valeur en l'element
-          for (f = fr.num_face(j), fb = zone.fbord(f), n = 0; n < N; n++)
+          for (f = fr.num_face(j), fb = domaine.fbord(f), n = 0; n < N; n++)
             result(fb, n) = valeurs()(f_e(f, f_e(f, 0) == -1), n);
       else if (sub_type(Champ_Inc_P1_base, *this))
         for (j = 0; j < fr.nb_faces_tot(); j++) //Champ P1 : moyenne des valeurs aux sommets
           {
-            f = fr.num_face(j), fb = zone.fbord(f);
+            f = fr.num_face(j), fb = domaine.fbord(f);
             for (n_som = 0; n_som < f_s.dimension(1) && f_s(f, n_som) >= 0;)
               n_som++;
             for (n = 0; n < N; n++)

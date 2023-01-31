@@ -40,7 +40,7 @@ void h_conv_Champ_P1NC::me_calculer(double tps)
     mon_champ_->calcul_h_conv(le_dom_Cl_VEF.valeur(), valeurs(), temp_ref());
 }
 
-const Zone_Cl_dis_base& h_conv_Champ_P1NC::zone_Cl_dis_base() const
+const Domaine_Cl_dis_base& h_conv_Champ_P1NC::domaine_Cl_dis_base() const
 {
   return le_dom_Cl_VEF.valeur();
 }

@@ -20,7 +20,7 @@
 #include <Iterateur_Source_Elem.h>
 #include <Source_Neutronique.h>
 #include <Iterateur_Source.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_VDF.h>
 
 /*! @brief class Source_Neutronique_VDF Cette classe constitue l'implementation en VDF du terme source
  *
@@ -35,7 +35,7 @@ public:
   Source_Neutronique_VDF(const Iterateur_Source_base& iter_base) : iter(iter_base) { }
   inline DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
   void completer() override;
-  void associer_domaines(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;
   double calculer_Tmoyenne() override;
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
@@ -44,7 +44,7 @@ public:
 
 protected:
   Iterateur_Source iter;
-  REF(Zone_VDF) le_dom;
+  REF(Domaine_VDF) le_dom;
 };
 
 #endif /* Source_Neutronique_VDF_included */

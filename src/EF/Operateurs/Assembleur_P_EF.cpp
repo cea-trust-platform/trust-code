@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Assembleur_P_EF.h>
-#include <Zone_Cl_EF.h>
-#include <Zone_EF.h>
+#include <Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
 #include <Champ_front_instationnaire_base.h>
@@ -41,7 +41,7 @@ Entree& Assembleur_P_EF::readOn(Entree& s )
 }
 
 
-void calculer_inv_volume_special(DoubleTab& inv_volumes_som, const Zone_Cl_EF& zone_Cl_EF,const DoubleTab& volumes_som,const DoubleTab& marqueur)
+void calculer_inv_volume_special(DoubleTab& inv_volumes_som, const Domaine_Cl_EF& domaine_Cl_EF,const DoubleTab& volumes_som,const DoubleTab& marqueur)
 {
   inv_volumes_som=volumes_som;
   // MODIF GB
@@ -59,7 +59,7 @@ void calculer_inv_volume_special(DoubleTab& inv_volumes_som, const Zone_Cl_EF& z
     }
 
 }
-void calculer_inv_volume(DoubleTab& inv_volumes_som, const Zone_Cl_EF& zone_Cl_EF,const DoubleVect& volumes_som)
+void calculer_inv_volume(DoubleTab& inv_volumes_som, const Domaine_Cl_EF& domaine_Cl_EF,const DoubleVect& volumes_som)
 {
   // maintenant l 'inverse du volume est un DoubleTab
   // c'est pour faire fonctionner le Piso
@@ -69,15 +69,15 @@ void calculer_inv_volume(DoubleTab& inv_volumes_som, const Zone_Cl_EF& zone_Cl_E
     {
       DoubleTab marqueur(*doubleT);
       marqueur=1;
-      zone_Cl_EF.equation().solv_masse().valeur().appliquer_impl(marqueur);
-      calculer_inv_volume_special(inv_volumes_som, zone_Cl_EF,*doubleT,marqueur);
+      domaine_Cl_EF.equation().solv_masse().valeur().appliquer_impl(marqueur);
+      calculer_inv_volume_special(inv_volumes_som, domaine_Cl_EF,*doubleT,marqueur);
       return;
     }
 
   DoubleTab marqueur;
   marqueur=(volumes_som);
   marqueur=1;
-  zone_Cl_EF.equation().solv_masse().appliquer(marqueur);
+  domaine_Cl_EF.equation().solv_masse().appliquer(marqueur);
   int taille=volumes_som.size_totale();
   inv_volumes_som.resize(taille,Objet_U::dimension);
   // marqueur
@@ -100,8 +100,8 @@ DoubleTab inv_volumes_som;
 
 int Assembleur_P_EF::assembler(Matrice& la_matrice)
 {
-  const Zone_EF& zone_EF = ref_cast(Zone_EF, le_dom_EF.valeur());
-  const DoubleVect& volumes_som=zone_EF.volumes_sommets_thilde();
+  const Domaine_EF& domaine_EF = ref_cast(Domaine_EF, le_dom_EF.valeur());
+  const DoubleVect& volumes_som=domaine_EF.volumes_sommets_thilde();
 
 
   return assembler_mat(la_matrice,volumes_som,1,1);
@@ -115,7 +115,7 @@ int Assembleur_P_EF::assembler_rho_variable(Matrice& la_matrice, const Champ_Don
       Cerr << "La masse volumique n'est pas aux sommets dans Assembleur_P_EF::assembler_rho_variable." << finl;
       Process::exit();
     }
-  const DoubleVect& volumes_som=ref_cast(Zone_EF, le_dom_EF.valeur()).volumes_sommets_thilde();
+  const DoubleVect& volumes_som=ref_cast(Domaine_EF, le_dom_EF.valeur()).volumes_sommets_thilde();
   const DoubleVect& masse_volumique=rho.valeurs();
   DoubleVect quantitee_som(volumes_som);
   int size=quantitee_som.size_array();
@@ -148,13 +148,13 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
   // On assemble une matrice de pression pour une equation d'hydraulique
   // On injecte dans cette matrice les conditions aux limites
   // On peut faire cela car a priori la matrice de pression n'est pas
-  // partagee par plusieurs equations sur une meme zone.
+  // partagee par plusieurs equations sur une meme domaine.
 
-  const Zone_EF& le_dom = le_dom_EF.valeur();
-  const Zone_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
+  const Domaine_EF& le_dom = le_dom_EF.valeur();
+  const Domaine_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
   les_coeff_pression.resize(le_dom_cl.nb_faces_Cl());
-  int n1 = le_dom.zone().nb_elem_tot();
-  int n2 = le_dom.zone().nb_elem();
+  int n1 = le_dom.domaine().nb_elem_tot();
+  int n2 = le_dom.domaine().nb_elem();
   //Journal() << "n1= " << n1 << " n2= " << n2 << finl;
   int elem2;
 
@@ -162,9 +162,9 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
 
 
   // on construit la connectivite som_elem
-  int nb_sommets_tot=le_dom.zone().nb_som_tot();
+  int nb_sommets_tot=le_dom.domaine().nb_som_tot();
   Static_Int_Lists som_elem;
-  construire_connectivite_som_elem(nb_sommets_tot,le_dom.zone().les_elems(),som_elem,1);
+  construire_connectivite_som_elem(nb_sommets_tot,le_dom.domaine().les_elems(),som_elem,1);
 
   //const IntTab& face_voisins = le_dom.face_voisins();
   //  const DoubleTab& face_normales = le_dom.face_normales();
@@ -186,7 +186,7 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
 
 
   // On parcourt les sommets
-  const IntTab& sommets_elem=le_dom.zone().les_elems();
+  const IntTab& sommets_elem=le_dom.domaine().les_elems();
   int nb_coeff_rr=0;
   int nb_coeff_rv=0;
   //int nb_elem=n2;
@@ -320,12 +320,12 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
   //  int nb_som_face=faces_sommets.dimension(1);
   // const IntTab& face_voisins = le_dom.face_voisins();
   //const DoubleTab& face_normales = le_dom.face_normales();
-  const Zone_Cl_EF& zone_Cl_EF  = le_dom_Cl_EF.valeur();
+  const Domaine_Cl_EF& domaine_Cl_EF  = le_dom_Cl_EF.valeur();
   // prise en compte des " cl " ajout du temr - int P sur le bord
   //int elem_ref=-2;
   for (int n_bord=0; n_bord<le_dom.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {
           MBrr.set_est_definie(1);
@@ -357,8 +357,8 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
   	    {
   	      int num_som=faces_sommets(face,sf);
     */
-  int nb_som=le_dom.zone().nb_som();
-  const ArrOfInt& type_sommet=zone_Cl_EF.get_type_sommet();
+  int nb_som=le_dom.domaine().nb_som();
+  const ArrOfInt& type_sommet=domaine_Cl_EF.get_type_sommet();
   for (int num_som=0; num_som<nb_som; num_som++)
     {
       int nb_voisin=som_elem.get_list_size(num_som);
@@ -388,7 +388,7 @@ int  Assembleur_P_EF::assembler_mat(Matrice& la_matrice,const DoubleVect& volume
                     grad[comp]=Bthilde(elem2,s2,comp);
                   }
                 //	  grad_n/=(le_dom.surface(face)*le_dom.surface(face));
-                zone_Cl_EF.modifie_gradient(grad_mod,grad,num_som);
+                domaine_Cl_EF.modifie_gradient(grad_mod,grad,num_som);
                 for (int dir=0; dir<dimension; dir++)
                   val-=Bthilde(elem1,s1,dir)*grad_mod[dir]*inv_volumes_som(num_som,dir);
                 // val-=Bthilde(elem1,s1,dir)*face_normales(face,dir)*grad_n*inv_volumes_som(num_som,dir);
@@ -477,8 +477,8 @@ int Assembleur_P_EF::modifier_secmem(DoubleTab& secmem)
 {
   Debog::verifier("secmem dans modifier secmem",secmem);
 
-  const Zone_EF& le_dom = le_dom_EF.valeur();
-  const Zone_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
+  const Domaine_EF& le_dom = le_dom_EF.valeur();
+  const Domaine_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
   int nb_cond_lim = le_dom_cl.nb_cond_lim();
   const IntTab& face_voisins = le_dom.face_voisins();
 
@@ -566,7 +566,7 @@ int Assembleur_P_EF::modifier_solution(DoubleTab& pression)
       // On prend la pression minimale comme pression de reference
       // afin d'avoir la meme pression de reference en sequentiel et parallele
       press_0=DMAXFLOAT;
-      int n,nb_elem=le_dom_EF.valeur().zone().nb_elem();
+      int n,nb_elem=le_dom_EF.valeur().domaine().nb_elem();
       for(n=0; n<nb_elem; n++)
         if (pression[n] < press_0)
           press_0 = pression[n];
@@ -580,24 +580,24 @@ int Assembleur_P_EF::modifier_solution(DoubleTab& pression)
   return 1;
 }
 
-const Zone_dis_base& Assembleur_P_EF::zone_dis_base() const
+const Domaine_dis_base& Assembleur_P_EF::domaine_dis_base() const
 {
   return le_dom_EF.valeur();
 }
 
-const Zone_Cl_dis_base& Assembleur_P_EF::zone_Cl_dis_base() const
+const Domaine_Cl_dis_base& Assembleur_P_EF::domaine_Cl_dis_base() const
 {
   return le_dom_Cl_EF.valeur();
 }
 
-void Assembleur_P_EF::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis)
+void Assembleur_P_EF::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis)
 {
-  le_dom_EF = ref_cast(Zone_EF,le_dom_dis);
+  le_dom_EF = ref_cast(Domaine_EF,le_dom_dis);
 }
 
-void Assembleur_P_EF::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis)
+void Assembleur_P_EF::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis)
 {
-  le_dom_Cl_EF = ref_cast(Zone_Cl_EF, le_dom_Cl_dis);
+  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, le_dom_Cl_dis);
 }
 
 void Assembleur_P_EF::completer(const Equation_base& Eqn)

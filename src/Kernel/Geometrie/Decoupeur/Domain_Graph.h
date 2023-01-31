@@ -28,10 +28,10 @@ class Domain_Graph
 
 public:
 
-  void construire_graph_from_segment(const Zone& dom,
+  void construire_graph_from_segment(const Domaine& dom,
                                      const int use_weights );
 
-  void construire_graph_elem_elem(const Zone& dom,
+  void construire_graph_elem_elem(const Domaine& dom,
                                   const Noms& liste_bords_periodiques,
                                   const int use_weights,
                                   Static_Int_Lists& graph_elements_perio);

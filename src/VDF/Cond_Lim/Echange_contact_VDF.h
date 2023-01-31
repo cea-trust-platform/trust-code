@@ -24,7 +24,7 @@
 
 class Milieu_base;
 class Front_VF;
-class Zone_VDF;
+class Domaine_VDF;
 class Faces;
 
 /*! @brief classe : Echange_contact_VDF Outre le champ_front representant la temperature de paroi,
@@ -33,7 +33,7 @@ class Faces;
  *   temporelles qui represente la temperature dans l'autre probleme.
  *
  */
-void calculer_h_local(DoubleTab& tab, const Equation_base& une_eqn, const Zone_VDF& zvdf_2, const Front_VF& front_vf, const Milieu_base& le_milieu, double invhparoi, int opt);
+void calculer_h_local(DoubleTab& tab, const Equation_base& une_eqn, const Domaine_VDF& zvdf_2, const Front_VF& front_vf, const Milieu_base& le_milieu, double invhparoi, int opt);
 
 class Echange_contact_VDF: public Echange_global_impose
 {

@@ -260,14 +260,14 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
  *    (see class DoubleTab_parts)
  *   Exemples:
  *    1) P1Bubble pressure fields have one, two or three parts with shape=1.
- *        (see Zone_VEF_PreP1b::discretiser_suite())
+ *        (see Domaine_VEF_PreP1b::discretiser_suite())
  *    2) One can create a composite field containing
  *     - velocity degrees of freedom at the faces
  *     - pressure d.o.f. at the elements
  *     - one multiscalar d.o.f at nodes
  *         MD_Vector_composite mdc;
- *         mdc.add_part(zonevf.md_vector_faces(), dimension);
- *         mdc.add_part(zone.md_vector_elements(), 0 // scalar //);
+ *         mdc.add_part(domainevf.md_vector_faces(), dimension);
+ *         mdc.add_part(domaine.md_vector_elements(), 0 // scalar //);
  *         mdc.add_part(domaine.md_vector_sommets(), 1 // multiscalar with 1 component //);
  *         MD_Vector md;
  *         md.copy(mdc);
@@ -275,8 +275,8 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
  *               DoubleVect v;
  *          MD_Vector_tools::creer_tableau_distribue(md, v);
  *        DoubleTab_Parts parts(v);
- *        // parts[0] has nb_dim()==2, dimensions are [ zonevf.nb_faces_tot, 3 ]
- *        // parts[1] has nb_dim()==1, dimension [ zone.nb_elem_tot ] // speciel case shape==0 //
+ *        // parts[0] has nb_dim()==2, dimensions are [ domainevf.nb_faces_tot, 3 ]
+ *        // parts[1] has nb_dim()==1, dimension [ domaine.nb_elem_tot ] // speciel case shape==0 //
  *        // parts[2] has nb_dim()==2, dimension [ domaine.nb_som_tot, 1 ]
  *     I can duplicate items in the descriptor by creating DoubleTab objects:
  *     The following code will create an array containing 12 d.o.f for each face
@@ -284,8 +284,8 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
  *        DoubleTab tab(0, 4);
  *        MD_Vector_tools::creer_tableau_distribue(md, tab);
  *        DoubleTab_Parts parts(tab);
- *        // parts[0] has nb_dim()==3, dimensions are [ zonevf.nb_faces_tot, 3, 4 ]
- *        // parts[1] has nb_dim()==2, dimension [ zone.nb_elem_tot, 4 ] // speciel case shape==0 //
+ *        // parts[0] has nb_dim()==3, dimensions are [ domainevf.nb_faces_tot, 3, 4 ]
+ *        // parts[1] has nb_dim()==2, dimension [ domaine.nb_elem_tot, 4 ] // speciel case shape==0 //
  *        // parts[2] has nb_dim()==3, dimension [ domaine.nb_som_tot, 1, 4 ]
  *
  */

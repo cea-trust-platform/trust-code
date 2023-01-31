@@ -26,11 +26,11 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
-#include <Zone_Cl_VDF.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_VDF.h>
+#include <Domaine_Cl_dis.h>
 #include <Milieu_base.h>
 #include <TRUSTTrav.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT_ELEM , Op_DIFF_FACE , Op_DIFT_FACE } ; // ne touche pas !
 
@@ -53,8 +53,8 @@ class Iterateur_VDF_base : public Objet_U
 {
   Declare_base(Iterateur_VDF_base);
 public:
-  void associer(const Zone_VDF&, const Zone_Cl_VDF&, const Operateur_base&);
-  void associer_domaine_cl_dis(const Zone_Cl_dis_base&);
+  void associer(const Domaine_VDF&, const Domaine_Cl_VDF&, const Operateur_base&);
+  void associer_domaine_cl_dis(const Domaine_Cl_dis_base&);
   void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv, bool use=false);
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& , Matrice_Morse& , const Cond_lim& , std::map<int, std::pair<int, int>>&) const { /* ne fait rien en general */ }
@@ -69,8 +69,8 @@ public:
   virtual Evaluateur_VDF& evaluateur() =0;
   virtual const Evaluateur_VDF& evaluateur() const=0;
 
-  inline const Zone_VDF& zone() const { return le_dom.valeur(); }
-  inline const Zone_Cl_VDF& zone_Cl() const { return la_zcl.valeur(); }
+  inline const Domaine_VDF& domaine() const { return le_dom.valeur(); }
+  inline const Domaine_Cl_VDF& domaine_Cl() const { return la_zcl.valeur(); }
   inline Type_Cl_VDF type_cl(const Cond_lim&) const;
   inline const bool& is_convective_op() const { return is_conv_op_; }
   inline const bool& is_pb_multiphase() const { return is_pb_multi; }
@@ -103,8 +103,8 @@ public:
   }
 
 protected:
-  REF(Zone_VDF) le_dom;
-  REF(Zone_Cl_VDF) la_zcl;
+  REF(Domaine_VDF) le_dom;
+  REF(Domaine_Cl_VDF) la_zcl;
   REF(Operateur_base) op_base;
   REF(Champ_Inc_base) le_champ_convecte_ou_inc;
   REF(Champ_base) le_ch_v;

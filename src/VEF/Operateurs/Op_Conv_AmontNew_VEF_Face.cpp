@@ -79,22 +79,22 @@ static inline void convbis(const double psc,const int num1,const int num2,
 DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, DoubleTab& resu) const
 {
   DoubleVect& fluent_ = fluent;
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
-  const IntTab& elem_faces=zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const DoubleTab& facette_normales = zone_VEF.facette_normales();
+  const IntTab& elem_faces=domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const DoubleTab& facette_normales = domaine_VEF.facette_normales();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
-  const Zone& zone = zone_VEF.zone();
-  const Elem_VEF& type_elem=zone_VEF.type_elem();
+  const Domaine& domaine = domaine_VEF.domaine();
+  const Elem_VEF& type_elem=domaine_VEF.type_elem();
   const int nfa7 = type_elem.nb_facette();
-  int nb_faces_tot=zone_VEF.nb_faces_tot();
-  int nb_elem_tot = zone_VEF.nb_elem_tot();
-  const DoubleVect& volumes=zone_VEF.volumes();
-  const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
-  const DoubleTab& normales_facettes_Cl = zone_Cl_VEF.normales_facettes_Cl();
+  int nb_faces_tot=domaine_VEF.nb_faces_tot();
+  int nb_elem_tot = domaine_VEF.nb_elem_tot();
+  const DoubleVect& volumes=domaine_VEF.volumes();
+  const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
+  const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   int ncomp_ch_transporte;
 
   if (transporte.nb_dim() == 1)
@@ -253,15 +253,15 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
         }
     }
   // calcul des flux ...
-  int nfac = zone.nb_faces_elem();
-  int nsom = zone.nb_som_elem();
-  int nb_som_facette = zone.type_elem().nb_som_face();
-  const Elem_geom_base& elem_geom = zone.type_elem().valeur();
+  int nfac = domaine.nb_faces_elem();
+  int nsom = domaine.nb_som_elem();
+  int nb_som_facette = domaine.type_elem().nb_som_face();
+  const Elem_geom_base& elem_geom = domaine.type_elem().valeur();
   if ( sub_type(Hexaedre_VEF,elem_geom))
     {
       Process::exit();
     }
-  const Elem_VEF_base& type_elemvef= zone_VEF.type_elem().valeur();
+  const Elem_VEF_base& type_elemvef= domaine_VEF.type_elem().valeur();
   int istetra=0;
   Nom nom_elem=type_elemvef.que_suis_je();
   if ((nom_elem=="Tetra_VEF")||(nom_elem=="Tri_VEF"))
@@ -291,9 +291,9 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
 
   int nb_faces_perio = 0;
   // Boucle pour compter le nombre de faces de periodicite
-  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -309,9 +309,9 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
 
   // Boucle pour remplir tab
   nb_faces_perio=0;
-  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           //          const Periodique& la_cl_perio = (Periodique&) la_cl.valeur();
@@ -334,11 +334,11 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
   compteur = 0;
   vsom=0.;
 
-  // Les polyedres non standard sont ranges en 2 groupes dans la Zone_VEF:
+  // Les polyedres non standard sont ranges en 2 groupes dans la Domaine_VEF:
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent
-  // dans la zone
+  // dans la domaine
 
   // boucle sur les polys
 
@@ -349,7 +349,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
       if (rang==-1)
         itypcl=0;
       else
-        itypcl=zone_Cl_VEF.type_elem_Cl(rang);
+        itypcl=domaine_Cl_VEF.type_elem_Cl(rang);
 
       // calcul des numeros des faces du polyedre
       for (face_adj=0; face_adj<nfac; face_adj++)
@@ -380,7 +380,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
           int ncomp;
           for (j=0; j<nsom; j++)
             {
-              num_som = zone.sommet_elem(poly,j);
+              num_som = domaine.sommet_elem(poly,j);
               for (ncomp=0; ncomp<dimension; ncomp++)
                 {
                   vsom(j,ncomp) = la_vitesse.valeur_a_sommet_compo(num_som,poly,ncomp);
@@ -388,7 +388,7 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
             }
         }
       // calcul de vc
-      zone_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(), itypcl,porosite_face);
+      domaine_VEF.type_elem().calcul_vc(face,vc,vs,vsom,vitesse(), itypcl,porosite_face);
 
       //for (j=0; j<dimension; j++) vc(j) =  vs(j)/nfac ;
       type_elem.calcul_vc(face,vc,vs,vsom,vitesse(),
@@ -472,17 +472,17 @@ DoubleTab& Op_Conv_AmontNew_VEF_Face::ajouter(const DoubleTab& transporte, Doubl
   // Dimensionnement du tableau des flux convectifs au bord du domaine
   // de calcul
   DoubleTab& flux_b = flux_bords_;
-  flux_b.resize(zone_VEF.nb_faces_bord(),ncomp_ch_transporte);
+  flux_b.resize(domaine_VEF.nb_faces_bord(),ncomp_ch_transporte);
   flux_b = 0.;
 
   // Boucle sur les bords pour traiter les conditions aux limites
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
 
-  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
 
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {

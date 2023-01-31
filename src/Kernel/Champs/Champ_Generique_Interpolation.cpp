@@ -16,7 +16,7 @@
 #include <Champ_Generique_Interpolation.h>
 #include <Postraitement.h>
 #include <Discretisation_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Synonyme_info.h>
 #include <Param.h>
 
@@ -137,7 +137,7 @@ int Champ_Generique_Interpolation::set_methode(const Motcle& methode, int exit_o
   return ok;
 }
 
-/*! @brief Initialisation de la classe: initialisation du domaine d'interpolation Parametres valides : "" => domaine natif, ou le nom d'un objet Zone connu de l'interprete
+/*! @brief Initialisation de la classe: initialisation du domaine d'interpolation Parametres valides : "" => domaine natif, ou le nom d'un objet Domaine connu de l'interprete
  *
  */
 int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_on_error)
@@ -151,7 +151,7 @@ int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_
   else
     {
       const Objet_U& ob = interprete().objet(nom_domaine);
-      if (!sub_type(Zone, ob))
+      if (!sub_type(Domaine, ob))
         {
           Cerr << "Error in Champ_Generique_Interpolation::set_domaine(nom_domaine)\n"
                << " The object " << nom_domaine << " is not a domain" << finl;
@@ -162,7 +162,7 @@ int Champ_Generique_Interpolation::set_domaine(const Nom& nom_domaine, int exit_
         }
       else
         {
-          domaine_ = ref_cast(Zone, ob);
+          domaine_ = ref_cast(Domaine, ob);
         }
     }
   return ok;
@@ -198,7 +198,7 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_without_evaluation(Ch
 
   Champ espace_stockage_source;
   const Champ_base& source = get_source(0).get_champ_without_evaluation(espace_stockage_source);
-  // Zone sur lequel on interpole le champ :
+  // Domaine sur lequel on interpole le champ :
   //  si domaine_ est une ref nulle, on prend le domaine natif du champ.
 
   const Noms compo = get_property("composantes");
@@ -243,9 +243,9 @@ const Champ_base& Champ_Generique_Interpolation::get_champ_with_calculer_champ_p
   const Champ_base& source  = ((optimisation_sous_maillage_==-1)?source_bis.valeur():source0);
   Nom nom_champ_interpole;
 
-  // Zone sur lequel on interpole le champ :
+  // Domaine sur lequel on interpole le champ :
   //  si domaine_ est une ref nulle, on prend le domaine natif du champ.
-  const Zone& domaine = get_ref_domain();
+  const Domaine& domaine = get_ref_domain();
   const Noms compo = get_property("composantes");
   const Noms nom_champ = get_property("nom");
   const Noms syno = get_property("synonyms");
@@ -501,7 +501,7 @@ Entity Champ_Generique_Interpolation::get_localisation(const int index) const
   return loc;
 }
 
-const Zone& Champ_Generique_Interpolation::get_ref_domain() const
+const Domaine& Champ_Generique_Interpolation::get_ref_domain() const
 {
   if (domaine_.non_nul())
     {
@@ -513,9 +513,9 @@ const Zone& Champ_Generique_Interpolation::get_ref_domain() const
     }
 }
 
-void Champ_Generique_Interpolation::get_copy_domain(Zone& domain) const
+void Champ_Generique_Interpolation::get_copy_domain(Domaine& domain) const
 {
-  const Zone& dom = get_ref_domain();
+  const Domaine& dom = get_ref_domain();
   domain = dom;
 }
 
@@ -612,7 +612,7 @@ void Champ_Generique_Interpolation::completer(const Postraitement_base& post)
       exit();
     }
   // Si le domaine lu n'est pas le domaine de calcul, on fixe le domaine
-  const Zone& domaine_calcul = get_source(0).get_ref_domain();
+  const Domaine& domaine_calcul = get_source(0).get_ref_domain();
   if (optimisation_demande_!=1)
     optimisation_sous_maillage_=0;
   if ( (nom_domaine_lu_!="") && (nom_domaine_lu_!=domaine_calcul.le_nom()) )
@@ -628,7 +628,7 @@ void Champ_Generique_Interpolation::completer(const Postraitement_base& post)
 
   discretiser_domaine();
 }
-const Zone_dis_base& Champ_Generique_Interpolation::get_ref_zone_dis_base() const
+const Domaine_dis_base& Champ_Generique_Interpolation::get_ref_domaine_dis_base() const
 {
   if (domaine_.non_nul())
     {
@@ -638,14 +638,13 @@ const Zone_dis_base& Champ_Generique_Interpolation::get_ref_zone_dis_base() cons
           Cerr << "The domain " << domaine_.le_nom() << " is not built." << finl;
           exit();
         }
-      const Zone_dis_base& zone_dis = le_dom_dis.valeur();
-      return zone_dis;
+      const Domaine_dis_base& domaine_dis = le_dom_dis.valeur();
+      return domaine_dis;
     }
   else
     {
-      return Champ_Gen_de_Champs_Gen::get_ref_zone_dis_base();
+      return Champ_Gen_de_Champs_Gen::get_ref_domaine_dis_base();
     }
-
 }
 
 const Motcle Champ_Generique_Interpolation::get_directive_pour_discr() const
@@ -674,7 +673,7 @@ const Motcle Champ_Generique_Interpolation::get_directive_pour_discr() const
 }
 
 //Discretisation du domaine d interpolation si celui-ci n est pas le domaine de calcul
-//Cette discretisation est necessaire pour associer une zone discretisee a l espace de
+//Cette discretisation est necessaire pour associer une domaine discretisee a l espace de
 //stockage dans la methode get_champ()
 void Champ_Generique_Interpolation::discretiser_domaine()
 {
@@ -684,11 +683,11 @@ void Champ_Generique_Interpolation::discretiser_domaine()
       const Discretisation_base& discr = Pb.discretisation();
       const Nom& type_discr = discr.que_suis_je();
       // on ne cree pas les faces sauf si on veut une interpolation aux faces ou si on a des polyedres
-      // Nom type = sub_type(Poly_geom_base, domaine_.valeur().type_elem().valeur()) ? "Zone_" : "NO_FACE_Zone_";
-      Nom type = "NO_FACE_Zone_";
+      // Nom type = sub_type(Poly_geom_base, domaine_.valeur().type_elem().valeur()) ? "Domaine_" : "NO_FACE_Domaine_";
+      Nom type = "NO_FACE_Domaine_";
       if (localisation_=="faces")
         {
-          type="Zone_";
+          type="Domaine_";
           // On verifie que la localisation aux faces est possible sur le domaine (sinon elem ou som)
           if (domaine_.valeur().type_elem().valeur().nb_som_face()<=2 && dimension==3)
             {

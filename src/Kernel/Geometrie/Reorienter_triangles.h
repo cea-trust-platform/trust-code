@@ -26,9 +26,9 @@
  */
 
 #include <Interprete_geometrique_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class Reorienter_triangles : public Interprete_geometrique_base
 {
@@ -37,7 +37,7 @@ class Reorienter_triangles : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void reorienter(Zone&) const;
+  void reorienter(Domaine&) const;
 
 protected :
   enum Sens {DIRECT , INDIRECT};

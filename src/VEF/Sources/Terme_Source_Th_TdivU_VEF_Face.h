@@ -42,14 +42,14 @@ public:
   void completer() override;
   void associer_eqn_t();
 protected:
-  void modifier_zone_cl();
+  void modifier_domaine_cl();
 
 
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   REF(Equation_base) eqn_t;
-  Zone_Cl_dis mon_domcl_;
-  REF(Zone_Cl_dis_base) zonecl_sa;
-  int zone_cl_mod_ = 0;
+  Domaine_Cl_dis mon_domcl_;
+  REF(Domaine_Cl_dis_base) domainecl_sa;
+  int domaine_cl_mod_ = 0;
 };
 
 #endif

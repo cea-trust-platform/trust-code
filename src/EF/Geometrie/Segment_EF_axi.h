@@ -34,7 +34,7 @@ class Segment_EF_axi : public Segment_EF
 public :
 
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const override ;
+               const IntTab& ,const Domaine& )  const override ;
 
 protected :
 

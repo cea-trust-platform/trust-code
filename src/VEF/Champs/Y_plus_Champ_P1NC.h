@@ -17,10 +17,10 @@
 #define Y_plus_Champ_P1NC_included
 
 #include <Champ_Fonc_P0_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 #include <Ref_Champ_P1NC.h>
 #include <Champ_y_plus.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 
 /*! @brief classe Y_plus_Champ_P1NC
  *
@@ -33,17 +33,17 @@ public:
   void mettre_a_jour(double) override;
   void associer_champ(const Champ_P1NC&);
   void me_calculer(double) override;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const;
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const;
 
   inline const Champ_P1NC& mon_champ() const { return mon_champ_.valeur(); }
-  inline void associer_domaine_Cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
+  inline void associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
   {
-    le_dom_Cl_VEF = (const Zone_Cl_VEF&) le_dom_Cl_dis_base;
+    le_dom_Cl_VEF = (const Domaine_Cl_VEF&) le_dom_Cl_dis_base;
   }
 
 protected:
   REF(Champ_P1NC) mon_champ_;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 };
 
 #endif /* Y_plus_Champ_P1NC_included */

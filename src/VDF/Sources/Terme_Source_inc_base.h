@@ -21,7 +21,7 @@
 #include <Source_base.h>
 
 class Probleme_base;
-class Zone_VF;
+class Domaine_VF;
 class Param;
 
 class Terme_Source_inc_base : public Source_base

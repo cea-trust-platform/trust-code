@@ -17,24 +17,24 @@
 #define Op_Grad_VDF_Face_base_included
 
 #include <Operateur_Grad_base.h>
-#include <Ref_Zone_Cl_VDF.h>
-#include <Ref_Zone_VDF.h>
-#include <Zone_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
+#include <Ref_Domaine_VDF.h>
+#include <Domaine_VDF.h>
 
 class Op_Grad_VDF_Face_base : public Operateur_Grad_base
 {
   Declare_base(Op_Grad_VDF_Face_base);
 public:
   void check_multiphase_compatibility() const override { }
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
 
   inline int has_interface_blocs() const override { return 1; }
-  inline Zone_VDF& zone_VDF() { return le_dom_vdf.valeur(); }
-  inline const Zone_VDF& zone_VDF() const { return le_dom_vdf.valeur(); }
-  inline Zone_Cl_VDF& zone_Cl_VDF() { return la_zcl_vdf.valeur(); }
-  inline const Zone_Cl_VDF& zone_Cl_VDF() const { return la_zcl_vdf.valeur(); }
+  inline Domaine_VDF& domaine_VDF() { return le_dom_vdf.valeur(); }
+  inline const Domaine_VDF& domaine_VDF() const { return le_dom_vdf.valeur(); }
+  inline Domaine_Cl_VDF& domaine_Cl_VDF() { return la_zcl_vdf.valeur(); }
+  inline const Domaine_Cl_VDF& domaine_Cl_VDF() const { return la_zcl_vdf.valeur(); }
   inline int& face_voisins_(int i, int j) { return face_voisins(i,j); }
   inline const int& face_voisins_(int i, int j) const { return face_voisins(i,j); }
   inline double volume_entrelaces_(int i) { return volume_entrelaces(i); }
@@ -47,8 +47,8 @@ public:
   inline const double& xp_(int elem, int ori) const { return xp(elem,ori); }
 
 protected:
-  REF(Zone_VDF) le_dom_vdf;
-  REF(Zone_Cl_VDF) la_zcl_vdf;
+  REF(Domaine_VDF) le_dom_vdf;
+  REF(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation;
   IntTab face_voisins;
   DoubleVect porosite_surf, volume_entrelaces;

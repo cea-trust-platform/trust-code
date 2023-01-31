@@ -36,7 +36,7 @@ Memoire& Memoire::Instance()
   return *_instance;
 }
 
-/*! @brief Constructeur Initialize une zone de travail pour les Objet_U, les "double" et les "int"
+/*! @brief Constructeur Initialize une domaine de travail pour les Objet_U, les "double" et les "int"
  *
  */
 Memoire::Memoire() : size(step), data(new Memoire_ptr[step]),
@@ -487,7 +487,7 @@ Sortie& operator << (Sortie& os, const Memoire& mem)
   return os << "Occupation taille memoire totale en Mo: " << total/1024/1024 << finl;
 }
 
-/*! @brief Destruction de la memoire Supprime les zone de travail pour les Objet_U, les double et les int
+/*! @brief Destruction de la memoire Supprime les domaine de travail pour les Objet_U, les double et les int
  *
  *     Sort (exit) avec un code 0
  *

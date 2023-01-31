@@ -213,7 +213,7 @@ void Solv_GCP::prepare_data(const Matrice_Base& matrice, const DoubleVect& secme
       ptr += sz;
       tmp_p_avec_items_virt_.ref_data(ptr, sz_tot); // avec espace virtuel
       tmp_p_avec_items_virt_.set_md_vector(md);
-      // tmp_p_ pointe sur la meme zone:
+      // tmp_p_ pointe sur la meme domaine:
       tmp_p_.ref_data(ptr, sz); // sans l'espace virtuel
       ptr += sz_tot;
       tmp_solution_.ref_data(ptr, sz);

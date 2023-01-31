@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <DP_Impose_PolyMAC_Face.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
@@ -45,11 +45,11 @@ Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
 
 void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
 {
-  const Zone& le_domaine = equation().probleme().domaine();
-  const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,equation().zone_dis().valeur());
-  int taille_bloc = zone_poly.nb_elem();
+  const Domaine& le_domaine = equation().probleme().domaine();
+  const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis().valeur());
+  int taille_bloc = domaine_poly.nb_elem();
   num_faces.resize(taille_bloc);
-  lire_surfaces(s,le_domaine,zone_poly,num_faces, sgn);
+  lire_surfaces(s,le_domaine,domaine_poly,num_faces, sgn);
   // int nfac_tot = mp_sum(num_faces.size());
   int nfac_max = (int)mp_max(num_faces.size()); // not to count several (number of processes) times the same face
 
@@ -62,15 +62,15 @@ void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
     }
 
   DoubleTrav S;
-  zone_poly.creer_tableau_faces(S);
-  for (int i = 0; i < num_faces.size(); i++) S(num_faces(i)) = zone_poly.face_surfaces(num_faces(i));
+  domaine_poly.creer_tableau_faces(S);
+  for (int i = 0; i < num_faces.size(); i++) S(num_faces(i)) = domaine_poly.face_surfaces(num_faces(i));
   surf = mp_somme_vect(S);
 }
 
 void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone_poly = ref_cast(Zone_Poly_base,equation().zone_dis().valeur());
-  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = zone_poly.face_surfaces();
+  const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis().valeur());
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine_poly.face_surfaces();
   const DoubleTab& vit = equation().inconnue().valeurs();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
@@ -78,13 +78,13 @@ void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
   //valeurs du champ de DP
   DoubleTrav xvf(num_faces.size(), dimension), DP(num_faces.size(), 3);
   for (int i = 0; i < num_faces.size(); i++)
-    for (int j = 0; j < dimension; j++) xvf(i, j) = zone_poly.xv()(num_faces(i), j);
+    for (int j = 0; j < dimension; j++) xvf(i, j) = domaine_poly.xv()(num_faces(i), j);
   DP_.valeur().valeur_aux(xvf, DP);
 
   double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
 
   for (int i = 0, f; i < num_faces.size(); i++)
-    if ((f = num_faces(i)) < zone_poly.nb_faces())
+    if ((f = num_faces(i)) < domaine_poly.nb_faces())
       {
         secmem(f) += fs(f) * pf(f) * sgn(i) * (DP(i, 0) + DP(i, 1) * (surf * sgn(i) * vit(f) - DP(i, 2))) * fac_rho;
         if (mat) (*mat)(f, f) -= fs(f) * pf(f) * DP(i, 1) * surf * fac_rho;

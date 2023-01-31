@@ -29,8 +29,8 @@
 
 #include <TRUSTTabs_forward.h>
 #include <Terme_Source_inc_base.h>
-#include <Ref_Zone_Cl_VDF.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
+#include <Ref_Domaine_VDF.h>
 #include <Source_base.h>
 class Probleme_base;
 class Navier_Stokes_std;
@@ -58,9 +58,9 @@ public :
 
 protected :
 
-  REF(Zone_VDF) le_dom_VDF;
-  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Domaine_VDF) le_dom_VDF;
+  REF(Domaine_Cl_VDF) le_dom_Cl_VDF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   /*    void calculer_cell_cent_vel(DoubleTab& ); */
   /*    void calculer_debit_ES(double& ,double&,double&  ) const; */
   /*    void calculer_debit(double& ,double& ) const; */

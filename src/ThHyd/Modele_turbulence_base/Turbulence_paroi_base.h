@@ -23,8 +23,8 @@
 #include <Champ_Inc.h>
 
 class Mod_turb_hyd;
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Probleme_base;
 class EcrFicPartage;
 class Param;
@@ -34,7 +34,7 @@ class Param;
  *     de calcul des grandeurs turbulentes aux voisinages des parois.
  *     Contient une reference a un modele de turbulence.
  *
- * @sa Paroi_std_hyd_VDF Paroi_std_scal_hyd_VDF, Classe abstraite, Methodes abstraites, void associer(const Zone_dis&, const Zone_Cl_dis&), int init_lois_paroi(), int calculer_hyd(DoubleTab& ), int calculer_hyd(DoubleTab& , DoubleTab& )
+ * @sa Paroi_std_hyd_VDF Paroi_std_scal_hyd_VDF, Classe abstraite, Methodes abstraites, void associer(const Domaine_dis&, const Domaine_Cl_dis&), int init_lois_paroi(), int calculer_hyd(DoubleTab& ), int calculer_hyd(DoubleTab& , DoubleTab& )
  */
 class Turbulence_paroi_base : public Champs_compris_interface, public Objet_U
 {
@@ -46,7 +46,7 @@ public :
   Turbulence_paroi_base();
   virtual void set_param(Param& param);
   inline void associer_modele(const Mod_turb_hyd_base& );
-  virtual void associer(const Zone_dis&, const Zone_Cl_dis&)=0;
+  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&)=0;
   virtual void completer() {};
   virtual int init_lois_paroi() =0;
   inline int calculer_hyd(Champ_Inc& );

@@ -43,7 +43,7 @@ public:
 protected:
 
   IntVect num_faces;
-  Nom nom_sous_zone;
+  Nom nom_sous_domaine;
   DoubleVect corr_front_ss;
 
 

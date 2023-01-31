@@ -25,8 +25,8 @@ Sortie& Source_QC_Chaleur_VDF::printOn(Sortie& os) const
 
 Entree& Source_QC_Chaleur_VDF::readOn(Entree& is) { return is; }
 
-void Source_QC_Chaleur_VDF::associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& zcl)
+void Source_QC_Chaleur_VDF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl)
 {
-  associer_domaines_impl(zone,zcl);
-  associer_volume_porosite_impl(zone,volumes,porosites);
+  associer_domaines_impl(domaine,zcl);
+  associer_volume_porosite_impl(domaine,volumes,porosites);
 }

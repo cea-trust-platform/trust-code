@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Echange_interne_global_parfait.h>
-#include <Zone_Cl_dis_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Discretisation_base.h>
 #include <EChaine.h>
 

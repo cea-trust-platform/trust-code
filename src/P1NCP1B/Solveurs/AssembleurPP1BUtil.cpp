@@ -15,7 +15,7 @@
 
 #include <Assembleur_P_VEFPreP1B.h>
 #include <Matrice_Bloc_Sym.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Periodique.h>
@@ -105,7 +105,7 @@ static inline int okface(int& ind_face, int& face, const Cond_lim& la_cl)
 
 inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
                             const Matrice_Bloc_Sym& matrice,
-                            const Zone_VEF_PreP1b& zone_VEF)
+                            const Domaine_VEF_PreP1b& domaine_VEF)
 {
   const Navier_Stokes_std& eqn=ref_cast(Navier_Stokes_std, ass.equation());
   const Operateur_Div& opdiv=eqn.operateur_divergence();
@@ -122,7 +122,7 @@ inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
   DoubleTab resu(tab), resu2(tab), erreur(tab);
 
   // On calcule un champ de pression quelconque
-  exemple_champ_non_homogene(zone_VEF, tab);
+  exemple_champ_non_homogene(domaine_VEF, tab);
 
   DoubleTab gradP(eqn.inconnue().valeurs());
   grad.calculer(tab, gradP);
@@ -133,10 +133,10 @@ inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
 }
 int verifier( const Assembleur_P_VEFPreP1B& ass,
               const Matrice_Bloc_Sym& matrice,
-              const Zone_VEF_PreP1b& zone_VEF,
+              const Domaine_VEF_PreP1b& domaine_VEF,
               const DoubleTab& inverse_quantitee_entrelacee)
 {
-  if (zone_VEF.get_alphaE()+zone_VEF.get_alphaS()+zone_VEF.get_alphaA()!=Objet_U::dimension)
+  if (domaine_VEF.get_alphaE()+domaine_VEF.get_alphaS()+domaine_VEF.get_alphaA()!=Objet_U::dimension)
     {
       Cerr << "Assembleur_P_VEFPreP1B::verifier n'est pas prevu pour verifier votre discretisation." << finl;
       Process::exit();
@@ -153,17 +153,17 @@ int verifier( const Assembleur_P_VEFPreP1B& ass,
   //  const Solveur_Masse& solvm=eqn.solv_masse();
   const DoubleTab& pression=eqn.pression().valeurs();
   int ko=0;
-  ko=verifier_complet(ass, matrice, zone_VEF);
+  ko=verifier_complet(ass, matrice, domaine_VEF);
   DoubleTab pre(pression);
   DoubleTab resu(pre), resu2(pre), erreur(pre);
   DoubleTab gradP(eqn.inconnue().valeurs());
-  const Zone& zone=zone_VEF.zone();
-  int nb_elem=zone.nb_elem();
-  int nb_elem_tot=zone.nb_elem_tot();
-  int nb_som=zone.nb_som();
-  int nb_som_tot=zone.nb_som_tot();
-  int nb_aretes=zone.nb_aretes();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
+  const Domaine& domaine=domaine_VEF.domaine();
+  int nb_elem=domaine.nb_elem();
+  int nb_elem_tot=domaine.nb_elem_tot();
+  int nb_som=domaine.nb_som();
+  int nb_som_tot=domaine.nb_som_tot();
+  int nb_aretes=domaine.nb_aretes();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
   for (int proc=0; proc<Process::nproc(); proc++)
     {
       int n = pre.dimension_tot(0);
@@ -185,14 +185,14 @@ int verifier( const Assembleur_P_VEFPreP1B& ass,
                 {
                   int sommet=i-nb_elem_tot;
                   Cerr << "On verifie le sommet reel ";
-                  if (zone.get_renum_som_perio(sommet)!=sommet) Cerr << "periodique ";
+                  if (domaine.get_renum_som_perio(sommet)!=sommet) Cerr << "periodique ";
                   Cerr << i-nb_elem_tot << " du processeur " << proc;
                   pre(i)=1;
                 }
               else if (nb_elem_tot+nb_som_tot<=i && i<nb_elem_tot+nb_som_tot+nb_aretes && ok_arete[i-nb_elem_tot-nb_som_tot])
                 {
                   int arete=i-nb_elem_tot-nb_som_tot;
-                  const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
+                  const ArrOfInt& renum_arete_perio=domaine_VEF.get_renum_arete_perio();
                   if (renum_arete_perio[arete]==arete)
                     {
                       Cerr << "On verifie l'arete reelle non superflue et non periodique " << arete << " du processeur " << proc;
@@ -291,13 +291,13 @@ static inline void sort( ArrOfInt& sommets, ArrOfInt& faces_op1, ArrOfInt& faces
           faces_op2[j]=tmp;
         }
 }
-static inline int chercher_arete(const Zone_VEF_PreP1b& zone_VEF,
+static inline int chercher_arete(const Domaine_VEF_PreP1b& domaine_VEF,
                                  int elem, int somi, int somj,
                                  const IntTab& elem_aretes,
                                  const IntTab& aretes_som)
 {
-  const ArrOfInt& renum_arete_perio=zone_VEF.get_renum_arete_perio();
-  const Zone& dom=zone_VEF.zone();
+  const ArrOfInt& renum_arete_perio=domaine_VEF.get_renum_arete_perio();
+  const Domaine& dom=domaine_VEF.domaine();
   if(somi>somj)
     {
       int k=somi;
@@ -334,17 +334,17 @@ static inline void swap (int& i, int& j)
 // dans elem1. face_op2(i) est ... dans elem2. (si elem2=-1, alors face_op2=-1)
 // les dimension premiers sommets sont ceux de face
 // le dernier est dans elem2
-static inline void remplir_sommets(const Zone_VEF& zone_VEF,
+static inline void remplir_sommets(const Domaine_VEF& domaine_VEF,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets,
                                    ArrOfInt& faces_op1,
                                    ArrOfInt& faces_op2)
 {
   int dplusun=Objet_U::dimension+1;
-  const IntTab& elem_som = zone_VEF.zone().les_elems();
-  const IntTab& face_som = zone_VEF.face_sommets();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const Zone& dom=zone_VEF.zone();
+  const IntTab& elem_som = domaine_VEF.domaine().les_elems();
+  const IntTab& face_som = domaine_VEF.face_sommets();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const Domaine& dom=domaine_VEF.domaine();
   int i,j,k;
   for(i=0; i<Objet_U::dimension; i++)
     sommets[i]=dom.get_renum_som_perio(face_som(face,i));
@@ -512,7 +512,7 @@ static double dotproduct_array_fois_inverse_quantitee_entrelacee(const ArrOfDoub
   //return  dotproduct_array(gradi,gradj)*inverse_quantitee_entrelacee(face,0);
 }
 
-static void contribuer_matriceP0P1(const Zone_VEF& zone_VEF,
+static void contribuer_matriceP0P1(const Domaine_VEF& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -521,8 +521,8 @@ static void contribuer_matriceP0P1(const Zone_VEF& zone_VEF,
                                    IntLists& voisins, DoubleLists& coeffs,
                                    int& nnz)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   assert(elem1==face_voisins(face, 0));
   assert(elem2==face_voisins(face, 1));
 
@@ -582,7 +582,7 @@ inline void range(int& i, int& n, int& j, int& m, Matrice_Morse& ARR, Matrice_Mo
   else
     AVV(i-n,j-m)+=coeff;
 }
-static void update_matriceP0P1(const Zone_VEF& zone_VEF,
+static void update_matriceP0P1(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -590,8 +590,8 @@ static void update_matriceP0P1(const Zone_VEF& zone_VEF,
                                Matrice_Morse& ARR, Matrice_Morse& ARV,
                                Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   assert(elem1==face_voisins(face, 0));
   assert(elem2==face_voisins(face, 1));
 
@@ -600,8 +600,8 @@ static void update_matriceP0P1(const Zone_VEF& zone_VEF,
   double psc;
   //double coeff_som=1./(dimension)/(dimension+1);
 
-  int nb_elem=zone_VEF.nb_elem();
-  int nb_som=zone_VEF.nb_som();
+  int nb_elem=domaine_VEF.nb_elem();
+  int nb_som=domaine_VEF.nb_som();
   for(int i=0; i<dplusdeux; i++)
     {
       int si=sommets[i];
@@ -618,7 +618,7 @@ static void update_matriceP0P1(const Zone_VEF& zone_VEF,
     }
 }
 
-static void contribuer_matriceP1P1(const Zone_VEF& zone_VEF,
+static void contribuer_matriceP1P1(const Domaine_VEF& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -626,8 +626,8 @@ static void contribuer_matriceP1P1(const Zone_VEF& zone_VEF,
                                    IntLists& voisins, DoubleLists& coeffs,
                                    DoubleVect& diag, int& nnz)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int dimension=Objet_U::dimension,
       dplusdeux=dimension+2;
@@ -672,7 +672,7 @@ static void contribuer_matriceP1P1(const Zone_VEF& zone_VEF,
     }
 }
 
-static void update_matriceP1P1(const Zone_VEF& zone_VEF,
+static void update_matriceP1P1(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -680,15 +680,15 @@ static void update_matriceP1P1(const Zone_VEF& zone_VEF,
                                Matrice_Morse& ARR, Matrice_Morse& ARV,
                                Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int dimension=Objet_U::dimension,
       dplusdeux=dimension+2;
   double psc;
   //double coeff_som=1./(dimension)/(dimension+1);
   //coeff_som*=coeff_som;
-  int nb_som_tot=zone_VEF.nb_som();
+  int nb_som_tot=domaine_VEF.nb_som();
   int i,j;
 
   // On ne traite pas les sommets -1 qui
@@ -724,7 +724,7 @@ static void update_matriceP1P1(const Zone_VEF& zone_VEF,
     }
 }
 
-static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
+static void contribuer_matricePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -732,11 +732,11 @@ static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                    IntLists& voisins, DoubleLists& coeffs,
                                    DoubleVect& diag, int& nnz)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j, k, l;
   double psc;
   // On ne traite pas les sommets -1 qui
@@ -756,10 +756,10 @@ static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
           int sj=sommets[j];
           int arete1;
           if(j<4)
-            arete1 = chercher_arete(zone_VEF,elem1, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem1, si, sj,
                                     elem_aretes, aretes_som);
           else
-            arete1 = chercher_arete(zone_VEF,elem2, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem2, si, sj,
                                     elem_aretes, aretes_som);
           assert(arete1!=-1);
           if(ok_arete[arete1])
@@ -780,11 +780,11 @@ static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                       int sl=sommets[l];
                       int arete2;
                       if(l<4)
-                        arete2 = chercher_arete(zone_VEF,elem1, sl, sk,
+                        arete2 = chercher_arete(domaine_VEF,elem1, sl, sk,
                                                 elem_aretes,
                                                 aretes_som);
                       else
-                        arete2 = chercher_arete(zone_VEF,elem2, sl, sk,
+                        arete2 = chercher_arete(domaine_VEF,elem2, sl, sk,
                                                 elem_aretes,
                                                 aretes_som);
                       assert(arete2!=-1);
@@ -819,7 +819,7 @@ static void contribuer_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
         }
     }
 }
-static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
+static void update_matricePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -827,12 +827,12 @@ static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                                Matrice_Morse& ARR, Matrice_Morse& ARV,
                                Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
   int i, j, k, l;
   double psc;
   // On ne traite pas les sommets -1 qui
@@ -852,10 +852,10 @@ static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
           int sj=sommets[j];
           int arete1;
           if(j<4)
-            arete1 = chercher_arete(zone_VEF,elem1, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem1, si, sj,
                                     elem_aretes, aretes_som);
           else
-            arete1 = chercher_arete(zone_VEF,elem2, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem2, si, sj,
                                     elem_aretes, aretes_som);
           assert(arete1!=-1);
           if(ok_arete[arete1])
@@ -877,11 +877,11 @@ static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
                       int sl=sommets[l];
                       int arete2;
                       if(l<4)
-                        arete2 = chercher_arete(zone_VEF,elem1, sl, sk,
+                        arete2 = chercher_arete(domaine_VEF,elem1, sl, sk,
                                                 elem_aretes,
                                                 aretes_som);
                       else
-                        arete2 = chercher_arete(zone_VEF,elem2, sl, sk,
+                        arete2 = chercher_arete(domaine_VEF,elem2, sl, sk,
                                                 elem_aretes,
                                                 aretes_som);
                       assert(arete2!=-1);
@@ -915,15 +915,15 @@ static void update_matricePaPa(const Zone_VEF_PreP1b& zone_VEF,
     }
 }
 static void
-contribuer_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
+contribuer_matrice_NeumannP0P1(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
                                IntLists& voisins, DoubleLists& coeffs,
                                int& nnz)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
@@ -959,18 +959,18 @@ contribuer_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
 }
 
 static void
-update_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
+update_matrice_NeumannP0P1(const Domaine_VEF& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets, ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
                            Matrice_Morse& ARR, Matrice_Morse& ARV,
                            Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
-  int nb_elem_tot=zone_VEF.nb_elem();
-  int nb_som_tot=zone_VEF.nb_som();
+  int nb_elem_tot=domaine_VEF.nb_elem();
+  int nb_som_tot=domaine_VEF.nb_som();
 
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
@@ -1004,15 +1004,15 @@ update_matrice_NeumannP0P1(const Zone_VEF& zone_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP1P1(const Zone_VEF& zone_VEF,
+contribuer_matrice_NeumannP1P1(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
                                IntLists& voisins, DoubleLists& coeffs,
                                DoubleVect& diag, int& nnz)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
@@ -1060,15 +1060,15 @@ contribuer_matrice_NeumannP1P1(const Zone_VEF& zone_VEF,
 
 
 static void
-update_matrice_NeumannP1P1(const Zone_VEF& zone_VEF,
+update_matrice_NeumannP1P1(const Domaine_VEF& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets, ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
                            Matrice_Morse& ARR, Matrice_Morse& ARV,
                            Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
@@ -1078,7 +1078,7 @@ update_matrice_NeumannP1P1(const Zone_VEF& zone_VEF,
   //coeff_som*=coeff_som;
 
 
-  int nb_som_tot=zone_VEF.nb_som();
+  int nb_som_tot=domaine_VEF.nb_som();
   int i,j;
   for(i=0; i<dplusun; i++)
     {
@@ -1114,15 +1114,15 @@ update_matrice_NeumannP1P1(const Zone_VEF& zone_VEF,
 }
 
 static void
-contribuer_matrice_SymetrieP1P1(const Zone_VEF& zone_VEF,
+contribuer_matrice_SymetrieP1P1(const Domaine_VEF& domaine_VEF,
                                 const DoubleTab& inverse_quantitee_entrelacee,
                                 int face, int elem,
                                 ArrOfInt& sommets, ArrOfInt& faces_op1,const ArrOfDouble& coef_som,
                                 IntLists& voisins, DoubleLists& coeffs,
                                 DoubleVect& diag, int& nnz)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
@@ -1167,15 +1167,15 @@ contribuer_matrice_SymetrieP1P1(const Zone_VEF& zone_VEF,
 
 
 static void
-update_matrice_SymetrieP1P1(const Zone_VEF& zone_VEF,
+update_matrice_SymetrieP1P1(const Domaine_VEF& domaine_VEF,
                             const DoubleTab& inverse_quantitee_entrelacee,
                             int face, int elem,
                             ArrOfInt& sommets, ArrOfInt& faces_op1,   const ArrOfDouble& coef_som,
                             Matrice_Morse& ARR, Matrice_Morse& ARV,
                             Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const DoubleTab& normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int dimension=Objet_U::dimension,
       dplusun=dimension+1;
@@ -1184,7 +1184,7 @@ update_matrice_SymetrieP1P1(const Zone_VEF& zone_VEF,
   //coeff_som*=coeff_som;
 
 
-  int nb_som_tot=zone_VEF.nb_som();
+  int nb_som_tot=domaine_VEF.nb_som();
   int i,j;
   for(i=0; i<dplusun; i++)
     {
@@ -1217,18 +1217,18 @@ update_matrice_SymetrieP1P1(const Zone_VEF& zone_VEF,
 }
 
 static void
-contribuer_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
+contribuer_matrice_NeumannPaPa(const Domaine_VEF_PreP1b& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,
                                IntLists& voisins, DoubleLists& coeffs,
                                DoubleVect& diag, int& nnz)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j, k, l;
   double psc;
 
@@ -1240,7 +1240,7 @@ contribuer_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1258,7 +1258,7 @@ contribuer_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
                   for(l=jj+1; l<4; l++)
                     {
                       int sl=sommets[l];
-                      int arete2= chercher_arete(zone_VEF,elem, sl, sk,
+                      int arete2= chercher_arete(domaine_VEF,elem, sl, sk,
                                                  elem_aretes,
                                                  aretes_som);
                       assert(arete2!=-1);
@@ -1295,19 +1295,19 @@ contribuer_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-update_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
+update_matrice_NeumannPaPa(const Domaine_VEF_PreP1b& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets, ArrOfInt& faces_op1,
                            Matrice_Morse& ARR, Matrice_Morse& ARV,
                            Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
 
   int i, j, k, l;
   double psc;
@@ -1320,7 +1320,7 @@ update_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1339,7 +1339,7 @@ update_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
                   for(l=jj+1; l<4; l++)
                     {
                       int sl=sommets[l];
-                      int arete2= chercher_arete(zone_VEF,elem, sl, sk,
+                      int arete2= chercher_arete(domaine_VEF,elem, sl, sk,
                                                  elem_aretes,
                                                  aretes_som);
                       assert(arete2!=-1);
@@ -1374,18 +1374,18 @@ update_matrice_NeumannPaPa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-contribuer_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
+contribuer_matrice_SymetriePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
                                 const DoubleTab& inverse_quantitee_entrelacee,
                                 int face, int elem,
                                 ArrOfInt& sommets, ArrOfInt& faces_op1,
                                 IntLists& voisins, DoubleLists& coeffs,
                                 DoubleVect& diag, int& nnz)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j, k, l;
   double psc;
 
@@ -1397,7 +1397,7 @@ contribuer_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1416,7 +1416,7 @@ contribuer_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
                   for(l=jj+1; l<4; l++)
                     {
                       int sl=sommets[l];
-                      int arete2= chercher_arete(zone_VEF,elem, sl, sk,
+                      int arete2= chercher_arete(domaine_VEF,elem, sl, sk,
                                                  elem_aretes,
                                                  aretes_som);
                       assert(arete2!=-1);
@@ -1454,20 +1454,20 @@ contribuer_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-update_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
+update_matrice_SymetriePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
                             const DoubleTab& inverse_quantitee_entrelacee,
                             int face, int elem,
                             ArrOfInt& sommets, ArrOfInt& faces_op1,
                             Matrice_Morse& ARR, Matrice_Morse& ARV,
                             Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j, k, l;
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
 
   double psc;
 
@@ -1479,7 +1479,7 @@ update_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1499,7 +1499,7 @@ update_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
                   for(l=jj+1; l<4; l++)
                     {
                       int sl=sommets[l];
-                      int arete2= chercher_arete(zone_VEF,elem, sl, sk,
+                      int arete2= chercher_arete(domaine_VEF,elem, sl, sk,
                                                  elem_aretes,
                                                  aretes_som);
                       assert(arete2!=-1);
@@ -1534,7 +1534,7 @@ update_matrice_SymetriePaPa(const Zone_VEF_PreP1b& zone_VEF,
     }
 }
 
-static void contribuer_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
+static void contribuer_matriceP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets,
@@ -1544,11 +1544,11 @@ static void contribuer_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                                    DoubleLists& coeffs,
                                    int& nnz)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j;
   double psc;
 
@@ -1563,10 +1563,10 @@ static void contribuer_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
           int sj=sommets[j];
           int arete1;
           if(j<4)
-            arete1 = chercher_arete(zone_VEF,elem1, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem1, si, sj,
                                     elem_aretes, aretes_som);
           else
-            arete1 = chercher_arete(zone_VEF,elem2, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem2, si, sj,
                                     elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1610,7 +1610,7 @@ static void contribuer_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
     }
 }
 
-static void update_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
+static void update_matriceP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets,
@@ -1619,13 +1619,13 @@ static void update_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                                Matrice_Morse& ARR, Matrice_Morse& ARV,
                                Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
-  int nb_elem_tot=zone_VEF.zone().nb_elem();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
+  int nb_elem_tot=domaine_VEF.domaine().nb_elem();
 
   int i, j;
   double psc;
@@ -1641,10 +1641,10 @@ static void update_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
           int sj=sommets[j];
           int arete1;
           if(j<4)
-            arete1 = chercher_arete(zone_VEF,elem1, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem1, si, sj,
                                     elem_aretes, aretes_som);
           else
-            arete1 = chercher_arete(zone_VEF,elem2, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem2, si, sj,
                                     elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1686,7 +1686,7 @@ static void update_matriceP0Pa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
+contribuer_matrice_NeumannP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets,
@@ -1695,11 +1695,11 @@ contribuer_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                                DoubleLists& coeffs,
                                int& nnz)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j;
   double psc;
 
@@ -1711,7 +1711,7 @@ contribuer_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1741,7 +1741,7 @@ contribuer_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-update_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
+update_matrice_NeumannP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets,
@@ -1749,13 +1749,13 @@ update_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
                            Matrice_Morse& ARR, Matrice_Morse& ARV,
                            Matrice_Morse& AVR, Matrice_Morse& AVV)
 {
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
-  int nb_elem_tot=zone_VEF.zone().nb_elem();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
+  int nb_elem_tot=domaine_VEF.domaine().nb_elem();
 
   int i, j;
   double psc;
@@ -1768,7 +1768,7 @@ update_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1795,7 +1795,7 @@ update_matrice_NeumannP0Pa(const Zone_VEF_PreP1b& zone_VEF,
     }
 }
 
-static void contribuer_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
+static void contribuer_matriceP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets,
@@ -1808,11 +1808,11 @@ static void contribuer_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   // int dimension=Objet_U::dimension,
   //    dplusun=dimension+1;
   //  double coeff_som=1./(dimension)/(dplusun);
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j, k;
   double psc;
 
@@ -1827,10 +1827,10 @@ static void contribuer_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
           int sj=sommets[j];
           int arete1;
           if(j<4)
-            arete1 = chercher_arete(zone_VEF,elem1, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem1, si, sj,
                                     elem_aretes, aretes_som);
           else
-            arete1 = chercher_arete(zone_VEF,elem2, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem2, si, sj,
                                     elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1864,7 +1864,7 @@ static void contribuer_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
     }
 }
 
-static void update_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
+static void update_matriceP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets,
@@ -1876,13 +1876,13 @@ static void update_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   //  int dimension=Objet_U::dimension,
   //    dplusun=dimension+1;
   //  double coeff_som=1./(dimension)/(dplusun);
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
-  int nb_som_tot=zone_VEF.zone().nb_som();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
+  int nb_som_tot=domaine_VEF.domaine().nb_som();
 
   int i, j, k;
   double psc;
@@ -1898,10 +1898,10 @@ static void update_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
           int sj=sommets[j];
           int arete1;
           if(j<4)
-            arete1 = chercher_arete(zone_VEF,elem1, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem1, si, sj,
                                     elem_aretes, aretes_som);
           else
-            arete1 = chercher_arete(zone_VEF,elem2, si, sj,
+            arete1 = chercher_arete(domaine_VEF,elem2, si, sj,
                                     elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -1934,7 +1934,7 @@ static void update_matriceP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
+contribuer_matrice_NeumannP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets,
@@ -1947,11 +1947,11 @@ contribuer_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   //    dplusun=dimension+1;
   //  double coeff_som=1./(dimension)/(dplusun);
   double unsurdim=1./Objet_U::dimension;
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j, k;
   double psc;
 
@@ -1963,7 +1963,7 @@ contribuer_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -2001,7 +2001,7 @@ contribuer_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-update_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
+update_matrice_NeumannP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets,
@@ -2013,13 +2013,13 @@ update_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   //  dplusun=dimension+1;
   //  double coeff_som=1./(dimension)/(dplusun);
   double unsurdim=1./Objet_U::dimension;
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
-  int nb_som_tot=zone_VEF.zone().nb_som();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
+  int nb_som_tot=domaine_VEF.domaine().nb_som();
 
   int i, j, k;
   double psc;
@@ -2032,7 +2032,7 @@ update_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -2068,7 +2068,7 @@ update_matrice_NeumannP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-contribuer_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
+contribuer_matrice_SymetrieP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                                 const DoubleTab& inverse_quantitee_entrelacee,
                                 int face, int elem,
                                 ArrOfInt& sommets,
@@ -2080,11 +2080,11 @@ contribuer_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   //int dimension=Objet_U::dimension,
   //    dplusun=dimension+1;
   //  double coeff_som=1./(dimension)/(dplusun);
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
   int i, j, k;
   double psc;
 
@@ -2096,7 +2096,7 @@ contribuer_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -2133,7 +2133,7 @@ contribuer_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 static void
-update_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
+update_matrice_SymetrieP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
                             const DoubleTab& inverse_quantitee_entrelacee,
                             int face, int elem,
                             ArrOfInt& sommets,
@@ -2144,13 +2144,13 @@ update_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
   //  int dimension=Objet_U::dimension,
   //    dplusun=dimension+1;
   //  double coeff_som=1./(dimension)/(dplusun);
-  const IntTab& elem_aretes=zone_VEF.zone().elem_aretes();
-  const IntTab& aretes_som=zone_VEF.zone().aretes_som();
-  const ArrOfInt& ok_arete=zone_VEF.get_ok_arete();
-  const IntTab& face_voisins=zone_VEF.face_voisins();
-  const DoubleTab& normales = zone_VEF.face_normales();
-  int nb_aretes_tot=zone_VEF.zone().nb_aretes();
-  int nb_som_tot=zone_VEF.zone().nb_som();
+  const IntTab& elem_aretes=domaine_VEF.domaine().elem_aretes();
+  const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
+  const ArrOfInt& ok_arete=domaine_VEF.get_ok_arete();
+  const IntTab& face_voisins=domaine_VEF.face_voisins();
+  const DoubleTab& normales = domaine_VEF.face_normales();
+  int nb_aretes_tot=domaine_VEF.domaine().nb_aretes();
+  int nb_som_tot=domaine_VEF.domaine().nb_som();
 
   int i, j, k;
   double psc;
@@ -2163,7 +2163,7 @@ update_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
         {
           int sj=sommets[j];
           int arete1;
-          arete1 = chercher_arete(zone_VEF,elem, si, sj,
+          arete1 = chercher_arete(domaine_VEF,elem, si, sj,
                                   elem_aretes, aretes_som);
           if(ok_arete[arete1])
             {
@@ -2198,8 +2198,8 @@ update_matrice_SymetrieP1Pa(const Zone_VEF_PreP1b& zone_VEF,
 }
 
 void
-assemblerP0P0(const Zone_dis_base& z,
-              const Zone_Cl_dis_base& zcl,
+assemblerP0P0(const Domaine_dis_base& z,
+              const Domaine_Cl_dis_base& zcl,
               Matrice& matrice,
               const DoubleTab& inverse_quantitee_entrelacee)
 {
@@ -2211,8 +2211,8 @@ assemblerP0P0(const Zone_dis_base& z,
 }
 
 void
-updateP0P0(const Zone_dis_base& z,
-           const Zone_Cl_dis_base& zcl,
+updateP0P0(const Domaine_dis_base& z,
+           const Domaine_Cl_dis_base& zcl,
            Matrice& matrice,
            const DoubleTab& inverse_quantitee_entrelacee)
 {
@@ -2223,19 +2223,19 @@ updateP0P0(const Zone_dis_base& z,
   Cerr << "Update P0 OK" << finl;
 }
 
-void assemblerP1P1(const Zone_dis_base& z,
-                   const Zone_Cl_dis_base& zcl,
+void assemblerP1P1(const Domaine_dis_base& z,
+                   const Domaine_Cl_dis_base& zcl,
                    Matrice& matrice, const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
-  int nb_som = zone_VEF.zone().nb_som_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
+  int nb_som = domaine_VEF.domaine().nb_som_tot();
   int elem1, elem2, face, ok;
   int nnz=nb_som;
   IntLists voisins(nb_som);
@@ -2256,12 +2256,12 @@ void assemblerP1P1(const Zone_dis_base& z,
           if (ok==-1) break;
           elem1=face_voisins(face, 0);
           elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP1P1(zone_VEF,
+              contribuer_matrice_NeumannP1P1(domaine_VEF,
                                              inverse_quantitee_entrelacee,
                                              face, elem1, sommets,
                                              face_opp1, coef_som,
@@ -2269,14 +2269,14 @@ void assemblerP1P1(const Zone_dis_base& z,
             }
           else if(ok==4)
             {
-              contribuer_matrice_SymetrieP1P1(zone_VEF,
+              contribuer_matrice_SymetrieP1P1(domaine_VEF,
                                               inverse_quantitee_entrelacee,
                                               face, elem1, sommets,
                                               face_opp1, coef_som,
                                               voisins, coeffs, diag, nnz);
             }
           else
-            contribuer_matriceP1P1(zone_VEF,
+            contribuer_matriceP1P1(domaine_VEF,
                                    inverse_quantitee_entrelacee,
                                    face, elem1, elem2, sommets,
                                    face_opp1, face_opp2, coef_som,
@@ -2288,12 +2288,12 @@ void assemblerP1P1(const Zone_dis_base& z,
     {
       elem1=face_voisins(face, 0);
       elem2=face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          contribuer_matriceP1P1(zone_VEF,
+          contribuer_matriceP1P1(domaine_VEF,
                                  inverse_quantitee_entrelacee,
                                  face, elem1, elem2, sommets,
                                  face_opp1, face_opp2, coef_som,
@@ -2310,25 +2310,25 @@ void assemblerP1P1(const Zone_dis_base& z,
 
   matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice_bloc=ref_cast(Matrice_Bloc, matrice.valeur());
-  matrice_bloc.remplir(voisins, coeffs, diag, zone.nb_som(), zone.nb_som_tot());
+  matrice_bloc.remplir(voisins, coeffs, diag, domaine.nb_som(), domaine.nb_som_tot());
   Cerr << "Assemblage P1 OK" << finl;
 }
 
 
-void updateP1P1(const Zone_dis_base& z,
-                const Zone_Cl_dis_base& zcl,
+void updateP1P1(const Domaine_dis_base& z,
+                const Domaine_Cl_dis_base& zcl,
                 Matrice& matrice,
                 const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  //  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
-  //  int nb_som = zone_VEF.zone().nb_som_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  //  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
+  //  int nb_som = domaine_VEF.domaine().nb_som_tot();
   int elem1, elem2, face, ok;
   //  int nnz=nb_som;
   ArrOfInt sommets(dimension+2);
@@ -2352,14 +2352,14 @@ void updateP1P1(const Zone_dis_base& z,
             break;
           elem1 = face_voisins(face, 0);
           elem2 = face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
           if (ok == 3)
-            update_matrice_NeumannP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+            update_matrice_NeumannP1P1(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
           else if (ok == 4)
-            update_matrice_SymetrieP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+            update_matrice_SymetrieP1P1(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
           else
-            update_matriceP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
+            update_matriceP1P1(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
@@ -2367,14 +2367,14 @@ void updateP1P1(const Zone_dis_base& z,
     {
       elem1 = face_voisins(face, 0);
       elem2 = face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          update_matriceP1P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
+          update_matriceP1P1(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
-  int nb_som=zone_VEF.zone().nb_som();
+  int nb_som=domaine_VEF.domaine().nb_som();
   for(int i=0; i<nb_som; i++)
     if(ARR(i,i)==0)
       {
@@ -2385,17 +2385,17 @@ void updateP1P1(const Zone_dis_base& z,
 }
 
 
-void modifieP1P1neumann(const Zone_dis_base& z,
-                        const Zone_Cl_dis_base& zcl,
+void modifieP1P1neumann(const Domaine_dis_base& z,
+                        const Domaine_Cl_dis_base& zcl,
                         Matrice& matrice,
                         const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
 
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  //  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  //  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
 
   //  int nnz=nb_som;
   ArrOfInt sommets(dimension+2);
@@ -2404,7 +2404,7 @@ void modifieP1P1neumann(const Zone_dis_base& z,
   Matrice_Bloc& A=ref_cast(Matrice_Bloc, matrice.valeur());
   Matrice_Morse_Sym& ARR=ref_cast(Matrice_Morse_Sym, A.get_bloc(0,0).valeur());
   // Faces de bord :
-  assert(ref_cast(Zone_VEF_PreP1b, z).get_cl_pression_sommet_faible()==0);
+  assert(ref_cast(Domaine_VEF_PreP1b, z).get_cl_pression_sommet_faible()==0);
   int nb_som_tot=z.nb_som();
   for(auto& itr : les_cl)
     {
@@ -2414,7 +2414,7 @@ void modifieP1P1neumann(const Zone_dis_base& z,
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int nb_faces_bord = le_bord.nb_faces_tot();
-          const IntTab& faces=zone_VEF.face_sommets();
+          const IntTab& faces=domaine_VEF.face_sommets();
           int nbsf=faces.dimension(1);
           for(int ind_face=0; ind_face<nb_faces_bord; ind_face++)
             {
@@ -2425,7 +2425,7 @@ void modifieP1P1neumann(const Zone_dis_base& z,
                   int som_glob=faces(face,som);
                   if (som_glob<nb_som_tot)
                     ARR(som_glob,som_glob)=1e12;
-                  //        Cout<<ref_cast(Zone_VEF_PreP1b, z).numero_premier_sommet()<<" ici "<<som_glob<<finl;
+                  //        Cout<<ref_cast(Domaine_VEF_PreP1b, z).numero_premier_sommet()<<" ici "<<som_glob<<finl;
                 }
             }
         }
@@ -2433,20 +2433,20 @@ void modifieP1P1neumann(const Zone_dis_base& z,
   Cerr << "Modifie P1P1 Neumann OK" << finl;
 }
 
-void assemblerPaPa(const Zone_dis_base& z,
-                   const Zone_Cl_dis_base& zcl,
+void assemblerPaPa(const Domaine_dis_base& z,
+                   const Domaine_Cl_dis_base& zcl,
                    Matrice& matrice,
                    const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
-  int nb_arete = zone.nb_aretes_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
+  int nb_arete = domaine.nb_aretes_tot();
   int elem1, elem2, face, ok;
   int nnz=nb_arete;
   IntLists voisins(nb_arete);
@@ -2467,11 +2467,11 @@ void assemblerPaPa(const Zone_dis_base& z,
           if (ok==-1) break;
           elem1=face_voisins(face, 0);
           elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannPaPa(zone_VEF,
+              contribuer_matrice_NeumannPaPa(domaine_VEF,
                                              inverse_quantitee_entrelacee,
                                              face, elem1, sommets,
                                              face_opp1,
@@ -2479,14 +2479,14 @@ void assemblerPaPa(const Zone_dis_base& z,
             }
           else if(ok==4)
             {
-              contribuer_matrice_SymetriePaPa(zone_VEF,
+              contribuer_matrice_SymetriePaPa(domaine_VEF,
                                               inverse_quantitee_entrelacee,
                                               face, elem1, sommets,
                                               face_opp1,
                                               voisins, coeffs, diag, nnz);
             }
           else
-            contribuer_matricePaPa(zone_VEF,
+            contribuer_matricePaPa(domaine_VEF,
                                    inverse_quantitee_entrelacee,
                                    face, elem1, elem2, sommets,
                                    face_opp1, face_opp2,
@@ -2498,11 +2498,11 @@ void assemblerPaPa(const Zone_dis_base& z,
     {
       elem1=face_voisins(face, 0);
       elem2=face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
-          contribuer_matricePaPa(zone_VEF,
+          contribuer_matricePaPa(domaine_VEF,
                                  inverse_quantitee_entrelacee,
                                  face, elem1, elem2, sommets,
                                  face_opp1, face_opp2,
@@ -2519,24 +2519,24 @@ void assemblerPaPa(const Zone_dis_base& z,
 
   matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice_bloc=ref_cast(Matrice_Bloc, matrice.valeur());
-  matrice_bloc.remplir(voisins, coeffs, diag, zone.nb_aretes(), zone.nb_aretes_tot());
+  matrice_bloc.remplir(voisins, coeffs, diag, domaine.nb_aretes(), domaine.nb_aretes_tot());
   Cerr << "Assemblage Pa OK" << finl;
 }
 
-void updatePaPa(const Zone_dis_base& z,
-                const Zone_Cl_dis_base& zcl,
+void updatePaPa(const Domaine_dis_base& z,
+                const Domaine_Cl_dis_base& zcl,
                 Matrice& matrice,
                 const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
-  int nb_arete = zone.nb_aretes();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
+  int nb_arete = domaine.nb_aretes();
   int elem1, elem2, face, ok;
   ArrOfInt sommets(dimension+2);
   ArrOfInt face_opp1(dimension+2);
@@ -2559,13 +2559,13 @@ void updatePaPa(const Zone_dis_base& z,
             break;
           elem1 = face_voisins(face, 0);
           elem2 = face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           if (ok == 3)
-            update_matrice_NeumannPaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
+            update_matrice_NeumannPaPa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
           else if (ok == 4)
-            update_matrice_SymetriePaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
+            update_matrice_SymetriePaPa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
           else
-            update_matricePaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
+            update_matricePaPa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
@@ -2573,10 +2573,10 @@ void updatePaPa(const Zone_dis_base& z,
     {
       elem1 = face_voisins(face, 0);
       elem2 = face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
-          update_matricePaPa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          update_matricePaPa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
   for(int i=0; i<nb_arete; i++)
@@ -2590,20 +2590,20 @@ void updatePaPa(const Zone_dis_base& z,
   Cerr << "Update Pa OK" << finl;
 }
 
-void assemblerP0Pa(const Zone_dis_base& z,
-                   const Zone_Cl_dis_base& zcl,
+void assemblerP0Pa(const Domaine_dis_base& z,
+                   const Domaine_Cl_dis_base& zcl,
                    Matrice& matrice,
                    const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
-  int nb_elem = zone.nb_elem_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
+  int nb_elem = domaine.nb_elem_tot();
   int elem1, elem2, face, ok;
   int nnz=0;
   IntLists voisins(nb_elem);
@@ -2623,11 +2623,11 @@ void assemblerP0Pa(const Zone_dis_base& z,
           if (ok==-1) break;
           elem1=face_voisins(face, 0);
           elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP0Pa(zone_VEF,
+              contribuer_matrice_NeumannP0Pa(domaine_VEF,
                                              inverse_quantitee_entrelacee,
                                              face, elem1, sommets,
                                              face_opp1,
@@ -2638,7 +2638,7 @@ void assemblerP0Pa(const Zone_dis_base& z,
               ; // RIEN
             }
           else
-            contribuer_matriceP0Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets,
+            contribuer_matriceP0Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets,
                                    face_opp1, face_opp2,
                                    voisins, coeffs, nnz);
         }
@@ -2648,11 +2648,11 @@ void assemblerP0Pa(const Zone_dis_base& z,
     {
       elem1=face_voisins(face, 0);
       elem2=face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
-          contribuer_matriceP0Pa(zone_VEF,
+          contribuer_matriceP0Pa(domaine_VEF,
                                  inverse_quantitee_entrelacee,
                                  face, elem1, elem2, sommets,
                                  face_opp1, face_opp2,
@@ -2661,22 +2661,22 @@ void assemblerP0Pa(const Zone_dis_base& z,
     }
   matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice_bloc=ref_cast(Matrice_Bloc, matrice.valeur());
-  matrice_bloc.remplir(voisins, coeffs, zone.nb_elem(), zone.nb_elem_tot(), zone.nb_aretes(), zone.nb_aretes_tot());
+  matrice_bloc.remplir(voisins, coeffs, domaine.nb_elem(), domaine.nb_elem_tot(), domaine.nb_aretes(), domaine.nb_aretes_tot());
   Cerr << "Assemblage P0Pa OK" << finl;
 }
 
-void updateP0Pa(const Zone_dis_base& z,
-                const Zone_Cl_dis_base& zcl,
+void updateP0Pa(const Domaine_dis_base& z,
+                const Domaine_Cl_dis_base& zcl,
                 Matrice& matrice,
                 const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
   int elem1, elem2, face, ok;
   ArrOfInt sommets(dimension+2);
   ArrOfInt face_opp1(dimension+2);
@@ -2699,12 +2699,12 @@ void updateP0Pa(const Zone_dis_base& z,
             break;
           elem1 = face_voisins(face, 0);
           elem2 = face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           if (ok == 3)
-            update_matrice_NeumannP0Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
+            update_matrice_NeumannP0Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, ARR, ARV, AVR, AVV);
           else if (ok == 4) { /* Do nothing */ }
           else
-            update_matriceP0Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
+            update_matriceP0Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
   face_associee = -1;
@@ -2712,31 +2712,31 @@ void updateP0Pa(const Zone_dis_base& z,
     {
       elem1 = face_voisins(face, 0);
       elem2 = face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
-          update_matriceP0Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          update_matriceP0Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, ARR, ARV, AVR, AVV);
         }
     }
   Cerr << "Update P0Pa OK" << finl;
 }
 
-void assemblerP1Pa(const Zone_dis_base& z,
-                   const Zone_Cl_dis_base& zcl,
+void assemblerP1Pa(const Domaine_dis_base& z,
+                   const Domaine_Cl_dis_base& zcl,
                    Matrice& matrice,
                    const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
   int elem1, elem2, face, ok;
   int nnz=0;
-  int nb_som = zone.nb_som_tot();
+  int nb_som = domaine.nb_som_tot();
   IntLists voisins(nb_som);
   DoubleLists coeffs(nb_som);
   ArrOfInt sommets(dimension+2);
@@ -2754,11 +2754,11 @@ void assemblerP1Pa(const Zone_dis_base& z,
           if (ok==-1) break;
           elem1=face_voisins(face, 0);
           elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP1Pa(zone_VEF,
+              contribuer_matrice_NeumannP1Pa(domaine_VEF,
                                              inverse_quantitee_entrelacee,
                                              face, elem1, sommets,
                                              face_opp1,coef_som,
@@ -2766,14 +2766,14 @@ void assemblerP1Pa(const Zone_dis_base& z,
             }
           else if(ok==4)
             {
-              contribuer_matrice_SymetrieP1Pa(zone_VEF,
+              contribuer_matrice_SymetrieP1Pa(domaine_VEF,
                                               inverse_quantitee_entrelacee,
                                               face, elem1, sommets,
                                               face_opp1, coef_som,
                                               voisins, coeffs, nnz);
             }
           else
-            contribuer_matriceP1Pa(zone_VEF,
+            contribuer_matriceP1Pa(domaine_VEF,
                                    inverse_quantitee_entrelacee,
                                    face, elem1, elem2, sommets,
                                    face_opp1, face_opp2, coef_som,
@@ -2785,11 +2785,11 @@ void assemblerP1Pa(const Zone_dis_base& z,
     {
       elem1=face_voisins(face, 0);
       elem2=face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
-          contribuer_matriceP1Pa(zone_VEF,
+          contribuer_matriceP1Pa(domaine_VEF,
                                  inverse_quantitee_entrelacee,
                                  face, elem1, elem2, sommets,
                                  face_opp1, face_opp2, coef_som,
@@ -2799,25 +2799,25 @@ void assemblerP1Pa(const Zone_dis_base& z,
 
   matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice_bloc=ref_cast(Matrice_Bloc, matrice.valeur());
-  matrice_bloc.remplir(voisins, coeffs, zone.nb_som(), zone.nb_som_tot(), zone.nb_aretes(), zone.nb_aretes_tot());
+  matrice_bloc.remplir(voisins, coeffs, domaine.nb_som(), domaine.nb_som_tot(), domaine.nb_aretes(), domaine.nb_aretes_tot());
   Cerr << "Assemblage P1Pa OK" << finl;
 }
 
-void updateP1Pa(const Zone_dis_base& z,
-                const Zone_Cl_dis_base& zcl,
+void updateP1Pa(const Domaine_dis_base& z,
+                const Domaine_Cl_dis_base& zcl,
                 Matrice& matrice,
                 const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF_PreP1b& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
   int elem1, elem2, face, ok;
-  int nb_som = zone.nb_som_tot();
+  int nb_som = domaine.nb_som_tot();
   IntLists voisins(nb_som);
   DoubleLists coeffs(nb_som);
   ArrOfInt sommets(dimension+2);
@@ -2841,13 +2841,13 @@ void updateP1Pa(const Zone_dis_base& z,
             break;
           elem1 = face_voisins(face, 0);
           elem2 = face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           if (ok == 3)
-            update_matrice_NeumannP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+            update_matrice_NeumannP1Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
           else if (ok == 4)
-            update_matrice_SymetrieP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+            update_matrice_SymetrieP1Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
           else
-            update_matriceP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
+            update_matriceP1Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
@@ -2855,30 +2855,30 @@ void updateP1Pa(const Zone_dis_base& z,
     {
       elem1 = face_voisins(face, 0);
       elem2 = face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
-          update_matriceP1Pa(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          update_matriceP1Pa(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
 
   Cerr << "Update P1Pa OK" << finl;
 }
 
-void assemblerP0P1(const Zone_dis_base& z,
-                   const Zone_Cl_dis_base& zcl,
+void assemblerP0P1(const Domaine_dis_base& z,
+                   const Domaine_Cl_dis_base& zcl,
                    Matrice& matrice,
                    const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone& zone=zone_VEF.zone();
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
-  int nb_elem = zone.nb_elem_tot();
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine& domaine=domaine_VEF.domaine();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
+  int nb_elem = domaine.nb_elem_tot();
   int elem1, elem2, face, ok;
   int nnz=0;
   IntLists voisins(nb_elem);
@@ -2898,12 +2898,12 @@ void assemblerP0P1(const Zone_dis_base& z,
           if (ok==-1) break;
           elem1=face_voisins(face, 0);
           elem2=face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
           if(ok==3)
             {
-              contribuer_matrice_NeumannP0P1(zone_VEF,
+              contribuer_matrice_NeumannP0P1(domaine_VEF,
                                              inverse_quantitee_entrelacee,
                                              face, elem1, sommets,
                                              face_opp1, coef_som,
@@ -2914,7 +2914,7 @@ void assemblerP0P1(const Zone_dis_base& z,
               ;// RIEN
             }
           else
-            contribuer_matriceP0P1(zone_VEF,
+            contribuer_matriceP0P1(domaine_VEF,
                                    inverse_quantitee_entrelacee,
                                    face, elem1, elem2, sommets,
                                    face_opp1, face_opp2, coef_som,
@@ -2926,12 +2926,12 @@ void assemblerP0P1(const Zone_dis_base& z,
     {
       elem1=face_voisins(face, 0);
       elem2=face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          contribuer_matriceP0P1(zone_VEF,
+          contribuer_matriceP0P1(domaine_VEF,
                                  inverse_quantitee_entrelacee,
                                  face, elem1, elem2, sommets,
                                  face_opp1, face_opp2, coef_som,
@@ -2941,22 +2941,22 @@ void assemblerP0P1(const Zone_dis_base& z,
 
   matrice.typer("Matrice_Bloc");
   Matrice_Bloc& matrice_bloc=ref_cast(Matrice_Bloc, matrice.valeur());
-  matrice_bloc.remplir(voisins, coeffs, zone.nb_elem(), zone.nb_elem_tot(), zone.nb_som(), zone.nb_som_tot());
+  matrice_bloc.remplir(voisins, coeffs, domaine.nb_elem(), domaine.nb_elem_tot(), domaine.nb_som(), domaine.nb_som_tot());
   Cerr << "Assemblage POP1 OK" << finl;
 }
 
-void updateP0P1(const Zone_dis_base& z,
-                const Zone_Cl_dis_base& zcl,
+void updateP0P1(const Domaine_dis_base& z,
+                const Domaine_Cl_dis_base& zcl,
                 Matrice& matrice,
                 const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Zone_VEF& zone_VEF=ref_cast(Zone_VEF_PreP1b, z);
-  const Zone_Cl_VEF& zone_Cl_VEF=ref_cast(Zone_Cl_VEF, zcl);
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nint = zone_VEF.premiere_face_int();
-  int nb_faces = zone_VEF.nb_faces_tot();
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nint = domaine_VEF.premiere_face_int();
+  int nb_faces = domaine_VEF.nb_faces_tot();
   int elem1, elem2, face, ok;
   ArrOfInt sommets(dimension+2);
   ArrOfInt face_opp1(dimension+2);
@@ -2979,13 +2979,13 @@ void updateP0P1(const Zone_dis_base& z,
             break;
           elem1 = face_voisins(face, 0);
           elem2 = face_voisins(face, 1);
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets, face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
           if (ok == 3)
-            update_matrice_NeumannP0P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
+            update_matrice_NeumannP0P1(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, sommets, face_opp1, coef_som, ARR, ARV, AVR, AVV);
           else if (ok == 4) { /* Do nothing */ }
           else
-            update_matriceP0P1(zone_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
+            update_matriceP0P1(domaine_VEF, inverse_quantitee_entrelacee, face, elem1, elem2, sommets, face_opp1, face_opp2, coef_som, ARR, ARV, AVR, AVV);
         }
     }
   face_associee=-1;
@@ -2993,12 +2993,12 @@ void updateP0P1(const Zone_dis_base& z,
     {
       elem1=face_voisins(face, 0);
       elem2=face_voisins(face, 1);
-      if (!zone_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
+      if (!domaine_VEF.est_une_face_virt_bord(face)) // On ne traite que les faces internes
         {
-          remplir_sommets(zone_VEF, face, elem1, elem2, sommets,
+          remplir_sommets(domaine_VEF, face, elem1, elem2, sommets,
                           face_opp1, face_opp2);
           sort(sommets, face_opp1, face_opp2);
-          update_matriceP0P1(zone_VEF,
+          update_matriceP0P1(domaine_VEF,
                              inverse_quantitee_entrelacee,
                              face, elem1, elem2, sommets,
                              face_opp1, face_opp2, coef_som,

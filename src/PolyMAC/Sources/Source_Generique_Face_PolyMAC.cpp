@@ -15,10 +15,10 @@
 
 #include <Source_Generique_Face_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Equation_base.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <Milieu_base.h>
 
 Implemente_instanciable(Source_Generique_Face_PolyMAC, "Source_Generique_Face_PolyMAC|Source_Generique_Face_PolyMAC_P0", Source_Generique_base);
@@ -54,20 +54,20 @@ DoubleTab& Source_Generique_Face_PolyMAC::ajouter(DoubleTab& resu) const
 {
   Champ espace_stockage;
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
-  const Zone_PolyMAC& zone = le_dom_PolyMAC.valeur();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
+  const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
-  for (int f = 0, calc_cl = !sub_type(Zone_PolyMAC_P0, zone); f < zone.nb_faces(); f++)
+  for (int f = 0, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); f < domaine.nb_faces(); f++)
     if (calc_cl || fcl(f, 0) < 2)
       resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);
   return resu;
 }
 
-void Source_Generique_Face_PolyMAC::associer_domaines(const Zone_dis& zone_dis,
-                                                      const Zone_Cl_dis& zcl_dis)
+void Source_Generique_Face_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis,
+                                                      const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom_PolyMAC = ref_cast(Zone_PolyMAC,zone_dis.valeur());
-  la_zcl_PolyMAC = ref_cast(Zone_Cl_PolyMAC,zcl_dis.valeur());
+  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC,domaine_dis.valeur());
+  la_zcl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC,zcl_dis.valeur());
 }
 
 Nom Source_Generique_Face_PolyMAC::localisation_source()

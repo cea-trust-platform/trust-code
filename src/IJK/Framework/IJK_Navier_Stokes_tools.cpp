@@ -70,7 +70,7 @@ static void extend_array(const IJK_Grid_Geometry& geom1,
 // split1 : Maillage d'origine sur lequel sont resolues les equations de NS.
 // split2 : Resultat etendu contenant le domaine ou vivent les interfaces.
 // n_cells : Nombre de cellules supplementaires crees de chaque cote.
-//           (doit etre inferieur au nombre de mailles dans la zone decoupee).
+//           (doit etre inferieur au nombre de mailles dans la domaine decoupee).
 void build_extended_splitting(const IJK_Splitting& split1,
                               IJK_Splitting& split2,
                               int n_cells)
@@ -101,7 +101,7 @@ void build_extended_splitting(const IJK_Splitting& split1,
                     split1.get_nprocessor_per_direction(DIRECTION_K));
 }
 
-Probleme_base& creer_zone_vdf(const IJK_Splitting& splitting, const Nom& nom_domaine)
+Probleme_base& creer_domaine_vdf(const IJK_Splitting& splitting, const Nom& nom_domaine)
 {
   const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
   // On va construire une partie de jdd a faire interpreter:
@@ -160,7 +160,7 @@ Probleme_base& creer_zone_vdf(const IJK_Splitting& splitting, const Nom& nom_dom
 
   if (min_array(map) < 0)
     {
-      Cerr << "Error in creer_zone_vdf: there are unused processors in the ijk splitting" << finl;
+      Cerr << "Error in creer_domaine_vdf: there are unused processors in the ijk splitting" << finl;
     }
   Nom pb_name = Nom("pb_")+nom_domaine;
   instructions << map << finl;
@@ -177,10 +177,10 @@ Probleme_base& creer_zone_vdf(const IJK_Splitting& splitting, const Nom& nom_dom
   Interprete_bloc::interprete_courant().interpreter_bloc(is, Interprete_bloc::BLOC_EOF,
                                                          0 /* flag verifie sans interpreter */);
 
-  // Il faut construire une structure de donnees de la Zone_VF qui n'est pas construite par defaut:
+  // Il faut construire une structure de donnees de la Domaine_VF qui n'est pas construite par defaut:
   Probleme_base& pb =  ref_cast(Probleme_base, Interprete_bloc::objet_global(pb_name));
-  Zone& zone = pb.domaine_dis().valeur().zone();
-  zone.construire_elem_virt_pe_num();
+  Domaine& domaine = pb.domaine_dis().valeur().domaine();
+  domaine.construire_elem_virt_pe_num();
 
   return pb;
 }

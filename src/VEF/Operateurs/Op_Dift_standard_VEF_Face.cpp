@@ -70,8 +70,8 @@ void Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& vitesse,
                                                       DoubleTab& resu, DoubleTab& tab_flux_bords,
                                                       const DoubleTab& nu,
                                                       const DoubleTab& nu_turb,
-                                                      const Zone_Cl_VEF& zone_Cl_VEF,
-                                                      const Zone_VEF& zone_VEF,
+                                                      const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                                      const Domaine_VEF& domaine_VEF,
                                                       const DoubleTab& tau_tan,
                                                       int nbr_comp) const
 {
@@ -88,14 +88,14 @@ void Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& vitesse,
   assert(nbr_comp>1);
 
   // On dimensionne et initialise le tableau des bilans de flux:
-  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nbr_comp);
+  tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nbr_comp);
   tab_flux_bords=0.;
 
   // Construction du tableau grad_
   if(!grad.get_md_vector().non_nul())
     {
       grad.resize(0, Objet_U::dimension, Objet_U::dimension);
-      zone_VEF.zone().creer_tableau_elements(grad);
+      domaine_VEF.domaine().creer_tableau_elements(grad);
     }
 
   // *** CALCUL DU GRADIENT ***
@@ -105,9 +105,9 @@ void Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& vitesse,
   if(grad_Ubar)
     ref_cast(Champ_P1NC,inconnue_.valeur()).filtrer_L2(ubar);
 
-  Champ_P1NC::calcul_gradient(ubar,grad,zone_Cl_VEF);
+  Champ_P1NC::calcul_gradient(ubar,grad,domaine_Cl_VEF);
   if (le_modele_turbulence.valeur().utiliser_loi_paroi())
-    Champ_P1NC::calcul_duidxj_paroi(grad,nu,nu_turb,tau_tan,zone_Cl_VEF);
+    Champ_P1NC::calcul_duidxj_paroi(grad,nu,nu_turb,tau_tan,domaine_Cl_VEF);
 
   grad.echange_espace_virtuel();
 
@@ -116,9 +116,9 @@ void Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& vitesse,
 
 
 
-  //  calcul_divergence(resu_div,grad,gradt,nu_div,nut_div,zone_Cl_VEF,zone_VEF,flux_bords,nb_comp);
-  //  calcul_divergence(resu_div,grad,grad,nu_div,nut_div,zone_Cl_VEF,zone_VEF,flux_bords,nb_comp);
-  calcul_divergence(resu,grad,grad,nu,nu_turb,zone_Cl_VEF,zone_VEF,flux_bords_,nbr_comp);
+  //  calcul_divergence(resu_div,grad,gradt,nu_div,nut_div,domaine_Cl_VEF,domaine_VEF,flux_bords,nb_comp);
+  //  calcul_divergence(resu_div,grad,grad,nu_div,nut_div,domaine_Cl_VEF,domaine_VEF,flux_bords,nb_comp);
+  calcul_divergence(resu,grad,grad,nu,nu_turb,domaine_Cl_VEF,domaine_VEF,flux_bords_,nbr_comp);
 
   Debog::verifier("Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel : resu 1 ",resu);
 
@@ -134,17 +134,17 @@ void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif,
                                                   const DoubleTab& gradt,
                                                   const DoubleTab& nu,
                                                   const DoubleTab& nu_turb,
-                                                  const Zone_Cl_VEF& zone_Cl_VEF,
-                                                  const Zone_VEF& zone_VEF,
+                                                  const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                                  const Domaine_VEF& domaine_VEF,
                                                   DoubleTab& tab_flux_bords,
                                                   int nbr_comp) const
 {
 
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleTab& face_normale = zone_VEF.face_normales();
-  //const DoubleVect& vol = zone_VEF.volumes();
-  int nb_faces = zone_VEF.nb_faces();
-  //int face_int = zone_VEF.premiere_face_int();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+  //const DoubleVect& vol = domaine_VEF.volumes();
+  int nb_faces = domaine_VEF.nb_faces();
+  //int face_int = domaine_VEF.premiere_face_int();
   int num_cl;
 
   int num_face0,elem10, elem2;
@@ -162,13 +162,13 @@ void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif,
   // Traitement des bords
   Debog::verifier("Op_Dift_standard_VEF_Face::calcul_divergence dif 0 ",dif);
 
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_cl=les_cl.size();
   for (num_cl=0; num_cl<nb_cl; num_cl++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(num_cl);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(num_cl);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      //const IntTab& elem_faces = zone_VEF.elem_faces();
+      //const IntTab& elem_faces = domaine_VEF.elem_faces();
       int nb_faces_b=le_bord.nb_faces();
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + nb_faces_b;
@@ -269,7 +269,7 @@ void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif,
 
   ////////////////////////////////////////////////////////////
 
-  for (num_face0=zone_VEF.premiere_face_int(); num_face0<nb_faces; num_face0++)
+  for (num_face0=domaine_VEF.premiere_face_int(); num_face0<nb_faces; num_face0++)
     {
       elem10 = face_voisins(num_face0,0);
       elem2 = face_voisins(num_face0,1);
@@ -299,14 +299,14 @@ void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif,
 DoubleTab& Op_Dift_standard_VEF_Face::ajouter(const DoubleTab& inconnue,
                                               DoubleTab& resu) const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
   DoubleTab nu(nu_turb);
   remplir_nu(nu);
   const int nb_comp = resu.line_size();
 
-  ajouter_cas_vectoriel(inconnue, resu, flux_bords_,nu, nu_turb, zone_Cl_VEF, zone_VEF, tau_tan_,nb_comp);
+  ajouter_cas_vectoriel(inconnue, resu, flux_bords_,nu, nu_turb, domaine_Cl_VEF, domaine_VEF, tau_tan_,nb_comp);
   modifier_flux(*this);
   return resu;
 }

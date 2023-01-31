@@ -18,7 +18,7 @@
 
 #include <TRUSTTab.h>
 
-class Zone_VDF;
+class Domaine_VDF;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -37,7 +37,7 @@ public:
   void dimensionner(int);
   void trier(int&, int&, int&, int&);
   void trier_pour_debog(int&, int&, int&, int&, const DoubleTab&);
-  void calculer_centre_de_gravite(Zone_VDF& zone);
+  void calculer_centre_de_gravite(Domaine_VDF& domaine);
 
 private:
   IntTab faces_;

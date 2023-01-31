@@ -71,7 +71,7 @@ inline void Iterateur_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab
 template<class _TYPE_>
 int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
 {
-  const Zone& mon_dom = le_dom->zone();
+  const Domaine& mon_dom = le_dom->domaine();
   const int impr_mom = mon_dom.moments_a_imprimer();
   const int impr_sum = (mon_dom.bords_a_imprimer_sum().est_vide() ? 0 : 1), impr_bord = (mon_dom.bords_a_imprimer().est_vide() ? 0 : 1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
@@ -177,7 +177,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
         Flux_moment << finl;
     }
   const LIST (Nom)
-  &Liste_bords_a_imprimer = le_dom->zone().bords_a_imprimer();
+  &Liste_bords_a_imprimer = le_dom->domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;

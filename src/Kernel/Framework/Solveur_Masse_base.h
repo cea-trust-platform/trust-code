@@ -20,10 +20,10 @@
 #include <Interface_blocs.h>
 #include <MorEqn.h>
 
-class Zone_dis;
-class Zone_dis_base;
-class Zone_Cl_dis;
-class Zone_Cl_dis_base;
+class Domaine_dis;
+class Domaine_dis_base;
+class Domaine_Cl_dis;
+class Domaine_Cl_dis_base;
 class Matrice_Base;
 class Matrice_Morse;
 
@@ -33,7 +33,7 @@ class Matrice_Morse;
  *      contient une reference a une matrice de masse.
  *      Cette classe est la base de la hierarchie des matrices de masse.
  *
- * @sa SolveurMasse Equation_base, Classe abstraite., Methodes abstraites:, DoubleTab& appliquer(DoubleTab&) const, void associer_domaine_dis_base(const Zone_dis_base& ), void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& )
+ * @sa SolveurMasse Equation_base, Classe abstraite., Methodes abstraites:, DoubleTab& appliquer(DoubleTab&) const, void associer_domaine_dis_base(const Domaine_dis_base& ), void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& )
  */
 
 class Solveur_Masse_base : public Objet_U, public MorEqn
@@ -45,8 +45,8 @@ public :
   virtual DoubleTab& appliquer(DoubleTab&) const;
 
   virtual void mettre_a_jour(double temps);
-  virtual void associer_domaine_dis_base(const Zone_dis_base& ) =0;
-  virtual void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) =0;
+  virtual void associer_domaine_dis_base(const Domaine_dis_base& ) =0;
+  virtual void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) =0;
   virtual void assembler();
 
   virtual Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const;

@@ -25,7 +25,7 @@
 
 class Champ_Inc_base;
 
-class Zone_dis_base;
+class Domaine_dis_base;
 class Cond_lim_base;
 /*! @brief classe Champ_front_base Classe de base pour la hierarchie des champs aux frontieres.
  *
@@ -88,7 +88,7 @@ public:
   virtual const DoubleTab& valeurs_au_temps(double temps) const = 0;
   inline const Frontiere_dis_base& frontiere_dis() const;
   inline Frontiere_dis_base& frontiere_dis();
-  const Zone_dis_base& zone_dis() const;
+  const Domaine_dis_base& domaine_dis() const;
   virtual Champ_front_base& affecter_(const Champ_front_base& ch) = 0;
   virtual void fixer_nb_valeurs_temporelles(int nb_cases);
   virtual void mettre_a_jour(double temps);

@@ -17,10 +17,10 @@
 #include <Navier_Stokes_std.h>
 #include <Champ_Fonc_P0_VDF.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_Cl_VDF.h>
 #include <Periodique.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(Terme_Source_Acceleration_VDF_Face,"Acceleration_VDF_Face",Terme_Source_Acceleration);
 
@@ -40,16 +40,16 @@ Entree& Terme_Source_Acceleration_VDF_Face::readOn(Entree& s )
 
 /*! @brief Methode appelee par Source_base::completer() apres associer_domaines Remplit les ref.
  *
- * aux zones et zone_cl
+ * aux domaines et domaine_cl
  *
  */
-void Terme_Source_Acceleration_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                           const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Acceleration_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
   if (je_suis_maitre())
     Cerr << "Terme_Source_Acceleration_VDF_Face::associer_domaines" << finl;
-  le_dom_VDF_    = ref_cast(Zone_VDF, zone_dis.valeur());
-  le_dom_Cl_VDF_ = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF_    = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF_ = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 /*! @brief Fonction outil pour Terme_Source_Acceleration_VDF_Face::ajouter Ajout des contributions d'une liste contigue de faces du terme source de translation:
@@ -123,12 +123,12 @@ static void TSAVDF_ajouter_liste_faces(const int premiere_face, const int dernie
  */
 void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF&    zone_VDF           = le_dom_VDF_.valeur();
-  const Zone_Cl_VDF& zone_Cl_VDF        = le_dom_Cl_VDF_.valeur();
-  const IntTab&      face_voisins       = zone_VDF.face_voisins();
-  const IntVect&     orientation        = zone_VDF.orientation();
+  const Domaine_VDF&    domaine_VDF           = le_dom_VDF_.valeur();
+  const Domaine_Cl_VDF& domaine_Cl_VDF        = le_dom_Cl_VDF_.valeur();
+  const IntTab&      face_voisins       = domaine_VDF.face_voisins();
+  const IntVect&     orientation        = domaine_VDF.orientation();
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
-  const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
 
   DoubleTab& s_face = get_set_terme_source_post().valeur().valeurs();
   s_face = 0.;
@@ -142,12 +142,12 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
 
   // Boucle sur les conditions limites pour traiter les faces de bord
 
-  for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VDF.nb_front_Cl(); n_bord++)
     {
       // pour chaque Condition Limite on regarde son type
       // Si face de Dirichlet ou de Symetrie on ne fait rien
       // Si face de Neumann on calcule la contribution au terme source
-      const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       const int ndeb = le_bord.num_premiere_face();
       const int nfin = ndeb + le_bord.nb_faces();
@@ -166,8 +166,8 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
 
   // Boucle sur les faces internes
   {
-    const int ndeb = zone_VDF.premiere_face_int();
-    const int nfin = zone_VDF.nb_faces();
+    const int ndeb = domaine_VDF.premiere_face_int();
+    const int nfin = domaine_VDF.nb_faces();
     TSAVDF_ajouter_liste_faces(ndeb, nfin,
                                volumes_entrelaces,
                                le_dom_VDF_.valeur().volumes(),
@@ -181,9 +181,9 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
   }
   {
     // Force la periodicite
-    for (int n_bord=0; n_bord<zone_VDF.nb_front_Cl(); n_bord++)
+    for (int n_bord=0; n_bord<domaine_VDF.nb_front_Cl(); n_bord++)
       {
-        const Cond_lim& la_cl = zone_Cl_VDF.les_conditions_limites(n_bord);
+        const Cond_lim& la_cl = domaine_Cl_VDF.les_conditions_limites(n_bord);
         if (sub_type(Periodique,la_cl.valeur()))
           {
             const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
@@ -225,11 +225,11 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
 const DoubleTab& Terme_Source_Acceleration_VDF_Face::calculer_vitesse_faces(
   DoubleTab& v_faces_stockage) const
 {
-  const Zone_VDF&    zone_VDF      = le_dom_VDF_.valeur();
-  const IntVect&     orientation   = zone_VDF.orientation();
-  const IntTab&      faces_voisins = zone_VDF.face_voisins();
-  const DoubleVect& volumes       = zone_VDF.volumes();  // volumes des elements
-  const IntTab&      elem_faces    = zone_VDF.elem_faces();
+  const Domaine_VDF&    domaine_VDF      = le_dom_VDF_.valeur();
+  const IntVect&     orientation   = domaine_VDF.orientation();
+  const IntTab&      faces_voisins = domaine_VDF.face_voisins();
+  const DoubleVect& volumes       = domaine_VDF.volumes();  // volumes des elements
+  const IntTab&      elem_faces    = domaine_VDF.elem_faces();
   const DoubleTab&   v_faces  = get_eq_hydraulique().inconnue()->valeurs();
   const int       dim      = Objet_U::dimension;
   const int       nb_faces = v_faces.dimension(0);

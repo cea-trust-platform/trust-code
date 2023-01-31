@@ -19,8 +19,8 @@
 
 #include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 #include <Ref_Champ_P1NC.h>
 class Probleme_base;
 
@@ -55,9 +55,9 @@ protected:
   double lambda_min = 1.e-24;
   double cible = 0.01;
   REF(Champ_P1NC) la_vitesse;
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };
 

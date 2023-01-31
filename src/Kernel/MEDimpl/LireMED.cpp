@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <LireMED.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 #include <EChaine.h>
 #include <med++.h>
@@ -51,7 +51,7 @@ void dimensionne_char_ptr_taille(Char_ptr& nom ,int taille_d_un_mot,int nb)
   nom.allocate(taille_d_un_mot*nb);
 }
 
-// XD Read_MED interprete lire_med 1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_zone keyword. NL2 NB: If the MED file contains one or several subzone defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subzones for sequential and/or parallel calculations. These subzones will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
+// XD Read_MED interprete lire_med 1 Keyword to read MED mesh files where 'domain' corresponds to the domain name, 'file' corresponds to the file (written in the MED format) containing the mesh named mesh_name. NL2 Note about naming boundaries: When reading 'file', TRUST will detect boundaries between domains (Raccord) when the name of the boundary begins by type_raccord_. For example, a boundary named type_raccord_wall in 'file' will be considered by TRUST as a boundary named 'wall' between two domains. NL2 NB: To read several domains from a mesh issued from a MED file, use Read_Med to read the mesh then use Create_domain_from_sous_domaine keyword. NL2 NB: If the MED file contains one or several subdomaine defined as a group of volumes, then Read_MED will read it and will create two files domain_name_ssz.geo and domain_name_ssz_par.geo defining the subdomaines for sequential and/or parallel calculations. These subdomaines will be read in sequential in the datafile by including (after Read_Med keyword) something like: NL2 Read_Med .... NL2 Read_file domain_name_ssz.geo ; NL2 During the parallel calculation, you will include something: NL2 Scatter { ... } NL2 Read_file domain_name_ssz_par.geo ;
 Implemente_instanciable_sans_constructeur(LireMED,"Lire_MED",Interprete_geometrique_base);
 Add_synonym(LireMED,"Read_med");
 
@@ -91,7 +91,7 @@ Entree& LireMED::interpreter_(Entree& is)
   med_non_installe();
   return is;
 }
-void LireMED::lire_geom( Nom& nom_fic,Zone& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
+void LireMED::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
 {
   med_non_installe();
 }
@@ -200,7 +200,7 @@ Entree& LireMED::interpreter_(Entree& is)
       nom_fic=nom_fic3.nom_me(me());
     }
   associer_domaine(nom_dom_trio);
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   lire_geom(nom_fic,dom,nom_mesh,nom_dom_trio,isvefforce,convertAllToPoly,isfamilyshort);
   return is;
 }
@@ -1016,7 +1016,7 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
       }
     if ((list_group.size())&& (Process::je_suis_maitre())&&(nom_dom_trio!=Nom()))
       {
-        // Create a subzone file if a group of volumes is detected:
+        // Create a subdomaine file if a group of volumes is detected:
         SFichier jdd(nom_dom_trio + "_ssz.geo");
         SFichier jdd_par(nom_dom_trio + "_ssz_par.geo");
         Process::Journal()<<"grp"<<list_group<<finl;
@@ -1045,10 +1045,10 @@ int medliregeom(Nom& nom_fic, const Nom& nom_dom, const Nom& nom_dom_trio, int& 
                 file_ssz+="_";
                 file_ssz+=toto;
                 file_ssz+=Nom(".file");
-                jdd<<"export Sous_Zone "<<toto<<finl;;
+                jdd<<"export Sous_Domaine "<<toto<<finl;;
                 jdd<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
                 jdd<<"Lire "<<toto <<" { "<<finl<<"fichier "<<file_ssz<<" \n }"<<finl;
-                jdd_par<<"export Sous_Zone "<<toto<<finl;;
+                jdd_par<<"export Sous_Domaine "<<toto<<finl;;
                 jdd_par<<"Associer "<<toto <<" "<<nom_dom_trio<<finl;
                 jdd_par<<"Lire "<<toto <<" { "<<finl<<"fichier "<<toto<<".ssz  \n }"<<finl;
                 SFichier f_ssz(file_ssz);
@@ -1294,7 +1294,7 @@ Nom type_medcoupling_to_type_geo_trio(const int type_cell, const int isvef, cons
 }
 #endif
 
-void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int convertAllToPoly, int isfamilyshort)
+void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom_trio, int isvef, int convertAllToPoly, int isfamilyshort)
 {
 
   ArrsOfInt sommets_joints;
@@ -1499,7 +1499,7 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
       les_elems2+=1;  // +1 cause C++ -> Fortran
 
 
-      // Detect Subzones (based on group of volumes);
+      // Detect Subdomaines (based on group of volumes);
       unsigned nb_volume_groups = (unsigned)file->getGroupsOnSpecifiedLev(0).size();
       if (nb_volume_groups>0 && Process::je_suis_maitre() && nom_dom_trio!=Nom())
         {
@@ -1512,22 +1512,22 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
             {
               MCAuto<DataArrayInt> ids(file->getGroupArr(0, groups[i], false));
               int nb_elems = (int) ids->getNbOfElems();
-              const Nom& nom_sous_zone = groups[i]; // We take the name of the group for the subzone name
-              Cerr << "Detecting a sub-zone (group name="<< nom_sous_zone << ") with " << nb_elems << " cells." << finl;
+              const Nom& nom_sous_domaine = groups[i]; // We take the name of the group for the subdomaine name
+              Cerr << "Detecting a sub-domaine (group name="<< nom_sous_domaine << ") with " << nb_elems << " cells." << finl;
               if (nb_elems > 0)
                 {
                   Nom file_ssz(nom_dom_trio);
                   file_ssz += "_";
-                  file_ssz += nom_sous_zone;
+                  file_ssz += nom_sous_domaine;
                   file_ssz += Nom(".file");
-                  jdd_seq << "export Sous_Zone " << nom_sous_zone << finl;
-                  jdd_par << "export Sous_Zone " << nom_sous_zone << finl;
+                  jdd_seq << "export Sous_Domaine " << nom_sous_domaine << finl;
+                  jdd_par << "export Sous_Domaine " << nom_sous_domaine << finl;
 
-                  jdd_seq << "Associer " << nom_sous_zone << " " << nom_dom_trio << finl;
-                  jdd_par << "Associer " << nom_sous_zone << " " << nom_dom_trio << finl;
+                  jdd_seq << "Associer " << nom_sous_domaine << " " << nom_dom_trio << finl;
+                  jdd_par << "Associer " << nom_sous_domaine << " " << nom_dom_trio << finl;
 
-                  jdd_seq << "Lire " << nom_sous_zone << " { fichier " << file_ssz << " }" << finl;
-                  jdd_par << "Lire " << nom_sous_zone << " { fichier " << nom_sous_zone << ".ssz" << " }" << finl;
+                  jdd_seq << "Lire " << nom_sous_domaine << " { fichier " << file_ssz << " }" << finl;
+                  jdd_par << "Lire " << nom_sous_domaine << " { fichier " << nom_sous_domaine << ".ssz" << " }" << finl;
                   SFichier f_ssz(file_ssz);
                   f_ssz << nb_elems << finl;
                   for (int j = 0; j < nb_elems; j++)
@@ -1780,7 +1780,7 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
     sommets=sommets2;
 
   //
-  // typage des elts de  la zone et remplissage des elts
+  // typage des elts de  la domaine et remplissage des elts
   // Avant de typer on regarde si il ne faut pas transormer les hexa en Hexa_vef
   int err=verifier_modifier_type_elem(type_elem,les_elems2,sommets);
   if (err!=0) exit();
@@ -1930,11 +1930,11 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
 //      if (Indices_bord(j)==-1000)
 //        {
 //          // Cerr<<" j "<<j <<noms_bords[j]<<finl;
-//          Nom nom_zone=noms_bords[j];
-//          if (nom_zone.debute_par("cpy_"))
-//            nom_zone.suffix("cpy_");
-//          Cerr<<" the zone is named "<<nom_zone<<finl;
-//          dom.nommer(nom_zone);
+//          Nom nom_domaine=noms_bords[j];
+//          if (nom_domaine.debute_par("cpy_"))
+//            nom_domaine.suffix("cpy_");
+//          Cerr<<" the domaine is named "<<nom_domaine<<finl;
+//          dom.nommer(nom_domaine);
 //        }
 //    }
   faces_bord.associer_domaine(dom);
@@ -1974,7 +1974,7 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
 //void medinfo1champ(const Nom& nom_fic, Nom& nomchamp,int& numero,int& nbcomp,int& ndt,med_entity_type& type_ent, med_geometry_type& type_geo,int& size,const Nom& nom_dom,int verifie_type,ArrOfDouble& temps_sauv);
 
 med_geometry_type type_geo_trio_to_type_med(const Nom& a);
-void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Zone& dom,ArrOfDouble& temps_sauv)
+void medinfochamp_existe(const Nom& nom_fic,Noms& nomschamp,const Domaine& dom,ArrOfDouble& temps_sauv)
 {
   med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
   if (fid<0)

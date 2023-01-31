@@ -18,9 +18,9 @@
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <EDO_Pression_th_VDF.h>
 #include <communications.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Champ_Face_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <TRUSTTab.h>
 #include <Debog.h>
 
@@ -37,10 +37,10 @@ Entree& EDO_Pression_th_VDF::readOn(Entree& is)
   return EDO_Pression_th_base::readOn(is);
 }
 
-void  EDO_Pression_th_VDF::associer_domaines(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
+void  EDO_Pression_th_VDF::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Zone_VDF,zone.valeur());
-  le_dom_Cl = zone_cl;
+  le_dom = ref_cast(Domaine_VDF,domaine.valeur());
+  le_dom_Cl = domaine_cl;
 }
 
 /*! @brief Complete l'EDO : calcule rho sur les faces

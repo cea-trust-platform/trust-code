@@ -18,7 +18,7 @@
 
 #include <Source_Fluide_Dilatable_VEF_Proto.h>
 #include <Source_WC_Chaleur.h>
-class Zone_VF;
+class Domaine_VF;
 
 /*! @brief class  Source_WC_Chaleur_VEF
  *
@@ -36,11 +36,11 @@ class Source_WC_Chaleur_VEF : public Source_WC_Chaleur, public Source_Fluide_Dil
   Declare_instanciable(Source_WC_Chaleur_VEF);
 
 protected:
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
   void compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const override;
 
 private:
-  void elem_to_face(const Zone_VF& zone, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const;
+  void elem_to_face(const Domaine_VF& domaine, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const;
 };
 
 #endif /* Source_WC_Chaleur_VEF_included */

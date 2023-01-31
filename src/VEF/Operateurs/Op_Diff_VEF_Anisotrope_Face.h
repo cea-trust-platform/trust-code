@@ -59,19 +59,19 @@ public:
   void ajouter_cas_scalaire(const DoubleTab& inconnue,
                             DoubleTab& resu, DoubleTab& flux_bords,
                             DoubleTab& nu,
-                            const Zone_Cl_VEF& zone_Cl_VEF,
-                            const Zone_VEF& zone_VEF ) const;
+                            const Domaine_Cl_VEF& domaine_Cl_VEF,
+                            const Domaine_VEF& domaine_VEF ) const;
   void ajouter_cas_vectoriel(const DoubleTab& inconnue,
                              DoubleTab& resu, DoubleTab& flux_bords,
                              DoubleTab& nu,
-                             const Zone_Cl_VEF& zone_Cl_VEF,
-                             const Zone_VEF& zone_VEF,
+                             const Domaine_Cl_VEF& domaine_Cl_VEF,
+                             const Domaine_VEF& domaine_VEF,
                              int nb_comp) const;
   void ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                                   DoubleTab& resu, DoubleTab& flux_bords,
                                   DoubleTab& nu,
-                                  const Zone_Cl_VEF& zone_Cl_VEF,
-                                  const Zone_VEF& zone_VEF,
+                                  const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                  const Domaine_VEF& domaine_VEF,
                                   int nb_comp) const;
 
 

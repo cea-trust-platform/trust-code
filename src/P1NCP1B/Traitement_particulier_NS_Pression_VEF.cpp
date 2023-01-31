@@ -16,7 +16,7 @@
 #include <Traitement_particulier_NS_Pression_VEF.h>
 #include <Assembleur_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VEF,"Traitement_particulier_NS_Pression_VEF",Traitement_particulier_NS_Pression);
 
@@ -77,10 +77,10 @@ Entree& Traitement_particulier_NS_Pression_VEF::lire(Entree& is)
             case 0 :
               {
                 Cerr << " Lire Pression_porosite " << finl;
-                const Zone_dis_base& zdis=mon_equation->inconnue().zone_dis_base();
-                const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zdis);
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
+                const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
-                const int nb_elem = zone_VEF.nb_elem() ;
+                const int nb_elem = domaine_VEF.nb_elem() ;
 
                 ch_p.associer_domaine_dis_base(zdis);
                 ch_p.nommer("Pression_porosite");
@@ -131,7 +131,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier()
 
 void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_pression()
 {
-  const Zone_VEF& zvef=ref_cast(Zone_VEF, mon_equation->zone_dis().valeur());
+  const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis().valeur());
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i,comp;
   int nb_face = zvef.nb_faces();
@@ -181,7 +181,7 @@ void Traitement_particulier_NS_Pression_VEF::post_traitement_particulier_calcul_
 
   //  Cerr << "la_pression " << mon_equation->pression().valeurs() << finl;
   //   Cerr << "ch_p.valeurs() " << ch_p.valeurs() << finl;
-  // const Zone_VEF& zvef=ref_cast(Zone_VEF, mon_equation->zone_dis().valeur());
+  // const Domaine_VEF& zvef=ref_cast(Domaine_VEF, mon_equation->domaine_dis().valeur());
   //   int i,comp;
   //   int nb_face = zvef.nb_faces();
   //   Champ_Inc la_pression = mon_equation->pression();

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Analyse_Angle.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 
 Implemente_instanciable(Analyse_Angle,"Analyse_Angle",Interprete);
@@ -98,18 +98,18 @@ Entree& Analyse_Angle::interpreter(Entree& is)
   Nom nom_dom;
   is >> nom_dom;
   is >> nb_histo;
-  Zone& dom=ref_cast(Zone,objet(nom_dom));
+  Domaine& dom=ref_cast(Domaine,objet(nom_dom));
 
   histogramme_angle(dom,Cout,nb_histo);
   return is;
 }
-void histogramme_angle(const Zone& dom , Sortie& out,  int nb_histo )
+void histogramme_angle(const Domaine& dom , Sortie& out,  int nb_histo )
 {
   out<<finl<<"Histogram of the largest angle of each element found into the mesh "<<dom.le_nom()<<" :" << finl;
   Motcle type_elem(dom.type_elem().valeur().que_suis_je());
-  if (((type_elem!="triangle")&& (type_elem!="tetraedre")) || ((type_elem=="triangle") && (Zone::dimension==3)))
+  if (((type_elem!="triangle")&& (type_elem!="tetraedre")) || ((type_elem=="triangle") && (Domaine::dimension==3)))
     {
-      out<<"Not available for "<<type_elem<<" in dimension "<<Zone::dimension<<finl;
+      out<<"Not available for "<<type_elem<<" in dimension "<<Domaine::dimension<<finl;
       return;
     }
 

@@ -24,8 +24,8 @@
 #include <MorEqn.h>
 
 class Probleme_base;
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Matrice_Morse;
 class SFichier;
 
@@ -53,7 +53,7 @@ public:
   virtual void contribuer_au_second_membre(DoubleTab&) const;
   virtual int impr(Sortie& os) const;
   // temporaire : associer_domaines sera rendue publique
-  inline void associer_domaines_public(const Zone_dis& zdis, const Zone_Cl_dis& zcldis) { associer_domaines(zdis,zcldis); }
+  inline void associer_domaines_public(const Domaine_dis& zdis, const Domaine_Cl_dis& zcldis) { associer_domaines(zdis,zcldis); }
   virtual int initialiser(double temps);
   virtual void associer_champ_rho(const Champ_base& champ_rho);
   virtual int a_pour_Champ_Fonc(const Motcle& mot, REF(Champ_base) &ch_ref) const;
@@ -85,7 +85,7 @@ public:
 
 protected:
 
-  virtual void associer_domaines(const Zone_dis&, const Zone_Cl_dis&) =0;
+  virtual void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) =0;
   virtual void associer_pb(const Probleme_base&) =0;
   int col_width_ = 0;
   Nom out_;                  // Nom du fichier .out pour l'impression

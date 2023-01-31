@@ -18,7 +18,7 @@
 #include <Champ_Inc_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Front_VF.h>
 
 Implemente_instanciable(Champ_Front_Fonction,"Champ_Front_Fonction",Ch_front_var_instationnaire_dep);
@@ -68,7 +68,7 @@ void Champ_Front_Fonction::mettre_a_jour(double temps)
 {
   const Champ_base& ch=ref_pb.valeur().get_champ(nom_champ_parametre_);
   const Front_VF& fvf = ref_cast(Front_VF, frontiere_dis());
-  const Zone_VF& zvf = ref_cast(Zone_VF, frontiere_dis().zone_dis());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, frontiere_dis().domaine_dis());
   DoubleTab& tab=valeurs_au_temps(temps);
   DoubleTab tab_ch(tab), pos(tab.dimension_tot(0), dimension);
   ch.trace(frontiere_dis(),tab_ch,temps,0);

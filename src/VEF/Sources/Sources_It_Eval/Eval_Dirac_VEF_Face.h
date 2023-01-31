@@ -18,7 +18,7 @@
 
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Ref_Champ_Don.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 class Eval_Dirac_VEF_Face: public Evaluateur_Source_VEF_Face
 {
@@ -39,7 +39,7 @@ public:
 
 protected:
   REF(Champ_Don) la_puissance;
-  REF(Zone) mon_dom;
+  REF(Domaine) mon_dom;
   double puissance, nb_dirac;
 
   template <typename Type_Double>

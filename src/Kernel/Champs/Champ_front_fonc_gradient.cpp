@@ -39,7 +39,7 @@ void Champ_front_fonc_gradient::associer_ch_inc_base(const Champ_Inc_base& inc)
 
 const Cond_lim_base& Champ_front_fonc_gradient::condition_limite(const Nom& nom_bord)
 {
-  const Zone_Cl_dis_base& zcl=inconnue.valeur().equation().zone_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl=inconnue.valeur().equation().domaine_Cl_dis().valeur();
   int n=zcl.nb_cond_lim();
   for(int i=0; i<n ; i++)
     {

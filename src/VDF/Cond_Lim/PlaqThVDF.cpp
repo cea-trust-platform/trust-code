@@ -19,7 +19,7 @@
 #include <Champ_front_calc.h>
 #include <Convection_Diffusion_Temperature.h>
 #include <Modele_turbulence_scal_base.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(PlaqThVDF,"Plaque_Thermique_VDF",Echange_global_impose);
 
@@ -40,7 +40,7 @@ Entree& PlaqThVDF::readOn(Entree& s )
 void PlaqThVDF::mettre_a_jour(double )
 {
   const Equation_base& eqn = mon_dom_cl_dis->equation();
-  const Zone_VDF& le_dom_VDF=ref_cast(Zone_VDF, eqn.zone_dis().valeur());
+  const Domaine_VDF& le_dom_VDF=ref_cast(Domaine_VDF, eqn.domaine_dis().valeur());
   const Front_VF& front= ref_cast(Front_VF,frontiere_dis());
 
   const Milieu_base& le_milieu=eqn.probleme().milieu();
@@ -61,7 +61,7 @@ void PlaqThVDF::mettre_a_jour(double )
       int nbfs2 = front.nb_faces()/2;
       tab.resize(front.nb_faces(),1);
       int boundary_index=-1;
-      int nb_boundaries=le_dom_VDF.zone().nb_front_Cl();
+      int nb_boundaries=le_dom_VDF.domaine().nb_front_Cl();
       for (int n_bord=0; n_bord<nb_boundaries; n_bord++)
         {
           if (le_dom_VDF.front_VF(n_bord).le_nom() == front.le_nom())

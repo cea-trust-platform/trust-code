@@ -91,8 +91,8 @@ void Coarsen_Operator_Uniform::initialize_grid_data_(const Grid_Level_Data_templ
         slice_sizes[dir][i] /= coarsen_factors_[dir];
     }
   coarse_splitting.initialize(grid_geom, slice_sizes[0], slice_sizes[1], slice_sizes[2], processor_mapping);
-  const int ghost_zone_size = fine.get_ghost_size();
-  coarse.initialize(coarse_splitting, ghost_zone_size, additional_k_layers);
+  const int ghost_domaine_size = fine.get_ghost_size();
+  coarse.initialize(coarse_splitting, ghost_domaine_size, additional_k_layers);
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>

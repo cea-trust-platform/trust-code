@@ -16,13 +16,13 @@
 #include <Champ_implementation.h>
 #include <Champ_Fonc_base.h>
 #include <Champ_Inc_base.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 
-DoubleTab& Champ_implementation::valeur_aux_sommets(const Zone& domain, DoubleTab& result) const
+DoubleTab& Champ_implementation::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
 {
   Nom domain_name = domain.le_nom();
-  Nom support_name = get_zone_geom().le_nom();
+  Nom support_name = get_domaine_geom().le_nom();
 
   if (domain_name == support_name)
     {
@@ -37,10 +37,10 @@ DoubleTab& Champ_implementation::valeur_aux_sommets(const Zone& domain, DoubleTa
   return result;
 }
 
-DoubleVect& Champ_implementation::valeur_aux_sommets_compo(const Zone& domain, DoubleVect& result, int ncomp) const
+DoubleVect& Champ_implementation::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
 {
   Nom domain_name = domain.le_nom();
-  Nom support_name = get_zone_geom().le_nom();
+  Nom support_name = get_domaine_geom().le_nom();
 
   if (domain_name == support_name)
     {
@@ -55,29 +55,29 @@ DoubleVect& Champ_implementation::valeur_aux_sommets_compo(const Zone& domain, D
   return result;
 }
 
-const Zone_VF& Champ_implementation::get_zone_dis() const
+const Domaine_VF& Champ_implementation::get_domaine_dis() const
 {
   const Champ_base& ch_base = le_champ();
 
   if (sub_type(Champ_Inc_base, ch_base))
     {
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base, ch_base);
-      return ref_cast(Zone_VF, ch_inc.zone_dis_base());
+      return ref_cast(Domaine_VF, ch_inc.domaine_dis_base());
     }
   else if (sub_type(Champ_Fonc_base, ch_base))
     {
       const Champ_Fonc_base& ch_fonc = ref_cast(Champ_Fonc_base, ch_base);
-      return ref_cast(Zone_VF, ch_fonc.zone_dis_base());
+      return ref_cast(Domaine_VF, ch_fonc.domaine_dis_base());
     }
   else
     {
-      Cerr << le_champ().que_suis_je() << " do not know/refer to a Zone_VF !" << finl;
+      Cerr << le_champ().que_suis_je() << " do not know/refer to a Domaine_VF !" << finl;
       Process::exit();
-      return get_zone_dis();
+      return get_domaine_dis();
     }
 }
 
-const Zone& Champ_implementation::get_zone_geom() const
+const Domaine& Champ_implementation::get_domaine_geom() const
 {
-  return get_zone_dis().zone();
+  return get_domaine_dis().domaine();
 }

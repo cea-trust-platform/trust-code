@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <EOS_Tools_VEF.h>
-#include <Zone.h>
-#include <Zone_VEF_PreP1b.h>
+#include <Domaine.h>
+#include <Domaine_VEF_PreP1b.h>
 #include <Debog.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
@@ -38,15 +38,15 @@ Entree& EOS_Tools_VEF::readOn(Entree& is)
   return is;
 }
 
-/*! @brief Associe les zones a l'EDO
+/*! @brief Associe les domaines a l'EDO
  *
- * @param (Zone_dis& zone) zone
- * @param (Zone_Cl_dis& zone_cl) zone cl
+ * @param (Domaine_dis& domaine) domaine
+ * @param (Domaine_Cl_dis& domaine_cl) domaine cl
  */
-void  EOS_Tools_VEF::associer_domaines(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
+void  EOS_Tools_VEF::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Zone_VEF,zone.valeur());
-  le_dom_Cl = zone_cl;
+  le_dom = ref_cast(Domaine_VEF,domaine.valeur());
+  le_dom_Cl = domaine_cl;
 }
 
 /*! @brief Renvoie rho avec la meme discretisation que la vitesse : une valeur par face en VEF
@@ -94,7 +94,7 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
   //Corrections pour moyenner div(u) sur les faces
   const DoubleVect& volumes = le_dom->volumes();
   const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Zone_Cl_VEF,le_dom_Cl->valeur()).volumes_entrelaces_Cl();
+  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Domaine_Cl_VEF,le_dom_Cl->valeur()).volumes_entrelaces_Cl();
 
   IntTab& face_voisins = le_dom->face_voisins();
   int premiere_fac_std=le_dom->premiere_face_std();
@@ -146,7 +146,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   int face, elem, som,som_glob;
   const IntTab& face_sommets = le_dom->face_sommets();
   int nb_elem_tot=le_dom->nb_elem_tot();
-  int nb_som_tot=le_dom->zone().nb_som_tot();
+  int nb_som_tot=le_dom->domaine().nb_som_tot();
   int nb_faces_tot=le_dom->nb_faces_tot();
   const Equation_base& eq=le_fluide().vitesse()->equation();
   DoubleTab tab_dZ;
@@ -169,13 +169,13 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   const IntTab& elem_faces = le_dom->elem_faces();
   const DoubleVect& volumes = le_dom->volumes();
   const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
-  const Zone_VEF_PreP1b& zp1b=ref_cast(Zone_VEF_PreP1b,le_dom.valeur());
+  const Domaine_VEF_PreP1b& zp1b=ref_cast(Domaine_VEF_PreP1b,le_dom.valeur());
   const DoubleVect& volumes_controle=zp1b.volume_aux_sommets();
 
   double rn,rnp1;
-  int nfe = le_dom->zone().nb_faces_elem();
+  int nfe = le_dom->domaine().nb_faces_elem();
   int nsf = le_dom->nb_som_face();
-  const Zone& dom=le_dom->zone();
+  const Domaine& dom=le_dom->domaine();
 
   // calcul de la somme des volumes entrelacees autour d'un sommet
   volume_int_som=0.;
@@ -235,7 +235,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 
   decal+=nb_case;
   int p_has_arrete=zp1b.get_alphaA();
-  int nb_ar_tot=le_dom->zone().nb_aretes_tot();
+  int nb_ar_tot=le_dom->domaine().nb_aretes_tot();
   nb_case=nb_ar_tot*p_has_arrete;
 
   for (int ar=0 ; ar<nb_case ; ar++)

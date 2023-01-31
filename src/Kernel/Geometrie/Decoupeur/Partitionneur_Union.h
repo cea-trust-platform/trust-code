@@ -16,7 +16,7 @@
 #define Partitionneur_Union_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 #include <map>
 #include <string>
 
@@ -27,26 +27,26 @@
  *  Syntaxe:
  *     partitionneur union
  *     {
- *       <sous-zone 1>  <fichier ecrire_decoupage du sous-domaine 1>
+ *       <sous-domaine 1>  <fichier ecrire_decoupage du sous-domaine 1>
  *       ...
- *       <sous-zone N>  <fichier ecrire_decoupage du sous-domaine N>
+ *       <sous-domaine N>  <fichier ecrire_decoupage du sous-domaine N>
  *     }
  *
  *
- * @sa Partitionneur_Sous_Domaine Create_domain_from_sous_zone
+ * @sa Partitionneur_Sous_Domaine Create_domain_from_sous_domaine
  */
 class Partitionneur_Union : public Partitionneur_base
 {
   Declare_instanciable(Partitionneur_Union);
 public:
   void set_param(Param& param) override { };
-  void associer_domaine(const Zone& dom) override;
+  void associer_domaine(const Domaine& dom) override;
   void initialiser(const char *filename, const char *filename_ssz);
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 protected:
   // Parametres du partitionneur
-  REF(Zone) ref_domaine_;
-  std::map<std::string, std::string> fic_ssz; //fic_ssz[nom de la sous zone] = { fichier de decoupage }
+  REF(Domaine) ref_domaine_;
+  std::map<std::string, std::string> fic_ssz; //fic_ssz[nom de la sous domaine] = { fichier de decoupage }
 };
 #endif

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_front_tangentiel_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <TRUSTTrav.h>
 Implemente_instanciable(Champ_front_tangentiel_VEF,"Champ_front_tangentiel_VEF",Champ_front_tangentiel);
 
@@ -45,12 +45,12 @@ int Champ_front_tangentiel_VEF::initialiser(double temps, const Champ_Inc_base& 
   if (!Champ_front_tangentiel::initialiser(temps,inco))
     return 0;
 
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,zone_dis());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,domaine_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   int premiere=le_bord.num_premiere_face();
   //  int derniere=premiere+le_bord.nb_faces();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   int nb_cases=les_valeurs->nb_cases();
 
@@ -63,7 +63,7 @@ int Champ_front_tangentiel_VEF::initialiser(double temps, const Champ_Inc_base& 
       int elem1=face_voisins(i+premiere,0);
       if (elem1 == -1)
         elem1=face_voisins(i+premiere,1);
-      int signe = zone_VEF.oriente_normale(i+premiere,elem1);
+      int signe = domaine_VEF.oriente_normale(i+premiere,elem1);
 
       vecteur_tang(i,2) = 0.0;
 
@@ -87,7 +87,7 @@ int Champ_front_tangentiel_VEF::initialiser(double temps, const Champ_Inc_base& 
 
           // WEC : Les indices etaient i+premiere.
           // Supprime car manifestement un bug !!
-          // Change aussi dans la zone_Cl_VEF
+          // Change aussi dans la domaine_Cl_VEF
           for(int j=0; j<2; j++)
             {
               tab(i,j)=vecteur_tang(i,j);

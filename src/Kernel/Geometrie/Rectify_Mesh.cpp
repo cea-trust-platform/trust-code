@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Rectify_Mesh.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Synonyme_info.h>
 
@@ -86,7 +86,7 @@ void Rectify_Mesh::check_cell_type(void) const
 
 void Rectify_Mesh::apply_2D(void)
 {
-  Zone& domain = domaine();
+  Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
   assert( domain.type_elem().valeur().que_suis_je() == Motcle("Triangle") );
@@ -99,7 +99,7 @@ void Rectify_Mesh::apply_2D(void)
 
 void Rectify_Mesh::apply_3D(void)
 {
-  Zone& domain = domaine();
+  Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
   assert( domain.type_elem().valeur().que_suis_je() == Motcle("Tetraedre") );

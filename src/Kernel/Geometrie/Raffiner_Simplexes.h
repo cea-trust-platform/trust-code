@@ -35,8 +35,8 @@ public :
   Entree& interpreter_(Entree& is) override;
 
 public :
-  static void refine_domain(const Zone& src,
-                            Zone&        dest);
+  static void refine_domain(const Domaine& src,
+                            Domaine&        dest);
 
 };
 

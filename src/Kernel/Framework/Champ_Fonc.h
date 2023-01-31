@@ -46,15 +46,15 @@ public :
   inline double changer_temps(const double t) ;
   inline void mettre_a_jour(double un_temps) ;
   inline int initialiser(const double un_temps);
-  inline void associer_domaine_dis_base(const Zone_dis_base&) ;
-  inline const Zone_dis_base& zone_dis_base() const ;
+  inline void associer_domaine_dis_base(const Domaine_dis_base&) ;
+  inline const Domaine_dis_base& domaine_dis_base() const ;
   inline int reprendre(Entree& ) override ;
   inline int sauvegarder(Sortie&) const override;
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const;
   inline virtual double valeur_a_elem_compo(const DoubleVect& position, int le_poly, int ncomp) const;
   inline DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& les_valeurs) const;
-  inline DoubleTab& valeur_aux_sommets(const Zone&, DoubleTab&) const;
-  inline DoubleVect& valeur_aux_sommets_compo(const Zone&,
+  inline DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine&,
                                               DoubleVect&, int) const;
   inline void nommer(const Nom& nom) override
   {
@@ -119,22 +119,22 @@ inline double Champ_Fonc::changer_temps(const double t)
   return valeur().changer_temps(t);
 }
 
-/*! @brief Appel a l'objet sous-jacent Associe une zone discretisee au champ.
+/*! @brief Appel a l'objet sous-jacent Associe une domaine discretisee au champ.
  *
- * @param (Zone_dis_base& zone_dis) la zone discretisee a associer au champ
+ * @param (Domaine_dis_base& domaine_dis) la domaine discretisee a associer au champ
  */
-inline void Champ_Fonc::associer_domaine_dis_base(const Zone_dis_base& zone_dis)
+inline void Champ_Fonc::associer_domaine_dis_base(const Domaine_dis_base& domaine_dis)
 {
-  valeur().associer_domaine_dis_base(zone_dis);
+  valeur().associer_domaine_dis_base(domaine_dis);
 }
 
-/*! @brief Appel a l'objet sous-jacent Renvoe la zone discretisee associee
+/*! @brief Appel a l'objet sous-jacent Renvoe la domaine discretisee associee
  *
- * @return (Zone_dis_base&) la zone discretisee associee
+ * @return (Domaine_dis_base&) la domaine discretisee associee
  */
-inline const Zone_dis_base& Champ_Fonc::zone_dis_base() const
+inline const Domaine_dis_base& Champ_Fonc::domaine_dis_base() const
 {
-  return valeur().zone_dis_base();
+  return valeur().domaine_dis_base();
 }
 
 /*! @brief Appel a l'objet sous-jacent Effectue une mise a jour en temps
@@ -209,11 +209,11 @@ inline DoubleTab& Champ_Fonc::valeur_aux_elems(const DoubleTab& positions, const
 {
   return valeur().valeur_aux_elems(positions, les_polys, les_valeurs);
 }
-inline DoubleTab& Champ_Fonc::valeur_aux_sommets(const Zone& dom, DoubleTab& les_valeurs) const
+inline DoubleTab& Champ_Fonc::valeur_aux_sommets(const Domaine& dom, DoubleTab& les_valeurs) const
 {
   return valeur().valeur_aux_sommets(dom, les_valeurs);
 }
-inline DoubleVect& Champ_Fonc::valeur_aux_sommets_compo(const Zone& dom, DoubleVect& les_valeurs, int compo) const
+inline DoubleVect& Champ_Fonc::valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& les_valeurs, int compo) const
 {
   return valeur().valeur_aux_sommets_compo(dom, les_valeurs, compo);
 }

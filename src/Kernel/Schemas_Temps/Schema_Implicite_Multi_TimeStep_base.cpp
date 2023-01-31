@@ -180,7 +180,7 @@ int Schema_Implicite_Multi_TimeStep_base::Iterer_Pb(Probleme_base& pb,int ite)
       authorized_equation(eqn);
 
       // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
-      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       Cout<<"Solving equation "<<eqn.que_suis_je()<<finl;
       const DoubleTab& inut=futur;
 
@@ -190,7 +190,7 @@ int Schema_Implicite_Multi_TimeStep_base::Iterer_Pb(Probleme_base& pb,int ite)
 
       convergence_pb  = convergence_pb&&convergence_eqn;
       futur           = present;
-      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present         = futur;
 
       // La ligne suivante realise:
@@ -216,7 +216,7 @@ void Schema_Implicite_Multi_TimeStep_base::test_stationnaire(Probleme_base& pb)
       DoubleTab& futur = pb.equation(i).inconnue().futur();
 
       futur    = present;
-      pb.equation(i).zone_Cl_dis()->imposer_cond_lim(pb.equation(i).inconnue(),temps_courant()+pas_de_temps());
+      pb.equation(i).domaine_Cl_dis()->imposer_cond_lim(pb.equation(i).inconnue(),temps_courant()+pas_de_temps());
       present -= passe;
       present /= dt_;
       update_critere_statio(present, pb.equation(i));
@@ -343,7 +343,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_pb_couple(Proble
               const int nb_eqn=pb.nombre_d_equations();
               for(int ii=0; ii<nb_eqn; ii++)
                 {
-                  pb.equation(ii).zone_Cl_dis()->calculer_coeffs_echange(temps_courant_+pas_de_temps());
+                  pb.equation(ii).domaine_Cl_dis()->calculer_coeffs_echange(temps_courant_+pas_de_temps());
                 }
 
             }
@@ -440,7 +440,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
     }
 
   // sert pour la pression et les couplages
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
 
   Cout << finl;
   while ((!convergence_eqn)&&(compteur<nb_ite_max))
@@ -456,7 +456,7 @@ int Schema_Implicite_Multi_TimeStep_base::faire_un_pas_de_temps_eqn_base(Equatio
       convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       modify_equation_parameters(eqn,stored_parameters);
       futur=present;
-      eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present=futur;
     }
 

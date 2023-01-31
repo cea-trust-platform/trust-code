@@ -26,7 +26,7 @@ class Polyedre_poly : public Elem_poly_base
 
 public:
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const override ;
+               const IntTab& ,const Domaine& )  const override ;
 };
 
 #endif

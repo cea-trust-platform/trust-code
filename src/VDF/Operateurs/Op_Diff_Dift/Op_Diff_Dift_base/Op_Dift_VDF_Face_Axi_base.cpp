@@ -21,10 +21,10 @@ Implemente_base(Op_Dift_VDF_Face_Axi_base,"Op_Dift_VDF_Face_Axi_base",Op_Dift_VD
 Sortie& Op_Dift_VDF_Face_Axi_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Dift_VDF_Face_Axi_base::readOn(Entree& s ) { return s ; }
 
-void Op_Dift_VDF_Face_Axi_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
+void Op_Dift_VDF_Face_Axi_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
   const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_transporte.valeur());
   le_dom_vdf = zvdf;
   la_zcl_vdf = zclvdf;
@@ -303,7 +303,7 @@ DoubleTab& Op_Dift_VDF_Face_Axi_base::ajouter(const DoubleTab& inco, DoubleTab& 
   const double temps = equation().schema_temps().temps_courant();
   mettre_a_jour_var(temps); // seulement pour var_axi !
 
-  const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
+  const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& visco_turb = diffusivite_turbulente()->valeurs();
   const DoubleTab& tau_diag = inconnue->tau_diag(), &tau_croises = inconnue->tau_croises();
   ref_cast_non_const(Champ_Face_VDF,inconnue.valeur()).calculer_dercov_axi(zclvdf);
@@ -561,7 +561,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution(const DoubleTab& inco, Matr
   const double temps = equation().schema_temps().temps_courant();
   mettre_a_jour_var(temps); // seulement pour var_axi !
 
-  const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
+  const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& visco_turb = diffusivite_turbulente()->valeurs();
   const DoubleTab& tau_diag = inconnue->tau_diag();
   ref_cast_non_const(Champ_Face_VDF,inconnue.valeur()).calculer_dercov_axi(zclvdf);

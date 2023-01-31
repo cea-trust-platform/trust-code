@@ -19,7 +19,7 @@
 #include <Fluide_Dilatable_base.h>
 #include <EDO_Pression_th.h>
 
-class Zone_Cl_dis;
+class Domaine_Cl_dis;
 
 /*! @brief classe Fluide_Quasi_Compressible Cette classe represente un d'un fluide quasi compressible
  *
@@ -38,7 +38,7 @@ public :
   void preparer_pas_temps() override;
   void prepare_pressure_edo() override;
   void write_mean_edo(double) override;
-  void checkTraitementPth(const Zone_Cl_dis& zone_cl) override;
+  void checkTraitementPth(const Domaine_Cl_dis& domaine_cl) override;
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 

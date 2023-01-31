@@ -184,11 +184,11 @@ void Precond_local::res_syst_loc_hybride(const Matrice_Morse_Sym& mat,
     {
       a_remplir_=0;
       {
-        const Zone_dis_base& zdisb = champ.zone_dis_base();
-        const Zone& zone = zdisb.zone();
-        int nb_som = zone.nb_som();
-        int nb_elem = zone.nb_elem();
-        int nb_elem_tot = zone.nb_elem_tot();
+        const Domaine_dis_base& zdisb = champ.domaine_dis_base();
+        const Domaine& domaine = zdisb.domaine();
+        int nb_som = domaine.nb_som();
+        int nb_elem = domaine.nb_elem();
+        int nb_elem_tot = domaine.nb_elem_tot();
 
         la_matrice_locale_.dimensionner(nb_elem+nb_som,0);
         int ii,jj;

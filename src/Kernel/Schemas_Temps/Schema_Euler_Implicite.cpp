@@ -228,14 +228,14 @@ int Schema_Euler_Implicite::Iterer_Pb(Probleme_base& pb,int compteur, int& ok)
       double temps=temps_courant_+dt_;
 
       // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
-      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
       const DoubleTab& inut=futur;
       convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       if (!ok) return false; //echec total -> on sort sans traiter les equations suivantes
       convergence_pb = convergence_pb&&convergence_eqn;
       futur=present;
-      eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present=futur;
 
       // La ligne suivante (commentee) realise:
@@ -259,7 +259,7 @@ void Schema_Euler_Implicite::test_stationnaire(Probleme_base& pb)
       DoubleTab& present = pb.equation(i).inconnue().valeurs();
       DoubleTab& futur = pb.equation(i).inconnue().futur();
       futur = present;
-      pb.equation(i).zone_Cl_dis()->imposer_cond_lim(pb.equation(i).inconnue(),temps_courant()+pas_de_temps());
+      pb.equation(i).domaine_Cl_dis()->imposer_cond_lim(pb.equation(i).inconnue(),temps_courant()+pas_de_temps());
       present -= passe;
       present/=dt_;
       update_critere_statio(present, pb.equation(i));
@@ -355,7 +355,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
               const int nb_eqn=pb.nombre_d_equations();
               for(int ii=0; ii<nb_eqn; ii++)
                 {
-                  pb.equation(ii).zone_Cl_dis()->calculer_coeffs_echange(temps_courant_+pas_de_temps());
+                  pb.equation(ii).domaine_Cl_dis()->calculer_coeffs_echange(temps_courant_+pas_de_temps());
                 }
 
             }
@@ -421,14 +421,14 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                           double temps = temps_courant_ + dt_;
 
                           // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
-                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
                           Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
                           const DoubleTab& inut=futur;
                           bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
                           if (!ok) break;
                           convergence_pbc = convergence_pbc && convergence_eqn;
                           futur = present;
-                          eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                          eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
                           present = futur;
 
                           eqn.inconnue().valeur().Champ_base::changer_temps(temps);
@@ -482,7 +482,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
   passe = present;
   // futur=present;
   // sert pour la pression et les couplages
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
   //present=futur;
 
   compteur=0;
@@ -497,7 +497,7 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_eqn_base(Equation_base& eqn)
       convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
       if (!ok) return 0; //si echec total
       futur=present;
-      eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+      eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
       present=futur;
     }
   present -= passe;

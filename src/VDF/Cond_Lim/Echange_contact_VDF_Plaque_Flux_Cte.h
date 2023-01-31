@@ -19,7 +19,7 @@
 
 #include <Echange_contact_Correlation_VDF.h>
 class Front_VF;
-class Zone_VDF;
+class Domaine_VDF;
 class Faces;
 
 ////////////////////////////////////////////////////////////////

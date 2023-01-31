@@ -16,8 +16,8 @@
 #include <Masse_Multiphase.h>
 #include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
 #include <TRUSTTrav.h>
 #include <Matrice_Morse.h>
@@ -168,7 +168,7 @@ void Masse_Multiphase::discretiser()
   Cerr << "Volume fraction discretization" << finl;
   //On utilise temperature pour la directive car discretisation identique
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
-  dis.discretiser_champ("temperature",zone_dis(),"alpha","sans_dimension", pb.nb_phases(),nb_valeurs_temp,temps,l_inco_ch);
+  dis.discretiser_champ("temperature",domaine_dis(),"alpha","sans_dimension", pb.nb_phases(),nb_valeurs_temp,temps,l_inco_ch);
   l_inco_ch.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
   Equation_base::discretiser();
   for (int i = 0; i < pb.nb_phases(); i++)
@@ -266,8 +266,8 @@ void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, Do
     for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n);
 
   /* valeur aux bords */
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
-  ch_rho.a_une_zone_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Zone_VF, eqn.zone_dis().valeur()).xv_bord(), bval);
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
+  ch_rho.a_une_domaine_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), bval);
   tab_multiply_any_shape(bval, ch_alpha.valeur_aux_bords(), VECT_ALL_ITEMS);
 
   /* derivees */

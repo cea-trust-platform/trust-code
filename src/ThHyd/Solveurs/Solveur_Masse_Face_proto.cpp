@@ -18,9 +18,9 @@
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <TRUSTTrav.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
-void Solveur_Masse_Face_proto::associer_masse_proto(const Solveur_Masse_base& sm, const Zone_VF& zvf )
+void Solveur_Masse_Face_proto::associer_masse_proto(const Solveur_Masse_base& sm, const Domaine_VF& zvf )
 {
   solv_mass_ = sm;
   le_dom_ = zvf;
@@ -28,16 +28,16 @@ void Solveur_Masse_Face_proto::associer_masse_proto(const Solveur_Masse_base& sm
 
 DoubleTab& Solveur_Masse_Face_proto::appliquer_impl_proto(DoubleTab& sm) const
 {
-  const Zone_VF& zone = le_dom_.valeur();
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
+  const Domaine_VF& domaine = le_dom_.valeur();
+  const IntTab& f_e = domaine.face_voisins();
+  const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, solv_mass_->equation()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
-                   &vfd = zone.volumes_entrelaces_dir();
+                   &vfd = domaine.volumes_entrelaces_dir();
   int i, e, f, n, N = solv_mass_->equation().inconnue().valeurs().line_size();
   double fac;
 
   //vitesses aux faces
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     for (n = 0; n < N; n++)
       {
         for (fac = 0, i = 0; i < 2; i++)
@@ -59,13 +59,13 @@ void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, con
   if (!matrices.count(nom_inc)) return; //rien a faire
 
   Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
-  const Zone_VF& zone = le_dom_.valeur();
+  const Domaine_VF& domaine = le_dom_.valeur();
   const DoubleTab& inco = solv_mass_->equation().inconnue().valeurs();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, solv_mass_->equation().probleme()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()) : NULL;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
   int i, f, m, n, N = inco.line_size();
 
-  for (f = 0, i = 0; f < zone.nb_faces(); f++)
+  for (f = 0, i = 0; f < domaine.nb_faces(); f++)
     for (n = 0; n < N; n++, i++) //faces reelles
       if (corr)
         for (m = 0; m < N; m++) sten.append_line(i, N * f + m);
@@ -82,18 +82,18 @@ void Solveur_Masse_Face_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
 {
   const DoubleTab& inco = solv_mass_->equation().inconnue().valeurs(), &passe = solv_mass_->equation().inconnue().passe();
   Matrice_Morse *mat = matrices[solv_mass_->equation().inconnue().le_nom().getString()]; //facultatif
-  const Zone_VF& zone = le_dom_.valeur();
-  const IntTab& f_e = zone.face_voisins();
-  const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
+  const Domaine_VF& domaine = le_dom_.valeur();
+  const IntTab& f_e = domaine.face_voisins();
+  const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, solv_mass_->equation().probleme()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()) : NULL;
-  const DoubleTab& vfd = zone.volumes_entrelaces_dir(), &rho = solv_mass_->equation().milieu().masse_volumique().passe(),
+  const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &rho = solv_mass_->equation().milieu().masse_volumique().passe(),
                    *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
   int i, e, f, m, n, N = inco.line_size(), cR = rho.dimension_tot(0) == 1;
 
   /* faces : si CLs, pas de produit par alpha * rho en multiphase */
   DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
-  for (f = 0; f < zone.nb_faces(); f++) //faces reelles
+  for (f = 0; f < domaine.nb_faces(); f++) //faces reelles
     {
       if (!pbm)
         for (masse = 0, n = 0; n < N; n++) masse(n, n) = vf(f); //pas Pb_Multiphase ou CL -> pas de alpha * rho

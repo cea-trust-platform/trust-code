@@ -16,7 +16,7 @@
 #include <Interpolation_IBM_power_law_tbl_u_star.h>
 #include <TRUSTTrav.h>
 
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_power_law_tbl_u_star, "Interpolation_IBM_power_law_tbl_u_star|IBM_power_law_tbl_u_star", Interpolation_IBM_mean_gradient ) ;
@@ -40,7 +40,7 @@ Entree& Interpolation_IBM_power_law_tbl_u_star::readOn( Entree& is )
   return is;
 }
 
-void Interpolation_IBM_power_law_tbl_u_star::discretise(const Discretisation_base& dis, Zone_dis_base& le_dom_EF)
+void Interpolation_IBM_power_law_tbl_u_star::discretise(const Discretisation_base& dis, Domaine_dis_base& le_dom_EF)
 {
   int nb_comp = Objet_U::dimension;
   Noms units(nb_comp);

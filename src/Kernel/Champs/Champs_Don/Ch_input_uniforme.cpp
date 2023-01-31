@@ -23,7 +23,7 @@ Implemente_instanciable(Ch_input_uniforme,"Champ_input_uniforme",Champ_Uniforme)
 
 Entree& Ch_input_uniforme::readOn(Entree& is)
 {
-  sous_zone_ok=false;
+  sous_domaine_ok=false;
   read(is);
   valeurs().resize(1, nb_compo_);
   if (initial_value_.size_array())

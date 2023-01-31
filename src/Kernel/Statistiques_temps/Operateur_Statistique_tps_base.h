@@ -18,8 +18,8 @@
 
 #include <Integrale_tps_Champ.h>
 class Probleme_base;
-class Zone_dis_base;
-class Zone;
+class Domaine_dis_base;
+class Domaine;
 class Nom;
 
 
@@ -45,7 +45,7 @@ public:
     localisation_post_=loc_post;
   };
   inline virtual void associer_op_stat(const Operateur_Statistique_tps_base&)                 {};
-  virtual void associer(const Zone_dis_base& ,const Champ_Generique_base& ,double ,double) =0;
+  virtual void associer(const Domaine_dis_base& ,const Champ_Generique_base& ,double ,double) =0;
   virtual void fixer_tstat_deb(double, double ) =0;
   virtual void fixer_tstat_fin(double ) =0;
   virtual void mettre_a_jour(double temps) =0;
@@ -55,7 +55,7 @@ public:
   virtual void initialiser(double val) =0;
   virtual void completer(const Probleme_base& ) =0;
   virtual DoubleTab calculer_valeurs() const =0;
-  virtual int completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format);
+  virtual int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
 
 protected:
   Nom localisation_post_;

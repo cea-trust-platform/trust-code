@@ -22,7 +22,7 @@
 #include <Champ_Uniforme.h>
 #include <Ref_Champ_Inc.h>
 #include <Champ_Don.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 class Eval_Darcy_VEF_Face: public Evaluateur_Source_VEF_Face
 {
@@ -55,7 +55,7 @@ private:
 
 void Eval_Darcy_VEF_Face::associer(const Champ_Don& diffu)
 {
-  int nb_faces_tot = ref_cast(Zone_VEF,le_dom.valeur()).nb_faces_tot();
+  int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
   db_diffusivite.resize(nb_faces_tot, Array_base::NOCOPY_NOINIT);
   diffusivite_ = diffu.valeur();
   mettre_a_jour();
@@ -63,14 +63,14 @@ void Eval_Darcy_VEF_Face::associer(const Champ_Don& diffu)
 
 inline void Eval_Darcy_VEF_Face::mettre_a_jour()
 {
-  int nb_faces_tot = ref_cast(Zone_VEF,le_dom.valeur()).nb_faces_tot();
+  int nb_faces_tot = ref_cast(Domaine_VEF,le_dom.valeur()).nb_faces_tot();
   if (sub_type(Champ_Uniforme, diffusivite_.valeur()))
     db_diffusivite = diffusivite_.valeur()(0, 0);
   else
     {
       const DoubleTab& val_diff = diffusivite_.valeur().valeurs();
       const IntTab& face_vois = le_dom.valeur().face_voisins();
-      const DoubleVect& volumes = ref_cast(Zone_VEF,le_dom.valeur()).volumes();
+      const DoubleVect& volumes = ref_cast(Domaine_VEF,le_dom.valeur()).volumes();
       db_diffusivite = 0.;
       // Compute nu(fac)=(nu(elem1).vol(elem1)+nu(elem2).vol(elem2))/(vol(elem1)+vol(elem2))
       // Viscosity at face is the volume weighted average of viscosity on elements

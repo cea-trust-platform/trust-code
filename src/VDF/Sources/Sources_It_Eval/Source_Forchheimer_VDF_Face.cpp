@@ -16,9 +16,9 @@
 #include <Source_Forchheimer_VDF_Face.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Champ_Don.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Source_Forchheimer_VDF_Face,"Forchheimer_VDF_Face",Terme_Source_VDF_base);
@@ -75,10 +75,10 @@ int Source_Forchheimer_VDF_Face::lire_motcle_non_standard(const Motcle& mot, Ent
 }
 
 
-void Source_Forchheimer_VDF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Forchheimer_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
-  const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
+  const Domaine_VDF& zvdf = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  const Domaine_Cl_VDF& zclvdf = ref_cast(Domaine_Cl_VDF,domaine_cl_dis.valeur());
   iter->associer_domaines(zvdf, zclvdf);
   eval().associer_domaines(zvdf, zclvdf );
 }

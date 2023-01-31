@@ -22,8 +22,8 @@ Entree& Op_Dift_VDF_Face_base::readOn(Entree& s ) { return s ; }
 
 double Op_Dift_VDF_Face_base::calculer_dt_stab() const
 {
-  const Zone_VDF& zone_VDF = iter->zone();
-  return calculer_dt_stab(zone_VDF);
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  return calculer_dt_stab(domaine_VDF);
 }
 
 /*
@@ -34,13 +34,13 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab() const
  *  avec coeff =  1/(dx*dx) + 1/(dy*dy) + 1/(dz*dz) et i decrivant l'ensemble des elements du maillage
  *  Rq: en hydraulique on cherche le Max sur les elements du maillage initial (comme en thermique) et non le Max sur les volumes de Qdm.
  */
-double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
+double Op_Dift_VDF_Face_base::calculer_dt_stab(const Domaine_VDF& domaine_VDF) const
 {
   double dt_stab, coef = -1.e10;
   const DoubleTab& diffu = diffusivite().valeurs(), &diffu_turb = diffusivite_turbulente()->valeurs();
 
   // B.Mat. 9/3/2005: pour traiter monophasique/qc/front-tracking de facon generique. Mettre a jour le qc et l'ancien ft pour utiliser ce mecanisme
-  const int nb_elem = zone_VDF.nb_elem(), dim = Objet_U::dimension;
+  const int nb_elem = domaine_VDF.nb_elem(), dim = Objet_U::dimension;
   if (has_champ_masse_volumique())
     {
       const DoubleTab& valeurs_rho = get_champ_masse_volumique().valeurs();
@@ -49,7 +49,7 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
           double diflo = 0.;
           for (int i = 0; i < dim; i++)
             {
-              const double h = zone_VDF.dim_elem(elem, i);
+              const double h = domaine_VDF.dim_elem(elem, i);
               diflo += 1. / (h * h);
             }
           double mu_physique = diffu(elem, 0),  mu_turbulent = diffu_turb(elem, 0);
@@ -72,7 +72,7 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
           double diflo = 0.;
           for (int i = 0; i < dim; i++)
             {
-              const double h = zone_VDF.dim_elem(elem, i);
+              const double h = domaine_VDF.dim_elem(elem, i);
               diflo += 1. / (h * h);
             }
 
@@ -101,17 +101,17 @@ double Op_Dift_VDF_Face_base::calculer_dt_stab(const Zone_VDF& zone_VDF) const
 
 void Op_Dift_VDF_Face_base::calculer_borne_locale(DoubleVect& borne_visco_turb,double dt,double dt_diff_sur_dt_conv) const
 {
-  const Zone_VDF& zone_VDF = iter->zone();
+  const Domaine_VDF& domaine_VDF = iter->domaine();
   const Champ_base& champ_diffu = diffusivite();
   const DoubleVect& diffu = champ_diffu.valeurs();
-  const int diffu_variable = (diffu.size() == 1) ? 0 : 1, nb_elem = zone_VDF.nb_elem();
+  const int diffu_variable = (diffu.size() == 1) ? 0 : 1, nb_elem = domaine_VDF.nb_elem();
   const double diffu_constante = (diffu_variable ? 0. : diffu(0));
   for (int elem=0; elem<nb_elem; elem++)
     {
       double h_inv = 0;
       for (int dir = 0; dir < dimension; dir++)
         {
-          double h = zone_VDF.dim_elem(elem,dir);
+          double h = domaine_VDF.dim_elem(elem,dir);
           h_inv += 1/(h*h);
         }
       double diffu_l = diffu_variable ? diffu(elem) : diffu_constante;
@@ -125,6 +125,6 @@ void Op_Dift_VDF_Face_base::dimensionner_blocs(matrices_t matrices, const tabs_t
 {
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
-  Op_VDF_Face::dimensionner(iter->zone(), iter->zone_Cl(), mat2);
+  Op_VDF_Face::dimensionner(iter->domaine(), iter->domaine_Cl(), mat2);
   mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
 }

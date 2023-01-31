@@ -19,7 +19,7 @@
 #include <Probleme_base.h>
 #include <Synonyme_info.h>
 #include <Champ_Fonc.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Param.h>
 
 Implemente_instanciable(Champ_Generique_Reduction_0D,"Reduction_0D",Champ_Gen_de_Champs_Gen);
@@ -101,20 +101,20 @@ void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
   Journal()<<"METHODE "<<methode_<<finl;
   if ((methode_=="valeur_a_gauche" || methode_=="left_value")&&(numero_proc_==-1))
     {
-      const Zone_dis_base& zone_dis = get_source(0).get_ref_zone_dis_base();
+      const Domaine_dis_base& domaine_dis = get_source(0).get_ref_domaine_dis_base();
 
-      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+      const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
       // position la plus a gauche
-      const DoubleTab& coords=zvf.zone().les_sommets();
-      const IntTab& conn=zvf.zone().les_elems();
+      const DoubleTab& coords=zvf.domaine().les_sommets();
+      const IntTab& conn=zvf.domaine().les_elems();
       double minp=mp_min_vect(coords);
       //Cerr<<" uu "<<minp<<finl;
       minp=Process::mp_min(minp);
       // Cerr<<" uu "<<minp<<finl;
-      const Zone& zone =zvf.zone();
+      const Domaine& domaine =zvf.domaine();
       int elemin=-1;
       double dmin=DMAXFLOAT;
-      int nb_elem=zone.nb_elem();
+      int nb_elem=domaine.nb_elem();
       //ArrOfDouble xp(dimension);
       for (int ele=0; ele<nb_elem; ele++)
         {
@@ -199,7 +199,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
 
   Champ source_espace_stockage;
   const Champ_base& source = get_source(0).get_champ(source_espace_stockage);
-  const Zone_dis_base& zone_dis = get_source(0).get_ref_zone_dis_base();
+  const Domaine_dis_base& domaine_dis = get_source(0).get_ref_domaine_dis_base();
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
@@ -218,7 +218,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
 
   const DoubleTab& valeurs_source = source.valeurs();
   DoubleTab&  espace_valeurs = espace_stockage->valeurs();
-  const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+  const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   DoubleVect val_extraites(nb_comp);
   double val_extraite=-100.;
 
@@ -253,9 +253,9 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
               Entity loc;
               loc = get_localisation();
               if (loc==ELEMENT)
-                zvf.zone().creer_tableau_elements(vect_source,Array_base::NOCOPY_NOINIT);
+                zvf.domaine().creer_tableau_elements(vect_source,Array_base::NOCOPY_NOINIT);
               else if (loc==NODE)
-                zvf.zone().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
+                zvf.domaine().creer_tableau_sommets(vect_source,Array_base::NOCOPY_NOINIT);
               else if (loc==FACE)
                 zvf.creer_tableau_faces(vect_source,Array_base::NOCOPY_NOINIT);
               vect_source = 0.;
@@ -344,14 +344,14 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // - au ELEM -> on pondere par les volumes des elements,
       // - au FACE -> on pondere par les volumes entrelaces (on ne prend pas en compte les volumes etendues car on n'y a pas acces),
       // - au NODE -> on pondere par les volumes de controle nodal [Vol(som)= Somme_sur_elem_entourant_som(Vol_elem/nb_som_par_elem)].
-      const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
-      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+      const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
+      const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
       double sum=0;
       const DoubleVect& volumes = zvf.volumes();
       //int volumes_size_tot = mp_sum(volumes.size_array());
       if (volumes.size_array()<zvf.nb_elem())
         {
-          Cerr << "The mesh volumes of the domain " << zvf.zone().le_nom() << " are not available yet." << finl;
+          Cerr << "The mesh volumes of the domain " << zvf.domaine().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
           exit();
         }
@@ -464,12 +464,12 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             {
               volume_controle_.resize(nb_som);
               volume_controle_=0;
-              int nb_som_par_elem = zvf.zone().les_elems().dimension_tot(1);
+              int nb_som_par_elem = zvf.domaine().les_elems().dimension_tot(1);
               int nb_elem = zvf.nb_elem();
               for (int i=0; i<nb_elem; i++)
                 for (int j=0; j<nb_som_par_elem; j++)
                   {
-                    int som=zvf.zone().sommet_elem(i,j);
+                    int som=zvf.domaine().sommet_elem(i,j);
                     volume_controle_(som)+=volumes(i)/nb_som_par_elem;
                   }
             }
@@ -507,15 +507,15 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // - au FACE -> on pondere par les volumes entrelaces (on ne prend pas en compte les volumes etendues car on n'y a pas acces),
       // - au NODE -> on pondere par les volumes de controle nodal [Vol(som)= Somme_sur_elem_entourant_som(Vol_elem/nb_som_par_elem)].
 
-      const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
-      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+      const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
+      const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
       double sum=0;
       double volume=0;
       const DoubleVect& volumes = zvf.volumes();
       //int volumes_size_tot = mp_sum(volumes.size_array());
       if (volumes.size_array()<zvf.nb_elem())
         {
-          Cerr << "The mesh volumes of the domain " << zvf.zone().le_nom() << " are not available yet." << finl;
+          Cerr << "The mesh volumes of the domain " << zvf.domaine().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
           exit();
         }
@@ -579,12 +579,12 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
             {
               volume_controle_.resize(nb_som);
               volume_controle_=0;
-              int nb_som_par_elem = zvf.zone().les_elems().dimension_tot(1);
+              int nb_som_par_elem = zvf.domaine().les_elems().dimension_tot(1);
               int nb_elem = zvf.nb_elem();
               for (int i=0; i<nb_elem; i++)
                 for (int j=0; j<nb_som_par_elem; j++)
                   {
-                    int som=zvf.zone().sommet_elem(i,j);
+                    int som=zvf.domaine().sommet_elem(i,j);
                     volume_controle_(som)+=volumes(i)/nb_som_par_elem;
                   }
             }
@@ -603,15 +603,15 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
       // - au ELEM -> on pondere par les volumes des elements *porosite_volumique
       // si on n'est pas aux ELEM erreur
 
-      const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
-      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+      const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
+      const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
       double sum=0;
       double volume=0;
       const DoubleVect& volumes = zvf.volumes();
       // int volumes_size_tot = mp_sum(volumes.size_array());
       if (volumes.size_array()<zvf.nb_elem())
         {
-          Cerr << "The mesh volumes of the domain " << zvf.zone().le_nom() << " are not available yet." << finl;
+          Cerr << "The mesh volumes of the domain " << zvf.domaine().le_nom() << " are not available yet." << finl;
           Cerr << "It is not implemented yet." << finl;
           exit();
         }
@@ -657,15 +657,15 @@ void Champ_Generique_Reduction_0D::extraire(double& val_extraite,const DoubleVec
   else if (methode_=="somme" || methode_=="moyenne" || methode_=="sum" || methode_=="average")
     {
 
-      const Zone_dis_base& zone_dis = get_source(0).get_ref_zone_dis_base();
-      const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+      const Domaine_dis_base& domaine_dis = get_source(0).get_ref_domaine_dis_base();
+      const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
       DoubleVect un;
       Entity loc;
       loc = get_localisation();
       if (loc==ELEMENT)
-        zvf.zone().creer_tableau_elements(un,Array_base::NOCOPY_NOINIT);
+        zvf.domaine().creer_tableau_elements(un,Array_base::NOCOPY_NOINIT);
       else if (loc==NODE)
-        zvf.zone().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
+        zvf.domaine().creer_tableau_sommets(un,Array_base::NOCOPY_NOINIT);
       else if (loc==FACE)
         zvf.creer_tableau_faces(un,Array_base::NOCOPY_NOINIT);
       un = 1.;

@@ -19,7 +19,7 @@
 #include <Navier_Stokes_WC.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Source_WC_Chaleur_VEF,"Source_WC_Chaleur_VEF",Source_WC_Chaleur);
 
@@ -31,10 +31,10 @@ Sortie& Source_WC_Chaleur_VEF::printOn(Sortie& os) const
 
 Entree& Source_WC_Chaleur_VEF::readOn(Entree& is) { return is; }
 
-void Source_WC_Chaleur_VEF::associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& zcl)
+void Source_WC_Chaleur_VEF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl)
 {
-  associer_domaines_impl(zone,zcl);
-  associer_volume_porosite_impl(zone,volumes,porosites);
+  associer_domaines_impl(domaine,zcl);
+  associer_volume_porosite_impl(domaine,volumes,porosites);
 }
 
 void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, const DoubleTab& Ptot) const
@@ -67,22 +67,22 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
   const Operateur_Grad& Op_Grad = eq_chal.operateur_gradient_WC();
   Op_Grad.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
 
-  const Zone_dis_base& zone_dis = mon_equation->inconnue().zone_dis_base();
-  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-  assert (zone_dis.que_suis_je() == "Zone_VEFPreP1b" || zone_dis.que_suis_je() == "Zone_VEF");
+  const Domaine_dis_base& domaine_dis = mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
+  assert (domaine_dis.que_suis_je() == "Domaine_VEFPreP1b" || domaine_dis.que_suis_je() == "Domaine_VEF");
 
   // grad should be zero at boundary
-  correct_grad_boundary(zone,grad_Ptot);
+  correct_grad_boundary(domaine,grad_Ptot);
 
   // We compute u*grad(P_tot) on each face
   DoubleTab grad_Ptot_face(la_vitesse); // champs sur les faces
 
   // get grad_Ptot on faces
-  elem_to_face(zone,grad_Ptot,grad_Ptot_face);
+  elem_to_face(domaine,grad_Ptot,grad_Ptot_face);
 
   const int n = la_vitesse.dimension_tot(0);
   assert (UgradP_face.dimension_tot(0) == n && grad_Ptot_face.dimension_tot(0) == n);
-  assert (UgradP_face.line_size() == 1 && n == zone.nb_faces_tot());
+  assert (UgradP_face.line_size() == 1 && n == domaine.nb_faces_tot());
   for (int i=0 ; i <n ; i++)
     {
       UgradP_face(i,0) = 0.;
@@ -91,12 +91,12 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
 }
 
 // On peut utiliser les methodes statics de Discretisation_tools... mais faut creer de Champ_base ...
-void Source_WC_Chaleur_VEF::elem_to_face(const Zone_VF& zone, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const
+void Source_WC_Chaleur_VEF::elem_to_face(const Domaine_VF& domaine, const DoubleTab& grad_Ptot,DoubleTab& grad_Ptot_face) const
 {
-  const DoubleVect& vol = zone.volumes();
-  const IntTab& elem_faces = zone.elem_faces();
-  const int nb_face_elem = elem_faces.line_size(), nb_elem_tot = zone.nb_elem_tot(), nb_comp = grad_Ptot_face.line_size();
-  assert (grad_Ptot.dimension_tot(0) == nb_elem_tot && grad_Ptot_face.dimension_tot(0) == zone.nb_faces_tot());
+  const DoubleVect& vol = domaine.volumes();
+  const IntTab& elem_faces = domaine.elem_faces();
+  const int nb_face_elem = elem_faces.line_size(), nb_elem_tot = domaine.nb_elem_tot(), nb_comp = grad_Ptot_face.line_size();
+  assert (grad_Ptot.dimension_tot(0) == nb_elem_tot && grad_Ptot_face.dimension_tot(0) == domaine.nb_faces_tot());
   assert (grad_Ptot.line_size() == nb_comp);
 
   grad_Ptot_face = 0.;
@@ -107,6 +107,6 @@ void Source_WC_Chaleur_VEF::elem_to_face(const Zone_VF& zone, const DoubleTab& g
         for (int comp = 0; comp < nb_comp; comp++) grad_Ptot_face(face,comp) += grad_Ptot(ele,comp)*vol(ele);
       }
 
-  for (int f=0; f<zone.nb_faces_tot(); f++)
+  for (int f=0; f<domaine.nb_faces_tot(); f++)
     for (int comp=0; comp<nb_comp; comp++) grad_Ptot_face(f,comp) /= volumes(f)*nb_face_elem;
 }

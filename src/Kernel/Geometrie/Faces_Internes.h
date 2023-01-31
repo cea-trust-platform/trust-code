@@ -29,7 +29,7 @@ class Faces_Internes : public LIST(Faces_Interne)
 
 public :
 
-  void associer_domaine(const Zone&);
+  void associer_domaine(const Domaine&);
   int nb_faces() const;
   inline int nb_faces_internes() const;
   //JY 26/08/97

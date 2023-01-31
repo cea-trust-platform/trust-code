@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Champ_Generique_Morceau_Equation.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Champ_Generique_refChamp.h>
 #include <Discretisation_base.h>
 #include <Operateur_base.h>
@@ -126,13 +126,13 @@ Champ_Fonc& Champ_Generique_Morceau_Equation::creer_espace_stockage(const Nature
     directive = "champ_face"; // Pour avoir les flux_bords aux faces et non aux elements en VDF (ex: temperature)
   else
     directive = get_directive_pour_discr();
-  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+  const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
 
-  discr.discretiser_champ(directive,zone_dis,nature,noms,unites,nb_comp,temps,es_tmp);
+  discr.discretiser_champ(directive,domaine_dis,nature,noms,unites,nb_comp,temps,es_tmp);
 
   if (directive=="pression")
     {
-      const  Zone_Cl_dis_base& zcl = get_ref_zcl_dis_base();
+      const  Domaine_Cl_dis_base& zcl = get_ref_zcl_dis_base();
       es_tmp->completer(zcl);
     }
 

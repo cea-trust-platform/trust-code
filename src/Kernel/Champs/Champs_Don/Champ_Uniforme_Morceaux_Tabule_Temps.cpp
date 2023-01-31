@@ -15,8 +15,8 @@
 
 #include <Champ_Uniforme_Morceaux_Tabule_Temps.h>
 #include <Interprete.h>
-#include <Sous_Zone.h>
-#include <Zone.h>
+#include <Sous_Domaine.h>
+#include <Domaine.h>
 #include <Motcle.h>
 
 Implemente_instanciable(Champ_Uniforme_Morceaux_Tabule_Temps, "Champ_Uniforme_Morceaux_Tabule_Temps", Champ_Uniforme_Morceaux_inst);
@@ -38,8 +38,8 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
   Nom nom;
   int k, poly,nb_val;
   is >> nom;
-  mon_domaine = ref_cast(Zone, Interprete::objet(nom));
-  Zone& le_domaine=mon_domaine.valeur();
+  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
+  Domaine& le_domaine=mon_domaine.valeur();
   dim=lire_dimension(is,que_suis_je());
   valeurs_.resize(0, dim);
   le_domaine.creer_tableau_elements(valeurs_);
@@ -68,7 +68,7 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
   motlu=nom;
   while (motlu != Motcle("}") )
     {
-      REF(Sous_Zone) refssz=les_sous_zones.add(le_domaine.ss_zone(nom));
+      REF(Sous_Domaine) refssz=les_sous_domaines.add(le_domaine.ss_domaine(nom));
       is >> motlu;
       if (motlu == Motcle("{") )
         {
@@ -113,7 +113,7 @@ void Champ_Uniforme_Morceaux_Tabule_Temps::me_calculer(double tps)
     {
 
       auto& list = les_tables.get_stl_list();
-      auto itr2 = les_sous_zones.get_stl_list().begin();
+      auto itr2 = les_sous_domaines.get_stl_list().begin();
 
       if (nb_comp() == 1)
         {
@@ -121,7 +121,7 @@ void Champ_Uniforme_Morceaux_Tabule_Temps::me_calculer(double tps)
           double val_ch;
           for (auto& itr : list)
             {
-              Sous_Zone& ssz = (*itr2).valeur();
+              Sous_Domaine& ssz = (*itr2).valeur();
               Table& la_table = itr;
 
               val_ch = la_table.val(tps);
@@ -140,7 +140,7 @@ void Champ_Uniforme_Morceaux_Tabule_Temps::me_calculer(double tps)
 
           for (auto& itr : list)
             {
-              Sous_Zone& ssz = (*itr2).valeur();
+              Sous_Domaine& ssz = (*itr2).valeur();
               Table& la_table = itr;
 
               la_table.valeurs(val_loc,tps);

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Discret_Thermique.h>
-#include <Zone_dis.h>
+#include <Domaine_dis.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Inc.h>
 #include <Milieu_base.h>
@@ -47,7 +47,7 @@ Entree& Discret_Thermique::readOn(Entree& s)
 }
 
 void Discret_Thermique::temperature(const Schema_Temps_base& sch,
-                                    Zone_dis& z,
+                                    Domaine_dis& z,
                                     Champ_Inc& ch, int nb_comp) const
 {
   Cerr << "Discretisation de la temperature" << finl;
@@ -55,7 +55,7 @@ void Discret_Thermique::temperature(const Schema_Temps_base& sch,
 
 }
 
-/* void Discret_Thermique::t_paroi(const Zone_dis& z,const Zone_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const
+/* void Discret_Thermique::t_paroi(const Domaine_dis& z,const Domaine_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const
 {
   Cerr << "Discret_Thyd::t_paroi() ne fait rien" << finl;
   Cerr <<  que_suis_je() << "doit la surcharger !" << finl;
@@ -63,7 +63,7 @@ void Discret_Thermique::temperature(const Schema_Temps_base& sch,
 } */
 
 void Discret_Thermique::Fluctu_Temperature(const Schema_Temps_base& sch,
-                                           Zone_dis& z,
+                                           Domaine_dis& z,
                                            Champ_Inc& ch) const
 {
   Cerr << "Discretisation des fluctuations en temperature" << finl;
@@ -77,7 +77,7 @@ void Discret_Thermique::Fluctu_Temperature(const Schema_Temps_base& sch,
   ch.valeur().nommer("Fluctu_Temperature");
 }
 void Discret_Thermique::Flux_Chaleur_Turb(const Schema_Temps_base& sch,
-                                          Zone_dis& z,
+                                          Domaine_dis& z,
                                           Champ_Inc& ch) const
 {
   Cerr << "Discretisation du flux de chaleur turbulente" << finl;
@@ -87,7 +87,7 @@ void Discret_Thermique::Flux_Chaleur_Turb(const Schema_Temps_base& sch,
 }
 
 void Discret_Thermique::flux_neutronique(const Schema_Temps_base& sch,
-                                         Zone_dis& z, Champ_Inc& ch, int nb_comp) const
+                                         Domaine_dis& z, Champ_Inc& ch, int nb_comp) const
 {
   Cerr << "Discretisation du flux neutronique" << finl;
   discretiser_champ("temperature",z.valeur(),"flux_neutronique","m-2.s-1",nb_comp,sch.nb_valeurs_temporelles(),sch.temps_courant(),ch);

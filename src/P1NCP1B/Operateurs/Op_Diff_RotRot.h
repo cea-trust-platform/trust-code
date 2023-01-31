@@ -25,7 +25,7 @@
 #include <SolveurSys.h>
 
 
-class Zone_VEF_PreP1b;
+class Domaine_VEF_PreP1b;
 
 class Op_Diff_RotRot : public Operateur_Diff_base
 {
@@ -37,7 +37,7 @@ public:
   ///////////////////////////////////////////////////
   // 5 methodes a surcharger car heritees de Op_base.
   ///////////////////////////////////////////////////
-  void associer( const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&) override;
+  void associer( const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
   void associer_diffusivite(const Champ_base&) override;
   const Champ_base& diffusivite() const override;
   DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
@@ -103,7 +103,7 @@ public:
   //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
   DoubleTab vecteur_normal(const int face, const int elem) const;
 
-  const Zone_VEF_PreP1b& zone_Vef() const;
+  const Domaine_VEF_PreP1b& domaine_Vef() const;
 
 protected:
 
@@ -116,8 +116,8 @@ protected:
   SolveurSys solveur_;
   //mutable Solv_GCP solveur_;
 
-  REF(Zone_VEF) le_dom_vef;
-  REF(Zone_Cl_VEF) la_zcl_vef;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_Uniforme) diffusivite_;
 
 };

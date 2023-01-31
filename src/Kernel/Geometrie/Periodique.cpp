@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <Reordonner_faces_periodiques.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <Periodique.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 #include <Scatter.h>
 
 Implemente_instanciable(Periodique, "Periodique", Cond_lim_base);
@@ -61,12 +61,12 @@ void Periodique::completer()
   else
     Cerr << "Periodic direction aligned on the axis " << direction_xyz_ << finl;
 
-  const Zone& zone = frontiere.zone();
+  const Domaine& domaine = frontiere.domaine();
 
   // Creation d'un tableau d'indices parallele sur toutes les faces frontieres
   IntTab tab_face_associee;
-  const Zone_VF& zonevf = ref_cast(Zone_VF, zone_Cl_dis().zone_dis().valeur());
-  zonevf.creer_tableau_faces_bord(tab_face_associee, Array_base::NOCOPY_NOINIT);
+  const Domaine_VF& domainevf = ref_cast(Domaine_VF, domaine_Cl_dis().domaine_dis().valeur());
+  domainevf.creer_tableau_faces_bord(tab_face_associee, Array_base::NOCOPY_NOINIT);
   tab_face_associee = -1;
 
   // Nombre de faces virtuelles de cette frontiere:
@@ -88,19 +88,19 @@ void Periodique::completer()
   const MD_Vector& md_faces_front = tab_face_associee.get_md_vector();
   // On echange espace virtuel avec traduction des indices:
   Scatter::construire_espace_virtuel_traduction(md_faces_front, md_faces_front, tab_face_associee, 1 /* erreurs fatales */);
-  // Tableau qui donne pour chaque face virtuelle de la zone, -1 si ce n'est pas une
+  // Tableau qui donne pour chaque face virtuelle de la domaine, -1 si ce n'est pas une
   // face frontiere, sinon son indice dans les les frontieres.
-  const ArrOfInt& ind_faces_virt_bord = zone.ind_faces_virt_bord();
+  const ArrOfInt& ind_faces_virt_bord = domaine.ind_faces_virt_bord();
   // Creation d'un tableau qui donne, pour chaque face virtuelle des frontieres (toutes frontieres)
   // l'indice de la face dans la frontiere periodique courante (-1 sinon)
   const int nb_faces_front_tot = tab_face_associee.size_totale();
   ArrOfInt index(nb_faces_front_tot);
   index = -2;
-  const int nb_faces_zone = zone_Cl_dis().zone_dis().valeur().face_sommets().dimension(0);
+  const int nb_faces_domaine = domaine_Cl_dis().domaine_dis().valeur().face_sommets().dimension(0);
   for (i = 0; i < nb_faces_virt; i++)
     {
-      const int face_zone = frontiere.face_virt(i); // Indice d'une face de la zone
-      const int face_front = ind_faces_virt_bord[face_zone - nb_faces_zone]; // Indice dans les frontieres
+      const int face_domaine = frontiere.face_virt(i); // Indice d'une face de la domaine
+      const int face_front = ind_faces_virt_bord[face_domaine - nb_faces_domaine]; // Indice dans les frontieres
       index[face_front] = nb_faces + i;
     }
 
@@ -116,8 +116,8 @@ void Periodique::completer()
       else
         {
           // Face virtuelle :
-          const int face_zone = frontiere.face_virt(i - nb_faces); // Indice de la face de la zone
-          const int face_front = ind_faces_virt_bord[face_zone - nb_faces_zone]; // Indice dans les frontieres
+          const int face_domaine = frontiere.face_virt(i - nb_faces); // Indice de la face de la domaine
+          const int face_front = ind_faces_virt_bord[face_domaine - nb_faces_domaine]; // Indice dans les frontieres
           // Indice de la face associee dans le tableau face_associee:
           const int face_front_associee = tab_face_associee[face_front];
           if (face_front_associee >= 0)

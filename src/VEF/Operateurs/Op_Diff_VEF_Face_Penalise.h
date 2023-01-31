@@ -17,9 +17,9 @@
 #ifndef Op_Diff_VEF_Face_Penalise_included
 #define Op_Diff_VEF_Face_Penalise_included
 #include <Op_Diff_VEF_Face.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <TRUSTList.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 class Op_Diff_VEF_Face_Penalise : public Op_Diff_VEF_Face
 {
@@ -98,17 +98,17 @@ protected:
 
 
 private:
-  /* Fonction membre qui retourne la Zone_VEF du domaine. */
-  inline const Zone_VEF& zone_vef() const;
+  /* Fonction membre qui retourne la Domaine_VEF du domaine. */
+  inline const Domaine_VEF& domaine_vef() const;
 
-  /* Fonction membre qui retourne le Zone du probleme. */
-  inline const Zone&  domaine() const;
+  /* Fonction membre qui retourne le Domaine du probleme. */
+  inline const Domaine&  domaine() const;
 
-  /* Fonction membre qui renvoie la zone du probleme. */
-  inline const Zone& zone() const;
+  /* Fonction membre qui renvoie la domaine du probleme. */
+  inline const Domaine& domaine() const;
 
-  /* Fonction membre qui renvoie la zone de conditions aux limitex. */
-  inline const Zone_Cl_VEF& zone_cl() const;
+  /* Fonction membre qui renvoie la domaine de conditions aux limitex. */
+  inline const Domaine_Cl_VEF& domaine_cl() const;
 
 };
 
@@ -120,8 +120,8 @@ inline double Op_Diff_VEF_Face_Penalise::longueur(const int Face) const
   double x_sommet1,x_sommet2;
   double y_sommet1,y_sommet2;
 
-  int sommet1 = zone_vef().face_sommets(Face,0);
-  int sommet2 = zone_vef().face_sommets(Face,1);
+  int sommet1 = domaine_vef().face_sommets(Face,0);
+  int sommet2 = domaine_vef().face_sommets(Face,1);
 
   x_sommet1 = domaine().coord(sommet1,0);
   y_sommet1 = domaine().coord(sommet1,1);
@@ -138,9 +138,9 @@ inline double Op_Diff_VEF_Face_Penalise::diametre(const int Element) const
   double longueur_face1,longueur_face2,longueur_face3;
   double longueur_max,diametre_element;
 
-  face1 = zone_vef().elem_faces(Element,0);
-  face2 = zone_vef().elem_faces(Element,1);
-  face3 = zone_vef().elem_faces(Element,2);
+  face1 = domaine_vef().elem_faces(Element,0);
+  face2 = domaine_vef().elem_faces(Element,1);
+  face3 = domaine_vef().elem_faces(Element,2);
 
   longueur_face1 = longueur(face1);
   longueur_face2 = longueur(face2);
@@ -154,24 +154,24 @@ inline double Op_Diff_VEF_Face_Penalise::diametre(const int Element) const
   return diametre_element;
 }
 
-inline const Zone_VEF& Op_Diff_VEF_Face_Penalise::zone_vef() const
+inline const Domaine_VEF& Op_Diff_VEF_Face_Penalise::domaine_vef() const
 {
   return le_dom_vef.valeur();
 }
 
-inline const Zone_Cl_VEF& Op_Diff_VEF_Face_Penalise::zone_cl() const
+inline const Domaine_Cl_VEF& Op_Diff_VEF_Face_Penalise::domaine_cl() const
 {
   return la_zcl_vef.valeur();
 }
 
-inline const Zone&  Op_Diff_VEF_Face_Penalise::zone() const
+inline const Domaine&  Op_Diff_VEF_Face_Penalise::domaine() const
 {
-  return zone_vef().zone();
+  return domaine_vef().domaine();
 }
 
-inline const Zone&  Op_Diff_VEF_Face_Penalise::domaine() const
+inline const Domaine&  Op_Diff_VEF_Face_Penalise::domaine() const
 {
-  return zone();
+  return domaine();
 }
 
 

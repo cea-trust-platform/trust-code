@@ -254,7 +254,7 @@ inline Type_Face Tetraedre::type_face(int i) const
 
 /*! @brief remplit la matrice m avec les trois vecteurs de base du tetraedre demande (le premier sommet du tetra est pris comme origine).
  *
- *   polys est le tableau des elements de la zone, coords le tableau des coordonnees
+ *   polys est le tableau des elements de la domaine, coords le tableau des coordonnees
  *   num_elem le numero du tetraedre a calculer.
  *   m est rempli avec la matrice m(i,j) = coord(polys(num_elem, j+1), i) - coord(polys(num_elem, 0), i)
  *

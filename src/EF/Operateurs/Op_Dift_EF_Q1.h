@@ -19,8 +19,8 @@
 #include <Op_Dift_EF_base.h>
 #include <Ref_Champ_Inc.h>
 #include <Ref_Champ_Uniforme.h>
-#include <Ref_Zone_EF.h>
-#include <Ref_Zone_Cl_EF.h>
+#include <Ref_Domaine_EF.h>
+#include <Ref_Domaine_Cl_EF.h>
 #include <Matrice_Morse.h>
 #include <Op_EF_base.h>
 #include <Champ_Don.h>
@@ -51,7 +51,7 @@ public:
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
   void verifier() const;
   void remplir_nu(DoubleTab&) const override;
-  void remplir_marqueur_elem_CL_paroi(ArrOfInt& ,const Zone_EF& ,const Zone_Cl_EF& ) const;
+  void remplir_marqueur_elem_CL_paroi(ArrOfInt& ,const Domaine_EF& ,const Domaine_Cl_EF& ) const;
 
   // Methodes pour l implicite.
   inline void dimensionner(Matrice_Morse& matrice) const override { Op_EF_base::dimensionner(le_dom_EF.valeur(), la_zcl_EF.valeur(), matrice); }
@@ -62,8 +62,8 @@ public:
   void ajouter_contribution(const DoubleTab&, Matrice_Morse& ) const;
   void ajouter_contributions_bords(Matrice_Morse& matrice) const;
   void ajouter_contribution_new(const DoubleTab&, Matrice_Morse&) const;
-  void ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, DoubleTab& nu, const Zone_Cl_EF& zone_Cl_EF, const Zone_EF& zone_EF) const;
-  void ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, DoubleTab& nu, const Zone_Cl_EF& zone_Cl_EF, const Zone_EF& zone_EF, int nb_comp) const;
+  void ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, DoubleTab& nu, const Domaine_Cl_EF& domaine_Cl_EF, const Domaine_EF& domaine_EF) const;
+  void ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, DoubleTab& nu, const Domaine_Cl_EF& domaine_Cl_EF, const Domaine_EF& domaine_EF, int nb_comp) const;
 
 
 protected :
@@ -97,18 +97,18 @@ DoubleTab& Op_Dift_EF_Q1::ajouter_scalaire_template(const DoubleTab& tab_inconnu
 {
   static constexpr bool IS_GEN = (_T_ == AJOUTE_SCAL::GEN), IS_D3_8 = (_T_ == AJOUTE_SCAL::D3_8), IS_D2_4 = (_T_ == AJOUTE_SCAL::D2_4);
 
-  const Zone_EF& zone_ef = ref_cast(Zone_EF, equation().zone_dis().valeur());
+  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis().valeur());
 
   const int N = IS_GEN ? resu.line_size() : 1;
-  const int nb_som_elem = IS_D3_8 ? 8 : ( IS_D2_4 ? 4 : zone_ef.zone().nb_som_elem() /* IS_GEN */);
+  const int nb_som_elem = IS_D3_8 ? 8 : ( IS_D2_4 ? 4 : domaine_ef.domaine().nb_som_elem() /* IS_GEN */);
   const int const_dimension = IS_D3_8 ? 3 : ( IS_D2_4 ? 2 : Objet_U::dimension /* IS_GEN */);
   const int dim_fois_nbn = nb_som_elem * const_dimension;
 
-  const DoubleVect& volumes_thilde = zone_ef.volumes_thilde(), &volumes = zone_ef.volumes();
+  const DoubleVect& volumes_thilde = domaine_ef.volumes_thilde(), &volumes = domaine_ef.volumes();
 
-  const DoubleTab& bij = zone_ef.Bij();
-  int nb_elem_tot = zone_ef.zone().nb_elem_tot();
-  const IntTab& elems = zone_ef.zone().les_elems();
+  const DoubleTab& bij = domaine_ef.Bij();
+  int nb_elem_tot = domaine_ef.domaine().nb_elem_tot();
+  const IntTab& elems = domaine_ef.domaine().les_elems();
 
   remplir_nu(nu_);
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
@@ -163,23 +163,23 @@ DoubleTab& Op_Dift_EF_Q1::ajouter_vectoriel_template(const DoubleTab& tab_inconn
 {
   static constexpr bool IS_GEN = (_T_ == AJOUTE_VECT::GEN), IS_D3_8 = (_T_ == AJOUTE_VECT::D3_8), IS_D2_4 = (_T_ == AJOUTE_VECT::D2_4);
 
-  const Zone_EF& zone_ef = ref_cast(Zone_EF, equation().zone_dis().valeur());
+  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, equation().domaine_dis().valeur());
 
   const int N = IS_D3_8 ? 3 : (IS_D2_4 ? 2 : resu.line_size() /* IS_GEN */);
   const int const_dimension = IS_GEN ? Objet_U::dimension : N;
-  const int nb_som_elem = IS_D3_8 ? 8 : (IS_D2_4 ? 4 : zone_ef.zone().nb_som_elem() /* IS_GEN */);
+  const int nb_som_elem = IS_D3_8 ? 8 : (IS_D2_4 ? 4 : domaine_ef.domaine().nb_som_elem() /* IS_GEN */);
   const int dim_fois_nbn = nb_som_elem * const_dimension;
 
   ArrOfInt marqueur_neuman;
-  remplir_marqueur_sommet_neumann(marqueur_neuman, zone_ef, la_zcl_EF.valeur(), transpose_partout_);
+  remplir_marqueur_sommet_neumann(marqueur_neuman, domaine_ef, la_zcl_EF.valeur(), transpose_partout_);
   ArrOfInt marqueur_paroi;
-  remplir_marqueur_elem_CL_paroi(marqueur_paroi, zone_ef, la_zcl_EF.valeur());
+  remplir_marqueur_elem_CL_paroi(marqueur_paroi, domaine_ef, la_zcl_EF.valeur());
 
-  const DoubleVect& volumes_thilde = zone_ef.volumes_thilde(), &volumes = zone_ef.volumes();
+  const DoubleVect& volumes_thilde = domaine_ef.volumes_thilde(), &volumes = domaine_ef.volumes();
 
-  const DoubleTab& bij = zone_ef.Bij();
-  int nb_elem_tot = zone_ef.zone().nb_elem_tot();
-  const IntTab& elems = zone_ef.zone().les_elems();
+  const DoubleTab& bij = domaine_ef.Bij();
+  int nb_elem_tot = domaine_ef.domaine().nb_elem_tot();
+  const IntTab& elems = domaine_ef.domaine().les_elems();
 
   remplir_nu(nu_);
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());

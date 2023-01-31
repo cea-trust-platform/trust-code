@@ -16,9 +16,9 @@
 #ifndef Masse_PolyMAC_base_included
 #define Masse_PolyMAC_base_included
 
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC.h>
 #include <Solveur_Masse.h>
 
 class Masse_PolyMAC_base : public Solveur_Masse_base
@@ -26,13 +26,13 @@ class Masse_PolyMAC_base : public Solveur_Masse_base
   Declare_base(Masse_PolyMAC_base);
 public:
   int has_interface_blocs() const override { return 1; }
-  void associer_domaine_dis_base(const Zone_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
   void check_multiphase_compatibility() const override { }
 
 protected:
-  REF(Zone_Cl_PolyMAC) le_dom_Cl_PolyMAC;
-  REF(Zone_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
 };
 
 #endif /* Masse_PolyMAC_base_included */

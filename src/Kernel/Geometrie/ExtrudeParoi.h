@@ -19,7 +19,7 @@
 
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
-class Zone;
+class Domaine;
 
 /*! @brief Classe ExtrudeParoi Cette classe est un interprete qui sert a lire et executer
  *
@@ -38,7 +38,7 @@ public :
 
   ExtrudeParoi();
   Entree& interpreter_(Entree&) override;
-  void extrude(Zone&) ;
+  void extrude(Domaine&) ;
 
 protected:
 

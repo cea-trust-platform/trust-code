@@ -15,7 +15,7 @@
 
 #include <Faces.h>
 #include <Faces2.h>
-#include <ZoneAxi1d.h>
+#include <DomaineAxi1d.h>
 #include <communications.h>
 #include <Linear_algebra_tools_impl.h>
 
@@ -198,11 +198,11 @@ Type_Face Faces::type(const Motcle& mot) const
       {
         Cerr << "In the area number " << Process::me() << " " << mot << " is not a type of face." << finl;
         Cerr << "Check your splitting." << finl;
-        // Si mot est vide c'est que l'on tente de relire des Zones creees avec une version anterieure a la 1.5.1
+        // Si mot est vide c'est que l'on tente de relire des Domaines creees avec une version anterieure a la 1.5.1
         if (mot=="")
           {
             Cerr << "Your splitting seems to have been done with a TRUST version 1.5 or earlier. Since" << finl;
-            Cerr << "the 1.5.1, the files format of .Zones containing the splitting of your mesh has evolved." << finl;
+            Cerr << "the 1.5.1, the files format of .Domaines containing the splitting of your mesh has evolved." << finl;
             Cerr << "You must therefore rebuild the splitting of your mesh with TRUST version 1.5.1 or newer." <<
                  finl;
           }
@@ -440,7 +440,7 @@ void Faces::completer(int face, int num_elem)
 void Faces::calculer_surfaces(DoubleVect& surfaces) const
 {
   surfaces.resize(nb_faces_tot());
-  const Zone& dom=zone();
+  const Domaine& dom=domaine();
   // Verification qu'en coordonnees cylindriques, r est bien positif
   if (axi || bidim_axi)
     {
@@ -647,7 +647,7 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
       {
         assert(dimension==3);
 
-        const ZoneAxi1d& domax = ref_cast(ZoneAxi1d,dom);
+        const DomaineAxi1d& domax = ref_cast(DomaineAxi1d,dom);
 
         for(int face=0; face <nb_faces_tot(); face++)
           {
@@ -703,7 +703,7 @@ void Faces::calculer_surfaces(DoubleVect& surfaces) const
 void Faces::calculer_centres_gravite(DoubleTab& xv) const
 {
   // Le tableau xv est dimensionne dans ::calculer_centres_gravite
-  const Zone& dom=zone();
+  const Domaine& dom=domaine();
   const DoubleTab& coord=dom.coord_sommets();
   ::calculer_centres_gravite(xv, type_face_,
                              coord, sommets);
@@ -835,8 +835,8 @@ void Faces::reordonner()
     case Faces::quadrilatere_2D_axi :
       {
         assert(dimension==2);
-        const Zone& mazone=zone();
-        const Zone& dom=mazone;
+        const Domaine& madomaine=domaine();
+        const Domaine& dom=madomaine;
         ArrOfInt S(2);
         ArrOfInt NS(2);
         int i;
@@ -880,8 +880,8 @@ void Faces::reordonner()
     case  Faces::quadrangle_3D :
       {
         assert(dimension==3);
-        const Zone& mazone=zone();
-        const Zone& dom=mazone;
+        const Domaine& madomaine=domaine();
+        const Domaine& dom=madomaine;
         ArrOfInt S(4);
         ArrOfInt NS(4);
         int i;
@@ -1036,10 +1036,10 @@ void Faces::reordonner()
  */
 IntVect& Faces::compare(const Faces& faces, IntVect& renum)
 {
-  const Zone& le_dom=zone();
-  const Zone& sa_zone=faces.zone();
-  const Zone& domaine=le_dom;
-  const Zone& son_domaine=sa_zone;
+  const Domaine& le_dom=domaine();
+  const Domaine& sa_domaine=faces.domaine();
+  const Domaine& domaine=le_dom;
+  const Domaine& son_domaine=sa_domaine;
   if ( (nb_faces() != faces.nb_faces()) || ( type_face_ != faces.type_face_) )
     {
       renum.resize(1);

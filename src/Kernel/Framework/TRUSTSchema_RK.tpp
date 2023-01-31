@@ -44,7 +44,7 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   update_critere_statio(xi, eqn);
 
   // Update boundary condition on futur:
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
   xip1.echange_espace_virtuel();
 
   // xi = x0;
@@ -91,7 +91,7 @@ TRUSTSchema_RK<_ORDRE_>::faire_un_pas_de_temps_eqn_base_generique(Equation_base&
   update_critere_statio(futur, eqn);
 
   // Update boundary condition on futur:
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(), temps_courant() + pas_de_temps());
   futur.echange_espace_virtuel();
 
   present = sauv; // back to y0

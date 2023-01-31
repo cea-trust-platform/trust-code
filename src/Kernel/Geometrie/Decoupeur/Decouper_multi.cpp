@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Decouper_multi.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 #include <Connectivite_som_elem.h>
 #include <Static_Int_Lists.h>
@@ -76,14 +76,14 @@ Entree& Decouper_multi::interpreter(Entree& is)
   /* partition des domaines */
   std::vector<IntVect> v_proc; //partition de chaque domaine
   std::vector<Decouper*> v_dec; //decoupeurs
-  std::vector<const Zone*> v_dom; //domaines
+  std::vector<const Domaine*> v_dom; //domaines
   std::vector<Static_Int_Lists> v_se; //connectivites
   std::vector<MCAuto<DataArrayDouble>> v_da; //DataArrayDouble de coordonnes
   std::vector<const DataArrayDouble*> v_pda; //et des pointeurs (ppur Aggregate)
   std::vector<int> off = { 0 }; //offset des sommets de chaque domaine dans le tableau aggrege
   for (auto &&n_d : decoupeurs)
     {
-      const Zone& dom = n_d.second.ref_domaine.valeur();
+      const Domaine& dom = n_d.second.ref_domaine.valeur();
       const DoubleTab& coord = dom.coord_sommets();
       v_proc.push_back(IntVect()), v_dec.push_back(&n_d.second), v_dom.push_back(&dom);
       v_se.push_back(Static_Int_Lists()), v_da.push_back(DataArrayDouble::New());

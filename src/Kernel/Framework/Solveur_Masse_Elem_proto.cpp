@@ -22,9 +22,9 @@
 #include <Matrix_tools.h>
 #include <Milieu_base.h>
 #include <Operateur.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
-void Solveur_Masse_Elem_proto::associer_masse_proto(const Solveur_Masse_base& sm, const Zone_VF& zvf )
+void Solveur_Masse_Elem_proto::associer_masse_proto(const Solveur_Masse_base& sm, const Domaine_VF& zvf )
 {
   solv_mass_ = sm;
   le_dom_ = zvf;
@@ -37,11 +37,11 @@ void Solveur_Masse_Elem_proto::preparer_calcul_proto()
 
 DoubleTab& Solveur_Masse_Elem_proto::appliquer_impl_proto(DoubleTab& sm) const
 {
-  const Zone_VF& zone = le_dom_.valeur();
-  const DoubleVect& ve = zone.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem();
+  const Domaine_VF& domaine = le_dom_.valeur();
+  const DoubleVect& ve = domaine.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem();
   const DoubleTab& der = solv_mass_->equation().champ_conserve().derivees().at(solv_mass_->equation().inconnue().le_nom().getString());
 
-  int e, ne_tot = zone.nb_elem_tot(), n, N = sm.line_size();
+  int e, ne_tot = domaine.nb_elem_tot(), n, N = sm.line_size();
   assert(sm.dimension_tot(0) >= ne_tot && N == der.line_size());
 
   /* partie elem */
@@ -57,9 +57,9 @@ void Solveur_Masse_Elem_proto::dimensionner_blocs_proto(matrices_t matrices, con
 {
   solv_mass_->equation().init_champ_conserve();
   /* une diagonale par derivee de champ_conserve_ presente dans matrices */
-  const Zone_VF& zone = le_dom_.valeur();
+  const Domaine_VF& domaine = le_dom_.valeur();
   const Champ_Inc_base& cc = solv_mass_->equation().champ_conserve();
-  int e, ne = zone.nb_elem(), n, N = cc.valeurs().line_size();
+  int e, ne = domaine.nb_elem(), n, N = cc.valeurs().line_size();
 
   for (auto &&i_m : matrices)
     if (cc.derivees().count(i_m.first))
@@ -81,13 +81,13 @@ void Solveur_Masse_Elem_proto::dimensionner_blocs_proto(matrices_t matrices, con
 
 void Solveur_Masse_Elem_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
-  const Zone_VF& zone = le_dom_.valeur();
+  const Domaine_VF& domaine = le_dom_.valeur();
   const Champ_Inc_base& cc = solv_mass_->equation().champ_conserve();
-  const Conds_lim& cls = solv_mass_->equation().zone_Cl_dis()->les_conditions_limites();
-  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, solv_mass_->equation().inconnue().valeur()).fcl(), &f_e = zone.face_voisins();
+  const Conds_lim& cls = solv_mass_->equation().domaine_Cl_dis()->les_conditions_limites();
+  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, solv_mass_->equation().inconnue().valeur()).fcl(), &f_e = domaine.face_voisins();
   const DoubleTab& present = cc.valeurs(), &passe = cc.passe();
-  const DoubleVect& ve = zone.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem(), &fs = zone.face_surfaces();
-  int e, f, n, N = cc.valeurs().line_size(), ne = zone.nb_elem();
+  const DoubleVect& ve = domaine.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem(), &fs = domaine.face_surfaces();
+  int e, f, n, N = cc.valeurs().line_size(), ne = domaine.nb_elem();
 
   /* second membre : avec ou sans resolution en increments*/
   for (e = 0; e < ne; e++)
@@ -96,7 +96,7 @@ void Solveur_Masse_Elem_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
 
   /* si on n'a pas d'operateur de diffusion (operateur(0) negligeable ou operateur(0) convectif pour Masse_Multiphase), alors ajout des flux aux faces de Neumann */
   if ( (sub_type(Op_Diff_negligeable, solv_mass_->equation().operateur(0).l_op_base())) || (!sub_type(Operateur_Diff_base, solv_mass_->equation().operateur(0).l_op_base())) )
-    for (f = 0; f < zone.premiere_face_int(); f++)
+    for (f = 0; f < domaine.premiere_face_int(); f++)
       if (fcl(f, 0) == 4)
         for (e = f_e(f, f_e(f, 0) == -1), n = 0; n < N; n++)
           secmem(e, n) += fs(f) * ref_cast(Neumann_paroi, cls[fcl(f, 1)].valeur()).flux_impose(fcl(f, 2), n);

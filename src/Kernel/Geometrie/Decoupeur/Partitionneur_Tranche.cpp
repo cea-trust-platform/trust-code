@@ -16,7 +16,7 @@
 #include <Reordonner_faces_periodiques.h>
 #include <Partitionneur_Tranche.h>
 #include <TRUSTArray.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Tranche,"Partitionneur_Tranche",Partitionneur_base);
@@ -61,7 +61,7 @@ void Partitionneur_Tranche::set_param(Param& param)
 /*! @brief Premiere etape d'initialisation du partitionneur: on associe un domaine.
  *
  */
-void Partitionneur_Tranche::associer_domaine(const Zone& domaine)
+void Partitionneur_Tranche::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
   nb_tranches_.resize(domaine.dimension);
@@ -131,11 +131,11 @@ static void trier_index_colonne_i(const DoubleTab& tab,
  *   existe un bord periodique pour lequel le vecteur delta est dirige dans la direction i.
  *
  */
-void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
+void Partitionneur_Tranche::chercher_direction_perio(const Domaine& domaine,
                                                      const Noms& liste_bords_perio,
                                                      ArrOfInt& directions_perio)
 {
-  Cerr << "Search of periodic directions of domain " << zone.le_nom() << finl;
+  Cerr << "Search of periodic directions of domain " << domaine.le_nom() << finl;
   const int dim = Objet_U::dimension;
   directions_perio.resize_array(dim);
   directions_perio = 0;
@@ -143,10 +143,10 @@ void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
     {
       int num_bord = 0;
       const Nom& nom_bord = itr;
-      const int nb_bords = zone.nb_bords();
+      const int nb_bords = domaine.nb_bords();
       while (num_bord < nb_bords)
         {
-          if (zone.bord(num_bord).le_nom() == nom_bord)
+          if (domaine.bord(num_bord).le_nom() == nom_bord)
             break;
           num_bord++;
         }
@@ -159,7 +159,7 @@ void Partitionneur_Tranche::chercher_direction_perio(const Zone& zone,
       ArrOfDouble delta;
       ArrOfDouble erreur;
       const double epsilon = Objet_U::precision_geom;
-      Reordonner_faces_periodiques::check_faces_periodiques(zone.bord(num_bord), delta, erreur);
+      Reordonner_faces_periodiques::check_faces_periodiques(domaine.bord(num_bord), delta, erreur);
       int count = 0;
       for (int j = 0; j < dim; j++)
         {
@@ -192,7 +192,7 @@ void Partitionneur_Tranche::construire_partition(IntVect& elem_part, int& nb_par
   assert(ref_domaine_.non_nul());
   assert(nb_tranches_[0] > 0);
 
-  const Zone& dom = ref_domaine_.valeur();
+  const Domaine& dom = ref_domaine_.valeur();
   const int nb_elem = dom.nb_elem();
 
   const int dim = dom.dimension;

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <VEF_1D.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_Ostwald_VEF.h>
 #include <Navier_Stokes_std.h>
 #include <Tri_VEF.h>
@@ -38,32 +38,32 @@ Entree& VEF_1D::readOn(Entree& is )
 }
 
 void VEF_1D::vitesse(const Schema_Temps_base& sch,
-                     Zone_dis& z,
+                     Domaine_dis& z,
                      Champ_Inc& ch) const
 {
   Cerr << "Discretisation de la vitesse" << finl;
-  Zone_VEF& zone_VEF=ref_cast(Zone_VEF, z.valeur());
-  if (sub_type(Tri_VEF,zone_VEF.type_elem().valeur()) || sub_type(Tetra_VEF,zone_VEF.type_elem().valeur()))
+  Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z.valeur());
+  if (sub_type(Tri_VEF,domaine_VEF.type_elem().valeur()) || sub_type(Tetra_VEF,domaine_VEF.type_elem().valeur()))
     {
       ch.typer("Champ_P1NC");
       Champ_P1NC& ch_vitesse=ref_cast(Champ_P1NC, ch.valeur());
-      ch_vitesse.associer_domaine_dis_base(zone_VEF);
+      ch_vitesse.associer_domaine_dis_base(domaine_VEF);
       ch_vitesse.nommer("vitesse");
       ch_vitesse.fixer_nb_comp(1);
       ch_vitesse.fixer_nb_valeurs_temporelles(sch.nb_valeurs_temporelles());
-      ch_vitesse.fixer_nb_valeurs_nodales(zone_VEF.nb_faces());
+      ch_vitesse.fixer_nb_valeurs_nodales(domaine_VEF.nb_faces());
       ch_vitesse.fixer_unite("m/s");
       ch_vitesse.changer_temps(sch.temps_courant());
     }
-  else if (sub_type(Quadri_VEF,zone_VEF.type_elem().valeur()) || sub_type(Hexa_VEF,zone_VEF.type_elem().valeur()))
+  else if (sub_type(Quadri_VEF,domaine_VEF.type_elem().valeur()) || sub_type(Hexa_VEF,domaine_VEF.type_elem().valeur()))
     {
       ch.typer("Champ_Q1NC");
       Champ_Q1NC& ch_vitesse=ref_cast(Champ_Q1NC, ch.valeur());
-      ch_vitesse.associer_domaine_dis_base(zone_VEF);
+      ch_vitesse.associer_domaine_dis_base(domaine_VEF);
       ch_vitesse.nommer("vitesse");
       ch_vitesse.fixer_nb_comp(1);
       ch_vitesse.fixer_nb_valeurs_temporelles(sch.nb_valeurs_temporelles());
-      ch_vitesse.fixer_nb_valeurs_nodales(zone_VEF.nb_faces());
+      ch_vitesse.fixer_nb_valeurs_nodales(domaine_VEF.nb_faces());
       ch_vitesse.fixer_unite("m/s");
       ch_vitesse.changer_temps(sch.temps_courant());
     }

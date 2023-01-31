@@ -14,14 +14,14 @@
 *****************************************************************************/
 
 #include <EDO_Pression_th_VEF.h>
-#include <Zone.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine.h>
+#include <Domaine_Cl_VEF.h>
 #include <Periodique.h>
-#include <Zone_VEF_PreP1b.h>
+#include <Domaine_VEF_PreP1b.h>
 #include <Sortie_libre_pression_imposee_QC.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Porosites_champ.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 
 Implemente_base_sans_constructeur(EDO_Pression_th_VEF,"EDO_Pression_th_VEF",EDO_Pression_th_base);
@@ -38,15 +38,15 @@ Entree& EDO_Pression_th_VEF::readOn(Entree& is)
   return EDO_Pression_th_base::readOn(is);
 }
 
-/*! @brief Associe les zones a l'EDO
+/*! @brief Associe les domaines a l'EDO
  *
- * @param (Zone_dis& zone) zone
- * @param (Zone_Cl_dis& zone_cl) zone cl
+ * @param (Domaine_dis& domaine) domaine
+ * @param (Domaine_Cl_dis& domaine_cl) domaine cl
  */
-void  EDO_Pression_th_VEF::associer_domaines(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
+void  EDO_Pression_th_VEF::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Zone_VEF,zone.valeur());
-  le_dom_Cl = zone_cl;
+  le_dom = ref_cast(Domaine_VEF,domaine.valeur());
+  le_dom_Cl = domaine_cl;
 }
 
 /*! @brief Complete l'EDO : calcule rho sur les faces
@@ -54,7 +54,7 @@ void  EDO_Pression_th_VEF::associer_domaines(const Zone_dis& zone, const Zone_Cl
  */
 void EDO_Pression_th_VEF::completer()
 {
-  if (!ref_cast(Zone_VEF_PreP1b,le_dom.valeur()).get_alphaE())
+  if (!ref_cast(Domaine_VEF_PreP1b,le_dom.valeur()).get_alphaE())
     {
       Cerr << "Le modele quasi compressible ne fonctionne pas encore avec cette discretisation." << finl;
       Cerr << "En VEF, la discretisation doit avoir le support P0. Donc utiliser P1Bulle ou P0P1." << finl;
@@ -72,7 +72,7 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
   const IntTab& face_voisins = le_dom->face_voisins();
   const DoubleTab& face_normales = le_dom->face_normales();
   const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Zone_Cl_VEF,le_dom_Cl->valeur()).volumes_entrelaces_Cl();
+  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Domaine_Cl_VEF,le_dom_Cl->valeur()).volumes_entrelaces_Cl();
 
   double diff;
   int face,comp1;
@@ -147,12 +147,12 @@ void EDO_Pression_th_VEF::calculer_grad(const DoubleTab& inco, DoubleTab& grad)
     {
       if (Objet_U::dimension==2)
         {
-          int elem, nb_som = le_dom->zone().nb_som();
-          int som,nsom, nse = le_dom->zone().nb_som_elem();
-          const IntTab& som_elem = le_dom->zone().les_elems();
+          int elem, nb_som = le_dom->domaine().nb_som();
+          int som,nsom, nse = le_dom->domaine().nb_som_elem();
+          const IntTab& som_elem = le_dom->domaine().les_elems();
           int s0,s1,elem0,elem1;
           const IntTab& face_sommets = le_dom->face_sommets();
-          const DoubleTab& coord_sommets = le_dom->zone().coord_sommets();
+          const DoubleTab& coord_sommets = le_dom->domaine().coord_sommets();
           const DoubleTab& xp = le_dom->xp();
           //    const DoubleTab& xv = le_dom->xv();
           DoubleTab incosom(nb_som);

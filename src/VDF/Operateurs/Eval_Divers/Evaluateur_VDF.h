@@ -16,16 +16,16 @@
 #ifndef Evaluateur_VDF_included
 #define Evaluateur_VDF_included
 
-#include <Ref_Zone_Cl_VDF.h>
-#include <Ref_Zone_VDF.h>
-#include <Zone_VDF.h>
+#include <Ref_Domaine_Cl_VDF.h>
+#include <Ref_Domaine_VDF.h>
+#include <Domaine_VDF.h>
 #include <TRUSTTab.h>
 
 /*! @brief class Evaluateur_VDF Classe de base des evaluateurs VDF.
  *
  *  Cette classe n'appartient pas a la hierarchie des Objet_U.
- *  Cette classe porte une reference a un objet de type Zone_VDF et une reference a un objet de type Zone_Cl_VDF. Elle porte des tableaux locaux
- *  qui sont en fait des references aux tableaux de l'objet de type Zone_VDF (ces tableaux locaux n'existent pas en memoire).
+ *  Cette classe porte une reference a un objet de type Domaine_VDF et une reference a un objet de type Domaine_Cl_VDF. Elle porte des tableaux locaux
+ *  qui sont en fait des references aux tableaux de l'objet de type Domaine_VDF (ces tableaux locaux n'existent pas en memoire).
  *
  */
 
@@ -35,7 +35,7 @@ public:
   Evaluateur_VDF() {}
   virtual ~Evaluateur_VDF() {}
   Evaluateur_VDF(const Evaluateur_VDF& );
-  virtual void associer_domaines(const Zone_VDF& , const Zone_Cl_VDF& );
+  virtual void associer_domaines(const Domaine_VDF& , const Domaine_Cl_VDF& );
   virtual void associer_porosite(const DoubleVect&);
 
   inline double dist_face_period(int fac1, int fac2, int k) const { return le_dom->dist_face_period(fac1,fac2,k); }
@@ -46,8 +46,8 @@ public:
   }
 
 protected:
-  REF(Zone_VDF) le_dom;
-  REF(Zone_Cl_VDF) la_zcl;
+  REF(Domaine_VDF) le_dom;
+  REF(Domaine_Cl_VDF) la_zcl;
   int dimension = -100, premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face
   DoubleVect surface;          // surfaces des faces

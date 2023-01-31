@@ -19,8 +19,8 @@
 
 #include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
 class Probleme_base;
 
 /*! @brief class Terme_Source_Qdm_Face_PolyMAC
@@ -48,7 +48,7 @@ public:
 
 protected:
 
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override { };
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { };
 
 };
 

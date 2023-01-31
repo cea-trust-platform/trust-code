@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Quadri_EF.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Quadri_EF,"Quadri_EF",Elem_EF_base);
 
@@ -39,16 +39,16 @@ Quadri_EF::Quadri_EF()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_EF
+/*! @brief remplit le tableau face_normales dans la Domaine_EF
  *
  */
 void Quadri_EF::normale(int num_Face,DoubleTab& Face_normales,
                         const  IntTab& Face_sommets,
                         const IntTab& Face_voisins,
                         const IntTab& elem_faces,
-                        const Zone& zone_geom) const
+                        const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
   double x1,y1;
   double nx,ny;
   double x1g=0,y1g=0;

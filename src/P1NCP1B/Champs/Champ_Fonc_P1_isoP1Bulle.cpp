@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P1_isoP1Bulle.h>
-#include <Zone_VEF_PreP1b.h>
+#include <Domaine_VEF_PreP1b.h>
 
 Implemente_instanciable(Champ_Fonc_P1_isoP1Bulle,"Champ_Fonc_P1_isoP1Bulle",Champ_Fonc_base);
 
@@ -25,7 +25,7 @@ Entree& Champ_Fonc_P1_isoP1Bulle::readOn(Entree& s) { return s ; }
 int Champ_Fonc_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
 {
   assert(n < 0);
-  const Zone_VEF_PreP1b& zvef = zone_vef();
+  const Domaine_VEF_PreP1b& zvef = domaine_vef();
   const MD_Vector& md = zvef.md_vector_p1b();
   creer_tableau_distribue(md);
   return n;
@@ -41,7 +41,7 @@ DoubleTab& Champ_Fonc_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleT
   return Champ_P1iP1B_implementation::trace(fr, valeurs(), x,distant);
 }
 
-void Champ_Fonc_P1_isoP1Bulle::completer(const Zone_Cl_dis_base& zcl)
+void Champ_Fonc_P1_isoP1Bulle::completer(const Domaine_Cl_dis_base& zcl)
 {
   Champ_P1iP1B_implementation::completer(zcl);
 }

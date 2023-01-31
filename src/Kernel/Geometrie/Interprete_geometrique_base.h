@@ -16,10 +16,10 @@
 #ifndef Interprete_geometrique_base_included
 #define Interprete_geometrique_base_included
 
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 #include <Interprete.h>
 #include <TRUST_List.h>
-#include <Zone.h>
+#include <Domaine.h>
 #ifdef MICROSOFT
 // necessaire pour visual
 #include <Octree.h>
@@ -40,13 +40,13 @@ public :
   Entree& interpreter(Entree& is) override;
   void associer_domaine(Nom& nom_dom);
   void associer_domaine(Entree& is);
-  inline Zone& domaine(int i=0) { return domains_(i).valeur(); }
-  inline const Zone& domaine(int i=0) const { return domains_(i).valeur(); }
-  inline LIST(REF(Zone))& domaines() { return domains_; }
-  void mettre_a_jour_sous_zone(Zone& zone, int& elem, int num_premier_elem, int nb_elem) const;
+  inline Domaine& domaine(int i=0) { return domains_(i).valeur(); }
+  inline const Domaine& domaine(int i=0) const { return domains_(i).valeur(); }
+  inline LIST(REF(Domaine))& domaines() { return domains_; }
+  void mettre_a_jour_sous_domaine(Domaine& domaine, int& elem, int num_premier_elem, int nb_elem) const;
 
 protected :
-  LIST(REF(Zone)) domains_; // List of reference to domains
+  LIST(REF(Domaine)) domains_; // List of reference to domains
 };
 
 #endif

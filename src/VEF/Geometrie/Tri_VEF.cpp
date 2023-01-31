@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Tri_VEF.h>
-#include <Zone.h>
-#include <Zone_VEF.h>
+#include <Domaine.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 
 Implemente_instanciable_sans_constructeur(Tri_VEF,"Tri_VEF",Elem_VEF_base);
@@ -50,16 +50,16 @@ Tri_VEF::Tri_VEF()
       KEL_(i,j)=tmp[i][j];
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_VEF
+/*! @brief remplit le tableau face_normales dans la Domaine_VEF
  *
  */
 void Tri_VEF::normale(int num_Face,DoubleTab& Face_normales,
                       const  IntTab& Face_sommets,
                       const IntTab& Face_voisins,
                       const IntTab& elem_faces,
-                      const Zone& zone_geom) const
+                      const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   double x1,y1;
   double nx,ny;
@@ -100,13 +100,13 @@ void Tri_VEF::normale(int num_Face,DoubleTab& Face_normales,
 /*! @brief calcule les normales des facettes pour des elem standards
  *
  */
-void Tri_VEF::creer_facette_normales(const Zone& zone_geom,
+void Tri_VEF::creer_facette_normales(const Domaine& domaine_geom,
                                      DoubleTab& facette_normales,
                                      const IntVect& rang_elem_non_std) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
-  const IntTab& les_Polys = zone_geom.les_elems();
-  int nb_elem = zone_geom.nb_elem();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
+  const IntTab& les_Polys = domaine_geom.les_elems();
+  int nb_elem = domaine_geom.nb_elem();
 
   int i, fa7;
   int i0,i1;
@@ -118,11 +118,11 @@ void Tri_VEF::creer_facette_normales(const Zone& zone_geom,
   double v[2];
   double psc;
 
-  if (facette_normales.get_md_vector() != zone_geom.md_vector_elements())
+  if (facette_normales.get_md_vector() != domaine_geom.md_vector_elements())
     {
       facette_normales.reset();
       facette_normales.resize(0,3,2);
-      zone_geom.creer_tableau_elements(facette_normales);
+      domaine_geom.creer_tableau_elements(facette_normales);
     }
 
   for(i=0; i<nb_elem; i++)
@@ -169,13 +169,13 @@ void Tri_VEF::creer_facette_normales(const Zone& zone_geom,
   facette_normales.echange_espace_virtuel();
 }
 
-/*! @brief remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans la Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
  *
  */
 void Tri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                          int fa7,
                                          int num_elem,const DoubleTab& x,
-                                         const DoubleVect& xg, const Zone& zone_geom) const
+                                         const DoubleVect& xg, const Domaine& domaine_geom) const
 {
   double u[2];
   double v[2];
@@ -212,7 +212,7 @@ void Tri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
  *
  */
 void Tri_VEF::modif_volumes_entrelaces(int j,int elem,
-                                       const Zone_VEF& le_dom_VEF,
+                                       const Domaine_VEF& le_dom_VEF,
                                        DoubleVect& volumes_entrelaces_Cl,
                                        int type_cl) const
 {
@@ -292,7 +292,7 @@ void Tri_VEF::modif_volumes_entrelaces(int j,int elem,
  *
  */
 void Tri_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
-                                                    const Zone_VEF& le_dom_VEF,
+                                                    const Domaine_VEF& le_dom_VEF,
                                                     DoubleVect& volumes_entrelaces_Cl,
                                                     int type_cl) const
 {

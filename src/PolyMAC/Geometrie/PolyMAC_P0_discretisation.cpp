@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <PolyMAC_P0_discretisation.h>
-#include <Zone_PolyMAC_P0.h>
+#include <Domaine_PolyMAC_P0.h>
 #include <Champ_Fonc_Tabule.h>
 //#include <Ch_Fonc_Som_PolyMAC_P0.h>
 #include <Champ_Fonc_Elem_PolyMAC.h>
@@ -31,8 +31,8 @@
 #include <Schema_Temps.h>
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_dis.h>
 #include <Synonyme_info.h>
 
 Implemente_instanciable(PolyMAC_P0_discretisation,"PolyMAC_P0|CoviMAC",PolyMAC_discretisation);
@@ -49,18 +49,18 @@ Sortie& PolyMAC_P0_discretisation::printOn(Sortie& s) const
   return s ;
 }
 
-void PolyMAC_P0_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
+void PolyMAC_P0_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
 {
   const Champ_Face_PolyMAC_P0&          vit = ref_cast(Champ_Face_PolyMAC_P0,ch_vitesse.valeur());
-  const Zone_PolyMAC_P0&          zone_poly = ref_cast(Zone_PolyMAC_P0, z.valeur());
-  const Zone_Cl_PolyMAC&    zone_cl_poly = ref_cast(Zone_Cl_PolyMAC, zcl.valeur());
+  const Domaine_PolyMAC_P0&          domaine_poly = ref_cast(Domaine_PolyMAC_P0, z.valeur());
+  const Domaine_Cl_PolyMAC&    domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
 
   ch.typer("grad_Champ_Face_PolyMAC_P0");
 
   grad_Champ_Face_PolyMAC_P0&   ch_grad_u = ref_cast(grad_Champ_Face_PolyMAC_P0,ch.valeur()); //
 
-  ch_grad_u.associer_domaine_dis_base(zone_poly);
-  ch_grad_u.associer_domaine_Cl_dis_base(zone_cl_poly);
+  ch_grad_u.associer_domaine_dis_base(domaine_poly);
+  ch_grad_u.associer_domaine_Cl_dis_base(domaine_cl_poly);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("gradient_vitesse");
   ch_grad_u.fixer_nb_comp(dimension * dimension * vit.valeurs().line_size());
@@ -86,22 +86,22 @@ void PolyMAC_P0_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
 
-void PolyMAC_P0_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_P0_discretisation::taux_cisaillement(const Domaine_dis& z, const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   const Champ_Face_PolyMAC_P0&          vit = ref_cast(Champ_Face_PolyMAC_P0,ch_vitesse.valeur());
-//  const Zone_PolyMAC_P0&          zone_poly = ref_cast(Zone_PolyMAC_P0, z.valeur());
-  const Zone_PolyMAC_P0&          zone = ref_cast(Zone_PolyMAC_P0, vit.zone_dis_base());
+//  const Domaine_PolyMAC_P0&          domaine_poly = ref_cast(Domaine_PolyMAC_P0, z.valeur());
+  const Domaine_PolyMAC_P0&          domaine = ref_cast(Domaine_PolyMAC_P0, vit.domaine_dis_base());
 
   ch.typer("Champ_Fonc_Elem_PolyMAC_P0_TC");
   Champ_Fonc_Elem_PolyMAC_P0_TC&   ch_grad_u = ref_cast(Champ_Fonc_Elem_PolyMAC_P0_TC,ch.valeur()); //
 
-  ch_grad_u.associer_domaine_dis_base(zone);
+  ch_grad_u.associer_domaine_dis_base(domaine);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("Taux_cisaillement");
   ch_grad_u.fixer_nb_comp(vit.valeurs().line_size());
 
   ch_grad_u.fixer_nature_du_champ(scalaire); // tensoriel pour etre precis
-  ch_grad_u.fixer_nb_valeurs_nodales(zone.nb_elem());
+  ch_grad_u.fixer_nb_valeurs_nodales(domaine.nb_elem());
   ch_grad_u.fixer_unite("s-1");
   ch_grad_u.changer_temps(-1); // so it is calculated at time 0
 }
@@ -111,13 +111,13 @@ void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
                                                       Champ_Fonc& ch) const
 {
   const Champ_Face_PolyMAC_P0&     vit = ref_cast(Champ_Face_PolyMAC_P0,ch_vitesse.valeur());
-  const Zone_PolyMAC_P0&          zone = ref_cast(Zone_PolyMAC_P0, vit.zone_dis_base());
+  const Domaine_PolyMAC_P0&          domaine = ref_cast(Domaine_PolyMAC_P0, vit.domaine_dis_base());
   int N = vit.valeurs().line_size();
 
   ch.typer("Champ_Fonc_Elem_PolyMAC_P0_rot");
   Champ_Fonc_Elem_PolyMAC_P0_rot&  ch_rot_u = ref_cast(Champ_Fonc_Elem_PolyMAC_P0_rot,ch.valeur());
 
-  ch_rot_u.associer_domaine_dis_base(zone);
+  ch_rot_u.associer_domaine_dis_base(domaine);
   ch_rot_u.associer_champ(vit);
   ch_rot_u.nommer("vorticite");
 
@@ -133,7 +133,7 @@ void PolyMAC_P0_discretisation::creer_champ_vorticite(const Schema_Temps_base& s
     }
   else abort();
 
-  ch_rot_u.fixer_nb_valeurs_nodales(zone.nb_elem());
+  ch_rot_u.fixer_nb_valeurs_nodales(domaine.nb_elem());
   ch_rot_u.fixer_unite("s-1");
   ch_rot_u.changer_temps(-1); // so it is calculated at time 0
 }

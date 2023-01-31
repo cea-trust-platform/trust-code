@@ -22,12 +22,12 @@ class Nom;
 
 /*! @brief Classe Elem_geom_base Cette classe est la classe de base pour la definition d'elements
  *
- *     geometriques constituant un maillage (i.e. une Zone geometrique)
- *     Un element geometrique a une Zone associe a laquelle il fournit
+ *     geometriques constituant un maillage (i.e. une Domaine geometrique)
+ *     Un element geometrique a une Domaine associe a laquelle il fournit
  *     les routines de base pour la manipulation des ses elements.
- *     (Une zone n'a qu'un seul type d'element geometrique)
+ *     (Une domaine n'a qu'un seul type d'element geometrique)
  *
- * @sa Hexaedre Prisme Rectangle Segment Tetraedre Triangle, Zone, Classe abstraite, Methodes abstraites:, int face_sommet(int i, int j) const, int nb_som() const, int nb_faces(int=0) const, int nb_som_face(int=0) const, int est_structure() const, const Nom& nom_lml() const, int contient(const ArrOfDouble&, int ) const, int contient(const ArrOfInt&, int ) const, Type_Face type_face(int=0) const, void calculer_volumes(DoubleVect& ) const, void calculer_normales(const IntTab& , DoubleTab& ) const
+ * @sa Hexaedre Prisme Rectangle Segment Tetraedre Triangle, Domaine, Classe abstraite, Methodes abstraites:, int face_sommet(int i, int j) const, int nb_som() const, int nb_faces(int=0) const, int nb_som_face(int=0) const, int est_structure() const, const Nom& nom_lml() const, int contient(const ArrOfDouble&, int ) const, int contient(const ArrOfInt&, int ) const, Type_Face type_face(int=0) const, void calculer_volumes(DoubleVect& ) const, void calculer_normales(const IntTab& , DoubleTab& ) const
  */
 class Elem_geom_base  : public Objet_U
 {
@@ -36,7 +36,7 @@ public:
   virtual void creer_faces_elem(Faces& ,int ,Type_Face ) const;
   inline void creer_faces_elem(Faces& ,int ) const;
   virtual int face_sommet(int i, int j) const=0;
-  inline void associer_domaine(const Zone& );
+  inline void associer_domaine(const Domaine& );
   virtual int nb_som() const=0;
   virtual int nb_faces(int=0) const=0;
   virtual int nb_som_face(int=0) const=0;
@@ -55,24 +55,24 @@ public:
   virtual void get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const;
 
 protected:
-  REF(Zone) mon_dom;
+  REF(Domaine) mon_dom;
 };
 
 
-/*! @brief Associe l'element geometrique a sa zone.
+/*! @brief Associe l'element geometrique a sa domaine.
  *
- * @param (Zone& une_zone) la zone a associee a l'element
+ * @param (Domaine& une_domaine) la domaine a associee a l'element
  */
-inline void Elem_geom_base::associer_domaine(const Zone& une_zone)
+inline void Elem_geom_base::associer_domaine(const Domaine& une_domaine)
 {
-  mon_dom=une_zone;
+  mon_dom=une_domaine;
 }
 
 
-/*! @brief Cree les faces de l'element de la zone specifie.
+/*! @brief Cree les faces de l'element de la domaine specifie.
  *
  * @param (Faces& faces) les faces de l'elements a creer
- * @param (int elem) le numero de element de la zone dont veut creer les faces
+ * @param (int elem) le numero de element de la domaine dont veut creer les faces
  */
 inline void Elem_geom_base::creer_faces_elem(Faces& faces, int elem) const
 {

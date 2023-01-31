@@ -20,8 +20,8 @@
 #include <Integrale_tps_Champ.h>
 
 class Probleme_base;
-class Zone_dis_base;
-class Zone;
+class Domaine_dis_base;
+class Domaine;
 class Nom;
 class Operateur_Statistique_tps_base;
 
@@ -47,7 +47,7 @@ public:
   virtual double temps() const =0;
   virtual const Integrale_tps_Champ& integrale() const =0;
 
-  virtual int completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format);
+  virtual int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
   virtual const Operateur_Statistique_tps_base& Operateur_Statistique() const = 0;
   virtual Operateur_Statistique_tps_base& Operateur_Statistique() = 0;
 

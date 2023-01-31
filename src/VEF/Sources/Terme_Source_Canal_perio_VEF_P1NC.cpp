@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Terme_Source_Canal_perio_VEF_P1NC.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Periodique.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
@@ -63,17 +63,17 @@ Entree& Terme_Source_Canal_perio_VEF_P1NC::readOn(Entree& s )
   return Terme_Source_Canal_perio::readOn(s);
 }
 
-void Terme_Source_Canal_perio_VEF_P1NC::associer_domaines(const Zone_dis& zone_dis,
-                                                          const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_perio_VEF_P1NC::associer_domaines(const Domaine_dis& domaine_dis,
+                                                          const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
 {
-  const Zone_VF& zone_VF = le_dom_VEF.valeur();
-  const DoubleVect& volumes_entrelaces = zone_VF.volumes_entrelaces();
+  const Domaine_VF& domaine_VF = le_dom_VEF.valeur();
+  const DoubleVect& volumes_entrelaces = domaine_VF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = le_dom_Cl_VEF.valeur().volumes_entrelaces_Cl();
   int premiere_face_std=le_dom_VEF.valeur().premiere_face_std() ;
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
@@ -88,7 +88,7 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
           for (int i=0; i<dimension; i++)
             resu(num_face,i)+= s[i]*vol;
         }
-      int nb_faces = zone_VF.nb_faces();
+      int nb_faces = domaine_VF.nb_faces();
       for (int num_face = premiere_face_std; num_face<nb_faces; num_face++)
         {
           double vol = volumes_entrelaces(num_face)*porosite_face(num_face);
@@ -100,7 +100,7 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
     {
       // Case Energy, s is non uniform
       bilan_=0;
-      const ArrOfInt& fd=zone_VF.faces_doubles();
+      const ArrOfInt& fd=domaine_VF.faces_doubles();
       for (int num_face = 0 ; num_face<premiere_face_std; num_face++)
         {
           double vol = volumes_entrelaces_Cl(num_face)*porosite_face(num_face);
@@ -108,7 +108,7 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
           resu(num_face)+= contrib;
           bilan_(0)+= contrib*(1-0.5*fd[num_face]);
         }
-      int nb_faces = zone_VF.nb_faces();
+      int nb_faces = domaine_VF.nb_faces();
       for (int num_face = premiere_face_std; num_face<nb_faces; num_face++)
         {
           double vol = volumes_entrelaces(num_face)*porosite_face(num_face);
@@ -122,17 +122,17 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
 
 void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
 {
-  const Zone_VF& zone_VF = le_dom_VEF.valeur();
-  const Zone_Cl_dis_base& zone_Cl_dis = le_dom_Cl_VEF.valeur();
+  const Domaine_VF& domaine_VF = le_dom_VEF.valeur();
+  const Domaine_Cl_dis_base& domaine_Cl_dis = le_dom_Cl_VEF.valeur();
   const Champ_Inc_base& velocity = (sub_type(Convection_Diffusion_std,equation()) ? ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante() : equation().inconnue());
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
   // Check we have really velocity:
   assert(velocity.le_nom()=="vitesse");
   const DoubleTab& vitesse = velocity.valeurs();
-  int nb_bords = zone_VF.nb_front_Cl();
+  int nb_bords = domaine_VF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_dis.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_dis.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -155,7 +155,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
                   if (axe>=0)
                     for (int num_face=ndeb; num_face<nfin; num_face++)
                       {
-                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * std::fabs(zone_VF.face_normales(num_face,axe));
+                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * std::fabs(domaine_VF.face_normales(num_face,axe));
                         debit_e += tab_rho_face[num_face] * debit_face;
                       }
                   else
@@ -163,7 +163,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
                       {
                         double debit_face=0;
                         for (int i=0; i<dimension; i++)
-                          debit_face += porosite_face(num_face)*vitesse(num_face,i) * zone_VF.face_normales(num_face,i);
+                          debit_face += porosite_face(num_face)*vitesse(num_face,i) * domaine_VF.face_normales(num_face,i);
                         debit_e += tab_rho_face[num_face] * debit_face;
                       }
                 }
@@ -172,7 +172,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
                   if (axe>=0)
                     for (int num_face=ndeb; num_face<nfin; num_face++)
                       {
-                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * std::fabs(zone_VF.face_normales(num_face,axe));
+                        double debit_face = porosite_face(num_face)*vitesse(num_face,axe) * std::fabs(domaine_VF.face_normales(num_face,axe));
                         debit_e += debit_face;
                       }
                   else
@@ -180,7 +180,7 @@ void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
                       {
                         double debit_face=0;
                         for (int i=0; i<dimension; i++)
-                          debit_face += porosite_face(num_face)*vitesse(num_face,i) * zone_VF.face_normales(num_face,i);
+                          debit_face += porosite_face(num_face)*vitesse(num_face,i) * domaine_VF.face_normales(num_face,i);
                         debit_e += debit_face;
                       }
                 }

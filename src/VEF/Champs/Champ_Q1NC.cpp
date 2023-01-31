@@ -32,7 +32,7 @@ Entree& Champ_Q1NC::readOn(Entree& s)
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
 void Champ_Q1NC::verifie_valeurs_cl()
 {
-  const Zone_Cl_dis_base& zcl = equation().zone_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl = equation().domaine_Cl_dis().valeur();
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int nb_compo = nb_comp();
@@ -72,7 +72,7 @@ int Champ_Q1NC::compo_normale_sortante(int num_face) const
 {
   double vit_norm = 0;
   for (int ncomp = 0; ncomp < nb_comp(); ncomp++)
-    vit_norm += (*this)(num_face, ncomp) * zone_vef().face_normales(num_face, ncomp);
+    vit_norm += (*this)(num_face, ncomp) * domaine_vef().face_normales(num_face, ncomp);
   return (vit_norm > 0);
 }
 
@@ -83,11 +83,11 @@ DoubleTab& Champ_Q1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double 
 
 void Champ_Q1NC::cal_rot_ordre1(DoubleTab& vorticite)
 {
-  const int nb_elem = zone_vef().nb_elem();
+  const int nb_elem = domaine_vef().nb_elem();
 
   DoubleTab gradient_elem(0, dimension, dimension);
   // le tableau est initialise dans la methode gradient():
-  zone_vef().zone().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
+  domaine_vef().domaine().creer_tableau_elements(gradient_elem, Array_base::NOCOPY_NOINIT);
 
   gradient(gradient_elem);
   Debog::verifier("apres calcul gradient", gradient_elem);
@@ -121,15 +121,15 @@ void Champ_Q1NC::cal_rot_ordre1(DoubleTab& vorticite)
 void Champ_Q1NC::gradient(DoubleTab& gradient_elem)
 {
   // Calcul du gradient de la vitesse pour le calcul de la vorticite
-  const Zone_VEF& zone_VEF = zone_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const DoubleTab& vitesse = equation().inconnue().valeurs();
 
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const int nb_faces = zone_VEF.nb_faces();
-  const int nb_elem = zone_VEF.nb_elem();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int premiere_face_int = zone_VEF.premiere_face_int();
-  const DoubleVect& volumes = zone_VEF.volumes();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const int nb_faces = domaine_VEF.nb_faces();
+  const int nb_elem = domaine_VEF.nb_elem();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int premiere_face_int = domaine_VEF.premiere_face_int();
+  const DoubleVect& volumes = domaine_VEF.volumes();
 
   assert(gradient_elem.dimension(0) == nb_elem);
   assert(gradient_elem.dimension(1) == dimension);
@@ -166,7 +166,7 @@ void Champ_Q1NC::gradient(DoubleTab& gradient_elem)
 
 int Champ_Q1NC::fixer_nb_valeurs_nodales(int n)
 {
-  const MD_Vector& md = zone_vef().md_vector_faces();
+  const MD_Vector& md = domaine_vef().md_vector_faces();
   creer_tableau_distribue(md);
   return 1;
 }

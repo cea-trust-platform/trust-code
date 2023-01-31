@@ -17,12 +17,12 @@
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
 #include <Periodique.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
-#include <Zone_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF_PreP1b.h>
 #include <Synonyme_info.h>
 
-extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Zone_Cl_VEF& zcl, const Zone_VEF& zone_VEF);
+extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Domaine_Cl_VEF& zcl, const Domaine_VEF& domaine_VEF);
 
 Implemente_instanciable(Terme_Boussinesq_VEFPreP1B_Face,"Boussinesq_VEFPreP1B_P1NC",Terme_Boussinesq_VEF_Face);
 Add_synonym(Terme_Boussinesq_VEFPreP1B_Face,"Boussinesq_temperature_VEFPreP1B_P1NC");
@@ -42,19 +42,19 @@ Entree& Terme_Boussinesq_VEFPreP1B_Face::readOn(Entree& s )
 
 DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_VEF.valeur());
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_VEF.valeur());
   // Si seulement support P0 on appelle en VEF
-  if (zone_VEF.get_alphaE() && !zone_VEF.get_alphaS() && !zone_VEF.get_alphaA())
+  if (domaine_VEF.get_alphaE() && !domaine_VEF.get_alphaS() && !domaine_VEF.get_alphaA())
     return Terme_Boussinesq_VEF_Face::ajouter(resu);
 
-  const DoubleVect& volumes = zone_VEF.volumes();
+  const DoubleVect& volumes = domaine_VEF.volumes();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const Champ_Inc& le_scalaire = equation_scalaire().inconnue();
   const DoubleVect& g = gravite().valeurs();
-  const Zone_Cl_VEF& zone_Cl_VEF = le_dom_Cl_VEF.valeur();
-  const IntTab& elem_sommets = zone_VEF.zone().les_elems();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const DoubleTab& coord_sommets=zone_VEF.zone().les_sommets();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
+  const IntTab& elem_sommets = domaine_VEF.domaine().les_elems();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const DoubleTab& coord_sommets=domaine_VEF.domaine().les_sommets();
 
   // Verifie la validite de T0:
   check();
@@ -134,17 +134,17 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
   ArrOfDouble a0(dimension),a0a1(dimension),a0a2(dimension),a0a3(dimension);
 
   // Extension possible des volumes de controle:
-  int modif_traitement_diri=( sub_type(Zone_VEF_PreP1b,zone_VEF) ? ref_cast(Zone_VEF_PreP1b,zone_VEF).get_modif_div_face_dirichlet() : 0);
+  int modif_traitement_diri=( sub_type(Domaine_VEF_PreP1b,domaine_VEF) ? ref_cast(Domaine_VEF_PreP1b,domaine_VEF).get_modif_div_face_dirichlet() : 0);
   modif_traitement_diri = 0; // Forcee a 0 car ne marche pas d'apres essais Ulrich&Thomas
   int nb_face_diri=0;
   ArrOfInt indice_diri(dimension+1);
 
   // Boucle sur les elements:
-  int nb_elem_tot=zone_VEF.nb_elem_tot();
+  int nb_elem_tot=domaine_VEF.nb_elem_tot();
   for (int elem=0; elem<nb_elem_tot; elem++)
     {
       if (modif_traitement_diri)
-        calculer_coef_som(elem,nb_face_diri,indice_diri,zone_Cl_VEF,zone_VEF);
+        calculer_coef_som(elem,nb_face_diri,indice_diri,domaine_Cl_VEF,domaine_VEF);
 
       double volume=volumes(elem);
       for (int i=0; i<nbpts; i++)
@@ -243,9 +243,9 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
     }
   {
     // modif pour periodique
-    for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+    for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
       {
-        const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+        const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
         if (sub_type(Periodique,la_cl.valeur()))
           {
             const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());

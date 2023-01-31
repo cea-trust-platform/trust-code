@@ -55,8 +55,8 @@ DoubleTab& Op_Conv_ALE::calculer(const DoubleTab& inco, DoubleTab& resu) const
   op_conv.calculer(inco, resu);
   return resu;
 }
-void Op_Conv_ALE::associer(const Zone_dis& zdis,
-                           const Zone_Cl_dis& zcl_dis,
+void Op_Conv_ALE::associer(const Domaine_dis& zdis,
+                           const Domaine_Cl_dis& zcl_dis,
                            const Champ_Inc& inco)
 {
   //Cerr << "Op_Conv_ALE::associer" << finl;

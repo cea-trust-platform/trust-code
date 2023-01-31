@@ -14,12 +14,12 @@
 *****************************************************************************/
 
 #include <Perte_Charge_Reguliere_VEF_P1NC.h>
-#include <Zone_VEF.h>
-#include <Sous_Zone.h>
+#include <Domaine_VEF.h>
+#include <Sous_Domaine.h>
 #include <Fluide_Incompressible.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Champ_Uniforme.h>
 #include <Matrice_Morse.h>
 
@@ -43,8 +43,8 @@ Entree& Perte_Charge_Reguliere_VEF_P1NC::readOn(Entree& s )
 {
   Cerr << " Perte_Charge_Reguliere_VEF_P1NC::readOn " << finl  ;
   Perte_Charge_Reguliere::lire_donnees(s);
-  //Nom nom_sous_zone;
-  s >> nom_sous_zone;
+  //Nom nom_sous_domaine;
+  s >> nom_sous_domaine;
 
   return s ;
 }
@@ -58,44 +58,44 @@ Entree& Perte_Charge_Reguliere_VEF_P1NC::readOn(Entree& s )
 //
 ////////////////////////////////////////////////////////////////////
 
-void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_zone)
+void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_domaine)
 {
   Cerr << " Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces " << finl;
-  const Zone& le_domaine = equation().probleme().domaine();
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
+  const Domaine& le_domaine = equation().probleme().domaine();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
 
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleVect& volumes = zone_VEF.volumes();
-  const Sous_Zone& la_sous_zone = le_domaine.ss_zone(un_nom_sous_zone);
-  int nb_poly_ss_zone = la_sous_zone.nb_elem_tot();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  const Sous_Domaine& la_sous_domaine = le_domaine.ss_domaine(un_nom_sous_domaine);
+  int nb_poly_ss_domaine = la_sous_domaine.nb_elem_tot();
 
-  int nfe=zone_VEF.zone().nb_faces_elem();
+  int nfe=domaine_VEF.domaine().nb_faces_elem();
   int nfac;
   int num_poly;
 
-  num_faces.resize(nb_poly_ss_zone*4);
-  corr_front_ss.resize(nb_poly_ss_zone*4);
+  num_faces.resize(nb_poly_ss_domaine*4);
+  corr_front_ss.resize(nb_poly_ss_domaine*4);
 
   corr_front_ss = 1. ;
   nfac = 0;
 
-  IntVect num_loc(zone_VEF.nb_elem_tot());
-  IntVect fait(zone_VEF.nb_faces_tot());
+  IntVect num_loc(domaine_VEF.nb_elem_tot());
+  IntVect fait(domaine_VEF.nb_faces_tot());
   fait = -1;
   num_loc = -1;
 
   int num_poly_vois;
   int num_elem,num_face, face_loc;
 
-  for (num_elem=0; num_elem<nb_poly_ss_zone; num_elem++)
+  for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
     {
-      num_loc[la_sous_zone(num_elem)] = num_elem;
+      num_loc[la_sous_domaine(num_elem)] = num_elem;
     }
 
-  for (num_elem=0; num_elem<nb_poly_ss_zone; num_elem++)
+  for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
     {
-      num_poly = la_sous_zone(num_elem);
+      num_poly = la_sous_domaine(num_elem);
       for  (face_loc = 0; face_loc < nfe ; face_loc++)
         {
           num_face =  elem_faces(num_poly,face_loc);
@@ -107,7 +107,7 @@ void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_zone)
                 {
                   num_poly_vois = face_voisins(num_face,i);
                   if (num_poly_vois != -1)
-                    if (num_loc[num_poly_vois] == -1)  // le poly voisin n'est pas dans la sous_zone
+                    if (num_loc[num_poly_vois] == -1)  // le poly voisin n'est pas dans la sous_domaine
                       {
                         corr_front_ss[nfac-1] = volumes(num_poly)/(volumes(num_poly)+volumes(num_poly_vois)) ;
                       }
@@ -122,11 +122,11 @@ void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_zone)
 DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
 {
   //Cerr << " Perte_Charge_Reguliere_VEF_P1NC::ajouter " << finl;
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,equation().zone_dis().valeur());
-  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   double U_abs;
   double Cf,CK,Reynolds;
@@ -153,7 +153,7 @@ DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
       exit();
     }
 
-  int premiere_face_int=zone_VEF.premiere_face_int();
+  int premiere_face_int=domaine_VEF.premiere_face_int();
   int direction = direction_perte_charge();
   int nb_faces = num_faces.size();
   for (int i=0; i<nb_faces; i++)
@@ -203,11 +203,11 @@ DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::ajouter(DoubleTab& resu) const
 void  Perte_Charge_Reguliere_VEF_P1NC::contribuer_a_avec(const DoubleTab&, Matrice_Morse& matrice) const
 {
   //Cerr << " Perte_Charge_Reguliere_VEF_P1NC::ajouter " << finl;
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,equation().zone_dis().valeur());
-  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   double U_abs;
   double Cf,CK,Reynolds;
@@ -234,7 +234,7 @@ void  Perte_Charge_Reguliere_VEF_P1NC::contribuer_a_avec(const DoubleTab&, Matri
       exit();
     }
 
-  int premiere_face_int=zone_VEF.premiere_face_int();
+  int premiere_face_int=domaine_VEF.premiere_face_int();
   int direction = direction_perte_charge();
   int nb_faces = num_faces.size();
   for (int i=0; i<nb_faces; i++)
@@ -293,7 +293,7 @@ DoubleTab& Perte_Charge_Reguliere_VEF_P1NC::calculer(DoubleTab& resu) const
 void Perte_Charge_Reguliere_VEF_P1NC::completer()
 {
   Source_base::completer();
-  remplir_num_faces(nom_sous_zone);
+  remplir_num_faces(nom_sous_domaine);
 
 }
 

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Source_PDF_base.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 
 #include <Equation_base.h>
 
@@ -73,8 +73,8 @@ void Source_PDF_base::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
   abort();
 }
 
-void Source_PDF_base::associer_domaines(const Zone_dis& zone_dis,
-                                        const Zone_Cl_dis& zone_Cl_dis)
+void Source_PDF_base::associer_domaines(const Domaine_dis& domaine_dis,
+                                        const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << "Source_PDF_base: Not implemented for current discretisation. Aborting..." << finl;
   abort();

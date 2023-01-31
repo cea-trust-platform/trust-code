@@ -16,8 +16,8 @@
 #include <Terme_Boussinesq_VEF_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Champ_Uniforme.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Navier_Stokes_std.h>
 #include <Synonyme_info.h>
 
@@ -37,19 +37,19 @@ Entree& Terme_Boussinesq_VEF_Face::readOn(Entree& s )
   return Terme_Boussinesq_base::readOn(s);
 }
 
-void Terme_Boussinesq_VEF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Boussinesq_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const DoubleTab& xp = zone_VEF.xp();
-  const DoubleTab& xv = zone_VEF.xv();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const DoubleTab& xp = domaine_VEF.xp();
+  const DoubleTab& xv = domaine_VEF.xv();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
@@ -60,7 +60,7 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   check();
 
   // Boucle sur toutes les faces
-  int nb_faces = zone_VEF.nb_faces();
+  int nb_faces = domaine_VEF.nb_faces();
   for (int face=0; face<nb_faces; face++)
     {
       int elem1 = face_voisins(face,0), elem2 = face_voisins(face,1);

@@ -16,8 +16,8 @@
 #include <Static_Int_Lists.h>
 #include <Array_tools.h>
 #include <Refine_Mesh.h>
-#include <Sous_Zone.h>
-#include <Zone.h>
+#include <Sous_Domaine.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <SChaine.h>
 #include <EChaine.h>
@@ -82,7 +82,7 @@ void Refine_Mesh::check_cell_type(void) const
 
 void Refine_Mesh::apply_2D(void)
 {
-  Zone& domain = domaine();
+  Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
   assert(domain.type_elem().valeur().que_suis_je() == Motcle("Triangle"));
@@ -97,8 +97,8 @@ void Refine_Mesh::apply_2D(void)
   IntTab new_cells;
   build_new_cells_2D(new_cells, edges_of_cells);
 
-  Noms new_sub_zones_descriptions;
-  build_new_sub_zones_descriptions(new_sub_zones_descriptions);
+  Noms new_sub_domaines_descriptions;
+  build_new_sub_domaines_descriptions(new_sub_domaines_descriptions);
 
   Static_Int_Lists incidence_from_node_to_edges;
   build_incidence_from_node_to_edges(new_nodes.dimension(0), nodes_of_edges, incidence_from_node_to_edges);
@@ -115,7 +115,7 @@ void Refine_Mesh::apply_2D(void)
   IntTabs new_cells_of_internal_frontier_faces;
   build_new_internal_frontier_faces_2D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
-  update_domain(Nom("Triangle"), Faces::segment_2D, new_nodes, new_cells, new_sub_zones_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
+  update_domain(Nom("Triangle"), Faces::segment_2D, new_nodes, new_cells, new_sub_domaines_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
                 new_cells_of_connector_faces, new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces);
 
   Scatter::init_sequential_domain(domain);
@@ -123,7 +123,7 @@ void Refine_Mesh::apply_2D(void)
 
 void Refine_Mesh::apply_3D(void)
 {
-  Zone& domain = domaine();
+  Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
   assert(domain.type_elem().valeur().que_suis_je() == Motcle("Tetraedre"));
@@ -138,8 +138,8 @@ void Refine_Mesh::apply_3D(void)
   IntTab new_cells;
   build_new_cells_3D(new_cells, edges_of_cells);
 
-  Noms new_sub_zones_descriptions;
-  build_new_sub_zones_descriptions(new_sub_zones_descriptions);
+  Noms new_sub_domaines_descriptions;
+  build_new_sub_domaines_descriptions(new_sub_domaines_descriptions);
 
   Static_Int_Lists incidence_from_node_to_edges;
   build_incidence_from_node_to_edges(new_nodes.dimension(0), nodes_of_edges, incidence_from_node_to_edges);
@@ -156,7 +156,7 @@ void Refine_Mesh::apply_3D(void)
   IntTabs new_cells_of_internal_frontier_faces;
   build_new_internal_frontier_faces_3D(new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces, incidence_from_node_to_edges);
 
-  update_domain(Nom("Tetraedre"), Faces::triangle_3D, new_nodes, new_cells, new_sub_zones_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
+  update_domain(Nom("Tetraedre"), Faces::triangle_3D, new_nodes, new_cells, new_sub_domaines_descriptions, new_nodes_of_boundary_faces, new_cells_of_boundary_faces, new_nodes_of_connector_faces,
                 new_cells_of_connector_faces, new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces);
 
   Scatter::init_sequential_domain(domain);
@@ -371,33 +371,33 @@ void Refine_Mesh::build_new_cells_3D(IntTab& new_cells, const IntTab& edges_of_c
     }
 }
 
-void Refine_Mesh::build_new_sub_zones_descriptions(Noms& sub_zones_descriptions) const
+void Refine_Mesh::build_new_sub_domaines_descriptions(Noms& sub_domaines_descriptions) const
 {
-  const int nb_sub_zones = domaine().nb_ss_zones();
-  sub_zones_descriptions.dimensionner(nb_sub_zones);
+  const int nb_sub_domaines = domaine().nb_ss_domaines();
+  sub_domaines_descriptions.dimensionner(nb_sub_domaines);
 
   const int nb_new_cells_per_old_cell = (Objet_U::dimension == 2) ? 4 : 8;
 
-  for (int i = 0; i < nb_sub_zones; ++i)
+  for (int i = 0; i < nb_sub_domaines; ++i)
     {
-      const Sous_Zone& sub_zone = domaine().ss_zone(i);
-      const int old_nb_cells_in_sub_zone = sub_zone.nb_elem_tot();
-      const int new_nb_cells_in_sub_zone = old_nb_cells_in_sub_zone * nb_new_cells_per_old_cell;
-      IntVect new_sub_zone_cells(new_nb_cells_in_sub_zone);
+      const Sous_Domaine& sub_domaine = domaine().ss_domaine(i);
+      const int old_nb_cells_in_sub_domaine = sub_domaine.nb_elem_tot();
+      const int new_nb_cells_in_sub_domaine = old_nb_cells_in_sub_domaine * nb_new_cells_per_old_cell;
+      IntVect new_sub_domaine_cells(new_nb_cells_in_sub_domaine);
       int idx = 0;
-      for (int c = 0; c < old_nb_cells_in_sub_zone; ++c)
+      for (int c = 0; c < old_nb_cells_in_sub_domaine; ++c)
         {
-          const int old_cell = sub_zone[c];
+          const int old_cell = sub_domaine[c];
           for (int j = 0; j < nb_new_cells_per_old_cell; ++j)
             {
-              new_sub_zone_cells[idx] = old_cell * nb_new_cells_per_old_cell + j;
+              new_sub_domaine_cells[idx] = old_cell * nb_new_cells_per_old_cell + j;
               ++idx;
             }
         }
 
       SChaine os;
-      os << " { Liste " << new_sub_zone_cells << " } ";
-      sub_zones_descriptions[i] = Nom(os.get_str());
+      os << " { Liste " << new_sub_domaine_cells << " } ";
+      sub_domaines_descriptions[i] = Nom(os.get_str());
     }
 }
 
@@ -616,14 +616,14 @@ int Refine_Mesh::find_edge(const Static_Int_Lists& incidence_from_node_to_edges,
   return edges0[0];
 }
 
-void Refine_Mesh::update_domain(const Nom& cell_type, const Type_Face& face_type, const DoubleTab& new_nodes, const IntTab& new_cells, const Noms& new_sub_zones_descriptions,
+void Refine_Mesh::update_domain(const Nom& cell_type, const Type_Face& face_type, const DoubleTab& new_nodes, const IntTab& new_cells, const Noms& new_sub_domaines_descriptions,
                                 const IntTabs& new_nodes_of_boundary_faces, const IntTabs& new_cells_of_boundary_faces, const IntTabs& new_nodes_of_connector_faces,
                                 const IntTabs& new_cells_of_connector_faces, const IntTabs& new_nodes_of_internal_frontier_faces, const IntTabs& new_cells_of_internal_frontier_faces)
 {
   update_nodes(new_nodes);
   update_cells(new_cells);
   update_octree(cell_type);
-  update_sub_zones(new_sub_zones_descriptions);
+  update_sub_domaines(new_sub_domaines_descriptions);
   update_boundary_faces(face_type, new_nodes_of_boundary_faces, new_cells_of_boundary_faces);
   update_connector_faces(face_type, new_nodes_of_connector_faces, new_cells_of_connector_faces);
   update_internal_frontier_faces(face_type, new_nodes_of_internal_frontier_faces, new_cells_of_internal_frontier_faces);
@@ -646,15 +646,15 @@ void Refine_Mesh::update_octree(const Nom& cell_type)
   domaine().construit_octree();
 }
 
-void Refine_Mesh::update_sub_zones(const Noms& new_sub_zones_descriptions)
+void Refine_Mesh::update_sub_domaines(const Noms& new_sub_domaines_descriptions)
 {
-  const int nb_sub_zones = domaine().nb_ss_zones();
-  for (int i = 0; i < nb_sub_zones; ++i)
+  const int nb_sub_domaines = domaine().nb_ss_domaines();
+  for (int i = 0; i < nb_sub_domaines; ++i)
     {
-      Sous_Zone& sub_zone = domaine().ss_zone(i);
-      const Nom& description = new_sub_zones_descriptions[i];
+      Sous_Domaine& sub_domaine = domaine().ss_domaine(i);
+      const Nom& description = new_sub_domaines_descriptions[i];
       EChaine is(description.getChar());
-      is >> sub_zone;
+      is >> sub_domaine;
     }
 }
 

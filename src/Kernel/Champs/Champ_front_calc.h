@@ -22,8 +22,8 @@
 
 class Equation_base;
 class Milieu_base;
-class Zone_dis_base;
-class Zone_Cl_dis_base;
+class Domaine_dis_base;
+class Domaine_Cl_dis_base;
 class Front_dis_base;
 
 /*! @brief classe Champ_front_calc Classe derivee de Champ_front_var qui represente les
@@ -50,8 +50,8 @@ public:
   const Nom& nom_bord_oppose() const;
   const Equation_base& equation() const;
   const Milieu_base& milieu() const;
-  const Zone_dis_base& zone_dis() const;
-  const Zone_Cl_dis_base& zone_Cl_dis() const;
+  const Domaine_dis_base& domaine_dis() const;
+  const Domaine_Cl_dis_base& domaine_Cl_dis() const;
   const Frontiere_dis_base& front_dis() const;
   inline void set_distant(int d) { distant_=d ; }
 

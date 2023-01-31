@@ -41,8 +41,8 @@ void Constituant::set_param(Param& param)
 
 void Constituant::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
-  dis.nommer_completer_champ_physique(zone_dis,"coefficient_diffusion","m2/s",D.valeur(),pb);
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
+  dis.nommer_completer_champ_physique(domaine_dis,"coefficient_diffusion","m2/s",D.valeur(),pb);
   champs_compris_.ajoute_champ(D.valeur());
   Milieu_base::discretiser(pb,dis);
 }

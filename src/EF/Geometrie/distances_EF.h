@@ -15,25 +15,25 @@
 
 #ifndef distances_EF_inclus
 #define distances_EF_inclus
-#include <Zone_EF.h>
-double norm_vit_lp_k(const DoubleTab& vit,int face,int face_b,const Zone_EF& zone,ArrOfDouble& val,int is_defilante);
-double norm_vit_lp(const ArrOfDouble& vit,int face,const Zone_EF& zone,ArrOfDouble& val);
+#include <Domaine_EF.h>
+double norm_vit_lp_k(const DoubleTab& vit,int face,int face_b,const Domaine_EF& domaine,ArrOfDouble& val,int is_defilante);
+double norm_vit_lp(const ArrOfDouble& vit,int face,const Domaine_EF& domaine,ArrOfDouble& val);
 double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,
-                    const Zone_EF& zone,
+                    const Domaine_EF& domaine,
                     double& val1,double& val2,double& val3);
 double norm_2D_vit1_k(const DoubleTab& vit,int fac,int num1,
-                      const Zone_EF& zone,
+                      const Domaine_EF& domaine,
                       double& val1,double& val2);
 double norm_3D_vit2(const DoubleTab& vit,int fac,int num1,
-                    const Zone_EF& zone,
+                    const Domaine_EF& domaine,
                     double& val1,double& val2,double& val3);
 double norm_2D_vit2_k(const DoubleTab& vit,int fac,int num1,
-                      const Zone_EF& zone,
+                      const Domaine_EF& domaine,
                       double& val1,double& val2);
-double distance_2D(int fac,int elem,const Zone_EF& zone);
+double distance_2D(int fac,int elem,const Domaine_EF& domaine);
 
-double distance_3D(int fac,int elem,const Zone_EF& zone);
-double distance_face_elem(int fac,int elem,const Zone_EF& zone);
+double distance_3D(int fac,int elem,const Domaine_EF& domaine);
+double distance_face_elem(int fac,int elem,const Domaine_EF& domaine);
 
 // Fonctions inlinees pour optimisation
 inline double vitesse_tangentielle(const double& v0,const double& v1,const double& r0,const double& r1)
@@ -67,11 +67,11 @@ inline void calcule_r0r1r2(const DoubleTab& face_normale, int& fac, double& r0, 
   r2*=tmp;
 }
 
-inline double distance_face(int fac,int fac1,const Zone_EF& zone)
+inline double distance_face(int fac,int fac1,const Domaine_EF& domaine)
 {
   int dimension=Objet_U::dimension;
-  const DoubleTab& xv = zone.xv();    // centre de gravite des faces
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& xv = domaine.xv();    // centre de gravite des faces
+  const DoubleTab& face_normale = domaine.face_normales();
   double r0,r1;
   double x0=xv(fac,0);
   double y0=xv(fac,1);

@@ -39,7 +39,7 @@ void grad_T_Champ_P1NC::me_calculer(double tps)
   mon_champ_->calcul_grad_T(le_dom_Cl_VEF.valeur(), valeurs());
 }
 
-const Zone_Cl_dis_base& grad_T_Champ_P1NC::zone_Cl_dis_base() const
+const Domaine_Cl_dis_base& grad_T_Champ_P1NC::domaine_Cl_dis_base() const
 {
   return le_dom_Cl_VEF.valeur();
 }

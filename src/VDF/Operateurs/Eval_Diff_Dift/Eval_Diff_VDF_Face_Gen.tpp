@@ -19,7 +19,7 @@
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 
 /* ************************************** *
  * *********  POUR L'EXPLICITE ********** *

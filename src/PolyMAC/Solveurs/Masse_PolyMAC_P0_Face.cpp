@@ -19,8 +19,8 @@
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Masse_ajoutee_base.h>
 #include <Option_PolyMAC_P0.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
@@ -53,13 +53,13 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
   Solveur_Masse_Face_proto::appliquer_impl_proto(sm);
 
   //vitesses aux elements
-  const Zone_PolyMAC_P0& zone = le_dom_PolyMAC_P0.valeur();
-  int e, nf_tot = zone.nb_faces_tot(), d, D = dimension, n, N = equation().inconnue().valeurs().line_size();
+  const Domaine_PolyMAC_P0& domaine = le_dom_PolyMAC_P0.valeur();
+  int e, nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = equation().inconnue().valeurs().line_size();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL;
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = zone.volumes();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
 
   if (sm.dimension_tot(0) > nf_tot)
-    for (e = 0; e < zone.nb_elem(); e++)
+    for (e = 0; e < domaine.nb_elem(); e++)
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           {
@@ -102,19 +102,19 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 {
   const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();
   Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
-  const Zone_PolyMAC_P0& zone = le_dom_PolyMAC_P0;
+  const Domaine_PolyMAC_P0& domaine = le_dom_PolyMAC_P0;
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &fs = zone.face_surfaces();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes(), &fs = domaine.face_surfaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const DoubleTab& nf = zone.face_normales(), &rho = equation().milieu().masse_volumique().passe(),
-                   *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &vfd = zone.volumes_entrelaces_dir();
+  const DoubleTab& nf = domaine.face_normales(), &rho = equation().milieu().masse_volumique().passe(),
+                   *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &vfd = domaine.volumes_entrelaces_dir();
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
-  int i, e, f, nf_tot = zone.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, cR = rho.dimension_tot(0) == 1;
+  int i, e, f, nf_tot = domaine.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, cR = rho.dimension_tot(0) == 1;
 
   /* faces : si CLs, pas de produit par alpha * rho en multiphase */
   DoubleTrav masse(N, N), masse_e(N, N); //masse alpha * rho, contribution
-  for (f = 0; f < zone.nb_faces(); f++) //faces reelles
+  for (f = 0; f < domaine.nb_faces(); f++) //faces reelles
     {
       if (!pbm || fcl(f, 0) >= 2)
         for (masse = 0, n = 0; n < N; n++) masse(n, n) = 1; //pas Pb_Multiphase ou CL -> pas de alpha * rho
@@ -140,7 +140,7 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
         }
     }
 
-  for (e = 0, i = nf_tot; e < zone.nb_elem_tot(); e++) //tous les elems (pour Op_Grad_PolyMAC_P0_Face)
+  for (e = 0, i = nf_tot; e < domaine.nb_elem_tot(); e++) //tous les elems (pour Op_Grad_PolyMAC_P0_Face)
     {
       for (masse = 0, n = 0; n < N; n++) masse(n, n) = a_r ? (*a_r)(e, n) : 1; //partie diagonale
       if (corr) corr->ajouter(&(*alpha)(e, 0), &rho(!cR * e, 0), masse); //partie masse ajoutee
@@ -157,9 +157,9 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   i++;
 }
 
-void Masse_PolyMAC_P0_Face::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
+void Masse_PolyMAC_P0_Face::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  le_dom_PolyMAC_P0 = ref_cast(Zone_PolyMAC_P0, le_dom_dis_base);
+  le_dom_PolyMAC_P0 = ref_cast(Domaine_PolyMAC_P0, le_dom_dis_base);
 }
 
 //sert a remettre en coherence la partie aux elements avec la partie aux faces

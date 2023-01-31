@@ -19,15 +19,15 @@
 #include <TRUST_Vector.h>
 #include <Cond_lim.h>
 
-class Zone_dis;
+class Domaine_dis;
 
 /*! @brief classe Conds_lim Cette classe represente un vecteur de conditions aux limites.
  *
- *      Un objet de ce type est porte par chaque Zone_Cl_dis_base associee
+ *      Un objet de ce type est porte par chaque Domaine_Cl_dis_base associee
  *      a une equation. Une classe representant un vecteur d'objet est
  *      declaree grace a la macro VECT(classe_X)
  *
- * @sa Cond_lim Zone_Cl_dis_base
+ * @sa Cond_lim Domaine_Cl_dis_base
  */
 class Conds_lim : public VECT(Cond_lim)
 {
@@ -37,7 +37,7 @@ public:
   inline int initialiser(double temps);
   inline void mettre_a_jour(double temps);
   inline void calculer_coeffs_echange(double temps);
-  void completer(const Zone_dis&);
+  void completer(const Domaine_dis&);
   inline int compatible_avec_eqn(const Equation_base&) const;
   inline int compatible_avec_discr(const Discretisation_base&) const;
 

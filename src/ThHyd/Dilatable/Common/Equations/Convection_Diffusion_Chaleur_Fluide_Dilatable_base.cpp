@@ -20,7 +20,7 @@
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Discret_Thyd.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Avanc.h>
 #include <Statistiques.h>
 
@@ -62,7 +62,7 @@ void Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   Cerr << "Energy equation discretization " << finl;
-  dis.temperature(schema_temps(), zone_dis(), l_inco_ch);
+  dis.temperature(schema_temps(), domaine_dis(), l_inco_ch);
   champs_compris_.ajoute_champ(l_inco_ch);
   Equation_base::discretiser();
   Cerr << "Convection_Diffusion_Chaleur_Fluide_Dilatable_base::discretiser() ok" << finl;
@@ -147,14 +147,14 @@ int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::preparer_calcul()
   return 1;
 }
 
-/*! @brief remplissage de la zone cl modifiee avec 1 partout au bord.
+/*! @brief remplissage de la domaine cl modifiee avec 1 partout au bord.
  *
  * ..
  *
  */
 int Convection_Diffusion_Chaleur_Fluide_Dilatable_base::remplir_cl_modifiee()
 {
-  zcl_modif_=(zone_Cl_dis());
+  zcl_modif_=(domaine_Cl_dis());
   Conds_lim& condlims=zcl_modif_.valeur().les_conditions_limites();
   int nb=condlims.size();
   // pour chaque condlim on recupere le champ_front et on met 1

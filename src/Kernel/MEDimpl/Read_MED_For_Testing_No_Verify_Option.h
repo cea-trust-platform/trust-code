@@ -28,14 +28,14 @@
 #include <LireMED.h>
 
 class Nom;
-class Zone;
+class Domaine;
 
 class Read_MED_For_Testing_No_Verify_Option : public LireMED
 {
   Declare_instanciable(Read_MED_For_Testing_No_Verify_Option);
 public :
   Entree& interpreter_(Entree&) override;
-  void lire_geom(Nom& nom_fic,Zone& dom,const Nom& nom_dom,const Nom& nom_dom1,int isvef=0, int isfamilyshort=0);
+  void lire_geom(Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom1,int isvef=0, int isfamilyshort=0);
 };
 
 #endif

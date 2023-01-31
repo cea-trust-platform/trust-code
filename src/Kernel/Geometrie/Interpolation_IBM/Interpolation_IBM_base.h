@@ -18,7 +18,7 @@
 
 #include <Objet_U.h>
 #include <Discretisation_base.h>
-#include <Zone_dis_base.h>
+#include <Domaine_dis_base.h>
 #include <Champ_Don.h>
 #include <Param.h>
 
@@ -36,7 +36,7 @@ class Interpolation_IBM_base : public Objet_U
   Declare_base( Interpolation_IBM_base ) ;
 
 public:
-  virtual void discretise(const Discretisation_base&, Zone_dis_base&);
+  virtual void discretise(const Discretisation_base&, Domaine_dis_base&);
   inline int get_impr()
   {
     return impr_;

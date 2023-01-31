@@ -18,8 +18,8 @@
 
 #include <TRUSTTab.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Champ_Inc;
 
 /*! @brief Classe Opnegligeable Cette classe definit l'interface d'un operateur negligeable
@@ -40,7 +40,7 @@ public :
   inline void mettre_a_jour(double );
 
 protected :
-  inline void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&);
+  inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&);
 };
 
 
@@ -83,11 +83,11 @@ inline void Operateur_negligeable::mettre_a_jour(double )
 
 /*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN
  *
- * @param (Zone_dis&)
- * @param (Zone_Cl_dis&)
+ * @param (Domaine_dis&)
+ * @param (Domaine_Cl_dis&)
  * @param (Champ_Inc&)
  */
-inline void Operateur_negligeable::associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&)
+inline void Operateur_negligeable::associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&)
 {
 }
 #endif

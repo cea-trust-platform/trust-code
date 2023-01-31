@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Ostwald.h>
-#include <Zone_dis_base.h>
+#include <Domaine_dis_base.h>
 
 Implemente_instanciable(Champ_Ostwald,"Champ_Ostwald",Champ_Fonc_P0_base);
 
@@ -54,15 +54,15 @@ int Champ_Ostwald::fixer_nb_valeurs_nodales(int nb_noeuds)
   // Note B.M.: encore un heritage a la noix qui m'empeche de factoriser
   // en utilisant creer_tableau_distribue:
   const Champ_Don_base& cdb = *this;
-  const Zone& zone = cdb.zone_dis_base().zone();
+  const Domaine& domaine = cdb.domaine_dis_base().domaine();
 
-  assert(nb_noeuds == zone.nb_elem());
+  assert(nb_noeuds == domaine.nb_elem());
 
   if (nb_compo_ == 1)
     valeurs_.resize(0);
   else
     valeurs_.resize(0, nb_compo_);
-  zone.creer_tableau_elements(valeurs_);
+  domaine.creer_tableau_elements(valeurs_);
   return nb_noeuds;
 }
 

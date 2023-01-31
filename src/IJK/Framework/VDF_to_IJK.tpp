@@ -19,11 +19,11 @@
 #include <Schema_Comm.h>
 #include <communications.h>
 #include <Statistiques.h>
-//#include <Zone_VF.h>
+//#include <Domaine_VF.h>
 #include <IJK_Field.h>
 #include <TRUSTTabs.h>
 #include <Array_tools.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
 void VDF_to_IJK::convert_to_ijk(const DoubleVect& x, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& ijk_x) const

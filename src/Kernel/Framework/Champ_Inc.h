@@ -26,7 +26,7 @@
  *      La plupart des methodes appellent les methodes de l'objet champ
  *      sous-jacent via la methode valeur() declaree grace a la macro
  *
- * @sa Ch_Inc_base Zone_dis Ch_proto
+ * @sa Ch_Inc_base Domaine_dis Ch_proto
  */
 
 class Champ_Inc : public DERIV(Champ_Inc_base), public Champ_Proto
@@ -48,8 +48,8 @@ public:
   int nb_valeurs_temporelles() const;
   int fixer_nb_valeurs_nodales(int);
   int nb_valeurs_nodales() const;
-  const Zone_dis_base& associer_domaine_dis_base(const Zone_dis_base&);
-  const Zone_dis_base& zone_dis_base() const;
+  const Domaine_dis_base& associer_domaine_dis_base(const Domaine_dis_base&);
+  const Domaine_dis_base& domaine_dis_base() const;
   double changer_temps(const double);
   double temps() const;
   DoubleTab& futur(int i = 1) override;

@@ -90,7 +90,7 @@ Entree& Champ_Don_Fonc_txyz::readOn(Entree& is)
     }
 
   // On remplit le tableau des valeurs aux elements
-  Zone& domaine = interprete_get_domaine(nom_dom);
+  Domaine& domaine = interprete_get_domaine(nom_dom);
   int nb_elems = domaine.nb_elem();
   DoubleTab& mes_val = valeurs();
   dimensionner(nb_elems, dim);

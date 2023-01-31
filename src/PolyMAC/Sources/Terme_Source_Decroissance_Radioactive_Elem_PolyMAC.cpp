@@ -15,8 +15,8 @@
 
 #include <Terme_Source_Decroissance_Radioactive_Elem_PolyMAC.h>
 #include <Equation_base.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_PolyMAC.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>
 #include <Synonyme_info.h>
@@ -63,18 +63,18 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::completer()
     }
 }
 
-void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Zone_dis& zone_dis,
-                                                                           const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis,
+                                                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << " Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines " << finl ;
-  le_dom_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
+  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
 }
 
 void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone = le_dom_PolyMAC.valeur();
+  const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
   const DoubleTab& inco = equation().inconnue().valeurs();
-  const int ne = zone.nb_elem(), N = inco.line_size();
+  const int ne = domaine.nb_elem(), N = inco.line_size();
   std::string nom_inco = equation().inconnue().le_nom().getString();
 
   for (auto &&n_m : matrices)
@@ -93,14 +93,14 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matr
 
 void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone = le_dom_PolyMAC.valeur();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = zone.volumes();
+  const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
   const DoubleTab& c = equation().inconnue().valeurs();
   std::string nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *Mc = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
   const int N = c.line_size();
 
-  for (int e = 0; e < zone.nb_elem(); e++)
+  for (int e = 0; e < domaine.nb_elem(); e++)
     for (int l = 0; l < N; l++)
       {
         const double fac = pe(e) * ve(e) * lambda[l];

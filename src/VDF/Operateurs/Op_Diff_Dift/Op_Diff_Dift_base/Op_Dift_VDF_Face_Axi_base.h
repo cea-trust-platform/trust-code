@@ -26,7 +26,7 @@ class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base
 public:
   double calculer_dt_stab() const override;
   void completer() override;
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
   void mettre_a_jour(double ) override;
   void contribue_au_second_membre(DoubleTab& ) const;
@@ -42,8 +42,8 @@ public:
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Champ_Face_VDF) inconnue;
-  REF(Zone_VDF) le_dom_vdf;
-  REF(Zone_Cl_VDF) la_zcl_vdf;
+  REF(Domaine_VDF) le_dom_vdf;
+  REF(Domaine_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;
   IntTab Qdm, face_voisins, elem_faces;
   DoubleVect surface, volumes_entrelaces, porosite;

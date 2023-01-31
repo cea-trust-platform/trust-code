@@ -16,8 +16,8 @@
 #include <Op_Conv_EF_Stab_PolyMAC_P0_Face.h>
 #include <Pb_Multiphase.h>
 #include <Schema_Temps_base.h>
-#include <Zone_Poly_base.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Poly_base.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 
@@ -56,8 +56,8 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
 {
   Op_Conv_PolyMAC_base::completer();
   /* au cas ou... */
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
     {
       Cerr << "Op_Conv_EF_Stab_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 2)!" << finl;
       Process::exit();
@@ -69,16 +69,16 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
 double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
 {
   double dt = 1e10;
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces();
-  const DoubleTab& vit = vitesse_->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
+  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces();
+  const DoubleTab& vit = vitesse_->valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   int i, e, f, n, N = vit.line_size();
   DoubleTrav flux(N), vol(N); //somme des flux pf * |f| * vf, volume minimal des mailles d'elements/faces affectes par ce flux
 
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (n = 0; n < N; n++)
@@ -95,11 +95,11 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
 
 void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
-  const DoubleTab& nf = zone.face_normales();
-  const DoubleVect& fs = zone.face_surfaces();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl(), &equiv = domaine.equiv();
+  const DoubleTab& nf = domaine.face_normales();
+  const DoubleVect& fs = domaine.face_surfaces();
 
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
@@ -107,19 +107,19 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
 
-  int i, j, k, e, eb, f, fb, fc, ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot(), m, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
+  int i, j, k, e, eb, f, fb, fc, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), m, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension;
 
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
 
   /* agit uniquement aux elements; diagonale omise */
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
           {
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-              if (fb < zone.nb_faces() && fcl(fb, 0) < 2)
+              if (fb < domaine.nb_faces() && fcl(fb, 0) < 2)
                 {
                   if ((fc = equiv(f, i, k)) >= 0) //equivalence : face -> face
                     for (n = 0; fcl(fc, 0) < 2 && n < N; n++)
@@ -146,12 +146,12 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
-  const DoubleTab& vit = ch.passe(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir();
-  const DoubleVect& fs = zone.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &ve = zone.volumes();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl(), &equiv = domaine.equiv();
+  const DoubleTab& vit = ch.passe(), &nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir();
+  const DoubleVect& fs = domaine.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &ve = domaine.volumes();
 
   /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */
   const std::string& nom_inco = ch.le_nom().getString();
@@ -162,11 +162,11 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                     *alp = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, &rho = equation().milieu().masse_volumique().passe();
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  int i, j, k, e, eb, f, fb, fc, fd, nf_tot = zone.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
+  int i, j, k, e, eb, f, fb, fc, fd, nf_tot = domaine.nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
   double mult;
 
   DoubleTrav dfac(2, N, N), masse(N, N);
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 1 || fcl(f, 0) == 3))
       {
         for (i = 0, dfac = 0; i < 2; i++)
@@ -183,13 +183,13 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-              if (fb < zone.nb_faces() && fcl(fb, 0) < 2) //partie "faces"
+              if (fb < domaine.nb_faces() && fcl(fb, 0) < 2) //partie "faces"
                 {
                   if ((fc = equiv(f, i, k)) >= 0 || f_e(f, 1) < 0)
                     for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                       {
                         eb = f_e(f, j), fd = (j == i ? fb : fc); //element/face sources
-                        mult = (fd < 0 || zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
+                        mult = (fd < 0 || domaine.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
                         for (n = 0; n < N; n++)
                           for (m = 0; m < N; m++)
                             if (dfac(j, n, m))

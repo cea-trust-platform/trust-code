@@ -15,17 +15,17 @@
 
 #include <Terme_Source_Qdm_VEF_Face.h>
 #include <Champ_Uniforme.h>
-#include <Zone.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Periodique.h>
 #include <BilanQdmVEF.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
-#include <Zone_VEF_PreP1b.h>
+#include <Domaine_VEF_PreP1b.h>
 
-extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Zone_Cl_VEF& zcl, const Zone_VEF& zone_VEF);
+extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Domaine_Cl_VEF& zcl, const Domaine_VEF& domaine_VEF);
 Implemente_instanciable(Terme_Source_Qdm_VEF_Face,"Source_Qdm_VEF_P1NC",Source_base);
 
 
@@ -59,25 +59,25 @@ void Terme_Source_Qdm_VEF_Face::associer_pb(const Probleme_base& )
   ;
 }
 
-void Terme_Source_Qdm_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                  const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Qdm_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                  const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 
 DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
 {
   int nb_comp=resu.line_size();
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF=le_dom_Cl_VEF.valeur();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& elem_sommets = zone_VEF.zone().les_elems();
-  const DoubleVect& volumes = zone_VEF.volumes();
-  const DoubleTab& coord_sommets=zone_VEF.zone().les_sommets();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF=le_dom_Cl_VEF.valeur();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& elem_sommets = domaine_VEF.domaine().les_elems();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  const DoubleTab& coord_sommets=domaine_VEF.domaine().les_sommets();
   ArrOfDouble a0(dimension),a0a1(dimension),a0a2(dimension), a0a3(dimension);
-  int nb_elem_tot=zone_VEF.nb_elem_tot();
+  int nb_elem_tot=domaine_VEF.nb_elem_tot();
   double volume;
   DoubleTab resu_sauv(resu);
   resu = 0.;
@@ -172,12 +172,12 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   int nb_face_diri=0;
   ArrOfInt indice_diri(dimension+1);
   int modif_traitement_diri=0;
-  if (sub_type(Zone_VEF_PreP1b,zone_VEF))
-    modif_traitement_diri=ref_cast(Zone_VEF_PreP1b,zone_VEF).get_modif_div_face_dirichlet();
+  if (sub_type(Domaine_VEF_PreP1b,domaine_VEF))
+    modif_traitement_diri=ref_cast(Domaine_VEF_PreP1b,domaine_VEF).get_modif_div_face_dirichlet();
   for (int elem=0; elem<nb_elem_tot; elem++)
     {
       if (modif_traitement_diri)
-        calculer_coef_som(elem,nb_face_diri,indice_diri,zone_Cl_VEF,zone_VEF);
+        calculer_coef_som(elem,nb_face_diri,indice_diri,domaine_Cl_VEF,domaine_VEF);
       volume=volumes(elem);
       for (int i=0; i<nbpts; i++)
         les_polygones(i)=elem;
@@ -276,9 +276,9 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
     }
   {
     // modif pour periodic
-    for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+    for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
       {
-        const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+        const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
         if (sub_type(Periodique,la_cl.valeur()))
           {
             const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
@@ -305,7 +305,7 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
       }
   }
   ArrOfDouble tab_bilan(nb_comp);
-  BilanQdmVEF::bilan_qdm(resu, zone_Cl_VEF, tab_bilan);
+  BilanQdmVEF::bilan_qdm(resu, domaine_Cl_VEF, tab_bilan);
   /*
     if (equation().schema_temps().limpr())
     {
@@ -315,7 +315,7 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
     }
     }*/
 
-  BilanQdmVEF::bilan_energie(resu, equation().inconnue().valeurs(), zone_Cl_VEF, tab_bilan);
+  BilanQdmVEF::bilan_energie(resu, equation().inconnue().valeurs(), domaine_Cl_VEF, tab_bilan);
   /*
     if (equation().schema_temps().limpr())
     {

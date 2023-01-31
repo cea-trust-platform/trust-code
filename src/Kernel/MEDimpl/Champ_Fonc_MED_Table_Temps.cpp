@@ -95,9 +95,9 @@ void Champ_Fonc_MED_Table_Temps::lire_donnees_champ(const std::string& fileName,
   vrai_champ0_.typer(type_champ);
   fixer_nb_comp(nbcomp);
   le_champ0().fixer_nb_comp(nbcomp);
-  zonebidon_inst.associer_domaine(mon_dom.valeur());
-  le_champ0().associer_domaine_dis_base(zonebidon_inst);
-  if (zonebidon_inst.nb_elem()==0) size = 0;
+  domainebidon_inst.associer_domaine(mon_dom.valeur());
+  le_champ0().associer_domaine_dis_base(domainebidon_inst);
+  if (domainebidon_inst.nb_elem()==0) size = 0;
   le_champ0().fixer_nb_valeurs_nodales(size);
   if (size != le_champ0().valeurs().dimension(0))
     {
@@ -122,7 +122,7 @@ void Champ_Fonc_MED_Table_Temps::lire(double t, int given_it)
 #endif
 #endif
 
-  if (zonebidon_inst.nb_elem() > 0)
+  if (domainebidon_inst.nb_elem() > 0)
     {
       double frac = la_table.val(t);
       const DoubleTab& vals0 = le_champ0().valeurs();

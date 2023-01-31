@@ -57,16 +57,16 @@ void Fluide_Ostwald::set_param(Param& param)
 
 void  Fluide_Ostwald::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
   const Discret_Thyd& dis2=ref_cast(Discret_Thyd, dis);
 
   // avec la signature de Ostwald....
   const Navier_Stokes_std& eqn_hydr=ref_cast(Navier_Stokes_std,pb.equation(0));
-  dis2.proprietes_physiques_fluide_Ostwald(eqn_hydr.zone_dis(),(*this),eqn_hydr,eqn_hydr.inconnue());
+  dis2.proprietes_physiques_fluide_Ostwald(eqn_hydr.domaine_dis(),(*this),eqn_hydr,eqn_hydr.inconnue());
   Champ_Don& K = consistance();
   if (K.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"consistance","kg/m/s",K.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"consistance","kg/m/s",K.valeur(),pb);
       champs_compris_.ajoute_champ(K.valeur());
     }
 

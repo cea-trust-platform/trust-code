@@ -17,8 +17,8 @@
 #define EDO_Pression_th_VEF_included
 
 #include <EDO_Pression_th_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_dis.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_dis.h>
 class Fluide_Quasi_Compressible;
 
 /*! @brief classe EDO_Pression_th_VEF Cette classe represente l'EDO sur la pression associee au schema de
@@ -36,7 +36,7 @@ class EDO_Pression_th_VEF: public EDO_Pression_th_base
 public :
   EDO_Pression_th_VEF();
   const Fluide_Quasi_Compressible& le_fluide() const { return le_fluide_.valeur(); };
-  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;
   void completer() override;
   void calculer_grad(const DoubleTab&,DoubleTab&);
   double masse_totale(double P,const DoubleTab& T) override;
@@ -44,8 +44,8 @@ public :
   double getM0() { return M0; }
 
 protected :
-  REF(Zone_VEF) le_dom;
-  REF(Zone_Cl_dis) le_dom_Cl;
+  REF(Domaine_VEF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_Cl;
   double M0;// la masse totale initiale
 };
 

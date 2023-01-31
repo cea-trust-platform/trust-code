@@ -18,7 +18,7 @@
 #include <Equation_base.h>
 #include <Fluide_Quasi_Compressible.h>
 #include <Motcle.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Interprete.h>
 
 Implemente_instanciable(Champ_front_debit_QC_fonc_t,"Champ_front_debit_QC_VDF_fonc_t",Ch_front_var_instationnaire_indep);
@@ -133,7 +133,7 @@ void Champ_front_debit_QC_fonc_t::mettre_a_jour(double tps)
   DoubleTab& tab=valeurs();
   DoubleTab& Debit=valeurs_au_temps(tps);
   int dim=nb_comp();
-  const Zone_VDF& le_dom_VDF = ref_cast(Zone_VDF,zone_dis());
+  const Domaine_VDF& le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis());
   const IntTab& face_voisins=le_dom_VDF.face_voisins();
   const Front_VF& front_vf=ref_cast(Front_VF,la_frontiere_dis.valeur());
   int ndeb = front_vf.num_premiere_face();

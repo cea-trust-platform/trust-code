@@ -18,10 +18,10 @@
 
 #include <Champ_Inc_P0_base.h>
 
-class Zone_VDF;
+class Domaine_VDF;
 
 /*! @brief classe Champ_P0_VDF Classe qui represente un champ discret P0 par element
- *  associe a une zone discretisee de type Zone_VDF
+ *  associe a une domaine discretisee de type Domaine_VDF
  *
  * @sa Champ_Inc_P0_base
  */
@@ -29,7 +29,7 @@ class Champ_P0_VDF: public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_P0_VDF);
 public :
-  const Zone_VDF& zone_VDF() const;
+  const Domaine_VDF& domaine_VDF() const;
   DoubleVect moyenne(const DoubleVect& porosite_elem) const;
   double moyenne(const DoubleVect& porosite_elem, int ) const;
   DoubleTab& remplir_coord_noeuds(DoubleTab& ) const override;

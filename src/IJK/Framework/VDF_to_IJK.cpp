@@ -18,11 +18,11 @@
 #include <Schema_Comm.h>
 #include <communications.h>
 #include <Statistiques.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <IJK_Field.h>
 #include <TRUSTTabs.h>
 #include <Array_tools.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 // search non empty lists in src and fills non_empty and dest with non empty lists
 static void pack_lists(const VECT(ArrOfInt) & src, ArrOfInt& non_empty, Static_Int_Lists& dest)
@@ -77,23 +77,23 @@ static int bsearch_double(const ArrOfDouble& tab, double valeur)
   return i;
 }
 
-static const DoubleTab& get_items_coords(const Zone_VF& zone_vf, IJK_Splitting::Localisation loc, int& nb_items)
+static const DoubleTab& get_items_coords(const Domaine_VF& domaine_vf, IJK_Splitting::Localisation loc, int& nb_items)
 {
   switch(loc)
     {
     case IJK_Splitting::ELEM:
-      nb_items = zone_vf.zone().nb_elem();
-      return zone_vf.xp();
+      nb_items = domaine_vf.domaine().nb_elem();
+      return domaine_vf.xp();
     case IJK_Splitting::NODES:
-      nb_items = zone_vf.zone().nb_som();
-      return zone_vf.zone().les_sommets();
+      nb_items = domaine_vf.domaine().nb_som();
+      return domaine_vf.domaine().les_sommets();
     default:
-      nb_items = zone_vf.nb_faces();
-      return zone_vf.xv();
+      nb_items = domaine_vf.nb_faces();
+      return domaine_vf.xv();
     }
 }
 
-void VDF_to_IJK::initialize(const Zone_VF& zone_vf, const IJK_Splitting& splitting,
+void VDF_to_IJK::initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& splitting,
                             IJK_Splitting::Localisation localisation,
                             int direction_for_x,
                             int direction_for_y,
@@ -148,8 +148,8 @@ void VDF_to_IJK::initialize(const Zone_VF& zone_vf, const IJK_Splitting& splitti
   int nb_items;
   // attention, coords.dimension(0) inclut les mailles virtuelles pour le tableau des elements, c'est pas bon,
   // il faut recuperer nb_elem reels...
-  const DoubleTab& coords = get_items_coords(zone_vf, localisation, nb_items);
-  const IntVect& orientation = zone_vf.orientation();
+  const DoubleTab& coords = get_items_coords(domaine_vf, localisation, nb_items);
+  const IntVect& orientation = domaine_vf.orientation();
 
   sch.begin_comm();
   const double eps = Objet_U::precision_geom;

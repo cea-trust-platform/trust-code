@@ -20,7 +20,7 @@
 #include <Symetrie.h>
 #include <Neumann_sortie_libre.h>
 #include <Champ_Uniforme.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <TRUSTLists.h>
 #include <Solv_GCP.h>
 #include <SSOR.h>
@@ -37,10 +37,10 @@ Entree& Op_Dift_VEF_P1NCP1B_Face::readOn(Entree& s)
   return s;
 }
 
-void Op_Dift_VEF_P1NCP1B_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis, const Champ_Inc& ch_transporte)
+void Op_Dift_VEF_P1NCP1B_Face::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
-  const Zone_VEF_PreP1b& zvef = ref_cast(Zone_VEF_PreP1b, zone_dis.valeur());
-  const Zone_Cl_VEFP1B& zclvef = ref_cast(Zone_Cl_VEFP1B, zone_cl_dis.valeur());
+  const Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b, domaine_dis.valeur());
+  const Domaine_Cl_VEFP1B& zclvef = ref_cast(Domaine_Cl_VEFP1B, domaine_cl_dis.valeur());
   const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_transporte.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
@@ -70,11 +70,11 @@ double Op_Dift_VEF_P1NCP1B_Face::calculer_dt_stab() const
   double surf_max;
   double dt_stab = 1.e30;
   double coef;
-  const Zone_VEF_PreP1b& le_dom_VEF = le_dom_vef.valeur();
+  const Domaine_VEF_PreP1b& le_dom_VEF = le_dom_vef.valeur();
   const DoubleVect& volumes = le_dom_VEF.volumes();
   const IntTab& elem_faces = le_dom_VEF.elem_faces();
   const DoubleTab& face_normales = le_dom_VEF.face_normales();
-  const Zone& le_dom = le_dom_VEF.zone();
+  const Domaine& le_dom = le_dom_VEF.domaine();
   //const int nb_elem = le_dom.nb_elem_tot();
   //const DoubleTab& xp=le_dom_VEF.xp();
   int nb_faces_elem = le_dom.nb_faces_elem();
@@ -107,14 +107,14 @@ double Op_Dift_VEF_P1NCP1B_Face::calculer_dt_stab() const
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_elem(const DoubleTab& vit, DoubleTab& grad) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (le_dom_vef.valeur()));
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, (le_dom_vef.valeur()));
 
-  const Zone& zone = zone_VEF.zone();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nfe = zone.nb_faces_elem();
-  int nb_elem_tot = zone.nb_elem_tot();
+  const Domaine& domaine = domaine_VEF.domaine();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nfe = domaine.nb_faces_elem();
+  int nb_elem_tot = domaine.nb_elem_tot();
   int elem, indice, face, compi, compj;
   double signe;
 
@@ -137,21 +137,21 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_elem(const DoubleTab& vit
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit, DoubleTab& grad) const
 {
 
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (le_dom_vef.valeur()));
-  const Zone& zone = zone_VEF.zone();
-  const Zone& dom = zone;
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& som_elem = zone.les_elems();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, (le_dom_vef.valeur()));
+  const Domaine& domaine = domaine_VEF.domaine();
+  const Domaine& dom = domaine;
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const IntTab& som_elem = domaine.les_elems();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
   double mijK, miiK, miK = 1. / (dimension + 1) / (dimension + 1);
-  int nfe = zone.nb_faces_elem();
-  int nb_elem_tot = zone.nb_elem_tot();
-  int nps = zone_VEF.numero_premier_sommet();
+  int nfe = domaine.nb_faces_elem();
+  int nb_elem_tot = domaine.nb_elem_tot();
+  int nps = domaine_VEF.numero_premier_sommet();
   int nb_som = grad.dimension(0) - nb_elem_tot;
-  int nb_som_elem = zone.nb_som_elem();
-  const IntTab& elem_som = zone.les_elems();
+  int nb_som_elem = domaine.nb_som_elem();
+  const IntTab& elem_som = domaine.les_elems();
   DoubleTab secmem(nb_som, dimension, dimension);
 
   if (Objet_U::dimension == 2)
@@ -178,7 +178,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
       int elem;
       for (elem = 0; elem < nb_elem_tot; elem++)
         {
-          double vol = zone_VEF.volumes(elem);
+          double vol = domaine_VEF.volumes(elem);
           double coeff_ij = mijK * vol - miK * vol;
           double coeff_ii = miiK * vol - miK * vol;
           for (int isom = 0; isom < nb_som_elem; isom++)
@@ -250,13 +250,13 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
         }
     }
   //Cerr << "Avant CL secmem = " << secmem << finl;
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_sommets = zone_VEF.face_sommets();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_sommets = domaine_VEF.face_sommets();
   int nb_bords = les_cl.size();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
         if (!sub_type(Periodique, la_cl.valeur()))
           {
@@ -313,7 +313,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
   }
   for (elem = 0; elem < nb_elem_tot; elem++)
     {
-      double vol = zone_VEF.volumes(elem);
+      double vol = domaine_VEF.volumes(elem);
       for (compi = 0; compi < dimension; compi++)
         for (compj = 0; compj < dimension; compj++)
           grad(elem, compi, compj) /= vol;
@@ -339,14 +339,14 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::corriger_div_pour_Cl(DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_bords = les_cl.size();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
         const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
         int num1 = le_bord.num_premiere_face();
@@ -400,13 +400,13 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::corriger_div_pour_Cl(DoubleTab& div) const
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
-  const Zone& zone = zone_VEF.zone();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nfe = zone.nb_faces_elem();
-  int nb_elem_tot = zone.nb_elem_tot();
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const Domaine& domaine = domaine_VEF.domaine();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nfe = domaine.nb_faces_elem();
+  int nb_elem_tot = domaine.nb_elem_tot();
 
   int elem, indice, face, compi, compj;
   ArrOfDouble sigma(dimension);
@@ -429,15 +429,15 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const D
 }
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
-  const Zone& dom = zone_VEF.zone();
-  const DoubleTab& face_normales = zone_VEF.face_normales();
+  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const Domaine& dom = domaine_VEF.domaine();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
   const IntTab& som_elem = dom.les_elems();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nfe = dom.nb_faces_elem();
   int nb_elem_tot = dom.nb_elem_tot();
-  int nps = zone_VEF.numero_premier_sommet();
+  int nps = domaine_VEF.numero_premier_sommet();
   int elem, indice, indice2, face, compi, compj, som;
   ArrOfDouble sigma(dimension);
   static double coeff_som = 1. / (dimension) / (dimension + 1);
@@ -462,13 +462,13 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
         }
     }
   //Cerr << "div AV CL : " << div << finl;
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const IntTab& face_sommets = zone_VEF.face_sommets();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const IntTab& face_sommets = domaine_VEF.face_sommets();
   int nb_bords = les_cl.size();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       {
         const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
         int num1 = le_bord.num_premiere_face();
@@ -493,9 +493,9 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
-  //  const Zone_Cl_VEFP1B& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF_PreP1b& zone_VEF = le_dom_vef.valeur();
-  const Zone& dom = zone_VEF.zone();
+  //  const Domaine_Cl_VEFP1B& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF_PreP1b& domaine_VEF = le_dom_vef.valeur();
+  const Domaine& dom = domaine_VEF.domaine();
   int nb_elem_tot=dom.nb_elem_tot();
   int nb_som_tot=dom.nb_som_tot();
 

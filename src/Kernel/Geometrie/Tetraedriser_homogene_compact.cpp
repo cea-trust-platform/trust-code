@@ -22,7 +22,7 @@ Sortie& Tetraedriser_homogene_compact::printOn(Sortie& os) const { return Interp
 Entree& Tetraedriser_homogene_compact::readOn(Entree& is) { return Interprete::readOn(is); }
 
 // Traitement des faces
-void Tetraedriser_homogene_compact::decoupe(Zone& zone, Faces& faces, IntTab& new_soms_old_elems, IntTab& fait_sommet, int nface) const
+void Tetraedriser_homogene_compact::decoupe(Domaine& domaine, Faces& faces, IntTab& new_soms_old_elems, IntTab& fait_sommet, int nface) const
 {
   IntTab& sommets = faces.les_sommets();
   int nb_faces = sommets.dimension(0);
@@ -103,9 +103,9 @@ void Tetraedriser_homogene_compact::decoupe(Zone& zone, Faces& faces, IntTab& ne
 }
 
 //
-// ATTENTION: ne considere qu'une seule zone pour l'instant...
+// ATTENTION: ne considere qu'une seule domaine pour l'instant...
 //
-int Tetraedriser_homogene_compact::creer_sommet(Zone& dom, Zone& zone, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
+int Tetraedriser_homogene_compact::creer_sommet(Domaine& dom, Domaine& domaine, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
                                                 int& nbnewsoms, IntTab& fait_sommet, int& nface) const
 {
 
@@ -169,20 +169,20 @@ int Tetraedriser_homogene_compact::creer_sommet(Zone& dom, Zone& zone, DoubleTab
   return _out;
 }
 
-void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
+void Tetraedriser_homogene_compact::trianguler(Domaine& domaine) const
 {
-  if ((zone.type_elem()->que_suis_je() == "Hexaedre") || (zone.type_elem()->que_suis_je() == "Hexaedre_VEF"))
+  if ((domaine.type_elem()->que_suis_je() == "Hexaedre") || (domaine.type_elem()->que_suis_je() == "Hexaedre_VEF"))
     {
-      IntTab& les_elems = zone.les_elems();
+      IntTab& les_elems = domaine.les_elems();
       int oldsz = les_elems.dimension(0);
-      int nbs = zone.nb_som();
+      int nbs = domaine.nb_som();
       IntTab elem_traite(oldsz);
-      int oldnbsom = zone.nb_som();
+      int oldnbsom = domaine.nb_som();
       IntTab new_elems(24 * oldsz, 4);
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 7);
       IntTab sommets(8);
-      Zone& dom = zone;
+      Domaine& dom = domaine;
       int compteur = 0;
       int nbnewsoms = 0;
       int nface = 0;
@@ -194,7 +194,7 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
 
       // Construction de l'Octree sur la grille "VDF" de base
 
-      zone.construit_octree();
+      domaine.construit_octree();
 
       //On dimensionne une premiere fois le tableau des sommets avec la dimension maximun
       //puis on redimensionnera seulement a la fin par la dimension exacte
@@ -238,49 +238,49 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
           sommets(5) = i5;
           sommets(6) = i6;
           sommets(7) = i7;
-          indice(0) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(0) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces bas (0-1-3-2)
           sommets(0) = i0;
           sommets(1) = i1;
           sommets(2) = i3;
           sommets(3) = i2;
-          indice(1) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(1) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces haut (4-5-7-6)
           sommets(0) = i4;
           sommets(1) = i5;
           sommets(2) = i7;
           sommets(3) = i6;
-          indice(4) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(4) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces avant (0-1-5-4)
           sommets(0) = i0;
           sommets(1) = i1;
           sommets(2) = i5;
           sommets(3) = i4;
-          indice(3) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(3) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces arriere (2-3-7-6)
           sommets(0) = i2;
           sommets(1) = i3;
           sommets(2) = i7;
           sommets(3) = i6;
-          indice(6) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(6) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces gauche (0-2-6-4)
           sommets(0) = i0;
           sommets(1) = i2;
           sommets(2) = i6;
           sommets(3) = i4;
-          indice(2) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(2) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces droite (1-3-7-5)
           sommets(0) = i1;
           sommets(1) = i3;
           sommets(2) = i7;
           sommets(3) = i5;
-          indice(5) = creer_sommet(dom, zone, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(5) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           // Liste des nouveaux sommets pour cet ancien cube
           for (int t = 0; t < 7; t++)
@@ -318,19 +318,19 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
           new_elems(i + oldsz, 1) = les_elems(i, 3);
           new_elems(i + oldsz, 2) = indice(1);
           new_elems(i + oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + oldsz, 1);
 
           new_elems(i + 2 * oldsz, 0) = les_elems(i, 3);
           new_elems(i + 2 * oldsz, 1) = les_elems(i, 2);
           new_elems(i + 2 * oldsz, 2) = indice(1);
           new_elems(i + 2 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 2 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 2 * oldsz, 1);
 
           new_elems(i + 3 * oldsz, 0) = les_elems(i, 2);
           new_elems(i + 3 * oldsz, 1) = les_elems(i, 0);
           new_elems(i + 3 * oldsz, 2) = indice(1);
           new_elems(i + 3 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 3 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 3 * oldsz, 1);
 
           // pyramide haut (base : 4-5-7-6)
 
@@ -338,25 +338,25 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
           new_elems(i + 4 * oldsz, 1) = les_elems(i, 5);
           new_elems(i + 4 * oldsz, 2) = indice(4);
           new_elems(i + 4 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 4 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 4 * oldsz, 1);
 
           new_elems(i + 5 * oldsz, 0) = les_elems(i, 5);
           new_elems(i + 5 * oldsz, 1) = les_elems(i, 7);
           new_elems(i + 5 * oldsz, 2) = indice(4);
           new_elems(i + 5 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 5 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 5 * oldsz, 1);
 
           new_elems(i + 6 * oldsz, 0) = les_elems(i, 7);
           new_elems(i + 6 * oldsz, 1) = les_elems(i, 6);
           new_elems(i + 6 * oldsz, 2) = indice(4);
           new_elems(i + 6 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 6 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 6 * oldsz, 1);
 
           new_elems(i + 7 * oldsz, 0) = les_elems(i, 6);
           new_elems(i + 7 * oldsz, 1) = les_elems(i, 4);
           new_elems(i + 7 * oldsz, 2) = indice(4);
           new_elems(i + 7 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 7 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 7 * oldsz, 1);
 
           // pyramide avant (base : 0-1-5-4)
 
@@ -364,25 +364,25 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
           new_elems(i + 8 * oldsz, 1) = les_elems(i, 1);
           new_elems(i + 8 * oldsz, 2) = indice(3);
           new_elems(i + 8 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 8 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 8 * oldsz, 1);
 
           new_elems(i + 9 * oldsz, 0) = les_elems(i, 1);
           new_elems(i + 9 * oldsz, 1) = les_elems(i, 5);
           new_elems(i + 9 * oldsz, 2) = indice(3);
           new_elems(i + 9 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 9 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 9 * oldsz, 1);
 
           new_elems(i + 10 * oldsz, 0) = les_elems(i, 5);
           new_elems(i + 10 * oldsz, 1) = les_elems(i, 4);
           new_elems(i + 10 * oldsz, 2) = indice(3);
           new_elems(i + 10 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 10 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 10 * oldsz, 1);
 
           new_elems(i + 11 * oldsz, 0) = les_elems(i, 4);
           new_elems(i + 11 * oldsz, 1) = les_elems(i, 0);
           new_elems(i + 11 * oldsz, 2) = indice(3);
           new_elems(i + 11 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 11 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 11 * oldsz, 1);
 
           // pyramide arriere (base : 2-3-7-6)
 
@@ -390,25 +390,25 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
           new_elems(i + 12 * oldsz, 1) = les_elems(i, 3);
           new_elems(i + 12 * oldsz, 2) = indice(6);
           new_elems(i + 12 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 12 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 12 * oldsz, 1);
 
           new_elems(i + 13 * oldsz, 0) = les_elems(i, 3);
           new_elems(i + 13 * oldsz, 1) = les_elems(i, 7);
           new_elems(i + 13 * oldsz, 2) = indice(6);
           new_elems(i + 13 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 13 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 13 * oldsz, 1);
 
           new_elems(i + 14 * oldsz, 0) = les_elems(i, 7);
           new_elems(i + 14 * oldsz, 1) = les_elems(i, 6);
           new_elems(i + 14 * oldsz, 2) = indice(6);
           new_elems(i + 14 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 14 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 14 * oldsz, 1);
 
           new_elems(i + 15 * oldsz, 0) = les_elems(i, 6);
           new_elems(i + 15 * oldsz, 1) = les_elems(i, 2);
           new_elems(i + 15 * oldsz, 2) = indice(6);
           new_elems(i + 15 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 15 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 15 * oldsz, 1);
 
           // pyramide gauche (base : 0-2-6-4)
 
@@ -416,25 +416,25 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
           new_elems(i + 16 * oldsz, 1) = les_elems(i, 2);
           new_elems(i + 16 * oldsz, 2) = indice(2);
           new_elems(i + 16 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 16 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 16 * oldsz, 1);
 
           new_elems(i + 17 * oldsz, 0) = les_elems(i, 2);
           new_elems(i + 17 * oldsz, 1) = les_elems(i, 6);
           new_elems(i + 17 * oldsz, 2) = indice(2);
           new_elems(i + 17 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 17 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 17 * oldsz, 1);
 
           new_elems(i + 18 * oldsz, 0) = les_elems(i, 6);
           new_elems(i + 18 * oldsz, 1) = les_elems(i, 4);
           new_elems(i + 18 * oldsz, 2) = indice(2);
           new_elems(i + 18 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 18 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 18 * oldsz, 1);
 
           new_elems(i + 19 * oldsz, 0) = les_elems(i, 4);
           new_elems(i + 19 * oldsz, 1) = les_elems(i, 0);
           new_elems(i + 19 * oldsz, 2) = indice(2);
           new_elems(i + 19 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 19 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 19 * oldsz, 1);
 
           // pyramide droite (base : 1-3-7-5)
 
@@ -442,25 +442,25 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
           new_elems(i + 20 * oldsz, 1) = les_elems(i, 3);
           new_elems(i + 20 * oldsz, 2) = indice(5);
           new_elems(i + 20 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 20 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 20 * oldsz, 1);
 
           new_elems(i + 21 * oldsz, 0) = les_elems(i, 3);
           new_elems(i + 21 * oldsz, 1) = les_elems(i, 7);
           new_elems(i + 21 * oldsz, 2) = indice(5);
           new_elems(i + 21 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 21 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 21 * oldsz, 1);
 
           new_elems(i + 22 * oldsz, 0) = les_elems(i, 7);
           new_elems(i + 22 * oldsz, 1) = les_elems(i, 5);
           new_elems(i + 22 * oldsz, 2) = indice(5);
           new_elems(i + 22 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 22 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 22 * oldsz, 1);
 
           new_elems(i + 23 * oldsz, 0) = les_elems(i, 5);
           new_elems(i + 23 * oldsz, 1) = les_elems(i, 1);
           new_elems(i + 23 * oldsz, 2) = indice(5);
           new_elems(i + 23 * oldsz, 3) = indice(0);
-          mettre_a_jour_sous_zone(zone, i, i + 23 * oldsz, 1);
+          mettre_a_jour_sous_domaine(domaine, i, i + 23 * oldsz, 1);
 
         }
       sommets_dom.resize(dim_som_old, 3);
@@ -468,36 +468,36 @@ void Tetraedriser_homogene_compact::trianguler(Zone& zone) const
 
       // Reconstruction de l'octree
       Cerr << "We have split the cubes..." << finl;
-      zone.invalide_octree();
-      zone.typer("Tetraedre");
+      domaine.invalide_octree();
+      domaine.typer("Tetraedre");
 
       Cerr << "Splitting of the boundaries" << finl;
-      for (auto &itr : zone.faces_bord())
+      for (auto &itr : domaine.faces_bord())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::triangle_3D);
-          decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
+          decoupe(domaine, les_faces, new_soms_old_elems, fait_sommet, nface);
         }
 
       Cerr << "Splitting of the connectors" << finl;
-      for (auto &itr : zone.faces_raccord())
+      for (auto &itr : domaine.faces_raccord())
         {
           Faces& les_faces = itr->faces();
           les_faces.typer(Faces::triangle_3D);
-          decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
+          decoupe(domaine, les_faces, new_soms_old_elems, fait_sommet, nface);
         }
 
       Cerr << "Splitting of the internal faces" << finl;
-      for (auto &itr : zone.faces_int())
+      for (auto &itr : domaine.faces_int())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::triangle_3D);
-          decoupe(zone, les_faces, new_soms_old_elems, fait_sommet, nface);
+          decoupe(domaine, les_faces, new_soms_old_elems, fait_sommet, nface);
         }
 
       Cerr << "END of Tetraedriser_homogene_compact..." << finl;
-      Cerr << "  1 NbElem=" << zone.les_elems().dimension(0) << "  NbNod=" << zone.nb_som() << finl;
+      Cerr << "  1 NbElem=" << domaine.les_elems().dimension(0) << "  NbNod=" << domaine.nb_som() << finl;
     }
   else
-    Cerr << "We do not yet know how to Tetraedriser_homogene_compact the " << zone.type_elem()->que_suis_je() << "s" << finl;
+    Cerr << "We do not yet know how to Tetraedriser_homogene_compact the " << domaine.type_elem()->que_suis_je() << "s" << finl;
 }

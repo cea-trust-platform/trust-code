@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Perte_Charge_Singuliere_VDF_Face.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Champ_Face_VDF.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
@@ -61,11 +61,11 @@ Entree& Perte_Charge_Singuliere_VDF_Face::readOn(Entree& s)
 
 void Perte_Charge_Singuliere_VDF_Face::remplir_num_faces(Entree& s)
 {
-  const Zone& le_domaine = equation().probleme().domaine();
-  const Zone_VDF& zone_VDF = ref_cast(Zone_VDF,equation().zone_dis().valeur());
-  int taille_bloc = zone_VDF.nb_elem();
+  const Domaine& le_domaine = equation().probleme().domaine();
+  const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF,equation().domaine_dis().valeur());
+  int taille_bloc = domaine_VDF.nb_elem();
   num_faces.resize(taille_bloc);
-  lire_surfaces(s,le_domaine,zone_VDF,num_faces, sgn);
+  lire_surfaces(s,le_domaine,domaine_VDF,num_faces, sgn);
   int nfac = num_faces.size();
   int nfac_tot = mp_sum(num_faces.size());
   if (nfac_tot==0)
@@ -78,7 +78,7 @@ void Perte_Charge_Singuliere_VDF_Face::remplir_num_faces(Entree& s)
 
   if (nfac != 0)
     {
-      int ori = zone_VDF.orientation(num_faces[0]);
+      int ori = domaine_VDF.orientation(num_faces[0]);
       if (ori != direction_perte_charge())
         {
           Cerr << "Erreur a la lecture des donnees de la perte de charge singuliere : " << finl;
@@ -95,15 +95,15 @@ void Perte_Charge_Singuliere_VDF_Face::dimensionner_blocs(matrices_t matrices, c
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
 
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (int f = 0; f < zone_VDF.nb_faces(); f++)
+  for (int f = 0; f < domaine_VDF.nb_faces(); f++)
     stencil.append_line(f, f);
   tableau_trier_retirer_doublons(stencil);
   if (mat && axi)
     {
-      Matrix_tools::allocate_morse_matrix(zone_VDF.nb_faces_tot(), zone_VDF.nb_faces_tot(), stencil, mat2);
+      Matrix_tools::allocate_morse_matrix(domaine_VDF.nb_faces_tot(), domaine_VDF.nb_faces_tot(), stencil, mat2);
       mat->nb_colonnes() ? *mat += mat2 : *mat = mat2;
     }
 
@@ -115,11 +115,11 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
-  int ndeb_faces_int = zone_VDF.premiere_face_int();
+  int ndeb_faces_int = domaine_VDF.premiere_face_int();
 
   int nb_faces = num_faces.size();
   int numfa;

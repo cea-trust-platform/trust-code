@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Tetra_VEF.h>
-#include <Zone.h>
-#include <Zone_VEF.h>
+#include <Domaine.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 
 Implemente_instanciable_sans_constructeur(Tetra_VEF,"Tetra_VEF",Elem_VEF_base);
@@ -57,11 +57,11 @@ void Tetra_VEF::normale(int num_Face,DoubleTab& Face_normales,
                         const IntTab& Face_sommets,
                         const IntTab& Face_voisins,
                         const IntTab& elem_faces,
-                        const Zone& zone_geom) const
+                        const Domaine& domaine_geom) const
 {
 
   //Cerr << " num_Face " << num_Face << finl;
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   // Cerr << "les face sommet " << Face_sommets << finl;
   double x1,y1,z1,x2,y2,z2;
@@ -122,16 +122,16 @@ void Tetra_VEF::normale(int num_Face,DoubleTab& Face_normales,
 
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_VEF
+/*! @brief remplit le tableau face_normales dans la Domaine_VEF
  *
  */
-void Tetra_VEF::creer_facette_normales(const Zone& zone_geom,
+void Tetra_VEF::creer_facette_normales(const Domaine& domaine_geom,
                                        DoubleTab& facette_normales,
                                        const IntVect& rang_elem_non_std) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
-  const IntTab& les_Polys = zone_geom.les_elems();
-  int nb_elem = zone_geom.nb_elem();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
+  const IntTab& les_Polys = domaine_geom.les_elems();
+  int nb_elem = domaine_geom.nb_elem();
 
   int i,fa7;
   int num_som[4];
@@ -146,15 +146,15 @@ void Tetra_VEF::creer_facette_normales(const Zone& zone_geom,
   //Original:
   // facette_normales.resize(0,6,3);
   // // valgrind with MPICH says a unitialised here so we initialize:
-  // // zone_geom.creer_tableau_elements(facette_normales, Array_base::NOCOPY_NOINIT);
-  // zone_geom.creer_tableau_elements(facette_normales);
+  // // domaine_geom.creer_tableau_elements(facette_normales, Array_base::NOCOPY_NOINIT);
+  // domaine_geom.creer_tableau_elements(facette_normales);
 
   //New similar as in Tri_VEF.cpp
-  if (facette_normales.get_md_vector() != zone_geom.md_vector_elements())
+  if (facette_normales.get_md_vector() != domaine_geom.md_vector_elements())
     {
       facette_normales.reset();
       facette_normales.resize(0,6,3);
-      zone_geom.creer_tableau_elements(facette_normales);
+      domaine_geom.creer_tableau_elements(facette_normales);
     }
 
   for(i=0; i<nb_elem; i++)
@@ -214,13 +214,13 @@ void Tetra_VEF::creer_facette_normales(const Zone& zone_geom,
 }
 
 
-/*! @brief remplit le tableau normales_facettes_Cl dans la Zone_Cl_VEF pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans la Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
  *
  */
 void Tetra_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
                                            int fa7,
                                            int num_elem,const DoubleTab& x,
-                                           const DoubleVect& xg, const Zone& zone_geom) const
+                                           const DoubleVect& xg, const Domaine& domaine_geom) const
 {
   // x contient les coord des sommets du tetraedre
   // xg contient les coord du "centre" du tetraedre
@@ -266,7 +266,7 @@ void Tetra_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
 
 
 void Tetra_VEF::modif_volumes_entrelaces(int j,int elem,
-                                         const Zone_VEF& le_dom_VEF,
+                                         const Domaine_VEF& le_dom_VEF,
                                          DoubleVect& volumes_entrelaces_Cl,
                                          int type_cl) const
 {
@@ -422,7 +422,7 @@ void Tetra_VEF::modif_volumes_entrelaces(int j,int elem,
 }
 
 void Tetra_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
-                                                      const Zone_VEF& le_dom_VEF,
+                                                      const Domaine_VEF& le_dom_VEF,
                                                       DoubleVect& volumes_entrelaces_Cl,
                                                       int type_cl) const
 {

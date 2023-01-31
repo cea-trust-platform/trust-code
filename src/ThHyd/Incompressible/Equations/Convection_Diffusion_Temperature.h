@@ -95,7 +95,7 @@ protected :
   int verifier_tag_indicatrice_pena_glob();
   int mise_a_jour_tag_indicatrice_pena_glob();
   void set_indic_pena_globale();
-  void mise_en_place_zone_fantome(DoubleTab&);
+  void mise_en_place_domaine_fantome(DoubleTab&);
   void calcul_indic_pena_global(IntTab&, IntTab&);
   void transport_ibc(DoubleTrav&, DoubleTab&);
   void ecrire_fichier_pena_th(DoubleTab&, DoubleTab&, DoubleTab&, DoubleTab&);

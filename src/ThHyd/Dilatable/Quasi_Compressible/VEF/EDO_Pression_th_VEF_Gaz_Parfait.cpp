@@ -15,7 +15,7 @@
 
 #include <EDO_Pression_th_VEF_Gaz_Parfait.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
@@ -61,20 +61,20 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
   int nb_faces = le_dom->nb_faces();
   double Pth=0;
 
-  const Zone_VEF& zone_vef = ref_cast(Zone_VEF, le_dom.valeur());
+  const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, le_dom.valeur());
 
   if (traitPth == 0)   // EDO
     {
 
       const DoubleTab& tab_rho = le_fluide_->masse_volumique().valeurs();       // n+1/2
 
-      const double rho_moy = Champ_P1NC::calculer_integrale_volumique(zone_vef, tab_rho, FAUX_EN_PERIO);
+      const double rho_moy = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tab_rho, FAUX_EN_PERIO);
       DoubleVect tmp(tab_rho); // copie de rho
       assert(tmp.size() == nb_faces);
       const double invdt = 1. / dt;
       for (int i = 0; i < nb_faces; i++)
         tmp[i] *= (tempnp1[i] - tempn[i]) / tempnp1[i] * invdt;
-      double S = Champ_P1NC::calculer_integrale_volumique(zone_vef, tmp, FAUX_EN_PERIO);
+      double S = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tmp, FAUX_EN_PERIO);
 
       //////////////////
       S /= rho_moy;
@@ -111,10 +111,10 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
       tmp.copy(tempn, ArrOfDouble::NOCOPY_NOINIT); // copier uniquement la structure
       for (int i = 0; i < nb_faces; i++)
         tmp[i] = 1. / tempn[i];
-      const double masse_n = Champ_P1NC::calculer_integrale_volumique(zone_vef, tmp, FAUX_EN_PERIO);
+      const double masse_n = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tmp, FAUX_EN_PERIO);
       for (int i = 0; i < nb_faces; i++)
         tmp[i] = 1. / tempnp1[i];
-      const double masse_np1 = Champ_P1NC::calculer_integrale_volumique(zone_vef, tmp, FAUX_EN_PERIO);
+      const double masse_np1 = Champ_P1NC::calculer_integrale_volumique(domaine_vef, tmp, FAUX_EN_PERIO);
 
       // Calcul de debit_u_imp et debit_rho_u_imp
       for (int n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)

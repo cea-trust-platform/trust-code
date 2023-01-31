@@ -16,8 +16,8 @@
 #include <Terme_Source_Canal_RANS_LES_VDF_Face.h>
 #include <math.h>
 #include <Champ_Uniforme.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Pb_Hydraulique.h>
 #include <Pb_Thermohydraulique.h>
 #include <EFichier.h>
@@ -152,11 +152,11 @@ Entree& Terme_Source_Canal_RANS_LES_VDF_Face::readOn(Entree& is )
 
 }
 
-void Terme_Source_Canal_RANS_LES_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                             const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_RANS_LES_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                             const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 void Terme_Source_Canal_RANS_LES_VDF_Face::associer_pb(const Probleme_base& pb)
@@ -166,14 +166,14 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::associer_pb(const Probleme_base& pb)
 
 void Terme_Source_Canal_RANS_LES_VDF_Face::init()
 {
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
-  int nb_faces = zone_VDF.nb_faces();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
+  int nb_faces = domaine_VDF.nb_faces();
   const double tps = mon_equation->schema_temps().temps_courant();
 
 
-  int nb_elems = zone_VDF.nb_elem();
-  int nb_faces_y = zone_VDF.nb_faces_Y();
+  int nb_elems = domaine_VDF.nb_elem();
+  int nb_faces_y = domaine_VDF.nb_faces_Y();
   int Ny = nb_elems/(nb_faces_y-nb_elems);
 
   SFichier fic_moyx("moyx.dat");
@@ -267,14 +267,14 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
   // utiles au calcul des differentes moyennes
   // Initialisation de : Yu,Yv,Yw + compt_x,compt_y,compt_z
   // + corresp_u,corresp_v,corresp_w
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
-  const DoubleTab& xv = zone_VDF.xv();
+  const DoubleTab& xv = domaine_VDF.xv();
 
-  int nb_faces = zone_VDF.nb_faces();
-  int nb_elems = zone_VDF.zone().nb_elem();
-  int nb_faces_y = zone_VDF.nb_faces_Y();
+  int nb_faces = domaine_VDF.nb_faces();
+  int nb_elems = domaine_VDF.domaine().nb_elem();
+  int nb_faces_y = domaine_VDF.nb_faces_Y();
 
   int Ny; //Nombre de maille en y + 1 (=nombre de faces)
   Ny = nb_elems/(nb_faces_y-nb_elems);
@@ -282,7 +282,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
   Nyy = Ny+1;
   Nzy = Ny;
 
-  const IntVect& orientation = zone_VDF.orientation();
+  const IntVect& orientation = domaine_VDF.orientation();
 
   int num_face,j,ori,indic,indicv,indicw,trouve;
   double y;
@@ -425,11 +425,11 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init_calcul_moyenne_spat()
 
 DoubleTab Terme_Source_Canal_RANS_LES_VDF_Face::norme_vit(void) const
 {
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  int nb_elems = zone_VDF.nb_elem();
-  int nb_faces = zone_VDF.nb_faces();
-  const IntTab& face_voisins = zone_VDF.face_voisins();
-  const IntTab& elem_faces = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  int nb_elems = domaine_VDF.nb_elem();
+  int nb_faces = domaine_VDF.nb_faces();
+  const IntTab& face_voisins = domaine_VDF.face_voisins();
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
   DoubleVect norme_vit_elem(nb_elems);
   norme_vit_elem.resize(nb_faces);
   double vit1, vit2, vit3;
@@ -481,9 +481,9 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::moy_spat(DoubleVect& champ, DoubleVec
                                                     DoubleVect& champ_spat_x_2, DoubleVect& champ_spat_y_2,
                                                     DoubleVect& champ_spat_z_2)
 {
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  const IntVect& orientation = zone_VDF.orientation();
-  int nb_faces = zone_VDF.nb_faces();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  const IntVect& orientation = domaine_VDF.orientation();
+  int nb_faces = domaine_VDF.nb_faces();
 
   int j=-1;
 
@@ -610,20 +610,20 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::ecriture_moy_temp(DoubleVect& champ_t
 void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
 {
   //Cerr << "Je suis dans le mettre_a_jour" << finl;
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double tps = mon_equation->schema_temps().temps_courant();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
-  const IntVect& orientation = zone_VDF.orientation();
-  int nb_elems = zone_VDF.nb_elem();
-  int nb_faces = zone_VDF.nb_faces();
+  const IntVect& orientation = domaine_VDF.orientation();
+  int nb_elems = domaine_VDF.nb_elem();
+  int nb_faces = domaine_VDF.nb_faces();
 
-  int nb_faces_x = zone_VDF.nb_faces_X();
-  int nb_faces_y = zone_VDF.nb_faces_Y();
-  int nb_faces_z = zone_VDF.nb_faces_Z();
+  int nb_faces_x = domaine_VDF.nb_faces_X();
+  int nb_faces_y = domaine_VDF.nb_faces_Y();
+  int nb_faces_z = domaine_VDF.nb_faces_Z();
 
   //static double duree = 0;
 
@@ -633,7 +633,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
   SFichier fic_moyz("moyz.dat");
   SFichier fic_f("f.dat", ios::app);
   SFichier fic_fface("force_face.dat", ios::app);
-  const DoubleTab& xv = zone_VDF.xv();
+  const DoubleTab& xv = domaine_VDF.xv();
 
 
 
@@ -974,7 +974,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
   compteur_reprise++;
 
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
-  const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
 
   DoubleVect force(nb_faces);
 
@@ -1059,10 +1059,10 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::mettre_a_jour(double temps)
 
 void Terme_Source_Canal_RANS_LES_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  int nb_faces = zone_VDF.nb_faces();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  int nb_faces = domaine_VDF.nb_faces();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
-  const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
   const double tps = mon_equation->schema_temps().temps_courant();
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();

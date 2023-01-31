@@ -14,16 +14,16 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Tabule_Morceaux.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <TRUSTTrav.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <TRUSTTab_parts.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule_Morceaux, "Champ_Fonc_Tabule_Morceaux|Champ_Tabule_Morceaux", TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TABULE>);
-// XD Champ_Fonc_Tabule_Morceaux champ_don_base Champ_Tabule_Morceaux 0 Field defined by tabulated data in each sub-zone. It makes possible the definition of a field which is a function of other fields.
+// XD Champ_Fonc_Tabule_Morceaux champ_don_base Champ_Tabule_Morceaux 0 Field defined by tabulated data in each sub-domaine. It makes possible the definition of a field which is a function of other fields.
 // XD   attr domain_name ref_domaine domain_name 0 Name of the domain.
 // XD   attr nb_comp int nb_comp 0 Number of field components.
-// XD   attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object function, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_tabule_morceaux type object.
+// XD   attr data bloc_lecture data 0 { Defaut val_def sous_domaine_1 val_1 ... sous_domaine_i val_i } By default, the value val_def is assigned to the field. It takes the sous_domaine_i identifier Sous_Domaine (sub_area) type object function, val_i. Sous_Domaine (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_tabule_morceaux type object.
 
 Sortie& Champ_Fonc_Tabule_Morceaux::printOn(Sortie& os) const { return os << valeurs(); }
 
@@ -33,7 +33,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   is >> nom;
   interprete_get_domaine(nom);
   mon_domaine->creer_tableau_elements(i_mor);
-  i_mor = -1; // pour planter si on a oublie une sous-zone
+  i_mor = -1; // pour planter si on a oublie une sous-domaine
 
   int nbcomp;
   is >> nbcomp;
@@ -49,9 +49,9 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   for (is >> nom; nom != "}"; is >> nom)
     {
       CHTAB ch_lu;
-      /* 1. lecture de la sous-zone */
-      REF(Sous_Zone) refssz = les_sous_zones.add(mon_domaine->ss_zone(nom));
-      Sous_Zone& ssz = refssz.valeur();
+      /* 1. lecture de la sous-domaine */
+      REF(Sous_Domaine) refssz = les_sous_domaines.add(mon_domaine->ss_domaine(nom));
+      Sous_Domaine& ssz = refssz.valeur();
 
       /* 2. lecture des champs parametres */
       is >> nom, m_pb_ch.push_back({});
@@ -141,7 +141,7 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
           IntVect polys(tab.dimension_tot(0));
           for (int i = 0; i < tab.dimension_tot(0); i++) polys[i] = i;
           tval.push_back(DoubleTab(tab.dimension_tot(0), pch->nb_comp()));
-          pch->valeur_aux_elems(pch->a_une_zone_dis_base() ? ref_cast(Zone_VF, pch->zone_dis_base()).xp() : vide, polys, tval.back());
+          pch->valeur_aux_elems(pch->a_une_domaine_dis_base() ? ref_cast(Domaine_VF, pch->domaine_dis_base()).xp() : vide, polys, tval.back());
           pval.push_back(&tval.back());
         }
       is_multi.push_back(pval.back()->dimension(1) > 1);

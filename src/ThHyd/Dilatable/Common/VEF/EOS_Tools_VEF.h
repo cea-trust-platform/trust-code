@@ -17,8 +17,8 @@
 #define EOS_Tools_VEF_included
 
 #include <EOS_Tools_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_dis.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_dis.h>
 
 class Fluide_Dilatable_base;
 
@@ -34,7 +34,7 @@ public :
   const DoubleTab& rho_discvit() const override;
   const DoubleTab& rho_face_n() const override;
   const DoubleTab& rho_face_np1() const override;
-  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;
   void divu_discvit(const DoubleTab& , DoubleTab& ) override;
   double moyenne_vol(const DoubleTab&) const override;
   void secmembre_divU_Z(DoubleTab& ) const override;
@@ -42,8 +42,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF(Zone_VEF) le_dom;
-  REF(Zone_Cl_dis) le_dom_Cl;
+  REF(Domaine_VEF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_Cl;
 };
 
 #endif /* EOS_Tools_VEF_included */

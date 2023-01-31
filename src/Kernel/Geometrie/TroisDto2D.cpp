@@ -80,7 +80,7 @@ Entree& TroisDto2D::interpreter_(Entree& is)
     Interprete_bloc& interp = Interprete_bloc::interprete_courant();
     if (interp.objet_global_existant(nom_dom2D))
       {
-        if (sub_type(Zone, interp.objet_global(nom_dom2D)))
+        if (sub_type(Domaine, interp.objet_global(nom_dom2D)))
           {
             Cerr << "Domain " << nom_dom2D
                  << " already exists, writing to this object." << finl;
@@ -96,12 +96,12 @@ Entree& TroisDto2D::interpreter_(Entree& is)
       {
         Cerr << "Declaring a new domain with name " << nom_dom2D << finl;
         DerObjU ob;
-        ob.typer("Zone");
+        ob.typer("Domaine");
         interp.ajouter(nom_dom2D, ob);
       }
   }
-  Zone& dom2D = ref_cast(Zone, objet(nom_dom2D));
-  const Zone& dom3D = domaine();
+  Domaine& dom2D = ref_cast(Domaine, objet(nom_dom2D));
+  const Domaine& dom3D = domaine();
   const Bord& bord3D=dom3D.bord(nom_bord);
   Scatter::uninit_sequential_domain(dom2D);
   extraire_2D(dom3D, dom2D, bord3D,nom_bord, test_axi);
@@ -110,7 +110,7 @@ Entree& TroisDto2D::interpreter_(Entree& is)
 
 }
 
-void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D, const Nom& nom_bord, int test_axi)
+void TroisDto2D::extraire_2D(const Domaine& dom3D, Domaine& dom2D, const Bord& bord3D, const Nom& nom_bord, int test_axi)
 {
   const DoubleTab& coord_sommets3D=dom3D.coord_sommets();
   DoubleTab& coord_sommets2D=dom2D.les_sommets();

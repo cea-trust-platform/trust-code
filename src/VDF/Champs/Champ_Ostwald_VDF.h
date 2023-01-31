@@ -25,7 +25,7 @@
  *         de la consistance et de l'indice de structure.
  *          Champ utilise pour le fluide d'Ostwald et la discretisation VDF.
  *             Fait reference a Champ_Face pour lancer le calcul de D:D dans Champ4.cpp
- *                     zone_VDF pou utiliser la
+ *                     domaine_VDF pou utiliser la
  *
  * @sa Champ_Ostwald
  */

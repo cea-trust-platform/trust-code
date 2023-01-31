@@ -15,7 +15,7 @@
 
 #include <Interpolation_IBM_elem_fluid.h>
 #include <TRUSTTrav.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable( Interpolation_IBM_elem_fluid, "Interpolation_IBM_element_fluide|IBM_element_fluide", Interpolation_IBM_base ) ;
@@ -44,7 +44,7 @@ Entree& Interpolation_IBM_elem_fluid::readOn( Entree& is )
   return is;
 }
 
-void Interpolation_IBM_elem_fluid::discretise(const Discretisation_base& dis, Zone_dis_base& le_dom_EF)
+void Interpolation_IBM_elem_fluid::discretise(const Discretisation_base& dis, Domaine_dis_base& le_dom_EF)
 {
   int nb_comp = Objet_U::dimension;
   Noms units(nb_comp);
@@ -64,15 +64,15 @@ void Interpolation_IBM_elem_fluid::discretise(const Discretisation_base& dis, Zo
   computeFluidElems(le_dom_EF);
 }
 
-void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& le_dom_EF)
+void Interpolation_IBM_elem_fluid::computeFluidElems(Domaine_dis_base& le_dom_EF)
 {
   double eps = 1e-12;
   int nb_som = le_dom_EF.nb_som();
   int nb_som_tot = le_dom_EF.nb_som_tot();
   int nb_elem = le_dom_EF.nb_elem();
   int nb_elem_tot = le_dom_EF.nb_elem_tot();
-  const DoubleTab& coordsDom = le_dom_EF.zone().coord_sommets();
-  // const IntTab& elems = le_dom_EF.zone().les_elems();
+  const DoubleTab& coordsDom = le_dom_EF.domaine().coord_sommets();
+  // const IntTab& elems = le_dom_EF.domaine().les_elems();
 
   DoubleTab& elems_fluid_ref = fluid_elems_.valeur().valeurs();
   DoubleTab& fluid_points_ref = fluid_points_.valeur().valeurs();
@@ -143,7 +143,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& le_dom_EF)
                           Cerr<<"coords_point(node) : x y z    = "<<coordsDom(i,0)<<" "<<coordsDom(i,1)<<" "<<coordsDom(i,2)<<finl;
                           Cerr<<"fluid_points(node) : xf yf zf = "<<x<<" "<<y<<" "<<z<<finl;
                           Cerr<<"solid_points(node) : xs ys zs = "<<xs<<" "<<ys<<" "<<zs<<finl;
-                          int elem_found = le_dom_EF.zone().chercher_elements(x,y,z);
+                          int elem_found = le_dom_EF.domaine().chercher_elements(x,y,z);
                           Cerr<<"chercher_elements(xf,yf,zf) = "<<elem_found<<finl;
                           exit();
                         }

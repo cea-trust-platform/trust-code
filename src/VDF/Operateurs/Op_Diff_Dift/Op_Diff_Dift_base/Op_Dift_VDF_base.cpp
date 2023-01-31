@@ -50,7 +50,7 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
 
       if (Objet_U::bidim_axi == 1)
         {
-          const Zone_VDF& zvdf = iter->zone();
+          const Domaine_VDF& zvdf = iter->domaine();
           const DoubleTab& xv = zvdf.xv();
           const IntVect& ori = zvdf.orientation();
           const IntTab& face_voisins = zvdf.face_voisins();

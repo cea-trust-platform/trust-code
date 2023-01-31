@@ -16,7 +16,7 @@
 #ifndef Interpolation_IBM_mean_gradient_proto_included
 #define Interpolation_IBM_mean_gradient_proto_included
 
-#include <Zone_dis_base.h>
+#include <Domaine_dis_base.h>
 #include <TRUSTLists.h>
 #include <Champ_Don.h>
 
@@ -38,7 +38,7 @@ public :
   };
 
 protected :
-  void computeSommetsVoisins(Zone_dis_base& le_dom_EF, const Champ_Don& solid_points, const Champ_Don& corresp_elems);
+  void computeSommetsVoisins(Domaine_dis_base& le_dom_EF, const Champ_Don& solid_points, const Champ_Don& corresp_elems);
 
   Champ_Don is_dirichlet_lu_;
   Champ_Don is_dirichlet_;

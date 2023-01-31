@@ -18,11 +18,11 @@
 
 #include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-#include <Ref_Sous_zone_VF.h>
+#include <Ref_Sous_domaine_VF.h>
 #include <Ref_Fluide_base.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Ref_Zone_VEF.h>
-#include <Ref_Zone_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
 #include <Parser_U.h>
 
 class Param;
@@ -32,7 +32,7 @@ class Param;
    Perte_Charge_Isotrope, Perte_Charge_Directionnelle et
    Perte_Charge_Anisotrope heritent de Perte_Charge_VEF. Elles
    doivent surcharger essentiellement readOn() et perte_charge().
-   readOn() est suppose lire au moins diam_hydr et sous_zone.
+   readOn() est suppose lire au moins diam_hydr et sous_domaine.
 
    Ces classes sont censees remplacer Perte_Charge_VEF_Face
    et Perte_Charge_VEF_P1NC.
@@ -52,7 +52,7 @@ public:
 protected:
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;   //!< associe le_dom_VEF et le_dom_Cl_VEF
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;   //!< associe le_dom_VEF et le_dom_Cl_VEF
 
   //! Appele pour chaque face par ajouter()
   /**
@@ -87,14 +87,14 @@ protected:
   REF(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
-  //! Zone dans laquelle s'applique la perte de charge
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
+  //! Domaine dans laquelle s'applique la perte de charge
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
-  // Cas d'une sous-zone
-  bool sous_zone=false; //!< Le terme est-il limite a une sous-zone ?
-  Nom nom_sous_zone; //!< Nom de la sous-zone, initialise dans readOn()
-  REF(Sous_zone_VF) la_sous_zone_dis; //!< Initialise dans completer()
+  // Cas d'une sous-domaine
+  bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?
+  Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
+  REF(Sous_domaine_VF) la_sous_domaine_dis; //!< Initialise dans completer()
   int implicite_;
 
   mutable Parser_U lambda;

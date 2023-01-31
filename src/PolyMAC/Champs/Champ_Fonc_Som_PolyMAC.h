@@ -18,13 +18,13 @@
 
 #include <Champ_Fonc_P1_base.h>
 
-class Zone_PolyMAC;
+class Domaine_PolyMAC;
 
 class Champ_Fonc_Som_PolyMAC: public Champ_Fonc_P1_base
 {
   Declare_instanciable(Champ_Fonc_Som_PolyMAC);
 public:
-  const Zone_PolyMAC& zone_PolyMAC() const;
+  const Domaine_PolyMAC& domaine_PolyMAC() const;
   int imprime(Sortie&, int) const override;
   void mettre_a_jour(double) override;
 };

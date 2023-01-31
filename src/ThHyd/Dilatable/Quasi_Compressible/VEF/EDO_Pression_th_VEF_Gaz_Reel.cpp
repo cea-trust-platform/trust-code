@@ -15,8 +15,8 @@
 
 #include <EDO_Pression_th_VEF_Gaz_Reel.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Schema_Temps_base.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
@@ -72,7 +72,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   DoubleTab HstarP0(nb_elem);
   DoubleTab gradh(nb_faces,dimension);
   DoubleTab u_gradh(nb_faces);
-  int nfe = le_dom->zone().nb_faces_elem();
+  int nfe = le_dom->domaine().nb_faces_elem();
   const IntTab& elem_faces = le_dom->elem_faces();
   for (elem=0 ; elem<nb_elem ; elem++)
     {

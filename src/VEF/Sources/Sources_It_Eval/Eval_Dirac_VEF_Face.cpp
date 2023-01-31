@@ -25,7 +25,7 @@ void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don& Q)
 void Eval_Dirac_VEF_Face::mettre_a_jour()
 {
   puissance = la_puissance.valeur()(0);
-  mon_dom = le_dom.valeur().zone();
+  mon_dom = le_dom.valeur().domaine();
 }
 
 void Eval_Dirac_VEF_Face::associer_nb_elem_dirac(int n)

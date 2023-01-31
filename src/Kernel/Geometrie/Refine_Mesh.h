@@ -60,7 +60,7 @@ protected :
   void build_new_cells_2D(IntTab& new_cells, const IntTab& edges_of_cells) const;
   void build_new_cells_3D(IntTab& new_cells, const IntTab& edges_of_cells) const;
 
-  void build_new_sub_zones_descriptions(Noms& new_sub_zones_descriptions) const;
+  void build_new_sub_domaines_descriptions(Noms& new_sub_domaines_descriptions) const;
 
   void build_incidence_from_node_to_edges(int            nb_nodes,
                                           const IntTab&     nodes_of_edges,
@@ -106,7 +106,7 @@ protected :
                      const Type_Face&    face_type,
                      const DoubleTab&    new_nodes,
                      const IntTab&       new_cells,
-                     const Noms&         new_sub_zones_descriptions,
+                     const Noms&         new_sub_domaines_descriptions,
                      const IntTabs& new_nodes_of_boundary_faces,
                      const IntTabs& new_cells_of_boundary_faces,
                      const IntTabs& new_nodes_of_connector_faces,
@@ -120,7 +120,7 @@ protected :
 
   void update_octree(const Nom& cell_type);
 
-  void update_sub_zones(const Noms& new_sub_zones_descriptions);
+  void update_sub_domaines(const Noms& new_sub_domaines_descriptions);
 
   void update_boundary_faces(const Type_Face&    face_type,
                              const IntTabs& new_nodes_of_boundary_faces,

@@ -22,7 +22,7 @@
 #include <Champ_Fonc.h>
 #include <Source_base.h>
 #include <Motcle.h>
-#include <Ref_Zone_VF.h>
+#include <Ref_Domaine_VF.h>
 
 class Probleme_base;
 

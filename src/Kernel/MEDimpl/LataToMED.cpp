@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <LataToMED.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <EFichierBin.h>
 #include <EChaine.h>
 #include <PE_Groups.h>
@@ -49,10 +49,10 @@ Entree& LataToMED::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-/*! @brief Convert a Lata domain object ('Domain') into a TRUST domain object ('Zone')
+/*! @brief Convert a Lata domain object ('Domain') into a TRUST domain object ('Domaine')
  *
  */
-void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
+void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
 {
   //      dom_trio.les_sommets()=geom.nodes_;
   // mais geom.nodes est un FloatTab
@@ -95,7 +95,7 @@ void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
 
   Nom type_elem=dom.lata_element_name(dom.elt_type_);
   if (type_elem=="PRISM6") type_elem="PRISME";
-  // zone.type_elem()=type_ele;
+  // domaine.type_elem()=type_ele;
   dom_trio.typer(type_elem);
 
   dom_trio.type_elem().associer_domaine(dom_trio);
@@ -237,7 +237,7 @@ Entree& latatoother::interpreter(Entree& is)
             Domain_Id id(geoms[i], 1, -1);
             const Domain& dom = filter.get_geometry(id);
 
-            Zone dom_trio;
+            Domaine dom_trio;
             dom_trio.nommer(geoms[i]);
             convert_domain_to_Domaine(dom,dom_trio);
             int est_le_premier_post=(i==0);
@@ -267,7 +267,7 @@ Entree& latatoother::interpreter(Entree& is)
               Domain_Id id(geoms[i], timestate, -1);
               const Domain& dom = filter.get_geometry(id);
 
-              Zone dom_trio;
+              Domaine dom_trio;
               dom_trio.nommer(geoms[i]);
               convert_domain_to_Domaine(dom,dom_trio);
               Field_UNames fields = filter.get_exportable_field_unames(geoms[i]);

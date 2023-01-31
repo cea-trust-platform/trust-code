@@ -14,22 +14,22 @@
 *****************************************************************************/
 
 #include <BilanQdmVEF.h>
-#include <Zone_Cl_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <Front_VF.h>
 #include <Periodique.h>
 #include <TRUSTTab.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 
-void BilanQdmVEF::bilan_qdm(const DoubleTab& dudt, const Zone_Cl_VEF& zone_Cl_VEF, ArrOfDouble& bilan)
+void BilanQdmVEF::bilan_qdm(const DoubleTab& dudt, const Domaine_Cl_VEF& domaine_Cl_VEF, ArrOfDouble& bilan)
 {
-  int nb_bord=zone_Cl_VEF.nb_cond_lim();
+  int nb_bord=domaine_Cl_VEF.nb_cond_lim();
   int face;
   int nb_comp=bilan.size_array();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int nb_faces=le_bord.nb_faces();
@@ -89,9 +89,9 @@ void BilanQdmVEF::bilan_qdm(const DoubleTab& dudt, const Zone_Cl_VEF& zone_Cl_VE
         }
     }// for nbord
   {
-    const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zone_Cl_VEF.zone_dis().valeur());
-    const int prems=zone_VEF.premiere_face_int();
-    const int nb_faces=zone_VEF.nb_faces_tot();
+    const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, domaine_Cl_VEF.domaine_dis().valeur());
+    const int prems=domaine_VEF.premiere_face_int();
+    const int nb_faces=domaine_VEF.nb_faces_tot();
     for(face=prems; face<nb_faces; face++)
       {
         for (int comp=0; comp<nb_comp; comp++)
@@ -107,15 +107,15 @@ void BilanQdmVEF::bilan_qdm(const DoubleTab& dudt, const Zone_Cl_VEF& zone_Cl_VE
 
 void BilanQdmVEF::bilan_energie(const DoubleTab& dudt,
                                 const DoubleTab& u,
-                                const Zone_Cl_VEF& zone_Cl_VEF,
+                                const Domaine_Cl_VEF& domaine_Cl_VEF,
                                 ArrOfDouble& bilan)
 {
-  int nb_bord=zone_Cl_VEF.nb_cond_lim();
+  int nb_bord=domaine_Cl_VEF.nb_cond_lim();
   int face;
   int nb_comp=bilan.size_array();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int nb_faces=le_bord.nb_faces();
@@ -175,9 +175,9 @@ void BilanQdmVEF::bilan_energie(const DoubleTab& dudt,
         }
     }// for nbord
   {
-    const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zone_Cl_VEF.zone_dis().valeur());
-    const int prems=zone_VEF.premiere_face_int();
-    const int nb_faces=zone_VEF.nb_faces_tot();
+    const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, domaine_Cl_VEF.domaine_dis().valeur());
+    const int prems=domaine_VEF.premiere_face_int();
+    const int nb_faces=domaine_VEF.nb_faces_tot();
     for(face=prems; face<nb_faces; face++)
       {
         for (int comp=0; comp<nb_comp; comp++)

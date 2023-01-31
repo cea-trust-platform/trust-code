@@ -168,7 +168,7 @@ int Echange_couplage_thermique::initialiser(double temps)
 
   if (reprise_)
     {
-      Champ_Inc ch = zone_Cl_dis().equation().inconnue();
+      Champ_Inc ch = domaine_Cl_dis().equation().inconnue();
       ch->affecter(lec_champs.champ_lu("temperature_paroi"));
       DoubleTab& vals1 =le_champ_front->valeurs();
       ch->trace(frontiere_dis(),vals1,temps,0);
@@ -177,10 +177,10 @@ int Echange_couplage_thermique::initialiser(double temps)
       DoubleTab& vals = phi_ext_->valeurs();
       ch->trace(frontiere_dis(),vals,temps,0);
     }
-  coeff_ap->initialiser(temps,zone_Cl_dis().inconnue());
-  coeff_sp->initialiser(temps,zone_Cl_dis().inconnue());
-  coeff_heff->initialiser(temps,zone_Cl_dis().inconnue());
-  temperature_Teff->initialiser(temps,zone_Cl_dis().inconnue());
+  coeff_ap->initialiser(temps,domaine_Cl_dis().inconnue());
+  coeff_sp->initialiser(temps,domaine_Cl_dis().inconnue());
+  coeff_heff->initialiser(temps,domaine_Cl_dis().inconnue());
+  temperature_Teff->initialiser(temps,domaine_Cl_dis().inconnue());
 
   return 1;
 }

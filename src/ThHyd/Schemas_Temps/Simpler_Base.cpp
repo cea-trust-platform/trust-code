@@ -20,7 +20,7 @@
 #include <TRUSTTrav.h>
 #include <SChaine.h>
 #include <EChaine.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_base_sans_constructeur(Simpler_Base,"Simpler_Base",Solveur_non_lineaire);
 
@@ -230,7 +230,7 @@ void Simpler_Base::assembler_matrice_pression_implicite(Equation_base& eqn_NS,co
       nb_comp = present.dimension(1);
     }
 
-  const Zone_VF& le_dom = ref_cast(Zone_VF,eqnNS.zone_dis().valeur());
+  const Domaine_VF& le_dom = ref_cast(Domaine_VF,eqnNS.domaine_dis().valeur());
   if (deux_entrees==0)
     {
       DoubleVect vol2 = le_dom.volumes_entrelaces();

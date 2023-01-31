@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Tabule_P0_VDF.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Table.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule_P0_VDF, "Champ_Fonc_Tabule_P0_VDF", Champ_Fonc_P0_VDF);
@@ -31,10 +31,10 @@ void Champ_Fonc_Tabule_P0_VDF::associer_param(const VECT(REF(Champ_base)) &les_c
 
 void Champ_Fonc_Tabule_P0_VDF::mettre_a_jour(double t)
 {
-  const Zone_VF& zone_VF = le_dom_VF.valeur();
+  const Domaine_VF& domaine_VF = le_dom_VF.valeur();
   const Table& table = la_table.valeur();
   DoubleTab& mes_valeurs = valeurs();
-  const int nb_elem = zone_VF.nb_elem(), nb_elem_tot = zone_VF.nb_elem_tot(), nb_param = les_ch_param.size();
+  const int nb_elem = domaine_VF.nb_elem(), nb_elem_tot = domaine_VF.nb_elem_tot(), nb_param = les_ch_param.size();
   DoubleTabs val_params_aux_elems;
   for (int i = 0; i < nb_param; i++)
     {
@@ -42,7 +42,7 @@ void Champ_Fonc_Tabule_P0_VDF::mettre_a_jour(double t)
       DoubleTab vp(nb_elem_tot, les_ch_param[i]->valeurs().dimension(1));
       val_params_aux_elems.add(vp);
     }
-  const DoubleTab& centres_de_gravites = zone_VF.xp();
+  const DoubleTab& centres_de_gravites = domaine_VF.xp();
   IntVect les_polys(nb_elem_tot);
   for (int elem = 0; elem < nb_elem_tot; elem++)
     les_polys(elem) = elem;

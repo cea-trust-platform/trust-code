@@ -17,8 +17,8 @@
 #include <Equation_base.h>
 #include <Pb_Multiphase.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_Cl_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(Masse_VDF_Elem,"Masse_VDF_P0_VDF",Masse_VDF_base);
 
@@ -37,9 +37,9 @@ DoubleTab& Masse_VDF_Elem::appliquer_impl(DoubleTab& sm) const
   if (sub_type(Pb_Multiphase, equation().probleme())) return appliquer_impl_proto(sm);
   else
     {
-      const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-      const DoubleVect& volumes = zone_VDF.volumes(), &porosite_elem = equation().milieu().porosite_elem();
-      int nb_elem = zone_VDF.nb_elem();
+      const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+      const DoubleVect& volumes = domaine_VDF.volumes(), &porosite_elem = equation().milieu().porosite_elem();
+      int nb_elem = domaine_VDF.nb_elem();
       if (nb_elem == 0)
         {
           sm.echange_espace_virtuel();

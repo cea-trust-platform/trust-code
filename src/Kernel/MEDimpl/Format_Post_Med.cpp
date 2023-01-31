@@ -121,7 +121,7 @@ int Format_Post_Med::finir(const int est_le_dernier_post)
 }
 
 
-int Format_Post_Med::completer_post(const Zone& dom,const int is_axi,
+int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
                                     const Nature_du_champ& nature,const int nb_compo,const Noms& noms_compo,
                                     const Motcle& loc_post,const Nom& le_nom_champ_post)
 {
@@ -194,16 +194,16 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_pre
 
 }
 
-int Format_Post_Med::ecrire_domaine(const Zone& domaine,const int est_le_premier_post)
+int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
-  const REF(Zone_dis_base) zone_dis_base;
-  return ecrire_domaine_dis(domaine, zone_dis_base, est_le_premier_post);
+  const REF(Domaine_dis_base) domaine_dis_base;
+  return ecrire_domaine_dis(domaine, domaine_dis_base, est_le_premier_post);
 }
 
 /*! @brief voir Format_Post_base::ecrire_domaine
  *
  */
-int Format_Post_Med::ecrire_domaine_dis(const Zone& domaine,const REF(Zone_dis_base)& zone_dis_base,const int est_le_premier_post)
+int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
 {
   Nom nom_fich(med_basename_);
   nom_fich +=".";
@@ -216,7 +216,7 @@ int Format_Post_Med::ecrire_domaine_dis(const Zone& domaine,const REF(Zone_dis_b
   nom_fic_base += format;
   Nom nom_fic=nom_fic_base.nom_me(Process::me());
 
-  ecrire_domaine_med(domaine,zone_dis_base,nom_fic,est_le_premier_post,nom_fich);
+  ecrire_domaine_med(domaine,domaine_dis_base,nom_fic,est_le_premier_post,nom_fich);
 
   return 1; // ok tout va bien
 }
@@ -242,7 +242,7 @@ int Format_Post_Med::ecrire_temps(const double temps)
 /*! @brief voir Format_Post_base::ecrire_champ
  *
  */
-int Format_Post_Med::ecrire_champ(const Zone& domaine,const Noms& unite_,const Noms& noms_compo,
+int Format_Post_Med::ecrire_champ(const Domaine& domaine,const Noms& unite_,const Noms& noms_compo,
                                   int ncomp,double temps_,
                                   const Nom& id_champ,
                                   const Nom& id_du_domaine,
@@ -274,7 +274,7 @@ int Format_Post_Med::ecrire_champ(const Zone& domaine,const Noms& unite_,const N
 
 int Format_Post_Med::ecrire_item_int(const Nom&     id_item,
                                      const Nom&     id_du_domaine,
-                                     const Nom&     id_zone,
+                                     const Nom&     id_domaine,
                                      const Nom&     localisation,
                                      const Nom&     reference,
                                      const IntVect& valeurs,
@@ -375,12 +375,12 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
       if (est_le_premier_post)
         {
           SFichier file(nom_fich1);
-          file<<"{ Dimension "<<dimension<<finl<<"# export Zone "<<id_du_domaine<<finl;
+          file<<"{ Dimension "<<dimension<<finl<<"# export Domaine "<<id_du_domaine<<finl;
         }
       else
         {
           SFichier file(nom_fich1,ios::app);
-          file<<" export Zone "<<id_du_domaine<<finl;
+          file<<" export Domaine "<<id_du_domaine<<finl;
         }
 
       SFichier file;
@@ -407,7 +407,7 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
   return 1;
 }
 
-int Format_Post_Med::ecrire_domaine_med(const Zone& domaine,const REF(Zone_dis_base)& zone_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
+int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
 {
   int dim = domaine.les_sommets().dimension(1);
   int mode=-1;
@@ -424,7 +424,7 @@ int Format_Post_Med::ecrire_domaine_med(const Zone& domaine,const REF(Zone_dis_b
       if (!ecr_med.getMajorMode()) Cerr << "Try using med_major format if you have issue when opening this file with older Salome versions.";
       Cerr << finl;
     }
-  ecr_med.ecrire_domaine_dis(nom_fic,domaine,zone_dis_base,domaine.le_nom(),mode);
+  ecr_med.ecrire_domaine_dis(nom_fic,domaine,domaine_dis_base,domaine.le_nom(),mode);
   return 1;
 
 }
@@ -440,7 +440,7 @@ int Format_Post_Med::ecrire_temps_med(const double temps,Nom& nom_fich)
   return 1;
 }
 
-int Format_Post_Med::ecrire_champ_med(const Zone& dom,const Noms& unite_, const Noms& noms_compo,
+int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, const Noms& noms_compo,
                                       int ncomp, double temps_,const Nom& nom_pdb,
                                       const Nom&   id_du_champ,
                                       const Nom&   id_du_domaine,

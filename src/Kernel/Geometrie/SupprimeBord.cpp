@@ -45,7 +45,7 @@ Entree& SupprimeBord::interpreter_(Entree& is)
       nlistbord.add(mot);
       is>>mot;
     }
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   Cout<<"HERE  "<<nlistbord<<finl;
 
   for (int b=0; b<nlistbord.size(); b++)

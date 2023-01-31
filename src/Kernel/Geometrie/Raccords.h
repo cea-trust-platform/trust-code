@@ -27,7 +27,7 @@ class Raccords : public LIST(Raccord)
 {
   Declare_instanciable(Raccords);
 public :
-  void associer_domaine(const Zone&);
+  void associer_domaine(const Domaine&);
   int nb_faces() const;
   inline int nb_raccords() const;
   //JY 26/08/97

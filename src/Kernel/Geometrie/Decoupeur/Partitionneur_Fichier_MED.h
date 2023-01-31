@@ -16,7 +16,7 @@
 #define Partitionneur_Fichier_MED_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 
 /*! @brief Partition d'un domaine a partir d'un fichier MED contenant un champ donnant, pour chaque element, le numero du processeur auquel cet element est attache.
@@ -30,13 +30,13 @@ class Partitionneur_Fichier_MED : public Partitionneur_base
   Declare_instanciable(Partitionneur_Fichier_MED);
 public:
   void set_param(Param& param) override;
-  void associer_domaine(const Zone& domaine) override;
+  void associer_domaine(const Domaine& domaine) override;
   void initialiser(const char *filename);
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
 
 protected:
   // Parametres du partitionneur
-  REF(Zone) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   Nom filename_;
   Nom fieldname_;
 };

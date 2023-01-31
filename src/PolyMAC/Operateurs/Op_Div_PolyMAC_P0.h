@@ -18,9 +18,9 @@
 #define Op_Div_PolyMAC_P0_included
 
 #include <Operateur_Div.h>
-#include <Ref_Zone_PolyMAC_P0.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC_P0.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
 
 /*! @brief class Op_Div_PolyMAC_P0
  *
@@ -45,7 +45,7 @@ class Op_Div_PolyMAC_P0 : public Operateur_Div_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
@@ -56,8 +56,8 @@ public:
 
 protected:
 
-  REF(Zone_PolyMAC_P0) le_dom_PolyMAC_P0;
-  REF(Zone_Cl_PolyMAC) la_zcl_PolyMAC_P0;
+  REF(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
+  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0;
 };
 
 #endif

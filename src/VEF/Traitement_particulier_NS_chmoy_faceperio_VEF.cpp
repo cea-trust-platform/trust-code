@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Traitement_particulier_NS_chmoy_faceperio_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Periodique.h>
 #include <Champ_P1NC.h>
 #include <Champ_Uniforme.h>
@@ -49,15 +49,15 @@ Entree& Traitement_particulier_NS_chmoy_faceperio_VEF::readOn(Entree& is)
 
 void Traitement_particulier_NS_chmoy_faceperio_VEF::init_calcul_stats(void)
 {
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zdisbase);
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,mon_equation->zone_Cl_dis().valeur() );
-  const DoubleTab& xv = zone_VEF.xv();    // centre de gravite des faces
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
+  const DoubleTab& xv = domaine_VEF.xv();    // centre de gravite des faces
   // Imprime dans un fichier les faces periodiques (numero+coordonnees du centre)
-  int nb_front=zone_VEF.nb_front_Cl();
+  int nb_front=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -83,19 +83,19 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::init_calcul_stats(void)
 
 void Traitement_particulier_NS_chmoy_faceperio_VEF::calcul_chmoy_faceperio(double un_temps_deb, double temps, double dt)
 {
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zdisbase);
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,mon_equation->zone_Cl_dis().valeur() );
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
 
   // Calcul de la moyenne temporelle de la vitesse sur les frontieres periodiques:
   // moy(U)=1/(temps-temps_deb)*Integrale(t=temps_deb a temps)(U(t)*dt)
   chmoy_faceperio*=(temps-un_temps_deb-dt);
   int test_proc=0;
-  int nb_front=zone_VEF.nb_front_Cl();
+  int nb_front=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -119,7 +119,7 @@ void Traitement_particulier_NS_chmoy_faceperio_VEF::calcul_chmoy_faceperio(doubl
       fic.precision(format_precision_geom);
       for (int n_bord=0; n_bord<nb_front; n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           if (sub_type(Periodique,la_cl.valeur()))
             {
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());

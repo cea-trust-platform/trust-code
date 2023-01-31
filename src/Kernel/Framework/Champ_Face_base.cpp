@@ -16,7 +16,7 @@
 #include <Dirichlet_homogene.h>
 #include <Neumann_homogene.h>
 #include <Champ_Face_base.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
 #include <Neumann.h>
@@ -30,11 +30,11 @@ Entree& Champ_Face_base::readOn(Entree& is) { return is; }
 //tableaux de correspondance pour les CLs
 void Champ_Face_base::init_fcl() const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,le_dom_VF.valeur());
-  const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF,le_dom_VF.valeur());
+  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
   int i, f, n;
 
-  fcl_.resize(zone.nb_faces_tot(), 3);
+  fcl_.resize(domaine.nb_faces_tot(), 3);
   for (n = 0; n < cls.size(); n++)
     {
       const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
@@ -56,11 +56,11 @@ void Champ_Face_base::init_fcl() const
 
 DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec , bool is_passe) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,le_dom_VF.valeur());
-  const DoubleTab& centres_de_gravites = zone.xp();
-  IntVect les_polys(zone.nb_elem_tot());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF,le_dom_VF.valeur());
+  const DoubleTab& centres_de_gravites = domaine.xp();
+  IntVect les_polys(domaine.nb_elem_tot());
 
-  for (int elem = 0; elem < zone.nb_elem_tot(); elem++) les_polys(elem) = elem;
+  for (int elem = 0; elem < domaine.nb_elem_tot(); elem++) les_polys(elem) = elem;
 
   if (!is_passe) valeur_aux_elems(centres_de_gravites, les_polys, val_vec);
   else valeur_aux_elems_passe(centres_de_gravites, les_polys, val_vec);
@@ -70,8 +70,8 @@ DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec , bool is_p
 
 DoubleVect& Champ_Face_base::get_elem_vector(const int num_elem, DoubleVect& val_vec) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,le_dom_VF.valeur());
-  const DoubleTab& centres_de_gravites = zone.xp();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF,le_dom_VF.valeur());
+  const DoubleTab& centres_de_gravites = domaine.xp();
 
   valeur_a_elem(centres_de_gravites, val_vec, num_elem);
 

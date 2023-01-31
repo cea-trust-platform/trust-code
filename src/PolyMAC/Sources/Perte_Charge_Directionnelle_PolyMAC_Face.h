@@ -29,7 +29,7 @@
    lambda expression(Re,x,y,z,t)
    diam_hydr champ_don
    direction champ_don
-   [sous_zone nom]
+   [sous_domaine nom]
    }
 
 */

@@ -88,7 +88,7 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
   return 1;
 }
 
-void PDF_model::affecter_vitesse_imposee(Zone_VF& le_dom, const DoubleTab& coords)
+void PDF_model::affecter_vitesse_imposee(Domaine_VF& le_dom, const DoubleTab& coords)
 {
   if (type_vitesse_imposee_ == 1)
     {

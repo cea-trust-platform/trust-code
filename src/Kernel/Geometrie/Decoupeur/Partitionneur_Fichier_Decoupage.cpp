@@ -14,7 +14,7 @@
 *****************************************************************************/
 #include <Partitionneur_Fichier_Decoupage.h>
 #include <EFichier.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Fichier_Decoupage,"Partitionneur_Fichier_Decoupage",Partitionneur_base);
@@ -54,7 +54,7 @@ void Partitionneur_Fichier_Decoupage::set_param(Param& param)
   param.ajouter_flag("corriger_partition",&corriger_partition_);
 }
 
-void Partitionneur_Fichier_Decoupage::associer_domaine(const Zone& domaine)
+void Partitionneur_Fichier_Decoupage::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
 }

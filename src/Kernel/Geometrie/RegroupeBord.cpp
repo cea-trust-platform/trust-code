@@ -52,7 +52,7 @@ Entree& RegroupeBord::interpreter_(Entree& is)
       }
   }
 
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   // test pour savoir si la frontiere a regrouper est valide
   // i.e : si frontiere est une frontiere du domaine  : on applique regroupe_bord()
   LIST(Nom) nlistbord_dom; // liste stockant tous les noms de frontiere du domaine
@@ -78,7 +78,7 @@ Entree& RegroupeBord::interpreter_(Entree& is)
 }
 
 
-void RegroupeBord::rassemble_bords(Zone& dom)
+void RegroupeBord::rassemble_bords(Domaine& dom)
 {
   int nbfr=dom.nb_front_Cl();
   for (int b=0; b<nbfr; b++)
@@ -100,7 +100,7 @@ void RegroupeBord::rassemble_bords(Zone& dom)
     }
 }
 
-void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
+void RegroupeBord::regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbord)
 {
   int nbfr=dom.nb_front_Cl();
   int nbfacestot=0;
@@ -113,7 +113,7 @@ void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
       if (nlistbord.contient(org.le_nom()))
         {
           if (prem_b==-1) prem_b=b;
-          //Frontiere& org=zone.frontiere(b);
+          //Frontiere& org=domaine.frontiere(b);
           nbfacestot+=org.nb_faces();
         }
     }
@@ -121,7 +121,7 @@ void RegroupeBord::regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord)
 
 
   Faces& newfaces=newb.faces();
-  //newfaces.typer(zone.frontiere(0).faces().type_face());
+  //newfaces.typer(domaine.frontiere(0).faces().type_face());
   int nbsom=newfaces.nb_som_faces();
   int nbfacestot0=newfaces.nb_faces();
   newfaces.dimensionner(nbfacestot);

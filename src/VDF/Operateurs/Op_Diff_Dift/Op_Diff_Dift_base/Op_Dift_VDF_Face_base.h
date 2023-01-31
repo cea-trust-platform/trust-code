@@ -30,13 +30,13 @@ class Op_Dift_VDF_Face_base : public Op_Dift_VDF_base, public Op_VDF_Face
 public:
   inline Op_Dift_VDF_Face_base(const Iterateur_VDF_base& iter_base ) : Op_Dift_VDF_base(iter_base) {}
   double calculer_dt_stab() const override;
-  double calculer_dt_stab(const Zone_VDF&) const;
+  double calculer_dt_stab(const Domaine_VDF&) const;
   void calculer_borne_locale(DoubleVect& ,double , double ) const override;
 
   const Champ_base& diffusivite() const override = 0; // XXX : E Saikali : juste pour securite ...
 
   inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */ }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl(iter->zone(), iter->zone_Cl(), matrice, secmem); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl(iter->domaine(), iter->domaine_Cl(), matrice, secmem); }
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
 
 };

@@ -23,7 +23,7 @@
 
 /*! @brief class Terme_Source_Constituant_VDF_Elem Cette classe represente un terme source de l'equation de la thermique
  *
- *  du type degagement volumique de puissance thermique uniforme sur une zone
+ *  du type degagement volumique de puissance thermique uniforme sur une domaine
  *
  * @sa Terme_Source_Constituant, Terme_Source_VDF_base
  */
@@ -33,7 +33,7 @@ class Terme_Source_Constituant_VDF_Elem : public Terme_Source_Constituant, publi
 public:
   Terme_Source_Constituant_VDF_Elem() : Terme_Source_Constituant(), Terme_Source_VDF_base(Iterateur_Source_Elem<Eval_Source_C_VDF_Elem>()) { }
 
-  void associer_domaines(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;
   void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
   void ouvrir_fichier(SFichier& os,const Nom& type, const int flag) const override { Terme_Source_Constituant::ouvrir_fichier(equation(), out_, que_suis_je(), description(), os, type, flag); }

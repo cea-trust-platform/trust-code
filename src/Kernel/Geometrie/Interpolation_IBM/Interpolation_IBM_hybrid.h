@@ -33,7 +33,7 @@ class Interpolation_IBM_hybrid : public Interpolation_IBM_elem_fluid, public Int
   Declare_instanciable( Interpolation_IBM_hybrid ) ;
 
 public :
-  void discretise(const Discretisation_base&, Zone_dis_base&) override;
+  void discretise(const Discretisation_base&, Domaine_dis_base&) override;
   inline IntList& getSommetsVoisinsOf(int i)
   {
     return sommets_voisins_[i];

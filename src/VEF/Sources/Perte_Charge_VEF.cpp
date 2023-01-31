@@ -15,14 +15,14 @@
 
 #include <Perte_Charge_VEF.h>
 #include <Schema_Temps_base.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Champ_Uniforme.h>
-#include <Sous_Zone.h>
-#include <Sous_zone_VF.h>
-#include <Sous_zone_dis.h>
+#include <Sous_Domaine.h>
+#include <Sous_domaine_VF.h>
+#include <Sous_domaine_dis.h>
 #include <Champ_P1NC.h>
 #include <Check_espace_virtuel.h>
 #include <Param.h>
@@ -58,7 +58,7 @@ void Perte_Charge_VEF::set_param(Param& param)
 {
   param.ajouter_non_std("lambda",(this),Param::REQUIRED);
   param.ajouter("diam_hydr",&diam_hydr,Param::REQUIRED);
-  param.ajouter_non_std("sous_zone",(this));
+  param.ajouter_non_std("sous_domaine",(this));
   param.ajouter("implicite",&implicite_);
 }
 
@@ -78,10 +78,10 @@ int Perte_Charge_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
         lambda.addVar("z");
       return 1;
     }
-  else if (mot=="sous_zone")
+  else if (mot=="sous_domaine")
     {
-      is >> nom_sous_zone;
-      sous_zone=true;
+      is >> nom_sous_domaine;
+      sous_domaine=true;
       return 1;
     }
   else // non compris
@@ -101,12 +101,12 @@ int Perte_Charge_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zvef=le_dom_VEF.valeur();
+  const Domaine_VEF& zvef=le_dom_VEF.valeur();
   const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
   const DoubleTab& xv=zvef.xv() ;                 // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
-  // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-zone !
-  const Sous_zone_VF& ssz = sous_zone ? la_sous_zone_dis.valeur() : Sous_zone_VF();
+  // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
+  const Sous_domaine_VF& ssz = sous_domaine ? la_sous_domaine_dis.valeur() : Sous_domaine_VF();
 
   // Parametres pour perte_charge()
   DoubleVect u(dimension);
@@ -121,12 +121,12 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
   double t=equation().schema_temps().temps_courant();
 
   // Nombre de faces a traiter.
-  int max_faces = sous_zone ? ssz.les_faces().size() : zvef.nb_faces();
+  int max_faces = sous_domaine ? ssz.les_faces().size() : zvef.nb_faces();
 
   for (int face=0; face<max_faces; face++)
     {
-      // indice de la face dans la zone_VEF
-      int la_face = sous_zone ? ssz.les_faces()[face] : face;
+      // indice de la face dans la domaine_VEF
+      int la_face = sous_domaine ? ssz.les_faces()[face] : face;
 
       if (la_face<zvef.nb_faces())
         {
@@ -156,7 +156,7 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
             reynolds=1e-10;
 
           // Calcul du volume d'integration
-          double volume=sous_zone?
+          double volume=sous_domaine?
                         ssz.volumes_entrelaces(face) :
                         zvef.volumes_entrelaces(la_face);
           volume*=equation().milieu().porosite_face(la_face);
@@ -186,9 +186,9 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
   const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
-  // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-zone !
-  const Sous_zone_VF& ssz=sous_zone?la_sous_zone_dis.valeur():Sous_zone_VF();
-  const Zone_VEF& zvef=le_dom_VEF.valeur();
+  // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
+  const Sous_domaine_VF& ssz=sous_domaine?la_sous_domaine_dis.valeur():Sous_domaine_VF();
+  const Domaine_VEF& zvef=le_dom_VEF.valeur();
 
   // Parametres pour perte_charge()
   DoubleVect u(dimension);
@@ -206,7 +206,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   double t=equation().schema_temps().temps_courant();
 
   // Nombre de faces a traiter.
-  int max_faces=sous_zone?
+  int max_faces=sous_domaine?
                 ssz.les_faces().size() :
 
                 zvef.nb_faces();
@@ -218,8 +218,8 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   for (int face=0; face<max_faces; face++)
     {
 
-      // indice de la face dans la zone_VEF
-      int la_face=sous_zone?
+      // indice de la face dans la domaine_VEF
+      int la_face=sous_domaine?
                   ssz.les_faces()[face] :
                   face;
 
@@ -261,7 +261,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
         reynolds=1e-10;
 
       // Calcul du volume d'integration
-      double volume=sous_zone?
+      double volume=sous_domaine?
                     ssz.volumes_entrelaces(face) :
                     zvef.volumes_entrelaces(la_face);
       volume*=equation().milieu().porosite_face(la_face);
@@ -292,23 +292,23 @@ void Perte_Charge_VEF::completer()
 {
   Source_base::completer();
 
-  if (sous_zone)
+  if (sous_domaine)
     {
-      sous_zone=false;
-      const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(nom_sous_zone);
-      const Zone_dis_base& le_domaine_dis=le_dom_VEF.valeur();
-      for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
+      sous_domaine=false;
+      const Sous_Domaine& la_sous_domaine=equation().probleme().domaine().ss_domaine(nom_sous_domaine);
+      const Domaine_dis_base& le_domaine_dis=le_dom_VEF.valeur();
+      for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_domaines_dis(); ssz++)
         {
-          if (le_domaine_dis.sous_zone_dis(ssz)->sous_zone().est_egal_a(la_sous_zone))
+          if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(la_sous_domaine))
             {
-              sous_zone=true;
-              la_sous_zone_dis=ref_cast(Sous_zone_VF,le_domaine_dis.sous_zone_dis(ssz).valeur());
+              sous_domaine=true;
+              la_sous_domaine_dis=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
             }
         }
 
-      if(!sous_zone)
+      if(!sous_domaine)
         {
-          Cerr << "On ne trouve pas la sous_zone discretisee associee a " << nom_sous_zone << finl;
+          Cerr << "On ne trouve pas la sous_domaine discretisee associee a " << nom_sous_domaine << finl;
           exit();
         }
     }
@@ -327,9 +327,9 @@ void Perte_Charge_VEF::associer_pb(const Probleme_base& pb)
   le_fluide = ref_cast(Fluide_base,equation().milieu());
 }
 
-void Perte_Charge_VEF::associer_domaines(const Zone_dis& zone_dis,
-                                         const Zone_Cl_dis& zone_Cl_dis)
+void Perte_Charge_VEF::associer_domaines(const Domaine_dis& domaine_dis,
+                                         const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }

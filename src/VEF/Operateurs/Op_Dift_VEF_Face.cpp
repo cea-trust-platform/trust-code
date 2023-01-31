@@ -79,9 +79,9 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
 
   double dt_stab=1.e30;
   double coef;
-  const Zone_VEF& le_dom_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
 
-  const Zone& le_dom= le_dom_VEF.zone();
+  const Domaine& le_dom= le_dom_VEF.domaine();
 
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
   DoubleTab diffu(nu_);
@@ -177,8 +177,8 @@ void Op_Dift_VEF_Face::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           remplir_nu(nu_);
 
           double coef;
-          const Zone_VEF& le_dom_VEF = le_dom_vef.valeur();
-          const Zone& le_dom= le_dom_VEF.zone();
+          const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
+          const Domaine& le_dom= le_dom_VEF.domaine();
           const DoubleVect& diffu_turb=diffusivite_turbulente()->valeurs();
           double alpha;
 
@@ -239,31 +239,31 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
                                             DoubleVect& resu, DoubleTab& tab_flux_bords,
                                             const DoubleVect& nu,
                                             const DoubleVect& nu_turb,
-                                            const Zone_Cl_VEF& zone_Cl_VEF,
-                                            const Zone_VEF& zone_VEF ) const
+                                            const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                            const Domaine_VEF& domaine_VEF ) const
 {
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int i,j,num_face;
-  int nb_faces = zone_VEF.nb_faces();
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces = domaine_VEF.nb_faces();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   double valA, d_nu;
-  int nb_front=zone_VEF.nb_front_Cl();
+  int nb_front=domaine_VEF.nb_front_Cl();
 
   // modif pour imprimer les flux sur les bords
-  int size_flux_bords=zone_VEF.nb_faces_bord();
+  int size_flux_bords=domaine_VEF.nb_faces_bord();
   tab_flux_bords.resize(size_flux_bords,1);
   tab_flux_bords=0.;
 
-  const int premiere_face_int=zone_VEF.premiere_face_int();
+  const int premiere_face_int=domaine_VEF.premiere_face_int();
 
   // contient -1 si la face n'est pas periodique et numero face_assso sinon
-  ArrOfInt marq( zone_VEF.nb_faces_tot());
+  ArrOfInt marq( domaine_VEF.nb_faces_tot());
   marq=-1;
   // On traite les faces bord
   for (int n_bord=0; n_bord<nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
@@ -305,9 +305,9 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
         // le tau tangentiel (les lois de paroi thermiques ne calculent pas
         // d'echange turbulent a la paroi pour l'instant
         {
-          const DoubleTab& face_normale = zone_VEF.face_normales();
-          const DoubleVect& vol = zone_VEF.volumes();
-          const Equation_base& my_eqn = zone_Cl_VEF.equation();
+          const DoubleTab& face_normale = domaine_VEF.face_normales();
+          const DoubleVect& vol = domaine_VEF.volumes();
+          const Equation_base& my_eqn = domaine_Cl_VEF.equation();
           const RefObjU& modele_turbulence = my_eqn.get_modele(TURBULENCE);
           if (sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
             {
@@ -346,7 +346,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
                           num_face = le_bord.num_face(ind_face);
                           int elem1 = face_voisins(num_face,0);
                           if(elem1==-1) elem1 = face_voisins(num_face,1);
-                          double surface_face=zone_VEF.face_surfaces(num_face);
+                          double surface_face=domaine_VEF.face_surfaces(num_face);
                           double surface_pond;
 
                           for (i=0; i<nb_faces_elem; i++)
@@ -355,13 +355,13 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
                                 {
                                   surface_pond = 0.;
                                   for (int kk=0; kk<nb_dim_pb; kk++)
-                                    surface_pond -= (face_normale(j,kk)*zone_VEF.oriente_normale(j,elem1)*face_normale(num_face,kk)*
-                                                     zone_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
+                                    surface_pond -= (face_normale(j,kk)*domaine_VEF.oriente_normale(j,elem1)*face_normale(num_face,kk)*
+                                                     domaine_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
                                   Tf+=inconnue(j)*surface_pond;
                                 }
 
                               for(int kk=0; kk<nb_dim_pb; kk++)
-                                le_mauvais_gradient(kk)+=inconnue(j)*face_normale(j,kk)*zone_VEF.oriente_normale(j,elem1);
+                                le_mauvais_gradient(kk)+=inconnue(j)*face_normale(j,kk)*domaine_VEF.oriente_normale(j,elem1);
                             }
                           le_mauvais_gradient/=vol(elem1);
                           // mauvais_gradient = le_mauvais_gradient.n
@@ -374,7 +374,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
                           // de temperature dans l'element.
                           // Ensuite ce sera multiplie par le vecteur normal a la face de paroi
                           // qui lui a les bons signes.
-                          bon_gradient=(Tf-inconnue(num_face))/d_equiv(ind_face)*(-zone_VEF.oriente_normale(num_face,elem1));
+                          bon_gradient=(Tf-inconnue(num_face))/d_equiv(ind_face)*(-domaine_VEF.oriente_normale(num_face,elem1));
 
                           double nutotal=nu(elem1)+nu_turb(elem1);
                           for (i=0; i<nb_faces_elem; i++)
@@ -383,7 +383,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
                               double correction=0.;
                               for(int kk=0; kk<nb_dim_pb; kk++)
                                 {
-                                  double resu2 = nutotal*(bon_gradient-mauvais_gradient)*face_normale(num_face,kk)*face_normale(j,kk)* (-zone_VEF.oriente_normale(j,elem1))/surface_face;
+                                  double resu2 = nutotal*(bon_gradient-mauvais_gradient)*face_normale(num_face,kk)*face_normale(j,kk)* (-domaine_VEF.oriente_normale(j,elem1))/surface_face;
 
                                   correction+=resu2;
                                 }
@@ -476,7 +476,7 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
   // Neumann :
   for (int n_bord=0; n_bord<nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
@@ -486,8 +486,8 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              resu[face] += la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.face_surfaces(face);
-              tab_flux_bords(face,0) = la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.face_surfaces(face);
+              resu[face] += la_cl_paroi.flux_impose(face-ndeb)*domaine_VEF.face_surfaces(face);
+              tab_flux_bords(face,0) = la_cl_paroi.flux_impose(face-ndeb)*domaine_VEF.face_surfaces(face);
             }
         }
       else if (sub_type(Echange_externe_impose,la_cl.valeur()))
@@ -498,8 +498,8 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleVect& inconnue,
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              resu[face] += la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*zone_VEF.face_surfaces(face);
-              tab_flux_bords(face,0) = la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*zone_VEF.face_surfaces(face);
+              resu[face] += la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*domaine_VEF.face_surfaces(face);
+              tab_flux_bords(face,0) = la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*domaine_VEF.face_surfaces(face);
             }
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
@@ -519,42 +519,42 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                                              DoubleTab& resu, DoubleTab& tab_flux_bords,
                                              const DoubleTab& nu,
                                              const DoubleTab& nu_turb,
-                                             const Zone_Cl_VEF& zone_Cl_VEF,
-                                             const Zone_VEF& zone_VEF,
+                                             const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                             const Domaine_VEF& domaine_VEF,
                                              int nbr_comp
                                             ) const
 {
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nb_faces = zone_VEF.nb_faces();
-  int nb_elem = zone_VEF.nb_elem();
-  const DoubleTab& face_normale = zone_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nb_faces = domaine_VEF.nb_faces();
+  int nb_elem = domaine_VEF.nb_elem();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
 
   assert(nbr_comp>1);
 
   // On dimensionne et initialise le tableau des bilans de flux:
-  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nbr_comp);
+  tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nbr_comp);
   tab_flux_bords=0.;
 
   // Construction du tableau grad_ si necessaire
   if(!grad_.get_md_vector().non_nul())
     {
       grad_.resize(0, Objet_U::dimension, Objet_U::dimension);
-      zone_VEF.zone().creer_tableau_elements(grad_);
+      domaine_VEF.domaine().creer_tableau_elements(grad_);
     }
   grad_=0.;
 
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_cl=les_cl.size();
 
-  Champ_P1NC::calcul_gradient(inconnue,grad_,zone_Cl_VEF);
+  Champ_P1NC::calcul_gradient(inconnue,grad_,domaine_Cl_VEF);
   if (le_modele_turbulence.valeur().utiliser_loi_paroi())
-    Champ_P1NC::calcul_duidxj_paroi(grad_,nu,nu_turb,tau_tan_,zone_Cl_VEF);
+    Champ_P1NC::calcul_duidxj_paroi(grad_,nu,nu_turb,tau_tan_,domaine_Cl_VEF);
 
   grad_.echange_espace_virtuel();
 
   DoubleTab Re;
   Re.resize(0, Objet_U::dimension, Objet_U::dimension);
-  zone_VEF.zone().creer_tableau_elements(Re);
+  domaine_VEF.domaine().creer_tableau_elements(Re);
   Re = 0.;
 
   if (le_modele_turbulence.valeur().calcul_tenseur_Re(nu_turb, grad_, Re))
@@ -579,7 +579,7 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   // boucle sur les CL
   for (int n_bord=0; n_bord<nb_cl; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
 
       int num1 = le_bord.num_premiere_face();
@@ -622,7 +622,7 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   /////////////////
   // Faces internes
   /////////////////
-  int n0 = zone_VEF.premiere_face_int();
+  int n0 = domaine_VEF.premiere_face_int();
   for (int num_face=n0; num_face<nb_faces; num_face++)
     {
       for (int kk=0; kk<2; kk++)
@@ -642,7 +642,7 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   // Symmetry condition
   for (int n_bord=0; n_bord<nb_cl; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Symetrie,la_cl.valeur()))
         {
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -658,29 +658,29 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                                                   DoubleTab& resu, DoubleTab& tab_flux_bords,
                                                   const DoubleTab& nu,
                                                   const DoubleVect& nu_turb,
-                                                  const Zone_Cl_VEF& zone_Cl_VEF,
-                                                  const Zone_VEF& zone_VEF,
+                                                  const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                                  const Domaine_VEF& domaine_VEF,
                                                   int nb_comp) const
 {
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int i,j,num_face;
-  int nb_faces = zone_VEF.nb_faces();
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces = domaine_VEF.nb_faces();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   double valA, d_nu;
-  int nb_front=zone_VEF.nb_front_Cl();
+  int nb_front=domaine_VEF.nb_front_Cl();
 
   // modif pour imprimer les flux sur les bords
-  int size_flux_bords=zone_VEF.nb_faces_bord();
+  int size_flux_bords=domaine_VEF.nb_faces_bord();
   tab_flux_bords.resize(size_flux_bords,nb_comp);
   tab_flux_bords=0.;
   // contient -1 si la face n'est pas periodique et numero face_assso sinon
-  ArrOfInt marq( zone_VEF.nb_faces_tot());
+  ArrOfInt marq( domaine_VEF.nb_faces_tot());
   marq=-1;
   // On traite les faces bord
   for (int n_bord=0; n_bord<nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
@@ -724,9 +724,9 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
         // le tau tangentiel (les lois de paroi thermiques ne calculent pas
         // d'echange turbulent a la paroi pour l'instant
         {
-          const DoubleTab& face_normale = zone_VEF.face_normales();
-          const DoubleVect& vol = zone_VEF.volumes();
-          const Equation_base& my_eqn = zone_Cl_VEF.equation();
+          const DoubleTab& face_normale = domaine_VEF.face_normales();
+          const DoubleVect& vol = domaine_VEF.volumes();
+          const Equation_base& my_eqn = domaine_Cl_VEF.equation();
           const RefObjU& modele_turbulence = my_eqn.get_modele(TURBULENCE);
           if (sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
             {
@@ -758,7 +758,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                               num_face = le_bord.num_face(ind_face);
                               int elem1 = face_voisins(num_face,0);
                               if(elem1==-1) elem1 = face_voisins(num_face,1);
-                              double surface_face=zone_VEF.face_surfaces(num_face);
+                              double surface_face=domaine_VEF.face_surfaces(num_face);
                               double surface_pond;
 
                               for (i=0; i<nb_faces_elem; i++)
@@ -767,13 +767,13 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                                     {
                                       surface_pond = 0.;
                                       for (int kk=0; kk<nb_dim_pb; kk++)
-                                        surface_pond -= (face_normale(j,kk)*zone_VEF.oriente_normale(j,elem1)*face_normale(num_face,kk)*
-                                                         zone_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
+                                        surface_pond -= (face_normale(j,kk)*domaine_VEF.oriente_normale(j,elem1)*face_normale(num_face,kk)*
+                                                         domaine_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
                                       Tf+=inconnue(j,nc)*surface_pond;
                                     }
 
                                   for(int kk=0; kk<nb_dim_pb; kk++)
-                                    le_mauvais_gradient(kk)+=inconnue(j,nc)*face_normale(j,kk)*zone_VEF.oriente_normale(j,elem1);
+                                    le_mauvais_gradient(kk)+=inconnue(j,nc)*face_normale(j,kk)*domaine_VEF.oriente_normale(j,elem1);
                                 }
                               le_mauvais_gradient/=vol(elem1);
                               // mauvais_gradient = le_mauvais_gradient.n
@@ -786,7 +786,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                               // de temperature dans l'element.
                               // Ensuite ce sera multiplie par le vecteur normal a la face de paroi
                               // qui lui a les bons signes.
-                              bon_gradient=(Tf-inconnue(num_face,nc))/d_equiv(ind_face)*(-zone_VEF.oriente_normale(num_face,elem1));
+                              bon_gradient=(Tf-inconnue(num_face,nc))/d_equiv(ind_face)*(-domaine_VEF.oriente_normale(num_face,elem1));
 
                               double nutotal=nu(elem1,nc)+nu_turb(elem1);
                               for (i=0; i<nb_faces_elem; i++)
@@ -795,7 +795,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                                   double correction=0.;
                                   for(int kk=0; kk<nb_dim_pb; kk++)
                                     {
-                                      double resu2 = nutotal*(bon_gradient-mauvais_gradient)*face_normale(num_face,kk)*face_normale(j,kk)* (-zone_VEF.oriente_normale(j,elem1))/surface_face;
+                                      double resu2 = nutotal*(bon_gradient-mauvais_gradient)*face_normale(num_face,kk)*face_normale(j,kk)* (-domaine_VEF.oriente_normale(j,elem1))/surface_face;
 
                                       correction+=resu2;
                                     }
@@ -852,7 +852,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
     }
 
   // Faces internes :
-  const int premiere_face_int=zone_VEF.premiere_face_int();
+  const int premiere_face_int=domaine_VEF.premiere_face_int();
   for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int kk=0; kk<2; kk++)
@@ -894,7 +894,7 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
   // Neumann :
   for (int n_bord=0; n_bord<nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
@@ -906,8 +906,8 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
             {
               for (int nc=0; nc<nb_comp; nc++)
                 {
-                  resu(face,nc) += la_cl_paroi.flux_impose(face-ndeb,nc)*zone_VEF.face_surfaces(face);
-                  tab_flux_bords(face,nc) = la_cl_paroi.flux_impose(face-ndeb,nc)*zone_VEF.face_surfaces(face);
+                  resu(face,nc) += la_cl_paroi.flux_impose(face-ndeb,nc)*domaine_VEF.face_surfaces(face);
+                  tab_flux_bords(face,nc) = la_cl_paroi.flux_impose(face-ndeb,nc)*domaine_VEF.face_surfaces(face);
                 }
             }
         }
@@ -921,8 +921,8 @@ void Op_Dift_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
             {
               for (int nc=0; nc<nb_comp; nc++)
                 {
-                  resu(face,nc) += la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*zone_VEF.face_surfaces(face);
-                  tab_flux_bords(face,nc) = la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*zone_VEF.face_surfaces(face);
+                  resu(face,nc) += la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*domaine_VEF.face_surfaces(face);
+                  tab_flux_bords(face,nc) = la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*domaine_VEF.face_surfaces(face);
                 }
             }
         }
@@ -944,8 +944,8 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org,
                                      DoubleTab& resu) const
 {
   remplir_nu(nu_);
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
   const int nb_comp = resu.line_size();
 
@@ -974,11 +974,11 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org,
 
 
   if(nature_champ==scalaire)
-    ajouter_cas_scalaire(inconnue, resu, flux_bords_, nu, nu_turb_m, zone_Cl_VEF, zone_VEF);
+    ajouter_cas_scalaire(inconnue, resu, flux_bords_, nu, nu_turb_m, domaine_Cl_VEF, domaine_VEF);
   else if (nature_champ==vectoriel)
-    ajouter_cas_vectoriel(inconnue, resu, flux_bords_, nu, nu_turb_m, zone_Cl_VEF, zone_VEF, nb_comp);
+    ajouter_cas_vectoriel(inconnue, resu, flux_bords_, nu, nu_turb_m, domaine_Cl_VEF, domaine_VEF, nb_comp);
   else if (nature_champ==multi_scalaire)
-    ajouter_cas_multi_scalaire(inconnue, resu, flux_bords_, nu, nu_turb_m, zone_Cl_VEF, zone_VEF, nb_comp);
+    ajouter_cas_multi_scalaire(inconnue, resu, flux_bords_, nu, nu_turb_m, domaine_Cl_VEF, domaine_VEF, nb_comp);
   modifier_flux(*this);
 
   return resu;
@@ -999,20 +999,20 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
                                                porosite_eventuelle) const
 {
   // On traite les faces bord
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const DoubleVect& volumes = zone_VEF.volumes();
-  const DoubleTab& face_normale = zone_VEF.face_normales();
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
-  int nb_faces = zone_VEF.nb_faces();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
+  int nb_faces = domaine_VEF.nb_faces();
   const int nb_comp =transporte.line_size();
 
-  int nb_bords=zone_VEF.nb_front_Cl();
+  int nb_bords=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
@@ -1103,7 +1103,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
           // correction dans le cas dirichlet sur paroi temperature
           if(sub_type(Scalaire_impose_paroi,la_cl.valeur()))
             {
-              const Equation_base& my_eqn = zone_Cl_VEF.equation();
+              const Equation_base& my_eqn = domaine_Cl_VEF.equation();
               const RefObjU& modele_turbulence = my_eqn.get_modele(TURBULENCE);
               if (sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
                 {
@@ -1111,8 +1111,8 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
                   const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
                   if (loiparth->use_equivalent_distance())
                     {
-                      //const DoubleTab& face_normale = zone_VEF.face_normales();
-                      const DoubleVect& vol = zone_VEF.volumes();
+                      //const DoubleTab& face_normale = domaine_VEF.face_normales();
+                      const DoubleVect& vol = domaine_VEF.volumes();
                       const DoubleVect& d_equiv=loiparth->equivalent_distance(n_bord);
                       int nb_dim_pb=Objet_U::dimension;
 
@@ -1135,9 +1135,9 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
                           // Ensuite ce sera multiplie par le vecteur normal a la face de paroi
                           // qui lui a les bons signes.
                           //bon_gradient=(Tf-inconnue(num_face))/d_equiv(num_face);
-                          bon_gradient=1./d_equiv(ind_face)*(-zone_VEF.oriente_normale(num_face,elem1));
+                          bon_gradient=1./d_equiv(ind_face)*(-domaine_VEF.oriente_normale(num_face,elem1));
 
-                          double surface_face=zone_VEF.face_surfaces(num_face);
+                          double surface_face=domaine_VEF.face_surfaces(num_face);
                           double nutotal=nu(elem1)+nu_turb(elem1);
                           for (int i=0; i<nb_faces_elem; i++)
                             {
@@ -1149,23 +1149,23 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
                                   int jj=elem_faces(elem1,ii);
                                   double surface_pond=0;
                                   for (int kk=0; kk<nb_dim_pb; kk++)
-                                    surface_pond -= (face_normale(jj,kk)*zone_VEF.oriente_normale(jj,elem1)*face_normale(num_face,kk)*
-                                                     zone_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
+                                    surface_pond -= (face_normale(jj,kk)*domaine_VEF.oriente_normale(jj,elem1)*face_normale(num_face,kk)*
+                                                     domaine_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
                                   Tf=surface_pond;
                                   //Tf=1./(nb_faces_elem-1); // Temperature moyenne.
                                   for(int kk=0; kk<nb_dim_pb; kk++)
-                                    le_mauvais_gradient(kk)+=face_normale(jj,kk)*zone_VEF.oriente_normale(jj,elem1);
+                                    le_mauvais_gradient(kk)+=face_normale(jj,kk)*domaine_VEF.oriente_normale(jj,elem1);
                                   le_mauvais_gradient/=vol(elem1);
                                   double mauvais_gradient=0;
-                                  //         double surface_face=zone_VEF.face_surfaces(num_face);
+                                  //         double surface_face=domaine_VEF.face_surfaces(num_face);
                                   for(int kk=0; kk<nb_dim_pb; kk++)
                                     mauvais_gradient+=le_mauvais_gradient(kk)*face_normale(num_face,kk)/surface_face;
                                   double resu1=0,resu2=0;
                                   for(int kk=0; kk<nb_dim_pb; kk++)
                                     {
-                                      // resu1 += nutotal*le_mauvais_gradient(kk)*face_normale(j,kk)*(-zone_VEF.oriente_normale(j,elem1));
-                                      resu1 += nutotal*mauvais_gradient*face_normale(num_face,kk)*face_normale(j,kk)*(-zone_VEF.oriente_normale(j,elem1))/surface_face;
-                                      resu2 += nutotal*bon_gradient    *face_normale(num_face,kk)*face_normale(j,kk)*(-zone_VEF.oriente_normale(j,elem1))/surface_face;
+                                      // resu1 += nutotal*le_mauvais_gradient(kk)*face_normale(j,kk)*(-domaine_VEF.oriente_normale(j,elem1));
+                                      resu1 += nutotal*mauvais_gradient*face_normale(num_face,kk)*face_normale(j,kk)*(-domaine_VEF.oriente_normale(j,elem1))/surface_face;
+                                      resu2 += nutotal*bon_gradient    *face_normale(num_face,kk)*face_normale(j,kk)*(-domaine_VEF.oriente_normale(j,elem1))/surface_face;
                                     }
                                   // bon gradient_reel =bongradient*(Tf-T_face) d'ou les derivees...
                                   // mauvais gradient_reel=mauvai_gradient_j*Tj
@@ -1188,7 +1188,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
               int nfin = ndeb + le_bord.nb_faces();
               for (int face=ndeb; face<nfin; face++)
                 {
-                  matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*zone_VEF.face_surfaces(face);
+                  matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
                 }
             }
 
@@ -1253,17 +1253,17 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   // matrice avec ajouter_contribution peut se faire
   // avant le premier pas de temps
   remplir_nu(nu_);
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int nb_faces = zone_VEF.nb_faces();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int nb_faces = domaine_VEF.nb_faces();
   const int nb_comp =transporte.line_size();
 
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
 
   const DoubleTab& nu_turb_=diffusivite_turbulente()->valeurs();
-  const DoubleTab& face_normale = zone_VEF.face_normales();
-  const DoubleVect& volumes = zone_VEF.volumes();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+  const DoubleVect& volumes = domaine_VEF.volumes();
   DoubleVect n(dimension);
 
   DoubleTab nu,nu_turb;
@@ -1285,7 +1285,7 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   ajouter_contribution_cl(transporte, matrice, nu, nu_turb, porosite_eventuelle);
 
   // On traite les faces internes
-  int numpremiereface = zone_VEF.premiere_face_int();
+  int numpremiereface = domaine_VEF.premiere_face_int();
   for (int num_face=numpremiereface; num_face<nb_faces; num_face++)
     {
       for (int l=0; l<2; l++)
@@ -1362,17 +1362,17 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
   // matrice avec ajouter_contribution peut se faire
   // avant le premier pas de temps
   remplir_nu(nu_);
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
-  int nb_faces = zone_VEF.nb_faces();
+  int nb_faces = domaine_VEF.nb_faces();
   const int nb_comp =transporte.line_size();
 
   int i0,j,num_face0;
   int elem0,elem1;
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
 
   double valA, d_nu;
   const DoubleTab& nu_turb_=diffusivite_turbulente()->valeurs();
@@ -1391,12 +1391,12 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
   if (!marq)
     porosite_eventuelle=1;
   // On traite les faces bord
-  int nb_bords=zone_VEF.nb_front_Cl();
+  int nb_bords=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      //const IntTab& elem_faces = zone_VEF.elem_faces();
+      //const IntTab& elem_faces = domaine_VEF.elem_faces();
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
       int nb_faces_bord_reel = le_bord.nb_faces();
@@ -1477,7 +1477,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
           // correction dans le cas dirichlet sur paroi temperature
           if(sub_type(Scalaire_impose_paroi,la_cl.valeur()))
             {
-              const Equation_base& my_eqn = zone_Cl_VEF.equation();
+              const Equation_base& my_eqn = domaine_Cl_VEF.equation();
               const RefObjU& modele_turbulence = my_eqn.get_modele(TURBULENCE);
               if (sub_type(Modele_turbulence_scal_base,modele_turbulence.valeur()))
                 {
@@ -1485,8 +1485,8 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
                   const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
                   if (loiparth->use_equivalent_distance())
                     {
-                      const DoubleTab& face_normale = zone_VEF.face_normales();
-                      const DoubleVect& vol = zone_VEF.volumes();
+                      const DoubleTab& face_normale = domaine_VEF.face_normales();
+                      const DoubleVect& vol = domaine_VEF.volumes();
                       const DoubleVect& d_equiv=loiparth->equivalent_distance(n_bord);
                       int nb_dim_pb=Objet_U::dimension;
 
@@ -1511,9 +1511,9 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
                               // Ensuite ce sera multiplie par le vecteur normal a la face de paroi
                               // qui lui a les bons signes.
                               //bon_gradient=(Tf-inconnue(num_face))/d_equiv(num_face);
-                              bon_gradient=1./d_equiv(ind_face)*(-zone_VEF.oriente_normale(num_face,elem1));
+                              bon_gradient=1./d_equiv(ind_face)*(-domaine_VEF.oriente_normale(num_face,elem1));
 
-                              double surface_face=zone_VEF.face_surfaces(num_face);
+                              double surface_face=domaine_VEF.face_surfaces(num_face);
                               double nutotal=nu(elem1,nc)+nu_turb(elem1);
                               for (i0=0; i0<nb_faces_elem; i0++)
                                 {
@@ -1525,23 +1525,23 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
                                       int jj=elem_faces(elem1,ii);
                                       double surface_pond=0;
                                       for (int kk=0; kk<nb_dim_pb; kk++)
-                                        surface_pond -= (face_normale(jj,kk)*zone_VEF.oriente_normale(jj,elem1)*face_normale(num_face,kk)*
-                                                         zone_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
+                                        surface_pond -= (face_normale(jj,kk)*domaine_VEF.oriente_normale(jj,elem1)*face_normale(num_face,kk)*
+                                                         domaine_VEF.oriente_normale(num_face,elem1))/(surface_face*surface_face);
                                       Tf=surface_pond;
                                       //Tf=1./(nb_faces_elem-1); // Temperature moyenne.
                                       for(int kk=0; kk<nb_dim_pb; kk++)
-                                        le_mauvais_gradient(kk)+=face_normale(jj,kk)*zone_VEF.oriente_normale(jj,elem1);
+                                        le_mauvais_gradient(kk)+=face_normale(jj,kk)*domaine_VEF.oriente_normale(jj,elem1);
                                       le_mauvais_gradient/=vol(elem1);
                                       double mauvais_gradient=0;
-                                      //         double surface_face=zone_VEF.face_surfaces(num_face);
+                                      //         double surface_face=domaine_VEF.face_surfaces(num_face);
                                       for(int kk=0; kk<nb_dim_pb; kk++)
                                         mauvais_gradient+=le_mauvais_gradient(kk)*face_normale(num_face,kk)/surface_face;
                                       double resu1=0,resu2=0;
                                       for(int kk=0; kk<nb_dim_pb; kk++)
                                         {
-                                          // resu1 += nutotal*le_mauvais_gradient(kk)*face_normale(j,kk)*(-zone_VEF.oriente_normale(j,elem1));
-                                          resu1 += nutotal*mauvais_gradient*face_normale(num_face,kk)*face_normale(j,kk)*(-zone_VEF.oriente_normale(j,elem1))/surface_face;
-                                          resu2 += nutotal*bon_gradient    *face_normale(num_face,kk)*face_normale(j,kk)*(-zone_VEF.oriente_normale(j,elem1))/surface_face;
+                                          // resu1 += nutotal*le_mauvais_gradient(kk)*face_normale(j,kk)*(-domaine_VEF.oriente_normale(j,elem1));
+                                          resu1 += nutotal*mauvais_gradient*face_normale(num_face,kk)*face_normale(j,kk)*(-domaine_VEF.oriente_normale(j,elem1))/surface_face;
+                                          resu2 += nutotal*bon_gradient    *face_normale(num_face,kk)*face_normale(j,kk)*(-domaine_VEF.oriente_normale(j,elem1))/surface_face;
                                         }
                                       // bon gradient_reel =bongradient*(Tf-T_face) d'ou les derivees...
                                       // mauvais gradient_reel=mauvai_gradient_j*Tj
@@ -1568,7 +1568,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
               for (int i=0; i<nb_faces_elem; i++)
                 if (( (j= elem_faces(elem,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
                   {
-                    //int orientation = zone_VEF.oriente_normale(j,elem);
+                    //int orientation = domaine_VEF.oriente_normale(j,elem);
                     // retire terme croisee pour l'intant
                     //orientation=0;
                     for (int nc=0; nc<nb_comp; nc++)
@@ -1595,7 +1595,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
     }
 
   // On traite les faces internes
-  int rumpremiereface=zone_VEF.premiere_face_int();
+  int rumpremiereface=domaine_VEF.premiere_face_int();
   for (num_face0=rumpremiereface; num_face0<nb_faces; num_face0++)
     {
       // ICI
@@ -1649,14 +1649,14 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
 
 void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int n_bord;
-  int nb_faces = zone_VEF.nb_faces();
+  int nb_faces = domaine_VEF.nb_faces();
   //int elem;
   int nb_comp =resu.line_size();
-  const DoubleTab& face_normale = zone_VEF.face_normales();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
   DoubleVect n(dimension);
   DoubleTrav Tgrad(dimension,dimension);
 
@@ -1664,8 +1664,8 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
   //  if (nb_comp!=1)
   if (equation().inconnue()->nature_du_champ()==vectoriel)
     {
-      //  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-      //const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+      //  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+      //const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
       const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
       const DoubleTab& inconnue_org=equation().inconnue().valeurs();
       DoubleTab nu,nu_turb_m;
@@ -1685,13 +1685,13 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
       DoubleTab& grad = grad_;
       grad=0.;
 
-      //      const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+      //      const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
       //      int nb_cl=les_cl.size();
 
-      Champ_P1NC::calcul_gradient(inconnue,grad,zone_Cl_VEF);
+      Champ_P1NC::calcul_gradient(inconnue,grad,domaine_Cl_VEF);
       DoubleTab gradsa(grad);
       if (le_modele_turbulence.valeur().utiliser_loi_paroi())
-        Champ_P1NC::calcul_duidxj_paroi(grad,nu,nu_turb,tau_tan_,zone_Cl_VEF);
+        Champ_P1NC::calcul_duidxj_paroi(grad,nu,nu_turb,tau_tan_,domaine_Cl_VEF);
       grad-=gradsa;
       grad.echange_espace_virtuel();
       for (int num_face=0; num_face<nb_faces; num_face++)
@@ -1720,9 +1720,9 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
     }
 
   //int nb_comp = resu.dimension(1);
-  for (n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
@@ -1731,7 +1731,7 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             for (int comp=0; comp<nb_comp; comp++)
-              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.face_surfaces(face);
+              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*domaine_VEF.face_surfaces(face);
         }
       else if (sub_type(Echange_externe_impose,la_cl.valeur()))
         {
@@ -1743,7 +1743,7 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
               int nfin = ndeb + le_bord.nb_faces();
               for (int face=ndeb; face<nfin; face++)
                 {
-                  resu[face] += la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb))*zone_VEF.face_surfaces(face);
+                  resu[face] += la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb))*domaine_VEF.face_surfaces(face);
                 }
             }
           else

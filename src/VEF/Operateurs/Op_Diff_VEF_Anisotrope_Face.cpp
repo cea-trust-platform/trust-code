@@ -69,33 +69,33 @@ const Champ_base& Op_Diff_VEF_Anisotrope_Face::diffusivite() const
 void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
                                                        DoubleTab& resu, DoubleTab& tab_flux_bords,
                                                        DoubleTab& nu,
-                                                       const Zone_Cl_VEF& zone_Cl_VEF,
-                                                       const Zone_VEF& zone_VEF ) const
+                                                       const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                                       const Domaine_VEF& domaine_VEF ) const
 {
   // assurer on a un tableau bidimensionnel
   assert(nu.nb_dim()==2);
   // assurer vrai nombre de composants pour l'anisotropie (9 pour 3d et 4 pour 2d)
   assert(nu.dimension(1)==dimension*dimension);
 
-  const IntTab& elemfaces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& elemfaces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int i,j,num_face;
-  int nb_faces = zone_VEF.nb_faces();
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces = domaine_VEF.nb_faces();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   double valA,flux;
   int n_bord, ind_face;
-  int nb_bords=zone_VEF.nb_front_Cl();
+  int nb_bords=domaine_VEF.nb_front_Cl();
   // On dimensionne et initialise le tableau des bilans de flux:
-  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),1);
+  tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),1);
   tab_flux_bords=0.;
-  const int premiere_face_int=zone_VEF.premiere_face_int();
+  const int premiere_face_int=domaine_VEF.premiere_face_int();
 
   // On traite les faces bord
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      //const IntTab& elemfaces = zone_VEF.elem_faces();
+      //const IntTab& elemfaces = domaine_VEF.elem_faces();
       int num1=0;
       int num2=le_bord.nb_faces_tot();
       int nb_faces_bord_reel = le_bord.nb_faces();
@@ -209,7 +209,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_scalaire(const DoubleTab& inconnue
   // Neumann :
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
@@ -219,7 +219,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_scalaire(const DoubleTab& inconnue
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              flux=la_cl_paroi.flux_impose(face-ndeb)*zone_VEF.surface(face);
+              flux=la_cl_paroi.flux_impose(face-ndeb)*domaine_VEF.surface(face);
               resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
@@ -232,7 +232,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_scalaire(const DoubleTab& inconnue
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*zone_VEF.surface(face);
+              flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*domaine_VEF.surface(face);
               resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
@@ -253,8 +253,8 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_scalaire(const DoubleTab& inconnue
 void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                                                         DoubleTab& resu, DoubleTab& tab_flux_bords,
                                                         DoubleTab& nu,
-                                                        const Zone_Cl_VEF& zone_Cl_VEF,
-                                                        const Zone_VEF& zone_VEF,
+                                                        const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                                        const Domaine_VEF& domaine_VEF,
                                                         int nb_comp) const
 {
   Cerr << "Error in Op_Diff_VEF_Anisotrope_Face::ajouter_cas_vectoriel()" << finl;
@@ -265,33 +265,33 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_vectoriel(const DoubleTab& inconnu
 void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
                                                              DoubleTab& resu, DoubleTab& tab_flux_bords,
                                                              DoubleTab& nu,
-                                                             const Zone_Cl_VEF& zone_Cl_VEF,
-                                                             const Zone_VEF& zone_VEF,
+                                                             const Domaine_Cl_VEF& domaine_Cl_VEF,
+                                                             const Domaine_VEF& domaine_VEF,
                                                              int nb_comp) const
 {
   const int nb_cols_nu = nu.dimension(1);
   assert(nb_cols_nu == dimension*dimension*nb_comp*nb_comp);
 
-  const IntTab& elemfaces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const IntTab& elemfaces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
   int i0,j,num_face;
-  int nb_faces = zone_VEF.nb_faces();
+  int nb_faces = domaine_VEF.nb_faces();
   int n_bord;
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   double valA,flux0;
   DoubleVect n(Objet_U::dimension);
   DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
   // dimensionning and initializing flow balance tabulars
-  tab_flux_bords.resize(zone_VEF.nb_faces_bord(),nb_comp);
+  tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nb_comp);
   tab_flux_bords=0.;
   assert( nb_comp>1 );
-  int nb_bords=zone_VEF.nb_front_Cl();
+  int nb_bords=domaine_VEF.nb_front_Cl();
   int ind_face;
 
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
 
       int num1 = 0;
@@ -381,7 +381,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
   // dealing now with internal faces
 
 
-  for (num_face=zone_VEF.premiere_face_int(); num_face<nb_faces; num_face++)
+  for (num_face=domaine_VEF.premiere_face_int(); num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)
         {
@@ -434,7 +434,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
   //On se base sur ce qui est fait pour le cas scalaire
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
@@ -446,7 +446,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
             {
               for (int nc=0; nc<nb_comp; nc++)
                 {
-                  flux0=la_cl_paroi.flux_impose(face-ndeb,nc)*zone_VEF.surface(face);
+                  flux0=la_cl_paroi.flux_impose(face-ndeb,nc)*domaine_VEF.surface(face);
                   resu(face,nc) += flux0;
                   tab_flux_bords(face,nc) = flux0;
                 }
@@ -462,7 +462,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
             {
               for (int nc=0; nc<nb_comp; nc++)
                 {
-                  flux0=la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*zone_VEF.surface(face);
+                  flux0=la_cl_paroi.h_imp(face-ndeb,nc)*(la_cl_paroi.T_ext(face-ndeb,nc)-inconnue(face,nc))*domaine_VEF.surface(face);
                   resu(face,nc) += flux0;
                   tab_flux_bords(face,nc) = flux0;
                 }
@@ -486,8 +486,8 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
 DoubleTab& Op_Diff_VEF_Anisotrope_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& resu) const
 {
   remplir_nu(nu_);
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
 
   int nb_comp = 1;
   int nb_dim = resu.nb_dim();
@@ -507,11 +507,11 @@ DoubleTab& Op_Diff_VEF_Anisotrope_Face::ajouter(const DoubleTab& inconnue_org, D
   const Champ_base& inco = equation().inconnue().valeur();
   const Nature_du_champ nature_champ = inco.nature_du_champ();
   if(nature_champ==scalaire)
-    ajouter_cas_scalaire(inconnue, resu, flux_bords_, nu, zone_Cl_VEF, zone_VEF);
+    ajouter_cas_scalaire(inconnue, resu, flux_bords_, nu, domaine_Cl_VEF, domaine_VEF);
   else if (nature_champ==vectoriel)
-    ajouter_cas_vectoriel(inconnue, resu, flux_bords_, nu, zone_Cl_VEF, zone_VEF,nb_comp);
+    ajouter_cas_vectoriel(inconnue, resu, flux_bords_, nu, domaine_Cl_VEF, domaine_VEF,nb_comp);
   else if (nature_champ==multi_scalaire)
-    ajouter_cas_multi_scalaire(inconnue, resu, flux_bords_, nu, zone_Cl_VEF, zone_VEF,nb_comp);
+    ajouter_cas_multi_scalaire(inconnue, resu, flux_bords_, nu, domaine_Cl_VEF, domaine_VEF,nb_comp);
   modifier_flux(*this);
 
   return resu;
@@ -531,12 +531,12 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution(const DoubleTab& transpor
   // matrice avec ajouter_contribution peut se faire
   // avant le premier pas de temps
   remplir_nu(nu_);
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
-  int n1 = zone_VEF.nb_faces();
+  int n1 = domaine_VEF.nb_faces();
   int nb_comp = 1;
   int nb_dim = transporte.nb_dim();
 
@@ -558,13 +558,13 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution(const DoubleTab& transpor
 
   int i,j,num_face;
   int elem1,elem2;
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   double val;
 
-  int nb_bords=zone_VEF.nb_front_Cl();
+  int nb_bords=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + le_bord.nb_faces();
@@ -644,7 +644,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution(const DoubleTab& transpor
             }
         }
     }
-  int n0 = zone_VEF.premiere_face_int();
+  int n0 = domaine_VEF.premiere_face_int();
   for (num_face=n0; num_face<n1; num_face++)
     {
       elem1 = face_voisins(num_face,0);
@@ -688,7 +688,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution(const DoubleTab& transpor
   // Neumann :
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
@@ -701,7 +701,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution(const DoubleTab& transpor
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*zone_VEF.face_surfaces(face);
+              matrice(face,face) += la_cl_paroi.h_imp(face-ndeb)*domaine_VEF.face_surfaces(face);
             }
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
@@ -720,12 +720,12 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution_multi_scalaire(const Doub
   // matrice avec ajouter_contribution peut se faire
   // avant le premier pas de temps
   remplir_nu(nu_);
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = zone_VEF.elem_faces();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
-  int n1 = zone_VEF.nb_faces();
+  int n1 = domaine_VEF.nb_faces();
   int nb_comp = 1;
   int nb_dim = transporte.nb_dim();
 
@@ -750,13 +750,13 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution_multi_scalaire(const Doub
 
   int i,j,num_face;
   int elem1,elem2;
-  int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
+  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   double val;
 
-  int nb_bords=zone_VEF.nb_front_Cl();
+  int nb_bords=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + le_bord.nb_faces();
@@ -868,7 +868,7 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution_multi_scalaire(const Doub
             }
         }
     }
-  for (num_face=zone_VEF.premiere_face_int(); num_face<n1; num_face++)
+  for (num_face=domaine_VEF.premiere_face_int(); num_face<n1; num_face++)
     {
       elem1 = face_voisins(num_face,0);
       elem2 = face_voisins(num_face,1);
@@ -930,15 +930,15 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_contribution_multi_scalaire(const Doub
 
 void Op_Diff_VEF_Anisotrope_Face::contribue_au_second_membre(DoubleTab& resu ) const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   int nb_comp = resu.line_size();
-  int nb_bords=zone_VEF.nb_front_Cl();
+  int nb_bords=domaine_VEF.nb_front_Cl();
 
   // Partie imposee :
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
@@ -947,7 +947,7 @@ void Op_Diff_VEF_Anisotrope_Face::contribue_au_second_membre(DoubleTab& resu ) c
           int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             for (int comp=0; comp<nb_comp; comp++)
-              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*zone_VEF.surface(face);
+              resu(face,comp) += la_cl_paroi.flux_impose(face-ndeb,comp)*domaine_VEF.surface(face);
         }
     }
 }
@@ -958,12 +958,12 @@ void Op_Diff_VEF_Anisotrope_Face::verifier() const
   if(testee)
     return;
   testee=1;
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  //  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  //  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
-  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  //  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  //  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
 
-  const DoubleTab& xv=zone_VEF.xv();
+  const DoubleTab& xv=domaine_VEF.xv();
   DoubleTab vit(equation().inconnue().valeurs());
   DoubleTab resu(vit);
   int i, comp;

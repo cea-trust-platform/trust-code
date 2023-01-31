@@ -15,7 +15,7 @@
 
 #include <Polyedre_poly.h>
 #include <Polyedre.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Linear_algebra_tools_impl.h>
 
 Implemente_instanciable(Polyedre_poly,"Polyedre_poly",Elem_poly_base);
@@ -29,11 +29,11 @@ void Polyedre_poly::normale(int num_Face,DoubleTab& Face_normales,
                             const IntTab& Face_sommets,
                             const IntTab& Face_voisins,
                             const IntTab& elem_faces,
-                            const Zone& zone_geom) const
+                            const Domaine& domaine_geom) const
 {
 
   //Cerr << " num_Face " << num_Face << finl;
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   // Cerr << "les face sommet " << Face_sommets << finl;
 
@@ -41,7 +41,7 @@ void Polyedre_poly::normale(int num_Face,DoubleTab& Face_normales,
   int nb_som_face_max= Face_sommets.dimension(1);
   int n0 = Face_sommets(num_Face,0);
 
-  const IntTab& elem=zone_geom.les_elems();
+  const IntTab& elem=domaine_geom.les_elems();
   Vecteur3 n(0,0,0);
   Vecteur3 moinsS0(les_coords(n0,0),les_coords(n0,1),les_coords(n0,2));
   moinsS0*=-1;
@@ -66,7 +66,7 @@ void Polyedre_poly::normale(int num_Face,DoubleTab& Face_normales,
   /*
     int elem1=Face_voisins(num_Face,0);
   DoubleVect xp;
-  ref_cast(Poly_geom_base,zone_geom.type_elem().valeur()).calculer_un_centre_gravite(elem1,xp);
+  ref_cast(Poly_geom_base,domaine_geom.type_elem().valeur()).calculer_un_centre_gravite(elem1,xp);
   Vecteur3 M(xp(0),xp(1),xp(2));
   */
   // on prend un point a l'interieur (pas le cg trop long)

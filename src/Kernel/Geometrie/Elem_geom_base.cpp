@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Elem_geom_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_base(Elem_geom_base,"Elem_geom_base",Objet_U);
 
@@ -64,7 +64,7 @@ int Elem_geom_base::num_face(int face, Type_Face& type) const
   return face;
 }
 
-/*! @brief Cree les faces de l'element geometrique specifie de la zone en precisant le type de face a creer.
+/*! @brief Cree les faces de l'element geometrique specifie de la domaine en precisant le type de face a creer.
  *
  * @param (Faces& les_faces) les faces a creer
  * @param (int num_elem) le numero de l'element dont on veut creer les faces
@@ -94,14 +94,14 @@ void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements de la zone associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements de la domaine associee a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
 void Elem_geom_base::calculer_centres_gravite(DoubleTab& xp) const
 {
   const IntTab& les_Polys = mon_dom->les_elems();
-  const Zone& le_domaine = mon_dom.valeur();
+  const Domaine& le_domaine = mon_dom.valeur();
   int nb_elem;
   if(xp.dimension(0)==0)
     {

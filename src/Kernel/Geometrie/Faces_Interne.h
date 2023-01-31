@@ -25,7 +25,7 @@
  *     On se sert des Faces_Internes pour representer des plaques a l'interieur
  *     d'un domaine fluide par exemple
  *
- * @sa Frontiere Zone
+ * @sa Frontiere Domaine
  */
 class Faces_Interne : public Frontiere
 {

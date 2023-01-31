@@ -46,7 +46,7 @@ void Champ_front_fonc_gradient_VDF::mettre_a_jour(double temps)
 
   DoubleTab& tab=valeurs_au_temps(temps);
 
-  const Zone_VDF& le_dom_VDF = ref_cast(Zone_VDF,zone_dis());
+  const Domaine_VDF& le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis());
   const IntVect& orientation = le_dom_VDF.orientation();
   // On recupere la CL et les champs associes
   const Paroi_Knudsen_non_negligeable& la_condition_limite=ref_cast(Paroi_Knudsen_non_negligeable,condition_limite(la_front.le_nom()));

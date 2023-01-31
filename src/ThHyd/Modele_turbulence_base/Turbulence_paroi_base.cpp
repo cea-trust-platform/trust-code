@@ -87,7 +87,7 @@ void Turbulence_paroi_base::creer_champ(const Motcle& motlu)
       double temps=0.;
       const Equation_base& equation=mon_modele_turb_hyd->equation();
       const Discretisation_base& discr = equation.probleme().discretisation();
-      discr.discretiser_champ("champ_face",equation.zone_dis(),scalaire,noms,unites,nb_comp,temps,champ_u_star_);
+      discr.discretiser_champ("champ_face",equation.domaine_dis(),scalaire,noms,unites,nb_comp,temps,champ_u_star_);
       champs_compris_.ajoute_champ(champ_u_star_);
     }
 }
@@ -103,8 +103,8 @@ const Champ_base& Turbulence_paroi_base::get_champ(const Motcle& nom) const
       if (tab_u_star_.size_array()>0)
         {
           // Boucle sur les frontieres pour recuperer u_star si tab_u_star dimensionne
-          const Zone_Cl_dis& zcl=my_eqn.zone_Cl_dis();
-          int nb_front=my_eqn.zone_dis().valeur().nb_front_Cl();
+          const Domaine_Cl_dis& zcl=my_eqn.domaine_Cl_dis();
+          int nb_front=my_eqn.domaine_dis().valeur().nb_front_Cl();
           for (int n_bord=0; n_bord<nb_front; n_bord++)
             {
               const Cond_lim& la_cl = zcl.les_conditions_limites(n_bord);

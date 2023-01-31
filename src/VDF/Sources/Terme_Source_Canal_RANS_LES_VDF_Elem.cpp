@@ -15,8 +15,8 @@
 
 #include <Terme_Source_Canal_RANS_LES_VDF_Elem.h>
 #include <Champ_Uniforme.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Pb_Hydraulique.h>
 #include <Pb_Thermohydraulique.h>
 #include <EFichier.h>
@@ -141,11 +141,11 @@ Entree& Terme_Source_Canal_RANS_LES_VDF_Elem::readOn(Entree& is )
 
 }
 
-void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_domaines(const Zone_dis& zone_dis,
-                                                             const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_domaines(const Domaine_dis& domaine_dis,
+                                                             const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_pb(const Probleme_base& pb)
@@ -155,11 +155,11 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_pb(const Probleme_base& pb)
 
 void Terme_Source_Canal_RANS_LES_VDF_Elem::init()
 {
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
   const double tps = mon_equation->schema_temps().temps_courant();
 
-  int nb_elems = zone_VDF.nb_elem();
+  int nb_elems = domaine_VDF.nb_elem();
 
 
   tau.resize(nb_elems);
@@ -224,14 +224,14 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
 {
   //Cerr << "Je suis dans le mettre_a_jour" << finl;
 
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
 
   //vitesse=temperature
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double tps = mon_equation->schema_temps().temps_courant();
-  int nb_elems = zone_VDF.nb_elem();
+  int nb_elems = domaine_VDF.nb_elem();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();
 
   int cptbis=0;
@@ -337,9 +337,9 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
 
 void Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
-  int nb_elems = zone_VDF.nb_elem();
-  const DoubleVect& volume = zone_VDF.volumes();
+  const Domaine_VDF& domaine_VDF = le_dom_VDF.valeur();
+  int nb_elems = domaine_VDF.nb_elem();
+  const DoubleVect& volume = domaine_VDF.volumes();
   const double tps = mon_equation->schema_temps().temps_courant();
   const double dt = mon_equation->schema_temps().pas_de_temps();
   const double dt_min = mon_equation->schema_temps().pas_temps_min();

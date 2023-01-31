@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <Ch_front_Vortex.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <LecFicDiffuse.h>
 #include <Interprete.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <time.h>
 #include <SFichier.h>
 
@@ -67,7 +67,7 @@ Entree& Ch_front_Vortex::readOn(Entree& is)
   Nom nom;
   is >> nom >> geom >> nu >> utau;
 
-  mon_domaine = ref_cast(Zone, Interprete::objet(nom));
+  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
 
   return is;
 }
@@ -164,7 +164,7 @@ int Ch_front_Vortex::initialiser(double un_temps, const Champ_Inc_base& inco)
   if (!Champ_front_var_instationnaire::initialiser(un_temps,inco))
     return 0;
 
-  Zone& domaine=mon_domaine.valeur();
+  Domaine& domaine=mon_domaine.valeur();
   const Frontiere_dis_base& fr_dis=frontiere_dis();
   const Frontiere& frontiere=fr_dis.frontiere();
   const int nb_faces=frontiere.nb_faces();
@@ -172,7 +172,7 @@ int Ch_front_Vortex::initialiser(double un_temps, const Champ_Inc_base& inco)
   const int nfin=ndeb+nb_faces;
   const Faces& faces=frontiere.faces();
   int nbsf=faces.nb_som_faces();
-  const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, domaine_dis());
   const DoubleTab& xv=zvf.xv();
 
   double x,y,z;
@@ -532,7 +532,7 @@ void Ch_front_Vortex::mettre_a_jour(double tps)
   const int nfin=ndeb+nb_faces;
   DoubleTab& les_val=valeurs();
 
-  const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, domaine_dis());
   const DoubleTab& xv=zvf.xv();
 
   double alpha=0;

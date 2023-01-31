@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Trianguler_fin.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Trianguler_fin, "Trianguler_fin", Triangulation_base);
 
@@ -22,14 +22,14 @@ Sortie& Trianguler_fin::printOn(Sortie& os) const { return Interprete::printOn(o
 
 Entree& Trianguler_fin::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Triangule tous les element d'une zone: transforme les elements goemetriques de la zone en triangles.
+/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques de la domaine en triangles.
  *
  *     Pour l'instant on ne sait trianguler que des Rectangles
  *     (on les coupe en 8).
  *
- * @param (Zone& zone) la zone dont on veut trianguler les elements
+ * @param (Domaine& domaine) la domaine dont on veut trianguler les elements
  */
-void Trianguler_fin::trianguler(Zone& dom) const
+void Trianguler_fin::trianguler(Domaine& dom) const
 {
   const DoubleTab& xs = dom.coord_sommets();
   IntTab& les_elems = dom.les_elems();
@@ -124,37 +124,37 @@ void Trianguler_fin::trianguler(Zone& dom) const
           new_elems(i + oldsz, 0) = i + nbs;
           new_elems(i + oldsz, 1) = i01;
           new_elems(i + oldsz, 2) = i1;
-          mettre_a_jour_sous_zone(dom, i, i + oldsz, 1);
+          mettre_a_jour_sous_domaine(dom, i, i + oldsz, 1);
 
           new_elems(i + 2 * oldsz, 0) = i + nbs;
           new_elems(i + 2 * oldsz, 1) = i1;
           new_elems(i + 2 * oldsz, 2) = i13;
-          mettre_a_jour_sous_zone(dom, i, i + 2 * oldsz, 1);
+          mettre_a_jour_sous_domaine(dom, i, i + 2 * oldsz, 1);
 
           new_elems(i + 3 * oldsz, 0) = i + nbs;
           new_elems(i + 3 * oldsz, 1) = i13;
           new_elems(i + 3 * oldsz, 2) = i3;
-          mettre_a_jour_sous_zone(dom, i, i + 3 * oldsz, 1);
+          mettre_a_jour_sous_domaine(dom, i, i + 3 * oldsz, 1);
 
           new_elems(i + 4 * oldsz, 0) = i + nbs;
           new_elems(i + 4 * oldsz, 1) = i3;
           new_elems(i + 4 * oldsz, 2) = i23;
-          mettre_a_jour_sous_zone(dom, i, i + 4 * oldsz, 1);
+          mettre_a_jour_sous_domaine(dom, i, i + 4 * oldsz, 1);
 
           new_elems(i + 5 * oldsz, 0) = i + nbs;
           new_elems(i + 5 * oldsz, 1) = i23;
           new_elems(i + 5 * oldsz, 2) = i2;
-          mettre_a_jour_sous_zone(dom, i, i + 5 * oldsz, 1);
+          mettre_a_jour_sous_domaine(dom, i, i + 5 * oldsz, 1);
 
           new_elems(i + 6 * oldsz, 0) = i + nbs;
           new_elems(i + 6 * oldsz, 1) = i2;
           new_elems(i + 6 * oldsz, 2) = i02;
-          mettre_a_jour_sous_zone(dom, i, i + 6 * oldsz, 1);
+          mettre_a_jour_sous_domaine(dom, i, i + 6 * oldsz, 1);
 
           new_elems(i + 7 * oldsz, 0) = i + nbs;
           new_elems(i + 7 * oldsz, 1) = i02;
           new_elems(i + 7 * oldsz, 2) = i0;
-          mettre_a_jour_sous_zone(dom, i, i + 7 * oldsz, 1);
+          mettre_a_jour_sous_domaine(dom, i, i + 7 * oldsz, 1);
 
         }
 

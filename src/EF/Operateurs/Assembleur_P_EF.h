@@ -18,18 +18,18 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
-#include <Ref_Zone_EF.h>
-#include <Ref_Zone_Cl_EF.h>
+#include <Ref_Domaine_EF.h>
+#include <Ref_Domaine_Cl_EF.h>
 
 class Assembleur_P_EF: public Assembleur_base
 {
   Declare_instanciable(Assembleur_P_EF);
 
 public:
-  void associer_domaine_dis_base(const Zone_dis_base&) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
+  void associer_domaine_dis_base(const Domaine_dis_base&) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base&) override;
+  const Domaine_dis_base& domaine_dis_base() const override;
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const override;
   int assembler(Matrice&) override;
   int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
   int assembler_QC(const DoubleTab&, Matrice&) override;
@@ -41,8 +41,8 @@ public:
 
 protected:
   REF(Equation_base) mon_equation;
-  REF(Zone_EF) le_dom_EF;
-  REF(Zone_Cl_EF) le_dom_Cl_EF;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) le_dom_Cl_EF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
 };

@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Op_EF_base.h>
-#include <Zone_EF.h>
-#include <Zone_Cl_EF.h>
+#include <Domaine_EF.h>
+#include <Domaine_Cl_EF.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Symetrie.h>
@@ -46,8 +46,8 @@
  *
  */
 
-void Op_EF_base::dimensionner(const Zone_EF& le_dom,
-                              const Zone_Cl_EF& le_dom_cl,
+void Op_EF_base::dimensionner(const Domaine_EF& le_dom,
+                              const Domaine_Cl_EF& le_dom_cl,
                               Matrice_Morse& la_matrice) const
 {
 
@@ -78,10 +78,10 @@ void Op_EF_base::dimensionner(const Zone_EF& le_dom,
 
   // on ne s'occupe pas dans un premier temps des composantes
 
-  const IntTab& elems=le_dom.zone().les_elems();
-  //int nb_elem=le_dom.zone().nb_elem();
-  int nb_elem_tot=le_dom.zone().nb_elem_tot();
-  int nb_som_elem=le_dom.zone().nb_som_elem();
+  const IntTab& elems=le_dom.domaine().les_elems();
+  //int nb_elem=le_dom.domaine().nb_elem();
+  int nb_elem_tot=le_dom.domaine().nb_elem_tot();
+  int nb_som_elem=le_dom.domaine().nb_som_elem();
   int nb_som_face=le_dom.nb_som_face();
 
   // Computation of the number of non void coeffs:
@@ -246,8 +246,8 @@ void Op_EF_base::dimensionner(const Zone_EF& le_dom,
  *
  */
 
-void Op_EF_base::modifier_pour_Cl(const Zone_EF& le_dom,
-                                  const Zone_Cl_EF& le_dom_cl,
+void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
+                                  const Domaine_Cl_EF& le_dom_cl,
                                   Matrice_Morse& la_matrice, DoubleTab& secmem) const
 {
 //  Cerr<<__PRETTY_FUNCTION__<<" ne fait rien "<<finl; return;
@@ -372,7 +372,7 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& le_dom,
 void Op_EF_base::modifier_flux( const Operateur_base& op) const
 {
   controle_modifier_flux_=1;
-  const Zone_EF& le_dom_EF=ref_cast(Zone_EF,op.equation().zone_dis().valeur());
+  const Domaine_EF& le_dom_EF=ref_cast(Domaine_EF,op.equation().domaine_dis().valeur());
   DoubleTab& flux_bords_=op.flux_bords();
   int nb_compo=flux_bords_.dimension(1);
   const Probleme_base& pb=op.equation().probleme();
@@ -399,7 +399,7 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
  */
 int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
 {
-  const Zone_EF& le_dom_EF=ref_cast(Zone_EF,op.equation().zone_dis().valeur());
+  const Domaine_EF& le_dom_EF=ref_cast(Domaine_EF,op.equation().domaine_dis().valeur());
   DoubleTab& flux_bords_=op.flux_bords();
   if (flux_bords_.nb_dim()!=2)
     {
@@ -417,11 +417,11 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   const Schema_Temps_base& sch=pb.schema_temps();
   // On n'imprime les moments que si demande et si on traite l'operateur de diffusion de la vitesse
   int impr_mom=0;
-  if (le_dom_EF.zone().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
+  if (le_dom_EF.domaine().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
     impr_mom=1;
 
-  const int impr_sum=(le_dom_EF.zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(le_dom_EF.zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_sum=(le_dom_EF.domaine().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_EF.domaine().bords_a_imprimer().est_vide() ? 0:1);
   int flag=0;
   if (Process::je_suis_maitre()) flag=1;
   //SFichier Flux;
@@ -452,7 +452,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   if (impr_mom)
     {
       const DoubleTab& xgrav = le_dom_EF.xv();
-      const ArrOfDouble& c_grav=le_dom_EF.zone().cg_moments();
+      const ArrOfDouble& c_grav=le_dom_EF.domaine().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<Objet_U::dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
@@ -465,8 +465,8 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
       flux_bord=0;
-      const Frontiere_dis_base& la_fr = op.equation().zone_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
-      const Cond_lim& la_cl = op.equation().zone_Cl_dis().les_conditions_limites(num_cl);
+      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
+      const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
@@ -503,7 +503,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
             {
               Flux.add_col(flux_bord(k));
               if (impr_mom) Flux_moment.add_col(moment(k));
-              if (le_dom_EF.zone().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
+              if (le_dom_EF.domaine().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bord(k);
@@ -525,13 +525,13 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   // Impression sur chaque face si demande
   for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
-      const Frontiere_dis_base& la_fr = op.equation().zone_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
-      const Cond_lim& la_cl = op.equation().zone_Cl_dis().les_conditions_limites(num_cl);
+      const Frontiere_dis_base& la_fr = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
+      const Cond_lim& la_cl = op.equation().domaine_Cl_dis().les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       // Impression sur chaque face
-      if (le_dom_EF.zone().bords_a_imprimer().contient(la_fr.le_nom()))
+      if (le_dom_EF.domaine().bords_a_imprimer().contient(la_fr.le_nom()))
         {
           Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
           const DoubleTab& xv=le_dom_EF.xv();

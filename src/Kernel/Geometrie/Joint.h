@@ -19,7 +19,7 @@
 #include <Frontiere.h>
 #include <Joint_Items.h>
 
-/*! @brief La classe Joint est une Frontiere qui contient les faces et les sommets de joint avec la zone PEvoisin() (pour les maillages
+/*! @brief La classe Joint est une Frontiere qui contient les faces et les sommets de joint avec la domaine PEvoisin() (pour les maillages
  *
  *     distribues en parallele).
  *     Elle porte en plus dans les Joint_Items les informations

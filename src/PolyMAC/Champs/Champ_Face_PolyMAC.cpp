@@ -23,11 +23,11 @@
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Matrix_tools.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Symetrie.h>
 #include <EChaine.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 #include <array>
 #include <cmath>
 #include <Operateur.h>
@@ -52,19 +52,19 @@ int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
   //
   // je suis tout de meme etonne du code utilise dans
   // Champ_Fonc_P0_base::fixer_nb_valeurs_nodales()
-  // pour recuperer la zone discrete...
+  // pour recuperer la domaine discrete...
 
   const Champ_Inc_base& self = ref_cast(Champ_Inc_base, *this);
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC,self.zone_dis_base());
+  const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,self.domaine_dis_base());
 
-  assert(n == zone.nb_faces() || n < 0); //on accepte a la fois les conventions VEF et VDF
+  assert(n == domaine.nb_faces() || n < 0); //on accepte a la fois les conventions VEF et VDF
 
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
   const int old_nb_compo = nb_compo_;
   if(nb_compo_ >= dimension) nb_compo_ /= dimension;
 
-  creer_tableau_distribue(zone.md_vector_faces());
+  creer_tableau_distribue(domaine.md_vector_faces());
   nb_compo_ = old_nb_compo;
   return n;
 
@@ -77,19 +77,19 @@ void Champ_Face_PolyMAC::init_auxiliary_variables()
       {
         DoubleTab& vals = futur(n);
         vals.set_md_vector(MD_Vector()); //on enleve le MD_Vector...
-        vals.resize_dim0(zone_PolyMAC().mdv_faces_aretes.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
-        vals.set_md_vector(zone_PolyMAC().mdv_faces_aretes); //...et on remet le bon MD_Vector
+        vals.resize_dim0(domaine_PolyMAC().mdv_faces_aretes.valeur().get_nb_items_tot()); //...on dimensionne a la bonne taille...
+        vals.set_md_vector(domaine_PolyMAC().mdv_faces_aretes); //...et on remet le bon MD_Vector
       }
 }
 
 int Champ_Face_PolyMAC::reprendre(Entree& fich)
 {
-  const Zone_PolyMAC* zone = le_dom_VF.non_nul() ? &ref_cast( Zone_PolyMAC,le_dom_VF.valeur()) : NULL;
+  const Domaine_PolyMAC* domaine = le_dom_VF.non_nul() ? &ref_cast( Domaine_PolyMAC,le_dom_VF.valeur()) : NULL;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
   valeurs().resize(0);
   int ret = Champ_Inc_base::reprendre(fich);
   //et on met le bon
-  if (zone) valeurs().set_md_vector(valeurs().dimension_tot(0) > zone->nb_faces_tot() ? zone->mdv_faces_aretes : zone->md_vector_faces());
+  if (domaine) valeurs().set_md_vector(valeurs().dimension_tot(0) > domaine->nb_faces_tot() ? domaine->mdv_faces_aretes : domaine->md_vector_faces());
   return ret;
 }
 
@@ -98,10 +98,10 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
   const DoubleTab& v = ch.valeurs();
   DoubleTab_parts parts(valeurs());
   DoubleTab& val = parts[0]; //partie vitesses
-  const Zone_PolyMAC& zone = zone_PolyMAC();
-  int nb_faces = zone.nb_faces();
-  const DoubleVect& surface = zone.face_surfaces();
-  const DoubleTab& normales = zone.face_normales();
+  const Domaine_PolyMAC& domaine = domaine_PolyMAC();
+  int nb_faces = domaine.nb_faces();
+  const DoubleVect& surface = domaine.face_surfaces();
+  const DoubleTab& normales = domaine.face_normales();
 
   if (sub_type(Champ_Uniforme,ch))
     {
@@ -122,9 +122,9 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
     }
   else
     {
-      //      int ndeb_int = zone.premiere_face_int();
-      //      const IntTab& face_voisins = zone.face_voisins();
-      const DoubleTab& xv=zone.xv();
+      //      int ndeb_int = domaine.premiere_face_int();
+      //      const IntTab& face_voisins = domaine.face_voisins();
+      const DoubleTab& xv=domaine.xv();
       DoubleTab eval(val.dimension_tot(0),dimension);
       ch.valeur_aux(xv,eval);
       for (int num_face=0; num_face<nb_faces; num_face++)
@@ -159,10 +159,10 @@ double Champ_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, int p
 /* vitesse aux elements */
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit) const
 {
-  const Zone_PolyMAC& zone = zone_PolyMAC();
-  const DoubleTab& xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& fs = zone.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = zone.volumes();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const Domaine_PolyMAC& domaine = domaine_PolyMAC();
+  const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
+  const DoubleVect& fs = domaine.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = domaine.volumes();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int e, f, j, r;
 
   val = 0;
@@ -177,10 +177,10 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
 /* vitesse aux elements sur une liste d'elements */
 void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, const IntVect& les_polys, DoubleTab& val, bool is_vit) const
 {
-  const Zone_PolyMAC& zone = zone_PolyMAC();
-  const DoubleTab& xv = zone.xv(), &xp = zone.xp();
-  const DoubleVect& fs = zone.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = zone.volumes();
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const Domaine_PolyMAC& domaine = domaine_PolyMAC();
+  const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
+  const DoubleVect& fs = domaine.face_surfaces(), *ppf = mon_equation_non_nul() ? &equation().milieu().porosite_face() : NULL, *ppe = ppf ? &equation().milieu().porosite_elem() : NULL, &ve = domaine.volumes();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int e, f, j, d, D = dimension, n, N = inco.line_size();
   assert(ve.line_size() == N * D);
 
@@ -232,11 +232,11 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems_(const DoubleTab& val_face ,cons
 
   //on interpole ve sur tous les elements, puis on se restreint a les_polys
   DoubleTrav ve(0, N * D);
-  zone_PolyMAC().zone().creer_tableau_elements(ve);
+  domaine_PolyMAC().domaine().creer_tableau_elements(ve);
   bool is_vit = cha.le_nom().debute_par("vitesse") && !cha.le_nom().debute_par("vitesse_debitante");
   interp_ve(val_face, ve, is_vit);
   for (int p = 0; p < les_polys.size(); p++)
-    for (int r = 0, e = les_polys(p); e < zone_PolyMAC().nb_elem() && r < N * D; r++) val_elem(p, r) = (e==-1) ? 0. : ve(e, r);
+    for (int r = 0, e = les_polys(p); e < domaine_PolyMAC().nb_elem() && r < N * D; r++) val_elem(p, r) = (e==-1) ? 0. : ve(e, r);
   return val_elem;
 }
 
@@ -247,7 +247,7 @@ DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& position
 
   //on interpole ve sur tous les elements, puis on se restreint a les_polys
   DoubleTrav ve(0, dimension * cha.valeurs().line_size());
-  zone_PolyMAC().zone().creer_tableau_elements(ve);
+  domaine_PolyMAC().domaine().creer_tableau_elements(ve);
   interp_ve(cha.valeurs(), ve);
 
   for (int p = 0; p < polys.size(); p++) val(p) = (polys(p) == -1) ? 0. : ve(polys(p), ncomp);
@@ -281,12 +281,12 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_faces(DoubleTab& val) const
       Process::exit();
     }
 
-  const Zone_PolyMAC& zone = zone_PolyMAC();
-  val.resize(zone.nb_faces(), N * D);
+  const Domaine_PolyMAC& domaine = domaine_PolyMAC();
+  val.resize(domaine.nb_faces(), N * D);
 
-  for (int f = 0; f < zone.nb_faces(); f++)
+  for (int f = 0; f < domaine.nb_faces(); f++)
     for (d = 0; d < D; d++)
-      for (n = 0; n < N; n++) val(f, N * d + n) = cha.valeurs()(f, n) * zone.face_normales(f, d) / zone.face_surfaces(f);
+      for (n = 0; n < N; n++) val(f, N * d + n) = cha.valeurs()(f, n) * domaine.face_normales(f, d) / domaine.face_surfaces(f);
   return val;
 }
 
@@ -302,11 +302,11 @@ DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x,
   const DoubleTab& val = valeurs(t);
   int n, N = val.line_size(), d, D = dimension, dim = vectoriel ? D : 1;
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);
-  const IntTab& face_voisins = zone_PolyMAC().face_voisins();
+  const IntTab& face_voisins = domaine_PolyMAC().face_voisins();
   DoubleTrav ve(0, N * D);
   if (vectoriel)
     {
-      zone_PolyMAC().zone().creer_tableau_elements(ve);
+      domaine_PolyMAC().domaine().creer_tableau_elements(ve);
       interp_ve(val, ve);
     }
 
@@ -329,5 +329,5 @@ DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x,
 
 int Champ_Face_PolyMAC::nb_valeurs_nodales() const
 {
-  return zone_PolyMAC().nb_faces(); //on ignore les variables auxiliaires
+  return domaine_PolyMAC().nb_faces(); //on ignore les variables auxiliaires
 }

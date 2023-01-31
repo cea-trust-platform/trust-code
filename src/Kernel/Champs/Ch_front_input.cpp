@@ -17,7 +17,7 @@
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <Interprete.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Frontiere_dis_base.h>
 #include <communications.h>
 #include <Convert_ICoCoTrioField.h>
@@ -27,7 +27,7 @@ Implemente_instanciable(Ch_front_input,"Ch_front_input",Ch_front_var_instationna
 
 Entree& Ch_front_input::readOn(Entree& is)
 {
-  sous_zone_ok=false;
+  sous_domaine_ok=false;
   read(is);
   mon_pb->addInputField(*this);
   return is;

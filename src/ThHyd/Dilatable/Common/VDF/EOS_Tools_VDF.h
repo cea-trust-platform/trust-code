@@ -16,9 +16,9 @@
 #ifndef EOS_Tools_VDF_included
 #define EOS_Tools_VDF_included
 
-#include <Ref_Zone_Cl_dis.h>
+#include <Ref_Domaine_Cl_dis.h>
 #include <EOS_Tools_base.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_VDF.h>
 #include <TRUSTTab.h>
 
 class Fluide_Dilatable_base;
@@ -33,7 +33,7 @@ class EOS_Tools_VDF: public EOS_Tools_base
   Declare_instanciable(EOS_Tools_VDF);
 public :
   const DoubleTab& rho_discvit() const override;
-  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;
   void divu_discvit(const DoubleTab&, DoubleTab&) override;
   void secmembre_divU_Z(DoubleTab& ) const override;
   void mettre_a_jour(double temps) override;
@@ -44,8 +44,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF(Zone_VDF) le_dom;
-  REF(Zone_Cl_dis) le_dom_Cl;
+  REF(Domaine_VDF) le_dom;
+  REF(Domaine_Cl_dis) le_dom_Cl;
   DoubleTab tab_rho_face, tab_rho_face_demi, tab_rho_face_np1;
 };
 

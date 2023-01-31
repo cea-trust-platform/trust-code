@@ -17,8 +17,8 @@
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Param.h>
 #include <Array_tools.h>
 #include <Matrix_tools.h>

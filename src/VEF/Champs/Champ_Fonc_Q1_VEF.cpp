@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Q1_VEF.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Champ_Fonc_Q1_VEF, "Champ_Fonc_Q1_VEF", Champ_Fonc_Q1_base);
 
@@ -30,10 +30,10 @@ void Champ_Fonc_Q1_VEF::mettre_a_jour(double t)
 
 int Champ_Fonc_Q1_VEF::imprime(Sortie& os, int ncomp) const
 {
-  const Zone_dis_base& zone_dis = zone_dis_base();
-  const Zone& zone = zone_dis.zone();
-  const DoubleTab& coord = zone.coord_sommets();
-  const int nb_som = zone.nb_som();
+  const Domaine_dis_base& domaine_dis = domaine_dis_base();
+  const Domaine& domaine = domaine_dis.domaine();
+  const DoubleTab& coord = domaine.coord_sommets();
+  const int nb_som = domaine.nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;

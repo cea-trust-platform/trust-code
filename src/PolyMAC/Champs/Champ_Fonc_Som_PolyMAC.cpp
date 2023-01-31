@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Som_PolyMAC.h>
-#include <Zone_PolyMAC.h>
-#include <Zone.h>
+#include <Domaine_PolyMAC.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Champ_Fonc_Som_PolyMAC, "Champ_Fonc_Som_PolyMAC", Champ_Fonc_P1_base);
 
@@ -23,9 +23,9 @@ Sortie& Champ_Fonc_Som_PolyMAC::printOn(Sortie& s) const { return s << que_suis_
 
 Entree& Champ_Fonc_Som_PolyMAC::readOn(Entree& s) { return s; }
 
-const Zone_PolyMAC& Champ_Fonc_Som_PolyMAC::zone_PolyMAC() const
+const Domaine_PolyMAC& Champ_Fonc_Som_PolyMAC::domaine_PolyMAC() const
 {
-  return ref_cast(Zone_PolyMAC, le_dom_VF.valeur());
+  return ref_cast(Domaine_PolyMAC, le_dom_VF.valeur());
 }
 
 void Champ_Fonc_Som_PolyMAC::mettre_a_jour(double t)
@@ -35,10 +35,10 @@ void Champ_Fonc_Som_PolyMAC::mettre_a_jour(double t)
 
 int Champ_Fonc_Som_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
-  const Zone_dis_base& zone_dis = zone_dis_base();
-  const Zone& zone = zone_dis.zone();
-  const DoubleTab& coord = zone.coord_sommets();
-  const int nb_som = zone.nb_som();
+  const Domaine_dis_base& domaine_dis = domaine_dis_base();
+  const Domaine& domaine = domaine_dis.domaine();
+  const DoubleTab& coord = domaine.coord_sommets();
+  const int nb_som = domaine.nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;

@@ -15,8 +15,8 @@
 
 #include <Terme_Source_Rappel_T_VEF_Face.h>
 #include <Champ_Uniforme.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
@@ -90,11 +90,11 @@ Entree& Terme_Source_Rappel_T_VEF_Face::readOn(Entree& is )
 
 }
 
-void Terme_Source_Rappel_T_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                       const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Rappel_T_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                       const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 void Terme_Source_Rappel_T_VEF_Face::associer_pb(const Probleme_base& pb)
@@ -106,9 +106,9 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
   Source_base::completer();
   if (fct_ok == 0)
     {
-      const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,equation().zone_dis().valeur());
-      const Zone& zone = zone_VEF.zone();
-      const int nb_elem = zone_VEF.nb_elem();
+      const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+      const Domaine& domaine = domaine_VEF.domaine();
+      const int nb_elem = domaine_VEF.nb_elem();
 
       Objet_U& ob1=Interprete::objet(nom_autre_pb);
       REF(Probleme_base) pb;
@@ -124,10 +124,10 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       rch = pb->get_champ(nom_inco);
       l_inconnue=ref_cast(Champ_Inc_base, rch.valeur()) ;
 
-      zone_VEF_autre_pb = ref_cast(Zone_VEF,pb->domaine_dis().valeur());
-      const int nb_elem_autre_pb = zone_VEF_autre_pb->nb_elem();
-      const DoubleTab& xp_autre_pb = zone_VEF_autre_pb->xp() ;
-      const DoubleVect& volumes = zone_VEF_autre_pb->volumes();
+      domaine_VEF_autre_pb = ref_cast(Domaine_VEF,pb->domaine_dis().valeur());
+      const int nb_elem_autre_pb = domaine_VEF_autre_pb->nb_elem();
+      const DoubleTab& xp_autre_pb = domaine_VEF_autre_pb->xp() ;
+      const DoubleVect& volumes = domaine_VEF_autre_pb->volumes();
 
       // Dimensionnement des tabs
       nb_fin.resize_array(nb_elem);
@@ -138,7 +138,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
       vol_fin_tot=0.;
 
       // Calcul des connectivites entre les maillages des deux pbs
-      zone.chercher_elements(xp_autre_pb, corresp_fin_gros);
+      domaine.chercher_elements(xp_autre_pb, corresp_fin_gros);
       for (int i=0; i<nb_elem_autre_pb; i++)
         {
           assert(corresp_fin_gros[i]>0);
@@ -153,19 +153,19 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
 
 DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const int nb_faces = zone_VEF.nb_faces();
-  const int premiere_face_std=zone_VEF.premiere_face_std();
-  const int ndeb = zone_VEF.premiere_face_int();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const int nb_faces = domaine_VEF.nb_faces();
+  const int premiere_face_std=domaine_VEF.premiere_face_std();
+  const int ndeb = domaine_VEF.premiere_face_int();
 
-  const int nb_elem = zone_VEF.nb_elem();
+  const int nb_elem = domaine_VEF.nb_elem();
   const DoubleTab& temperature = mon_equation->inconnue().valeurs();
-  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = le_dom_Cl_VEF->volumes_entrelaces_Cl();
-  const DoubleTab& xv=zone_VEF.xv() ;
+  const DoubleTab& xv=domaine_VEF.xv() ;
   const double dt = mon_equation->schema_temps().pas_de_temps();
 
-  const DoubleVect& volumes_autre_pb = zone_VEF_autre_pb->volumes();
+  const DoubleVect& volumes_autre_pb = domaine_VEF_autre_pb->volumes();
 
   double vol;
   double force=0.;
@@ -196,11 +196,11 @@ DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
     }
   else
     {
-      const Zone_VEF& zoneVEF_autre_pb = ref_cast(Zone_VEF,l_inconnue->zone_dis_base());
-      const int nb_elem_autre_pb = zoneVEF_autre_pb.nb_elem();
-      const DoubleTab& xp=zoneVEF_autre_pb.xp() ;
+      const Domaine_VEF& domaineVEF_autre_pb = ref_cast(Domaine_VEF,l_inconnue->domaine_dis_base());
+      const int nb_elem_autre_pb = domaineVEF_autre_pb.nb_elem();
+      const DoubleTab& xp=domaineVEF_autre_pb.xp() ;
 
-      const IntTab& face_voisins=zone_VEF.face_voisins() ;
+      const IntTab& face_voisins=domaine_VEF.face_voisins() ;
       ArrOfDouble val_elem(nb_elem); // valeurs sur les elems du pb courant du champ de l'autre pb.
 
       DoubleTab valeurs(nb_elem_autre_pb,l_inconnue->nb_comp()); //valeurs sur l'autre pb

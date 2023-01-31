@@ -26,8 +26,8 @@ Entree& Champ_Fonc_Face_VDF::readOn(Entree& s) { return s; }
 
 int Champ_Fonc_Face_VDF::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
-  assert(nb_noeuds == zone_vdf().nb_faces());
-  const MD_Vector& md = zone_vdf().md_vector_faces();
+  assert(nb_noeuds == domaine_vdf().nb_faces());
+  const MD_Vector& md = domaine_vdf().md_vector_faces();
   // HACK (le meme que dans Champ_Face_VDF.cpp)
   int old_nb_comp = nb_compo_;
   nb_compo_ = 1;
@@ -56,9 +56,9 @@ Champ_base& Champ_Fonc_Face_VDF::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
-  const Zone_VDF& zone_VDF = zone_vdf();
-  int nb_faces = zone_VDF.nb_faces();
-  const IntVect& orientation = zone_VDF.orientation();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  int nb_faces = domaine_VDF.nb_faces();
+  const IntVect& orientation = domaine_VDF.orientation();
   int ori, n0, n1;
 
   if (sub_type(Champ_Uniforme, ch))
@@ -68,8 +68,8 @@ Champ_base& Champ_Fonc_Face_VDF::affecter_(const Champ_base& ch)
     }
   else if ((sub_type(Champ_Uniforme_Morceaux, ch)) || (sub_type(Champ_Don_lu, ch)))
     {
-      int ndeb_int = zone_VDF.premiere_face_int();
-      const IntTab& face_voisins = zone_VDF.face_voisins();
+      int ndeb_int = domaine_VDF.premiere_face_int();
+      const IntTab& face_voisins = domaine_VDF.face_voisins();
       int num_face;
 
       for (num_face = 0; num_face < ndeb_int; num_face++)
@@ -92,15 +92,15 @@ Champ_base& Champ_Fonc_Face_VDF::affecter_(const Champ_base& ch)
     }
   else
     {
-      //      int ndeb_int = zone_VDF.premiere_face_int();
-      //      const IntTab& face_voisins = zone_VDF.face_voisins();
-      DoubleTab positionX(zone_VDF.nb_faces_X(), dimension);
-      DoubleVect U(zone_VDF.nb_faces_X());
-      DoubleTab positionY(zone_VDF.nb_faces_Y(), dimension);
-      DoubleVect V(zone_VDF.nb_faces_Y());
-      DoubleTab positionZ(zone_VDF.nb_faces_Z(), dimension);
-      DoubleVect W(zone_VDF.nb_faces_Z());
-      const DoubleTab& xv = zone_VDF.xv();
+      //      int ndeb_int = domaine_VDF.premiere_face_int();
+      //      const IntTab& face_voisins = domaine_VDF.face_voisins();
+      DoubleTab positionX(domaine_VDF.nb_faces_X(), dimension);
+      DoubleVect U(domaine_VDF.nb_faces_X());
+      DoubleTab positionY(domaine_VDF.nb_faces_Y(), dimension);
+      DoubleVect V(domaine_VDF.nb_faces_Y());
+      DoubleTab positionZ(domaine_VDF.nb_faces_Z(), dimension);
+      DoubleVect W(domaine_VDF.nb_faces_Z());
+      const DoubleTab& xv = domaine_VDF.xv();
       int nbx = 0;
       int nby = 0;
       int nbz = 0;
@@ -156,8 +156,8 @@ Champ_base& Champ_Fonc_Face_VDF::affecter_(const Champ_base& ch)
 
 DoubleVect& Champ_Fonc_Face_VDF::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
-  const Zone& mazone = zone_dis_base().zone();
+  const Domaine& madomaine = domaine_dis_base().domaine();
   IntVect les_polys(positions.dimension(0));
-  mazone.chercher_elements(positions, les_polys);
+  madomaine.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }

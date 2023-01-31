@@ -18,14 +18,14 @@
 
 #include <TRUSTTab.h>
 #include <Ref_IntTab.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
-class Zone;
+class Domaine;
 class Static_Int_Lists;
 class Faces;
 class Frontiere;
 
-/*! @brief classe outil pour construire les faces d'une zone
+/*! @brief classe outil pour construire les faces d'une domaine
  * (utilisee uniquement pour creer les tableau des faces reelles)
  *
  */
@@ -34,7 +34,7 @@ class Faces_builder
 public:
   Faces_builder();
   void reset();
-  void creer_faces_reeles(Zone& zone, const Static_Int_Lists& connect_som_elem, Faces& les_faces, IntTab& elem_faces);
+  void creer_faces_reeles(Domaine& domaine, const Static_Int_Lists& connect_som_elem, Faces& les_faces, IntTab& elem_faces);
 
   static int chercher_face_element(const IntTab& les_elements, const IntTab& faces_element_reference, const ArrOfInt& une_face, const int elem);
 
@@ -54,7 +54,7 @@ private:
 
   // Tous les membres suivants sont initialises dans creer_faces_reeles:
 
-  // Raccourci vers les elements de la zone
+  // Raccourci vers les elements de la domaine
   const IntTab * les_elements_ptr_;
   // La connectivite elements-sommets (pour chaque sommet, liste des
   // elements adjacents, y compris les sommets et elements virtuels)
@@ -65,7 +65,7 @@ private:
   IntTab faces_element_reference_old_;
   int is_polyedre_;
   // pour check_erreur_faces :
-  REF(Zone)   ref_zone_;
+  REF(Domaine)   ref_domaine_;
   REF(IntTab) faces_sommets_;
   REF(IntTab) face_elem_;
 };

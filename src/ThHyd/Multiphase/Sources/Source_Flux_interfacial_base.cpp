@@ -25,8 +25,8 @@
 #include <Synonyme_info.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
-#include <Zone_VF.h>
-#include <Zone.h>
+#include <Domaine_VF.h>
+#include <Domaine.h>
 
 Implemente_base(Source_Flux_interfacial_base,"Source_Flux_interfacial_base", Sources_Multiphase_base);
 
@@ -45,7 +45,7 @@ Entree& Source_Flux_interfacial_base::readOn(Entree& is)
 void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
@@ -61,11 +61,11 @@ void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const
         IntTrav sten(0, 2);
         sten.set_smart_resize(1);
         if (n_m.first == "temperature" || n_m.first == "pression" || n_m.first == "alpha" || n_m.first == "interfacial_area" ) /* temperature/pression: dependance locale */
-          for (e = 0; e < zone.nb_elem(); e++)
+          for (e = 0; e < domaine.nb_elem(); e++)
             for (n = 0; n < N; n++)
               for (int m = 0; m < M; m++) sten.append_line(N * e + n, M * e + m);
         if (mat.nb_colonnes())
-          for (e = 0; e < zone.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
+          for (e = 0; e < domaine.nb_elem(); e++) /* autres variables: on peut melanger les composantes*/
             {
               for (idx.clear(), n = 0, i = N * e; n < N; n++, i++)
                 for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
@@ -81,17 +81,17 @@ void Source_Flux_interfacial_base::dimensionner_blocs(matrices_t matrices, const
 
 void Source_Flux_interfacial_base::completer()
 {
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   int N = equation().inconnue().valeurs().line_size();
   if (!sub_type(Source_Flux_interfacial_base, equation().sources().dernier().valeur()))
     Process::exit(que_suis_je() + " : Source_Flux_interfacial_base must be the last source term in the source term declaration list of the " + equation().que_suis_je() + " equation ! ");
 
   if (sub_type(Energie_Multiphase, equation()))
     {
-      qpi_.resize(0, N, N), zone.zone().creer_tableau_elements(qpi_);
-      dT_qpi_.resize(0, N, N, N), zone.zone().creer_tableau_elements(dT_qpi_);
-      da_qpi_.resize(0, N, N, N), zone.zone().creer_tableau_elements(da_qpi_);
-      dp_qpi_.resize(0, N, N), zone.zone().creer_tableau_elements(dp_qpi_);
+      qpi_.resize(0, N, N), domaine.domaine().creer_tableau_elements(qpi_);
+      dT_qpi_.resize(0, N, N, N), domaine.domaine().creer_tableau_elements(dT_qpi_);
+      da_qpi_.resize(0, N, N, N), domaine.domaine().creer_tableau_elements(da_qpi_);
+      dp_qpi_.resize(0, N, N), domaine.domaine().creer_tableau_elements(dp_qpi_);
     }
 }
 
@@ -130,8 +130,8 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
   // Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
-  const DoubleVect& pe = milc.porosite_elem(), &ve = zone.volumes();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const DoubleVect& pe = milc.porosite_elem(), &ve = domaine.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
   const Champ_base& ch_rho = milc.masse_volumique();
   const Champ_Inc_base& ch_alpha = pbm.eq_masse.inconnue().valeur(), &ch_a_r = pbm.eq_masse.champ_conserve(),
@@ -189,12 +189,12 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   hi.resize(N, N), dT_hi.resize(N, N, N), da_hi.resize(N, N, N), dP_hi.resize(N, N), in.v.resize(N, D);
 
   // Et pour les methodes span de la classe Saturation
-  const int nbelem = zone.nb_elem(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+  const int nbelem = domaine.nb_elem(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
   DoubleTrav Ts_tab(nbelem,nb_max_sat), dPTs_tab(nbelem,nb_max_sat), Hvs_tab(nbelem,nb_max_sat), Hls_tab(nbelem,nb_max_sat), dPHvs_tab(nbelem,nb_max_sat), dPHls_tab(nbelem,nb_max_sat), Lvap_tab(nbelem,nb_max_sat);
 
   // fill velocity at elem tab
   DoubleTab pvit_elem(0, N * D);
-  zone.zone().creer_tableau_elements(pvit_elem);
+  domaine.domaine().creer_tableau_elements(pvit_elem);
   const Champ_Face_base& ch_vit = ref_cast(Champ_Face_base,ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.inconnue().valeur());
   ch_vit.get_elem_vector_field(pvit_elem);
 
@@ -223,7 +223,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           z_sat.compute_all_flux_interfacial(sats_all, nb_max_sat, ind_trav);
         }
 
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       double vol = pe(e) * ve(e), x, G = 0, dv_min = 0.1, dh = milc.diametre_hydraulique_elem()(e), dP_G = 0.; // E. Saikali : initialise dP_G ici sinon fuite memoire ...
       for (in.v = 0, d = 0; d < D; d++)

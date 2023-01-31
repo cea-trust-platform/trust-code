@@ -16,7 +16,7 @@
 #include <Linear_algebra_tools_impl.h>
 #include <TRUSTList.h>
 #include <Polyedre.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <algorithm>
 
 using std::swap;
@@ -69,9 +69,9 @@ Entree& Polyedre::readOn(Entree& s )
 void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
 {
 
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
 
 
   int nb_elem;
@@ -152,7 +152,7 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
 void Polyedre::calculer_un_centre_gravite(const int num_elem,DoubleVect& xp) const
 {
   const IntTab& les_Polys = mon_dom->les_elems();
-  const Zone& le_domaine = mon_dom.valeur();
+  const Domaine& le_domaine = mon_dom.valeur();
 
   xp.resize(dimension);
   int nb_som_reel=nb_som();
@@ -192,22 +192,22 @@ const Nom& Polyedre::nom_lml() const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0.
  *
- * Renvoie 1 si l'element "element" de la zone associee a
+ * Renvoie 1 si l'element "element" de la domaine associee a
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int element) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int element) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
  */
 int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
 {
 
   // on regarde si le point P est du meme cote que xg pour chaque face .
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
   Vecteur3 P(pos[0],pos[1],pos[2]);
   Vecteur3 xg(0,0,0);
   int nb_som_max=elem.dimension(1);
@@ -264,11 +264,11 @@ int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0 Renvoie 1 si les sommets specifies par le parametre "pos"
  *
- *     sont les sommets de l'element "element" de la zone associee a
+ *     sont les sommets de l'element "element" de la domaine associee a
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Polyedre::contient(const ArrOfInt& pos, int num_poly ) const
@@ -278,17 +278,17 @@ int Polyedre::contient(const ArrOfInt& pos, int num_poly ) const
 }
 
 
-/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la zone associee.
+/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Polyedre::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const IntTab& elem=zone.les_elems();
-  const DoubleTab& coord=zone.coord_sommets();
+  const Domaine& domaine=mon_dom.valeur();
+  const IntTab& elem=domaine.les_elems();
+  const DoubleTab& coord=domaine.coord_sommets();
 
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {

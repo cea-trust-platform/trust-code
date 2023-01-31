@@ -29,12 +29,12 @@ public:
   {
     return 3;
   };
-  void creer_facette_normales(const Zone&  ,DoubleTab&,
+  void creer_facette_normales(const Domaine&  ,DoubleTab&,
                               const IntVect& ) const override;
   void creer_normales_facettes_Cl(DoubleTab& ,int ,int ,
-                                  const DoubleTab& ,const DoubleVect& ,const Zone&) const override;
-  void modif_volumes_entrelaces(int ,int ,const Zone_VEF& ,DoubleVect& ,int ) const override;
-  void modif_volumes_entrelaces_faces_joints(int ,int ,const Zone_VEF& ,DoubleVect& ,int ) const override;
+                                  const DoubleTab& ,const DoubleVect& ,const Domaine&) const override;
+  void modif_volumes_entrelaces(int ,int ,const Domaine_VEF& ,DoubleVect& ,int ) const override;
+  void modif_volumes_entrelaces_faces_joints(int ,int ,const Domaine_VEF& ,DoubleVect& ,int ) const override;
   void modif_normales_facettes_Cl(DoubleTab&,int ,int
                                   ,int ,int ,int ,int ) const override;
   void calcul_vc(const ArrOfInt& ,ArrOfDouble& ,const ArrOfDouble& ,
@@ -42,7 +42,7 @@ public:
   void calcul_xg(DoubleVect& ,const DoubleTab& ,const int ,int& ,
                  int& ,int&  ,int& ) const override;
   void normale(int ,DoubleTab&, const IntTab& ,const IntTab&,
-               const IntTab& ,const Zone& )  const override ;
+               const IntTab& ,const Domaine& )  const override ;
 };
 
 #endif

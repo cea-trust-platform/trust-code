@@ -16,9 +16,9 @@
 #include <Traitement_particulier_NS_Pression_VDF.h>
 #include <Navier_Stokes_std.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <TRUSTTrav.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_Pression_VDF,"Traitement_particulier_NS_Pression_VDF",Traitement_particulier_NS_Pression);
 
@@ -79,10 +79,10 @@ Entree& Traitement_particulier_NS_Pression_VDF::lire(Entree& is)
             case 0 :
               {
                 Cerr << " Lire Pression_porosite " << finl;
-                const Zone_dis_base& zdis=mon_equation->inconnue().zone_dis_base();
-                const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdis);
+                const Domaine_dis_base& zdis=mon_equation->inconnue().domaine_dis_base();
+                const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdis);
                 //                  const Probleme_base& pb = mon_equation->probleme();
-                const int nb_elem = zone_VDF.nb_elem() ;
+                const int nb_elem = domaine_VDF.nb_elem() ;
 
                 ch_p.associer_domaine_dis_base(zdis);
                 ch_p.nommer("Pression_porosite");
@@ -131,7 +131,7 @@ void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier()
 
 void Traitement_particulier_NS_Pression_VDF::post_traitement_particulier_calcul_pression()
 {
-  const Zone_VDF& zvdf=ref_cast(Zone_VDF, mon_equation->zone_dis().valeur());
+  const Domaine_VDF& zvdf=ref_cast(Domaine_VDF, mon_equation->domaine_dis().valeur());
   const DoubleVect& porosite_face = mon_equation->milieu().porosite_face();
   int i;
   int nb_face = zvdf.nb_faces();

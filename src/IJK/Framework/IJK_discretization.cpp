@@ -15,7 +15,7 @@
 
 #include <IJK_discretization.h>
 #include <Param.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Probleme_base.h>
 #include <Interprete_bloc.h>
 
@@ -78,20 +78,20 @@ Entree& IJK_discretization::readOn(Entree& is)
     }
 
   const Probleme_base& pb = ref_cast(Probleme_base, Interprete_bloc::objet_global(vdf_problem));
-  const Zone_VF& zone_vdf = ref_cast(Zone_VF, pb.domaine_dis().valeur());
+  const Domaine_VF& domaine_vdf = ref_cast(Domaine_VF, pb.domaine_dis().valeur());
 
   IJK_Grid_Geometry grid_geom;
-  grid_geom.initialize_from_unstructured(zone_vdf.zone(),
+  grid_geom.initialize_from_unstructured(domaine_vdf.domaine(),
                                          direction_mapping[0], direction_mapping[1], direction_mapping[2],
                                          perio_flags[0], perio_flags[1], perio_flags[2]);
 
   splitting_.initialize(grid_geom, splitting[0], splitting[1], splitting[2]);
 
-  vdf_to_ijk_i_.initialize(zone_vdf, splitting_, IJK_Splitting::FACES_I, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_j_.initialize(zone_vdf, splitting_, IJK_Splitting::FACES_J, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_k_.initialize(zone_vdf, splitting_, IJK_Splitting::FACES_K, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_elem_.initialize(zone_vdf, splitting_, IJK_Splitting::ELEM, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
-  vdf_to_ijk_nodes_.initialize(zone_vdf, splitting_, IJK_Splitting::NODES, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_i_.initialize(domaine_vdf, splitting_, IJK_Splitting::FACES_I, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_j_.initialize(domaine_vdf, splitting_, IJK_Splitting::FACES_J, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_k_.initialize(domaine_vdf, splitting_, IJK_Splitting::FACES_K, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_elem_.initialize(domaine_vdf, splitting_, IJK_Splitting::ELEM, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
+  vdf_to_ijk_nodes_.initialize(domaine_vdf, splitting_, IJK_Splitting::NODES, direction_mapping[0], direction_mapping[1], direction_mapping[2]);
 
   return is;
 }

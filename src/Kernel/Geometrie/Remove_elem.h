@@ -26,9 +26,9 @@
 #include <Interprete_geometrique_base.h>
 #include <TRUSTList.h>
 #include <Parser_U.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class Remove_elem : public Interprete_geometrique_base
 {
@@ -37,9 +37,9 @@ class Remove_elem : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void remove_elem_(Zone&);
-  void recreer_faces(Zone& , Faces&, IntTab&) const;
-  void creer_faces(Zone& , Faces&, IntTab&) const;
+  void remove_elem_(Domaine&);
+  void recreer_faces(Domaine& , Faces&, IntTab&) const;
+  void creer_faces(Domaine& , Faces&, IntTab&) const;
   void remplir_liste(IntTab&, int, int, int, int) const;
 
 protected :

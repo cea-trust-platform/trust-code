@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Source_Generique_VEF.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
 #include <Equation_base.h>
@@ -75,11 +75,11 @@ DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-void Source_Generique_VEF::associer_domaines(const Zone_dis& zone_dis,
-                                             const Zone_Cl_dis& zcl_dis)
+void Source_Generique_VEF::associer_domaines(const Domaine_dis& domaine_dis,
+                                             const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom_VEF = ref_cast(Zone_VEF,zone_dis.valeur());
-  la_zcl_VEF = ref_cast(Zone_Cl_VEF,zcl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF,domaine_dis.valeur());
+  la_zcl_VEF = ref_cast(Domaine_Cl_VEF,zcl_dis.valeur());
 }
 
 Nom Source_Generique_VEF::localisation_source()

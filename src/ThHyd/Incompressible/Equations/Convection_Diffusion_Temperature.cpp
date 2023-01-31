@@ -23,7 +23,7 @@
 #include <Transport_Interfaces_base.h>
 #include <TRUSTTrav.h>
 #include <SFichier.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Matrice_Morse.h>
 #include <Champ_Uniforme.h>
 #include <Matrice_Morse_Sym.h>
@@ -133,9 +133,9 @@ int Convection_Diffusion_Temperature::lire_motcle_non_standard(const Motcle& un_
           Cerr << "On attendait : " << accolade_ouverte << finl;
           exit();
         }
-      const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
-      zone_vf.zone().creer_tableau_elements(indic_pena_global);
-      zone_vf.creer_tableau_faces(indic_face_pena_global);
+      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+      domaine_vf.domaine().creer_tableau_elements(indic_pena_global);
+      domaine_vf.creer_tableau_faces(indic_face_pena_global);
     }
   else
     return Convection_Diffusion_std::lire_motcle_non_standard(un_mot,is);
@@ -164,7 +164,7 @@ void Convection_Diffusion_Temperature::discretiser()
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
   if (Process::je_suis_maitre())
     Cerr << "Energy equation discretization" << finl;
-  dis.temperature(schema_temps(), zone_dis(), la_temperature);
+  dis.temperature(schema_temps(), domaine_dis(), la_temperature);
   champs_compris_.ajoute_champ(la_temperature);
 
   Equation_base::discretiser();
@@ -253,7 +253,7 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
         if (!temperature_paroi.non_nul())
           {
             const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-            dis.t_paroi(zone_dis(),zone_Cl_dis(),*this,temperature_paroi);
+            dis.t_paroi(domaine_dis(),domaine_Cl_dis(),*this,temperature_paroi);
             champs_compris_.ajoute_champ(temperature_paroi);
           }
       } */
@@ -262,7 +262,7 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
       if (!gradient_temperature.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-          dis.grad_T(zone_dis(),zone_Cl_dis(),la_temperature,gradient_temperature);
+          dis.grad_T(domaine_dis(),domaine_Cl_dis(),la_temperature,gradient_temperature);
           champs_compris_.ajoute_champ(gradient_temperature);
         }
     }
@@ -274,7 +274,7 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
           temp_mot.suffix("H_ECHANGE_");
           int temperature;
           string2int(temp_mot,temperature);
-          dis.h_conv(zone_dis(),zone_Cl_dis(),la_temperature,h_echange,nom_mot,temperature);
+          dis.h_conv(domaine_dis(),domaine_Cl_dis(),la_temperature,h_echange,nom_mot,temperature);
           champs_compris_.ajoute_champ(h_echange);
         }
     }
@@ -350,8 +350,8 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
       const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
       // Specific code if temperature equation is penalized
       derivee=inconnue().valeurs();
-      //   Mise en place d'une methode de mise en place d'une zone fantome
-      mise_en_place_zone_fantome(derivee);
+      //   Mise en place d'une methode de mise en place d'une domaine fantome
+      mise_en_place_domaine_fantome(derivee);
       DoubleTab& inc=inconnue().valeurs();
       inc = derivee;
 
@@ -737,8 +737,8 @@ void Convection_Diffusion_Temperature::transport_ibc(DoubleTrav& secmem_conv_vr,
   set_indic_pena_globale();
 
   // on calcule l indicatrice epaisse
-  const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
-  const IntTab& faces_elem = zone_vf.face_voisins();
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+  const IntTab& faces_elem = domaine_vf.face_voisins();
   IntTrav indic_pena_global_fat(indic_pena_global);
   for (int i_face = 0; i_face < indic_face_pena_global.size(); i_face++)
     {
@@ -751,7 +751,7 @@ void Convection_Diffusion_Temperature::transport_ibc(DoubleTrav& secmem_conv_vr,
         }
     }
   // post-traitement particulier pour les coins
-  const IntTab& elem_faces = zone_vf.elem_faces();
+  const IntTab& elem_faces = domaine_vf.elem_faces();
   const int nb_faces_elem = elem_faces.dimension(1);
   const int nb_elem  = indic_pena_global.dimension(0);
   for (int i_elem = 0; i_elem < nb_elem;  i_elem++)
@@ -810,7 +810,7 @@ void Convection_Diffusion_Temperature::transport_ibc(DoubleTrav& secmem_conv_vr,
     }
 }
 
-void Convection_Diffusion_Temperature::mise_en_place_zone_fantome(DoubleTab& solution)
+void Convection_Diffusion_Temperature::mise_en_place_domaine_fantome(DoubleTab& solution)
 {
   int maj = verifier_tag_indicatrice_pena_glob();
   if (maj == 1) return;
@@ -818,7 +818,7 @@ void Convection_Diffusion_Temperature::mise_en_place_zone_fantome(DoubleTab& sol
   // garde-fou
   if (schema_temps().facteur_securite_pas() > 1.0)
     {
-      Cerr << "Convection_Diffusion_Temperature::mise_en_place_zone_fantome Facteur securite doit etre <= 1"<<finl;
+      Cerr << "Convection_Diffusion_Temperature::mise_en_place_domaine_fantome Facteur securite doit etre <= 1"<<finl;
       exit();
     }
 
@@ -833,9 +833,9 @@ void Convection_Diffusion_Temperature::mise_en_place_zone_fantome(DoubleTab& sol
   for (int k_elem =0 ; k_elem <nb_elem; ++k_elem)  ((indicatrice_totale(k_elem)!=0) ? ++x : ++j);
 
   //traitement cellules fantomes (if any)
-  const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
-  const IntTab& elem_faces = zone_vf.elem_faces();
-  const IntTab& faces_elem = zone_vf.face_voisins();
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+  const IntTab& elem_faces = domaine_vf.elem_faces();
+  const IntTab& faces_elem = domaine_vf.face_voisins();
   const int nb_faces_elem = elem_faces.dimension(1);
   int k=0; //nb cellules fantomes ibc -> fluide
   int k_cor=0; //nb cellules fantomes (ibc -> fluide) corrigees
@@ -953,13 +953,13 @@ void Convection_Diffusion_Temperature::mise_en_place_zone_fantome(DoubleTab& sol
         }
     }
   solution.echange_espace_virtuel();
-  //     Debog::verifier("Convection_Diffusion_Temperature::mise_en_place_zone_fantome solution ",solution);
-  Cout <<"Mise_en_place_zone_fantome : fluide -> ibc : "<<u<< " elem. (dont "<<k_cor2<<" corrigees) et ibc -> fluide : ";
+  //     Debog::verifier("Convection_Diffusion_Temperature::mise_en_place_domaine_fantome solution ",solution);
+  Cout <<"Mise_en_place_domaine_fantome : fluide -> ibc : "<<u<< " elem. (dont "<<k_cor2<<" corrigees) et ibc -> fluide : ";
   Cout<<k<<" elem.(dont "<<k_cor<<" corrigees)"<<finl;
   Cout <<"             nb elem. ibc : "<<x<<" et nb elem fluide : "<<j<<" sur un total de : "<<nb_elem<<finl;
   if ((u != k_cor2) || (k !=k_cor))
     {
-      Cerr <<"Mise_en_place_zone_fantome : Les cellules fantomes ne sont pas toutes corrigees"<<finl;
+      Cerr <<"Mise_en_place_domaine_fantome : Les cellules fantomes ne sont pas toutes corrigees"<<finl;
       exit();
     }
 
@@ -1014,8 +1014,8 @@ void Convection_Diffusion_Temperature::calcul_indic_pena_global(IntTab& indicatr
             }
         }
       // fonction characteristique (numero ibc) pour l'ensemble des ibc
-      const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
-      const IntTab& face_voisins = zone_vf.face_voisins();
+      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+      const IntTab& face_voisins = domaine_vf.face_voisins();
       for (int i = 0; i < nfaces ; i++)
         {
           const int elem0 = face_voisins(i, 0);
@@ -1056,9 +1056,9 @@ DoubleTab& Convection_Diffusion_Temperature::penalisation_L2(DoubleTab& u)
   set_indic_pena_globale();
 
   //calcul de T_voisinage pour tous les elemnts
-  const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
-  const IntTab& elem_faces = zone_vf.elem_faces();
-  const IntTab& faces_elem = zone_vf.face_voisins();
+  const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+  const IntTab& elem_faces = domaine_vf.elem_faces();
+  const IntTab& faces_elem = domaine_vf.face_voisins();
   const int nb_faces_elem = elem_faces.dimension(1);
   const DoubleTab& inc=inconnue().valeurs();
   // inconnue doit etre scalaire
@@ -1247,8 +1247,8 @@ void Convection_Diffusion_Temperature::ecrire_fichier_pena_th(DoubleTab& u_old, 
   if (le_schema_en_temps->limpr())
     {
 
-      const Zone_VF& zone_vf = ref_cast(Zone_VF, zone_dis().valeur());
-      const DoubleVect& vol_maille = zone_vf.volumes();
+      const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis().valeur());
+      const DoubleVect& vol_maille = domaine_vf.volumes();
       const Fluide_base& fluide_inc = ref_cast(Fluide_base, milieu());
       const DoubleTab& tab_rho = fluide_inc.masse_volumique().valeurs();
       const double rho = tab_rho(0,0);
@@ -1376,7 +1376,7 @@ void Convection_Diffusion_Temperature::calculer_rho_cp_T(const Objet_U& obj, Dou
   for (int i = 0; i < Nl; i++)
     for (int n = 0; n < N; n++) val(i, n) = rho(0, n) * cp(!cCp * i, n) * T(i, n);
 
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une zone_dis_base */
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
   DoubleTab b_cp = cCp ? cp : ch_cp->valeur_aux_bords(), b_T = ch_T.valeur_aux_bords();
   int Nb = b_T.dimension_tot(0);
   // on suppose que rho est un champ_uniforme : on utilise directement le tableau du champ

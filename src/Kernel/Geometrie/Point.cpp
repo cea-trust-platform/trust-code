@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Point.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Point,"Point",Elem_geom_base);
 
@@ -62,13 +62,13 @@ const Nom& Point::nom_lml() const
 }
 
 
-/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element ielem de la domaine associee a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int element) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int element) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element "element" 0 sinon
  */
 int Point::contient(const ArrOfDouble& pos, int element ) const
@@ -78,9 +78,9 @@ int Point::contient(const ArrOfDouble& pos, int element ) const
   assert(pos.size_array()==dimension);
 
 
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
-  const IntTab& elem=zone.les_elems();
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
+  const IntTab& elem=domaine.les_elems();
   for (int s=0; s<1; s++)
     {
       int ok=1;
@@ -98,29 +98,29 @@ int Point::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Point::contient(const ArrOfInt& pos, int element ) const
 {
   abort();
   assert(pos.size_array()==1);
-  const Zone& zone=mon_dom.valeur();
-  if((zone.sommet_elem(element,0)==pos[0])&&
-      (zone.sommet_elem(element,1)==pos[1]))
+  const Domaine& domaine=mon_dom.valeur();
+  if((domaine.sommet_elem(element,0)==pos[0])&&
+      (domaine.sommet_elem(element,1)==pos[1]))
     return 1;
   else
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Point::calculer_volumes(DoubleVect& volumes) const
 {

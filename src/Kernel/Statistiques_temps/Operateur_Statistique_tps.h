@@ -85,7 +85,7 @@ public:
   {
     return valeur().localisation_post();
   };
-  virtual inline int completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format);
+  virtual inline int completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format);
 };
 
 
@@ -102,7 +102,7 @@ Operateur_Statistique_tps::operator=(const Operateur_Statistique_tps_base& op_st
   return *this;
 }
 
-inline int Operateur_Statistique_tps::completer_post_statistiques(const Zone& dom,const int is_axi,Format_Post_base& format)
+inline int Operateur_Statistique_tps::completer_post_statistiques(const Domaine& dom,const int is_axi,Format_Post_base& format)
 {
   return valeur().completer_post_statistiques(dom,is_axi,format);
 }

@@ -16,8 +16,8 @@
 #ifndef Op_Conv_PolyMAC_base_included
 #define Op_Conv_PolyMAC_base_included
 
-#include <Ref_Zone_Cl_PolyMAC.h>
-#include <Ref_Zone_Poly_base.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <Ref_Domaine_Poly_base.h>
 #include <Operateur_Conv.h>
 #include <SFichier.h>
 
@@ -34,13 +34,13 @@ public:
   double calculer_dt_stab() const override;
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override;
   int impr(Sortie& os) const override;
-  void associer_domaine_cl_dis(const Zone_Cl_dis_base&) override;
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
   void associer_vitesse(const Champ_base& ) override;
 
 protected:
-  REF(Zone_Poly_base) le_dom_poly_;
-  REF(Zone_Cl_PolyMAC) la_zcl_poly_;
+  REF(Domaine_Poly_base) le_dom_poly_;
+  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) vitesse_;
 
   mutable SFichier Flux, Flux_moment, Flux_sum;

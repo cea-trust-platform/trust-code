@@ -16,9 +16,9 @@
 #include <Convert_ICoCoTrioField.h>
 #include <ICoCoTrioField.h>
 #include <ICoCoMEDDoubleField.hxx>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Champ_Generique_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <PE_Groups.h>
 #include <Comm_Group.h>
 
@@ -37,8 +37,8 @@ void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
 
 void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
 {
-  const Zone_VF& zvf = ref_cast(Zone_VF, ch.get_ref_zone_dis_base());
-  const Zone& dom = zvf.zone();
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, ch.get_ref_domaine_dis_base());
+  const Domaine& dom = zvf.domaine();
 
   afield.clear();
   afield.setName(ch.le_nom().getString());
@@ -52,7 +52,7 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
   affecte_double_avec_doubletab(&afield._coords, coord);
 
   /* dimension des elements du domaine */
-  Motcle type_elem_ = zvf.zone().type_elem()->que_suis_je();
+  Motcle type_elem_ = zvf.domaine().type_elem()->que_suis_je();
   Motcle type_elem(type_elem_);
   type_elem.prefix("_AXI");
   if (type_elem != Motcle(type_elem_))
@@ -77,10 +77,10 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
   /* elements : ceux du domaine si le champ est aux sommets/elements, les faces si le champ est aux faces */
   int loc_faces = ch.get_localisation() == FACE;
   if (loc_faces) afield._mesh_dim--;
-  afield._nb_elems = loc_faces ? zvf.nb_faces() : zvf.zone().nb_elem();
+  afield._nb_elems = loc_faces ? zvf.nb_faces() : zvf.domaine().nb_elem();
   if (loc_faces || type_elem != "POLYEDRE") //maillage de faces -> connectivity = face_sommets
     {
-      const IntTab& conn = loc_faces ? zvf.face_sommets() : zvf.zone().les_elems();
+      const IntTab& conn = loc_faces ? zvf.face_sommets() : zvf.domaine().les_elems();
       //le seul moyen qu'on a d'eviter que des polygones soient pris pour des quadrilateres est d'avoir un tableau de connectivite de largeur > 4...
       afield._nodes_per_elem = std::max(conn.dimension(1), type_elem == "POLYGONE" || type_elem == "POLYGONE_3D"  || type_elem == "POLYEDRE"  ? (int) 5 : 0);
       afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
@@ -125,7 +125,7 @@ using std::vector;
 
 
 /*!
- * This method is non const only due to this->_field that can be modified (to point to the same zone than returned object).
+ * This method is non const only due to this->_field that can be modified (to point to the same domaine than returned object).
  * So \b warning, to access to \a this->_field only when the returned object is alive.
  */
 MEDDoubleField build_medfield(TrioField& triofield)

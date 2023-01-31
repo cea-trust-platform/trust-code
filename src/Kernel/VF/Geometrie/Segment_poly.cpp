@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <Segment_poly.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_Poly_base.h>
+#include <Domaine_Poly_base.h>
 // Tri pour voire si champ_P1...
 #include <Tri_poly.h>
 Implemente_instanciable(Segment_poly,"Segment_poly",Elem_poly_base);
@@ -36,14 +36,14 @@ Entree& Segment_poly::readOn(Entree& s )
 }
 
 
-/*! @brief remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Domaine_poly
  *
  */
 void Segment_poly::normale(int num_Face,DoubleTab& Face_normales,
                            const  IntTab& Face_sommets,
                            const IntTab& Face_voisins,
                            const IntTab& elem_faces,
-                           const Zone& zone_geom) const
+                           const Domaine& domaine_geom) const
 {
   // pas de sens simple a normale
   Face_normales(num_Face,0) = 1;
@@ -58,8 +58,8 @@ void Segment_poly::normale(int num_Face,DoubleTab& Face_normales,
     int n2=elem_faces(elem1,0);
     if (n2==num_Face) Face_normales(num_Face,0) = -1;
     /*
-    const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
-    //     const IntTab& elem = zone_geom.elems();
+    const DoubleTab& les_coords = domaine_geom.domaine().coord_sommets();
+    //     const IntTab& elem = domaine_geom.elems();
 
        {
     int n2=elem_faces(elem1,0);

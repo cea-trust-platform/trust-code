@@ -15,7 +15,7 @@
 
 #include <Critere_Q_Champ_Face.h>
 #include <Champ_Face_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 
 Implemente_instanciable(Critere_Q_Champ_Face, "Critere_Q_Champ_Face", Champ_Fonc_P0_VDF);
 
@@ -33,7 +33,7 @@ void Critere_Q_Champ_Face::me_calculer(double tps)
   mon_champ_->calcul_critere_Q(valeurs(), le_dom_Cl_VDF.valeur());
 }
 
-const Zone_Cl_dis_base& Critere_Q_Champ_Face::zone_Cl_dis_base() const
+const Domaine_Cl_dis_base& Critere_Q_Champ_Face::domaine_Cl_dis_base() const
 {
   return le_dom_Cl_VDF.valeur();
 }

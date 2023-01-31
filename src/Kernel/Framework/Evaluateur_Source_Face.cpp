@@ -16,7 +16,7 @@
 #include <Evaluateur_Source_Face.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Evaluateur_Source_Face::Evaluateur_Source_Face(const Evaluateur_Source_Face& eval) : Evaluateur_Source(eval)
 {
@@ -27,7 +27,7 @@ Evaluateur_Source_Face::Evaluateur_Source_Face(const Evaluateur_Source_Face& eva
 
 void Evaluateur_Source_Face::completer()
 {
-  orientation.ref(ref_cast(Zone_VF,le_dom.valeur()).orientation());
-  volumes_entrelaces.ref(ref_cast(Zone_VF,le_dom.valeur()).volumes_entrelaces());
+  orientation.ref(ref_cast(Domaine_VF,le_dom.valeur()).orientation());
+  volumes_entrelaces.ref(ref_cast(Domaine_VF,le_dom.valeur()).volumes_entrelaces());
   porosite_surf.ref(la_zcl->equation().milieu().porosite_face());
 }

@@ -15,7 +15,7 @@
 
 #ifndef VDF_to_IJK_included
 #define VDF_to_IJK_included
-class Zone_VF;
+class Domaine_VF;
 class IJK_Splitting;
 
 #include <IJK_Field_forward.h>
@@ -27,7 +27,7 @@ class IJK_Splitting;
 class VDF_to_IJK
 {
 public:
-  void initialize(const Zone_VF& zone_vf, const IJK_Splitting& splitting,
+  void initialize(const Domaine_VF& domaine_vf, const IJK_Splitting& splitting,
                   IJK_Splitting::Localisation localisation,
                   int direction_for_x,
                   int direction_for_y,

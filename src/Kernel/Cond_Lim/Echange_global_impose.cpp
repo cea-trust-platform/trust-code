@@ -17,7 +17,7 @@
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_dis_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Equation_base.h>
 
 Implemente_instanciable_sans_constructeur(Echange_global_impose,"Paroi_echange_global_impose",Echange_impose_base);
@@ -104,8 +104,8 @@ int Echange_global_impose::initialiser(double temps)
 
   if (phi_ext_lu_)
     {
-      derivee_phi_ext_->initialiser(temps, zone_Cl_dis().inconnue());
-      phi_ext_->initialiser(temps, zone_Cl_dis().inconnue());
+      derivee_phi_ext_->initialiser(temps, domaine_Cl_dis().inconnue());
+      phi_ext_->initialiser(temps, domaine_Cl_dis().inconnue());
       DoubleTab& vals_derphi = derivee_phi_ext_->valeurs();
       vals_derphi = 0.;
       DoubleTab& vals_phi = phi_ext_->valeurs();

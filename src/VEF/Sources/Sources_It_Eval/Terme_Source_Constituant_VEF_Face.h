@@ -32,7 +32,7 @@ class Terme_Source_Constituant_VEF_Face: public Terme_Source_Constituant, public
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_VEF_Face);
 public:
   Terme_Source_Constituant_VEF_Face() : Terme_Source_Constituant(), Terme_Source_VEF_base(Iterateur_Source_VEF_Face<Eval_Source_C_VEF_Face>()) { }
-  void associer_domaines(const Zone_dis&, const Zone_Cl_dis&) override;
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
 };

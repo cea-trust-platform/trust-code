@@ -24,14 +24,14 @@
  * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
  */
 #include <Interprete_geometrique_base.h>
-class Zone;
+class Domaine;
 class NettoieNoeuds : public Interprete_geometrique_base
 {
   Declare_instanciable(NettoieNoeuds);
 public :
   Entree& interpreter_(Entree&) override;
-  static void nettoie(Zone&);
-  static void verifie_noeuds(const Zone&);
+  static void nettoie(Domaine&);
+  static void verifie_noeuds(const Domaine&);
   static int NettoiePasNoeuds;
 };
 

@@ -21,9 +21,9 @@
  *     * l'on discretise les proprietes physiques du fluide et notamment celui du fluide
  *        d'Ostwald( K, N, Mu, ...)
  *     * l'on associe le champ d'Ostwald et l'equation hydraulique, le fluide et la
- *     zone_dis_base
+ *     domaine_dis_base
  *     ** ( nouvelles procedures :
- *   void proprietes_physiques_fluide_Ostwald(Zone_dis& ,Fluide_Ostwald& ,
+ *   void proprietes_physiques_fluide_Ostwald(Domaine_dis& ,Fluide_Ostwald& ,
  *            const Navier_Stokes_std& , const Champ_Inc& ) const;
  *    a besoin de la classe Fluide_Ostwald pour avoir acces au fluide etudie
  *                          Navier_Stokes_Std pour avoir acces a l'equation hydraulique
@@ -42,13 +42,13 @@ public :
   //
   // Methodes surchargees de Discretisation_base
   //
-  void grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
-  void taux_cisaillement(const Zone_dis&, const Zone_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const override;
+  void grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const override;
+  void taux_cisaillement(const Domaine_dis&, const Domaine_Cl_dis& ,const Champ_Inc&, Champ_Fonc&) const override;
   void creer_champ_vorticite(const Schema_Temps_base& ,const Champ_Inc&, Champ_Fonc& ) const override;
 
 private:
   void discretiser_champ_fonc_don(
-    const Motcle& directive, const Zone_dis_base& z,
+    const Motcle& directive, const Domaine_dis_base& z,
     Nature_du_champ nature,
     const Noms& nom, const Noms& unite,
     int nb_comp, double temps,

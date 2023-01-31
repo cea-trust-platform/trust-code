@@ -19,7 +19,7 @@
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
 class Frontiere;
-class Zone;
+class Domaine;
 
 /*! @brief Cet interprete permet de reordonner les faces d'un bord periodique selon la convention utilisee dans le decoupeur (d'abord les faces d'une extremite du domaine, puis dans le
  *
@@ -29,10 +29,10 @@ class Zone;
 class Reordonner_faces_periodiques : public Interprete_geometrique_base
 {
 public:
-  static int reordonner_faces_periodiques(const Zone& domaine, IntTab& faces, const ArrOfDouble& direction_perio, const double epsilon);
+  static int reordonner_faces_periodiques(const Domaine& domaine, IntTab& faces, const ArrOfDouble& direction_perio, const double epsilon);
   static int check_faces_periodiques(const Frontiere& frontiere, ArrOfDouble& vecteur_delta, ArrOfDouble& erreur, const int verbose = 0);
-  static void renum_som_perio(const Zone&, const Noms& liste_bords_periodiques, ArrOfInt& renum_som_perio, const int calculer_espace_virtuel);
-  static void chercher_direction_perio(ArrOfDouble& direction_perio, const Zone& dom, const Nom& bord);
+  static void renum_som_perio(const Domaine&, const Noms& liste_bords_periodiques, ArrOfInt& renum_som_perio, const int calculer_espace_virtuel);
+  static void chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine& dom, const Nom& bord);
 };
 
 #endif

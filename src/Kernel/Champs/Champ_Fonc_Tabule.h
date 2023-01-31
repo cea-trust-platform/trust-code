@@ -19,7 +19,7 @@
 #include <Champ_Fonc.h>
 #include <Table.h>
 
-class Zone_dis_base;
+class Domaine_dis_base;
 
 /*! @brief Classe Champ_Fonc_Tabule Classe derivee de Champ_Fonc_base qui represente les
  *
@@ -40,8 +40,8 @@ public:
   inline const Champ_Fonc& le_champ_tabule_discretise() const;
 
   inline const DoubleTab& valeurs() const override { return le_champ_tabule_discretise().valeurs(); }
-  inline const Zone_dis_base& zone_dis_base() const override { return le_champ_tabule_discretise().zone_dis_base(); }
-  inline const Zone_VF& zone_vf() const override { return le_champ_tabule_discretise()->zone_vf(); }
+  inline const Domaine_dis_base& domaine_dis_base() const override { return le_champ_tabule_discretise().domaine_dis_base(); }
+  inline const Domaine_VF& domaine_vf() const override { return le_champ_tabule_discretise()->domaine_vf(); }
   inline Champ_Fonc& le_champ_tabule_discretise() { return le_champ_tabule_dis; }
   inline const Table& table() const { return la_table; }
   inline Table& table() { return la_table; }
@@ -59,9 +59,9 @@ public:
     Champ_Fonc_base::mettre_a_jour(un_temps);
   }
 
-  inline void associer_domaine_dis_base(const Zone_dis_base& zone_dis) override
+  inline void associer_domaine_dis_base(const Domaine_dis_base& domaine_dis) override
   {
-    le_champ_tabule_discretise().associer_domaine_dis_base(zone_dis);
+    le_champ_tabule_discretise().associer_domaine_dis_base(domaine_dis);
   }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const override
@@ -69,7 +69,7 @@ public:
     return le_champ_tabule_discretise().valeur_a_elem(position, les_valeurs, le_poly);
   }
 
-  inline DoubleVect& valeur_aux_sommets_compo(const Zone& dom, DoubleVect& les_valeurs, int compo) const override
+  inline DoubleVect& valeur_aux_sommets_compo(const Domaine& dom, DoubleVect& les_valeurs, int compo) const override
   {
     return le_champ_tabule_discretise().valeur_aux_sommets_compo(dom, les_valeurs, compo);
   }
@@ -79,7 +79,7 @@ public:
     return le_champ_tabule_discretise().valeur_aux_elems(positions, les_polys, les_valeurs);
   }
 
-  inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& les_valeurs) const override
+  inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& les_valeurs) const override
   {
     return le_champ_tabule_discretise().valeur_aux_sommets(dom, les_valeurs);
   }

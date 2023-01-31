@@ -96,7 +96,7 @@ void Fluide_base::creer_champs_non_lus()
 
 void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
   // mu rho nu  revoir
   double temps=pb.schema_temps().temps_courant();
   if (mu.non_nul())
@@ -104,40 +104,40 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
       {
         Cerr<<" on convertit le champ_fonc_med en champ_don"<<finl;
         Champ_Don mu_prov;
-        dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,mu_prov);
+        dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,mu_prov);
         mu_prov.affecter_(mu.valeur());
         mu.detach();
         nu.detach();
-        dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,mu);
+        dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,mu);
 
         mu.valeur().valeurs()=mu_prov.valeur().valeurs();
 
       }
   if (!mu.non_nul())
     {
-      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,mu);
-      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,nu);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,mu);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,nu);
     }
   if (mu.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"viscosite_dynamique","kg/m/s",mu.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"viscosite_dynamique","kg/m/s",mu.valeur(),pb);
       champs_compris_.ajoute_champ(mu.valeur());
     }
   if (sub_type(Champ_Fonc_Tabule,mu.valeur()))
     {
-      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,nu);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,nu);
     }
   if (!nu.non_nul())
-    dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,nu);
+    dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,nu);
 
   if (nu.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"viscosite_cinematique","m2/s",nu.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"viscosite_cinematique","m2/s",nu.valeur(),pb);
       champs_compris_.ajoute_champ(nu.valeur());
     }
   if (beta_co.non_nul())
     {
-      dis.nommer_completer_champ_physique(zone_dis,"dilatabilite_solutale",".",beta_co.valeur(),pb);
+      dis.nommer_completer_champ_physique(domaine_dis,"dilatabilite_solutale",".",beta_co.valeur(),pb);
       champs_compris_.ajoute_champ(beta_co.valeur());
     }
 
@@ -420,7 +420,7 @@ void Fluide_base::creer_e_int() const
 {
   Champ_Inc e_int_inc;
   const Equation_base& eq = equation("temperature");
-  eq.discretisation().discretiser_champ("champ_elem", eq.zone_dis(), "energie_interne", "J/kg", 1,
+  eq.discretisation().discretiser_champ("champ_elem", eq.domaine_dis(), "energie_interne", "J/kg", 1,
                                         eq.inconnue()->nb_valeurs_temporelles(), eq.inconnue()->temps(), e_int_inc);
   e_int_inc.associer_eqn(eq), e_int_inc->init_champ_calcule(*this, calculer_e_int);
   e_int = e_int_inc;
@@ -439,8 +439,8 @@ void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& 
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++) val(i, n) = fl.h0_ + Cp(!cCp * i, n) * (T(i, n0 + n) - fl.T0_);
   DoubleTab bT = ch_T.valeur_aux_bords(), bCp;
-  if (ch_Cp.a_une_zone_dis_base()) bCp = ch_Cp.valeur_aux_bords();
-  else bCp.resize(bval.dimension_tot(0), N), ch_Cp.valeur_aux(ref_cast(Zone_VF, ch_T.zone_dis_base()).xv_bord() , bCp);
+  if (ch_Cp.a_une_domaine_dis_base()) bCp = ch_Cp.valeur_aux_bords();
+  else bCp.resize(bval.dimension_tot(0), N), ch_Cp.valeur_aux(ref_cast(Domaine_VF, ch_T.domaine_dis_base()).xv_bord() , bCp);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = fl.h0_ + bCp(i, n) * (bT(i, n0 + n) - fl.T0_);
 

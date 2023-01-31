@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexaedre_VEF.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Hexaedre_VEF,"Hexaedre_VEF",Elem_geom_base);
 
@@ -57,7 +57,7 @@ const Nom& Hexaedre_VEF::nom_lml() const
  *
  * @return (Nom&) toujours egal a "HEXA8"
  */
-static int entre_faces(const Zone& zone,const Zone& dom,const ArrOfDouble& pos, int Asom0_, int Asom1_, int Asom2_, int Bsom0_, int Bsom1_, int Bsom2_)
+static int entre_faces(const Domaine& domaine,const Domaine& dom,const ArrOfDouble& pos, int Asom0_, int Asom1_, int Asom2_, int Bsom0_, int Bsom1_, int Bsom2_)
 {
   double prodA,prodB;
   const DoubleTab& coord=dom.les_sommets();
@@ -111,7 +111,7 @@ static int entre_faces(const Zone& zone,const Zone& dom,const ArrOfDouble& pos, 
  *
  * @return (Nom&) toujours egal a "HEXA8"
  */
-static int contient_Tetra(const Zone& zone,const Zone& dom,const ArrOfDouble& pos, int som0_, int som1_, int som2_, int som3_, int aff)
+static int contient_Tetra(const Domaine& domaine,const Domaine& dom,const ArrOfDouble& pos, int som0_, int som1_, int som2_, int som3_, int aff)
 {
   double prod1,prod2;
   int som0, som1, som2, som3;
@@ -237,37 +237,37 @@ static int contient_Tetra(const Zone& zone,const Zone& dom,const ArrOfDouble& po
   return 1;
 }
 
-/*! @brief Renvoie 1 si l'element ielem de la zone associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element ielem de la domaine associee a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
  *
  * @param (DoubleVect& pos) coordonnees du point que l'on cherche a localiser
- * @param (int ielem) le numero de l'element de la zone dans lequel on cherche le point.
+ * @param (int ielem) le numero de l'element de la domaine dans lequel on cherche le point.
  * @return (int) 1 si le point de coordonnees specifiees appartient a l'element ielem 0 sinon
  */
 int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
-  int som0 = zone.sommet_elem(element,0);
-  int som1 = zone.sommet_elem(element,1);
-  int som2 = zone.sommet_elem(element,2);
-  int som3 = zone.sommet_elem(element,3);
-  int som4 = zone.sommet_elem(element,4);
-  int som5 = zone.sommet_elem(element,5);
-  int som6 = zone.sommet_elem(element,6);
-  int som7 = zone.sommet_elem(element,7);
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
+  int som0 = domaine.sommet_elem(element,0);
+  int som1 = domaine.sommet_elem(element,1);
+  int som2 = domaine.sommet_elem(element,2);
+  int som3 = domaine.sommet_elem(element,3);
+  int som4 = domaine.sommet_elem(element,4);
+  int som5 = domaine.sommet_elem(element,5);
+  int som6 = domaine.sommet_elem(element,6);
+  int som7 = domaine.sommet_elem(element,7);
 
   // GF on teste si le point est boen entre les 2 faces
   bool new_algo = true;
   if (new_algo)
     {
-      if (entre_faces(zone, dom, pos, som0, som1, som2, som4, som5, som6))
-        if (entre_faces(zone, dom, pos, som0, som1, som4, som2, som3, som6))
+      if (entre_faces(dom, dom, pos, som0, som1, som2, som4, som5, som6))
+        if (entre_faces(dom, dom, pos, som0, som1, som4, som2, som3, som6))
 
-          if (entre_faces(zone, dom, pos, som0, som2, som4, som1, som3, som5))
+          if (entre_faces(dom, dom, pos, som0, som2, som4, som1, som3, som5))
             return 1;
       return 0;
     }
@@ -279,12 +279,12 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
         {
           aff = 1;
         }
-      if (contient_Tetra(zone, dom, pos, som0, som1, som2, som4, aff) ||
-          contient_Tetra(zone, dom, pos, som1, som2, som3, som6, aff) ||
-          contient_Tetra(zone, dom, pos, som1, som2, som4, som6, aff) ||
-          contient_Tetra(zone, dom, pos, som3, som5, som6, som7, aff) ||
-          contient_Tetra(zone, dom, pos, som1, som4, som5, som6, aff) ||
-          contient_Tetra(zone, dom, pos, som1, som3, som5, som6, aff))
+      if (contient_Tetra(dom, dom, pos, som0, som1, som2, som4, aff) ||
+          contient_Tetra(dom, dom, pos, som1, som2, som3, som6, aff) ||
+          contient_Tetra(dom, dom, pos, som1, som2, som4, som6, aff) ||
+          contient_Tetra(dom, dom, pos, som3, som5, som6, som7, aff) ||
+          contient_Tetra(dom, dom, pos, som1, som4, som5, som6, aff) ||
+          contient_Tetra(dom, dom, pos, som1, som3, som5, som6, aff))
         {
           return 1;
         }
@@ -293,38 +293,38 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la zone associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" de la domaine associee a
  *
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
- * @param (int element) le numero de l'element de la zone dont on veut comparer les sommets
+ * @param (int element) le numero de l'element de la domaine dont on veut comparer les sommets
  * @return (int) 1 si les sommets passes en parametre sont ceux de l'element specifie, 0 sinon
  */
 int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=mon_dom.valeur();
-  if((zone.sommet_elem(element,0)==som[0])&&
-      (zone.sommet_elem(element,1)==som[1])&&
-      (zone.sommet_elem(element,2)==som[2])&&
-      (zone.sommet_elem(element,3)==som[3])&&
-      (zone.sommet_elem(element,4)==som[4])&&
-      (zone.sommet_elem(element,5)==som[5])&&
-      (zone.sommet_elem(element,6)==som[6])&&
-      (zone.sommet_elem(element,7)==som[7]))
+  const Domaine& domaine=mon_dom.valeur();
+  if((domaine.sommet_elem(element,0)==som[0])&&
+      (domaine.sommet_elem(element,1)==som[1])&&
+      (domaine.sommet_elem(element,2)==som[2])&&
+      (domaine.sommet_elem(element,3)==som[3])&&
+      (domaine.sommet_elem(element,4)==som[4])&&
+      (domaine.sommet_elem(element,5)==som[5])&&
+      (domaine.sommet_elem(element,6)==som[6])&&
+      (domaine.sommet_elem(element,7)==som[7]))
     return 1;
   else
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();
-  const Zone& dom=zone;
+  const Domaine& domaine=mon_dom.valeur();
+  const Domaine& dom=domaine;
   IntTab face_sommet_global;
   face_sommet_global.resize(6,4);
   double x0,y0,z0;
@@ -338,7 +338,7 @@ void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
 
   // volume_global =0;
 
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
@@ -350,14 +350,14 @@ void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
       // on definit les sommets de l'elem
       // on recupere le centre de l'element.
 
-      som0 = zone.sommet_elem(num_poly,0);
-      som1 = zone.sommet_elem(num_poly,1);
-      som2 = zone.sommet_elem(num_poly,2);
-      som3 = zone.sommet_elem(num_poly,3);
-      som4 = zone.sommet_elem(num_poly,4);
-      som5 = zone.sommet_elem(num_poly,5);
-      som6 = zone.sommet_elem(num_poly,6);
-      som7 = zone.sommet_elem(num_poly,7);
+      som0 = domaine.sommet_elem(num_poly,0);
+      som1 = domaine.sommet_elem(num_poly,1);
+      som2 = domaine.sommet_elem(num_poly,2);
+      som3 = domaine.sommet_elem(num_poly,3);
+      som4 = domaine.sommet_elem(num_poly,4);
+      som5 = domaine.sommet_elem(num_poly,5);
+      som6 = domaine.sommet_elem(num_poly,6);
+      som7 = domaine.sommet_elem(num_poly,7);
 
       //  Cerr << " som0 " << som0 << " som1 " << som1 << " som2 " << som2 << " som3 " << som3 <<  finl;
       //  Cerr << " som4 " << som4 << " som5 " << som5 << " som6 " << som6 << " som7 " << som7 <<   finl;
@@ -614,10 +614,10 @@ void Hexaedre_VEF::reordonner()
     S'il est plus grand on intervertit les sommets 2 et 3.
     L'algorithme fonctionne si 0123 et 4567 sont deja sur une meme face
   */
-  Zone& zone=mon_dom.valeur();
-  IntTab& elem=zone.les_elems();
-  int nb_elem=zone.nb_elem();
-  DoubleTab& coord=zone.les_sommets();
+  Domaine& domaine=mon_dom.valeur();
+  IntTab& elem=domaine.les_elems();
+  int nb_elem=domaine.nb_elem();
+  DoubleTab& coord=domaine.les_sommets();
   // tableau contenant les permutations valides d'un quadrangle
   IntTab perm(8,4);
   perm( 0 , 0 )= 0 ;

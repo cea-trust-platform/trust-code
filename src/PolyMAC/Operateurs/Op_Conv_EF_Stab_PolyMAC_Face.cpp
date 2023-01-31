@@ -17,9 +17,9 @@
 #include <Dirichlet_homogene.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Pb_Multiphase.h>
-#include <Zone_Poly_base.h>
+#include <Domaine_Poly_base.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
@@ -79,8 +79,8 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
 {
   Op_Conv_PolyMAC_base::completer();
   /* au cas ou... */
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
     {
       Cerr << "Op_Conv_EF_Stab_PolyMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl;
       Process::exit();
@@ -92,16 +92,16 @@ void Op_Conv_EF_Stab_PolyMAC_Face::completer()
 double Op_Conv_EF_Stab_PolyMAC_Face::calculer_dt_stab() const
 {
   double dt = 1e10;
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces();
-  const DoubleTab& vit = vitesse_->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
+  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces();
+  const DoubleTab& vit = vitesse_->valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ch.fcl();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   int i, e, f, n, N = vit.line_size();
   DoubleTrav flux(N), vol(N); //somme des flux pf * |f| * vf, volume minimal des mailles d'elements/faces affectes par ce flux
 
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (n = 0; n < N; n++)
@@ -118,11 +118,11 @@ double Op_Conv_EF_Stab_PolyMAC_Face::calculer_dt_stab() const
 
 void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
-  const DoubleTab& nf = zone.face_normales(), &inco = ch.valeurs(), &xp = zone.xp(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces(), &ve = zone.volumes();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl(), &equiv = domaine.equiv();
+  const DoubleTab& nf = domaine.face_normales(), &inco = ch.valeurs(), &xp = domaine.xp(), &xv = domaine.xv();
+  const DoubleVect& fs = domaine.face_surfaces(), &ve = domaine.volumes();
 
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco) || semi_impl.count(nom_inco)) return; //pas de bloc diagonal ou semi-implicite -> rien a faire
@@ -136,20 +136,20 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const
   stencil.set_smart_resize(1);
 
   /* agit uniquement aux elements; diagonale omise */
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 3))
       for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
         for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
           {
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-              if (fb < zone.nb_faces())
+              if (fb < domaine.nb_faces())
                 {
                   if ((fc = equiv(f, i, k)) >= 0) //equivalence : face -> face
                     for (n = 0; n < N; n++)
                       for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++) stencil.append_line(N * fb + n, N * fc + m);
                   else if (f_e(f, 1) >= 0)
                     for (l = 0; l < e_f.dimension(1) && (fc = e_f(eb, l)) >= 0; l++) //pas d'equivalence : faces de l'elem -> face
-                      if(std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb))
+                      if(std::abs(fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb))
                         for (n = 0; n < N; n++)
                           for (m = (corr ? 0 : n); m < (corr ? N : n + 1); m++)
                             stencil.append_line(N * fb + n, N * fc + m);
@@ -165,12 +165,12 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner_blocs(matrices_t matrices, const
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
-  const DoubleTab& vit = ch.passe(), &nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(), &xp = zone.xp(), &xv = zone.xv();
-  const DoubleVect& fs = zone.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &ve = zone.volumes();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl(), &equiv = domaine.equiv();
+  const DoubleTab& vit = ch.passe(), &nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(), &xp = domaine.xp(), &xv = domaine.xv();
+  const DoubleVect& fs = domaine.face_surfaces(), &pe = porosite_e, &pf = porosite_f, &ve = domaine.volumes();
 
   /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */
   const std::string& nom_inco = ch.le_nom().getString();
@@ -185,7 +185,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   double mult;
 
   DoubleTrav dfac(2, N, N), masse(N, N);
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     if (f_e(f, 0) >= 0 && (f_e(f, 1) >= 0 || fcl(f, 0) == 1 || fcl(f, 0) == 3))
       {
         for (i = 0, dfac = 0; i < 2; i++)
@@ -202,13 +202,13 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           {
             for (k = 0; k < e_f.dimension(1) && (fb = e_f(e, k)) >= 0; k++)
-              if (fb < zone.nb_faces())
+              if (fb < domaine.nb_faces())
                 {
                   if ((fc = equiv(f, i, k)) >= 0 || f_e(f, 1) < 0)
                     for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                       {
                         eb = f_e(f, j), fd = (j == i ? fb : fc); //element/face sources
-                        mult = (fd < 0 || zone.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
+                        mult = (fd < 0 || domaine.dot(&nf(fb, 0), &nf(fd, 0)) > 0 ? 1 : -1) * (fd >= 0 ? pf(fd) / pe(eb) : 1); //multiplicateur pour passer de vf a ve
                         for (n = 0; n < N; n++)
                           for (m = 0; m < N; m++)
                             if (dfac(j, n, m))
@@ -226,23 +226,23 @@ void Op_Conv_EF_Stab_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                   else for (j = 0; j < 2; j++)  //pas d'equivalence : n_f * operateur aux elements
                       {
                         for (eb = f_e(f, j), l = 0; l < e_f.dimension(1) && (fc = e_f(eb, l)) >= 0; l++)
-                          if (std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb))
+                          if (std::abs(fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0))) > 1e-6 * ve(eb) * fs(fb))
                             for (n = 0; n < N; n++)
                               for (m = 0; m < N; m++)
                                 if (dfac(j, n, m))
                                   {
-                                    double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (eb == f_e(fc, 0) ? 1 : -1) * fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0)) / (ve(e) * ve(eb) * fs(fb));
+                                    double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (eb == f_e(fc, 0) ? 1 : -1) * fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(eb, 0)) / (ve(e) * ve(eb) * fs(fb));
                                     secmem(fb, n) -= fac * inco(fc, m);
                                     if (mat && fac) (*mat)(N * fb + n, N * fc + m) += fac;
                                   }
                         if (comp)
                           for (l = 0; l < e_f.dimension(1) && (fc = e_f(e, l)) >= 0; l++)
-                            if (std::abs(fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0))) > 1e-6 * ve(e) * fs(fb))
+                            if (std::abs(fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0))) > 1e-6 * ve(e) * fs(fb))
                               for (n = 0; n < N; n++)
                                 for (m = 0; m < N; m++)
                                   if (dfac(j, n, m))
                                     {
-                                      double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (e == f_e(fc, 0) ? 1 : -1) * fs(fc) * zone.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0)) / (ve(e) * ve(e) * fs(fb));
+                                      double fac = (i ? -1 : 1) * vfd(fb, e != f_e(fb, 0)) * dfac(j, n, m) * (e == f_e(fc, 0) ? 1 : -1) * fs(fc) * domaine.dot(&xv(fc, 0), &nf(fb, 0), &xp(e, 0)) / (ve(e) * ve(e) * fs(fb));
                                       secmem(fb, n) += fac * inco(fc, m);
                                       if (mat && fac) (*mat)(N * fb + n, N * fc + m) -= fac;
                                     }

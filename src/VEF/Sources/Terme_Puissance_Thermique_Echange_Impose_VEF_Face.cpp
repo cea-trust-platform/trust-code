@@ -16,7 +16,7 @@
 #include <Terme_Puissance_Thermique_Echange_Impose_VEF_Face.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 #include <Param.h>
 
@@ -50,13 +50,13 @@ Entree& Terme_Puissance_Thermique_Echange_Impose_VEF_Face::readOn(Entree& s )
 void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double temps)
 {
   int nb_faces = le_dom_VEF.valeur().nb_faces();
-  const Zone_VEF& zone = ref_cast(Zone_VEF, le_dom_VEF.valeur());
-  const IntTab& face_voisins = zone.face_voisins();
-  const DoubleVect& volumes_entrelaces = zone.volumes_entrelaces();
+  const Domaine_VEF& domaine = ref_cast(Domaine_VEF, le_dom_VEF.valeur());
+  const IntTab& face_voisins = domaine.face_voisins();
+  const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
-  const DoubleVect& volumes_elements = zone.volumes();
+  const DoubleVect& volumes_elements = domaine.volumes();
 
   bilan()(0) = 0;
 
@@ -83,7 +83,7 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
       double hm = (h0 * vol0 + h1 * vol1) / (vol0 + vol1);
       double htextm = (h0 * text0 * vol0 + h1 * text1 * vol1) / (vol0 + vol1);
 
-      double c = (zone.faces_doubles()[num_face]==1) ? 0.5 : 1 ;
+      double c = (domaine.faces_doubles()[num_face]==1) ? 0.5 : 1 ;
       bilan()(0) -= c * (hm*T(num_face)-htextm) * vol;
 
     }
@@ -100,26 +100,26 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::mettre_a_jour(double tem
 //
 ////////////////////////////////////////////////////////////////////
 
-void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                                          const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                                          const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << " Terme_Puissance_Thermique_Echange_Impose_VEF_Face::associer_domaines " << finl ;
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 
 DoubleTab& Terme_Puissance_Thermique_Echange_Impose_VEF_Face::ajouter(DoubleTab& resu )  const
 {
   int nb_faces=le_dom_VEF.valeur().nb_faces();
-  const Zone_VF&     zone               = le_dom_VEF.valeur();
-  const IntTab&      face_voisins       = zone.face_voisins();
-  const DoubleVect& volumes_entrelaces = zone.volumes_entrelaces();
+  const Domaine_VF&     domaine               = le_dom_VEF.valeur();
+  const IntTab&      face_voisins       = domaine.face_voisins();
+  const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
 
   const DoubleTab& T = equation().inconnue().valeurs();
-  const DoubleVect& volumes_elements = zone.volumes();
+  const DoubleVect& volumes_elements = domaine.volumes();
 
   for (int num_face=0; num_face<nb_faces; num_face++)
     {
@@ -162,13 +162,13 @@ void Terme_Puissance_Thermique_Echange_Impose_VEF_Face::contribuer_a_avec(const 
 
 
   int nb_faces=le_dom_VEF.valeur().nb_faces();
-  const Zone_VF&     zone               = le_dom_VEF.valeur();
-  const IntTab&      face_voisins       = zone.face_voisins();
-  const DoubleVect& volumes_entrelaces = zone.volumes_entrelaces();
+  const Domaine_VF&     domaine               = le_dom_VEF.valeur();
+  const IntTab&      face_voisins       = domaine.face_voisins();
+  const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
   const DoubleTab& himp = himp_.valeur().valeurs();
   // const DoubleTab& Text = Text_.valeur().valeurs();
   // const DoubleTab& T = equation().inconnue().valeurs();
-  const DoubleVect& volumes_elements = zone.volumes();
+  const DoubleVect& volumes_elements = domaine.volumes();
 
 
 

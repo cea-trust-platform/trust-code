@@ -21,7 +21,7 @@
 #include <Parser_U.h>
 
 class Front_VF;
-class Zone_VEF;
+class Domaine_VEF;
 class Faces;
 class Param;
 
@@ -58,9 +58,9 @@ protected:
   void calculer_Vitesse();
   void calculer_Tfluide();
   void calculer_h_solide(DoubleTab&);
-  double pdt_scalSqrt(const Zone_VEF&, int, int, int, int, double);
-  double pdt_scal(const Zone_VEF&, int, int, int, int, double);
-  double surfacesVEF(const Zone_VEF&, int, int);
+  double pdt_scalSqrt(const Domaine_VEF&, int, int, int, int, double);
+  double pdt_scal(const Domaine_VEF&, int, int, int, int, double);
+  double surfacesVEF(const Domaine_VEF&, int, int);
   void init_tab_echange();
 
   IntVect correspondance_solide_fluide;

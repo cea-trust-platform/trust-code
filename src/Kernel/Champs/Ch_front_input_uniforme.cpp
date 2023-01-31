@@ -23,7 +23,7 @@ Implemente_instanciable(Ch_front_input_uniforme,"Ch_front_input_uniforme",Champ_
 
 Entree& Ch_front_input_uniforme::readOn(Entree& is)
 {
-  sous_zone_ok=false;
+  sous_domaine_ok=false;
   read(is);
   mon_pb->addInputField(*this);
   return is;

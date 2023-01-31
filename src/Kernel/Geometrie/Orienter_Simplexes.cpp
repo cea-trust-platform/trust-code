@@ -15,7 +15,7 @@
 
 #include <Orienter_Simplexes.h>
 #include <Scatter.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Motcle.h>
 
 Implemente_instanciable(Orienter_Simplexes,"Orienter_Simplexes_old",Interprete_geometrique_base) ;
@@ -32,12 +32,12 @@ Entree& Orienter_Simplexes::readOn(Entree& is)
   return is;
 }
 
-static void choose_internal_diagonal_for_triangle(Zone& domain)
+static void choose_internal_diagonal_for_triangle(Domaine& domain)
 {
   // nothing to do
 }
 
-static void choose_internal_diagonal_for_tetrahedron(Zone& domain)
+static void choose_internal_diagonal_for_tetrahedron(Domaine& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
   IntTab&           cells = domain.les_elems();
@@ -120,7 +120,7 @@ static void choose_internal_diagonal_for_tetrahedron(Zone& domain)
     }
 }
 
-static void choose_internal_diagonal(Zone& domain)
+static void choose_internal_diagonal(Domaine& domain)
 {
   const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 
@@ -145,7 +145,7 @@ static void choose_internal_diagonal(Zone& domain)
     }
 }
 
-static void ensure_positive_volumes_for_triangle(Zone& domain)
+static void ensure_positive_volumes_for_triangle(Domaine& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
   IntTab&           cells = domain.les_elems();
@@ -175,7 +175,7 @@ static void ensure_positive_volumes_for_triangle(Zone& domain)
     }
 }
 
-static void ensure_positive_volumes_for_tetrahedron(Zone& domain)
+static void ensure_positive_volumes_for_tetrahedron(Domaine& domain)
 {
   const DoubleTab& nodes = domain.les_sommets();
   IntTab&           cells = domain.les_elems();
@@ -220,7 +220,7 @@ static void ensure_positive_volumes_for_tetrahedron(Zone& domain)
 }
 
 
-static void ensure_positive_volumes(Zone& domain)
+static void ensure_positive_volumes(Domaine& domain)
 {
   const Nom& cell_type = domain.type_elem().valeur().que_suis_je();
 
@@ -245,7 +245,7 @@ static void ensure_positive_volumes(Zone& domain)
     }
 }
 
-void Orienter_Simplexes::orient_domain(Zone& domain)
+void Orienter_Simplexes::orient_domain(Domaine& domain)
 {
   choose_internal_diagonal(domain);
   ensure_positive_volumes(domain);
@@ -255,7 +255,7 @@ Entree& Orienter_Simplexes::interpreter_(Entree& is)
 {
   associer_domaine(is);
 
-  Zone& domain = domaine();
+  Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
   orient_domain(domain);
   Scatter::init_sequential_domain(domain);

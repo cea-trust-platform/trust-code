@@ -14,10 +14,10 @@
 *****************************************************************************/
 
 #include <Champ_front_lu.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <LecFicDiffuse.h>
 #include <Interprete.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_front_lu,"Champ_front_lu",Ch_front_var_stationnaire);
 
@@ -56,7 +56,7 @@ Entree& Champ_front_lu::readOn(Entree& is)
   Nom nom;
   is >> nom;
 
-  mon_domaine = ref_cast(Zone, Interprete::objet(nom));
+  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
 
 
 
@@ -99,7 +99,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
     return 0;
 
   int dim=nb_comp();
-  Zone& domaine=mon_domaine.valeur();
+  Domaine& domaine=mon_domaine.valeur();
   const Frontiere_dis_base& fr_dis=frontiere_dis();
   const Frontiere& frontiere=fr_dis.frontiere();
   const int nb_faces=frontiere.nb_faces();
@@ -140,7 +140,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
 
   int nb_elems = domaine.nb_elem();
   int nbfacelem=domaine.nb_faces_elem();
-  const Zone_VF& zvf = ref_cast(Zone_VF, zone_dis());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, domaine_dis());
   const IntTab& elem_faces=zvf.elem_faces();
   const DoubleTab& xv=zvf.xv();
   IntTab compteur(nb_faces);

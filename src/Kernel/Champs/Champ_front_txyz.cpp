@@ -15,9 +15,9 @@
 //   Nouveau champ frontiere
 
 #include <Champ_front_txyz.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Frontiere_dis_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 
 Implemente_instanciable(Champ_front_txyz,"Champ_front_fonc_txyz",Ch_front_var_instationnaire_indep);
@@ -100,7 +100,7 @@ void Champ_front_txyz::mettre_a_jour(double temps)
 {
   int dim=nb_comp();
   const Frontiere_dis_base& fr_dis=frontiere_dis();
-  const Zone_VF& zvf = ref_cast(Zone_VF, fr_dis.zone_dis());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, fr_dis.domaine_dis());
   int nb_faces=ref_cast(Front_VF, fr_dis).nb_faces();
   int premiere_face = ref_cast(Front_VF, fr_dis).num_premiere_face();
   int i,k;

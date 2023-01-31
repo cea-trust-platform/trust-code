@@ -24,7 +24,7 @@
 #include <Loi_Etat.h>
 
 class Probleme_base;
-class Zone_Cl_dis;
+class Domaine_Cl_dis;
 
 /*! @brief classe Fluide_Dilatable_base Cette classe represente un d'un fluide dilatable,
  *
@@ -63,7 +63,7 @@ public :
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 
   // Virtuelles pure
-  virtual void checkTraitementPth(const Zone_Cl_dis&)=0;
+  virtual void checkTraitementPth(const Domaine_Cl_dis&)=0;
   virtual void prepare_pressure_edo()=0;
   virtual void write_mean_edo(double )=0;
   virtual void secmembre_divU_Z(DoubleTab& ) const=0;

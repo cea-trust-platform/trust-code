@@ -16,10 +16,10 @@
 #include <Op_Conv_PolyMAC_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Champ.h>
 
 Implemente_base(Op_Conv_PolyMAC_base,"Op_Conv_PolyMAC_base",Operateur_Conv_base);
@@ -38,20 +38,20 @@ void Op_Conv_PolyMAC_base::completer()
   Operateur_base::completer();
 }
 
-void Op_Conv_PolyMAC_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zcl)
+void Op_Conv_PolyMAC_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  la_zcl_poly_ = ref_cast(Zone_Cl_PolyMAC,zcl);
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl);
 }
 
-void Op_Conv_PolyMAC_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zcl,const Champ_Inc& )
+void Op_Conv_PolyMAC_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
-  le_dom_poly_ = ref_cast(Zone_PolyMAC,zone_dis.valeur());
-  la_zcl_poly_ = ref_cast(Zone_Cl_PolyMAC,zcl.valeur());
+  le_dom_poly_ = ref_cast(Domaine_PolyMAC,domaine_dis.valeur());
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl.valeur());
 
 }
 int Op_Conv_PolyMAC_base::impr(Sortie& os) const
 {
-  const Zone& mon_dom=le_dom_poly_->zone();
+  const Domaine& mon_dom=le_dom_poly_->domaine();
   const int impr_mom=mon_dom.moments_a_imprimer();
   const int impr_sum=(mon_dom.bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(mon_dom.bords_a_imprimer().est_vide() ? 0:1);
@@ -140,7 +140,7 @@ int Op_Conv_PolyMAC_base::impr(Sortie& os) const
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;
     }
-  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_poly_->zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_poly_->domaine().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide() && nb_comp > 0)
     {
       EcrFicPartage Flux_face;

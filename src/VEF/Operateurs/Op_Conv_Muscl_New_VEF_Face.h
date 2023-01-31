@@ -18,7 +18,7 @@
 #define Op_Conv_Muscl_New_VEF_Face_included
 
 #include <Op_Conv_VEF_Face.h>
-#include <Ref_Sous_zone_VF.h>
+#include <Ref_Sous_domaine_VF.h>
 #include <Matrice_Morse.h>
 #include <TRUSTTabs.h>
 #include <TRUSTList.h>
@@ -101,9 +101,9 @@ private :
   int version_ = 2;
   int facsec_auto_ = 0;
 
-//  bool sous_zone;  // Cas d'une sous-zone a definir pour que l'EF_Stab degenere en Amont
-  Nom nom_sous_zone;
-  REF(Sous_zone_VF) la_sous_zone_dis;
+//  bool sous_domaine;  // Cas d'une sous-domaine a definir pour que l'EF_Stab degenere en Amont
+  Nom nom_sous_domaine;
+  REF(Sous_domaine_VF) la_sous_domaine_dis;
 
   double (*limiteur_)(double)=nullptr;
 

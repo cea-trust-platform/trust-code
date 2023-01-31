@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Tetra_EF.h>
-#include <Zone.h>
-#include <Zone_EF.h>
+#include <Domaine.h>
+#include <Domaine_EF.h>
 #include <Champ_P1_EF.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
@@ -48,11 +48,11 @@ void Tetra_EF::normale(int num_Face,DoubleTab& Face_normales,
                        const IntTab& Face_sommets,
                        const IntTab& Face_voisins,
                        const IntTab& elem_faces,
-                       const Zone& zone_geom) const
+                       const Domaine& domaine_geom) const
 {
 
   //Cerr << " num_Face " << num_Face << finl;
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   // Cerr << "les face sommet " << Face_sommets << finl;
   double x1,y1,z1,x2,y2,z2;

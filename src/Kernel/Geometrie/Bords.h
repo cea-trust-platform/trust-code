@@ -30,7 +30,7 @@ class Bords : public LIST(Bord)
 
 public :
 
-  void associer_domaine(const Zone&);
+  void associer_domaine(const Domaine&);
   int nb_faces() const;
   inline int nb_bords() const;
   //JY 26/08/97

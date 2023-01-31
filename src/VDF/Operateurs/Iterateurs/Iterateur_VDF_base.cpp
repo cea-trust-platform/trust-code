@@ -20,16 +20,16 @@ Implemente_base(Iterateur_VDF_base, "Iterateur_VDF_base", Objet_U);
 Entree& Iterateur_VDF_base::readOn(Entree& s) { return s; }
 Sortie& Iterateur_VDF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-void Iterateur_VDF_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zcl)
+void Iterateur_VDF_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  const Zone_Cl_VDF& zone_cl_vdf = ref_cast(Zone_Cl_VDF, zcl);
-  la_zcl = zone_cl_vdf;
+  const Domaine_Cl_VDF& domaine_cl_vdf = ref_cast(Domaine_Cl_VDF, zcl);
+  la_zcl = domaine_cl_vdf;
 }
 
-void Iterateur_VDF_base::associer(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& zone_cl_vdf, const Operateur_base& op)
+void Iterateur_VDF_base::associer(const Domaine_VDF& domaine_vdf, const Domaine_Cl_VDF& domaine_cl_vdf, const Operateur_base& op)
 {
-  le_dom = zone_vdf;
-  la_zcl = zone_cl_vdf;
+  le_dom = domaine_vdf;
+  la_zcl = domaine_cl_vdf;
   op_base = op;
 }
 

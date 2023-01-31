@@ -15,8 +15,8 @@
 
 #include <Source_Scalaire_EF.h>
 #include <Champ_Uniforme.h>
-#include <Zone.h>
-#include <Zone_EF.h>
+#include <Domaine.h>
+#include <Domaine_EF.h>
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
 #include <Equation_base.h>
@@ -58,12 +58,12 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
     }
   else
     {
-      equation().discretisation().discretiser_champ("champ_elem",equation().zone_dis(),"source",",",1,0.,la_source_);
+      equation().discretisation().discretiser_champ("champ_elem",equation().domaine_dis(),"source",",",1,0.,la_source_);
       la_source_.valeur().affecter(la_source_lu_);
       la_source_lu_.detach();
     }
   //  const Equation_base& eqn = pb.equation(0);
-  equation().discretisation().nommer_completer_champ_physique(equation().zone_dis(),"Puissance_volumique","W/m3",la_source_,pb);
+  equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(),"Puissance_volumique","W/m3",la_source_,pb);
   champs_compris_.ajoute_champ(la_source_);
   if (la_source_->nb_comp() != equation().inconnue().valeur().nb_comp())
     {
@@ -75,26 +75,26 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
   return s;
 }
 
-void Source_Scalaire_EF::associer_domaines(const Zone_dis& zone_dis,
-                                           const Zone_Cl_dis& zone_Cl_dis)
+void Source_Scalaire_EF::associer_domaines(const Domaine_dis& domaine_dis,
+                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_EF = ref_cast(Zone_EF, zone_dis.valeur());
-  //  le_dom_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
+  le_dom_EF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  //  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
 }
 
 
 DoubleTab& Source_Scalaire_EF::ajouter(DoubleTab& resu) const
 {
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   int ncomp=equation().inconnue().valeur().nb_comp();
-  const IntTab& elems= zone_EF.zone().les_elems() ;
-  int nb_som_elem=zone_EF.zone().nb_som_elem();
-  int nb_elems=zone_EF.zone().nb_elem_tot();
+  const IntTab& elems= domaine_EF.domaine().les_elems() ;
+  int nb_som_elem=domaine_EF.domaine().nb_som_elem();
+  int nb_elems=domaine_EF.domaine().nb_elem_tot();
 
   // Attention calcul IPhi *S(e)
-  //  const DoubleTab& IPhi_thilde=zone_EF.IPhi_thilde();
+  //  const DoubleTab& IPhi_thilde=domaine_EF.IPhi_thilde();
 
-  const DoubleTab& IPhi=zone_EF.IPhi();
+  const DoubleTab& IPhi=domaine_EF.IPhi();
 
   int is_source_unif=0;
 

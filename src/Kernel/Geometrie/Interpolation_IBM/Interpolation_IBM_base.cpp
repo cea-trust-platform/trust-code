@@ -18,7 +18,7 @@
 Implemente_base(Interpolation_IBM_base, "Interpolation_IBM_base", Objet_U);
 // XD interpolation_ibm_base objet_u interpolation_ibm_base 0 Base class for all the interpolation methods available in the Immersed Boundary Method (IBM).
 
-void Interpolation_IBM_base::discretise(const Discretisation_base&, Zone_dis_base&)
+void Interpolation_IBM_base::discretise(const Discretisation_base&, Domaine_dis_base&)
 {
   return;
 }

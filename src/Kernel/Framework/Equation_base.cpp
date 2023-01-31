@@ -35,7 +35,7 @@
 #include <SolveurSys.h>
 #include <Operateur.h>
 #include <EChaine.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Avanc.h>
 #include <Debog.h>
 #include <Param.h>
@@ -81,17 +81,17 @@ int Equation_base::equation_non_resolue() const
     }
 }
 
-/*! @brief Renvoie la zone discretisee associee a l'equation.
+/*! @brief Renvoie la domaine discretisee associee a l'equation.
  *
- * @return (Zone_dis&) la zone discretisee asscoiee a l'equation
- * @throws l'objet zone discretisee (Zone_dis) est invalide,
+ * @return (Domaine_dis&) la domaine discretisee asscoiee a l'equation
+ * @throws l'objet domaine discretisee (Domaine_dis) est invalide,
  * probleme associe non discretise.
  */
-Zone_dis& Equation_base::zone_dis()
+Domaine_dis& Equation_base::domaine_dis()
 {
   if (!le_dom_dis.non_nul())
     {
-      Cerr << "There is no object of type Zone_dis yet associated to the equation " << que_suis_je() << finl;
+      Cerr << "There is no object of type Domaine_dis yet associated to the equation " << que_suis_je() << finl;
       Cerr << "This means that the problem has not been discretized or" << finl;
       Cerr << "that instruction Discretiser is misplaced" << finl;
       exit();
@@ -99,19 +99,19 @@ Zone_dis& Equation_base::zone_dis()
   return le_dom_dis.valeur();
 }
 
-/*! @brief Renvoie la zone discretisee associee a l'equation.
+/*! @brief Renvoie la domaine discretisee associee a l'equation.
  *
  * (version const)
  *
- * @return (Zone_dis&) la zone discretisee asssociee a l'equation
- * @throws l'objet zone discretisee (Zone_dis) est invalide,
+ * @return (Domaine_dis&) la domaine discretisee asssociee a l'equation
+ * @throws l'objet domaine discretisee (Domaine_dis) est invalide,
  * probleme associe non discretise.
  */
-const Zone_dis& Equation_base::zone_dis() const
+const Domaine_dis& Equation_base::domaine_dis() const
 {
   if (!le_dom_dis.non_nul())
     {
-      Cerr << "There is no object of type Zone_dis associated to the equation " << que_suis_je() << finl;
+      Cerr << "There is no object of type Domaine_dis associated to the equation " << que_suis_je() << finl;
       Cerr << "This means that the problem has not been discretized" << finl;
       exit();
     }
@@ -126,8 +126,8 @@ const Zone_dis& Equation_base::zone_dis() const
  *     operateurs, complete les conditions aux limites discretisees.
  *     Voir les methodes Source_base::completer(),
  *                       Operateur_base::completer()
- *                       Zone_Cl_dis_base::completer()
- *                       Zone_Cl_dis_base::completer(const Zone_dis& )
+ *                       Domaine_Cl_dis_base::completer()
+ *                       Domaine_Cl_dis_base::completer(const Domaine_dis& )
  *
  */
 void Equation_base::completer()
@@ -585,11 +585,11 @@ Entree& Equation_base::lire_cond_init(Entree& is)
 
 /*! @brief Lecture des conditions limites sur un flot d'entree.
  *
- * voir Zone_Cl_dis_base::readOn
+ * voir Domaine_Cl_dis_base::readOn
  *
  * @param (Entree& is) le flot d'entree
  * @return (Entree&) le flot d'entree modifie
- * @throws la zone des conditions aux limites discretisee est vide
+ * @throws la domaine des conditions aux limites discretisee est vide
  */
 Entree& Equation_base::lire_cl(Entree& is)
 {
@@ -598,7 +598,7 @@ Entree& Equation_base::lire_cl(Entree& is)
     {
       Cerr << "Error while reading boundaries conditions : " <<
            que_suis_je() << finl;
-      Cerr << "The Zone_Cl_dis is empty ..." << finl;
+      Cerr << "The Domaine_Cl_dis is empty ..." << finl;
       exit();
     }
   is >> le_dom_Cl_dis.valeur();
@@ -883,19 +883,19 @@ void Equation_base::associer_pb_base(const Probleme_base& pb)
 
 /*! @brief Discretise l'equation.
  *
- * Type la zone_Cl_dis, la formatte, l'associe a l'equation.
- *     Type le solveur masse, lui associe la zone discretisee et
- *     la zone des conditions aux limites discretisees.
+ * Type la domaine_Cl_dis, la formatte, l'associe a l'equation.
+ *     Type le solveur masse, lui associe la domaine discretisee et
+ *     la domaine des conditions aux limites discretisees.
  *
  */
 void Equation_base::discretiser()
 {
-  discretisation().zone_Cl_dis(zone_dis(), le_dom_Cl_dis);
+  discretisation().domaine_Cl_dis(domaine_dis(), le_dom_Cl_dis);
   le_dom_Cl_dis->associer_eqn(*this);
   le_dom_Cl_dis->associer_inconnue(inconnue());
 
   solveur_masse.typer();
-  solveur_masse->associer_domaine_dis_base(zone_dis().valeur());
+  solveur_masse->associer_domaine_dis_base(domaine_dis().valeur());
   solveur_masse->associer_domaine_cl_dis_base(le_dom_Cl_dis.valeur());
 
   if (calculate_time_derivative())
@@ -910,7 +910,7 @@ void Equation_base::discretiser()
       Nom unite(inconnue().valeur().unites()[0]);
       unite += "/s";
 
-      discretisation().discretiser_champ(directive,zone_dis().valeur(),nom,unite,
+      discretisation().discretiser_champ(directive,domaine_dis().valeur(),nom,unite,
                                          inconnue().valeur().nb_comp(),
                                          schema_temps().nb_valeurs_temporelles(),
                                          schema_temps().temps_courant(),derivee_en_temps());
@@ -964,11 +964,11 @@ const Schema_Temps_base& Equation_base::schema_temps() const
   return le_schema_en_temps.valeur();
 }
 
-/*! @brief Associe la zone discretisee a l'equation.
+/*! @brief Associe la domaine discretisee a l'equation.
  *
- * @param (Zone_dis& z) la zone discretisee a associee
+ * @param (Domaine_dis& z) la domaine discretisee a associee
  */
-void Equation_base::associer_domaine_dis(const Zone_dis& z)
+void Equation_base::associer_domaine_dis(const Domaine_dis& z)
 {
   le_dom_dis=z;
 }
@@ -991,7 +991,7 @@ void Equation_base::mettre_a_jour(double temps)
 
   // On tourne la roue des CLs
   // Update the boundary condition:
-  if (temps > schema_temps().temps_courant()) zone_Cl_dis()->avancer(temps);
+  if (temps > schema_temps().temps_courant()) domaine_Cl_dis()->avancer(temps);
 }
 
 //mise a jour de champ_conserve / champ_convecte : appele par Probleme_base::mettre_a_jour() apres avoir mis a jour le milieu
@@ -1054,7 +1054,7 @@ int Equation_base::preparer_calcul()
   Debog::verifier(msg ,inconnue());
 
   les_sources.initialiser(temps);
-  zone_Cl_dis().imposer_cond_lim(inconnue(),temps);
+  domaine_Cl_dis().imposer_cond_lim(inconnue(),temps);
   inconnue().valeurs().echange_espace_virtuel();
 
   /* initialisation de parametre_equation() par le schema en temps si celui-ci le permet */
@@ -1100,11 +1100,11 @@ bool Equation_base::initTimeStep(double dt)
       if (calculate_time_derivative()) derivee_en_temps()->futur(i)=derivee_en_temps()->valeurs();
 
       // Mise a jour du temps dans les CL
-      zone_Cl_dis()->changer_temps_futur(tps,i);
+      domaine_Cl_dis()->changer_temps_futur(tps,i);
     }
 
   // Mise a jour du temps par defaut des CLs
-  zone_Cl_dis()->set_temps_defaut(sch.temps_defaut());
+  domaine_Cl_dis()->set_temps_defaut(sch.temps_defaut());
 
   // Mise a jour des operateurs
   for(int i=0; i<nombre_d_operateurs(); i++)
@@ -1128,10 +1128,10 @@ bool Equation_base::updateGivenFields()
     {
       double tps=sch.temps_futur(i);
       // Calcul des CLs a ce temps.
-      zone_Cl_dis().mettre_a_jour(tps);
+      domaine_Cl_dis().mettre_a_jour(tps);
     }
   // Calcul du taux d'accroissement des CLs entre les temps present et futur.
-  zone_Cl_dis()->Gpoint(temps_present,temps_futur);
+  domaine_Cl_dis()->Gpoint(temps_present,temps_futur);
 
   //MaJ des operateurs
   for (int i = 0; i < nombre_d_operateurs(); i++)
@@ -1167,7 +1167,7 @@ void Equation_base::creer_champ(const Motcle& motlu)
     {
       if (!volume_maille.non_nul())
         {
-          discretisation().volume_maille(schema_temps(),zone_dis(),volume_maille);
+          discretisation().volume_maille(schema_temps(),domaine_dis(),volume_maille);
           champs_compris_.ajoute_champ(volume_maille);
         }
     }
@@ -1180,7 +1180,7 @@ void Equation_base::creer_champ(const Motcle& motlu)
     {
       if (!field_residu_.non_nul())
         {
-          discretisation().residu(zone_dis(),inconnue(),field_residu_);
+          discretisation().residu(domaine_dis(),inconnue(),field_residu_);
           champs_compris_.ajoute_champ(field_residu_);
         }
     }
@@ -2165,7 +2165,7 @@ void Equation_base::init_champ_conserve() const
   if (champ_conserve_.non_nul()) return; //deja fait
   int Nt = inconnue()->nb_valeurs_temporelles(), Nl = inconnue().valeurs().size_reelle_ok() ? inconnue().valeurs().dimension(0) : -1, Nc = inconnue().valeurs().line_size();
   //champ_conserve_ : meme type / support que l'inconnue
-  discretisation().creer_champ(champ_conserve_, zone_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
+  discretisation().creer_champ(champ_conserve_, domaine_dis().valeur(), inconnue().valeur().que_suis_je(), "N/A", "N/A", Nc, Nl, Nt, schema_temps().temps_courant());
   champ_conserve_->associer_eqn(*this);
   auto nom_fonc = get_fonc_champ_conserve();
   champ_conserve_->nommer(nom_fonc.first);

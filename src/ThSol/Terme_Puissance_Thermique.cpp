@@ -36,13 +36,13 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
 
   Motcle type;
   is >> type;
-  const Zone_dis_base& zdis = eqn.zone_dis().valeur();
+  const Domaine_dis_base& zdis = eqn.domaine_dis().valeur();
   const Nom& type_zdis = zdis.que_suis_je();
   if (type=="Valeur_totale_sur_volume")
     {
-      if (type_zdis.debute_par("Zone_VDF"))
+      if (type_zdis.debute_par("Domaine_VDF"))
         type += "_VDF";
-      else  if (type_zdis.debute_par("Zone_VEF"))
+      else  if (type_zdis.debute_par("Domaine_VEF"))
         type += "_VEF";
     }
   la_puissance_lu.typer(type);
@@ -50,15 +50,15 @@ void Terme_Puissance_Thermique::lire_donnees(Entree& is,const Equation_base& eqn
   is >> ch_puissance_lu;
   const int nb_comp = ch_puissance_lu.nb_comp();
 
-  eqn.probleme().discretisation().discretiser_champ(type_zdis.debute_par("Zone_PolyMAC") ? "temperature" : "champ_elem", eqn.zone_dis(), "pp", "1",nb_comp,0., la_puissance);
+  eqn.probleme().discretisation().discretiser_champ(type_zdis.debute_par("Domaine_PolyMAC") ? "temperature" : "champ_elem", eqn.domaine_dis(), "pp", "1",nb_comp,0., la_puissance);
   la_puissance_lu->fixer_nb_comp(nb_comp);
   if (ch_puissance_lu.le_nom()=="anonyme") ch_puissance_lu.nommer("Puissance_volumique");
 
   for (int n = 0; n < nb_comp; n++) la_puissance_lu->fixer_nom_compo(n, ch_puissance_lu.le_nom() + (nb_comp > 1 ? Nom(n) :""));
   for (int n = 0; n < nb_comp; n++) la_puissance->fixer_nom_compo(n, ch_puissance_lu.le_nom() + (nb_comp > 1 ? Nom(n) :""));
   // PL: Il faut faire nommer_completer_champ_physique les 2 champs (plantage sinon pour une puissance de type Champ_fonc_tabule)
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance_lu,eqn.probleme());
-  eqn.discretisation().nommer_completer_champ_physique(eqn.zone_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance,eqn.probleme());
+  eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance_lu,eqn.probleme());
+  eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(),ch_puissance_lu.le_nom(),"W/m3",la_puissance,eqn.probleme());
   la_puissance.valeur().valeurs() = 0;
   la_puissance.valeur().affecter(ch_puissance_lu);
 }
@@ -67,8 +67,8 @@ void Terme_Puissance_Thermique::initialiser_champ_puissance(const Equation_base&
 {
   if (sub_type(Champ_val_tot_sur_vol_base,la_puissance_lu.valeur()))
     {
-      const Zone_dis_base& zdis = eqn.zone_dis().valeur();
-      const Zone_Cl_dis_base& zcldis = eqn.zone_Cl_dis().valeur();
+      const Domaine_dis_base& zdis = eqn.domaine_dis().valeur();
+      const Domaine_Cl_dis_base& zcldis = eqn.domaine_Cl_dis().valeur();
       Champ_val_tot_sur_vol_base& champ_puis = ref_cast(Champ_val_tot_sur_vol_base,la_puissance_lu.valeur());
       champ_puis.evaluer(zdis,zcldis);
     }

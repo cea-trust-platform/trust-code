@@ -20,7 +20,7 @@
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Param.h>
 #include <SETS.h>
 
@@ -40,7 +40,7 @@ Entree& Op_Evanescence_Homogene_Elem_base::readOn(Entree& is)
 
 void Op_Evanescence_Homogene_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const DoubleTab& inco = equation().inconnue().valeurs();
 
   /* on doit pouvoir ajouter / soustraire les equations entre composantes */
@@ -54,7 +54,7 @@ void Op_Evanescence_Homogene_Elem_base::dimensionner_blocs(matrices_t matrices, 
         sten.set_smart_resize(1);
 
         std::set<int> idx;
-        for (e = 0; e < zone.nb_elem(); e++, idx.clear())
+        for (e = 0; e < domaine.nb_elem(); e++, idx.clear())
           {
             for (i = N * e, n = 0; n < N; n++, i++)
               for (j = mat.get_tab1()(i) - 1; j < mat.get_tab1()(i + 1) - 1; j++)
@@ -71,7 +71,7 @@ void Op_Evanescence_Homogene_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
 {
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
   const DoubleTab& inco = ch.valeurs(), &alpha = pb.eq_masse.inconnue().valeurs(), &rho = equation().milieu().masse_volumique().valeurs(), &p = pb.eq_qdm.pression().valeurs();
 
@@ -88,7 +88,7 @@ void Op_Evanescence_Homogene_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   IntTrav maj(inco.dimension_tot(0)); //maj(i) : phase majoritaire de la ligne i
   DoubleTrav coeff(inco.dimension_tot(0), inco.line_size(), 2); //coeff(i, n, 0/1) : coeff a appliquer a l'equation existante / a l'eq. "inco = v_maj", leurs derivees en alpha
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       /* phase majoritaire */
       for (a_max = 0, k = -1, n = 0; n < N; n++)
@@ -114,7 +114,7 @@ void Op_Evanescence_Homogene_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
       {
         int diag = (n_m.first == ch.le_nom().getString()), press = (n_m.first == "pression"); //est-on sur le bloc diagonal, sur le bloc pression?
         Matrice_Morse& mat = *n_m.second;
-        for (e = 0; e < zone.nb_elem(); e++)
+        for (e = 0; e < domaine.nb_elem(); e++)
           for (n = 0, m = 0; n < N; n++, m += (M > 1))
             if (coeff(e, n, 0))
               {

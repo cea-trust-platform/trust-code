@@ -16,8 +16,8 @@
 #include <Op_Diff_PolyMAC_P0_Elem.h>
 #include <Pb_Multiphase.h>
 #include <Schema_Temps_base.h>
-#include <Zone_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Neumann_paroi.h>
@@ -70,20 +70,20 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
   Op_Diff_PolyMAC_P0_base::completer();
   const Equation_base& eq = equation();
   const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, eq.inconnue().valeur());
-  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
+  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     {
       Cerr << "Op_Diff_PolyMAC_P0_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
       Process::exit();
     }
-  flux_bords_.resize(zone.premiere_face_int(), ch.valeurs().line_size());
+  flux_bords_.resize(domaine.premiere_face_int(), ch.valeurs().line_size());
 
   const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, eq.probleme()) ? &ref_cast(Pb_Multiphase, eq.probleme()) : NULL;
   if (sub_type(Energie_Multiphase, eq))
     if (pbm)
       if (pbm->has_correlation("Flux_parietal"))
         if (ref_cast(Flux_parietal_base, pbm->get_correlation("Flux_parietal").valeur()).calculates_bubble_nucleation_diameter())
-          d_nuc_.resize(0, ch.valeurs().line_size()), zone.zone().creer_tableau_elements(d_nuc_);
+          d_nuc_.resize(0, ch.valeurs().line_size()), domaine.domaine().creer_tableau_elements(d_nuc_);
 }
 
 /* construction de s_dist : sommets du porbleme coincidant avec des sommets de problemes distants */
@@ -106,7 +106,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_s_dist() const
 void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 {
   if (som_ext_init_) return; //deja fait
-  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
+  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
   int i, j, k, s, sb, s_l, iop, e, f, ok;
 
   /* remplissage de op_ext : de proche en proche */
@@ -118,7 +118,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
       const Op_Diff_PolyMAC_P0_Elem *op = *op_ext_tbd.begin();
       op_ext_tbd.erase(op_ext_tbd.begin());
       //elargissement de op_ext
-      const Conds_lim& cls = op->equation().zone_Cl_dis()->les_conditions_limites();
+      const Conds_lim& cls = op->equation().domaine_Cl_dis()->les_conditions_limites();
       for (const auto& itr : cls)
         if (sub_type(Echange_contact_PolyMAC_P0, itr.valeur()))
           {
@@ -142,15 +142,15 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
   som_ext_pe.resize(0, 2), som_ext_pf.resize(0, 4), som_ext_pe.set_smart_resize(1), som_ext_pf.set_smart_resize(1);
   std::set<std::array<int, 2>> s_pe; // (pb, el)
   std::set<std::array<int, 4>> s_pf; // (pb1, f1, pb2, f2)
-  std::vector<std::reference_wrapper<const Zone_PolyMAC_P0>> zones;
+  std::vector<std::reference_wrapper<const Domaine_PolyMAC_P0>> domaines;
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_s;
   std::vector<std::reference_wrapper<const Static_Int_Lists>> som_elem;
-  for (auto &&op : op_ext) zones.push_back(std::ref(ref_cast(Zone_PolyMAC_P0, op->equation().zone_dis().valeur())));
+  for (auto &&op : op_ext) domaines.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op->equation().domaine_dis().valeur())));
   for (auto &&op : op_ext) fcl.push_back(std::ref(ref_cast(Champ_Elem_PolyMAC_P0, op->equation().inconnue().valeur()).fcl()));
-  for (auto &&zo : zones) e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets())), som_elem.push_back(std::ref(zo.get().som_elem()));
+  for (auto &&zo : domaines) e_f.push_back(std::ref(zo.get().elem_faces())), f_s.push_back(std::ref(zo.get().face_sommets())), som_elem.push_back(std::ref(zo.get().som_elem()));
 
   /* autres CLs (hors Echange_contact) devant etre traitees par som_ext : Echange_impose_base, tout si Pb_Multiphase avec Flux_parietal_base */
-  const Conds_lim& cls = equation().zone_Cl_dis()->les_conditions_limites();
+  const Conds_lim& cls = equation().domaine_Cl_dis()->les_conditions_limites();
   int has_flux = sub_type(Energie_Multiphase, equation()) && ref_cast(Pb_Multiphase, equation().probleme()).has_correlation("flux_parietal");
   for (i = 0; i < cls.size(); i++)
     if (has_flux || sub_type(Echange_contact_PolyMAC_P0, cls[i].valeur()))
@@ -159,7 +159,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
           if (!s_dist_full.count(s)) s_dist_full[s] = { }; //dans le std::map, mais pas d'operateurs distants!
 
   for (auto &&s_op_sb : s_dist_full)
-    if ((s = s_op_sb.first) < zone.nb_som())
+    if ((s = s_op_sb.first) < domaine.nb_som())
       {
         //elements
         for (i = 0; i < som_elem[0].get().get_list_size(s); i++)
@@ -179,7 +179,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
             {
               for (ok = 0, j = 0; !ok && j < f_s[iop].get().dimension(1) && (sb = f_s[iop](f, j)) >= 0; j++) ok |= sb == s_l;
               if (!ok || fcl[iop](f, 0) != 3) continue; //face ne touchant pas le sommet ou non Echange_contact
-              const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, op_ext[iop]->equation().zone_Cl_dis()->les_conditions_limites()[fcl[iop](f, 1)].valeur());
+              const Echange_contact_PolyMAC_P0& cl = ref_cast(Echange_contact_PolyMAC_P0, op_ext[iop]->equation().domaine_Cl_dis()->les_conditions_limites()[fcl[iop](f, 1)].valeur());
               int o_iop = (int)(std::find(op_ext.begin(), op_ext.end(), &cl.o_diff.valeur()) - op_ext.begin()), o_f = cl.f_dist(fcl[iop](f, 2)); //operateur / face de l'autre cote
               std::array<int, 4> arr = { iop < o_iop ? iop : o_iop, iop < o_iop ? f : o_f, iop < o_iop ? o_iop : iop, iop < o_iop ? o_f : f};
               s_pf.insert({arr}); //stocke dans l'ordre
@@ -194,22 +194,22 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 
 double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
 {
-  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
-  const IntTab& e_f = zone.elem_faces();
-  const DoubleTab& nf = zone.face_normales(),
+  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const IntTab& e_f = domaine.elem_faces();
+  const DoubleTab& nf = domaine.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL),
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
   int i, e, f, n, N = equation().inconnue().valeurs().dimension(1), cD = diffu.dimension(0) == 1, cL = lambda.dimension(0) == 1;
   double dt = 1e10;
   DoubleTrav flux(N);
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (n = 0; n < N; n++)
-          flux(n) += zone.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+          flux(n) += domaine.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, pe(e) * ve(e) * (alp ? (*alp)(e, n) : 1) * (lambda(!cL * e, n) / diffu(!cD * e, n)) / flux(n));
@@ -223,8 +223,8 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
   init_op_ext(), update_phif(!nu_constant_); //calcul de (nf.nu.grad T) : si nu variable, stencil complet
   const std::string nom_inco = equation().inconnue().le_nom().getString();
   if (semi_impl.count(nom_inco)) return; //semi-implicite -> rien a dimensionner
-  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins();
+  const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
+  const IntTab& f_e = domaine.face_voisins();
   int i, j, k, e, e_s, p_s, f, m, n, n_sten = 0;
   std::vector<Matrice_Morse *> mat(op_ext.size());
   for (i = 0; i < (int) op_ext.size(); i++) //une matrice potentielle a remplir par operateur de op_ext
@@ -237,22 +237,22 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
     stencil[i].resize(0, 2), stencil[i].set_smart_resize(1), N[i] = op_ext[i]->equation().inconnue().valeurs().line_size();
 
   IntTrav tpfa(0, N[0]); //pour suivre quels flux sont a deux points
-  zone.creer_tableau_faces(tpfa), tpfa = 1;
+  domaine.creer_tableau_faces(tpfa), tpfa = 1;
 
   Cerr << "Op_Diff_PolyMAC_P0_Elem::dimensionner() : ";
   //avec fgrad : parties hors Echange_contact (ne melange ni les problemes, ni les composantes)
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-      if (e < zone.nb_elem()) //stencil a l'element e
+      if (e < domaine.nb_elem()) //stencil a l'element e
         for (j = phif_d(f); j < phif_d(f + 1); j++)
-          if ((e_s = phif_e(j)) < zone.nb_elem_tot())
+          if ((e_s = phif_e(j)) < domaine.nb_elem_tot())
             for (n = 0; n < N[0]; n++)
               stencil[0].append_line(N[0] * e + n, N[0] * e_s + n), tpfa(f, n) &= e_s == f_e(f, 0) || e_s == f_e(f, 1) || phif_c(j, n) == 0;
 
   //avec som_ext : partie Echange_contact -> melange toutes les composantes si som_mix = 1
   for (i = 0; i < som_ext.dimension(0); i++)
     for (j = som_ext_d(i, 0); j < som_ext_d(i + 1, 0); j++)
-      if (!som_ext_pe(j, 0) && (e = som_ext_pe(j, 1)) < zone.nb_elem())
+      if (!som_ext_pe(j, 0) && (e = som_ext_pe(j, 1)) < domaine.nb_elem())
         for (k = som_ext_d(i, 0); k < som_ext_d(i + 1, 0); k++)
           for (p_s = som_ext_pe(k, 0), e_s = som_ext_pe(k, 1), n = 0; n < N[0]; n++)
             for (m = (som_mix(i) ? 0 : n); m < (som_mix(i) ? N[p_s] : n + 1); m++) stencil[p_s].append_line(N[0] * e + n, N[p_s] * e_s + m);
@@ -262,13 +262,13 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
       {
         tableau_trier_retirer_doublons(stencil[i]);
         Matrice_Morse mat2;
-        Matrix_tools::allocate_morse_matrix(N[0] * zone.nb_elem_tot(), N[i] * op_ext[i]->equation().zone_dis()->nb_elem_tot(), stencil[i], mat2);
+        Matrix_tools::allocate_morse_matrix(N[0] * domaine.nb_elem_tot(), N[i] * op_ext[i]->equation().domaine_dis()->nb_elem_tot(), stencil[i], mat2);
         mat[i]->nb_colonnes() ? *mat[i] += mat2 : *mat[i] = mat2;
       }
 
   for (auto &&st : stencil) n_sten += st.dimension(0); //n_sten : nombre total de points du stencil de l'operateur
-  Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N[0] * zone.zone().md_vector_elements().valeur().nb_items_seq_tot())
-       << " " << mp_somme_vect(tpfa) * 100. / (N[0] * zone.md_vector_faces().valeur().nb_items_seq_tot()) << "% TPFA " << finl;
+  Cerr << "width " << Process::mp_sum(n_sten) * 1. / (N[0] * domaine.domaine().md_vector_elements().valeur().nb_items_seq_tot())
+       << " " << mp_somme_vect(tpfa) * 100. / (N[0] * domaine.md_vector_faces().valeur().nb_items_seq_tot()) << "% TPFA " << finl;
 }
 
 void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
@@ -282,7 +282,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = (int)op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it, cv, nonlinear;
   std::vector<Matrice_Morse *> mat(n_ext); //matrices
   std::vector<int> N; //composantes
-  std::vector<std::reference_wrapper<const Zone_PolyMAC_P0>> zone; //zones
+  std::vector<std::reference_wrapper<const Domaine_PolyMAC_P0>> domaine; //domaines
   std::vector<std::reference_wrapper<const Conds_lim>> cls; //conditions aux limites
   std::vector<std::reference_wrapper<const IntTab>> fcl, e_f, f_e, f_s; //tableaux "fcl", "elem_faces", "faces_voisins"
   std::vector<std::reference_wrapper<const DoubleVect>> fs; //surfaces
@@ -291,32 +291,32 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
     {
       std::string nom_mat = i ? nom_inco + "/" + op_ext[i]->equation().probleme().le_nom().getString() : nom_inco;
       mat[i] = !semi_impl.count(nom_inco) && matrices.count(nom_mat) ? matrices.at(nom_mat) : NULL;
-      zone.push_back(std::ref(ref_cast(Zone_PolyMAC_P0, op_ext[i]->equation().zone_dis().valeur())));
-      f_e.push_back(std::ref(zone[i].get().face_voisins())), e_f.push_back(std::ref(zone[i].get().elem_faces())), f_s.push_back(std::ref(zone[i].get().face_sommets()));
-      fs.push_back(std::ref(zone[i].get().face_surfaces())), nf.push_back(std::ref(zone[i].get().face_normales()));
-      xp.push_back(std::ref(zone[i].get().xp())), xv.push_back(std::ref(zone[i].get().xv())), xs.push_back(std::ref(zone[i].get().zone().coord_sommets()));
-      cls.push_back(std::ref(op_ext[i]->equation().zone_Cl_dis().les_conditions_limites()));
+      domaine.push_back(std::ref(ref_cast(Domaine_PolyMAC_P0, op_ext[i]->equation().domaine_dis().valeur())));
+      f_e.push_back(std::ref(domaine[i].get().face_voisins())), e_f.push_back(std::ref(domaine[i].get().elem_faces())), f_s.push_back(std::ref(domaine[i].get().face_sommets()));
+      fs.push_back(std::ref(domaine[i].get().face_surfaces())), nf.push_back(std::ref(domaine[i].get().face_normales()));
+      xp.push_back(std::ref(domaine[i].get().xp())), xv.push_back(std::ref(domaine[i].get().xv())), xs.push_back(std::ref(domaine[i].get().domaine().coord_sommets()));
+      cls.push_back(std::ref(op_ext[i]->equation().domaine_Cl_dis().les_conditions_limites()));
       diffu.push_back(ref_cast(Op_Diff_PolyMAC_P0_Elem, *op_ext[i]).nu());
       const Champ_Inc& ch_inc = op_ext[i]->has_champ_inco() ? op_ext[i]->mon_inconnue() : op_ext[i]->equation().inconnue();
       const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, ch_inc.valeur());
       inco.push_back(std::ref(semi_impl.count(nom_mat) ? semi_impl.at(nom_mat) : ch.valeurs()));
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
-  const Zone_PolyMAC_P0& zone0 = zone[0];
+  const Domaine_PolyMAC_P0& domaine0 = domaine[0];
   DoubleTab *pqpi = equation().sources().size() && sub_type(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur()) ? &ref_cast(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur()).qpi() : NULL;
   d_nuc_ = 0; //remise a zero du diametre de nucleation
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */
   DoubleTrav flux(N[0]);
-  for (f = 0; f < zone0.nb_faces(); f++)
+  for (f = 0; f < domaine0.nb_faces(); f++)
     {
       for (flux = 0, i = phif_d(f); i < phif_d(f + 1); i++)
-        if ((fb = (eb = phif_e(i)) - zone0.nb_elem_tot()) < 0) //element
+        if ((fb = (eb = phif_e(i)) - domaine0.nb_elem_tot()) < 0) //element
           {
             for (n = 0; n < N[0]; n++) flux(n) += phif_c(i, n) * fs[0](f) * inco[0](eb, n);
             if (mat[0])
               for (j = 0; j < 2 && (e = f_e[0](f, j)) >= 0; j++)
-                if (e < zone[0].get().nb_elem())
+                if (e < domaine[0].get().nb_elem())
                   for (n = 0; n < N[0]; n++) //derivees
                     (*mat[0])(N[0] * e + n, N[0] * eb + n) += (j ? 1 : -1) * phif_c(i, n) * fs[0](f);
           }
@@ -331,10 +331,10 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
             flux(n) += (phif_c(i, n) ? phif_c(i, n) * fs[0](f) * ref_cast(Dirichlet, cls[0].get()[fcl[0](fb, 1)].valeur()).val_imp(fcl[0](fb, 2), n) : 0);
 
       for (j = 0; j < 2 && (e = f_e[0](f, j)) >= 0; j++)
-        if (e < zone[0].get().nb_elem())
+        if (e < domaine[0].get().nb_elem())
           for (n = 0; n < N[0]; n++) //second membre -> amont/aval
             secmem(e, n) += (j ? -1 : 1) * flux(n);
-      if (f < zone0.premiere_face_int())
+      if (f < domaine0.premiere_face_int())
         for (n = 0; n < N[0]; n++) flux_bords_(f, n) = flux(n); //flux aux bords
     }
 
@@ -356,7 +356,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   mA.set_smart_resize(1), mB.set_smart_resize(1), Qf.set_smart_resize(1), Qec.set_smart_resize(1);
 
   for (i_s = 0; i_s < som_ext.dimension(0); i_s++)
-    if ((s = som_ext(i_s)) < zone0.nb_som())
+    if ((s = som_ext(i_s)) < domaine0.nb_som())
       {
         /* (pb, elem) connectes a s -> avec som_ext_pe (deja classes) */
         for (s_pe.clear(), n_e = 0, i = som_ext_d(i_s, 0); i < som_ext_d(i_s + 1, 0); i++, n_e++) s_pe.push_back({{ som_ext_pe(i, 0), som_ext_pe(i, 1)}});
@@ -383,8 +383,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                   {
                     if (m == 1 || k > 0) sb = f_s[p](f, m ? (k + 1 < f_s[p].get().dimension(1) && f_s[p](f, k + 1) >= 0 ? k + 1 : 0) : k - 1); //sommet suivant (m = 1) ou precedent avec k > 0 -> facile
                     else for (n = f_s[p].get().dimension(1) - 1; (sb = f_s[p](f, n)) == -1; ) n--; //sommet precedent avec k = 0 -> on cherche a partir de la fin
-                    auto v = zone0.cross(D, D, &xs[p](sp, 0), &xs[p](sb, 0), &xv[p](f, 0), &xv[p](f, 0));//produit vectoriel (xs - xf)x(xsb - xf)
-                    surf_fs[l] += std::fabs(zone0.dot(&v[0], &nf[p](f, 0))) / fs[p](f) / 4; //surface a ajouter
+                    auto v = domaine0.cross(D, D, &xs[p](sp, 0), &xs[p](sb, 0), &xv[p](f, 0), &xv[p](f, 0));//produit vectoriel (xs - xf)x(xsb - xf)
+                    surf_fs[l] += std::fabs(domaine0.dot(&v[0], &nf[p](f, 0))) / fs[p](f) / 4; //surface a ajouter
                     for (d = 0; d < D; d++) vec_fs[l][m][d] = (xs[p](sp, d) + xs[p](sb, d)) / 2 - xv[p](f, d); //vecteur face -> arete
                   }
                 }
@@ -402,7 +402,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
         /* volumes */
         for (vol_es.resize(n_e), vol_s = 0, i = 0; i < n_e; vol_s += vol_es[i], i++)
           for (p = s_pe[i][0], e = s_pe[i][1], vol_es[i] = 0, j = 0; j < (int) se_f[i].size(); j++)
-            k = se_f[i][j], pb = s_pf[k][0], f = s_pf[k][1], vol_es[i] += surf_fs[k] * std::fabs(zone0.dot(&xp[p](e, 0), &nf[pb](f, 0), &xv[pb](f, 0))) / fs[pb](f) / D;
+            k = se_f[i][j], pb = s_pf[k][0], f = s_pf[k][1], vol_es[i] += surf_fs[k] * std::fabs(domaine0.dot(&xp[p](e, 0), &nf[pb](f, 0), &xv[pb](f, 0))) / fs[pb](f) / D;
 
         /* inconnues en paroi (i_efs), aux elements (i_e). On alloues toutes les composantes si som_mix = 1, une seule sinon */
         int mix = som_mix(i_s), Nm = mix ? 1 : N[s_pe[0][0]], t_eq, t_e, t_ec; //nombre total d'equations/variables aux faces, nombre total de variables aux elements, t_ec = t_e + 1, nombres divises par Nl
@@ -461,7 +461,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                         for (j = 0; j < (int) se_f[i].size(); j++)
                           {
                             k = se_f[i][j], f = s_pf[k][0] == p ? s_pf[k][1] : m_pf[s_pf[k]][1], sgn = e == f_e[p](f, 0) ? 1 : -1; //indice de face, num dans le probleme courant, amont/aval
-                            for (l = 0; l < D; l++) fac[l] = sgn * zone0.nu_dot(&diffu[p].get(), e, n, &nf[p](f, 0), i3[l]) * surf_fs[k] / fs[p](f) / vol_es[i]; //vecteur lambda_e nf sortant * facteur commun
+                            for (l = 0; l < D; l++) fac[l] = sgn * domaine0.nu_dot(&diffu[p].get(), e, n, &nf[p](f, 0), i3[l]) * surf_fs[k] / fs[p](f) / vol_es[i]; //vecteur lambda_e nf sortant * facteur commun
                             Y(!mix * n, il) += fac[d] * (xv[p](f, db) - xp[p](e, db)) - fac[db] * (xv[p](f, d) - xp[p](e, d)); //second membre
                             for (l = 0; l < D - 1; l++) C(!mix * n, (D - 1) * k + l, il) += fac[db] * vec_fs[k][l][d] - fac[d] * vec_fs[k][l][db]; //matrice
                           }
@@ -522,7 +522,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                         for (l = 0; l < n_ef; l++)
                           for (kb = se_f[i][l], fb = s_pf[kb][0] == p ? s_pf[kb][1] : m_pf[s_pf[kb]][1], n = 0; n < N[p]; n++)
                             {
-                              double x = sgn_l * zone0.nu_dot(&diffu[p].get(), e, n, &nf[p](f, 0), &X(!mix * n, l, 0)) / fs[p](f), y = x * surf_fs[k];
+                              double x = sgn_l * domaine0.nu_dot(&diffu[p].get(), e, n, &nf[p](f, 0), &X(!mix * n, l, 0)) / fs[p](f), y = x * surf_fs[k];
                               /* stockage du flux sortant dans Ff / Fec */
                               Fec(!mix * n, i_efs(i, j, mix * n), t_e) += y * (Tefs(!mix * n, i_efs(i, l, mix * n)) - inco[p](e, n));
                               Ff(!mix * n, i_efs(i, j, mix * n), i_efs(i, l, mix * n)) += y, Fec(!mix * n, i_efs(i, j, mix * n), i_e(i, mix * n)) -= y;
@@ -562,7 +562,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             in.N = N[p], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
                             out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc = &d_nuc;
                             for (d = 0; d < D; d++)
-                              for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(zone[p].get().nb_faces_tot() + D * e + d, n), 2);
+                              for (n = 0; n < N[p]; n++) nv(n) += std::pow(vit(domaine[p].get().nb_faces_tot() + D * e + d, n), 2);
                             for (n = 0; n < N[p]; n++) nv(n) = sqrt(nv(n)), Tf(n) = Tefs(0, i_efs(i, j, n));
                             //appel : on n'est implicite qu'en les temperatures
                             corr.qp(in, out);
@@ -654,12 +654,12 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
 
         /* contributions aux flux et aux matrices */
         for (i = 0; i < n_e; i++)
-          if (s_pe[i][0] == 0 && (e = s_pe[i][1]) < zone[0].get().nb_elem())
+          if (s_pe[i][0] == 0 && (e = s_pe[i][1]) < domaine[0].get().nb_elem())
             for (j = 0; j < (int) se_f[i].size(); j++)
               for (k = se_f[i][j], f = s_pf[k][0] ? m_pf[s_pf[k]][1] : s_pf[k][1], n = 0; n < N[0]; n++) //seulement celles du probleme courant
                 {
                   secmem(e, n) += Fec(!mix * n, i_efs(i, j, mix * n), t_e); //partie constante
-                  if (f < zone0.premiere_face_int()) flux_bords_(f, n) += Fec(!mix * n, i_efs(i, j, mix * n), t_e);
+                  if (f < domaine0.premiere_face_int()) flux_bords_(f, n) += Fec(!mix * n, i_efs(i, j, mix * n), t_e);
                   for (k = 0; k < n_e; k++)
                     if (mat[p = s_pe[k][0]])
                       for (eb = s_pe[k][1], m = (mix ? 0 : n); m < (mix ? N[p] : n + 1); m++) //derivees : si on a la matrice

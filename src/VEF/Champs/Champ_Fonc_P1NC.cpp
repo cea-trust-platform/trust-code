@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P1NC.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 Implemente_instanciable(Champ_Fonc_P1NC,"Champ_Fonc_P1NC",Champ_Fonc_base);
 
@@ -24,8 +24,8 @@ Entree& Champ_Fonc_P1NC::readOn(Entree& s) { return s ; }
 
 int Champ_Fonc_P1NC::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
-  assert(nb_noeuds == zone_vef().nb_faces());
-  const MD_Vector& md = zone_vef().md_vector_faces();
+  assert(nb_noeuds == domaine_vef().nb_faces());
+  const MD_Vector& md = domaine_vef().md_vector_faces();
   creer_tableau_distribue(md);
 
   Champ_P1NC_implementation::fixer_nb_valeurs_nodales(nb_noeuds);

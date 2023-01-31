@@ -22,7 +22,7 @@
 
 /*! @brief Classe Perte_Charge_Reguliere Cette classe derivee de Perte_Charge est utiliseelorsque l'on veut
  *
- *     modeliser une zone de l'ecoulement dans laquelle des obstacles sont
+ *     modeliser une domaine de l'ecoulement dans laquelle des obstacles sont
  *     immerges (faisceau de tubes par exemple)
  *
  * @sa Perte_Charge Perte_Charge_Singuliere

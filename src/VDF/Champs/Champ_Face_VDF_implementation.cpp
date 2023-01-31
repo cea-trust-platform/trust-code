@@ -17,7 +17,7 @@
 #include <Frontiere_dis_base.h>
 #include <Champ_Inc_base.h>
 #include <LecFicDiffuse.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <TRUSTTab.h>
 
 DoubleTab& Champ_Face_VDF_implementation::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
@@ -64,14 +64,14 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_a_elem_(const DoubleTab& val_f
   if (e == -1) return val;
 
   const int N = le_champ().valeurs().line_size(), D = Objet_U::dimension;
-  const Zone_VDF& zone_VDF = zone_vdf();
-  const Zone& zone_geom = get_zone_geom();
-  const IntTab& f_s = zone_VDF.face_sommets(), &e_f = zone_VDF.elem_faces();
+  const Domaine_VDF& domaine_VDF = domaine_vdf();
+  const Domaine& domaine_geom = get_domaine_geom();
+  const IntTab& f_s = domaine_VDF.face_sommets(), &e_f = domaine_VDF.elem_faces();
 
   for (int d = 0; d < D; d++)
     {
       const int som0 = f_s(e_f(e, d), 0), som1 = f_s(e_f(e, d + D), 0);
-      const double psi = (position(d) - zone_geom.coord(som0, d)) / (zone_geom.coord(som1, d) - zone_geom.coord(som0, d));
+      const double psi = (position(d) - domaine_geom.coord(som0, d)) / (domaine_geom.coord(som1, d) - domaine_geom.coord(som0, d));
       for (int n = 0; n < N; n++)
         {
           // TODO : FIXME : cas avec line_size 1 mais nb_dim != 2 ... vu dans cathare3D
@@ -122,9 +122,9 @@ double Champ_Face_VDF_implementation::valeur_a_elem_compo(const DoubleVect& posi
   assert(le_champ().valeurs().line_size() == 1); // not compatible with multiphase
   if (e == -1) return 0;
 
-  const IntTab& f_s = zone_vdf().face_sommets(), &e_f = zone_vdf().elem_faces();
+  const IntTab& f_s = domaine_vdf().face_sommets(), &e_f = domaine_vdf().elem_faces();
   const DoubleTab& vals = le_champ().valeurs();
-  const Zone& dom = zone_vdf().zone();
+  const Domaine& dom = domaine_vdf().domaine();
   const int D = Objet_U::dimension;
 
   const double val1 = vals(e_f(e, d)), val2 = vals(e_f(e, D + d));
@@ -134,7 +134,7 @@ double Champ_Face_VDF_implementation::valeur_a_elem_compo(const DoubleVect& posi
   return interpolation(val1, val2, psi);
 }
 
-DoubleTab& Champ_Face_VDF_implementation::valeur_aux_sommets(const Zone& dom, DoubleTab& ch_som) const
+DoubleTab& Champ_Face_VDF_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& ch_som) const
 {
   if (le_champ().nb_comp() == 1)
     {
@@ -170,7 +170,7 @@ DoubleTab& Champ_Face_VDF_implementation::valeur_aux_sommets(const Zone& dom, Do
 
   return ch_som;
 }
-DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Zone& dom,
+DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Domaine& dom,
                                                                     DoubleVect& ch_som,
                                                                     int ncomp) const
 {
@@ -212,7 +212,7 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Zone& 
 
 DoubleTab& Champ_Face_VDF_implementation::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone_VDF& le_dom_vdf = ref_cast(Zone_VDF,get_zone_dis());
+  const Domaine_VDF& le_dom_vdf = ref_cast(Domaine_VDF,get_domaine_dis());
   const DoubleTab& xv = le_dom_vdf.xv();
   int nb_fac = le_dom_vdf.nb_faces_tot();
   if ( (xv.dimension(0) == nb_fac ) && (xv.dimension(1) == Objet_U::dimension) )
@@ -229,8 +229,8 @@ DoubleTab& Champ_Face_VDF_implementation::remplir_coord_noeuds(DoubleTab& positi
 int Champ_Face_VDF_implementation::remplir_coord_noeuds_et_polys(DoubleTab& positions,
                                                                  IntVect& polys) const
 {
-  const IntTab& face_voisins = zone_vdf().face_voisins();
-  int nb_faces=zone_vdf().nb_faces();
+  const IntTab& face_voisins = domaine_vdf().face_voisins();
+  int nb_faces=domaine_vdf().nb_faces();
   remplir_coord_noeuds(positions);
   polys.resize(nb_faces);
 
@@ -370,7 +370,7 @@ DoubleTab& Champ_Face_VDF_implementation::trace(const Frontiere_dis_base& fr, co
 {
   assert(distant==0);
   const Front_VF& fr_vf=ref_cast(Front_VF, fr);
-  const Zone_VDF& zvdf=zone_vdf();
+  const Domaine_VDF& zvdf=domaine_vdf();
   const IntVect& ori = zvdf.orientation();
   const IntTab& face_voisins = zvdf.face_voisins();
   const IntTab& elem_faces = zvdf.elem_faces();

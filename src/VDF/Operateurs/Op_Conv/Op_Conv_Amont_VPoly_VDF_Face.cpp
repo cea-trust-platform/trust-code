@@ -23,17 +23,17 @@ Entree& Op_Conv_Amont_VPoly_VDF_Face::readOn(Entree& s ) { return s ; }
 
 void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone = iter->zone();
+  const Domaine_VDF& domaine = iter->domaine();
   // okok je sais ... tgv
   DoubleTab& tab_flux_bords = flux_bords();
-  tab_flux_bords.resize(zone.nb_faces_bord(), dimension);
+  tab_flux_bords.resize(domaine.nb_faces_bord(), dimension);
   tab_flux_bords = 0.;
 
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
-  const Conds_lim& cls = iter->zone_Cl().les_conditions_limites();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl();
-  const DoubleTab& vit = ch.passe(), &vfd = zone.volumes_entrelaces_dir();
-  const DoubleVect& fs = zone.face_surfaces(), &pe = equation().milieu().porosite_elem(), &ve = zone.volumes();
+  const Conds_lim& cls = iter->domaine_Cl().les_conditions_limites();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ch.fcl();
+  const DoubleTab& vit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir();
+  const DoubleVect& fs = domaine.face_surfaces(), &pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
 
   /* a_r : produit alpha_rho si Pb_Multiphase -> par semi_implicite, ou en recuperant le champ_conserve de l'equation de masse */
   const std::string& nom_inco = ch.le_nom().getString();
@@ -47,7 +47,7 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   int i, j, k, e = -100, eb, f, fb, fd, m, n, N = inco.line_size(), d, D = dimension, comp = !incompressible_;
 
   DoubleTrav dfac(2, N, N), masse(N, N);
-  for (f = 0; f < zone.nb_faces_tot(); f++)
+  for (f = 0; f < domaine.nb_faces_tot(); f++)
     {
       const bool is_interne = (f_e(f, 0) >= 0 && f_e(f, 1) >= 0);
       const bool is_bord = ((f_e(f, 0) >= 0 && f_e(f, 1) < 0) || (f_e(f, 0) < 0 && f_e(f, 1) >= 0));
@@ -120,14 +120,14 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                 for (k = 0; k < e_f.dimension(1); k++)
                   {
                     fb = e_f(e, k);
-                    if (fb >= 0 && (zone.orientation(fb) == zone.orientation(f)))
-                      if (fb < zone.nb_faces())
+                    if (fb >= 0 && (domaine.orientation(fb) == domaine.orientation(f)))
+                      if (fb < domaine.nb_faces())
                         if (f_e(f, i == 0 ? 1 : 0) < 0 || (f_e(f, 0) >= 0 && f_e(f, 1) >= 0))
                           {
                             if (f_e(f, 0) < 0)
                               for (j = 1; j >= 0; j--) //equivalence : face fd -> face fb
                                 {
-                                  eb = f_e(f, j), fd = (j == i ? fb : zone.face_amont_princ(fb, j) /* face  */); //element/face sources
+                                  eb = f_e(f, j), fd = (j == i ? fb : domaine.face_amont_princ(fb, j) /* face  */); //element/face sources
 
                                   for (n = 0; n < N; n++)
                                     for (m = 0; m < N; m++)
@@ -145,7 +145,7 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                                                 {
                                                   if (sub_type(Dirichlet, cls[fcl(f, 1)].valeur()))
                                                     throw;
-                                                  secmem(fb, n) -= 0;  //fac * zone.face_normales(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
+                                                  secmem(fb, n) -= 0;  //fac * domaine.face_normales(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
                                                 }
                                             }
 
@@ -166,7 +166,7 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                             else
                               for (j = 0; j < 2; j++) //equivalence : face fd -> face fb
                                 {
-                                  eb = f_e(f, j), fd = (j == i ? fb : zone.face_amont_princ(fb, j) /* face  */); //element/face sources
+                                  eb = f_e(f, j), fd = (j == i ? fb : domaine.face_amont_princ(fb, j) /* face  */); //element/face sources
 
                                   for (n = 0; n < N; n++)
                                     for (m = 0; m < N; m++)
@@ -184,7 +184,7 @@ void Op_Conv_Amont_VPoly_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
                                                 {
                                                   if (sub_type(Dirichlet, cls[fcl(f, 1)].valeur()))
                                                     throw;
-                                                  secmem(fb, n) -= 0;  //fac * zone.face_normales(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
+                                                  secmem(fb, n) -= 0;  //fac * domaine.face_normales(fb, d) / fs(fb) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + m);
                                                 }
                                             }
 

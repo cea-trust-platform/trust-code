@@ -16,7 +16,7 @@
 #include <Terme_Source_Solide_SWIFT_VDF.h>
 #include <math.h>
 #include <Champ_Uniforme.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Conduction.h>
 #include <Interprete.h>
 #include <Probleme_base.h>
@@ -134,11 +134,11 @@ Entree& Terme_Source_Solide_SWIFT_VDF::readOn(Entree& is )
 
 
 
-void Terme_Source_Solide_SWIFT_VDF::associer_domaines(const Zone_dis& zone_dis,
-                                                      const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Solide_SWIFT_VDF::associer_domaines(const Domaine_dis& domaine_dis,
+                                                      const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  /*    le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-        le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur()) */
+  /*    le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+        le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur()) */
   ;
 }
 
@@ -160,13 +160,13 @@ void Terme_Source_Solide_SWIFT_VDF::init_calcul_moyenne(const Conduction& my_eqn
   int num_elem,j,indic,trouve;
   double y;
 
-  const Zone_dis_base& zdisbase = my_eqn.inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF      = ref_cast(Zone_VDF, zdisbase);
-  const DoubleTab& xp           = zone_VDF.xp();
+  const Domaine_dis_base& zdisbase = my_eqn.inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF      = ref_cast(Domaine_VDF, zdisbase);
+  const DoubleTab& xp           = domaine_VDF.xp();
 
-  int nb_elems   = zone_VDF.zone().nb_elem();
-  int nb_faces_x = zone_VDF.nb_faces_X();
-  int nb_faces_z = zone_VDF.nb_faces_Z();
+  int nb_elems   = domaine_VDF.domaine().nb_elem();
+  int nb_faces_x = domaine_VDF.nb_faces_X();
+  int nb_faces_z = domaine_VDF.nb_faces_Z();
 
   int Nx        = nb_elems/(nb_faces_x-nb_elems);
   int Nz        = nb_elems/(nb_faces_z-nb_elems);
@@ -252,13 +252,13 @@ void Terme_Source_Solide_SWIFT_VDF::correspondance_SWIFT_coarse( )
 
 void Terme_Source_Solide_SWIFT_VDF::calcul_moyenne(const Conduction& my_eqn, DoubleVect& T_moy, const IntVect& corresp, const IntVect& compt) const
 {
-  const Zone_dis_base& zdisbase = my_eqn.inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF      = ref_cast(Zone_VDF, zdisbase);
+  const Domaine_dis_base& zdisbase = my_eqn.inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF      = ref_cast(Domaine_VDF, zdisbase);
   const DoubleTab& Temp         = my_eqn.inconnue().valeurs();
 
-  int nb_elems   = zone_VDF.zone().nb_elem();
-  int nb_faces_x = zone_VDF.nb_faces_X();
-  int nb_faces_z = zone_VDF.nb_faces_Z();
+  int nb_elems   = domaine_VDF.domaine().nb_elem();
+  int nb_faces_x = domaine_VDF.nb_faces_X();
+  int nb_faces_z = domaine_VDF.nb_faces_Z();
 
   int Nx        = nb_elems/(nb_faces_x-nb_elems);
   int Nz        = nb_elems/(nb_faces_z-nb_elems);
@@ -282,10 +282,10 @@ void Terme_Source_Solide_SWIFT_VDF::calcul_moyenne(const Conduction& my_eqn, Dou
 void Terme_Source_Solide_SWIFT_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const
 {
 
-  const Zone_dis_base& zdisbase = eq_swift->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF      = ref_cast(Zone_VDF, zdisbase);
-  int nb_elems                   = zone_VDF.nb_elem();
-  const DoubleVect& volume         = zone_VDF.volumes();
+  const Domaine_dis_base& zdisbase = eq_swift->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF      = ref_cast(Domaine_VDF, zdisbase);
+  int nb_elems                   = domaine_VDF.nb_elem();
+  const DoubleVect& volume         = domaine_VDF.volumes();
 
   DoubleVect Tmoy_swift;        // Profils de temperature moyenne.
   DoubleVect Tmoy_corse;

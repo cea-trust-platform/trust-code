@@ -15,7 +15,7 @@
 
 #include <Integrale_tps_produit_champs.h>
 #include <TRUSTTab.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Integrale_tps_produit_champs,"Integrale_tps_produit_champs",Integrale_tps_Champ);
 
@@ -84,7 +84,7 @@ void Integrale_tps_produit_champs::ajoute_produit_tensoriel(double alpha, const 
   if (support_different_)
     {
       // On ramene au centre des elements
-      const DoubleTab& xp = ref_cast(Zone_VF,zone_dis_base()).xp();
+      const DoubleTab& xp = ref_cast(Domaine_VF,domaine_dis_base()).xp();
       int nb_elem_tot = xp.dimension_tot(0);
       DoubleTab val_a,val_b;
       // Le jour ou les champs seront mieux foutus, on n'aura

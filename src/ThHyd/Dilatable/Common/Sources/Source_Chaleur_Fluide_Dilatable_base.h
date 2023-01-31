@@ -19,8 +19,8 @@
 #include <Source_base.h>
 #include <Ref_Fluide_Dilatable_base.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 
 /*! @brief class Source_Chaleur_Fluide_Dilatable_base
  *
@@ -45,7 +45,7 @@ public:
   inline void associer_pb(const Probleme_base& ) override { }
 
 protected:
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override =0;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override =0;
   REF(Fluide_Dilatable_base) le_fluide;
   DoubleVect volumes,porosites;
 };

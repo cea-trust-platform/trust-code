@@ -16,7 +16,7 @@
 #include <Champ_Post_Operateur_Eqn.h>
 #include <Probleme_base.h>
 #include <Postraitement.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Nom.h>
 #include <Champ_Generique_refChamp.h>
 #include <Discretisation_base.h>
@@ -75,8 +75,8 @@ void Champ_Post_Operateur_Eqn::verification_cas_compo() const
       exit();
     }
   // Verifier qu'on n'est pas en VDF
-  const Zone_dis_base& zone_dis = ref_eq_.valeur().zone_dis().valeur();
-  if ((zone_dis.que_suis_je().debute_par("Zone_VDF")) && (compo_ != -1 ))
+  const Domaine_dis_base& domaine_dis = ref_eq_.valeur().domaine_dis().valeur();
+  if ((domaine_dis.que_suis_je().debute_par("Domaine_VDF")) && (compo_ != -1 ))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
       Cerr<<"The option compo is not available in case of VDF discretization"<<finl;
@@ -133,18 +133,18 @@ void Champ_Post_Operateur_Eqn::completer(const Postraitement_base& post)
   const Equation_base& eqn=ref_eq_.valeur();
   const MD_Vector& mdf = eqn.inconnue().valeurs().get_md_vector(),
                    md = sub_type(MD_Vector_composite, mdf.valeur()) ? ref_cast(MD_Vector_composite, mdf.valeur()).get_desc_part(0) : mdf;
-  const Zone_VF& zvf= ref_cast( Zone_VF,ref_eq_.valeur().zone_dis().valeur());
+  const Domaine_VF& zvf= ref_cast( Domaine_VF,ref_eq_.valeur().domaine_dis().valeur());
   if (md== zvf.face_sommets().get_md_vector())
     {
       localisation_inco_=FACE;
       ok=1;
     }
-  if (md== zvf.zone().les_elems().get_md_vector())
+  if (md== zvf.domaine().les_elems().get_md_vector())
     {
       localisation_inco_=ELEMENT;
       ok=1;
     }
-  if (md == zvf.zone().les_sommets().get_md_vector())
+  if (md == zvf.domaine().les_sommets().get_md_vector())
     {
       ok=1;
       localisation_inco_=NODE;
@@ -189,7 +189,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(C
 
     }
   int nb_comp = 1;
-  ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->zone_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
+  ref_eq_.valeur().discretisation().discretiser_champ(directive,ref_eq_->domaine_dis().valeur(),"oooo","unit", nb_comp,temps,espace_stockage_fonc);
   espace_stockage = espace_stockage_fonc;
   espace_stockage.valeur().fixer_nature_du_champ(scalaire);
 

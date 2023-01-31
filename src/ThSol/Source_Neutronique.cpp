@@ -158,7 +158,7 @@ const Nom& Source_Neutronique::repartition() const
 }
 
 /**
- * Renvoie le nom de la sous zone de degagement de puissance
+ * Renvoie le nom de la sous domaine de degagement de puissance
  */
 const Nom& Source_Neutronique::nom_ssz() const
 {

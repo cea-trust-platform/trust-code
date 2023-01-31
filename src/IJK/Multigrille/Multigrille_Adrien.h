@@ -177,7 +177,7 @@ private:
 
   // number of isotropic coarsening steps
   int nb_isotropic_coarsening_ = -10;
-  // Thickness of the ghost zone: determines the maximum number of sweeps of the Jacobi
+  // Thickness of the ghost domaine: determines the maximum number of sweeps of the Jacobi
   // smoother that are performed in the same pass (1, 2, 4 or 6 can be efficient depending
   // on the architecture and the problem)
   int ghost_size_;

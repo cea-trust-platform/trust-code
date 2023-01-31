@@ -21,7 +21,7 @@
 #include <communications.h>
 #include <NettoieNoeuds.h>
 #include <Faces_builder.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Faces2.h>
 #include <stdio.h>
@@ -41,15 +41,15 @@ void Faces_builder::reset()
   les_elements_ptr_ = 0;
   connectivite_som_elem_ptr_ = 0;
   faces_element_reference_old_.reset();
-  ref_zone_.reset();
+  ref_domaine_.reset();
   faces_sommets_.reset();
   face_elem_.reset();
 }
 
-/*! @brief A partir de la description des elements de la zone et des frontieres (bords, raccords, faces internes et joints) :
+/*! @brief A partir de la description des elements de la domaine et des frontieres (bords, raccords, faces internes et joints) :
  *
  *   Remplissage des structures suivantes:
- *   - pour les frontieres de la zone: fixer_num_premiere_face
+ *   - pour les frontieres de la domaine: fixer_num_premiere_face
  *   - les_faces.faces_sommets (faces reeles)
  *   - les_faces.faces_voisins (faces reeles)
  *   - elem_faces              (pour les faces reeles des elements reels)
@@ -57,26 +57,26 @@ void Faces_builder::reset()
  *   - joints.items_communs(FACE)
  *
  */
-void Faces_builder::creer_faces_reeles(Zone& zone,
+void Faces_builder::creer_faces_reeles(Domaine& domaine,
                                        const Static_Int_Lists& connect_som_elem,
                                        Faces&   les_faces,
                                        IntTab& elem_faces)
 {
-  les_elements_ptr_ = & zone.les_elems();
+  les_elements_ptr_ = & domaine.les_elems();
 
   connectivite_som_elem_ptr_ = & connect_som_elem;
   // La connectivite doit contenir les sommets virtuels
-  assert(connect_som_elem.get_nb_lists() == zone.nb_som_tot());
+  assert(connect_som_elem.get_nb_lists() == domaine.nb_som_tot());
 
   // Remplissage du tableau des faces de l'element de reference
 
   is_polyedre_=0;
-  if (sub_type(Poly_geom_base,zone.type_elem().valeur()))
+  if (sub_type(Poly_geom_base,domaine.type_elem().valeur()))
     {
       is_polyedre_=1;
     }
   else
-    zone.type_elem().valeur().get_tab_faces_sommets_locaux(faces_element_reference_old_);
+    domaine.type_elem().valeur().get_tab_faces_sommets_locaux(faces_element_reference_old_);
   // Tableau de taille (nb_faces, nb_sommets par face),
   // pour chaque face, les indices de ses sommets dans le domaine.
   // L'ordre des sommets est celui donne par l'element de reference,
@@ -92,7 +92,7 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
   // Initialisation des references utilisees dans check_erreur_faces
   faces_sommets_ = faces_sommets;
   face_elem_ = faces_voisins;
-  ref_zone_ = zone;
+  ref_domaine_ = domaine;
 
   // Le tableau des faces des elements:
   //  dimension(0) = nombre d'elements,
@@ -109,12 +109,12 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
   const int nb_sommets_par_face = faces_element_reference(0).dimension(0) ? faces_element_reference(0).dimension(1) : 3;
   // On ajoute chaque face avec resize(n+1,...), donc smart_resize:
   // Calcul du nombre theorique de faces:
-  const int nb_faces_front = zone.nb_faces_frontiere() + zone.nb_faces_joint();
+  const int nb_faces_front = domaine.nb_faces_frontiere() + domaine.nb_faces_joint();
   int nb_faces_prevision = (nb_elements * nb_faces_par_element + nb_faces_front) / 2;
   if (is_polyedre_)
     {
       // les faces sont toutes deja connues....
-      const Poly_geom_base& poly=ref_cast(Poly_geom_base,ref_zone_->type_elem().valeur());
+      const Poly_geom_base& poly=ref_cast(Poly_geom_base,ref_domaine_->type_elem().valeur());
       nb_faces_prevision=(poly.get_somme_nb_faces_elem()+ nb_faces_front) / 2;;
     }
   // Allocation memoire pour le nombre de faces prevu pour eviter de reallouer
@@ -131,7 +131,7 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
 
   // Creation des faces de bord
   {
-    Bords& bords = zone.faces_bord();
+    Bords& bords = domaine.faces_bord();
     const int n = bords.size();
     for (int i = 0; i < n; i++)
       {
@@ -145,7 +145,7 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
   }
   // Raccords
   {
-    Raccords& raccords = zone.faces_raccord();
+    Raccords& raccords = domaine.faces_raccord();
     const int n = raccords.size();
     for (int i = 0; i < n; i++)
       {
@@ -160,7 +160,7 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
 
   // Faces de bord "internes"
   {
-    Faces_Internes& faces_int = zone.faces_int();
+    Faces_Internes& faces_int = domaine.faces_int();
     const int n = faces_int.size();
     for (int i = 0; i < n; i++)
       {
@@ -180,13 +180,13 @@ void Faces_builder::creer_faces_reeles(Zone& zone,
       {
         Cerr << "Faces_builder::creer_faces_reeles not coded for the internal faces of boundary" << finl;
         Process::exit();
-        // A faire selon l'ancienne version de zone2... et a tester !
+        // A faire selon l'ancienne version de domaine2... et a tester !
       }
   }
 
   // Faces de joint
   {
-    Joints& joints = zone.faces_joint();
+    Joints& joints = domaine.faces_joint();
     const int n = joints.size();
     for (int i = 0; i < n; i++)
       {
@@ -262,7 +262,7 @@ void Faces_builder::check_erreur_faces(const char * message,
         << " elem1 elem2 = neighbouring element number\n"
         << "facenumber som1 (x1 y1 z1) som2 (x2 y2 z2) [som3 (x3 y3 z3)...] elem1 elem2" << finl;
       char s[1000];
-      const DoubleTab& coord = ref_zone_.valeur().coord_sommets();
+      const DoubleTab& coord = ref_domaine_.valeur().coord_sommets();
       const IntTab&     faces = faces_sommets_.valeur();
       const IntTab&     face_elem = face_elem_.valeur();
       const int dim = Objet_U::dimension;
@@ -284,7 +284,7 @@ void Faces_builder::check_erreur_faces(const char * message,
           sptr += snprintf(sptr, 100, "%4ld %4ld", (long)face_elem(iface,0),(long) face_elem(iface,1));
           J << s << finl;
         }
-      NettoieNoeuds::verifie_noeuds(ref_zone_.valeur());
+      NettoieNoeuds::verifie_noeuds(ref_domaine_.valeur());
       Process::exit();
     }
 }
@@ -361,7 +361,7 @@ const IntTab& Faces_builder::faces_element_reference(int elem) const
   if (is_polyedre_==1 && les_elements_ptr_->dimension(0))
     {
       assert(is_polyedre_==1);
-      const Poly_geom_base& poly=ref_cast(Poly_geom_base,ref_zone_->type_elem().valeur());
+      const Poly_geom_base& poly=ref_cast(Poly_geom_base,ref_domaine_->type_elem().valeur());
       IntTab& elem_ref_mod=ref_cast_non_const(IntTab,faces_element_reference_old_);
       poly.get_tab_faces_sommets_locaux(elem_ref_mod,elem);
 
@@ -372,7 +372,7 @@ const IntTab& Faces_builder::faces_element_reference(int elem) const
 }
 
 
-/*! @brief Methode outil: on suppose que "une_face" contient les indices des sommets d'une face de l'element d'indice "elem" dans la zone.
+/*! @brief Methode outil: on suppose que "une_face" contient les indices des sommets d'une face de l'element d'indice "elem" dans la domaine.
  *
  *   On cherche quel est le numero de cette face sur l'element
  *   de reference. Si les sommets ne correspondent a aucune face de
@@ -524,8 +524,8 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
   if (sub_type(Joint, frontiere))
     {
       // Deux sources d'erreur possibles: les faces de joint sont fausses
-      // ou bien la zone ne contient pas les elements virtuels (il faut
-      // au moins que la zone contienne les elements virtuels voisins des
+      // ou bien la domaine ne contient pas les elements virtuels (il faut
+      // au moins que la domaine contienne les elements virtuels voisins des
       // faces de joint).
       msg += "(Error in a Joint object: internal error in the mesh splitter or scatter ? )\n";
     }

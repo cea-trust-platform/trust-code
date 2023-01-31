@@ -63,7 +63,7 @@ int Champ_P1NC::compo_normale_sortante(int num_face) const
 {
   double vit_norm = 0;
   for (int ncomp = 0; ncomp < nb_comp(); ncomp++)
-    vit_norm += (*this)(num_face, ncomp) * zone_vef().face_normales(num_face, ncomp);
+    vit_norm += (*this)(num_face, ncomp) * domaine_vef().face_normales(num_face, ncomp);
   return (vit_norm > 0);
 }
 
@@ -74,7 +74,7 @@ DoubleTab& Champ_P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double 
 
 void Champ_P1NC::cal_rot_ordre1(DoubleTab& vorticite) const
 {
-  const int nb_elem = zone_vef().nb_elem(), nb_elem_tot = zone_vef().nb_elem_tot();
+  const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
   DoubleTab gradient_elem(nb_elem_tot, dimension, dimension);
 
   gradient_elem = 0.;
@@ -107,13 +107,13 @@ void Champ_P1NC::cal_rot_ordre1(DoubleTab& vorticite) const
   return;
 }
 
-void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& gradient_elem)
+void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& gradient_elem)
 {
-  const DoubleTab& face_normales = zone_VEF.face_normales();
-  const int nb_faces = zone_VEF.nb_faces_tot();
-  const int nb_elem = zone_VEF.nb_elem_tot();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
-  int premiere_face_int = zone_VEF.premiere_face_int();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const int nb_faces = domaine_VEF.nb_faces_tot();
+  const int nb_elem = domaine_VEF.nb_elem_tot();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  int premiere_face_int = domaine_VEF.premiere_face_int();
 
   int dimension = Objet_U::dimension;
   const int nb_comp = variable.line_size();
@@ -128,9 +128,9 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
   // Cas du calcul du gradient d'un tableau de vecteurs
   if (nb_comp != 1)
     {
-      for (int n_bord = 0; n_bord < zone_VEF.nb_front_Cl(); n_bord++)
+      for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
           int num1 = 0;
           int num2 = le_bord.nb_faces_tot();
@@ -242,9 +242,9 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
   // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,,)
   else if (gradient_elem.nb_dim() == 3)
     {
-      for (int n_bord = 0; n_bord < zone_VEF.nb_front_Cl(); n_bord++)
+      for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
           int num1 = 0;
           int num2 = le_bord.nb_faces_tot();
@@ -310,9 +310,9 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
   // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,)
   else
     {
-      for (int n_bord = 0; n_bord < zone_VEF.nb_front_Cl(); n_bord++)
+      for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
           const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
           int num1 = 0;
           int num2 = le_bord.nb_faces_tot();
@@ -373,7 +373,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
       end_timer("Face loop in Champ_P1NC::calculer_gradientP1NC");
     }
 
-  const double * inverse_volumes_addr = copyToDevice(zone_VEF.inverse_volumes());
+  const double * inverse_volumes_addr = copyToDevice(domaine_VEF.inverse_volumes());
   start_timer();
   if (gradient_elem_nb_dim==3)
     #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) //map(tofrom:gradient_elem_addr[0:gradient_elem.size_array()])
@@ -393,8 +393,8 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Zone_VEF& zone_VEF, 
 void Champ_P1NC::gradient(DoubleTab& gradient_elem) const
 {
   // Calcul du gradient: par exemple gradient de la vitesse pour le calcul de la vorticite
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF, equation().zone_Cl_dis().valeur());
-  calculer_gradientP1NC(valeurs(), zone_vef(), zone_Cl_VEF, gradient_elem);
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, equation().domaine_Cl_dis().valeur());
+  calculer_gradientP1NC(valeurs(), domaine_vef(), domaine_Cl_VEF, gradient_elem);
 
 }
 
@@ -410,9 +410,9 @@ Champ_base& Champ_P1NC::affecter_(const Champ_base& ch)
   DoubleTab& tab = valeurs();
   DoubleTab noeuds;
   remplir_coord_noeuds(noeuds);
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  const int nb_faces = zone_VEF.nb_faces();
-  const IntTab& face_sommets = zone_VEF.face_sommets();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  const int nb_faces = domaine_VEF.nb_faces();
+  const IntTab& face_sommets = domaine_VEF.face_sommets();
   const DoubleTab& sommets=domaine().coord_sommets();
   int nb_som=sommets.dimension(0);
   Cerr << "Affecter Clement : ... " << finl;
@@ -457,7 +457,7 @@ Champ_base& Champ_P1NC::affecter_(const Champ_base& ch)
 // en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
 void Champ_P1NC::verifie_valeurs_cl()
 {
-  const Zone_Cl_dis_base& zcl = equation().zone_Cl_dis().valeur();
+  const Domaine_Cl_dis_base& zcl = equation().domaine_Cl_dis().valeur();
   int nb_cl = zcl.nb_cond_lim();
   DoubleTab& ch_tab = valeurs();
   int nb_compo = nb_comp();
@@ -495,8 +495,8 @@ void Champ_P1NC::verifie_valeurs_cl()
 
 void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q) const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF, equation().zone_Cl_dis().valeur());
-  const int nb_elem = zone_vef().nb_elem(), nb_elem_tot = zone_vef().nb_elem_tot();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF, equation().domaine_Cl_dis().valeur());
+  const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
   int num_elem, i, j;
   double crit, deriv1, deriv2;
 
@@ -505,7 +505,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q) const
 
   //Champ_P1NC& vit = *this;
   const DoubleTab& vitesse = valeurs();
-  Champ_P1NC::calcul_gradient(vitesse, gradient_elem, zone_Cl_VEF);
+  Champ_P1NC::calcul_gradient(vitesse, gradient_elem, domaine_Cl_VEF);
 
   for (num_elem = 0; num_elem < nb_elem; num_elem++)
     {
@@ -522,7 +522,7 @@ void Champ_P1NC::calcul_critere_Q(DoubleVect& Critere_Q) const
     }
 }
 
-void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plus) const
+void Champ_P1NC::calcul_y_plus(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleVect& y_plus) const
 {
   // On initialise le champ y_plus avec une valeur negative,
   // comme ca lorsqu'on veut visualiser le champ pres de la paroi,
@@ -535,7 +535,7 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
   y_plus = -1.;
 
   const Champ_P1NC& vit = *this;
-  const IntTab& face_voisins = zone_vef().face_voisins(), &elem_faces = zone_vef().elem_faces();
+  const IntTab& face_voisins = domaine_vef().face_voisins(), &elem_faces = domaine_vef().elem_faces();
   const Equation_base& eqn_hydr = equation();
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
   const Champ_Don& ch_visco_cin = le_fluide.viscosite_cinematique();
@@ -570,15 +570,15 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
       // if( ! sub_type( Paroi_negligeable_VEF , loipar ) )
       if (loipar.use_shear())
         {
-          yplus_faces.resize(zone_vef().nb_faces_tot());
+          yplus_faces.resize(domaine_vef().nb_faces_tot());
           yplus_faces.ref(loipar.tab_d_plus());
           yplus_already_computed = 1;
         }
     }
 
-  for (int n_bord = 0; n_bord < zone_vef().nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_vef().nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
 
       if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()) || la_cl.valeur().que_suis_je() == "Entree_fluide_vitesse_imposee_ALE")
         {
@@ -610,9 +610,9 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
                       else if (num[1] == num_face)
                         num[1] = elem_faces(elem, 2);
 
-                      dist = distance_2D(num_face, elem, zone_vef());
+                      dist = distance_2D(num_face, elem, domaine_vef());
                       dist *= 3. / 2.; // pour se ramener a distance paroi / milieu de num[0]-num[1]
-                      norm_v = norm_2D_vit1_lp(vit.valeurs(), num_face, num[0], num[1], zone_vef(), val1, val2);
+                      norm_v = norm_2D_vit1_lp(vit.valeurs(), num_face, num[0], num[1], domaine_vef(), val1, val2);
 
                     } // dim 2
                   else if (dimension == 3)
@@ -629,9 +629,9 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
                       else if (num[2] == num_face)
                         num[2] = elem_faces(elem, 3);
 
-                      dist = distance_3D(num_face, elem, zone_vef());
+                      dist = distance_3D(num_face, elem, domaine_vef());
                       dist *= 4. / 3.; // pour se ramener a distance paroi / milieu de num[0]-num[1]-num[2]
-                      norm_v = norm_3D_vit1_lp(vit.valeurs(), num_face, num[0], num[1], num[2], zone_vef(), val1, val2, val3);
+                      norm_v = norm_3D_vit1_lp(vit.valeurs(), num_face, num[0], num[1], num[2], domaine_vef(), val1, val2, val3);
 
                     } // dim 3
 
@@ -654,15 +654,15 @@ void Champ_P1NC::calcul_y_plus(const Zone_Cl_VEF& zone_Cl_VEF, DoubleVect& y_plu
     } // Fin boucle sur les bords
 }
 
-void Champ_P1NC::calcul_grad_U(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_u) const
+void Champ_P1NC::calcul_grad_U(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& grad_u) const
 {
   const DoubleTab& u = valeurs();
-  const int nb_elem = zone_vef().nb_elem(), nb_elem_tot = zone_vef().nb_elem_tot();
+  const int nb_elem = domaine_vef().nb_elem(), nb_elem_tot = domaine_vef().nb_elem_tot();
 
   DoubleTab gradient_elem(nb_elem_tot, dimension, dimension);
   gradient_elem = 0.;
 
-  calculer_gradientP1NC(u, zone_vef(), zone_Cl_VEF, gradient_elem);
+  calculer_gradientP1NC(u, domaine_vef(), domaine_Cl_VEF, gradient_elem);
 
   for (int elem = 0; elem < nb_elem; elem++)
     {
@@ -677,20 +677,20 @@ void Champ_P1NC::calcul_grad_U(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_u
 
 }
 
-void Champ_P1NC::calcul_grad_T(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_T) const
+void Champ_P1NC::calcul_grad_T(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& grad_T) const
 {
   const DoubleTab& temp = valeurs();
-  calculer_gradientP1NC(temp, zone_vef(), zone_Cl_VEF, grad_T);
+  calculer_gradientP1NC(temp, domaine_vef(), domaine_Cl_VEF, grad_T);
 
   // *******************************************************************
   //  PQ : 12/12/05 : pour pouvoir visualiser les oscillations a partir
   //                    des changements de signes du gradient de T
   // *******************************************************************
   /*
-   const IntTab& face_voisins = zone_VEF.face_voisins();
-   const IntTab& elem_faces=zone_VEF.elem_faces();
-   int nb_faces = zone_VEF.nb_faces();
-   const int nb_elem = zone_VEF.nb_elem_tot();
+   const IntTab& face_voisins = domaine_VEF.face_voisins();
+   const IntTab& elem_faces=domaine_VEF.elem_faces();
+   int nb_faces = domaine_VEF.nb_faces();
+   const int nb_elem = domaine_VEF.nb_elem_tot();
 
    int num_elem,num_face,elem0,elem1,i;
    ArrOfInt sign_opp_x(nb_faces);
@@ -724,11 +724,11 @@ void Champ_P1NC::calcul_grad_T(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& grad_T
 }
 
 // Calcul du coefficient d'echange
-void Champ_P1NC::calcul_h_conv(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& h_conv, int temp_ref) const
+void Champ_P1NC::calcul_h_conv(const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& h_conv, int temp_ref) const
 {
   const DoubleTab& temp = valeurs();
-  const IntTab& face_voisins = zone_vef().face_voisins();
-  const DoubleTab& face_normale = zone_vef().face_normales();
+  const IntTab& face_voisins = domaine_vef().face_voisins();
+  const DoubleTab& face_normale = domaine_vef().face_normales();
 
   // On recupere le flux aux frontieres
   DoubleTab Flux;
@@ -739,9 +739,9 @@ void Champ_P1NC::calcul_h_conv(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& h_conv
 
   double T_ref = double(temp_ref);
 
-  for (int n_bord = 0; n_bord < zone_vef().nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_vef().nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Frontiere_dis_base& la_fr = la_cl.frontiere_dis();
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
@@ -810,10 +810,10 @@ void Champ_P1NC::calcul_h_conv(const Zone_Cl_VEF& zone_Cl_VEF, DoubleTab& h_conv
     }
 }
 
-static double norme_L2(const DoubleTab& u, const Zone_VEF& zone_VEF)
+static double norme_L2(const DoubleTab& u, const Domaine_VEF& domaine_VEF)
 {
-  const DoubleVect& volumes = zone_VEF.volumes_entrelaces();
-  const int nb_faces = zone_VEF.nb_faces();
+  const DoubleVect& volumes = domaine_VEF.volumes_entrelaces();
+  const int nb_faces = domaine_VEF.nb_faces();
   int i = 0;
   double norme = 0;
   int nb_compo_ = u.line_size();
@@ -826,21 +826,21 @@ static double norme_L2(const DoubleTab& u, const Zone_VEF& zone_VEF)
     }
   return sqrt(norme);
 }
-double Champ_P1NC::norme_L2(const Zone& dom) const
+double Champ_P1NC::norme_L2(const Domaine& dom) const
 {
   Cerr << "Champ_P1NC::norme_L2" << finl;
   {
     DoubleTab x(valeurs());
     filtrer_L2(x);
-    Cerr << "Norme filtree : " << ::norme_L2(x, zone_vef()) << finl;
+    Cerr << "Norme filtree : " << ::norme_L2(x, domaine_vef()) << finl;
   }
   const DoubleTab& u = valeurs();
-  return ::norme_L2(u, zone_vef());
+  return ::norme_L2(u, domaine_vef());
 }
 
-double Champ_P1NC::norme_H1(const Zone& dom) const
+double Champ_P1NC::norme_H1(const Domaine& dom) const
 {
-  const Zone& mon_dom = zone_vef().zone();
+  const Domaine& mon_dom = domaine_vef().domaine();
 
   double dnorme_H1, norme_H1_comp, int_grad_elem, norme_grad_elem;
   int face_globale;
@@ -864,15 +864,15 @@ double Champ_P1NC::norme_H1(const Zone& dom) const
               int_grad_elem = 0.; //pour eviter les accumulations
               for (int face = 0; face < mon_dom.nb_faces_elem(); face++) //boucle sur les faces d'un "K"
                 {
-                  face_globale = zone_vef().elem_faces(K, face);
+                  face_globale = domaine_vef().elem_faces(K, face);
 
-                  int_grad_elem += (valeurs())(face_globale, composante) * zone_vef().face_normales(face_globale, i) * zone_vef().oriente_normale(face_globale, K);
+                  int_grad_elem += (valeurs())(face_globale, composante) * domaine_vef().face_normales(face_globale, i) * domaine_vef().oriente_normale(face_globale, K);
                 } //fin du for sur "face"
 
               norme_grad_elem += int_grad_elem * int_grad_elem;
             } //fin du for sur "i"
 
-          norme_H1_comp += norme_grad_elem / zone_vef().volumes(K);
+          norme_H1_comp += norme_grad_elem / domaine_vef().volumes(K);
         } //fin du for sur "K"
 
       dnorme_H1 += norme_H1_comp;
@@ -881,7 +881,7 @@ double Champ_P1NC::norme_H1(const Zone& dom) const
   return sqrt(dnorme_H1);
 }
 
-double Champ_P1NC::norme_L2_H1(const Zone& dom) const
+double Champ_P1NC::norme_L2_H1(const Domaine& dom) const
 {
   double pas_de_temps = equation().schema_temps().pas_de_temps();
 
@@ -894,22 +894,22 @@ double Champ_P1NC::norme_L2_H1(const Zone& dom) const
 //A partir de gij, on peut calculer Sij = 0.5(gij(i,j)+gij(j,i))
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DoubleTab& Champ_P1NC::calcul_gradient(const DoubleTab& champ, DoubleTab& gij, const Zone_Cl_VEF& zone_Cl_VEF)
+DoubleTab& Champ_P1NC::calcul_gradient(const DoubleTab& champ, DoubleTab& gij, const Domaine_Cl_VEF& domaine_Cl_VEF)
 {
-  const Zone_VEF& zone_VEF = zone_Cl_VEF.zone_VEF();
-  calculer_gradientP1NC(champ, zone_VEF, zone_Cl_VEF, gij);
+  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_VEF();
+  calculer_gradientP1NC(champ, domaine_VEF, domaine_Cl_VEF, gij);
   return gij;
 
 }
 
-DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleTab& tau_tan, const Zone_Cl_VEF& zone_Cl_VEF)
+DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleTab& tau_tan, const Domaine_Cl_VEF& domaine_Cl_VEF)
 {
 
-  const Zone_VEF& zone_VEF = zone_Cl_VEF.zone_VEF();
-  const DoubleTab& face_normale = zone_VEF.face_normales();
-  const IntTab& face_voisins = zone_VEF.face_voisins();
+  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_VEF();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
 
-  const DoubleVect& porosite_face = zone_Cl_VEF.equation().milieu().porosite_face();
+  const DoubleVect& porosite_face = domaine_Cl_VEF.equation().milieu().porosite_face();
 
   int i, j, fac, num1;
 
@@ -951,7 +951,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
   //
   // c'est ce dernier terme qu'il s'agit donc de determiner ici
 
-  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   int nb_cl = les_cl.size();
   // Cerr << "On fait une modif aux calculs des gradient a cause de la loi de paroi!!!!" << finl;
   //        DoubleTrav part1_int(Objet_U::dimension), part1(Objet_U::dimension,Objet_U::dimension), part2(Objet_U::dimension,Objet_U::dimension);
@@ -1001,7 +1001,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
               // vecteur normal a la paroi
 
               double norme2_n = 0.;
-              int signe = -zone_VEF.oriente_normale(fac, num1); // orientation vers l'interieur
+              int signe = -domaine_VEF.oriente_normale(fac, num1); // orientation vers l'interieur
 
               for (i = 0; i < Objet_U::dimension; i++)
                 norme2_n += face_normale(fac, i) * face_normale(fac, i);
@@ -1059,15 +1059,15 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
 ////////////////////
 // Calcul de 2SijSij
 ////////////////////
-DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& SMA_barre, const Zone_Cl_VEF& zone_Cl_VEF)
+DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& SMA_barre, const Domaine_Cl_VEF& domaine_Cl_VEF)
 {
-  const Zone_VEF& zone_VEF = zone_Cl_VEF.zone_VEF();
-  const int nb_elem = zone_VEF.nb_elem();
-  const int nb_elem_tot = zone_VEF.nb_elem_tot();
+  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_VEF();
+  const int nb_elem = domaine_VEF.nb_elem();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot();
 
   DoubleTab duidxj(nb_elem_tot, dimension, dimension);
 
-  Champ_P1NC::calcul_gradient(la_vitesse, duidxj, zone_Cl_VEF);
+  Champ_P1NC::calcul_gradient(la_vitesse, duidxj, domaine_Cl_VEF);
 
   for (int elem = 0; elem < nb_elem; elem++)
     {
@@ -1083,7 +1083,7 @@ DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& 
   return SMA_barre;
 }
 
-double Champ_P1NC::calculer_integrale_volumique(const Zone_VEF& zone, const DoubleVect& v, Ok_Perio ok)
+double Champ_P1NC::calculer_integrale_volumique(const Domaine_VEF& domaine, const DoubleVect& v, Ok_Perio ok)
 {
   if (ok != FAUX_EN_PERIO)
     {
@@ -1093,15 +1093,15 @@ double Champ_P1NC::calculer_integrale_volumique(const Zone_VEF& zone, const Doub
     }
 
   assert(v.line_size() == 1);
-  const DoubleVect& volume = zone.volumes_entrelaces();
+  const DoubleVect& volume = domaine.volumes_entrelaces();
   const double resu = mp_prodscal(v, volume);
   return resu;
 }
 
 int Champ_P1NC::fixer_nb_valeurs_nodales(int nb_noeuds)
 {
-  assert(nb_noeuds == zone_vef().nb_faces());
-  const MD_Vector& md = zone_vef().md_vector_faces();
+  assert(nb_noeuds == domaine_vef().nb_faces());
+  const MD_Vector& md = domaine_vef().md_vector_faces();
   creer_tableau_distribue(md);
 
   Champ_P1NC_implementation::fixer_nb_valeurs_nodales(nb_noeuds);

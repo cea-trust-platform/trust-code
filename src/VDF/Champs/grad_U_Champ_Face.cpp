@@ -15,7 +15,7 @@
 
 #include <grad_U_Champ_Face.h>
 #include <Champ_Face_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 
 Implemente_instanciable(grad_U_Champ_Face, "grad_U_Champ_Face", Champ_Fonc_P0_VDF);
 

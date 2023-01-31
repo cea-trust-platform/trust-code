@@ -19,7 +19,7 @@
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_base(Source_Dispersion_bulles_base, "Source_Dispersion_bulles_base", Sources_Multiphase_base);
 
@@ -46,7 +46,7 @@ void Source_Dispersion_bulles_base::dimensionner_blocs(matrices_t matrices, cons
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   if (!matrices.count(ch.le_nom().getString())) return; //rien a faire
   Matrice_Morse& mat = *matrices.at(ch.le_nom().getString()), mat2;
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const DoubleTab& inco = ch.valeurs();
   const IntTab& fcl = ch.fcl();
 
@@ -56,7 +56,7 @@ void Source_Dispersion_bulles_base::dimensionner_blocs(matrices_t matrices, cons
   int f, k, l, N = inco.line_size();
 
   /*faces*/
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     if (fcl(f, 0) < 2)
       for (k = 0; k < N; k++)
         for (l = 0; l < N; l++) stencil.append_line(N * f + k, N * f + l);

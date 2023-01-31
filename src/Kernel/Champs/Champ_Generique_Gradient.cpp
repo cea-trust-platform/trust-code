@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Generique_Gradient.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Champ_Generique_refChamp.h>
 #include <Discretisation_base.h>
 #include <Synonyme_info.h>
@@ -70,8 +70,8 @@ void Champ_Generique_Gradient::completer(const Postraitement_base& post)
               Op_Grad_.typer();
               Op_Grad_.l_op_base().associer_eqn(eqn);
 
-              const Zone_dis& zdis = eqn.zone_dis();
-              const Zone_Cl_dis& zcl = eqn.zone_Cl_dis();
+              const Domaine_dis& zdis = eqn.domaine_dis();
+              const Domaine_Cl_dis& zcl = eqn.domaine_Cl_dis();
               const Champ_Inc& inco = eqn.inconnue();
               Op_Grad_->associer(zdis, zcl, inco);
             }

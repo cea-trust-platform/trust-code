@@ -20,8 +20,8 @@
 #include <Traitement_particulier_NS_VEF.h>
 #include <Champ_Fonc_P1NC.h>
 #include <Ref_Champ_Inc_base.h>
-#include <Zone_VEF.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 
 /*! @brief classe Traitement_particulier_Brech_VEF Cette classe permet de faire les traitements particuliers
  *
@@ -52,11 +52,11 @@ protected :
   Champ_Fonc_P1NC  ch_p ;
 
 private:
-  void  calculer_terme_production_K(const Zone_VEF& ,const Zone_Cl_VEF& ,
+  void  calculer_terme_production_K(const Domaine_VEF& ,const Domaine_Cl_VEF& ,
                                     DoubleVect& ,
                                     const DoubleTab& ) const;
 
-  void calculer_terme_destruction_K(const Zone_VEF& , const Zone_Cl_VEF& , DoubleVect& ,
+  void calculer_terme_destruction_K(const Domaine_VEF& , const Domaine_Cl_VEF& , DoubleVect& ,
                                     const DoubleTab& ,
                                     const DoubleVect&  , const DoubleVect&  ) const;
 

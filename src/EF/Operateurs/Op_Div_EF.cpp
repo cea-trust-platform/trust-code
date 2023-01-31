@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Op_Div_EF.h>
-#include <Zone_Cl_EF.h>
+#include <Domaine_Cl_EF.h>
 #include <Probleme_base.h>
 
 #include <Schema_Temps_base.h>
@@ -46,25 +46,25 @@ Entree& Op_Div_EF::readOn(Entree& s)
 /*! @brief
  *
  */
-void Op_Div_EF::associer(const Zone_dis& zone_dis,
-                         const Zone_Cl_dis& zone_Cl_dis,
+void Op_Div_EF::associer(const Domaine_dis& domaine_dis,
+                         const Domaine_Cl_dis& domaine_Cl_dis,
                          const Champ_Inc&)
 {
-  const Zone_EF& zEF = ref_cast(Zone_EF, zone_dis.valeur());
-  const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
+  const Domaine_EF& zEF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  const Domaine_Cl_EF& zclEF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
   le_dom_EF = zEF;
   la_zcl_EF = zclEF;
 }
 
 DoubleTab& Op_Div_EF::ajouter(const DoubleTab& vit, DoubleTab& div) const
 {
-  const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
 
 
-  const DoubleTab& Bij_thilde=zone_ef.Bij_thilde();
-  int nb_elem=zone_ef.zone().nb_elem();
-  int nb_som_elem=zone_ef.zone().nb_som_elem();
-  const IntTab& elems=zone_ef.zone().les_elems() ;
+  const DoubleTab& Bij_thilde=domaine_ef.Bij_thilde();
+  int nb_elem=domaine_ef.domaine().nb_elem();
+  int nb_som_elem=domaine_ef.domaine().nb_som_elem();
+  const IntTab& elems=domaine_ef.domaine().les_elems() ;
 
   for (int elem=0; elem<nb_elem; elem++)
     {
@@ -83,14 +83,14 @@ DoubleTab& Op_Div_EF::ajouter(const DoubleTab& vit, DoubleTab& div) const
   declare_espace_virtuel_invalide(div);
   // calcul de flux bord
 
-  const IntTab& face_sommets=zone_ef.face_sommets();
-  int nb_som_face=zone_ef.nb_som_face();
-  const DoubleTab& face_normales = zone_ef.face_normales();
+  const IntTab& face_sommets=domaine_ef.face_sommets();
+  int nb_som_face=domaine_ef.nb_som_face();
+  const DoubleTab& face_normales = domaine_ef.face_normales();
   DoubleTab& tab_flux_bords = flux_bords_;
-  const DoubleVect& porosite_sommet=zone_ef.porosite_sommet();
-  tab_flux_bords.resize(zone_ef.nb_faces_bord(),1);
+  const DoubleVect& porosite_sommet=domaine_ef.porosite_sommet();
+  tab_flux_bords.resize(domaine_ef.nb_faces_bord(),1);
   tab_flux_bords=0;
-  int premiere_face_int=zone_ef.premiere_face_int();
+  int premiere_face_int=domaine_ef.premiere_face_int();
   for (int face=0; face<premiere_face_int; face++)
     {
       for (int s=0; s<nb_som_face; s++)
@@ -115,7 +115,7 @@ DoubleTab& Op_Div_EF::calculer(const DoubleTab& vit, DoubleTab& div) const
 int Op_Div_EF::impr(Sortie& os) const
 {
 
-  const int impr_bord=(le_dom_EF->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_EF->domaine().bords_a_imprimer().est_vide() ? 0:1);
   SFichier Flux_div;
   ouvrir_fichier(Flux_div,"",je_suis_maitre());
   EcrFicPartage Flux_face;
@@ -169,7 +169,7 @@ int Op_Div_EF::impr(Sortie& os) const
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
-      if (le_dom_EF->zone().bords_a_imprimer().contient(la_fr.le_nom()))
+      if (le_dom_EF->domaine().bords_a_imprimer().contient(la_fr.le_nom()))
         {
           Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
           for (int face=ndeb; face<nfin; face++)
@@ -192,9 +192,9 @@ int Op_Div_EF::impr(Sortie& os) const
 
 void Op_Div_EF::volumique(DoubleTab& div) const
 {
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
-  const DoubleVect& vol = zone_EF.volumes();
-  int nb_elem=zone_EF.zone().nb_elem_tot();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const DoubleVect& vol = domaine_EF.volumes();
+  int nb_elem=domaine_EF.domaine().nb_elem_tot();
   int num_elem;
 
   for(num_elem=0; num_elem<nb_elem; num_elem++)

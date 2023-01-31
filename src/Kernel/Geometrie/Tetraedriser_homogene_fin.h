@@ -29,8 +29,8 @@
 #include <Triangulation_base.h>
 #include <TRUSTTab.h>
 
-class Zone;
-class Zone;
+class Domaine;
+class Domaine;
 class Faces;
 
 class Tetraedriser_homogene_fin : public Triangulation_base
@@ -39,9 +39,9 @@ class Tetraedriser_homogene_fin : public Triangulation_base
 
 public :
 
-  void decoupe(Zone&, Faces&, IntTab&, IntTab&, int, IntTab&, int) const;
-  void trianguler(Zone&) const override;
-  int creer_sommet(Zone&, Zone&, DoubleTab&, IntTab&, IntTab&, int, IntTab&, int&, int, int&, IntTab&, int&, IntTab&, int&) const;
+  void decoupe(Domaine&, Faces&, IntTab&, IntTab&, int, IntTab&, int) const;
+  void trianguler(Domaine&) const override;
+  int creer_sommet(Domaine&, Domaine&, DoubleTab&, IntTab&, IntTab&, int, IntTab&, int&, int, int&, IntTab&, int&, IntTab&, int&) const;
   inline int dimension_application() const override;
 };
 

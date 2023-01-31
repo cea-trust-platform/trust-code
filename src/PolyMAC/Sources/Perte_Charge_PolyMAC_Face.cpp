@@ -17,7 +17,7 @@
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 
 Implemente_base(Perte_Charge_PolyMAC_Face,"Perte_Charge_PolyMAC_Face",Source_base);
@@ -67,7 +67,7 @@ void Perte_Charge_PolyMAC_Face::associer_pb(const Probleme_base& pb)
         {
           la_vitesse = ref_cast(Champ_Face_PolyMAC,eqn.inconnue().valeur());
           le_fluide = ref_cast(Fluide_base,eqn.milieu());
-          associer_domaines(eqn.zone_dis(),eqn.zone_Cl_dis());
+          associer_domaines(eqn.domaine_dis(),eqn.domaine_Cl_dis());
           i = nb_eqn;
           ok = 1;
         }

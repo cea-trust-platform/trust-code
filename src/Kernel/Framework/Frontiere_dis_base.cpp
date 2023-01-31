@@ -83,12 +83,12 @@ const Nom& Frontiere_dis_base::le_nom() const
   return la_frontiere->le_nom();
 }
 
-void Frontiere_dis_base::associer_Zone_dis(const Zone_dis_base& z)
+void Frontiere_dis_base::associer_Domaine_dis(const Domaine_dis_base& z)
 {
   le_dom_dis=z;
 }
 
-const Zone_dis_base& Frontiere_dis_base::zone_dis() const
+const Domaine_dis_base& Frontiere_dis_base::domaine_dis() const
 {
   return le_dom_dis.valeur();
 }

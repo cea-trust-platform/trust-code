@@ -15,8 +15,8 @@
 
 #include <Taux_cisaillement_P0_VDF.h>
 #include <Champ_Face_VDF.h>
-#include <Zone_Cl_VDF.h>
-#include <Zone_VF.h>
+#include <Domaine_Cl_VDF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Taux_cisaillement_P0_VDF, "Taux_cisaillement_P0_VDF", Champ_Fonc_P0_VDF);
 
@@ -24,9 +24,9 @@ Sortie& Taux_cisaillement_P0_VDF::printOn(Sortie& s) const { return s << que_sui
 
 Entree& Taux_cisaillement_P0_VDF::readOn(Entree& s) { return s; }
 
-void Taux_cisaillement_P0_VDF::associer_champ(const Champ_Face_VDF& la_vitesse, const Zone_Cl_dis_base& le_dom_Cl_dis_base)
+void Taux_cisaillement_P0_VDF::associer_champ(const Champ_Face_VDF& la_vitesse, const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, le_dom_Cl_dis_base);
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, le_dom_Cl_dis_base);
   vitesse_ = la_vitesse;
 }
 

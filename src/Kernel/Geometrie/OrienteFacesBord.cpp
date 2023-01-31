@@ -41,7 +41,7 @@ Entree& OrienteFacesBord::interpreter_(Entree& is)
 
 void OrienteFacesBord::oriente_faces_bord(const Nom& nom_dom)
 {
-  Zone& dom=ref_cast(Zone, objet(nom_dom));
+  Domaine& dom=ref_cast(Domaine, objet(nom_dom));
   Nom type=dom.type_elem()->que_suis_je();
   double e=0.001;
   IntVect elem(1);

@@ -16,7 +16,7 @@
 #ifndef TRUSTChamp_Morceaux_generique_TPP_included
 #define TRUSTChamp_Morceaux_generique_TPP_included
 
-#include <Sous_Zone.h>
+#include <Sous_Domaine.h>
 
 template<Champ_Morceaux_Type _TYPE_>
 Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& ch)
@@ -39,7 +39,7 @@ Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& c
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a(const DoubleVect& positions, DoubleVect& tab_valeurs) const
 {
-  const Zone& le_dom = mon_domaine;
+  const Domaine& le_dom = mon_domaine;
   IntVect le_poly(1);
   le_dom.chercher_elements(positions, le_poly);
   return valeur_a_elem(positions, tab_valeurs, le_poly[0]);
@@ -87,7 +87,7 @@ double TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a_elem_compo(const DoubleVe
 template<Champ_Morceaux_Type _TYPE_>
 DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
-  const Zone& le_dom = mon_domaine;
+  const Domaine& le_dom = mon_domaine;
   IntVect les_polys(le_dom.nb_elem());
   le_dom.chercher_elements(positions, les_polys);
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
@@ -102,7 +102,7 @@ DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& po
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
-  const Zone& le_dom = mon_domaine;
+  const Domaine& le_dom = mon_domaine;
   IntVect les_polys(le_dom.nb_elem());
   le_dom.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
@@ -219,7 +219,7 @@ void TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& no
       ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
       mon_domaine = ref_pb->domaine();
     }
-  else mon_domaine = ref_cast(Zone, Interprete::objet(nom));
+  else mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
 }
 
 template<Champ_Morceaux_Type _TYPE_>
@@ -271,8 +271,8 @@ Entree& TRUSTChamp_Morceaux_generique<_TYPE_>::complete_readOn(const int dim, co
   is >> nom;
   while (nom != Nom("}"))
     {
-      REF (Sous_Zone) refssz = les_sous_zones.add(mon_domaine->ss_zone(nom));
-      Sous_Zone& ssz = refssz.valeur();
+      REF (Sous_Domaine) refssz = les_sous_domaines.add(mon_domaine->ss_domaine(nom));
+      Sous_Domaine& ssz = refssz.valeur();
       for (k = 0; k < dim; k++)
         {
           Parser_U psr;

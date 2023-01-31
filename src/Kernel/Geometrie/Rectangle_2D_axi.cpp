@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Rectangle_2D_axi.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <math.h>
 Implemente_instanciable(Rectangle_2D_axi,"Rectangle_2D_axi",Rectangle);
 
@@ -60,7 +60,7 @@ void Rectangle_2D_axi::reordonner()
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements de la zone associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements de la domaine associee a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
@@ -68,7 +68,7 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
   /*
     const IntTab& les_Polys = mon_dom->les_elems();
-    const Zone& le_domaine = mon_dom->domaine();
+    const Domaine& le_domaine = mon_dom->domaine();
     int nb_elem = mon_dom->nb_elem_tot();
     int num_som;
 
@@ -92,23 +92,23 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 
 }
 
-/*! @brief Calcule les volumes des elements de la zone associee.
+/*! @brief Calcule les volumes des elements de la domaine associee.
  *
- * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la zone
+ * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements de la domaine
  */
 void Rectangle_2D_axi::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=mon_dom.valeur();// zone.valeur() permet d'acceder a                                            // la zone qui est en cours de traitement
-  const Zone& dom=zone;
+  const Domaine& domaine=mon_dom.valeur();// domaine.valeur() permet d'acceder a                                            // la domaine qui est en cours de traitement
+  const Domaine& dom=domaine;
   double r,r1,r2,dr,dz;
   int S1,S2,S3;
-  int size_tot = zone.nb_elem_tot();
+  int size_tot = domaine.nb_elem_tot();
   assert(volumes.size_totale()==size_tot);
   for (int num_poly=0; num_poly<size_tot; num_poly++)
     {
-      S1 = zone.sommet_elem(num_poly,0);
-      S2 = zone.sommet_elem(num_poly,1);
-      S3 = zone.sommet_elem(num_poly,2);
+      S1 = domaine.sommet_elem(num_poly,0);
+      S2 = domaine.sommet_elem(num_poly,1);
+      S3 = domaine.sommet_elem(num_poly,2);
       r1= dom.coord(S1,0);
       r2= dom.coord(S2,0);
       if (r1< r2) r =r1;

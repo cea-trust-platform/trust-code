@@ -16,8 +16,8 @@
 #include <Evaluateur_Source_VEF_Face.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 
 Evaluateur_Source_VEF_Face::Evaluateur_Source_VEF_Face(const Evaluateur_Source_VEF_Face& eval) : Evaluateur_Source_Face(eval)
 {
@@ -35,8 +35,8 @@ void Evaluateur_Source_VEF_Face::changer_volumes_entrelaces_Cl(DoubleVect& vol)
 void Evaluateur_Source_VEF_Face::completer()
 {
   Cerr << "Evaluateur_Source_VEF_Face::completer()" << finl;
-  volumes_entrelaces.ref(ref_cast(Zone_VEF,le_dom.valeur()).volumes_entrelaces());
-  volumes_entrelaces_Cl.ref(ref_cast(Zone_Cl_VEF,la_zcl.valeur()).volumes_entrelaces_Cl());
-  porosite_surf.ref(ref_cast(Zone_Cl_VEF,la_zcl.valeur()).equation().milieu().porosite_face());
-  face_voisins.ref(ref_cast(Zone_VEF,le_dom.valeur()).face_voisins());
+  volumes_entrelaces.ref(ref_cast(Domaine_VEF,le_dom.valeur()).volumes_entrelaces());
+  volumes_entrelaces_Cl.ref(ref_cast(Domaine_Cl_VEF,la_zcl.valeur()).volumes_entrelaces_Cl());
+  porosite_surf.ref(ref_cast(Domaine_Cl_VEF,la_zcl.valeur()).equation().milieu().porosite_face());
+  face_voisins.ref(ref_cast(Domaine_VEF,le_dom.valeur()).face_voisins());
 }

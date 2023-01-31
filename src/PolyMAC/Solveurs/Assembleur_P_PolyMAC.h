@@ -18,9 +18,9 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
-#include <Zone_PolyMAC.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -33,10 +33,10 @@ class Assembleur_P_PolyMAC : public Assembleur_base
   Declare_instanciable(Assembleur_P_PolyMAC);
 
 public:
-  void associer_domaine_dis_base(const Zone_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
+  const Domaine_dis_base& domaine_dis_base() const override;
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const override;
   int assembler(Matrice&) override;
   int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
   int assembler_QC(const DoubleTab&, Matrice&) override;
@@ -57,8 +57,8 @@ public:
 
 protected :
   REF(Equation_base) mon_equation;
-  REF(Zone_PolyMAC) le_dom_PolyMAC;
-  REF(Zone_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   int has_P_ref = 0;
   int stencil_done = 0;
   IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)

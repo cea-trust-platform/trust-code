@@ -18,12 +18,12 @@
 
 #include <DomaineCutter_Correspondance.h>
 #include <Static_Int_Lists.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 #include <Ref_IntVect.h>
 #include <Decouper.h>
 #include <Noms.h>
 
-class Zone;
+class Domaine;
 
 /*! @brief Classe outil permettant de generer des sous-domaines pour un calcul parallele a partir d'un domaine de depart (domaine_global) et d'un tableau de decoupage
  *
@@ -35,38 +35,38 @@ class DomaineCutter: public Objet_U
 {
   Declare_instanciable(DomaineCutter);
 public:
-  void initialiser(const Zone& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& bords_periodiques, const int permissif = 0);
+  void initialiser(const Domaine& domaine_global, const IntVect& elem_part, const int nb_parts, const int epaisseur_joint, const Noms& bords_periodiques, const int permissif = 0);
 
   void reset();
 
-  void construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance_, Zone& sous_domaine_, const Static_Int_Lists *som_raccord = NULL) const;
-  void construire_sous_domaine(const int part, Zone& sous_domaine_) const
+  void construire_sous_domaine(const int part, DomaineCutter_Correspondance& correspondance_, Domaine& sous_domaine_, const Static_Int_Lists *som_raccord = NULL) const;
+  void construire_sous_domaine(const int part, Domaine& sous_domaine_) const
   {
     DomaineCutter_Correspondance correspondance;
     construire_sous_domaine(part, correspondance, sous_domaine_);
   }
 
-  void ecrire_zones(const Nom& basename, const Decouper::ZonesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists *som_raccord = NULL);
+  void ecrire_domaines(const Nom& basename, const Decouper::DomainesFileOutputType format, IntVect& elem_part, const int reorder, const Static_Int_Lists *som_raccord = NULL);
   inline const Noms& bords_internes() const { return bords_a_pb_; }
 
 private:
-  void construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const;
-  void construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const;
-  void construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Zone& zone_partie) const;
-  void construire_sommets_joints_ssdom(const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_sommets, const int partie, const Static_Int_Lists *som_raccord, Zone& zone_partie) const;
+  void construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Domaine& domaine_partie) const;
+  void construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Domaine& domaine_partie) const;
+  void construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Domaine& domaine_partie) const;
+  void construire_sommets_joints_ssdom(const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_sommets, const int partie, const Static_Int_Lists *som_raccord, Domaine& domaine_partie) const;
 
-  void construire_faces_joints_ssdom(const int partie, const DomaineCutter_Correspondance& correspondance, Zone& zone_partie) const;
+  void construire_faces_joints_ssdom(const int partie, const DomaineCutter_Correspondance& correspondance, Domaine& domaine_partie) const;
 
-  void construire_elements_distants_ssdom(const int partie, const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_elements, Zone& zone_partie) const;
+  void construire_elements_distants_ssdom(const int partie, const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_elements, Domaine& domaine_partie) const;
 
-  void writeData(const Zone& sous_domaine, Sortie& os) const;
+  void writeData(const Domaine& sous_domaine, Sortie& os) const;
 
   // Ne pas utiliser ces deux methodes:
   const DomaineCutter& operator=(const DomaineCutter& dc);
   DomaineCutter(const DomaineCutter& dc);
 
   // Reference au domaine global
-  REF(Zone) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   // Reference au tableau de decoupage
   //  (pour chaque element du domaine global, numero de sous-domaine)
   REF(IntVect) ref_elem_part_;

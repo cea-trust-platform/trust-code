@@ -14,11 +14,11 @@
 *****************************************************************************/
 
 #include <Perte_Charge_Singuliere_VEF_Face.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Motcle.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Matrice_Morse.h>
 
 Implemente_instanciable(Perte_Charge_Singuliere_VEF_Face,"Perte_Charge_Singuliere_VEF_P1NC",Perte_Charge_VEF_Face);
@@ -58,11 +58,11 @@ Entree& Perte_Charge_Singuliere_VEF_Face::readOn(Entree& s)
 
 void Perte_Charge_Singuliere_VEF_Face::remplir_num_faces(Entree& s)
 {
-  const Zone& le_domaine = equation().probleme().domaine();
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,equation().zone_dis().valeur());
-  int taille_bloc = zone_VEF.nb_elem();
+  const Domaine& le_domaine = equation().probleme().domaine();
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,equation().domaine_dis().valeur());
+  int taille_bloc = domaine_VEF.nb_elem();
   num_faces.resize(taille_bloc);
-  lire_surfaces(s,le_domaine,zone_VEF,num_faces, sgn);
+  lire_surfaces(s,le_domaine,domaine_VEF,num_faces, sgn);
   // int nfac_tot = mp_sum(num_faces.size());
   int nfac_tot = (int)mp_max(num_faces.size()); // not to count several (number of processes) times the same face
 
@@ -82,8 +82,8 @@ void Perte_Charge_Singuliere_VEF_Face::remplir_num_faces(Entree& s)
 
 DoubleTab& Perte_Charge_Singuliere_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
-  //const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
+  //const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
 
@@ -100,8 +100,8 @@ DoubleTab& Perte_Charge_Singuliere_VEF_Face::ajouter(DoubleTab& resu) const
       for (int j=0; j<dimension; j++)
         {
           Ud = vit(numfa,j)*porosite_surf[numfa];
-          // area=zone_VEF.face_surfaces(numfa);
-          area=direction_perte_charge() < 0 ? zone_VEF.face_surfaces(numfa) : std::fabs(zone_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
+          // area=domaine_VEF.face_surfaces(numfa);
+          area=direction_perte_charge() < 0 ? domaine_VEF.face_surfaces(numfa) : std::fabs(domaine_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
           coefK=K();
           // if (j!=direction_perte_charge()) coefK=0.;
           resu(numfa,j) -= 0.5*coefK*Ud*std::fabs(Ud)*area*porosite_surf[numfa];
@@ -118,7 +118,7 @@ DoubleTab& Perte_Charge_Singuliere_VEF_Face::calculer(DoubleTab& resu) const
 
 void Perte_Charge_Singuliere_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
 
@@ -138,8 +138,8 @@ void Perte_Charge_Singuliere_VEF_Face::contribuer_a_avec(const DoubleTab& inco, 
           Ud = porosite_surf[numfa];
           double Ud2= vit(numfa,j)*porosite_surf[numfa];
           int n0=numfa*dimension+j;
-          // area=zone_VEF.face_surfaces(numfa);
-          area=direction_perte_charge() < 0 ? zone_VEF.face_surfaces(numfa) : std::fabs(zone_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
+          // area=domaine_VEF.face_surfaces(numfa);
+          area=direction_perte_charge() < 0 ? domaine_VEF.face_surfaces(numfa) : std::fabs(domaine_VEF.face_normales(numfa,direction_perte_charge())); // Taking account of inclined plane
           coefK=K();
           // if (j!=direction_perte_charge()) coefK=0.;
           matrice.coef(n0,n0)+= 0.5*coefK*Ud*std::fabs(Ud2)*area*porosite_surf[numfa];

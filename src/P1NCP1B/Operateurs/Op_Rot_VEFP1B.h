@@ -19,9 +19,9 @@
 #include <Champ_P1_isoP1Bulle.h>
 #include <Op_Grad_VEF_Face.h>
 #include <Operateur_base.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_VEF.h>
 
-class Zone_VEF_PreP1b;
+class Domaine_VEF_PreP1b;
 
 class Op_Rot_VEFP1B : public Operateur_base
 {
@@ -33,7 +33,7 @@ public:
   ///////////////////////////////////////////////////
   // 3 methodes a surcharger car heritees de Op_base.
   ///////////////////////////////////////////////////
-  void associer( const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc&) override;
+  void associer( const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
   DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
   DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
 
@@ -47,15 +47,15 @@ public:
   ///////////////////////////////////////////////////
   // Fin methode rajoutee
   //////////////////////////////////////////////////
-  const Zone_VEF_PreP1b& zone_Vef() const;
+  const Domaine_VEF_PreP1b& domaine_Vef() const;
 
   void associer_coins(const ArrOfInt&);
 
 protected:
 
   ArrOfInt coins;
-  REF(Zone_VEF) le_dom_vef;
-  REF(Zone_Cl_VEF) la_zcl_vef;
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
 
 };
 

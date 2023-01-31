@@ -15,9 +15,9 @@
 
 #include <Perte_Charge_Singuliere.h>
 #include <Motcle.h>
-#include <Zone.h>
-#include <Zone_VF.h>
-#include <Sous_Zone.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
+#include <Sous_Domaine.h>
 #include <Octree.h>
 #include <Source_base.h>
 #include <Param.h>
@@ -104,13 +104,13 @@ Entree& Perte_Charge_Singuliere::lire_donnees(Entree& is)
   return is;
 }
 
-void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
-                                            const Zone_dis_base& zone_dis, IntVect& les_faces, IntVect& sgn)
+void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domaine,
+                                            const Domaine_dis_base& domaine_dis, IntVect& les_faces, IntVect& sgn)
 {
-  const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+  const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   const IntTab& elem_faces = zvf.elem_faces();
   const DoubleTab& xv = zvf.xv();
-  int nfe = zvf.zone().nb_faces_elem();
+  int nfe = zvf.domaine().nb_faces_elem();
   IntTab face_tab; //1 for faces in the surface
   zvf.creer_tableau_faces(face_tab);
   Champ_Don orientation;
@@ -122,7 +122,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
   Motcle acc_ouverte("{");
   Motcle acc_fermee("}");
 
-  Nom nom_ss_zone, nom_surface;
+  Nom nom_ss_domaine, nom_surface;
   double position;
 
   /* Read plan */
@@ -141,7 +141,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
   is >> method;
   if (method=="X" || method=="Y" || method=="Z")
     {
-      /* Subzone algorithm */
+      /* Subdomaine algorithm */
       algo=0;
       Nom direction=method, egal;
       if (  ((direction=="X") && (direction_perte_charge()!=0))
@@ -170,9 +170,9 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
 
         }
       is >> egal >> position;
-      is >> nom_ss_zone;
+      is >> nom_ss_domaine;
       Cerr << " position " << direction << " " << position << finl;
-      identifiant_ = nom_ss_zone + "_" + direction + "=" + Nom(position);
+      identifiant_ = nom_ss_domaine + "_" + direction + "=" + Nom(position);
     }
   else if (method=="Surface")
     {
@@ -183,15 +183,15 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
               {
                 Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
                 Cerr << "The keyword " << method << " specified for plan definition is only possible in 3D !" << finl;
-                Cerr << "You must used the method of intersection between subzone and location of plane." << finl;
+                Cerr << "You must used the method of intersection between subdomaine and location of plane." << finl;
                 Process::exit();
               }
       */
-      if (zone_dis.que_suis_je().debute_par("Zone_VDF"))
+      if (domaine_dis.que_suis_je().debute_par("Domaine_VDF"))
         {
           Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
           Cerr << "The keyword " << method << " specified for plan definition is only possible in VEF discretization !" << finl;
-          Cerr << "You must used the method of intersection between subzone and location of plane." << finl;
+          Cerr << "You must used the method of intersection between subdomaine and location of plane." << finl;
           Process::exit();
         }
       is >> nom_surface;
@@ -223,8 +223,8 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
 
   if (algo==0)
     {
-      /* Subzone algorithm */
-      const Sous_Zone& ssz = le_domaine.ss_zone(nom_ss_zone);
+      /* Subdomaine algorithm */
+      const Sous_Domaine& ssz = le_domaine.ss_domaine(nom_ss_domaine);
       for (int poly=0; poly<ssz.nb_elem_tot(); poly++)
         {
           for (int j=0; j<nfe; j++)
@@ -249,7 +249,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
   else if (algo==1)
     {
       /* Surface algorithm */
-      const Zone& le_domaine2D = ref_cast(Zone,le_domaine.interprete().objet(nom_surface));
+      const Domaine& le_domaine2D = ref_cast(Domaine,le_domaine.interprete().objet(nom_surface));
       const DoubleTab& coord_sommets_2D=le_domaine2D.coord_sommets();
 
       DoubleTab xv2D;
@@ -355,7 +355,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Zone& le_domaine,
 
 double Perte_Charge_Singuliere::calculate_Q(const Equation_base& eqn, const IntVect& num_faces, const IntVect& sgn) const
 {
-  const Zone_VF& zvf = ref_cast(Zone_VF, eqn.zone_dis().valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, eqn.domaine_dis().valeur());
   const DoubleTab& vit = eqn.inconnue().valeurs(),
                    &fac = sub_type(Pb_Multiphase, eqn.probleme()) ? ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.champ_conserve().passe()
                           : eqn.probleme().get_champ("masse_volumique").valeurs(); // get_champ pour flica5 car la masse volumique n'est pas dans le milieu...

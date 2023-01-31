@@ -39,7 +39,7 @@ public:
   DoubleTab& ajouter(DoubleTab& ) const override;
 
 protected :
-  void associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& ) override;
 };
 
 #endif /* Source_WC_Gravite_VEF_included */

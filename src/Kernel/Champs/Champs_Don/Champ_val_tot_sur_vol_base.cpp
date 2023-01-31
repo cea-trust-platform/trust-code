@@ -15,9 +15,9 @@
 
 #include <Champ_val_tot_sur_vol_base.h>
 #include <Interprete.h>
-#include <Zone.h>
-#include <Zone_VF.h>
-#include <Sous_Zone.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
+#include <Sous_Domaine.h>
 
 Implemente_base(Champ_val_tot_sur_vol_base,"Champ_val_tot_sur_vol_base",Champ_Uniforme_Morceaux);
 
@@ -25,16 +25,16 @@ Sortie& Champ_val_tot_sur_vol_base::printOn(Sortie& os) const { return Champ_Uni
 
 Entree& Champ_val_tot_sur_vol_base::readOn(Entree& is) { return Champ_Uniforme_Morceaux::readOn(is); }
 
-//Evaluation du champ sur le domaine par defaut et les sous zones specifiees
-//-Pour chacune des sous zones et pour le domaine complet on calcul CONTRIB_loc:
-//   loc designe une localisation (sous zone i ou domaine par defaut)
+//Evaluation du champ sur le domaine par defaut et les sous domaines specifiees
+//-Pour chacune des sous domaines et pour le domaine complet on calcul CONTRIB_loc:
+//   loc designe une localisation (sous domaine i ou domaine par defaut)
 //   cas VDF : CONTRIB_loc = somme de volume(elem)*porosite(elem) pour les elements de loc
 //   cas VEF : CONTRIB_loc = somme de vol_entrelaces(face)*por_face(face) pour les faces de loc
-//-On retranche CONTRIB_loc de chaque sous zone a celle du domaine complet
+//-On retranche CONTRIB_loc de chaque sous domaine a celle du domaine complet
 //-Estimation de la puissance aux elements pour chaque localisation par la relation :
 //  P(elem,compo) = P_lue/CONTRIB_loc
 //
-void Champ_val_tot_sur_vol_base::evaluer(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis)
+void Champ_val_tot_sur_vol_base::evaluer(const Domaine_dis_base& zdis,const Domaine_Cl_dis_base& zcldis)
 {
   const int nb_elem = zdis.nb_elem();
   DoubleVect vol_glob_pond;
@@ -46,9 +46,9 @@ void Champ_val_tot_sur_vol_base::evaluer(const Zone_dis_base& zdis,const Zone_Cl
 
   int cpt=1;
 
-  for (auto& itr : les_sous_zones)
+  for (auto& itr : les_sous_domaines)
     {
-      const Sous_Zone& sz = itr.valeur();
+      const Sous_Domaine& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();
       int el;
       for (int elem=0; elem<size_sz; elem++)

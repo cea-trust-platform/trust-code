@@ -18,7 +18,7 @@
 #include <Champ_Fonc_Tabule.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Inc_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Debog.h>
 
 Implemente_base(Loi_Etat_Multi_GP_base,"Loi_Etat_Multi_Gaz_Parfait_base",Loi_Etat_Melange_GP_base);
@@ -129,7 +129,7 @@ void Loi_Etat_Multi_GP_base::calculer_alpha()
     }
   else // VEF
     {
-      const IntTab& elem_faces=ref_cast(Zone_VF,le_fluide->vitesse().zone_dis_base()).elem_faces();
+      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
       double rhoelem, Cpelem;
       int face, nfe = elem_faces.line_size();
 
@@ -213,7 +213,7 @@ void Loi_Etat_Multi_GP_base::calculer_tab_mu(const DoubleTab& mu, int size)
     }
   else // VEF (average on elem from values on face);
     {
-      const IntTab& elem_faces=ref_cast(Zone_VF,le_fluide->vitesse().zone_dis_base()).elem_faces();
+      const IntTab& elem_faces=ref_cast(Domaine_VF,le_fluide->vitesse().domaine_dis_base()).elem_faces();
       const int nfe = elem_faces.line_size();
       tab_mu = 0;
       for (int elem=0; elem<nb_elem; elem++)

@@ -21,7 +21,7 @@
 
 class Champ_Inc;
 class Schema_Temps_base;
-class Zone_dis;
+class Domaine_dis;
 class Milieu_base;
 
 /*! @brief Class Discret_Thermique Cette classe est la classe de base representant une discretisation
@@ -31,7 +31,7 @@ class Milieu_base;
  *     derivees pour typer et discretiser les champs portes par les
  *     equations liees a la discretisation.
  *
- * @sa Discretisation_base, Classe abstraite, Methodes abstraites, void temperature(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const, void proprietes_physiques_milieu(Zone_dis& ,Milieu_base& ,const Champ_Inc& ) const
+ * @sa Discretisation_base, Classe abstraite, Methodes abstraites, void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const, void proprietes_physiques_milieu(Domaine_dis& ,Milieu_base& ,const Champ_Inc& ) const
  */
 class Discret_Thermique : public Discretisation_base
 {
@@ -39,11 +39,11 @@ class Discret_Thermique : public Discretisation_base
 
 public :
 
-  void temperature(const Schema_Temps_base&, Zone_dis&, Champ_Inc&, int nb_comp = 1) const;
-  void flux_neutronique(const Schema_Temps_base& sch, Zone_dis& z, Champ_Inc& ch, int nb_comp=1) const;
-//  virtual void t_paroi(const Zone_dis& z,const Zone_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
-  void Fluctu_Temperature(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const ;
-  void Flux_Chaleur_Turb(const Schema_Temps_base&, Zone_dis&, Champ_Inc&) const;
+  void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&, int nb_comp = 1) const;
+  void flux_neutronique(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Inc& ch, int nb_comp=1) const;
+//  virtual void t_paroi(const Domaine_dis& z,const Domaine_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
+  void Fluctu_Temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const ;
+  void Flux_Chaleur_Turb(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const;
 };
 
 #endif

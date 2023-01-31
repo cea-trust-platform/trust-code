@@ -229,7 +229,7 @@ void QDM_Multiphase::abortTimeStep()
 void QDM_Multiphase::discretiser_vitesse()
 {
   const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-  dis.vitesse(schema_temps(), zone_dis(), la_vitesse, ref_cast(Pb_Multiphase, probleme()).nb_phases());
+  dis.vitesse(schema_temps(), domaine_dis(), la_vitesse, ref_cast(Pb_Multiphase, probleme()).nb_phases());
 }
 
 void QDM_Multiphase::discretiser_grad_p()
@@ -285,7 +285,7 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
   int i = noms_vit_phases_.rang(motlu);
   if (i >= 0 && !(vit_phases_[i].non_nul()))
     {
-      discretisation().discretiser_champ("vitesse",zone_dis(), noms_vit_phases_[i], "m/s",dimension, 1, 0, vit_phases_[i]);
+      discretisation().discretiser_champ("vitesse",domaine_dis(), noms_vit_phases_[i], "m/s",dimension, 1, 0, vit_phases_[i]);
       champs_compris_.ajoute_champ(vit_phases_[i]);
     }
   i = noms_grad_vit_phases_.rang(motlu);
@@ -303,7 +303,7 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
           }
       noms[0] = noms_grad_vit_phases_[i]; // Pour lui donner le bon nom dans discretiser_champ ; consequence : la premiere coordonnee en sortie n'a pas le bon nom
       Motcle typeChamp = "champ_elem" ;
-      discretisation().discretiser_champ(typeChamp, zone_dis(), multi_scalaire, noms , unites, D*D, 0, grad_vit_phases_[0]);
+      discretisation().discretiser_champ(typeChamp, domaine_dis(), multi_scalaire, noms , unites, D*D, 0, grad_vit_phases_[0]);
       champs_compris_.ajoute_champ(grad_vit_phases_[i]);
     }
 
@@ -312,7 +312,7 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
       if (!gradient_P.non_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
-          dis.gradient_P(schema_temps(), zone_dis(), gradient_P, ref_cast(Pb_Multiphase, probleme()).nb_phases());
+          dis.gradient_P(schema_temps(), domaine_dis(), gradient_P, ref_cast(Pb_Multiphase, probleme()).nb_phases());
           champs_compris_.ajoute_champ(gradient_P);
         }
     }

@@ -17,7 +17,7 @@
 #include <Static_Int_Lists.h>
 #include <Faces_builder.h>
 #include <Extruder_en3.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -37,11 +37,11 @@ Entree& Extruder_en3::readOn(Entree& is) { return Interprete::readOn(is); }
 
 /*! @brief Fonction principale de l'interprete Extruder_en3
  *
- * Triangule 1 a 1 toutes les zones du domaine specifie par la directive.
- *     On triangule la zone grace a la methode:
- *       void Extruder_en3::extruder(Zone& zone) const
+ * Triangule 1 a 1 toutes les domaines du domaine specifie par la directive.
+ *     On triangule la domaine grace a la methode:
+ *       void Extruder_en3::extruder(Domaine& domaine) const
  *     Extruder_en3 signifie ici transformer en triangle des
- *     elements geometrique d'une zone.
+ *     elements geometrique d'une domaine.
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree
@@ -75,11 +75,11 @@ Entree& Extruder_en3::interpreter_(Entree& is)
   // dans le tableau nums sont issus du regroupement des domaines en un seul
   // On procede par concatenation des domaines dans "dom_tot" de maniere a ne pas interferer
   // avec les domaines d'origines.
-  Zone dom_tot;   // just to get correct renumbering
+  Domaine dom_tot;   // just to get correct renumbering
   for(int i=0; i<nb_dom; i++)
     {
       associer_domaine(noms_dom[nb_dom-1-i]);
-      Zone& domi=domaine(i);
+      Domaine& domi=domaine(i);
       IntVect num;
       dom_tot.ajouter(domi.coord_sommets(), num);
 
@@ -97,7 +97,7 @@ Entree& Extruder_en3::interpreter_(Entree& is)
 /*! @brief Extrusion d'un domaine surfacique
  *
  */
-void Extruder_en3::extruder(Zone& dom, const IntVect& num)
+void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
 {
   if(dom.type_elem()->que_suis_je() == "Triangle")
     {
@@ -110,7 +110,7 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
 
       Faces les_faces;
       {
-        // bloc a factoriser avec Zone_VF.cpp :
+        // bloc a factoriser avec Domaine_VF.cpp :
         Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
         les_faces.associer_domaine(dom);
@@ -274,7 +274,7 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
                     }
                 }
 
-              mettre_a_jour_sous_zone(dom,i,j,3);
+              mettre_a_jour_sous_domaine(dom,i,j,3);
               i1+=oldnbsom;
               i2+=oldnbsom;
               i3+=oldnbsom;
@@ -297,7 +297,7 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
 /*! @brief Creation des bords du domaine extrude
  *
  */
-void Extruder_en3::construire_bords(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz, const IntVect& num)
+void Extruder_en3::construire_bords(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz, const IntVect& num)
 {
   IntTab& les_elems = dom.les_elems();
   // Les bords:

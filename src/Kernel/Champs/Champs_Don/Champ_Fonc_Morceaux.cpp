@@ -22,9 +22,9 @@ Sortie& Champ_Fonc_Morceaux::printOn(Sortie& os) const { return os << valeurs();
 /*! @brief Lit les valeurs du champ uniforme par morceaux a partir d'un flot d'entree.
  *
  * On lit le nom du domaine (nom_domaine) le nombre de composantes du champ (nb_comp) la valeur par defaut
- *     du champ ainsi que les valeurs sur les sous zones.
+ *     du champ ainsi que les valeurs sur les sous domaines.
  *     Format:
- *      Champ_Fonc_Morceaux nom_domaine nb_comp { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i }
+ *      Champ_Fonc_Morceaux nom_domaine nb_comp { Defaut val_def sous_domaine_1 val_1 ... sous_domaine_i val_i }
  *
  */
 Entree& Champ_Fonc_Morceaux::readOn(Entree& is)

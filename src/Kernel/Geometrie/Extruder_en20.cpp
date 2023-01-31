@@ -17,7 +17,7 @@
 #include <Static_Int_Lists.h>
 #include <Extruder_en20.h>
 #include <Faces_builder.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -29,13 +29,13 @@ Sortie& Extruder_en20::printOn(Sortie& os) const { return Interprete::printOn(os
 
 Entree& Extruder_en20::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Fonction principale de l'interprete Extruder_en20 Triangule 1 a 1 toutes les zones du domaine
+/*! @brief Fonction principale de l'interprete Extruder_en20 Triangule 1 a 1 toutes les domaines du domaine
  *
  *     specifie par la directive.
- *     On triangule la zone grace a la methode:
- *       void Extruder_en20::extruder(Zone& zone) const
+ *     On triangule la domaine grace a la methode:
+ *       void Extruder_en20::extruder(Domaine& domaine) const
  *     Extruder signifie ici transformer en triangle des
- *     elements geometrique d'une zone.
+ *     elements geometrique d'une domaine.
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree
@@ -56,14 +56,14 @@ Entree& Extruder_en20::interpreter_(Entree& is)
   return is;
 }
 
-/*! @brief Triangule tous les element d'une zone: transforme les elements goemetriques de la zone en triangles.
+/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques de la domaine en triangles.
  *
  *     Pour l'instant on ne sait raffiner que des Rectangles
  *     (on les coupe en 4).
  *
- * @param (Zone& zone) la zone dont on veut raffiner les elements
+ * @param (Domaine& domaine) la domaine dont on veut raffiner les elements
  */
-void Extruder_en20::extruder(Zone& dom)
+void Extruder_en20::extruder(Domaine& dom)
 {
   if (dom.type_elem()->que_suis_je() == "Rectangle" || dom.type_elem()->que_suis_je() ==  "Quadrangle" )
     {
@@ -80,9 +80,9 @@ void Extruder_en20::extruder(Zone& dom)
       double dz = direction[2]/NZ;
 
       Faces les_faces;
-      //zone.creer_faces(les_faces);
+      //domaine.creer_faces(les_faces);
       {
-        // bloc a factoriser avec Zone_VF.cpp :
+        // bloc a factoriser avec Domaine_VF.cpp :
         Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
         les_faces.associer_domaine(dom);
@@ -232,7 +232,7 @@ void Extruder_en20::extruder(Zone& dom)
               new_elems(2*k*oldsz+2*i+1,3) = ig;
               cpt++;
 
-              mettre_a_jour_sous_zone(dom,i,2*k*oldsz+2*i,2);
+              mettre_a_jour_sous_domaine(dom,i,2*k*oldsz+2*i,2);
 
               i0+=oldnbsom;
               i1+=oldnbsom;
@@ -356,7 +356,7 @@ void Extruder_en20::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, i
       for (int k=0; k<NZ; k++)
         {
           //double z = (k+0.5)*dz;
-          //int i01 = zone.chercher_sommets(x01, y01, z);
+          //int i01 = domaine.chercher_sommets(x01, y01, z);
           int j01 = oldnbsom*(NZ+1)+NZ*oldsz+k*nbfaces2D+jface;
 
           int i00=oldnbsom*(NZ+1)+NZ*oldsz+NZ*nbfaces2D+i0;
@@ -401,7 +401,7 @@ void Extruder_en20::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, i
 
 
 
-void Extruder_en20::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
+void Extruder_en20::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
   const int nbfaces2D = les_faces.nb_faces();
   IntTab& les_elems = dom.les_elems();

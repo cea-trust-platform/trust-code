@@ -21,8 +21,8 @@
 #include <Schema_Temps_base.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_VF.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_VF.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Fluide_Weakly_Compressible,"Fluide_Weakly_Compressible",Fluide_Dilatable_base);
@@ -94,7 +94,7 @@ void Fluide_Weakly_Compressible::completer(const Probleme_base& pb)
   // XXX : currently we support only open configurations if use_total_hydro_pressure
   // THERE IS A PROBLEM HERE
   // TODO : FIXME
-  if (use_total_hydro_pressure()) checkTraitementPth(pb.equation(0).zone_Cl_dis());
+  if (use_total_hydro_pressure()) checkTraitementPth(pb.equation(0).domaine_Cl_dis());
 
   if (Pth_xyz_.non_nul())
     {
@@ -227,15 +227,15 @@ void Fluide_Weakly_Compressible::write_mean_edo(double t)
   /* Do nothing */
 }
 
-void Fluide_Weakly_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
+void Fluide_Weakly_Compressible::checkTraitementPth(const Domaine_Cl_dis& domaine_cl)
 {
   // TODO : FIXME : we should be able to use this in closed cavities too !!
   int pression_imposee=0;
-  int size=zone_cl.les_conditions_limites().size();
+  int size=domaine_cl.les_conditions_limites().size();
   assert(size!=0);
   for (int n=0; n<size; n++)
     {
-      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n);
+      const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur())) pression_imposee=1;
     }
 
@@ -248,16 +248,16 @@ void Fluide_Weakly_Compressible::checkTraitementPth(const Zone_Cl_dis& zone_cl)
 
 void Fluide_Weakly_Compressible::discretiser(const Probleme_base& pb, const  Discretisation_base& dis)
 {
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
   double temps=pb.schema_temps().temps_courant();
 
   // In *_Melange_Binaire_WC we do not even have a temperature variable ...
   // it is the species mass fraction Y1... Although named ch_temperature
   Champ_Don& ch_TK = ch_temperature();
   if (pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_WC" || pb.que_suis_je()=="Pb_Hydraulique_Melange_Binaire_Turbulent_WC")
-    dis.discretiser_champ("temperature",zone_dis,"fraction_massique","neant",1,temps,ch_TK);
+    dis.discretiser_champ("temperature",domaine_dis,"fraction_massique","neant",1,temps,ch_TK);
   else
-    dis.discretiser_champ("temperature",zone_dis,"temperature","K",1,temps,ch_TK);
+    dis.discretiser_champ("temperature",domaine_dis,"temperature","K",1,temps,ch_TK);
 
   if (type_fluide()!="Gaz_Parfait")
     loi_etat()->champs_compris().ajoute_champ(ch_TK);
@@ -266,18 +266,18 @@ void Fluide_Weakly_Compressible::discretiser(const Probleme_base& pb, const  Dis
 
   // XXX XXX : Champs pour WC : comme la temperature car elem en VDF et faces en VEF
   Champ_Don& phydro = pression_hydro();
-  dis.discretiser_champ("temperature",zone_dis,"pression_hydro","Pa",1,temps,phydro);
+  dis.discretiser_champ("temperature",domaine_dis,"pression_hydro","Pa",1,temps,phydro);
   champs_compris_.ajoute_champ(phydro);
 
   Champ_Don& peos = pression_eos();
-  dis.discretiser_champ("temperature",zone_dis,"pression_eos","Pa",1,temps,peos);
+  dis.discretiser_champ("temperature",domaine_dis,"pression_eos","Pa",1,temps,peos);
   champs_compris_.ajoute_champ(peos);
 
   // Seulement pour multi-especes
   if (pb.que_suis_je()=="Pb_Thermohydraulique_Especes_WC")
     {
       Champ_Don& yn = fraction_massique_nonresolue();
-      dis.discretiser_champ("temperature",zone_dis,"fraction_massique_nonresolue","neant",1,temps,yn);
+      dis.discretiser_champ("temperature",domaine_dis,"fraction_massique_nonresolue","neant",1,temps,yn);
       champs_compris_.ajoute_champ(yn);
     }
 }
@@ -326,10 +326,10 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_tot(int n, const DoubleT
 void Fluide_Weakly_Compressible::calculer_pression_hydro()
 {
   DoubleTab& tab_Phydro = pression_hydro_.valeurs();
-  const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
-  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-  int is_VDF = zone_dis.que_suis_je() == "Zone_VDF" ? 1 : 0;
-  const DoubleTab& centres_de_gravites = is_VDF ? zone.xp() : zone.xv();
+  const Domaine_dis_base& domaine_dis= pression_-> domaine_dis_base();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
+  int is_VDF = domaine_dis.que_suis_je() == "Domaine_VDF" ? 1 : 0;
+  const DoubleTab& centres_de_gravites = is_VDF ? domaine.xp() : domaine.xv();
   const DoubleTab& tab_rho = rho_np1(), grav = gravite().valeurs();
   const int n = tab_Phydro.dimension_tot(0);
   assert (n ==  tab_rho.dimension_tot(0) && a_gravite());
@@ -359,7 +359,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
           else // VEF : on verra le jour ou on fait du polyMAC
             {
               // on a P_NS_elem_ aux elems et Pth_tab_ comme rho, i.e aux faces
-              const Zone_VF& zvf = ref_cast(Zone_VF, inco_chaleur()->zone_dis_base());
+              const Domaine_VF& zvf = ref_cast(Domaine_VF, inco_chaleur()->domaine_dis_base());
               assert(Pth_tab_.dimension_tot(0) == zvf.nb_faces_tot());
 
               const IntTab& elem_faces = zvf.elem_faces();

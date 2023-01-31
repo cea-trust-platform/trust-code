@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Partitionneur_Parmetis.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Static_Int_Lists.h>
 #include <parmetis++.h>
 #include <Param.h>
@@ -67,7 +67,7 @@ int Partitionneur_Parmetis::lire_motcle_non_standard(const Motcle& mot, Entree& 
   return Partitionneur_base::lire_motcle_non_standard(mot,is);
 }
 
-void Partitionneur_Parmetis::associer_domaine(const Zone& domaine)
+void Partitionneur_Parmetis::associer_domaine(const Domaine& domaine)
 {
   ref_domaine_ = domaine;
 }
@@ -113,7 +113,7 @@ void Partitionneur_Parmetis::construire_partition(IntVect& elem_part, int& nb_pa
   Cerr << "Partitionneur_Parmetis::construire_partition" << finl;
   Cerr << " Construction of graph connectivity..." << finl;
   Static_Int_Lists graph_elements_perio;
-  //const Zone& dom = ref_domaine_.valeur();
+  //const Domaine& dom = ref_domaine_.valeur();
   Domain_Graph graph;
   graph.construire_graph_elem_elem(ref_domaine_.valeur(), liste_bords_periodiques_,
                                    use_weights_,

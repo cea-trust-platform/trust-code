@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Raffiner_Simplexes.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Nom.h>
 #include <Scatter.h>
 #include <Motcle.h>
@@ -719,10 +719,10 @@ static void build_frontier(const Frontiere&         src,
                            const IntTab&            edges_of_cells_src,
                            const IntTab&            faces_pattern,
                            const IntTab&            faces_refinement_pattern,
-                           const Zone&              zone_dest,
+                           const Domaine&              domaine_dest,
                            Frontiere&               dest)
 {
-  dest.associer_domaine(zone_dest);
+  dest.associer_domaine(domaine_dest);
   dest.typer_faces(face_type);
   dest.nommer(src.le_nom());
 
@@ -778,8 +778,8 @@ static void build_frontier(const Frontiere&         src,
   dest.les_sommets_des_faces() = nodes_of_faces_dest;
 }
 
-void Raffiner_Simplexes::refine_domain(const Zone& src,
-                                       Zone&        dest)
+void Raffiner_Simplexes::refine_domain(const Domaine& src,
+                                       Domaine&        dest)
 {
 
   const Nom&        cell_type          = src.type_elem().valeur().que_suis_je();
@@ -1065,10 +1065,10 @@ Entree& Raffiner_Simplexes::interpreter_(Entree& is)
 {
   associer_domaine(is);
 
-  Zone& domain = domaine();
+  Domaine& domain = domaine();
   Scatter::uninit_sequential_domain(domain);
 
-  Zone initial_domain(domain);
+  Domaine initial_domain(domain);
   refine_domain(initial_domain,domain);
   Scatter::init_sequential_domain(domain);
 

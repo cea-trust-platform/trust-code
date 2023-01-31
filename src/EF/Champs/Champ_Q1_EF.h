@@ -18,13 +18,13 @@
 
 #include <Champ_Inc_Q1_base.h>
 
-class Zone_EF;
+class Domaine_EF;
 
 class Champ_Q1_EF: public Champ_Inc_Q1_base
 {
   Declare_instanciable(Champ_Q1_EF);
 public:
-  const Zone_EF& zone_EF() const;
+  const Domaine_EF& domaine_EF() const;
   int imprime(Sortie&, int) const override;
   void gradient(DoubleTab&);
   void cal_rot_ordre1(DoubleTab&);

@@ -112,7 +112,7 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnNS(int i,bool& converged)
   // couple thermique VEF avec Chap_front_contact_VEF, meme avant convergence.
   // WEC :  /!\ la vitesse au temps intermediaire
   // n'est pas forcement a divergence nulle.
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
 
   // Calcul de la derivee dudt pour la valeur intermediaire de l'inconnue.
   // Bidouille : Comme les operateurs prennent par defaut le present,
@@ -132,13 +132,13 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnNS(int i,bool& converged)
   intermediaire*= (1-omega);
   old*= omega;
   intermediaire+= old;
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
   intermediaire.echange_espace_virtuel();
   final = dudt;
   final*= dt_final;
   final+= present;
 
-  eqn.zone_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_final);
+  eqn.domaine_Cl_dis().imposer_cond_lim(eqn.inconnue(),temps_final);
   final.echange_espace_virtuel();
 
   delta*=-1;
@@ -219,7 +219,7 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnOther(int i,bool& converged)
     }
 
   // On impose les CLs au temps intermediaire
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_intermediaire);
 
 
   // Calculs (idem) sur le deuxieme pas de temps
@@ -245,7 +245,7 @@ bool Sch_CN_EX_iteratif::iterateTimeStepOnOther(int i,bool& converged)
   dIdt/=dt_2;
   update_critere_statio(dIdt, eqn);
   // On impose les CLs au temps final
-  eqn.zone_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_final);
+  eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_final);
 
   converged=true;
   return true;

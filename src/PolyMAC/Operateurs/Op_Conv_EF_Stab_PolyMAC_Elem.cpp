@@ -18,8 +18,8 @@
 #include <Convection_Diffusion_std.h>
 #include <Milieu_base.h>
 #include <Schema_Temps_base.h>
-#include <Zone_Poly_base.h>
-#include <Zone_Cl_PolyMAC.h>
+#include <Domaine_Poly_base.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
@@ -83,11 +83,11 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
   Op_Conv_PolyMAC_base::preparer_calcul();
 
   /* au cas ou... */
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   equation().init_champ_convecte();
-  flux_bords_.resize(zone.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
+  flux_bords_.resize(domaine.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
 
-  if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
+  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
     {
       Cerr << "Op_Conv_EF_Stab_PolyMAC_Elem : largeur de joint insuffisante (minimum 2)!" << finl;
       Process::exit();
@@ -97,15 +97,15 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
 double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 {
   double dt = 1e10;
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
+  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem();
   const DoubleTab& vit = vitesse_->valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int i, e, f, n, N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   DoubleTrav flux(N); //somme des flux pf * |f| * vf
 
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
         for (n = 0; n < N; n++)
@@ -120,8 +120,8 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 
 void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
+  const IntTab& f_e = domaine.face_voisins(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_convecte();
 
@@ -134,15 +134,15 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
         int m, M = equation().probleme().get_champ(i_m.first.c_str()).valeurs().line_size();
         if (i_m.first == "vitesse") /* vitesse */
           {
-            for (f = 0; f < zone.nb_faces_tot(); f++)
+            for (f = 0; f < domaine.nb_faces_tot(); f++)
               if (fcl_v(f, 0) < 2)
                 for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-                  if (e < zone.nb_elem())
+                  if (e < domaine.nb_elem())
                     for (n = 0; n < N; n++) stencil.append_line(N * e + n, M * f + n * (M > 1));
           }
-        else for (f = 0; f < zone.nb_faces_tot(); f++)
+        else for (f = 0; f < domaine.nb_faces_tot(); f++)
             for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-              if (e < zone.nb_elem()) /* inconnues scalaires */
+              if (e < domaine.nb_elem()) /* inconnues scalaires */
                 for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
                   for (n = 0, m = 0; n < N; n++, m += (M > 1)) stencil.append_line(N * e + n, M * eb + m);
 
@@ -156,9 +156,9 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
-  const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
+  const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();
   const DoubleTab& vit = vitesse_->valeurs(), &vcc = semi_impl.count(nom_cc) ? semi_impl.at(nom_cc) : cc.valeurs(), bcc = cc.valeur_aux_bords();
@@ -174,7 +174,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
   DoubleTrav dv_flux(N), dc_flux(2, N); //derivees du flux convectif a la face par rapport a la vitesse / au champ convecte amont / aval
 
   /* convection aux faces internes (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     if (!fcl(f, 0) || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
       {
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++)
@@ -187,19 +187,19 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& sec
 
         //second membre
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-          if (e < zone.nb_elem())
+          if (e < domaine.nb_elem())
             for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
               secmem(e, n) -= (i ? -1 : 1) * dv_flux(n) * vit(f, m);
         //derivees : vitesse
         if (m_vit && fcl_v(f, 0) < 2)
           for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            if (e < zone.nb_elem())
+            if (e < domaine.nb_elem())
               for (n = 0, m = 0; n < N; n++, m += (Mv > 1))
                 (*m_vit)(N * e + n, Mv * f + m) += (i ? -1 : 1) * dv_flux(n);
         //derivees : champ convecte
         for (auto &&d_m_i : d_cc)
           for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-            if (e < zone.nb_elem())
+            if (e < domaine.nb_elem())
               for (j = 0; j < 2 && (eb = f_e(f, j)) >= 0; j++)
                 for (n = 0, m = 0, M = std::get<2>(d_m_i); n < N; n++, m += (M > 1))
                   (*std::get<1>(d_m_i))(N * e + n, M * eb + m) += (i ? -1 : 1) * dc_flux(j, n) * (*std::get<0>(d_m_i))(eb, m);
@@ -212,17 +212,17 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::creer_champ(const Motcle& motlu)
   int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
   if (i >= 0 && !cc_phases_[i].non_nul())
     {
-      equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_cc_phases_[i], "kg/m2/s",dimension, 1, 0, cc_phases_[i]);
+      equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_cc_phases_[i], "kg/m2/s",dimension, 1, 0, cc_phases_[i]);
       champs_compris_.ajoute_champ(cc_phases_[i]);
     }
   if (j >= 0 && !vd_phases_[j].non_nul())
     {
-      equation().discretisation().discretiser_champ("vitesse", equation().zone_dis(), noms_vd_phases_[j], "m/s",dimension, 1, 0, vd_phases_[j]);
+      equation().discretisation().discretiser_champ("vitesse", equation().domaine_dis(), noms_vd_phases_[j], "m/s",dimension, 1, 0, vd_phases_[j]);
       champs_compris_.ajoute_champ(vd_phases_[j]);
     }
   if (k >= 0 && !x_phases_[k].non_nul())
     {
-      equation().discretisation().discretiser_champ("temperature", equation().zone_dis(), noms_x_phases_[k], "m/s",1, 1, 0, x_phases_[k]);
+      equation().discretisation().discretiser_champ("temperature", equation().domaine_dis(), noms_x_phases_[k], "m/s",1, 1, 0, x_phases_[k]);
       champs_compris_.ajoute_champ(x_phases_[k]);
     }
 }
@@ -230,11 +230,11 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::creer_champ(const Motcle& motlu)
 void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
 {
   Op_Conv_PolyMAC_base::mettre_a_jour(temps);
-  const Zone_Poly_base& zone = le_dom_poly_.valeur();
-  const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
+  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
+  const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();
-  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();
-  const DoubleTab& vit = vitesse_->valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = zone.xv(), &xp = zone.xp();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
+  const DoubleTab& vit = vitesse_->valeurs(), &vcc = cc.valeurs(), bcc = cc.valeur_aux_bords(), &xv = domaine.xv(), &xp = domaine.xp();
   DoubleTab balp;
   if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
@@ -242,7 +242,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
   int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), M = vit.line_size();
   DoubleTrav cc_f(N); //valeur du champ convecte aux faces
   /* flux aux bords */
-  for (f = 0; f < zone.premiere_face_int(); f++)
+  for (f = 0; f < domaine.premiere_face_int(); f++)
     {
       for (cc_f = 0, i = 0; i < 2; i++)
         for (e = f_e(f, i), n = 0, m = 0; n < N; n++, m += (M > 1))
@@ -257,7 +257,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
         {
           Champ_Face_PolyMAC& c_ph = ref_cast(Champ_Face_PolyMAC, cc_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
-          for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+          for (f = 0; f < domaine.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
             for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? vcc(e, n) : bcc(f, n));
           c_ph.changer_temps(temps);
         }
@@ -270,7 +270,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
           Champ_Face_PolyMAC& c_ph = ref_cast(Champ_Face_PolyMAC, vd_phases_[n].valeur());
           DoubleTab& v_ph = c_ph.valeurs();
           /* on remplit la partie aux faces, puis on demande au champ d'interpoler aux elements */
-          for (f = 0; f < zone.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
+          for (f = 0; f < domaine.nb_faces(); v_ph(f) *= vit(f, m) * pf(f), f++)
             for (v_ph(f) = 0, i = 0; i < 2; i++) v_ph(f) += (1. + (vit(f, m) * (i ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2 * ((e = f_e(f, i)) >= 0 ? alp(e, n) : balp(f, n));
           c_ph.changer_temps(temps);
         }
@@ -278,13 +278,13 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
   DoubleTrav G(N), v(N, D);
   double Gt;
   if (x_phases_.size())
-    for (e = 0; e < zone.nb_elem(); e++) //titre : aux elements
+    for (e = 0; e < domaine.nb_elem(); e++) //titre : aux elements
       {
         for (v = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
           for (n = 0; n < N; n++)
             for (d = 0; d < D; d++)
               v(n, d) += fs(f) * pf(f) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * vit(f, n) / (pe(e) * ve(e));
-        for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(zone.dot(&v(n, 0), &v(n, 0)));
+        for (Gt = 0, n = 0; n < N; Gt += G(n), n++) G(n) = vcc(e, n) * sqrt(domaine.dot(&v(n, 0), &v(n, 0)));
         for (n = 0; n < N; n++)
           if (x_phases_[n].non_nul()) x_phases_[n]->valeurs()(e) = Gt ? G(n) / Gt : 0;
       }

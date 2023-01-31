@@ -15,7 +15,7 @@
 
 #include <Traitement_particulier_NS_EC.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Terme_Source_Acceleration.h>
 #include <Milieu_base.h>
 #include <Ref_ArrOfDouble.h>
@@ -254,10 +254,10 @@ static double trait_part_calculer_ec_faces(const int         face_debut,
 void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
 {
 
-  const Zone_dis_base& zdisbase        = mon_equation->inconnue().zone_dis_base();
-  const Zone_VF&    zone_VF            = ref_cast(Zone_VF, zdisbase);
-  const DoubleVect& volumes_entrelaces = zone_VF.volumes_entrelaces();
-  const DoubleTab&  xv                 = zone_VF.xv();
+  const Domaine_dis_base& zdisbase        = mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VF&    domaine_VF            = ref_cast(Domaine_VF, zdisbase);
+  const DoubleVect& volumes_entrelaces = domaine_VF.volumes_entrelaces();
+  const DoubleTab&  xv                 = domaine_VF.xv();
   const DoubleTab&  vitesse            = mon_equation->inconnue().valeurs();
   REF(ArrOfDouble) translation(xv);
   REF(ArrOfDouble) rotation(xv);
@@ -305,7 +305,7 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
     {
       const Champ_base& champ_rho = get_champ_masse_volumique();
       rho = champ_rho.valeurs();
-      if (rho->dimension(0) != zone_VF.nb_faces() || rho->line_size() != 1)
+      if (rho->dimension(0) != domaine_VF.nb_faces() || rho->line_size() != 1)
         {
           Cerr << "Erreur dans Traitement_particulier_NS_EC::calculer_Ec" << finl;
           Cerr << "le champ de masse volumique n'est pas un champ scalaire aux faces" << finl;
@@ -316,12 +316,12 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
     {
       rho = mon_equation->milieu().masse_volumique().valeurs();
     }
-  const int nb_front = zone_VF.nb_front_Cl();
-  const ArrOfInt& faces_doubles = zone_VF.faces_doubles();
+  const int nb_front = domaine_VF.nb_front_Cl();
+  const ArrOfInt& faces_doubles = domaine_VF.faces_doubles();
   // Faces de bord
   for (int i = 0; i < nb_front; i++)
     {
-      const Frontiere& fr = zone_VF.front_VF(i).frontiere();
+      const Frontiere& fr = domaine_VF.front_VF(i).frontiere();
       const int debut    = fr.num_premiere_face();
       const int nb_faces = fr.nb_faces();
       ec += trait_part_calculer_ec_faces(debut, nb_faces, 1,
@@ -329,8 +329,8 @@ void Traitement_particulier_NS_EC::calculer_Ec(double& energie_cinetique)
     }
   // Faces a l'interieur du domaine (y compris les faces de joint)
   {
-    const int debut    = zone_VF.premiere_face_int();
-    const int nb_faces = zone_VF.nb_faces_internes();
+    const int debut    = domaine_VF.premiere_face_int();
+    const int nb_faces = domaine_VF.nb_faces_internes();
     ec += trait_part_calculer_ec_faces(debut, nb_faces, 0,
                                        vitesse, volumes_entrelaces, xv, rho, translation, rotation, repere_mobile_, faces_doubles);
   }

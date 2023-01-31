@@ -18,8 +18,8 @@
 
 #include <Ref_Champ_Inc_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone_Cl_VEF.h>
-#include <Ref_Zone_VEF.h>
+#include <Ref_Domaine_Cl_VEF.h>
+#include <Ref_Domaine_VEF.h>
 #include <Source_base.h>
 #include <Parser_U.h>
 
@@ -39,9 +39,9 @@ public :
   void mettre_a_jour(double temps) override {  } ;
 
 protected :
-  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
-  REF(Zone_VEF) le_dom_VEF;
-  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  REF(Domaine_VEF) le_dom_VEF;
+  REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
 private :
 
@@ -50,7 +50,7 @@ private :
   mutable Parser_U force_rappel;
 
   REF(Champ_Inc_base) l_inconnue;
-  REF(Zone_VEF) zone_VEF_autre_pb;
+  REF(Domaine_VEF) domaine_VEF_autre_pb;
   Nom nom_pb, nom_autre_pb;
   Motcle nom_inco;
 

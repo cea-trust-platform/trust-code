@@ -15,7 +15,7 @@
 
 #include <Loi_paroi_base.h>
 #include <Pb_Multiphase.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <Cond_lim_base.h>
 #include <math.h>

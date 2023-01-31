@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Interprete_geometrique_base.h>
-#include <Sous_Zone.h>
-#include <Zone.h>
+#include <Sous_Domaine.h>
+#include <Domaine.h>
 #include <EChaine.h>
 
 Implemente_base(Interprete_geometrique_base, "Interprete_geometrique_base", Interprete);
@@ -36,13 +36,13 @@ void Interprete_geometrique_base::associer_domaine(Entree& is)
   Cerr << "Association of the domain on which the interpreter applies " << que_suis_je() << finl;
   Nom nom_dom;
   is >> nom_dom;
-  if(!sub_type(Zone, objet(nom_dom)))
+  if(!sub_type(Domaine, objet(nom_dom)))
     {
       Cerr << nom_dom << " is of type " << objet(nom_dom).que_suis_je() << finl;
       Cerr << "we know to treat only one domain with the interpreter " << que_suis_je() << finl;
       exit();
     }
-  domains_.add(ref_cast(Zone, objet(nom_dom)));
+  domains_.add(ref_cast(Domaine, objet(nom_dom)));
 }
 
 Entree& Interprete_geometrique_base::interpreter(Entree& is)
@@ -56,26 +56,26 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
   // suite a la modification des domaines
   for (int j=0; j<domains_.size(); j++)
     {
-      Zone& zone = domaine(j);
-      zone.invalide_octree();
-      zone.faces_bord().associer_domaine(zone);
-      zone.faces_joint().associer_domaine(zone);
-      zone.faces_raccord().associer_domaine(zone);
-      zone.faces_int().associer_domaine(zone);
-      zone.type_elem().associer_domaine(zone);
-      zone.fixer_premieres_faces_frontiere();
-//      zone.associer_domaine(domaine(j));
+      Domaine& domaine = domaine(j);
+      domaine.invalide_octree();
+      domaine.faces_bord().associer_domaine(domaine);
+      domaine.faces_joint().associer_domaine(domaine);
+      domaine.faces_raccord().associer_domaine(domaine);
+      domaine.faces_int().associer_domaine(domaine);
+      domaine.type_elem().associer_domaine(domaine);
+      domaine.fixer_premieres_faces_frontiere();
+//      domaine.associer_domaine(domaine(j));
     }
   return is;
 }
 
-// Je rajoute dans les sous-zones les nouveaux elements
-void Interprete_geometrique_base::mettre_a_jour_sous_zone(Zone& zone, int& elem, int num_premier_elem, int nb_elem) const
+// Je rajoute dans les sous-domaines les nouveaux elements
+void Interprete_geometrique_base::mettre_a_jour_sous_domaine(Domaine& domaine, int& elem, int num_premier_elem, int nb_elem) const
 {
-  Zone& dom=zone;
-  for (int ssz=0; ssz<dom.nb_ss_zones(); ssz++)
+  Domaine& dom=domaine;
+  for (int ssz=0; ssz<dom.nb_ss_domaines(); ssz++)
     {
-      Sous_Zone& sous_zone=dom.ss_zone(ssz);
+      Sous_Domaine& sous_domaine=dom.ss_domaine(ssz);
       if ((que_suis_je()=="Raffiner_anisotrope")
           || (que_suis_je()=="Raffiner_isotrope")
           || (que_suis_je()=="Remove_elem")
@@ -89,17 +89,17 @@ void Interprete_geometrique_base::mettre_a_jour_sous_zone(Zone& zone, int& elem,
           || (que_suis_je()=="Trianguler_H")
           || (que_suis_je()=="VerifierCoin"))
         {
-          const int nb_poly=sous_zone.nb_elem_tot();
+          const int nb_poly=sous_domaine.nb_elem_tot();
           for (int nb_p=0; nb_p<nb_poly; nb_p++)
             {
-              if (elem==sous_zone[nb_p])
+              if (elem==sous_domaine[nb_p])
                 {
-                  Cerr << "   The element " << elem << " which will be modified, is included to the subarea \"" << sous_zone.le_nom() << "\". So the element";
+                  Cerr << "   The element " << elem << " which will be modified, is included to the subarea \"" << sous_domaine.le_nom() << "\". So the element";
                   if (nb_elem>1) Cerr << "s";
                   Cerr << " generated [";
                   for(int num_elem=num_premier_elem; num_elem<num_premier_elem+nb_elem; num_elem++)
                     {
-                      sous_zone.add_poly(num_elem);
+                      sous_domaine.add_poly(num_elem);
                       if (num_elem!=num_premier_elem) Cerr << " ";
                       Cerr << num_elem;
                     }
@@ -110,7 +110,7 @@ void Interprete_geometrique_base::mettre_a_jour_sous_zone(Zone& zone, int& elem,
       else
         {
           Cerr << finl;
-          Cerr << "You have defined the subarea \"" << sous_zone.le_nom() << "\" before using the interpreter \"" << que_suis_je() << "\"." << finl;
+          Cerr << "You have defined the subarea \"" << sous_domaine.le_nom() << "\" before using the interpreter \"" << que_suis_je() << "\"." << finl;
           Cerr << "To correctly mark the good elements, set the subarea after to have used the interpreter." << finl;
           exit();
         }

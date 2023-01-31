@@ -13,25 +13,25 @@
 *
 *****************************************************************************/
 #include <distances_EF.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Motcle.h>
 
 double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,
-                    const Zone_EF& zone,
+                    const Domaine_EF& domaine,
                     double& val1,double& val2,double& val3)
 {
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& face_normale = domaine.face_normales();
   // fac numero de la face a paroi fixe
   double r0,r1,r2;
   calcule_r0r1r2(face_normale,fac,r0,r1,r2);
-  int nsom = zone.nb_som_face();
+  int nsom = domaine.nb_som_face();
   ArrOfDouble vit_face(3);
   vit_face=0.;
   for(int comp=0; comp<3; comp++)
     {
       for(int jsom=0; jsom<nsom; jsom++)
         {
-          int num_som = zone.face_sommets(num1, jsom);
+          int num_som = domaine.face_sommets(num1, jsom);
           vit_face[comp]+=vit(num_som,comp);
         }
     }
@@ -50,21 +50,21 @@ double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,
 }
 
 double norm_2D_vit1_k(const DoubleTab& vit,int fac,int num1,
-                      const Zone_EF& zone,
+                      const Domaine_EF& domaine,
                       double& val1,double& val2)
 {
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& face_normale = domaine.face_normales();
   // fac numero de la face a paroi fixe
   double r0,r1;
   calcule_r0r1(face_normale,fac,r0,r1);
-  int nsom = zone.nb_som_face();
+  int nsom = domaine.nb_som_face();
   ArrOfDouble vit_face(2);
   vit_face=0.;
   for(int comp=0; comp<2; comp++)
     {
       for(int jsom=0; jsom<nsom; jsom++)
         {
-          int num_som = zone.face_sommets(num1, jsom);
+          int num_som = domaine.face_sommets(num1, jsom);
           vit_face[comp]+=vit(num_som,comp);
         }
     }
@@ -82,15 +82,15 @@ double norm_2D_vit1_k(const DoubleTab& vit,int fac,int num1,
 }
 
 double norm_3D_vit2(const DoubleTab& vit,int fac,int num1,
-                    const Zone_EF& zone,
+                    const Domaine_EF& domaine,
                     double& val1,double& val2,double& val3)
 {
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& face_normale = domaine.face_normales();
   // fac numero de la face a paroi defilante
   double r0,r1,r2;
   calcule_r0r1r2(face_normale,fac,r0,r1,r2);
 
-  int nsom = zone.nb_som_face();
+  int nsom = domaine.nb_som_face();
   ArrOfDouble vit_face(3);
   ArrOfDouble vit_face2(3);
   vit_face=0.;
@@ -99,9 +99,9 @@ double norm_3D_vit2(const DoubleTab& vit,int fac,int num1,
     {
       for(int jsom=0; jsom<nsom; jsom++)
         {
-          int num_som = zone.face_sommets(num1, jsom);
+          int num_som = domaine.face_sommets(num1, jsom);
           vit_face[comp]+=vit(num_som,comp);
-          int num_som2 = zone.face_sommets(fac, jsom);
+          int num_som2 = domaine.face_sommets(fac, jsom);
           vit_face2[comp]+=vit(num_som2,comp);
         }
     }
@@ -119,15 +119,15 @@ double norm_3D_vit2(const DoubleTab& vit,int fac,int num1,
 }
 
 double norm_2D_vit2_k(const DoubleTab& vit,int fac,int num1,
-                      const Zone_EF& zone,
+                      const Domaine_EF& domaine,
                       double& val1,double& val2)
 {
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& face_normale = domaine.face_normales();
   // fac numero de la face a paroi defilante
   double r0,r1;
   calcule_r0r1(face_normale,fac,r0,r1);
 
-  int nsom = zone.nb_som_face();
+  int nsom = domaine.nb_som_face();
   ArrOfDouble vit_face(2);
   ArrOfDouble vit_face2(2);
   vit_face=0.;
@@ -136,9 +136,9 @@ double norm_2D_vit2_k(const DoubleTab& vit,int fac,int num1,
     {
       for(int jsom=0; jsom<nsom; jsom++)
         {
-          int num_som = zone.face_sommets(num1, jsom);
+          int num_som = domaine.face_sommets(num1, jsom);
           vit_face[comp]+=vit(num_som,comp);
-          int num_som2 = zone.face_sommets(fac, jsom);
+          int num_som2 = domaine.face_sommets(fac, jsom);
           vit_face2[comp]+=vit(num_som2,comp);
         }
     }
@@ -153,12 +153,12 @@ double norm_2D_vit2_k(const DoubleTab& vit,int fac,int num1,
   return norm_vit;
 }
 
-double distance_2D(int fac,int elem,const Zone_EF& zone)
+double distance_2D(int fac,int elem,const Domaine_EF& domaine)
 {
-  const DoubleTab& xp = zone.xp();    // centre de gravite des elements
-  const DoubleTab& xv = zone.xv();    // centre de gravite des faces
+  const DoubleTab& xp = domaine.xp();    // centre de gravite des elements
+  const DoubleTab& xv = domaine.xv();    // centre de gravite des faces
 
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& face_normale = domaine.face_normales();
   double r0,r1;
   calcule_r0r1(face_normale,fac,r0,r1);
 
@@ -170,11 +170,11 @@ double distance_2D(int fac,int elem,const Zone_EF& zone)
   return fabs(r0*(x1-x0)+r1*(y1-y0));
 }
 
-double distance_3D(int fac,int elem,const Zone_EF& zone)
+double distance_3D(int fac,int elem,const Domaine_EF& domaine)
 {
-  const DoubleTab& xp = zone.xp();    // centre de gravite des elements
-  const DoubleTab& xv = zone.xv();    // centre de gravite des faces
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& xp = domaine.xp();    // centre de gravite des elements
+  const DoubleTab& xv = domaine.xv();    // centre de gravite des faces
+  const DoubleTab& face_normale = domaine.face_normales();
   double r0,r1,r2;
   calcule_r0r1r2(face_normale,fac,r0,r1,r2);
   double x0=xv(fac,0);
@@ -187,10 +187,10 @@ double distance_3D(int fac,int elem,const Zone_EF& zone)
   return fabs(r0*(x1-x0)+r1*(y1-y0)+r2*(z1-z0));
 }
 
-double norm_vit_lp(const ArrOfDouble& vit,int face,const Zone_EF& zone,ArrOfDouble& val)
+double norm_vit_lp(const ArrOfDouble& vit,int face,const Domaine_EF& domaine,ArrOfDouble& val)
 {
 
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& face_normale = domaine.face_normales();
   int dim=Objet_U::dimension;
   ArrOfDouble r(dim);
   double psc,norm_vit;
@@ -208,31 +208,31 @@ double norm_vit_lp(const ArrOfDouble& vit,int face,const Zone_EF& zone,ArrOfDoub
   return norm_vit;
 }
 
-double norm_vit_lp_k(const DoubleTab& vit,int face,int face_b,const Zone_EF& zone,ArrOfDouble& val,int is_defilante)
+double norm_vit_lp_k(const DoubleTab& vit,int face,int face_b,const Domaine_EF& domaine,ArrOfDouble& val,int is_defilante)
 {
   int dimension=Objet_U::dimension;
-  //assert(face_b<zone.premiere_face_int()); assert a ameliorer ou faces_virt...
+  //assert(face_b<domaine.premiere_face_int()); assert a ameliorer ou faces_virt...
   if (is_defilante==0)
     if (dimension==3)
-      return norm_3D_vit1(vit,face_b,face,zone,val[0],val[1],val[2]);
+      return norm_3D_vit1(vit,face_b,face,domaine,val[0],val[1],val[2]);
     else
-      return norm_2D_vit1_k(vit,face_b,face,zone,val[0],val[1]);
+      return norm_2D_vit1_k(vit,face_b,face,domaine,val[0],val[1]);
 
   else
     {
       if (dimension==3)
-        return norm_3D_vit2(vit,face_b,face,zone,val[0],val[1],val[2]);
+        return norm_3D_vit2(vit,face_b,face,domaine,val[0],val[1],val[2]);
       else
-        return norm_2D_vit2_k(vit,face_b,face,zone,val[0],val[1]);
+        return norm_2D_vit2_k(vit,face_b,face,domaine,val[0],val[1]);
     }
 }
 
-double distance_face_elem(int fac,int elem,const Zone_EF& zone)
+double distance_face_elem(int fac,int elem,const Domaine_EF& domaine)
 {
   int dimension=Objet_U::dimension;
   if (dimension==3)
-    return distance_3D(fac,elem,zone);
+    return distance_3D(fac,elem,domaine);
   else
-    return distance_2D(fac,elem,zone);
+    return distance_2D(fac,elem,domaine);
 }
 

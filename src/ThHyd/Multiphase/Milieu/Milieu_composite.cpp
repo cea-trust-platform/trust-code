@@ -22,7 +22,7 @@
 #include <Probleme_base.h>
 #include <Pb_Multiphase.h>
 #include <Interprete.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Milieu_composite, "Milieu_composite", Fluide_base);
 // XD liste_mil listobj liste_mil -1 milieu_base 0 Composite medium made of several sub mediums.
@@ -199,26 +199,26 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   Cerr << "Composite medium discretization." << finl;
 
   const int N = (int)fluides.size(), nc = pb.equation(0).inconnue()->nb_valeurs_temporelles();
-  const Zone_dis_base& zone_dis = pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
   const double temps = pb.schema_temps().temps_courant();
 
   for (auto& itr : fluides) itr->discretiser(pb, dis);
 
   /* masse volumique, energie interne, enthalpie : champ_inc */
   Champ_Inc rho_inc, ei_inc, h_inc;
-  dis.discretiser_champ("champ_elem", zone_dis, "masse_volumique", "kg/m^3", N, nc, temps, rho_inc);
-  dis.discretiser_champ("champ_elem", zone_dis, "energie_interne", "J/m^3", N, nc, temps, ei_inc);
-  dis.discretiser_champ("champ_elem", zone_dis, "enthalpie", "J/m^3", N, nc, temps, h_inc);
+  dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique", "kg/m^3", N, nc, temps, rho_inc);
+  dis.discretiser_champ("champ_elem", domaine_dis, "energie_interne", "J/m^3", N, nc, temps, ei_inc);
+  dis.discretiser_champ("champ_elem", domaine_dis, "enthalpie", "J/m^3", N, nc, temps, h_inc);
   rho = rho_inc, e_int = ei_inc, h = h_inc;
 
   /* autres champs : champ_fonc */
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_dynamique", "kg/m/s", N, temps, mu);
-  dis.discretiser_champ("champ_elem", zone_dis, "viscosite_cinematique", "m2/s", N, temps, nu);
-  dis.discretiser_champ("champ_elem", zone_dis, "diffusivite", "m2/s", N, temps, alpha);
-  dis.discretiser_champ("champ_elem", zone_dis, "conductivite", "W/m/K", N, temps, lambda);
-  dis.discretiser_champ("champ_elem", zone_dis, "capacite_calorifique", "J/kg/K", N, temps, Cp);
-  dis.discretiser_champ("champ_elem", zone_dis, "masse_volumique_melange", "kg/m^3", 1, temps, rho_m);
-  dis.discretiser_champ("champ_elem", zone_dis, "enthalpie_melange", "J/m^3", 1, temps, h_m);
+  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_dynamique", "kg/m/s", N, temps, mu);
+  dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_cinematique", "m2/s", N, temps, nu);
+  dis.discretiser_champ("champ_elem", domaine_dis, "diffusivite", "m2/s", N, temps, alpha);
+  dis.discretiser_champ("champ_elem", domaine_dis, "conductivite", "W/m/K", N, temps, lambda);
+  dis.discretiser_champ("champ_elem", domaine_dis, "capacite_calorifique", "J/kg/K", N, temps, Cp);
+  dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique_melange", "kg/m^3", 1, temps, rho_m);
+  dis.discretiser_champ("champ_elem", domaine_dis, "enthalpie_melange", "J/m^3", 1, temps, h_m);
 
   champs_compris_.ajoute_champ(rho);
   champs_compris_.ajoute_champ(e_int);
@@ -346,7 +346,7 @@ int Milieu_composite::check_unknown_range() const
 void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
 {
   const Milieu_composite& mil = ref_cast(Milieu_composite, obj);
-  const Zone_VF& zvf = ref_cast(Zone_VF, mil.equation_.begin()->second->zone_dis().valeur());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, mil.equation_.begin()->second->domaine_dis().valeur());
   int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides.size();
   std::vector<const DoubleTab *> split(N);
   for (n = 0; n < N; n++) split[n] = &mil.fluides[n]->masse_volumique().valeurs();
@@ -355,7 +355,7 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
 
   std::vector<DoubleTab> bsplit(N);
   for (n = 0; n < N; n++)
-    if (mil.fluides[n]->masse_volumique()->a_une_zone_dis_base())
+    if (mil.fluides[n]->masse_volumique()->a_une_domaine_dis_base())
       bsplit[n] = mil.fluides[n]->masse_volumique()->valeur_aux_bords();
     else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides[n]->masse_volumique()->valeur_aux(zvf.xv_bord(), bsplit[n]);
   for (i = 0; i < Nb; i++)

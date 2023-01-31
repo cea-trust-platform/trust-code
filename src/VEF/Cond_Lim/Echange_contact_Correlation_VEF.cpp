@@ -21,10 +21,10 @@
 #include <Milieu_base.h>
 #include <Schema_Comm.h>
 #include <Solv_TDMA.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <EFichier.h>
 #include <SFichier.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 
 Implemente_instanciable(Echange_contact_Correlation_VEF,"Paroi_Echange_contact_Correlation_VEF",Temperature_imposee_paroi);
@@ -151,9 +151,9 @@ void Echange_contact_Correlation_VEF::calculer_h_solide(DoubleTab& tab)
   // forcement local
 
 
-  const Equation_base& mon_eqn = zone_Cl_dis().equation();
+  const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const Milieu_base& mon_milieu = mon_eqn.milieu();
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_Cl_dis().zone_dis().valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis().valeur());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const IntTab& face_voisins = zvef.face_voisins();
 
@@ -216,7 +216,7 @@ void Echange_contact_Correlation_VEF::completer()
     U=debit/rho(0);
   else U = debit/rho(N-1);
 
-  const Equation_base& mon_eqn = zone_Cl_dis().equation();
+  const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const Milieu_base& mon_milieu = mon_eqn.milieu();
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const int nb_faces_bord = ma_front_vf.nb_faces();
@@ -237,7 +237,7 @@ void Echange_contact_Correlation_VEF::completer()
   DoubleTab& Tparoi =champ_front().valeur().valeurs();
   Tparoi.resize(nb_faces_bord,nb_comp);
   const DoubleTab& Ts = mon_eqn.inconnue().valeurs();
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_Cl_dis().zone_dis().valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis().valeur());
   const IntTab& face_voisins = zvef.face_voisins();
   const int ndeb = ma_front_vf.num_premiere_face();
   for (int ii=0; ii<nb_faces_bord; ii++)
@@ -294,7 +294,7 @@ void Echange_contact_Correlation_VEF::init_tab_echange()
 void Echange_contact_Correlation_VEF::calculer_CL()
 {
   Schema_Comm schema_comm;
-  const Joints& joints = zone_Cl_dis().zone().faces_joint();
+  const Joints& joints = domaine_Cl_dis().domaine().faces_joint();
   const int nb_voisins = joints.size();
   ArrOfInt send_pe_list(nb_voisins);
   int i;
@@ -370,7 +370,7 @@ double Echange_contact_Correlation_VEF::calculer_coefficient_echange(int i)
  */
 void Echange_contact_Correlation_VEF::calculer_Q()
 {
-  const Zone_VEF& ma_zvef = ref_cast(Zone_VEF,zone_Cl_dis().zone_dis().valeur());
+  const Domaine_VEF& ma_zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis().valeur());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const int ndeb = ma_front_vf.num_premiere_face();
   const int nb_faces_bord = ma_front_vf.nb_faces();
@@ -398,11 +398,11 @@ void Echange_contact_Correlation_VEF::calculer_Q()
 
 void Echange_contact_Correlation_VEF::init()
 {
-  const Zone_VEF& ma_zvef = ref_cast(Zone_VEF,zone_Cl_dis().zone_dis().valeur());
+  const Domaine_VEF& ma_zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis().valeur());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const DoubleTab& xv = ma_zvef.xv();
   const IntTab& face_sommets = ma_zvef.face_sommets();
-  const DoubleTab& coord_som = ma_zvef.zone().coord_sommets();
+  const DoubleTab& coord_som = ma_zvef.domaine().coord_sommets();
 
   const int ndeb = ma_front_vf.num_premiere_face();
   const int nb_faces_bord = ma_front_vf.nb_faces();
@@ -572,7 +572,7 @@ void Echange_contact_Correlation_VEF::calculer_Vitesse()
  */
 void Echange_contact_Correlation_VEF::calculer_Tfluide()
 {
-  const Equation_base& mon_eqn = zone_Cl_dis().equation();
+  const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const double dt = mon_eqn.schema_temps().pas_de_temps();
 
   DoubleVect ma(N); // diagonale
@@ -705,7 +705,7 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
 {
 
   // Nom des fichiers de sauvegarde
-  Nom Fichier_sauv_nom = zone_Cl_dis().equation().probleme().le_nom();
+  Nom Fichier_sauv_nom = domaine_Cl_dis().equation().probleme().le_nom();
   Fichier_sauv_nom+="_";
   Fichier_sauv_nom+=frontiere_dis().frontiere().le_nom();
   Fichier_sauv_nom+=".sauv";
@@ -732,9 +732,9 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
 
   const int taille = h_solide.dimension(0);
   DoubleTab& Tparoi = champ_front().valeur().valeurs();
-  const Equation_base& mon_eqn = zone_Cl_dis().equation();
+  const Equation_base& mon_eqn = domaine_Cl_dis().equation();
   const DoubleTab& Ts = mon_eqn.inconnue().valeurs();
-  Zone_VEF& zvef = ref_cast(Zone_VEF,zone_Cl_dis().zone_dis().valeur());
+  Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_Cl_dis().domaine_dis().valeur());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
   const IntTab& face_voisins = zvef.face_voisins();
   const int ndeb = ma_front_vf.num_premiere_face();
@@ -835,7 +835,7 @@ void Echange_contact_Correlation_VEF::mettre_a_jour(double temps)
  */
 int Echange_contact_Correlation_VEF::limpr(double temps_courant,double dt) const
 {
-  const Schema_Temps_base& sch = zone_Cl_dis().equation().schema_temps();
+  const Schema_Temps_base& sch = domaine_Cl_dis().equation().schema_temps();
   // Test un peu tordu, mais ca fonctionne !!!! (CM 05/07/2007)
   if (dt_impr<=dt || ((sch.temps_max()<=temps_courant || sch.nb_pas_dt_max()<=(sch.nb_pas_dt()+1) || (temps_courant!=sch.temps_courant() && sch.nb_pas_dt()==0)) && dt_impr!=1e10))
     return 1;
@@ -879,7 +879,7 @@ void Echange_contact_Correlation_VEF::imprimer(double temps) const
           nom_bord+=Nom(temps);
           nom_bord+=".dat";
           SFichier fic(nom_bord);
-          fic.precision(zone_Cl_dis().equation().schema_temps().precision_impr());
+          fic.precision(domaine_Cl_dis().equation().schema_temps().precision_impr());
           fic.setf(ios::scientific);
           double Qt=0.;
           fic << "# X                T                U                h                rho                mu                lambda                Q[W]";
@@ -931,7 +931,7 @@ void Echange_contact_Correlation_VEF::imprimer(double temps) const
       nom_bord+=Nom(temps);
       nom_bord+=".dat";
       SFichier fic(nom_bord);
-      fic.precision(zone_Cl_dis().equation().schema_temps().precision_impr());
+      fic.precision(domaine_Cl_dis().equation().schema_temps().precision_impr());
       fic.setf(ios::scientific);
       double Qt=0.;
       fic << "# X                 T                 U                 h                 rho                 mu                 lambda                  Q[W]";
@@ -956,7 +956,7 @@ void Echange_contact_Correlation_VEF::imprimer(double temps) const
 // Attention : la normale a la face num_face est suppose sortante
 // tandis que celle a la face num2 est reorientee dans la methode
 // afin d etre sortante.
-double Echange_contact_Correlation_VEF::pdt_scalSqrt(const Zone_VEF& le_dom,int num_face,int num2,
+double Echange_contact_Correlation_VEF::pdt_scalSqrt(const Domaine_VEF& le_dom,int num_face,int num2,
                                                      int num_elem,int dim,double diffu)
 {
   double pscal;
@@ -973,7 +973,7 @@ double Echange_contact_Correlation_VEF::pdt_scalSqrt(const Zone_VEF& le_dom,int 
 // Attention : la normal a la face num_face est suppose sortante
 // tandis que celle a la face num2 est reorientee dans la methode
 // afin d etre sortante.
-double Echange_contact_Correlation_VEF::pdt_scal(const Zone_VEF& le_dom,int num_face,int num2,
+double Echange_contact_Correlation_VEF::pdt_scal(const Domaine_VEF& le_dom,int num_face,int num2,
                                                  int num_elem,int dim,double diffu)
 {
   double pscal;
@@ -989,7 +989,7 @@ double Echange_contact_Correlation_VEF::pdt_scal(const Zone_VEF& le_dom,int num_
 
   return (pscal*diffu)/le_dom.volumes(num_elem);
 }
-double Echange_contact_Correlation_VEF::surfacesVEF(const Zone_VEF& le_dom,int num_face,int dim)
+double Echange_contact_Correlation_VEF::surfacesVEF(const Domaine_VEF& le_dom,int num_face,int dim)
 {
   double pscal;
 

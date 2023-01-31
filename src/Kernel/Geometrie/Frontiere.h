@@ -20,12 +20,12 @@
 
 /*! @brief Classe Frontiere.
  *
- * Une Frontiere decrit une partie de la frontiere d'une Zone,
- *     elle possede un Nom, elle porte des Faces et a une Zone associee.
+ * Une Frontiere decrit une partie de la frontiere d'une Domaine,
+ *     elle possede un Nom, elle porte des Faces et a une Domaine associee.
  *     Une Frontiere peut etre specialisee en un Bord, un Joint un
  *     Raccord ou une Face Interne.
  *
- * @sa Zone Bord Joint Raccord Faces_Interne
+ * @sa Domaine Bord Joint Raccord Faces_Interne
  */
 class Frontiere : public Objet_U
 {
@@ -35,9 +35,9 @@ public:
 
   // Entree& lire(Entree&);
   // Sortie& ecrire(Sortie&) const;
-  void associer_domaine(const Zone&);
-  const Zone& zone() const;
-  Zone& zone();
+  void associer_domaine(const Domaine&);
+  const Domaine& domaine() const;
+  Domaine& domaine();
   void nommer(const Nom&) override;
   void ajouter_faces(const IntTab&);
   void typer_faces(const Motcle&);
@@ -74,7 +74,7 @@ private :
 
   Nom nom;
   Faces les_faces;
-  REF(Zone) le_dom;
+  REF(Domaine) le_dom;
   ArrOfInt faces_virt;
   int num_premiere_face_ = -100;
   double aire_ = -100.;

@@ -19,8 +19,8 @@
 #include <Source_Chaleur_Fluide_Dilatable_base.h>
 #include <Ref_Fluide_Quasi_Compressible.h>
 
-class Zone_Cl_dis;
-class Zone_dis;
+class Domaine_Cl_dis;
+class Domaine_dis;
 
 /*! @brief class Source_QC_Chaleur
  *

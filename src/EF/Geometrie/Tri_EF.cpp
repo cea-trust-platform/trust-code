@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Tri_EF.h>
-#include <Zone.h>
-#include <Zone_EF.h>
+#include <Domaine.h>
+#include <Domaine_EF.h>
 #include <Champ_P1_EF.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
@@ -39,16 +39,16 @@ Tri_EF::Tri_EF()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_EF
+/*! @brief remplit le tableau face_normales dans la Domaine_EF
  *
  */
 void Tri_EF::normale(int num_Face,DoubleTab& Face_normales,
                      const  IntTab& Face_sommets,
                      const IntTab& Face_voisins,
                      const IntTab& elem_faces,
-                     const Zone& zone_geom) const
+                     const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   double x1,y1;
   double nx,ny;

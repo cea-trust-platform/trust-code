@@ -16,13 +16,13 @@
 #define BilanQdmVEF_included
 
 #include <TRUSTTabs_forward.h>
-class Zone_Cl_VEF;
+class Domaine_Cl_VEF;
 
 class BilanQdmVEF
 {
 public :
-  static void bilan_qdm(const DoubleTab& dudt, const Zone_Cl_VEF& zone_Cl_VEF, ArrOfDouble& bilan);
+  static void bilan_qdm(const DoubleTab& dudt, const Domaine_Cl_VEF& domaine_Cl_VEF, ArrOfDouble& bilan);
   static void bilan_energie(const DoubleTab& dudt, const DoubleTab& u,
-                            const Zone_Cl_VEF& zone_Cl_VEF, ArrOfDouble& bilan);
+                            const Domaine_Cl_VEF& domaine_Cl_VEF, ArrOfDouble& bilan);
 };
 #endif

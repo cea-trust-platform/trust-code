@@ -25,7 +25,7 @@
 #include <TRUST_Vector.h>
 #include <Champ_Don.h>
 #include <Parser_U.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 class Convection_Diffusion_std;
 class Param;

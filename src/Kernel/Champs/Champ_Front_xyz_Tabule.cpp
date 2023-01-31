@@ -14,9 +14,9 @@
 *****************************************************************************/
 
 #include <Champ_Front_xyz_Tabule.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Frontiere_dis_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <Lecture_Table.h>
 

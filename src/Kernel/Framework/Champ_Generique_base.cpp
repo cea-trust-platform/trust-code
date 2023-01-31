@@ -234,9 +234,9 @@ void Champ_Generique_base::get_copy_coordinates(DoubleTab&) const
 /*! @brief Renvoie le tableau de connectivite entre l'entite geometrique index1 et l'entite index2.
  *
  * Par exemple
- *    get_ref_connectivity(ELEM, NODE) = Zone::mes_elems
- *    get_ref_connectivity(ELEM, FACE) = ZoneVF::elem_faces_
- *    get_ref_connectivity(FACE, ELEM) = ZoneVF::face_voisins_
+ *    get_ref_connectivity(ELEM, NODE) = Domaine::mes_elems
+ *    get_ref_connectivity(ELEM, FACE) = DomaineVF::elem_faces_
+ *    get_ref_connectivity(FACE, ELEM) = DomaineVF::face_voisins_
  *   Le tableau a toujours deux dimensions :
  *    dimension(0) = nombre d'entites "index1" reelles
  *    dimension(1) = nombre d'entites "index2" connectees a chaque entite "index1"
@@ -262,11 +262,11 @@ void Champ_Generique_base::get_copy_connectivity(Entity index1, Entity index2, I
  * Par defaut le domaine associe au probleme.
  *
  */
-const Zone& Champ_Generique_base::get_ref_domain() const
+const Domaine& Champ_Generique_base::get_ref_domain() const
 {
   const Objet_U& ob = interprete().objet(nom_pb_);
   const Probleme_base& pb = ref_cast(Probleme_base,ob);
-  const Zone& dom = pb.domaine_dis().zone();
+  const Domaine& dom = pb.domaine_dis().domaine();
   return dom;
 }
 
@@ -276,30 +276,30 @@ const Zone& Champ_Generique_base::get_ref_domain() const
  * Par defaut le domaine associe au probleme.
  *
  */
-void Champ_Generique_base::get_copy_domain(Zone& domain) const
+void Champ_Generique_base::get_copy_domain(Domaine& domain) const
 {
-  const Zone& dom = get_ref_domain();
+  const Domaine& dom = get_ref_domain();
   domain = dom;
 }
 
 
-/*! @brief Renvoie une ref a la zone_discretisee du domaine sur lequel sera evalue l espace de stockage.
+/*! @brief Renvoie une ref a la domaine_discretisee du domaine sur lequel sera evalue l espace de stockage.
  *
  *  Par defaut le domaine associe au probleme.
  *
  */
-const Zone_dis_base& Champ_Generique_base::get_ref_zone_dis_base() const
+const Domaine_dis_base& Champ_Generique_base::get_ref_domaine_dis_base() const
 {
   const Objet_U& ob = interprete().objet(nom_pb_);
   const Probleme_base& pb = ref_cast(Probleme_base,ob);
-  const Zone_dis_base& zone_dis = pb.domaine_dis().valeur();
-  return zone_dis;
+  const Domaine_dis_base& domaine_dis = pb.domaine_dis().valeur();
+  return domaine_dis;
 }
 
-/*! @brief Renvoie une ref a la zone_cl_discretisee de l equation portant le champ cible.
+/*! @brief Renvoie une ref a la domaine_cl_discretisee de l equation portant le champ cible.
  *
  */
-const Zone_Cl_dis_base& Champ_Generique_base::get_ref_zcl_dis_base() const
+const Domaine_Cl_dis_base& Champ_Generique_base::get_ref_zcl_dis_base() const
 {
   throw Champ_Generique_erreur("INVALID");
 }

@@ -20,8 +20,8 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Interprete.h>
-#include <Zone.h>
-#include <Zone_VF.h>
+#include <Domaine.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable_sans_constructeur(Champ_front_calc,"Champ_front_calc",Ch_front_var_instationnaire_dep);
 
@@ -97,13 +97,13 @@ int Champ_front_calc::initialiser(double temps, const Champ_Inc_base& inco)
   // Check/initialize Raccord boundaries in parallel:
   if (nproc() > 1)
     {
-      const Zone_dis_base& zone_dis_opposee = front_dis().zone_dis();
-      const Zone_dis_base& zone_dis_locale = frontiere_dis().zone_dis();
+      const Domaine_dis_base& domaine_dis_opposee = front_dis().domaine_dis();
+      const Domaine_dis_base& domaine_dis_locale = frontiere_dis().domaine_dis();
       const Frontiere& frontiere_opposee = front_dis().frontiere();
       const Frontiere& frontiere_locale = frontiere_dis().frontiere();
       if (distant_ && !sub_type(Raccord_distant_homogene, frontiere_opposee))
         {
-          const Nom& nom_domaine_oppose = zone_dis_opposee.zone().le_nom();
+          const Nom& nom_domaine_oppose = domaine_dis_opposee.domaine().le_nom();
           Cerr << "Error, the boundary " << frontiere_opposee.le_nom() << " should be a Raccord." << finl;
           Cerr << "Add in your data file between the definition and the partition of the domain " << nom_domaine_oppose << " :" << finl;
           Cerr << "Modif_bord_to_raccord " << nom_domaine_oppose << " " << frontiere_opposee.le_nom() << finl;
@@ -113,7 +113,7 @@ int Champ_front_calc::initialiser(double temps, const Champ_Inc_base& inco)
         {
           Raccord_distant_homogene& raccord_distant = ref_cast_non_const(Raccord_distant_homogene, frontiere_opposee);
           if (!raccord_distant.est_initialise())
-            raccord_distant.initialise(frontiere_locale, zone_dis_locale, zone_dis_opposee);
+            raccord_distant.initialise(frontiere_locale, domaine_dis_locale, domaine_dis_opposee);
         }
     }
   return 1;
@@ -162,7 +162,7 @@ void Champ_front_calc::mettre_a_jour(double temps)
 {
   assert (nom_autre_bord_ != "??") ;
   DoubleTab& tab=valeurs_au_temps(temps);
-  const Frontiere_dis_base& frontiere_dis_opposee = zone_dis().frontiere_dis(nom_bord_oppose());
+  const Frontiere_dis_base& frontiere_dis_opposee = domaine_dis().frontiere_dis(nom_bord_oppose());
   l_inconnue->trace(frontiere_dis_opposee,tab,temps,distant_ /* distant */);
 }
 
@@ -207,24 +207,24 @@ const Milieu_base& Champ_front_calc::milieu() const
   return equation().milieu();
 }
 
-/*! @brief Renvoie la zone discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace.
+/*! @brief Renvoie la domaine discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace.
  *
- * @return (Zone_dis_base&) la zone discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace
+ * @return (Domaine_dis_base&) la domaine discretisee associee a l'equation qui porte le champ inconnue dont on prend la trace
  */
-const Zone_dis_base& Champ_front_calc::zone_dis() const
+const Domaine_dis_base& Champ_front_calc::domaine_dis() const
 {
-  return inconnue().zone_dis_base();
+  return inconnue().domaine_dis_base();
 }
 
-/*! @brief Renvoie la zone des conditions au limites discretisees portee par l'equation qui porte le champ inconnue
+/*! @brief Renvoie la domaine des conditions au limites discretisees portee par l'equation qui porte le champ inconnue
  *
  *     dont on prend la trace
  *
- * @return (Zone_Cl_dis_base&) la zone des conditions au limites discretisees portee par l'equation qui porte le champ inconnue dont on prend la trace
+ * @return (Domaine_Cl_dis_base&) la domaine des conditions au limites discretisees portee par l'equation qui porte le champ inconnue dont on prend la trace
  */
-const Zone_Cl_dis_base& Champ_front_calc::zone_Cl_dis() const
+const Domaine_Cl_dis_base& Champ_front_calc::domaine_Cl_dis() const
 {
-  return equation().zone_Cl_dis().valeur();
+  return equation().domaine_Cl_dis().valeur();
 }
 
 /*! @brief Renvoie la frontiere discretisee correspondante au domaine sur lequel prend la trace.
@@ -234,7 +234,7 @@ const Zone_Cl_dis_base& Champ_front_calc::zone_Cl_dis() const
  */
 const Frontiere_dis_base& Champ_front_calc::front_dis() const
 {
-  return zone_dis().frontiere_dis(nom_autre_bord_);
+  return domaine_dis().frontiere_dis(nom_autre_bord_);
 }
 
 

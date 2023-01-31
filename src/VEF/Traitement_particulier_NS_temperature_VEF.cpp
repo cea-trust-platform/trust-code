@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Traitement_particulier_NS_temperature_VEF.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 #include <Champ_P1NC.h>
 #include <Champ_Uniforme.h>
 #include <SFichier.h>
@@ -51,11 +51,11 @@ Entree& Traitement_particulier_NS_temperature_VEF::readOn(Entree& is)
 
 void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
 {
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VEF& zone_VEF=ref_cast(Zone_VEF, zdisbase);
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,mon_equation->zone_Cl_dis().valeur() );
-  //  const DoubleTab& xv = zone_VEF.xv();    // centre de gravite des faces
-  int nb_front=zone_VEF.nb_front_Cl();
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, zdisbase);
+  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_equation->domaine_Cl_dis().valeur() );
+  //  const DoubleTab& xv = domaine_VEF.xv();    // centre de gravite des faces
+  int nb_front=domaine_VEF.nb_front_Cl();
 
 
   const Probleme_base& pb = mon_equation.valeur().probleme();
@@ -94,7 +94,7 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
 
   for (int n_bord=0; n_bord<nb_front; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int num1 = le_bord.num_premiere_face();
       int num2 = num1 + le_bord.nb_faces();
@@ -108,8 +108,8 @@ void Traitement_particulier_NS_temperature_VEF::calcul_temperature()
           double tmp=0.;
           for (int iface=num1; iface<num2; iface++)
             {
-              if (taille_rho==1)  tmp = rho(0,0)  *vitesse(iface,dir)*zone_VEF.face_surfaces(iface);
-              else                     tmp = rho(iface)*vitesse(iface,dir)*zone_VEF.face_surfaces(iface);
+              if (taille_rho==1)  tmp = rho(0,0)  *vitesse(iface,dir)*domaine_VEF.face_surfaces(iface);
+              else                     tmp = rho(iface)*vitesse(iface,dir)*domaine_VEF.face_surfaces(iface);
               Tmoyen += tmp*tab_temperature(iface);
               rhoUS += tmp;
               if(tab_temperature(iface)>Tmax) Tmax=tab_temperature(iface);

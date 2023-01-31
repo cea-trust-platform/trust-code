@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Point_EF.h>
-#include <Zone.h>
-#include <Zone_EF.h>
+#include <Domaine.h>
+#include <Domaine_EF.h>
 #include <Champ_P1_EF.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
@@ -36,14 +36,14 @@ Entree& Point_EF::readOn(Entree& s )
 }
 
 
-/*! @brief remplit le tableau face_normales dans la Zone_EF
+/*! @brief remplit le tableau face_normales dans la Domaine_EF
  *
  */
 void Point_EF::normale(int num_Face,DoubleTab& Face_normales,
                        const  IntTab& Face_sommets,
                        const IntTab& Face_voisins,
                        const IntTab& elem_faces,
-                       const Zone& zone_geom) const
+                       const Domaine& domaine_geom) const
 {
   abort();
   // pas de sens simple a normale
@@ -59,8 +59,8 @@ void Point_EF::normale(int num_Face,DoubleTab& Face_normales,
     int n2=elem_faces(elem1,0);
     if (n2==num_Face) Face_normales(num_Face,0) = -1;
     /*
-    const DoubleTab& les_coords = zone_geom.domaine().coord_sommets();
-    //     const IntTab& elem = zone_geom.elems();
+    const DoubleTab& les_coords = domaine_geom.domaine().coord_sommets();
+    //     const IntTab& elem = domaine_geom.elems();
 
        {
     int n2=elem_faces(elem1,0);

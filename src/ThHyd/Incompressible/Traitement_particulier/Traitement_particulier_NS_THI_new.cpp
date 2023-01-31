@@ -15,7 +15,7 @@
 
 #include <Traitement_particulier_NS_THI_new.h>
 #include <MD_Vector_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_base(Traitement_particulier_NS_THI_new,"Traitement_particulier_NS_THI_new",Traitement_particulier_NS_base);
 
@@ -145,12 +145,12 @@ void Traitement_particulier_NS_THI_new::en_cours_de_resolution(int nb_op, Double
   return;
 }
 
-int& Traitement_particulier_NS_THI_new::calcul_nb_som_dir(const Zone& zone)
+int& Traitement_particulier_NS_THI_new::calcul_nb_som_dir(const Domaine& domaine)
 {
   const char* methode_actuelle="Traitement_particulier_NS_THI_new::calcul_nb_som_dir";
 
   // Sert a calculer le nombre de sommet commun en parallele
-  double nb_som = zone.md_vector_sommets().valeur().nb_items_seq_tot();
+  double nb_som = domaine.md_vector_sommets().valeur().nb_items_seq_tot();
   // Somme sur tous les processeurs
 
   double nb=pow(nb_som*1.,1./3.);

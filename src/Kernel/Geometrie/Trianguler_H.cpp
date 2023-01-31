@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Trianguler_H.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Trianguler_H,"Trianguler_H",Triangulation_base);
 
@@ -40,31 +40,31 @@ Entree& Trianguler_H::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-/*! @brief Triangule tous les element d'une zone: transforme les elements goemetriques de la zone en triangles.
+/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques de la domaine en triangles.
  *
  *     Pour l'instant on ne sait trianguler que des Rectangles
  *     (on les coupe en 2).
  *
- * @param (Zone& zone) la zone dont on veut trianguler les elements
+ * @param (Domaine& domaine) la domaine dont on veut trianguler les elements
  */
-void Trianguler_H::trianguler(Zone& zone) const
+void Trianguler_H::trianguler(Domaine& domaine) const
 {
-  Zone& dom=zone;
-  IntTab& les_elems=zone.les_elems();
+  Domaine& dom=domaine;
+  IntTab& les_elems=domaine.les_elems();
   int oldsz=les_elems.dimension(0);
   DoubleTab& sommets=dom.les_sommets();
   int cpt=sommets.dimension(0);
   {
     DoubleTab sommets_ajoutes(oldsz, dimension);
-    zone.type_elem()->calculer_centres_gravite(sommets_ajoutes);
+    domaine.type_elem()->calculer_centres_gravite(sommets_ajoutes);
     sommets.resize(cpt+oldsz, dimension);
     for(int i=0; i<oldsz; i++)
       for(int j=0; j<dimension; j++)
         sommets(cpt+i,j)=sommets_ajoutes(i,j);
   }
-  if ((zone.type_elem()->que_suis_je() == "Rectangle")|| (zone.type_elem()->que_suis_je() == "Quadrangle"))
+  if ((domaine.type_elem()->que_suis_je() == "Rectangle")|| (domaine.type_elem()->que_suis_je() == "Quadrangle"))
     {
-      zone.typer("Triangle");
+      domaine.typer("Triangle");
       IntTab new_elems(4*oldsz, 3);
       for(int i=0; i< oldsz; i++)
         {
@@ -80,24 +80,24 @@ void Trianguler_H::trianguler(Zone& zone) const
           new_elems(i+oldsz,0)=                  i+cpt;
           new_elems(i+oldsz,1)=                  i0;
           new_elems(i+oldsz,2)=                  i2;
-          mettre_a_jour_sous_zone(zone,i,i+oldsz,1);
+          mettre_a_jour_sous_domaine(domaine,i,i+oldsz,1);
 
           new_elems(i+2*oldsz,0)=          i+cpt;
           new_elems(i+2*oldsz,1)=          i1;
           new_elems(i+2*oldsz,2)=          i3;
-          mettre_a_jour_sous_zone(zone,i,i+2*oldsz,1);
+          mettre_a_jour_sous_domaine(domaine,i,i+2*oldsz,1);
 
           new_elems(i+3*oldsz,0)=          i+cpt;
           new_elems(i+3*oldsz,1)=          i2;
           new_elems(i+3*oldsz,2)=          i3;
-          mettre_a_jour_sous_zone(zone,i,i+3*oldsz,1);
+          mettre_a_jour_sous_domaine(domaine,i,i+3*oldsz,1);
         }
       les_elems.ref(new_elems);
     }
   else
     {
       Cerr << "We do not yet know how to Trianguler_h the "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+           << domaine.type_elem()->que_suis_je() <<"s"<<finl;
     }
 }
 

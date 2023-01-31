@@ -28,9 +28,9 @@
 // Interprete
 
 #include <Interprete_geometrique_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class OrienteFacesBord : public Interprete_geometrique_base
 {

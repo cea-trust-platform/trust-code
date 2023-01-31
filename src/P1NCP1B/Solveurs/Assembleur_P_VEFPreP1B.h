@@ -18,7 +18,7 @@
 
 #include <Assembleur_P_VEF.h>
 #include <Matrice.h>
-class Zone_VEF_PreP1b;
+class Domaine_VEF_PreP1b;
 class Champ_P1_isoP1Bulle;
 
 class Assembleur_P_VEFPreP1B : public Assembleur_P_VEF
@@ -27,7 +27,7 @@ class Assembleur_P_VEFPreP1B : public Assembleur_P_VEF
   Declare_instanciable(Assembleur_P_VEFPreP1B);
 
 public :
-  const Zone_VEF_PreP1b& zone_Vef() const;
+  const Domaine_VEF_PreP1b& domaine_Vef() const;
   int assembler(Matrice&) override;
   int assembler_rho_variable(Matrice&, const Champ_Don_base&) override;
   int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;

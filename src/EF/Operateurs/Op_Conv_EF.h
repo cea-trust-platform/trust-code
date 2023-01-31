@@ -103,8 +103,8 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_template(const DoubleTab& transporte, D
   static constexpr bool IS_GEN = (_COND_ == AJOUTE_COND::GEN), IS_D3_81 = (_COND_ == AJOUTE_COND::D3_81), IS_D3_82 = (_COND_ == AJOUTE_COND::D3_82),
                         IS_D2_41 = (_COND_ == AJOUTE_COND::D2_41), IS_D2_42 = (_COND_ == AJOUTE_COND::D2_42);
 
-  const Zone_EF& zone_ef = ref_cast(Zone_EF, le_dom_EF.valeur());
-  const int nb_som_elem = (IS_D3_81 || IS_D3_82) ? 8 : ( (IS_D2_41 || IS_D2_42) ? 4 : zone_ef.zone().nb_som_elem() /* IS_GEN */);
+  const Domaine_EF& domaine_ef = ref_cast(Domaine_EF, le_dom_EF.valeur());
+  const int nb_som_elem = (IS_D3_81 || IS_D3_82) ? 8 : ( (IS_D2_41 || IS_D2_42) ? 4 : domaine_ef.domaine().nb_som_elem() /* IS_GEN */);
 
   if ((btd_impl == 1) && (hourglass_impl == 1) && (centre_impl == 1))
     return resu;
@@ -124,11 +124,11 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_template(const DoubleTab& transporte, D
   Debog::verifier("conv rho", rho_elem);
   Debog::verifier("conv transporte", transporte);
 
-  const int nb_comp0 = resu.line_size(), nb_elem_tot = zone_ef.zone().nb_elem_tot();
-  const DoubleVect& volumes_thilde = zone_ef.volumes_thilde(), & volumes = zone_ef.volumes();
-  const DoubleTab& IPhi_thilde = zone_ef.IPhi_thilde(), & bij = zone_ef.Bij();
+  const int nb_comp0 = resu.line_size(), nb_elem_tot = domaine_ef.domaine().nb_elem_tot();
+  const DoubleVect& volumes_thilde = domaine_ef.volumes_thilde(), & volumes = domaine_ef.volumes();
+  const DoubleTab& IPhi_thilde = domaine_ef.IPhi_thilde(), & bij = domaine_ef.Bij();
 
-  const IntTab& elems = zone_ef.zone().les_elems();
+  const IntTab& elems = domaine_ef.domaine().les_elems();
   double f = coefficient_btd();
 
   int mcoef3d[8] = { 1, -1, -1, 1, -1, 1, 1, -1 };

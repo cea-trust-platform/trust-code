@@ -24,7 +24,7 @@
 #include <TRUSTTab.h>
 #include <SFichier.h>
 #include <Motcle.h>
-class Zone;
+class Domaine;
 
 /*! @brief classe Sonde Cette classe permet d'effectuer l'evolution d'un champ au cours du temps.
  *

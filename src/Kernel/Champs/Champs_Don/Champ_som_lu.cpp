@@ -27,7 +27,7 @@ Entree& Champ_som_lu::readOn(Entree& is)
   double tolerance;
   Nom nom;
   is >> nom;
-  mon_domaine = ref_cast(Zone, Interprete::objet(nom));
+  mon_domaine = ref_cast(Domaine, Interprete::objet(nom));
   is >> nbcomp; // nombre de composantes du champ
   is >> tolerance; // tolerance en metres pour la recherche des coordonnees
   is >> nom; // nom du fichier a lire

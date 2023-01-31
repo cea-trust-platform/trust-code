@@ -15,7 +15,7 @@
 
 #include <Boundary_field_inward.h>
 #include <Motcle.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Linear_algebra_tools.h>
 #include <EChaine.h>
 
@@ -55,7 +55,7 @@ int Boundary_field_inward::initialiser(double tps, const Champ_Inc_base& inco)
 
 void Boundary_field_inward::mettre_a_jour(double tps)
 {
-  const Zone_VF& zone_VF = ref_cast(Zone_VF,zone_dis());
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF,domaine_dis());
   const Front_VF& le_bord= ref_cast(Front_VF,frontiere_dis());
   int first=le_bord.num_premiere_face();
 
@@ -73,7 +73,7 @@ void Boundary_field_inward::mettre_a_jour(double tps)
       int signe = -1;//we want the opposite of the normal vector
       int global_boundary_face_number=i+first;
       //outward vector associated to the fac global_boundary_face_number
-      DoubleTab normal_vector = zone_VF.normalized_boundaries_outward_vector(global_boundary_face_number,signe);
+      DoubleTab normal_vector = domaine_VF.normalized_boundaries_outward_vector(global_boundary_face_number,signe);
 
       for (int k=0; k<dimension; k++)
         {

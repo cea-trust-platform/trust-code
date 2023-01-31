@@ -20,8 +20,8 @@
 #include <Objet_U.h>
 
 class Champ_Inc_base;
-class Zone_EF;
-class Zone;
+class Domaine_EF;
+class Domaine;
 
 class Elem_EF_base: public Objet_U
 {
@@ -34,7 +34,7 @@ public:
 
   virtual void calcul_vc(const ArrOfInt&, ArrOfDouble&, const ArrOfDouble&, const DoubleTab&, const Champ_Inc_base&, int) const =0;
   virtual void calcul_xg(DoubleVect&, const DoubleTab&, const int, int&, int&, int&, int&) const =0;
-  virtual void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Zone&) const =0;
+  virtual void normale(int, DoubleTab&, const IntTab&, const IntTab&, const IntTab&, const Domaine&) const =0;
 protected:
 };
 

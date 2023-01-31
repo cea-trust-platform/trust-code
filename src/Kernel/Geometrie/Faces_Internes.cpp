@@ -21,13 +21,13 @@ Sortie& Faces_Internes::printOn(Sortie& os) const { return LIST(Faces_Interne)::
 
 Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(is); }
 
-/*! @brief Associe une zone a tous les objets Faces_Interne de la liste.
+/*! @brief Associe une domaine a tous les objets Faces_Interne de la liste.
  *
- * @param (Zone& une_zone) la zone a associer aux Faces_Interne de la liste
+ * @param (Domaine& une_domaine) la domaine a associer aux Faces_Interne de la liste
  */
-void Faces_Internes::associer_domaine(const Zone& une_zone)
+void Faces_Internes::associer_domaine(const Domaine& une_domaine)
 {
-  for (auto& itr : *this) itr.associer_domaine(une_zone);
+  for (auto& itr : *this) itr.associer_domaine(une_domaine);
 }
 
 /*! @brief Renvoie le nombre total de faces contenues dans la liste des Faces_Interne, i.

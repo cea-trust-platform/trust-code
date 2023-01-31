@@ -16,7 +16,7 @@
 #include <Evaluateur_VDF.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 
 Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval) : le_dom(eval.le_dom), la_zcl(eval.la_zcl), dimension(eval.dimension),
   premiere_face_bord(eval.premiere_face_bord)
@@ -29,18 +29,18 @@ Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval) : le_dom(eval.le_dom)
   xv.ref(eval.xv);
 }
 
-void Evaluateur_VDF::associer_domaines(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& zone_cl_vdf)
+void Evaluateur_VDF::associer_domaines(const Domaine_VDF& domaine_vdf, const Domaine_Cl_VDF& domaine_cl_vdf)
 {
-  le_dom = zone_vdf;
-  la_zcl = zone_cl_vdf;
+  le_dom = domaine_vdf;
+  la_zcl = domaine_cl_vdf;
   dimension = Objet_U::dimension;
-  premiere_face_bord = zone_vdf.premiere_face_bord();
-  surface.ref(zone_vdf.face_surfaces());
-  orientation.ref(zone_vdf.orientation());
-  elem_.ref(zone_vdf.face_voisins());
+  premiere_face_bord = domaine_vdf.premiere_face_bord();
+  surface.ref(domaine_vdf.face_surfaces());
+  orientation.ref(domaine_vdf.orientation());
+  elem_.ref(domaine_vdf.face_voisins());
   porosite.ref(la_zcl->equation().milieu().porosite_face());
-  volume_entrelaces.ref(zone_vdf.volumes_entrelaces());
-  xv.ref(zone_vdf.xv());
+  volume_entrelaces.ref(domaine_vdf.volumes_entrelaces());
+  xv.ref(domaine_vdf.xv());
 }
 
 void Evaluateur_VDF::associer_porosite(const DoubleVect& poro)

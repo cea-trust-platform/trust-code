@@ -15,7 +15,7 @@
 
 #include <Champ_Generique_Transformation.h>
 #include <Probleme_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <TRUSTTabs.h>
 #include <Champ_Fonc.h>
 
@@ -31,7 +31,7 @@
 #include <Linear_algebra_tools_impl.h>
 #include <MD_Vector.h>
 #include <MD_Vector_composite.h>
-#include <Zone_dis_base.h>
+#include <Domaine_dis_base.h>
 
 Implemente_instanciable(Champ_Generique_Transformation,"Transformation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Transformation,"Champ_Post_Transformation");
@@ -235,7 +235,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
         }
     }
   //Si aucun champ source n a ete specifie on en ajoute une
-  //pour donner acces a la zone discretisee ...
+  //pour donner acces a la domaine discretisee ...
 
   Noms sources_location;
 
@@ -270,29 +270,29 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
           Champ my_field;
 
           const Champ_base& source_i = get_source( i ).get_champ_without_evaluation( my_field );
-          if( source_i.a_une_zone_dis_base( ) )
+          if( source_i.a_une_domaine_dis_base( ) )
             {
-              const Zone_dis_base& zone_source_i = source_i.zone_dis_base( );
-              if( ! sub_type( Zone_VF , zone_source_i ) )
+              const Domaine_dis_base& domaine_source_i = source_i.domaine_dis_base( );
+              if( ! sub_type( Domaine_VF , domaine_source_i ) )
                 {
                   Cerr << "Warning in Champ_Generique_Transformation::completer "<<finl;
-                  Cerr << "The source number "<<i<<" has a zone_dis_base but not of type Zone_VF so use directive to determine the location"<<finl;
+                  Cerr << "The source number "<<i<<" has a domaine_dis_base but not of type Domaine_VF so use directive to determine the location"<<finl;
                   use_directive=true;
                 }
               if( ! use_directive )
                 {
                   const DoubleTab& values_source_i = source_i.valeurs( );
-                  const Zone_VF& zvf_source_i = ref_cast( Zone_VF, zone_source_i );
+                  const Domaine_VF& zvf_source_i = ref_cast( Domaine_VF, domaine_source_i );
 
 
                   MD_Vector md;
                   md = values_source_i.get_md_vector( );
 
                   //composite case, in particular Champ_{P0,Face}_PolyMAC...
-                  if (zvf_source_i.que_suis_je().debute_par("Zone_PolyMAC") && sub_type( MD_Vector_composite, md.valeur( )))
+                  if (zvf_source_i.que_suis_je().debute_par("Domaine_PolyMAC") && sub_type( MD_Vector_composite, md.valeur( )))
                     {
                       const MD_Vector& md0 = ref_cast(MD_Vector_composite, md.valeur()).get_desc_part(0);
-                      if (md0 == zvf_source_i.zone( ).les_elems().get_md_vector( ))
+                      if (md0 == zvf_source_i.domaine( ).les_elems().get_md_vector( ))
                         sources_location.add( "elem" );
                       else if (md0 == zvf_source_i.face_sommets( ).get_md_vector( ))
                         sources_location.add("faces");
@@ -314,11 +314,11 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                     {
                       sources_location.add( "faces" );
                     }
-                  else if( md == zvf_source_i.zone( ).les_elems( ).get_md_vector( ) )
+                  else if( md == zvf_source_i.domaine( ).les_elems( ).get_md_vector( ) )
                     {
                       sources_location.add( "elem" );
                     }
-                  else if( md == zvf_source_i.zone( ).les_sommets( ).get_md_vector( ) )
+                  else if( md == zvf_source_i.domaine( ).les_sommets( ).get_md_vector( ) )
                     {
                       sources_location.add( "som" );
                     }
@@ -334,10 +334,10 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                     }
                   // Cout << "sources location "<<i<<" : "<<sources_location( i )<<finl;
                 }//end of not using directive case
-            }//end of has zone dis
+            }//end of has domaine dis
           else
             {
-              //in the case where there is no zone dis base, we look at the directive
+              //in the case where there is no domaine dis base, we look at the directive
               use_directive=true;
             }
 
@@ -445,16 +445,16 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
 }
 
 
-void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Zone_VF& zvf,const Motcle& loc,bool champ_normal_faces)
+void projette(DoubleTab& valeurs_espace,const DoubleTab& val_source,const Domaine_VF& zvf,const Motcle& loc,bool champ_normal_faces)
 {
-  const Nom& type_elem=zvf.zone().type_elem().valeur().que_suis_je();
+  const Nom& type_elem=zvf.domaine().type_elem().valeur().que_suis_je();
   if ((champ_normal_faces)||(loc!="elem")|| (type_elem!="Quadrangle"))
     {
       Cerr<<"option composante_normale not coded in this case"<<finl;
       Process::exit();
     }
-  const DoubleTab& coord=zvf.zone().coord_sommets();
-  const IntTab& elems=zvf.zone().les_elems();
+  const DoubleTab& coord=zvf.domaine().coord_sommets();
+  const IntTab& elems=zvf.domaine().les_elems();
 
   int nb_v= valeurs_espace.dimension(0);
   assert(nb_v==zvf.nb_elem());
@@ -501,7 +501,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ_without_evaluation(C
 }
 const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stockage) const
 {
-  const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
+  const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
   Champ_Fonc es_tmp;
 
   espace_stockage = creer_espace_stockage(nature_ch,nb_comp_,es_tmp);
@@ -509,20 +509,20 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   //Construction du tableau positions qui contient les coordonnees
   //des points (support) ou vont etre evaluees les valeurs de l espace
   //de stockage
-  const Zone_VF& zvf = ref_cast(Zone_VF,zone_dis);
+  const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   DoubleTab positions;
   int nb_pos;
   int nb_elem_tot = zvf.nb_elem_tot();
   int nb_som_tot = get_ref_domain().nb_som_tot();
   const Motcle directive = get_directive_pour_discr();
   bool champ_normal_faces = 0;
-  if (zvf.que_suis_je().debute_par("Zone_VDF") || zvf.que_suis_je().debute_par("Zone_PolyMAC"))
+  if (zvf.que_suis_je().debute_par("Domaine_VDF") || zvf.que_suis_je().debute_par("Domaine_PolyMAC"))
     champ_normal_faces = 1;
   if (localisation_ == "elem")
     {
       if (zvf.xp().nb_dim() != 2) /* xp() non initialise */
         {
-          zvf.zone().calculer_centres_gravite(positions);
+          zvf.domaine().calculer_centres_gravite(positions);
         }
       else
         {
@@ -987,8 +987,8 @@ int Champ_Generique_Transformation::preparer_macro()
 
   if ((nature_ch==scalaire) && (localisation_!="elem"))
     {
-      const Zone_dis_base& zone_dis = get_ref_zone_dis_base();
-      if (zone_dis.que_suis_je().debute_par("Zone_VDF"))
+      const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
+      if (domaine_dis.que_suis_je().debute_par("Domaine_VDF"))
         {
           msg = "The nature of the generated storing field will be scalar.\n";
           msg += "In that case the location elem is required since VDF discretization is considered.";

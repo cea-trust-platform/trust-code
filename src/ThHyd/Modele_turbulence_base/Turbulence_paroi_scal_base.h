@@ -24,11 +24,11 @@
 #include <Champs_compris_interface.h>
 #include <TRUSTVects.h>
 
-class Zone_dis;
-class Zone_Cl_dis;
+class Domaine_dis;
+class Domaine_Cl_dis;
 class Probleme_base;
 class EcrFicPartage;
-class Zone_VF;
+class Domaine_VF;
 class Champ_Don;
 /*! @brief Classe Turbulence_paroi_scal_base Classe de base pour la hierarchie des classes representant les modeles
  *
@@ -47,7 +47,7 @@ class Turbulence_paroi_scal_base : public Champs_compris_interface, public Objet
 public :
   Turbulence_paroi_scal_base():nb_impr_(0),calcul_ldp_en_flux_impose_(0),Prdt_sur_kappa_(2.12) { }
   inline void associer_modele(const Modele_turbulence_scal_base& );
-  virtual void associer(const Zone_dis&, const Zone_Cl_dis&)=0;
+  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&)=0;
   virtual void completer() {};
   virtual int init_lois_paroi() =0;
   inline int calculer_scal(Champ_Fonc& );
@@ -138,7 +138,7 @@ private :
 // asymptotiques de la temperature adimensionnee T+
 // avec Kader:
 // sous-couche conductrice : T+=Pr y+
-// zone logarithmique : T+=2.12*ln(y+)+Beta
+// domaine logarithmique : T+=2.12*ln(y+)+Beta
 inline double Turbulence_paroi_scal_base::T_plus(double y_plus, double Pr)
 {
   double Gamma = (0.01*pow(Pr*y_plus,4.))/(1.+5.*pow(Pr,3.)*y_plus);

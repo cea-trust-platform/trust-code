@@ -19,9 +19,9 @@
 #include <communications.h>
 #include <Champ_Inc_base.h>
 #include <Postraitement.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <sys/stat.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Sonde.h>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde,"Sonde",Objet_U);
@@ -70,7 +70,7 @@ Sonde::Sonde(const Nom& nom)  :
   nodes(false),
   chsom(false),
   grav(false),
-  gravcl(false),  // Valeurs aux centres de gravite (comme grav) mais avec ajout eventuel des valeurs aux bords via la zone Cl du champ post-traite
+  gravcl(false),  // Valeurs aux centres de gravite (comme grav) mais avec ajout eventuel des valeurs aux bords via la domaine Cl du champ post-traite
   som(false),
   nb_bip(0.),
   reprise(0),
@@ -667,10 +667,10 @@ void Sonde::associer_post(const Postraitement& le_post)
 /*! @brief Initialise la sonde.
  *
  * Dimensionne les tableaux, de valeurs, verifie si les points specifies sont
- *     bien dans la zone de calcul.
+ *     bien dans la domaine de calcul.
  *
- * @param (Zone& zone_geom) la zone de calcul qui sera sondee
- * @throws point de sondage en dehors de la zone de calcul
+ * @param (Domaine& domaine_geom) la domaine de calcul qui sera sondee
+ * @throws point de sondage en dehors de la domaine de calcul
  */
 void Sonde::initialiser()
 {
@@ -681,7 +681,7 @@ void Sonde::initialiser()
   if(elem_.size() != nbre_points_tot)
     elem_.resize(nbre_points_tot);
 
-  const Zone& zone_geom = mon_champ->get_ref_domain();
+  const Domaine& domaine_geom = mon_champ->get_ref_domain();
 
   if (numero_elem_==-1)
     {
@@ -689,7 +689,7 @@ void Sonde::initialiser()
       int nb_coord = les_positions_sondes_.dimension(1);
       if (nb_coord != Objet_U::dimension)
         {
-          Cerr << "You can't specify the probe named " << nom_ << " with "<< nb_coord << " coordinates on the domain named " <<zone_geom.le_nom()<<finl;
+          Cerr << "You can't specify the probe named " << nom_ << " with "<< nb_coord << " coordinates on the domain named " <<domaine_geom.le_nom()<<finl;
           Cerr << "which has spatial dimension " << Objet_U::dimension << finl;
           Cerr << "Change the probe coordinates or use numero_elem_sur_maitre keyword (see documentation)" << finl;
           Cerr << "to specify a cell containing the probe and not its coordinates." << finl;
@@ -697,16 +697,16 @@ void Sonde::initialiser()
           Process::exit();
         }
       // Fill the elem_ array (which list real cells containing all the probes):
-      zone_geom.chercher_elements(les_positions_sondes_,elem_,1);
+      domaine_geom.chercher_elements(les_positions_sondes_,elem_,1);
     }
   else
     {
       // Location of the probe is given by an element number:
       elem_[0]= numero_elem_;
-      const IntTab& les_elems=mon_champ->get_ref_zone_dis_base().zone().les_elems();
+      const IntTab& les_elems=mon_champ->get_ref_domaine_dis_base().domaine().les_elems();
       if (numero_elem_<les_elems.dimension_tot(0))
         {
-          const DoubleTab& coord=mon_champ->get_ref_zone_dis_base().zone().les_sommets();
+          const DoubleTab& coord=mon_champ->get_ref_domaine_dis_base().domaine().les_sommets();
           int nb_som=les_elems.dimension(1);
           // Fill les_positions_ with the cog of the cell numero_elem_
           for (int s=0; s<nb_som; s++)
@@ -734,10 +734,10 @@ void Sonde::initialiser()
   mp_max_for_each_item(tmp);
   for (int i=0; i<nbre_points_tot; i++)
     if (tmp[i]==-1)
-      Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << zone_geom.le_nom() << finl;
+      Cerr << "WARNING: The point number " << i+1 << " of the probe named " << nom_ << " is outside the computational domain " << domaine_geom.le_nom() << finl;
 
   // Probes may be moved to cog, face, vertex:
-  const Zone& zone = mon_champ->get_ref_domain();
+  const Domaine& domaine = mon_champ->get_ref_domain();
   const Noms nom_champ = mon_champ->get_property("nom");
 
   if (grav || gravcl)
@@ -750,8 +750,8 @@ void Sonde::initialiser()
         }
 
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to centers of gravity). Check the .log files to see the new location."<<finl;
-      const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
-      const DoubleTab& xp = zoneVF.xp();
+      const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
+      const DoubleTab& xp = domaineVF.xp();
       for (int i=0; i<nbre_points_tot; i++)
         {
           if(elem_[i]!=-1)
@@ -771,12 +771,12 @@ void Sonde::initialiser()
     }
   else if (nodes)
     {
-      const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
-      const DoubleTab& xv = zoneVF.xv();
-      const IntTab& elem_faces = zoneVF.elem_faces();
+      const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
+      const DoubleTab& xv = domaineVF.xv();
+      const IntTab& elem_faces = domaineVF.elem_faces();
       if (mp_max(elem_faces.size_array())==0)
         {
-          Cerr << "Error: the domain " << zoneVF.zone().le_nom() << " is not discretized." << finl;
+          Cerr << "Error: the domain " << domaineVF.domaine().le_nom() << " is not discretized." << finl;
           exit();
         }
       if (sub_type(Champ_Generique_Interpolation,mon_champ.valeur()))
@@ -789,7 +789,7 @@ void Sonde::initialiser()
           exit();
         }
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to faces). Check the .log files to see the new location."<<finl;
-      const int nfaces_par_element = zone.nb_faces_elem() ;
+      const int nfaces_par_element = domaine.nb_faces_elem() ;
       for (int i=0; i<nbre_points_tot; i++)
         {
           double dist_min=DMAXFLOAT;
@@ -803,7 +803,7 @@ void Sonde::initialiser()
                   // Sonde de type segmentfaces : on recherche seulement parmi les faces orientees selon
                   // orientation_faces_
                   if (face >= 0 &&
-                      (orientation_faces_ == -1 || zoneVF.orientation_si_definie(face)==orientation_faces_))
+                      (orientation_faces_ == -1 || domaineVF.orientation_si_definie(face)==orientation_faces_))
                     {
                       double dist=0.;
 
@@ -823,7 +823,7 @@ void Sonde::initialiser()
                   Journal() << " x(" << dir << "): " << les_positions_sondes_(i,dir) << " -> " << xv(face_min,dir);
                   les_positions_sondes_(i,dir)=xv(face_min,dir);
                 }
-              Journal() << " (" << (face_min < zoneVF.premiere_face_int() ? "boundary face " : "internal face ") << face_min<<")" << finl;
+              Journal() << " (" << (face_min < domaineVF.premiere_face_int() ? "boundary face " : "internal face ") << face_min<<")" << finl;
             }
         }
     }
@@ -839,9 +839,9 @@ void Sonde::initialiser()
           exit();
         }
       Cerr<<"The location of the probe named "<<nom_<<" are modified (to vertexes). Check the .log files to see the new location."<<finl;
-      const IntTab& sommet_elem = zone.les_elems();
-      const int sommets_par_element = zone.les_elems().dimension(1);
-      const DoubleTab& coord = zone.les_sommets();
+      const IntTab& sommet_elem = domaine.les_elems();
+      const int sommets_par_element = domaine.les_elems().dimension(1);
+      const DoubleTab& coord = domaine.les_sommets();
       for (int i=0; i<nbre_points_tot; i++)
         {
           double dist_min=DMAXFLOAT;
@@ -1392,7 +1392,7 @@ void Sonde::init_bords()
       Probleme_base& Pb = mon_post->probleme();
       REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
-      const Zone_Cl_dis& zcl = ch_inc.zone_Cl_dis();
+      const Domaine_Cl_dis& zcl = ch_inc.domaine_Cl_dis();
 
       if (zcl.non_nul())
         {
@@ -1419,10 +1419,10 @@ void Sonde::init_bords()
 void Sonde::ajouter_bords(const DoubleTab& coords_bords)
 {
   double eps = mon_champ->get_ref_domain().epsilon();
-  const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
+  const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
 
-  const DoubleTab& xv = zoneVF.xv();
-  const IntTab& e_f = zoneVF.elem_faces(), &f_e = zoneVF.face_voisins();
+  const DoubleTab& xv = domaineVF.xv();
+  const IntTab& e_f = domaineVF.elem_faces(), &f_e = domaineVF.face_voisins();
   int nbre_points = les_positions_sondes_.dimension(0), face;
 
   faces_bords_.set_smart_resize(1);
@@ -1467,12 +1467,12 @@ void Sonde::mettre_a_jour_bords()
       Probleme_base& Pb = mon_post->probleme();
       REF(Champ_base) chref = Pb.get_champ(nom_champ_lu_);
       const Champ_Inc_base& ch_inc = ref_cast(Champ_Inc_base,chref.valeur());
-      const Zone_Cl_dis& zcl = ch_inc.zone_Cl_dis();
+      const Domaine_Cl_dis& zcl = ch_inc.domaine_Cl_dis();
       const DoubleTab& vals_ch = ch_inc.valeurs();
       if (zcl.non_nul())
         {
-          const Zone_VF& zoneVF = ref_cast(Zone_VF,mon_champ->get_ref_zone_dis_base());
-          const IntTab& face_voisins = zoneVF.face_voisins();
+          const Domaine_VF& domaineVF = ref_cast(Domaine_VF,mon_champ->get_ref_domaine_dis_base());
+          const IntTab& face_voisins = domaineVF.face_voisins();
 
           int nbval = valeurs_locales.dimension(0);
 

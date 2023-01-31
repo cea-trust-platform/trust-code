@@ -23,7 +23,7 @@ class Champ_implementation_P1: public Champ_implementation_sommet
 {
 public:
   ~Champ_implementation_P1() override { }
-  static void init_from_file(DoubleTab& val, const Zone& dom, int nb_comp, double tolerance, Entree& input);
+  static void init_from_file(DoubleTab& val, const Domaine& dom, int nb_comp, double tolerance, Entree& input);
 
 protected:
   void value_interpolation(const DoubleTab& positions, const ArrOfInt& cells, const DoubleTab& values, DoubleTab& resu, int ncomp = -1) const override;

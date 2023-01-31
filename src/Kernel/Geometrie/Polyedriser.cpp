@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Polyedriser.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Polyedre.h>
 #include <vector>
@@ -162,15 +162,15 @@ static void reorder_vertices(Faces& faces, const DoubleTab& coords)
   return;
 }
 
-void Polyedriser::polyedriser(Zone& zone) const
+void Polyedriser::polyedriser(Domaine& domaine) const
 {
-  if(zone.type_elem()->que_suis_je() == "Hexaedre")
+  if(domaine.type_elem()->que_suis_je() == "Hexaedre")
     {
-      zone.typer("Polyedre");
-      Polyedre& p = ref_cast(Polyedre, zone.type_elem().valeur());
+      domaine.typer("Polyedre");
+      Polyedre& p = ref_cast(Polyedre, domaine.type_elem().valeur());
 
       ArrOfInt Pi, Fi, N;
-      const IntTab& elements = zone.les_elems();
+      const IntTab& elements = domaine.les_elems();
       int nb_elems = elements.dimension(0);
       Pi.resize_array(nb_elems+1);
       Fi.resize_array(nb_elems*6+1);
@@ -196,33 +196,33 @@ void Polyedriser::polyedriser(Zone& zone) const
         }
       Fi[nb_elems*6] = node;
       Pi[nb_elems] = face;
-      p.affecte_connectivite_numero_global(N, Fi, Pi, zone.les_elems());
+      p.affecte_connectivite_numero_global(N, Fi, Pi, domaine.les_elems());
     }
   else
     {
       Cerr << "We do not yet know how to Polyedriser the "
-           << zone.type_elem()->que_suis_je() <<"s"<<finl;
+           << domaine.type_elem()->que_suis_je() <<"s"<<finl;
       Cerr << "Try to use convertAllToPoly option of Lire_MED|Read_MED keyword if you read a MED file for your mesh." << finl;
       exit();
     }
 
-  const DoubleTab& coords = zone.coord_sommets();
+  const DoubleTab& coords = domaine.coord_sommets();
 
-  for (auto &itr : zone.faces_bord())
+  for (auto &itr : domaine.faces_bord())
     {
       Faces& les_faces = itr.faces();
       les_faces.typer(Faces::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
-  for (auto &itr : zone.faces_raccord())
+  for (auto &itr : domaine.faces_raccord())
     {
       Faces& les_faces = itr->faces();
       les_faces.typer(Faces::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
 
-  for (auto &itr : zone.faces_int())
+  for (auto &itr : domaine.faces_int())
     {
       Faces& les_faces = itr.faces();
       les_faces.typer(Faces::polygone_3D);

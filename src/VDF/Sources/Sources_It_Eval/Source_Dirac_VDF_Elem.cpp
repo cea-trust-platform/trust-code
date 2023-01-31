@@ -33,13 +33,13 @@ Entree& Source_Dirac_VDF_Elem::readOn(Entree& is)
   return is;
 }
 
-void Source_Dirac_VDF_Elem::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Dirac_VDF_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  Terme_Puissance_Thermique_VDF_base::associer_domaines(zone_dis,zone_cl_dis);
+  Terme_Puissance_Thermique_VDF_base::associer_domaines(domaine_dis,domaine_cl_dis);
   Eval_Dirac_VDF_Elem& eval_dirac = static_cast<Eval_Dirac_VDF_Elem&> (iter->evaluateur());
-  eval_dirac.associer_domaines(zone_dis.valeur(),zone_cl_dis.valeur());
-  const int nb_elem = zone_dis.valeur().nb_elem();
-  const Zone& mon_dom = zone_dis.valeur().zone();
+  eval_dirac.associer_domaines(domaine_dis.valeur(),domaine_cl_dis.valeur());
+  const int nb_elem = domaine_dis.valeur().nb_elem();
+  const Domaine& mon_dom = domaine_dis.valeur().domaine();
   nb_dirac = 0;
 
   for (int elem = 0; elem < nb_elem; elem++)

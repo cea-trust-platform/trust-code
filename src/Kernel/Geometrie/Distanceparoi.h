@@ -26,9 +26,9 @@
  */
 
 #include <Interprete_geometrique_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class Distanceparoi : public Interprete_geometrique_base
 {

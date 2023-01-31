@@ -22,10 +22,10 @@ Sortie& Champ_Uniforme_Morceaux::printOn(Sortie& os) const { return os << valeur
 /*! @brief Lit les valeurs du champ uniforme par morceaux a partir d'un flot d'entree.
  *
  * On lit le nom du domaine (nom_domaine) le nombre de composantes du champ (nb_comp) la valeur par defaut
- *     du champ ainsi que les valeurs sur les sous zones.
+ *     du champ ainsi que les valeurs sur les sous domaines.
  *     Format:
  *      Champ_Uniforme_Morceaux nom_domaine nb_comp
- *      { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i }
+ *      { Defaut val_def sous_domaine_1 val_1 ... sous_domaine_i val_i }
  *
  */
 Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
@@ -36,7 +36,7 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
   int k, poly;
   is >> nom;
   interprete_get_domaine(nom);
-  Zone& le_domaine=mon_domaine.valeur();
+  Domaine& le_domaine=mon_domaine.valeur();
   const IntTab& les_elems=le_domaine.les_elems();
   const int nb_som_elem = le_domaine.nb_som_elem();
   double x=0,y=0,z=0;
@@ -103,8 +103,8 @@ Entree& Champ_Uniforme_Morceaux::readOn(Entree& is)
   motlu=nom;
   while (motlu != Motcle("}") )
     {
-      REF(Sous_Zone) refssz=les_sous_zones.add(le_domaine.ss_zone(nom));
-      Sous_Zone& ssz = refssz.valeur();
+      REF(Sous_Domaine) refssz=les_sous_domaines.add(le_domaine.ss_domaine(nom));
+      Sous_Domaine& ssz = refssz.valeur();
       for( k=0; k< dim; k++)
         {
           Nom tmp;
@@ -147,7 +147,7 @@ Champ_base& Champ_Uniforme_Morceaux::affecter_(const Champ_base& ch)
   if (sub_type(Champ_Uniforme_Morceaux, ch))
     {
       const Champ_Uniforme_Morceaux& chum = ref_cast(Champ_Uniforme_Morceaux, ch);
-      les_sous_zones = chum.sous_zones();
+      les_sous_domaines = chum.sous_domaines();
       mon_domaine = chum.domaine();
       valeurs_ = chum.valeurs();
     }

@@ -18,8 +18,8 @@
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Face_VDF.h>
-#include <Zone_VDF.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_VDF.h>
+#include <Domaine_Cl_VDF.h>
 
 Implemente_base(Perte_Charge_VDF_Face,"Perte_Charge_VDF_Face",Source_dep_inco_base);
 
@@ -62,7 +62,7 @@ void Perte_Charge_VDF_Face::associer_pb(const Probleme_base& pb)
         {
           la_vitesse = ref_cast(Champ_Face_VDF,eqn.inconnue().valeur());
           le_fluide = ref_cast(Fluide_base,eqn.milieu());
-          associer_domaines(eqn.zone_dis(),eqn.zone_Cl_dis());
+          associer_domaines(eqn.domaine_dis(),eqn.domaine_Cl_dis());
           i = nb_eqn;
           ok = 1;
         }
@@ -76,11 +76,11 @@ void Perte_Charge_VDF_Face::associer_pb(const Probleme_base& pb)
     }
 }
 
-void Perte_Charge_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                              const Zone_Cl_dis& zone_Cl_dis)
+void Perte_Charge_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                              const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF, domaine_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Domaine_Cl_VDF, domaine_Cl_dis.valeur());
 }
 
 

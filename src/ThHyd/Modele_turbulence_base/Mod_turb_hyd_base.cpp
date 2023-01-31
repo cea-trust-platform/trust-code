@@ -18,7 +18,7 @@
 #include <Schema_Temps_base.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
 #include <Operateur_Diff_base.h>
 #include <Operateur_Conv_base.h>
@@ -114,7 +114,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
           Nom accolade_ouverte="{";
           Nom accolade_fermee="}";
           nom_fichier_=Objet_U::nom_du_cas()+"_"+equation().probleme().le_nom()+"_ustar_mean_only";
-          Zone& dom=equation().probleme().domaine();
+          Domaine& dom=equation().probleme().domaine();
           LIST(Nom) nlistbord_dom;                      //!< liste stockant tous les noms de frontiere du domaine
           int nbfr=dom.nb_front_Cl();
           for (int b=0; b<nbfr; b++)
@@ -205,13 +205,13 @@ void Mod_turb_hyd_base::associer_eqn(const Equation_base& eqn)
 
 /*! @brief NE FAIT RIEN a surcharger dans les classes derivees.
  *
- *     Associe la zone discretisee et la zone des conditions
+ *     Associe la domaine discretisee et la domaine des conditions
  *     aux limites discretisees au modele de turbulence.
  *
- * @param (Zone_dis&) une zone discretisee
- * @param (Zone_Cl_dis&) une zone de conditions aux limites discretisees
+ * @param (Domaine_dis&) une domaine discretisee
+ * @param (Domaine_Cl_dis&) une domaine de conditions aux limites discretisees
  */
-void Mod_turb_hyd_base::associer(const Zone_dis& , const Zone_Cl_dis&  )
+void Mod_turb_hyd_base::associer(const Domaine_dis& , const Domaine_Cl_dis&  )
 {
   ;
 }
@@ -264,19 +264,19 @@ void Mod_turb_hyd_base::lire_distance_paroi( )
 void Mod_turb_hyd_base::discretiser()
 {
   Cerr << "Turbulence hydraulic model discretization" << finl;
-  discretiser_visc_turb(mon_equation->schema_temps(),mon_equation->zone_dis(),
+  discretiser_visc_turb(mon_equation->schema_temps(),mon_equation->domaine_dis(),
                         la_viscosite_turbulente);
   champs_compris_.ajoute_champ(la_viscosite_turbulente);
 
-  discretiser_corr_visc_turb(mon_equation->schema_temps(),mon_equation->zone_dis(),corr_visco_turb);
+  discretiser_corr_visc_turb(mon_equation->schema_temps(),mon_equation->domaine_dis(),corr_visco_turb);
   champs_compris_.ajoute_champ(corr_visco_turb);
   const Discretisation_base& dis=ref_cast(Discretisation_base, mon_equation->discretisation());
-  dis.discretiser_champ("champ_elem",mon_equation->zone_dis().valeur(),"distance_paroi","m",1,mon_equation->schema_temps().temps_courant(),wall_length_);
+  dis.discretiser_champ("champ_elem",mon_equation->domaine_dis().valeur(),"distance_paroi","m",1,mon_equation->schema_temps().temps_courant(),wall_length_);
   champs_compris_.ajoute_champ(wall_length_);
 }
 
 void Mod_turb_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch,
-                                              Zone_dis& z, Champ_Fonc& ch) const
+                                              Domaine_dis& z, Champ_Fonc& ch) const
 {
   int is_dilat = equation().probleme().is_dilatable();
   if (!is_dilat)
@@ -290,7 +290,7 @@ void Mod_turb_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch,
 }
 
 void Mod_turb_hyd_base::discretiser_corr_visc_turb(const Schema_Temps_base& sch,
-                                                   Zone_dis& z, Champ_Fonc& ch) const
+                                                   Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Turbulent viscosity correction field discretization" << finl;
   const Discretisation_base& dis = mon_equation->discretisation();
@@ -298,7 +298,7 @@ void Mod_turb_hyd_base::discretiser_corr_visc_turb(const Schema_Temps_base& sch,
 }
 
 void Mod_turb_hyd_base::discretiser_K(const Schema_Temps_base& sch,
-                                      Zone_dis& z, Champ_Fonc& ch) const
+                                      Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Kinetic turbulent energy field discretisation" << finl;
   const Discretisation_base& dis = mon_equation->discretisation();
@@ -495,7 +495,7 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
       op_diff.calculer_borne_locale(borne_visco_turb, op_conv.dt_stab_conv(), dt_diff_sur_dt_conv_);
     }
   // On borne la viscosite turbulente
-  int nb_elem = equation().zone_dis().zone().nb_elem();
+  int nb_elem = equation().domaine_dis().domaine().nb_elem();
   assert(nb_elem==size);
   int compt=0;
   Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before",la_viscosite_turbulente.valeurs());

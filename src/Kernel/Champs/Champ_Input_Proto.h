@@ -19,7 +19,7 @@
 #include <TRUSTArray.h>
 #include <Ref_Probleme_base.h>
 #include <ICoCoTrioField.h>
-#include <Ref_Sous_Zone.h>
+#include <Ref_Sous_Domaine.h>
 
 using ICoCo::TrioField;
 
@@ -58,8 +58,8 @@ protected:
   virtual void set_name(const Nom& name)=0; // calls nommer
 
   REF(Probleme_base) mon_pb;
-  bool sous_zone_ok; // This fields knows how to deal with a sous_zone
-  REF(Sous_Zone) ma_sous_zone;
+  bool sous_domaine_ok; // This fields knows how to deal with a sous_domaine
+  REF(Sous_Domaine) ma_sous_domaine;
   ArrOfDouble initial_value_;
 };
 

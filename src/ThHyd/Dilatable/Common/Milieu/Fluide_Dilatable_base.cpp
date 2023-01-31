@@ -20,7 +20,7 @@
 #include <Navier_Stokes_std.h>
 #include <Champ_Uniforme.h>
 #include <Probleme_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Param.h>
 
 Implemente_base_sans_constructeur(Fluide_Dilatable_base,"Fluide_Dilatable_base",Fluide_base);
@@ -44,41 +44,41 @@ void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discreti
 {
   Cerr<<"Fluide_Dilatable_base::discretiser"<<finl;
 
-  const Zone_dis_base& zone_dis=pb.equation(0).zone_dis();
+  const Domaine_dis_base& domaine_dis=pb.equation(0).domaine_dis();
   double temps=pb.schema_temps().temps_courant();
 
   // les champs seront nommes par le milieu_base
   Champ_Don ch_rho;
-  dis.discretiser_champ("temperature",zone_dis,"masse_volumique_p","neant",1,temps,ch_rho);
+  dis.discretiser_champ("temperature",domaine_dis,"masse_volumique_p","neant",1,temps,ch_rho);
   rho = ch_rho.valeur();
 
   Champ_Don& cp = capacite_calorifique();
   if (!cp.non_nul() || !sub_type(Champ_Uniforme,cp.valeur())) //ie Cp non constant : gaz reels
     {
       Cerr<<"Heat capacity Cp is discretized once more for space variable case."<<finl;
-      dis.discretiser_champ("temperature",zone_dis,"cp_prov","neant",1,temps,cp);
+      dis.discretiser_champ("temperature",domaine_dis,"cp_prov","neant",1,temps,cp);
     }
 
   if (!lambda.non_nul() || ((!sub_type(Champ_Uniforme,lambda.valeur())) && (!sub_type(Champ_Fonc_Tabule,lambda.valeur()))))
     {
       // cas particulier etait faux en VEF voir quand cela sert (FM slt) : sera nomme par milieu_base
-      dis.discretiser_champ("champ_elem",zone_dis,"neant","neant",1,temps,lambda);
+      dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,lambda);
     }
 
-  dis.discretiser_champ("vitesse", zone_dis,"rho_comme_v","kg/m3",1,temps,rho_comme_v);
+  dis.discretiser_champ("vitesse", domaine_dis,"rho_comme_v","kg/m3",1,temps,rho_comme_v);
   champs_compris_.ajoute_champ(rho_comme_v);
 
-  dis.discretiser_champ("champ_elem",zone_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,mu_sur_Sc);
+  dis.discretiser_champ("champ_elem",domaine_dis,"mu_sur_Schmidt","kg/(m.s)",1,temps,mu_sur_Sc);
   champs_compris_.ajoute_champ(mu_sur_Sc);
 
-  dis.discretiser_champ("champ_elem",zone_dis,"nu_sur_Schmidt","m2/s",1,temps,nu_sur_Sc);
+  dis.discretiser_champ("champ_elem",domaine_dis,"nu_sur_Schmidt","m2/s",1,temps,nu_sur_Sc);
   champs_compris_.ajoute_champ(nu_sur_Sc);
 
   Champ_Don& ptot = pression_tot();
-  dis.discretiser_champ("champ_elem",zone_dis,"pression_tot","Pa",1,temps,ptot);
+  dis.discretiser_champ("champ_elem",domaine_dis,"pression_tot","Pa",1,temps,ptot);
   champs_compris_.ajoute_champ(ptot);
 
-  dis.discretiser_champ("temperature",zone_dis,"rho_gaz","kg/m3",1,temps,rho_gaz);
+  dis.discretiser_champ("temperature",domaine_dis,"rho_gaz","kg/m3",1,temps,rho_gaz);
   champs_compris_.ajoute_champ(rho_gaz);
 
   Fluide_base::discretiser(pb,dis);
@@ -391,9 +391,9 @@ void Fluide_Dilatable_base::calculer_pression_tot()
   if( n != pression_->valeurs().dimension_tot(0) )
     {
       // Interpolation de pression_ aux elements (ex: P1P0)
-      const Zone_dis_base& zone_dis= pression_-> zone_dis_base();
-      const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-      const DoubleTab& centres_de_gravites=zone.xp();
+      const Domaine_dis_base& domaine_dis= pression_-> domaine_dis_base();
+      const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
+      const DoubleTab& centres_de_gravites=domaine.xp();
       pression_->valeur().valeur_aux(centres_de_gravites,tab_PHyd);
     }
   else  tab_PHyd = pression_->valeurs();
@@ -475,7 +475,7 @@ void Fluide_Dilatable_base::completer(const Probleme_base& pb)
   if (typ=="VEFPreP1B") typ = "VEF";
 
   eos_tools_.typer(typ);
-  eos_tools_->associer_domaines(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
+  eos_tools_->associer_domaines(pb.equation(0).domaine_dis(),pb.equation(0).domaine_Cl_dis());
   eos_tools_->associer_fluide(*this);
   loi_etat_->assoscier_probleme(pb);
   initialiser_inco_ch();

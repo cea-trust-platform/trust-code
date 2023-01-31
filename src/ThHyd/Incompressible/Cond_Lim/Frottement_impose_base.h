@@ -39,7 +39,7 @@ public:
   virtual void liste_faces_loi_paroi(IntTab&) =0;
   void associer_fr_dis_base(const Frontiere_dis_base& fr) override { la_frontiere_dis = fr; }
   int initialiser(double temps) override =0;
-  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& zcl) override { mon_dom_cl_dis = zcl; }
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl) override { mon_dom_cl_dis = zcl; }
   virtual double coefficient_frottement(int i) const =0;
   virtual double coefficient_frottement(int i, int j) const =0;
   virtual double coefficient_frottement_grad(int i) const =0; // Change the coefficient when calculation of gradient : nu = NULL

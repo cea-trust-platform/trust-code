@@ -36,9 +36,9 @@ Entree& Reorienter_triangles::interpreter_(Entree& is)
       Cerr << "we can not reorientate (Reorienter) triangles in dimension " << dimension <<finl;
       exit();
     }
-  Nom nom_dom, typ_zone;
+  Nom nom_dom, typ_domaine;
   associer_domaine(is);
-  Zone& dom=domaine();
+  Domaine& dom=domaine();
   Scatter::uninit_sequential_domain(dom);
   reorienter(dom);
   Scatter::init_sequential_domain(dom);
@@ -98,13 +98,13 @@ Reorienter_triangles::Sens Reorienter_triangles::reorienter_triangle(IntTab& les
 }
 
 //Cette methode permet de reorienter les triangles dans le sens direct
-void Reorienter_triangles::reorienter(Zone& dom) const
+void Reorienter_triangles::reorienter(Domaine& dom) const
 {
   const DoubleTab& coord_sommets = dom.coord_sommets();
 
   if (dom.type_elem()->que_suis_je() == "Triangle" )
     {
-      //zone de triangles
+      //domaine de triangles
       IntTab& les_elems = dom.les_elems();
       int nb_elems = les_elems.dimension(0);
       int ielem;

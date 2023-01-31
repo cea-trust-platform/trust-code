@@ -19,19 +19,19 @@
 #include <Ref_Solveur_Masse_base.h>
 #include <TRUSTTabs_forward.h>
 #include <Interface_blocs.h>
-#include <Ref_Zone_VF.h>
+#include <Ref_Domaine_VF.h>
 
 class Solveur_Masse_Face_proto
 {
 public:
-  void associer_masse_proto(const Solveur_Masse_base& , const Zone_VF&) ;
+  void associer_masse_proto(const Solveur_Masse_base& , const Domaine_VF&) ;
   DoubleTab& appliquer_impl_proto(DoubleTab& ) const;
   void dimensionner_blocs_proto(matrices_t matrices, const tabs_t& semi_impl,const bool allocate, IntTrav&) const;
   void ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const ;
 
 protected:
   REF(Solveur_Masse_base) solv_mass_;
-  REF(Zone_VF) le_dom_;
+  REF(Domaine_VF) le_dom_;
 };
 
 #endif /* Solveur_Masse_Face_proto_included */

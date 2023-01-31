@@ -20,7 +20,7 @@
 #include <Champ_front_var_instationnaire.h>
 
 
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 /*! @brief classe Ch_fr_Vortex Classe derivee de Champ_front_var qui represente les
  *
@@ -49,7 +49,7 @@ protected :
 
   int init = 1;
   int first_rand = 1;
-  REF(Zone) mon_domaine;
+  REF(Domaine) mon_domaine;
   Nom geom;
   double nu = -100., utau = -100.;
   double R = -100., Ox = -100., Oy = -100., Oz = -100., surf = -100.;

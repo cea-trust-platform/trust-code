@@ -53,7 +53,7 @@ void Paroi_Knudsen_non_negligeable::completer()
 {
   Cerr << "Paroi_Knudsen_non_negligeable::completer" << finl;
   Nom type = "Champ_front_fonc_gradient_";
-  type += zone_Cl_dis().equation().discretisation().que_suis_je();
+  type += domaine_Cl_dis().equation().discretisation().que_suis_je();
   // Typage definitif en fonction de la discretisation
   Frontiere_dis_base& fr = le_champ_front.frontiere_dis();
   le_champ_front.typer(type);
@@ -64,6 +64,6 @@ void Paroi_Knudsen_non_negligeable::completer()
   le_champ_front->fixer_nb_comp(dimension);
   // On associe l'inconnue:
   Champ_front_fonc_gradient& ch = ref_cast(Champ_front_fonc_gradient, le_champ_front.valeur());
-  ch.associer_ch_inc_base(zone_Cl_dis().equation().inconnue().valeur());
+  ch.associer_ch_inc_base(domaine_Cl_dis().equation().inconnue().valeur());
   Cerr << "Paroi_Knudsen_non_negligeable::completer OK" << finl;
 }

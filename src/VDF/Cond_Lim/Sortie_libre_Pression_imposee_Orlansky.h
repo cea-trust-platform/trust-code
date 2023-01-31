@@ -29,7 +29,7 @@
 #include <Neumann_sortie_libre.h>
 #include <Ref_Champ_P0_VDF.h>
 #include <Ref_Champ_Face_VDF.h>
-#include <Ref_Zone_VDF.h>
+#include <Ref_Domaine_VDF.h>
 
 class Sortie_libre_Pression_imposee_Orlansky: public Neumann_sortie_libre
 {
@@ -41,7 +41,7 @@ public:
   double flux_impose(int, int) const override;
 
 protected:
-  REF(Zone_VDF) le_dom_VDF;
+  REF(Domaine_VDF) le_dom_VDF;
   REF(Champ_P0_VDF) pression_interne;
   REF(Champ_Face_VDF) vitesse_interne;
 

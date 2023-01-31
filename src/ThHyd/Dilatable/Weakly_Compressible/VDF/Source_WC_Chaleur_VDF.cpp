@@ -18,7 +18,7 @@
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_WC.h>
 #include <Probleme_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Source_WC_Chaleur_VDF,"Source_WC_Chaleur_VDF",Source_WC_Chaleur);
 
@@ -30,10 +30,10 @@ Sortie& Source_WC_Chaleur_VDF::printOn(Sortie& os) const
 
 Entree& Source_WC_Chaleur_VDF::readOn(Entree& is) { return is; }
 
-void Source_WC_Chaleur_VDF::associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& zcl)
+void Source_WC_Chaleur_VDF::associer_domaines(const Domaine_dis& domaine,const Domaine_Cl_dis& zcl)
 {
-  associer_domaines_impl(zone,zcl);
-  associer_volume_porosite_impl(zone,volumes,porosites);
+  associer_domaines_impl(domaine,zcl);
+  associer_volume_porosite_impl(domaine,volumes,porosites);
 }
 
 void Source_WC_Chaleur_VDF::compute_interpolate_gradP(DoubleTab& UgradP_elem, const DoubleTab& Ptot) const
@@ -60,29 +60,29 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP(DoubleTab& UgradP_elem, co
   const Operateur_Grad& Op_Grad = eq_chal.operateur_gradient_WC();
   Op_Grad.calculer(Ptot,grad_Ptot); // compute grad(P_tot)
 
-  const Zone_dis_base& zone_dis = mon_equation->inconnue().zone_dis_base();
-  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-  assert (zone_dis.que_suis_je() == "Zone_VDF");
+  const Domaine_dis_base& domaine_dis = mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
+  assert (domaine_dis.que_suis_je() == "Domaine_VDF");
 
   // grad should be zero at boundary
-  correct_grad_boundary(zone,grad_Ptot);
+  correct_grad_boundary(domaine,grad_Ptot);
 
   // We compute u*grad(P_tot) on each face
   DoubleTab UgradP(grad_Ptot); // field on faces
   const int n = la_vitesse.dimension_tot(0);
-  assert ( n == zone.nb_faces_tot() && la_vitesse.line_size() == 1);
-  assert ( Ptot.dimension_tot(0) == zone.nb_elem_tot() );
+  assert ( n == domaine.nb_faces_tot() && la_vitesse.line_size() == 1);
+  assert ( Ptot.dimension_tot(0) == domaine.nb_elem_tot() );
 
   for (int i=0 ; i <n ; i++) UgradP(i,0) = la_vitesse(i,0) * grad_Ptot(i,0);
-  face_to_elem(zone,UgradP,UgradP_elem);
+  face_to_elem(domaine,UgradP,UgradP_elem);
 }
 
 // On peut utiliser les methodes statics de Discretisation_tools... mais faut creer de Champ_base ...
-void Source_WC_Chaleur_VDF::face_to_elem(const Zone_VF& zone, const DoubleTab& UgradP,DoubleTab& UgradP_elem) const
+void Source_WC_Chaleur_VDF::face_to_elem(const Domaine_VF& domaine, const DoubleTab& UgradP,DoubleTab& UgradP_elem) const
 {
-  const IntTab& elem_faces = zone.elem_faces();
-  const int nb_face_elem = elem_faces.line_size(), nb_elem_tot= zone.nb_elem_tot();
-  assert (UgradP_elem.dimension_tot(0) == nb_elem_tot && UgradP.dimension_tot(0) == zone.nb_faces_tot());
+  const IntTab& elem_faces = domaine.elem_faces();
+  const int nb_face_elem = elem_faces.line_size(), nb_elem_tot= domaine.nb_elem_tot();
+  assert (UgradP_elem.dimension_tot(0) == nb_elem_tot && UgradP.dimension_tot(0) == domaine.nb_faces_tot());
 
   UgradP_elem = 0.;
   for (int ele=0; ele<nb_elem_tot; ele++)
@@ -118,14 +118,14 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
    */
 
   // We use that of NS because we test the CL too (attention mon_equation is Chaleur...)
-  const Zone_dis_base& zone_dis = eqHyd.inconnue().zone_dis_base();
-  const Zone_VF& zone = ref_cast(Zone_VF, zone_dis);
-  const Zone_Cl_dis& zone_cl = eqHyd.zone_Cl_dis();
-  assert (zone_dis.que_suis_je() == "Zone_VDF");
+  const Domaine_dis_base& domaine_dis = eqHyd.inconnue().domaine_dis_base();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
+  const Domaine_Cl_dis& domaine_cl = eqHyd.domaine_Cl_dis();
+  assert (domaine_dis.que_suis_je() == "Domaine_VDF");
 
-  for (int n_bord=0; n_bord<zone.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_cl.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_cl.les_conditions_limites(n_bord);
       // corrige si Neumann_sortie_libre
       if ( sub_type(Neumann_sortie_libre,la_cl.valeur()) )
         {
@@ -140,8 +140,8 @@ void Source_WC_Chaleur_VDF::compute_interpolate_gradP_old(DoubleTab& UgradP_elem
   // We compute u*grad(P_tot) on each face
   DoubleTab UgradP(grad_Ptot); // field on faces
   const int n = la_vitesse.dimension(0);
-  assert ( n == zone.nb_faces() );
-  assert ( Ptot.dimension(0) == zone.nb_elem() );
+  assert ( n == domaine.nb_faces() );
+  assert ( Ptot.dimension(0) == domaine.nb_elem() );
   for (int i=0 ; i <n ; i++) UgradP(i,0) = la_vitesse(i,0) * grad_Ptot(i,0);
-  face_to_elem(zone,UgradP,UgradP_elem);
+  face_to_elem(domaine,UgradP,UgradP_elem);
 }

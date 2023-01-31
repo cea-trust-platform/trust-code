@@ -19,7 +19,7 @@
 #include <distances_VEF.h>
 #include <Champ_P0_VEF.h>
 #include <Milieu_base.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 Implemente_instanciable(Sortie_libre_Gradient_Pression_libre_VEF, "Frontiere_ouverte_Gradient_Pression_libre_VEF", Neumann_sortie_libre);
 
@@ -41,11 +41,11 @@ Entree& Sortie_libre_Gradient_Pression_libre_VEF::readOn(Entree& s)
 void Sortie_libre_Gradient_Pression_libre_VEF::completer()
 {
   Cerr << "Sortie_libre_Gradient_Pression_libre_VEF::completer()" << finl;
-  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
 
-  //  const Zone_VEF& le_dom_VEF = ref_cast(Zone_VEF,eqn.zone_dis().valeur());
+  //  const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF,eqn.domaine_dis().valeur());
 
   const Champ_P0_VEF& pression = ref_cast(Champ_P0_VEF, eqn_hydr.pression().valeur());
 
@@ -64,13 +64,13 @@ int Sortie_libre_Gradient_Pression_libre_VEF::initialiser(double temps)
 
   int ok = Cond_lim_base::initialiser(temps);
 
-  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
   //      const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Zone_VEF& mon_dom_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis().valeur());
   const IntTab& face_voisins = mon_dom_VEF.face_voisins();
-  //      const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,mon_dom_cl_dis.valeur());
-  //      const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
+  //      const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_dom_cl_dis.valeur());
+  //      const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
   //      const DoubleTab& face_normale = le_dom_VEF.face_normales();
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
   int nb_faces_loc = le_bord.nb_faces();
@@ -124,12 +124,12 @@ void Sortie_libre_Gradient_Pression_libre_VEF::mettre_a_jour(double temps)
 
 double Sortie_libre_Gradient_Pression_libre_VEF::flux_impose(int face) const
 {
-  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Domaine_Cl_dis_base& le_dom_Cl = domaine_Cl_dis();
   const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
-  const Zone_VEF& mon_dom_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const Domaine_VEF& mon_dom_VEF = ref_cast(Domaine_VEF, eqn.domaine_dis().valeur());
   const IntTab& face_voisins = mon_dom_VEF.face_voisins();
-  //  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,mon_dom_cl_dis.valeur());
+  //  const Domaine_Cl_VEF& domaine_Cl_VEF = ref_cast(Domaine_Cl_VEF,mon_dom_cl_dis.valeur());
   //  const Front_VF& le_bord = ref_cast(Front_VF,frontiere_dis());
   const IntTab& elem_faces = mon_dom_VEF.elem_faces();
   const DoubleTab& face_normales = mon_dom_VEF.face_normales();

@@ -18,7 +18,7 @@
 #include <Mod_turb_hyd_base.h>
 #include <Modele_turbulence_scal.h>
 #include <Navier_Stokes_std.h>
-#include <Zone_Cl_VEF.h>
+#include <Domaine_Cl_VEF.h>
 
 Implemente_base(Op_Dift_VEF_base,"Op_Dift_VEF_base",Op_Diff_VEF_base);
 
@@ -56,12 +56,12 @@ void Op_Dift_VEF_base::mettre_a_jour(double )
     }
 }
 
-void Op_Dift_VEF_base::associer(const Zone_dis& zone_dis,
-                                const Zone_Cl_dis& zone_cl_dis,
+void Op_Dift_VEF_base::associer(const Domaine_dis& domaine_dis,
+                                const Domaine_Cl_dis& domaine_cl_dis,
                                 const Champ_Inc& ch_transporte)
 {
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
   inconnue_ = ch_transporte;
@@ -96,7 +96,7 @@ void Op_Dift_VEF_base::completer()
 
 void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& borne_visco_turb, double dt_conv, double dt_diff_sur_dt_conv) const
 {
-  const Zone_VEF& le_dom_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
   int nb_elem = le_dom_VEF.nb_elem();
   int flag = diffusivite().valeurs().dimension(0)>1 ? 1 : 0;
   for (int elem=0; elem<nb_elem; elem++)

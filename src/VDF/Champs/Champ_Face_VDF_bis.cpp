@@ -15,7 +15,7 @@
 
 #include <Champ_Face_VDF.h>
 
-void Champ_Face_VDF::calcul_y_plus_diphasique(DoubleTab& , const Zone_Cl_VDF& )
+void Champ_Face_VDF::calcul_y_plus_diphasique(DoubleTab& , const Domaine_Cl_VDF& )
 {
   /* Do nothing : implementation in trioCFD */
 }

@@ -14,11 +14,11 @@
 *****************************************************************************/
 #include <Partitionneur_Sous_Domaine.h>
 #include <EFichier.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Param.h>
 #include <EChaine.h>
 
-// XD partitionneur_sous_domaine partitionneur_deriv sous_domaine -1 Given a global partition of a global domain, 'sous-domaine' allows to produce a conform partition of a sub-domain generated from the bigger one using the keyword create_domain_from_sous_zone. The sub-domain will be partitionned in a conform fashion with the global domain.
+// XD partitionneur_sous_domaine partitionneur_deriv sous_domaine -1 Given a global partition of a global domain, 'sous-domaine' allows to produce a conform partition of a sub-domain generated from the bigger one using the keyword create_domain_from_sous_domaine. The sub-domain will be partitionned in a conform fashion with the global domain.
 Implemente_instanciable_sans_constructeur(Partitionneur_Sous_Domaine,"Partitionneur_Sous_Domaine",Partitionneur_base);
 
 Partitionneur_Sous_Domaine::Partitionneur_Sous_Domaine()
@@ -72,7 +72,7 @@ void Partitionneur_Sous_Domaine::construire_partition(IntVect& elem_part, int& n
   if (filename_ssz_ == "")
     {
       Cerr << "Error in Partitionneur_Sous_Domaine::construire_partition\n";
-      Cerr << " The subzone file name has not been initialized" << finl;
+      Cerr << " The subdomaine file name has not been initialized" << finl;
       exit();
     }
 
@@ -90,7 +90,7 @@ void Partitionneur_Sous_Domaine::construire_partition(IntVect& elem_part, int& n
   file >> nb_parts_tot;
   file.close();
 
-  Cerr << "Reading of subzone file : " << filename_ssz_ << finl;
+  Cerr << "Reading of subdomaine file : " << filename_ssz_ << finl;
   file.ouvrir(filename_ssz_);
   if (!file.good())
     {

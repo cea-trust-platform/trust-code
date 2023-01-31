@@ -66,8 +66,8 @@ public :
 protected :
 
   REF(Champ_base) la_diffusivite;
-  inline void associer(const Zone_dis&,
-                       const Zone_Cl_dis&,
+  inline void associer(const Domaine_dis&,
+                       const Domaine_Cl_dis&,
                        const Champ_Inc& ) override ;
 };
 
@@ -147,17 +147,17 @@ inline void Op_Diff_negligeable::mettre_a_jour(double temps)
 }
 
 
-/*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::associer(const Zone_dis&,
+/*! @brief Associe divers objets a un operateurs negligeable: NE FAIT RIEN Simple appel a Operateur_negligeable::associer(const Domaine_dis&,
  *
- *                                                      const Zone_Cl_dis&,
+ *                                                      const Domaine_Cl_dis&,
  *                                                      const Champ_Inc&)
  *
- * @param (Zone_dis& z)
- * @param (Zone_Cl_dis& zcl)
+ * @param (Domaine_dis& z)
+ * @param (Domaine_Cl_dis& zcl)
  * @param (Champ_Inc& ch)
  */
-inline void Op_Diff_negligeable::associer(const Zone_dis& z,
-                                          const Zone_Cl_dis& zcl,
+inline void Op_Diff_negligeable::associer(const Domaine_dis& z,
+                                          const Domaine_Cl_dis& zcl,
                                           const Champ_Inc& ch)
 {
   Operateur_negligeable::associer(z, zcl, ch);

@@ -19,7 +19,7 @@
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
 
-class Zone;
+class Domaine;
 class Faces;
 
 /*! @brief Classe Extruder_en3 Cette classe est un interprete qui sert a lire et executer
@@ -48,10 +48,10 @@ public :
   }
 
   inline void setNbTranches(int n) { NZ_ = n; }
-  void extruder(Zone&, const IntVect&);
+  void extruder(Domaine&, const IntVect&);
 
 protected:
-  void construire_bords(Zone&, Faces&, int, int, const IntVect&) ;
+  void construire_bords(Domaine&, Faces&, int, int, const IntVect&) ;
   void construire_bord_lateral(Faces&, Faces&, int, const IntVect&);
 
   ArrOfDouble direction_;

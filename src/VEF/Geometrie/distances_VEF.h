@@ -15,36 +15,36 @@
 
 #ifndef distances_VEF_inclus
 #define distances_VEF_inclus
-#include <Zone_VEF.h>
-//double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Zone_VEF& zone,double& val1);
-double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Zone_VEF& zone,double& val1, double& val2);
-double norm_2D_vit1_lp(const DoubleTab& vit,int elem,int num1,int num2,const Zone_VEF& zone,double& val1,double& val2);
-double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Zone_VEF& zone,double& val1);
-double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,const Zone_VEF& zone,double& val1);
-//double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,const Zone_VEF& zone,double& val1);
-double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,int num2,const Zone_VEF& zone,double& val1);
-double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Zone_VEF& zone,double& val1);
-double distance_2D(int fac,int elem,const Zone_VEF& zone);
+#include <Domaine_VEF.h>
+//double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Domaine_VEF& domaine,double& val1);
+double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,const Domaine_VEF& domaine,double& val1, double& val2);
+double norm_2D_vit1_lp(const DoubleTab& vit,int elem,int num1,int num2,const Domaine_VEF& domaine,double& val1,double& val2);
+double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Domaine_VEF& domaine,double& val1);
+double norm_2D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,const Domaine_VEF& domaine,double& val1);
+//double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,const Domaine_VEF& domaine,double& val1);
+double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,int num2,const Domaine_VEF& domaine,double& val1);
+double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Domaine_VEF& domaine,double& val1);
+double distance_2D(int fac,int elem,const Domaine_VEF& domaine);
 
-double norm_3D_vit1(const DoubleTab& vit,int elem,int num1,const Zone_VEF& zone,double& val1 ,double& val2,double& val3);
-double norm_3D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Zone_VEF& zone,double& val1 ,double& val2,double& val3);
-double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,int num2,int num3,int num4,const Zone_VEF& zone,double& val1,double& val2,double& val3);
-double norm_3D_vit2(const DoubleTab& vit,int elem,int num1,const Zone_VEF& zone,double& val1 ,double& val2,double& val3);
-double norm_3D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Zone_VEF& zone,double& val1 ,double& val2,double& val3);
+double norm_3D_vit1(const DoubleTab& vit,int elem,int num1,const Domaine_VEF& domaine,double& val1 ,double& val2,double& val3);
+double norm_3D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Domaine_VEF& domaine,double& val1 ,double& val2,double& val3);
+double norm_3D_vit1(const DoubleTab& vit,int fac,int num1,int num2,int num3,int num4,const Domaine_VEF& domaine,double& val1,double& val2,double& val3);
+double norm_3D_vit2(const DoubleTab& vit,int elem,int num1,const Domaine_VEF& domaine,double& val1 ,double& val2,double& val3);
+double norm_3D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,const Domaine_VEF& domaine,double& val1 ,double& val2,double& val3);
 double norm_3D_vit1_lp(const DoubleTab& vit,int elem,int num1,int num2,int num3,
-                       const Zone_VEF& zone,
+                       const Domaine_VEF& domaine,
                        double& val1 ,double& val2,double& val3);
-double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,const Zone_VEF& zone,double& val1);
-double norm_3D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,int num5, const Zone_VEF& zone,double& val1 ,double& val2,double& val3);
-double norm_3D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,int num5, const Zone_VEF& zone,double& val1 ,double& val2,double& val3);
-double norm_3D_vit2(const DoubleTab& vit,int fac,int num1,int num2,int num3,int num4,const Zone_VEF& zone,double& val1,double& val2,double& val3);
-double distance_3D(int fac,int elem,const Zone_VEF& zone);
-double distance_face_elem(int fac,int elem,const Zone_VEF& zone);
-double norm_vit_lp_k(const DoubleTab& vit,int face,int face_b,const Zone_VEF& zone,ArrOfDouble& val,int is_defilante);
+double norm_2D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,const Domaine_VEF& domaine,double& val1);
+double norm_3D_vit1(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,int num5, const Domaine_VEF& domaine,double& val1 ,double& val2,double& val3);
+double norm_3D_vit2(const DoubleTab& vit,int elem,int num1,int num2,int num3,int num4,int num5, const Domaine_VEF& domaine,double& val1 ,double& val2,double& val3);
+double norm_3D_vit2(const DoubleTab& vit,int fac,int num1,int num2,int num3,int num4,const Domaine_VEF& domaine,double& val1,double& val2,double& val3);
+double distance_3D(int fac,int elem,const Domaine_VEF& domaine);
+double distance_face_elem(int fac,int elem,const Domaine_VEF& domaine);
+double norm_vit_lp_k(const DoubleTab& vit,int face,int face_b,const Domaine_VEF& domaine,ArrOfDouble& val,int is_defilante);
 
-DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& methode, const Zone_VEF& zone);
-double distance_sommets(const int , const int , const Zone_VEF& );
-double som_pscal(const int , const int , const int , const int , const Zone_VEF& );
+DoubleVect& calcul_longueur_filtre(DoubleVect& longueur_filtre, const Motcle& methode, const Domaine_VEF& domaine);
+double distance_sommets(const int , const int , const Domaine_VEF& );
+double som_pscal(const int , const int , const int , const int , const Domaine_VEF& );
 
 // Fonctions inlinees pour optimisation
 inline double vitesse_tangentielle(const double v0,const double v1,const double r0,const double r1)
@@ -78,11 +78,11 @@ inline void calcule_r0r1r2(const DoubleTab& face_normale, int& fac, double& r0, 
   r2*=tmp;
 }
 
-inline double distance_face(int fac,int fac1,const Zone_VEF& zone)
+inline double distance_face(int fac,int fac1,const Domaine_VEF& domaine)
 {
   int dimension=Objet_U::dimension;
-  const DoubleTab& xv = zone.xv();    // centre de gravite des faces
-  const DoubleTab& face_normale = zone.face_normales();
+  const DoubleTab& xv = domaine.xv();    // centre de gravite des faces
+  const DoubleTab& face_normale = domaine.face_normales();
   double r0,r1;
   double x0=xv(fac,0);
   double y0=xv(fac,1);

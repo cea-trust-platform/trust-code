@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Tri_poly.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Tri_poly,"Tri_poly",Elem_poly_base);
 
@@ -35,12 +35,12 @@ Tri_poly::Tri_poly()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Domaine_poly
  *
  */
-void Tri_poly::normale(int num_Face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Zone& zone_geom) const
+void Tri_poly::normale(int num_Face, DoubleTab& Face_normales, const IntTab& Face_sommets, const IntTab& Face_voisins, const IntTab& elem_faces, const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   double x1, y1;
   double nx, ny;

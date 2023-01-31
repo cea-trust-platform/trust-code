@@ -17,20 +17,20 @@
 #include <Champ_Fonc_Tabule.h>
 
 Implemente_instanciable(Champ_Fonc_Fonction_txyz_Morceaux,"Champ_Fonc_Fonction_txyz_Morceaux",TRUSTChamp_Morceaux_generique<Champ_Morceaux_Type::FONC_TXYZ>);
-// XD champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-zone. It makes possible the definition of a field that depends on the time and the space.
+// XD champ_fonc_fonction_txyz_morceaux champ_don_base champ_fonc_fonction_txyz_morceaux 0 Field defined by analytical functions in each sub-domaine. It makes possible the definition of a field that depends on the time and the space.
 // XD   attr problem_name ref_Pb_base problem_name 0 Name of the problem.
 // XD   attr inco chaine inco 0 Name of the field (for example: temperature).
 // XD   attr nb_comp int nb_comp 0 Number of field components.
-// XD   attr data bloc_lecture data 0 { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i } By default, the value val_def is assigned to the field. It takes the sous_zone_i identifier Sous_Zone (sub_area) type object function, val_i. Sous_Zone (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_fonction_txyz_morceaux type object.
+// XD   attr data bloc_lecture data 0 { Defaut val_def sous_domaine_1 val_1 ... sous_domaine_i val_i } By default, the value val_def is assigned to the field. It takes the sous_domaine_i identifier Sous_Domaine (sub_area) type object function, val_i. Sous_Domaine (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_fonction_txyz_morceaux type object.
 
 Sortie& Champ_Fonc_Fonction_txyz_Morceaux::printOn(Sortie& os) const { return os << valeurs(); }
 
 /*! @brief Lit les valeurs du champ uniforme par morceaux a partir d'un flot d'entree.
  *
  * On lit le nom du domaine (nom_domaine) le nombre de composantes du champ (nb_comp) la valeur par defaut
- *     du champ ainsi que les valeurs sur les sous zones.
+ *     du champ ainsi que les valeurs sur les sous domaines.
  *     Format:
- *      Champ_Fonc_Fonction_txyz_Morceaux pb champ nb_comp { Defaut val_def sous_zone_1 val_1 ... sous_zone_i val_i }
+ *      Champ_Fonc_Fonction_txyz_Morceaux pb champ nb_comp { Defaut val_def sous_domaine_1 val_1 ... sous_domaine_i val_i }
  *
  */
 Entree& Champ_Fonc_Fonction_txyz_Morceaux::readOn(Entree& is)

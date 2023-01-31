@@ -21,7 +21,7 @@
 #include <Champ_front_normal.h>
 #include <Champ_front.h>
 #include <Parser_U.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 /*! @brief class Champ_front_xyz_debit
  *

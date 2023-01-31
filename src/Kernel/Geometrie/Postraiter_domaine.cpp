@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Postraiter_domaine.h>
-#include <Sous_Zone.h>
+#include <Sous_Domaine.h>
 #include <Format_Post.h>
 #include <Param.h>
 #include <communications.h>
@@ -40,13 +40,13 @@ Entree& Postraiter_domaine::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
-void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Faces& faces,Nom& nom_bord,Nom& fichier,const IntTab& les_elems, Format_Post_base& post, int& compteur,int& compteur0,int& compteur_reel,int& moi,int isjoint=0)
+void traite_bord(const Domaine& domaine,IntVect& ch_som,IntVect& ch_elem3,int num2, Faces& faces,Nom& nom_bord,Nom& fichier,const IntTab& les_elems, Format_Post_base& post, int& compteur,int& compteur0,int& compteur_reel,int& moi,int isjoint=0)
 {
-  const Zone& dom=zone;
+  const Domaine& dom=domaine;
   Nom nom_dom=dom.le_nom();
   int num=-num2;
   int nb_elem=les_elems.dimension(0);
-  int nb_elem_tot=zone.nb_elem_tot();
+  int nb_elem_tot=domaine.nb_elem_tot();
 
 
   int nb_faces=faces.nb_faces();
@@ -126,21 +126,21 @@ void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Fa
                   DoubleTab position(1,Objet_U::dimension);
                   IntVect res;
                   DoubleTab xv;
-                  faces.associer_domaine(zone);
+                  faces.associer_domaine(domaine);
                   faces.calculer_centres_gravite(xv);
                   for (j=0; j<nb_faces; j++)
                     {
                       for (int dir=0; dir<Objet_U::dimension; dir++)
                         position(0,dir)=xv(j,dir);
-                      zone.chercher_elements(position,res);
+                      domaine.chercher_elements(position,res);
                       if (res[0]<0)
                         {
                           position+=1e-5;
-                          zone.chercher_elements(position,res);
+                          domaine.chercher_elements(position,res);
                           if (res[0]<0)
                             {
                               position-=2e-5;
-                              zone.chercher_elements(position,res);
+                              domaine.chercher_elements(position,res);
                             }
                         }
 
@@ -286,7 +286,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
         est_le_premie_post=0;
       post.ecrire_entete(0.,0,est_le_premie_post);
 
-      const Zone& dom=domaine(numero_domaine);
+      const Domaine& dom=domaine(numero_domaine);
       int reprise = 0;
       double t_init = 0.;
       post.preparer_post(dom.le_nom(),est_le_premie_post,reprise,t_init);
@@ -301,7 +301,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
         est_le_premie_post=1;
       else
         est_le_premie_post=0;
-      const Zone& dom=domaine(numero_domaine);
+      const Domaine& dom=domaine(numero_domaine);
 
       compteur=-1;
       post.init_ecriture(0.,-1.,est_le_premie_post,dom);
@@ -313,7 +313,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
 
   for (int numero_domaine=0; numero_domaine<nb_domaine_; numero_domaine++)
     {
-      Zone& dom=domaine(numero_domaine);
+      Domaine& dom=domaine(numero_domaine);
       Nom nom_dom(dom.le_nom());
       const IntTab& les_elems = dom.les_elems();
       IntVect ch_som(dom.nb_som());
@@ -424,19 +424,19 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
               }
         }
       //////////////////////////
-      // Ecriture des sous_zones
+      // Ecriture des sous_domaines
       //////////////////////////
-      int nb_ss_zones=dom.nb_ss_zones();
+      int nb_ss_domaines=dom.nb_ss_domaines();
       int nb_elem_tot=dom.nb_elem_tot();
-      for (int i=0; i<nb_ss_zones; i++)
+      for (int i=0; i<nb_ss_domaines; i++)
         {
-          const Sous_Zone& la_ss_zone=dom.ss_zone(i);
-          int nbpoly=la_ss_zone.nb_elem_tot();
+          const Sous_Domaine& la_ss_domaine=dom.ss_domaine(i);
+          int nbpoly=la_ss_domaine.nb_elem_tot();
           IntVect ch_elemb2(nb_elem);
           int cell=0;
           for (int pol=0; pol<nbpoly; pol++)
             {
-              int elem=la_ss_zone[pol];
+              int elem=la_ss_domaine[pol];
               if (elem<nb_elem)
                 {
                   ch_elemb2[elem]=(i+1);
@@ -444,18 +444,18 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
                 }
               else if (elem>=nb_elem_tot)
                 {
-                  Cerr << "This subzone is poorly defined." << finl;
+                  Cerr << "This subdomaine is poorly defined." << finl;
                   Cerr << "It is composed of elements which do not belong" << finl;
                   Cerr << "to the domain!" << finl;
                   Process::exit();
                 }
             }
-          int subzone_cells=mp_sum(cell);
-          Cerr<<"We handle of the subzone " << i <<" who have " << subzone_cells << " cells." << finl;
+          int subdomaine_cells=mp_sum(cell);
+          Cerr<<"We handle of the subdomaine " << i <<" who have " << subdomaine_cells << " cells." << finl;
           Faces bidon;
           Nom nom_post;
-          nom_post="Sous_Zone_";
-          nom_post+=la_ss_zone.le_nom();
+          nom_post="Sous_Domaine_";
+          nom_post+=la_ss_domaine.le_nom();
           traite_bord(dom,ch_som,ch_elemb2,1,bidon,nom_post,fichier,les_elems,post,compteur,compteur0,compteur_reel,moi,2);
         }
     }

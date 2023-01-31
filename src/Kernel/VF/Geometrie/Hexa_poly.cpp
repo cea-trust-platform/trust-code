@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Hexa_poly.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Hexa_poly,"Hexa_poly",Elem_poly_base);
 
@@ -39,7 +39,7 @@ Hexa_poly::Hexa_poly()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Zone_poly
+/*! @brief remplit le tableau face_normales dans la Domaine_poly
  *
  */
 
@@ -47,9 +47,9 @@ void Hexa_poly::normale(int num_Face,DoubleTab& Face_normales,
                         const  IntTab& Face_sommets,
                         const IntTab& Face_voisins,
                         const IntTab& elem_faces,
-                        const Zone& zone_geom) const
+                        const Domaine& domaine_geom) const
 {
-  const DoubleTab& les_coords = zone_geom.coord_sommets();
+  const DoubleTab& les_coords = domaine_geom.coord_sommets();
 
   double x1,y1,z1,x2,y2,z2;
   double nx,ny,nz;

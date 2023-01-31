@@ -18,7 +18,7 @@
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <cfloat>
 
 Implemente_base(Source_Travail_pression_Elem_base, "Source_Travail_pression_Elem_base", Sources_Multiphase_base);
@@ -29,10 +29,10 @@ Entree& Source_Travail_pression_Elem_base::readOn(Entree& is) { return is; }
 
 void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
-  const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   const DoubleTab& inco = equation().inconnue().valeurs();
-  int i, j, e, eb, ne = zone.nb_elem(), f,n, N = inco.line_size(), m, M = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().valeurs().line_size();
+  int i, j, e, eb, ne = domaine.nb_elem(), f,n, N = inco.line_size(), m, M = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().valeurs().line_size();
 
   for (auto &&n_m : matrices)
     if (n_m.first == "pression" || (n_m.first == "alpha" && !semi_impl.count("alpha")) || n_m.first == "vitesse")
@@ -64,12 +64,12 @@ void Source_Travail_pression_Elem_base::dimensionner_blocs(matrices_t matrices, 
 void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
-  const Zone_VF& zone = ref_cast(Zone_VF, equation().zone_dis().valeur());
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &fs = zone.face_surfaces(), &ve = zone.volumes();
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const Champ_Inc_base& ch_a = pbm.eq_masse.inconnue().valeur(), &ch_v = pbm.eq_qdm.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur();
   /* trois tableaux de alpha : present / passe et champ convecte (peut etre semi-implicite) */
   const DoubleTab& alpha = ch_a.valeurs(), &c_alpha = semi_impl.count("alpha") ? semi_impl.at("alpha") : alpha, &p_alpha = ch_a.passe(), &press = ch_p.valeurs(), &vit = ch_v.valeurs();
-  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, ch_a).fcl(), &f_e = zone.face_voisins();
+  const IntTab& fcl = ref_cast(Champ_Inc_P0_base, ch_a).fcl(), &f_e = domaine.face_voisins();
   DoubleTab b_alpha = ch_a.valeur_aux_bords();
   Matrice_Morse *Mp = matrices.count("pression") ? matrices.at("pression") : NULL,
                  *Ma = matrices.count("alpha") && !semi_impl.count("alpha") ? matrices.at("alpha") : NULL,
@@ -79,7 +79,7 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   double dt = equation().schema_temps().pas_de_temps();
 
   //partie -p d alpha_k / dt et ses derivees
-  for (e = 0; e < zone.nb_elem(); e++)
+  for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (n = 0, m = 0; n < N; n++, m += (M > 1)) secmem(e, n) -= pe(e) * ve(e) * press(e, m) * (alpha(e, n) - p_alpha(e, n)) / dt;
       if (Mp)
@@ -91,7 +91,7 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   //partie -p div (alpha_k v_k)
   DoubleTrav dv_flux(N), dc_flux(2, N); //derivees du flux convectif a la face par rapport a la vitesse / au champ convecte amont / aval
   /* convection aux faces internes (fcl(f, 0) == 0), de Neumann_val_ext ou de Dirichlet */
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     if (!fcl(f, 0) || (fcl(f, 0) > 4 && fcl(f, 0) < 7))
       {
         for (dv_flux = 0, dc_flux = 0, i = 0; i < 2; i++)
@@ -105,28 +105,28 @@ void Source_Travail_pression_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
         //second membre
         for (i = 0; i < 2; i++)
           if ((e = f_e(f, i)) >= 0)
-            if (e < zone.nb_elem())
+            if (e < domaine.nb_elem())
               for (n = 0, m = 0; n < N; n++, m += (M > 1))
                 secmem(e, n) -= (i ? -1 : 1) * press(e, m) * dv_flux(n) * vit(f, n);
         //derivees : vitesse
         if (Mv)
           for (i = 0; i < 2; i++)
             if ((e = f_e(f, i)) >= 0)
-              if (e < zone.nb_elem())
+              if (e < domaine.nb_elem())
                 for (n = 0, m = 0; n < N; n++, m += (M > 1))
                   (*Mv)(N * e + n, N * f + n) += (i ? -1 : 1) * press(e, m) * dv_flux(n);
         //derivees : pression
         if (Mp)
           for (i = 0; i < 2; i++)
             if ((e = f_e(f, i)) >= 0)
-              if (e < zone.nb_elem())
+              if (e < domaine.nb_elem())
                 for (n = 0, m = 0; n < N; n++, m += (M > 1))
                   (*Mp)(N * e + n, M * e + m) += (i ? -1 : 1) * dv_flux(n) * vit(f, n);
         //derivees : alpha
         if (Ma)
           for (i = 0; i < 2; i++)
             if ((e = f_e(f, i)) >= 0)
-              if (e < zone.nb_elem())
+              if (e < domaine.nb_elem())
                 for (j = 0; j < 2; j++)
                   if ((eb = f_e(f, j)) >= 0)
                     for (n = 0, m = 0; n < N; n++, m += (M > 1)) (*Ma)(N * e + n, N * eb + n) += (i ? -1 : 1) * press(e, m) * dc_flux(j, n);

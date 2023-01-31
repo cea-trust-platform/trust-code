@@ -16,11 +16,11 @@
 #include <Source_Generique_VDF_Face.h>
 #include <Dirichlet_homogene.h>
 #include <Equation_base.h>
-#include <Zone_Cl_VDF.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_VDF.h>
+#include <Domaine_Cl_dis.h>
 #include <Milieu_base.h>
 #include <Dirichlet.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Implemente_instanciable(Source_Generique_VDF_Face,"Source_Generique_VDF_Face",Source_Generique_base);
 
@@ -69,11 +69,11 @@ void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   secmem.echange_espace_virtuel();
 }
 
-void Source_Generique_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                  const Zone_Cl_dis& zcl_dis)
+void Source_Generique_VDF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                  const Domaine_Cl_dis& zcl_dis)
 {
-  le_dom_VDF = ref_cast(Zone_VDF,zone_dis.valeur());
-  la_zcl_VDF = ref_cast(Zone_Cl_VDF,zcl_dis.valeur());
+  le_dom_VDF = ref_cast(Domaine_VDF,domaine_dis.valeur());
+  la_zcl_VDF = ref_cast(Domaine_Cl_VDF,zcl_dis.valeur());
 }
 
 Nom Source_Generique_VDF_Face::localisation_source()

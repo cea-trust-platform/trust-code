@@ -145,9 +145,9 @@ void Redistribute_Field::intersect(const int s1, const int n1, int& s2, int& n2,
 //  avec une ligne et trois colonnes: { 0, 0, n } ou n est le nombre d'elements global du champ
 // Si on veut redistribuer en periodisant (construction du champ etendu pour le front-tracking)
 //  on passe un tableau a trois lignes:
-//    ligne 0, la zone centrale:  { 0, extend_size, ni }  (ni est la taille du champ non etendu)
-//    ligne 1, la zone de gauche: { ni-extend_size, 0, extend_size }
-//    ligne 2, la zone de droite: { 0, ni + extend_size, extend_size }
+//    ligne 0, la domaine centrale:  { 0, extend_size, ni }  (ni est la taille du champ non etendu)
+//    ligne 1, la domaine de gauche: { ni-extend_size, 0, extend_size }
+//    ligne 2, la domaine de droite: { 0, ni + extend_size, extend_size }
 //
 // On remplit le tableau send_blocs: liste de segments de donnees a envoyer aux autres processeurs
 //  (colonne 0: indice local du premier element a envoyer,
@@ -241,7 +241,7 @@ void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
           ArrOfDouble *buf_ptr;
           if (dest_pe == Process::me())
             {
-              // On fait pointer tmp sur une zone du buffer local de la bonne taille:
+              // On fait pointer tmp sur une domaine du buffer local de la bonne taille:
               tmp.ref_array(buffer_for_me, index_buffer_for_me /* start index */, ni*nj*nk /* size */);
               index_buffer_for_me += ni*nj*nk; // avance de la taille du bloc dans le buffer
               buf_ptr = &tmp;
@@ -287,7 +287,7 @@ void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
           ArrOfDouble *buf_ptr;
           if (src_pe == Process::me())
             {
-              // On fait pointer tmp sur une zone du buffer local de la bonne taille:
+              // On fait pointer tmp sur une domaine du buffer local de la bonne taille:
               tmp.ref_array(buffer_for_me, index_buffer_for_me /* start index */, ni*nj*nk /* size */);
               index_buffer_for_me += ni*nj*nk; // avance de la taille du bloc dans le buffer
               buf_ptr = &tmp;

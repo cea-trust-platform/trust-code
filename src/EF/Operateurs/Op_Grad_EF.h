@@ -18,11 +18,11 @@
 #define Op_Grad_EF_included
 
 #include <Operateur_Grad.h>
-#include <Zone_EF.h>
-#include <Ref_Zone_Cl_EF.h>
-#include <Zone_Cl_EF.h>
+#include <Domaine_EF.h>
+#include <Ref_Domaine_Cl_EF.h>
+#include <Domaine_Cl_EF.h>
 
-#include <Ref_Zone_EF.h>
+#include <Ref_Domaine_EF.h>
 #include <Champ_Don.h>
 
 /*! @brief class Op_Grad_EF
@@ -49,7 +49,7 @@ class Op_Grad_EF : public Operateur_Grad_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis&,const Champ_Inc&) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
@@ -57,8 +57,8 @@ public:
   void calculer_flux_bords() const override;
 
 protected:
-  REF(Zone_EF) le_dom_EF;
-  REF(Zone_Cl_EF) la_zcl_EF;
+  REF(Domaine_EF) le_dom_EF;
+  REF(Domaine_Cl_EF) la_zcl_EF;
   Champ_Don int_P_bord_;
 
 };

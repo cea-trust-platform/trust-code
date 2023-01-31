@@ -16,7 +16,7 @@
 #include <Evaluateur_Source_Elem.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 Evaluateur_Source_Elem::Evaluateur_Source_Elem(const Evaluateur_Source_Elem& eval) : Evaluateur_Source(eval)
 {
@@ -27,6 +27,6 @@ Evaluateur_Source_Elem::Evaluateur_Source_Elem(const Evaluateur_Source_Elem& eva
 void Evaluateur_Source_Elem::completer()
 {
   Cerr << "Evaluateur_Source_Elem::completer()" << finl;
-  volumes.ref(ref_cast(Zone_VF,le_dom.valeur()).volumes());
+  volumes.ref(ref_cast(Domaine_VF,le_dom.valeur()).volumes());
   porosite_vol.ref(la_zcl->equation().milieu().porosite_elem());
 }

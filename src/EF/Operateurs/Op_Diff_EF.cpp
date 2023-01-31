@@ -15,7 +15,7 @@
 
 //static int transpose_=1;
 #include <Op_Diff_EF.h>
-#include <Zone_EF.h>
+#include <Domaine_EF.h>
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
 #include <Debog.h>
@@ -101,10 +101,10 @@ const Champ_base& Op_Diff_EF::diffusivite() const
 
 void Op_Diff_EF::remplir_nu(DoubleTab& nu) const
 {
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   // On dimensionne nu
   if (!nu.get_md_vector().non_nul())
-    zone_EF.zone().creer_tableau_elements(nu);
+    domaine_EF.domaine().creer_tableau_elements(nu);
   const DoubleTab& diffu=diffusivite().valeurs();
   if (diffu.size()==1)
     nu = diffu(0,0);
@@ -128,9 +128,9 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
     return ajouter_new(tab_inconnue,resu);
 
   remplir_nu(nu_);
-  //  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_ef = le_dom_EF.valeur();
-  int nb_som_elem=zone_ef.zone().nb_som_elem();
+  //  const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
+  const Domaine_EF& domaine_ef = le_dom_EF.valeur();
+  int nb_som_elem=domaine_ef.domaine().nb_som_elem();
 
   int N = resu.line_size();
   Nature_du_champ nat= equation().inconnue().valeur().nature_du_champ();
@@ -206,23 +206,23 @@ DoubleTab& Op_Diff_EF::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& res
 {
   Cerr<<"NEW"<<finl;
   remplir_nu(nu_);
-  //  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  //const Zone_EF& zone_EF = le_dom_EF.valeur();
+  //  const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
+  //const Domaine_EF& domaine_EF = le_dom_EF.valeur();
 
 
   const int N = resu.line_size();
   ArrOfInt marqueur_neuman;
-  const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
   if(N > 1)
-    remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
+    remplir_marqueur_sommet_neumann( marqueur_neuman,domaine_ef,la_zcl_EF.valeur(),transpose_partout_ );
 
-  const DoubleVect& volumes= zone_ef.volumes();
+  const DoubleVect& volumes= domaine_ef.volumes();
 
-  const DoubleTab& bij=zone_ef.Bij();
-  const DoubleTab& bij_thilde=zone_ef.Bij_thilde();
-  int nb_elem_tot=zone_ef.zone().nb_elem_tot();
-  int nb_som_elem=zone_ef.zone().nb_som_elem();
-  const IntTab& elems=zone_ef.zone().les_elems() ;
+  const DoubleTab& bij=domaine_ef.Bij();
+  const DoubleTab& bij_thilde=domaine_ef.Bij_thilde();
+  int nb_elem_tot=domaine_ef.domaine().nb_elem_tot();
+  int nb_som_elem=domaine_ef.domaine().nb_som_elem();
+  const IntTab& elems=domaine_ef.domaine().les_elems() ;
 
   for (int elem=0; elem<nb_elem_tot; elem++)
     if (elem_contribue(elem))
@@ -296,18 +296,18 @@ void Op_Diff_EF::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse
   remplir_nu(nu_);
 
   const int N = transporte.line_size();
-  const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
-  const DoubleVect& volumes= zone_ef.volumes();
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const DoubleVect& volumes_thilde= domaine_ef.volumes_thilde();
+  const DoubleVect& volumes= domaine_ef.volumes();
 
-  const DoubleTab& bij=zone_ef.Bij();
-  int nb_elem_tot=zone_ef.zone().nb_elem_tot();
-  int nb_som_elem=zone_ef.zone().nb_som_elem();
-  const IntTab& elems=zone_ef.zone().les_elems() ;
-  int nb_som=zone_ef.zone().nb_som();
+  const DoubleTab& bij=domaine_ef.Bij();
+  int nb_elem_tot=domaine_ef.domaine().nb_elem_tot();
+  int nb_som_elem=domaine_ef.domaine().nb_som_elem();
+  const IntTab& elems=domaine_ef.domaine().les_elems() ;
+  int nb_som=domaine_ef.domaine().nb_som();
 
   ArrOfInt marqueur_neuman;
-  remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
+  remplir_marqueur_sommet_neumann( marqueur_neuman,domaine_ef,la_zcl_EF.valeur(),transpose_partout_ );
   for (int elem=0; elem<nb_elem_tot; elem++)
     if (elem_contribue(elem))
       {
@@ -348,19 +348,19 @@ void Op_Diff_EF::ajouter_contribution_new(const DoubleTab& transporte, Matrice_M
   remplir_nu(nu_);
 
   const int N = transporte.line_size();
-  const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  //const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
-  const DoubleVect& volumes= zone_ef.volumes();
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  //const DoubleVect& volumes_thilde= domaine_ef.volumes_thilde();
+  const DoubleVect& volumes= domaine_ef.volumes();
 
-  const DoubleTab& bij=zone_ef.Bij();
-  const DoubleTab& bij_thilde=zone_ef.Bij_thilde();
-  int nb_elem_tot=zone_ef.zone().nb_elem_tot();
-  int nb_som_elem=zone_ef.zone().nb_som_elem();
-  const IntTab& elems=zone_ef.zone().les_elems() ;
-  int nb_som=zone_ef.zone().nb_som();
+  const DoubleTab& bij=domaine_ef.Bij();
+  const DoubleTab& bij_thilde=domaine_ef.Bij_thilde();
+  int nb_elem_tot=domaine_ef.domaine().nb_elem_tot();
+  int nb_som_elem=domaine_ef.domaine().nb_som_elem();
+  const IntTab& elems=domaine_ef.domaine().les_elems() ;
+  int nb_som=domaine_ef.domaine().nb_som();
 
   ArrOfInt marqueur_neuman;
-  remplir_marqueur_sommet_neumann( marqueur_neuman,zone_ef,la_zcl_EF.valeur(),transpose_partout_ );
+  remplir_marqueur_sommet_neumann( marqueur_neuman,domaine_ef,la_zcl_EF.valeur(),transpose_partout_ );
   for (int elem=0; elem<nb_elem_tot; elem++)
     if (elem_contribue(elem))
       {
@@ -402,22 +402,22 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
 {
   // a mettre dans calculer_flux_bord....
 
-  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
+  const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   flux_bords_=0.;
   // const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
   // on parcourt toutes les faces de bord et on calcule lambda*gradT
-  const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
-  const IntTab& face_voisins=zone_ef.face_voisins();
-  const DoubleTab& bij=zone_ef.Bij();
-  int nb_som_elem=zone_ef.zone().nb_som_elem();
-  const IntTab& elems=zone_ef.zone().les_elems() ;
-  const DoubleTab& face_normales=zone_ef.face_normales();
-  const DoubleVect& volumes_thilde= zone_ef.volumes_thilde();
-  const DoubleVect& volumes= zone_ef.volumes();
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
+  const IntTab& face_voisins=domaine_ef.face_voisins();
+  const DoubleTab& bij=domaine_ef.Bij();
+  int nb_som_elem=domaine_ef.domaine().nb_som_elem();
+  const IntTab& elems=domaine_ef.domaine().les_elems() ;
+  const DoubleTab& face_normales=domaine_ef.face_normales();
+  const DoubleVect& volumes_thilde= domaine_ef.volumes_thilde();
+  const DoubleVect& volumes= domaine_ef.volumes();
 
-  const IntTab& face_sommets=zone_ef.face_sommets();
-  int nb_som_face=zone_ef.nb_som_face();
+  const IntTab& face_sommets=domaine_ef.face_sommets();
+  int nb_som_face=domaine_ef.nb_som_face();
 
   const int N = resu.line_size();
 
@@ -427,7 +427,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
       modifier_flux(*this);
       return;
     }
-  int premiere_face_int=zone_ef.premiere_face_int();
+  int premiere_face_int=domaine_ef.premiere_face_int();
   for (int face=0; face<premiere_face_int; face++)
     {
       int elem=face_voisins(face,0);
@@ -452,11 +452,11 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
 
   // Neumann :
   int n_bord;
-  int nb_bords=zone_Cl_EF.nb_cond_lim();
+  int nb_bords=domaine_Cl_EF.nb_cond_lim();
 
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
@@ -467,7 +467,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
           for (int face=ndeb; face<nfin; face++)
             {
 
-              double flux=la_cl_paroi.flux_impose(face-ndeb)*zone_EF.surface(face);
+              double flux=la_cl_paroi.flux_impose(face-ndeb)*domaine_EF.surface(face);
               for (int i1=0; i1<nb_som_face; i1++)
                 {
                   int glob2=face_sommets(face,i1);
@@ -499,7 +499,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
                     }
                   tm/=nb_som_face;
                 }
-              double flux=(phiext+h*(Text-tm))*zone_EF.surface(face);
+              double flux=(phiext+h*(Text-tm))*domaine_EF.surface(face);
               flux_bords_(face,0) = flux;
               flux/=nb_som_face;
               for (int i1=0; i1<nb_som_face; i1++)
@@ -531,11 +531,11 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
                       // By default, we just have -A.T(i-1) + A*T(i)
                       // Recompute the extra bit of flux coming from the other side:
                       //    Get opposite element
-                      int elem1 = zone_EF.face_voisins(opp_face, 0);
-                      int elem_opp = (elem1 != -1) ? elem1 : zone_EF.face_voisins(opp_face, 1);
+                      int elem1 = domaine_EF.face_voisins(opp_face, 0);
+                      int elem_opp = (elem1 != -1) ? elem1 : domaine_EF.face_voisins(opp_face, 1);
                       //    Other face of the opposite element (i.e. face "after" opp_face)
-                      int f1 = zone_EF.elem_faces(elem_opp, 0);
-                      int face_plus_2 = f1 != opp_face ? f1 : zone_EF.elem_faces(elem_opp, 1);  // 2 faces per elem max - 1D
+                      int f1 = domaine_EF.elem_faces(elem_opp, 0);
+                      int face_plus_2 = f1 != opp_face ? f1 : domaine_EF.elem_faces(elem_opp, 1);  // 2 faces per elem max - 1D
                       int som_p2 = face_sommets(face_plus_2, 0);
 
                       double pond = volumes_thilde(elem_opp)/volumes(elem_opp)/volumes(elem_opp); // taken from ajouter() ...
@@ -547,9 +547,9 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
                       // This is where we set a Dirichlet T(face) = T(opposite_face)
                       // Initially, flux for this som is -B.T(i+1) + B.T(i+2)   with B = nu(i+1)  (nu being the diffusivity)
                       // -> We want to have  B.T(i) - B.T(i+1)
-                      int elem = zone_EF.face_voisins(face, 0);
-                      int f1 = zone_EF.elem_faces(elem, 0);
-                      int face_p2 = f1 != face ? f1 : zone_EF.elem_faces(elem, 1);  // other face of the current elem
+                      int elem = domaine_EF.face_voisins(face, 0);
+                      int f1 = domaine_EF.elem_faces(elem, 0);
+                      int face_p2 = f1 != face ? f1 : domaine_EF.elem_faces(elem, 1);  // other face of the current elem
                       int som_p2=face_sommets(face_p2,0);
 
                       double pond = volumes_thilde(elem)/volumes(elem)/volumes(elem); // taken from ajouter() ...
@@ -593,7 +593,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
                     }
                   tm/=nb_som_face;
                   to/=nb_som_face;
-                  //flux=h*(to-tm)*zone_EF.surface(face);
+                  //flux=h*(to-tm)*domaine_EF.surface(face);
                   flux=h*(to-tm)*surface_gap(face-ndeb);
                 }
               else   // implicit case via contribuer_au_second_membre()
@@ -631,7 +631,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
                     }
                   tm/=nb_som_face;
                 }
-              double flux=h*(Text-tm)*zone_EF.surface(face);
+              double flux=h*(Text-tm)*domaine_EF.surface(face);
               flux_bords_(face,0) = flux;
               flux/=nb_som_face;
               for (int i1=0; i1<nb_som_face; i1++)
@@ -655,12 +655,12 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
 
 void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
 {
-  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = le_dom_EF.valeur();
-  const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
+  const Domaine_Cl_EF& domaine_Cl_EF = la_zcl_EF.valeur();
+  const Domaine_EF& domaine_EF = le_dom_EF.valeur();
+  const Domaine_EF& domaine_ef=ref_cast(Domaine_EF,equation().domaine_dis().valeur());
 
-  const IntTab& face_sommets=zone_ef.face_sommets();
-  int nb_som_face=zone_ef.nb_som_face();
+  const IntTab& face_sommets=domaine_ef.face_sommets();
+  int nb_som_face=domaine_ef.nb_som_face();
 
   int N = equation().inconnue().valeurs().line_size();
 
@@ -672,11 +672,11 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
 
   // Neumann :
   int n_bord;
-  int nb_bords=zone_Cl_EF.nb_cond_lim();
+  int nb_bords=domaine_Cl_EF.nb_cond_lim();
 
   for (n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_EF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_EF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
@@ -692,7 +692,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
               double dphi_dT=la_cl_paroi.derivee_flux_exterieur_imposee(face-ndeb);
 
               double tm=1./(nb_som_face*nb_som_face);
-              double flux=(dphi_dT+h)*zone_EF.surface(face)*tm;
+              double flux=(dphi_dT+h)*domaine_EF.surface(face)*tm;
 
               for (int i1=0; i1<nb_som_face; i1++)
                 {
@@ -718,15 +718,15 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
               // face on the other side of the inner wall:
               int opp_face = fmap(face-ndeb)+ndeb;
               // element attached to it
-              int elem1 = zone_EF.face_voisins(opp_face, 0);
-              int elem_opp = (elem1 != -1) ? elem1 : zone_EF.face_voisins(opp_face, 1);
+              int elem1 = domaine_EF.face_voisins(opp_face, 0);
+              int elem_opp = (elem1 != -1) ? elem1 : domaine_EF.face_voisins(opp_face, 1);
               // other face of the opposite element (i.e. face "after" opp_face)
-              int f1 = zone_EF.elem_faces(elem_opp, 0);
-              int face_plus_2 = f1 != opp_face ? f1 : zone_EF.elem_faces(elem_opp, 1);  // 2 faces per elem max - 1D
+              int f1 = domaine_EF.elem_faces(elem_opp, 0);
+              int face_plus_2 = f1 != opp_face ? f1 : domaine_EF.elem_faces(elem_opp, 1);  // 2 faces per elem max - 1D
               // other face of the current elem
-              int elem = zone_EF.face_voisins(face, 0);
-              f1 = zone_EF.elem_faces(elem, 0);
-              int face_min_1 = f1 != face ? f1 : zone_EF.elem_faces(elem, 1);
+              int elem = domaine_EF.face_voisins(face, 0);
+              f1 = domaine_EF.elem_faces(elem, 0);
+              int face_min_1 = f1 != face ? f1 : domaine_EF.elem_faces(elem, 1);
 
               for (int i1=0; i1<nb_som_face; i1++)
                 {
@@ -766,7 +766,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
             {
               double h=la_cl_paroi.h_imp(face-ndeb);
               double tm=1./(nb_som_face*nb_som_face);
-              //double flux=h*zone_EF.surface(face)*tm;
+              //double flux=h*domaine_EF.surface(face)*tm;
               double flux=h*surface_gap(face-ndeb)*tm;
               int opp_face = fmap(face-ndeb)+ndeb;
 
@@ -792,7 +792,7 @@ void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
             {
               double h=la_cl_paroi.h_imp(face-ndeb);
               double tm=1./(nb_som_face*nb_som_face);
-              double flux=h*zone_EF.surface(face)*tm;
+              double flux=h*domaine_EF.surface(face)*tm;
               for (int i1=0; i1<nb_som_face; i1++)
                 {
                   int glob2=face_sommets(face,i1);

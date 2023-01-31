@@ -21,8 +21,8 @@
 #include <Champ_Don.h>
 
 class Probleme_base;
-class Zone_dis_base;
-class Zone_Cl_dis_base;
+class Domaine_dis_base;
+class Domaine_Cl_dis_base;
 class Equation_base;
 
 /*! @brief Classe Terme_Puissance_Thermique Cette classe represente un terme source de l'equation de la thermique

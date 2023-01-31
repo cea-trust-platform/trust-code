@@ -17,7 +17,7 @@
 
 #include <Partitionneur_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Ref_Zone.h>
+#include <Ref_Domaine.h>
 
 /*! @brief Partitionneur de domaine en tranches paralleles aux directions de l'espace.
  *
@@ -29,14 +29,14 @@ class Partitionneur_Tranche : public Partitionneur_base
   Declare_instanciable(Partitionneur_Tranche);
 public:
   void set_param(Param& param) override;
-  void associer_domaine(const Zone& domaine) override;
+  void associer_domaine(const Domaine& domaine) override;
   void initialiser(const ArrOfInt& nb_tranches);
   void construire_partition(IntVect& elem_part, int& nb_parts_tot) const override;
-  static void chercher_direction_perio(const Zone& zone, const Noms& liste_bords_perio, ArrOfInt& directions_perio);
+  static void chercher_direction_perio(const Domaine& domaine, const Noms& liste_bords_perio, ArrOfInt& directions_perio);
 
 private:
   // Parametres du partitionneur
-  REF(Zone) ref_domaine_;
+  REF(Domaine) ref_domaine_;
   // Pour chaque dimension d'espace, 2 ou 3, nombre de tranches
   // a creer dans cette direction (>=1)
   ArrOfInt nb_tranches_;

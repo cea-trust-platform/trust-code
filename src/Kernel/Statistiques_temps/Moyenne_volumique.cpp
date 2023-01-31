@@ -17,8 +17,8 @@
 #include <Param.h>
 #include <Equation_base.h>
 #include <Postraitement.h>
-#include <Zone_VF.h>
-#include <Ref_Zone_VF.h>
+#include <Domaine_VF.h>
+#include <Ref_Domaine_VF.h>
 #include <Octree_Double.h>
 #include <communications.h>
 #include <algorithm>
@@ -283,31 +283,31 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
                                        double temps,
                                        const Motcle& localisation)
 {
-  const Zone& dom_post = ref_cast(Zone, objet(nom_dom));
+  const Domaine& dom_post = ref_cast(Domaine, objet(nom_dom));
   const int nb_champs = noms_champs.size();
   if (nb_champs == 0)
     return;
 
   REF(Champ_base) ref_champ;
-  REF(Zone_VF) ref_zone_vf;
+  REF(Domaine_VF) ref_domaine_vf;
   int i_champ;
   // ************************************
-  // Calcul du nombre total de composantes et de ref_zone_vf
+  // Calcul du nombre total de composantes et de ref_domaine_vf
   int nb_compo_tot = 0;
   for (i_champ = 0; i_champ < nb_champs; i_champ++)
     {
       get_champ(nom_pb, noms_champs[i_champ], ref_champ);
       const Champ_base& champ = ref_champ.valeur();
-      const Zone_VF& zvf = ref_cast(Zone_VF, champ.zone_dis_base());
+      const Domaine_VF& zvf = ref_cast(Domaine_VF, champ.domaine_dis_base());
       if (i_champ == 0)
         {
-          ref_zone_vf = zvf;
+          ref_domaine_vf = zvf;
         }
       else
         {
-          if (& (ref_zone_vf.valeur()) != & zvf)
+          if (& (ref_domaine_vf.valeur()) != & zvf)
             {
-              Cerr << "Error in Moyenne_volumique::traiter_champs all the fields must be discretized on the same Zone." << finl;
+              Cerr << "Error in Moyenne_volumique::traiter_champs all the fields must be discretized on the same Domaine." << finl;
               barrier();
               exit();
             }
@@ -316,12 +316,12 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
       nb_compo_tot += nb_compo;
     }
 
-  const Zone_VF& zone_source = ref_zone_vf.valeur();
+  const Domaine_VF& domaine_source = ref_domaine_vf.valeur();
 
   // ************************************
   // Construction d'un gros tableau contenant toutes les valeurs a traiter plus la porosite
   DoubleTab valeurs_src;
-  const int nb_lignes = zone_source.nb_elem();
+  const int nb_lignes = domaine_source.nb_elem();
   valeurs_src.resize(nb_lignes, nb_compo_tot + 1);
   int count = 0;
   {
@@ -329,7 +329,7 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
     IntVect liste_elems(nb_lignes);
     for (int i = 0; i < nb_lignes; i++)
       liste_elems[i] = i;
-    const DoubleTab& xp = zone_source.xp();
+    const DoubleTab& xp = domaine_source.xp();
     for (i_champ = 0; i_champ < nb_champs; i_champ++)
       {
         get_champ(nom_pb, noms_champs[i_champ], ref_champ);
@@ -359,7 +359,7 @@ void Moyenne_volumique::traiter_champs(const Motcles& noms_champs,
   // ************************************
   // Calcul de tous les produits de convolution
 
-  calculer_convolution_champ_elem(zone_source,
+  calculer_convolution_champ_elem(domaine_source,
                                   valeurs_src,
                                   coords,
                                   resu);
@@ -452,7 +452,7 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
   param.lire_avec_accolades_depuis(is);
 
   // on recupere le domaine
-  const Zone& dom = ref_cast(Zone, objet(nom_dom));
+  const Domaine& dom = ref_cast(Domaine, objet(nom_dom));
   if (noms_champs.size() == 0)
     {
       Cerr << "Moyenne_volumique : no field to treat" << finl;
@@ -532,13 +532,13 @@ Entree& Moyenne_volumique::interpreter(Entree& is)
 class Calcul_integrale_locale
 {
 public:
-  Calcul_integrale_locale(const Zone_VF& zone_source,
+  Calcul_integrale_locale(const Domaine_VF& domaine_source,
                           const Moyenne_volumique& filter,
                           const DoubleTab& champ_source);
   void calculer(double x, double y, double z, ArrOfDouble& resu);
 
 protected:
-  const Zone_VF& zone_source_;
+  const Domaine_VF& domaine_source_;
   Octree_Double octree_;
   const Moyenne_volumique& filter_;
   const DoubleTab& champ_source_;
@@ -554,10 +554,10 @@ protected:
  * .. Voir Moyenne_volumique::calculer_convolution()
  *
  */
-Calcul_integrale_locale::Calcul_integrale_locale(const Zone_VF& zone_source,
+Calcul_integrale_locale::Calcul_integrale_locale(const Domaine_VF& domaine_source,
                                                  const Moyenne_volumique& filter,
                                                  const DoubleTab& champ_source) :
-  zone_source_(zone_source),
+  domaine_source_(domaine_source),
   filter_(filter),
   champ_source_(champ_source)
 {
@@ -566,8 +566,8 @@ Calcul_integrale_locale::Calcul_integrale_locale(const Zone_VF& zone_source,
   filter_results_.set_smart_resize(1);
   // Construction d'un octree contenant les centres des elements
   // On copie le tableau car il sera retaille :
-  DoubleTab coords = zone_source.xp();
-  nb_items_reels_ = zone_source.nb_elem();
+  DoubleTab coords = domaine_source.xp();
+  nb_items_reels_ = domaine_source.nb_elem();
   // Le tableau xp est dimensionne avec dimension(0)=nb_elem_tot. On le retaille a nb_elem
   coords.resize(nb_items_reels_, coords.dimension(1));
   if (champ_source.dimension(0) != nb_items_reels_)
@@ -596,7 +596,7 @@ void Calcul_integrale_locale::calculer(const double x, const double y, const dou
                               x + box_size, y + box_size, z + box_size,
                               liste_elems_);
 
-  const DoubleTab& coord_items = zone_source_.xp();
+  const DoubleTab& coord_items = domaine_source_.xp();
 
   const int nb_items = liste_elems_.size_array();
   const int dim = Objet_U::dimension;
@@ -614,7 +614,7 @@ void Calcul_integrale_locale::calculer(const double x, const double y, const dou
   filter_results_.resize_array(nb_items);
   filter_.eval_filtre(filter_coords_, filter_results_);
 
-  const DoubleVect& volumes = zone_source_.volumes();
+  const DoubleVect& volumes = domaine_source_.volumes();
   const int nb_comp = champ_source_.dimension(1);
   resu = 0.;
   for (int i = 0; i < nb_items; i++)
@@ -639,7 +639,7 @@ void Calcul_integrale_locale::calculer(const double x, const double y, const dou
  *   et calculer_convolution_champ_face()
  *
  */
-void Moyenne_volumique::calculer_convolution(const Zone_VF& zone_source,
+void Moyenne_volumique::calculer_convolution(const Domaine_VF& domaine_source,
                                              const DoubleTab& champ_source,
                                              const DoubleTab& coords_to_compute,
                                              DoubleTab& resu) const
@@ -659,7 +659,7 @@ void Moyenne_volumique::calculer_convolution(const Zone_VF& zone_source,
   ArrOfDouble resu_partiel(nb_comp);
   DoubleTab resu_partiels(nbproc, nb_comp);
 
-  Calcul_integrale_locale integrale_locale(zone_source,
+  Calcul_integrale_locale integrale_locale(domaine_source,
                                            *this,
                                            champ_source);
 
@@ -722,7 +722,7 @@ void Moyenne_volumique::calculer_convolution(const Zone_VF& zone_source,
     }
 }
 
-/*! @brief Calcule le produit de convolution entre la fonction filtre et le champ "champ_source" qui doit etre discretise aux elements de la "zone_source".
+/*! @brief Calcule le produit de convolution entre la fonction filtre et le champ "champ_source" qui doit etre discretise aux elements de la "domaine_source".
  *
  *   Le tableau resu aura le meme nombre de colonnes que le tableau "champ_source", et
  *   le meme nombre de lignes que le tableau coords_to_compute.
@@ -730,13 +730,13 @@ void Moyenne_volumique::calculer_convolution(const Zone_VF& zone_source,
  *   centre sur l'origine (on ne calcule pas la contribution des elements hors de ce cube).
  *
  */
-void Moyenne_volumique::calculer_convolution_champ_elem(const Zone_VF& zone_source,
+void Moyenne_volumique::calculer_convolution_champ_elem(const Domaine_VF& domaine_source,
                                                         const DoubleTab& champ_source,
                                                         const DoubleTab& coords_to_compute,
                                                         DoubleTab& resu) const
 {
-  assert(champ_source.dimension(0) == zone_source.zone().nb_elem());
-  calculer_convolution(zone_source, champ_source,
+  assert(champ_source.dimension(0) == domaine_source.domaine().nb_elem());
+  calculer_convolution(domaine_source, champ_source,
                        coords_to_compute, resu);
 }
 
@@ -749,7 +749,7 @@ void Moyenne_volumique::calculer_convolution_champ_elem(const Zone_VF& zone_sour
  *   avec les faces de normale Y, etc...
  *
  */
-void Moyenne_volumique::calculer_convolution_champ_face(const Zone_VF& zone_source,
+void Moyenne_volumique::calculer_convolution_champ_face(const Domaine_VF& domaine_source,
                                                         const DoubleTab& champ_source,
                                                         const DoubleTab& coords_to_compute,
                                                         DoubleTab& resu) const

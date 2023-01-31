@@ -17,17 +17,17 @@
 #define Champ_Fonc_base_included
 
 #include <Champ_Don_base.h>
-#include <Ref_Zone_VF.h>
+#include <Ref_Domaine_VF.h>
 
-class Zone_dis_base;
+class Domaine_dis_base;
 class MD_Vector;
-class Zone;
+class Domaine;
 
 /*! @brief classe Champ_Fonc_base Classe de base des champs qui sont fonction d'une grandeur calculee
  *
  *      au cours du temps
  *
- * @sa Champ_base Champ_Don_base, Classe abstraite., Methodes abstraites:, void mettre_a_jour(double temps), void associer_domaine_dis_base(const Zone_dis_base&), const Zone_dis_base& zone_dis_base() const
+ * @sa Champ_base Champ_Don_base, Classe abstraite., Methodes abstraites:, void mettre_a_jour(double temps), void associer_domaine_dis_base(const Domaine_dis_base&), const Domaine_dis_base& domaine_dis_base() const
  */
 class Champ_Fonc_base : public Champ_Don_base
 {
@@ -45,19 +45,19 @@ public:
   virtual DoubleTab& remplir_coord_noeuds(DoubleTab&) const;
   virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int) const;
   DoubleTab& valeur_aux(const DoubleTab&, DoubleTab&) const override;
-  const Zone& domaine() const;
-  int a_une_zone_dis_base() const override { return 1; }
+  const Domaine& domaine() const;
+  int a_une_domaine_dis_base() const override { return 1; }
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
   virtual void creer_espace_distant(int dummy) { }
 
-  void associer_domaine_dis_base(const Zone_dis_base&) override;
-  const Zone_dis_base& zone_dis_base() const override;
-  virtual const Zone_VF& zone_vf() const;
+  void associer_domaine_dis_base(const Domaine_dis_base&) override;
+  const Domaine_dis_base& domaine_dis_base() const override;
+  virtual const Domaine_VF& domaine_vf() const;
 
 protected:
   // Par defaut on initialise les valeurs a zero
   virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
-  REF(Zone_VF) le_dom_VF;
+  REF(Domaine_VF) le_dom_VF;
 };
 
 #endif /* Champ_Fonc_base_included */

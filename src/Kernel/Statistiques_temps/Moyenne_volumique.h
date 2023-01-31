@@ -24,7 +24,7 @@
 class Convolution_function_base;
 class Motcles;
 class Format_Post_base;
-class Zone_VF;
+class Domaine_VF;
 
 /*! @brief : cet interprete permet, a la fin du calcul (apres "resoudre"), de calculer et de stocker dans un fichier lata le produit de convolution
  *
@@ -43,9 +43,9 @@ class Moyenne_volumique: public Interprete
 public:
   Entree& interpreter(Entree&) override;
 
-  virtual void calculer_convolution_champ_elem(const Zone_VF& zone_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
+  virtual void calculer_convolution_champ_elem(const Domaine_VF& domaine_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 
-  virtual void calculer_convolution_champ_face(const Zone_VF& zone_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
+  virtual void calculer_convolution_champ_face(const Domaine_VF& domaine_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 
   virtual void eval_filtre(const DoubleTab& coords, ArrOfDouble& result) const;
   double box_size() const { return box_size_;  }
@@ -56,7 +56,7 @@ protected:
   int get_champ(const Nom& nom_pb, const Nom& nom_champ,
                 REF(Champ_base) &ref_champ);
 
-  virtual void calculer_convolution(const Zone_VF& zone_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
+  virtual void calculer_convolution(const Domaine_VF& domaine_source, const DoubleTab& champ_source, const DoubleTab& coords_to_compute, DoubleTab& resu) const;
 
   enum Type { ERROR, BOITE, CHAPEAU, GAUSSIENNE, PARSER, QUADRA };
   // Si type_ != parser, il faut renseigner l_, sinon il faut renseigner expression_parser_

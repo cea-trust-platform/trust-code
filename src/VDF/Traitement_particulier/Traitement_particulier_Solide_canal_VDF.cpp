@@ -19,10 +19,10 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Face_VDF.h>
 #include <Probleme_base.h>
-#include <Zone_Cl_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <Conduction.h>
 #include <TRUSTTrav.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 
 Sortie& Traitement_particulier_Solide_canal_VDF::printOn(Sortie& is) const
 {
@@ -104,11 +104,11 @@ void Traitement_particulier_Solide_canal_VDF::post_traitement_particulier()
 void Traitement_particulier_Solide_canal_VDF::calculer_moyennes_spatiales_thermo(DoubleVect& tmoy, DoubleVect& trms,const DoubleVect& tabY, IntVect& tab_corresp, IntVect& tab_compt)
 {
 
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
-  // Le nombre d'elements de la zone VDF.
-  int nb_elems = zone_VDF.zone().nb_elem();
+  // Le nombre d'elements de la domaine VDF.
+  int nb_elems = domaine_VDF.domaine().nb_elem();
 
   // On veut acceder aux valeurs de la temperature a partir de mon_equation_NRJ.
   const DoubleTab& Temp = mon_equation.valeur().inconnue().valeurs();
@@ -266,12 +266,12 @@ void Traitement_particulier_Solide_canal_VDF::init_calcul_stats(void)
 
 void Traitement_particulier_Solide_canal_VDF::init_calcul_moyenne(void)
 {
-  const Zone_dis_base& zdisbase=mon_equation->inconnue().zone_dis_base();
-  const Zone_VDF& zone_VDF=ref_cast(Zone_VDF, zdisbase);
+  const Domaine_dis_base& zdisbase=mon_equation->inconnue().domaine_dis_base();
+  const Domaine_VDF& domaine_VDF=ref_cast(Domaine_VDF, zdisbase);
 
-  const DoubleTab& xp = zone_VDF.xp();
+  const DoubleTab& xp = domaine_VDF.xp();
 
-  int nb_elems = zone_VDF.zone().nb_elem();
+  int nb_elems = domaine_VDF.domaine().nb_elem();
 
   int num_elem,j,indic,trouve;
   double y;

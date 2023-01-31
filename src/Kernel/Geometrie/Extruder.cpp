@@ -17,7 +17,7 @@
 #include <Static_Int_Lists.h>
 #include <Faces_builder.h>
 #include <Extruder.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Param.h>
 
@@ -29,13 +29,13 @@ Sortie& Extruder::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
 Entree& Extruder::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Fonction principale de l'interprete Extruder Triangule 1 a 1 toutes les zones du domaine
+/*! @brief Fonction principale de l'interprete Extruder Triangule 1 a 1 toutes les domaines du domaine
  *
  *     specifie par la directive.
- *     On triangule la zone grace a la methode:
- *       void Extruder::extruder(Zone& zone) const
+ *     On triangule la domaine grace a la methode:
+ *       void Extruder::extruder(Domaine& domaine) const
  *     Extruder signifie ici transformer en triangle des
- *     elements geometrique d'une zone.
+ *     elements geometrique d'une domaine.
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree
@@ -67,14 +67,14 @@ inline void check_boundary_name(const Nom& name)
       Process::exit();
     }
 }
-/*! @brief Triangule tous les element d'une zone: transforme les elements goemetriques de la zone en triangles.
+/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques de la domaine en triangles.
  *
  *     Pour l'instant on ne sait raffiner que des Rectangles
  *     (on les coupe en 4).
  *
- * @param (Zone& zone) la zone dont on veut raffiner les elements
+ * @param (Domaine& domaine) la domaine dont on veut raffiner les elements
  */
-void Extruder::extruder(Zone& dom)
+void Extruder::extruder(Domaine& dom)
 {
 
 
@@ -92,9 +92,9 @@ void Extruder::extruder(Zone& dom)
       double dz = direction[2]/NZ;
 
       Faces les_faces;
-      //zone.creer_faces(les_faces);
+      //domaine.creer_faces(les_faces);
       {
-        // bloc a factoriser avec Zone_VF.cpp :
+        // bloc a factoriser avec Domaine_VF.cpp :
         Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
         les_faces.associer_domaine(dom);
@@ -227,7 +227,7 @@ void Extruder::extruder(Zone& dom)
               new_elems(2*k*oldsz+2*i+1,3) = ig;
               cpt++;
 
-              mettre_a_jour_sous_zone(dom,i,2*k*oldsz+2*i,2);
+              mettre_a_jour_sous_domaine(dom,i,2*k*oldsz+2*i,2);
 
               i0+=oldnbsom;
               i1+=oldnbsom;
@@ -336,7 +336,7 @@ void Extruder::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, int ol
       for (int k=0; k<NZ; k++)
         {
           //double z = (k+0.5)*dz;
-          //int i01 = zone.chercher_sommets(x01, y01, z);
+          //int i01 = domaine.chercher_sommets(x01, y01, z);
           int j01 = oldnbsom*(NZ+1)+NZ*oldsz+k*nbfaces2D+jface;
 
           les_sommets(k*4*size_2D+4*i,0) = i0;
@@ -370,7 +370,7 @@ void Extruder::traiter_faces_dvt(Faces& les_faces_bord, Faces& les_faces, int ol
 
 
 
-void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
+void Extruder::extruder_dvt(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
 
   const int nbfaces2D = les_faces.nb_faces();
@@ -430,7 +430,7 @@ void Extruder::extruder_dvt(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz
 
 }
 
-void Extruder::extruder_hexa(Zone& dom)
+void Extruder::extruder_hexa(Domaine& dom)
 {
 
   int oldnbsom = dom.nb_som();
@@ -442,7 +442,7 @@ void Extruder::extruder_hexa(Zone& dom)
 
   Faces les_faces;
   {
-    // bloc a factoriser avec Zone_VF.cpp :
+    // bloc a factoriser avec Domaine_VF.cpp :
     Type_Face type_face = dom.type_elem().type_face(0);
     les_faces.typer(type_face);
     les_faces.associer_domaine(dom);
@@ -568,7 +568,7 @@ void Extruder::traiter_faces_dvt_hexa(Faces& les_faces_bord, int oldnbsom)
   les_faces_bord.voisins()=-1;
 }
 
-void Extruder::extruder_dvt_hexa(Zone& dom, Faces& les_faces, int oldnbsom, int oldsz)
+void Extruder::extruder_dvt_hexa(Domaine& dom, Faces& les_faces, int oldnbsom, int oldsz)
 {
 
   IntTab& les_elems=dom.les_elems();

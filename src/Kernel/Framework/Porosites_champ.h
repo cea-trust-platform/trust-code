@@ -38,12 +38,12 @@ class Porosites : public Objet_U
 {
   Declare_instanciable(Porosites);
 public:
-  void remplir_champ(const Zone_VF& zvf, DoubleVect& , DoubleVect& );
+  void remplir_champ(const Domaine_VF& zvf, DoubleVect& , DoubleVect& );
   const bool& is_read() { return is_read_; }
 
 protected :
   bool is_read_ = false;
-  std::vector<Nom> les_sous_zones;
+  std::vector<Nom> les_sous_domaines;
   std::vector<double> porosites_volu;
   std::vector<DoubleVect> porosites_surf;
 };

@@ -16,8 +16,8 @@
 #include <Champ_val_tot_sur_vol_VDF.h>
 #include <Equation_base.h>
 #include <Milieu_base.h>
-#include <Sous_Zone.h>
-#include <Zone_VF.h>
+#include <Sous_Domaine.h>
+#include <Domaine_VF.h>
 
 Implemente_instanciable(Champ_val_tot_sur_vol_VDF,"Valeur_totale_sur_volume_VDF",Champ_val_tot_sur_vol_base);
 
@@ -34,20 +34,20 @@ Entree& Champ_val_tot_sur_vol_VDF::readOn(Entree& is)
   return is;
 }
 
-DoubleVect& Champ_val_tot_sur_vol_VDF::eval_contrib_loc(const Zone_dis_base& zdis,const Zone_Cl_dis_base& zcldis,DoubleVect& vol_glob_pond)
+DoubleVect& Champ_val_tot_sur_vol_VDF::eval_contrib_loc(const Domaine_dis_base& zdis,const Domaine_Cl_dis_base& zcldis,DoubleVect& vol_glob_pond)
 {
-  const Zone_VF& zvf = ref_cast(Zone_VF,zdis);
+  const Domaine_VF& zvf = ref_cast(Domaine_VF,zdis);
   const int nb_elem = zvf.nb_elem();
-  int size_vol = les_sous_zones.size()+1;
+  int size_vol = les_sous_domaines.size()+1;
   vol_glob_pond.resize(size_vol);
 
   const DoubleVect& vol = zvf.volumes();
   const DoubleVect& por_elem = zcldis.equation().milieu().porosite_elem();
 
   int cpt=1;
-  for (auto& itr : les_sous_zones)
+  for (auto& itr : les_sous_domaines)
     {
-      const Sous_Zone& sz = itr.valeur();
+      const Sous_Domaine& sz = itr.valeur();
       int size_sz = sz.nb_elem_tot();
       int el;
 

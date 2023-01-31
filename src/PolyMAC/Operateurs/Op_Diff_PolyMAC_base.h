@@ -17,9 +17,9 @@
 #define Op_Diff_PolyMAC_base_included
 
 #include <Operateur_Diff_base.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <SFichier.h>
 class Champ_Fonc;
 
@@ -44,7 +44,7 @@ class Op_Diff_PolyMAC_base : public Operateur_Diff_base
   Declare_base(Op_Diff_PolyMAC_base);
 
 public:
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
 
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
@@ -88,8 +88,8 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Zone_PolyMAC) le_dom_poly_;
-  REF(Zone_Cl_PolyMAC) la_zcl_poly_;
+  REF(Domaine_PolyMAC) le_dom_poly_;
+  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
 
   double t_last_nu_ = -1e10; //pour detecter quand on doit recalculer nu, les variables auxiliaires

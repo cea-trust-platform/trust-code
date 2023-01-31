@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <EOS_Tools_VDF.h>
-#include <Zone_VDF.h>
+#include <Domaine_VDF.h>
 #include <Debog.h>
 #include <Champ_Face_VDF.h>
 #include <Fluide_Dilatable_base.h>
@@ -36,12 +36,12 @@ Entree& EOS_Tools_VDF::readOn(Entree& is)
   return is;
 }
 
-void  EOS_Tools_VDF::associer_domaines(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
+void  EOS_Tools_VDF::associer_domaines(const Domaine_dis& domaine, const Domaine_Cl_dis& domaine_cl)
 {
-  le_dom = ref_cast(Zone_VDF,zone.valeur());
-  le_dom_Cl = zone_cl;
+  le_dom = ref_cast(Domaine_VDF,domaine.valeur());
+  le_dom_Cl = domaine_cl;
   Champ_Face_VDF toto;
-  toto.associer_domaine_dis_base(zone.valeur());
+  toto.associer_domaine_dis_base(domaine.valeur());
   toto.fixer_nb_comp(1);
   toto.fixer_nb_valeurs_nodales(le_dom->nb_faces());
   tab_rho_face=toto.valeurs();

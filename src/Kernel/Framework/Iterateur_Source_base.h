@@ -16,10 +16,10 @@
 #ifndef Iterateur_Source_base_included
 #define Iterateur_Source_base_included
 
-#include <Ref_Zone_Cl_dis_base.h>
-#include <Ref_Zone_dis_base.h>
+#include <Ref_Domaine_Cl_dis_base.h>
+#include <Ref_Domaine_dis_base.h>
 #include <TRUSTTabs_forward.h>
-#include <Zone_Cl_dis_base.h>
+#include <Domaine_Cl_dis_base.h>
 #include <Ref_Source_base.h>
 #include <Equation_base.h>
 
@@ -53,10 +53,10 @@ public:
     return (nom_eqn.debute_par("Navier_Stokes")) ? 1 : 0;
   }
 
-  inline void associer_domaines(const Zone_dis_base& zone, const Zone_Cl_dis_base& zone_cl)
+  inline void associer_domaines(const Domaine_dis_base& domaine, const Domaine_Cl_dis_base& domaine_cl)
   {
-    le_dom = zone;
-    la_zcl = zone_cl;
+    le_dom = domaine;
+    la_zcl = domaine_cl;
   }
 
   virtual int impr(Sortie&) const
@@ -66,8 +66,8 @@ public:
   }
 
 protected:
-  REF(Zone_Cl_dis_base) la_zcl;
-  REF(Zone_dis_base) le_dom;
+  REF(Domaine_Cl_dis_base) la_zcl;
+  REF(Domaine_dis_base) le_dom;
   REF(Source_base) so_base;
 };
 

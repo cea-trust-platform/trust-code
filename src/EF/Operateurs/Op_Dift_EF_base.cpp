@@ -86,7 +86,7 @@ void Op_Dift_EF_base::completer()
 
 void Op_Dift_EF_base::calculer_borne_locale(DoubleVect& borne_visco_turb, double dt_conv, double dt_diff_sur_dt_conv) const
 {
-  const Zone_EF& le_dom_ef = le_dom_EF.valeur();
+  const Domaine_EF& le_dom_ef = le_dom_EF.valeur();
   int nb_elem = le_dom_ef.nb_elem();
   int flag = diffusivite().valeurs().dimension(0)>1 ? 1 : 0;
   for (int elem=0; elem<nb_elem; elem++)

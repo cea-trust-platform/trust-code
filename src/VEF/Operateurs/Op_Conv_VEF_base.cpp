@@ -62,10 +62,10 @@ void Op_Conv_VEF_base::abortTimeStep()
 
 double Op_Conv_VEF_base::calculer_dt_stab() const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
   remplir_fluent(fluent);
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent,equation().milieu());
@@ -75,9 +75,9 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   // On traite les conditions aux limites
   // Si une face porte une condition de Dirichlet on n'en tient pas compte
   // dans le calcul de dt_stab
-  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if ((sub_type(Dirichlet, la_cl.valeur())) || (sub_type(Dirichlet_homogene, la_cl.valeur())))
         { /* Do nothing */}
       else
@@ -94,8 +94,8 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
     }
 
   // On traite les faces internes non standard
-  int ndeb = zone_VEF.premiere_face_int();
-  int nfin = zone_VEF.premiere_face_std();
+  int ndeb = domaine_VEF.premiere_face_int();
+  int nfin = domaine_VEF.premiere_face_std();
 
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
@@ -105,7 +105,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
 
   // On traite les faces internes standard
   ndeb = nfin;
-  nfin = zone_VEF.nb_faces();
+  nfin = domaine_VEF.nb_faces();
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
       dt_face = volumes_entrelaces(num_face)/(fluent[num_face]+DMINFLOAT);
@@ -132,10 +132,10 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
 
       if ((le_dom_vef.non_nul()) && (la_zcl_vef.non_nul()))
         {
-          const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-          const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-          const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-          const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
+          const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+          const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+          const DoubleVect& volumes_entrelaces = domaine_VEF.volumes_entrelaces();
+          const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
           double dt_face;
           remplir_fluent(fluent);
           if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
@@ -144,9 +144,9 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
           // On traite les conditions aux limites
           // Si une face porte une condition de Dirichlet on n'en tient pas compte
           // dans le calcul de dt_stab
-          for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+          for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
             {
-              const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+              const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
               if ((sub_type(Dirichlet, la_cl.valeur())) || (sub_type(Dirichlet_homogene, la_cl.valeur())))
                 { /* Do nothing */}
               else
@@ -163,8 +163,8 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
             }
 
           // On traite les faces internes non standard
-          int ndeb = zone_VEF.premiere_face_int();
-          int nfin = zone_VEF.premiere_face_std();
+          int ndeb = domaine_VEF.premiere_face_int();
+          int nfin = domaine_VEF.premiere_face_std();
 
           for (int num_face=ndeb; num_face<nfin; num_face++)
             {
@@ -174,7 +174,7 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
 
           // On traite les faces internes standard
           ndeb = nfin;
-          nfin = zone_VEF.nb_faces();
+          nfin = domaine_VEF.nb_faces();
           for (int num_face=ndeb; num_face<nfin; num_face++)
             {
               dt_face = volumes_entrelaces(num_face)/(fluent[num_face]+1.e-30);
@@ -199,18 +199,18 @@ Motcle Op_Conv_VEF_base::get_localisation_pour_post(const Nom& option) const
     return Operateur_Conv_base::get_localisation_pour_post(option);
   return loc;
 }
-void Op_Conv_VEF_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zone_cl_dis)
+void Op_Conv_VEF_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& domaine_cl_dis)
 {
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis);
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis);
   la_zcl_vef = zclvef;
 }
 
-void Op_Conv_VEF_base::associer(const Zone_dis& zone_dis,
-                                const Zone_Cl_dis& zone_cl_dis,
+void Op_Conv_VEF_base::associer(const Domaine_dis& domaine_dis,
+                                const Domaine_Cl_dis& domaine_cl_dis,
                                 const Champ_Inc& )
 {
-  const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_dis.valeur());
-  const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
 
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
@@ -256,18 +256,18 @@ void Op_Conv_VEF_base::remplir_fluent(DoubleVect& tab_fluent) const
 // This is the equivalent of "Op_Conv_VEF_base :: calculer_dt_stab ()"
 void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
-  const DoubleVect& volumes_entrelaces =  zone_VEF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const DoubleVect& volumes_entrelaces =  domaine_VEF.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces_Cl = domaine_Cl_VEF.volumes_entrelaces_Cl();
 
-  int nb_faces= zone_VEF.nb_faces();
+  int nb_faces= domaine_VEF.nb_faces();
   dt_face=(volumes_entrelaces);
   remplir_fluent(fluent);
 
-  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = le_bord.num_premiere_face();
       int nfin = ndeb + le_bord.nb_faces();
@@ -281,8 +281,8 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
     }
 
   //Non-standard internal faces
-  int ndeb = zone_VEF.premiere_face_int();
-  int nfin = zone_VEF.premiere_face_std();
+  int ndeb = domaine_VEF.premiere_face_int();
+  int nfin = domaine_VEF.premiere_face_std();
 
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
@@ -294,7 +294,7 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
 
   //The standard internal faces
   ndeb = nfin;
-  nfin = zone_VEF.nb_faces();
+  nfin = domaine_VEF.nb_faces();
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
       if( sup_strict(fluent[num_face], 1.e-30) )
@@ -311,9 +311,9 @@ void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
     }
   dt_face.echange_espace_virtuel();
 
-  for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
+  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = zone_Cl_VEF.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());

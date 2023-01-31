@@ -28,9 +28,9 @@
  */
 
 #include <Interprete_geometrique_base.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-class Zone;
+class Domaine;
 
 class RegroupeBord : public Interprete_geometrique_base
 {
@@ -39,9 +39,9 @@ class RegroupeBord : public Interprete_geometrique_base
 public :
 
   Entree& interpreter_(Entree&) override;
-  void regroupe_bord(Zone& dom, Nom nom,const LIST(Nom)& nlistbord);
+  void regroupe_bord(Domaine& dom, Nom nom,const LIST(Nom)& nlistbord);
   // regroupe les bords de meme nom en un seul bord du meme nom
-  void rassemble_bords(Zone& dom);
+  void rassemble_bords(Domaine& dom);
 
 };
 

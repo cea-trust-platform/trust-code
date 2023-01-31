@@ -18,10 +18,10 @@
 
 #include <Champ_Inc_P0_base.h>
 
-class Zone_EF;
+class Domaine_EF;
 
 /*! @brief classe Champ_P0_EF Classe qui represente un champ discret P0 par element
- *  associe a une zone discretisee de type Zone_EF
+ *  associe a une domaine discretisee de type Domaine_EF
  *
  * @sa Champ_Inc_P0_base
  */
@@ -29,7 +29,7 @@ class Champ_P0_EF: public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_P0_EF);
 public:
-  const Zone_EF& zone_EF() const;
+  const Domaine_EF& domaine_EF() const;
   int imprime(Sortie&, int) const override;
 };
 

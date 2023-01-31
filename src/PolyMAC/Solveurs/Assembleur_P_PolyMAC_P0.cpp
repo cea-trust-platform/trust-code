@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Assembleur_P_PolyMAC_P0.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
 #include <Champ_Face_PolyMAC_P0.h>
@@ -56,13 +56,13 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, le_dom_PolyMAC.valeur());
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
   const Op_Grad_PolyMAC_P0_Face& grad = ref_cast(Op_Grad_PolyMAC_P0_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
   grad.update_grad();
   const DoubleTab& fgrad_c = grad.fgrad_c;
-  const IntTab& f_e = zone.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e;
-  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = zone.face_surfaces();
-  int i, j, e, eb, f, ne = zone.nb_elem(), ne_tot = zone.nb_elem_tot();
+  const IntTab& f_e = domaine.face_voisins(), &fgrad_d = grad.fgrad_d, &fgrad_e = grad.fgrad_e;
+  const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces();
+  int i, j, e, eb, f, ne = domaine.nb_elem(), ne_tot = domaine.nb_elem_tot();
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
@@ -75,7 +75,7 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
     {
       IntTrav stencil(0, 2);
       stencil.set_smart_resize(1);
-      for (f = 0; f < zone.nb_faces(); f++)
+      for (f = 0; f < domaine.nb_faces(); f++)
         for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
           if (e < ne)
             for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)
@@ -96,7 +96,7 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
     }
 
   /* 2. remplissage des coefficients : style Op_Diff_PolyMAC_Elem */
-  for (f = 0; f < zone.nb_faces(); f++)
+  for (f = 0; f < domaine.nb_faces(); f++)
     for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
       if (e < ne)
         for (j = fgrad_d(f); j < fgrad_d(f + 1); j++)

@@ -15,8 +15,8 @@
 
 #include <Terme_Source_Decroissance_Radioactive_VEF_Face.h>
 #include <Equation_base.h>
-#include <Zone_Cl_dis.h>
-#include <Zone_VEF.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_VEF.h>
 #include <Synonyme_info.h>
 
 Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_VEF_Face,"Decroissance_Radioactive_VEF_P1NC",Source_base);
@@ -59,18 +59,18 @@ void Terme_Source_Decroissance_Radioactive_VEF_Face::completer()
     }
 }
 
-void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                                       const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                                       const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << " Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines " << finl ;
-  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
 }
 
 DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::ajouter(DoubleTab& resu)  const
 {
   int nb_faces = le_dom_VEF.valeur().nb_faces();
-  const Zone_VF& zone = le_dom_VEF.valeur();
-  const DoubleVect& vf = zone.volumes_entrelaces();
+  const Domaine_VF& domaine = le_dom_VEF.valeur();
+  const DoubleVect& vf = domaine.volumes_entrelaces();
   const DoubleTab& c = equation().inconnue().valeurs();
 
   for (int f = 0; f < nb_faces; f++)
@@ -90,8 +90,8 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::calculer(DoubleTab& r
 void Terme_Source_Decroissance_Radioactive_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   int nb_faces = le_dom_VEF.valeur().nb_faces();
-  const Zone_VF& zone = le_dom_VEF.valeur();
-  const DoubleVect& vf = zone.volumes_entrelaces();
+  const Domaine_VF& domaine = le_dom_VEF.valeur();
+  const DoubleVect& vf = domaine.volumes_entrelaces();
 
   for (int f = 0; f < nb_faces; f++)
     for (int l = 0; l < nb_groupes; l++)

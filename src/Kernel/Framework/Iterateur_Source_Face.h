@@ -22,7 +22,7 @@
 #include <TRUSTSingle.h>
 #include <Milieu_base.h>
 #include <Dirichlet.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 template <class _TYPE_>
 class Iterateur_Source_Face : public Iterateur_Source_base
@@ -45,8 +45,8 @@ public:
 
   void completer_() override
   {
-    nb_faces = ref_cast(Zone_VF,le_dom.valeur()).nb_faces();
-    premiere_face_interne = ref_cast(Zone_VF,le_dom.valeur()).premiere_face_int();
+    nb_faces = ref_cast(Domaine_VF,le_dom.valeur()).nb_faces();
+    premiere_face_interne = ref_cast(Domaine_VF,le_dom.valeur()).premiere_face_int();
   }
 
   inline Evaluateur_Source& evaluateur() override
@@ -62,7 +62,7 @@ protected:
 
   template <typename Type_Double> DoubleTab& ajouter_faces_internes(const int, DoubleTab& ) const;
   template <typename Type_Double> DoubleTab& ajouter_faces_bords(const int, DoubleTab& ) const;
-  inline const int& faces_doubles(int num_face) const { return ref_cast(Zone_VF,le_dom.valeur()).faces_doubles()[num_face]; }
+  inline const int& faces_doubles(int num_face) const { return ref_cast(Domaine_VF,le_dom.valeur()).faces_doubles()[num_face]; }
 };
 
 template<class _TYPE_>
@@ -75,7 +75,7 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter(DoubleTab& resu) const
 
   DoubleVect& bilan = so_base->bilan();
   bilan = 0;
-  const int nb_faces_tot = ref_cast(Zone_VF,le_dom.valeur()).nb_faces_tot();
+  const int nb_faces_tot = ref_cast(Domaine_VF,le_dom.valeur()).nb_faces_tot();
   coef.resize(nb_faces_tot, Array_base::NOCOPY_NOINIT);
   coef = 1;
   if (equation_divisee_par_rho())
@@ -88,7 +88,7 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter(DoubleTab& resu) const
         {
           const DoubleTab& val_rho = rho.valeurs();
           const IntTab& face_vois = le_dom.valeur().face_voisins();
-          const DoubleVect& volumes = ref_cast(Zone_VF,le_dom.valeur()).volumes();
+          const DoubleVect& volumes = ref_cast(Domaine_VF,le_dom.valeur()).volumes();
           coef = 0.;
           for (int fac = 0; fac < nb_faces_tot; fac++)
             {

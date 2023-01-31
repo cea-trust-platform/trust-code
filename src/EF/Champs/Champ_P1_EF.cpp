@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Champ_P1_EF.h>
-#include <Zone_EF.h>
-#include <Zone.h>
+#include <Domaine_EF.h>
+#include <Domaine.h>
 
 Implemente_instanciable(Champ_P1_EF,"Champ_P1_EF",Champ_Inc_P1_base);
 
@@ -27,17 +27,17 @@ Entree& Champ_P1_EF::readOn(Entree& s)
   return s;
 }
 
-const Zone_EF& Champ_P1_EF::zone_EF() const
+const Domaine_EF& Champ_P1_EF::domaine_EF() const
 {
-  return ref_cast(Zone_EF, le_dom_VF.valeur());
+  return ref_cast(Domaine_EF, le_dom_VF.valeur());
 }
 
 int Champ_P1_EF::imprime(Sortie& os, int ncomp) const
 {
-  const Zone_dis_base& zone_dis = zone_dis_base();
-  const Zone& zone = zone_dis.zone();
-  const DoubleTab& coord = zone.coord_sommets();
-  const int nb_som = zone.nb_som();
+  const Domaine_dis_base& domaine_dis = domaine_dis_base();
+  const Domaine& domaine = domaine_dis.domaine();
+  const DoubleTab& coord = domaine.coord_sommets();
+  const int nb_som = domaine.nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;

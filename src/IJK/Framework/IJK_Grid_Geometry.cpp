@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <IJK_Grid_Geometry.h>
-#include <Zone.h>
-#include <Zone.h>
+#include <Domaine.h>
+#include <Domaine.h>
 #include <communications.h>
 #include <IJK_Field.h>
 #include <Param.h>
@@ -189,16 +189,16 @@ static void find_unique_coord(const DoubleTab& src, int column, ArrOfDouble& res
 
 // Extracts the mesh origin, dimensions and cell sizes from a distributed VDF mesh.
 //
-void IJK_Grid_Geometry::initialize_from_unstructured(const Zone& zone,
+void IJK_Grid_Geometry::initialize_from_unstructured(const Domaine& domaine,
                                                      int direction_for_x,
                                                      int direction_for_y,
                                                      int direction_for_z,
                                                      bool perio_x, bool perio_y, bool perio_z)
 {
-  if (!sub_type(Hexaedre, zone.type_elem().valeur()))
+  if (!sub_type(Hexaedre, domaine.type_elem().valeur()))
     {
       Cerr << "Error in IJK_Grid_Geometry::initialize_from_unstructured:\n"
-           << " the provided zone does not have Hexaedre element type" << finl;
+           << " the provided domaine does not have Hexaedre element type" << finl;
       exit();
     }
   periodic_[0] = perio_x;
@@ -206,7 +206,7 @@ void IJK_Grid_Geometry::initialize_from_unstructured(const Zone& zone,
   periodic_[2] = perio_z;
   // Find all coordinates in the unstructured mesh
   // swap directions
-  const DoubleTab& coord_som = zone.les_sommets();
+  const DoubleTab& coord_som = domaine.les_sommets();
   Cout << "IJK_Grid_Geometry::initialize_from_unstructured maps x->" <<  direction_for_x
        << " y->" << direction_for_y << " z->" << direction_for_z << finl;
 

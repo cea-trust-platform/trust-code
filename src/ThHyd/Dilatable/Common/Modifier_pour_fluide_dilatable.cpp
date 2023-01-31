@@ -16,7 +16,7 @@
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Fluide_Dilatable_base.h>
 #include <TRUSTVect.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 
 static void multiplier_ou_diviser(DoubleVect& x, const DoubleVect& y, int diviser)
 {
@@ -29,10 +29,10 @@ static void multiplier_ou_diviser(DoubleVect& x, const DoubleVect& y, int divise
 // Modif B.M: on ne remplit que la partie reelle du tableau.
 void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Dilatable_base& le_fluide,int diviser)
 {
-  const Zone_VF& zvf = ref_cast(Zone_VF,le_fluide.vitesse().valeur().zone_dis_base());
+  const Domaine_VF& zvf = ref_cast(Domaine_VF,le_fluide.vitesse().valeur().domaine_dis_base());
   // Descripteurs des tableaux aux elements et aux faces:
-  const Zone& zone = zvf.zone();
-  const MD_Vector& md_elem = zone.les_elems().get_md_vector();
+  const Domaine& domaine = zvf.domaine();
+  const MD_Vector& md_elem = domaine.les_elems().get_md_vector();
   const MD_Vector& md_faces = zvf.md_vector_faces();
   const MD_Vector& md_faces_bord = zvf.md_vector_faces_bord();
 
@@ -67,8 +67,8 @@ void multiplier_diviser_rho(DoubleVect& tab,const Fluide_Dilatable_base& le_flui
       // Il faut calculer rho aux elements
       const DoubleTab& tab_rho = le_fluide.masse_volumique().valeurs();
       DoubleVect rho_elem;
-      zone.creer_tableau_elements(rho_elem, Array_base::NOCOPY_NOINIT);
-      const int nb_elem_tot = zone.nb_elem_tot();
+      domaine.creer_tableau_elements(rho_elem, Array_base::NOCOPY_NOINIT);
+      const int nb_elem_tot = domaine.nb_elem_tot();
       const IntTab& elem_faces = zvf.elem_faces();
       const int nfe = elem_faces.dimension(1);
       const double facteur = 1. / nfe;

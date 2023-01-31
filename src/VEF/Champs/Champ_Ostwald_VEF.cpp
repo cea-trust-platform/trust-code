@@ -17,7 +17,7 @@
 #include <Champ_Ostwald_VEF.h>
 #include <Champ_Uniforme.h>
 #include <Fluide_Ostwald.h>
-#include <Zone_VEF.h>
+#include <Domaine_VEF.h>
 
 Implemente_instanciable(Champ_Ostwald_VEF, "Champ_Ostwald_VEF", Champ_Ostwald);
 
@@ -80,11 +80,11 @@ void Champ_Ostwald_VEF::associer_eqn(const Navier_Stokes_std& eq)
 
 void Champ_Ostwald_VEF::calculer_dscald(DoubleTab& dscald)
 {
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF,zone_vf());
-  const Zone_Cl_VEF& zcl_VEF = ref_cast(Zone_Cl_VEF, eq_hydraulique->zone_Cl_dis().valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,domaine_vf());
+  const Domaine_Cl_VEF& zcl_VEF = ref_cast(Domaine_Cl_VEF, eq_hydraulique->domaine_Cl_dis().valeur());
   const DoubleTab& vit = eq_hydraulique->inconnue().valeurs();
-  int nb_elem = zone_VEF.nb_elem();
-  int nb_elem_tot = zone_VEF.nb_elem_tot();
+  int nb_elem = domaine_VEF.nb_elem();
+  int nb_elem_tot = domaine_VEF.nb_elem_tot();
 
   int elem;
 

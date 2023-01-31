@@ -19,7 +19,7 @@
 #include <Evaluateur_Source_Elem.h>
 #include <Ref_Champ_Don.h>
 #include <Champ_Don.h>
-#include <Zone.h>
+#include <Domaine.h>
 
 class Eval_Dirac_VDF_Elem: public Evaluateur_Source_Elem
 {
@@ -35,7 +35,7 @@ public:
 protected:
 
   REF(Champ_Don) la_puissance;
-  REF(Zone) mon_dom;
+  REF(Domaine) mon_dom;
   double puissance, nb_dirac;
 };
 
@@ -48,7 +48,7 @@ inline void Eval_Dirac_VDF_Elem::associer_champs(const Champ_Don& Q)
 inline void Eval_Dirac_VDF_Elem::mettre_a_jour()
 {
   puissance = la_puissance.valeur()(0);
-  mon_dom = le_dom.valeur().zone();
+  mon_dom = le_dom.valeur().domaine();
 }
 
 template <typename Type_Double>

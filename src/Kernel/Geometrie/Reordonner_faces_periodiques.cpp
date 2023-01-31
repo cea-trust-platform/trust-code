@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 #include <Reordonner_faces_periodiques.h>
-#include <Zone.h>
+#include <Domaine.h>
 #include <Scatter.h>
 #include <Octree_Double.h>
 #include <Param.h>
@@ -55,7 +55,7 @@ static double local_norme_vect(const DoubleVect& dv)
   return x;
 }
 
-void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Zone& dom, const Nom& bord)
+void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& direction_perio, const Domaine& dom, const Nom& bord)
 {
   const DoubleTab& sommets = dom.coord_sommets();
   const int dim = sommets.dimension(1);
@@ -97,11 +97,11 @@ void Reordonner_faces_periodiques::chercher_direction_perio(ArrOfDouble& directi
  *
  *   Attention, l'algorithme est en n carre (lent), et ne fonctionne qu'en sequentiel.
  *
- * @param (zone) la zone a laquelle appartiennent les faces
+ * @param (domaine) la domaine a laquelle appartiennent les faces
  * @param (direction_perio) le vecteur qui separe le centre d'une face au centre de la face opposee
  * @param (faces) le tableau des faces (pour chaque face, indices de ses sommets) a reordonner Valeur de retour: 1 si ok, 0 si on n'a pas trouve de face jumelle a une face a precision_geom pres.
  */
-int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Zone& domaine,
+int Reordonner_faces_periodiques::reordonner_faces_periodiques(const Domaine& domaine,
                                                                IntTab& faces,
                                                                const ArrOfDouble& direction_perio,
                                                                const double epsilon)
@@ -230,7 +230,7 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
       Process::exit();
     }
   const int n = nb_faces / 2;
-  const DoubleTab coord = frontiere.zone().les_sommets();
+  const DoubleTab coord = frontiere.domaine().les_sommets();
 
   int i;
   // Calculer un vecteur delta (tous les procs n'ont pas forcement des faces de ce bord)
@@ -279,7 +279,7 @@ int Reordonner_faces_periodiques::check_faces_periodiques(const Frontiere& front
   return 1;
 }
 
-void Reordonner_faces_periodiques::renum_som_perio(const Zone& domaine,
+void Reordonner_faces_periodiques::renum_som_perio(const Domaine& domaine,
                                                    const Noms& liste_bords_periodiques,
                                                    ArrOfInt& renum_som_perio,
                                                    const int calculer_espace_virtuel)

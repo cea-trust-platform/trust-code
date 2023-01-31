@@ -14,8 +14,8 @@
 *****************************************************************************/
 
 #include <Terme_Source_Acceleration_VEF_Face.h>
-#include <Zone_VEF_PreP1b.h>
-#include <Zone_Cl_VEFP1B.h>
+#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_Cl_VEFP1B.h>
 #include <Periodique.h>
 #include <Navier_Stokes_std.h>
 #include <Champ_Fonc_P0_VEF.h>
@@ -39,16 +39,16 @@ Entree& Terme_Source_Acceleration_VEF_Face::readOn(Entree& s )
 
 /*! @brief Methode appelee par Source_base::completer() apres associer_domaines Remplit les ref.
  *
- * aux zones et zone_cl
+ * aux domaines et domaine_cl
  *
  */
-void Terme_Source_Acceleration_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
-                                                           const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Acceleration_VEF_Face::associer_domaines(const Domaine_dis& domaine_dis,
+                                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
   if (je_suis_maitre())
     Cerr << "Terme_Source_Acceleration_VEF_Face::associer_domaines" << finl;
-  le_dom_VEF_    = ref_cast(Zone_VEF_PreP1b, zone_dis.valeur());
-  le_dom_Cl_VEF_ = ref_cast(Zone_Cl_VEFP1B, zone_Cl_dis.valeur());
+  le_dom_VEF_    = ref_cast(Domaine_VEF_PreP1b, domaine_dis.valeur());
+  le_dom_Cl_VEF_ = ref_cast(Domaine_Cl_VEFP1B, domaine_Cl_dis.valeur());
 }
 
 /*! @brief Fonction outil pour Terme_Source_Acceleration_VEF_Face::ajouter Ajout des contributions d'une liste contigue de faces du terme source de translation:
@@ -136,11 +136,11 @@ static void TSAVEF_ajouter_liste_faces(const int premiere_face, const int dernie
  */
 DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VF&     zone               = le_dom_VEF_.valeur();
-  const Zone_Cl_dis_base& zone_Cl       = le_dom_Cl_VEF_.valeur();
-  const IntTab&      face_voisins       = zone.face_voisins();
+  const Domaine_VF&     domaine               = le_dom_VEF_.valeur();
+  const Domaine_Cl_dis_base& domaine_Cl       = le_dom_Cl_VEF_.valeur();
+  const IntTab&      face_voisins       = domaine.face_voisins();
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
-  const DoubleVect& volumes_entrelaces = zone.volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces = domaine.volumes_entrelaces();
 
   DoubleTab& s_face = get_set_terme_source_post().valeur().valeurs();
   s_face = 0.;
@@ -154,19 +154,19 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
 
   // Boucle sur les conditions limites pour traiter les faces de bord
 
-  for (int n_bord = 0; n_bord < zone.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine.nb_front_Cl(); n_bord++)
     {
       // pour chaque Condition Limite on regarde son type
       // Si face de Dirichlet on ne fait rien
       // Si face de Neumann, Periodique ou de Symetrie on calcule la contribution au terme source
-      const Cond_lim& la_cl = zone_Cl.les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = domaine_Cl.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       const int ndeb = le_bord.num_premiere_face();
       const int nfin = ndeb + le_bord.nb_faces();
 
       TSAVEF_ajouter_liste_faces(ndeb, nfin,
                                  volumes_entrelaces,
-                                 zone.volumes(),
+                                 domaine.volumes(),
                                  porosite_surf,
                                  face_voisins,
                                  ref_rho_,
@@ -177,11 +177,11 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
     }
   // Boucle sur les faces internes
   {
-    const int ndeb = zone.premiere_face_int();
-    const int nfin = zone.nb_faces();
+    const int ndeb = domaine.premiere_face_int();
+    const int nfin = domaine.nb_faces();
     TSAVEF_ajouter_liste_faces(ndeb, nfin,
                                volumes_entrelaces,
-                               zone.volumes(),
+                               domaine.volumes(),
                                porosite_surf,
                                face_voisins,
                                ref_rho_,
@@ -193,9 +193,9 @@ DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
   {
     // Force la periodicite
     int nb_comp=resu.line_size();
-    for (int n_bord=0; n_bord<zone.nb_front_Cl(); n_bord++)
+    for (int n_bord=0; n_bord<domaine.nb_front_Cl(); n_bord++)
       {
-        const Cond_lim& la_cl = zone_Cl.les_conditions_limites(n_bord);
+        const Cond_lim& la_cl = domaine_Cl.les_conditions_limites(n_bord);
         if (sub_type(Periodique,la_cl.valeur()))
           {
             const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());

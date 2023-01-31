@@ -15,9 +15,9 @@
 
 #include <Pave.h>
 #include <math.h>
-#include <Zone.h>
+#include <Domaine.h>
 
-Implemente_instanciable(Pave,"Pave",Zone);
+Implemente_instanciable(Pave,"Pave",Domaine);
 // XD bloc_pave objet_lecture nul -1 Class to create a pave.
 // XD attr Origine listf Origine 1 Keyword to define the pave (block) origin, that is to say one of the 8 block points (or 4 in a 2D coordinate system).
 // XD attr longueurs listf longueurs 1 Keyword to define the block dimensions, that is to say knowing the origin, length along the axes.
@@ -38,7 +38,7 @@ Implemente_instanciable(Pave,"Pave",Zone);
 
 Sortie& Pave::printOn(Sortie& s ) const
 {
-  return Zone::printOn(s) ;
+  return Domaine::printOn(s) ;
 }
 
 /*! @brief Lit les specifications d'un pave a partir d'un flot d'entree.
@@ -1231,21 +1231,21 @@ void Pave::typer_()
   switch(dimension)
     {
     case 1:
-      Zone::typer("Segment");
+      Domaine::typer("Segment");
       break;
     case 2:
       if (axi)
-        Zone::typer("Rectangle_Axi");
+        Domaine::typer("Rectangle_Axi");
       else if (bidim_axi)
-        Zone::typer("Rectangle_2D_Axi");
+        Domaine::typer("Rectangle_2D_Axi");
       else
-        Zone::typer("Rectangle");
+        Domaine::typer("Rectangle");
       break;
     case 3:
       if (axi)
-        Zone::typer("Hexaedre_Axi");
+        Domaine::typer("Hexaedre_Axi");
       else
-        Zone::typer("Hexaedre");
+        Domaine::typer("Hexaedre");
       break;
     default :
       throw;

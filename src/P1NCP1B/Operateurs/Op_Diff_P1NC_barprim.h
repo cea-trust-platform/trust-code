@@ -19,13 +19,13 @@
 
 #include <Operateur_Diff_base.h>
 #include <Ref_Champ_Uniforme.h>
-#include <Ref_Zone_VEF_PreP1b.h>
-#include <Ref_Zone_Cl_VEFP1B.h>
+#include <Ref_Domaine_VEF_PreP1b.h>
+#include <Ref_Domaine_Cl_VEFP1B.h>
 #include <Equation_base.h>
 #include <Matrice_Morse.h>
 #include <Op_VEF_Face.h>
-#include <Zone_VEF_PreP1b.h>
-#include <Zone_Cl_VEFP1B.h>
+#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_Cl_VEFP1B.h>
 
 
 
@@ -46,7 +46,7 @@ class Op_Diff_P1NC_barprim : public Operateur_Diff_base, public Op_VEF_Face
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& ,
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,
                 const Champ_Inc& ) override;
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
@@ -70,8 +70,8 @@ public:
 protected :
 
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
-  REF(Zone_VEF_PreP1b) le_dom_vef;
-  REF(Zone_Cl_VEFP1B) la_zcl_vef;
+  REF(Domaine_VEF_PreP1b) le_dom_vef;
+  REF(Domaine_Cl_VEFP1B) la_zcl_vef;
   REF(Champ_Uniforme) diffusivite_;
   //REF(Champ_Inc) inconnue_;
 

@@ -18,9 +18,9 @@
 #define Op_Grad_PolyMAC_Face_included
 
 #include <Operateur_Grad.h>
-#include <Ref_Zone_PolyMAC.h>
-#include <Zone_PolyMAC.h>
-#include <Ref_Zone_Cl_PolyMAC.h>
+#include <Ref_Domaine_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
+#include <Ref_Domaine_Cl_PolyMAC.h>
 #include <Ref_Champ_Face_PolyMAC.h>
 
 /*! @brief class Op_Grad_PolyMAC_Face
@@ -39,7 +39,7 @@ class Op_Grad_PolyMAC_Face : public Operateur_Grad_base
 
 public:
 
-  void associer(const Zone_dis& , const Zone_Cl_dis& , const Champ_Inc& ) override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void completer() override;
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
@@ -56,8 +56,8 @@ public:
 
 private:
 
-  REF(Zone_PolyMAC) ref_zone;
-  REF(Zone_Cl_PolyMAC) ref_zcl;
+  REF(Domaine_PolyMAC) ref_domaine;
+  REF(Domaine_Cl_PolyMAC) ref_zcl;
 };
 
 #endif

@@ -14,12 +14,12 @@
 *****************************************************************************/
 
 #include <VEFPreP1B.h>
-#include <Zone_dis.h>
-#include <Zone_Cl_VEFP1B.h>
+#include <Domaine_dis.h>
+#include <Domaine_Cl_VEFP1B.h>
 #include <Champ_P1_isoP1Bulle.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Inc.h>
-#include <Zone_Cl_dis.h>
+#include <Domaine_Cl_dis.h>
 #include <Motcle.h>
 #include <Champ_Don.h>
 #include <Champ_Fonc.h>
@@ -94,13 +94,13 @@ Entree& VEFPreP1B::readOn(Entree& is )
  *  Cette methode determine le type du champ a creer en fonction du type d'element
  *  et de la directive de discretisation. Elle determine ensuite le nombre de ddl
  *  et fixe l'ensemble des parametres du champ (type, nb_compo, nb_ddl, nb_pas_dt,
- *  nom(s), unite(s), nature du champ et attribue un temps) et associe la Zone_dis au champ.
+ *  nom(s), unite(s), nature du champ et attribue un temps) et associe la Domaine_dis au champ.
  *  Voir le code pour avoir la correspondance entre les directives et
  *  le type de champ cree.
  *
  */
 void VEFPreP1B::discretiser_champ(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, int nb_pas_dt, double temps,
@@ -163,7 +163,7 @@ void VEFPreP1B::discretiser_champ(
  *
  */
 void VEFPreP1B::discretiser_champ(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, double temps,
@@ -179,7 +179,7 @@ void VEFPreP1B::discretiser_champ(
  * .. , Champ_Inc)
  *
  */
-void VEFPreP1B::discretiser_champ(const Motcle& directive, const Zone_dis_base& z,
+void VEFPreP1B::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
                                   Nature_du_champ nature,
                                   const Noms& noms, const Noms& unites,
                                   int nb_comp, double temps,
@@ -198,7 +198,7 @@ void VEFPreP1B::discretiser_champ(const Motcle& directive, const Zone_dis_base& 
  *
  */
 void VEFPreP1B::discretiser_champ_fonc_don(
-  const Motcle& directive, const Zone_dis_base& z,
+  const Motcle& directive, const Domaine_dis_base& z,
   Nature_du_champ nature,
   const Noms& noms, const Noms& unites,
   int nb_comp, double temps,
@@ -271,22 +271,22 @@ void VEFPreP1B::discretiser_champ_fonc_don(
     }
 }
 
-void VEFPreP1B::zone_Cl_dis(Zone_dis& z,
-                            Zone_Cl_dis& zcl) const
+void VEFPreP1B::domaine_Cl_dis(Domaine_dis& z,
+                            Domaine_Cl_dis& zcl) const
 {
   Cerr << "discretisation des conditions limites" << finl;
   assert(z.non_nul());
-  Zone_VEF& zone_VEF=ref_cast(Zone_VEF, z.valeur());
-  zcl.typer("Zone_Cl_VEFP1B");
+  Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z.valeur());
+  zcl.typer("Domaine_Cl_VEFP1B");
   assert(zcl.non_nul());
-  Zone_Cl_VEFP1B& zone_Cl_VEF=ref_cast(Zone_Cl_VEFP1B, zcl.valeur());
-  zone_Cl_VEF.associer(zone_VEF);
+  Domaine_Cl_VEFP1B& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEFP1B, zcl.valeur());
+  domaine_Cl_VEF.associer(domaine_VEF);
   Cerr << "discretisation des conditions limites OK" << finl;
 }
 
-void VEFPreP1B::discretiser(Zone_dis& dom) const
+void VEFPreP1B::discretiser(Domaine_dis& dom) const
 {
   Discretisation_base::discretiser(dom);
-  Zone_VEF_PreP1b& zvef = ref_cast(Zone_VEF_PreP1b, dom.valeur());
+  Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b, dom.valeur());
   zvef.discretiser_suite(*this);
 }
