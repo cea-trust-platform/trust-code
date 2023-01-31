@@ -20,7 +20,8 @@ install_OpenBlas()
       CC=$TRUST_cc
       FC=$TRUST_F77
    fi  
-   $TRUST_MAKE CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP
+   # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
+   $TRUST_MAKE CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP NO_AVX512=1
 }
 install_NetLib()
 {
@@ -115,6 +116,8 @@ then
       rm -r -f OpenBLAS*
    else
       cd ..
+      echo "Contact trust@cea.fr if you have issues with OpenBlas build."
+      exit -1 # Comment if issue
       echo "Error during OpenBLAS install, so switching to Netlib non optimized blas..."
       install_NetLib
    fi  
