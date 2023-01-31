@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ public:
   double flux_impose(int, int) const override;
 
 protected:
-  REF(Zone_VDF) la_zone_VDF;
+  REF(Zone_VDF) le_dom_VDF;
   REF(Champ_P0_VDF) pression_interne;
   REF(Champ_Face_VDF) vitesse_interne;
 

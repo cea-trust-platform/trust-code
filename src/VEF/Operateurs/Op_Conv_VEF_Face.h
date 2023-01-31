@@ -75,7 +75,7 @@ protected:
  */
 inline void Op_Conv_VEF_Face::dimensionner(Matrice_Morse& matrice) const
 {
-  Op_VEF_Face::dimensionner(la_zone_vef.valeur(), la_zcl_vef.valeur(), matrice);
+  Op_VEF_Face::dimensionner(le_dom_vef.valeur(), la_zcl_vef.valeur(), matrice);
 }
 
 /*! @brief On modifie le second membre et la matrice dans le cas des conditions de dirichlet.
@@ -83,7 +83,7 @@ inline void Op_Conv_VEF_Face::dimensionner(Matrice_Morse& matrice) const
  */
 inline void Op_Conv_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
-  Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(), la_zcl_vef.valeur(), matrice, secmem);
+  Op_VEF_Face::modifier_pour_Cl(le_dom_vef.valeur(), la_zcl_vef.valeur(), matrice, secmem);
 }
 
 /*! @brief on assemble la matrice des inconnues implicite.

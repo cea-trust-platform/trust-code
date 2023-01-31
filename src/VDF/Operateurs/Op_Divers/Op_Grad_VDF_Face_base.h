@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,8 +31,8 @@ public:
   int impr(Sortie& os) const override;
 
   inline int has_interface_blocs() const override { return 1; }
-  inline Zone_VDF& zone_VDF() { return la_zone_vdf.valeur(); }
-  inline const Zone_VDF& zone_VDF() const { return la_zone_vdf.valeur(); }
+  inline Zone_VDF& zone_VDF() { return le_dom_vdf.valeur(); }
+  inline const Zone_VDF& zone_VDF() const { return le_dom_vdf.valeur(); }
   inline Zone_Cl_VDF& zone_Cl_VDF() { return la_zcl_vdf.valeur(); }
   inline const Zone_Cl_VDF& zone_Cl_VDF() const { return la_zcl_vdf.valeur(); }
   inline int& face_voisins_(int i, int j) { return face_voisins(i,j); }
@@ -47,7 +47,7 @@ public:
   inline const double& xp_(int elem, int ori) const { return xp(elem,ori); }
 
 protected:
-  REF(Zone_VDF) la_zone_vdf;
+  REF(Zone_VDF) le_dom_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
   IntVect orientation;
   IntTab face_voisins;

@@ -38,8 +38,8 @@ public :
   ///
   /// Accessors and shortcuts
   ///
-  inline const Zone& zone() const { return la_zone.valeur(); }
-  inline Zone& zone() { return la_zone.valeur(); }
+  inline const Zone& zone() const { return le_dom.valeur(); }
+  inline Zone& zone() { return le_dom.valeur(); }
 
   inline int nb_elem() const { return zone().nb_elem(); }
   inline int nb_elem_tot() const { return zone().nb_elem_tot(); }
@@ -78,7 +78,7 @@ public :
   ///
   /// Various
   ///
-  void associer_zone(const Zone&);
+  void associer_domaine(const Zone&);
   void discretiser_root(const Nom& typ);
   virtual void discretiser() {}
   virtual void discretiser_no_face() = 0;
@@ -97,7 +97,7 @@ public :
   }
 
 protected :
-  REF(Zone) la_zone;
+  REF(Zone) le_dom;
   Sous_zones_dis les_sous_zones_dis;
 
   int dist_paroi_initialisee_ = 0;

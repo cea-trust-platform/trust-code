@@ -87,7 +87,7 @@ protected:
   virtual void calculer_vitesse_imposee_power_law_tbl_u_star();
   virtual void rotate_imposed_velocity(DoubleTab&);
   ArrOfDouble get_tuvw_local() const;
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  void associer_domaines(const Zone_dis&, const Zone_Cl_dis&) override;
   virtual void compute_indicateur_nodal_champ_aire();
   int type_vitesse_imposee_ = -1;
   Champ_Don champ_rotation_lu_;

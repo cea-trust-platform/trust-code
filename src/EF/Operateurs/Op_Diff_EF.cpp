@@ -101,7 +101,7 @@ const Champ_base& Op_Diff_EF::diffusivite() const
 
 void Op_Diff_EF::remplir_nu(DoubleTab& nu) const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   // On dimensionne nu
   if (!nu.get_md_vector().non_nul())
     zone_EF.zone().creer_tableau_elements(nu);
@@ -129,7 +129,7 @@ DoubleTab& Op_Diff_EF::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu) c
 
   remplir_nu(nu_);
   //  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_ef = la_zone_EF.valeur();
+  const Zone_EF& zone_ef = le_dom_EF.valeur();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
 
   int N = resu.line_size();
@@ -207,7 +207,7 @@ DoubleTab& Op_Diff_EF::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& res
   Cerr<<"NEW"<<finl;
   remplir_nu(nu_);
   //  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  //const Zone_EF& zone_EF = la_zone_EF.valeur();
+  //const Zone_EF& zone_EF = le_dom_EF.valeur();
 
 
   const int N = resu.line_size();
@@ -403,7 +403,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
   // a mettre dans calculer_flux_bord....
 
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   flux_bords_=0.;
   // const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
   // on parcourt toutes les faces de bord et on calcule lambda*gradT
@@ -656,7 +656,7 @@ void Op_Diff_EF::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,  i
 void Op_Diff_EF::ajouter_contributions_bords(Matrice_Morse& matrice ) const
 {
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
 
   const IntTab& face_sommets=zone_ef.face_sommets();

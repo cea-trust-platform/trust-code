@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,34 +25,34 @@
 #include <Symetrie.h>
 
 
-void Source_Fluide_Dilatable_VEF_Proto::associer_zones_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
+void Source_Fluide_Dilatable_VEF_Proto::associer_domaines_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
 {
-  la_zone = ref_cast(Zone_VEF,zone.valeur());
-  la_zone_Cl = ref_cast(Zone_Cl_VEF,zone_cl.valeur());
+  le_dom = ref_cast(Zone_VEF,zone.valeur());
+  le_dom_Cl = ref_cast(Zone_Cl_VEF,zone_cl.valeur());
 }
 
 void Source_Fluide_Dilatable_VEF_Proto::associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites)
 {
   volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes_entrelaces());
-  porosites.ref(la_zone_Cl->equation().milieu().porosite_face());
+  porosites.ref(le_dom_Cl->equation().milieu().porosite_face());
 }
 
 void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,const DoubleVect& g,
                                                      const int dimension, const double rho_m,
                                                      const DoubleTab& tab_rho, DoubleTab& resu) const
 {
-  const int nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const DoubleVect& porosite_face = la_zone_Cl->equation().milieu().porosite_face();
-  const IntTab& face_voisins = la_zone->face_voisins();
-  const DoubleTab& face_normales = la_zone->face_normales(), xp = la_zone->xp(), xv = la_zone->xv();
+  const int nb_faces = le_dom->nb_faces(), premiere_face_interne = le_dom->premiere_face_int();
+  const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
+  const DoubleVect& porosite_face = le_dom_Cl->equation().milieu().porosite_face();
+  const IntTab& face_voisins = le_dom->face_voisins();
+  const DoubleTab& face_normales = le_dom->face_normales(), xp = le_dom->xp(), xv = le_dom->xv();
 
   if (eqn.discretisation().que_suis_je()=="VEF")
     {
       // Boucle faces bord
-      for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
+      for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
         {
-          const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
+          const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(num_cl);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur()))
@@ -99,9 +99,9 @@ void Source_Fluide_Dilatable_VEF_Proto::ajouter_impl(const Equation_base& eqn,co
   else if (eqn.discretisation().que_suis_je()=="VEFPreP1B")
     {
       // Boucle faces bord
-      for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
+      for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
         {
-          const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
+          const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(num_cl);
           const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
           if (sub_type(Neumann_sortie_libre,la_cl.valeur())||sub_type(Symetrie,la_cl.valeur())||sub_type(Periodique,la_cl.valeur()))

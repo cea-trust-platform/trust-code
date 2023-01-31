@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,14 +36,14 @@ Entree& EOS_Tools_VDF::readOn(Entree& is)
   return is;
 }
 
-void  EOS_Tools_VDF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
+void  EOS_Tools_VDF::associer_domaines(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
 {
-  la_zone = ref_cast(Zone_VDF,zone.valeur());
-  la_zone_Cl = zone_cl;
+  le_dom = ref_cast(Zone_VDF,zone.valeur());
+  le_dom_Cl = zone_cl;
   Champ_Face_VDF toto;
-  toto.associer_zone_dis_base(zone.valeur());
+  toto.associer_domaine_dis_base(zone.valeur());
   toto.fixer_nb_comp(1);
-  toto.fixer_nb_valeurs_nodales(la_zone->nb_faces());
+  toto.fixer_nb_valeurs_nodales(le_dom->nb_faces());
   tab_rho_face=toto.valeurs();
   tab_rho_face_demi=toto.valeurs();
   tab_rho_face_np1=toto.valeurs();
@@ -55,8 +55,8 @@ void  EOS_Tools_VDF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zon
  */
 double EOS_Tools_VDF::moyenne_vol(const DoubleTab& tab) const
 {
-  int nb_elem=la_zone->nb_elem();
-  const DoubleVect& volumes = la_zone->volumes();
+  int nb_elem=le_dom->nb_elem();
+  const DoubleVect& volumes = le_dom->volumes();
   assert(tab.dimension(0)==nb_elem);
   ArrOfDouble sum(2);
   sum = 0;
@@ -72,10 +72,10 @@ double EOS_Tools_VDF::moyenne_vol(const DoubleTab& tab) const
 
 void EOS_Tools_VDF::calculer_rho_face_np1(const DoubleTab& tab_rhoP0)
 {
-  int face, elem, nb_faces_tot = la_zone->nb_faces_tot();
+  int face, elem, nb_faces_tot = le_dom->nb_faces_tot();
   Debog::verifier("tab_rhoP0",tab_rhoP0);
   int i, nb_comp;
-  IntTab& face_voisins = la_zone->face_voisins();
+  IntTab& face_voisins = le_dom->face_voisins();
   for (face=0 ; face<nb_faces_tot ; face++)
     {
       nb_comp=0;
@@ -114,8 +114,8 @@ const DoubleTab& EOS_Tools_VDF::rho_discvit() const
 void EOS_Tools_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
 {
   assert_espace_virtuel_vect(secmem1);
-  int nb_faces_tot = la_zone->nb_faces_tot();
-  IntTab& face_voisins = la_zone->face_voisins();
+  int nb_faces_tot = le_dom->nb_faces_tot();
+  IntTab& face_voisins = le_dom->face_voisins();
   //remplissage de div(u) sur les faces
   for (int face=0 ; face<nb_faces_tot; face++)
     {
@@ -142,14 +142,14 @@ void EOS_Tools_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
 void EOS_Tools_VDF::secmembre_divU_Z(DoubleTab& tab_W) const
 {
   double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();
-  int elem,nb_elem = la_zone->nb_elem(),nb_faces = la_zone->nb_faces();
+  int elem,nb_elem = le_dom->nb_elem(),nb_faces = le_dom->nb_faces();
   DoubleVect tab_dZ(nb_elem);
   DoubleTab tab_gradZ(nb_faces);
   const DoubleTab& tab_rhonP0 = le_fluide().loi_etat()->rho_n();
   const DoubleTab& tab_rhonp1P0 = le_fluide().loi_etat()->rho_np1();
   Debog::verifier("divU tab_rhonP0",tab_rhonP0);
   Debog::verifier("divU tab_rhonp1P0",tab_rhonp1P0);
-  const DoubleVect& volumes = la_zone->volumes();
+  const DoubleVect& volumes = le_dom->volumes();
 
   for (elem=0 ; elem<nb_elem ; elem++)
     tab_dZ(elem) = (tab_rhonp1P0(elem)-tab_rhonP0(elem))/dt;

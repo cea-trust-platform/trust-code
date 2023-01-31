@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,16 +44,16 @@ Entree& Terme_Boussinesq_PolyMAC_Face::readOn(Entree& s )
   return Terme_Boussinesq_base::readOn(s);
 }
 
-void Terme_Boussinesq_PolyMAC_Face::associer_zones(const Zone_dis& zone_dis,
-                                                   const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Boussinesq_PolyMAC_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                      const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
-  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, zone_Cl_dis.valeur());
+  le_dom_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
+  le_dom_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, zone_Cl_dis.valeur());
 }
 
 void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Zone_PolyMAC& zone = le_dom_PolyMAC.valeur();
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();

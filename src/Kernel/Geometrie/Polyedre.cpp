@@ -69,7 +69,7 @@ Entree& Polyedre::readOn(Entree& s )
 void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
 {
 
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.coord_sommets();
 
@@ -77,7 +77,7 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
   int nb_elem;
   if(xp.dimension(0)==0)
     {
-      nb_elem = ma_zone->nb_elem_tot();
+      nb_elem = mon_dom->nb_elem_tot();
       xp.resize(nb_elem,dimension);
     }
   else
@@ -151,8 +151,8 @@ void Polyedre::calculer_centres_gravite(DoubleTab& xp) const
 
 void Polyedre::calculer_un_centre_gravite(const int num_elem,DoubleVect& xp) const
 {
-  const IntTab& les_Polys = ma_zone->les_elems();
-  const Zone& le_domaine = ma_zone.valeur();
+  const IntTab& les_Polys = mon_dom->les_elems();
+  const Zone& le_domaine = mon_dom.valeur();
 
   xp.resize(dimension);
   int nb_som_reel=nb_som();
@@ -173,7 +173,7 @@ int Polyedre::get_nb_som_elem_max() const
   if (nb_som_elem_max_>-1)
     return nb_som_elem_max_ ;
   else
-    return ma_zone.valeur().les_elems().dimension(1);
+    return mon_dom.valeur().les_elems().dimension(1);
 }
 
 /*! @brief Renvoie le nom LML d'un polyedre = "POLYEDRE_"+nb_som_max.
@@ -205,7 +205,7 @@ int Polyedre::contient(const ArrOfDouble& pos, int num_poly ) const
 {
 
   // on regarde si le point P est du meme cote que xg pour chaque face .
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.coord_sommets();
   Vecteur3 P(pos[0],pos[1],pos[2]);
@@ -284,7 +284,7 @@ int Polyedre::contient(const ArrOfInt& pos, int num_poly ) const
  */
 void Polyedre::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.coord_sommets();
 
@@ -583,11 +583,11 @@ void Polyedre::compute_virtual_index()
   // Methode brutale mais il faut bien commencer ....
 
   IntTab faces_som(0,nb_face_elem_max_,nb_som_face_max_);
-  ma_zone.valeur().creer_tableau_elements(faces_som);
+  mon_dom.valeur().creer_tableau_elements(faces_som);
 
   IntTab faces_som_local;
-  int nb_elem=ma_zone.valeur().nb_elem();
-  int nb_elem_tot=ma_zone.valeur().nb_elem_tot();
+  int nb_elem=mon_dom.valeur().nb_elem();
+  int nb_elem_tot=mon_dom.valeur().nb_elem_tot();
   for (int ele=0; ele<nb_elem; ele++)
     {
       get_tab_faces_sommets_locaux(faces_som_local,ele);
@@ -671,6 +671,6 @@ void Polyedre::compute_virtual_index()
 int Polyedre::get_somme_nb_faces_elem() const
 {
 
-  int titi= PolyhedronIndex_[ma_zone.valeur().nb_elem()];
+  int titi= PolyhedronIndex_[mon_dom.valeur().nb_elem()];
   return titi;
 }

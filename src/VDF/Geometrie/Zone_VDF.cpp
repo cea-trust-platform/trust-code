@@ -371,16 +371,16 @@ void Zone_VDF::genere_aretes()
 {
   Cerr << "On genere les aretes" << finl;
 
-  Zone& ma_zone=zone();
-  //  int nb_poly = la_zone.nb_elem();
-  int nb_poly_tot = ma_zone.nb_elem_tot();
+  Zone& mon_dom=zone();
+  //  int nb_poly = le_dom.nb_elem();
+  int nb_poly_tot = mon_dom.nb_elem_tot();
   // Estimation avec majoration du nombre d'aretes : nb_aretes_plus
   nb_aretes_=-1; // cf Aretes::affecter
   int nb_aretes_plus=-1;
   if (dimension == 2)
-    nb_aretes_plus = ma_zone.nb_som();
+    nb_aretes_plus = mon_dom.nb_som();
   else if (dimension == 3)
-    nb_aretes_plus = ma_zone.nb_som()*3;
+    nb_aretes_plus = mon_dom.nb_som()*3;
   Cerr << "Creation des aretes " << finl;
   Aretes les_aretes(nb_aretes_plus);
 
@@ -459,14 +459,14 @@ void Zone_VDF::genere_aretes()
         face12=elem_faces(el1,droite(dir));
         face13=elem_faces(el1,haut(dir));
 
-        el2=face_vois(*this, ma_zone, face12, 1);
+        el2=face_vois(*this, mon_dom, face12, 1);
 
         if(el2>-1)
           face24=elem_faces(el2,haut(dir));
         else
           face24=-1;
 
-        el3=face_vois(*this, ma_zone, face13, 1);
+        el3=face_vois(*this, mon_dom, face13, 1);
 
         if(el3>-1)
           face34=elem_faces(el3,droite(dir));
@@ -474,11 +474,11 @@ void Zone_VDF::genere_aretes()
           face34=-1;
 
         if( (el2>-1) && (el3>-1))
-          el4=face_vois(*this, ma_zone, face24, 1);
+          el4=face_vois(*this, mon_dom, face24, 1);
         else if((el2>-1))
-          el4=face_vois(*this, ma_zone, face24, 1);
+          el4=face_vois(*this, mon_dom, face24, 1);
         else if((el3>-1))
-          el4=face_vois(*this, ma_zone, face34, 1);
+          el4=face_vois(*this, mon_dom, face34, 1);
         else
           el4=-1;
 
@@ -505,20 +505,20 @@ void Zone_VDF::genere_aretes()
 
         // Pour les coins ou bords :
         face13 = elem_faces(el1, bas(dir));
-        el3 = face_vois(*this, ma_zone, face13, 0);
+        el3 = face_vois(*this, mon_dom, face13, 0);
         if (el3 < 0) // On doit generer l'arete en bas a droite de el1
           // si la maille en bas de el1 n'existe pas
           {
             if (el2 >= 0)
               {
                 face24 = elem_faces(el2, bas(dir));
-                el4 = face_vois(*this, ma_zone, face24, 0);
+                el4 = face_vois(*this, mon_dom, face24, 0);
                 if (el4 < 0) // arete bord
                   les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face13, face24, face12, -1, est_une_plaque);
                 else // arete mixte
                   {
                     face34 = elem_faces(el4, gauche(dir));
-                    if (face_vois(*this, ma_zone, face34, 0) == -1)
+                    if (face_vois(*this, mon_dom, face34, 0) == -1)
                       les_aretes.affecter(nb_aretes_, dir, mixte, nb_f, face13, face24, face34, face12, est_une_plaque);
                   }
               }
@@ -529,16 +529,16 @@ void Zone_VDF::genere_aretes()
 
 
         face13 = elem_faces(el1, gauche(dir));
-        el3 = face_vois(*this, ma_zone, face13, 0);
+        el3 = face_vois(*this, mon_dom, face13, 0);
         if (el3 < 0) // On doit generer l'arete en haut a gauche de el1
           // si la maille en haut a gauche n'existe pas
           {
             face12 = elem_faces(el1, haut(dir));
-            el2 = face_vois(*this, ma_zone, face12, 1);
+            el2 = face_vois(*this, mon_dom, face12, 1);
             if (el2 >= 0)
               {
                 face24 = elem_faces(el2, gauche(dir));
-                el4 = face_vois(*this, ma_zone, face24, 0);
+                el4 = face_vois(*this, mon_dom, face24, 0);
                 if (el4 < 0) // arete bord
                   les_aretes.affecter(nb_aretes_, dir, bord, nb_f, face13, face24, face12, -1, est_une_plaque);
               }
@@ -549,9 +549,9 @@ void Zone_VDF::genere_aretes()
 
         // On doit generer l'arete en bas a gauche de el1
         face12 = elem_faces(el1, gauche(dir));
-        el2 = face_vois(*this, ma_zone, face12, 0);
+        el2 = face_vois(*this, mon_dom, face12, 0);
         face13 = elem_faces(el1, bas(dir));
-        el3 = face_vois(*this, ma_zone, face13, 0);
+        el3 = face_vois(*this, mon_dom, face13, 0);
         if ((el2 < 0) && (el3 < 0)) // arete coin
           {
             les_aretes.affecter(nb_aretes_, dir, coin, nb_f, face13, -1, face12, -1, est_une_plaque);
@@ -973,7 +973,7 @@ void Zone_VDF::modifier_pour_Cl(const Conds_lim& conds_lim)
       //   Cerr << "Qdm : " << Qdm_ << finl;
       //   Cerr << "aretes_coin_traitees : " << aretes_coin_traitees << finl;
     }
-  //Journal() << "la_zone apres modif pour Cl : " << *this << finl;
+  //Journal() << "le_dom apres modif pour Cl : " << *this << finl;
 
 
   // PQ : 10/10/05 : les faces periodiques etant a double contribution

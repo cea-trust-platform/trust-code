@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ void Perte_Charge_VDF_Face::associer_pb(const Probleme_base& pb)
         {
           la_vitesse = ref_cast(Champ_Face_VDF,eqn.inconnue().valeur());
           le_fluide = ref_cast(Fluide_base,eqn.milieu());
-          associer_zones(eqn.zone_dis(),eqn.zone_Cl_dis());
+          associer_domaines(eqn.zone_dis(),eqn.zone_Cl_dis());
           i = nb_eqn;
           ok = 1;
         }
@@ -76,11 +76,11 @@ void Perte_Charge_VDF_Face::associer_pb(const Probleme_base& pb)
     }
 }
 
-void Perte_Charge_VDF_Face::associer_zones(const Zone_dis& zone_dis,
-                                           const Zone_Cl_dis& zone_Cl_dis)
+void Perte_Charge_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                              const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ Entree& Terme_Boussinesq_VEFPreP1B_Face::readOn(Entree& s )
 
 DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_VEF.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_VEF.valeur());
   // Si seulement support P0 on appelle en VEF
   if (zone_VEF.get_alphaE() && !zone_VEF.get_alphaS() && !zone_VEF.get_alphaA())
     return Terme_Boussinesq_VEF_Face::ajouter(resu);
@@ -51,7 +51,7 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const Champ_Inc& le_scalaire = equation_scalaire().inconnue();
   const DoubleVect& g = gravite().valeurs();
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zone_Cl_VEF.valeur();
+  const Zone_Cl_VEF& zone_Cl_VEF = le_dom_Cl_VEF.valeur();
   const IntTab& elem_sommets = zone_VEF.zone().les_elems();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const DoubleTab& coord_sommets=zone_VEF.zone().les_sommets();

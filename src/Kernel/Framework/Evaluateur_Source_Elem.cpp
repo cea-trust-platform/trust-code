@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,6 +27,6 @@ Evaluateur_Source_Elem::Evaluateur_Source_Elem(const Evaluateur_Source_Elem& eva
 void Evaluateur_Source_Elem::completer()
 {
   Cerr << "Evaluateur_Source_Elem::completer()" << finl;
-  volumes.ref(ref_cast(Zone_VF,la_zone.valeur()).volumes());
+  volumes.ref(ref_cast(Zone_VF,le_dom.valeur()).volumes());
   porosite_vol.ref(la_zcl->equation().milieu().porosite_elem());
 }

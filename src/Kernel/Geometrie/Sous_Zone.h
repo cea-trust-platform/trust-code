@@ -41,16 +41,16 @@ public :
   inline int operator()(int) const;
   inline int operator[](int) const;
   inline int nb_elem_tot() const; // Returns the subzone number of elements (real+virtual elements in parallel)
-  void associer_zone(const Zone&);
+  void associer_domaine(const Zone&);
   int associer_(Objet_U&) override;
   void nommer(const Nom&) override;
   inline Zone& zone()
   {
-    return la_zone_.valeur();
+    return le_dom_.valeur();
   }
   inline const Zone& zone() const
   {
-    return la_zone_.valeur();
+    return le_dom_.valeur();
   }
   int add_poly(const int poly);
   int remove_poly(const int poly);
@@ -61,7 +61,7 @@ public :
 protected :
 
   IntVect les_polys_;
-  REF(Zone) la_zone_;
+  REF(Zone) le_dom_;
   Nom nom_;
 };
 
@@ -69,7 +69,7 @@ protected :
  *
  * @param (Zone& zone) la zone dont la sous-zone est une partie
  */
-inline Sous_Zone::Sous_Zone(const Zone& azone) : la_zone_(azone)
+inline Sous_Zone::Sous_Zone(const Zone& azone) : le_dom_(azone)
 {}
 
 

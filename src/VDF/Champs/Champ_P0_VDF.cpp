@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ Entree& Champ_P0_VDF::readOn(Entree& s) { return s ; }
 
 const Zone_VDF& Champ_P0_VDF::zone_VDF() const
 {
-  return ref_cast(Zone_VDF, la_zone_VF.valeur());
+  return ref_cast(Zone_VDF, le_dom_VF.valeur());
 }
 
 DoubleTab& Champ_P0_VDF::remplir_coord_noeuds(DoubleTab& positions) const

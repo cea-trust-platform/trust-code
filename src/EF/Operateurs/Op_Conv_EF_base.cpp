@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,7 @@ double Op_Conv_EF_base::calculer_dt_stab() const
   Cerr<<__FILE__<<(int)__LINE__<<" dt_stab mal code "<<finl;
   double dt_stab=1e30;
   /*  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const DoubleVect& volumes_entrelaces = zone_EF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = zone_Cl_EF.volumes_entrelaces_Cl();
   remplir_fluent(fluent);
@@ -152,7 +152,7 @@ void Op_Conv_EF_base::calculer_pour_post(Champ& espace_stockage,const Nom& optio
 
 }
 
-void Op_Conv_EF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zone_cl_dis)
+void Op_Conv_EF_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zone_cl_dis)
 {
   const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis);
   la_zcl_EF = zclEF;
@@ -165,10 +165,10 @@ void Op_Conv_EF_base::associer(const Zone_dis& zone_dis,
   const Zone_EF& zEF = ref_cast(Zone_EF,zone_dis.valeur());
   const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF,zone_cl_dis.valeur());
 
-  la_zone_EF = zEF;
+  le_dom_EF = zEF;
   la_zcl_EF = zclEF;
   /*
-  fluent.resize(la_zone_EF->nb_faces());
+  fluent.resize(le_dom_EF->nb_faces());
   // On cree l'espace virtuel de fluent
   int nbjoints = zEF.nb_joints();
   int i;

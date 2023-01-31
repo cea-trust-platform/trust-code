@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,18 +38,18 @@ Entree& Terme_Source_Acceleration_VDF_Face::readOn(Entree& s )
   return s;
 }
 
-/*! @brief Methode appelee par Source_base::completer() apres associer_zones Remplit les ref.
+/*! @brief Methode appelee par Source_base::completer() apres associer_domaines Remplit les ref.
  *
  * aux zones et zone_cl
  *
  */
-void Terme_Source_Acceleration_VDF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                        const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Acceleration_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                           const Zone_Cl_dis& zone_Cl_dis)
 {
   if (je_suis_maitre())
-    Cerr << "Terme_Source_Acceleration_VDF_Face::associer_zones" << finl;
-  la_zone_VDF_    = ref_cast(Zone_VDF, zone_dis.valeur());
-  la_zone_Cl_VDF_ = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+    Cerr << "Terme_Source_Acceleration_VDF_Face::associer_domaines" << finl;
+  le_dom_VDF_    = ref_cast(Zone_VDF, zone_dis.valeur());
+  le_dom_Cl_VDF_ = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
 /*! @brief Fonction outil pour Terme_Source_Acceleration_VDF_Face::ajouter Ajout des contributions d'une liste contigue de faces du terme source de translation:
@@ -123,8 +123,8 @@ static void TSAVDF_ajouter_liste_faces(const int premiere_face, const int dernie
  */
 void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF&    zone_VDF           = la_zone_VDF_.valeur();
-  const Zone_Cl_VDF& zone_Cl_VDF        = la_zone_Cl_VDF_.valeur();
+  const Zone_VDF&    zone_VDF           = le_dom_VDF_.valeur();
+  const Zone_Cl_VDF& zone_Cl_VDF        = le_dom_Cl_VDF_.valeur();
   const IntTab&      face_voisins       = zone_VDF.face_voisins();
   const IntVect&     orientation        = zone_VDF.orientation();
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
@@ -153,7 +153,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
       const int nfin = ndeb + le_bord.nb_faces();
       TSAVDF_ajouter_liste_faces(ndeb, nfin,
                                  volumes_entrelaces,
-                                 la_zone_VDF_.valeur().volumes(),
+                                 le_dom_VDF_.valeur().volumes(),
                                  porosite_surf,
                                  orientation,
                                  face_voisins,
@@ -170,7 +170,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
     const int nfin = zone_VDF.nb_faces();
     TSAVDF_ajouter_liste_faces(ndeb, nfin,
                                volumes_entrelaces,
-                               la_zone_VDF_.valeur().volumes(),
+                               le_dom_VDF_.valeur().volumes(),
                                porosite_surf,
                                orientation,
                                face_voisins,
@@ -225,7 +225,7 @@ void Terme_Source_Acceleration_VDF_Face::ajouter_blocs(matrices_t matrices, Doub
 const DoubleTab& Terme_Source_Acceleration_VDF_Face::calculer_vitesse_faces(
   DoubleTab& v_faces_stockage) const
 {
-  const Zone_VDF&    zone_VDF      = la_zone_VDF_.valeur();
+  const Zone_VDF&    zone_VDF      = le_dom_VDF_.valeur();
   const IntVect&     orientation   = zone_VDF.orientation();
   const IntTab&      faces_voisins = zone_VDF.face_voisins();
   const DoubleVect& volumes       = zone_VDF.volumes();  // volumes des elements

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,7 +79,7 @@ const Nom& Triangle::nom_lml() const
 int Triangle::contient(const ArrOfDouble& pos, int ielem) const
 {
   assert(pos.size_array()==2);
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   assert(ielem<zone.nb_elem_tot());
   int som0 = zone.sommet_elem(ielem,0);
@@ -142,7 +142,7 @@ int Triangle::contient(const ArrOfDouble& pos, int ielem) const
  */
 int Triangle::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   if((zone.sommet_elem(element,0)==som[0])&&
       (zone.sommet_elem(element,1)==som[1])&&
       (zone.sommet_elem(element,2)==som[2]))
@@ -157,7 +157,7 @@ int Triangle::contient(const ArrOfInt& som, int element ) const
  */
 void Triangle::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const DoubleTab& coord = zone.coord_sommets();
   DoubleTab pos(3,dimension);
   int size_tot = zone.nb_elem_tot();
@@ -182,7 +182,7 @@ void Triangle::calculer_volumes(DoubleVect& volumes) const
 void Triangle::calculer_normales(const IntTab& Face_sommets ,
                                  DoubleTab& face_normales) const
 {
-  const Zone& zone_geom = ma_zone.valeur();
+  const Zone& zone_geom = mon_dom.valeur();
   const DoubleTab& les_coords = zone_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1;

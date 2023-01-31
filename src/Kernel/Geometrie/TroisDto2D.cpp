@@ -314,7 +314,7 @@ void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D,
           Bord tmp;
           Bord& bord2D=dom2D.faces_bord().add(tmp);
           bord2D.nommer(front.le_nom());
-          bord2D.associer_zone(dom2D);
+          bord2D.associer_domaine(dom2D);
           if (test_axi)
             bord2D.typer_faces("QUADRILATERE_2D_AXI");
           else
@@ -420,7 +420,7 @@ void TroisDto2D::extraire_2D(const Zone& dom3D, Zone& dom2D, const Bord& bord3D,
           Raccord& bord2D=dom2D.faces_raccord().add(tmpbis);
           bord2D.typer(itr->le_type());
           bord2D->nommer(front.le_nom());
-          bord2D->associer_zone(dom2D);
+          bord2D->associer_domaine(dom2D);
           if (test_axi)
             bord2D->typer_faces("QUADRILATERE_2D_AXI");
           else

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@ Implemente_base(Iterateur_VDF_base, "Iterateur_VDF_base", Objet_U);
 Entree& Iterateur_VDF_base::readOn(Entree& s) { return s; }
 Sortie& Iterateur_VDF_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-void Iterateur_VDF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zcl)
+void Iterateur_VDF_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zcl)
 {
   const Zone_Cl_VDF& zone_cl_vdf = ref_cast(Zone_Cl_VDF, zcl);
   la_zcl = zone_cl_vdf;
@@ -28,7 +28,7 @@ void Iterateur_VDF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zcl)
 
 void Iterateur_VDF_base::associer(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& zone_cl_vdf, const Operateur_base& op)
 {
-  la_zone = zone_vdf;
+  le_dom = zone_vdf;
   la_zcl = zone_cl_vdf;
   op_base = op;
 }

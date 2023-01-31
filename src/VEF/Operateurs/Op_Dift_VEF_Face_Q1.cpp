@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,17 +69,17 @@ double Op_Dift_VEF_Face_Q1::calculer_dt_stab() const
   double surf_max=0;
   double dt_stab=1.e30;
   double coef;
-  const Zone_VEF& la_zone_VEF = la_zone_vef.valeur();
-  const DoubleVect& volumes = la_zone_VEF.volumes();
-  const IntTab& elem_faces = la_zone_VEF.elem_faces();
-  const DoubleTab& face_normales = la_zone_VEF.face_normales();
-  const Zone& la_zone= la_zone_VEF.zone();
-  int nb_faces_elem = la_zone.nb_faces_elem();
+  const Zone_VEF& le_dom_VEF = le_dom_vef.valeur();
+  const DoubleVect& volumes = le_dom_VEF.volumes();
+  const IntTab& elem_faces = le_dom_VEF.elem_faces();
+  const DoubleTab& face_normales = le_dom_VEF.face_normales();
+  const Zone& le_dom= le_dom_VEF.zone();
+  int nb_faces_elem = le_dom.nb_faces_elem();
   double diffu = (diffusivite_.valeur())(0,0);
   const DoubleVect& diffu_turb=diffusivite_turbulente()->valeurs();
   double diffu2_;
-  int la_zone_nb_elem=la_zone.nb_elem();
-  for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
+  int le_dom_nb_elem=le_dom.nb_elem();
+  for (int num_elem=0; num_elem<le_dom_nb_elem; num_elem++)
     {
       surf_max = 1.e-30;
       for (int i=0; i<nb_faces_elem; i++)
@@ -107,27 +107,27 @@ double Op_Dift_VEF_Face_Q1::calculer_dt_stab() const
 // Fonction utile visc
 // mu <Si, Sj> / |K|
 
-static double viscA_Q1(const Zone_VEF& la_zone,int num_face,int num2,int dimension,
+static double viscA_Q1(const Zone_VEF& le_dom,int num_face,int num2,int dimension,
                        int num_elem,double diffu)
 {
-  double constante = (diffu)/la_zone.volumes(num_elem);
+  double constante = (diffu)/le_dom.volumes(num_elem);
   double Valeur=0;
 
   if(dimension==2)
     {
-      Valeur=la_zone.face_normales(num_face,0)*
-             la_zone.face_normales(num2,1) -
-             la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0);
+      Valeur=le_dom.face_normales(num_face,0)*
+             le_dom.face_normales(num2,1) -
+             le_dom.face_normales(num_face,1)*le_dom.face_normales(num2,0);
       Valeur=constante*std::fabs(Valeur);
     }
   else
     {
-      Valeur=(la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,2) -
-              la_zone.face_normales(num_face,2)*la_zone.face_normales(num2,1)) +
-             (la_zone.face_normales(num_face,2)*la_zone.face_normales(num2,0) -
-              la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,2)) +
-             (la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,1) -
-              la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,0));
+      Valeur=(le_dom.face_normales(num_face,1)*le_dom.face_normales(num2,2) -
+              le_dom.face_normales(num_face,2)*le_dom.face_normales(num2,1)) +
+             (le_dom.face_normales(num_face,2)*le_dom.face_normales(num2,0) -
+              le_dom.face_normales(num_face,0)*le_dom.face_normales(num2,2)) +
+             (le_dom.face_normales(num_face,0)*le_dom.face_normales(num2,1) -
+              le_dom.face_normales(num_face,1)*le_dom.face_normales(num2,0));
       Valeur=constante*std::fabs(Valeur);
     }
   return Valeur;
@@ -137,7 +137,7 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue,
                                         DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -481,7 +481,7 @@ void Op_Dift_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
 
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -648,7 +648,7 @@ void Op_Dift_VEF_Face_Q1::ajouter_contribution(const DoubleTab& transporte, Matr
 void Op_Dift_VEF_Face_Q1::contribue_au_second_membre(DoubleTab& resu ) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   int elem,i,j;

@@ -43,7 +43,7 @@ Entree& Op_Grad_VDF_Face::readOn(Entree& s) { return s; }
 
 void Op_Grad_VDF_Face::calculer_flux_bords() const
 {
-  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  const Zone_VDF& zvdf = le_dom_vdf.valeur();
   if (flux_bords_.size_array()==0) flux_bords_.resize(zvdf.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
@@ -75,11 +75,11 @@ void Op_Grad_VDF_Face::calculer_flux_bords() const
 
 int Op_Grad_VDF_Face::impr(Sortie& os) const
 {
-  const int impr_mom=la_zone_vdf->zone().moments_a_imprimer();
-  const int impr_sum=(la_zone_vdf->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_vdf->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=le_dom_vdf->zone().moments_a_imprimer();
+  const int impr_sum=(le_dom_vdf->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_vdf->zone().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
-  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  const Zone_VDF& zvdf = le_dom_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   int face, ori;
   const int nb_faces =  zvdf.nb_faces_tot();
@@ -232,7 +232,7 @@ void Op_Grad_VDF_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& sem
 {
   if (!matrices.count("pression")) return; //rien a faire
 
-  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  const Zone_VDF& zvdf = le_dom_vdf.valeur();
   IntTab sten(0, 2);
   sten.set_smart_resize(1);
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
@@ -261,7 +261,7 @@ void Op_Grad_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, con
 
   assert_espace_virtuel_vect(inco);
 
-  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  const Zone_VDF& zvdf = le_dom_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& face_surfaces = zvdf.face_surfaces(), &vf = zvdf.volumes_entrelaces();
   const DoubleTab& vfd = zvdf.volumes_entrelaces_dir();

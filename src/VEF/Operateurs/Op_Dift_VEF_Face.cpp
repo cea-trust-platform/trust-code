@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -79,9 +79,9 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
 
   double dt_stab=1.e30;
   double coef;
-  const Zone_VEF& la_zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& le_dom_VEF = le_dom_vef.valeur();
 
-  const Zone& la_zone= la_zone_VEF.zone();
+  const Zone& le_dom= le_dom_VEF.zone();
 
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
   DoubleTab diffu(nu_);
@@ -93,18 +93,18 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
     }
   double alpha;
 
-  int la_zone_nb_elem=la_zone.nb_elem();
+  int le_dom_nb_elem=le_dom.nb_elem();
   if (has_champ_masse_volumique())
     {
       const DoubleTab& rho_elem = get_champ_masse_volumique().valeurs();
-      assert(rho_elem.size_array()==la_zone_VEF.nb_elem_tot());
-      for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
+      assert(rho_elem.size_array()==le_dom_VEF.nb_elem_tot());
+      for (int num_elem=0; num_elem<le_dom_nb_elem; num_elem++)
         {
           alpha = diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
           alpha/=rho_elem[num_elem];
           // dt=1/(dimension/(pas*pas))/(2*alpha)
 
-          coef=la_zone_VEF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
+          coef=le_dom_VEF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
 
           // dt_stab=min(dt);
           if (coef<dt_stab) dt_stab = coef;
@@ -128,14 +128,14 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
         unif_diffu_dt=0;
       if (nature_champ!=multi_scalaire)
         {
-          for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
+          for (int num_elem=0; num_elem<le_dom_nb_elem; num_elem++)
             {
               alpha =  diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
               if(unif_diffu_dt==0)
                 valeurs_diffusivite_dt=valeurs_diffusivite(num_elem,0);
               alpha*=valeurs_diffusivite_dt/(diffu[num_elem]+DMINFLOAT);
               // dt=1/(dimension/(pas*pas))/(2*alpha)
-              coef=la_zone_VEF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
+              coef=le_dom_VEF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
               assert(coef>=0);
               // dt_stab=min(dt);
               if (coef<dt_stab) dt_stab = coef;
@@ -146,13 +146,13 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
           int nb_comp = valeurs_diffusivite.line_size();
           for (int nc=0; nc<nb_comp; nc++)
             {
-              for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
+              for (int num_elem=0; num_elem<le_dom_nb_elem; num_elem++)
                 {
                   alpha =  diffu(num_elem,nc) + diffu_turb[num_elem];
                   //if(unif_diffu_dt==0)
                   valeurs_diffusivite_dt=valeurs_diffusivite(0,nc);
                   alpha*=valeurs_diffusivite_dt/(diffu(num_elem,nc)+DMINFLOAT);
-                  coef=la_zone_VEF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
+                  coef=le_dom_VEF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
 
                   if (coef<dt_stab) dt_stab = coef;
                 }
@@ -171,27 +171,27 @@ void Op_Dift_VEF_Face::calculer_pour_post(Champ& espace_stockage,const Nom& opti
     {
       DoubleTab& es_valeurs = espace_stockage->valeurs();
 
-      if (la_zone_vef.non_nul())
+      if (le_dom_vef.non_nul())
         {
           // On remplit le tableau nu contenant la diffusivite en chaque elem
           remplir_nu(nu_);
 
           double coef;
-          const Zone_VEF& la_zone_VEF = la_zone_vef.valeur();
-          const Zone& la_zone= la_zone_VEF.zone();
+          const Zone_VEF& le_dom_VEF = le_dom_vef.valeur();
+          const Zone& le_dom= le_dom_VEF.zone();
           const DoubleVect& diffu_turb=diffusivite_turbulente()->valeurs();
           double alpha;
 
-          int la_zone_nb_elem=la_zone.nb_elem();
+          int le_dom_nb_elem=le_dom.nb_elem();
           if (has_champ_masse_volumique())
             {
               const DoubleTab& rho_elem = get_champ_masse_volumique().valeurs();
-              assert(rho_elem.size_array()==la_zone_VEF.nb_elem_tot());
-              for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
+              assert(rho_elem.size_array()==le_dom_VEF.nb_elem_tot());
+              for (int num_elem=0; num_elem<le_dom_nb_elem; num_elem++)
                 {
                   alpha = nu_[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
                   alpha/=rho_elem[num_elem];
-                  coef=la_zone_VEF.carre_pas_maille(num_elem)/(2.*dimension*alpha);
+                  coef=le_dom_VEF.carre_pas_maille(num_elem)/(2.*dimension*alpha);
                   es_valeurs(num_elem) = coef;
                 }
             }
@@ -208,13 +208,13 @@ void Op_Dift_VEF_Face::calculer_pour_post(Champ& espace_stockage,const Nom& opti
                 }
               else
                 unif_diffu_dt=0;
-              for (int num_elem=0; num_elem<la_zone_nb_elem; num_elem++)
+              for (int num_elem=0; num_elem<le_dom_nb_elem; num_elem++)
                 {
                   alpha =  nu_[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
                   if(unif_diffu_dt==0)
                     valeurs_diffusivite_dt=valeurs_diffusivite(num_elem);
                   alpha*=valeurs_diffusivite_dt/nu_[num_elem];
-                  coef=la_zone_VEF.carre_pas_maille(num_elem)/(2.*dimension*alpha);
+                  coef=le_dom_VEF.carre_pas_maille(num_elem)/(2.*dimension*alpha);
                   es_valeurs(num_elem) = coef;
                 }
             }
@@ -945,7 +945,7 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org,
 {
   remplir_nu(nu_);
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
   const int nb_comp = resu.line_size();
 
@@ -1000,7 +1000,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matr
 {
   // On traite les faces bord
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const DoubleVect& volumes = zone_VEF.volumes();
@@ -1253,7 +1253,7 @@ void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   // matrice avec ajouter_contribution peut se faire
   // avant le premier pas de temps
   remplir_nu(nu_);
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int nb_faces = zone_VEF.nb_faces();
@@ -1363,7 +1363,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
   // avant le premier pas de temps
   remplir_nu(nu_);
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
@@ -1650,7 +1650,7 @@ void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
 void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   int n_bord;
   int nb_faces = zone_VEF.nb_faces();
@@ -1665,7 +1665,7 @@ void Op_Dift_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
   if (equation().inconnue()->nature_du_champ()==vectoriel)
     {
       //  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-      //const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+      //const Zone_VEF& zone_VEF = le_dom_vef.valeur();
       const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
       const DoubleTab& inconnue_org=equation().inconnue().valeurs();
       DoubleTab nu,nu_turb_m;

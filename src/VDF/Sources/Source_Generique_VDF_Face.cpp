@@ -42,11 +42,11 @@ void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   const Champ_base& champ_calc = ch_source_->get_champ(espace_stockage);
   const DoubleTab& valeurs_calc = champ_calc.valeurs();
 
-  int nb_faces = la_zone_VDF->nb_faces();
-  const DoubleVect& vol_entrelaces = la_zone_VDF->volumes_entrelaces();
+  int nb_faces = le_dom_VDF->nb_faces();
+  const DoubleVect& vol_entrelaces = le_dom_VDF->volumes_entrelaces();
   const DoubleVect& poro_face = equation().milieu().porosite_face();
-  int nb_front_cl = la_zone_VDF->nb_front_Cl();
-  int premiere_face_interne = la_zone_VDF->premiere_face_int();
+  int nb_front_cl = le_dom_VDF->nb_front_Cl();
+  int premiere_face_interne = le_dom_VDF->premiere_face_int();
   int num_face;
 
   for (int num_cl = 0; num_cl < nb_front_cl; num_cl++)
@@ -69,10 +69,10 @@ void Source_Generique_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   secmem.echange_espace_virtuel();
 }
 
-void Source_Generique_VDF_Face::associer_zones(const Zone_dis& zone_dis,
-                                               const Zone_Cl_dis& zcl_dis)
+void Source_Generique_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                  const Zone_Cl_dis& zcl_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF,zone_dis.valeur());
+  le_dom_VDF = ref_cast(Zone_VDF,zone_dis.valeur());
   la_zcl_VDF = ref_cast(Zone_Cl_VDF,zcl_dis.valeur());
 }
 

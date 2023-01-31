@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@ Evaluateur_Source_Face::Evaluateur_Source_Face(const Evaluateur_Source_Face& eva
 
 void Evaluateur_Source_Face::completer()
 {
-  orientation.ref(ref_cast(Zone_VF,la_zone.valeur()).orientation());
-  volumes_entrelaces.ref(ref_cast(Zone_VF,la_zone.valeur()).volumes_entrelaces());
+  orientation.ref(ref_cast(Zone_VF,le_dom.valeur()).orientation());
+  volumes_entrelaces.ref(ref_cast(Zone_VF,le_dom.valeur()).volumes_entrelaces());
   porosite_surf.ref(la_zcl->equation().milieu().porosite_face());
 }

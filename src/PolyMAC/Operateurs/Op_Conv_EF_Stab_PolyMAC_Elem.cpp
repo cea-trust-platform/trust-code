@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -83,7 +83,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
   Op_Conv_PolyMAC_base::preparer_calcul();
 
   /* au cas ou... */
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   equation().init_champ_convecte();
   flux_bords_.resize(zone.premiere_face_int(), (le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs()).line_size());
 
@@ -97,7 +97,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::preparer_calcul()
 double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 {
   double dt = 1e10;
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem();
   const DoubleTab& vit = vitesse_->valeurs(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
@@ -120,7 +120,7 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
 
 void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_convecte();
@@ -156,7 +156,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::dimensionner_blocs(matrices_t mats, const tab
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC, vitesse_.valeur()).fcl();
   const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
@@ -230,7 +230,7 @@ void Op_Conv_EF_Stab_PolyMAC_Elem::creer_champ(const Motcle& motlu)
 void Op_Conv_EF_Stab_PolyMAC_Elem::mettre_a_jour(double temps)
 {
   Op_Conv_PolyMAC_base::mettre_a_jour(temps);
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();
   const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &fs = zone.face_surfaces(), &ve = zone.volumes();

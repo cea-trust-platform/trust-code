@@ -37,7 +37,7 @@ public :
   void associer_fluide(const Fluide_Quasi_Compressible&);
   // Virtuelles pure
   virtual void completer() =0;
-  virtual void associer_zones(const Zone_dis&,const Zone_Cl_dis&) =0;
+  virtual void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) =0;
   virtual void mettre_a_jour_CL(double) = 0;
   virtual double masse_totale(double P,const DoubleTab& T)=0;
   virtual double resoudre(double) =0;

@@ -672,30 +672,30 @@ void Champ_Inc_base::associer_eqn(const Equation_base& eqn)
   MorEqn::associer_eqn(eqn);
 }
 
-void Champ_Inc_base::associer_zone_cl_dis(const Zone_Cl_dis& zcl)
+void Champ_Inc_base::associer_domaine_cl_dis(const Zone_Cl_dis& zcl)
 {
-  ma_zone_cl_dis = zcl;
+  mon_dom_cl_dis = zcl;
 }
 
-void Champ_Inc_base::associer_zone_dis_base(const Zone_dis_base& z_dis)
+void Champ_Inc_base::associer_domaine_dis_base(const Zone_dis_base& z_dis)
 {
-  la_zone_VF = ref_cast(Zone_VF, z_dis);
+  le_dom_VF = ref_cast(Zone_VF, z_dis);
 }
 
 const Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis() const
 {
-  if (!ma_zone_cl_dis.non_nul())
+  if (!mon_dom_cl_dis.non_nul())
     return equation().zone_Cl_dis();
   else
-    return ma_zone_cl_dis.valeur();
+    return mon_dom_cl_dis.valeur();
 }
 
 Zone_Cl_dis& Champ_Inc_base::zone_Cl_dis()
 {
-  if (!ma_zone_cl_dis.non_nul())
+  if (!mon_dom_cl_dis.non_nul())
     return equation().zone_Cl_dis();
   else
-    return ma_zone_cl_dis.valeur();
+    return mon_dom_cl_dis.valeur();
 }
 
 void Champ_Inc_base::init_champ_calcule(const Objet_U& obj, fonc_calc_t fonc)

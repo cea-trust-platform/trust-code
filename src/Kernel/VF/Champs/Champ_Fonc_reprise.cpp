@@ -284,11 +284,11 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       nom_ident+=nom_temps;
     }
 
-  associer_zone_dis_base(pb.domaine_dis());
+  associer_domaine_dis_base(pb.domaine_dis());
   // on cree un champ comme le ch_ref;
   const Champ_Inc_base& ch_inc=ref_cast(Champ_Inc_base,ref_ch.valeur());
   vrai_champ_.typer(ch_inc.que_suis_je());
-  vrai_champ_->associer_zone_dis_base(pb.domaine_dis());
+  vrai_champ_->associer_domaine_dis_base(pb.domaine_dis());
   //vrai_champ_->fixer_nb_valeurs_temporelles(2);
   vrai_champ_->nommer(ch_inc.le_nom());
   vrai_champ_->fixer_nb_comp(ch_inc.nb_comp());

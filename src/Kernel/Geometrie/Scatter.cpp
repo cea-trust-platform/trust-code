@@ -816,7 +816,7 @@ static int ajouter_joint(Zone& zone, int pe)
 
   Joint& joint = joints.add(Joint());
   joint.nommer(Nom("Joint_")+Nom(pe));
-  joint.associer_zone(zone);
+  joint.associer_domaine(zone);
   int ep = (i_joint > 0) ? joints[0].epaisseur() : 1;
   joint.affecte_epaisseur(ep);
   joint.affecte_PEvoisin(pe);
@@ -1153,13 +1153,13 @@ void Scatter::ajouter_joints(Zone& zone,
  * @param (nb_items_reels) le nombre de "type_item" reels
  * @param (items_lies) si le tableau est non vide, il doit etre de taille nb_items_reels. Dans ce cas, il permet de forcer la propriete suivante : "si l'item i est distant, alors l'item items_lies[i] est distant aussi". Ce tableau est utilise pour inclure les sommets periodiques virtuels associes. (voir calculer_espace_distant_sommets).
  */
-static void calculer_espace_distant_item(Zone& la_zone,
+static void calculer_espace_distant_item(Zone& le_dom,
                                          const Joint::Type_Item type_item,
                                          const IntTab& connectivite_elem_item,
                                          const int nb_items_reels,
                                          const ArrOfInt& items_lies)
 {
-  const Joints& joints                 = la_zone.faces_joint();
+  const Joints& joints                 = le_dom.faces_joint();
   const int   nb_joints              = joints.size();
   const int   nproc                  = Process::nproc();
   const int   nb_items_par_element   = connectivite_elem_item.dimension(1);
@@ -1211,7 +1211,7 @@ static void calculer_espace_distant_item(Zone& la_zone,
       items_to_send[pe_voisin] = liste_items;
     }
   // Calcul des espaces distants en fonction de "items_to_send"
-  Scatter::calculer_espace_distant(la_zone, nb_items_reels, items_to_send, type_item);
+  Scatter::calculer_espace_distant(le_dom, nb_items_reels, items_to_send, type_item);
 }
 
 /*! @brief En fonction de l'espace distant des elements, calcule l'espace distant des sommets.

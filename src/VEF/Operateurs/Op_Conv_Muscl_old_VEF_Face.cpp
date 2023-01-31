@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -77,7 +77,7 @@ DoubleTab& Op_Conv_Muscl_old_VEF_Face::ajouter(const DoubleTab& transporte,
                                                DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
+  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, le_dom_vef.valeur());
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const IntTab& elem_faces = zone_VEF.elem_faces();

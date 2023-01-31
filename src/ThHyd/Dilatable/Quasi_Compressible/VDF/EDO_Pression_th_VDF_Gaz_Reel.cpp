@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,9 +58,9 @@ Entree& EDO_Pression_th_VDF_Gaz_Reel::readOn(Entree& is)
 double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
 {
   int n_bord ;
-  for (n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
         return Pth_n;
     }
@@ -73,7 +73,7 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
   const Loi_Etat& loi_ = le_fluide_->loi_etat();
   //const DoubleVect& tab_rhon = loi_->rho_n();                       //passe
 
-  int elem, nb_elem=la_zone->nb_elem(),i;
+  int elem, nb_elem=le_dom->nb_elem(),i;
   double V = 0; //mesure du domaine
   double Fn = 0; //integrale 1 a l'etape n
   double Fnp1 = 0; //integrale 1 a l'etape n+1
@@ -82,7 +82,7 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
   double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
   double v,al,b, bnp1, hn,hnp1, divu;
 
-  const IntTab& elem_faces = la_zone->elem_faces();
+  const IntTab& elem_faces = le_dom->elem_faces();
   DoubleTrav divU(tab_vit.dimension(0), 1);
   ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit,divU);
   DoubleTrav gradh(tab_vit.dimension(0));
@@ -107,7 +107,7 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
 
   for (elem=0 ; elem<nb_elem ; elem++)
     {
-      v = la_zone->volumes(elem);
+      v = le_dom->volumes(elem);
       V += v;
       hn   = tab_hn(elem);
       hnp1 = tab_hnp1(elem);
@@ -140,13 +140,13 @@ double EDO_Pression_th_VDF_Gaz_Reel::resoudre(double Pth_n)
       Fnp1 = 0;
       for (elem=0 ; elem<nb_elem ; elem++)
         {
-          v = la_zone->volumes(elem);
+          v = le_dom->volumes(elem);
           hnp1 = tab_hnp1(elem);
           r = loi_->calculer_masse_volumique(Pth,hnp1);
           bnp1 = r / loi_->Drho_DP(Pth,hnp1);
           for (i=0 ; i<dimension ; i++)
             {
-              Fnp1 += v*bnp1 * (tab_vit(elem_faces(elem,i+dimension))-tab_vit(elem_faces(elem,i)))/la_zone->dim_elem(elem,i);
+              Fnp1 += v*bnp1 * (tab_vit(elem_faces(elem,i+dimension))-tab_vit(elem_faces(elem,i)))/le_dom->dim_elem(elem,i);
             }
         }
       Pth = Pth_n + dt/V *(S-.5*(Fn+Fnp1));

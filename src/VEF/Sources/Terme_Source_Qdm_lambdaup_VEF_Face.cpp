@@ -115,7 +115,7 @@ void Terme_Source_Qdm_lambdaup_VEF_Face::associer_pb(const Probleme_base& pb)
       if  (sub_type(Navier_Stokes_std,eqn))
         {
           la_vitesse = ref_cast(Champ_P1NC,eqn.inconnue().valeur());
-          associer_zones(eqn.zone_dis(),eqn.zone_Cl_dis());
+          associer_domaines(eqn.zone_dis(),eqn.zone_Cl_dis());
           i = nb_eqn;
           ok = 1;
         }
@@ -131,18 +131,18 @@ void Terme_Source_Qdm_lambdaup_VEF_Face::associer_pb(const Probleme_base& pb)
     }
 }
 
-void Terme_Source_Qdm_lambdaup_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                        const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Qdm_lambdaup_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                           const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
 }
 
 
 DoubleTab& Terme_Source_Qdm_lambdaup_VEF_Face::ajouter(DoubleTab& resu) const
 {
   static double rapport_old=1.;
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   const DoubleVect& volumes_entrelaces=zone_VEF.volumes_entrelaces();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const DoubleTab& vitesse=la_vitesse.valeur().valeurs();
@@ -204,7 +204,7 @@ void Terme_Source_Qdm_lambdaup_VEF_Face::mettre_a_jour(double temps)
 
 double Terme_Source_Qdm_lambdaup_VEF_Face::norme_H1(const DoubleTab& vitesse) const
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   const Zone& zone = zone_VEF.zone();
 
   double dnorme_H1,norme_H1_comp,int_grad_elem,norme_grad_elem;
@@ -257,7 +257,7 @@ double Terme_Source_Qdm_lambdaup_VEF_Face::norme_L2_H1(const DoubleTab& u) const
 
 double Terme_Source_Qdm_lambdaup_VEF_Face::norme_L2(const DoubleTab& u) const
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   const DoubleVect& volumes = zone_VEF.volumes_entrelaces();
   const int nb_faces = zone_VEF.nb_faces();
 

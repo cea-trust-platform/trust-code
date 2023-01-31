@@ -699,7 +699,7 @@ void Champ_Generique_Interpolation::discretiser_domaine()
         }
       type += type_discr;
       le_dom_dis.typer(type);
-      le_dom_dis->associer_zone(domaine_.valeur());
+      le_dom_dis->associer_domaine(domaine_.valeur());
       le_dom_dis->discretiser_root(type);
     }
 }

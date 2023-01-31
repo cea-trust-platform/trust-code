@@ -369,7 +369,7 @@ void EF_discretisation::distance_paroi(const Schema_Temps_base& sch,
   Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
   ch.typer("Champ_Fonc_P0_EF");
   Champ_Fonc_P0_EF& ch_dist_paroi=ref_cast(Champ_Fonc_P0_EF,ch.valeur());
-  ch_dist_paroi.associer_zone_dis_base(zone_EF);
+  ch_dist_paroi.associer_domaine_dis_base(zone_EF);
   ch_dist_paroi.nommer("distance_paroi");
   ch_dist_paroi.fixer_nb_comp(1);
   ch_dist_paroi.fixer_nb_valeurs_nodales(zone_EF.nb_elem());
@@ -390,7 +390,7 @@ void EF_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
       ch.typer("Rotationnel_Champ_P1_EF");
       const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
       Rotationnel_Champ_P1_EF& ch_W=ref_cast(Rotationnel_Champ_P1_EF,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(zone_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -411,7 +411,7 @@ void EF_discretisation::vorticite(Zone_dis& z,const Champ_Inc& ch_vitesse,
       ch.typer("Rotationnel_Champ_Q1_EF");
       const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF,ch_vitesse.valeur());
       Rotationnel_Champ_Q1_EF& ch_W=ref_cast(Rotationnel_Champ_Q1_EF,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(zone_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -444,7 +444,7 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
       const Zone_EF& zone_EF = ref_cast(Zone_EF,vit.zone_dis_base());
       Rotationnel_Champ_P1_EF& ch_W = ref_cast(Rotationnel_Champ_P1_EF,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(zone_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -466,7 +466,7 @@ void EF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       const Champ_Q1_EF& vit = ref_cast(Champ_Q1_EF,ch_vitesse.valeur());
       const Zone_EF& zone_EF = ref_cast(Zone_EF,vit.zone_dis_base());
       Rotationnel_Champ_Q1_EF& ch_W = ref_cast(Rotationnel_Champ_Q1_EF,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_EF);
+      ch_W.associer_domaine_dis_base(zone_EF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
@@ -516,7 +516,7 @@ void EF_discretisation::proprietes_physiques_fluide_Ostwald(const Zone_dis& z, F
   mu.typer("Champ_Ostwald_EF");
   Champ_Ostwald_EF& ch_mu = ref_cast(Champ_Ostwald_EF,mu.valeur());
   Cerr<<"associe zonedisbase EF"<<finl;
-  ch_mu.associer_zone_dis_base(zone_EF);
+  ch_mu.associer_domaine_dis_base(zone_EF);
   ch_mu.associer_fluide(le_fluide);
   ch_mu.associer_champ(vit);
   ch_mu.associer_eqn(eqn_hydr);
@@ -558,7 +558,7 @@ void EF_discretisation::critere_Q(const Zone_dis& z,const Zone_Cl_dis& zcl,const
   const Zone_EF& zone_EF=ref_cast(Zone_EF, z.valeur());
   ch.typer("Critere_Q_Champ_P1_EF");
   Critere_Q_Champ_P1_EF& ch_cQ=ref_cast(Critere_Q_Champ_P1_EF,ch.valeur());
-  ch_cQ.associer_zone_dis_base(zone_EF);
+  ch_cQ.associer_domaine_dis_base(zone_EF);
   ch_cQ.associer_champ(vit);
   ch_cQ.nommer("Critere_Q");
   ch_cQ.fixer_nb_comp(1);
@@ -579,8 +579,8 @@ void EF_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const Ch
   const Zone_Cl_EF& zone_cl_EF=ref_cast(Zone_Cl_EF, zcl.valeur());
   ch.typer("Y_plus_Champ_P1_EF");
   Y_plus_Champ_P1_EF& ch_yp=ref_cast(Y_plus_Champ_P1_EF,ch.valeur());
-  ch_yp.associer_zone_dis_base(zone_EF);
-  ch_yp.associer_zone_Cl_dis_base(zone_cl_EF);
+  ch_yp.associer_domaine_dis_base(zone_EF);
+  ch_yp.associer_domaine_Cl_dis_base(zone_cl_EF);
   ch_yp.associer_champ(vit);
   ch_yp.nommer("Y_plus");
   ch_yp.fixer_nb_comp(1);
@@ -599,8 +599,8 @@ void EF_discretisation::grad_T(const Zone_dis& z,const Zone_Cl_dis& zcl,const Ch
   const Zone_Cl_EF& zone_cl_EF=ref_cast(Zone_Cl_EF, zcl.valeur());
   ch.typer("gradient_temperature_Champ_P1_EF");
   grad_T_Champ_P1_EF& ch_gt=ref_cast(grad_T_Champ_P1_EF,ch.valeur());
-  ch_gt.associer_zone_dis_base(zone_EF);
-  ch_gt.associer_zone_Cl_dis_base(zone_cl_EF);
+  ch_gt.associer_domaine_dis_base(zone_EF);
+  ch_gt.associer_domaine_Cl_dis_base(zone_cl_EF);
   ch_gt.associer_champ(temp);
   ch_gt.nommer("gradient_temperature");
   ch_gt.fixer_nb_comp(dimension);
@@ -619,8 +619,8 @@ void EF_discretisation::h_conv(const Zone_dis& z,const Zone_Cl_dis& zcl,const Ch
   const Zone_Cl_EF& zone_cl_EF=ref_cast(Zone_Cl_EF, zcl.valeur());
   ch.typer("h_conv_Champ_P1_EF");
   h_conv_Champ_P1_EF& ch_gt=ref_cast(h_conv_Champ_P1_EF,ch.valeur());
-  ch_gt.associer_zone_dis_base(zone_EF);
-  ch_gt.associer_zone_Cl_dis_base(zone_cl_EF);
+  ch_gt.associer_domaine_dis_base(zone_EF);
+  ch_gt.associer_domaine_Cl_dis_base(zone_cl_EF);
   ch_gt.associer_champ(temp);
   ch_gt.temp_ref()=temp_ref;
   ////ch_gt.nommer("h_conv");
@@ -638,7 +638,7 @@ void EF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_vdf,Cham
   Champ_Fonc_Tabule_P0_EF& ch_tab_lambda_dis =
     ref_cast(Champ_Fonc_Tabule_P0_EF,lambda_tab_dis.valeur());
   //ch_tab_lambda_dis.nommer(nom_champ);
-  ch_tab_lambda_dis.associer_zone_dis_base(zone_vdf);
+  ch_tab_lambda_dis.associer_domaine_dis_base(zone_vdf);
   ch_tab_lambda_dis.associer_param(champs_param, lambda_tab.table());
   ch_tab_lambda_dis.fixer_nb_comp(lambda_tab.nb_comp());
   ch_tab_lambda_dis.fixer_nb_valeurs_nodales(zone_vdf.nb_elem());

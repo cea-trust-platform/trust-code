@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -230,10 +230,10 @@ void Simpler_Base::assembler_matrice_pression_implicite(Equation_base& eqn_NS,co
       nb_comp = present.dimension(1);
     }
 
-  const Zone_VF& la_zone = ref_cast(Zone_VF,eqnNS.zone_dis().valeur());
+  const Zone_VF& le_dom = ref_cast(Zone_VF,eqnNS.zone_dis().valeur());
   if (deux_entrees==0)
     {
-      DoubleVect vol2 = la_zone.volumes_entrelaces();
+      DoubleVect vol2 = le_dom.volumes_entrelaces();
       int ns = vol2.size();
       for (int i=0; i<ns; i++)
         {

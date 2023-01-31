@@ -313,7 +313,7 @@ void VDF_discretisation::vorticite(Zone_dis& z,
   const Zone_VDF& zone_vdf=ref_cast(Zone_VDF, z.valeur());
   ch.typer("Rotationnel_Champ_Face");
   Rotationnel_Champ_Face& ch_W=ref_cast(Rotationnel_Champ_Face,ch.valeur());
-  ch_W.associer_zone_dis_base(zone_vdf);
+  ch_W.associer_domaine_dis_base(zone_vdf);
   ch_W.associer_champ(vit);
   ch_W.nommer("vorticite");
   if (dimension == 2)
@@ -337,8 +337,8 @@ void VDF_discretisation::critere_Q(const Zone_dis& z,const Zone_Cl_dis& zcl,cons
   const Zone_Cl_VDF& zone_cl_vdf=ref_cast(Zone_Cl_VDF, zcl.valeur());
   ch.typer("Critere_Q_Champ_Face");
   Critere_Q_Champ_Face& ch_Criter_Q=ref_cast(Critere_Q_Champ_Face,ch.valeur());
-  ch_Criter_Q.associer_zone_dis_base(zone_vdf);
-  ch_Criter_Q.associer_zone_Cl_dis_base(zone_cl_vdf);
+  ch_Criter_Q.associer_domaine_dis_base(zone_vdf);
+  ch_Criter_Q.associer_domaine_Cl_dis_base(zone_cl_vdf);
   ch_Criter_Q.associer_champ(vit);
   ch_Criter_Q.nommer("Critere_Q");
   ch_Criter_Q.fixer_nb_comp(1);
@@ -354,8 +354,8 @@ void VDF_discretisation::grad_u(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
   const Zone_Cl_VDF& zone_cl_vdf=ref_cast(Zone_Cl_VDF, zcl.valeur());
   ch.typer("grad_U_Champ_Face");
   grad_U_Champ_Face& ch_grad_u=ref_cast(grad_U_Champ_Face,ch.valeur());
-  ch_grad_u.associer_zone_dis_base(zone_vdf);
-  ch_grad_u.associer_zone_Cl_dis_base(zone_cl_vdf);
+  ch_grad_u.associer_domaine_dis_base(zone_vdf);
+  ch_grad_u.associer_domaine_Cl_dis_base(zone_cl_vdf);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("gradient_vitesse");
   ch_grad_u.fixer_nb_comp(dimension*dimension);
@@ -391,7 +391,7 @@ void VDF_discretisation::reynolds_maille(const Zone_dis& z, const Fluide_base& l
   const Zone_VDF& zone_vdf=ref_cast(Zone_VDF, z.valeur());
   champ.typer("Reynolds_maille_Champ_Face");
   Reynolds_maille_Champ_Face& ch=ref_cast(Reynolds_maille_Champ_Face,champ.valeur());
-  ch.associer_zone_dis_base(zone_vdf);
+  ch.associer_domaine_dis_base(zone_vdf);
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, ch_vitesse.valeur());
   const Champ_Don& nu = le_fluide.viscosite_cinematique();
   ch.associer_champ(vit,nu);
@@ -410,7 +410,7 @@ void VDF_discretisation::courant_maille(const Zone_dis& z, const Schema_Temps_ba
   const Zone_VDF& zone_vdf=ref_cast(Zone_VDF, z.valeur());
   champ.typer("Courant_maille_Champ_Face");
   Courant_maille_Champ_Face& ch=ref_cast(Courant_maille_Champ_Face,champ.valeur());
-  ch.associer_zone_dis_base(zone_vdf);
+  ch.associer_domaine_dis_base(zone_vdf);
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, ch_vitesse.valeur());
   ch.associer_champ(vit,sch);
   ch.nommer("Courant_maille");
@@ -429,7 +429,7 @@ void VDF_discretisation::taux_cisaillement(const Zone_dis& z, const Zone_Cl_dis&
   const Zone_Cl_VDF& zone_cl_vdf=ref_cast(Zone_Cl_VDF, zcl.valeur());
   champ.typer("Taux_cisaillement_P0_VDF");
   Taux_cisaillement_P0_VDF& ch=ref_cast(Taux_cisaillement_P0_VDF,champ.valeur());
-  ch.associer_zone_dis_base(zone_vdf);
+  ch.associer_domaine_dis_base(zone_vdf);
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, ch_vitesse.valeur());
   ch.associer_champ(vit, zone_cl_vdf);
   ch.nommer("Taux_cisaillement");
@@ -446,8 +446,8 @@ void VDF_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
   const Zone_Cl_VDF& zone_cl_vdf=ref_cast(Zone_Cl_VDF, zcl.valeur());
   ch.typer("Y_plus_Champ_Face");
   Y_plus_Champ_Face& ch_y_plus=ref_cast(Y_plus_Champ_Face,ch.valeur());
-  ch_y_plus.associer_zone_dis_base(zone_vdf);
-  ch_y_plus.associer_zone_Cl_dis_base(zone_cl_vdf);
+  ch_y_plus.associer_domaine_dis_base(zone_vdf);
+  ch_y_plus.associer_domaine_Cl_dis_base(zone_cl_vdf);
   ch_y_plus.associer_champ(vit);
   ch_y_plus.nommer("Y_plus");
   ch_y_plus.fixer_nb_comp(1);
@@ -463,8 +463,8 @@ void VDF_discretisation::y_plus(const Zone_dis& z,const Zone_Cl_dis& zcl,const C
   ch.typer("Champ_Temperature_Paroi_Face");
   Champ_T_Paroi_Face& ch_tp=ref_cast(Champ_T_Paroi_Face,ch.valeur());
   ch_tp.associer_eqn(eqn);
-  ch_tp.associer_zone_dis_base(zone_vdf);
-  ch_tp.associer_zone_Cl_dis_base(zone_cl_vdf);
+  ch_tp.associer_domaine_dis_base(zone_vdf);
+  ch_tp.associer_domaine_Cl_dis_base(zone_cl_vdf);
   ch_tp.nommer("temperature_paroi");
   ch_tp.fixer_nb_comp(1);
   ch_tp.fixer_nb_valeurs_nodales(zone_vdf.nb_faces());
@@ -476,7 +476,7 @@ void VDF_discretisation::modifier_champ_tabule(const Zone_dis_base& zone_dis, Ch
 {
   le_champ_tabule.le_champ_tabule_discretise().typer("Champ_Fonc_Tabule_P0_VDF");
   Champ_Fonc_Tabule_P0_VDF& le_champ_tabule_dis = ref_cast(Champ_Fonc_Tabule_P0_VDF,le_champ_tabule.le_champ_tabule_discretise().valeur());
-  le_champ_tabule_dis.associer_zone_dis_base(zone_dis);
+  le_champ_tabule_dis.associer_domaine_dis_base(zone_dis);
   le_champ_tabule_dis.associer_param(ch_inc,le_champ_tabule.table());
   le_champ_tabule_dis.nommer(le_champ_tabule.le_nom()); // We give a name to this field, help for debug
   le_champ_tabule_dis.fixer_nb_comp(le_champ_tabule.nb_comp());
@@ -517,7 +517,7 @@ void VDF_discretisation::proprietes_physiques_fluide_Ostwald
   mu.typer("Champ_Ostwald_VDF");
   Champ_Ostwald_VDF& ch_mu = ref_cast(Champ_Ostwald_VDF,mu.valeur());
   Cerr<<"associe zonedisbase"<<finl;
-  ch_mu.associer_zone_dis_base(zone_vdf);
+  ch_mu.associer_domaine_dis_base(zone_vdf);
   ch_mu.associer_fluide(le_fluide);
   ch_mu.associer_champ(vit);
   Cerr<<"associations finies"<<finl;
@@ -544,7 +544,7 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       const Zone_VDF& zone_VDF = ref_cast(Zone_VDF,vit.zone_dis_base());
       ch.typer("Rotationnel_Champ_Face");
       Rotationnel_Champ_Face& ch_W=ref_cast(Rotationnel_Champ_Face,ch.valeur());
-      ch_W.associer_zone_dis_base(zone_VDF);
+      ch_W.associer_domaine_dis_base(zone_VDF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)

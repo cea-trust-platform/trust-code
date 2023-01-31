@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ public:
   const Zone_VEF_PreP1b& zone_Vef() const;
 
 protected:
-  REF(Zone_VEF) la_zone_vef;
+  REF(Zone_VEF) le_dom_vef;
   REF(Zone_Cl_VEF) la_zcl_vef;
   IntLists elements_pour_sommet_;
   /*   DoubleTab flux_tangent_bords_; */

@@ -62,12 +62,12 @@ int Source_Darcy_VDF_Face::lire_motcle_non_standard(const Motcle& mot, Entree& i
   return -1;
 }
 
-void Source_Darcy_VDF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Darcy_VDF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  iter->associer_zones(zvdf, zclvdf);
-  eval().associer_zones(zvdf, zclvdf);
+  iter->associer_domaines(zvdf, zclvdf);
+  eval().associer_domaines(zvdf, zclvdf);
 }
 
 void Source_Darcy_VDF_Face::associer_pb(const Probleme_base& pb)

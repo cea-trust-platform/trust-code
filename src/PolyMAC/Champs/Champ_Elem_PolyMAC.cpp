@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ Entree& Champ_Elem_PolyMAC::readOn(Entree& s)
 
 const Zone_PolyMAC& Champ_Elem_PolyMAC::zone_PolyMAC() const
 {
-  return ref_cast(Zone_PolyMAC, la_zone_VF.valeur());
+  return ref_cast(Zone_PolyMAC, le_dom_VF.valeur());
 }
 
 int Champ_Elem_PolyMAC::imprime(Sortie& os, int ncomp) const
@@ -74,7 +74,7 @@ int Champ_Elem_PolyMAC::fixer_nb_valeurs_nodales(int n)
 
 int Champ_Elem_PolyMAC::nb_valeurs_nodales() const
 {
-  return la_zone_VF->nb_elem(); //on ignore les variables auxiliaires
+  return le_dom_VF->nb_elem(); //on ignore les variables auxiliaires
 }
 
 void Champ_Elem_PolyMAC::init_auxiliary_variables()
@@ -98,7 +98,7 @@ void Champ_Elem_PolyMAC::init_auxiliary_variables()
 
 int Champ_Elem_PolyMAC::reprendre(Entree& fich)
 {
-  const Zone_PolyMAC* zone = la_zone_VF.non_nul() ? &ref_cast( Zone_PolyMAC,la_zone_VF.valeur()) : NULL;
+  const Zone_PolyMAC* zone = le_dom_VF.non_nul() ? &ref_cast( Zone_PolyMAC,le_dom_VF.valeur()) : NULL;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
   valeurs().resize(0);
   int ret = Champ_Inc_base::reprendre(fich);

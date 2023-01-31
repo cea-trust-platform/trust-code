@@ -53,8 +53,8 @@ Entree& Solveur_Masse_EF::readOn(Entree& s)
 DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
 {
   Debog::verifier("Solveur_Masse_EF::appliquer deb, sm=",sm);
-  const Zone_Cl_EF& zone_Cl_EF = ref_cast(Zone_Cl_EF,la_zone_Cl_EF.valeur());
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_Cl_EF& zone_Cl_EF = ref_cast(Zone_Cl_EF,le_dom_Cl_EF.valeur());
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const DoubleVect& volumes_sommets_thilde = zone_EF.volumes_sommets_thilde();
 
   //  const DoubleVect& porosite_sommet = zone_EF.porosite_sommet();
@@ -160,14 +160,14 @@ DoubleTab& Solveur_Masse_EF::appliquer_impl(DoubleTab& sm) const
 
 
 //
-void Solveur_Masse_EF::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
+void Solveur_Masse_EF::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
 {
-  la_zone_EF = ref_cast(Zone_EF, la_zone_dis_base);
+  le_dom_EF = ref_cast(Zone_EF, le_dom_dis_base);
 }
 
-void Solveur_Masse_EF::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+void Solveur_Masse_EF::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_zone_Cl_EF = ref_cast(Zone_Cl_EF, la_zone_Cl_dis_base);
+  le_dom_Cl_EF = ref_cast(Zone_Cl_EF, le_dom_Cl_dis_base);
 }
 
 
@@ -175,10 +175,10 @@ void Solveur_Masse_EF::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone
 
 Matrice_Base& Solveur_Masse_EF::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
-  if (penalisation||(la_zone_Cl_EF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
+  if (penalisation||(le_dom_Cl_EF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
     return Solveur_Masse_base::ajouter_masse(dt,matrice,penalisation);
   // Sinon on modifie temporairement la nature du champ pour que appliquer_impl ne projette pas sur n.
-  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,la_zone_Cl_EF.valeur().equation().inconnue().valeur());
+  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_EF.valeur().equation().inconnue().valeur());
   inco.fixer_nature_du_champ(multi_scalaire);
   Solveur_Masse_base::ajouter_masse(dt,matrice,penalisation);
   inco.fixer_nature_du_champ(vectoriel);
@@ -190,11 +190,11 @@ Matrice_Base& Solveur_Masse_EF::ajouter_masse(double dt, Matrice_Base& matrice, 
 
 DoubleTab& Solveur_Masse_EF::ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation) const
 {
-  if (penalisation||(la_zone_Cl_EF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
+  if (penalisation||(le_dom_Cl_EF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
     return Solveur_Masse_base::ajouter_masse(dt,x,y,penalisation);
 
   // Sinon on modifie temporairement la nature du champ pour que appliquer_impl ne projette pas sur n.
-  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,la_zone_Cl_EF.valeur().equation().inconnue().valeur());
+  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_EF.valeur().equation().inconnue().valeur());
   inco.fixer_nature_du_champ(multi_scalaire);
   Solveur_Masse_base::ajouter_masse(dt,x,y,penalisation);
   inco.fixer_nature_du_champ(vectoriel);

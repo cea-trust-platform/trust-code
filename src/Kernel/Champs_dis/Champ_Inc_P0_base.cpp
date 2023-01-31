@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,13 +61,13 @@ Champ_base& Champ_Inc_P0_base::affecter_(const Champ_base& ch)
 
 double Champ_Inc_P0_base::valeur_au_bord(int face) const
 {
-  assert(la_zone_VF.non_nul());
+  assert(le_dom_VF.non_nul());
   const DoubleTab& val = valeurs();
   double la_val_bord;
 
-  int n0 = la_zone_VF->face_voisins(face, 0);
+  int n0 = le_dom_VF->face_voisins(face, 0);
   if (n0 != -1) la_val_bord = val[n0];
-  else la_val_bord = val[la_zone_VF->face_voisins(face, 1)];
+  else la_val_bord = val[le_dom_VF->face_voisins(face, 1)];
 
   return la_val_bord;
 }
@@ -83,7 +83,7 @@ DoubleTab& Champ_Inc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x, 
 //utilitaires pour CL
 void Champ_Inc_P0_base::init_fcl() const
 {
-  const Conds_lim& cls = ma_zone_cl_dis.valeur().les_conditions_limites();
+  const Conds_lim& cls = mon_dom_cl_dis.valeur().les_conditions_limites();
   int i, f, n;
 
   const Zone_VF& zone = ref_cast(Zone_VF, mon_equation->zone_dis().valeur());

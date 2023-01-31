@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -239,12 +239,12 @@ int Champ_Q4_implementation::imprime_Q4(Sortie& os, int ncomp) const
 {
   const Champ_base& cha = le_champ();
   int nb_compo_ = cha.nb_comp();
-  const Zone& la_zone = get_zone_geom();
-  int nb_som_tot = la_zone.nb_som_tot();
+  const Zone& le_dom = get_zone_geom();
+  int nb_som_tot = le_dom.nb_som_tot();
   const DoubleTab& val = cha.valeurs();
   int som;
   // On recalcule les centres de gravite :
-  const DoubleTab pos_som = la_zone.coord_sommets();
+  const DoubleTab pos_som = le_dom.coord_sommets();
   os << nb_som_tot << finl;
   for (som = 0; som < nb_som_tot; som++)
     {

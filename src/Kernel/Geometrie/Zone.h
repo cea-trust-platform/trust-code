@@ -497,7 +497,7 @@ inline int Zone::nb_front_Cl() const  {   return nb_bords() +nb_raccords() + nb_
 inline void Zone::typer(const Nom& typ)
 {
   elem_.typer(typ);
-  elem_.associer_zone(*this);
+  elem_.associer_domaine(*this);
 }
 
 /*! @brief Calcule les centres de gravites des elements de la zone.

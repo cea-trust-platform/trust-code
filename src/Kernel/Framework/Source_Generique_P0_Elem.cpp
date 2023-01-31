@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,9 +41,9 @@ DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
   const Champ_base& champ_calc = ch_source_->get_champ(espace_stockage);
   const DoubleTab& valeurs_calc = champ_calc.valeurs();
 
-  int nb_elem = la_zone->nb_elem();
-  const DoubleVect& vol = la_zone->volumes();
-  const DoubleVect& poro_vol = la_zone_cl->valeur().equation().milieu().porosite_elem();
+  int nb_elem = le_dom->nb_elem();
+  const DoubleVect& vol = le_dom->volumes();
+  const DoubleVect& poro_vol = le_dom_cl->valeur().equation().milieu().porosite_elem();
 
   for (int elem = 0; elem<nb_elem; elem++)
     resu(elem) += valeurs_calc(elem)*vol(elem)*poro_vol(elem);
@@ -52,11 +52,11 @@ DoubleTab& Source_Generique_P0_Elem::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-void Source_Generique_P0_Elem::associer_zones(const Zone_dis& zone_dis,
-                                              const Zone_Cl_dis& zcl_dis)
+void Source_Generique_P0_Elem::associer_domaines(const Zone_dis& zone_dis,
+                                                 const Zone_Cl_dis& zcl_dis)
 {
-  la_zone = ref_cast(Zone_VF,zone_dis.valeur());
-  la_zone_cl = zcl_dis;
+  le_dom = ref_cast(Zone_VF,zone_dis.valeur());
+  le_dom_cl = zcl_dis;
 }
 
 Nom Source_Generique_P0_Elem::localisation_source()

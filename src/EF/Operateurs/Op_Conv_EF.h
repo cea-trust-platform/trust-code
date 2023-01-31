@@ -47,8 +47,8 @@ public:
 
   //virtual void remplir_fluent(DoubleVect& ) const;
   // Methodes pour l implicite.
-  inline void dimensionner(Matrice_Morse& matrice) const override { Op_EF_base::dimensionner(la_zone_EF.valeur(),la_zcl_EF.valeur(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_EF_base::modifier_pour_Cl(la_zone_EF.valeur(),la_zcl_EF.valeur(), matrice, secmem); }
+  inline void dimensionner(Matrice_Morse& matrice) const override { Op_EF_base::dimensionner(le_dom_EF.valeur(),la_zcl_EF.valeur(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_EF_base::modifier_pour_Cl(le_dom_EF.valeur(),la_zcl_EF.valeur(), matrice, secmem); }
   inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override { ajouter_contribution(inco, matrice); }
   inline void contribuer_au_second_membre(DoubleTab& resu) const override { contribue_au_second_membre(resu); }
   void contribue_au_second_membre(DoubleTab& ) const;
@@ -103,7 +103,7 @@ DoubleTab& Op_Conv_EF::ajouter_sous_cond_template(const DoubleTab& transporte, D
   static constexpr bool IS_GEN = (_COND_ == AJOUTE_COND::GEN), IS_D3_81 = (_COND_ == AJOUTE_COND::D3_81), IS_D3_82 = (_COND_ == AJOUTE_COND::D3_82),
                         IS_D2_41 = (_COND_ == AJOUTE_COND::D2_41), IS_D2_42 = (_COND_ == AJOUTE_COND::D2_42);
 
-  const Zone_EF& zone_ef = ref_cast(Zone_EF, la_zone_EF.valeur());
+  const Zone_EF& zone_ef = ref_cast(Zone_EF, le_dom_EF.valeur());
   const int nb_som_elem = (IS_D3_81 || IS_D3_82) ? 8 : ( (IS_D2_41 || IS_D2_42) ? 4 : zone_ef.zone().nb_som_elem() /* IS_GEN */);
 
   if ((btd_impl == 1) && (hourglass_impl == 1) && (centre_impl == 1))

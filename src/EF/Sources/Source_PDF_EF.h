@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,9 +74,9 @@ protected:
   void calculer_vitesse_imposee_power_law_tbl_u_star() override;
   void rotate_imposed_velocity(DoubleTab&) override;
   DoubleTab compute_pond(const DoubleTab&, const DoubleTab&, const DoubleVect&, int&, int&) const ;
-  REF(Zone_EF) la_zone_EF;
-  REF(Zone_Cl_EF) la_zone_Cl_EF;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Zone_EF) le_dom_EF;
+  REF(Zone_Cl_EF) le_dom_Cl_EF;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
   void compute_indicateur_nodal_champ_aire() override;
 
   DoubleVect tab_u_star_ibm_;                //!< valeurs des u* IBM calculees localement

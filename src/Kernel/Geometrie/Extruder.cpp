@@ -97,7 +97,7 @@ void Extruder::extruder(Zone& dom)
         // bloc a factoriser avec Zone_VF.cpp :
         Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
-        les_faces.associer_zone(dom);
+        les_faces.associer_domaine(dom);
 
         Static_Int_Lists connectivite_som_elem;
         const int     nb_sommets_tot = dom.nb_som_tot();
@@ -445,7 +445,7 @@ void Extruder::extruder_hexa(Zone& dom)
     // bloc a factoriser avec Zone_VF.cpp :
     Type_Face type_face = dom.type_elem().type_face(0);
     les_faces.typer(type_face);
-    les_faces.associer_zone(dom);
+    les_faces.associer_domaine(dom);
 
     Static_Int_Lists connectivite_som_elem;
     const int     nb_sommets_tot = dom.nb_som_tot();

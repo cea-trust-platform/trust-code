@@ -40,8 +40,8 @@ void Eval_Dift_VDF_Face::mettre_a_jour()
 
 double Eval_Dift_VDF_Face::tau_tan_impl(int face, int k) const
 {
-  const int nb_faces = la_zone.valeur().nb_faces();
-  const ArrOfInt& ind_faces_virt_bord = la_zone.valeur().ind_faces_virt_bord();
+  const int nb_faces = le_dom.valeur().nb_faces();
+  const ArrOfInt& ind_faces_virt_bord = le_dom.valeur().ind_faces_virt_bord();
   int f = (face >= tau_tan_.dimension(0)) ? ind_faces_virt_bord[face-nb_faces] : face;
   if(f >= tau_tan_.dimension_tot(0))
     {

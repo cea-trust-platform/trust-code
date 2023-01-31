@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -207,13 +207,13 @@ DoubleVect& Champ_implementation_P0::valeur_aux_sommets_compo_impl(DoubleVect& r
 int Champ_implementation_P0::imprime_P0(Sortie& os, int ncomp) const
 {
   const Champ_base& cha = le_champ();
-  const Zone& la_zone = get_zone_geom();
-  int nb_elem_tot = la_zone.nb_elem_tot();
+  const Zone& le_dom = get_zone_geom();
+  int nb_elem_tot = le_dom.nb_elem_tot();
   const DoubleTab& val = cha.valeurs();
   int elem;
   // On recalcule les centres de gravite :
   DoubleTab pos_centre;
-  la_zone.calculer_centres_gravite(pos_centre);
+  le_dom.calculer_centres_gravite(pos_centre);
   os << nb_elem_tot << finl;
   for (elem = 0; elem < nb_elem_tot; elem++)
     {

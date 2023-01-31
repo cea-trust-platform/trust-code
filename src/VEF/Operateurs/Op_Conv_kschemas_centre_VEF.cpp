@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ void Op_Conv_kschemas_centre_VEF::convkschemas_centre(const double dK, const int
                                                       DoubleVect& tab_fluent, DoubleVect& flux,
                                                       const DoubleVect& rx0, const DoubleTab& gradient_elem ,DoubleVect& coord_som) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleTab& xv = zone_VEF.xv();
   int comp,amont,i,j;
   double deltat0,deltat1;
@@ -171,7 +171,7 @@ DoubleTab& Op_Conv_kschemas_centre_VEF::ajouter(const DoubleTab& transporte,
                                                 DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const DoubleTab& face_normales = zone_VEF.face_normales();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,15 +41,15 @@ void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::completer()
 {
 
   Cerr << "Sortie_libre_Gradient_Pression_libre_VEFPreP1B::completer()" << finl;
-  const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
-  const Equation_base& eqn = la_zone_Cl.equation();
+  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
 
-  const Zone_VEF& ma_zone_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const Zone_VEF& mon_dom_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
 
   const Champ_P1_isoP1Bulle& pression = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression().valeur());
 
-  const IntTab& face_voisins = ma_zone_VEF.face_voisins();
+  const IntTab& face_voisins = mon_dom_VEF.face_voisins();
 
   pression_interne = pression;
 
@@ -65,13 +65,13 @@ void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::completer()
     for (face = ndeb; face < nfin; face++)
       {
         int elem = face_voisins(face, 0);
-        coeff[face - ndeb] = distance_2D(face, elem, ma_zone_VEF) * 3.;
+        coeff[face - ndeb] = distance_2D(face, elem, mon_dom_VEF) * 3.;
       }
   if (dimension == 3)
     for (face = ndeb; face < nfin; face++)
       {
         int elem = face_voisins(face, 0);
-        coeff[face - ndeb] = distance_3D(face, elem, ma_zone_VEF) * 4.;
+        coeff[face - ndeb] = distance_3D(face, elem, mon_dom_VEF) * 4.;
       }
 
   pression_temps_moins_un.resize(nb_faces_loc);
@@ -120,10 +120,10 @@ int Sortie_libre_Gradient_Pression_libre_VEFPreP1B::initialiser(double temps)
 void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::mettre_a_jour(double temps)
 {
 
-  const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
-  const Equation_base& eqn = la_zone_Cl.equation();
-  const Zone_VEF& ma_zone_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
-  const DoubleTab& face_normale = ma_zone_VEF.face_normales();
+  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Equation_base& eqn = le_dom_Cl.equation();
+  const Zone_VEF& mon_dom_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const DoubleTab& face_normale = mon_dom_VEF.face_normales();
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
 
   int nb_faces_loc = le_bord.nb_faces();
@@ -132,7 +132,7 @@ void Sortie_libre_Gradient_Pression_libre_VEFPreP1B::mettre_a_jour(double temps)
 
   int face, face_loc, j;
 
-  const DoubleTab& xv = ma_zone_VEF.xv();
+  const DoubleTab& xv = mon_dom_VEF.xv();
 
   DoubleTab geom;
   geom.resize(nb_faces_loc, dimension);
@@ -235,7 +235,7 @@ double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::flux_impose(int face, int
 
 double Sortie_libre_Gradient_Pression_libre_VEFPreP1B::Grad_P_lib_VEFPreP1B(int face) const
 {
-  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
+  const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
   double d_rho = rho(0, 0);
   if (le_champ_front.valeurs().size() == 1)

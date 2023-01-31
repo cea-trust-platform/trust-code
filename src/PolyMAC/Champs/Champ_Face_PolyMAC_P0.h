@@ -34,7 +34,7 @@ class Champ_Face_PolyMAC_P0 : public Champ_Face_PolyMAC
   Declare_instanciable(Champ_Face_PolyMAC_P0) ;
 
 public :
-  inline const Zone_PolyMAC_P0& zone_PolyMAC_P0() const { return ref_cast(Zone_PolyMAC_P0, la_zone_VF.valeur()); }
+  inline const Zone_PolyMAC_P0& zone_PolyMAC_P0() const { return ref_cast(Zone_PolyMAC_P0, le_dom_VF.valeur()); }
 
   int fixer_nb_valeurs_nodales(int n) override;
   void init_auxiliary_variables() override; /* demande l'ajout des variables auxiliaires (\vec v aux elements) */

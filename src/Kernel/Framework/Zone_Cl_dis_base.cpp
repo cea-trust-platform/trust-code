@@ -144,7 +144,7 @@ Entree& Zone_Cl_dis_base::readOn(Entree& is)
     }
   for (int num_cl=0; num_cl<nb_clim; num_cl++)
     {
-      les_conditions_limites(num_cl)->associer_zone_cl_dis_base(*this);
+      les_conditions_limites(num_cl)->associer_domaine_cl_dis_base(*this);
       les_conditions_limites(num_cl)->verifie_ch_init_nb_comp();
       //      const Frontiere_dis_base& la_fr_dis = les_conditions_limites(num_cl).frontiere_dis();
       //      const Frontiere& frontiere=la_fr_dis.frontiere();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ void Op_Diff_P1NC_barprim::associer(const Zone_dis& zone_dis,
       inconnue = inco;
     }
 
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 }
 
@@ -91,7 +91,7 @@ const Champ_base& Op_Diff_P1NC_barprim::diffusivite() const
 double Op_Diff_P1NC_barprim::calculer_dt_stab() const
 {
   double dt_stab;
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   double alpha = 1.e-38;
   // pas mp_max ?
   if (diffusivite_pour_pas_de_temps().valeurs().size() > 0)
@@ -105,7 +105,7 @@ void Op_Diff_P1NC_barprim::calculer_divergence(const DoubleTab& grad,
                                                const DoubleVect& nu,
                                                DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const IntTab& elem_faces=zone_VEF.elem_faces();
@@ -132,7 +132,7 @@ void Op_Diff_P1NC_barprim::calculer_divergence(const DoubleTab& grad,
         }
     }
   {
-    int nb_bords=la_zone_vef->nb_front_Cl();
+    int nb_bords=le_dom_vef->nb_front_Cl();
     for (int n_bord=0; n_bord<nb_bords; n_bord++)
       {
         const Cond_lim& la_cl = la_zcl_vef->les_conditions_limites(n_bord);
@@ -192,8 +192,8 @@ void calculer_gradientP1NC(const DoubleTab& vitesse,
 DoubleTab& Op_Diff_P1NC_barprim::calculer(const DoubleTab& inconnue, DoubleTab& resu) const
 {
   //Cerr << "Op_Diff_P1NC_barprim::calculer" << finl;
-  int nb_elem = la_zone_vef->zone().nb_elem_tot();
-  //const DoubleTab& xp=la_zone_vef->xp();
+  int nb_elem = le_dom_vef->zone().nb_elem_tot();
+  //const DoubleTab& xp=le_dom_vef->xp();
   DoubleVect nu;
   {
     nu.resize(nb_elem);
@@ -205,7 +205,7 @@ DoubleTab& Op_Diff_P1NC_barprim::calculer(const DoubleTab& inconnue, DoubleTab& 
   DoubleTab gradient_bar;
   DoubleTab ubar(ch.valeurs());
   ch.filtrer_L2(ubar);
-  calculer_gradientP1NC(ubar, la_zone_vef.valeur(),la_zcl_vef.valeur() ,
+  calculer_gradientP1NC(ubar, le_dom_vef.valeur(),la_zcl_vef.valeur() ,
                         gradient_bar);
   DoubleTab resu_bar(resu);
   calculer_divergence(gradient_bar, nu, resu_bar);

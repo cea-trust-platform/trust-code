@@ -76,7 +76,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
       else
         som(0,0)=Mx;
       front.ajouter_faces(som);
-      front.associer_zone(*this);
+      front.associer_domaine(*this);
     }
   else if(dimension==2)
     {
@@ -230,7 +230,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             }
         }
       front.ajouter_faces(som);
-      front.associer_zone(*this);
+      front.associer_domaine(*this);
     }
   else if(dimension==3)
     {
@@ -478,7 +478,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
               }
         }
       front.ajouter_faces(som);
-      front.associer_zone(*this);
+      front.associer_domaine(*this);
     }
   else
     {

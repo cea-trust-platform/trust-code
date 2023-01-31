@@ -127,7 +127,7 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_zone)
 DoubleTab& Perte_Charge_Reguliere_VDF_Face::ajouter_(const DoubleTab& inco,DoubleTab& resu) const
 {
 
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
   const IntTab& elem_faces = zone_VDF.elem_faces();

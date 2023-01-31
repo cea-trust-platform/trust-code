@@ -207,11 +207,11 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   // copie de Perte_Charge_VEF::ajouter
   // Raccourcis
   const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
-  const DoubleTab& xv=la_zone_VEF->xv() ;                     // centres de gravite des faces
+  const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-zone !
   const Sous_zone_VF& ssz=sous_zone?la_sous_zone_dis.valeur():Sous_zone_VF();
-  const Zone_VEF& zvef=la_zone_VEF.valeur();
+  const Zone_VEF& zvef=le_dom_VEF.valeur();
 
   // Parametres pour perte_charge()
   static DoubleVect u(dimension);

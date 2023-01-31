@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,14 +37,14 @@ public:
 
   inline const Champ_Face_VDF& mon_champ() const { return mon_champ_.valeur(); }
 
-  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+  inline void associer_domaine_Cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
   {
-    la_zone_Cl_VDF = (const Zone_Cl_VDF&) la_zone_Cl_dis_base;
+    le_dom_Cl_VDF = (const Zone_Cl_VDF&) le_dom_Cl_dis_base;
   }
 
 protected:
   REF(Champ_Face_VDF) mon_champ_;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
+  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
 };
 
 #endif /* Y_plus_Champ_Face_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ public :
   };
 
 protected :
-  void computeSommetsVoisins(Zone_dis_base& la_zone_EF, const Champ_Don& solid_points, const Champ_Don& corresp_elems);
+  void computeSommetsVoisins(Zone_dis_base& le_dom_EF, const Champ_Don& solid_points, const Champ_Don& corresp_elems);
 
   Champ_Don is_dirichlet_lu_;
   Champ_Don is_dirichlet_;

@@ -60,7 +60,7 @@ protected:
  */
 inline  void Op_Conv_EF_VEF_P1NC::dimensionner(Matrice_Morse& matrice) const
 {
-  Op_VEF_Face::dimensionner(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice);
+  Op_VEF_Face::dimensionner(le_dom_vef.valeur(),la_zcl_vef.valeur(), matrice);
 }
 
 
@@ -69,7 +69,7 @@ inline  void Op_Conv_EF_VEF_P1NC::dimensionner(Matrice_Morse& matrice) const
  */
 inline void Op_Conv_EF_VEF_P1NC::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
-  Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
+  Op_VEF_Face::modifier_pour_Cl(le_dom_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
 }
 
 

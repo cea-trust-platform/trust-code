@@ -97,7 +97,7 @@ private:
     const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
     iter_()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this)); // Et ouiiiiiiiii
     EVAL_TYPE& eval_conv = static_cast<EVAL_TYPE&> (iter_()->evaluateur()); // Mais ouiiiiiiiiiiii
-    eval_conv.associer_zones(zvdf, zclvdf );
+    eval_conv.associer_domaines(zvdf, zclvdf );
 
     if (is_QUICK || is_CENTRE4)
       if ( Process::nproc()>1 && zvdf.zone().nb_joints() && zvdf.zone().joint(0).epaisseur()<2)

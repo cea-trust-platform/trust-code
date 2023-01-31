@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ void  Op_Rot_VEFP1B::associer_coins(const ArrOfInt& arr)
 
 const Zone_VEF_PreP1b& Op_Rot_VEFP1B::zone_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  return ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
 }
 
 //////////////////////////////////////////////////
@@ -72,7 +72,7 @@ void Op_Rot_VEFP1B::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_C
 {
   const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 }
 
@@ -90,7 +90,7 @@ DoubleTab& Op_Rot_VEFP1B::ajouter(const DoubleTab& vorticite, DoubleTab& rot) co
 {
   Cerr << "je suis dans OpRot" << finl;
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Zone& zone = zone_VEF.zone();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
@@ -271,7 +271,7 @@ Op_Rot_VEFP1B::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   DoubleTab le_vecteur_normal(dimension);
 
   for (int composante = 0; composante<dimension; composante++)

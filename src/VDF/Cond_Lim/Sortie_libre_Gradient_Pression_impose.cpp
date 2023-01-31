@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,8 +38,8 @@ Entree& Sortie_libre_Gradient_Pression_impose::readOn(Entree& s)
 void Sortie_libre_Gradient_Pression_impose::completer()
 {
   Cerr << "Sortie_libre_Gradient_Pression_impose::completer()" << finl;
-  const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
-  const Equation_base& eqn = la_zone_Cl.equation();
+  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
   const Zone_VDF& zone_vdf = ref_cast(Zone_VDF, eqn.zone_dis().valeur());
   const Champ_P0_VDF& pression = ref_cast(Champ_P0_VDF, eqn_hydr.pression().valeur());
@@ -47,7 +47,7 @@ void Sortie_libre_Gradient_Pression_impose::completer()
   const DoubleVect& volumes_entrelaces = zone_vdf.volumes_entrelaces();
   const DoubleVect& face_surfaces = zone_vdf.face_surfaces();
 
-  la_zone_VDF = zone_vdf;
+  le_dom_VDF = zone_vdf;
   pression_interne = pression;
 
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
@@ -105,7 +105,7 @@ double Sortie_libre_Gradient_Pression_impose::flux_impose(int face, int ncomp) c
 
 double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
 {
-  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
+  const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   if (sub_type(Champ_Uniforme, mil.masse_volumique().valeur()))
     {
       const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
@@ -121,9 +121,9 @@ double Sortie_libre_Gradient_Pression_impose::grad_P_imp(int face) const
     {
       //quasi compressible
       const DoubleTab& tab_rho = mil.masse_volumique().valeurs();
-      int elem = la_zone_VDF->face_voisins(face, 0);
+      int elem = le_dom_VDF->face_voisins(face, 0);
       if (elem == -1)
-        elem = la_zone_VDF->face_voisins(face, 1);
+        elem = le_dom_VDF->face_voisins(face, 1);
       double d_rho = tab_rho(elem);
       if (le_champ_front.valeurs().size() == 1)
         return le_champ_front(0, 0) / d_rho;

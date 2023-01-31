@@ -54,8 +54,8 @@ Entree& Masse_VEF_P1NC::readOn(Entree& s)
 
 DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
 {
-  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,la_zone_Cl_VEF.valeur());
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_Cl_VEF& zone_Cl_VEF = ref_cast(Zone_Cl_VEF,le_dom_Cl_VEF.valeur());
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -161,23 +161,23 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
 
 
 //
-void Masse_VEF_P1NC::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
+void Masse_VEF_P1NC::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, la_zone_dis_base);
+  le_dom_VEF = ref_cast(Zone_VEF, le_dom_dis_base);
 }
 
-void Masse_VEF_P1NC::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+void Masse_VEF_P1NC::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, la_zone_Cl_dis_base);
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, le_dom_Cl_dis_base);
 }
 
 
 Matrice_Base& Masse_VEF_P1NC::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
-  if (penalisation||(la_zone_Cl_VEF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
+  if (penalisation||(le_dom_Cl_VEF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
     return Solveur_Masse_base::ajouter_masse(dt,matrice,penalisation);
   // Sinon on modifie temporairement la nature du champ pour que appliquer_impl ne projette pas sur n.
-  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,la_zone_Cl_VEF.valeur().equation().inconnue().valeur());
+  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_VEF.valeur().equation().inconnue().valeur());
   inco.fixer_nature_du_champ(multi_scalaire);
   Solveur_Masse_base::ajouter_masse(dt,matrice,penalisation);
   inco.fixer_nature_du_champ(vectoriel);
@@ -189,11 +189,11 @@ Matrice_Base& Masse_VEF_P1NC::ajouter_masse(double dt, Matrice_Base& matrice, in
 
 DoubleTab& Masse_VEF_P1NC::ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation) const
 {
-  if (penalisation||(la_zone_Cl_VEF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
+  if (penalisation||(le_dom_Cl_VEF.valeur().equation().inconnue()->nature_du_champ()!=vectoriel))
     return Solveur_Masse_base::ajouter_masse(dt,x,y,penalisation);
 
   // Sinon on modifie temporairement la nature du champ pour que appliquer_impl ne projette pas sur n.
-  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,la_zone_Cl_VEF.valeur().equation().inconnue().valeur());
+  Champ_Inc_base& inco=ref_cast_non_const( Champ_Inc_base,le_dom_Cl_VEF.valeur().equation().inconnue().valeur());
   inco.fixer_nature_du_champ(multi_scalaire);
   Solveur_Masse_base::ajouter_masse(dt,x,y,penalisation);
   inco.fixer_nature_du_champ(vectoriel);

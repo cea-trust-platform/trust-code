@@ -33,21 +33,21 @@ inline Iterateur_VDF_Face<_TYPE_>::Iterateur_VDF_Face(const Iterateur_VDF_Face<_
 template<class _TYPE_>
 void Iterateur_VDF_Face<_TYPE_>::completer_()
 {
-  nb_elem = la_zone->nb_elem_tot();
-  orientation.ref(la_zone->orientation());
-  Qdm.ref(la_zone->Qdm());
-  elem.ref(la_zone->face_voisins());
-  elem_faces.ref(la_zone->elem_faces());
+  nb_elem = le_dom->nb_elem_tot();
+  orientation.ref(le_dom->orientation());
+  Qdm.ref(le_dom->Qdm());
+  elem.ref(le_dom->face_voisins());
+  elem_faces.ref(le_dom->elem_faces());
   type_arete_bord.ref(la_zcl->type_arete_bord());
   type_arete_coin.ref(la_zcl->type_arete_coin());
-  premiere_arete_interne = la_zone->premiere_arete_interne();
-  derniere_arete_interne = premiere_arete_interne + la_zone->nb_aretes_internes();
-  premiere_arete_mixte = la_zone->premiere_arete_mixte();
-  derniere_arete_mixte = premiere_arete_mixte + la_zone->nb_aretes_mixtes();
-  premiere_arete_bord = la_zone->premiere_arete_bord();
-  derniere_arete_bord = premiere_arete_bord + la_zone->nb_aretes_bord();
-  premiere_arete_coin = la_zone->premiere_arete_coin();
-  derniere_arete_coin = premiere_arete_coin + la_zone->nb_aretes_coin();
+  premiere_arete_interne = le_dom->premiere_arete_interne();
+  derniere_arete_interne = premiere_arete_interne + le_dom->nb_aretes_internes();
+  premiere_arete_mixte = le_dom->premiere_arete_mixte();
+  derniere_arete_mixte = premiere_arete_mixte + le_dom->nb_aretes_mixtes();
+  premiere_arete_bord = le_dom->premiere_arete_bord();
+  derniere_arete_bord = premiere_arete_bord + le_dom->nb_aretes_bord();
+  premiere_arete_coin = le_dom->premiere_arete_coin();
+  derniere_arete_coin = premiere_arete_coin + le_dom->nb_aretes_coin();
 }
 
 template<class _TYPE_>
@@ -61,7 +61,7 @@ inline void Iterateur_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab
       if (sub_type(Champ_Uniforme, rho))
         {
           const double coef = rho(0, 0);
-          const int nb_faces_bord = la_zone->nb_faces_bord();
+          const int nb_faces_bord = le_dom->nb_faces_bord();
           for (int face = 0; face < nb_faces_bord; face++)
             for (int k = 0; k < tab_flux_bords.line_size(); k++) tab_flux_bords(face, k) *= coef;
         }
@@ -71,24 +71,24 @@ inline void Iterateur_VDF_Face<_TYPE_>::multiply_by_rho_if_hydraulique(DoubleTab
 template<class _TYPE_>
 int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
 {
-  const Zone& ma_zone = la_zone->zone();
-  const int impr_mom = ma_zone.moments_a_imprimer();
-  const int impr_sum = (ma_zone.bords_a_imprimer_sum().est_vide() ? 0 : 1), impr_bord = (ma_zone.bords_a_imprimer().est_vide() ? 0 : 1);
+  const Zone& mon_dom = le_dom->zone();
+  const int impr_mom = mon_dom.moments_a_imprimer();
+  const int impr_sum = (mon_dom.bords_a_imprimer_sum().est_vide() ? 0 : 1), impr_bord = (mon_dom.bords_a_imprimer().est_vide() ? 0 : 1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   DoubleVect bilan(tab_flux_bords.dimension(1));
-  const int nb_faces = la_zone->nb_faces_tot();
+  const int nb_faces = le_dom->nb_faces_tot();
   DoubleTab xgr(nb_faces, dimension);
   xgr = 0.;
   if (impr_mom)
     {
-      const DoubleTab& xgrav = la_zone->xv();
-      const ArrOfDouble& c_grav = ma_zone.cg_moments();
+      const DoubleTab& xgrav = le_dom->xv();
+      const ArrOfDouble& c_grav = mon_dom.cg_moments();
       for (int num_face = 0; num_face < nb_faces; num_face++)
         for (int i = 0; i < dimension; i++)
           xgr(num_face, i) = xgrav(num_face, i) - c_grav[i];
     }
-  int k, face, nb_front_Cl = la_zone->nb_front_Cl();
+  int k, face, nb_front_Cl = le_dom->nb_front_Cl();
   DoubleTrav flux_bords2(5, nb_front_Cl, tab_flux_bords.dimension(1));
   flux_bords2 = 0;
   for (int num_cl = 0; num_cl < nb_front_Cl; num_cl++)
@@ -108,7 +108,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
                   else
                     flux_bords2(2, num_cl, k) += tab_flux_bords(face, k);
                 }
-              if (ma_zone.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
+              if (mon_dom.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
                 flux_bords2(3, num_cl, k) += tab_flux_bords(face, k);
             } /* fin for k */
           if (impr_mom)
@@ -177,7 +177,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
         Flux_moment << finl;
     }
   const LIST (Nom)
-  &Liste_bords_a_imprimer = la_zone->zone().bords_a_imprimer();
+  &Liste_bords_a_imprimer = le_dom->zone().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
@@ -188,7 +188,7 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
           const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
           const Front_VF& frontiere_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
-          if (ma_zone.bords_a_imprimer().contient(la_fr.le_nom()))
+          if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
             {
               if (je_suis_maitre())
                 {
@@ -199,9 +199,9 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
               for (face = ndeb; face < nfin; face++)
                 {
                   if (dimension == 2)
-                    Flux_face << "# Face a x= " << la_zone->xv(face, 0) << " y= " << la_zone->xv(face, 1) << " : ";
+                    Flux_face << "# Face a x= " << le_dom->xv(face, 0) << " y= " << le_dom->xv(face, 1) << " : ";
                   else if (dimension == 3)
-                    Flux_face << "# Face a x= " << la_zone->xv(face, 0) << " y= " << la_zone->xv(face, 1) << " z= " << la_zone->xv(face, 2) << " : ";
+                    Flux_face << "# Face a x= " << le_dom->xv(face, 0) << " y= " << le_dom->xv(face, 1) << " z= " << le_dom->xv(face, 2) << " : ";
                   for (k = 0; k < tab_flux_bords.dimension(1); k++)
                     Flux_face << tab_flux_bords(face, k) << " ";
                   Flux_face << finl;

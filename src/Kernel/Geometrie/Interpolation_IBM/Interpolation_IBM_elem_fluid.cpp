@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,35 +44,35 @@ Entree& Interpolation_IBM_elem_fluid::readOn( Entree& is )
   return is;
 }
 
-void Interpolation_IBM_elem_fluid::discretise(const Discretisation_base& dis, Zone_dis_base& la_zone_EF)
+void Interpolation_IBM_elem_fluid::discretise(const Discretisation_base& dis, Zone_dis_base& le_dom_EF)
 {
   int nb_comp = Objet_U::dimension;
   Noms units(nb_comp);
   Noms c_nam(nb_comp);
 
-  dis.discretiser_champ("champ_sommets",la_zone_EF,"fluid_elems","none",1,0., fluid_elems_);
+  dis.discretiser_champ("champ_sommets",le_dom_EF,"fluid_elems","none",1,0., fluid_elems_);
   fluid_elems_.valeur().affecter(fluid_elems_lu_);
   if ((&corresp_elems_lu_)->non_nul())
     {
-      dis.discretiser_champ("champ_elem",la_zone_EF,"corresp_elems","none",1,0., corresp_elems_);
+      dis.discretiser_champ("champ_elem",le_dom_EF,"corresp_elems","none",1,0., corresp_elems_);
       corresp_elems_.valeur().affecter(corresp_elems_lu_);
     }
-  dis.discretiser_champ("vitesse",la_zone_EF,vectoriel,c_nam,units,nb_comp,0.,fluid_points_);
+  dis.discretiser_champ("vitesse",le_dom_EF,vectoriel,c_nam,units,nb_comp,0.,fluid_points_);
   fluid_points_.valeur().affecter(fluid_points_lu_);
-  dis.discretiser_champ("vitesse",la_zone_EF,vectoriel,c_nam,units,nb_comp,0.,solid_points_);
+  dis.discretiser_champ("vitesse",le_dom_EF,vectoriel,c_nam,units,nb_comp,0.,solid_points_);
   solid_points_.valeur().affecter(solid_points_lu_);
-  computeFluidElems(la_zone_EF);
+  computeFluidElems(le_dom_EF);
 }
 
-void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
+void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& le_dom_EF)
 {
   double eps = 1e-12;
-  int nb_som = la_zone_EF.nb_som();
-  int nb_som_tot = la_zone_EF.nb_som_tot();
-  int nb_elem = la_zone_EF.nb_elem();
-  int nb_elem_tot = la_zone_EF.nb_elem_tot();
-  const DoubleTab& coordsDom = la_zone_EF.zone().coord_sommets();
-  // const IntTab& elems = la_zone_EF.zone().les_elems();
+  int nb_som = le_dom_EF.nb_som();
+  int nb_som_tot = le_dom_EF.nb_som_tot();
+  int nb_elem = le_dom_EF.nb_elem();
+  int nb_elem_tot = le_dom_EF.nb_elem_tot();
+  const DoubleTab& coordsDom = le_dom_EF.zone().coord_sommets();
+  // const IntTab& elems = le_dom_EF.zone().les_elems();
 
   DoubleTab& elems_fluid_ref = fluid_elems_.valeur().valeurs();
   DoubleTab& fluid_points_ref = fluid_points_.valeur().valeurs();
@@ -143,7 +143,7 @@ void Interpolation_IBM_elem_fluid::computeFluidElems(Zone_dis_base& la_zone_EF)
                           Cerr<<"coords_point(node) : x y z    = "<<coordsDom(i,0)<<" "<<coordsDom(i,1)<<" "<<coordsDom(i,2)<<finl;
                           Cerr<<"fluid_points(node) : xf yf zf = "<<x<<" "<<y<<" "<<z<<finl;
                           Cerr<<"solid_points(node) : xs ys zs = "<<xs<<" "<<ys<<" "<<zs<<finl;
-                          int elem_found = la_zone_EF.zone().chercher_elements(x,y,z);
+                          int elem_found = le_dom_EF.zone().chercher_elements(x,y,z);
                           Cerr<<"chercher_elements(xf,yf,zf) = "<<elem_found<<finl;
                           exit();
                         }

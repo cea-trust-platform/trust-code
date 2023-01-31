@@ -25,9 +25,9 @@ Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
  *
  * @param (Zone& une_zone) la zone a associer
  */
-void Raccords::associer_zone(const Zone& une_zone)
+void Raccords::associer_domaine(const Zone& une_zone)
 {
-  for (auto& itr : *this) itr->associer_zone(une_zone);
+  for (auto& itr : *this) itr->associer_domaine(une_zone);
 }
 
 /*! @brief Renvoie le nombre de face total des Raccords de la liste.

@@ -2204,8 +2204,8 @@ assemblerP0P0(const Zone_dis_base& z,
               const DoubleTab& inverse_quantitee_entrelacee)
 {
   Assembleur_P_VEF Assembleur_P0;
-  Assembleur_P0.associer_zone_dis_base(z);
-  Assembleur_P0.associer_zone_cl_dis_base(zcl);
+  Assembleur_P0.associer_domaine_dis_base(z);
+  Assembleur_P0.associer_domaine_cl_dis_base(zcl);
   Assembleur_P0.remplir(matrice,inverse_quantitee_entrelacee);
   Cerr << "Assemblage P0 OK" << finl;
 }
@@ -2217,8 +2217,8 @@ updateP0P0(const Zone_dis_base& z,
            const DoubleTab& inverse_quantitee_entrelacee)
 {
   Assembleur_P_VEF Assembleur_P0;
-  Assembleur_P0.associer_zone_dis_base(z);
-  Assembleur_P0.associer_zone_cl_dis_base(zcl);
+  Assembleur_P0.associer_domaine_dis_base(z);
+  Assembleur_P0.associer_domaine_cl_dis_base(zcl);
   Assembleur_P0.remplir(matrice,inverse_quantitee_entrelacee);
   Cerr << "Update P0 OK" << finl;
 }

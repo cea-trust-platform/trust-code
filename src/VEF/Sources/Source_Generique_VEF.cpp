@@ -42,12 +42,12 @@ DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
   const Champ_base& champ_calc = ch_source_->get_champ(espace_stockage);
   const DoubleTab& valeurs_calc = champ_calc.valeurs();
 
-  int nb_faces = la_zone_VEF->nb_faces();
-  const DoubleVect& vol_entrelaces = la_zone_VEF->volumes_entrelaces();
+  int nb_faces = le_dom_VEF->nb_faces();
+  const DoubleVect& vol_entrelaces = le_dom_VEF->volumes_entrelaces();
   const DoubleVect& vol_entrelaces_Cl = la_zcl_VEF->volumes_entrelaces_Cl();
   const DoubleVect& poro_face = equation().milieu().porosite_face();
-  int nb_front_cl = la_zone_VEF->nb_front_Cl();
-  int premiere_face_interne = la_zone_VEF->premiere_face_int();
+  int nb_front_cl = le_dom_VEF->nb_front_Cl();
+  int premiere_face_interne = le_dom_VEF->premiere_face_int();
   int num_face;
   int nb_comp = resu.line_size();
 
@@ -75,10 +75,10 @@ DoubleTab& Source_Generique_VEF::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-void Source_Generique_VEF::associer_zones(const Zone_dis& zone_dis,
-                                          const Zone_Cl_dis& zcl_dis)
+void Source_Generique_VEF::associer_domaines(const Zone_dis& zone_dis,
+                                             const Zone_Cl_dis& zcl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF,zone_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF,zone_dis.valeur());
   la_zcl_VEF = ref_cast(Zone_Cl_VEF,zcl_dis.valeur());
 }
 

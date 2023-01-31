@@ -169,7 +169,7 @@ void Op_Correlation::completer(const Probleme_base& Pb)
   nom_pour_post+=nom_a+"_"+nom_b;
   integrale_tps_ab_->nommer(nom_pour_post);
 
-  integrale_tps_ab_.associer_zone_dis_base(zone);
+  integrale_tps_ab_.associer_domaine_dis_base(zone);
   integrale_tps_ab_->fixer_nb_comp(nb_comp);
 
   // BM: le parametre de fixer_nb_valeurs_nodales est inutile,

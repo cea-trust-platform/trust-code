@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,10 +36,10 @@ void grad_T_Champ_P1NC::mettre_a_jour(double tps)
 
 void grad_T_Champ_P1NC::me_calculer(double tps)
 {
-  mon_champ_->calcul_grad_T(la_zone_Cl_VEF.valeur(), valeurs());
+  mon_champ_->calcul_grad_T(le_dom_Cl_VEF.valeur(), valeurs());
 }
 
 const Zone_Cl_dis_base& grad_T_Champ_P1NC::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_VEF.valeur();
+  return le_dom_Cl_VEF.valeur();
 }

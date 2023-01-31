@@ -33,13 +33,13 @@ Entree& Terme_Source_Constituant_VEF_Face::readOn(Entree& s)
   return s;
 }
 
-void Terme_Source_Constituant_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Terme_Source_Constituant_VEF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_cl_dis.valeur());
-  iter->associer_zones(zvef, zclvef);
+  iter->associer_domaines(zvef, zclvef);
   Eval_Source_C_VEF_Face& eval_puis = dynamic_cast<Eval_Source_C_VEF_Face&> (iter->evaluateur());
-  eval_puis.associer_zones(zvef, zclvef);
+  eval_puis.associer_domaines(zvef, zclvef);
 }
 
 void Terme_Source_Constituant_VEF_Face::associer_pb(const Probleme_base& pb)

@@ -34,7 +34,7 @@ public:
   void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_pb(const Probleme_base& ) override;
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis&, const Zone_Cl_dis& ) override;
   void mettre_a_jour(double temps) override { /* Do nothing */ }
   inline Eval_Darcy_VDF_Face& eval() { return static_cast<Eval_Darcy_VDF_Face&> (iter->evaluateur()); }
 };

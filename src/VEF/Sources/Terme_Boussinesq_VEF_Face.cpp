@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,15 +37,15 @@ Entree& Terme_Boussinesq_VEF_Face::readOn(Entree& s )
   return Terme_Boussinesq_base::readOn(s);
 }
 
-void Terme_Boussinesq_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Boussinesq_VEF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
 }
 
 DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const DoubleTab& xp = zone_VEF.xp();

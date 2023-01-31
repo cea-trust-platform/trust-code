@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -80,7 +80,7 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Zone_PolyMAC_P0) la_zone_poly_;
+  REF(Zone_PolyMAC_P0) le_dom_poly_;
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
 

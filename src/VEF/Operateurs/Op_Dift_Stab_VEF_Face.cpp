@@ -204,7 +204,7 @@ DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org,DoubleTa
 
 void Op_Dift_Stab_VEF_Face::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF =  la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF =  le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   const DoubleVect& inconnueVect = inconnue;
@@ -298,7 +298,7 @@ void Op_Dift_Stab_VEF_Face::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab
 
 void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
@@ -337,7 +337,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const
 
 // void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& Aij_diag, const DoubleTab& Aij_extradiag, const DoubleTab& inconnue, DoubleTab& resu2)
 // {
-//   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+//   const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
 //   const int nb_elem_tot=zone_VEF.nb_elem_tot();
 //   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
@@ -406,7 +406,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const
 
 void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& Aij_diag, const DoubleTab& nu, const DoubleTab& inconnueTab, DoubleTab& resu2) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   int nb_comp=resu2.line_size();
@@ -473,7 +473,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& 
 
 void Op_Dift_Stab_VEF_Face::ajouter_diffusion(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
   const int nb_comp = resuTab.line_size();
@@ -516,7 +516,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_diffusion(const DoubleTab& Aij, const Double
 
 void Op_Dift_Stab_VEF_Face::ajouter_diffusion_vectoriel(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   const int nb_comp=resuTab.line_size();
@@ -559,7 +559,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_diffusion_vectoriel(const DoubleTab& Aij, co
 
 void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_tot=zone_VEF.nb_faces_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
@@ -664,7 +664,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion(const DoubleTab& Aij, const Do
 
 void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion_vectoriel(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_tot=zone_VEF.nb_faces_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
@@ -768,7 +768,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion_vectoriel(const DoubleTab& Aij
 
 void Op_Dift_Stab_VEF_Face::calculer_coefficients(const DoubleTab& nu, DoubleTab& Aij) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   const IntTab& elem_faces=zone_VEF.elem_faces();
@@ -820,7 +820,7 @@ void Op_Dift_Stab_VEF_Face::calculer_coefficients(const DoubleTab& nu, DoubleTab
 
 void Op_Dift_Stab_VEF_Face::calculer_coefficients_vectoriel_diag(const DoubleTab& nu, const DoubleTab& nu2, DoubleTab& Aij) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   const int nb_comp=equation().inconnue().valeurs().line_size();
@@ -895,7 +895,7 @@ void Op_Dift_Stab_VEF_Face::calculer_coefficients_vectoriel_diag(const DoubleTab
 
 // void Op_Dift_Stab_VEF_Face::calculer_coefficients_vectoriel_extradiag(const DoubleTab& nu, DoubleTab& Aij) const
 // {
-//   const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+//   const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
 //   const int nb_elem_tot=zone_VEF.nb_elem_tot();
 //   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
@@ -967,7 +967,7 @@ void Op_Dift_Stab_VEF_Face::calculer_coefficients_vectoriel_diag(const DoubleTab
 
 double Op_Dift_Stab_VEF_Face::calculer_gradients(int facei, const DoubleTab& rij) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
@@ -1013,7 +1013,7 @@ double Op_Dift_Stab_VEF_Face::calculer_gradients(int facei, const DoubleTab& rij
 
 void Op_Dift_Stab_VEF_Face::calculer_min(const DoubleTab& inconnueTab, int& dim, DoubleTab& Minima) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   const int nb_faces_tot=zone_VEF.nb_faces_tot();
@@ -1088,7 +1088,7 @@ void Op_Dift_Stab_VEF_Face::calculer_min(const DoubleTab& inconnueTab, int& dim,
 
 void Op_Dift_Stab_VEF_Face::calculer_max(const DoubleTab& inconnueTab, int& dim, DoubleTab& Maxima) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   const int nb_faces_tot=zone_VEF.nb_faces_tot();
@@ -1166,7 +1166,7 @@ void Op_Dift_Stab_VEF_Face::completer()
   Op_Dift_VEF_Face::completer();
 
   {
-    const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+    const Zone_VEF& zone_VEF=le_dom_vef.valeur();
     const Zone_Cl_VEF& zone_Cl_VEF=la_zcl_vef.valeur();
     const Conds_lim& les_cl=zone_Cl_VEF.les_conditions_limites();
     const int nb_bord=les_cl.size();
@@ -1197,7 +1197,7 @@ void Op_Dift_Stab_VEF_Face::completer()
 
 void Op_Dift_Stab_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,const DoubleTab& nu,const DoubleTab& nu_turb_m, DoubleTab& resu2) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   DoubleTab Aij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
@@ -1216,7 +1216,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,const
 
 void Op_Dift_Stab_VEF_Face::ajouter_cas_multiscalaire(const DoubleTab& inconnue,const DoubleTab& nu,const DoubleTab& nu_turb_m, DoubleTab& resu2) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
   DoubleTab Aij(nb_elem_tot,nb_faces_elem,nb_faces_elem);
@@ -1234,7 +1234,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_cas_multiscalaire(const DoubleTab& inconnue,
 
 void Op_Dift_Stab_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,const DoubleTab& nu,const DoubleTab& nu_turb_m, DoubleTab& resu2) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=zone_VEF.zone().nb_faces_elem();
@@ -1272,7 +1272,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte,
     {
       // On traite les faces bord
       const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-      const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+      const Zone_VEF& zone_VEF = le_dom_vef.valeur();
       const IntTab& face_voisins = zone_VEF.face_voisins();
       const IntTab& elem_faces = zone_VEF.elem_faces();
       const DoubleVect& volumes = zone_VEF.volumes();
@@ -1470,7 +1470,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Ma
       // matrice avec ajouter_contribution peut se faire
       // avant le premier pas de temps
       remplir_nu(nu_);
-      const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+      const Zone_VEF& zone_VEF = le_dom_vef.valeur();
       const IntTab& elem_faces = zone_VEF.elem_faces();
       const IntTab& face_voisins = zone_VEF.face_voisins();
       int nb_faces = zone_VEF.nb_faces();
@@ -1575,7 +1575,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab&
       // avant le premier pas de temps
       remplir_nu(nu_);
       const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-      const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+      const Zone_VEF& zone_VEF = le_dom_vef.valeur();
       const IntTab& elemfaces = zone_VEF.elem_faces();
       const IntTab& face_voisins = zone_VEF.face_voisins();
       int nb_faces = zone_VEF.nb_faces();

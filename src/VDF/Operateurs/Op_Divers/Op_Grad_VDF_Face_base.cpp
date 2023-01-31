@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ void Op_Grad_VDF_Face_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF, zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
-  la_zone_vdf = zvdf;
+  le_dom_vdf = zvdf;
   la_zcl_vdf = zclvdf;
   porosite_surf.ref(la_zcl_vdf->equation().milieu().porosite_face());
   volume_entrelaces.ref(zvdf.volumes_entrelaces());

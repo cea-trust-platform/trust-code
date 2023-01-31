@@ -309,7 +309,7 @@ void DomaineCutter::construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_s
       const Frontiere& frontiere = itr;
       Frontiere& front_partie = zone_partie.faces_bord().add(Bord());
       front_partie.nommer(frontiere.le_nom());
-      front_partie.associer_zone(zone_partie);
+      front_partie.associer_domaine(zone_partie);
       front_partie.faces().typer(frontiere.faces().type_face());
       voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
       construire_liste_faces_sous_domaine(elements_voisins,
@@ -345,7 +345,7 @@ void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_invers
       raccord_partie.typer(type_raccord);
       Frontiere& front_partie = raccord_partie.valeur();
       front_partie.nommer(frontiere.le_nom());
-      front_partie.associer_zone(zone_partie);
+      front_partie.associer_domaine(zone_partie);
       front_partie.faces().typer(frontiere.faces().type_face());
       voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
       construire_liste_faces_sous_domaine(elements_voisins,
@@ -374,7 +374,7 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
       Frontiere& front_partie =
         zone_partie.faces_int().add(Faces_Interne());
       front_partie.nommer(frontiere.le_nom());
-      front_partie.associer_zone(zone_partie);
+      front_partie.associer_domaine(zone_partie);
       front_partie.faces().typer(frontiere.faces().type_face());
       voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
       construire_liste_faces_sous_domaine(elements_voisins,
@@ -408,7 +408,7 @@ static void ajouter_joints(Zone& zone, const ArrOfInt& voisins, const int epaiss
           Cerr << " Adding of a new joint : " << pe << finl;
           Joint& joint = joints.add(Joint());
           joint.nommer(Nom("Joint_")+Nom(pe));
-          joint.associer_zone(zone);
+          joint.associer_domaine(zone);
           joint.affecte_epaisseur(epaisseur);
           joint.affecte_PEvoisin(pe);
           // Ces joints n'auront pas de sommets communs. Met le flag
@@ -713,7 +713,7 @@ void DomaineCutter::construire_sommets_joints_ssdom(const ArrOfInt& liste_sommet
           nom_joint+=nom_numero;
           joint.nommer(nom_joint);
           joint.affecte_epaisseur(epaisseur_joint_);
-          joint.associer_zone(zone_partie);
+          joint.associer_domaine(zone_partie);
           joint.affecte_PEvoisin(PEvoisin);
           ArrOfInt& sommets_locaux = joint.set_joint_item(Joint::SOMMET).set_items_communs();
           sommets_locaux.resize_array(nb_sommets2);
@@ -1134,7 +1134,7 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
     ref_cast(Poly_geom_base,domain.type_elem().valeur()).build_reduced(sous_domain.type_elem(), elements_sous_partie);
   else
     sous_domain.type_elem() = domain.type_elem();
-  sous_domain.type_elem().associer_zone(sous_domain);
+  sous_domain.type_elem().associer_domaine(sous_domain);
 
   construire_liste_sommets_sousdomaine(domain.nb_som_tot(), domain.les_elems(), elements_sous_partie, part,
                                        som_raccord, correspondance.liste_sommets_ /* write */,

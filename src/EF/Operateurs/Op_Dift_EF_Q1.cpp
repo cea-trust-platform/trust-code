@@ -95,7 +95,7 @@ void Op_Dift_EF_Q1::associer_diffusivite(const Champ_base& diffu)
 
 void Op_Dift_EF_Q1::remplir_nu(DoubleTab& nu) const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   // On dimensionne nu
   if (!nu.get_md_vector().non_nul())
     zone_EF.zone().creer_tableau_elements(nu);
@@ -126,7 +126,7 @@ DoubleTab& Op_Dift_EF_Q1::ajouter(const DoubleTab& tab_inconnue, DoubleTab& resu
 
   remplir_nu(nu_);
   //  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_ef = la_zone_EF.valeur();
+  const Zone_EF& zone_ef = le_dom_EF.valeur();
   int nb_som_elem=zone_ef.zone().nb_som_elem();
 
   int N = resu.line_size();
@@ -207,7 +207,7 @@ DoubleTab& Op_Dift_EF_Q1::ajouter_new(const DoubleTab& tab_inconnue, DoubleTab& 
   Cerr<<"NEW"<<finl;
   remplir_nu(nu_);
   //  const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  //const Zone_EF& zone_EF = la_zone_EF.valeur();
+  //const Zone_EF& zone_EF = le_dom_EF.valeur();
 
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
   DoubleTab diffu(nu_);
@@ -430,7 +430,7 @@ void Op_Dift_EF_Q1::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,
   // a mettre dans calculer_flux_bord....
 
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   flux_bords_=0.;
   // const DoubleTab& tab_inconnue=equation().inconnue().valeurs();
   // on parcourt toutes les faces de bord et on calcule lambda*gradT
@@ -771,7 +771,7 @@ void Op_Dift_EF_Q1::ajouter_bords(const DoubleTab& tab_inconnue,DoubleTab& resu,
 void Op_Dift_EF_Q1::ajouter_contributions_bords(Matrice_Morse& matrice ) const
 {
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const Zone_EF& zone_ef=ref_cast(Zone_EF,equation().zone_dis().valeur());
 
   const IntTab& face_sommets=zone_ef.face_sommets();
@@ -953,9 +953,9 @@ double Op_Dift_EF_Q1::calculer_dt_stab() const
 
   double dt_stab=1.e30;
   double coef;
-  const Zone_EF& ma_zone_EF = la_zone_EF.valeur();
+  const Zone_EF& mon_dom_EF = le_dom_EF.valeur();
 
-  const Zone& ma_zone= ma_zone_EF.zone();
+  const Zone& mon_dom= mon_dom_EF.zone();
 
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
   DoubleTab diffu(nu_);
@@ -967,18 +967,18 @@ double Op_Dift_EF_Q1::calculer_dt_stab() const
     }
   double alpha;
 
-  int ma_zone_nb_elem=ma_zone.nb_elem();
+  int mon_dom_nb_elem=mon_dom.nb_elem();
   if (has_champ_masse_volumique())
     {
       const DoubleTab& rho_elem = get_champ_masse_volumique().valeurs();
-      assert(rho_elem.size_array()==ma_zone_EF.nb_elem_tot());
-      for (int num_elem=0; num_elem<ma_zone_nb_elem; num_elem++)
+      assert(rho_elem.size_array()==mon_dom_EF.nb_elem_tot());
+      for (int num_elem=0; num_elem<mon_dom_nb_elem; num_elem++)
         {
           alpha = diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
           alpha/=rho_elem[num_elem];
           // dt=1/(dimension/(pas*pas))/(2*alpha)
 
-          coef=ma_zone_EF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
+          coef=mon_dom_EF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
 
           // dt_stab=min(dt);
           if (coef<dt_stab) dt_stab = coef;
@@ -1003,14 +1003,14 @@ double Op_Dift_EF_Q1::calculer_dt_stab() const
       if (nature_champ!=multi_scalaire)
         {
           int nb_dim = valeurs_diffusivite.nb_dim();
-          for (int num_elem=0; num_elem<ma_zone_nb_elem; num_elem++)
+          for (int num_elem=0; num_elem<mon_dom_nb_elem; num_elem++)
             {
               alpha =  diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
               if(unif_diffu_dt==0)
                 valeurs_diffusivite_dt=(nb_dim==1?valeurs_diffusivite(num_elem):valeurs_diffusivite(num_elem,0));
               alpha*=valeurs_diffusivite_dt/(diffu[num_elem]+DMINFLOAT);
               // dt=1/(dimension/(pas*pas))/(2*alpha)
-              coef=ma_zone_EF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
+              coef=mon_dom_EF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
               assert(coef>=0);
               // dt_stab=min(dt);
               if (coef<dt_stab) dt_stab = coef;
@@ -1021,13 +1021,13 @@ double Op_Dift_EF_Q1::calculer_dt_stab() const
           int nb_comp = valeurs_diffusivite.dimension(1);
           for (int nc=0; nc<nb_comp; nc++)
             {
-              for (int num_elem=0; num_elem<ma_zone_nb_elem; num_elem++)
+              for (int num_elem=0; num_elem<mon_dom_nb_elem; num_elem++)
                 {
                   alpha =  diffu(num_elem,nc) + diffu_turb[num_elem];
                   //if(unif_diffu_dt==0)
                   valeurs_diffusivite_dt=valeurs_diffusivite(0,nc);
                   alpha*=valeurs_diffusivite_dt/(diffu(num_elem,nc)+DMINFLOAT);
-                  coef=ma_zone_EF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
+                  coef=mon_dom_EF.carre_pas_maille(num_elem)/(2.*dimension*(alpha+DMINFLOAT));
 
                   if (coef<dt_stab) dt_stab = coef;
                 }

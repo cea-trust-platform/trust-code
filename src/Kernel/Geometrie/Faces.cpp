@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -1036,9 +1036,9 @@ void Faces::reordonner()
  */
 IntVect& Faces::compare(const Faces& faces, IntVect& renum)
 {
-  const Zone& la_zone=zone();
+  const Zone& le_dom=zone();
   const Zone& sa_zone=faces.zone();
-  const Zone& domaine=la_zone;
+  const Zone& domaine=le_dom;
   const Zone& son_domaine=sa_zone;
   if ( (nb_faces() != faces.nb_faces()) || ( type_face_ != faces.type_face_) )
     {

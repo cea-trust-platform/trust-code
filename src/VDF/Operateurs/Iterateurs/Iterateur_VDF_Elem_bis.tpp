@@ -23,10 +23,10 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
       && !( sub_type(Operateur_Diff_base,op_base.valeur()) && ref_cast(Operateur_Diff_base,op_base.valeur()).diffusivite().le_nom() == "conductivite" ) )
     {
       DoubleTab& flux_bords=op_base->flux_bords();
-      const Zone_VDF& la_zone_vdf=ref_cast(Zone_VDF,op_base->equation().zone_dis().valeur());
+      const Zone_VDF& le_dom_vdf=ref_cast(Zone_VDF,op_base->equation().zone_dis().valeur());
       const Champ_base& rho = (op_base->equation()).milieu().masse_volumique().valeur();
       const Champ_Don& Cp = (op_base->equation()).milieu().capacite_calorifique();
-      const IntTab& face_voisins=la_zone_vdf.face_voisins();
+      const IntTab& face_voisins=le_dom_vdf.face_voisins();
       int rho_uniforme = sub_type(Champ_Uniforme,rho) ? 1 : 0, cp_uniforme = sub_type(Champ_Uniforme,Cp.valeur()) ? 1 : 0;
       int is_rho_u=op_base->equation().probleme().is_dilatable();
       if (is_rho_u)
@@ -36,7 +36,7 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
           if (sub_type(Op_Conv_VDF_base,op))
             if (ref_cast(Op_Conv_VDF_base,op).vitesse().le_nom()=="rho_u") is_rho_u = 1;
         }
-      const int nb_faces_bords = la_zone_vdf.nb_faces_bord();
+      const int nb_faces_bords = le_dom_vdf.nb_faces_bord();
       for (int face = 0; face < nb_faces_bords; face++)
         for(int k = 0; k < flux_bords.dimension(1); k++)
           {
@@ -50,15 +50,15 @@ void  Iterateur_VDF_Elem<_TYPE_>::modifier_flux() const
 template <class _TYPE_>
 int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
 {
-  const Zone_VDF& la_zone_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur());
-  const Zone& mazone=la_zone->zone();
+  const Zone_VDF& le_dom_vdf=ref_cast(Zone_VDF,op_base.valeur().equation().zone_dis().valeur());
+  const Zone& mazone=le_dom->zone();
   const int impr_bord=(mazone.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   double temps = sch.temps_courant();
   DoubleTab& flux_bords=op_base->flux_bords();
   DoubleVect bilan(flux_bords.dimension(1));
   int k,face;
-  int nb_front_Cl=la_zone->nb_front_Cl();
+  int nb_front_Cl=le_dom->nb_front_Cl();
   DoubleTrav flux_bords2( 3, nb_front_Cl , flux_bords.dimension(1));
   flux_bords2=0;
   /*flux_bord(k)          ->   flux_bords2(0,num_cl,k) */
@@ -106,7 +106,7 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
         Flux.add_col(bilan(k));
       Flux << finl;
     }
-  const LIST(Nom)& Liste_bords_a_imprimer = la_zone->zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom->zone().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
@@ -123,15 +123,15 @@ int Iterateur_VDF_Elem<_TYPE_>::impr(Sortie& os) const
               for (face=ndeb; face<nfin; face++)
                 {
                   if (dimension == 2)
-                    Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1);
+                    Flux_face << "# Face a x= " << le_dom->xv(face,0) << " y= " << le_dom->xv(face,1);
                   else if (dimension == 3)
-                    Flux_face << "# Face a x= " << la_zone->xv(face,0) << " y= " << la_zone->xv(face,1) << " z= " << la_zone->xv(face,2);
+                    Flux_face << "# Face a x= " << le_dom->xv(face,0) << " y= " << le_dom->xv(face,1) << " z= " << le_dom->xv(face,2);
                   for(k=0; k<flux_bords.dimension(1); k++)
                     {
-                      if (!est_egal(la_zone_vdf.face_surfaces(face),0., 1.e-20))
+                      if (!est_egal(le_dom_vdf.face_surfaces(face),0., 1.e-20))
                         {
-                          Flux_face << " surface_face(m2)= " << la_zone_vdf.face_surfaces(face);
-                          Flux_face << " flux_par_surface(W/m2)= " << flux_bords(face, k)/la_zone_vdf.face_surfaces(face);
+                          Flux_face << " surface_face(m2)= " << le_dom_vdf.face_surfaces(face);
+                          Flux_face << " flux_par_surface(W/m2)= " << flux_bords(face, k)/le_dom_vdf.face_surfaces(face);
                         }
                       Flux_face << " flux(W)= " << flux_bords(face, k);
                     }
@@ -151,8 +151,8 @@ void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) co
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   const int ncomp = resu.line_size();
-  assert(resu.nb_dim() < 3 && la_zcl.non_nul() && la_zone.non_nul());
-  assert(op_base->flux_bords().dimension(0)==la_zone->nb_faces_bord()); /* resize deja fait */
+  assert(resu.nb_dim() < 3 && la_zcl.non_nul() && le_dom.non_nul());
+  assert(op_base->flux_bords().dimension(0)==le_dom->nb_faces_bord()); /* resize deja fait */
   if (ncomp == 1)
     {
       contribuer_au_second_membre_bords<SingleDouble>(ncomp,resu);
@@ -168,7 +168,7 @@ void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre(DoubleTab& resu) co
 template <class _TYPE_> template <typename Type_Double>
 void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int ncomp, DoubleTab& resu) const
 {
-  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
+  for (int num_cl = 0; num_cl < le_dom->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -217,7 +217,7 @@ template <class _TYPE_> template <typename Type_Double>
 void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_interne(const int ncomp, DoubleTab& resu) const
 {
   Type_Double flux(ncomp);
-  const Zone_VDF& zone_VDF = la_zone.valeur();
+  const Zone_VDF& zone_VDF = le_dom.valeur();
   const int ndeb = zone_VDF.premiere_face_int(), nfin = zone_VDF.nb_faces();
   for (int face = ndeb; face < nfin; face++)
     {
@@ -253,10 +253,10 @@ void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords_(const Echang
     {
       Type_Double flux(ncomp);
       int boundary_index=-1;
-      if (la_zone.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
+      if (le_dom.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom()) boundary_index = num_cl;
       for (int face = ndeb; face < nfin; face++)
         {
-          int local_face=la_zone.valeur().front_VF(boundary_index).num_local_face(face);
+          int local_face=le_dom.valeur().front_VF(boundary_index).num_local_face(face);
           flux_evaluateur.secmem_face(boundary_index,face,local_face, cl, ndeb, flux);
           fill_flux_tables_(face,ncomp,1.0 /* coeff */,flux,resu);
         }

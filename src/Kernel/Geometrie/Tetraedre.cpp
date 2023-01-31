@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -78,7 +78,7 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
 {
   // 29/01/2010 Optimisation CPU de la methode (50% plus rapide) par PL
   assert(pos.size_array()==3);
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const DoubleTab& coord=zone.coord_sommets();
   double prod1,prod2,xn,yn,zn;
   int som0 = zone.sommet_elem(ielem,0);
@@ -191,7 +191,7 @@ int Tetraedre::contient(const ArrOfDouble& pos, int ielem) const
  */
 int Tetraedre::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   if((zone.sommet_elem(element,0)==som[0])&&
       (zone.sommet_elem(element,1)==som[1])&&
       (zone.sommet_elem(element,1)==som[2])&&
@@ -207,7 +207,7 @@ int Tetraedre::contient(const ArrOfInt& som, int element ) const
  */
 void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
 
   double x0,y0,z0;
@@ -254,7 +254,7 @@ void Tetraedre::calculer_volumes(DoubleVect& volumes) const
 void Tetraedre::calculer_normales(const IntTab& Face_sommets ,
                                   DoubleTab& face_normales) const
 {
-  const Zone& zone_geom = ma_zone.valeur();
+  const Zone& zone_geom = mon_dom.valeur();
   const DoubleTab& les_coords = zone_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1,z1,x2,y2,z2;

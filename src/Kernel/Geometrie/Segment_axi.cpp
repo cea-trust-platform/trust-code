@@ -32,7 +32,7 @@ Entree& Segment_axi::readOn( Entree& is )
 
 void Segment_axi::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const ZoneAxi1d& dom = ref_cast(ZoneAxi1d,zone);
 
   int S1,S2;

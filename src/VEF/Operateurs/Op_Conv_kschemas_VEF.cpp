@@ -158,7 +158,7 @@ DoubleTab& Op_Conv_kschemas_VEF::ajouter(const DoubleTab& transporte,
                                          DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();

@@ -55,9 +55,9 @@ protected:
   double lambda_min = 1.e-24;
   double cible = 0.01;
   REF(Champ_P1NC) la_vitesse;
-  REF(Zone_VEF) la_zone_VEF;
-  REF(Zone_Cl_VEF) la_zone_Cl_VEF;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Zone_VEF) le_dom_VEF;
+  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
 };
 

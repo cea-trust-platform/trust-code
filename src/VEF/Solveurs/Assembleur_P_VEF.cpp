@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,9 +39,9 @@ Entree& Assembleur_P_VEF::readOn(Entree& s )
 int Assembleur_P_VEF::assembler(Matrice& la_matrice)
 {
   // Si rho est constant, on resout avec la pression P*=P/rho
-  const DoubleVect& volumes_entrelaces_ref=la_zone_VEF->volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces_ref=le_dom_VEF->volumes_entrelaces();
   DoubleVect volumes_entrelaces(volumes_entrelaces_ref);
-  const DoubleVect& volumes_entrelaces_cl=la_zone_Cl_VEF.valeur().volumes_entrelaces_Cl();
+  const DoubleVect& volumes_entrelaces_cl=le_dom_Cl_VEF.valeur().volumes_entrelaces_Cl();
   int size=volumes_entrelaces_cl.size();
   for (int f=0; f<size; f++)
     if (volumes_entrelaces_cl(f)!=0)
@@ -114,7 +114,7 @@ int Assembleur_P_VEF::assembler_mat(Matrice& la_matrice, const DoubleVect& volum
   set_resoudre_increment_pression(incr_pression);
   set_resoudre_en_u(resoudre_en_u);
   DoubleTab inv_volumes_entrelaces;
-  const Zone_Cl_VEF& zone_Cl_VEF = la_zone_Cl_VEF.valeur();
+  const Zone_Cl_VEF& zone_Cl_VEF = le_dom_Cl_VEF.valeur();
   DoubleTab inverse_quantitee_entrelacee;
   calculer_inv_volume(inverse_quantitee_entrelacee, zone_Cl_VEF, volumes_entrelaces);
   remplir(la_matrice, inverse_quantitee_entrelacee);
@@ -140,20 +140,20 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
   // On peut faire cela car a priori la matrice de pression n'est pas
   // partagee par plusieurs equations sur une meme zone.
 
-  const Zone_VEF& la_zone = la_zone_VEF.valeur();
-  const Zone_Cl_VEF& la_zone_cl = la_zone_Cl_VEF.valeur();
-  les_coeff_pression.resize(la_zone_cl.nb_faces_Cl());
-  int n1 = la_zone.zone().nb_elem_tot();
-  int n2 = la_zone.zone().nb_elem();
+  const Zone_VEF& le_dom = le_dom_VEF.valeur();
+  const Zone_Cl_VEF& le_dom_cl = le_dom_Cl_VEF.valeur();
+  les_coeff_pression.resize(le_dom_cl.nb_faces_Cl());
+  int n1 = le_dom.zone().nb_elem_tot();
+  int n2 = le_dom.zone().nb_elem();
   int elem1,elem2;
   double val;
   int i;
 
-  const IntTab& face_voisins = la_zone.face_voisins();
-  const DoubleTab& face_normales = la_zone.face_normales();
-  const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
+  const IntTab& face_voisins = le_dom.face_voisins();
+  const DoubleTab& face_normales = le_dom.face_normales();
+  const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
 
-  // int premiere_face_std=la_zone.premiere_face_std();
+  // int premiere_face_std=le_dom.premiere_face_std();
   // Rajout des porosites.
 
   la_matrice.typer("Matrice_Bloc"); // En fait Matrice_Bloc_Sym ?
@@ -189,8 +189,8 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
 
   // On traite les faces internes:
 
-  int ndeb = la_zone_VEF->premiere_face_int();
-  int nfin = la_zone_VEF->nb_faces_tot();
+  int ndeb = le_dom_VEF->premiere_face_int();
+  int nfin = le_dom_VEF->nb_faces_tot();
   IntVect rang_voisinRR(n2);
   IntVect rang_voisinRV(n2);
   IntVect rang_voisinVV(n1-n2);
@@ -204,7 +204,7 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
     {
       elem1 = face_voisins(num_face,0);
       elem2 = face_voisins(num_face,1);
-      if (!la_zone_VEF->est_une_face_virt_bord(num_face) && elem1 != -1 && elem2 != -1)
+      if (!le_dom_VEF->est_une_face_virt_bord(num_face) && elem1 != -1 && elem2 != -1)
         {
           if (elem1 > elem2)
             {
@@ -354,7 +354,7 @@ int Assembleur_P_VEF::remplir(Matrice& la_matrice, const DoubleTab& inverse_quan
       elem1 = face_voisins(num_face,0);
       elem2 = face_voisins(num_face,1);
       // On ne traite que les faces internes virtuelles ou non
-      if (!la_zone_VEF->est_une_face_virt_bord(num_face) && elem1 != -1 && elem2 != -1)
+      if (!le_dom_VEF->est_une_face_virt_bord(num_face) && elem1 != -1 && elem2 != -1)
         {
           if(dimension==2)
             {
@@ -581,15 +581,15 @@ int Assembleur_P_VEF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
 
 int Assembleur_P_VEF::modifier_secmem(DoubleTab& secmem)
 {
-  const Zone_VEF& la_zone = la_zone_VEF.valeur();
-  const Zone_Cl_VEF& la_zone_cl = la_zone_Cl_VEF.valeur();
-  int nb_cond_lim = la_zone_cl.nb_cond_lim();
-  const IntTab& face_voisins = la_zone.face_voisins();
+  const Zone_VEF& le_dom = le_dom_VEF.valeur();
+  const Zone_Cl_VEF& le_dom_cl = le_dom_Cl_VEF.valeur();
+  int nb_cond_lim = le_dom_cl.nb_cond_lim();
+  const IntTab& face_voisins = le_dom.face_voisins();
 
   // Modification du second membre :
   for (int i=0; i<nb_cond_lim; i++)
     {
-      const Cond_lim_base& la_cl_base = la_zone_cl.les_conditions_limites(i).valeur();
+      const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(i).valeur();
       const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl_base.frontiere_dis());
       int ndeb = la_front_dis.num_premiere_face();
       int nfin = ndeb + la_front_dis.nb_faces();
@@ -625,7 +625,7 @@ int Assembleur_P_VEF::modifier_secmem(DoubleTab& secmem)
               //for num_face
               double Stt = 0.;
               for (int k=0; k<dimension; k++)
-                Stt -= Gpt(k) * la_zone.face_normales(num_face, k);
+                Stt -= Gpt(k) * le_dom.face_normales(num_face, k);
               secmem(face_voisins(num_face,0)) += Stt;
             }
         }
@@ -642,7 +642,7 @@ int Assembleur_P_VEF::modifier_secmem(DoubleTab& secmem)
               double Stt = 0.;
               for (int k=0; k<dimension; k++)
                 Stt -= Gpt(num_face - ndeb, k) *
-                       la_zone.face_normales(num_face, k);
+                       le_dom.face_normales(num_face, k);
               secmem(face_voisins(num_face,0)) += Stt;
             }
         }
@@ -660,7 +660,7 @@ int Assembleur_P_VEF::modifier_solution(DoubleTab& pression)
       // On prend la pression minimale comme pression de reference
       // afin d'avoir la meme pression de reference en sequentiel et parallele
       press_0=DMAXFLOAT;
-      int n,nb_elem=la_zone_VEF.valeur().zone().nb_elem();
+      int n,nb_elem=le_dom_VEF.valeur().zone().nb_elem();
       for(n=0; n<nb_elem; n++)
         if (pression[n] < press_0)
           press_0 = pression[n];
@@ -691,8 +691,8 @@ int Assembleur_P_VEF::modifier_matrice(Matrice& matrice)
     {
       int element_referent=0;
       double distance=DMAXFLOAT;
-      const DoubleTab& coord=la_zone_VEF->xp();
-      int n = la_zone_VEF.valeur().nb_elem();
+      const DoubleTab& coord=le_dom_VEF->xp();
+      int n = le_dom_VEF.valeur().nb_elem();
       for(int i=0; i<n; i++)
         {
           double tmp=0;
@@ -715,22 +715,22 @@ int Assembleur_P_VEF::modifier_matrice(Matrice& matrice)
 
 const Zone_dis_base& Assembleur_P_VEF::zone_dis_base() const
 {
-  return la_zone_VEF.valeur();
+  return le_dom_VEF.valeur();
 }
 
 const Zone_Cl_dis_base& Assembleur_P_VEF::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_VEF.valeur();
+  return le_dom_Cl_VEF.valeur();
 }
 
-void Assembleur_P_VEF::associer_zone_dis_base(const Zone_dis_base& la_zone_dis)
+void Assembleur_P_VEF::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF,la_zone_dis);
+  le_dom_VEF = ref_cast(Zone_VEF,le_dom_dis);
 }
 
-void Assembleur_P_VEF::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis)
+void Assembleur_P_VEF::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis)
 {
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, la_zone_Cl_dis);
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, le_dom_Cl_dis);
 }
 
 void Assembleur_P_VEF::completer(const Equation_base& Eqn)

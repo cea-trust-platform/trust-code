@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -95,7 +95,7 @@ void Perte_Charge_Singuliere_VDF_Face::dimensionner_blocs(matrices_t matrices, c
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL, mat2;
 
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
   for (int f = 0; f < zone_VDF.nb_faces(); f++)
@@ -115,7 +115,7 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : equation().inconnue().valeurs();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
@@ -133,9 +133,9 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
         U = vit[numfa];
 
         if (numfa < ndeb_faces_int)
-          Ck = -0.5*K()/la_zone_VDF->dist_norm_bord_axi(numfa);
+          Ck = -0.5*K()/le_dom_VDF->dist_norm_bord_axi(numfa);
         else
-          Ck = -0.5*K()/la_zone_VDF->dist_norm_axi(numfa);
+          Ck = -0.5*K()/le_dom_VDF->dist_norm_axi(numfa);
         secmem[numfa] += Ck*U*std::fabs(U)*volumes_entrelaces[numfa]*porosite_surf[numfa];
       }
   else
@@ -149,9 +149,9 @@ void Perte_Charge_Singuliere_VDF_Face::ajouter_blocs(matrices_t matrices, Double
         U = inco[numfa]*porosite_surf[numfa];
 
         if (numfa < ndeb_faces_int)
-          Ck = -0.5*K()/la_zone_VDF->dist_norm_bord(numfa);
+          Ck = -0.5*K()/le_dom_VDF->dist_norm_bord(numfa);
         else
-          Ck = -0.5*K()/la_zone_VDF->dist_norm(numfa);
+          Ck = -0.5*K()/le_dom_VDF->dist_norm(numfa);
 
         secmem[numfa] += Ck*U*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];
         if(mat) (*mat)(numfa,numfa)-=Ck*porosite_surf[numfa]*std::fabs(Ud)*volumes_entrelaces[numfa]*porosite_surf[numfa];

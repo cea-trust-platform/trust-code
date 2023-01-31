@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ void Rectangle::reordonner()
  */
 int Rectangle::reordonner_elem()
 {
-  Zone& zone=ma_zone.valeur();
+  Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   IntTab& elem=zone.les_elems();
 
@@ -145,7 +145,7 @@ const Nom& Rectangle::nom_lml() const
 int Rectangle::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==2);
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som3 = zone.sommet_elem(element,3);
@@ -166,7 +166,7 @@ int Rectangle::contient(const ArrOfDouble& pos, int element ) const
  */
 int Rectangle::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   if((zone.sommet_elem(element,0)==som[0])&&
       (zone.sommet_elem(element,1)==som[1])&&
       (zone.sommet_elem(element,2)==som[2])&&
@@ -188,7 +188,7 @@ void Rectangle::calculer_volumes(DoubleVect& volumes) const
       Cerr << "Rectangle::calculer_volumes is not supported for 3D yet." << finl;
       exit();
     }
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   double dx,dy;
   int S1,S2,S3;
@@ -215,7 +215,7 @@ void Rectangle::calculer_volumes(DoubleVect& volumes) const
 void Rectangle::calculer_normales(const IntTab& Face_sommets ,
                                   DoubleTab& face_normales) const
 {
-  const Zone& zone_geom = ma_zone.valeur();
+  const Zone& zone_geom = mon_dom.valeur();
   const DoubleTab& les_coords = zone_geom.coord_sommets();
   int nbfaces = Face_sommets.dimension(0);
   double x1,y1;

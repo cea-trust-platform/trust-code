@@ -40,7 +40,7 @@ class Sous_zone_dis_base : public Objet_U
 
 public:
   void associer_sous_zone(const Sous_Zone&);
-  void associer_zone_dis(const Zone_dis_base&);
+  void associer_domaine_dis(const Zone_dis_base&);
 
   // Methodes d'acces aux REFs
   const Sous_Zone& sous_zone() const;
@@ -53,7 +53,7 @@ public:
 
 protected:
   REF(Sous_Zone) la_sous_zone;
-  REF(Zone_dis_base) la_zone_dis;
+  REF(Zone_dis_base) le_dom_dis;
 };
 
 #endif

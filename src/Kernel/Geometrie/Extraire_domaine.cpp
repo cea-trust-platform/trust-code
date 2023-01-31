@@ -204,8 +204,8 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
       }
   Cerr<<finl;;
   dom.faces_bord().add(faces);
-  dom.faces_bord().associer_zone(dom);
-  dom.type_elem().associer_zone(dom);
+  dom.faces_bord().associer_domaine(dom);
+  dom.type_elem().associer_domaine(dom);
   dom.fixer_premieres_faces_frontiere();
 
   assert(nb==nb_t);

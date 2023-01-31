@@ -139,7 +139,7 @@ void ExtrudeParoi::extrude(Zone& dom)
     // bloc a factoriser avec Zone_VF.cpp :
     Type_Face type_face = dom.type_elem().type_face(0);
     lesfaces.typer(type_face);
-    lesfaces.associer_zone(dom);
+    lesfaces.associer_domaine(dom);
 
     Static_Int_Lists connectivite_som_elem;
     const int     nb_sommets_tot = dom.nb_som_tot();

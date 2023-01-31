@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -92,7 +92,7 @@ const Nom& Quadrangle_VEF::nom_lml() const
 int Quadrangle_VEF::contient(const ArrOfDouble& pos, int element) const
 {
   assert(pos.size_array()==2);
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som1 = zone.sommet_elem(element,1);
@@ -148,7 +148,7 @@ int Quadrangle_VEF::contient(const ArrOfDouble& pos, int element) const
  */
 int Quadrangle_VEF::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   if((zone.sommet_elem(element,0)==som[0])&&
       (zone.sommet_elem(element,1)==som[1])&&
       (zone.sommet_elem(element,2)==som[2])&&
@@ -164,7 +164,7 @@ int Quadrangle_VEF::contient(const ArrOfInt& som, int element ) const
  */
 void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const DoubleTab& coord = zone.coord_sommets();
   int S0,S1,S2,S3;
   ArrOfDouble xg(dimension);
@@ -225,7 +225,7 @@ void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
  */
 void Quadrangle_VEF::reordonner()
 {
-  Zone& zone=ma_zone.valeur();
+  Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   IntTab& elem=zone.les_elems();
 

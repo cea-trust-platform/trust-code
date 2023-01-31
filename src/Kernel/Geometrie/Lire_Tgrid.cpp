@@ -414,7 +414,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                   Cerr << "Contact TRUST support." << finl;
                   exit();
                 }
-              dom.type_elem().associer_zone(dom);
+              dom.type_elem().associer_domaine(dom);
             }
           Cerr << finl;
         }
@@ -664,7 +664,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
           Cerr << "The area " << izone << " is called " << nom_zone << finl;
           // On parcourt les bords pour renommer
           Bords& les_bords=dom.faces_bord();
-          les_bords.associer_zone(dom);
+          les_bords.associer_domaine(dom);
           if (les_bords.est_vide())
             {
               Cerr << "Reading a name before reading the boundaries..." << finl;

@@ -41,8 +41,8 @@ public :
   int assembler(Matrice&);
   int assembler_QC(const DoubleTab&, Matrice&);
   void completer(const Equation_base& );
-  void associer_zone_dis_base(const Zone_dis_base&);
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base&);
+  void associer_domaine_dis_base(const Zone_dis_base&);
+  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&);
   const Zone_dis_base& zone_dis_base() const;
   const Zone_Cl_dis_base& zone_Cl_dis_base() const;
   int modifier_secmem(DoubleTab&);

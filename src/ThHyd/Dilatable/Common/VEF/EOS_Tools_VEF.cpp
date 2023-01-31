@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,10 +43,10 @@ Entree& EOS_Tools_VEF::readOn(Entree& is)
  * @param (Zone_dis& zone) zone
  * @param (Zone_Cl_dis& zone_cl) zone cl
  */
-void  EOS_Tools_VEF::associer_zones(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
+void  EOS_Tools_VEF::associer_domaines(const Zone_dis& zone, const Zone_Cl_dis& zone_cl)
 {
-  la_zone = ref_cast(Zone_VEF,zone.valeur());
-  la_zone_Cl = zone_cl;
+  le_dom = ref_cast(Zone_VEF,zone.valeur());
+  le_dom_Cl = zone_cl;
 }
 
 /*! @brief Renvoie rho avec la meme discretisation que la vitesse : une valeur par face en VEF
@@ -75,13 +75,13 @@ const DoubleTab& EOS_Tools_VEF::rho_face_np1() const
 double EOS_Tools_VEF::moyenne_vol(const DoubleTab& tab) const
 {
   assert(tab.line_size() == 1);
-  double x = Champ_P1NC::calculer_integrale_volumique(la_zone.valeur(), tab, FAUX_EN_PERIO);
+  double x = Champ_P1NC::calculer_integrale_volumique(le_dom.valeur(), tab, FAUX_EN_PERIO);
   // La facon simple de faire serait celle-ci, mais c'est faux a cause de FAUX_EN_PERIO
   //  qui compte deux fois les volumes entrelaces des faces periodiques:
   DoubleVect un;
-  la_zone.valeur().creer_tableau_faces(un, Array_base::NOCOPY_NOINIT);
+  le_dom.valeur().creer_tableau_faces(un, Array_base::NOCOPY_NOINIT);
   un = 1.;
-  double y = Champ_P1NC::calculer_integrale_volumique(la_zone.valeur(), un, FAUX_EN_PERIO);
+  double y = Champ_P1NC::calculer_integrale_volumique(le_dom.valeur(), un, FAUX_EN_PERIO);
   return x / y;
 }
 
@@ -92,12 +92,12 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
 {
   assert_espace_virtuel_vect(DivVelocityElements);
   //Corrections pour moyenner div(u) sur les faces
-  const DoubleVect& volumes = la_zone->volumes();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Zone_Cl_VEF,la_zone_Cl->valeur()).volumes_entrelaces_Cl();
+  const DoubleVect& volumes = le_dom->volumes();
+  const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
+  const DoubleVect& volumes_entrelaces_Cl = ref_cast(Zone_Cl_VEF,le_dom_Cl->valeur()).volumes_entrelaces_Cl();
 
-  IntTab& face_voisins = la_zone->face_voisins();
-  int premiere_fac_std=la_zone->premiere_face_std();
+  IntTab& face_voisins = le_dom->face_voisins();
+  int premiere_fac_std=le_dom->premiere_face_std();
 
   //remplissage de div(u) sur les faces
   for (int face=0; face<premiere_fac_std; face++)
@@ -116,7 +116,7 @@ void EOS_Tools_VEF::divu_discvit(const DoubleTab& DivVelocityElements, DoubleTab
       DivVelocityFaces(face) /= nb_comp;
     }
 
-  int size = la_zone->nb_faces();
+  int size = le_dom->nb_faces();
   for (int face=premiere_fac_std; face<size; face++)
     {
       int nb_comp=0;
@@ -144,10 +144,10 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 {
   double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();
   int face, elem, som,som_glob;
-  const IntTab& face_sommets = la_zone->face_sommets();
-  int nb_elem_tot=la_zone->nb_elem_tot();
-  int nb_som_tot=la_zone->zone().nb_som_tot();
-  int nb_faces_tot=la_zone->nb_faces_tot();
+  const IntTab& face_sommets = le_dom->face_sommets();
+  int nb_elem_tot=le_dom->nb_elem_tot();
+  int nb_som_tot=le_dom->zone().nb_som_tot();
+  int nb_faces_tot=le_dom->nb_faces_tot();
   const Equation_base& eq=le_fluide().vitesse()->equation();
   DoubleTab tab_dZ;
 
@@ -166,16 +166,16 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   const DoubleVect& porosite_face = le_fluide().porosite_face();
   const DoubleTab& tab_rhonP1=modif_par_porosite_si_flag(tab_rhon,tab_rhonP1_,1,porosite_face);
   const DoubleTab& tab_rhonp1P1=modif_par_porosite_si_flag(tab_rhonp1,tab_rhonp1P1_,1,porosite_face);
-  const IntTab& elem_faces = la_zone->elem_faces();
-  const DoubleVect& volumes = la_zone->volumes();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces();
-  const Zone_VEF_PreP1b& zp1b=ref_cast(Zone_VEF_PreP1b,la_zone.valeur());
+  const IntTab& elem_faces = le_dom->elem_faces();
+  const DoubleVect& volumes = le_dom->volumes();
+  const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
+  const Zone_VEF_PreP1b& zp1b=ref_cast(Zone_VEF_PreP1b,le_dom.valeur());
   const DoubleVect& volumes_controle=zp1b.volume_aux_sommets();
 
   double rn,rnp1;
-  int nfe = la_zone->zone().nb_faces_elem();
-  int nsf = la_zone->nb_som_face();
-  const Zone& dom=la_zone->zone();
+  int nfe = le_dom->zone().nb_faces_elem();
+  int nsf = le_dom->nb_som_face();
+  const Zone& dom=le_dom->zone();
 
   // calcul de la somme des volumes entrelacees autour d'un sommet
   volume_int_som=0.;
@@ -235,7 +235,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
 
   decal+=nb_case;
   int p_has_arrete=zp1b.get_alphaA();
-  int nb_ar_tot=la_zone->zone().nb_aretes_tot();
+  int nb_ar_tot=le_dom->zone().nb_aretes_tot();
   nb_case=nb_ar_tot*p_has_arrete;
 
   for (int ar=0 ; ar<nb_case ; ar++)

@@ -66,7 +66,7 @@ void Op_Grad_EF::associer(const Zone_dis& zone_dis,
 {
   const Zone_EF& zEF = ref_cast(Zone_EF, zone_dis.valeur());
   const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
-  la_zone_EF = zEF;
+  le_dom_EF = zEF;
   la_zcl_EF = zclEF;
   //  const IntTab& face_sommets=zEF.face_sommets();
 #ifdef  lire_valimp_dans_med_
@@ -331,7 +331,7 @@ DoubleTab& Op_Grad_EF::calculer(const DoubleTab& pre, DoubleTab& grad) const
 void Op_Grad_EF::calculer_flux_bords() const
 {
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& face_voisins = zone_EF.face_voisins();
   const DoubleTab& face_normales = zone_EF.face_normales();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
@@ -356,16 +356,16 @@ void Op_Grad_EF::calculer_flux_bords() const
 
 int Op_Grad_EF::impr(Sortie& os) const
 {
-  const int impr_mom=la_zone_EF->zone().moments_a_imprimer();
-  const int impr_sum=(la_zone_EF->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_EF->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=le_dom_EF->zone().moments_a_imprimer();
+  const int impr_sum=(le_dom_EF->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_EF->zone().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   double temps = sch.temps_courant();
   const Zone_Cl_EF& zone_Cl_EF = la_zcl_EF.valeur();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int n_bord ;
   int face;
-  const ArrOfDouble& c_grav=la_zone_EF->zone().cg_moments();
+  const ArrOfDouble& c_grav=le_dom_EF->zone().cg_moments();
   int flag=je_suis_maitre();
   SFichier Flux_grad;
   ouvrir_fichier(Flux_grad,"",flag);

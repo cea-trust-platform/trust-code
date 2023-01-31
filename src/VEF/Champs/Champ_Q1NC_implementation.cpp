@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -242,8 +242,8 @@ DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Zone& dom, Double
 {
   // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets " << finl;
   const Zone_dis_base& zone_dis = get_zone_dis();
-  const Zone& ma_zone = zone_dis.zone();
-  int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
+  const Zone& mon_dom = zone_dis.zone();
+  int nb_elem_tot = mon_dom.nb_elem_tot(), nb_som = mon_dom.nb_som(), nb_som_elem = mon_dom.nb_som_elem();
   const Champ_base& cha = le_champ();
   int nb_compo_ = cha.nb_comp();
   IntVect compteur(nb_som);
@@ -255,7 +255,7 @@ DoubleTab& Champ_Q1NC_implementation::valeur_aux_sommets(const Zone& dom, Double
   for (num_elem = 0; num_elem < nb_elem_tot; num_elem++)
     for (j = 0; j < nb_som_elem; j++)
       {
-        num_som = ma_zone.sommet_elem(num_elem, j);
+        num_som = mon_dom.sommet_elem(num_elem, j);
         //        Cerr << "num_som " << num_som << finl;
         for (int k = 0; k < Objet_U::dimension; k++)
           position(k) = dom.coord(num_som, k);
@@ -281,8 +281,8 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Zone& dom,
 {
   // Cerr << "Champ_Q1NC_implementation::valeur_aux_sommets_compo " << finl;
   const Zone_dis_base& zone_dis = get_zone_dis();
-  const Zone& ma_zone = zone_dis.zone();
-  int nb_elem_tot = ma_zone.nb_elem_tot(), nb_som = ma_zone.nb_som(), nb_som_elem = ma_zone.nb_som_elem();
+  const Zone& mon_dom = zone_dis.zone();
+  int nb_elem_tot = mon_dom.nb_elem_tot(), nb_som = mon_dom.nb_som(), nb_som_elem = mon_dom.nb_som_elem();
   IntVect compteur(nb_som);
   int num_elem, num_som, j;
   ch_som = 0;
@@ -292,7 +292,7 @@ DoubleVect& Champ_Q1NC_implementation::valeur_aux_sommets_compo(const Zone& dom,
   for (num_elem = 0; num_elem < nb_elem_tot; num_elem++)
     for (j = 0; j < nb_som_elem; j++)
       {
-        num_som = ma_zone.sommet_elem(num_elem, j);
+        num_som = mon_dom.sommet_elem(num_elem, j);
         for (int k = 0; k < Objet_U::dimension; k++)
           position(k) = dom.coord(num_som, k);
 
@@ -345,7 +345,7 @@ int Champ_Q1NC_implementation::remplir_coord_noeuds_et_polys(DoubleTab& position
 //
 void Champ_Q1NC_implementation::transforme_coord2D()
 {
-  //  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  //  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Zone_VEF& zone_VEF = zone_vef();
   const Zone& zone_geom = get_zone_geom();
   const int nb_elem_tot = zone_VEF.nb_elem_tot();

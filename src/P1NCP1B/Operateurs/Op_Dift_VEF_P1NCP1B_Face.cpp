@@ -42,7 +42,7 @@ void Op_Dift_VEF_P1NCP1B_Face::associer(const Zone_dis& zone_dis, const Zone_Cl_
   const Zone_VEF_PreP1b& zvef = ref_cast(Zone_VEF_PreP1b, zone_dis.valeur());
   const Zone_Cl_VEFP1B& zclvef = ref_cast(Zone_Cl_VEFP1B, zone_cl_dis.valeur());
   const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_transporte.valeur());
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
   inconnue_ = inco;
   solveur.typer("Solv_GCP");
@@ -70,22 +70,22 @@ double Op_Dift_VEF_P1NCP1B_Face::calculer_dt_stab() const
   double surf_max;
   double dt_stab = 1.e30;
   double coef;
-  const Zone_VEF_PreP1b& la_zone_VEF = la_zone_vef.valeur();
-  const DoubleVect& volumes = la_zone_VEF.volumes();
-  const IntTab& elem_faces = la_zone_VEF.elem_faces();
-  const DoubleTab& face_normales = la_zone_VEF.face_normales();
-  const Zone& la_zone = la_zone_VEF.zone();
-  //const int nb_elem = la_zone.nb_elem_tot();
-  //const DoubleTab& xp=la_zone_VEF.xp();
-  int nb_faces_elem = la_zone.nb_faces_elem();
+  const Zone_VEF_PreP1b& le_dom_VEF = le_dom_vef.valeur();
+  const DoubleVect& volumes = le_dom_VEF.volumes();
+  const IntTab& elem_faces = le_dom_VEF.elem_faces();
+  const DoubleTab& face_normales = le_dom_VEF.face_normales();
+  const Zone& le_dom = le_dom_VEF.zone();
+  //const int nb_elem = le_dom.nb_elem_tot();
+  //const DoubleTab& xp=le_dom_VEF.xp();
+  int nb_faces_elem = le_dom.nb_faces_elem();
   double diffu = (diffusivite_.valeur())(0, 0);
   const DoubleVect& diffu_turb = diffusivite_turbulente()->valeurs();
   double diffu2_;
   //diffu_turb=1.;
   // for( int j=0;j<nb_elem;j++)
   //     diffu_turb[j]=1.-0.9*xp(j,1);
-  int la_zone_nb_elem = la_zone.nb_elem();
-  for (int num_elem = 0; num_elem < la_zone_nb_elem; num_elem++)
+  int le_dom_nb_elem = le_dom.nb_elem();
+  for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
     {
       surf_max = 1.e-30;
       for (int i = 0; i < nb_faces_elem; i++)
@@ -107,7 +107,7 @@ double Op_Dift_VEF_P1NCP1B_Face::calculer_dt_stab() const
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_elem(const DoubleTab& vit, DoubleTab& grad) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (la_zone_vef.valeur()));
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (le_dom_vef.valeur()));
 
   const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -137,7 +137,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_elem(const DoubleTab& vit
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit, DoubleTab& grad) const
 {
 
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (la_zone_vef.valeur()));
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, (le_dom_vef.valeur()));
   const Zone& zone = zone_VEF.zone();
   const Zone& dom = zone;
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -339,7 +339,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::corriger_div_pour_Cl(DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
@@ -400,7 +400,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::corriger_div_pour_Cl(DoubleTab& div) const
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
   const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -429,7 +429,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const D
 }
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
   const Zone& dom = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const IntTab& som_elem = dom.les_elems();
@@ -494,7 +494,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
   //  const Zone_Cl_VEFP1B& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF_PreP1b& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF_PreP1b& zone_VEF = le_dom_vef.valeur();
   const Zone& dom = zone_VEF.zone();
   int nb_elem_tot=dom.nb_elem_tot();
   int nb_som_tot=dom.nb_som_tot();

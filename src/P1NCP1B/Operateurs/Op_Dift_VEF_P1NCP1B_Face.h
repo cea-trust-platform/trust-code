@@ -76,7 +76,7 @@ protected:
   DoubleTab& calculer_divergence_som(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& corriger_div_pour_Cl(DoubleTab&) const;
   REF(Mod_turb_hyd_base) le_modele_turbulence;
-  REF(Zone_VEF_PreP1b) la_zone_vef;
+  REF(Zone_VEF_PreP1b) le_dom_vef;
   REF(Zone_Cl_VEFP1B) la_zcl_vef;
   SolveurSys solveur;
   int trans = -10;

@@ -36,13 +36,13 @@ public:
   inline void contribuer_au_second_membre(DoubleTab& resu) const override { contribue_au_second_membre(resu); }
   inline void associer_loipar(const Turbulence_paroi& ) { /* do nothing */}
   inline void associer_diffusivite_turbulente(const Champ_Fonc& visc_turb) { Op_Diff_Turbulent_base::associer_diffusivite_turbulente(visc_turb);}
-  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
+  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Champ_Face_VDF) inconnue;
-  REF(Zone_VDF) la_zone_vdf;
+  REF(Zone_VDF) le_dom_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;
   IntTab Qdm, face_voisins, elem_faces;

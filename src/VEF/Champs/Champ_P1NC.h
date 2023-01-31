@@ -63,7 +63,7 @@ public:
   static double calculer_integrale_volumique(const Zone_VEF&, const DoubleVect&, Ok_Perio ok);
 
   // Methodes inlines
-  inline const Zone_VEF& zone_vef() const override { return ref_cast(Zone_VEF, la_zone_VF.valeur()); }
+  inline const Zone_VEF& zone_vef() const override { return ref_cast(Zone_VEF, le_dom_VF.valeur()); }
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {
     return Champ_P1NC_implementation::valeur_a_elem(position, val, le_poly);

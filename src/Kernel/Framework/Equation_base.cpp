@@ -89,14 +89,14 @@ int Equation_base::equation_non_resolue() const
  */
 Zone_dis& Equation_base::zone_dis()
 {
-  if (!la_zone_dis.non_nul())
+  if (!le_dom_dis.non_nul())
     {
       Cerr << "There is no object of type Zone_dis yet associated to the equation " << que_suis_je() << finl;
       Cerr << "This means that the problem has not been discretized or" << finl;
       Cerr << "that instruction Discretiser is misplaced" << finl;
       exit();
     }
-  return la_zone_dis.valeur();
+  return le_dom_dis.valeur();
 }
 
 /*! @brief Renvoie la zone discretisee associee a l'equation.
@@ -109,14 +109,14 @@ Zone_dis& Equation_base::zone_dis()
  */
 const Zone_dis& Equation_base::zone_dis() const
 {
-  if (!la_zone_dis.non_nul())
+  if (!le_dom_dis.non_nul())
     {
       Cerr << "There is no object of type Zone_dis associated to the equation " << que_suis_je() << finl;
       Cerr << "This means that the problem has not been discretized" << finl;
       exit();
     }
-  assert(la_zone_dis.non_nul());
-  return la_zone_dis.valeur();
+  assert(le_dom_dis.non_nul());
+  return le_dom_dis.valeur();
 }
 
 
@@ -133,18 +133,18 @@ const Zone_dis& Equation_base::zone_dis() const
 void Equation_base::completer()
 {
   inconnue().associer_eqn(*this);
-  if (la_zone_Cl_dis.non_nul())
-    la_zone_Cl_dis->completer();
+  if (le_dom_Cl_dis.non_nul())
+    le_dom_Cl_dis->completer();
 
-  inconnue()->associer_zone_cl_dis(la_zone_Cl_dis);
+  inconnue()->associer_domaine_cl_dis(le_dom_Cl_dis);
 
   if (mon_probleme.valeur().get_coupled())
     {
       bool err = false;
-      int nb_cl = la_zone_Cl_dis->nb_cond_lim();
+      int nb_cl = le_dom_Cl_dis->nb_cond_lim();
       for (int i=0; i<nb_cl; i++)
         {
-          const Cond_lim_base& la_cl = la_zone_Cl_dis.valeur().les_conditions_limites(i);
+          const Cond_lim_base& la_cl = le_dom_Cl_dis.valeur().les_conditions_limites(i);
           const Frontiere& la_frontiere = la_cl.frontiere_dis().frontiere();
 
           bool raccord_found = false;
@@ -215,7 +215,7 @@ Sortie& Equation_base::printOn(Sortie& os) const
   os << nom_ << finl;
   os << solveur_masse;
   os << les_sources;
-  os << la_zone_Cl_dis;
+  os << le_dom_Cl_dis;
   os << inconnue() ;
   for(int i=0; i<nombre_d_operateurs(); i++)
     {
@@ -405,13 +405,13 @@ void Equation_base::ecrire_fichier_xyz() const
           int nb_compo = champ_a_ecrire->nb_comp();
           if (nb_bords_post>0) // on ne souhaite postraiter que sur certains bords
             {
-              int nb_cl = la_zone_Cl_dis->nb_cond_lim();
+              int nb_cl = le_dom_Cl_dis->nb_cond_lim();
               for (int j=0; j<nb_bords_post; j++)
                 {
                   int count = 0 ; // int servant a tester si le nom du bord correspond bien au nom d'une frontiere
                   for (int i=0; i<nb_cl; i++)
                     {
-                      const Cond_lim_base& la_cl = la_zone_Cl_dis.valeur().les_conditions_limites(i);
+                      const Cond_lim_base& la_cl = le_dom_Cl_dis.valeur().les_conditions_limites(i);
                       const Frontiere& la_frontiere = la_cl.frontiere_dis().frontiere();
                       if (la_frontiere.le_nom() == noms_bord[j])
                         {
@@ -594,14 +594,14 @@ Entree& Equation_base::lire_cond_init(Entree& is)
 Entree& Equation_base::lire_cl(Entree& is)
 {
   Cerr << "Reading of boundaries conditions\n";
-  if(!la_zone_Cl_dis.non_nul())
+  if(!le_dom_Cl_dis.non_nul())
     {
       Cerr << "Error while reading boundaries conditions : " <<
            que_suis_je() << finl;
       Cerr << "The Zone_Cl_dis is empty ..." << finl;
       exit();
     }
-  is >> la_zone_Cl_dis.valeur();
+  is >> le_dom_Cl_dis.valeur();
   return is;
 }
 
@@ -890,13 +890,13 @@ void Equation_base::associer_pb_base(const Probleme_base& pb)
  */
 void Equation_base::discretiser()
 {
-  discretisation().zone_Cl_dis(zone_dis(), la_zone_Cl_dis);
-  la_zone_Cl_dis->associer_eqn(*this);
-  la_zone_Cl_dis->associer_inconnue(inconnue());
+  discretisation().zone_Cl_dis(zone_dis(), le_dom_Cl_dis);
+  le_dom_Cl_dis->associer_eqn(*this);
+  le_dom_Cl_dis->associer_inconnue(inconnue());
 
   solveur_masse.typer();
-  solveur_masse->associer_zone_dis_base(zone_dis().valeur());
-  solveur_masse->associer_zone_cl_dis_base(la_zone_Cl_dis.valeur());
+  solveur_masse->associer_domaine_dis_base(zone_dis().valeur());
+  solveur_masse->associer_domaine_cl_dis_base(le_dom_Cl_dis.valeur());
 
   if (calculate_time_derivative())
     {
@@ -968,9 +968,9 @@ const Schema_Temps_base& Equation_base::schema_temps() const
  *
  * @param (Zone_dis& z) la zone discretisee a associee
  */
-void Equation_base::associer_zone_dis(const Zone_dis& z)
+void Equation_base::associer_domaine_dis(const Zone_dis& z)
 {
-  la_zone_dis=z;
+  le_dom_dis=z;
 }
 
 /*! @brief La valeur de l'inconnue sur le pas de temps a ete calculee.
@@ -1047,7 +1047,7 @@ int Equation_base::preparer_calcul()
   inconnue()->verifie_valeurs_cl();
   inconnue().changer_temps(temps);
   if (calculate_time_derivative()) derivee_en_temps().changer_temps(temps);
-  la_zone_Cl_dis->initialiser(temps);
+  le_dom_Cl_dis->initialiser(temps);
 
   Nom msg=que_suis_je();
   msg+=" dans Equation_base::preparer_calcul 1";
@@ -1415,7 +1415,7 @@ void Equation_base::calculer_pas_de_temps_locaux(DoubleTab& dt_op) const
  */
 int Equation_base::verif_Cl() const
 {
-  const Conds_lim& les_cl=la_zone_Cl_dis->les_conditions_limites();
+  const Conds_lim& les_cl=le_dom_Cl_dis->les_conditions_limites();
   les_cl.compatible_avec_eqn(*this);
   return les_cl.compatible_avec_discr(discretisation());
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ Entree& Segment::readOn(Entree& s )
  */
 void Segment::reordonner()
 {
-  Zone& zone=ma_zone.valeur();
+  Zone& zone=mon_dom.valeur();
   IntTab& elem=zone.les_elems();
   const Zone& dom=zone;
   ArrOfInt S(2);
@@ -98,7 +98,7 @@ int Segment::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==dimension);
 
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   const IntTab& elem=zone.les_elems();
   // Test whether OM = a.O1 with O and 1 the extreme points of the seg and M the point to be tested
@@ -133,7 +133,7 @@ int Segment::contient(const ArrOfDouble& pos, int element ) const
 int Segment::contient(const ArrOfInt& pos, int element ) const
 {
   assert(pos.size_array()==1);
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   if((zone.sommet_elem(element,0)==pos[0])&&
       (zone.sommet_elem(element,1)==pos[1]))
     return 1;
@@ -147,7 +147,7 @@ int Segment::contient(const ArrOfInt& pos, int element ) const
  */
 void Segment::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   double dx;
   int S1,S2;

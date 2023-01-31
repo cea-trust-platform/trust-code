@@ -82,7 +82,7 @@ Entree& Traitement_particulier_NS_Pression_VEF::lire(Entree& is)
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_elem = zone_VEF.nb_elem() ;
 
-                ch_p.associer_zone_dis_base(zdis);
+                ch_p.associer_domaine_dis_base(zdis);
                 ch_p.nommer("Pression_porosite");
                 ch_p.fixer_nb_comp(1);
                 ch_p.fixer_nb_valeurs_nodales(nb_elem);

@@ -84,15 +84,15 @@ Entree& Zone_Cl_VEF::readOn(Entree& is )
 /*! @brief etape de discretisation : dimensionnement des tableaux
  *
  */
-void Zone_Cl_VEF::associer(const Zone_VEF& la_zone_VEF)
+void Zone_Cl_VEF::associer(const Zone_VEF& le_dom_VEF)
 {
-  int nb_faces_non_std = la_zone_VEF.nb_faces_non_std();
-  const Elem_VEF& type_elem= la_zone_VEF.type_elem();
+  int nb_faces_non_std = le_dom_VEF.nb_faces_non_std();
+  const Elem_VEF& type_elem= le_dom_VEF.type_elem();
   int nb_fa7_elem = type_elem.nb_facette();
 
   {
     IntVect renum;
-    la_zone_VEF.creer_tableau_faces(renum, ArrOfInt::NOCOPY_NOINIT);
+    le_dom_VEF.creer_tableau_faces(renum, ArrOfInt::NOCOPY_NOINIT);
     renum = -1;
     // Marquer les faces non standard reelles (premieres faces dans la zone)
     int i;
@@ -107,7 +107,7 @@ void Zone_Cl_VEF::associer(const Zone_VEF& la_zone_VEF)
   {
     // Construction du descripteur pour le tableau des elements "Cl":
     MD_Vector md_vect;
-    MD_Vector_tools::creer_md_vect_renum(la_zone_VEF.rang_elem_non_std(), md_vect);
+    MD_Vector_tools::creer_md_vect_renum(le_dom_VEF.rang_elem_non_std(), md_vect);
 
     // Creation de tableaux aux elements "Cl":
     normales_facettes_Cl_.resize(0, nb_fa7_elem, dimension);
@@ -127,10 +127,10 @@ void Zone_Cl_VEF::completer(const Zone_dis& une_zone_dis)
 {
   if (sub_type(Zone_VEF,une_zone_dis.valeur()))
     {
-      const Zone_VEF& la_zone_VEF = ref_cast(Zone_VEF, une_zone_dis.valeur());
-      remplir_type_elem_Cl(la_zone_VEF);
-      remplir_volumes_entrelaces_Cl(la_zone_VEF);
-      remplir_normales_facettes_Cl(la_zone_VEF);
+      const Zone_VEF& le_dom_VEF = ref_cast(Zone_VEF, une_zone_dis.valeur());
+      remplir_type_elem_Cl(le_dom_VEF);
+      remplir_volumes_entrelaces_Cl(le_dom_VEF);
+      remplir_normales_facettes_Cl(le_dom_VEF);
     }
   else
     {
@@ -142,20 +142,20 @@ void Zone_Cl_VEF::completer(const Zone_dis& une_zone_dis)
 /*! @brief appele par completer() : remplissage de type_elem_Cl_ et volumes_entrelaces_Cl_
  *
  */
-void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
+void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& le_dom_VEF)
 {
-  const DoubleVect& volumes_entrelaces = la_zone_VEF.volumes_entrelaces();
-  const IntVect& rang_elem = la_zone_VEF.rang_elem_non_std();
+  const DoubleVect& volumes_entrelaces = le_dom_VEF.volumes_entrelaces();
+  const IntVect& rang_elem = le_dom_VEF.rang_elem_non_std();
 
   // Initialisation du tableau volumes_entrelaces_Cl
   // a priori les faces non standard ne sont pas touchees par les C.L
 
-  for (int i=0; i<la_zone_VEF.nb_faces_non_std(); i++)
+  for (int i=0; i<le_dom_VEF.nb_faces_non_std(); i++)
     volumes_entrelaces_Cl_[i] = volumes_entrelaces(i);
 
   // Calcul des valeurs des volumes entrelaces modifiees par les C.L:
 
-  int nb_poly_tot = la_zone_VEF.zone().nb_elem_tot();
+  int nb_poly_tot = le_dom_VEF.zone().nb_elem_tot();
   ArrOfInt poly_fait(nb_poly_tot);
   poly_fait = 0;
   for(int i=0; i<les_conditions_limites_.size(); i++)
@@ -166,20 +166,20 @@ void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
            (sub_type(Dirichlet_homogene,la_cl))
          )
         {
-          const Front_VF& le_bord= la_zone_VEF.front_VF(i);
+          const Front_VF& le_bord= le_dom_VEF.front_VF(i);
           const Frontiere& front=le_bord.frontiere();
           int premiere=le_bord.num_premiere_face();
           int derniere=premiere+le_bord.nb_faces();
           for(int j=premiere; j<derniere; j++)
             {
               volumes_entrelaces_Cl_[j] =0;
-              int elem=la_zone_VEF.face_voisins(j,0);
+              int elem=le_dom_VEF.face_voisins(j,0);
               int n_poly=rang_elem(elem);
               if(!poly_fait[n_poly])
                 {
                   poly_fait[n_poly]=1;
-                  const Elem_VEF& type_elem= la_zone_VEF.type_elem();
-                  type_elem.modif_volumes_entrelaces(j,elem,la_zone_VEF,
+                  const Elem_VEF& type_elem= le_dom_VEF.type_elem();
+                  type_elem.modif_volumes_entrelaces(j,elem,le_dom_VEF,
                                                      volumes_entrelaces_Cl(),
                                                      type_elem_Cl(n_poly)) ;
                 }
@@ -190,15 +190,15 @@ void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
           for (int ind_face=0; ind_face<nb_faces_virt; ind_face++)
             {
               int num_face = faces_virt[ind_face];
-              int elem=la_zone_VEF.face_voisins(num_face,0);
+              int elem=le_dom_VEF.face_voisins(num_face,0);
               int n_poly=rang_elem(elem);
               if(n_poly!=-1)
                 {
                   if(!poly_fait[n_poly])
                     {
                       poly_fait[n_poly]=1;
-                      const Elem_VEF& type_elem= la_zone_VEF.type_elem();
-                      type_elem.modif_volumes_entrelaces_faces_joints(num_face,elem,la_zone_VEF,
+                      const Elem_VEF& type_elem= le_dom_VEF.type_elem();
+                      type_elem.modif_volumes_entrelaces_faces_joints(num_face,elem,le_dom_VEF,
                                                                       volumes_entrelaces_Cl(),
                                                                       type_elem_Cl(n_poly)) ;
                     }
@@ -213,16 +213,16 @@ void Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
  *  CHANGER LE NOM
  *
  */
-void Zone_Cl_VEF::remplir_normales_facettes_Cl(const Zone_VEF& la_zone_VEF)
+void Zone_Cl_VEF::remplir_normales_facettes_Cl(const Zone_VEF& le_dom_VEF)
 {
-  const Zone& z = la_zone_VEF.zone();
+  const Zone& z = le_dom_VEF.zone();
   const Zone& dom = z;
   const DoubleTab& les_coords =dom.coord_sommets();
   const IntTab& les_Polys = z.les_elems() ;
-  const Elem_VEF& elemvef = la_zone_VEF.type_elem();
-  const IntVect& rang_elem=la_zone_VEF.rang_elem_non_std();
-  const IntTab& elem_faces = la_zone_VEF.elem_faces();
-  const DoubleTab& xv=la_zone_VEF.xv();
+  const Elem_VEF& elemvef = le_dom_VEF.type_elem();
+  const IntVect& rang_elem=le_dom_VEF.rang_elem_non_std();
+  const IntTab& elem_faces = le_dom_VEF.elem_faces();
+  const DoubleTab& xv=le_dom_VEF.xv();
   const IntTab& KEL=elemvef.valeur().KEL();
 
 
@@ -324,13 +324,13 @@ int trois_puissance(int n)
 /*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
  *
  */
-void Zone_Cl_VEF::remplir_type_elem_Cl(const Zone_VEF& la_zone_VEF)
+void Zone_Cl_VEF::remplir_type_elem_Cl(const Zone_VEF& le_dom_VEF)
 {
-  const Zone& z = la_zone_VEF.zone();
+  const Zone& z = le_dom_VEF.zone();
   int nfac= z.type_elem().nb_faces();   // dans Elem_geom
-  const IntTab& elem_faces = la_zone_VEF.elem_faces();
-  const IntTab& face_voisins = la_zone_VEF.face_voisins();
-  const IntVect& rang_elem = la_zone_VEF.rang_elem_non_std();
+  const IntTab& elem_faces = le_dom_VEF.elem_faces();
+  const IntTab& face_voisins = le_dom_VEF.face_voisins();
+  const IntVect& rang_elem = le_dom_VEF.rang_elem_non_std();
   type_elem_Cl_ = 0;
   int elem, num_elem;
 
@@ -342,7 +342,7 @@ void Zone_Cl_VEF::remplir_type_elem_Cl(const Zone_VEF& la_zone_VEF)
            (sub_type(Dirichlet_homogene,la_cl))
          )
         {
-          const Front_VF& le_bord= la_zone_VEF.front_VF(i);
+          const Front_VF& le_bord= le_dom_VEF.front_VF(i);
           int premiere = le_bord.num_premiere_face();
           int derniere = premiere+le_bord.nb_faces();
           for(int j=premiere; j<derniere; j++)
@@ -356,9 +356,9 @@ void Zone_Cl_VEF::remplir_type_elem_Cl(const Zone_VEF& la_zone_VEF)
                 Cerr << "Zone_Cl_VEF::creer_type_elem_Cl() PAS POSSIBLE!! " << finl;
               num_elem = rang_elem(elem);
               assert(num_elem!=-1);
-              if (sub_type(Tri_VEF,la_zone_VEF.type_elem().valeur()) || sub_type(Tetra_VEF,la_zone_VEF.type_elem().valeur()))
+              if (sub_type(Tri_VEF,le_dom_VEF.type_elem().valeur()) || sub_type(Tetra_VEF,le_dom_VEF.type_elem().valeur()))
                 type_elem_Cl_[num_elem]+= Deux_Puissance((int)(nfac-1-numero2));
-              else if (sub_type(Quadri_VEF,la_zone_VEF.type_elem().valeur()) || sub_type(Hexa_VEF,la_zone_VEF.type_elem().valeur()) )
+              else if (sub_type(Quadri_VEF,le_dom_VEF.type_elem().valeur()) || sub_type(Hexa_VEF,le_dom_VEF.type_elem().valeur()) )
                 type_elem_Cl_[num_elem]+= trois_puissance((int)(nfac-1-numero2));
               else
                 {
@@ -737,9 +737,9 @@ int Zone_Cl_VEF::initialiser(double temps)
       if (modif_perio_fait_ == 0)
         {
           Cerr <<"modification de la Zone_Cl_VEF pour periodicite" << finl;
-          const Zone_VEF& la_zone_VEF = ref_cast(Zone_VEF,zone_dis().valeur());
-          const DoubleVect& volumes_entrelaces = la_zone_VEF.volumes_entrelaces();
-          remplir_volumes_entrelaces_Cl(la_zone_VEF);
+          const Zone_VEF& le_dom_VEF = ref_cast(Zone_VEF,zone_dis().valeur());
+          const DoubleVect& volumes_entrelaces = le_dom_VEF.volumes_entrelaces();
+          remplir_volumes_entrelaces_Cl(le_dom_VEF);
           for(int i=0; i<les_conditions_limites_.size(); i++)
             {
               const Cond_lim_base& la_cl=les_conditions_limites_[i].valeur();
@@ -748,7 +748,7 @@ int Zone_Cl_VEF::initialiser(double temps)
                 {
 
                   const Periodique& la_cl_perio = ref_cast(Periodique,la_cl);
-                  const Front_VF& le_bord= la_zone_VEF.front_VF(i);
+                  const Front_VF& le_bord= le_dom_VEF.front_VF(i);
                   int premiere=le_bord.num_premiere_face();
                   int derniere=premiere+le_bord.nb_faces();
                   IntVect fait(le_bord.nb_faces());

@@ -84,7 +84,7 @@ void Champ_Face_PolyMAC::init_auxiliary_variables()
 
 int Champ_Face_PolyMAC::reprendre(Entree& fich)
 {
-  const Zone_PolyMAC* zone = la_zone_VF.non_nul() ? &ref_cast( Zone_PolyMAC,la_zone_VF.valeur()) : NULL;
+  const Zone_PolyMAC* zone = le_dom_VF.non_nul() ? &ref_cast( Zone_PolyMAC,le_dom_VF.valeur()) : NULL;
   valeurs().set_md_vector(MD_Vector()); //on enleve le MD_Vector...
   valeurs().resize(0);
   int ret = Champ_Inc_base::reprendre(fich);

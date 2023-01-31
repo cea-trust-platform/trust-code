@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ Entree& Op_Curl_VEFP1B::readOn(Entree& is)
 
 const Zone_VEF_PreP1b& Op_Curl_VEFP1B::zone_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  return ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
 }
 
 /////////////////////////////////////
@@ -67,7 +67,7 @@ void Op_Curl_VEFP1B::associer(const Zone_dis& zone_dis,
 {
   const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 
   elements_pour_sommet();
@@ -84,7 +84,7 @@ DoubleTab& Op_Curl_VEFP1B::ajouter(const DoubleTab& vitesse,
 {
   Cerr << "Je suis dans operateur curl" << finl;
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Zone& zone = zone_VEF.zone();
   //int prems=zone_VEF.premiere_face_int();
   if ( dimension != 2 )
@@ -228,7 +228,7 @@ Op_Curl_VEFP1B::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   DoubleTab le_vecteur_normal(dimension);
 
   for (int composante = 0; composante<dimension; composante++)
@@ -244,7 +244,7 @@ Op_Curl_VEFP1B::vecteur_normal(const int face, const int elem) const
 // du maillage qui contiennent le sommet de numero global "i"
 int Op_Curl_VEFP1B::elements_pour_sommet()
 {
-  const Zone& zone = la_zone_vef.valeur().zone();
+  const Zone& zone = le_dom_vef.valeur().zone();
   int numero_global_som;
   elements_pour_sommet_.dimensionner(zone.nb_som());
 

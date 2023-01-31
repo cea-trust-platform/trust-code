@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ ArrOfDouble Terme_Source_Canal_perio_VDF_P0::source_convection_diffusion(double 
 
 void Terme_Source_Canal_perio_VDF_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone_VF = la_zone_VDF.valeur();
+  const Zone_VF& zone_VF = le_dom_VDF.valeur();
   const DoubleVect& volumes = zone_VF.volumes();
   ArrOfDouble s(source());
 

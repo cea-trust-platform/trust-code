@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,11 +31,11 @@ int Champ_Fonc_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
   // j'utilise le meme genre de code que dans Champ_Fonc_P0_base sauf que je recupere le nombre de faces au lieu du nombre d'elements
   // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer la zone discrete...
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
-  const Zone_VF& la_zone_vf = ref_cast(Zone_VF, self.zone_dis_base());
+  const Zone_VF& le_dom_vf = ref_cast(Zone_VF, self.zone_dis_base());
 
-  assert(n == la_zone_vf.nb_faces());
+  assert(n == le_dom_vf.nb_faces());
 
-  const MD_Vector& md = la_zone_vf.md_vector_faces();
+  const MD_Vector& md = le_dom_vf.md_vector_faces();
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;

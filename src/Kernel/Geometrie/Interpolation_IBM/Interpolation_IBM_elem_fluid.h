@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class Interpolation_IBM_elem_fluid : public Interpolation_IBM_base
   Declare_instanciable( Interpolation_IBM_elem_fluid ) ;
 
 public :
-  void discretise(const Discretisation_base&, Zone_dis_base& la_zone_EF) override;
+  void discretise(const Discretisation_base&, Zone_dis_base& le_dom_EF) override;
 
 protected :
   virtual void computeFluidElems(Zone_dis_base&);

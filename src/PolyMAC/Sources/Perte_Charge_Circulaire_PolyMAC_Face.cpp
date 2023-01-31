@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -207,11 +207,11 @@ void  Perte_Charge_Circulaire_PolyMAC_Face::coeffs_perte_charge(const DoubleVect
   // copie de Perte_Charge_PolyMAC::ajouter
   // Raccourcis
   const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
-  const DoubleTab& xv=la_zone_PolyMAC->xv() ;                     // centres de gravite des faces
+  const DoubleTab& xv=le_dom_PolyMAC->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-zone !
   const Sous_zone_VF& ssz=sous_zone?la_sous_zone_dis.valeur():Sous_zone_VF();
-  const Zone_PolyMAC& zvef=la_zone_PolyMAC.valeur();
+  const Zone_PolyMAC& zvef=le_dom_PolyMAC.valeur();
 
   // Parametres pour perte_charge()
   static DoubleVect u(dimension);

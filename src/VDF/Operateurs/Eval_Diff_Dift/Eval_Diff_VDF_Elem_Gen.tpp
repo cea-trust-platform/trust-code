@@ -50,7 +50,7 @@ template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, const DoubleTab&, const int face, const Periodique& la_cl, const int , Type_Double& flux) const
 {
   const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
-  const double d0 = la_zone->dist_face_elem0_period(face,i,la_cl.distance()), d1 = la_zone->dist_face_elem1_period(face,j,la_cl.distance());
+  const double d0 = le_dom->dist_face_elem0_period(face,i,la_cl.distance()), d1 = le_dom->dist_face_elem1_period(face,j,la_cl.distance());
 
   for (int k = 0; k < ncomp; k++)
     {
@@ -109,8 +109,8 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
       const Champ_front_calc_interne& Text = ref_cast(Champ_front_calc_interne, cl.T_ext().valeur());
       const IntTab& fmap = Text.face_map();
       int opp_face = fmap[face-num1]+num1;  // num1 is the index of the first face
-      int elem1 = la_zone->face_voisins(opp_face, 0);
-      elem_opp = (elem1 != -1) ? elem1 : la_zone->face_voisins(opp_face, 1);
+      int elem1 = le_dom->face_voisins(opp_face, 0);
+      elem_opp = (elem1 != -1) ? elem1 : le_dom->face_voisins(opp_face, 1);
     }
 
   // XXX : E. Saikali 08/03/2021 : The test of a zero diffusion was not done before. I think it should be like that
@@ -196,7 +196,7 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const int face, const
 {
   assert (aii.size_array() == ajj.size_array());
   const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
-  const double d0 = la_zone->dist_face_elem0_period(face,i,la_cl.distance()), d1 = la_zone->dist_face_elem1_period(face,j,la_cl.distance());
+  const double d0 = le_dom->dist_face_elem0_period(face,i,la_cl.distance()), d1 = le_dom->dist_face_elem1_period(face,j,la_cl.distance());
   for (int k = 0; k < ncomp; k++)
     {
       const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,9 +67,9 @@ void Rectangle_2D_axi::reordonner()
 void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
   /*
-    const IntTab& les_Polys = ma_zone->les_elems();
-    const Zone& le_domaine = ma_zone->domaine();
-    int nb_elem = ma_zone->nb_elem_tot();
+    const IntTab& les_Polys = mon_dom->les_elems();
+    const Zone& le_domaine = mon_dom->domaine();
+    int nb_elem = mon_dom->nb_elem_tot();
     int num_som;
 
     xp.resize(nb_elem,dimension);
@@ -98,7 +98,7 @@ void Rectangle_2D_axi::calculer_centres_gravite(DoubleTab& xp) const
  */
 void Rectangle_2D_axi::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();// zone.valeur() permet d'acceder a                                            // la zone qui est en cours de traitement
+  const Zone& zone=mon_dom.valeur();// zone.valeur() permet d'acceder a                                            // la zone qui est en cours de traitement
   const Zone& dom=zone;
   double r,r1,r2,dr,dz;
   int S1,S2,S3;

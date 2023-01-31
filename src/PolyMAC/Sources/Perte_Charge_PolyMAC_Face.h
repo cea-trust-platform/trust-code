@@ -54,7 +54,7 @@ protected:
   REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override { };
 
 
 

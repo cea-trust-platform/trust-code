@@ -64,9 +64,9 @@ public :
   };
 
 protected :
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
-  REF(Zone_VDF) la_zone_VDF;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  REF(Zone_VDF) le_dom_VDF;
+  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
 
 private :
   int moyenne= 0; //type de moyenne

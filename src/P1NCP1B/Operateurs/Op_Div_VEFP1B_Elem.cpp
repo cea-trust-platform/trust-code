@@ -101,7 +101,7 @@ static int verifier(const Op_Div_VEFP1B_Elem& op,
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,le_dom_vef.valeur());
   assert(zone_VEF.get_alphaE());
   const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -304,7 +304,7 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div, DoubleTab& flux_b) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
   assert(zone_VEF.get_alphaS());
   const Zone& zone = zone_VEF.zone();
   const Zone& dom = zone;
@@ -484,7 +484,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,le_dom_vef.valeur());
   assert(zone_VEF.get_alphaA());
   const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -622,7 +622,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,le_dom_vef.valeur());
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   // Quelques verifications:
   // L'espace virtuel de vitesse_face_absolue doit etre a jour (Le test est fait si check_enabled==1)
@@ -750,7 +750,7 @@ for(int isom=0; isom<3; isom++)
 // Divise par le volume
 void Op_Div_VEFP1B_Elem::volumique(DoubleTab& div) const
 {
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,le_dom_vef.valeur());
   int n=0;
   if (zone_VEF.get_alphaE())
     {
@@ -778,7 +778,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
 {
   // On annulle la divergence aux sommets sans degre de liberte
   // (sommet uniquement commun a des faces avec des CL Diriclet)
-  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
+  const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,le_dom_vef.valeur());
   const Zone& zone = zone_VEF.zone();
   const Zone& dom=zone;
   const IntTab& som_elem=zone.les_elems();

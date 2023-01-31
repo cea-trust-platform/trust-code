@@ -76,8 +76,8 @@ void Terme_Source_Th_TdivU_VEF_Face::associer_eqn_t()
   eqn_t = equation();
 }
 
-void Terme_Source_Th_TdivU_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                    const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Th_TdivU_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                       const Zone_Cl_dis& zone_Cl_dis)
 {
 }
 
@@ -91,10 +91,10 @@ void Terme_Source_Th_TdivU_VEF_Face::modifier_zone_cl()
 {
   if (zone_cl_mod_) return;
   zone_cl_mod_=1;
-  Zone_Cl_dis& ma_zonecl=ref_cast(Zone_Cl_dis,ma_zonecl_);
-  ma_zonecl=eqn_t.valeur().zone_Cl_dis();
+  Zone_Cl_dis& mon_domcl=ref_cast(Zone_Cl_dis,mon_domcl_);
+  mon_domcl=eqn_t.valeur().zone_Cl_dis();
   zonecl_sa=eqn_t.valeur().zone_Cl_dis().valeur();
-  Conds_lim& condlims=ma_zonecl.les_conditions_limites();
+  Conds_lim& condlims=mon_domcl.les_conditions_limites();
   Conds_lim& condlims_sa=zonecl_sa.valeur().les_conditions_limites();
   int nb=condlims.size();
 
@@ -165,7 +165,7 @@ DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
   Operateur_base& optype=ref_cast_non_const(Operateur_base,Op_conv.l_op_base());
   // We save the boundary fluxes:
   DoubleTab flux_bords_backup = optype.flux_bords();
-  optype.associer_zone_cl_dis(ma_zonecl_);
+  optype.associer_domaine_cl_dis(mon_domcl_);
   Op_conv.ajouter(temp,TdivU);
   for(int face=0; face<nb_faces; face++)
     {
@@ -185,7 +185,7 @@ DoubleTab& Terme_Source_Th_TdivU_VEF_Face::ajouter(DoubleTab& resu) const
   TdivU *= rhoCp;
   resu-=TdivU;
   // on remet la bonne zone_cl_dis
-  optype.associer_zone_cl_dis(zonecl_sa.valeur());
+  optype.associer_domaine_cl_dis(zonecl_sa.valeur());
   // We reset flux_bords
   optype.flux_bords() = flux_bords_backup;
   return resu;

@@ -154,7 +154,7 @@ void Discr_inst::discretiser_champ_fonc_don(
     {
       Champ_Fonc& ch=*champ_fonc;
       ch.typer(type);
-      ch->associer_zone_dis_base(z);
+      ch->associer_domaine_dis_base(z);
       ch->fixer_nb_comp(nb_comp);
       ch->fixer_nature_du_champ(nature);
       ch->fixer_nb_valeurs_nodales(nb_ddl);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,12 +31,12 @@ void Reynolds_maille_Champ_Face::associer_champ(const Champ_Face_VDF& la_vitesse
 }
 
 // Methode de calcul de la valeur sur une face d'un champ uniforme ou non a plusieurs composantes
-inline double valeur(const DoubleTab& champ, const int face, const int compo, const Zone_VDF& la_zone_VDF)
+inline double valeur(const DoubleTab& champ, const int face, const int compo, const Zone_VDF& le_dom_VDF)
 {
   if (champ.dimension(0) == 1) return champ(0, compo); // Champ uniforme
   else
     {
-      int elem0 = la_zone_VDF.face_voisins(face, 0), elem1 = la_zone_VDF.face_voisins(face, 1);
+      int elem0 = le_dom_VDF.face_voisins(face, 0), elem1 = le_dom_VDF.face_voisins(face, 1);
       if (elem0 < 0) elem0 = elem1; // face frontiere
       if (elem1 < 0) elem1 = elem0; // face frontiere
       return 0.5 * (champ(elem0, compo) + champ(elem1, compo));

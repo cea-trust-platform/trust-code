@@ -38,7 +38,7 @@ class Zone_dis : public DERIV(Zone_dis_base)
   Declare_instanciable(Zone_dis);
 
 public :
-  inline void associer_zone(const Zone&);
+  inline void associer_domaine(const Zone&);
 
   int nombre_de_sous_zones_dis() const { return valeur().nombre_de_sous_zones_dis(); }
 
@@ -60,9 +60,9 @@ public :
  *
  * @param (Zone& une_zone)
  */
-inline void Zone_dis::associer_zone(const Zone& une_zone)
+inline void Zone_dis::associer_domaine(const Zone& une_zone)
 {
-  valeur().associer_zone(une_zone);
+  valeur().associer_domaine(une_zone);
 }
 
 /*! @brief Appel a l'objet sous-jacent.

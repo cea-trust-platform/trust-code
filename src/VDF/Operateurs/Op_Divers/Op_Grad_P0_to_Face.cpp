@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   statistiques().begin_count(gradient_counter_);
   const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : equation().inconnue().valeur().valeurs();
   assert_espace_virtuel_vect(inco);
-  const Zone_VDF& zvdf = la_zone_vdf.valeur();
+  const Zone_VDF& zvdf = le_dom_vdf.valeur();
   const Zone_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& face_surfaces = zvdf.face_surfaces();
 

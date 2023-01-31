@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ Entree& Sortie_libre_pression_moyenne_imposee::readOn(Entree& s)
 
 void Sortie_libre_pression_moyenne_imposee::completer()
 {
-  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
+  const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   if (sub_type(Champ_Uniforme, mil.masse_volumique().valeur()))
     {
       const Champ_Uniforme& rho = ref_cast(Champ_Uniforme, mil.masse_volumique().valeur());
@@ -59,7 +59,7 @@ void Sortie_libre_pression_moyenne_imposee::completer()
 
   surfaces.resize(nb_faces_);
 
-  Zone_VF& zvf = ref_cast(Zone_VF, ma_zone_cl_dis->zone_dis().valeur());
+  Zone_VF& zvf = ref_cast(Zone_VF, mon_dom_cl_dis->zone_dis().valeur());
   for (i = 0; i < nb_faces_; i++)
     {
       surfaces(i) = zvf.face_surfaces(i + ndeb_);
@@ -74,7 +74,7 @@ void Sortie_libre_pression_moyenne_imposee::completer()
 void Sortie_libre_pression_moyenne_imposee::mettre_a_jour(double temps)
 {
   Cond_lim_base::mettre_a_jour(temps);
-  const DoubleTab& tab_P = ref_cast(Navier_Stokes_std,ma_zone_cl_dis->equation()).pression().valeurs();
+  const DoubleTab& tab_P = ref_cast(Navier_Stokes_std,mon_dom_cl_dis->equation()).pression().valeurs();
 
   int face, elem, facegl;
   DoubleTab& Pimp = le_champ_front.valeurs();
@@ -120,7 +120,7 @@ void Sortie_libre_pression_moyenne_imposee::mettre_a_jour(double temps)
  */
 double Sortie_libre_pression_moyenne_imposee::flux_impose(int i) const
 {
-  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
+  const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   const Champ_base& rho = mil.masse_volumique().valeur();
   double rho_;
   assert(!est_egal(d_rho, -123.));
@@ -150,7 +150,7 @@ double Sortie_libre_pression_moyenne_imposee::flux_impose(int i) const
  */
 double Sortie_libre_pression_moyenne_imposee::flux_impose(int i, int j) const
 {
-  const Milieu_base& mil = ma_zone_cl_dis->equation().milieu();
+  const Milieu_base& mil = mon_dom_cl_dis->equation().milieu();
   const Champ_base& rho = mil.masse_volumique().valeur();
   double rho_;
   assert(!est_egal(d_rho, -123.));

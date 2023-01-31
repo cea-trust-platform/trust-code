@@ -83,11 +83,11 @@ void Echange_couplage_thermique::completer()
   temperature_Teff->associer_fr_dis_base(frontiere_dis());
   temperature_Teff->fixer_nb_valeurs_temporelles(3);
 
-  Nom nom_pb=ma_zone_cl_dis->equation().probleme().que_suis_je();
-  const Champ_base& rho=ma_zone_cl_dis->equation().milieu().masse_volumique().valeur();
+  Nom nom_pb=mon_dom_cl_dis->equation().probleme().que_suis_je();
+  const Champ_base& rho=mon_dom_cl_dis->equation().milieu().masse_volumique().valeur();
   if ((nom_pb.debute_par("Probleme_Interface")|| nom_pb==Nom("Probleme_Thermo_Front_Tracking"))||!sub_type(Champ_Uniforme,rho)
       ||nom_pb==Nom("Pb_Conduction") || nom_pb.debute_par("Pb_Conduction_Combustible")
-      ||ma_zone_cl_dis->equation().que_suis_je()=="Convection_Diffusion_Concentration")
+      ||mon_dom_cl_dis->equation().que_suis_je()=="Convection_Diffusion_Concentration")
     {
       // Pour le front tracking, QC, et conduc_variable, on ne divise pas par Rho*Cp:
       divise_par_rho_cp_=false;
@@ -98,7 +98,7 @@ double Echange_couplage_thermique::champ_exterieur(int i,int j, const Champ_fron
 {
   if (divise_par_rho_cp_)
     {
-      const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
+      const Milieu_base& mil=mon_dom_cl_dis->equation().milieu();
       const Champ_base& rho=mil.masse_volumique().valeur();
       const Champ_Don& Cp=mil.capacite_calorifique();
       double d_rho = sub_type(Champ_Uniforme,rho) ? rho(0,0) : rho(i);

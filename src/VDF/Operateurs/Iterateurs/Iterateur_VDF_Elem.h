@@ -39,7 +39,7 @@ public:
   inline const Evaluateur_VDF& evaluateur() const override { return static_cast<const Evaluateur_VDF&> (flux_evaluateur); }
 
   int impr(Sortie& os) const override;
-  void completer_() override { elem.ref(la_zone->face_voisins()); }
+  void completer_() override { elem.ref(le_dom->face_voisins()); }
   void ajouter_contribution_autre_pb(const DoubleTab& inco, Matrice_Morse& matrice, const Cond_lim& la_cl, std::map<int, std::pair<int, int>>&) const override;
   void contribuer_au_second_membre(DoubleTab& ) const override;
 

@@ -38,13 +38,13 @@ void Terme_Source_Constituant_VDF_Elem::completer()
   col_width_ = Terme_Source_Constituant::completer(equation().inconnue().valeur());
 }
 
-void Terme_Source_Constituant_VDF_Elem::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Terme_Source_Constituant_VDF_Elem::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  iter->associer_zones(zvdf, zclvdf);
+  iter->associer_domaines(zvdf, zclvdf);
   Eval_Source_C_VDF_Elem& eval_puis = static_cast<Eval_Source_C_VDF_Elem&> (iter->evaluateur());
-  eval_puis.associer_zones(zvdf,zclvdf);
+  eval_puis.associer_domaines(zvdf,zclvdf);
 }
 
 void Terme_Source_Constituant_VDF_Elem::associer_pb(const Probleme_base& pb)

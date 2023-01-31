@@ -78,11 +78,11 @@ void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
   for(; ((type_id<nb_type_face())
          &&(type!=type_face(type_id))); type_id++)
     ;
-  const IntTab& les_Polys = ma_zone->les_elems();
+  const IntTab& les_Polys = mon_dom->les_elems();
   assert(les_Polys.dimension_tot(0) > num_elem);
   int face, i;
   les_faces.dimensionner(nb_faces(type_id));
-  les_faces.associer_zone(ma_zone.valeur());
+  les_faces.associer_domaine(mon_dom.valeur());
 
   for(face=0; face<nb_faces(type_id); face++)
     {
@@ -100,12 +100,12 @@ void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
  */
 void Elem_geom_base::calculer_centres_gravite(DoubleTab& xp) const
 {
-  const IntTab& les_Polys = ma_zone->les_elems();
-  const Zone& le_domaine = ma_zone.valeur();
+  const IntTab& les_Polys = mon_dom->les_elems();
+  const Zone& le_domaine = mon_dom.valeur();
   int nb_elem;
   if(xp.dimension(0)==0)
     {
-      nb_elem = ma_zone->nb_elem_tot();
+      nb_elem = mon_dom->nb_elem_tot();
       xp.resize(nb_elem,dimension);
     }
   else

@@ -252,7 +252,7 @@ double formule_3D(int n)
 
 void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,const IntList& faces, const DoubleTabs& valeurs_faces, const DoubleTab& tab_vitesse, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF=la_zcl_vef.valeur();
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const int nb_bord=zone_Cl_VEF.nb_cond_lim();
@@ -294,7 +294,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::reinit_conv_pour_Cl(const DoubleTab& transporte,c
 
 void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab& Kij,const int nb_comp, const DoubleTab& tab_vitesse) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const DoubleTab& face_normales=zone_VEF.face_normales();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -509,7 +509,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_coefficients_operateur_centre(DoubleTab&
 }
 void Op_Conv_EF_VEF_P1NC_Stab::remplir_fluent(DoubleVect& fluent_) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& tab_vitesse=la_vitesse.valeurs();
   const DoubleTab& face_normales=zone_VEF.face_normales();
@@ -536,7 +536,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
   DoubleTab sauv(resu);
   resu=0;
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   const DoubleTab& vitesse_2=la_vitesse.valeurs();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
@@ -615,7 +615,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter(const DoubleTab& transporte_2,
 DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab& transporte,
                                                                  DoubleTab& resu, const DoubleTab& vitesse_2) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const DoubleTab& face_normales=zone_VEF.face_normales();
@@ -684,7 +684,7 @@ DoubleTab& Op_Conv_EF_VEF_P1NC_Stab::ajouter_partie_compressible(const DoubleTab
 void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const DoubleTab& tab_vitesse, const DoubleTab& transporte) const
 {
 
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
 #ifndef NDEBUG
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -743,7 +743,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::calculer_flux_bords(const DoubleTab& Kij, const D
 DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.line_size();
@@ -781,7 +781,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_operateur_centre(const DoubleTab& Kij, const D
 DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const int nb_elem_tot=zone_VEF.nb_elem_tot();
   const int nb_faces_elem=elem_faces.line_size();
@@ -826,7 +826,7 @@ Op_Conv_EF_VEF_P1NC_Stab::ajouter_diffusion(const DoubleTab& Kij, const DoubleTa
 DoubleTab&
 Op_Conv_EF_VEF_P1NC_Stab::ajouter_antidiffusion(const DoubleTab& Kij, const DoubleTab& transporte, DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
 
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins=zone_VEF.face_voisins();
@@ -985,7 +985,7 @@ Op_Conv_EF_VEF_P1NC_Stab::calculer_senseur(const DoubleTab& Kij, const DoubleVec
 
 void Op_Conv_EF_VEF_P1NC_Stab::test(const DoubleTab& transporte, const DoubleTab& resu, const DoubleTab& tab_vitesse) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const int nb_faces_elem=elem_faces.dimension(1);
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
@@ -1002,7 +1002,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::test(const DoubleTab& transporte, const DoubleTab
 
 void Op_Conv_EF_VEF_P1NC_Stab::test_difference_Kij(const DoubleTab& transporte, DoubleTab& Kij, DoubleTab& Kij_ancien, const DoubleTab& tab_vitesse ) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   //  const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   //const DoubleTab& vitesse=la_vitesse.valeurs();
 
@@ -1167,7 +1167,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::test_difference_resu(const DoubleTab& Kij, const 
   //   Calcul de resu2
   //
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -1584,7 +1584,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::mettre_a_jour_pour_periodicite(DoubleTab& resu) c
 
 void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTab& resu, const DoubleTab& tab_vitesse ) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   //  const Champ_P1NC& la_vitesse=ref_cast( Champ_P1NC, vitesse_.valeur());
   // const DoubleTab& vitesse=la_vitesse.valeurs();
 
@@ -2015,7 +2015,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_old(const DoubleTab& transporte, DoubleTa
 //contenu dans un element quelconque du maillage
 void Op_Conv_EF_VEF_P1NC_Stab::calculer_data_pour_dirichlet()
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
 
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -2084,12 +2084,12 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
   //  if (equation().inconnue().valeurs().nb_dim()>1)
   //  nb_comp=equation().inconnue().valeurs().dimension(1);
 
-  //  limiteurs_.resize(la_zone_vef->nb_faces_tot(),nb_comp);
+  //  limiteurs_.resize(le_dom_vef->nb_faces_tot(),nb_comp);
   // limiteurs_=0.;
 
-  alpha_tab.resize_array(la_zone_vef->nb_faces_tot());
+  alpha_tab.resize_array(le_dom_vef->nb_faces_tot());
   alpha_tab = alpha_;
-  beta.resize_array(la_zone_vef->nb_faces_tot());
+  beta.resize_array(le_dom_vef->nb_faces_tot());
   beta=1.;
 
   if (ssz_alpha)
@@ -2098,7 +2098,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
         {
           REF(Sous_zone_VF) la_ssz;
           const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(noms_ssz_alpha[i]);
-          const Zone_dis_base& le_domaine_dis=la_zone_vef.valeur();
+          const Zone_dis_base& le_domaine_dis=le_dom_vef.valeur();
           bool trouve=false;
           for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
             {
@@ -2133,7 +2133,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
     {
       sous_zone=false;
       const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(nom_sous_zone);
-      const Zone_dis_base& le_domaine_dis=la_zone_vef.valeur();
+      const Zone_dis_base& le_domaine_dis=le_dom_vef.valeur();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
         {
           if (le_domaine_dis.sous_zone_dis(ssz)->sous_zone().est_egal_a(la_sous_zone))
@@ -2169,7 +2169,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution(const DoubleTab& transporte_
       Op_Conv_VEF_Face::ajouter_contribution(transporte_2, matrice) ;
       return;
     }
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const int nb_elem_tot = zone_VEF.nb_elem_tot();
   const int nb_faces_elem = zone_VEF.zone().nb_faces_elem();
@@ -2209,7 +2209,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::modifier_pour_Cl (Matrice_Morse& matrice, DoubleT
 
 void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_operateur_centre(const DoubleTab& Kij, const DoubleTab& transporte, Matrice_Morse& matrice) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
 
   const IntTab& elem_faces=zone_VEF.elem_faces();
@@ -2323,7 +2323,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_operateur_centre(const Doubl
 
 void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_diffusion(const DoubleTab& Kij, const DoubleTab& transporte, Matrice_Morse& matrice) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -2448,7 +2448,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_diffusion(const DoubleTab& K
 void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_partie_compressible(const DoubleTab& transporte, const DoubleTab& vitesse_2,
                                                                         Matrice_Morse& matrice) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -2584,7 +2584,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_partie_compressible(const Do
 void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTab& Kij, const DoubleTab& transporte,
                                                                   Matrice_Morse& matrice) const
 {
-  const Zone_VEF& zone_VEF=la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF=le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const IntTab& elem_faces=zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -2811,7 +2811,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::ajouter_contribution_antidiffusion(const DoubleTa
 
 void Op_Conv_EF_VEF_P1NC_Stab::test_implicite() const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
 
   const DoubleTab& unknown=equation().inconnue().valeurs();

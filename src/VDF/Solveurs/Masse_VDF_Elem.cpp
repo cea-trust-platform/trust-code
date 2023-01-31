@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ Entree& Masse_VDF_Elem::readOn(Entree& s) { return s ; }
 
 void Masse_VDF_Elem::preparer_calcul()
 {
-  associer_masse_proto(*this, la_zone_VDF.valeur());
+  associer_masse_proto(*this, le_dom_VDF.valeur());
   if (sub_type(Pb_Multiphase,equation().probleme())) preparer_calcul_proto();
 }
 
@@ -37,7 +37,7 @@ DoubleTab& Masse_VDF_Elem::appliquer_impl(DoubleTab& sm) const
   if (sub_type(Pb_Multiphase, equation().probleme())) return appliquer_impl_proto(sm);
   else
     {
-      const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+      const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
       const DoubleVect& volumes = zone_VDF.volumes(), &porosite_elem = equation().milieu().porosite_elem();
       int nb_elem = zone_VDF.nb_elem();
       if (nb_elem == 0)

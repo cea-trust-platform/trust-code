@@ -62,7 +62,7 @@ void Op_Diff_PolyMAC_Elem::completer()
   Equation_base& eq = equation();
   Champ_Elem_PolyMAC& ch = ref_cast(Champ_Elem_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue().valeur());
   ch.init_auxiliary_variables();
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     {
       Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
@@ -105,7 +105,7 @@ void Op_Diff_PolyMAC_Elem::init_op_ext() const
 
 double Op_Diff_PolyMAC_Elem::calculer_dt_stab() const
 {
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
   const IntTab& e_f = zone.elem_faces();
   const DoubleTab& nf = zone.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,

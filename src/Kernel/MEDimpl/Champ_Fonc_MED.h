@@ -35,7 +35,7 @@ class Champ_Fonc_MED: public Champ_Fonc_base
 {
   Declare_instanciable(Champ_Fonc_MED);
 public :
-  inline void associer_zone_dis_base(const Zone_dis_base&) override;
+  inline void associer_domaine_dis_base(const Zone_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
   const Zone_VF& zone_vf() const override { throw; }
 
@@ -103,9 +103,9 @@ protected:
   void readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_decoup_lu);
 };
 
-inline void Champ_Fonc_MED::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
+inline void Champ_Fonc_MED::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
 {
-  Cerr<<"Champ_Fonc_MED::associer_zone_dis_base does nothing"<<finl;
+  Cerr<<"Champ_Fonc_MED::associer_domaine_dis_base does nothing"<<finl;
 }
 inline const Champ_Fonc_base& Champ_Fonc_MED::le_champ() const
 {

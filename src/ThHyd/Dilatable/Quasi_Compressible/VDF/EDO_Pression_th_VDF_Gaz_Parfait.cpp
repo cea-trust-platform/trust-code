@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,9 +64,9 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
       Cerr<<"on choisit le traitement "<<finl;
       int n_bord ;
       traitPth=1;
-      for (n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)
+      for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
         {
-          const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
           if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
             {
               traitPth=2;
@@ -85,9 +85,9 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
       /*
       //Cerr << "trait cons" << finl;
       double Sco=0,v;
-      int elem, nb_elem=la_zone->nb_elem();
+      int elem, nb_elem=le_dom->nb_elem();
       for (elem=0 ; elem<nb_elem ; elem++) {
-      v = la_zone->volumes(elem);
+      v = le_dom->volumes(elem);
       //V += v;
       //rho_moy += tab_rho(elem) *v;
       Sco += v/tempnp1(elem);
@@ -102,10 +102,10 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
       */
       const DoubleTab& tempn = le_fluide_->inco_chaleur().passe();
       double cn1=0,cn=0,v;
-      int elem, nb_elem=la_zone->nb_elem();
+      int elem, nb_elem=le_dom->nb_elem();
       for (elem=0 ; elem<nb_elem ; elem++)
         {
-          v = la_zone->volumes(elem);
+          v = le_dom->volumes(elem);
           //V += v;
           //rho_moy += tab_rho(elem) *v;
           cn1 += v/tempnp1(elem);
@@ -114,13 +114,13 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
       int n_bord ;
 
       double cm=0;
-      const IntTab& face_voisins=la_zone->face_voisins();
-      const DoubleVect& Surface=la_zone->face_surfaces();
+      const IntTab& face_voisins=le_dom->face_voisins();
+      const DoubleVect& Surface=le_dom->face_surfaces();
       // ce n'est pas la bonne vitesse mais on essaye
-      const IntVect& orientation=la_zone->orientation();
-      for (n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)
+      const IntVect& orientation=le_dom->orientation();
+      for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
         {
-          const Cond_lim_base& la_cl = la_zone_Cl->les_conditions_limites(n_bord).valeur();
+          const Cond_lim_base& la_cl = le_dom_Cl->les_conditions_limites(n_bord).valeur();
           if (sub_type(Dirichlet, la_cl))
             {
               const Dirichlet& diri=ref_cast(Dirichlet,la_cl);
@@ -159,9 +159,9 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   abort();
   // traitement edo ???
   int n_bord;
-  for (n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
         return Pth_n;
 
@@ -177,7 +177,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
 
   Cerr<<"---EDO : Tnp1="<<tempnp1(0)<<" Tn="<<tempn(0)<<finl;
 
-  int elem, nb_elem=la_zone->nb_elem();
+  int elem, nb_elem=le_dom->nb_elem();
   double V = 0; //mesure du domaine
   double F = 0; //integrale du gradient de U
   double S = 0; //second membre
@@ -188,7 +188,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   double v;
 
 
-  const IntTab& elem_faces = la_zone->elem_faces();
+  const IntTab& elem_faces = le_dom->elem_faces();
   DoubleTrav divU(tab_vit.dimension(0));
   ref_cast(Navier_Stokes_std,le_fluide_->vitesse()->equation()).operateur_divergence().calculer(tab_vit,divU);
   DoubleTrav gradT(tab_vit.dimension(0));
@@ -214,31 +214,31 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
 
   for (elem=0 ; elem<nb_elem ; elem++)
     {
-      v = la_zone->volumes(elem);
+      v = le_dom->volumes(elem);
       V += v;
 
       S += v * tab_rho(elem) * ((tempnp1(elem)-tempn(elem))/dt + u_gradT(elem));
 
     }
 
-  //  int nb_cond_lim = la_zone->nb_front_Cl();
+  //  int nb_cond_lim = le_dom->nb_front_Cl();
   int ndeb, nfin, face;
   double norm;
   DoubleVect norme(dimension);
-  for (n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       ndeb = frontiere_dis.num_premiere_face();
       nfin = ndeb + frontiere_dis.nb_faces();
       //if (sub_type(Neumann_sortie_libre, la_cl.valeur()) || sub_type(Dirichlet_entree_fluide, la_cl.valeur())) {
       for (face=ndeb ; face<nfin ; face++)
         {
-          elem = la_zone->face_voisins(face,0);
-          norm = la_zone->face_surfaces(face);
+          elem = le_dom->face_voisins(face,0);
+          norm = le_dom->face_surfaces(face);
           if (elem==-1)
             {
-              elem = la_zone->face_voisins(face,1);
+              elem = le_dom->face_voisins(face,1);
               norm *= -1;
             }
           //calcul de F=Som(div(U))
@@ -286,7 +286,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   const Loi_Etat_GP_QC& loi_ = ref_cast(Loi_Etat_GP_QC,le_fluide_->loi_etat().valeur());
 
 
-  int elem, nb_elem=la_zone->nb_elem();
+  int elem, nb_elem=le_dom->nb_elem();
   double V = 0; //mesure du domaine
   double F = 0; //integrale du gradient de U
   double S = 0; //second membre
@@ -298,14 +298,14 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
   double v;
 
-  const IntTab& elem_faces = la_zone->elem_faces();
+  const IntTab& elem_faces = le_dom->elem_faces();
   double Sco=0,Pth;
 
 
   if (traitPth == 0)
   { //Cerr << "trait edo" << finl;
   for (elem=0 ; elem<nb_elem ; elem++) {
-  v = la_zone->volumes(elem);
+  v = le_dom->volumes(elem);
   V += v;
 
   rho_moy += tab_rho(elem) *v;
@@ -325,7 +325,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   else if (traitPth == 1)
   { //Cerr << "trait cons" << finl;
   for (elem=0 ; elem<nb_elem ; elem++) {
-  v = la_zone->volumes(elem);
+  v = le_dom->volumes(elem);
   V += v;
 
   rho_moy += tab_rho(elem) *v;

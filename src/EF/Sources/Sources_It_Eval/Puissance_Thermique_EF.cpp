@@ -32,13 +32,13 @@ Entree& Puissance_Thermique_EF::readOn(Entree& s)
   return s;
 }
 
-void Puissance_Thermique_EF::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Puissance_Thermique_EF::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_EF& zEF = ref_cast(Zone_EF, zone_dis.valeur());
   const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF, zone_cl_dis.valeur());
-  iter->associer_zones(zEF, zclEF);
+  iter->associer_domaines(zEF, zclEF);
   Eval_Puiss_Th_EF& eval_puis = dynamic_cast<Eval_Puiss_Th_EF&> (iter->evaluateur());
-  eval_puis.associer_zones(zEF, zclEF);
+  eval_puis.associer_domaines(zEF, zclEF);
 }
 
 void Puissance_Thermique_EF::associer_pb(const Probleme_base& pb)

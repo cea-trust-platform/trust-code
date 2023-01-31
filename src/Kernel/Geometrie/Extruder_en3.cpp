@@ -113,7 +113,7 @@ void Extruder_en3::extruder(Zone& dom, const IntVect& num)
         // bloc a factoriser avec Zone_VF.cpp :
         Type_Face type_face = dom.type_elem().type_face(0);
         les_faces.typer(type_face);
-        les_faces.associer_zone(dom);
+        les_faces.associer_domaine(dom);
 
         Static_Int_Lists connectivite_som_elem;
         const IntTab& elements = dom.les_elems();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ public:
   Champ_base& affecter_(const Champ_base&) override;
   double norme_L2(const Zone& dom) const;
 
-  inline const Zone_VEF_PreP1b& zone_vef() const override { return ref_cast(Zone_VEF_PreP1b, la_zone_VF.valeur()); }
+  inline const Zone_VEF_PreP1b& zone_vef() const override { return ref_cast(Zone_VEF_PreP1b, le_dom_VF.valeur()); }
 
   inline DoubleTab& valeur_aux_sommets(const Zone& dom, DoubleTab& sommets) const override
   {

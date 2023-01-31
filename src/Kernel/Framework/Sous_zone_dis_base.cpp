@@ -52,18 +52,18 @@ void Sous_zone_dis_base::associer_sous_zone(const Sous_Zone& une_sous_zone)
 /*! @brief Associe une Zone_dis a l'objet.
  *
  */
-void Sous_zone_dis_base::associer_zone_dis(const Zone_dis_base& une_zone_dis)
+void Sous_zone_dis_base::associer_domaine_dis(const Zone_dis_base& une_zone_dis)
 {
-  la_zone_dis=une_zone_dis;
+  le_dom_dis=une_zone_dis;
 }
 
 const Zone_dis_base& Sous_zone_dis_base::zone_dis() const
 {
-  return la_zone_dis.valeur();
+  return le_dom_dis.valeur();
 }
 
 Zone_dis_base& Sous_zone_dis_base::zone_dis()
 {
-  return la_zone_dis.valeur();
+  return le_dom_dis.valeur();
 }
 

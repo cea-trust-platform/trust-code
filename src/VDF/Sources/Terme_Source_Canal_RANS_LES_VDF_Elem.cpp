@@ -141,11 +141,11 @@ Entree& Terme_Source_Canal_RANS_LES_VDF_Elem::readOn(Entree& is )
 
 }
 
-void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_zones(const Zone_dis& zone_dis,
-                                                          const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_domaines(const Zone_dis& zone_dis,
+                                                             const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
 void Terme_Source_Canal_RANS_LES_VDF_Elem::associer_pb(const Probleme_base& pb)
@@ -224,7 +224,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
 {
   //Cerr << "Je suis dans le mettre_a_jour" << finl;
 
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
 
   //vitesse=temperature
 
@@ -337,7 +337,7 @@ void Terme_Source_Canal_RANS_LES_VDF_Elem::mettre_a_jour(double temps)
 
 void Terme_Source_Canal_RANS_LES_VDF_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   int nb_elems = zone_VDF.nb_elem();
   const DoubleVect& volume = zone_VDF.volumes();
   const double tps = mon_equation->schema_temps().temps_courant();

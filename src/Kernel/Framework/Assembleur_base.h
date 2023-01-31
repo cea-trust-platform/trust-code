@@ -45,8 +45,8 @@ public:
   virtual int assembler_rho_variable(Matrice&, const Champ_Don_base& rho);
   virtual int assembler_QC(const DoubleTab&, Matrice&);
   virtual void completer(const Equation_base&) =0;
-  virtual void associer_zone_dis_base(const Zone_dis_base&) =0;
-  virtual void associer_zone_cl_dis_base(const Zone_Cl_dis_base&) =0;
+  virtual void associer_domaine_dis_base(const Zone_dis_base&) =0;
+  virtual void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&) =0;
   virtual const Zone_dis_base& zone_dis_base() const =0;
   virtual const Zone_Cl_dis_base& zone_Cl_dis_base() const =0;
   virtual int modifier_secmem(DoubleTab&)=0;

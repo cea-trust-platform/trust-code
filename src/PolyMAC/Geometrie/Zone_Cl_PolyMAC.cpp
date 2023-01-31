@@ -58,9 +58,9 @@ Entree& Zone_Cl_PolyMAC::readOn(Entree& is )
 /*! @brief etape de discretisation : dimensionnement des tableaux
  *
  */
-void Zone_Cl_PolyMAC::associer(const Zone_PolyMAC& la_zone_PolyMAC)
+void Zone_Cl_PolyMAC::associer(const Zone_PolyMAC& le_dom_PolyMAC)
 {
-  //  int nb_elem_Cl  = la_zone_PolyMAC.nb_elem_Cl();
+  //  int nb_elem_Cl  = le_dom_PolyMAC.nb_elem_Cl();
 }
 
 /*! @brief remplissage des tableaux
@@ -71,8 +71,8 @@ void Zone_Cl_PolyMAC::completer(const Zone_dis& une_zone_dis)
   modif_perio_fait_ = 0;
   if (sub_type(Zone_PolyMAC,une_zone_dis.valeur()))
     {
-      const Zone_PolyMAC& la_zone_poly = ref_cast(Zone_PolyMAC, une_zone_dis.valeur());
-      remplir_type_elem_Cl(la_zone_poly);
+      const Zone_PolyMAC& le_dom_poly = ref_cast(Zone_PolyMAC, une_zone_dis.valeur());
+      remplir_type_elem_Cl(le_dom_poly);
     }
   else
     {
@@ -83,7 +83,7 @@ void Zone_Cl_PolyMAC::completer(const Zone_dis& une_zone_dis)
 /*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
  *
  */
-void Zone_Cl_PolyMAC::remplir_type_elem_Cl(const Zone_PolyMAC& la_zone_PolyMAC)
+void Zone_Cl_PolyMAC::remplir_type_elem_Cl(const Zone_PolyMAC& le_dom_PolyMAC)
 {
 }
 
@@ -101,7 +101,7 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
   else if (sub_type(Champ_Face_PolyMAC,ch_base))
     {
       Champ_Face_PolyMAC& ch_face = ref_cast(Champ_Face_PolyMAC, ch_base);
-      const Zone_VF& ma_zone_VF = ch_face.zone_vf();
+      const Zone_VF& mon_dom_VF = ch_face.zone_vf();
       int ndeb,nfin, num_face;
 
       for(int i=0; i<nb_cond_lim(); i++)
@@ -131,8 +131,8 @@ void Zone_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
                     // vn
                     double vn=0;
                     for (int d=0; d<dimension; d++)
-                      vn+=ma_zone_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
-                    vn/=ma_zone_VF.face_surfaces(num_face);
+                      vn+=mon_dom_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
+                    vn/=mon_dom_VF.face_surfaces(num_face);
                     ch_tab(num_face, n) = vn;
                   }
             }

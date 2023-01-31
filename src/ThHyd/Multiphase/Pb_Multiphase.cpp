@@ -143,7 +143,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
       eq.associer_pb_base(*this);
       eq.associer_milieu_base(milieu());
       eq.associer_sch_tps_base(le_schema_en_temps);
-      eq.associer_zone_dis(domaine_dis());
+      eq.associer_domaine_dis(domaine_dis());
       eq.discretiser(); //a faire avant de lire l'equation
       is >> eq; //et c'est parti!
       eq.associer_milieu_equation(); //remontee vers le milieu

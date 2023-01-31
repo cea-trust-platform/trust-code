@@ -328,18 +328,18 @@ void Navier_Stokes_std::completer()
   initialise_residu(1);
 
   la_pression.associer_eqn(*this);
-  la_pression->completer(la_zone_Cl_dis.valeur());
+  la_pression->completer(le_dom_Cl_dis.valeur());
   // [ABN] make sure the pressure knows the zone_Cl_dis to be able to use specific postreatment like 'gravcl'
-  la_pression->associer_zone_cl_dis(la_zone_Cl_dis);
+  la_pression->associer_domaine_cl_dis(le_dom_Cl_dis);
 
   divergence_U.associer_eqn(*this);
   if (gradient_P.non_nul()) gradient_P.associer_eqn(*this);
   la_pression_en_pa.associer_eqn(*this);
-  la_pression_en_pa->completer(la_zone_Cl_dis.valeur());
-  la_pression_en_pa->associer_zone_cl_dis(la_zone_Cl_dis);
+  la_pression_en_pa->completer(le_dom_Cl_dis.valeur());
+  la_pression_en_pa->associer_domaine_cl_dis(le_dom_Cl_dis);
   divergence.completer();
   gradient.completer();
-  assembleur_pression_.associer_zone_cl_dis_base(zone_Cl_dis().valeur());
+  assembleur_pression_.associer_domaine_cl_dis_base(zone_Cl_dis().valeur());
   assembleur_pression_.completer(*this);
 
   if (distance_paroi_globale.non_nul())// On initialize la distance au bord au debut du calcul si on en a besoin, ce ne sera plus mis a jour par la suite car le maillage est fixe ; on le fait tard car il faut avoir lu les CL
@@ -425,7 +425,7 @@ void Navier_Stokes_std::discretiser_assembleur_pression()
   type += discretisation().que_suis_je();
   Cerr << "Navier_Stokes_std::discretiser_assembleur_pression : type="<< type << finl;
   assembleur_pression_.typer(type);
-  assembleur_pression_.associer_zone_dis_base(zone_dis().valeur());
+  assembleur_pression_.associer_domaine_dis_base(zone_dis().valeur());
 }
 
 /*! @brief Renvoie le nombre d'operateurs de l'equation: Pour Navier Stokes Standard c'est 2.
@@ -967,7 +967,7 @@ int Navier_Stokes_std::preparer_calcul()
     projeter();
 
   // Au cas ou une cl de pression depend de u que l'on vient de modifier
-  la_zone_Cl_dis->mettre_a_jour(temps);
+  le_dom_Cl_dis->mettre_a_jour(temps);
   Debog::verifier("Navier_Stokes_std::preparer_calcul, la_pression ap projeter", la_pression.valeurs());
 
   // Initialisation du champ de pression (resolution de Laplacien(P)=0 avec les conditions limites en pression)

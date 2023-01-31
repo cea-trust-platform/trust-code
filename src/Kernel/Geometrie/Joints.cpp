@@ -27,9 +27,9 @@ Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
  *
  * @param (Zone& une_zone) la zone a associer aux joint
  */
-void Joints::associer_zone(const Zone& une_zone)
+void Joints::associer_domaine(const Zone& une_zone)
 {
-  for (auto& itr : *this) itr.associer_zone(une_zone);
+  for (auto& itr : *this) itr.associer_domaine(une_zone);
 }
 
 /*! @brief Renvoie le nombre de face total des Joints de la liste.

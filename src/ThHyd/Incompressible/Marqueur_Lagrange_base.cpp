@@ -54,7 +54,7 @@ void Marqueur_Lagrange_base::discretiser(const Probleme_base& pb, const  Discret
   dis.discretiser_champ("champ_elem",zone_dis,nom,unite,1,temps,densite_particules_);
   champs_compris_.ajoute_champ(densite_particules_.valeur());
 
-  ensemble_points().associer_zone(zone);
+  ensemble_points().associer_domaine(zone);
   if (t_debut_integr_==-1.)
     t_debut_integr_ = pb.schema_temps().temps_init();
 }

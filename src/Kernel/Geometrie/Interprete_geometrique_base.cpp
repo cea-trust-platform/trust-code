@@ -58,11 +58,11 @@ Entree& Interprete_geometrique_base::interpreter(Entree& is)
     {
       Zone& zone = domaine(j);
       zone.invalide_octree();
-      zone.faces_bord().associer_zone(zone);
-      zone.faces_joint().associer_zone(zone);
-      zone.faces_raccord().associer_zone(zone);
-      zone.faces_int().associer_zone(zone);
-      zone.type_elem().associer_zone(zone);
+      zone.faces_bord().associer_domaine(zone);
+      zone.faces_joint().associer_domaine(zone);
+      zone.faces_raccord().associer_domaine(zone);
+      zone.faces_int().associer_domaine(zone);
+      zone.type_elem().associer_domaine(zone);
       zone.fixer_premieres_faces_frontiere();
 //      zone.associer_domaine(domaine(j));
     }

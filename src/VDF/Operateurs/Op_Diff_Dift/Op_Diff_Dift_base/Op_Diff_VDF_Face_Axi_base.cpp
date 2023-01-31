@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ void Op_Diff_VDF_Face_Axi_base::associer(const Zone_dis& zone_dis, const Zone_Cl
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
   const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_transporte.valeur());
-  la_zone_vdf = zvdf;
+  le_dom_vdf = zvdf;
   la_zcl_vdf = zclvdf;
   inconnue = inco;
   surface.ref(zvdf.face_surfaces());
@@ -42,13 +42,13 @@ void Op_Diff_VDF_Face_Axi_base::associer(const Zone_dis& zone_dis, const Zone_Cl
 
 double Op_Diff_VDF_Face_Axi_base::calculer_dt_stab() const
 {
-  return Op_Diff_VDF_Face_base::calculer_dt_stab(la_zone_vdf.valeur()) ;
+  return Op_Diff_VDF_Face_base::calculer_dt_stab(le_dom_vdf.valeur()) ;
 }
 
 void Op_Diff_VDF_Face_Axi_base::ajouter_elem(const DoubleTab& inco, DoubleTab& resu) const
 {
   if (inco.line_size() > 1) not_implemented(__func__);
-  for (int num_elem = 0; num_elem < la_zone_vdf->nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < le_dom_vdf->nb_elem(); num_elem++)
     {
       const int fx0 = elem_faces(num_elem,0), fx1 = elem_faces(num_elem,dimension), fy0 = elem_faces(num_elem,1), fy1 = elem_faces(num_elem,1+dimension);
       // Calcul de tau11
@@ -74,7 +74,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_elem(const DoubleTab& inco, DoubleTab& r
 
 void Op_Diff_VDF_Face_Axi_base::ajouter_elem_3D(const DoubleTab& inco, DoubleTab& resu) const
 {
-  for (int num_elem = 0; num_elem < la_zone_vdf->nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < le_dom_vdf->nb_elem(); num_elem++)
     {
       const int fz0 = elem_faces(num_elem,2), fz1 = elem_faces(num_elem,2+dimension);
       // Calcul de tau33
@@ -86,7 +86,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_elem_3D(const DoubleTab& inco, DoubleTab
 
 void  Op_Diff_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleTab& inco, DoubleTab& resu) const
 {
-  int ndeb = la_zone_vdf->premiere_arete_bord(), nfin = ndeb + la_zone_vdf->nb_aretes_bord();
+  int ndeb = le_dom_vdf->premiere_arete_bord(), nfin = ndeb + le_dom_vdf->nb_aretes_bord();
   for (int n_arete = ndeb; n_arete < nfin; n_arete++)
     {
       const int n_type = type_arete_bord(n_arete-ndeb);
@@ -98,7 +98,7 @@ void  Op_Diff_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleTab& inco, Dou
         case TypeAreteBordVDF::PAROI_FLUIDE:
           {
             const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe  = Qdm(n_arete,3), ori1 = orientation(fac1), ori3 = orientation(fac3);
-            const int rang1 = fac1 - la_zone_vdf->premiere_face_bord(), rang2 = fac2 - la_zone_vdf->premiere_face_bord();
+            const int rang1 = fac1 - le_dom_vdf->premiere_face_bord(), rang2 = fac2 - le_dom_vdf->premiere_face_bord();
             double vit_imp, dist3, tps = inconnue->temps();
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE) // arete paroi_fluide :il faut determiner qui est la face fluide
@@ -197,7 +197,7 @@ void  Op_Diff_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleTab& inco, Dou
 
 void Op_Diff_VDF_Face_Axi_base::ajouter_aretes_mixtes_internes(const DoubleTab& inco, DoubleTab& resu) const
 {
-  const int ndeb = la_zone_vdf->premiere_arete_mixte(), nfin = la_zone_vdf->nb_aretes();
+  const int ndeb = le_dom_vdf->premiere_arete_mixte(), nfin = le_dom_vdf->nb_aretes();
   for (int n_arete=ndeb; n_arete<nfin; n_arete++)
     {
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3), ori1 = orientation(fac1), ori3 = orientation(fac3);
@@ -311,7 +311,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_elem(const DoubleTab& inco,
 
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
-  for (int num_elem = 0; num_elem < la_zone_vdf->nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < le_dom_vdf->nb_elem(); num_elem++)
     {
       const int fx0 = elem_faces(num_elem,0), fx1 = elem_faces(num_elem,dimension), fy0 = elem_faces(num_elem,1), fy1 = elem_faces(num_elem,1+dimension);
       // Calcul de tau11
@@ -343,7 +343,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_elem(const DoubleTab& inco,
 
 void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_elem_3D(Matrice_Morse& matrice) const
 {
-  for (int num_elem = 0; num_elem < la_zone_vdf->nb_elem(); num_elem++)
+  for (int num_elem = 0; num_elem < le_dom_vdf->nb_elem(); num_elem++)
     {
       const int fz0 = elem_faces(num_elem,2), fz1 = elem_faces(num_elem,2+dimension);
       // Calcul de tau33
@@ -357,7 +357,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(Matrice_Morse&
 {
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
-  const int ndeb = la_zone_vdf->premiere_arete_bord(), nfin = ndeb + la_zone_vdf->nb_aretes_bord();
+  const int ndeb = le_dom_vdf->premiere_arete_bord(), nfin = ndeb + le_dom_vdf->nb_aretes_bord();
   for (int n_arete=ndeb; n_arete<nfin; n_arete++)
     {
       const int n_type = type_arete_bord(n_arete-ndeb);
@@ -471,7 +471,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_mixtes_internes(Matr
 {
   const IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
-  const int ndeb = la_zone_vdf->premiere_arete_mixte(), nfin = la_zone_vdf->nb_aretes();
+  const int ndeb = le_dom_vdf->premiere_arete_mixte(), nfin = le_dom_vdf->nb_aretes();
   for (int n_arete = ndeb; n_arete < nfin; n_arete++)
     {
       const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), fac4 = Qdm(n_arete,3), ori1 = orientation(fac1), ori3 = orientation(fac3);
@@ -557,7 +557,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution(const DoubleTab& inco, Matr
 
 void Op_Diff_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu) const
 {
-  const int ndeb = la_zone_vdf->premiere_arete_bord(), nfin = ndeb + la_zone_vdf->nb_aretes_bord();
+  const int ndeb = le_dom_vdf->premiere_arete_bord(), nfin = ndeb + le_dom_vdf->nb_aretes_bord();
   for (int n_arete = ndeb; n_arete < nfin; n_arete++)
     {
       const int n_type = type_arete_bord(n_arete-ndeb);
@@ -568,7 +568,7 @@ void Op_Diff_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu) cons
         case TypeAreteBordVDF::PAROI_FLUIDE:
           {
             const int fac1 = Qdm(n_arete,0), fac2 = Qdm(n_arete,1), fac3 = Qdm(n_arete,2), signe  = Qdm(n_arete,3);
-            const int ori1 = orientation(fac1), ori3 = orientation(fac3), rang1 = fac1 - la_zone_vdf->premiere_face_bord(), rang2 = fac2 - la_zone_vdf->premiere_face_bord();
+            const int ori1 = orientation(fac1), ori3 = orientation(fac3), rang1 = fac1 - le_dom_vdf->premiere_face_bord(), rang2 = fac2 - le_dom_vdf->premiere_face_bord();
             double vit_imp, tps = inconnue->temps();
 
             if (n_type == TypeAreteBordVDF::PAROI_FLUIDE) // arete paroi_fluide :il faut determiner qui est la face fluide

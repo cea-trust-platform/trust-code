@@ -22,11 +22,11 @@ Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_VDF_Elem,"Pu
 Sortie& Terme_Puissance_Thermique_VDF_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
 Entree& Terme_Puissance_Thermique_VDF_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_VDF_base::readOn(s); }
 
-void Terme_Puissance_Thermique_VDF_Elem::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Terme_Puissance_Thermique_VDF_Elem::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  Terme_Puissance_Thermique_VDF_base::associer_zones(zone_dis,zone_cl_dis);
+  Terme_Puissance_Thermique_VDF_base::associer_domaines(zone_dis,zone_cl_dis);
   Eval_Puiss_Th_VDF_Elem& eval_puis = static_cast<Eval_Puiss_Th_VDF_Elem&> (iter->evaluateur());
-  eval_puis.associer_zones(zone_dis.valeur(),zone_cl_dis.valeur());
+  eval_puis.associer_domaines(zone_dis.valeur(),zone_cl_dis.valeur());
 }
 
 void Terme_Puissance_Thermique_VDF_Elem::associer_pb(const Probleme_base& pb)

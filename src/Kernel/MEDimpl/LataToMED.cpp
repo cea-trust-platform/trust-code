@@ -98,7 +98,7 @@ void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
   // zone.type_elem()=type_ele;
   dom_trio.typer(type_elem);
 
-  dom_trio.type_elem().associer_zone(dom_trio);
+  dom_trio.type_elem().associer_domaine(dom_trio);
   if (dom.get_domain_type()==Domain::UNSTRUCTURED)
     {
       const DomainUnstructured& geom = dom.cast_DomainUnstructured();
@@ -124,11 +124,11 @@ void convert_domain_to_Domaine(  const Domain& dom , Zone& dom_trio)
       // a coder
       //Process::exit();
     }
-  dom_trio.faces_bord().associer_zone(dom_trio);
-  dom_trio.faces_raccord().associer_zone(dom_trio);
-  dom_trio.faces_joint().associer_zone(dom_trio);
+  dom_trio.faces_bord().associer_domaine(dom_trio);
+  dom_trio.faces_raccord().associer_domaine(dom_trio);
+  dom_trio.faces_joint().associer_domaine(dom_trio);
 
-  dom_trio.type_elem().associer_zone(dom_trio);
+  dom_trio.type_elem().associer_domaine(dom_trio);
   dom_trio.fixer_premieres_faces_frontiere();
 
   if (dom.id_.timestep_!=0)

@@ -647,7 +647,7 @@ void Hexa_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,
  *
  */
 void Hexa_VEF::modif_volumes_entrelaces(int j,int elem,
-                                        const Zone_VEF& la_zone_VEF,
+                                        const Zone_VEF& le_dom_VEF,
                                         DoubleVect& volumes_entrelaces_Cl,
                                         int type_cl) const
 {
@@ -659,7 +659,7 @@ void Hexa_VEF::modif_volumes_entrelaces(int j,int elem,
  *
  */
 void Hexa_VEF::modif_volumes_entrelaces_faces_joints(int j,int elem,
-                                                     const Zone_VEF& la_zone_VEF,
+                                                     const Zone_VEF& le_dom_VEF,
                                                      DoubleVect& volumes_entrelaces_Cl,
                                                      int type_cl) const
 {

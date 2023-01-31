@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,13 +57,13 @@ public:
 
   virtual void remplir_fluent(DoubleVect& ) const;
   int impr(Sortie& os) const override;
-  void associer_zone_cl_dis(const Zone_Cl_dis_base&) override;
+  void associer_domaine_cl_dis(const Zone_Cl_dis_base&) override;
   int  phi_u_transportant(const Equation_base& eq) const;
   void completer() override;
 
 protected:
 
-  REF(Zone_EF) la_zone_EF;
+  REF(Zone_EF) le_dom_EF;
   REF(Zone_Cl_EF) la_zcl_EF;
   REF(Champ_Inc_base) vitesse_;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,15 +31,15 @@ void Op_Div_VDF_Elem::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone
 
   iter->associer(zvdf,zclvdf,*this);
   Eval_Div_VDF_Elem& eval_div = static_cast<Eval_Div_VDF_Elem&> (iter->evaluateur());
-  eval_div.associer_zones(zvdf, zclvdf );
+  eval_div.associer_domaines(zvdf, zclvdf );
 
-  la_zone_vdf = zvdf;
+  le_dom_vdf = zvdf;
   la_zcl_vdf = zclvdf;
 }
 
 void Op_Div_VDF_Elem::volumique(DoubleTab& div) const
 {
-  const Zone_VDF& zone_VDF = la_zone_vdf.valeur();
+  const Zone_VDF& zone_VDF = le_dom_vdf.valeur();
   const DoubleVect& vol = zone_VDF.volumes();
   const int nb_elem = zone_VDF.zone().nb_elem_tot();
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,8 +40,8 @@ Entree& Sortie_libre_Pression_imposee_Orlansky::readOn(Entree& s)
 void Sortie_libre_Pression_imposee_Orlansky::completer()
 {
   Cerr << "Sortie_libre_Pression_imposee_Orlansky::completer()" << finl;
-  const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
-  const Equation_base& eqn = la_zone_Cl.equation();
+  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
   const Zone_VDF& zone_vdf = ref_cast(Zone_VDF, eqn.zone_dis().valeur());
   const Champ_P0_VDF& pression = ref_cast(Champ_P0_VDF, eqn_hydr.pression().valeur());
@@ -50,7 +50,7 @@ void Sortie_libre_Pression_imposee_Orlansky::completer()
   //  const DoubleVect& volumes_entrelaces = zone_vdf.volumes_entrelaces();
   //  const DoubleVect& face_surfaces = zone_vdf.face_surfaces();
 
-  la_zone_VDF = zone_vdf;
+  le_dom_VDF = zone_vdf;
   pression_interne = pression;
   vitesse_interne = vitesse;
 

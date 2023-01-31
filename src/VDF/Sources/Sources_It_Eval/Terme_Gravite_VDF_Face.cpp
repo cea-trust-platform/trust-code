@@ -29,13 +29,13 @@ Entree& Terme_Gravite_VDF_Face::readOn(Entree& s)
   return s ;
 }
 
-void Terme_Gravite_VDF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Terme_Gravite_VDF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  iter->associer_zones(zvdf, zclvdf);
+  iter->associer_domaines(zvdf, zclvdf);
   Eval_Gravite_VDF_Face& eval_grav = static_cast<Eval_Gravite_VDF_Face&> (iter->evaluateur());
-  eval_grav.associer_zones(zvdf,zclvdf);
+  eval_grav.associer_domaines(zvdf,zclvdf);
 }
 
 void Terme_Gravite_VDF_Face::associer_pb(const Probleme_base& pb)

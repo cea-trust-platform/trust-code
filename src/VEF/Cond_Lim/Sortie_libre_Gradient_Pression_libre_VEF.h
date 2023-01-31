@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,7 @@ public:
   virtual double Grad_P_lib_VEF(int) const;
 
 protected:
-  REF(Zone_VEF) la_zone_VEF;
+  REF(Zone_VEF) le_dom_VEF;
   REF(Champ_P0_VEF) pression_interne;
   DoubleVect trace_pression_int;   // pression interne sur les mailles de bord
   DoubleVect coeff;

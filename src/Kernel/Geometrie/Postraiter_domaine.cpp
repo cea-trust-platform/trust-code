@@ -126,7 +126,7 @@ void traite_bord(const Zone& zone,IntVect& ch_som,IntVect& ch_elem3,int num2, Fa
                   DoubleTab position(1,Objet_U::dimension);
                   IntVect res;
                   DoubleTab xv;
-                  faces.associer_zone(zone);
+                  faces.associer_domaine(zone);
                   faces.calculer_centres_gravite(xv);
                   for (j=0; j<nb_faces; j++)
                     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -956,47 +956,47 @@ void Echange_contact_Correlation_VEF::imprimer(double temps) const
 // Attention : la normale a la face num_face est suppose sortante
 // tandis que celle a la face num2 est reorientee dans la methode
 // afin d etre sortante.
-double Echange_contact_Correlation_VEF::pdt_scalSqrt(const Zone_VEF& la_zone,int num_face,int num2,
+double Echange_contact_Correlation_VEF::pdt_scalSqrt(const Zone_VEF& le_dom,int num_face,int num2,
                                                      int num_elem,int dim,double diffu)
 {
   double pscal;
 
-  pscal = la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,0)
-          + la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,1);
+  pscal = le_dom.face_normales(num_face,0)*le_dom.face_normales(num2,0)
+          + le_dom.face_normales(num_face,1)*le_dom.face_normales(num2,1);
   if (dim == 3)
-    pscal += la_zone.face_normales(num_face,2)*la_zone.face_normales(num2,2);
+    pscal += le_dom.face_normales(num_face,2)*le_dom.face_normales(num2,2);
   pscal = sqrt(std::fabs(pscal));
 
-  return (pscal*diffu)/la_zone.volumes(num_elem);
+  return (pscal*diffu)/le_dom.volumes(num_elem);
 }
 
 // Attention : la normal a la face num_face est suppose sortante
 // tandis que celle a la face num2 est reorientee dans la methode
 // afin d etre sortante.
-double Echange_contact_Correlation_VEF::pdt_scal(const Zone_VEF& la_zone,int num_face,int num2,
+double Echange_contact_Correlation_VEF::pdt_scal(const Zone_VEF& le_dom,int num_face,int num2,
                                                  int num_elem,int dim,double diffu)
 {
   double pscal;
-  const IntTab& face_voisinsF = la_zone.face_voisins();
+  const IntTab& face_voisinsF = le_dom.face_voisins();
 
-  pscal = la_zone.face_normales(num_face,0)*la_zone.face_normales(num2,0)
-          + la_zone.face_normales(num_face,1)*la_zone.face_normales(num2,1);
+  pscal = le_dom.face_normales(num_face,0)*le_dom.face_normales(num2,0)
+          + le_dom.face_normales(num_face,1)*le_dom.face_normales(num2,1);
   if (dim == 3)
-    pscal += la_zone.face_normales(num_face,2)*la_zone.face_normales(num2,2);
+    pscal += le_dom.face_normales(num_face,2)*le_dom.face_normales(num2,2);
 
   if ( (face_voisinsF(num_face,0) == face_voisinsF(num2,0)) ||
        (face_voisinsF(num_face,1) == face_voisinsF(num2,1))) pscal = -pscal;
 
-  return (pscal*diffu)/la_zone.volumes(num_elem);
+  return (pscal*diffu)/le_dom.volumes(num_elem);
 }
-double Echange_contact_Correlation_VEF::surfacesVEF(const Zone_VEF& la_zone,int num_face,int dim)
+double Echange_contact_Correlation_VEF::surfacesVEF(const Zone_VEF& le_dom,int num_face,int dim)
 {
   double pscal;
 
-  pscal = la_zone.face_normales(num_face,0)*la_zone.face_normales(num_face,0)
-          + la_zone.face_normales(num_face,1)*la_zone.face_normales(num_face,1);
+  pscal = le_dom.face_normales(num_face,0)*le_dom.face_normales(num_face,0)
+          + le_dom.face_normales(num_face,1)*le_dom.face_normales(num_face,1);
   if (dim == 3)
-    pscal += la_zone.face_normales(num_face,2)*la_zone.face_normales(num_face,2);
+    pscal += le_dom.face_normales(num_face,2)*le_dom.face_normales(num_face,2);
   pscal = sqrt(pscal);
 
   return pscal;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,11 +85,11 @@ void Op_Diff_VEF_base::associer(const Zone_dis& zone_dis,
       inconnue = inco;
     }
 
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   int nb_dim = ch_transporte->valeurs().nb_dim();
   int nb_comp = 1;
 
@@ -107,7 +107,7 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
   //          dt_diff = h*h/diffusivite
 
   double dt_stab = DMAXFLOAT;
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   if (! has_champ_masse_volumique())
     {
 
@@ -121,13 +121,13 @@ double Op_Diff_VEF_base::calculer_dt_stab() const
 
       // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
       double h_imp_max = -1, h_imp_temp=-2, max_conductivity = 0;
-      const Zone_Cl_VEF& la_zone_cl_vef = la_zcl_vef.valeur();
-      const Equation_base& mon_eqn = la_zone_cl_vef.equation();
+      const Zone_Cl_VEF& le_dom_cl_vef = la_zcl_vef.valeur();
+      const Equation_base& mon_eqn = le_dom_cl_vef.equation();
 
-      for(int i=0; i<la_zone_cl_vef.nb_cond_lim(); i++)
+      for(int i=0; i<le_dom_cl_vef.nb_cond_lim(); i++)
         {
           // loop on boundaries
-          const Cond_lim_base& la_cl = la_zone_cl_vef.les_conditions_limites(i).valeur();
+          const Cond_lim_base& la_cl = le_dom_cl_vef.les_conditions_limites(i).valeur();
 
           if (sub_type(Echange_externe_impose,la_cl))
             {
@@ -199,10 +199,10 @@ void Op_Diff_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
     {
       DoubleTab& es_valeurs = espace_stockage->valeurs();
 
-      if (la_zone_vef.non_nul())
+      if (le_dom_vef.non_nul())
         {
           remplir_nu(nu_);
-          const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+          const Zone_VEF& zone_VEF = le_dom_vef.valeur();
           if (! has_champ_masse_volumique())
             {
 
@@ -262,7 +262,7 @@ Motcle Op_Diff_VEF_base::get_localisation_pour_post(const Nom& option) const
 
 void Op_Diff_VEF_base::remplir_nu(DoubleTab& nu) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   // On dimensionne nu
   const DoubleTab& diffu=diffusivite().valeurs();
   if (!nu.get_md_vector().non_nul())

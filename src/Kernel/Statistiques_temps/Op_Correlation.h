@@ -149,7 +149,7 @@ inline void Op_Correlation::associer(const Zone_dis_base& une_zdis, const Champ_
     type = type_le_champ;
 
   integrale_tps_ab_.typer(type);
-  integrale_tps_ab_.associer_zone_dis_base(une_zdis);
+  integrale_tps_ab_.associer_domaine_dis_base(une_zdis);
   integrale_tps_ab_.associer(le_champ_a,le_champ_b,1,1,t1,t2);
 }
 

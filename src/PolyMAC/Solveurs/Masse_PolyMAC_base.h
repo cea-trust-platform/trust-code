@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,13 +26,13 @@ class Masse_PolyMAC_base : public Solveur_Masse_base
   Declare_base(Masse_PolyMAC_base);
 public:
   int has_interface_blocs() const override { return 1; }
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Zone_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
   void check_multiphase_compatibility() const override { }
 
 protected:
-  REF(Zone_Cl_PolyMAC) la_zone_Cl_PolyMAC;
-  REF(Zone_PolyMAC) la_zone_PolyMAC;
+  REF(Zone_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  REF(Zone_PolyMAC) le_dom_PolyMAC;
 };
 
 #endif /* Masse_PolyMAC_base_included */

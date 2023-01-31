@@ -144,7 +144,7 @@ private:
     const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
     iter_()->associer(zvdf,zclvdf,static_cast<OP_TYPE&>(*this));
     EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
-    eval_diff.associer_zones(zvdf,zclvdf);
+    eval_diff.associer_domaines(zvdf,zclvdf);
     return eval_diff;
   }
 };

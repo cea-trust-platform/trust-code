@@ -101,7 +101,7 @@ int Perte_Charge_VEF::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 
 DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zvef=la_zone_VEF.valeur();
+  const Zone_VEF& zvef=le_dom_VEF.valeur();
   const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
   const DoubleTab& xv=zvef.xv() ;                 // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
@@ -184,11 +184,11 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
 
   // Raccourcis
   const Champ_Don& nu=le_fluide->viscosite_cinematique(); // viscosite cinematique
-  const DoubleTab& xv=la_zone_VEF->xv() ;                     // centres de gravite des faces
+  const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-zone !
   const Sous_zone_VF& ssz=sous_zone?la_sous_zone_dis.valeur():Sous_zone_VF();
-  const Zone_VEF& zvef=la_zone_VEF.valeur();
+  const Zone_VEF& zvef=le_dom_VEF.valeur();
 
   // Parametres pour perte_charge()
   DoubleVect u(dimension);
@@ -296,7 +296,7 @@ void Perte_Charge_VEF::completer()
     {
       sous_zone=false;
       const Sous_Zone& la_sous_zone=equation().probleme().domaine().ss_zone(nom_sous_zone);
-      const Zone_dis_base& le_domaine_dis=la_zone_VEF.valeur();
+      const Zone_dis_base& le_domaine_dis=le_dom_VEF.valeur();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_zones_dis(); ssz++)
         {
           if (le_domaine_dis.sous_zone_dis(ssz)->sous_zone().est_egal_a(la_sous_zone))
@@ -327,9 +327,9 @@ void Perte_Charge_VEF::associer_pb(const Probleme_base& pb)
   le_fluide = ref_cast(Fluide_base,equation().milieu());
 }
 
-void Perte_Charge_VEF::associer_zones(const Zone_dis& zone_dis,
-                                      const Zone_Cl_dis& zone_Cl_dis)
+void Perte_Charge_VEF::associer_domaines(const Zone_dis& zone_dis,
+                                         const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,8 +32,8 @@ class Assembleur_P_VDF_Q4 : public Assembleur_base
   Declare_instanciable(Assembleur_P_VDF_Q4);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Zone_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
   const Zone_dis_base& zone_dis_base() const override;
   const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
   int assembler(Matrice&) override;
@@ -43,8 +43,8 @@ public:
   void completer(const Equation_base& ) override;
 
 protected :
-  REF(Zone_VDF) la_zone_VDF;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
+  REF(Zone_VDF) le_dom_VDF;
+  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
   REF(Equation_base) eqn_;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,16 +63,16 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::completer()
     }
 }
 
-void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_zones(const Zone_dis& zone_dis,
-                                                                        const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Zone_dis& zone_dis,
+                                                                           const Zone_Cl_dis& zone_Cl_dis)
 {
-  Cerr << " Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_zones " << finl ;
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
+  Cerr << " Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines " << finl ;
+  le_dom_PolyMAC = ref_cast(Zone_PolyMAC, zone_dis.valeur());
 }
 
 void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone = la_zone_PolyMAC.valeur();
+  const Zone_VF& zone = le_dom_PolyMAC.valeur();
   const DoubleTab& inco = equation().inconnue().valeurs();
   const int ne = zone.nb_elem(), N = inco.line_size();
   std::string nom_inco = equation().inconnue().le_nom().getString();
@@ -93,7 +93,7 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matr
 
 void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone = la_zone_PolyMAC.valeur();
+  const Zone_VF& zone = le_dom_PolyMAC.valeur();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = zone.volumes();
   const DoubleTab& c = equation().inconnue().valeurs();
   std::string nom_inco = equation().inconnue().le_nom().getString();

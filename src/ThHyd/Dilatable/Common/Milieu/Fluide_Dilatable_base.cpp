@@ -475,7 +475,7 @@ void Fluide_Dilatable_base::completer(const Probleme_base& pb)
   if (typ=="VEFPreP1B") typ = "VEF";
 
   eos_tools_.typer(typ);
-  eos_tools_->associer_zones(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
+  eos_tools_->associer_domaines(pb.equation(0).zone_dis(),pb.equation(0).zone_Cl_dis());
   eos_tools_->associer_fluide(*this);
   loi_etat_->assoscier_probleme(pb);
   initialiser_inco_ch();

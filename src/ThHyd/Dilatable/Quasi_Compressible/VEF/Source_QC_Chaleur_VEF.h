@@ -33,7 +33,7 @@ class Source_QC_Chaleur_VEF : public Source_QC_Chaleur, public Source_Fluide_Dil
 {
   Declare_instanciable(Source_QC_Chaleur_VEF);
 protected:
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
 };
 
 #endif /* Source_QC_Chaleur_VEF_included */

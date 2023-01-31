@@ -156,7 +156,7 @@ inline double Op_Diff_VEF_Face_Penalise::diametre(const int Element) const
 
 inline const Zone_VEF& Op_Diff_VEF_Face_Penalise::zone_vef() const
 {
-  return la_zone_vef.valeur();
+  return le_dom_vef.valeur();
 }
 
 inline const Zone_Cl_VEF& Op_Diff_VEF_Face_Penalise::zone_cl() const

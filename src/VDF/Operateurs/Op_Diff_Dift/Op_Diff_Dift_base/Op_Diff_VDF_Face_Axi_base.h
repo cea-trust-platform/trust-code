@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,13 +30,13 @@ public:
   inline void mettre_a_jour(double temps) override { }
   inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override { ajouter_contribution(inco, matrice); }
   inline void contribuer_au_second_membre(DoubleTab& resu) const override { contribue_au_second_membre(resu); }
-  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( la_zone_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
+  inline void dimensionner(Matrice_Morse& matrice) const override { Op_VDF_Face::dimensionner(le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
   static constexpr double deux_pi = M_PI*2.0;
   REF(Champ_Face_VDF) inconnue;
-  REF(Zone_VDF) la_zone_vdf;
+  REF(Zone_VDF) le_dom_vdf;
   REF(Zone_Cl_VDF) la_zcl_vdf;
   IntVect orientation, type_arete_bord;
   IntTab Qdm, face_voisins, elem_faces;

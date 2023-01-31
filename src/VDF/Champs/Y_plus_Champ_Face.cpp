@@ -30,12 +30,12 @@ void Y_plus_Champ_Face::associer_champ(const Champ_Face_VDF& un_champ)
 
 void Y_plus_Champ_Face::me_calculer(double tps)
 {
-  mon_champ_->calcul_y_plus(valeurs(), la_zone_Cl_VDF.valeur());
+  mon_champ_->calcul_y_plus(valeurs(), le_dom_Cl_VDF.valeur());
 }
 
 const Zone_Cl_dis_base& Y_plus_Champ_Face::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_VDF.valeur();
+  return le_dom_Cl_VDF.valeur();
 }
 
 void Y_plus_Champ_Face::mettre_a_jour(double tps)

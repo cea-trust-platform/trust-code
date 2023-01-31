@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ const Zone_dis_base& Champ_Fonc_P0_MED::zone_dis_base() const
   return zonebidon.valeur();
 }
 
-void Champ_Fonc_P0_MED::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
+void Champ_Fonc_P0_MED::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
 {
-  zonebidon = la_zone_dis_base;
+  zonebidon = le_dom_dis_base;
 }

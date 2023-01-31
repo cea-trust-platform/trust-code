@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ void Op_Conv_VEF_base::abortTimeStep()
 double Op_Conv_VEF_base::calculer_dt_stab() const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
   remplir_fluent(fluent);
@@ -130,10 +130,10 @@ void Op_Conv_VEF_base::calculer_pour_post(Champ& espace_stockage,const Nom& opti
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 1.e30;
 
-      if ((la_zone_vef.non_nul()) && (la_zcl_vef.non_nul()))
+      if ((le_dom_vef.non_nul()) && (la_zcl_vef.non_nul()))
         {
           const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-          const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+          const Zone_VEF& zone_VEF = le_dom_vef.valeur();
           const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
           const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
           double dt_face;
@@ -199,7 +199,7 @@ Motcle Op_Conv_VEF_base::get_localisation_pour_post(const Nom& option) const
     return Operateur_Conv_base::get_localisation_pour_post(option);
   return loc;
 }
-void Op_Conv_VEF_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zone_cl_dis)
+void Op_Conv_VEF_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zone_cl_dis)
 {
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis);
   la_zcl_vef = zclvef;
@@ -212,7 +212,7 @@ void Op_Conv_VEF_base::associer(const Zone_dis& zone_dis,
   const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_dis.valeur());
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
 
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
   //******************************************************************************
   // Initialisation des jetons pour l'alternance (kamoulox !)
@@ -222,7 +222,7 @@ void Op_Conv_VEF_base::associer(const Zone_dis& zone_dis,
   roue= -1;
   //  roue2=-1;
 
-  la_zone_vef.valeur().creer_tableau_faces(fluent);
+  le_dom_vef.valeur().creer_tableau_faces(fluent);
 }
 
 int Op_Conv_VEF_base::impr(Sortie& os) const
@@ -257,7 +257,7 @@ void Op_Conv_VEF_base::remplir_fluent(DoubleVect& tab_fluent) const
 void Op_Conv_VEF_base::calculer_dt_local(DoubleTab& dt_face) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleVect& volumes_entrelaces =  zone_VEF.volumes_entrelaces();
   const DoubleVect& volumes_entrelaces_Cl = zone_Cl_VEF.volumes_entrelaces_Cl();
 

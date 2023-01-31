@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,7 +60,7 @@ protected:
  */
 inline  void Op_Conv_Amont_old_VEF_Face::dimensionner(Matrice_Morse& matrice) const
 {
-  Op_VEF_Face::dimensionner(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice);
+  Op_VEF_Face::dimensionner(le_dom_vef.valeur(),la_zcl_vef.valeur(), matrice);
 }
 
 
@@ -69,7 +69,7 @@ inline  void Op_Conv_Amont_old_VEF_Face::dimensionner(Matrice_Morse& matrice) co
  */
 inline void Op_Conv_Amont_old_VEF_Face::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
-  Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
+  Op_VEF_Face::modifier_pour_Cl(le_dom_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
 }
 
 

@@ -722,7 +722,7 @@ static void build_frontier(const Frontiere&         src,
                            const Zone&              zone_dest,
                            Frontiere&               dest)
 {
-  dest.associer_zone(zone_dest);
+  dest.associer_domaine(zone_dest);
   dest.typer_faces(face_type);
   dest.nommer(src.le_nom());
 

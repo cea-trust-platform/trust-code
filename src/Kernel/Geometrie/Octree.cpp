@@ -693,7 +693,7 @@ int Octree::taille() const
  */
 const Zone& OctreeRoot::zone() const
 {
-  return la_zone.valeur();
+  return le_dom.valeur();
 }
 
 
@@ -703,7 +703,7 @@ const Zone& OctreeRoot::zone() const
  */
 void OctreeRoot::associer_Zone(const Zone& z)
 {
-  la_zone=z;
+  le_dom=z;
 }
 
 void OctreeRoot::construire(int reel_prec)
@@ -1113,7 +1113,7 @@ void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, doubl
  */
 int OctreeRoot::construit() const
 {
-  if((la_zone.non_nul()==0)||(valid_!=1))
+  if((le_dom.non_nul()==0)||(valid_!=1))
     // L'Octree n'est pas construit ou la zone est nulle
     return 0;
   else

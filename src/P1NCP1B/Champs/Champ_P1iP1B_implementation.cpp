@@ -172,7 +172,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Zone& dom, Doub
   if (zvef.get_alphaE()) // Support P0
     {
       Champ_P0_VEF tmp;
-      tmp.associer_zone_dis_base(zvef);
+      tmp.associer_domaine_dis_base(zvef);
       tmp.valeurs() = champ_filtre_;
       tmp.valeur_aux_sommets(zvef.zone(), val);
     }
@@ -215,8 +215,8 @@ valeur_aux_sommets_compo(const Zone& dom,
 DoubleTab& Champ_P1iP1B_implementation::remplir_coord_noeuds(DoubleTab& coord) const
 {
   const Zone_VEF_PreP1b& zvef=zone_vef();
-  const Zone& la_zone=zvef.zone();
-  const Zone& dom=la_zone;
+  const Zone& le_dom=zvef.zone();
+  const Zone& dom=le_dom;
   const DoubleTab& coord_sommets=dom.coord_sommets();
   int nbe=zvef.nb_elem_tot();
   int nbs=zvef.nb_som_tot();

@@ -212,9 +212,9 @@ DoubleVect& Champ_Face_VDF_implementation::valeur_aux_sommets_compo(const Zone& 
 
 DoubleTab& Champ_Face_VDF_implementation::remplir_coord_noeuds(DoubleTab& positions) const
 {
-  const Zone_VDF& la_zone_vdf = ref_cast(Zone_VDF,get_zone_dis());
-  const DoubleTab& xv = la_zone_vdf.xv();
-  int nb_fac = la_zone_vdf.nb_faces_tot();
+  const Zone_VDF& le_dom_vdf = ref_cast(Zone_VDF,get_zone_dis());
+  const DoubleTab& xv = le_dom_vdf.xv();
+  int nb_fac = le_dom_vdf.nb_faces_tot();
   if ( (xv.dimension(0) == nb_fac ) && (xv.dimension(1) == Objet_U::dimension) )
     positions.ref(xv);
   else

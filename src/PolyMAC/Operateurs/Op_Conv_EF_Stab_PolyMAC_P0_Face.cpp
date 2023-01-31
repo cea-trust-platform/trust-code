@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
 {
   Op_Conv_PolyMAC_base::completer();
   /* au cas ou... */
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 2)
     {
       Cerr << "Op_Conv_EF_Stab_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 2)!" << finl;
@@ -69,7 +69,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
 double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
 {
   double dt = 1e10;
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const DoubleVect& fs = zone.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = zone.volumes(), &pe = equation().milieu().porosite_elem(), &vf = zone.volumes_entrelaces();
   const DoubleTab& vit = vitesse_->valeurs(), &vfd = zone.volumes_entrelaces_dir(),
@@ -95,7 +95,7 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
 
 void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
   const DoubleTab& nf = zone.face_normales();
@@ -146,7 +146,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_Poly_base& zone = la_zone_poly_.valeur();
+  const Zone_Poly_base& zone = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();

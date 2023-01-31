@@ -659,7 +659,7 @@ DoubleTab& Op_Diff_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& r
 {
   remplir_nu(nu_);
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   int nb_comp = 1;
   int nb_dim = resu.nb_dim();
@@ -706,7 +706,7 @@ void Op_Diff_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
   // avant le premier pas de temps
   remplir_nu(nu_);
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
@@ -926,7 +926,7 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
   // avant le premier pas de temps
   remplir_nu(nu_);
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
@@ -1084,7 +1084,7 @@ void Op_Diff_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& tran
 void Op_Diff_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   int nb_comp = 1;
   int nb_dim = resu.nb_dim();
 
@@ -1145,7 +1145,7 @@ void Op_Diff_VEF_Face::verifier() const
   if(testee)
     return;
   testee=1;
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   //  const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   //  const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();

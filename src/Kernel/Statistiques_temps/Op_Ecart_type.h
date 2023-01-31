@@ -121,7 +121,7 @@ inline void Op_Ecart_type::associer(const Zone_dis_base& une_zdis,const Champ_Ge
     type = type_le_champ;
 
   integrale_carre_champ.typer(type);
-  integrale_carre_champ.associer_zone_dis_base(une_zdis);
+  integrale_carre_champ.associer_domaine_dis_base(une_zdis);
   integrale_carre_champ.associer(le_champ,2,t1,t2);
 }
 

@@ -64,7 +64,7 @@ public:
   virtual int fixer_nb_valeurs_nodales(int n);
   // Par defaut, ces deux methodes provoquent une erreur. L'appel
   // est invalide sauf si le champ possede une Zone_dis
-  virtual void associer_zone_dis_base(const Zone_dis_base&);
+  virtual void associer_domaine_dis_base(const Zone_dis_base&);
   virtual const Zone_dis_base& zone_dis_base() const;
   virtual int a_une_zone_dis_base() const { return 0; } // Par defaut, on ne sait pas si une zone_dis_base sera definie
 

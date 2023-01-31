@@ -43,7 +43,7 @@ public:
     return 1;
   };
 protected :
-  void associer_zones(const Zone_dis& zone,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& ) override;
 };
 
 #endif /* Source_QC_Gravite_VDF_included */

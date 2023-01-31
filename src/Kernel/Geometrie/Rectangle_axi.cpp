@@ -47,9 +47,9 @@ Entree& Rectangle_axi::readOn(Entree& s )
  */
 void Rectangle_axi::calculer_centres_gravite(DoubleTab& xp) const
 {
-  const IntTab& les_Polys = ma_zone->les_elems();
-  const Zone& le_domaine = ma_zone.valeur();
-  int nb_elem = ma_zone->nb_elem();
+  const IntTab& les_Polys = mon_dom->les_elems();
+  const Zone& le_domaine = mon_dom.valeur();
+  int nb_elem = mon_dom->nb_elem();
   int num_som;
 
   xp.resize(nb_elem,dimension);
@@ -113,7 +113,7 @@ const Nom& Rectangle_axi::nom_lml() const
  */
 void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   double r,dr,d_teta;
   int S1,S2,S4;
@@ -164,7 +164,7 @@ void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
 int Rectangle_axi::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==2);
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som3 = zone.sommet_elem(element,3);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,10 +85,10 @@ const Nom& Frontiere_dis_base::le_nom() const
 
 void Frontiere_dis_base::associer_Zone_dis(const Zone_dis_base& z)
 {
-  la_zone_dis=z;
+  le_dom_dis=z;
 }
 
 const Zone_dis_base& Frontiere_dis_base::zone_dis() const
 {
-  return la_zone_dis.valeur();
+  return le_dom_dis.valeur();
 }

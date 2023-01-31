@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -403,8 +403,8 @@ void Champ_front_recyclage::get_coord_faces(const Frontiere_dis_base& fr_vf,
                                             const DoubleVect& delt_dist)
 {
   const Front_VF&   fr_vf2    = ref_cast(Front_VF,fr_vf);
-  const Zone_VF&    la_zone2  = ref_cast(Zone_VF,fr_vf2.zone_dis());
-  const DoubleTab&  xv2       = la_zone2.xv();
+  const Zone_VF&    le_dom2  = ref_cast(Zone_VF,fr_vf2.zone_dis());
+  const DoubleTab&  xv2       = le_dom2.xv();
   const int      nb_faces2 = fr_vf2.nb_faces();
   const int      ndeb2     = fr_vf2.num_premiere_face();
   const int      dim       = xv2.dimension(1);
@@ -758,8 +758,8 @@ void Champ_front_recyclage::initialiser_moyenne_imposee(DoubleTab& moyenne)
   else if (methode_moy_impos_==5)
     {
       const Zone_dis_base& zone_dis2 = fr_vf2.zone_dis();
-      const Zone_VF& la_zone2        = ref_cast(Zone_VF,zone_dis2);
-      const DoubleTab&  xv2          = la_zone2.xv();
+      const Zone_VF& le_dom2        = ref_cast(Zone_VF,zone_dis2);
+      const DoubleTab&  xv2          = le_dom2.xv();
 
       double Kappa = 0.41;
       double d_paroi,y_plus,U_log;
@@ -836,8 +836,8 @@ void Champ_front_recyclage::calcul_moyenne_imposee(const DoubleTab& tab,double t
     {
       const Front_VF& fr_vf2 = ref_cast(Front_VF,la_frontiere_dis.valeur());
       const Zone_dis_base& zone_dis2 = fr_vf2.zone_dis();
-      const Zone_VF&  la_zone2 = ref_cast(Zone_VF,zone_dis2);
-      const DoubleTab&  xv2 = la_zone2.xv();
+      const Zone_VF&  le_dom2 = ref_cast(Zone_VF,zone_dis2);
+      const DoubleTab&  xv2 = le_dom2.xv();
       int nb_faces_bord2 = fr_vf2.nb_faces();
       int ndeb = fr_vf2.num_premiere_face();
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,18 +35,18 @@ public:
   Evaluateur_VDF() {}
   virtual ~Evaluateur_VDF() {}
   Evaluateur_VDF(const Evaluateur_VDF& );
-  virtual void associer_zones(const Zone_VDF& , const Zone_Cl_VDF& );
+  virtual void associer_domaines(const Zone_VDF& , const Zone_Cl_VDF& );
   virtual void associer_porosite(const DoubleVect&);
 
-  inline double dist_face_period(int fac1, int fac2, int k) const { return la_zone->dist_face_period(fac1,fac2,k); }
+  inline double dist_face_period(int fac1, int fac2, int k) const { return le_dom->dist_face_period(fac1,fac2,k); }
   inline double dist_face(int fac1, int fac2, int k) const
   {
     return xv(fac2,k) - xv(fac1,k);
-    //return la_zone->dist_face(fac1, fac2, k);
+    //return le_dom->dist_face(fac1, fac2, k);
   }
 
 protected:
-  REF(Zone_VDF) la_zone;
+  REF(Zone_VDF) le_dom;
   REF(Zone_Cl_VDF) la_zcl;
   int dimension = -100, premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face

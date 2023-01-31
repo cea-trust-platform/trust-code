@@ -71,7 +71,7 @@ public:
   inline IntTab& voisins();
   inline const IntTab& voisins() const;
   void completer(int, int);
-  inline void associer_zone(const Zone&);
+  inline void associer_domaine(const Zone&);
   inline const Zone& zone() const;
   void calculer_surfaces(DoubleVect& ) const;
   void calculer_centres_gravite(DoubleTab& ) const;
@@ -89,7 +89,7 @@ private :
   int nb_som_face = -123;
   IntTab sommets;
   IntTab faces_voisins;
-  REF(Zone) ma_zone;
+  REF(Zone) mon_dom;
 };
 
 typedef Faces::Type_Face Type_Face;
@@ -202,9 +202,9 @@ inline int& Faces::voisin(int face, int i)
  *
  * @param (Zone& z) la zone a laquelle l'objet s'associe
  */
-inline void Faces::associer_zone(const Zone& z)
+inline void Faces::associer_domaine(const Zone& z)
 {
-  ma_zone=z;
+  mon_dom=z;
 }
 
 /*! @brief Renvoie la zone associee.
@@ -213,7 +213,7 @@ inline void Faces::associer_zone(const Zone& z)
  */
 inline const Zone& Faces::zone() const
 {
-  return ma_zone.valeur();
+  return mon_dom.valeur();
 }
 
 /*! @brief Renvoie le tableau des voisins (des faces).

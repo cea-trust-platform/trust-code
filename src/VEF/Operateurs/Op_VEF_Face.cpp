@@ -41,8 +41,8 @@
  *
  */
 
-void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
-                               const Zone_Cl_VEF& la_zone_cl,
+void Op_VEF_Face::dimensionner(const Zone_VEF& le_dom,
+                               const Zone_Cl_VEF& le_dom_cl,
                                Matrice_Morse& la_matrice) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
@@ -53,14 +53,14 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
 
   int num_face;
   int ndeb = 0;
-  int nfin = la_zone.nb_faces();
-  int nnnn = la_zone.nb_faces_tot();
+  int nfin = le_dom.nb_faces();
+  int nnnn = le_dom.nb_faces_tot();
   nfin=nnnn;
   int i,j,k,kk;
   int elem1,elem2;
-  int nb_faces_elem = la_zone.zone().nb_faces_elem();
-  //const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
-  const int nb_comp = la_zone_cl.equation().inconnue().valeurs().line_size();
+  int nb_faces_elem = le_dom.zone().nb_faces_elem();
+  //const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
+  const int nb_comp = le_dom_cl.equation().inconnue().valeurs().line_size();
   la_matrice.dimensionner(nfin*nb_comp,nfin*nb_comp,0);
 
   IntVect& tab1=la_matrice.get_set_tab1();
@@ -69,8 +69,8 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
   coeff=0;
 
 
-  const IntTab& elem_faces = la_zone.elem_faces();
-  const IntTab& face_voisins = la_zone.face_voisins();
+  const IntTab& elem_faces = le_dom.elem_faces();
+  const IntTab& face_voisins = le_dom.face_voisins();
 
   // A chaque face on associe un tableau d'entiers et une liste de reels:
   // voisines[i] = {j t.q j>i et M(i,j) est non nul }
@@ -176,18 +176,18 @@ void Op_VEF_Face::dimensionner(const Zone_VEF& la_zone,
  *
  */
 
-void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
-                                   const Zone_Cl_VEF& la_zone_cl,
+void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& le_dom,
+                                   const Zone_Cl_VEF& le_dom_cl,
                                    Matrice_Morse& la_matrice, DoubleTab& secmem) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
   // la convection, de la diffusion pour le cas des faces.
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
-  const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
   const IntVect& tab1=la_matrice.get_tab1();
   DoubleVect& coeff = la_matrice.get_set_coeff();
-  const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   const int nb_comp = champ_inconnue.line_size();
   ArrOfDouble normale(nb_comp);
   for (const auto& itr : les_cl)
@@ -246,11 +246,11 @@ void Op_VEF_Face::modifier_pour_Cl(const Zone_VEF& la_zone,
             }
         }
       if (sub_type(Symetrie,la_cl.valeur()))
-        if (la_zone_cl.equation().inconnue().valeur().nature_du_champ()==vectoriel)
+        if (le_dom_cl.equation().inconnue().valeur().nature_du_champ()==vectoriel)
           {
             const IntVect& tab2=la_matrice.get_tab2();
             const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
-            const DoubleTab& face_normales = la_zone.face_normales();
+            const DoubleTab& face_normales = le_dom.face_normales();
             int nfaces = la_front_dis.nb_faces_tot();
             ArrOfDouble somme(la_matrice.nb_colonnes()); // On dimensionne au plus grand
             for (int ind_face=0; ind_face < nfaces; ind_face++)
@@ -382,7 +382,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
     return;
   const Probleme_base& pb=op.equation().probleme();
 
-  const Zone_VEF& la_zone_vef=ref_cast(Zone_VEF,op.equation().zone_dis().valeur());
+  const Zone_VEF& le_dom_vef=ref_cast(Zone_VEF,op.equation().zone_dis().valeur());
   int nb_compo=flux_bords_.dimension(1);
   // On multiplie le flux au bord par rho*Cp sauf si c'est un operateur de diffusion avec la conductivite comme champ
   if (op.equation().inconnue().le_nom()=="temperature"
@@ -403,7 +403,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
                 is_rho_u=1;
             }
         }
-      const int nb_faces_bords=la_zone_vef.nb_faces_bord();
+      const int nb_faces_bords=le_dom_vef.nb_faces_bord();
       for (int face=0; face<nb_faces_bords; face++)
         {
           if (cp_uniforme) Cp_=Cp(0,0);
@@ -434,7 +434,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
       if (sub_type(Champ_Uniforme,rho))
         {
           double coef = rho(0,0);
-          int nb_faces_bord=la_zone_vef.nb_faces_bord();
+          int nb_faces_bord=le_dom_vef.nb_faces_bord();
           for (int face=0; face<nb_faces_bord; face++)
             for(int k=0; k<nb_compo; k++)
               flux_bords_(face,k) *= coef;
@@ -448,7 +448,7 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
  */
 int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
 {
-  const Zone_VEF& la_zone_vef=ref_cast(Zone_VEF,op.equation().zone_dis().valeur());
+  const Zone_VEF& le_dom_vef=ref_cast(Zone_VEF,op.equation().zone_dis().valeur());
   DoubleTab& flux_bords_=op.flux_bords();
   if (flux_bords_.nb_dim()!=2)
     {
@@ -466,20 +466,20 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   const Schema_Temps_base& sch=pb.schema_temps();
   // On n'imprime les moments que si demande et si on traite l'operateur de diffusion de la vitesse
   int impr_mom=0;
-  if (la_zone_vef.zone().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
+  if (le_dom_vef.zone().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
     impr_mom=1;
 
-  const int impr_sum=(la_zone_vef.zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_vef.zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_sum=(le_dom_vef.zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_vef.zone().bords_a_imprimer().est_vide() ? 0:1);
 
   // Calcul des moments
-  const int nb_faces =  la_zone_vef.nb_faces_tot();
+  const int nb_faces =  le_dom_vef.nb_faces_tot();
   DoubleTab xgr(nb_faces,Objet_U::dimension);
   xgr=0.;
   if (impr_mom)
     {
-      const DoubleTab& xgrav = la_zone_vef.xv();
-      const ArrOfDouble& c_grav=la_zone_vef.zone().cg_moments();
+      const DoubleTab& xgrav = le_dom_vef.xv();
+      const ArrOfDouble& c_grav=le_dom_vef.zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<Objet_U::dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
@@ -488,7 +488,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord
   DoubleVect bilan(nb_compo);
   bilan = 0;
-  int nb_cl = la_zone_vef.nb_front_Cl();
+  int nb_cl = le_dom_vef.nb_front_Cl();
   DoubleTrav flux_bords(4,nb_cl,nb_compo);
   flux_bords=0.;
   /*
@@ -567,7 +567,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
               else
                 Flux.add_col(flux_bords(0,num_cl,k));
               if (impr_mom) Flux_moment.add_col(flux_bords(3,num_cl,k));
-              if (la_zone_vef.zone().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bords(0,num_cl,k));
+              if (le_dom_vef.zone().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bords(0,num_cl,k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bords(0,num_cl,k);
@@ -582,7 +582,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
       if (impr_sum) Flux_sum << finl;
     }
 
-  const LIST(Nom)& Liste_bords_a_imprimer = la_zone_vef.zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_vef.zone().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
@@ -601,7 +601,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
               Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps ";
               sch.imprimer_temps_courant(Flux_face);
               Flux_face << " : " << finl;
-              const DoubleTab& xv=la_zone_vef.xv();
+              const DoubleTab& xv=le_dom_vef.xv();
               for (int face=ndeb; face<nfin; face++)
                 {
                   if (Objet_U::dimension==2)
@@ -609,7 +609,7 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
                   else if (Objet_U::dimension==3)
                     Flux_face << "# Face a x= " << xv(face,0) << " y= " << xv(face,1) << " z= " << xv(face,2) ;
                   for(int k=0; k<nb_compo; k++)
-                    Flux_face << " surface_face(m2)= " << la_zone_vef.face_surfaces(face) << " flux_par_surface(W/m2)= "  << flux_bords_(face, k)/la_zone_vef.face_surfaces(face) << " flux(W)= " << flux_bords_(face, k)  ;
+                    Flux_face << " surface_face(m2)= " << le_dom_vef.face_surfaces(face) << " flux_par_surface(W/m2)= "  << flux_bords_(face, k)/le_dom_vef.face_surfaces(face) << " flux(W)= " << flux_bords_(face, k)  ;
                   Flux_face << finl;
                 }
               Flux_face.syncfile();

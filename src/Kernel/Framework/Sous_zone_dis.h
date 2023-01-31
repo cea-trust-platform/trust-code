@@ -36,9 +36,9 @@ public:
   {
     valeur().associer_sous_zone(ssz);
   }
-  inline void associer_zone_dis(const Zone_dis_base& zd)
+  inline void associer_domaine_dis(const Zone_dis_base& zd)
   {
-    valeur().associer_zone_dis(zd);
+    valeur().associer_domaine_dis(zd);
   }
   inline void discretiser()
   {

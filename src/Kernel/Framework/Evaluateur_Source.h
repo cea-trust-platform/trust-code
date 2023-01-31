@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ class Evaluateur_Source
 {
 public:
   Evaluateur_Source() { }
-  Evaluateur_Source(const Evaluateur_Source& eval) : la_zone(eval.la_zone), la_zcl(eval.la_zcl) { }
+  Evaluateur_Source(const Evaluateur_Source& eval) : le_dom(eval.le_dom), la_zcl(eval.la_zcl) { }
   virtual ~Evaluateur_Source() { }
 
   template <typename Type_Double>
@@ -35,15 +35,15 @@ public:
   virtual void mettre_a_jour() = 0;
   virtual void completer() = 0;
 
-  void associer_zones(const Zone_dis_base& zone, const Zone_Cl_dis_base& zone_cl)
+  void associer_domaines(const Zone_dis_base& zone, const Zone_Cl_dis_base& zone_cl)
   {
-    la_zone = zone;
+    le_dom = zone;
     la_zcl = zone_cl;
     completer();
   }
 
 protected:
-  REF(Zone_dis_base) la_zone;
+  REF(Zone_dis_base) le_dom;
   REF(Zone_Cl_dis_base) la_zcl;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,12 +33,12 @@ class Source_Generique_VEF: public Source_Generique_base
 public:
 
   DoubleTab& ajouter(DoubleTab& ) const override;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis&) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis&) override;
   Nom localisation_source() override;
 
 protected:
 
-  REF(Zone_VEF) la_zone_VEF;
+  REF(Zone_VEF) le_dom_VEF;
   REF(Zone_Cl_VEF) la_zcl_VEF;
 };
 

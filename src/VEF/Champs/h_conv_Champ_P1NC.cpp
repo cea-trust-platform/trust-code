@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,10 +37,10 @@ void h_conv_Champ_P1NC::mettre_a_jour(double tps)
 void h_conv_Champ_P1NC::me_calculer(double tps)
 {
   if (temps_ != tps)
-    mon_champ_->calcul_h_conv(la_zone_Cl_VEF.valeur(), valeurs(), temp_ref());
+    mon_champ_->calcul_h_conv(le_dom_Cl_VEF.valeur(), valeurs(), temp_ref());
 }
 
 const Zone_Cl_dis_base& h_conv_Champ_P1NC::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_VEF.valeur();
+  return le_dom_Cl_VEF.valeur();
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ void Op_Div_EF::associer(const Zone_dis& zone_dis,
 {
   const Zone_EF& zEF = ref_cast(Zone_EF, zone_dis.valeur());
   const Zone_Cl_EF& zclEF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
-  la_zone_EF = zEF;
+  le_dom_EF = zEF;
   la_zcl_EF = zclEF;
 }
 
@@ -115,7 +115,7 @@ DoubleTab& Op_Div_EF::calculer(const DoubleTab& vit, DoubleTab& div) const
 int Op_Div_EF::impr(Sortie& os) const
 {
 
-  const int impr_bord=(la_zone_EF->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_EF->zone().bords_a_imprimer().est_vide() ? 0:1);
   SFichier Flux_div;
   ouvrir_fichier(Flux_div,"",je_suis_maitre());
   EcrFicPartage Flux_face;
@@ -129,7 +129,7 @@ int Op_Div_EF::impr(Sortie& os) const
   DoubleVect flux_bord(nb_compo);
   DoubleVect bilan(nb_compo);
   bilan = 0;
-  for (int num_cl=0; num_cl<la_zone_EF->nb_front_Cl(); num_cl++)
+  for (int num_cl=0; num_cl<le_dom_EF->nb_front_Cl(); num_cl++)
     {
       flux_bord=0;
       const Cond_lim& la_cl = la_zcl_EF->les_conditions_limites(num_cl);
@@ -162,22 +162,22 @@ int Op_Div_EF::impr(Sortie& os) const
       Flux_div << finl;
     }
 
-  for (int num_cl=0; num_cl<la_zone_EF->nb_front_Cl(); num_cl++)
+  for (int num_cl=0; num_cl<le_dom_EF->nb_front_Cl(); num_cl++)
     {
       const Frontiere_dis_base& la_fr = la_zcl_EF->les_conditions_limites(num_cl).frontiere_dis();
       const Cond_lim& la_cl = la_zcl_EF->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
-      if (la_zone_EF->zone().bords_a_imprimer().contient(la_fr.le_nom()))
+      if (le_dom_EF->zone().bords_a_imprimer().contient(la_fr.le_nom()))
         {
           Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
           for (int face=ndeb; face<nfin; face++)
             {
               if (dimension==2)
-                Flux_face << "# Face a x= " << la_zone_EF->xv(face,0) << " y= " << la_zone_EF->xv(face,1) << " flux=" ;
+                Flux_face << "# Face a x= " << le_dom_EF->xv(face,0) << " y= " << le_dom_EF->xv(face,1) << " flux=" ;
               else if (dimension==3)
-                Flux_face << "# Face a x= " << la_zone_EF->xv(face,0) << " y= " << la_zone_EF->xv(face,1) << " z= " << la_zone_EF->xv(face,2) << " flux=" ;
+                Flux_face << "# Face a x= " << le_dom_EF->xv(face,0) << " y= " << le_dom_EF->xv(face,1) << " z= " << le_dom_EF->xv(face,2) << " flux=" ;
               for(int k=0; k<nb_compo; k++)
                 Flux_face << " " << flux_bords_(face, k);
               Flux_face << finl;
@@ -192,7 +192,7 @@ int Op_Div_EF::impr(Sortie& os) const
 
 void Op_Div_EF::volumique(DoubleTab& div) const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const DoubleVect& vol = zone_EF.volumes();
   int nb_elem=zone_EF.zone().nb_elem_tot();
   int num_elem;

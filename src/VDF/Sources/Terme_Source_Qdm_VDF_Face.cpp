@@ -43,16 +43,16 @@ Entree& Terme_Source_Qdm_VDF_Face::readOn(Entree& s)
   return s;
 }
 
-void Terme_Source_Qdm_VDF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Qdm_VDF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
 void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& resu, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const Zone_Cl_VDF& zone_Cl_VDF = la_zone_Cl_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
+  const Zone_Cl_VDF& zone_Cl_VDF = le_dom_Cl_VDF.valeur();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();

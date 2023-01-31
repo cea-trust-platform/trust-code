@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,29 +23,29 @@
 #include <TRUSTTab.h>
 #include <Zone_VDF.h>
 
-void Source_Fluide_Dilatable_VDF_Proto::associer_zones_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
+void Source_Fluide_Dilatable_VDF_Proto::associer_domaines_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
 {
-  la_zone = ref_cast(Zone_VDF,zone.valeur());
-  la_zone_Cl = ref_cast(Zone_Cl_VDF,zone_cl.valeur());
+  le_dom = ref_cast(Zone_VDF,zone.valeur());
+  le_dom_Cl = ref_cast(Zone_Cl_VDF,zone_cl.valeur());
 }
 
 void Source_Fluide_Dilatable_VDF_Proto::associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites)
 {
   volumes.ref(ref_cast(Zone_VF,zone.valeur()).volumes());
-  porosites.ref(la_zone_Cl->equation().milieu().porosite_elem());
+  porosites.ref(le_dom_Cl->equation().milieu().porosite_elem());
 }
 
 void Source_Fluide_Dilatable_VDF_Proto::ajouter_impl(const DoubleVect& g,const double rho_m,
                                                      const DoubleTab& tab_rho, DoubleTab& resu) const
 {
 
-  const int nb_faces = la_zone->nb_faces(), premiere_face_interne = la_zone->premiere_face_int();
-  const IntVect& orientation = la_zone->orientation();
-  const DoubleVect& volumes_entrelaces = la_zone->volumes_entrelaces(), porosite_surf=la_zone_Cl->equation().milieu().porosite_face();
+  const int nb_faces = le_dom->nb_faces(), premiere_face_interne = le_dom->premiere_face_int();
+  const IntVect& orientation = le_dom->orientation();
+  const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces(), porosite_surf=le_dom_Cl->equation().milieu().porosite_face();
 
-  for (int num_cl=0 ; num_cl<la_zone->nb_front_Cl() ; num_cl++)
+  for (int num_cl=0 ; num_cl<le_dom->nb_front_Cl() ; num_cl++)
     {
-      const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(num_cl);
+      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(num_cl);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 

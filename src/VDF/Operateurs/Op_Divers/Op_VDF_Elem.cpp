@@ -23,23 +23,23 @@
 
 #include <Zone_VDF.h>
 
-void Op_VDF_Elem::dimensionner(const Zone_VDF& la_zone, const Zone_Cl_VDF& la_zone_cl, Matrice_Morse& la_matrice) const
+void Op_VDF_Elem::dimensionner(const Zone_VDF& le_dom, const Zone_Cl_VDF& le_dom_cl, Matrice_Morse& la_matrice) const
 {
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de la convection, de la diffusion pour le cas des elements.
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
 
-  const IntTab& face_voisins = la_zone.face_voisins();
-  const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
-  const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
-  const int n1 = la_zone.zone().nb_elem_tot(), nb_comp = champ_inconnue.line_size();
+  const IntTab& face_voisins = le_dom.face_voisins();
+  const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
+  const int n1 = le_dom.zone().nb_elem_tot(), nb_comp = champ_inconnue.line_size();
 
   la_matrice.dimensionner(n1*nb_comp, n1*nb_comp, 0);
 
   IntVect& tab1 = la_matrice.get_set_tab1(), &tab2 = la_matrice.get_set_tab2();
   DoubleVect& coeff = la_matrice.get_set_coeff();
 
-  const int ndeb = la_zone.premiere_face_int(), nfin = la_zone.nb_faces();
+  const int ndeb = le_dom.premiere_face_int(), nfin = le_dom.nb_faces();
   coeff = 0;
 
   IntVect rang_voisin(n1*nb_comp);

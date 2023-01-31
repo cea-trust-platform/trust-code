@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -116,8 +116,8 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
       DoubleTab& Ps = parties_P[1];  // partie sommets
 
       //const Zone_VEF_PreP1b& zvef=zone_vef();
-      const Zone& la_zone = zvef.zone();
-      const Zone& dom = la_zone;
+      const Zone& le_dom = zvef.zone();
+      const Zone& dom = le_dom;
       const DoubleTab& coord_sommets = dom.coord_sommets();
       const DoubleTab& xg = zvef.xp();
       ch.valeur_aux(xg, Pk);

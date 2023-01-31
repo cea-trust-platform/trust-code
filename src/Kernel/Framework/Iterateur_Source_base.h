@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,9 +53,9 @@ public:
     return (nom_eqn.debute_par("Navier_Stokes")) ? 1 : 0;
   }
 
-  inline void associer_zones(const Zone_dis_base& zone, const Zone_Cl_dis_base& zone_cl)
+  inline void associer_domaines(const Zone_dis_base& zone, const Zone_Cl_dis_base& zone_cl)
   {
-    la_zone = zone;
+    le_dom = zone;
     la_zcl = zone_cl;
   }
 
@@ -67,7 +67,7 @@ public:
 
 protected:
   REF(Zone_Cl_dis_base) la_zcl;
-  REF(Zone_dis_base) la_zone;
+  REF(Zone_dis_base) le_dom;
   REF(Source_base) so_base;
 };
 

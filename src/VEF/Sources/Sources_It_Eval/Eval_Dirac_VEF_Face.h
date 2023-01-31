@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,7 +39,7 @@ public:
 
 protected:
   REF(Champ_Don) la_puissance;
-  REF(Zone) ma_zone;
+  REF(Zone) mon_dom;
   double puissance, nb_dirac;
 
   template <typename Type_Double>
@@ -57,7 +57,7 @@ inline void Eval_Dirac_VEF_Face::calculer_terme_source(const int num_face, Type_
   if (face_voisins(num_face, 1) == -1) elem = face_voisins(num_face, 0);
   else elem = face_voisins(num_face, 1);
 
-  const int test = ma_zone.valeur().type_elem().contient(le_point, elem);
+  const int test = mon_dom.valeur().type_elem().contient(le_point, elem);
   assert(nb_dirac != -123. && puissance != -123.);
   for (int i = 0; i < size; i++) source[i] = (test == 1) ? nb_dirac * puissance : 0.;
 }

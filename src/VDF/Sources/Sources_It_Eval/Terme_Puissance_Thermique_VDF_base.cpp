@@ -34,11 +34,11 @@ Entree& Terme_Puissance_Thermique_VDF_base::readOn(Entree& s )
   return s ;
 }
 
-void Terme_Puissance_Thermique_VDF_base::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Terme_Puissance_Thermique_VDF_base::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  iter->associer_zones(zvdf,zclvdf);
+  iter->associer_domaines(zvdf,zclvdf);
 }
 
 int Terme_Puissance_Thermique_VDF_base::initialiser(double temps)

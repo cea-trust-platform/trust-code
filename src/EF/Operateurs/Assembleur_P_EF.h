@@ -26,8 +26,8 @@ class Assembleur_P_EF: public Assembleur_base
   Declare_instanciable(Assembleur_P_EF);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base&) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base&) override;
+  void associer_domaine_dis_base(const Zone_dis_base&) override;
+  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
   const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
   int assembler(Matrice&) override;
@@ -41,8 +41,8 @@ public:
 
 protected:
   REF(Equation_base) mon_equation;
-  REF(Zone_EF) la_zone_EF;
-  REF(Zone_Cl_EF) la_zone_Cl_EF;
+  REF(Zone_EF) le_dom_EF;
+  REF(Zone_Cl_EF) le_dom_Cl_EF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
 };

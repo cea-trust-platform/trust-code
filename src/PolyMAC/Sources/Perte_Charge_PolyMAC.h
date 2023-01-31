@@ -56,7 +56,7 @@ public:
 protected:
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override { };
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override { };
   //! Appele pour chaque face par ajouter()
   /**
      Utilise les intermediaires de calcul : u, norme_u, dh_valeur, reynolds

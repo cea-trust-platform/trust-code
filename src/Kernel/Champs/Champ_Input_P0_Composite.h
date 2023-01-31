@@ -42,7 +42,7 @@ public:
   const Nom& fixer_unite(const Nom& unit) override { return champ_input_.fixer_unite(unit); }
   const Nom& fixer_unite(int i, const Nom& unit) override { return champ_input_.fixer_unite(i,unit); }
 
-  void associer_zone_dis_base(const Zone_dis_base& zdb) override { champ_input_.associer_zone_dis_base(zdb); }
+  void associer_domaine_dis_base(const Zone_dis_base& zdb) override { champ_input_.associer_domaine_dis_base(zdb); }
   const Zone_dis_base& zone_dis_base() const override { return champ_input_.zone_dis_base(); }
 
   void getTemplate(TrioField& afield) const { champ_input_.getTemplate(afield); }

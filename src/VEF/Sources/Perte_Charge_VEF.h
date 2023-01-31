@@ -52,7 +52,7 @@ public:
 protected:
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;   //!< associe la_zone_VEF et la_zone_Cl_VEF
+  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;   //!< associe le_dom_VEF et le_dom_Cl_VEF
 
   //! Appele pour chaque face par ajouter()
   /**
@@ -88,8 +88,8 @@ protected:
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
   //! Zone dans laquelle s'applique la perte de charge
-  REF(Zone_VEF) la_zone_VEF;
-  REF(Zone_Cl_VEF) la_zone_Cl_VEF;
+  REF(Zone_VEF) le_dom_VEF;
+  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
 
   // Cas d'une sous-zone
   bool sous_zone=false; //!< Le terme est-il limite a une sous-zone ?

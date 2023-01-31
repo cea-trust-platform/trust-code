@@ -77,7 +77,7 @@ void Op_Diff_PolyMAC_P0_base::completer()
   else if ( (N_nu == N_mil * D) | (N_nu == N*D) ) nu_.resize(0, N, D); //diagonal
   else if ( (N_nu == N_mil * D * D) | (N_nu == N * D * D) ) nu_.resize(0, N, D, D); //complet
   else Process::exit(Nom("Op_Diff_PolyMAC_P0_base : diffusivity component count ") + Nom(N_nu) + " not among (" + Nom(N) + ", " + Nom(N * D) + ", " + Nom(N * D * D)  + ")!");
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   zone.zone().creer_tableau_elements(nu_);
   const Conds_lim& cls = eq.zone_Cl_dis().les_conditions_limites();
   nu_constant_ = (sub_type(Champ_Uniforme, diffusivite()) || sub_type(Champ_Don_Fonc_xyz, diffusivite())) ;
@@ -89,27 +89,27 @@ void Op_Diff_PolyMAC_P0_base::completer()
 
 int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
 {
-  const Zone& ma_zone=la_zone_poly_->zone();
-  const int impr_mom=ma_zone.moments_a_imprimer();
-  const int impr_sum=(ma_zone.bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(ma_zone.bords_a_imprimer().est_vide() ? 0:1);
+  const Zone& mon_dom=le_dom_poly_->zone();
+  const int impr_mom=mon_dom.moments_a_imprimer();
+  const int impr_sum=(mon_dom.bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(mon_dom.bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = la_zcl_poly_->equation().probleme().schema_temps();
   DoubleTab& tab_flux_bords= flux_bords();
   int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
   DoubleVect bilan(nb_comp);
-  const int nb_faces = la_zone_poly_->nb_faces_tot();
+  const int nb_faces = le_dom_poly_->nb_faces_tot();
   DoubleTab xgr(nb_faces,dimension);
   xgr=0.;
   if (impr_mom)
     {
-      const DoubleTab& xgrav = la_zone_poly_->xv();
-      const ArrOfDouble& c_grav=ma_zone.cg_moments();
+      const DoubleTab& xgrav = le_dom_poly_->xv();
+      const ArrOfDouble& c_grav=mon_dom.cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
   int k,face;
-  int nb_front_Cl=la_zone_poly_->nb_front_Cl();
+  int nb_front_Cl=le_dom_poly_->nb_front_Cl();
   DoubleTrav flux_bords2( 5, nb_front_Cl , nb_comp) ;
   flux_bords2=0;
   for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
@@ -123,7 +123,7 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
           for(k=0; k<nb_comp; k++)
             {
               flux_bords2(0,num_cl,k)+=tab_flux_bords(face, k);
-              if (ma_zone.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
+              if (mon_dom.bords_a_imprimer_sum().contient(frontiere_dis.le_nom()))
                 flux_bords2(3,num_cl,k)+=tab_flux_bords(face, k);
             }  /* fin for k */
           if (impr_mom)
@@ -178,7 +178,7 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;
     }
-  const LIST(Nom)& Liste_bords_a_imprimer = la_zone_poly_->zone().bords_a_imprimer();
+  const LIST(Nom)& Liste_bords_a_imprimer = le_dom_poly_->zone().bords_a_imprimer();
   if (!Liste_bords_a_imprimer.est_vide() && nb_comp > 0)
     {
       EcrFicPartage Flux_face;
@@ -190,7 +190,7 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
           const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
           int ndeb = frontiere_dis.num_premiere_face();
           int nfin = ndeb + frontiere_dis.nb_faces();
-          if (ma_zone.bords_a_imprimer().contient(la_fr.le_nom()))
+          if (mon_dom.bords_a_imprimer().contient(la_fr.le_nom()))
             {
               if(je_suis_maitre())
                 {
@@ -201,9 +201,9 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
               for (face=ndeb; face<nfin; face++)
                 {
                   if (dimension == 2)
-                    Flux_face << "# Face a x= " << la_zone_poly_->xv(face,0) << " y= " << la_zone_poly_->xv(face,1) << " : ";
+                    Flux_face << "# Face a x= " << le_dom_poly_->xv(face,0) << " y= " << le_dom_poly_->xv(face,1) << " : ";
                   else if (dimension == 3)
-                    Flux_face << "# Face a x= " << la_zone_poly_->xv(face,0) << " y= " << la_zone_poly_->xv(face,1) << " z= " << la_zone_poly_->xv(face,2) << " : ";
+                    Flux_face << "# Face a x= " << le_dom_poly_->xv(face,0) << " y= " << le_dom_poly_->xv(face,1) << " z= " << le_dom_poly_->xv(face,2) << " : ";
                   for(k=0; k<nb_comp; k++)
                     Flux_face << tab_flux_bords(face, k) << " ";
                   Flux_face << finl;
@@ -215,14 +215,14 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
   return 1;
 }
 /*
-void Op_Diff_PolyMAC_P0_base::associer_zone_cl_dis(const Zone_Cl_dis_base& zcl)
+void Op_Diff_PolyMAC_P0_base::associer_domaine_cl_dis(const Zone_Cl_dis_base& zcl)
 {
   la_zcl_poly_ = ref_cast(Zone_Cl_PolyMAC,zcl);
 }
 */
 void Op_Diff_PolyMAC_P0_base::associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zcl,const Champ_Inc& )
 {
-  la_zone_poly_ = ref_cast(Zone_PolyMAC_P0,zone_dis.valeur());
+  le_dom_poly_ = ref_cast(Zone_PolyMAC_P0,zone_dis.valeur());
   la_zcl_poly_ = ref_cast(Zone_Cl_PolyMAC,zcl.valeur());
 }
 
@@ -248,7 +248,7 @@ const Champ_base& Op_Diff_PolyMAC_P0_base::diffusivite() const
 
 void Op_Diff_PolyMAC_P0_base::update_nu() const
 {
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   const DoubleTab& nu_src = diffusivite().valeurs();
   int e, i, m, n, c_nu = nu_src.dimension_tot(0) == 1, d, db, D = dimension;
   int N = equation().inconnue().valeurs().line_size(), N_mil = equation().milieu().masse_volumique().non_nul() ? equation().milieu().masse_volumique().valeurs().line_size() : N,
@@ -289,6 +289,6 @@ void Op_Diff_PolyMAC_P0_base::update_phif(int full_stencil) const
   if (!full_stencil && phif_a_jour_) return; //deja fait, sauf si on demande tout le stencil
   const Champ_Inc_base& ch = equation().inconnue().valeur();
   const IntTab& fcl = sub_type(Champ_Face_PolyMAC_P0, ch) ? ref_cast(Champ_Face_PolyMAC_P0, ch).fcl() : ref_cast(Champ_Elem_PolyMAC_P0, ch).fcl();
-  la_zone_poly_->fgrad(ch.valeurs().line_size(), 0, la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &som_ext, sub_type(Champ_Face_PolyMAC_P0, ch), full_stencil, phif_d, phif_e, phif_c);
+  le_dom_poly_->fgrad(ch.valeurs().line_size(), 0, la_zcl_poly_->les_conditions_limites(), fcl, &nu(), &som_ext, sub_type(Champ_Face_PolyMAC_P0, ch), full_stencil, phif_d, phif_e, phif_c);
   phif_a_jour_ = 1;
 }

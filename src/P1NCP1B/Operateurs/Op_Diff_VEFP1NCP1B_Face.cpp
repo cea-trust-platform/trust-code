@@ -214,7 +214,7 @@ void Op_Diff_VEFP1NCP1B_Face::associer(const Zone_dis& zone_dis,
       inconnue_ = inco;
     }
 
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 }
 
@@ -1336,7 +1336,7 @@ ajouter_contribution_elem(const DoubleTab& inconnue,const DoubleVect& porosite_f
                           const DoubleTab& nu,Matrice_Morse& matrice) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
 
@@ -3025,7 +3025,7 @@ void Op_Diff_VEFP1NCP1B_Face::dimensionner(Matrice_Morse& matrice) const
   IntLists faces_faces;
 
   if (alphaE && !alphaS && !alphaA)
-    Op_VEF_Face::dimensionner(la_zone_vef.valeur(), la_zcl_vef.valeur(), matrice);
+    Op_VEF_Face::dimensionner(le_dom_vef.valeur(), la_zcl_vef.valeur(), matrice);
 
   if (alphaS)
     {

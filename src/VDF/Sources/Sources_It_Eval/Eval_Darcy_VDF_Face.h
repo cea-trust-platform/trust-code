@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ protected:
  */
 inline void Eval_Darcy_VDF_Face::associer(const Champ_Don& diffu)
 {
-  const int nb_faces_tot = ref_cast(Zone_VDF,la_zone.valeur()).nb_faces_tot();
+  const int nb_faces_tot = ref_cast(Zone_VDF,le_dom.valeur()).nb_faces_tot();
   db_diffusivite.resize(nb_faces_tot,Array_base::NOCOPY_NOINIT);
   diffusivite_ = diffu.valeur();
   mettre_a_jour();
@@ -58,13 +58,13 @@ inline void Eval_Darcy_VDF_Face::associer(const Champ_Don& diffu)
 
 inline void Eval_Darcy_VDF_Face::mettre_a_jour()
 {
-  const int nb_faces_tot = ref_cast(Zone_VDF,la_zone.valeur()).nb_faces_tot();
+  const int nb_faces_tot = ref_cast(Zone_VDF,le_dom.valeur()).nb_faces_tot();
   if (sub_type(Champ_Uniforme,diffusivite_.valeur())) db_diffusivite = diffusivite_.valeur()(0,0);
   else
     {
       const DoubleTab& val_diff = diffusivite_.valeur().valeurs();
-      const IntTab& face_vois = la_zone.valeur().face_voisins();
-      const ArrOfDouble& volumes = ref_cast(Zone_VDF,la_zone.valeur()).volumes();
+      const IntTab& face_vois = le_dom.valeur().face_voisins();
+      const ArrOfDouble& volumes = ref_cast(Zone_VDF,le_dom.valeur()).volumes();
       db_diffusivite = 0.;
       // Compute nu(fac)=(nu(elem1).vol(elem1)+nu(elem2).vol(elem2))/(vol(elem1)+vol(elem2))
       // Viscosity at face is the volume weighted average of viscosity on elements

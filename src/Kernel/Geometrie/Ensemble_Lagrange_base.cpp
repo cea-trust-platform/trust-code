@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,9 +35,9 @@ Entree& Ensemble_Lagrange_base::readOn(Entree& is)
   return is;
 }
 
-void Ensemble_Lagrange_base::associer_zone(const Zone& une_zone)
+void Ensemble_Lagrange_base::associer_domaine(const Zone& une_zone)
 {
-  ma_zone_=une_zone;
+  mon_dom_=une_zone;
 }
 
 void Ensemble_Lagrange_base::remplir_sommets_tmp(DoubleTab& soms_tmp)
@@ -71,7 +71,7 @@ void Ensemble_Lagrange_base::remplir_sommets_tmp(DoubleTab& soms_tmp)
 
 void Ensemble_Lagrange_base::generer_marqueurs_sz(DoubleTab& soms_tmp)
 {
-  const Zone& mazone = ma_zone_.valeur();
+  const Zone& mazone = mon_dom_.valeur();
   const Zone& dom = mazone;
   int nb_sz,nb_marq_sz, old_size, dim;
   soms_tmp.resize(0);

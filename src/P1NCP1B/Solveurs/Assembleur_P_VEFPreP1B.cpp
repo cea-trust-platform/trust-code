@@ -100,7 +100,7 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
 
 const Zone_VEF_PreP1b& Assembleur_P_VEFPreP1B::zone_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, la_zone_VEF.valeur());
+  return ref_cast(Zone_VEF_PreP1b, le_dom_VEF.valeur());
 }
 
 extern void assemblerP0P0(const Zone_dis_base& z,
@@ -247,7 +247,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
         }
 
       DoubleTab inverse_quantitee_entrelacee;
-      const Zone_Cl_VEF& zone_Cl_VEF = la_zone_Cl_VEF.valeur();
+      const Zone_Cl_VEF& zone_Cl_VEF = le_dom_Cl_VEF.valeur();
       calculer_inv_volume(inverse_quantitee_entrelacee, zone_Cl_VEF, quantitee_entrelacee);
       int P0 = 0;
       int P1 = P0 + zone_vef.get_alphaE();
@@ -402,17 +402,17 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
 int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 {
-  const Zone_VEF_PreP1b& la_zone = zone_Vef();
+  const Zone_VEF_PreP1b& le_dom = zone_Vef();
 
   // Verification sur le support Pa
-  if (la_zone.get_alphaA())
+  if (le_dom.get_alphaA())
     {
       // Verification sur les aretes que:
-      const ArrOfInt& renum_arete_perio=la_zone.get_renum_arete_perio();
-      const ArrOfInt& ok_arete=la_zone.get_ok_arete();
-      int npa=la_zone.numero_premiere_arete();
+      const ArrOfInt& renum_arete_perio=le_dom.get_renum_arete_perio();
+      const ArrOfInt& ok_arete=le_dom.get_ok_arete();
+      int npa=le_dom.numero_premiere_arete();
       // b n'a pas forcement son espace virtuel a jour
-      int nb_aretes=la_zone.zone().nb_aretes();
+      int nb_aretes=le_dom.zone().nb_aretes();
       for(int i=0; i<nb_aretes; i++)
         if(!ok_arete[i] && b(npa+i)!=0.) // Les aretes superflues ont une valeur nulle
           {
@@ -427,12 +427,12 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
     }
 
   // Verification sur le support P1
-  if (la_zone.get_alphaS())
+  if (le_dom.get_alphaS())
     {
       // Verification que la pression sur les sommets periodiques est nulle
-      const Zone& dom=la_zone.zone();
-      int nps=la_zone.numero_premier_sommet();
-      int ns=la_zone.zone().nb_som();
+      const Zone& dom=le_dom.zone();
+      int nps=le_dom.numero_premier_sommet();
+      int ns=le_dom.zone().nb_som();
       for(int i=0; i<ns; i++)
         {
           int k=dom.get_renum_som_perio(i);
@@ -455,7 +455,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
   if (get_resoudre_en_u())
     {
       const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
-      const Zone_Cl_VEF& zone_Cl = la_zone_Cl_VEF.valeur();
+      const Zone_Cl_VEF& zone_Cl = le_dom_Cl_VEF.valeur();
 
       const DoubleVect& porosite_face = zone_Cl.equation().milieu().porosite_face();
 
@@ -540,7 +540,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, DoubleTab& b)
 {
   const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
-  const Zone_Cl_VEF& zone_Cl = la_zone_Cl_VEF.valeur();
+  const Zone_Cl_VEF& zone_Cl = le_dom_Cl_VEF.valeur();
 
   const int nb_cond_lim = zone_Cl.nb_cond_lim();
 
@@ -584,7 +584,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, Double
 int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleTab& b)
 {
   const Zone_VEF_PreP1b& zone_VEF =  zone_Vef();
-  const Zone_Cl_VEF& zone_Cl = la_zone_Cl_VEF.valeur();
+  const Zone_Cl_VEF& zone_Cl = le_dom_Cl_VEF.valeur();
   const Zone& zone = zone_VEF.zone();
   const Zone& domaine = zone;
 
@@ -682,17 +682,17 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
 {
 
   //  if (!has_P_ref) exit();
-  const Zone_VEF_PreP1b& la_zone = zone_Vef();
+  const Zone_VEF_PreP1b& le_dom = zone_Vef();
 
   // Verification sur les aretes
-  if (la_zone.get_alphaA())
+  if (le_dom.get_alphaA())
     {
       // On impose la pression a 0 sur les aretes superflues:
-      const IntVect& ok_arete=la_zone.get_ok_arete();
-      const ArrOfInt& renum_arete_perio=la_zone.get_renum_arete_perio();
+      const IntVect& ok_arete=le_dom.get_ok_arete();
+      const ArrOfInt& renum_arete_perio=le_dom.get_renum_arete_perio();
       // Nombre d'aretes reelles
       int nb_aretes=ok_arete.size();
-      int npa=la_zone.numero_premiere_arete();
+      int npa=le_dom.numero_premiere_arete();
       for(int i=0; i<nb_aretes; i++)
         {
           if(!ok_arete(i) && pression(npa+i)!=0.)
@@ -711,11 +711,11 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
     }
 
   // On applique la periodicite sur les sommets pour la pression:
-  if (la_zone.get_alphaS())
+  if (le_dom.get_alphaS())
     {
-      const Zone& dom=la_zone.zone();
-      int nps=la_zone.numero_premier_sommet();
-      int ns=la_zone.zone().nb_som();
+      const Zone& dom=le_dom.zone();
+      int nps=le_dom.numero_premier_sommet();
+      int ns=le_dom.zone().nb_som();
       for(int i=0; i<ns; i++)
         {
           int k=dom.get_renum_som_perio(i);
@@ -724,7 +724,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
     }
   // pression.echange_espace_virtuel();
   // pour retirer le min de la pression si pas de Pref et si que PO sinon on filtre plus tard
-  if (la_zone.get_alphaE() && (la_zone.get_alphaS()==0) && (la_zone.get_alphaA()==0) )
+  if (le_dom.get_alphaE() && (le_dom.get_alphaS()==0) && (le_dom.get_alphaA()==0) )
     Assembleur_P_VEF::modifier_solution( pression);
   // Verification possible par variable d'environnement:
   char* theValue = getenv("TRUST_VERIFIE_DIRICHLET");
@@ -747,7 +747,7 @@ void Assembleur_P_VEFPreP1B::verifier_dirichlet()
   faces=-1;
   const IntTab& face_sommets=zone_Vef().face_sommets();
   Faces_de_Dirichlet=0;
-  const Conds_lim& les_cl = la_zone_Cl_VEF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VEF.valeur().les_conditions_limites();
   for(int i=0; i<les_cl.size(); i++)
     {
       const Cond_lim& la_cl = les_cl[i];
@@ -862,7 +862,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
 {
   int matrice_modifiee=0;
   has_P_ref=0;
-  const Conds_lim& les_cl = la_zone_Cl_VEF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VEF.valeur().les_conditions_limites();
   const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
   // Recherche s'il y'a une pression de reference, et si oui la matrice n'est pas modifiee
   for(int i=0; i<les_cl.size(); i++)

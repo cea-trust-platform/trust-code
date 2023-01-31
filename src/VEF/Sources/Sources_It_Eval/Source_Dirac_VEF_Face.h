@@ -30,7 +30,7 @@ class Source_Dirac_VEF_Face : public Terme_Puissance_Thermique_VEF_base
 public:
   Source_Dirac_VEF_Face() : Terme_Puissance_Thermique_VEF_base(Iterateur_Source_VEF_Face<Eval_Dirac_VEF_Face>()) { }
   void associer_pb(const Probleme_base& ) override;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
   void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 
 protected:

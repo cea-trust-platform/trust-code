@@ -410,7 +410,7 @@ Champ_base& Champ_P1NC::affecter_(const Champ_base& ch)
   DoubleTab& tab = valeurs();
   DoubleTab noeuds;
   remplir_coord_noeuds(noeuds);
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   const int nb_faces = zone_VEF.nb_faces();
   const IntTab& face_sommets = zone_VEF.face_sommets();
   const DoubleTab& sommets=domaine().coord_sommets();
@@ -840,7 +840,7 @@ double Champ_P1NC::norme_L2(const Zone& dom) const
 
 double Champ_P1NC::norme_H1(const Zone& dom) const
 {
-  const Zone& ma_zone = zone_vef().zone();
+  const Zone& mon_dom = zone_vef().zone();
 
   double dnorme_H1, norme_H1_comp, int_grad_elem, norme_grad_elem;
   int face_globale;
@@ -856,13 +856,13 @@ double Champ_P1NC::norme_H1(const Zone& dom) const
   for (int composante = 0; composante < nb_comp(); composante++) //cas scalaire ou vectoriel
     {
       norme_H1_comp = 0.; //pour eviter les accumulations
-      for (int K = 0; K < ma_zone.nb_elem(); K++) //boucle sur les elements
+      for (int K = 0; K < mon_dom.nb_elem(); K++) //boucle sur les elements
         {
           norme_grad_elem = 0.; //pour eviter les accumulations
           for (int i = 0; i < dimension; i++) //boucle sur la dimension du pb
             {
               int_grad_elem = 0.; //pour eviter les accumulations
-              for (int face = 0; face < ma_zone.nb_faces_elem(); face++) //boucle sur les faces d'un "K"
+              for (int face = 0; face < mon_dom.nb_faces_elem(); face++) //boucle sur les faces d'un "K"
                 {
                   face_globale = zone_vef().elem_faces(K, face);
 

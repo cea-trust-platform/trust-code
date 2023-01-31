@@ -62,7 +62,7 @@ void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_zone)
 {
   Cerr << " Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces " << finl;
   const Zone& le_domaine = equation().probleme().domaine();
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,12 +34,12 @@ public:
   double calculer_dt_stab() const override;
   inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override;
   int impr(Sortie& os) const override;
-  void associer_zone_cl_dis(const Zone_Cl_dis_base&) override;
+  void associer_domaine_cl_dis(const Zone_Cl_dis_base&) override;
   void associer(const Zone_dis& , const Zone_Cl_dis& ,const Champ_Inc& ) override;
   void associer_vitesse(const Champ_base& ) override;
 
 protected:
-  REF(Zone_Poly_base) la_zone_poly_;
+  REF(Zone_Poly_base) le_dom_poly_;
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) vitesse_;
 

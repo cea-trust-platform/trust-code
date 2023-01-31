@@ -67,7 +67,7 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
   Cerr << "Zone_Cl_VDF::completer ..." << finl;
   if (sub_type(Zone_VDF,une_zone_dis.valeur()))
     {
-      const Zone_VDF& la_zone_VDF = ref_cast(Zone_VDF,une_zone_dis.valeur());
+      const Zone_VDF& le_dom_VDF = ref_cast(Zone_VDF,une_zone_dis.valeur());
 
       //  Remplissage du tableau d'entiers type_arete_bord_
       //  tableau intermediaire : les_faces_Cl
@@ -82,13 +82,13 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
       //  On ne considere que les conditions aux limites qui interviennent pour
       //  la quantite de mouvement
 
-      int nb_aretes_bord = la_zone_VDF.nb_aretes_bord();
+      int nb_aretes_bord = le_dom_VDF.nb_aretes_bord();
       IntVect les_faces_Cl;
-      la_zone_VDF.creer_tableau_faces_bord(les_faces_Cl);
+      le_dom_VDF.creer_tableau_faces_bord(les_faces_Cl);
 
       // Boucle sur les conditions aux limites pour remplir les_faces_Cl:
 
-      for (int n_bord=0; n_bord<la_zone_VDF.nb_front_Cl(); n_bord++)
+      for (int n_bord=0; n_bord<le_dom_VDF.nb_front_Cl(); n_bord++)
         {
 
           // pour chaque Condition Limite on regarde son type
@@ -126,20 +126,20 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
       int face1,face2;
       int rang1,rang2;
       type_arete_bord_= TypeAreteBordVDF::VIDE;
-      int ndeb = la_zone_VDF.premiere_arete_bord();
+      int ndeb = le_dom_VDF.premiere_arete_bord();
       int nfin = ndeb + nb_aretes_bord;
       int num_arete_;
 
-      int decal_virt = la_zone_VDF.nb_faces();
+      int decal_virt = le_dom_VDF.nb_faces();
       int sz_faces_Cl = les_faces_Cl.size_reelle();
-      const ArrOfInt& ind_faces_virt_bord = la_zone_VDF.zone().ind_faces_virt_bord();
+      const ArrOfInt& ind_faces_virt_bord = le_dom_VDF.zone().ind_faces_virt_bord();
       int num_arete;
 
       for ( num_arete=ndeb; num_arete<nfin; num_arete++)
         {
           num_arete_=num_arete-ndeb;
-          face1 = la_zone_VDF.Qdm(num_arete,0);
-          face2 = la_zone_VDF.Qdm(num_arete,1);
+          face1 = le_dom_VDF.Qdm(num_arete,0);
+          face2 = le_dom_VDF.Qdm(num_arete,1);
           rang1 = face1;
           rang2 = face2;
           if(rang1>=sz_faces_Cl) rang1=ind_faces_virt_bord[rang1-decal_virt];
@@ -219,18 +219,18 @@ void Zone_Cl_VDF::completer(const Zone_dis& une_zone_dis)
       // Boucle sur les aretes coin pour remplir type_arete_coin_
 
       type_arete_coin_= TypeAreteCoinVDF::VIDE;
-      ndeb = la_zone_VDF.premiere_arete_coin();
-      nfin = ndeb + la_zone_VDF.nb_aretes_coin();
+      ndeb = le_dom_VDF.premiere_arete_coin();
+      nfin = ndeb + le_dom_VDF.nb_aretes_coin();
       int fac1,fac2,fac3,fac4;
 
       for (num_arete=ndeb; num_arete<nfin; num_arete++)
         {
           num_arete_=num_arete-ndeb;
           // On cherche les 2 valeurs differentes de -1
-          fac1 = la_zone_VDF.Qdm(num_arete_,0);
-          fac2 = la_zone_VDF.Qdm(num_arete_,1);
-          fac3 = la_zone_VDF.Qdm(num_arete_,2);
-          fac4 = la_zone_VDF.Qdm(num_arete_,3);
+          fac1 = le_dom_VDF.Qdm(num_arete_,0);
+          fac2 = le_dom_VDF.Qdm(num_arete_,1);
+          fac3 = le_dom_VDF.Qdm(num_arete_,2);
+          fac4 = le_dom_VDF.Qdm(num_arete_,3);
 
           IntVect f(2);
           f = -2;
@@ -378,7 +378,7 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
   else if (sub_type(Champ_Face_VDF,ch_base))
     {
       Champ_Face_VDF& ch_face = ref_cast(Champ_Face_VDF, ch_base);
-      const Zone_VDF& ma_zone_VDF = ch_face.zone_vdf();
+      const Zone_VDF& mon_dom_VDF = ch_face.zone_vdf();
       int ndeb,nfin, num_face;
 
       for(int i=0; i<nb_cond_lim(); i++)
@@ -432,7 +432,7 @@ void Zone_Cl_VDF::imposer_cond_lim(Champ_Inc& ch, double temps)
                 for (int n = 0; n < N; n++)
                   {
                     // WEC : optimisable (pour chaque face recherche le bon temps !)
-                    ch_tab(num_face, n) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, N * ma_zone_VDF.orientation(num_face) + n);
+                    ch_tab(num_face, n) = la_cl_diri.val_imp_au_temps(temps, num_face - ndeb, N * mon_dom_VDF.orientation(num_face) + n);
                   }
             }
           else if ( sub_type(Dirichlet_paroi_fixe,la_cl) )

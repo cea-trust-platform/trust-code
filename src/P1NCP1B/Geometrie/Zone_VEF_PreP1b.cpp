@@ -384,10 +384,10 @@ void Zone_VEF_PreP1b::construire_ok_arete()
 
   // Estimation du nombre d'aretes superflues a trouver sur la zone
   // en comptant les sommets reels non periodiques dont le contenu vaut 0
-  int nombre_aretes_superflues_prevues_sur_la_zone=0;
+  int nombre_aretes_superflues_prevues_sur_le_dom=0;
   for (int i=0; i<nb_som_reel; i++)
     if (i==dom.get_renum_som_perio(i) && contenu[i]==0)
-      nombre_aretes_superflues_prevues_sur_la_zone++;
+      nombre_aretes_superflues_prevues_sur_le_dom++;
 
   ok_arete = -1;
 
@@ -461,7 +461,7 @@ void Zone_VEF_PreP1b::construire_ok_arete()
   ok_arete.echange_espace_virtuel();
 
   // Verification des aretes superflues
-  verifie_ok_arete(nombre_aretes_superflues_prevues_sur_la_zone);
+  verifie_ok_arete(nombre_aretes_superflues_prevues_sur_le_dom);
 
   // Ecriture des aretes superflues dans un fichier nom_du_cas.ok_arete afin de le relire la fois suivante
   Nom fichier(nom_du_cas());
@@ -667,7 +667,7 @@ void Zone_VEF_PreP1b::construire_renum_arete_perio(const Conds_lim& conds_lim)
   */
 }
 
-void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_la_zone) const
+void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_le_dom) const
 {
   Cerr << "Check array ok_arete..." << finl;
   // Algorithme de verification du tableau des aretes superflues
@@ -749,7 +749,7 @@ void Zone_VEF_PreP1b::verifie_ok_arete(int nombre_aretes_superflues_prevues_sur_
         nb_sommets_non_periodiques+=1./sommets_communs;
       }
   double total_nombre_aretes_superflues=mp_sum(nombre_aretes_reelles_superflues);
-  double somme_nombre_aretes_superflues_prevues_par_zone=mp_sum(nombre_aretes_superflues_prevues_sur_la_zone);
+  double somme_nombre_aretes_superflues_prevues_par_zone=mp_sum(nombre_aretes_superflues_prevues_sur_le_dom);
   double total_nb_sommets_non_periodiques=mp_sum(nb_sommets_non_periodiques);
 
 

@@ -39,7 +39,7 @@ public :
 
   inline void contribuer_au_second_membre(DoubleTab& ) const override;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
-  inline void associer_zone_cl_dis(const Zone_Cl_dis_base&) override
+  inline void associer_domaine_cl_dis(const Zone_Cl_dis_base&) override
   {
     ;
   } ;

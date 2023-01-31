@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ class EOS_Tools_VDF: public EOS_Tools_base
   Declare_instanciable(EOS_Tools_VDF);
 public :
   const DoubleTab& rho_discvit() const override;
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;
+  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;
   void divu_discvit(const DoubleTab&, DoubleTab&) override;
   void secmembre_divU_Z(DoubleTab& ) const override;
   void mettre_a_jour(double temps) override;
@@ -44,8 +44,8 @@ public :
   inline const Fluide_Dilatable_base& le_fluide() const { return le_fluide_.valeur(); }
 
 protected :
-  REF(Zone_VDF) la_zone;
-  REF(Zone_Cl_dis) la_zone_Cl;
+  REF(Zone_VDF) le_dom;
+  REF(Zone_Cl_dis) le_dom_Cl;
   DoubleTab tab_rho_face, tab_rho_face_demi, tab_rho_face_np1;
 };
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,7 +44,7 @@ public:
     return eval;
   }
 
-  void completer_() override { nb_elems = la_zone->zone().nb_elem_tot(); }
+  void completer_() override { nb_elems = le_dom->zone().nb_elem_tot(); }
 
   DoubleTab& ajouter(DoubleTab&) const override;
   int impr(Sortie&) const override;
@@ -92,9 +92,9 @@ template<typename _TYPE_> template<typename Type_Double>
 DoubleTab& Iterateur_Source_EF_Som<_TYPE_>::ajouter_elems_standard(const int ncomp, DoubleTab& resu) const
 {
   Type_Double source(ncomp);
-  const IntTab& elems = la_zone->zone().les_elems();
-  const DoubleTab& IPhi_thilde = ref_cast(Zone_EF,la_zone.valeur()).IPhi_thilde();
-  int nb_som_elem = la_zone->zone().nb_som_elem();
+  const IntTab& elems = le_dom->zone().les_elems();
+  const DoubleTab& IPhi_thilde = ref_cast(Zone_EF,le_dom.valeur()).IPhi_thilde();
+  int nb_som_elem = le_dom->zone().nb_som_elem();
   for (int num_elem = 0; num_elem < nb_elems; num_elem++)
     {
       evaluateur_source_elem.calculer_terme_source(num_elem, source);

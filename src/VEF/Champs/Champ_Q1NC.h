@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ public:
   void gradient(DoubleTab&);
 
   // Methodes inlines
-  inline const Zone_VEF& zone_vef() const override { return ref_cast(Zone_VEF, la_zone_VF.valeur()); }
+  inline const Zone_VEF& zone_vef() const override { return ref_cast(Zone_VEF, le_dom_VF.valeur()); }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {

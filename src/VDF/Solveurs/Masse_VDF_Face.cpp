@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ Entree& Masse_VDF_Face::readOn(Entree& s) { return s ; }
 
 void Masse_VDF_Face::completer()
 {
-  Solveur_Masse_Face_proto::associer_masse_proto(*this,la_zone_VDF.valeur());
+  Solveur_Masse_Face_proto::associer_masse_proto(*this,le_dom_VDF.valeur());
 }
 
 DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
@@ -43,9 +43,9 @@ DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
   else
     {
 
-      assert(la_zone_VDF.non_nul());
-      assert(la_zone_Cl_VDF.non_nul());
-      const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+      assert(le_dom_VDF.non_nul());
+      assert(le_dom_Cl_VDF.non_nul());
+      const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
       const DoubleVect& porosite_face = equation().milieu().porosite_face();
       const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
       const int nb_faces = zone_VDF.nb_faces(), N = sm.line_size();
@@ -67,7 +67,7 @@ DoubleTab& Masse_VDF_Face::appliquer_impl(DoubleTab& sm) const
         {
 
           // pour chaque Condition Limite on regarde son type
-          const Cond_lim& la_cl = la_zone_Cl_VDF->les_conditions_limites(n_bord);
+          const Cond_lim& la_cl = le_dom_Cl_VDF->les_conditions_limites(n_bord);
           const Front_VF& la_front_dis = ref_cast(Front_VF, la_cl.frontiere_dis());
           const int ndeb = la_front_dis.num_premiere_face();
           const int nfin = ndeb + la_front_dis.nb_faces();

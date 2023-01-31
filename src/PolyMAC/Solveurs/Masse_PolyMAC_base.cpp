@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,14 +22,14 @@ Implemente_base(Masse_PolyMAC_base,"Masse_PolyMAC_base",Solveur_Masse_base);
 Sortie& Masse_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 Entree& Masse_PolyMAC_base::readOn(Entree& s) { return s ; }
 
-void Masse_PolyMAC_base::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
+void Masse_PolyMAC_base::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
 {
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC, la_zone_dis_base);
+  le_dom_PolyMAC = ref_cast(Zone_PolyMAC, le_dom_dis_base);
 }
 
-void Masse_PolyMAC_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+void Masse_PolyMAC_base::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis_base);
+  le_dom_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, le_dom_Cl_dis_base);
 }
 
 

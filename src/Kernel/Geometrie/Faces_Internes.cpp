@@ -25,9 +25,9 @@ Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(
  *
  * @param (Zone& une_zone) la zone a associer aux Faces_Interne de la liste
  */
-void Faces_Internes::associer_zone(const Zone& une_zone)
+void Faces_Internes::associer_domaine(const Zone& une_zone)
 {
-  for (auto& itr : *this) itr.associer_zone(une_zone);
+  for (auto& itr : *this) itr.associer_domaine(une_zone);
 }
 
 /*! @brief Renvoie le nombre total de faces contenues dans la liste des Faces_Interne, i.

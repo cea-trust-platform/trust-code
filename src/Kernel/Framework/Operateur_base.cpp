@@ -273,9 +273,9 @@ int Operateur_base::systeme_invariant() const
 {
   return 1;
 }
-void Operateur_base::associer_zone_cl_dis(const Zone_Cl_dis_base&)
+void Operateur_base::associer_domaine_cl_dis(const Zone_Cl_dis_base&)
 {
-  Cerr<<"Operateur_base::associer_zone_cl_dis must be overloaded "<<finl;
+  Cerr<<"Operateur_base::associer_domaine_cl_dis must be overloaded "<<finl;
   exit();
 }
 

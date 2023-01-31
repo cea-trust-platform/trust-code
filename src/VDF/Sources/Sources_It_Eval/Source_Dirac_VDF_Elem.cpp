@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,18 +33,18 @@ Entree& Source_Dirac_VDF_Elem::readOn(Entree& is)
   return is;
 }
 
-void Source_Dirac_VDF_Elem::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Dirac_VDF_Elem::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  Terme_Puissance_Thermique_VDF_base::associer_zones(zone_dis,zone_cl_dis);
+  Terme_Puissance_Thermique_VDF_base::associer_domaines(zone_dis,zone_cl_dis);
   Eval_Dirac_VDF_Elem& eval_dirac = static_cast<Eval_Dirac_VDF_Elem&> (iter->evaluateur());
-  eval_dirac.associer_zones(zone_dis.valeur(),zone_cl_dis.valeur());
+  eval_dirac.associer_domaines(zone_dis.valeur(),zone_cl_dis.valeur());
   const int nb_elem = zone_dis.valeur().nb_elem();
-  const Zone& ma_zone = zone_dis.valeur().zone();
+  const Zone& mon_dom = zone_dis.valeur().zone();
   nb_dirac = 0;
 
   for (int elem = 0; elem < nb_elem; elem++)
     {
-      int test =  ma_zone.type_elem().contient(point,elem) ;
+      int test =  mon_dom.type_elem().contient(point,elem) ;
       if (test == 1) nb_dirac++;
     }
 

@@ -49,7 +49,7 @@ Entree& List_Equations_Scalaires_Passifs_Especes::readOn(Entree& is)
       Eqn.associer_sch_tps_base(schema_temps());
 
       // on la discretise (pas fait par discretiser)
-      Eqn.associer_zone_dis(probleme().domaine_dis());
+      Eqn.associer_domaine_dis(probleme().domaine_dis());
       Eqn.discretiser();
 
       // on change le nom de l'inconnue et de l equation

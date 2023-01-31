@@ -32,7 +32,7 @@ class Elem_geom : public DERIV(Elem_geom_base)
   Declare_instanciable(Elem_geom);
 public:
 
-  inline void associer_zone(const Zone& );
+  inline void associer_domaine(const Zone& );
   inline void creer_faces_elem(Faces& ,int ) const;
   inline void creer_faces_elem(Faces& ,int ,Type_Face ) const;
   inline void face_sommet(int i, int j) const;
@@ -56,9 +56,9 @@ public:
  *
  * @param (Zone&  z) la zone dont fait partie l'element
  */
-inline void Elem_geom::associer_zone(const Zone&  z)
+inline void Elem_geom::associer_domaine(const Zone&  z)
 {
-  valeur().associer_zone(z);
+  valeur().associer_domaine(z);
 }
 
 

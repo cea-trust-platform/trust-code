@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,19 +59,19 @@ void Terme_Source_Qdm_VEF_Face::associer_pb(const Probleme_base& )
   ;
 }
 
-void Terme_Source_Qdm_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                               const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Qdm_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                  const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
 }
 
 
 DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
 {
   int nb_comp=resu.line_size();
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
-  const Zone_Cl_VEF& zone_Cl_VEF=la_zone_Cl_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
+  const Zone_Cl_VEF& zone_Cl_VEF=le_dom_Cl_VEF.valeur();
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& elem_sommets = zone_VEF.zone().les_elems();
   const DoubleVect& volumes = zone_VEF.volumes();

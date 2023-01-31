@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,7 +42,7 @@ public :
   virtual void associer_equation_transport(const Equation_base&
                                            equation) = 0;
   virtual const Equation_base& equation_associee() const = 0;
-  void associer_zone(const Zone& zone);
+  void associer_domaine(const Zone& zone);
   virtual inline const Zone& zone() const;
   void remplir_sommets_tmp(DoubleTab& soms_tmp);
   void generer_marqueurs_sz(DoubleTab& soms_tmp);
@@ -56,7 +56,7 @@ protected :
   IntVect nb_marqs_sz;        //nombre de marqueurs par sous zone
   IntTab nb_marqs_par_dir;        //nombre de marqueurs dans chacune des directions d une sous zone
   //si distribution uniforme sur la sous zone
-  REF(Zone) ma_zone_;                //REF a la Zone du maillage Eulerien
+  REF(Zone) mon_dom_;                //REF a la Zone du maillage Eulerien
 
   DoubleTab sommets_lu_;      //Coordonnees des sommets lus dans le cas d une lecture dans un fichier
 
@@ -66,7 +66,7 @@ private :
 
 inline const Zone& Ensemble_Lagrange_base::zone() const
 {
-  return ma_zone_.valeur();
+  return mon_dom_.valeur();
 }
 
 inline const IntVect& Ensemble_Lagrange_base::nb_marqs_par_sz() const

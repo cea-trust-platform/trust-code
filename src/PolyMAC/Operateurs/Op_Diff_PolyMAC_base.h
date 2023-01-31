@@ -88,7 +88,7 @@ public:
   int impr(Sortie& os) const override;
 
 protected:
-  REF(Zone_PolyMAC) la_zone_poly_;
+  REF(Zone_PolyMAC) le_dom_poly_;
   REF(Zone_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
 

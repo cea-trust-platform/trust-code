@@ -199,7 +199,7 @@ void Discretisation_base::champ_fixer_membres_communs(
   int nb_ddl,
   double temps)
 {
-  ch.associer_zone_dis_base(z);
+  ch.associer_domaine_dis_base(z);
   ch.nommer(nom);
   ch.fixer_nb_comp(nb_comp);
   if ((nb_comp>1)&& (nb_comp==dimension))
@@ -288,7 +288,7 @@ void Discretisation_base::discretiser(Zone_dis& dom_dis) const
   type+=que_suis_je();
   dom_dis.typer(type);
   const Zone& dom = le_domaine_.valeur();
-  dom_dis->associer_zone(dom);
+  dom_dis->associer_domaine(dom);
   dom_dis->discretiser_root(type);
 }
 

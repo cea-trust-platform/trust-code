@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,13 +42,13 @@ Entree& Masse_PolyMAC_Face::readOn(Entree& s) { return s ; }
 
 void Masse_PolyMAC_Face::completer()
 {
-  Solveur_Masse_Face_proto::associer_masse_proto(*this,la_zone_PolyMAC.valeur());
+  Solveur_Masse_Face_proto::associer_masse_proto(*this,le_dom_PolyMAC.valeur());
 }
 
 // XXX : a voir si on peut utiliser Solveur_Masse_Face_proto::appliquer_impl_proto ...
 DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
-  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Zone_PolyMAC& zone = le_dom_PolyMAC.valeur();
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = equation().milieu().porosite_face();
   int i, e, f, n, N = equation().inconnue().valeurs().line_size();
@@ -83,8 +83,8 @@ void Masse_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, d
 //sert a imposer les CLs de Dirichlet en multiphase (ou la variation de P_bord ne permet de corriger que v_melange)
 DoubleTab& Masse_PolyMAC_Face::corriger_solution(DoubleTab& x, const DoubleTab& y, int incr) const
 {
-  const Zone_PolyMAC& zone = la_zone_PolyMAC;
-  const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
+  const Zone_PolyMAC& zone = le_dom_PolyMAC;
+  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
   const DoubleTab& nf = zone.face_normales(), &vit = equation().inconnue().valeurs();
   const DoubleVect& fs = zone.face_surfaces();

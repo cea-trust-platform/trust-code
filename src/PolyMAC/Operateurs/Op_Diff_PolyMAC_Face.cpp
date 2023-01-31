@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ Entree& Op_Diff_PolyMAC_Face::readOn( Entree& is )
 void Op_Diff_PolyMAC_Face::completer()
 {
   Op_Diff_PolyMAC_base::completer();
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
   Equation_base& eq = equation();
   Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : eq.inconnue().valeur());
   ch.init_auxiliary_variables(); /* ajout des inconnues auxiliaires (vorticites aux aretes) */
@@ -70,7 +70,7 @@ void Op_Diff_PolyMAC_Face::completer()
 
 double Op_Diff_PolyMAC_Face::calculer_dt_stab() const
 {
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
   const IntTab& e_f = zone.elem_faces();
   const DoubleTab& nf = zone.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
@@ -96,7 +96,7 @@ double Op_Diff_PolyMAC_Face::calculer_dt_stab() const
 void Op_Diff_PolyMAC_Face::dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
   const IntTab& e_f = zone.elem_faces(), &f_s = zone.face_sommets(), &e_a = zone.zone().elem_aretes(), &fcl = ch.fcl();
   const std::string& nom_inco = ch.le_nom().getString();
   if (!matrices.count(nom_inco)) return; //pas de bloc diagonal -> rien a faire
@@ -171,7 +171,7 @@ void Op_Diff_PolyMAC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
 {
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
   const Conds_lim& cls = ch.zone_Cl_dis().les_conditions_limites();
-  const Zone_PolyMAC& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC& zone = le_dom_poly_.valeur();
   const IntTab& e_f = zone.elem_faces(), &f_s = zone.face_sommets(), &e_a = zone.zone().elem_aretes(), &fcl = ch.fcl(), &f_e = zone.face_voisins();
   const std::string& nom_inco = ch.le_nom().getString();
   Matrice_Morse* mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;

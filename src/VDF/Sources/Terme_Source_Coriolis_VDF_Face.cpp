@@ -77,23 +77,23 @@ void Terme_Source_Coriolis_VDF_Face::associer_pb(const Probleme_base& pb)
     }
 
   la_source.resize(0,dimension);
-  la_zone_VDF.valeur().zone().creer_tableau_elements(la_source);
+  le_dom_VDF.valeur().zone().creer_tableau_elements(la_source);
 }
 
 
-void Terme_Source_Coriolis_VDF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                    const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Coriolis_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                       const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 
 }
 
 
 void Terme_Source_Coriolis_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const Zone_Cl_VDF& zone_Cl_VDF = la_zone_Cl_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
+  const Zone_Cl_VDF& zone_Cl_VDF = le_dom_Cl_VDF.valeur();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
@@ -183,7 +183,7 @@ void Terme_Source_Coriolis_VDF_Face::calculer_force_de_Coriolis() const
 {
   // On calcule la force de Coriolis par element (maillage entrelace!)
   // On se ramenera aux faces dans le ajouter
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   const DoubleTab& vitesse = eq_hydraulique().inconnue().valeurs();
   //  int nb_faces = zone_VDF.nb_faces();
   const int nb_elems =  eq_hydraulique().zone_dis().zone().nb_elem();

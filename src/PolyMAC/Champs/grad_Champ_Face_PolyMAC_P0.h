@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,9 +47,9 @@ public:
   inline virtual Champ_Face_PolyMAC_P0& champ_a_deriver() { return champ_.valeur(); }
   inline virtual const Champ_Face_PolyMAC_P0& champ_a_deriver() const { return champ_.valeur(); }
   inline void associer_champ(const Champ_Face_PolyMAC_P0& ch) { champ_ = ch; }
-  inline void associer_zone_Cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+  inline void associer_domaine_Cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
   {
-    la_Zone_Cl_PolyMAC = static_cast<const Zone_Cl_PolyMAC&>(la_zone_Cl_dis_base);
+    le_Dom_Cl_PolyMAC = static_cast<const Zone_Cl_PolyMAC&>(le_dom_Cl_dis_base);
   }
 
   // Interpolation du gradient de la vitesse
@@ -61,7 +61,7 @@ public:
   void init_grad();
 
 protected:
-  REF(Zone_Cl_PolyMAC) la_Zone_Cl_PolyMAC;
+  REF(Zone_Cl_PolyMAC) le_Dom_Cl_PolyMAC;
   REF(Champ_Face_PolyMAC_P0) champ_;
 
   int is_init = 0;

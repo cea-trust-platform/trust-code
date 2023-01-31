@@ -39,9 +39,9 @@ Champ_base& TRUSTChamp_Morceaux_generique<_TYPE_>::affecter_(const Champ_base& c
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a(const DoubleVect& positions, DoubleVect& tab_valeurs) const
 {
-  const Zone& la_zone = mon_domaine;
+  const Zone& le_dom = mon_domaine;
   IntVect le_poly(1);
-  la_zone.chercher_elements(positions, le_poly);
+  le_dom.chercher_elements(positions, le_poly);
   return valeur_a_elem(positions, tab_valeurs, le_poly[0]);
 }
 
@@ -87,9 +87,9 @@ double TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_a_elem_compo(const DoubleVe
 template<Champ_Morceaux_Type _TYPE_>
 DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& positions, DoubleTab& tab_valeurs) const
 {
-  const Zone& la_zone = mon_domaine;
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions, les_polys);
+  const Zone& le_dom = mon_domaine;
+  IntVect les_polys(le_dom.nb_elem());
+  le_dom.chercher_elements(positions, les_polys);
   return valeur_aux_elems(positions, les_polys, tab_valeurs);
 }
 
@@ -102,9 +102,9 @@ DoubleTab& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux(const DoubleTab& po
 template<Champ_Morceaux_Type _TYPE_>
 DoubleVect& TRUSTChamp_Morceaux_generique<_TYPE_>::valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const
 {
-  const Zone& la_zone = mon_domaine;
-  IntVect les_polys(la_zone.nb_elem());
-  la_zone.chercher_elements(positions, les_polys);
+  const Zone& le_dom = mon_domaine;
+  IntVect les_polys(le_dom.nb_elem());
+  le_dom.chercher_elements(positions, les_polys);
   return valeur_aux_elems_compo(positions, les_polys, tab_valeurs, ncomp);
 }
 

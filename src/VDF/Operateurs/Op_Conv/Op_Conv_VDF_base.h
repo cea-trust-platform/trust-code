@@ -30,7 +30,7 @@ public:
   inline Op_Conv_VDF_base( const Iterateur_VDF_base& iter_base) : iter(iter_base) { } // constructeur
   void completer() override;
   void preparer_calcul() override;
-  void associer_zone_cl_dis(const Zone_Cl_dis_base& zcl) override { iter->associer_zone_cl_dis(zcl); }
+  void associer_domaine_cl_dis(const Zone_Cl_dis_base& zcl) override { iter->associer_domaine_cl_dis(zcl); }
   void calculer_dt_local(DoubleTab&) const override ; //Local time step calculation
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
   void creer_champ(const Motcle& ) override;

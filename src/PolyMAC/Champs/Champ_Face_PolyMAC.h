@@ -30,7 +30,7 @@ class Champ_Face_PolyMAC : public Champ_Face_base
 {
   Declare_instanciable(Champ_Face_PolyMAC) ;
 public :
-  inline const Zone_PolyMAC& zone_PolyMAC() const { return ref_cast(Zone_PolyMAC, la_zone_VF.valeur()); }
+  inline const Zone_PolyMAC& zone_PolyMAC() const { return ref_cast(Zone_PolyMAC, le_dom_VF.valeur()); }
 
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;

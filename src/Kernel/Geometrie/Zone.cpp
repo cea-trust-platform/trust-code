@@ -244,11 +244,11 @@ void Zone::check_zone()
   if (mes_faces_bord_.size() == 0 && mes_faces_raccord_.size() == 0 && Process::nproc() == 1)
     Cerr << "Warning, the reread zone " << nom_ << " has no defined boundaries (none boundary or connector)." << finl;
 
-  mes_faces_bord_.associer_zone(*this);
-  mes_faces_joint_.associer_zone(*this);
-  mes_faces_raccord_.associer_zone(*this);
-  mes_faces_int_.associer_zone(*this);
-  elem_.associer_zone(*this);
+  mes_faces_bord_.associer_domaine(*this);
+  mes_faces_joint_.associer_domaine(*this);
+  mes_faces_raccord_.associer_domaine(*this);
+  mes_faces_int_.associer_domaine(*this);
+  elem_.associer_domaine(*this);
   fixer_premieres_faces_frontiere();
 
   const int nbelem = mp_sum(mes_elems_.dimension(0));
@@ -760,7 +760,7 @@ int Zone::comprimer()
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
-        front.associer_zone(*this); // Au cas ou la zone de la frontiere n'est pas la bonne zone
+        front.associer_domaine(*this); // Au cas ou la zone de la frontiere n'est pas la bonne zone
         Journal() << "Zone::comprimer() bord : " << front.le_nom() << finl;
 
         // second loop over list elements, starting from an incremented position
@@ -849,16 +849,16 @@ void Zone::merge_wo_vertices_with(Zone& dom2)
     for(int j=0; j<nb_ccord; j++)
       elems1(sz1+i,j)=elems2(i,j);
 
-  dom2.faces_bord().associer_zone(*this);
+  dom2.faces_bord().associer_domaine(*this);
   faces_bord().add(dom2.faces_bord());
 
-  dom2.faces_joint().associer_zone(*this);
+  dom2.faces_joint().associer_domaine(*this);
   faces_joint().add(dom2.faces_joint());
 
-  dom2.faces_raccord().associer_zone(*this);
+  dom2.faces_raccord().associer_domaine(*this);
   faces_raccord().add(dom2.faces_raccord());
 
-  dom2.faces_int().associer_zone(*this);
+  dom2.faces_int().associer_domaine(*this);
   faces_int().add(dom2.faces_int());
 
   correct_type_of_borders_after_merge();

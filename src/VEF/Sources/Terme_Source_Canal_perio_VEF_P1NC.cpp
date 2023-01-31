@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,19 +63,19 @@ Entree& Terme_Source_Canal_perio_VEF_P1NC::readOn(Entree& s )
   return Terme_Source_Canal_perio::readOn(s);
 }
 
-void Terme_Source_Canal_perio_VEF_P1NC::associer_zones(const Zone_dis& zone_dis,
-                                                       const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_perio_VEF_P1NC::associer_domaines(const Zone_dis& zone_dis,
+                                                          const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
 }
 
 DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
 {
-  const Zone_VF& zone_VF = la_zone_VEF.valeur();
+  const Zone_VF& zone_VF = le_dom_VEF.valeur();
   const DoubleVect& volumes_entrelaces = zone_VF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = la_zone_Cl_VEF.valeur().volumes_entrelaces_Cl();
-  int premiere_face_std=la_zone_VEF.valeur().premiere_face_std() ;
+  const DoubleVect& volumes_entrelaces_Cl = le_dom_Cl_VEF.valeur().volumes_entrelaces_Cl();
+  int premiere_face_std=le_dom_VEF.valeur().premiere_face_std() ;
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
   ArrOfDouble s;
   s = source();
@@ -122,8 +122,8 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
 
 void Terme_Source_Canal_perio_VEF_P1NC::calculer_debit(double& debit_e) const
 {
-  const Zone_VF& zone_VF = la_zone_VEF.valeur();
-  const Zone_Cl_dis_base& zone_Cl_dis = la_zone_Cl_VEF.valeur();
+  const Zone_VF& zone_VF = le_dom_VEF.valeur();
+  const Zone_Cl_dis_base& zone_Cl_dis = le_dom_Cl_VEF.valeur();
   const Champ_Inc_base& velocity = (sub_type(Convection_Diffusion_std,equation()) ? ref_cast(Convection_Diffusion_std,equation()).vitesse_transportante() : equation().inconnue());
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
   // Check we have really velocity:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,17 +35,17 @@ Sortie& Terme_Source_Canal_perio_VDF_Face::printOn(Sortie& s) const { return s <
 
 Entree& Terme_Source_Canal_perio_VDF_Face::readOn(Entree& s) { return Terme_Source_Canal_perio::readOn(s); }
 
-void Terme_Source_Canal_perio_VDF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_perio_VDF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
 void Terme_Source_Canal_perio_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone_VF = la_zone_VDF.valeur();
-  const Zone_Cl_dis_base& zone_Cl_dis = la_zone_Cl_VDF.valeur();
-  const IntVect& orientation = la_zone_VDF->orientation();
+  const Zone_VF& zone_VF = le_dom_VDF.valeur();
+  const Zone_Cl_dis_base& zone_Cl_dis = le_dom_Cl_VDF.valeur();
+  const IntVect& orientation = le_dom_VDF->orientation();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VF.volumes_entrelaces();
   int ncomp;
@@ -96,8 +96,8 @@ void Terme_Source_Canal_perio_VDF_Face::ajouter_blocs(matrices_t matrices, Doubl
 
 void Terme_Source_Canal_perio_VDF_Face::calculer_debit(double& debit_e) const
 {
-  const Zone_VF& zone_VF = la_zone_VDF.valeur();
-  const Zone_Cl_dis_base& zone_Cl_dis = la_zone_Cl_VDF.valeur();
+  const Zone_VF& zone_VF = le_dom_VDF.valeur();
+  const Zone_Cl_dis_base& zone_Cl_dis = le_dom_Cl_VDF.valeur();
   const DoubleTab& vitesse = equation().inconnue().valeurs();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   int ndeb, nfin, num_face;

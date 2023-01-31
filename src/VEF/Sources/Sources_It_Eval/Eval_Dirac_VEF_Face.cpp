@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ void Eval_Dirac_VEF_Face::associer_champs(const Champ_Don& Q)
 void Eval_Dirac_VEF_Face::mettre_a_jour()
 {
   puissance = la_puissance.valeur()(0);
-  ma_zone = la_zone.valeur().zone();
+  mon_dom = le_dom.valeur().zone();
 }
 
 void Eval_Dirac_VEF_Face::associer_nb_elem_dirac(int n)

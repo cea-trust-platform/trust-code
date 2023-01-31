@@ -43,7 +43,7 @@ public :
 protected :
 
   REF(Frontiere) la_frontiere;
-  REF(Zone_dis_base) la_zone_dis;
+  REF(Zone_dis_base) le_dom_dis;
 };
 
 #endif

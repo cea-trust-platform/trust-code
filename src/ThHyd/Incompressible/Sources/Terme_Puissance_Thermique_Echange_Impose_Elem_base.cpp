@@ -74,12 +74,12 @@ int Terme_Puissance_Thermique_Echange_Impose_Elem_base::lire_motcle_non_standard
 
 void Terme_Puissance_Thermique_Echange_Impose_Elem_base::mettre_a_jour(double temps)
 {
-  const Zone_VF& zone = la_zone.valeur();
+  const Zone_VF& zone = le_dom.valeur();
   const DoubleVect& volumes = zone.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
-  int nb_elem = la_zone.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
+  int nb_elem = le_dom.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
 
   bilan().resize(N + 1), bilan() = 0;
 
@@ -109,20 +109,20 @@ void Terme_Puissance_Thermique_Echange_Impose_Elem_base::pid_process()
   p_error = error;
 }
 
-void Terme_Puissance_Thermique_Echange_Impose_Elem_base::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Puissance_Thermique_Echange_Impose_Elem_base::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone = ref_cast(Zone_VF, zone_dis.valeur());
-  la_zone_Cl = ref_cast(Zone_Cl_dis_base, zone_Cl_dis.valeur());
+  le_dom = ref_cast(Zone_VF, zone_dis.valeur());
+  le_dom_Cl = ref_cast(Zone_Cl_dis_base, zone_Cl_dis.valeur());
 }
 
 void Terme_Puissance_Thermique_Echange_Impose_Elem_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VF& zone = la_zone.valeur();
+  const Zone_VF& zone = le_dom.valeur();
   const DoubleVect& volumes = zone.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
-  int nb_elem = la_zone.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
+  int nb_elem = le_dom.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
 

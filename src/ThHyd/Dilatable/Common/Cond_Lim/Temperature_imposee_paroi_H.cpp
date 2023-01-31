@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,7 +34,7 @@ Entree& Temperature_imposee_paroi_H::readOn(Entree& s)
  */
 void Temperature_imposee_paroi_H::completer()
 {
-  le_fluide = ref_cast(Fluide_Dilatable_base, ma_zone_cl_dis->equation().milieu());
+  le_fluide = ref_cast(Fluide_Dilatable_base, mon_dom_cl_dis->equation().milieu());
   modifier_val_imp = 1;
 }
 

@@ -51,9 +51,9 @@ Entree& Zone_Cl_EF::readOn(Entree& is )
 /*! @brief etape de discretisation : dimensionnement des tableaux
  *
  */
-void Zone_Cl_EF::associer(const Zone_EF& la_zone_EF)
+void Zone_Cl_EF::associer(const Zone_EF& le_dom_EF)
 {
-  //  int nb_elem_Cl  = la_zone_EF.nb_elem_Cl();
+  //  int nb_elem_Cl  = le_dom_EF.nb_elem_Cl();
 }
 
 /*! @brief remplissage des tableaux
@@ -63,8 +63,8 @@ void Zone_Cl_EF::completer(const Zone_dis& une_zone_dis)
 {
   if (sub_type(Zone_EF,une_zone_dis.valeur()))
     {
-      const Zone_EF& la_zone_EF = ref_cast(Zone_EF, une_zone_dis.valeur());
-      remplir_type_elem_Cl(la_zone_EF);
+      const Zone_EF& le_dom_EF = ref_cast(Zone_EF, une_zone_dis.valeur());
+      remplir_type_elem_Cl(le_dom_EF);
     }
   else
     {
@@ -132,11 +132,11 @@ void construit_connectivite_sommet(int type_cl,Static_Int_Lists& som_face_bord,c
 /*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
  *
  */
-void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
+void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& le_dom_EF)
 {
-  const Zone& z = la_zone_EF.zone();
+  const Zone& z = le_dom_EF.zone();
 
-  const IntTab& faces_sommets=la_zone_EF.face_sommets();
+  const IntTab& faces_sommets=le_dom_EF.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
   int nb_som_tot=z.nb_som_tot();
   type_sommet_.resize_array(z.nb_som_tot());
@@ -146,7 +146,7 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
   for(int i=0; i<les_conditions_limites_.size(); i++)
     {
       Cond_lim_base& la_cl=les_conditions_limites_[i].valeur();
-      const Front_VF& le_bord= la_zone_EF.front_VF(i);
+      const Front_VF& le_bord= le_dom_EF.front_VF(i);
       int num2 =  le_bord.nb_faces_tot();
 
       if ( (sub_type(Dirichlet,la_cl))|| (sub_type(Dirichlet_homogene,la_cl)) )
@@ -213,13 +213,13 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
   // On cree la connectivite sommet -> face de bord symetrie
   if (equation().inconnue().valeur().nature_du_champ()==vectoriel)
     {
-      equation().probleme().discretisation().discretiser_champ("VITESSE",la_zone_EF,"normales_nodales","1",dimension,0.,normales_symetrie_);
-      equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",la_zone_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_bis_);
+      equation().probleme().discretisation().discretiser_champ("VITESSE",le_dom_EF,"normales_nodales","1",dimension,0.,normales_symetrie_);
+      equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",le_dom_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_bis_);
       Static_Int_Lists sommet_face_symetrie;
       int type_cl=1;
-      construit_connectivite_sommet(type_cl,sommet_face_symetrie,les_conditions_limites_,la_zone_EF);
+      construit_connectivite_sommet(type_cl,sommet_face_symetrie,les_conditions_limites_,le_dom_EF);
       // sommet_face_symetrie contient le nombre de face de symetrie associe a chaque sommet
-      const DoubleTab& face_normales = la_zone_EF.face_normales();
+      const DoubleTab& face_normales = le_dom_EF.face_normales();
       ArrOfDouble n(dimension),t1(dimension),t2(dimension);
       for (int som=0; som<nb_som_tot; som++)
         {
@@ -307,7 +307,7 @@ void Zone_Cl_EF::remplir_type_elem_Cl(const Zone_EF& la_zone_EF)
                       Cerr<<som<<" "<<n[0] << " " <<n[1]<<" "<<n[2]<<finl;
                       f=nbf;
                       if (!normales_symetrie_ter_.non_nul())
-                        equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",la_zone_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_ter_);
+                        equation().probleme().discretisation().discretiser_champ("CHAMP_SOMMETS",le_dom_EF,"normales_nodales_bis","1",dimension,0., normales_symetrie_ter_);
                       for (int d=0; d<dimension; d++)
                         normales_symetrie_ter_.valeur().valeurs()(som,d)=t2[d];
                       //exit();

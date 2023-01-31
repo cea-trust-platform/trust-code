@@ -54,7 +54,7 @@ class Iterateur_VDF_base : public Objet_U
   Declare_base(Iterateur_VDF_base);
 public:
   void associer(const Zone_VDF&, const Zone_Cl_VDF&, const Operateur_base&);
-  void associer_zone_cl_dis(const Zone_Cl_dis_base&);
+  void associer_domaine_cl_dis(const Zone_Cl_dis_base&);
   void associer_champ_convecte_ou_inc(const Champ_Inc_base& ch, const Champ_base* chv, bool use=false);
   virtual void ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const=0;
   virtual void ajouter_contribution_autre_pb(const DoubleTab& , Matrice_Morse& , const Cond_lim& , std::map<int, std::pair<int, int>>&) const { /* ne fait rien en general */ }
@@ -69,7 +69,7 @@ public:
   virtual Evaluateur_VDF& evaluateur() =0;
   virtual const Evaluateur_VDF& evaluateur() const=0;
 
-  inline const Zone_VDF& zone() const { return la_zone.valeur(); }
+  inline const Zone_VDF& zone() const { return le_dom.valeur(); }
   inline const Zone_Cl_VDF& zone_Cl() const { return la_zcl.valeur(); }
   inline Type_Cl_VDF type_cl(const Cond_lim&) const;
   inline const bool& is_convective_op() const { return is_conv_op_; }
@@ -103,7 +103,7 @@ public:
   }
 
 protected:
-  REF(Zone_VDF) la_zone;
+  REF(Zone_VDF) le_dom;
   REF(Zone_Cl_VDF) la_zcl;
   REF(Operateur_base) op_base;
   REF(Champ_Inc_base) le_champ_convecte_ou_inc;

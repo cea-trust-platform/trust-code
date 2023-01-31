@@ -90,11 +90,11 @@ Entree& Terme_Source_Rappel_T_VEF_Face::readOn(Entree& is )
 
 }
 
-void Terme_Source_Rappel_T_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                    const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Rappel_T_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                       const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
 }
 
 void Terme_Source_Rappel_T_VEF_Face::associer_pb(const Probleme_base& pb)
@@ -153,7 +153,7 @@ void Terme_Source_Rappel_T_VEF_Face::completer()
 
 DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   const int nb_faces = zone_VEF.nb_faces();
   const int premiere_face_std=zone_VEF.premiere_face_std();
   const int ndeb = zone_VEF.premiere_face_int();
@@ -161,7 +161,7 @@ DoubleTab& Terme_Source_Rappel_T_VEF_Face::ajouter(DoubleTab& resu) const
   const int nb_elem = zone_VEF.nb_elem();
   const DoubleTab& temperature = mon_equation->inconnue().valeurs();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();
-  const DoubleVect& volumes_entrelaces_Cl = la_zone_Cl_VEF->volumes_entrelaces_Cl();
+  const DoubleVect& volumes_entrelaces_Cl = le_dom_Cl_VEF->volumes_entrelaces_Cl();
   const DoubleTab& xv=zone_VEF.xv() ;
   const double dt = mon_equation->schema_temps().pas_de_temps();
 

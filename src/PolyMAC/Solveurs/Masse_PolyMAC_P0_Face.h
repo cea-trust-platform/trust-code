@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@ class Masse_PolyMAC_P0_Face : public Masse_PolyMAC_Face
 {
   Declare_instanciable(Masse_PolyMAC_P0_Face);
 public:
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
+  void associer_domaine_dis_base(const Zone_dis_base& ) override;
   void completer() override;
 
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
@@ -32,7 +32,7 @@ public:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
 
 private:
-  REF(Zone_PolyMAC_P0) la_zone_PolyMAC_P0;
+  REF(Zone_PolyMAC_P0) le_dom_PolyMAC_P0;
 };
 
 #endif /* Masse_PolyMAC_P0_Face_included */

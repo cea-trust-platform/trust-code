@@ -27,8 +27,8 @@ class Assembleur_P_VEF: public Assembleur_base
   Declare_instanciable(Assembleur_P_VEF);
 
 public:
-  void associer_zone_dis_base(const Zone_dis_base&) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base&) override;
+  void associer_domaine_dis_base(const Zone_dis_base&) override;
+  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&) override;
   const Zone_dis_base& zone_dis_base() const override;
   const Zone_Cl_dis_base& zone_Cl_dis_base() const override;
   int assembler(Matrice&) override;
@@ -50,8 +50,8 @@ public:
 
 protected:
   REF(Equation_base) mon_equation;
-  REF(Zone_VEF) la_zone_VEF;
-  REF(Zone_Cl_VEF) la_zone_Cl_VEF;
+  REF(Zone_VEF) le_dom_VEF;
+  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
   DoubleTab les_coeff_pression;
   int has_P_ref = 0;
   void calculer_inv_volume(DoubleTab& inv_volumes_entrelaces, const Zone_Cl_VEF& zone_Cl_VEF, const DoubleVect& volumes_entrelaces);

@@ -135,7 +135,7 @@ public :
   Schema_Temps_base& schema_temps();
   const Schema_Temps_base& schema_temps() const;
   virtual void associer_sch_tps_base(const Schema_Temps_base&);
-  virtual void associer_zone_dis(const Zone_dis&);
+  virtual void associer_domaine_dis(const Zone_dis&);
 
   const Discretisation_base& discretisation() const;
 
@@ -297,8 +297,8 @@ protected :
   Solveur_Masse solveur_masse;
   Sources les_sources;
   REF(Schema_Temps_base) le_schema_en_temps;
-  REF(Zone_dis) la_zone_dis;
-  Zone_Cl_dis la_zone_Cl_dis;
+  REF(Zone_dis) le_dom_dis;
+  Zone_Cl_dis le_dom_Cl_dis;
   REF(Probleme_base) mon_probleme;
   virtual void set_param(Param& titi);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
@@ -381,7 +381,7 @@ inline const Nom& Equation_base::le_nom() const
  */
 inline Zone_Cl_dis& Equation_base::zone_Cl_dis()
 {
-  return la_zone_Cl_dis;
+  return le_dom_Cl_dis;
 }
 
 /*! @brief Renvoie la zone des conditions aux limite discretisee associee a l'equation
@@ -392,7 +392,7 @@ inline Zone_Cl_dis& Equation_base::zone_Cl_dis()
  */
 inline const Zone_Cl_dis& Equation_base::zone_Cl_dis() const
 {
-  return la_zone_Cl_dis;
+  return le_dom_Cl_dis;
 }
 
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,9 +29,9 @@ void Eval_Puiss_Neutr_VDF_Elem::associer_champs(const Champ_Don& Q)
 
 void Eval_Puiss_Neutr_VDF_Elem::associer_repartition(const Nom& n, const Nom& nom_ssz)
 {
-  const int nb_elem = la_zone->nb_elem();
-  const DoubleTab& xp = ref_cast(Zone_VDF, la_zone.valeur()).xp();
-  const Sous_Zone& ssz = la_zone->zone().ss_zone(nom_ssz);
+  const int nb_elem = le_dom->nb_elem();
+  const DoubleTab& xp = ref_cast(Zone_VDF, le_dom.valeur()).xp();
+  const Sous_Zone& ssz = le_dom->zone().ss_zone(nom_ssz);
 
   fxyz = n;
 

@@ -134,11 +134,11 @@ Entree& Terme_Source_Solide_SWIFT_VDF::readOn(Entree& is )
 
 
 
-void Terme_Source_Solide_SWIFT_VDF::associer_zones(const Zone_dis& zone_dis,
-                                                   const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Solide_SWIFT_VDF::associer_domaines(const Zone_dis& zone_dis,
+                                                      const Zone_Cl_dis& zone_Cl_dis)
 {
-  /*    la_zone_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-        la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur()) */
+  /*    le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
+        le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur()) */
   ;
 }
 

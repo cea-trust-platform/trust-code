@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,7 +54,7 @@ DoubleTab& Champ_Fonc_P0_base::trace(const Frontiere_dis_base& fr, DoubleTab& x,
 
 double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) const
 {
-  const Zone_VF& zvf = la_zone_VF.valeur();
+  const Zone_VF& zvf = le_dom_VF.valeur();
   const DoubleVect& volumes = zvf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -74,7 +74,7 @@ double Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem, int ncomp) c
 
 DoubleVect Champ_Fonc_P0_base::moyenne(const DoubleVect& porosite_elem) const
 {
-  const Zone_VF& zvf = la_zone_VF.valeur();
+  const Zone_VF& zvf = le_dom_VF.valeur();
   const DoubleVect& volumes = zvf.volumes();
   const DoubleTab& val = valeurs();
 
@@ -110,7 +110,7 @@ double Champ_Fonc_P0_base::valeur_au_bord(int face) const
 {
   double val_bord;
   const DoubleTab& val = valeurs();
-  const Zone_VF& zvf = la_zone_VF.valeur();
+  const Zone_VF& zvf = le_dom_VF.valeur();
 
   int n0 = zvf.face_voisins(face, 0);
   if (n0 != -1)

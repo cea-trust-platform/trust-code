@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,14 +54,14 @@ inline void Op_VDF_Face::dimensionner_(const int num_face1, const int num_face2,
 }
 
 // methode interne pour la classe Op_VDF_Face !
-inline int face_bord_amont2(const Zone_VDF& la_zone , const int num_face , const int k , const int i)
+inline int face_bord_amont2(const Zone_VDF& le_dom , const int num_face , const int k , const int i)
 {
-  const int ori = la_zone.orientation(num_face);
-  int elem = la_zone.face_voisins(num_face,0);
+  const int ori = le_dom.orientation(num_face);
+  int elem = le_dom.face_voisins(num_face,0);
   if(elem != -1)
     {
-      const int face = la_zone.elem_faces(elem, k+i*Objet_U::dimension), elem_bis = la_zone.face_voisins(face,i);
-      elem = (elem_bis != -1) ? la_zone.elem_faces(elem_bis, ori+Objet_U::dimension) : -1;
+      const int face = le_dom.elem_faces(elem, k+i*Objet_U::dimension), elem_bis = le_dom.face_voisins(face,i);
+      elem = (elem_bis != -1) ? le_dom.elem_faces(elem_bis, ori+Objet_U::dimension) : -1;
     }
   else Process::exit();
 

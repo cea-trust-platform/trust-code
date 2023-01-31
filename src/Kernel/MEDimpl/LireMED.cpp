@@ -1789,7 +1789,7 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
   // si on a modifier_type_elem
   if (type_ele.valeur().que_suis_je()!=type_elem)
     dom.typer(type_elem);
-  dom.type_elem().associer_zone(dom);
+  dom.type_elem().associer_domaine(dom);
   IntTab& les_elems=dom.les_elems();
   // on revient a une numerotation c
   //les_elems2-=1;
@@ -1937,15 +1937,15 @@ void LireMED::lire_geom(Nom& nom_fic, Zone& dom, const Nom& nom_dom, const Nom& 
 //          dom.nommer(nom_zone);
 //        }
 //    }
-  faces_bord.associer_zone(dom);
-  faces_raccord.associer_zone(dom);
-  faces_joint.associer_zone(dom);
-  dom.type_elem().associer_zone(dom);
+  faces_bord.associer_domaine(dom);
+  faces_raccord.associer_domaine(dom);
+  faces_joint.associer_domaine(dom);
+  dom.type_elem().associer_domaine(dom);
   dom.fixer_premieres_faces_frontiere();
   int nbfr=dom.nb_front_Cl();
   for (int fr=0; fr<nbfr; fr++)
     {
-      dom.frontiere(fr).faces().associer_zone(dom);
+      dom.frontiere(fr).faces().associer_domaine(dom);
       if ( dom.frontiere(fr).faces().type_face()!=Faces::vide_0D)
         dom.frontiere(fr).faces().reordonner();
     }

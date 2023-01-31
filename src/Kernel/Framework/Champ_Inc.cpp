@@ -71,9 +71,9 @@ int Champ_Inc::nb_valeurs_nodales() const
  * @param (Zone_dis_base& z)
  * @return (Zone_dis_base&) la zone discretise associee au champ
  */
-const Zone_dis_base& Champ_Inc::associer_zone_dis_base(const Zone_dis_base& z)
+const Zone_dis_base& Champ_Inc::associer_domaine_dis_base(const Zone_dis_base& z)
 {
-  valeur().associer_zone_dis_base(z);
+  valeur().associer_domaine_dis_base(z);
   return z;
 }
 /*! @brief Appel a l'objet sous-jacent Renvoie la zone discretisee associee au champ.

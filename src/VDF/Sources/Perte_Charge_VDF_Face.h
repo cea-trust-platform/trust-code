@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,11 +40,11 @@ public:
 protected:
   REF(Champ_Face_VDF) la_vitesse;
   REF(Fluide_base) le_fluide;
-  REF(Zone_VDF) la_zone_VDF;
-  REF(Zone_Cl_VDF) la_zone_Cl_VDF;
+  REF(Zone_VDF) le_dom_VDF;
+  REF(Zone_Cl_VDF) le_dom_Cl_VDF;
   IntVect num_faces;
   DoubleVect corr_front_ss;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
 };
 
 #endif /* Perte_Charge_VDF_Face_included */

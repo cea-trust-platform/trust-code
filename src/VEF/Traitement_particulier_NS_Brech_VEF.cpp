@@ -145,7 +145,7 @@ Entree& Traitement_particulier_NS_Brech_VEF::lire(Entree& is)
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_faces = zone_VEF.nb_faces() ;
 
-                ch_ri.associer_zone_dis_base(zdis);
+                ch_ri.associer_domaine_dis_base(zdis);
                 ch_ri.nommer("Richardson");
                 ch_ri.fixer_nb_comp(1);
                 ch_ri.fixer_nb_valeurs_nodales(nb_faces);
@@ -163,7 +163,7 @@ Entree& Traitement_particulier_NS_Brech_VEF::lire(Entree& is)
                 //                  const Probleme_base& pb = mon_equation->probleme();
                 const int nb_elem = zone_VEF.nb_elem() ;
 
-                ch_p.associer_zone_dis_base(zdis);
+                ch_p.associer_domaine_dis_base(zdis);
                 ch_p.nommer("Pression_porosite");
                 ch_p.fixer_nb_comp(1);
                 ch_p.fixer_nb_valeurs_nodales(nb_elem);
@@ -685,8 +685,8 @@ calculer_terme_destruction_K(const Zone_VEF& zone_VEF,
   u_teta=0;
   gradient_elem=0;
 
-  //  const Zone& la_zone=zone_VEF.zone();
-  //  int nb_faces_elem = la_zone.nb_faces_elem();
+  //  const Zone& le_dom=zone_VEF.zone();
+  //  int nb_faces_elem = le_dom.nb_faces_elem();
   //  const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
   const DoubleTab& face_normales = zone_VEF.face_normales();

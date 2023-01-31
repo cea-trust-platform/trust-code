@@ -368,7 +368,7 @@ void Probleme_base::discretiser_equations()
   Cerr << "Discretization of the equations of problem " << que_suis_je() << " ..." <<  finl;
   for (int i = 0; i < nombre_d_equations(); i++)
     {
-      equation(i).associer_zone_dis(domaine_dis());
+      equation(i).associer_domaine_dis(domaine_dis());
       equation(i).discretiser();
     }
 }
@@ -396,7 +396,7 @@ void Probleme_base::discretiser(Discretisation_base& une_discretisation)
   une_discretisation.associer_domaine(le_domaine_.valeur());
   une_discretisation.discretiser(le_domaine_dis);
   // Can not do this before, since the Zone_dis is not typed yet:
-  le_domaine_dis.associer_zone(le_domaine_);
+  le_domaine_dis.associer_domaine(le_domaine_);
 
   if (milieu_via_associer() || is_pb_FT())
     {

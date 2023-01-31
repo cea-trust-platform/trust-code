@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,18 +41,18 @@ void Source_Dirac_VEF_Face::associer_pb(const Probleme_base& pb)
   eval_puis.le_point.copy(point);
 }
 
-void Source_Dirac_VEF_Face::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Dirac_VEF_Face::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
-  Terme_Puissance_Thermique_VEF_base::associer_zones(zone_dis, zone_cl_dis);
+  Terme_Puissance_Thermique_VEF_base::associer_domaines(zone_dis, zone_cl_dis);
   Eval_Dirac_VEF_Face& eval_grav = dynamic_cast<Eval_Dirac_VEF_Face&> (iter->evaluateur());
-  eval_grav.associer_zones(zone_dis.valeur(), zone_cl_dis.valeur());
+  eval_grav.associer_domaines(zone_dis.valeur(), zone_cl_dis.valeur());
 
   int nb_elem = zone_dis.valeur().nb_elem();
-  const Zone& ma_zone = zone_dis.valeur().zone();
+  const Zone& mon_dom = zone_dis.valeur().zone();
   nb_dirac = 0;
   for (int elem = 0; elem < nb_elem; elem++)
     {
-      int test = ma_zone.type_elem().contient(point, elem);
+      int test = mon_dom.type_elem().contient(point, elem);
       if (test == 1)
         nb_dirac++;
     }

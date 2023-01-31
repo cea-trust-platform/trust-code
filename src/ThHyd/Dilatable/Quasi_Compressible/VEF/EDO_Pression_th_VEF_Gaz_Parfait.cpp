@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,10 +58,10 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
   double futur   = present+dt;
   const DoubleTab& tempnp1 = le_fluide_->inco_chaleur()->valeurs(futur);    // T(n+1)
   const DoubleTab& tempn = le_fluide_->inco_chaleur()->valeurs(present);    // T(n)
-  int nb_faces = la_zone->nb_faces();
+  int nb_faces = le_dom->nb_faces();
   double Pth=0;
 
-  const Zone_VEF& zone_vef = ref_cast(Zone_VEF, la_zone.valeur());
+  const Zone_VEF& zone_vef = ref_cast(Zone_VEF, le_dom.valeur());
 
   if (traitPth == 0)   // EDO
     {
@@ -117,9 +117,9 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
       const double masse_np1 = Champ_P1NC::calculer_integrale_volumique(zone_vef, tmp, FAUX_EN_PERIO);
 
       // Calcul de debit_u_imp et debit_rho_u_imp
-      for (int n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)
+      for (int n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
         {
-          const Cond_lim_base& la_cl = la_zone_Cl->les_conditions_limites(n_bord).valeur();
+          const Cond_lim_base& la_cl = le_dom_Cl->les_conditions_limites(n_bord).valeur();
           if (sub_type(Dirichlet, la_cl))
             {
               const Dirichlet& diri=ref_cast(Dirichlet,la_cl);
@@ -130,8 +130,8 @@ double EDO_Pression_th_VEF_Gaz_Parfait::resoudre(double Pth_n)
                 {
                   double debit_v=0;
                   for (int d=0; d<dimension; d++)
-                    debit_v += la_zone->face_normales(face,d)*diri.val_imp_au_temps(futur,face-ndeb,d)/tempnp1(face);
-                  int n0 = la_zone->face_voisins(face,0);
+                    debit_v += le_dom->face_normales(face,d)*diri.val_imp_au_temps(futur,face-ndeb,d)/tempnp1(face);
+                  int n0 = le_dom->face_voisins(face,0);
                   if (n0 == -1)
                     debit_v=-debit_v;
                   if (sub_type(Frontiere_ouverte_rho_u_impose, la_cl))

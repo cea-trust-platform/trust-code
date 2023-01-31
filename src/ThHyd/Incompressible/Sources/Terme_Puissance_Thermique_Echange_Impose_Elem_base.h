@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,10 +40,10 @@ public:
   void pid_process();
 
 protected:
-  REF(Zone_VF) la_zone;
-  REF(Zone_Cl_dis_base) la_zone_Cl;
+  REF(Zone_VF) le_dom;
+  REF(Zone_Cl_dis_base) le_dom_Cl;
   Champ_Don himp_,Text_;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
   // PID controler
   int regul_ = 0;
   Parser_U pow_cible_, Kp_, Ki_, Kd_;

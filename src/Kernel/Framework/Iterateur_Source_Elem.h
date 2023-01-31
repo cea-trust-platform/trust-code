@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ class Iterateur_Source_Elem : public Iterateur_Source_base
 public:
   DoubleTab& ajouter(DoubleTab& ) const override;
 
-  void completer_() override { nb_elem_ = la_zone->nb_elem(); }
+  void completer_() override { nb_elem_ = le_dom->nb_elem(); }
   inline Evaluateur_Source& evaluateur() override
   {
     Evaluateur_Source& eval = static_cast<Evaluateur_Source&>(evaluateur_source_elem);

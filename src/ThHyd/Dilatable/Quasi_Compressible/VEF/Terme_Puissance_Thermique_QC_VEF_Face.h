@@ -32,7 +32,7 @@ class Terme_Puissance_Thermique_QC_VEF_Face: public Terme_Puissance_Thermique_VE
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VEF_Face);
 public:
   Terme_Puissance_Thermique_QC_VEF_Face() : Terme_Puissance_Thermique_VEF_base(Iterateur_Source_VEF_Face<Eval_Puiss_Th_QC_VEF_Face>()) { }
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis&) override;
+  void associer_domaines(const Zone_dis&, const Zone_Cl_dis&) override;
   void associer_pb(const Probleme_base&) override;
   void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
 };

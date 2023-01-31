@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,17 +24,17 @@ Sortie& Taux_cisaillement_P0_VDF::printOn(Sortie& s) const { return s << que_sui
 
 Entree& Taux_cisaillement_P0_VDF::readOn(Entree& s) { return s; }
 
-void Taux_cisaillement_P0_VDF::associer_champ(const Champ_Face_VDF& la_vitesse, const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+void Taux_cisaillement_P0_VDF::associer_champ(const Champ_Face_VDF& la_vitesse, const Zone_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, la_zone_Cl_dis_base);
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, le_dom_Cl_dis_base);
   vitesse_ = la_vitesse;
 }
 
 void Taux_cisaillement_P0_VDF::mettre_a_jour(double tps)
 {
-  int nb_elem = la_zone_VF->nb_elem();
+  int nb_elem = le_dom_VF->nb_elem();
   DoubleVect tmp(nb_elem);
-  vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(), tmp, la_zone_Cl_VDF.valeur());
+  vitesse_->calcul_S_barre(vitesse_.valeur().valeurs(), tmp, le_dom_Cl_VDF.valeur());
   DoubleTab& S = valeurs(); // Shear rate
   for (int i = 0; i < nb_elem; i++)
     S(i) = sqrt(tmp(i));

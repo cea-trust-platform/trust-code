@@ -128,20 +128,20 @@ void Zone_Cl_VEFP1B::imposer_cond_lim(Champ_Inc& ch,double temps)
     }
 }
 
-void Zone_Cl_VEFP1B::remplir_volumes_entrelaces_Cl(const Zone_VEF& la_zone_VEF)
+void Zone_Cl_VEFP1B::remplir_volumes_entrelaces_Cl(const Zone_VEF& le_dom_VEF)
 {
   Cerr << "On passe dans Zone_Cl_VEFP1B::remplir_volumes_entrelaces" << finl;
   // On rappelle la methode de la classe mere pour etendre les volumes de controles sur les faces non standard.
   // Uniquement en conduction pour l'instant ou en P0 seul
-  const Zone_VEF_PreP1b& z=ref_cast(Zone_VEF_PreP1b, la_zone_VEF);
+  const Zone_VEF_PreP1b& z=ref_cast(Zone_VEF_PreP1b, le_dom_VEF);
   if ((z.get_modif_div_face_dirichlet())||sub_type(Conduction, equation()) || (z.get_alphaE() && !z.get_alphaS() && !z.get_alphaA()))
-    return Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(la_zone_VEF);
+    return Zone_Cl_VEF::remplir_volumes_entrelaces_Cl(le_dom_VEF);
   else
     {
-      const DoubleVect& volumes_entrelaces = la_zone_VEF.volumes_entrelaces();
+      const DoubleVect& volumes_entrelaces = le_dom_VEF.volumes_entrelaces();
       // Initialisation du tableau volumes_entrelaces_Cl
       // a priori les faces non standard ne sont pas touchees par les C.L
-      for (int i=0; i<la_zone_VEF.nb_faces_non_std(); i++)
+      for (int i=0; i<le_dom_VEF.nb_faces_non_std(); i++)
         volumes_entrelaces_Cl(i) = volumes_entrelaces(i);
       Cerr << "Fin creation esp. virtuel volumes_entrelaces_Cl_" << finl;
     }

@@ -30,7 +30,7 @@ Entree& Champ_Face_base::readOn(Entree& is) { return is; }
 //tableaux de correspondance pour les CLs
 void Champ_Face_base::init_fcl() const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF,le_dom_VF.valeur());
   const Conds_lim& cls = zone_Cl_dis().les_conditions_limites();
   int i, f, n;
 
@@ -56,7 +56,7 @@ void Champ_Face_base::init_fcl() const
 
 DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec , bool is_passe) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF,le_dom_VF.valeur());
   const DoubleTab& centres_de_gravites = zone.xp();
   IntVect les_polys(zone.nb_elem_tot());
 
@@ -70,7 +70,7 @@ DoubleTab& Champ_Face_base::get_elem_vector_field(DoubleTab& val_vec , bool is_p
 
 DoubleVect& Champ_Face_base::get_elem_vector(const int num_elem, DoubleVect& val_vec) const
 {
-  const Zone_VF& zone = ref_cast(Zone_VF,la_zone_VF.valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF,le_dom_VF.valeur());
   const DoubleTab& centres_de_gravites = zone.xp();
 
   valeur_a_elem(centres_de_gravites, val_vec, num_elem);

@@ -133,8 +133,8 @@ void Champ_front_debit_QC_fonc_t::mettre_a_jour(double tps)
   DoubleTab& tab=valeurs();
   DoubleTab& Debit=valeurs_au_temps(tps);
   int dim=nb_comp();
-  const Zone_VDF& la_zone_VDF = ref_cast(Zone_VDF,zone_dis());
-  const IntTab& face_voisins=la_zone_VDF.face_voisins();
+  const Zone_VDF& le_dom_VDF = ref_cast(Zone_VDF,zone_dis());
+  const IntTab& face_voisins=le_dom_VDF.face_voisins();
   const Front_VF& front_vf=ref_cast(Front_VF,la_frontiere_dis.valeur());
   int ndeb = front_vf.num_premiere_face();
   int nfin = ndeb + nb_faces;
@@ -158,7 +158,7 @@ void Champ_front_debit_QC_fonc_t::mettre_a_jour(double tps)
     {
       int num_face;
       double rho_moy=0,S=0,s;
-      const DoubleVect& surface=la_zone_VDF.face_surfaces();
+      const DoubleVect& surface=le_dom_VDF.face_surfaces();
       for ( num_face=ndeb; num_face<nfin; num_face++)
         {
           int n0 = face_voisins(num_face, 0);

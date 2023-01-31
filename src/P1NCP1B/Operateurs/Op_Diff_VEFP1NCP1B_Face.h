@@ -156,7 +156,7 @@ inline void Op_Diff_VEFP1NCP1B_Face::contribuer_au_second_membre(DoubleTab& resu
 
 inline const Zone_VEF_PreP1b& Op_Diff_VEFP1NCP1B_Face::zone_VEFPreP1B() const
 {
-  return ref_cast(Zone_VEF_PreP1b,la_zone_vef.valeur());
+  return ref_cast(Zone_VEF_PreP1b,le_dom_vef.valeur());
 }
 
 inline const Zone_Cl_VEFP1B& Op_Diff_VEFP1NCP1B_Face::zone_Cl_VEFPreP1B() const

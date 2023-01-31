@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ public:
   virtual void creer_faces_elem(Faces& ,int ,Type_Face ) const;
   inline void creer_faces_elem(Faces& ,int ) const;
   virtual int face_sommet(int i, int j) const=0;
-  inline void associer_zone(const Zone& );
+  inline void associer_domaine(const Zone& );
   virtual int nb_som() const=0;
   virtual int nb_faces(int=0) const=0;
   virtual int nb_som_face(int=0) const=0;
@@ -55,7 +55,7 @@ public:
   virtual void get_tab_aretes_sommets_locaux(IntTab& aretes_som_local) const;
 
 protected:
-  REF(Zone) ma_zone;
+  REF(Zone) mon_dom;
 };
 
 
@@ -63,9 +63,9 @@ protected:
  *
  * @param (Zone& une_zone) la zone a associee a l'element
  */
-inline void Elem_geom_base::associer_zone(const Zone& une_zone)
+inline void Elem_geom_base::associer_domaine(const Zone& une_zone)
 {
-  ma_zone=une_zone;
+  mon_dom=une_zone;
 }
 
 

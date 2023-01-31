@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,7 +70,7 @@ public:
 protected :
 
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
-  REF(Zone_VEF_PreP1b) la_zone_vef;
+  REF(Zone_VEF_PreP1b) le_dom_vef;
   REF(Zone_Cl_VEFP1B) la_zcl_vef;
   REF(Champ_Uniforme) diffusivite_;
   //REF(Champ_Inc) inconnue_;
@@ -83,13 +83,13 @@ protected :
 
 inline  void Op_Diff_P1NC_barprim::dimensionner(Matrice_Morse& matrice) const
 {
-  // Op_VEF_Face::dimensionner(la_zone_vef.valeur(), la_zcl_vef.valeur(), matrice);
+  // Op_VEF_Face::dimensionner(le_dom_vef.valeur(), la_zcl_vef.valeur(), matrice);
   return;
 }
 
 inline void Op_Diff_P1NC_barprim::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
-  // Op_VEF_Face::modifier_pour_Cl(la_zone_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
+  // Op_VEF_Face::modifier_pour_Cl(le_dom_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
   return;
 }
 

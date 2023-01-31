@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -75,17 +75,17 @@ Entree& Source_Scalaire_EF::readOn(Entree& s )
   return s;
 }
 
-void Source_Scalaire_EF::associer_zones(const Zone_dis& zone_dis,
-                                        const Zone_Cl_dis& zone_Cl_dis)
+void Source_Scalaire_EF::associer_domaines(const Zone_dis& zone_dis,
+                                           const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_EF = ref_cast(Zone_EF, zone_dis.valeur());
-  //  la_zone_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
+  le_dom_EF = ref_cast(Zone_EF, zone_dis.valeur());
+  //  le_dom_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
 }
 
 
 DoubleTab& Source_Scalaire_EF::ajouter(DoubleTab& resu) const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int ncomp=equation().inconnue().valeur().nb_comp();
   const IntTab& elems= zone_EF.zone().les_elems() ;
   int nb_som_elem=zone_EF.zone().nb_som_elem();

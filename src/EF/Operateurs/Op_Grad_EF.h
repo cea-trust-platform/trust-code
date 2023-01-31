@@ -57,7 +57,7 @@ public:
   void calculer_flux_bords() const override;
 
 protected:
-  REF(Zone_EF) la_zone_EF;
+  REF(Zone_EF) le_dom_EF;
   REF(Zone_Cl_EF) la_zcl_EF;
   Champ_Don int_P_bord_;
 

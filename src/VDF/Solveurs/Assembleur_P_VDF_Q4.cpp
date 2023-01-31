@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,14 +35,14 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
 {
   Cerr << "Assembleur_P_VDF_Q4::assembler " << finl;
   Cerr << "Assemblage de la matrice Q4 en cours..." << finl;
-  const IntTab& FaceSoms = la_zone_VDF->face_sommets();
-  const IntTab& FaceVois = la_zone_VDF->face_voisins();
-  const IntVect& Orientation = la_zone_VDF->orientation();
+  const IntTab& FaceSoms = le_dom_VDF->face_sommets();
+  const IntTab& FaceVois = le_dom_VDF->face_voisins();
+  const IntVect& Orientation = le_dom_VDF->orientation();
   int face, som0,som1;
-  int nbfaces = la_zone_VDF->nb_faces(),  nbsom = la_zone_VDF->nb_som();
-  const DoubleVect& volumes_entrelaces = la_zone_VDF->volumes_entrelaces();
+  int nbfaces = le_dom_VDF->nb_faces(),  nbsom = le_dom_VDF->nb_som();
+  const DoubleVect& volumes_entrelaces = le_dom_VDF->volumes_entrelaces();
   const DoubleVect& porosite_face = eqn_->milieu().porosite_face();
-  const DoubleTab& CoordSom = la_zone_VDF->zone().coord_sommets();
+  const DoubleTab& CoordSom = le_dom_VDF->zone().coord_sommets();
   double surf,vol,por,val, r;
   int ori, elem0,elem1;
   //construction matrice
@@ -82,16 +82,16 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
       elem1 = FaceVois(face,1);
       if (elem0>-1 && elem1>-1)
         {
-          surf = 0.5* (la_zone_VDF->dim_elem(elem0,ori) + la_zone_VDF->dim_elem(elem1,ori));
+          surf = 0.5* (le_dom_VDF->dim_elem(elem0,ori) + le_dom_VDF->dim_elem(elem1,ori));
         }
       else if (elem0>-1)
         {
-          surf = la_zone_VDF->dim_elem(elem0,ori);
+          surf = le_dom_VDF->dim_elem(elem0,ori);
         }
       else
         {
           surf = 0.;
-          surf = la_zone_VDF->dim_elem(elem1,ori);
+          surf = le_dom_VDF->dim_elem(elem1,ori);
         }
       if (bidim_axi/* && ori==1*/)
         {
@@ -102,16 +102,16 @@ int Assembleur_P_VDF_Q4::assembler(Matrice& la_matrice)
       por = porosite_face(face);
       val = surf*surf /vol * por;
 #ifdef _AFFDEBUG
-      if (la_zone_VDF->nb_som()<400)
+      if (le_dom_VDF->nb_som()<400)
         {
           Cerr<<"face="<<face<<"  ori="<<ori<<"  soms="<<som0<<"/"<<som1<<" coordsom="<<CoordSom(som0,0)<<"/"<<CoordSom(som0,1);
           Cerr<<" "<<CoordSom(som1,0)<<"/"<<CoordSom(som1,1)<<"  elems="<<FaceVois(face,0)<<"/"<<FaceVois(face,1)<<"  dim_elems/2=";
           if (FaceVois(face,0)>-1)
-            Cerr<<la_zone_VDF->dim_elem(FaceVois(face,0),ori)/2.<<" / ";
+            Cerr<<le_dom_VDF->dim_elem(FaceVois(face,0),ori)/2.<<" / ";
           else
             Cerr<<"--- / ";
           if (FaceVois(face,1)>-1)
-            Cerr<<la_zone_VDF->dim_elem(FaceVois(face,1),ori)/2.<<"  ";
+            Cerr<<le_dom_VDF->dim_elem(FaceVois(face,1),ori)/2.<<"  ";
           else
             Cerr<<"---  ";
           Cerr<<"  surf="<<surf<<"  vol="<<vol<<"  val="<<val<<finl;
@@ -142,13 +142,13 @@ int Assembleur_P_VDF_Q4::modifier_secmem(DoubleTab& secmem)
 
 int Assembleur_P_VDF_Q4::modifier_secmem(const DoubleTab& tab_secmem_, DoubleVect& secmem)
 {
-  const DoubleTab& CoordSommets = la_zone_VDF->zone().coord_sommets();
-  const IntTab& FaceSoms = la_zone_VDF->face_sommets();
-  const IntTab& FaceVois = la_zone_VDF->face_voisins();
-  const IntVect& Orientation = la_zone_VDF->orientation();
-  const DoubleTab& CoordSom = la_zone_VDF->zone().coord_sommets();
+  const DoubleTab& CoordSommets = le_dom_VDF->zone().coord_sommets();
+  const IntTab& FaceSoms = le_dom_VDF->face_sommets();
+  const IntTab& FaceVois = le_dom_VDF->face_voisins();
+  const IntVect& Orientation = le_dom_VDF->orientation();
+  const DoubleTab& CoordSom = le_dom_VDF->zone().coord_sommets();
   int face, som0,som1, ori, invori, elem0,elem1;
-  int nbfaces = la_zone_VDF->nb_faces(),  nbsom = la_zone_VDF->nb_som();
+  int nbfaces = le_dom_VDF->nb_faces(),  nbsom = le_dom_VDF->nb_som();
   double surf, r;
 
   secmem.resize(nbsom);
@@ -164,15 +164,15 @@ int Assembleur_P_VDF_Q4::modifier_secmem(const DoubleTab& tab_secmem_, DoubleVec
       elem1 = FaceVois(face,1);
       if (elem0>-1 && elem1>-1)
         {
-          surf = 0.5* (la_zone_VDF->dim_elem(elem0,ori) + la_zone_VDF->dim_elem(elem1,ori));
+          surf = 0.5* (le_dom_VDF->dim_elem(elem0,ori) + le_dom_VDF->dim_elem(elem1,ori));
         }
       else if (elem0>-1)
         {
-          surf = la_zone_VDF->dim_elem(elem0,ori);
+          surf = le_dom_VDF->dim_elem(elem0,ori);
         }
       else if (elem1>-1)
         {
-          surf = la_zone_VDF->dim_elem(elem1,ori);
+          surf = le_dom_VDF->dim_elem(elem1,ori);
         }
       else
         {
@@ -211,22 +211,22 @@ int Assembleur_P_VDF_Q4::modifier_solution(DoubleTab& pression)
 
 const Zone_dis_base& Assembleur_P_VDF_Q4::zone_dis_base() const
 {
-  return la_zone_VDF.valeur();
+  return le_dom_VDF.valeur();
 }
 
 const Zone_Cl_dis_base& Assembleur_P_VDF_Q4::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_VDF.valeur();
+  return le_dom_Cl_VDF.valeur();
 }
 
-void Assembleur_P_VDF_Q4::associer_zone_dis_base(const Zone_dis_base& la_zone_dis)
+void Assembleur_P_VDF_Q4::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, la_zone_dis);
+  le_dom_VDF = ref_cast(Zone_VDF, le_dom_dis);
 }
 
-void Assembleur_P_VDF_Q4::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis)
+void Assembleur_P_VDF_Q4::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis)
 {
-  la_zone_Cl_VDF =ref_cast(Zone_Cl_VDF, la_zone_Cl_dis);
+  le_dom_Cl_VDF =ref_cast(Zone_Cl_VDF, le_dom_Cl_dis);
 }
 
 void Assembleur_P_VDF_Q4::completer(const Equation_base& Eqn)

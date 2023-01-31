@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,31 +72,31 @@ void Terme_Source_inc_th_VDF_Face::associer_pb(const Probleme_base& pb)
 }
 
 
-void Terme_Source_inc_th_VDF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                  const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_inc_th_VDF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                     const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
+  le_dom_VDF = ref_cast(Zone_VDF, zone_dis.valeur());
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
 }
 
 // void Terme_Source_inc_th_VDF_Face::mettre_a_jour(double temps)
 //   //void Turbulence_hyd_sous_maille_inc_VDF::mettre_a_jour(double )
 // {
-//   int nb_elem_tot = la_zone_VDF->zone().nb_elem_tot();
+//   int nb_elem_tot = le_dom_VDF->zone().nb_elem_tot();
 //   DoubleTrav cell_cent_vel(nb_elem_tot,dimension);
 //   calculer_cell_cent_vel(cell_cent_vel);
 // }
 
 void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
-  const Zone_Cl_VDF& zone_Cl_VDF = la_zone_Cl_VDF.valeur();
+  const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
+  const Zone_Cl_VDF& zone_Cl_VDF = le_dom_Cl_VDF.valeur();
   const IntTab& face_voisins = zone_VDF.face_voisins();
   const IntVect& orientation = zone_VDF.orientation();
   //const DoubleTab& xv = zone_VDF.xv();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VDF.volumes_entrelaces();
-  const Zone& zone = la_zone_VDF->zone();
+  const Zone& zone = le_dom_VDF->zone();
   int nb_elem = zone.nb_elem();
   const Champ_Uniforme& ch_beta = ref_cast(Champ_Uniforme,beta().valeur());
   const DoubleTab& vitesse = eq_hydraulique().inconnue().valeurs();
@@ -108,7 +108,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   double vol;
   DoubleTrav s(3);
   s = 0.;
-  //int nb_elem_tot = la_zone_VDF->zone().nb_elem_tot();
+  //int nb_elem_tot = le_dom_VDF->zone().nb_elem_tot();
   //   double dQij=0;
   //   double si;
 
@@ -127,7 +127,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   // Exemple XTOF
   //   Cerr << " debut de parallel " << finl;
   DoubleTab cell_cent_vel(0, dimension);
-  la_zone_VDF.valeur().zone().creer_tableau_elements(cell_cent_vel);
+  le_dom_VDF.valeur().zone().creer_tableau_elements(cell_cent_vel);
   //    DoubleTrav toto(cell_cent_vel);
 
   DoubleTab temp1(cell_cent_vel);
@@ -147,7 +147,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   DoubleVect dQij_j(cell_cent_temp);
 
   //   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
-  //   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
   const IntTab& elem_faces = zone_VDF.elem_faces();
   int element_number;
@@ -229,7 +229,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   //   DoubleTrav uij_filt(nb_elem_tot,dimension,dimension);
 
   // -------------------------------------------------------------------
-  //   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   //   const IntTab& face_voisins = zone_VDF.face_voisins();
   //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
   //   const IntTab& elem_faces = zone_VDF.elem_faces();
@@ -538,7 +538,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   //   DoubleTrav Qij(nb_elem_tot,dimension,dimension);
 
   // -------------------------------------------------------------------
-  //   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
   //   int element_number;
 
@@ -562,7 +562,7 @@ void Terme_Source_inc_th_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab&
   //   DoubleTrav Lij(nb_elem_tot,dimension,dimension);
 
   // -------------------------------------------------------------------
-  //   const Zone_VDF& zone_VDF = la_zone_VDF.valeur();
+  //   const Zone_VDF& zone_VDF = le_dom_VDF.valeur();
   //   int nb_elem_tot = zone_VDF.zone().nb_elem_tot();
   //   int element_number;
 

@@ -67,14 +67,14 @@ inline void Elem_VEF::creer_normales_facettes_Cl(DoubleTab& norm_fa7_cl, int fa7
   valeur().creer_normales_facettes_Cl(norm_fa7_cl, fa7, num_elem, x, xg, zone_geom);
 }
 
-inline void Elem_VEF::modif_volumes_entrelaces(int j, int elem, const Zone_VEF& la_zone_VEF, DoubleVect& vol_ent_cl, int type_cl) const
+inline void Elem_VEF::modif_volumes_entrelaces(int j, int elem, const Zone_VEF& le_dom_VEF, DoubleVect& vol_ent_cl, int type_cl) const
 {
-  valeur().modif_volumes_entrelaces(j, elem, la_zone_VEF, vol_ent_cl, type_cl);
+  valeur().modif_volumes_entrelaces(j, elem, le_dom_VEF, vol_ent_cl, type_cl);
 }
 
-inline void Elem_VEF::modif_volumes_entrelaces_faces_joints(int j, int elem, const Zone_VEF& la_zone_VEF, DoubleVect& vol_ent_cl, int type_cl) const
+inline void Elem_VEF::modif_volumes_entrelaces_faces_joints(int j, int elem, const Zone_VEF& le_dom_VEF, DoubleVect& vol_ent_cl, int type_cl) const
 {
-  valeur().modif_volumes_entrelaces_faces_joints(j, elem, la_zone_VEF, vol_ent_cl, type_cl);
+  valeur().modif_volumes_entrelaces_faces_joints(j, elem, le_dom_VEF, vol_ent_cl, type_cl);
 }
 
 inline void Elem_VEF::modif_normales_facettes_Cl(DoubleTab& norm_fa7_cl, int fa7, int num_elem, int idirichlet, int n1, int n2, int n3) const

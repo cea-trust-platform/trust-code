@@ -449,7 +449,7 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
           {
             Joint& joint = zone.faces_joint().add(Joint());
             joint.nommer("Joint_i");
-            joint.associer_zone(zone);
+            joint.associer_domaine(zone);
             joint.affecte_epaisseur(epaisseur_joint);
             joint.affecte_PEvoisin(pe);
             joint.faces().typer(zone.type_elem().valeur().type_face());
@@ -502,7 +502,7 @@ static void auto_build_joints(Zone& zone, const int epaisseur_joint)
               {
                 Joint& joint = zone.faces_joint().add(Joint());
                 joint.nommer("Joint_i");
-                joint.associer_zone(zone);
+                joint.associer_domaine(zone);
                 joint.affecte_epaisseur(epaisseur_joint);
                 joint.affecte_PEvoisin(pe);
                 joint.faces().typer(zone.type_elem().valeur().type_face());
@@ -732,7 +732,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
       Cerr << "MaillerParallel::construire_domaine  erreur" << finl;
       exit();
     }
-  elem.valeur().associer_zone(domaine);
+  elem.valeur().associer_domaine(domaine);
 
   BlocData data;
   Noms liste_bords_perio;
@@ -770,7 +770,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
   for (num_bord = 0; num_bord < bords.size(); num_bord++)
     {
       Bord& bord = bords[num_bord];
-      bord.associer_zone(domaine);
+      bord.associer_domaine(domaine);
       bord.faces().typer(domaine.type_elem().valeur().type_face());
       // important pour dimensionner le linesize du tableau des faces pour les frontieres vides
       bord.faces().dimensionner(0);

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -117,10 +117,10 @@ int Echange_global_impose::initialiser(double temps)
 
 double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ext) const
 {
-  if (ma_zone_cl_dis->equation().que_suis_je()!="Convection_Diffusion_Concentration")
+  if (mon_dom_cl_dis->equation().que_suis_je()!="Convection_Diffusion_Concentration")
     {
-      const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-      Nom nom_pb=ma_zone_cl_dis->equation().probleme().que_suis_je();
+      const Milieu_base& mil=mon_dom_cl_dis->equation().milieu();
+      Nom nom_pb=mon_dom_cl_dis->equation().probleme().que_suis_je();
       double d_Cp;
       double d_rho;
       const Champ_base& rho=mil.masse_volumique().valeur();
@@ -178,10 +178,10 @@ double Echange_global_impose::champ_exterieur(int i, const Champ_front& champ_ex
 
 double Echange_global_impose::champ_exterieur(int i,int j, const Champ_front& champ_ext) const
 {
-  if (ma_zone_cl_dis->equation().que_suis_je()!="Convection_Diffusion_Concentration")
+  if (mon_dom_cl_dis->equation().que_suis_je()!="Convection_Diffusion_Concentration")
     {
-      const Milieu_base& mil=ma_zone_cl_dis->equation().milieu();
-      Nom nom_pb=ma_zone_cl_dis->equation().probleme().que_suis_je();
+      const Milieu_base& mil=mon_dom_cl_dis->equation().milieu();
+      Nom nom_pb=mon_dom_cl_dis->equation().probleme().que_suis_je();
       double d_Cp;
       double d_rho;
       const Champ_base& rho=mil.masse_volumique().valeur();

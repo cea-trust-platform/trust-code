@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ public:
 
 protected:
 
-  REF(Zone_VEF) la_zone_vef;
+  REF(Zone_VEF) le_dom_vef;
   REF(Zone_Cl_VEF) la_zcl_vef;
   REF(Champ_Inc_base) inconnue_;
   //DoubleVect porosite_face;
@@ -79,7 +79,7 @@ protected:
 // nu <Si, Sj> / |K|
 inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, double diffu) const
 {
-  const Zone_VEF& zone=la_zone_vef.valeur();
+  const Zone_VEF& zone=le_dom_vef.valeur();
   const IntTab& face_voisins=zone.face_voisins();
   const DoubleTab& face_normales=zone.face_normales();
   const DoubleVect& inverse_volumes=zone.inverse_volumes();
@@ -100,7 +100,7 @@ inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, double diffu) 
 // case of scalair
 inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, DoubleTab& diffu) const
 {
-  const Zone_VEF& zone=la_zone_vef.valeur();
+  const Zone_VEF& zone=le_dom_vef.valeur();
   const IntTab& face_voisins=zone.face_voisins();
   const DoubleTab& face_normales=zone.face_normales();
   const DoubleVect& inverse_volumes=zone.inverse_volumes();
@@ -122,7 +122,7 @@ inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, DoubleTab& dif
 // case of multi-scalar
 inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, ArrOfDouble& diffu_ci_cj_elem) const
 {
-  const Zone_VEF& zone=la_zone_vef.valeur();
+  const Zone_VEF& zone=le_dom_vef.valeur();
   const IntTab& face_voisins=zone.face_voisins();
   const DoubleTab& face_normales=zone.face_normales();
   const DoubleVect& inverse_volumes=zone.inverse_volumes();

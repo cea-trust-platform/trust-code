@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -55,10 +55,10 @@ class Eval_Centre_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Centre_VDF_Elem>, pu
 {
 public:
   static constexpr bool IS_CENTRE = true;
-  inline int amont_amont(int face, int i) const override { return la_zone->amont_amont(face, i); }
-  inline double dim_elem(int n1, int k) const override { return la_zone->dim_elem(n1,k); }
-  inline double dist_elem(int n1, int n2, int k) const override { return la_zone->dist_elem(n1,n2,k); }
-  inline double dist_face_elem1(int num_face,int n1) const { return la_zone->dist_face_elem1(num_face, n1); }
+  inline int amont_amont(int face, int i) const override { return le_dom->amont_amont(face, i); }
+  inline double dim_elem(int n1, int k) const override { return le_dom->dim_elem(n1,k); }
+  inline double dist_elem(int n1, int n2, int k) const override { return le_dom->dist_elem(n1,n2,k); }
+  inline double dist_face_elem1(int num_face,int n1) const { return le_dom->dist_face_elem1(num_face, n1); }
 
   template <typename Type_Double>
   inline void qcentre(const double psc, const int num0, const int num1, const int num0_0, const int num1_1,const int face,const DoubleTab& transporte, Type_Double& flux) const
@@ -75,8 +75,8 @@ class Eval_Centre4_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Centre4_VDF_Elem>, 
 
 public:
   static constexpr bool IS_CENTRE4 = true;
-  inline int amont_amont(int face, int i) const override { return la_zone->amont_amont(face, i); }
-  inline double dist_elem(int n1, int n2, int k) const override { return la_zone->dist_elem_period(n1,n2,k); }
+  inline int amont_amont(int face, int i) const override { return le_dom->amont_amont(face, i); }
+  inline double dist_elem(int n1, int n2, int k) const override { return le_dom->dist_elem_period(n1,n2,k); }
   template <typename Type_Double> inline void qcentre(const double ,const int ,const int ,const int ,const int ,const int , const DoubleTab& ,Type_Double& ) const;
 };
 
@@ -97,9 +97,9 @@ class Eval_Quick_VDF_Elem : public Eval_Conv_VDF_Elem<Eval_Quick_VDF_Elem>, publ
 {
 public:
   static constexpr bool IS_QUICK = true;
-  inline int amont_amont(int face, int i) const override { return la_zone->amont_amont(face, i); }
-  inline double dim_elem(int n1, int k) const override { return la_zone->dim_elem(n1,k); }
-  inline double dist_elem(int n1, int n2, int k) const override { return la_zone->dist_elem_period(n1,n2,k); }
+  inline int amont_amont(int face, int i) const override { return le_dom->amont_amont(face, i); }
+  inline double dim_elem(int n1, int k) const override { return le_dom->dim_elem(n1,k); }
+  inline double dist_elem(int n1, int n2, int k) const override { return le_dom->dist_elem_period(n1,n2,k); }
   template <typename Type_Double> inline void quick_fram(const double, const int, const int,const int, const int ,const int ,const DoubleTab&, Type_Double& ) const;
 };
 

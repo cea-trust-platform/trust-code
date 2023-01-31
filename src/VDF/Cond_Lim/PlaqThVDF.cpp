@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,8 +39,8 @@ Entree& PlaqThVDF::readOn(Entree& s )
 
 void PlaqThVDF::mettre_a_jour(double )
 {
-  const Equation_base& eqn = ma_zone_cl_dis->equation();
-  const Zone_VDF& la_zone_VDF=ref_cast(Zone_VDF, eqn.zone_dis().valeur());
+  const Equation_base& eqn = mon_dom_cl_dis->equation();
+  const Zone_VDF& le_dom_VDF=ref_cast(Zone_VDF, eqn.zone_dis().valeur());
   const Front_VF& front= ref_cast(Front_VF,frontiere_dis());
 
   const Milieu_base& le_milieu=eqn.probleme().milieu();
@@ -61,18 +61,18 @@ void PlaqThVDF::mettre_a_jour(double )
       int nbfs2 = front.nb_faces()/2;
       tab.resize(front.nb_faces(),1);
       int boundary_index=-1;
-      int nb_boundaries=la_zone_VDF.zone().nb_front_Cl();
+      int nb_boundaries=le_dom_VDF.zone().nb_front_Cl();
       for (int n_bord=0; n_bord<nb_boundaries; n_bord++)
         {
-          if (la_zone_VDF.front_VF(n_bord).le_nom() == front.le_nom())
+          if (le_dom_VDF.front_VF(n_bord).le_nom() == front.le_nom())
             boundary_index=n_bord;
         }
       for(int face=0; face < nbfs2; face++)
         {
           // double e1 = loipar.d_equiv(face);
           // double e2 = loipar.d_equiv(nbfs2+face);
-          int local_face=la_zone_VDF.front_VF(boundary_index).num_local_face(face);
-          int local_face2=la_zone_VDF.front_VF(boundary_index).num_local_face(nbfs2+face);
+          int local_face=le_dom_VDF.front_VF(boundary_index).num_local_face(face);
+          int local_face2=le_dom_VDF.front_VF(boundary_index).num_local_face(nbfs2+face);
           double e1 = loipar.valeur().equivalent_distance(boundary_index,local_face);
           double e2 = loipar.valeur().equivalent_distance(boundary_index,local_face2);
           tab(face,0) = tab(nbfs2+face,0) =
@@ -90,8 +90,8 @@ void PlaqThVDF::mettre_a_jour(double )
       DoubleTab& tab= h_imp_->valeurs();
       tab.resize(1,1);
       h_imp_->fixer_nb_comp(1);
-      double e1 = la_zone_VDF.dist_norm_bord(front.num_premiere_face());
-      double e2 = la_zone_VDF.dist_norm_bord(front.nb_faces()/2);
+      double e1 = le_dom_VDF.dist_norm_bord(front.num_premiere_face());
+      double e2 = le_dom_VDF.dist_norm_bord(front.nb_faces()/2);
       tab(0,0) = 2./(1./h+e1/le_milieu.diffusivite()(0,0)
                      +e2/le_milieu.diffusivite()(0,0));
     }
@@ -107,8 +107,8 @@ void PlaqThVDF::mettre_a_jour(double )
   for(face=premiere; face < derniere; face++)
     {
       int num=face-premiere;
-      el1=la_zone_VDF.face_voisins(face,0);
-      el2=la_zone_VDF.face_voisins(face+nbfs2,1);
+      el1=le_dom_VDF.face_voisins(face,0);
+      el2=le_dom_VDF.face_voisins(face+nbfs2,1);
       tab(num+nbfs2,0)=tab(num,0)=(Temp(el1)+Temp(el2))*0.5;
     };
 }

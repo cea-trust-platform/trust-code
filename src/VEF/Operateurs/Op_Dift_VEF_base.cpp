@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ void Op_Dift_VEF_base::associer(const Zone_dis& zone_dis,
 {
   const Zone_VEF& zvef = ref_cast(Zone_VEF,zone_dis.valeur());
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
   inconnue_ = ch_transporte;
 }
@@ -96,12 +96,12 @@ void Op_Dift_VEF_base::completer()
 
 void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& borne_visco_turb, double dt_conv, double dt_diff_sur_dt_conv) const
 {
-  const Zone_VEF& la_zone_VEF = la_zone_vef.valeur();
-  int nb_elem = la_zone_VEF.nb_elem();
+  const Zone_VEF& le_dom_VEF = le_dom_vef.valeur();
+  int nb_elem = le_dom_VEF.nb_elem();
   int flag = diffusivite().valeurs().dimension(0)>1 ? 1 : 0;
   for (int elem=0; elem<nb_elem; elem++)
     {
-      double h_inv = 1./la_zone_VEF.carre_pas_maille(elem);
+      double h_inv = 1./le_dom_VEF.carre_pas_maille(elem);
       // C'est pas tres propre pour recuperer diffu mais ca evite de coder cette methode dans plusieurs classes:
       double diffu = (flag ? diffusivite().valeurs()(elem) : diffusivite().valeurs()(0,0));
       //

@@ -120,7 +120,7 @@ void Transformer::transformation_complete(Noms& les_fcts)
       if (ref_cast(Rectangle,type_elem.valeur()).reordonner_elem() == -1) // Le reordonner_elem revele que l'on n'a plus des Rectangle
         {
           type_elem.typer("Quadrangle");
-          type_elem.associer_zone(domaine());
+          type_elem.associer_domaine(domaine());
         }
     }
   if (type_elem->que_suis_je() == "Hexaedre")
@@ -128,13 +128,13 @@ void Transformer::transformation_complete(Noms& les_fcts)
       if (ref_cast(Hexaedre,type_elem.valeur()).reordonner_elem() == -1) // Le reordonner_elem revele que l'on n'a plus des Hexaedre
         {
           type_elem.typer("Hexaedre_VEF");
-          type_elem.associer_zone(domaine());
+          type_elem.associer_domaine(domaine());
           Bords& les_bords = domaine().faces_bord();
 
           for (auto &itr : les_bords)
             itr.faces().typer(Faces::quadrangle_3D);
 
-          les_bords.associer_zone(domaine());
+          les_bords.associer_domaine(domaine());
         }
     }
   // Il faut reordonner apres un Transformer -y x par exemple car

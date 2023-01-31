@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,12 +30,12 @@ void Critere_Q_Champ_Face::associer_champ(const Champ_Face_VDF& un_champ)
 
 void Critere_Q_Champ_Face::me_calculer(double tps)
 {
-  mon_champ_->calcul_critere_Q(valeurs(), la_zone_Cl_VDF.valeur());
+  mon_champ_->calcul_critere_Q(valeurs(), le_dom_Cl_VDF.valeur());
 }
 
 const Zone_Cl_dis_base& Critere_Q_Champ_Face::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_VDF.valeur();
+  return le_dom_Cl_VDF.valeur();
 }
 
 void Critere_Q_Champ_Face::mettre_a_jour(double tps)

@@ -46,7 +46,7 @@ class Zone;
  *
  *      Champ_Inc est un morceaux d'equation car il herite de MorEqn.
  *
- * @sa MorEqn Champ_Inc Champ_base Ch_proto Equation_base, Classe abstraite, Methodes abstraites:, const Zone_dis_base& associer_zone_dis_base(const Zone_dis_base&), const Zone_dis_base& zone_dis_base() const, DoubleTab& remplir_coord_noeuds(DoubleTab& ) const
+ * @sa MorEqn Champ_Inc Champ_base Ch_proto Equation_base, Classe abstraite, Methodes abstraites:, const Zone_dis_base& associer_domaine_dis_base(const Zone_dis_base&), const Zone_dis_base& zone_dis_base() const, DoubleTab& remplir_coord_noeuds(DoubleTab& ) const
  */
 
 class Champ_Inc_base : public Champ_base, public MorEqn
@@ -101,13 +101,13 @@ public:
   int a_une_zone_dis_base() const override { return 1; }
 
   virtual void associer_eqn(const Equation_base&);
-  virtual void associer_zone_cl_dis(const Zone_Cl_dis&);
-  void associer_zone_dis_base(const Zone_dis_base&) override;
+  virtual void associer_domaine_cl_dis(const Zone_Cl_dis&);
+  void associer_domaine_dis_base(const Zone_dis_base&) override;
 
   const Zone_Cl_dis& zone_Cl_dis() const;
   Zone_Cl_dis& zone_Cl_dis();
-  const Zone_dis_base& zone_dis_base() const override { return la_zone_VF.valeur(); }
-  const Zone_VF& zone_vf() const { return la_zone_VF.valeur(); }
+  const Zone_dis_base& zone_dis_base() const override { return le_dom_VF.valeur(); }
+  const Zone_VF& zone_vf() const { return le_dom_VF.valeur(); }
 
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
   virtual int remplir_coord_noeuds_et_polys(DoubleTab&, IntVect&) const;
@@ -144,8 +144,8 @@ protected:
   virtual void creer_tableau_distribue(const MD_Vector&, Array_base::Resize_Options = Array_base::COPY_INIT);
 
   Roue_ptr les_valeurs;
-  REF(Zone_Cl_dis) ma_zone_cl_dis;
-  REF(Zone_VF) la_zone_VF;
+  REF(Zone_Cl_dis) mon_dom_cl_dis;
+  REF(Zone_VF) le_dom_VF;
 
   /* pour les champs dependant d'autres Champ_Inc */
   fonc_calc_t fonc_calc_;  //fonction de calcul

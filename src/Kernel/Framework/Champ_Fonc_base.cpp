@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,20 +25,20 @@ Sortie& Champ_Fonc_base::printOn(Sortie& s) const { return s; }
 
 Entree& Champ_Fonc_base::readOn(Entree& s) { return s; }
 
-void Champ_Fonc_base::associer_zone_dis_base(const Zone_dis_base& z_dis)
+void Champ_Fonc_base::associer_domaine_dis_base(const Zone_dis_base& z_dis)
 {
-  la_zone_VF = ref_cast(Zone_VF, z_dis);
+  le_dom_VF = ref_cast(Zone_VF, z_dis);
 }
 
 const Zone_dis_base& Champ_Fonc_base::zone_dis_base() const
 {
-  return la_zone_VF.non_nul() ? la_zone_VF.valeur() : Champ_Don_base::zone_dis_base() /* throw */;
+  return le_dom_VF.non_nul() ? le_dom_VF.valeur() : Champ_Don_base::zone_dis_base() /* throw */;
 }
 
 const Zone_VF& Champ_Fonc_base::zone_vf() const
 {
-  assert (la_zone_VF.non_nul());
-  return la_zone_VF.valeur();
+  assert (le_dom_VF.non_nul());
+  return le_dom_VF.valeur();
 }
 
 /*! @brief Mise a jour en temps du champ.

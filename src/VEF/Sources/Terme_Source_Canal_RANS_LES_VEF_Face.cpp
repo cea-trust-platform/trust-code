@@ -175,11 +175,11 @@ Entree& Terme_Source_Canal_RANS_LES_VEF_Face::readOn(Entree& is )
 
 }
 
-void Terme_Source_Canal_RANS_LES_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                          const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Canal_RANS_LES_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                             const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
-  la_zone_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
 }
 
 void Terme_Source_Canal_RANS_LES_VEF_Face::associer_pb(const Probleme_base& pb)
@@ -283,7 +283,7 @@ void Terme_Source_Canal_RANS_LES_VEF_Face::mettre_a_jour(double temps)
 {
   //Cerr << "Je suis dans le mettre_a_jour" << finl;
 
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   //  const DoubleTab& xv = zone_VEF.xv();
 
   const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
@@ -384,7 +384,7 @@ void Terme_Source_Canal_RANS_LES_VEF_Face::mettre_a_jour(double temps)
 
 DoubleTab& Terme_Source_Canal_RANS_LES_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+  const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
   int nb_faces = zone_VEF.nb_faces();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone_VEF.volumes_entrelaces();

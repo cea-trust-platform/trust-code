@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,14 +26,14 @@ Entree& Frontiere_ouverte_rho_u_impose::readOn(Entree& s) { return Entree_fluide
 
 void Frontiere_ouverte_rho_u_impose::completer()
 {
-  le_fluide = ref_cast(Fluide_Dilatable_base, ma_zone_cl_dis->equation().milieu());
+  le_fluide = ref_cast(Fluide_Dilatable_base, mon_dom_cl_dis->equation().milieu());
 }
 
 int Frontiere_ouverte_rho_u_impose::compatible_avec_eqn(const Equation_base& eqn) const
 {
-  if (!sub_type(Fluide_Dilatable_base, ma_zone_cl_dis->equation().milieu()))
+  if (!sub_type(Fluide_Dilatable_base, mon_dom_cl_dis->equation().milieu()))
     {
-      Cerr << "The boundary condition Frontiere_ouverte_rho_u_impose is only applicable for dialtable fluids and not a fluid of type " <<  ma_zone_cl_dis->equation().milieu().que_suis_je() << finl;
+      Cerr << "The boundary condition Frontiere_ouverte_rho_u_impose is only applicable for dialtable fluids and not a fluid of type " <<  mon_dom_cl_dis->equation().milieu().que_suis_je() << finl;
       Process::exit();
     }
 

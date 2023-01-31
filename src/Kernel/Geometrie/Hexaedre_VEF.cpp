@@ -249,7 +249,7 @@ static int contient_Tetra(const Zone& zone,const Zone& dom,const ArrOfDouble& po
 int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 {
   assert(pos.size_array()==3);
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   int som0 = zone.sommet_elem(element,0);
   int som1 = zone.sommet_elem(element,1);
@@ -303,7 +303,7 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
  */
 int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   if((zone.sommet_elem(element,0)==som[0])&&
       (zone.sommet_elem(element,1)==som[1])&&
       (zone.sommet_elem(element,2)==som[2])&&
@@ -323,7 +323,7 @@ int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
  */
 void Hexaedre_VEF::calculer_volumes(DoubleVect& volumes) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const Zone& dom=zone;
   IntTab face_sommet_global;
   face_sommet_global.resize(6,4);
@@ -614,7 +614,7 @@ void Hexaedre_VEF::reordonner()
     S'il est plus grand on intervertit les sommets 2 et 3.
     L'algorithme fonctionne si 0123 et 4567 sont deja sur une meme face
   */
-  Zone& zone=ma_zone.valeur();
+  Zone& zone=mon_dom.valeur();
   IntTab& elem=zone.les_elems();
   int nb_elem=zone.nb_elem();
   DoubleTab& coord=zone.les_sommets();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,12 +27,12 @@ class Zone_dis;
 class Source_Fluide_Dilatable_VEF_Proto
 {
 protected:
-  void associer_zones_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl);
+  void associer_domaines_impl(const Zone_dis& zone,const Zone_Cl_dis& zone_cl);
   void associer_volume_porosite_impl(const Zone_dis& zone, DoubleVect& volumes, DoubleVect& porosites);
   void ajouter_impl(const Equation_base& eqn, const DoubleVect& g, const int dimension, const double rho_m, const DoubleTab& tab_rho, DoubleTab& resu) const;
 
-  REF(Zone_VEF) la_zone;
-  REF(Zone_Cl_VEF) la_zone_Cl;
+  REF(Zone_VEF) le_dom;
+  REF(Zone_Cl_VEF) le_dom_Cl;
 };
 
 #endif /* Source_Fluide_Dilatable_VEF_Proto_included */

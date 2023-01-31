@@ -688,8 +688,8 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Zone& un_dom, const Motcle& 
   vrai_champ_.typer(type_champ);
   fixer_nb_comp(nbcomp);
   le_champ().fixer_nb_comp(nbcomp);
-  zonebidon_inst.associer_zone(un_dom);
-  le_champ().associer_zone_dis_base(zonebidon_inst);
+  zonebidon_inst.associer_domaine(un_dom);
+  le_champ().associer_domaine_dis_base(zonebidon_inst);
   le_champ().fixer_nb_valeurs_nodales(type_champ == "Champ_Fonc_P0_MED" ? un_dom.nb_elem() : un_dom.nb_som());
   //pour forcer la lecture lors du mettre a jour
   changer_temps(-1e3);

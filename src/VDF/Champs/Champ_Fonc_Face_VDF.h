@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@ public:
   DoubleVect& valeur_aux_compo(const DoubleTab& positions, DoubleVect& tab_valeurs, int ncomp) const override;
 
   // Methodes inlines
-  inline const Zone_VDF& zone_vdf() const override { return ref_cast(Zone_VDF, la_zone_VF.valeur()); }
+  inline const Zone_VDF& zone_vdf() const override { return ref_cast(Zone_VDF, le_dom_VF.valeur()); }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {

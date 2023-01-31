@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,7 +133,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
     }
 
   // PQ 20/06/06 : pour permettre une recherche "rapide" des faces
-  //                 on s'appuie sur ma_zone.chercher_elements(x,y,z)
+  //                 on s'appuie sur mon_dom.chercher_elements(x,y,z)
   //                 (methode inspiree de EcritureLectureSpecial::lecture_special)
   //
   //                Restriction --> champs aux faces

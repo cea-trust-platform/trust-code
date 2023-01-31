@@ -86,14 +86,14 @@ Entree& Sous_Zone::readOn(Entree& is)
     les_mots[11]= "fonction_sous_zone";
   }
 
-  if (!la_zone_.non_nul())
+  if (!le_dom_.non_nul())
     {
       Cerr << "You have not associated one of the objects of type Sous_Zone " << finl;
       Cerr << "to the object of type Domain " << finl;
       exit();
     }
 
-  const Zone& lazone=la_zone_.valeur();
+  const Zone& lazone=le_dom_.valeur();
   const Zone& dom=lazone;
   ArrOfInt les_polys_possibles_;
 
@@ -172,8 +172,8 @@ Entree& Sous_Zone::readOn(Entree& is)
               }
           }
         {
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           DoubleVect x(dimension);
           int compteur=0;
 
@@ -248,11 +248,11 @@ Entree& Sous_Zone::readOn(Entree& is)
             ly*=deux_pi;
           }
         {
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           double x, y, z;
           int compteur=0;
-          // int nb_poly=la_zone.nb_elem();
+          // int nb_poly=le_dom.nb_elem();
           Cerr << "Construction of the subarea " << le_nom()<< finl;
           les_polys_.resize(nb_pol_possible);
           for (int n_pol=0; n_pol<nb_pol_possible; n_pol++)
@@ -314,8 +314,8 @@ Entree& Sous_Zone::readOn(Entree& is)
         lx+= ox;
         ly+=oy;
         {
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           double x, y;
           int compteur=0;
 
@@ -457,8 +457,8 @@ Entree& Sous_Zone::readOn(Entree& is)
             ly*=deux_pi;
           }
         {
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           double x, y, z;
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
@@ -550,8 +550,8 @@ Entree& Sous_Zone::readOn(Entree& is)
         ly+=oy;
 
         {
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           double x, y;
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
@@ -632,8 +632,8 @@ Entree& Sous_Zone::readOn(Entree& is)
         {
           double ri2=ri*ri; // Internal radius^2
           double re2=re*re; // External radius^2
-          const Zone& la_zone=la_zone_.valeur();
-          int nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int nbsom=le_dom.nb_som_elem();
           DoubleVect x(dimension);
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
@@ -747,8 +747,8 @@ Entree& Sous_Zone::readOn(Entree& is)
         h+=h0;
         {
           double ri2 = ri*ri, re2=re*re;
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           DoubleVect x(dimension);
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom() << finl;
@@ -807,8 +807,8 @@ Entree& Sous_Zone::readOn(Entree& is)
           }
 
         {
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           DoubleVect x(dimension);
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom()<< finl;
@@ -863,8 +863,8 @@ Entree& Sous_Zone::readOn(Entree& is)
         F.parseString();
 
         {
-          const Zone& la_zone=la_zone_.valeur();
-          int le_poly, nbsom=la_zone.nb_som_elem();
+          const Zone& le_dom=le_dom_.valeur();
+          int le_poly, nbsom=le_dom.nb_som_elem();
           DoubleVect x(dimension);
           int compteur=0;
           Cerr << "Construction of the subarea " << le_nom()<< finl;
@@ -992,10 +992,10 @@ int Sous_Zone::add_poly(const int poly)
 int Sous_Zone::remove_poly(const int poly)
 {
   assert(0<=poly);
-  assert(poly<=la_zone_.valeur().nb_elem());
+  assert(poly<=le_dom_.valeur().nb_elem());
   int nb_poly=les_polys_.size();
   IntVect les_polys_tmp;
-  les_polys_tmp.resize(la_zone_.valeur().nb_elem());
+  les_polys_tmp.resize(le_dom_.valeur().nb_elem());
   int compteur=0;
   for(int i=0; i<nb_poly; i++)
     if(les_polys_(i)!=poly)
@@ -1016,9 +1016,9 @@ int Sous_Zone::remove_poly(const int poly)
  *
  * @param (Zone& zone) la zone a associe a la sous-zone
  */
-void Sous_Zone::associer_zone(const Zone& une_zone)
+void Sous_Zone::associer_domaine(const Zone& une_zone)
 {
-  la_zone_=une_zone;
+  le_dom_=une_zone;
 }
 
 
@@ -1035,8 +1035,8 @@ int Sous_Zone::associer_(Objet_U& ob)
   if( sub_type(Zone, ob))
     {
       // MONOZONE pour le moment
-      if(la_zone_.non_nul()) return 1;
-      associer_zone(ref_cast(Zone, ob));
+      if(le_dom_.non_nul()) return 1;
+      associer_domaine(ref_cast(Zone, ob));
       ob.associer_(*this);
       return 1;
     }

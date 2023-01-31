@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
+  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, le_dom_PolyMAC.valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   const IntTab& e_f = zone.elem_faces(), &fcl = ch.fcl();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
@@ -130,8 +130,8 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
-  for (int n_bord=0; n_bord<la_zone_PolyMAC->nb_front_Cl(); n_bord++)
-    if (sub_type(Neumann_sortie_libre, la_zone_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
+  for (int n_bord=0; n_bord<le_dom_PolyMAC->nb_front_Cl(); n_bord++)
+    if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 
@@ -170,7 +170,7 @@ int Assembleur_P_PolyMAC::assembler_QC(const DoubleTab& tab_rho, Matrice& matric
 /* equations sum_k alpha_k = 1, [grad p]_{fe} = [grad p]_{fe'} en Pb_Multiphase */
 void Assembleur_P_PolyMAC::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
-  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Zone_PolyMAC& zone = le_dom_PolyMAC.valeur();
   int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), m, M = equation().get_champ("pression").valeurs().line_size(),
                          ne_tot = zone.nb_elem_tot(), nf_tot = zone.nb_faces_tot();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
@@ -204,9 +204,9 @@ void Assembleur_P_PolyMAC::dimensionner_continuite(matrices_t matrices, int aux_
 
 void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
-  const Zone_PolyMAC& zone = la_zone_PolyMAC.valeur();
+  const Zone_PolyMAC& zone = le_dom_PolyMAC.valeur();
   const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
+  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const DoubleTab *alpha = pbm ? &pbm->eq_masse.inconnue().valeurs() : NULL, &press = equation().probleme().get_champ("pression").valeurs(),
                    &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &nf = zone.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur()).fcl(), &e_f = zone.elem_faces();
@@ -268,9 +268,9 @@ void Assembleur_P_PolyMAC::assembler_continuite(matrices_t matrices, DoubleTab& 
 
 void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& secmem) const
 {
-  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, la_zone_PolyMAC.valeur());
+  const Zone_PolyMAC& zone = ref_cast(Zone_PolyMAC, le_dom_PolyMAC.valeur());
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
-  const Conds_lim& cls = la_zone_Cl_PolyMAC->les_conditions_limites();
+  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& fcl = ch.fcl();
   int f, ne_tot = zone.nb_elem_tot(), m, M = equation().probleme().get_champ("pression").valeurs().line_size();
   for (f = 0; f < zone.premiere_face_int(); f++)
@@ -282,9 +282,9 @@ void Assembleur_P_PolyMAC::modifier_secmem_pour_incr_p(const DoubleTab& press, c
 /* norme pour assembler_continuite */
 DoubleTab Assembleur_P_PolyMAC::norme_continuite() const
 {
-  const DoubleVect& pe= equation().milieu().porosite_elem(), &ve = la_zone_PolyMAC->volumes();
-  DoubleTab norm(la_zone_PolyMAC->nb_elem());
-  for (int e = 0; e < la_zone_PolyMAC->nb_elem(); e++) norm(e) = pe(e) * ve(e);
+  const DoubleVect& pe= equation().milieu().porosite_elem(), &ve = le_dom_PolyMAC->volumes();
+  DoubleTab norm(le_dom_PolyMAC->nb_elem());
+  for (int e = 0; e < le_dom_PolyMAC->nb_elem(); e++) norm(e) = pe(e) * ve(e);
   return norm;
 }
 
@@ -297,22 +297,22 @@ int Assembleur_P_PolyMAC::modifier_solution(DoubleTab& pression)
 
 const Zone_dis_base& Assembleur_P_PolyMAC::zone_dis_base() const
 {
-  return la_zone_PolyMAC.valeur();
+  return le_dom_PolyMAC.valeur();
 }
 
 const Zone_Cl_dis_base& Assembleur_P_PolyMAC::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_PolyMAC.valeur();
+  return le_dom_Cl_PolyMAC.valeur();
 }
 
-void Assembleur_P_PolyMAC::associer_zone_dis_base(const Zone_dis_base& la_zone_dis)
+void Assembleur_P_PolyMAC::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis)
 {
-  la_zone_PolyMAC = ref_cast(Zone_PolyMAC,la_zone_dis);
+  le_dom_PolyMAC = ref_cast(Zone_PolyMAC,le_dom_dis);
 }
 
-void Assembleur_P_PolyMAC::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis)
+void Assembleur_P_PolyMAC::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis)
 {
-  la_zone_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, la_zone_Cl_dis);
+  le_dom_Cl_PolyMAC = ref_cast(Zone_Cl_PolyMAC, le_dom_Cl_dis);
 }
 
 void Assembleur_P_PolyMAC::completer(const Equation_base& Eqn)

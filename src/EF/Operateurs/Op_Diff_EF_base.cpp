@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -73,11 +73,11 @@ void Op_Diff_EF_base::associer(const Zone_dis& zone_dis,
       inconnue = inco;
     }
   */
-  la_zone_EF = zEF;
+  le_dom_EF = zEF;
   la_zcl_EF = zclEF;
   inconnue = ch_transporte;
 
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
 
   int nb_comp = 1;
   //  int nb_dim = resu.nb_dim();
@@ -95,7 +95,7 @@ double Op_Diff_EF_base::calculer_dt_stab() const
   //          dt_diff = h*h/diffusivite
 
   double dt_stab = DMAXFLOAT;
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   if (! has_champ_masse_volumique())
     {
       if (1)

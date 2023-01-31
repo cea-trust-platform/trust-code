@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,17 +59,17 @@ void Terme_Source_Decroissance_Radioactive_VEF_Face::completer()
     }
 }
 
-void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                                    const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                                       const Zone_Cl_dis& zone_Cl_dis)
 {
-  Cerr << " Terme_Source_Decroissance_Radioactive_VEF_Face::associer_zones " << finl ;
-  la_zone_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
+  Cerr << " Terme_Source_Decroissance_Radioactive_VEF_Face::associer_domaines " << finl ;
+  le_dom_VEF = ref_cast(Zone_VEF, zone_dis.valeur());
 }
 
 DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::ajouter(DoubleTab& resu)  const
 {
-  int nb_faces = la_zone_VEF.valeur().nb_faces();
-  const Zone_VF& zone = la_zone_VEF.valeur();
+  int nb_faces = le_dom_VEF.valeur().nb_faces();
+  const Zone_VF& zone = le_dom_VEF.valeur();
   const DoubleVect& vf = zone.volumes_entrelaces();
   const DoubleTab& c = equation().inconnue().valeurs();
 
@@ -89,8 +89,8 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_VEF_Face::calculer(DoubleTab& r
 
 void Terme_Source_Decroissance_Radioactive_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  int nb_faces = la_zone_VEF.valeur().nb_faces();
-  const Zone_VF& zone = la_zone_VEF.valeur();
+  int nb_faces = le_dom_VEF.valeur().nb_faces();
+  const Zone_VF& zone = le_dom_VEF.valeur();
   const DoubleVect& vf = zone.volumes_entrelaces();
 
   for (int f = 0; f < nb_faces; f++)

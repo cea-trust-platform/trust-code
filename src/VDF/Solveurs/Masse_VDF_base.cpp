@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -101,12 +101,12 @@ void Masse_VDF_base::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
     }
 }
 
-void Masse_VDF_base::associer_zone_dis_base(const Zone_dis_base& la_zone_dis_base)
+void Masse_VDF_base::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis_base)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, la_zone_dis_base);
+  le_dom_VDF = ref_cast(Zone_VDF, le_dom_dis_base);
 }
 
-void Masse_VDF_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis_base)
+void Masse_VDF_base::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, la_zone_Cl_dis_base);
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, le_dom_Cl_dis_base);
 }

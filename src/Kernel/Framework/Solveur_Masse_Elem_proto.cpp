@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@
 void Solveur_Masse_Elem_proto::associer_masse_proto(const Solveur_Masse_base& sm, const Zone_VF& zvf )
 {
   solv_mass_ = sm;
-  la_zone_ = zvf;
+  le_dom_ = zvf;
 }
 
 void Solveur_Masse_Elem_proto::preparer_calcul_proto()
@@ -37,7 +37,7 @@ void Solveur_Masse_Elem_proto::preparer_calcul_proto()
 
 DoubleTab& Solveur_Masse_Elem_proto::appliquer_impl_proto(DoubleTab& sm) const
 {
-  const Zone_VF& zone = la_zone_.valeur();
+  const Zone_VF& zone = le_dom_.valeur();
   const DoubleVect& ve = zone.volumes(), &pe = solv_mass_->equation().milieu().porosite_elem();
   const DoubleTab& der = solv_mass_->equation().champ_conserve().derivees().at(solv_mass_->equation().inconnue().le_nom().getString());
 
@@ -57,7 +57,7 @@ void Solveur_Masse_Elem_proto::dimensionner_blocs_proto(matrices_t matrices, con
 {
   solv_mass_->equation().init_champ_conserve();
   /* une diagonale par derivee de champ_conserve_ presente dans matrices */
-  const Zone_VF& zone = la_zone_.valeur();
+  const Zone_VF& zone = le_dom_.valeur();
   const Champ_Inc_base& cc = solv_mass_->equation().champ_conserve();
   int e, ne = zone.nb_elem(), n, N = cc.valeurs().line_size();
 
@@ -81,7 +81,7 @@ void Solveur_Masse_Elem_proto::dimensionner_blocs_proto(matrices_t matrices, con
 
 void Solveur_Masse_Elem_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const
 {
-  const Zone_VF& zone = la_zone_.valeur();
+  const Zone_VF& zone = le_dom_.valeur();
   const Champ_Inc_base& cc = solv_mass_->equation().champ_conserve();
   const Conds_lim& cls = solv_mass_->equation().zone_Cl_dis()->les_conditions_limites();
   const IntTab& fcl = ref_cast(Champ_Inc_P0_base, solv_mass_->equation().inconnue().valeur()).fcl(), &f_e = zone.face_voisins();

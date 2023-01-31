@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ public:
   Source_Neutronique_VDF(const Iterateur_Source_base& iter_base) : iter(iter_base) { }
   inline DoubleTab& calculer(DoubleTab& resu) const override { return iter->calculer(resu); }
   void completer() override;
-  void associer_zones(const Zone_dis&, const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis&, const Zone_Cl_dis& ) override;
   void associer_pb(const Probleme_base& ) override;
   double calculer_Tmoyenne() override;
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
@@ -44,7 +44,7 @@ public:
 
 protected:
   Iterateur_Source iter;
-  REF(Zone_VDF) la_zone;
+  REF(Zone_VDF) le_dom;
 };
 
 #endif /* Source_Neutronique_VDF_included */

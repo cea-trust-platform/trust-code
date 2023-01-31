@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ Entree& Champ_Fonc_Elem_PolyMAC::readOn(Entree& s) { return s; }
 
 Champ_base& Champ_Fonc_Elem_PolyMAC::affecter_(const Champ_base& ch)
 {
-  const Zone_VF& zone = ref_cast(Zone_VF, la_zone_VF.valeur());
+  const Zone_VF& zone = ref_cast(Zone_VF, le_dom_VF.valeur());
   ch.valeur_aux(zone.xp(), valeurs());
   return *this;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ public:
   void associer_champ(const Champ_P1NC&, const Zone_Cl_dis_base&);
 
 private:
-  REF(Zone_Cl_VEF) la_zone_Cl_VEF;
+  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
   REF(Champ_P1NC) vitesse_;
 };
 

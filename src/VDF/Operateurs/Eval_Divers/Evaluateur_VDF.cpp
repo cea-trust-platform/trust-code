@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #include <Milieu_base.h>
 #include <Zone_Cl_VDF.h>
 
-Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval) : la_zone(eval.la_zone), la_zcl(eval.la_zcl), dimension(eval.dimension),
+Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval) : le_dom(eval.le_dom), la_zcl(eval.la_zcl), dimension(eval.dimension),
   premiere_face_bord(eval.premiere_face_bord)
 {
   surface.ref(eval.surface);
@@ -29,9 +29,9 @@ Evaluateur_VDF::Evaluateur_VDF(const Evaluateur_VDF& eval) : la_zone(eval.la_zon
   xv.ref(eval.xv);
 }
 
-void Evaluateur_VDF::associer_zones(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& zone_cl_vdf)
+void Evaluateur_VDF::associer_domaines(const Zone_VDF& zone_vdf, const Zone_Cl_VDF& zone_cl_vdf)
 {
-  la_zone = zone_vdf;
+  le_dom = zone_vdf;
   la_zcl = zone_cl_vdf;
   dimension = Objet_U::dimension;
   premiere_face_bord = zone_vdf.premiere_face_bord();
@@ -50,5 +50,5 @@ void Evaluateur_VDF::associer_porosite(const DoubleVect& poro)
 
 double Evaluateur_VDF::dist_norm_bord(int face) const
 {
-  return la_zone->dist_norm_bord(face);
+  return le_dom->dist_norm_bord(face);
 }

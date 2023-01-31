@@ -124,7 +124,7 @@ public :
   inline int reel() const { return reel_; }
 
 protected :
-  REF(Zone) la_zone;
+  REF(Zone) le_dom;
   OctreeLoc loc;
   int valid_, reel_ = -1;
 };

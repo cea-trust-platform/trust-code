@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -156,9 +156,9 @@ void Cond_lim_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
  *
  * @param (Zone_Cl_dis_base& zcl) une Zone des conditions aux limites discretisees a laquelle l'objet Cond_lim_base se rapporte
  */
-void Cond_lim_base::associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcl)
+void Cond_lim_base::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& zcl)
 {
-  ma_zone_cl_dis = zcl;
+  mon_dom_cl_dis = zcl;
   le_champ_front.valeur().verifier(*this);
 }
 

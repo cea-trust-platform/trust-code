@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,8 +34,8 @@ class Masse_VEF_P1NC : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Zone_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
 
   DoubleTab& appliquer_impl(DoubleTab& sm) const override;
 
@@ -46,8 +46,8 @@ public:
 
 private:
 
-  REF(Zone_VEF) la_zone_VEF;
-  REF(Zone_Cl_VEF) la_zone_Cl_VEF;
+  REF(Zone_VEF) le_dom_VEF;
+  REF(Zone_Cl_VEF) le_dom_Cl_VEF;
 };
 
 #endif

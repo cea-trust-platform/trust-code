@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,7 +37,7 @@ class EDO_Pression_th_VDF: public EDO_Pression_th_base
 public :
   EDO_Pression_th_VDF();
   const Fluide_Quasi_Compressible& le_fluide() const { return le_fluide_.valeur(); };
-  void associer_zones(const Zone_dis&,const Zone_Cl_dis&) override;
+  void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) override;
   void completer() override;
   void calculer_grad(const DoubleTab&,DoubleTab&);
   double masse_totale(double P,const DoubleTab& T) override;
@@ -45,8 +45,8 @@ public :
   double getM0() { return M0; }
 
 protected :
-  REF(Zone_VDF) la_zone;
-  REF(Zone_Cl_dis) la_zone_Cl;
+  REF(Zone_VDF) le_dom;
+  REF(Zone_Cl_dis) le_dom_Cl;
   double M0;// la masse totale initiale
 };
 

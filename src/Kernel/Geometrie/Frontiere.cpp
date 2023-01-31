@@ -55,10 +55,10 @@ Sortie& Frontiere::printOn(Sortie& os) const
  *
  * @param (Zone& une_zone) la zone a associee a la frontiere
  */
-void Frontiere::associer_zone(const Zone& une_zone)
+void Frontiere::associer_domaine(const Zone& une_zone)
 {
-  la_zone=une_zone;
-  les_faces.associer_zone(une_zone);
+  le_dom=une_zone;
+  les_faces.associer_domaine(une_zone);
 }
 
 /*! @brief Donne un nom a la frontiere
@@ -138,7 +138,7 @@ void Frontiere::renum(const IntVect& Les_Nums)
  */
 const Zone& Frontiere::zone() const
 {
-  return la_zone.valeur();
+  return le_dom.valeur();
 }
 
 /*! @brief Renvoie la Zone associee a la frontiere.
@@ -147,7 +147,7 @@ const Zone& Frontiere::zone() const
  */
 Zone& Frontiere::zone()
 {
-  return la_zone.valeur();
+  return le_dom.valeur();
 }
 
 

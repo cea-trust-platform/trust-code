@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -404,7 +404,7 @@ DoubleTab& Op_Conv_DI_L2_VEF_Face::ajouter(const DoubleTab& transporte,
                                            DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -762,7 +762,7 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_2d(DoubleTab& derive ,int poly,
 
   //Cerr << " in reconst_DI_L2_2d " << sing << finl ;
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   //  const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -953,7 +953,7 @@ void Op_Conv_DI_L2_VEF_Face::reconst_DI_L2_3d(DoubleTab& derive, int poly,
                                               int& nlim) const
 {
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   //  const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -1192,7 +1192,7 @@ void Op_Conv_DI_L2_VEF_Face::poly_DI_L2_2d(int N, int M, DoubleTab& derive ,int 
                                            const DoubleTab& transporte, int& sing) const
 {
   //Cerr << " in           poly_DI_L2_2d " << finl ;
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();
@@ -1313,7 +1313,7 @@ void Op_Conv_DI_L2_VEF_Face::poly_DI_L2_3d(int N, int M, DoubleTab& derive ,int 
                                            const DoubleTab& transporte ,int& sing) const
 {
   //  Cerr<<"Op_Conv_DI_L2_VEF_Face::poly_DI_L2_3d 0 "<<finl;
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const IntTab& elem_faces = zone_VEF.elem_faces();
   const IntTab& face_voisins = zone_VEF.face_voisins();

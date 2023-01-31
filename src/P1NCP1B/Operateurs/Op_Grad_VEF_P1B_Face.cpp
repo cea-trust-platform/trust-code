@@ -50,7 +50,7 @@ Entree& Op_Grad_VEF_P1B_Face::readOn(Entree& s)
 
 const Zone_VEF_PreP1b& Op_Grad_VEF_P1B_Face::zone_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  return ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
 }
 
 static int chercher_arete(int elem, int somi, int somj,
@@ -213,7 +213,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::
 modifier_grad_pour_Cl(DoubleTab& grad ) const
 {
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
-                                             la_zone_vef.valeur());
+                                             le_dom_vef.valeur());
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const Zone_Cl_VEF& zone_Cl_VEF=la_zcl_vef.valeur();
   const Conds_lim& les_cl = zone_Cl_VEF.les_conditions_limites();
@@ -279,7 +279,7 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
-                                             la_zone_vef.valeur());
+                                             le_dom_vef.valeur());
   assert(zone_VEF.get_alphaE());
   const Zone& zone = zone_VEF.zone();
   const DoubleTab& face_normales = zone_VEF.face_normales();
@@ -345,7 +345,7 @@ ajouter_som(const DoubleTab& pre,
             DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
-                                             la_zone_vef.valeur());
+                                             le_dom_vef.valeur());
   assert(zone_VEF.get_alphaS());
   const Zone& zone = zone_VEF.zone();
   const Zone& dom=zone;
@@ -440,7 +440,7 @@ ajouter_aretes(const DoubleTab& pre,
                DoubleTab& grad) const
 {
   const Zone_VEF_PreP1b& zone_VEF =
-    ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+    ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
   assert(zone_VEF.get_alphaA());
   const Zone& zone = zone_VEF.zone();
   //const Zone& dom=zone;
@@ -648,7 +648,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter(const DoubleTab& pre,
   assert_invalide_items_non_calcules(grad);
   //Debog::verifier("Op_Grad_VEF_P1B_Face::ajouter pre", pre);
   const Zone_VEF_PreP1b& zone_VEF = ref_cast(Zone_VEF_PreP1b,
-                                             la_zone_vef.valeur());
+                                             le_dom_vef.valeur());
   static int init=1;
   if(!init)
     verifier(*this, init, zone_VEF, pre, grad);
@@ -674,7 +674,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   int nps=zone_VEF.numero_premier_sommet();
   int npa=zone_VEF.numero_premiere_arete();
   const IntTab& face_voisins = zone_VEF.face_voisins();
-  const IntTab& som_elem=la_zone_vef->zone().les_elems();
+  const IntTab& som_elem=le_dom_vef->zone().les_elems();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
   const Champ_P1_isoP1Bulle& la_pression_P1B = ref_cast(Champ_P1_isoP1Bulle,eqn_hydr.pression_pa().valeur());
@@ -701,7 +701,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
               elem = face_voisins(face,voisin);
             }
           int signe=zone_VEF.oriente_normale(face,elem);
-          int som_opp = la_zone_vef->get_num_fac_loc(face, voisin);
+          int som_opp = le_dom_vef->get_num_fac_loc(face, voisin);
           som_opp = som_elem(elem, som_opp);
           double pres_tot = 0. ;
 
@@ -727,8 +727,8 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
           if (zone_VEF.get_alphaA()*0!=0)
             {
               double pres_arete = 0.;
-              const IntTab& elem_aretes=la_zone_vef->zone().elem_aretes();
-              const IntTab& aretes_som=la_zone_vef->zone().aretes_som();
+              const IntTab& elem_aretes=le_dom_vef->zone().elem_aretes();
+              const IntTab& aretes_som=le_dom_vef->zone().aretes_som();
               for(int arete=0; arete<6; arete++)
                 {
                   int arete_glob = elem_aretes(elem, arete);
@@ -747,9 +747,9 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
 {
-  const int impr_mom=la_zone_vef->zone().moments_a_imprimer();
-  const int impr_sum=(la_zone_vef->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_vef->zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=le_dom_vef->zone().moments_a_imprimer();
+  const int impr_sum=(le_dom_vef->zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_vef->zone().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
   const Zone_VEF_PreP1b& zone_VEF = zone_Vef();
@@ -760,7 +760,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
   if (impr_mom)
     {
       const DoubleTab& xgrav = zone_VEF.xv();
-      const ArrOfDouble& c_grav=la_zone_vef->zone().cg_moments();
+      const ArrOfDouble& c_grav=le_dom_vef->zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ Sortie& Polygone::printOn(Sortie& s ) const
 void Polygone::rebuild_index()
 {
 
-  const IntTab& les_elems = ma_zone.valeur().les_elems();
+  const IntTab& les_elems = mon_dom.valeur().les_elems();
   int nb_elem=les_elems.dimension_tot(0);
   ArrOfInt   PolygonIndex_OK(nb_elem+1);
   PolygonIndex_OK[0]=0;
@@ -75,7 +75,7 @@ void Polygone::rebuild_index()
 
 void Polygone::build_reduced(Elem_geom& type_elem, const ArrOfInt& elems_sous_part) const
 {
-  const IntTab& les_elems = ma_zone.valeur().les_elems();
+  const IntTab& les_elems = mon_dom.valeur().les_elems();
   type_elem.typer("Polygone");
   Polygone& reduced = ref_cast(Polygone, type_elem.valeur());
   reduced.nb_som_elem_max_  = nb_som_elem_max_;
@@ -104,7 +104,7 @@ void Polygone::compute_virtual_index()
 
 int Polygone::get_somme_nb_faces_elem() const
 {
-  return PolygonIndex_[ma_zone.valeur().nb_elem()];
+  return PolygonIndex_[mon_dom.valeur().nb_elem()];
 }
 /*! @brief NE FAIT RIEN
  *
@@ -125,7 +125,7 @@ int Polygone::get_nb_som_elem_max() const
   if (nb_som_elem_max_>-1)
     return nb_som_elem_max_ ;
   else
-    return ma_zone.valeur().les_elems().dimension(1);
+    return mon_dom.valeur().les_elems().dimension(1);
 }
 
 /*! @brief Renvoie le nom LML d'un polyedre = "POLYEDRE_"+nb_som_max.
@@ -193,7 +193,7 @@ int contient_triangle(const ArrOfDouble& pos,int som0,int som1,int som2,const Do
  */
 int Polygone::contient(const ArrOfDouble& pos_r, int num_poly ) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.coord_sommets();
   DoubleTab pos(3,dimension);
@@ -240,7 +240,7 @@ int Polygone::contient(const ArrOfInt& pos, int element ) const
 void Polygone::calculer_volumes(DoubleVect& volumes) const
 {
 
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.coord_sommets();
   int size = zone.nb_elem();
@@ -305,7 +305,7 @@ int Polygone::get_tab_faces_sommets_locaux(IntTab& faces_som_local,int ele) cons
   /*
    les elems pas remplis
     int nb_face2=get_nb_som_elem_max();
-    const IntTab& les_elems = ma_zone.valeur().les_elems();
+    const IntTab& les_elems = mon_dom.valeur().les_elems();
 
     {
 
@@ -396,13 +396,13 @@ void Polygone::reordonner()
 }
 void Polygone::calculer_centres_gravite(DoubleTab& xp) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.coord_sommets();
   int nb_elem;
   if(xp.dimension(0)==0)
     {
-      nb_elem = ma_zone->nb_elem_tot();
+      nb_elem = mon_dom->nb_elem_tot();
       xp.resize(nb_elem,dimension);
     }
   else
@@ -443,7 +443,7 @@ void Polygone::calculer_centres_gravite(DoubleTab& xp) const
 
 void Polygone::calculer_un_centre_gravite(const int num_poly,DoubleVect& xp) const
 {
-  const Zone& zone=ma_zone.valeur();
+  const Zone& zone=mon_dom.valeur();
   const IntTab& elem=zone.les_elems();
   const DoubleTab& coord=zone.coord_sommets();
   xp.resize(dimension);

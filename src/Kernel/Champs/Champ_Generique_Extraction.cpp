@@ -168,7 +168,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   //La zone discretisee a associer n est actuellement pas disponible
   //On associe pas de zone_discretisee et on ne fixe pas nb_valeurs_nodales
   espace_stockage.typer(type_espace_stockage);
-  ////espace_stockage->associer_zone_dis_base(zone_dis);
+  ////espace_stockage->associer_domaine_dis_base(zone_dis);
   espace_stockage->fixer_nb_comp(nb_comp);
   ////espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
   espace_stockage->fixer_nature_du_champ(nature_source);
@@ -437,7 +437,7 @@ void Champ_Generique_Extraction::discretiser_domaine()
       Nom type = "NO_FACE_Zone_";
       type += type_discr;
       le_dom_dis.typer(type);
-      le_dom_dis->associer_zone(domaine_.valeur());
+      le_dom_dis->associer_domaine(domaine_.valeur());
       le_dom_dis->discretiser_root(type);
     }
 }

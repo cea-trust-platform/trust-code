@@ -47,7 +47,7 @@ void VEF_1D::vitesse(const Schema_Temps_base& sch,
     {
       ch.typer("Champ_P1NC");
       Champ_P1NC& ch_vitesse=ref_cast(Champ_P1NC, ch.valeur());
-      ch_vitesse.associer_zone_dis_base(zone_VEF);
+      ch_vitesse.associer_domaine_dis_base(zone_VEF);
       ch_vitesse.nommer("vitesse");
       ch_vitesse.fixer_nb_comp(1);
       ch_vitesse.fixer_nb_valeurs_temporelles(sch.nb_valeurs_temporelles());
@@ -59,7 +59,7 @@ void VEF_1D::vitesse(const Schema_Temps_base& sch,
     {
       ch.typer("Champ_Q1NC");
       Champ_Q1NC& ch_vitesse=ref_cast(Champ_Q1NC, ch.valeur());
-      ch_vitesse.associer_zone_dis_base(zone_VEF);
+      ch_vitesse.associer_domaine_dis_base(zone_VEF);
       ch_vitesse.nommer("vitesse");
       ch_vitesse.fixer_nb_comp(1);
       ch_vitesse.fixer_nb_valeurs_temporelles(sch.nb_valeurs_temporelles());

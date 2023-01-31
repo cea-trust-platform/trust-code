@@ -46,7 +46,7 @@ public :
   inline double changer_temps(const double t) ;
   inline void mettre_a_jour(double un_temps) ;
   inline int initialiser(const double un_temps);
-  inline void associer_zone_dis_base(const Zone_dis_base&) ;
+  inline void associer_domaine_dis_base(const Zone_dis_base&) ;
   inline const Zone_dis_base& zone_dis_base() const ;
   inline int reprendre(Entree& ) override ;
   inline int sauvegarder(Sortie&) const override;
@@ -123,9 +123,9 @@ inline double Champ_Fonc::changer_temps(const double t)
  *
  * @param (Zone_dis_base& zone_dis) la zone discretisee a associer au champ
  */
-inline void Champ_Fonc::associer_zone_dis_base(const Zone_dis_base& zone_dis)
+inline void Champ_Fonc::associer_domaine_dis_base(const Zone_dis_base& zone_dis)
 {
-  valeur().associer_zone_dis_base(zone_dis);
+  valeur().associer_domaine_dis_base(zone_dis);
 }
 
 /*! @brief Appel a l'objet sous-jacent Renvoe la zone discretisee associee

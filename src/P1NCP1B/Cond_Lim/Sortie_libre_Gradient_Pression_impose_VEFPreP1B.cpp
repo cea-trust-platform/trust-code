@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,12 +34,12 @@ Entree& Sortie_libre_Gradient_Pression_impose_VEFPreP1B::readOn(Entree& s)
 int Sortie_libre_Gradient_Pression_impose_VEFPreP1B::initialiser(double temps)
 {
   Cond_lim_base::initialiser(temps);
-  const Zone_Cl_dis_base& la_zone_Cl = zone_Cl_dis();
-  const Equation_base& eqn = la_zone_Cl.equation();
+  const Zone_Cl_dis_base& le_dom_Cl = zone_Cl_dis();
+  const Equation_base& eqn = le_dom_Cl.equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std, eqn);
   const Champ_P1_isoP1Bulle& pression = ref_cast(Champ_P1_isoP1Bulle, eqn_hydr.pression().valeur());
-  const Zone_VEF& ma_zone_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
-  const IntTab& face_voisins = ma_zone_VEF.face_voisins();
+  const Zone_VEF& mon_dom_VEF = ref_cast(Zone_VEF, eqn.zone_dis().valeur());
+  const IntTab& face_voisins = mon_dom_VEF.face_voisins();
   const Front_VF& le_bord = ref_cast(Front_VF, frontiere_dis());
   pression_interne = pression;
   int nb_faces_loc = le_bord.nb_faces_tot();
@@ -50,9 +50,9 @@ int Sortie_libre_Gradient_Pression_impose_VEFPreP1B::initialiser(double temps)
       int face = le_bord.num_face(ind_face);
       int elem = face_voisins(face, 0);
       if (dimension == 2)
-        coeff[ind_face] = distance_2D(face, elem, ma_zone_VEF) * 3.;
+        coeff[ind_face] = distance_2D(face, elem, mon_dom_VEF) * 3.;
       else
-        coeff[ind_face] = distance_3D(face, elem, ma_zone_VEF) * 4.;
+        coeff[ind_face] = distance_3D(face, elem, mon_dom_VEF) * 4.;
     }
   // On n'appelle pas mettre_a_jour car la mise a jour du champ_front pourrait dependre de l'exterieur !
   return calculer_trace_pression();

@@ -26,9 +26,9 @@ Sortie& Source_WC_Gravite_VDF::printOn(Sortie& os) const
 
 Entree& Source_WC_Gravite_VDF::readOn(Entree& is) { return is; }
 
-void Source_WC_Gravite_VDF::associer_zones(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
+void Source_WC_Gravite_VDF::associer_domaines(const Zone_dis& zone,const Zone_Cl_dis& zone_cl)
 {
-  associer_zones_impl(zone,zone_cl);
+  associer_domaines_impl(zone,zone_cl);
 }
 
 void Source_WC_Gravite_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const

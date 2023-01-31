@@ -108,7 +108,7 @@ inline void Op_Moyenne::associer(const Zone_dis_base& une_zdis, const Champ_Gene
     type = type_le_champ;
 
   integrale_champ.typer(type);
-  integrale_champ.associer_zone_dis_base(une_zdis);
+  integrale_champ.associer_domaine_dis_base(une_zdis);
   integrale_champ.associer(le_champ,1,t1,t2);
 }
 

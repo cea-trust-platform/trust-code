@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ Entree& Op_Diff_RotRot::readOn(Entree& s)
 
 const Zone_VEF_PreP1b& Op_Diff_RotRot::zone_Vef() const
 {
-  return ref_cast(Zone_VEF_PreP1b, la_zone_vef.valeur());
+  return ref_cast(Zone_VEF_PreP1b, le_dom_vef.valeur());
 }
 
 void Op_Diff_RotRot::
@@ -52,7 +52,7 @@ associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis,
 {
   const Zone_VEF& zvef = ref_cast(Zone_VEF, zone_dis.valeur());
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF, zone_Cl_dis.valeur());
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 
   curl_.associer(zone_dis,zone_Cl_dis,inco);
@@ -64,7 +64,7 @@ associer(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_Cl_dis,
   Champ_P1_isoP1Bulle& vorticite =
     ref_cast(Champ_P1_isoP1Bulle,vorticite_.valeur());
 
-  vorticite.associer_zone_dis_base(zvef);
+  vorticite.associer_domaine_dis_base(zvef);
   vorticite.nommer("vorticite");
 
   if (dimension == 2) vorticite.fixer_nb_comp(1);
@@ -587,7 +587,7 @@ Op_Diff_RotRot::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   DoubleTab le_vecteur_normal(dimension);
 
   for (int composante = 0; composante<dimension; composante++)

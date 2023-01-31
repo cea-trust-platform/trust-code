@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
-  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, la_zone_PolyMAC.valeur());
+  const Zone_PolyMAC_P0& zone = ref_cast(Zone_PolyMAC_P0, le_dom_PolyMAC.valeur());
   const Op_Grad_PolyMAC_P0_Face& grad = ref_cast(Op_Grad_PolyMAC_P0_Face, ref_cast(Navier_Stokes_std, equation()).operateur_gradient().valeur());
   grad.update_grad();
   const DoubleTab& fgrad_c = grad.fgrad_c;
@@ -66,8 +66,8 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
-  for (int n_bord=0; n_bord<la_zone_PolyMAC->nb_front_Cl(); n_bord++)
-    if (sub_type(Neumann_sortie_libre, la_zone_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
+  for (int n_bord=0; n_bord<le_dom_PolyMAC->nb_front_Cl(); n_bord++)
+    if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
 
   /* 1. stencil de la matrice en pression : seulement au premier passage */
@@ -113,10 +113,10 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
 void Assembleur_P_PolyMAC_P0::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
   if (aux_only) return; //rien a faire
-  int e, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = la_zone_PolyMAC->nb_elem_tot();
+  int e, n, N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases(), ne_tot = le_dom_PolyMAC->nb_elem_tot();
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
+  for (e = 0; e < le_dom_PolyMAC->nb_elem(); e++)
     for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
   Matrix_tools::allocate_morse_matrix(ne_tot, N * ne_tot, stencil, *matrices.at("alpha"));
 }
@@ -126,12 +126,12 @@ void Assembleur_P_PolyMAC_P0::assembler_continuite(matrices_t matrices, DoubleTa
   if (aux_only) return;
   const DoubleTab& alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeurs();
   Matrice_Morse& mat = *matrices.at("alpha");
-  const DoubleVect& ve = la_zone_PolyMAC->volumes(), &pe = equation().milieu().porosite_elem();
+  const DoubleVect& ve = le_dom_PolyMAC->volumes(), &pe = equation().milieu().porosite_elem();
   int e, n, N = alpha.line_size();
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
-  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
+  for (e = 0; e < le_dom_PolyMAC->nb_elem(); e++)
     for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
   /* matrice */
-  for (e = 0; e < la_zone_PolyMAC->nb_elem(); e++)
+  for (e = 0; e < le_dom_PolyMAC->nb_elem(); e++)
     for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
 }

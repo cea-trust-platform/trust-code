@@ -136,7 +136,7 @@ Entree& Pb_MED::readOn(Entree& is )
 
   Nom typ = "NO_FACE_Zone_VF_inst";
   le_domaine_dis.typer(typ);
-  le_domaine_dis->associer_zone(dom);
+  le_domaine_dis->associer_domaine(dom);
   le_domaine_dis->discretiser_root(typ);
 
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;

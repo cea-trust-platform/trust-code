@@ -70,7 +70,7 @@ void Op_Diff_PolyMAC_P0_Elem::completer()
   Op_Diff_PolyMAC_P0_base::completer();
   const Equation_base& eq = equation();
   const Champ_Elem_PolyMAC_P0& ch = ref_cast(Champ_Elem_PolyMAC_P0, eq.inconnue().valeur());
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   if (zone.zone().nb_joints() && zone.zone().joint(0).epaisseur() < 1)
     {
       Cerr << "Op_Diff_PolyMAC_P0_Elem : largeur de joint insuffisante (minimum 1)!" << finl;
@@ -106,7 +106,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_s_dist() const
 void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 {
   if (som_ext_init_) return; //deja fait
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   int i, j, k, s, sb, s_l, iop, e, f, ok;
 
   /* remplissage de op_ext : de proche en proche */
@@ -194,7 +194,7 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 
 double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
 {
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   const IntTab& e_f = zone.elem_faces();
   const DoubleTab& nf = zone.face_normales(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL),
@@ -223,7 +223,7 @@ void Op_Diff_PolyMAC_P0_Elem::dimensionner_blocs(matrices_t matrices, const tabs
   init_op_ext(), update_phif(!nu_constant_); //calcul de (nf.nu.grad T) : si nu variable, stencil complet
   const std::string nom_inco = equation().inconnue().le_nom().getString();
   if (semi_impl.count(nom_inco)) return; //semi-implicite -> rien a dimensionner
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   const IntTab& f_e = zone.face_voisins();
   int i, j, k, e, e_s, p_s, f, m, n, n_sten = 0;
   std::vector<Matrice_Morse *> mat(op_ext.size());

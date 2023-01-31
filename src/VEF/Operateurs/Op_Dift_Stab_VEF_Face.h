@@ -76,7 +76,7 @@ protected :
 
 inline double Op_Dift_Stab_VEF_Face::aij_extradiag(const int elem, const int facei, const int facej, const int dim, const int dim2, const double nu_elem) const
 {
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
 
   const IntTab& face_voisins=zone_VEF.face_voisins();
 

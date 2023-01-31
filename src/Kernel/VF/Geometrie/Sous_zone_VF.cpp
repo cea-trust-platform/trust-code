@@ -60,9 +60,9 @@ void Sous_zone_VF::discretiser()
   Cerr << "Sous_zone_VF::discretiser : discretization of the subarea "
        << la_sous_zone->le_nom() << "... ";
 
-  la_zone_VF=ref_cast(Zone_VF,la_zone_dis.valeur());
+  le_dom_VF=ref_cast(Zone_VF,le_dom_dis.valeur());
 
-  int nb_faces_tot=la_zone_VF->nb_faces_tot();
+  int nb_faces_tot=le_dom_VF->nb_faces_tot();
 
   // Stockages temporaires :
   IntTab faces_internes;
@@ -82,7 +82,7 @@ void Sous_zone_VF::discretiser()
   int nb_faces_bord=0;
 
   IntTab elem_app;
-  elem_app.resize(la_zone_VF->nb_elem_tot());
+  elem_app.resize(le_dom_VF->nb_elem_tot());
   elem_app=0;
 
   // Remplissage de elem_app
@@ -94,8 +94,8 @@ void Sous_zone_VF::discretiser()
     {
       int elem0,elem1;
       // Quels elements lui sont voisins ?
-      elem0=la_zone_VF->face_voisins(i,0);
-      elem1=la_zone_VF->face_voisins(i,1);
+      elem0=le_dom_VF->face_voisins(i,0);
+      elem1=le_dom_VF->face_voisins(i,1);
       // Remplissage des tableaux temporaires.
       if (elem1==-1)                           // face au bord de la zone
         {
@@ -143,15 +143,15 @@ void Sous_zone_VF::discretiser()
     les_faces_(premiere_face_bord_+i)=faces_bord(i);
 
   // Calcul des volumes entrelaces
-  const DoubleVect& volumes=la_zone_VF->volumes();
+  const DoubleVect& volumes=le_dom_VF->volumes();
   volumes_entrelaces_.resize(nb_faces_bord_0+nb_faces_bord_1);
   for (int i=0; i<nb_faces_bord_0; i++)
     {
-      volumes_entrelaces_(i)=volumes(la_zone_VF->face_voisins(les_faces_(premiere_face_bord_0_+i),0));
+      volumes_entrelaces_(i)=volumes(le_dom_VF->face_voisins(les_faces_(premiere_face_bord_0_+i),0));
     }
   for (int i=0; i<nb_faces_bord_1; i++)
     {
-      volumes_entrelaces_(nb_faces_bord_0+i)=volumes(la_zone_VF->face_voisins(les_faces_(premiere_face_bord_1_+i),1));
+      volumes_entrelaces_(nb_faces_bord_0+i)=volumes(le_dom_VF->face_voisins(les_faces_(premiere_face_bord_1_+i),1));
     }
   Cerr << "OK" << finl;
 
@@ -160,7 +160,7 @@ void Sous_zone_VF::discretiser()
   for (int j=0; j<la_sous_zone->nb_elem_tot(); j++)
     {
       // On ne compte que les mailles reelles
-      if (la_sous_zone.valeur()(j)<la_zone_VF->zone().nb_elem())
+      if (la_sous_zone.valeur()(j)<le_dom_VF->zone().nb_elem())
         volume_sous_zone+=volumes(la_sous_zone.valeur()(j));
     }
   volume_sous_zone=mp_sum(volume_sous_zone);

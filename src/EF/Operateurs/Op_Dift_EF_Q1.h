@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -54,8 +54,8 @@ public:
   void remplir_marqueur_elem_CL_paroi(ArrOfInt& ,const Zone_EF& ,const Zone_Cl_EF& ) const;
 
   // Methodes pour l implicite.
-  inline void dimensionner(Matrice_Morse& matrice) const override { Op_EF_base::dimensionner(la_zone_EF.valeur(), la_zcl_EF.valeur(), matrice); }
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_EF_base::modifier_pour_Cl(la_zone_EF.valeur(),la_zcl_EF.valeur(), matrice, secmem); }
+  inline void dimensionner(Matrice_Morse& matrice) const override { Op_EF_base::dimensionner(le_dom_EF.valeur(), la_zcl_EF.valeur(), matrice); }
+  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_EF_base::modifier_pour_Cl(le_dom_EF.valeur(),la_zcl_EF.valeur(), matrice, secmem); }
   inline void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override { ajouter_contribution(inco, matrice); }
   void contribuer_au_second_membre(DoubleTab& ) const override;
   void ajouter_bords(const DoubleTab&, DoubleTab& ,int contrib_interne=1) const;

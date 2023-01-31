@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,18 +18,18 @@
 #include <Zone.h>
 #include <Process.h>
 
-void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base& la_zone_EF,
+void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base& le_dom_EF,
                                                                   const Champ_Don& solid_points,
                                                                   const Champ_Don& corresp_elems)
 {
-  int nb_som = la_zone_EF.nb_som();
-  int nb_som_tot = la_zone_EF.nb_som_tot();
-  int nb_elem = la_zone_EF.nb_elem();
-  int nb_elem_tot = la_zone_EF.nb_elem_tot();
-  int nb_som_elem = la_zone_EF.zone().nb_som_elem();
+  int nb_som = le_dom_EF.nb_som();
+  int nb_som_tot = le_dom_EF.nb_som_tot();
+  int nb_elem = le_dom_EF.nb_elem();
+  int nb_elem_tot = le_dom_EF.nb_elem_tot();
+  int nb_som_elem = le_dom_EF.zone().nb_som_elem();
   DoubleTab& elems_solid_ref = solid_elems_.valeur().valeurs();
-  const IntTab& elems = la_zone_EF.zone().les_elems();
-  const DoubleTab& coordsDom = la_zone_EF.zone().coord_sommets();
+  const IntTab& elems = le_dom_EF.zone().les_elems();
+  const DoubleTab& coordsDom = le_dom_EF.zone().coord_sommets();
   const DoubleTab& solidPointsCoords = solid_points.valeur().valeurs();
 
   //Cerr << "nb_som_elem = " << nb_som_elem << finl;
@@ -152,7 +152,7 @@ void Interpolation_IBM_mean_gradient_proto::computeSommetsVoisins(Zone_dis_base&
                           int elems_xpf = (int)lrint(elems_solid_ref(num_som_2));
                           bool flag_xpf = true;
                           //bool flag_prt_nodes = false;
-                          int elem_found = la_zone_EF.zone().chercher_elements(xpf1,xpf2,xpf3);
+                          int elem_found = le_dom_EF.zone().chercher_elements(xpf1,xpf2,xpf3);
                           if (elems_xpf >= 0)
                             {
                               // test de verification prepro Salome/Trust :

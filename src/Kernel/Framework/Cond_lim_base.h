@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ public:
   virtual void associer_fr_dis_base(const Frontiere_dis_base&);
   inline Zone_Cl_dis_base& zone_Cl_dis();
   inline const Zone_Cl_dis_base& zone_Cl_dis() const;
-  virtual void associer_zone_cl_dis_base(const Zone_Cl_dis_base&);
+  virtual void associer_domaine_cl_dis_base(const Zone_Cl_dis_base&);
   inline Champ_front& champ_front();
   inline const Champ_front& champ_front() const;
 
@@ -75,7 +75,7 @@ protected:
   std::vector<Motcle> app_domains;
   std::vector<Nom> supp_discs;
   Champ_front le_champ_front;
-  REF(Zone_Cl_dis_base) ma_zone_cl_dis;
+  REF(Zone_Cl_dis_base) mon_dom_cl_dis;
   void err_pas_compatible(const Equation_base&) const;
   void err_pas_compatible(const Discretisation_base&) const;
 
@@ -109,7 +109,7 @@ inline const Frontiere_dis_base& Cond_lim_base::frontiere_dis() const
  */
 inline Zone_Cl_dis_base& Cond_lim_base::zone_Cl_dis()
 {
-  return ma_zone_cl_dis.valeur();
+  return mon_dom_cl_dis.valeur();
 }
 
 /*! @brief Renvoie la zone des conditions aux limites discretisee dont l'objet fait partie.
@@ -120,7 +120,7 @@ inline Zone_Cl_dis_base& Cond_lim_base::zone_Cl_dis()
  */
 inline const Zone_Cl_dis_base& Cond_lim_base::zone_Cl_dis() const
 {
-  return ma_zone_cl_dis.valeur();
+  return mon_dom_cl_dis.valeur();
 }
 
 inline Champ_front& Cond_lim_base::champ_front()

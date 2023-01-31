@@ -50,7 +50,7 @@ public:
   inline void associer_pb(const Probleme_base& ) override { }
 
 protected:
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override = 0;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override = 0;
   REF(Fluide_Dilatable_base) le_fluide;
   DoubleVect g;
 };

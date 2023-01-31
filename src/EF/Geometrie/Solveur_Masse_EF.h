@@ -34,8 +34,8 @@ class Solveur_Masse_EF : public Solveur_Masse_base
 
 public:
 
-  void associer_zone_dis_base(const Zone_dis_base& ) override;
-  void associer_zone_cl_dis_base(const Zone_Cl_dis_base& ) override;
+  void associer_domaine_dis_base(const Zone_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Zone_Cl_dis_base& ) override;
 
   Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation=1) const override;
   DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation=1) const override;
@@ -44,8 +44,8 @@ public:
 
 private:
 
-  REF(Zone_EF) la_zone_EF;
-  REF(Zone_Cl_EF) la_zone_Cl_EF;
+  REF(Zone_EF) le_dom_EF;
+  REF(Zone_Cl_EF) le_dom_Cl_EF;
 };
 
 #endif

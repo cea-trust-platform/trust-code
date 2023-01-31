@@ -105,7 +105,7 @@ const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
       valeurs=0;
       if (tab_u_star_ibm_.size_array()>0)
         {
-          const Zone_EF& zone_EF = la_zone_EF.valeur();
+          const Zone_EF& zone_EF = le_dom_EF.valeur();
           int nb_som=zone_EF.zone().nb_som();
           for (int num_node=0; num_node<nb_som; num_node++)
             valeurs(num_node)=tab_u_star_ibm_(num_node);
@@ -123,7 +123,7 @@ const Champ_base& Source_PDF_EF::get_champ(const Motcle& nom) const
       valeurs=0;
       if (tab_y_plus_ibm_.size_array()>0)
         {
-          const Zone_EF& zone_EF = la_zone_EF.valeur();
+          const Zone_EF& zone_EF = le_dom_EF.valeur();
           int nb_som=zone_EF.zone().nb_som();
           for (int num_node=0; num_node<nb_som; num_node++)
             valeurs(num_node)=tab_y_plus_ibm_(num_node);
@@ -171,7 +171,7 @@ void Source_PDF_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
 
 // void Paroi_hyd_base_VEF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const
 // {
-//   const Zone_VEF& zone_VEF = la_zone_VEF.valeur();
+//   const Zone_VEF& zone_VEF = le_dom_VEF.valeur();
 //   const Probleme_base& pb=mon_modele_turb_hyd->equation().probleme();
 //   const Schema_Temps_base& sch=pb.schema_temps();
 //   int ndeb,nfin, size0, num_bord;
@@ -193,7 +193,7 @@ void Source_PDF_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
 
 //   for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
 //     {
-//       const Cond_lim& la_cl = la_zone_Cl_VEF->les_conditions_limites(n_bord);
+//       const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
 //       if ( (sub_type(Dirichlet_paroi_fixe,la_cl.valeur())) ||
 //            (sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) ))
 //         {
@@ -227,7 +227,7 @@ void Source_PDF_EF::get_noms_champs_postraitables(Noms& nom,Option opt) const
 //   num_bord=0;
 //   for (int n_bord=0; n_bord<zone_VEF.nb_front_Cl(); n_bord++)
 //     {
-//       const Cond_lim& la_cl = la_zone_Cl_VEF->les_conditions_limites(n_bord);
+//       const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
 //       if ( (sub_type(Dirichlet_paroi_fixe,la_cl.valeur())) ||
 //            (sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) ))
 //         {
@@ -261,14 +261,14 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   nb_comp=9;
   Noms nom_c(nb_comp);
   Noms unites(nb_comp);
-  pb.discretisation().discretiser_champ("champ_elem",la_zone_EF,vectoriel,nom_c,unites,nb_comp,0.,champ_rotation_);
+  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF,vectoriel,nom_c,unites,nb_comp,0.,champ_rotation_);
   champ_rotation_.valeur().affecter(champ_rotation_lu_);
   nb_comp=3;
   Noms nom_c1(nb_comp);
   Noms unites1(nb_comp);
-  pb.discretisation().discretiser_champ("champ_elem",la_zone_EF,"aire","m-1",1,0., champ_aire_);
+  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF,"aire","m-1",1,0., champ_aire_);
   champ_aire_.valeur().affecter(champ_aire_lu_);
-  pb.discretisation().discretiser_champ("champ_elem",la_zone_EF,"rho","kg.m-3",1,0., champ_rho_);
+  pb.discretisation().discretiser_champ("champ_elem",le_dom_EF,"rho","kg.m-3",1,0., champ_rho_);
   Source_PDF_base::updateChampRho();
   if (transpose_rotation_)
     {
@@ -293,12 +293,12 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
   matrice_pression_variable_bool_ = false;
   if (temps_relax_ != 1.0e+12) matrice_pression_variable_bool_ = true;
   type_vitesse_imposee_ = modele_lu_.type_vitesse_imposee_;
-  pb.discretisation().discretiser_champ("vitesse",la_zone_EF,vectoriel,nom_c1,unites1,nb_comp,0.,modele_lu_.vitesse_imposee_);
+  pb.discretisation().discretiser_champ("vitesse",le_dom_EF,vectoriel,nom_c1,unites1,nb_comp,0.,modele_lu_.vitesse_imposee_);
 
   if (interpolation_bool_)
     {
-      Zone_dis_base& la_zone_dis_base = ref_cast(Zone_dis_base,la_zone_EF.valeur());
-      interpolation_lue_.valeur().discretise(pb.discretisation(),la_zone_dis_base);
+      Zone_dis_base& le_dom_dis_base = ref_cast(Zone_dis_base,le_dom_EF.valeur());
+      interpolation_lue_.valeur().discretise(pb.discretisation(),le_dom_dis_base);
       if (type_vitesse_imposee_ == 1)
         {
           if (interpolation_lue_.valeur().que_suis_je() == "Interpolation_IBM_gradient_moyen")
@@ -325,8 +325,8 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
         }
       else
         {
-          const DoubleTab& coords = la_zone_EF.valeur().zone().coord_sommets();
-          modele_lu_.affecter_vitesse_imposee(la_zone_EF, coords);
+          const DoubleTab& coords = le_dom_EF.valeur().zone().coord_sommets();
+          modele_lu_.affecter_vitesse_imposee(le_dom_EF, coords);
         }
     }
 
@@ -335,14 +335,14 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
       rotate_imposed_velocity(modele_lu_.vitesse_imposee_.valeur().valeurs());
     }
 
-  /*pb.discretisation().discretiser_champ("vitesse",la_zone_EF,vectoriel,nom_c1,unites1,nb_comp,0.,vitesse_imposee_);
+  /*pb.discretisation().discretiser_champ("vitesse",le_dom_EF,vectoriel,nom_c1,unites1,nb_comp,0.,vitesse_imposee_);
   vitesse_imposee_.valeur().affecter(mod_.vitesse_imposee_);*/
   vitesse_imposee_ = modele_lu_.vitesse_imposee_.valeur().valeurs();
-  pb.discretisation().discretiser_champ("champ_sommets",la_zone_EF,"","",1,0., champ_nodal_);
+  pb.discretisation().discretiser_champ("champ_sommets",le_dom_EF,"","",1,0., champ_nodal_);
 
   compute_indicateur_nodal_champ_aire();
 
-  int nb_som=la_zone_EF.valeur().zone().nb_som();
+  int nb_som=le_dom_EF.valeur().zone().nb_som();
   tab_u_star_ibm_.resize(nb_som);
   tab_y_plus_ibm_.resize(nb_som);
 }
@@ -350,7 +350,7 @@ void Source_PDF_EF::associer_pb(const Probleme_base& pb)
 void Source_PDF_EF::compute_indicateur_nodal_champ_aire()
 {
   const DoubleTab& aire=champ_aire_.valeurs();
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int nb_elems=zone_EF.zone().nb_elem_tot();
   int nb_nodes=zone_EF.zone().nb_som_tot();
   int nb_som_elem=zone_EF.zone().nb_som_elem();
@@ -374,9 +374,9 @@ void Source_PDF_EF::compute_indicateur_nodal_champ_aire()
 
 void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, const DoubleTab& points, double val, double eps)
 {
-  int nb_som=la_zone_EF.valeur().zone().nb_som();
+  int nb_som=le_dom_EF.valeur().zone().nb_som();
   int dim = Objet_U::dimension;
-  const DoubleTab& coords = la_zone_EF.valeur().zone().coord_sommets();
+  const DoubleTab& coords = le_dom_EF.valeur().zone().coord_sommets();
   ArrOfDouble x(dim);
   for (int i = 0; i < nb_som; i++)
     {
@@ -407,7 +407,7 @@ void Source_PDF_EF::compute_vitesse_imposee_projete(const DoubleTab& marqueur, c
 
 void Source_PDF_EF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
   int nb_som_elem=zone_EF.zone().nb_som_elem();
   int nb_elem_tot=zone_EF.zone().nb_elem_tot();
@@ -463,11 +463,11 @@ void Source_PDF_EF::rotate_imposed_velocity(DoubleTab& vitesse_imposee)
     }
 }
 
-void Source_PDF_EF::associer_zones(const Zone_dis& zone_dis,
-                                   const Zone_Cl_dis& zone_Cl_dis)
+void Source_PDF_EF::associer_domaines(const Zone_dis& zone_dis,
+                                      const Zone_Cl_dis& zone_Cl_dis)
 {
-  la_zone_EF = ref_cast(Zone_EF, zone_dis.valeur());
-  la_zone_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
+  le_dom_EF = ref_cast(Zone_EF, zone_dis.valeur());
+  le_dom_Cl_EF = ref_cast(Zone_Cl_EF, zone_Cl_dis.valeur());
 }
 
 DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const DoubleTab& rotation, int num_elem) const
@@ -498,7 +498,7 @@ DoubleVect Source_PDF_EF::diag_coeff_elem(ArrOfDouble& vitesse_elem, const Doubl
 
 DoubleTab Source_PDF_EF::compute_coeff_elem() const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems() ;
   int nb_som_elem=zone_EF.zone().nb_som_elem();
   int nb_elems=zone_EF.zone().nb_elem_tot();
@@ -548,7 +548,7 @@ DoubleTab Source_PDF_EF::compute_coeff_elem() const
 
 DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
   int nb_som_elem=zone_EF.zone().nb_som_elem();
   int nb_elems=zone_EF.zone().nb_elem_tot();
@@ -628,7 +628,7 @@ DoubleTab Source_PDF_EF::compute_coeff_matrice_pression() const
 
 void Source_PDF_EF::multiply_coeff_volume(DoubleTab& coeff) const
 {
-  const DoubleVect& vol_som=ref_cast(Zone_EF, la_zone_EF.valeur()).volumes_sommets_thilde();
+  const DoubleVect& vol_som=ref_cast(Zone_EF, le_dom_EF.valeur()).volumes_sommets_thilde();
   int n = vol_som.size_totale();
   int nc = coeff.dimension_tot(0) ;
   if (n != nc)
@@ -701,7 +701,7 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
   /* i_traitement_special = 1 => coefficient (1/eta -> 1) */
   /* i_traitement_special = 2 => coefficient (1/eta -> 1 + 1/eta) */
 
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems() ;
   int nb_som_elem=zone_EF.zone().nb_som_elem();
   int nb_elems=zone_EF.zone().nb_elem_tot();
@@ -797,7 +797,7 @@ This function redirects toward the contribuer_avec_ which correspond to the mode
 
 void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
   int nb_som_elem=zone_EF.zone().nb_som_elem();
   int nb_elems=zone_EF.zone().nb_elem_tot();
@@ -850,7 +850,7 @@ void  Source_PDF_EF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat
 
 void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Morse& matrice) const
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems() ;
   int nb_elems=zone_EF.zone().nb_elem_tot();
   int nb_som_elem=zone_EF.zone().nb_som_elem();
@@ -889,7 +889,7 @@ void  Source_PDF_EF::verif_ajouter_contrib(const DoubleTab& vitesse, Matrice_Mor
 
 void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
   const Zone& dom = zone_EF.zone();
@@ -950,7 +950,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_elem_fluid()
 
 void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
   const Zone& dom = zone_EF.zone();
@@ -1033,7 +1033,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_mean_grad()
 
 void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
   const Zone& dom = zone_EF.zone();
@@ -1141,7 +1141,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_hybrid()
 
 void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
   const Zone& dom = zone_EF.zone();
@@ -1395,7 +1395,7 @@ void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl()
 
 void Source_PDF_EF::calculer_vitesse_imposee_power_law_tbl_u_star()
 {
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   int nb_som=zone_EF.zone().nb_som();
   int nb_comp = dimension;
   const Zone& dom = zone_EF.zone();
@@ -1691,22 +1691,22 @@ void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab
   const DoubleTab& aire=champ_aire_.valeurs();
   int nb_elem = correction_en_pression.size();
 
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
   int nb_som_elem=zone_EF.zone().nb_som_elem();
   int ncomp = coeff_node.dimension(1) ;
   DoubleTrav coef_elem(nb_elem);
 
-  const Zone_Cl_EF& la_zone_cl = la_zone_Cl_EF.valeur();
-  int nb_cond_lim = la_zone_cl.nb_cond_lim();
+  const Zone_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
+  int nb_cond_lim = le_dom_cl.nb_cond_lim();
   const IntTab& faces_sommets=zone_EF.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
   DoubleTrav flag_cl(coeff_node);
   flag_cl = 1.;
   for (int ij=0; ij<nb_cond_lim; ij++)
     {
-      const Cond_lim_base& la_cl_base = la_zone_cl.les_conditions_limites(ij).valeur();
-      const Front_VF& le_bord = ref_cast(Front_VF,la_zone_cl.les_conditions_limites(ij).frontiere_dis());
+      const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(ij).valeur();
+      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij).frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
       if (sub_type(Dirichlet,la_cl_base))
         {
@@ -1721,7 +1721,7 @@ void Source_PDF_EF::correct_incr_pressure(const DoubleTab& coeff_node, DoubleTab
             }
         }
     }
-  la_zone_cl.imposer_symetrie(flag_cl,0);
+  le_dom_cl.imposer_symetrie(flag_cl,0);
   // int nb_som=zone_EF.zone().nb_som();
   // for(int som=0; som<nb_som; som++)Cerr<<"som flag_c = "<<som<<" "<<flag_cl(som,0)<<" "<<flag_cl(som,1)<<" "<<flag_cl(som,2)<<finl;
 
@@ -1752,22 +1752,22 @@ void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pre
   const DoubleTab& aire=champ_aire_.valeurs();
   int nb_elem = pression.size();
 
-  const Zone_EF& zone_EF = la_zone_EF.valeur();
+  const Zone_EF& zone_EF = le_dom_EF.valeur();
   const IntTab& elems= zone_EF.zone().les_elems();
   int nb_som_elem=zone_EF.zone().nb_som_elem();
   int ncomp = coeff_node.dimension(1) ;
   DoubleTrav coef_elem(nb_elem);
 
-  const Zone_Cl_EF& la_zone_cl = la_zone_Cl_EF.valeur();
-  int nb_cond_lim = la_zone_cl.nb_cond_lim();
+  const Zone_Cl_EF& le_dom_cl = le_dom_Cl_EF.valeur();
+  int nb_cond_lim = le_dom_cl.nb_cond_lim();
   const IntTab& faces_sommets=zone_EF.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
   DoubleTrav flag_cl(coeff_node);
   flag_cl = 1.;
   for (int ij=0; ij<nb_cond_lim; ij++)
     {
-      const Cond_lim_base& la_cl_base = la_zone_cl.les_conditions_limites(ij).valeur();
-      const Front_VF& le_bord = ref_cast(Front_VF,la_zone_cl.les_conditions_limites(ij).frontiere_dis());
+      const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(ij).valeur();
+      const Front_VF& le_bord = ref_cast(Front_VF,le_dom_cl.les_conditions_limites(ij).frontiere_dis());
       int nfaces = le_bord.nb_faces_tot();
       if (sub_type(Dirichlet,la_cl_base))
         {
@@ -1782,7 +1782,7 @@ void Source_PDF_EF::correct_pressure(const DoubleTab& coeff_node, DoubleTab& pre
             }
         }
     }
-  la_zone_cl.imposer_symetrie(flag_cl,0);
+  le_dom_cl.imposer_symetrie(flag_cl,0);
 
   for(int num_elem=0; num_elem<nb_elem; num_elem++)
     {
@@ -1851,7 +1851,7 @@ int Source_PDF_EF::impr(Sortie& os) const
           double pdtps = sch.pas_de_temps();
           if (temps == pdtps) return 0;
           const DoubleTab& vitesse=equation().inconnue().valeurs();
-          int nb_som=la_zone_EF.valeur().zone().nb_som();
+          int nb_som=le_dom_EF.valeur().zone().nb_som();
           Nom espace=" \t";
 
           Navier_Stokes_std& eq_NS = ref_cast_non_const(Navier_Stokes_std, equation());

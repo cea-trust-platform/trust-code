@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ class Source_Generique_VDF_Face: public Source_Generique_base
 
 public:
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis&) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis&) override;
   Nom localisation_source() override;
   inline int has_interface_blocs() const override { return 1; };
   inline void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override {}
@@ -41,7 +41,7 @@ public:
 
 protected:
 
-  REF(Zone_VDF) la_zone_VDF;
+  REF(Zone_VDF) le_dom_VDF;
   REF(Zone_Cl_VDF) la_zcl_VDF;
 };
 

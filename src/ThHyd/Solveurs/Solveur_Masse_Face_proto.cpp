@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,12 +23,12 @@
 void Solveur_Masse_Face_proto::associer_masse_proto(const Solveur_Masse_base& sm, const Zone_VF& zvf )
 {
   solv_mass_ = sm;
-  la_zone_ = zvf;
+  le_dom_ = zvf;
 }
 
 DoubleTab& Solveur_Masse_Face_proto::appliquer_impl_proto(DoubleTab& sm) const
 {
-  const Zone_VF& zone = la_zone_.valeur();
+  const Zone_VF& zone = le_dom_.valeur();
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, solv_mass_->equation()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()).eq_masse.champ_conserve().passe() : NULL,
@@ -59,7 +59,7 @@ void Solveur_Masse_Face_proto::dimensionner_blocs_proto(matrices_t matrices, con
   if (!matrices.count(nom_inc)) return; //rien a faire
 
   Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
-  const Zone_VF& zone = la_zone_.valeur();
+  const Zone_VF& zone = le_dom_.valeur();
   const DoubleTab& inco = solv_mass_->equation().inconnue().valeurs();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, solv_mass_->equation().probleme()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()) : NULL;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
@@ -82,7 +82,7 @@ void Solveur_Masse_Face_proto::ajouter_blocs_proto(matrices_t matrices, DoubleTa
 {
   const DoubleTab& inco = solv_mass_->equation().inconnue().valeurs(), &passe = solv_mass_->equation().inconnue().passe();
   Matrice_Morse *mat = matrices[solv_mass_->equation().inconnue().le_nom().getString()]; //facultatif
-  const Zone_VF& zone = la_zone_.valeur();
+  const Zone_VF& zone = le_dom_.valeur();
   const IntTab& f_e = zone.face_voisins();
   const DoubleVect& pf = solv_mass_->equation().milieu().porosite_face(), &vf = zone.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, solv_mass_->equation().probleme()) ? &ref_cast(Pb_Multiphase, solv_mass_->equation().probleme()) : NULL;

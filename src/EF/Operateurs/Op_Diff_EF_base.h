@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ public:
 
 protected:
 
-  REF(Zone_EF) la_zone_EF;
+  REF(Zone_EF) le_dom_EF;
   REF(Zone_Cl_EF) la_zcl_EF;
   REF(Champ_Inc_base) inconnue;
   mutable DoubleTab nu_;

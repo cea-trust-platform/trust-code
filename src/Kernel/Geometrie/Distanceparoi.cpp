@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,13 +68,13 @@ Entree& Distanceparoi::interpreter_(Entree& is)
   Faces* les_faces_ptr=new(Faces);
   Faces& les_faces= *les_faces_ptr;
 
-  //la_zone.creer_faces(les_faces);
+  //le_dom.creer_faces(les_faces);
 
   {
     // bloc a factoriser avec Zone_VF.cpp :
     Type_Face type_face = dom.type_elem().type_face(0);
     les_faces.typer(type_face);
-    les_faces.associer_zone(dom);
+    les_faces.associer_domaine(dom);
 
     Static_Int_Lists connectivite_som_elem;
     const int     nb_sommets_tot = dom.nb_som_tot();

@@ -51,9 +51,9 @@ Sous_zone_dis& Zone_dis_base::sous_zone_dis(int i)
  *
  * @param (Zone& une_zone) la zone a associee a la zone discretisee
  */
-void Zone_dis_base::associer_zone(const Zone& une_zone)
+void Zone_dis_base::associer_domaine(const Zone& une_zone)
 {
-  la_zone=une_zone;
+  le_dom=une_zone;
 }
 
 /*! @brief Renvoie la frontiere de Nom nom.
@@ -166,7 +166,7 @@ void Zone_dis_base::discretiser_root(const Nom& typ)
   ze_typ.suffix("NO_FACE_");
   bool face_ok = (ze_typ == typ);
 
-  const Zone& dom = la_zone.valeur();
+  const Zone& dom = le_dom.valeur();
 
   if (face_ok)
     discretiser();

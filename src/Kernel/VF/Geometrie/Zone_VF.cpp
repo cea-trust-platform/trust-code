@@ -112,7 +112,7 @@ void Zone_VF::discretiser()
     {
       Type_Face type_face = zone().type_elem().type_face(0);
       les_faces.typer(type_face);
-      les_faces.associer_zone(zone());
+      les_faces.associer_domaine(zone());
 
       Static_Int_Lists connectivite_som_elem;
       const int     nb_sommets_tot = zone().nb_som_tot();
@@ -258,7 +258,7 @@ void Zone_VF::typer_discretiser_ss_zone(int i)
 
   sous_zone_dis(i).typer("Sous_zone_VF");
   sous_zone_dis(i).associer_sous_zone(dom.ss_zone(i));
-  sous_zone_dis(i).associer_zone_dis(*this);
+  sous_zone_dis(i).associer_domaine_dis(*this);
   sous_zone_dis(i).discretiser();
 }
 
@@ -528,7 +528,7 @@ void Zone_VF::infobord()
   for (int i=0; i<raccords.nb_raccords(); i++)
     {
       Faces& faces=raccords(i).valeur().faces();
-      faces.associer_zone(zone());
+      faces.associer_domaine(zone());
       faces.calculer_surfaces(surfaces);
       double s=0;
       for (int j=0; j<faces.nb_faces(); j++)
@@ -543,7 +543,7 @@ void Zone_VF::infobord()
   for (int i=0; i<bords.nb_bords(); i++)
     {
       Faces& faces=bords(i).faces();
-      faces.associer_zone(zone());
+      faces.associer_domaine(zone());
       faces.calculer_surfaces(surfaces);
       double s=0;
       for (int j=0; j<faces.nb_faces(); j++)

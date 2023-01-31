@@ -300,7 +300,7 @@ DoubleTab& Op_Dift_standard_VEF_Face::ajouter(const DoubleTab& inconnue,
                                               DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const DoubleTab& nu_turb=diffusivite_turbulente()->valeurs();
   DoubleTab nu(nu_turb);
   remplir_nu(nu);

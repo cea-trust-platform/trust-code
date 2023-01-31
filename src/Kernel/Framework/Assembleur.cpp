@@ -64,9 +64,9 @@ int Assembleur::assembler_QC(const DoubleTab& rho, Matrice& mat)
  * Permet d'associer l'objet a la zone discretisee
  *
  */
-void Assembleur::associer_zone_dis_base(const Zone_dis_base& zdis)
+void Assembleur::associer_domaine_dis_base(const Zone_dis_base& zdis)
 {
-  valeur().associer_zone_dis_base(zdis);
+  valeur().associer_domaine_dis_base(zdis);
 }
 
 /*! @brief Appel a l'objet sous-jacent.
@@ -74,9 +74,9 @@ void Assembleur::associer_zone_dis_base(const Zone_dis_base& zdis)
  * Permet d'associer l'objet a la Zone_Cl_dis
  *
  */
-void Assembleur::associer_zone_cl_dis_base(const Zone_Cl_dis_base& zcldis)
+void Assembleur::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& zcldis)
 {
-  valeur().associer_zone_cl_dis_base(zcldis);
+  valeur().associer_domaine_cl_dis_base(zcldis);
 }
 
 /*! @brief Appel a l'objet sous-jacent.

@@ -983,12 +983,12 @@ int Champ_base::fixer_nb_valeurs_nodales(int n)
 
 // Tous les champs n'ont pas de zone_dis_base. Pour ceux qui
 // n'en ont pas, l'appel est invalide.
-void Champ_base::associer_zone_dis_base(const Zone_dis_base& zone_dis)
+void Champ_base::associer_domaine_dis_base(const Zone_dis_base& zone_dis)
 {
-  Cerr << "Error in Champ_base::associer_zone_dis_base\n";
+  Cerr << "Error in Champ_base::associer_domaine_dis_base\n";
   Cerr << " (field name : " << le_nom() << ")\n";
   Cerr << " The method " << que_suis_je();
-  Cerr << "::associer_zone_dis_base is not coded\n";
+  Cerr << "::associer_domaine_dis_base is not coded\n";
   Cerr << " or the field does not possess a zone_dis_base." << finl;
   exit();
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -60,11 +60,11 @@ int Assembleur_P_VDF::liste_faces_periodiques(ArrOfInt& faces)
 {
   // On commence par surestimer largement la taille du tableau :
   // nombre de faces de bord
-  const int nb_faces_bord = la_zone_VDF.valeur().nb_faces_bord();
+  const int nb_faces_bord = le_dom_VDF.valeur().nb_faces_bord();
   faces.resize_array(nb_faces_bord);
 
   // Recherche des faces periodiques dans les conditions aux limites:
-  const Conds_lim& les_cl = la_zone_Cl_VDF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VDF.valeur().les_conditions_limites();
   const int nb_cl = les_cl.size();
   int nb_faces_periodiques = 0;
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
@@ -108,7 +108,7 @@ int Assembleur_P_VDF::liste_faces_periodiques(ArrOfInt& faces)
 int Assembleur_P_VDF::construire(Matrice& la_matrice)
 {
   int i;
-  const Zone_VDF& zone_vdf   = la_zone_VDF.valeur();
+  const Zone_VDF& zone_vdf   = le_dom_VDF.valeur();
   const IntTab& face_voisins = zone_vdf.face_voisins();
 
   // Comptage du nombre total d'elements non nuls:
@@ -282,11 +282,11 @@ int Assembleur_P_VDF::construire(Matrice& la_matrice)
 
 int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_entrelaces,const Champ_Don_base * rho_ptr)
 {
-  const Zone_VDF& zone_vdf   = la_zone_VDF.valeur();
+  const Zone_VDF& zone_vdf   = le_dom_VDF.valeur();
   const IntTab& face_voisins = zone_vdf.face_voisins();
   const DoubleVect& face_surfaces = zone_vdf.face_surfaces();
   //const DoubleVect & volumes_entrelaces = zone_vdf.volumes_entrelaces();
-  const DoubleVect& porosite_face = la_zone_Cl_VDF->equation().milieu().porosite_face();
+  const DoubleVect& porosite_face = le_dom_Cl_VDF->equation().milieu().porosite_face();
 
 
   const DoubleVect * valeurs_rho = 0;
@@ -385,7 +385,7 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
     }
 
   // Traitement des conditions aux limites
-  const Conds_lim& les_cl = la_zone_Cl_VDF.valeur().les_conditions_limites();
+  const Conds_lim& les_cl = le_dom_Cl_VDF.valeur().les_conditions_limites();
   const int nb_cl = les_cl.size();
   for (int num_cl = 0; num_cl < nb_cl; num_cl++)
     {
@@ -479,13 +479,13 @@ int Assembleur_P_VDF::remplir(Matrice& la_matrice, const DoubleVect& volumes_ent
  */
 int Assembleur_P_VDF::modifier_secmem(DoubleTab& secmem)
 {
-  const Zone_Cl_VDF& la_zone_cl = la_zone_Cl_VDF.valeur();
-  int nb_cond_lim = la_zone_cl.nb_cond_lim();
+  const Zone_Cl_VDF& le_dom_cl = le_dom_Cl_VDF.valeur();
+  int nb_cond_lim = le_dom_cl.nb_cond_lim();
 
   for (int indice_cl = 0; indice_cl < nb_cond_lim; indice_cl++)
     {
       const Cond_lim_base& la_cl_base =
-        la_zone_cl.les_conditions_limites(indice_cl).valeur();
+        le_dom_cl.les_conditions_limites(indice_cl).valeur();
 
       const Front_VF& frontiere_vf = ref_cast(Front_VF, la_cl_base.frontiere_dis());
 
@@ -544,8 +544,8 @@ void Assembleur_P_VDF::modifier_secmem_pression_imposee(const Neumann_sortie_lib
                                                         const Front_VF& frontiere_vf,
                                                         DoubleTab& secmem)
 {
-  const Zone_VDF& la_zone = la_zone_VDF.valeur();
-  const IntTab& face_voisins = la_zone.face_voisins();
+  const Zone_VDF& le_dom = le_dom_VDF.valeur();
+  const IntTab& face_voisins = le_dom.face_voisins();
   if (get_resoudre_increment_pression())
     {
       /*
@@ -589,9 +589,9 @@ void Assembleur_P_VDF::modifier_secmem_vitesse_imposee(const Entree_fluide_vites
                                                        DoubleTab& secmem)
 {
   const Champ_front_base& champ_front = cond_lim.champ_front().valeur();
-  const Zone_VDF& la_zone = la_zone_VDF.valeur();
-  const DoubleVect& face_surfaces = la_zone.face_surfaces();
-  const IntTab& face_voisins = la_zone.face_voisins();
+  const Zone_VDF& le_dom = le_dom_VDF.valeur();
+  const DoubleVect& face_surfaces = le_dom.face_surfaces();
+  const IntTab& face_voisins = le_dom.face_voisins();
 
   if (get_resoudre_en_u())
     {
@@ -622,7 +622,7 @@ void Assembleur_P_VDF::modifier_secmem_vitesse_imposee(const Entree_fluide_vites
               const double signe = (elem0 < 0) ? 1. : -1.;
               // Numero de l'element adjacent a la face de bord
               const int elem = elem0 + elem1 + 1;
-              const int ori = la_zone.orientation(num_face);
+              const int ori = le_dom.orientation(num_face);
               const double gpoint = (gpoint_variable) ? tab_gpoint(i, ori) : tab_gpoint(ori);
 
               secmem[elem] += signe * surface * gpoint;
@@ -648,7 +648,7 @@ int Assembleur_P_VDF::modifier_solution(DoubleTab& pression)
       // On prend la pression minimale comme pression de reference
       // afin d'avoir la meme pression de reference en sequentiel et parallele
       press_0=DMAXFLOAT;
-      int nb_elem=la_zone_VDF.valeur().zone().nb_elem();
+      int nb_elem=le_dom_VDF.valeur().zone().nb_elem();
       for(int n=0; n<nb_elem; n++)
         if (pression[n] < press_0)
           press_0 = pression[n];
@@ -687,7 +687,7 @@ int Assembleur_P_VDF::assembler(Matrice& matrice)
   set_resoudre_increment_pression(1);
   set_resoudre_en_u(1);
   construire(matrice);
-  const Zone_VDF& zone_vdf   = la_zone_VDF.valeur();
+  const Zone_VDF& zone_vdf   = le_dom_VDF.valeur();
 
   const DoubleVect& volumes_entrelaces = zone_vdf.volumes_entrelaces();
   remplir(matrice,volumes_entrelaces, 0);
@@ -719,7 +719,7 @@ int Assembleur_P_VDF::assembler_rho_variable(Matrice& matrice,
         }
       construire(matrice);
     }
-  const Zone_VDF& zone_vdf   = la_zone_VDF.valeur();
+  const Zone_VDF& zone_vdf   = le_dom_VDF.valeur();
 
   const DoubleVect& volumes_entrelaces = zone_vdf.volumes_entrelaces();
   remplir(matrice,volumes_entrelaces, & rho);
@@ -751,7 +751,7 @@ int Assembleur_P_VDF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
           Cerr << "Assembleur_P_VDF::assembler_QC" << finl;
         }
       construire(matrice);
-      const Zone_VDF& zone_vdf   = la_zone_VDF.valeur();
+      const Zone_VDF& zone_vdf   = le_dom_VDF.valeur();
 
       const DoubleVect& volumes_entrelaces = zone_vdf.volumes_entrelaces();
       remplir(matrice,volumes_entrelaces, 0);
@@ -782,10 +782,10 @@ int Assembleur_P_VDF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
 void Assembleur_P_VDF::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
   if (aux_only) return; //rien a faire
-  int e, n, N = ref_cast(Pb_Multiphase, la_zone_Cl_VDF->equation().probleme()).nb_phases(), ne_tot = la_zone_VDF->nb_elem_tot();
+  int e, n, N = ref_cast(Pb_Multiphase, le_dom_Cl_VDF->equation().probleme()).nb_phases(), ne_tot = le_dom_VDF->nb_elem_tot();
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
-  for (e = 0; e < la_zone_VDF->nb_elem(); e++)
+  for (e = 0; e < le_dom_VDF->nb_elem(); e++)
     for (n = 0; n < N; n++) stencil.append_line(e, N * e + n);
   Matrix_tools::allocate_morse_matrix(ne_tot, N * ne_tot, stencil, *matrices.at("alpha"));
 }
@@ -793,45 +793,45 @@ void Assembleur_P_VDF::dimensionner_continuite(matrices_t matrices, int aux_only
 void Assembleur_P_VDF::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
   if (aux_only) return;
-  const DoubleTab& alpha = ref_cast(Pb_Multiphase, la_zone_Cl_VDF->equation().probleme()).eq_masse.inconnue().valeurs();
+  const DoubleTab& alpha = ref_cast(Pb_Multiphase, le_dom_Cl_VDF->equation().probleme()).eq_masse.inconnue().valeurs();
   Matrice_Morse& mat = *matrices.at("alpha");
-  const DoubleVect& ve = la_zone_VDF->volumes(), &pe = la_zone_Cl_VDF->equation().milieu().porosite_elem();
+  const DoubleVect& ve = le_dom_VDF->volumes(), &pe = le_dom_Cl_VDF->equation().milieu().porosite_elem();
   int e, n, N = alpha.line_size();
   /* second membre : on multiplie par porosite * volume pour que le systeme en P soit symetrique en cartesien */
-  for (e = 0; e < la_zone_VDF->nb_elem(); e++)
+  for (e = 0; e < le_dom_VDF->nb_elem(); e++)
     for (secmem(e) = -pe(e) * ve(e), n = 0; n < N; n++) secmem(e) += pe(e) * ve(e) * alpha(e, n);
   /* matrice */
-  for (e = 0; e < la_zone_VDF->nb_elem(); e++)
+  for (e = 0; e < le_dom_VDF->nb_elem(); e++)
     for (n = 0; n < N; n++) mat(e, N * e + n) = -pe(e) * ve(e);
 }
 
 /* norme pour assembler_continuite */
 DoubleTab Assembleur_P_VDF::norme_continuite() const
 {
-  const DoubleVect& pe = la_zone_Cl_VDF->equation().milieu().porosite_elem(), &ve = la_zone_VDF->volumes();
-  DoubleTab norm(la_zone_VDF->nb_elem());
-  for (int e = 0; e < la_zone_VDF->nb_elem(); e++) norm(e) = pe(e) * ve(e);
+  const DoubleVect& pe = le_dom_Cl_VDF->equation().milieu().porosite_elem(), &ve = le_dom_VDF->volumes();
+  DoubleTab norm(le_dom_VDF->nb_elem());
+  for (int e = 0; e < le_dom_VDF->nb_elem(); e++) norm(e) = pe(e) * ve(e);
   return norm;
 }
 
 const Zone_dis_base& Assembleur_P_VDF::zone_dis_base() const
 {
-  return la_zone_VDF.valeur();
+  return le_dom_VDF.valeur();
 }
 
 const Zone_Cl_dis_base& Assembleur_P_VDF::zone_Cl_dis_base() const
 {
-  return la_zone_Cl_VDF.valeur();
+  return le_dom_Cl_VDF.valeur();
 }
 
-void Assembleur_P_VDF::associer_zone_dis_base(const Zone_dis_base& la_zone_dis)
+void Assembleur_P_VDF::associer_domaine_dis_base(const Zone_dis_base& le_dom_dis)
 {
-  la_zone_VDF = ref_cast(Zone_VDF, la_zone_dis);
+  le_dom_VDF = ref_cast(Zone_VDF, le_dom_dis);
 }
 
-void Assembleur_P_VDF::associer_zone_cl_dis_base(const Zone_Cl_dis_base& la_zone_Cl_dis)
+void Assembleur_P_VDF::associer_domaine_cl_dis_base(const Zone_Cl_dis_base& le_dom_Cl_dis)
 {
-  la_zone_Cl_VDF = ref_cast(Zone_Cl_VDF, la_zone_Cl_dis);
+  le_dom_Cl_VDF = ref_cast(Zone_Cl_VDF, le_dom_Cl_dis);
 }
 
 void Assembleur_P_VDF::completer(const Equation_base& Eqn)

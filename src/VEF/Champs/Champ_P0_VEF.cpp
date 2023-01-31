@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ Entree& Champ_P0_VEF::readOn(Entree& s) { return s ; }
 
 const Zone_VEF& Champ_P0_VEF::zone_VEF() const
 {
-  return ref_cast(Zone_VEF, la_zone_VF.valeur());
+  return ref_cast(Zone_VEF, le_dom_VF.valeur());
 }
 
 int Champ_P0_VEF::imprime(Sortie& os, int ncomp) const

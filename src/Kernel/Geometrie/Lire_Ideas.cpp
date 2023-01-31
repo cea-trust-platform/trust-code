@@ -107,7 +107,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   //
   DoubleTab& coord=dom.les_sommets();
   dom.type_elem().typer("Tetraedre");
-  dom.type_elem().associer_zone(dom);
+  dom.type_elem().associer_domaine(dom);
 
   //
   // On commence par transferer les coordonnees
@@ -169,7 +169,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
   // Ici, on associe les bords a la zone (on se refere a dom)
   // On fait les_bords --> Zone
   //
-  les_bords.associer_zone(dom);
+  les_bords.associer_domaine(dom);
   //
   Nom nom_bord="Bord";
   //
@@ -199,7 +199,7 @@ Entree& Lire_Ideas::interpreter_(Entree& is)
           nouveau.faces().sommet(j,1)= FACB(1,num)-1;
           nouveau.faces().sommet(j,2)= FACB(2,num)-1;
         }
-      nouveau.associer_zone(dom);
+      nouveau.associer_domaine(dom);
     }
   //
   Cerr << " Completing the assignment of the boundary faces" << finl;

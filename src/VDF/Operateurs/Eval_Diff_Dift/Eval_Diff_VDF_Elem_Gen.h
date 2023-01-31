@@ -100,24 +100,24 @@ public:
   template <typename Type_Double> inline void secmem_faces_interne(const int, Type_Double& ) const { /* Do nothing */ }
 
 private:
-  inline double Dist_face_elem0(const int face, const int n0) const { return DERIVED_T::IS_AXI ? la_zone->dist_face_elem0_axi(face,n0) : la_zone->dist_face_elem0(face,n0); }
-  inline double Dist_face_elem1(const int face, const int n1) const { return DERIVED_T::IS_AXI ? la_zone->dist_face_elem1_axi(face,n1) : la_zone->dist_face_elem1(face,n1); }
+  inline double Dist_face_elem0(const int face, const int n0) const { return DERIVED_T::IS_AXI ? le_dom->dist_face_elem0_axi(face,n0) : le_dom->dist_face_elem0(face,n0); }
+  inline double Dist_face_elem1(const int face, const int n1) const { return DERIVED_T::IS_AXI ? le_dom->dist_face_elem1_axi(face,n1) : le_dom->dist_face_elem1(face,n1); }
   inline double Dist_norm_bord (const int face) const
   {
-    double val = DERIVED_T::IS_AXI ? la_zone->dist_norm_bord_axi(face) : la_zone->dist_norm_bord(face);
+    double val = DERIVED_T::IS_AXI ? le_dom->dist_norm_bord_axi(face) : le_dom->dist_norm_bord(face);
     return DERIVED_T::IS_MULTD ? val : 2*val;
   }
 
   inline double Dist_norm_bord_externe_VEC(const int boundary_index, const int global_face, const int local_face) const
   {
     if (DERIVED_T::IS_DEQUIV) return equivalent_distance(boundary_index,local_face);
-    else return DERIVED_T::IS_AXI ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
+    else return DERIVED_T::IS_AXI ? le_dom->dist_norm_bord_axi(global_face) : le_dom->dist_norm_bord(global_face);
   }
 
   inline double Dist_norm_bord_externe_(const int global_face) const
   {
     assert (!DERIVED_T::IS_DEQUIV);
-    return DERIVED_T::IS_AXI ? la_zone->dist_norm_bord_axi(global_face) : la_zone->dist_norm_bord(global_face);
+    return DERIVED_T::IS_AXI ? le_dom->dist_norm_bord_axi(global_face) : le_dom->dist_norm_bord(global_face);
   }
 
   inline void not_implemented_k_eps(const char * nom_funct) const

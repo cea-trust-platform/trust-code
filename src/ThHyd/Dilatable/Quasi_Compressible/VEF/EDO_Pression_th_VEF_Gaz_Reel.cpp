@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -44,9 +44,9 @@ Entree& EDO_Pression_th_VEF_Gaz_Reel::readOn(Entree& is)
 double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
 {
   int n_bord ;
-  for (n_bord=0; n_bord<la_zone->nb_front_Cl(); n_bord++)
+  for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
-      const Cond_lim& la_cl = la_zone_Cl->les_conditions_limites(n_bord);
+      const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);
       if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
         return Pth_n;
     }
@@ -58,7 +58,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   const Loi_Etat& loi_ = le_fluide_->loi_etat();
   //  const DoubleVect& tab_rhon = loi_->rho_n();                       //passe
 
-  int elem, nb_elem=la_zone->nb_elem();
+  int elem, nb_elem=le_dom->nb_elem();
   double V = 0; //mesure du domaine
   double Fn = 0; //integrale 1 a l'etape n
   double Fnp1 = 0; //integrale 1 a l'etape n+1
@@ -67,13 +67,13 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   double dt = le_fluide_->vitesse()->equation().schema_temps().pas_de_temps();
   double v,al,bn, bnp1, hn,hnp1, divu;
 
-  int i, face,nb_faces=la_zone->nb_faces();
+  int i, face,nb_faces=le_dom->nb_faces();
   //calcul T* aux elements
   DoubleTab HstarP0(nb_elem);
   DoubleTab gradh(nb_faces,dimension);
   DoubleTab u_gradh(nb_faces);
-  int nfe = la_zone->zone().nb_faces_elem();
-  const IntTab& elem_faces = la_zone->elem_faces();
+  int nfe = le_dom->zone().nb_faces_elem();
+  const IntTab& elem_faces = le_dom->elem_faces();
   for (elem=0 ; elem<nb_elem ; elem++)
     {
       HstarP0(elem) = 0;
@@ -103,8 +103,8 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
   int e0,e1;
   for (face=0 ; face<nb_faces ; face++)
     {
-      e0 = la_zone->face_voisins(face,0);
-      e1 = la_zone->face_voisins(face,1);
+      e0 = le_dom->face_voisins(face,0);
+      e1 = le_dom->face_voisins(face,1);
       if (e0!=-1 && e1!=-1)
         {
           divU(face) = .5*(divUP0(e0)+divUP0(e1));
@@ -121,7 +121,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
 
   for (face=0 ; face<nb_faces ; face++)
     {
-      v = la_zone->volumes_entrelaces(face);
+      v = le_dom->volumes_entrelaces(face);
       V += v;
       hn   = tab_hn(face);
       hnp1 = tab_hnp1(face);
@@ -152,7 +152,7 @@ double EDO_Pression_th_VEF_Gaz_Reel::resoudre(double Pth_n)
       Fnp1 = 0;
       for (face=0 ; face<nb_faces ; face++)
         {
-          v = la_zone->volumes_entrelaces(face);
+          v = le_dom->volumes_entrelaces(face);
           hnp1 = tab_hnp1(face);
           r = loi_->calculer_masse_volumique(Pth,hnp1);
           bnp1 = r / loi_->Drho_DP(Pth,hnp1);

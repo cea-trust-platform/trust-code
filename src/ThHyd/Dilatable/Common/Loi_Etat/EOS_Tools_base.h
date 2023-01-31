@@ -37,7 +37,7 @@ public :
   virtual const DoubleTab& rho_discvit() const=0;
   virtual const DoubleTab& rho_face_n() const=0;
   virtual const DoubleTab& rho_face_np1() const=0;
-  virtual void associer_zones(const Zone_dis&,const Zone_Cl_dis&) =0;
+  virtual void associer_domaines(const Zone_dis&,const Zone_Cl_dis&) =0;
   virtual void divu_discvit(const DoubleTab&, DoubleTab&)=0;
   virtual void secmembre_divU_Z(DoubleTab& ) const =0;
   virtual void calculer_rho_face_np1(const DoubleTab& rho)=0;

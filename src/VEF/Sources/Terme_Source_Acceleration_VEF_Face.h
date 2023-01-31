@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,12 +36,12 @@ public:
 
 protected:
   const DoubleTab& calculer_vitesse_faces(DoubleTab& v_faces_stockage) const override;
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
 
 private:
   // References remplies par associer_champ_rho
-  REF(Zone_VEF_PreP1b) la_zone_VEF_;
-  REF(Zone_Cl_VEFP1B)  la_zone_Cl_VEF_;
+  REF(Zone_VEF_PreP1b) le_dom_VEF_;
+  REF(Zone_Cl_VEFP1B)  le_dom_Cl_VEF_;
   // Reference remplie par associer_champ_rho() et utilisee par ajouter()
   // La reference peut rester nulle (monophasique).
   REF(Champ_base)  ref_rho_;

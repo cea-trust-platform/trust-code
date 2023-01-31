@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,9 +19,9 @@
 void Eval_Source_C_VEF_Face::completer()
 {
   Evaluateur_Source_VEF_Face::completer();
-  face_voisins.ref(la_zone->face_voisins());
-  volumes.ref(ref_cast(Zone_VEF,la_zone.valeur()).volumes());
-  nb_faces_elem = la_zone->zone().nb_faces_elem();
+  face_voisins.ref(le_dom->face_voisins());
+  volumes.ref(ref_cast(Zone_VEF,le_dom.valeur()).volumes());
+  nb_faces_elem = le_dom->zone().nb_faces_elem();
 }
 
 void Eval_Source_C_VEF_Face::associer_champs(const Champ_Don& Q)

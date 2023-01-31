@@ -130,7 +130,7 @@ void Op_Conv_VEF_Face::completer()
   // si un des sommets est sur un bord (tableau des sommets) (C MALOD 17/07/2007)
   if (type_elem_Cl_.size_array() == 0)
     {
-      const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
+      const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, le_dom_vef.valeur());
       const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
       const int nb_elem_tot = zone_VEF.nb_elem_tot();
       const IntVect& rang_elem_non_std = zone_VEF.rang_elem_non_std();
@@ -160,7 +160,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   //statistiques().begin_count(m1);
   assert((type_op==amont) || (type_op==muscl) || (type_op==centre));
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
+  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, le_dom_vef.valeur());
   const Champ_Inc_base& la_vitesse=vitesse();
   const DoubleTab& vitesse_face_absolue=la_vitesse.valeurs();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
@@ -1166,7 +1166,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
 {
   modifier_matrice_pour_periodique_avant_contribuer(matrice,equation());
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse();
   const DoubleTab& vitesse_face_absolue=la_vitesse.valeurs();
   const IntTab& elem_faces = zone_VEF.elem_faces();
@@ -1373,7 +1373,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
 void Op_Conv_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse();
   const DoubleTab& face_normales = zone_VEF.face_normales();
   const Zone& zone = zone_VEF.zone();
@@ -1513,7 +1513,7 @@ void Op_Conv_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) const
 void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, la_zone_vef.valeur());
+  const Zone_VEF& zone_VEF = ref_cast(Zone_VEF, le_dom_vef.valeur());
   int marq=phi_u_transportant(equation());
   // on force a calculer un pas de temps sans "porosite"
   marq=0;

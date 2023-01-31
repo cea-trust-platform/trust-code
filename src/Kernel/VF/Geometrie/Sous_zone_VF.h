@@ -38,8 +38,8 @@
 
    les_faces : nb_dim=1
    dimension(0) = le nombre de faces de la sous_zone
-   valeur de l'entier = indice dans les tableaux la_zone_VF->face_voisins_,
-   la_zone_VF->face_sommets_,...
+   valeur de l'entier = indice dans les tableaux le_dom_VF->face_voisins_,
+   le_dom_VF->face_sommets_,...
 
    volumes_entrelaces(int face) renvoie le volume entrelace restreint
    a la sous-zone. Le numero de la face fait reference au tableau
@@ -84,7 +84,7 @@ public:
   void discretiser() override;
 
 protected:
-  REF(Zone_VF) la_zone_VF;
+  REF(Zone_VF) le_dom_VF;
   IntTab les_faces_;
   int premiere_face_bord_0_ = -10;
   int premiere_face_bord_1_= -10;
@@ -95,7 +95,7 @@ protected:
 inline double Sous_zone_VF::volumes_entrelaces(int face) const
 {
   if (face<premiere_face_bord_0_ || face>=premiere_face_bord_)
-    return la_zone_VF->volumes_entrelaces(les_faces_(face));
+    return le_dom_VF->volumes_entrelaces(les_faces_(face));
   else
     return volumes_entrelaces_(face-premiere_face_bord_0_);
 }

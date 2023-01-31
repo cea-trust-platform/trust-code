@@ -50,7 +50,7 @@ public:
   virtual DoubleTab& calculer(const DoubleTab&, DoubleTab&) const;
   virtual void associer_champ(const Champ_Inc&, const std::string& nom_ch);
   virtual void associer(const Zone_dis&, const Zone_Cl_dis&, const Champ_Inc& inco) =0;
-  virtual void associer_zone_cl_dis(const Zone_Cl_dis_base&);
+  virtual void associer_domaine_cl_dis(const Zone_Cl_dis_base&);
   virtual void dimensionner(Matrice_Morse&) const /* =0 */;
   virtual void dimensionner_bloc_vitesse(Matrice_Morse& matrice) const;
   virtual void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const /* =0 */;

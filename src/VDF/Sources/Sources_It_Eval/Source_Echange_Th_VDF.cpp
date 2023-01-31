@@ -36,13 +36,13 @@ Entree& Source_Echange_Th_VDF::readOn(Entree& s)
   return s;
 }
 
-void Source_Echange_Th_VDF::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Echange_Th_VDF::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  iter->associer_zones(zvdf, zclvdf);
+  iter->associer_domaines(zvdf, zclvdf);
   Eval_Echange_Himp_VDF_Elem& eval = static_cast<Eval_Echange_Himp_VDF_Elem&> (iter->evaluateur());
-  eval.associer_zones(zvdf, zclvdf );
+  eval.associer_domaines(zvdf, zclvdf );
 }
 
 void Source_Echange_Th_VDF::associer_pb(const Probleme_base& pb)

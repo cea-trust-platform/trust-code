@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ Entree& Op_Diff_PolyMAC_P0_Face::readOn( Entree& is )
 void Op_Diff_PolyMAC_P0_Face::completer()
 {
   Op_Diff_PolyMAC_P0_base::completer();
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
   if (le_champ_inco.non_nul()) ch.init_auxiliary_variables(); // cas flica5 : ce n'est pas l'inconnue qui est utilisee, donc on cree les variables auxiliaires ici
   flux_bords_.resize(zone.premiere_face_int(), dimension * ch.valeurs().line_size());
@@ -65,7 +65,7 @@ void Op_Diff_PolyMAC_P0_Face::completer()
 
 double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
 {
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   const IntTab& e_f = zone.elem_faces(), &f_e = zone.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
   const DoubleTab& nf = zone.face_normales(), &vfd = zone.volumes_entrelaces_dir(),
                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL,
@@ -94,7 +94,7 @@ double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
 void Op_Diff_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
   const DoubleTab& nf = zone.face_normales();
   const DoubleVect& fs = zone.face_surfaces();
@@ -167,7 +167,7 @@ void Op_Diff_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   Matrice_Morse *mat = matrices.count(nom_inco) && !semi_impl.count(nom_inco) ? matrices[nom_inco] : NULL; //facultatif
   const DoubleTab& inco = semi_impl.count(nom_inco) ? semi_impl.at(nom_inco) : le_champ_inco.non_nul() ? le_champ_inco->valeurs() : equation().inconnue().valeurs();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
-  const Zone_PolyMAC_P0& zone = la_zone_poly_.valeur();
+  const Zone_PolyMAC_P0& zone = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   const IntTab& f_e = zone.face_voisins(), &e_f = zone.elem_faces(), &fcl = ch.fcl(), &equiv = zone.equiv();
   const DoubleVect& fs = zone.face_surfaces(), &vf = zone.volumes_entrelaces(), &ve = zone.volumes(), &pf = porosite_f, &pe = porosite_e;

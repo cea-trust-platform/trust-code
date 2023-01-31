@@ -93,7 +93,7 @@ public:
 
   // Les etapes de creation de l espace de stockage sont :
   // espace_stockage.typer(type_champ)
-  // espace_stockage.associer_zone_dis_base(une_zone_dis)
+  // espace_stockage.associer_domaine_dis_base(une_zone_dis)
   // espace_stockage->fixer_nb_comp(nb_comp);
   // espace_stockage->fixer_nb_valeurs_nodales(nb_ddl);
   // Calcul des valeurs par instruction de la forme

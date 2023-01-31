@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@ void Source_Neutronique_VDF::completer()
 double Source_Neutronique_VDF::calculer_Tmoyenne()
 {
   double T = 0.;
-  const int nb_elem = la_zone->nb_elem();
+  const int nb_elem = le_dom->nb_elem();
   const DoubleTab& temp = equation().inconnue().valeurs();
   for (int i = 0; i < nb_elem; i++) T += temp(i);
 
@@ -41,14 +41,14 @@ double Source_Neutronique_VDF::calculer_Tmoyenne()
   return T;
 }
 
-void Source_Neutronique_VDF::associer_zones(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
+void Source_Neutronique_VDF::associer_domaines(const Zone_dis& zone_dis, const Zone_Cl_dis& zone_cl_dis)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF,zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF,zone_cl_dis.valeur());
-  la_zone = zvdf;
-  iter->associer_zones(zvdf, zclvdf);
+  le_dom = zvdf;
+  iter->associer_domaines(zvdf, zclvdf);
   Eval_Puiss_Neutr_VDF_Elem& eval_puis = static_cast<Eval_Puiss_Neutr_VDF_Elem&> (iter->evaluateur());
-  eval_puis.associer_zones(zvdf, zclvdf );
+  eval_puis.associer_domaines(zvdf, zclvdf );
 }
 
 void Source_Neutronique_VDF::associer_pb(const Probleme_base& pb)

@@ -88,11 +88,11 @@ int PDF_model::lire_motcle_non_standard(const Motcle& un_mot, Entree& is)
   return 1;
 }
 
-void PDF_model::affecter_vitesse_imposee(Zone_VF& la_zone, const DoubleTab& coords)
+void PDF_model::affecter_vitesse_imposee(Zone_VF& le_dom, const DoubleTab& coords)
 {
   if (type_vitesse_imposee_ == 1)
     {
-      int nb_som_tot = la_zone.nb_som_tot();
+      int nb_som_tot = le_dom.nb_som_tot();
 
       DoubleTab& vitesse_imposee_ref = vitesse_imposee_.valeur().valeurs();
 

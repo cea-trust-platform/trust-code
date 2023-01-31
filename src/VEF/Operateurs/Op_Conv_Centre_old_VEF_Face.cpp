@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,19 +47,19 @@ void Op_Conv_Centre_old_VEF_Face::associer(const Zone_dis& zone_dis,
   const Zone_Cl_VEF& zclvef = ref_cast(Zone_Cl_VEF,zone_cl_dis.valeur());
   const Champ_Inc_base& le_ch_transporte = ref_cast(Champ_Inc_base,ch_transporte.valeur());
 
-  la_zone_vef = zvef;
+  le_dom_vef = zvef;
   la_zcl_vef = zclvef;
   champ_transporte = le_ch_transporte;
 
   fluent.reset();
-  la_zone_vef.valeur().creer_tableau_faces(fluent);
+  le_dom_vef.valeur().creer_tableau_faces(fluent);
 }
 
 DoubleTab& Op_Conv_Centre_old_VEF_Face::ajouter(const DoubleTab& transporte,
                                                 DoubleTab& resu) const
 {
   const Zone_Cl_VEF& zone_Cl_VEF = la_zcl_vef.valeur();
-  const Zone_VEF& zone_VEF = la_zone_vef.valeur();
+  const Zone_VEF& zone_VEF = le_dom_vef.valeur();
   //  const Champ_Inc_base& le_transporte = champ_transporte.valeur();
   const Champ_Inc_base& la_vitesse =vitesse_.valeur();
 

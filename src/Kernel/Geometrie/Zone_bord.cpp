@@ -132,7 +132,7 @@ void Zone_bord::extraire_domaine_bord(const Zone& src,
   Motcle type_elem;
   type_face_to_type_elem(src.type_elem().valeur(), src.type_elem().valeur().type_face(), type_elem);
   dest.type_elem().typer(type_elem);
-  dest.type_elem().valeur().associer_zone(dest);
+  dest.type_elem().valeur().associer_domaine(dest);
 
   const Frontiere& front = src.frontiere(nom_bord);
   const int nb_faces = front.faces().nb_faces();

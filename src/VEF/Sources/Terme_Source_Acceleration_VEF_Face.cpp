@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -37,18 +37,18 @@ Entree& Terme_Source_Acceleration_VEF_Face::readOn(Entree& s )
   return s;
 }
 
-/*! @brief Methode appelee par Source_base::completer() apres associer_zones Remplit les ref.
+/*! @brief Methode appelee par Source_base::completer() apres associer_domaines Remplit les ref.
  *
  * aux zones et zone_cl
  *
  */
-void Terme_Source_Acceleration_VEF_Face::associer_zones(const Zone_dis& zone_dis,
-                                                        const Zone_Cl_dis& zone_Cl_dis)
+void Terme_Source_Acceleration_VEF_Face::associer_domaines(const Zone_dis& zone_dis,
+                                                           const Zone_Cl_dis& zone_Cl_dis)
 {
   if (je_suis_maitre())
-    Cerr << "Terme_Source_Acceleration_VEF_Face::associer_zones" << finl;
-  la_zone_VEF_    = ref_cast(Zone_VEF_PreP1b, zone_dis.valeur());
-  la_zone_Cl_VEF_ = ref_cast(Zone_Cl_VEFP1B, zone_Cl_dis.valeur());
+    Cerr << "Terme_Source_Acceleration_VEF_Face::associer_domaines" << finl;
+  le_dom_VEF_    = ref_cast(Zone_VEF_PreP1b, zone_dis.valeur());
+  le_dom_Cl_VEF_ = ref_cast(Zone_Cl_VEFP1B, zone_Cl_dis.valeur());
 }
 
 /*! @brief Fonction outil pour Terme_Source_Acceleration_VEF_Face::ajouter Ajout des contributions d'une liste contigue de faces du terme source de translation:
@@ -136,8 +136,8 @@ static void TSAVEF_ajouter_liste_faces(const int premiere_face, const int dernie
  */
 DoubleTab& Terme_Source_Acceleration_VEF_Face::ajouter(DoubleTab& resu) const
 {
-  const Zone_VF&     zone               = la_zone_VEF_.valeur();
-  const Zone_Cl_dis_base& zone_Cl       = la_zone_Cl_VEF_.valeur();
+  const Zone_VF&     zone               = le_dom_VEF_.valeur();
+  const Zone_Cl_dis_base& zone_Cl       = le_dom_Cl_VEF_.valeur();
   const IntTab&      face_voisins       = zone.face_voisins();
   const DoubleVect& porosite_surf      = equation().milieu().porosite_face();
   const DoubleVect& volumes_entrelaces = zone.volumes_entrelaces();

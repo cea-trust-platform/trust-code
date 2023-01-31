@@ -68,7 +68,7 @@ void Source_QC_QDM_Gen::mettre_a_jour(double t)
 /*! @brief Met a jour les references internes a l'objet Source_QC_QDM_Gen.
  *
  * Appelle 2 methodes virtuelles pures protegees:
- *        Source_QC_QDM_Gen::associer_zones(const Zone_dis& ,const Zone_Cl_dis&)
+ *        Source_QC_QDM_Gen::associer_domaines(const Zone_dis& ,const Zone_Cl_dis&)
  *        Source_QC_QDM_Gen::associer_pb(const Probleme_base&)
  *
  */
@@ -94,9 +94,9 @@ DoubleTab&  Source_QC_QDM_Gen::calculer(DoubleTab& resu) const
   ajouter(resu);
   return resu;
 }
-void  Source_QC_QDM_Gen::associer_zones(const Zone_dis& z ,const Zone_Cl_dis& zcl )
+void  Source_QC_QDM_Gen::associer_domaines(const Zone_dis& z ,const Zone_Cl_dis& zcl )
 {
-  source_incompressible->associer_zones_public(z,zcl);
+  source_incompressible->associer_domaines_public(z,zcl);
 }
 void  Source_QC_QDM_Gen::associer_pb(const Probleme_base& pb )
 {

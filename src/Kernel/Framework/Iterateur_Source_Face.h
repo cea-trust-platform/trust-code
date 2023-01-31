@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -45,8 +45,8 @@ public:
 
   void completer_() override
   {
-    nb_faces = ref_cast(Zone_VF,la_zone.valeur()).nb_faces();
-    premiere_face_interne = ref_cast(Zone_VF,la_zone.valeur()).premiere_face_int();
+    nb_faces = ref_cast(Zone_VF,le_dom.valeur()).nb_faces();
+    premiere_face_interne = ref_cast(Zone_VF,le_dom.valeur()).premiere_face_int();
   }
 
   inline Evaluateur_Source& evaluateur() override
@@ -62,7 +62,7 @@ protected:
 
   template <typename Type_Double> DoubleTab& ajouter_faces_internes(const int, DoubleTab& ) const;
   template <typename Type_Double> DoubleTab& ajouter_faces_bords(const int, DoubleTab& ) const;
-  inline const int& faces_doubles(int num_face) const { return ref_cast(Zone_VF,la_zone.valeur()).faces_doubles()[num_face]; }
+  inline const int& faces_doubles(int num_face) const { return ref_cast(Zone_VF,le_dom.valeur()).faces_doubles()[num_face]; }
 };
 
 template<class _TYPE_>
@@ -75,7 +75,7 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter(DoubleTab& resu) const
 
   DoubleVect& bilan = so_base->bilan();
   bilan = 0;
-  const int nb_faces_tot = ref_cast(Zone_VF,la_zone.valeur()).nb_faces_tot();
+  const int nb_faces_tot = ref_cast(Zone_VF,le_dom.valeur()).nb_faces_tot();
   coef.resize(nb_faces_tot, Array_base::NOCOPY_NOINIT);
   coef = 1;
   if (equation_divisee_par_rho())
@@ -87,8 +87,8 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter(DoubleTab& resu) const
       else
         {
           const DoubleTab& val_rho = rho.valeurs();
-          const IntTab& face_vois = la_zone.valeur().face_voisins();
-          const DoubleVect& volumes = ref_cast(Zone_VF,la_zone.valeur()).volumes();
+          const IntTab& face_vois = le_dom.valeur().face_voisins();
+          const DoubleVect& volumes = ref_cast(Zone_VF,le_dom.valeur()).volumes();
           coef = 0.;
           for (int fac = 0; fac < nb_faces_tot; fac++)
             {
@@ -127,7 +127,7 @@ DoubleTab& Iterateur_Source_Face<_TYPE_>::ajouter_faces_bords(const int ncomp, D
 {
   Type_Double source(ncomp);
   DoubleVect& bilan = so_base->bilan();
-  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
+  for (int num_cl = 0; num_cl < le_dom->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());

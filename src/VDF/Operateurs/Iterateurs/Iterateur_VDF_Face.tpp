@@ -28,7 +28,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs(matrices_t mats, DoubleTab& secme
   assert(op_base->equation().inconnue().valeurs().nb_dim() < 3);
   const int ncomp = op_base->equation().inconnue().valeurs().line_size();
   DoubleTab& tab_flux_bords = op_base->flux_bords();
-  tab_flux_bords.resize(la_zone->nb_faces_bord(), dimension);
+  tab_flux_bords.resize(le_dom->nb_faces_bord(), dimension);
   tab_flux_bords = 0.;
 
   if (ncomp == 1)
@@ -112,7 +112,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
     {
       constexpr bool is_PAROI = (Arete_Type == Type_Flux_Arete::PAROI);
       Type_Double flux(ncomp), aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
-      const int n = la_zone->nb_faces_bord(), fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), signe = Qdm(n_arete, 3);
+      const int n = le_dom->nb_faces_bord(), fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), signe = Qdm(n_arete, 3);
       DoubleTab& tab_flux_bords = op_base->flux_bords();
       const DoubleTab& inco = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
@@ -150,7 +150,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
     {
       constexpr bool is_FLUIDE = (Arete_Type == Type_Flux_Arete::FLUIDE), is_PAROI_FL = (Arete_Type == Type_Flux_Arete::PAROI_FLUIDE);
       Type_Double flux3(ncomp), flux1_2(ncomp), aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
-      const int n = la_zone->nb_faces_bord(), fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), signe = Qdm(n_arete, 3);
+      const int n = le_dom->nb_faces_bord(), fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), signe = Qdm(n_arete, 3);
       DoubleTab& tab_flux_bords = op_base->flux_bords();
       const DoubleTab& inco = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
@@ -307,7 +307,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const
   if (should_calc_flux)
     {
       Type_Double flux3(ncomp), flux1_2(ncomp), aii1_2(ncomp), aii3_4(ncomp), ajj1_2(ncomp);
-      const int n = la_zone->nb_faces_bord(), fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), signe = Qdm(n_arete, 3);
+      const int n = le_dom->nb_faces_bord(), fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), signe = Qdm(n_arete, 3);
       DoubleTab& tab_flux_bords = op_base->flux_bords();
       const DoubleTab& inco = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
@@ -412,7 +412,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_generique_(const int debut, con
         {
           flux = 0.;
           const int fac1 = Qdm(n_arete, 0), fac2 = Qdm(n_arete, 1), fac3 = Qdm(n_arete, 2), fac4 = Qdm(n_arete, 3);
-          const int n = la_zone->nb_faces_bord(), n2 = la_zone->nb_faces_tot(); /* GF pour assurer bilan seq = para */
+          const int n = le_dom->nb_faces_bord(), n2 = le_dom->nb_faces_tot(); /* GF pour assurer bilan seq = para */
           flux_evaluateur.template flux_arete < Arete_Type > (inco, a_r, fac1, fac2, fac3, fac4, flux);
           fill_resu_tab < Type_Double > (fac3, fac4, ncomp, flux, secmem);
 
@@ -484,7 +484,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_generique_(const int debut, con
 template<class _TYPE_> template <typename Type_Double>
 void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_sortie_libre(const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
+  for (int num_cl = 0; num_cl < le_dom->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       switch(type_cl(la_cl))
@@ -559,11 +559,11 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_elem(const int ncomp, matrice
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   const DoubleTab& inco = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
   Type_Double flux(ncomp), aii(ncomp), ajj(ncomp), flux_c(ncomp) /* partie compressible */;
-  const int n_fc_bd = la_zone->nb_faces_bord();
+  const int n_fc_bd = le_dom->nb_faces_bord();
 
   const DoubleTab* a_r = (!is_pb_multi || !is_conv_op_) ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") :
                          &ref_cast(Pb_Multiphase,op_base->equation().probleme()).eq_masse.champ_conserve().valeurs();
-//  const IntTab& f_e = la_zone->face_voisins();
+//  const IntTab& f_e = le_dom->face_voisins();
   // second membre
   for (int num_elem = 0; num_elem < nb_elem; num_elem++)
     for (int fa7 = 0; fa7 < dimension; fa7++)
@@ -604,7 +604,7 @@ void Iterateur_VDF_Face<_TYPE_>::corriger_fa7_elem_periodicite(const int ncomp, 
   const DoubleTab& inco = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
   Matrice_Morse *matrice = (is_pb_multi && is_conv_op_) ? (mats.count(nom_ch_inco_) && !semi_impl.count(nom_ch_inco_) ? mats.at(nom_ch_inco_) : nullptr) : (mats.count(nom_ch_inco_) ? mats.at(nom_ch_inco_) : nullptr);
 
-  for (int num_cl = 0; num_cl < la_zone->nb_front_Cl(); num_cl++)
+  for (int num_cl = 0; num_cl < le_dom->nb_front_Cl(); num_cl++)
     {
       const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);
       if (sub_type(Periodique, la_cl.valeur()))

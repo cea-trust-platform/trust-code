@@ -59,7 +59,7 @@ void Op_Ecart_type::completer(const Probleme_base& Pb)
 
   // Initialisation de la structure du tableau val.
   //  Est-bien le bon endroit pour faire ca ? (plutot dans integrale_carre_champ ?)
-  integrale_carre_champ.associer_zone_dis_base(Pb.domaine_dis().valeur());
+  integrale_carre_champ.associer_domaine_dis_base(Pb.domaine_dis().valeur());
   int nb_comp = source.nb_comp();
   integrale_carre_champ->fixer_nb_comp(nb_comp);
   DoubleTab& val = valeurs_carre();

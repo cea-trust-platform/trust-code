@@ -58,25 +58,25 @@ void Force_Centrifuge_VDF_Face_Axi::associer_pb(const Probleme_base& )
   Cerr << "Force_Centrifuge_VDF_Face_Axi::associer_pb" << finl;
 }
 
-void Force_Centrifuge_VDF_Face_Axi::associer_zones(const Zone_dis& zone_dis,
-                                                   const Zone_Cl_dis& zone_Cl_dis)
+void Force_Centrifuge_VDF_Face_Axi::associer_domaines(const Zone_dis& zone_dis,
+                                                      const Zone_Cl_dis& zone_Cl_dis)
 {
   const Zone_VDF& zvdf = ref_cast(Zone_VDF, zone_dis.valeur());
   const Zone_Cl_VDF& zclvdf = ref_cast(Zone_Cl_VDF, zone_Cl_dis.valeur());
-  la_zone_VDF = zvdf;
-  la_zone_Cl_VDF = zclvdf;
+  le_dom_VDF = zvdf;
+  le_dom_Cl_VDF = zclvdf;
   elem_faces.ref(zvdf.elem_faces());
   orientation.ref(zvdf.orientation());
   xp.ref(zvdf.xp());
   xv.ref(zvdf.xv());
   volume_entrelaces.ref(zvdf.volumes_entrelaces());
-  porosite_surf.ref(la_zone_Cl_VDF->equation().milieu().porosite_face());
+  porosite_surf.ref(le_dom_Cl_VDF->equation().milieu().porosite_face());
 }
 
 void Force_Centrifuge_VDF_Face_Axi::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  const Zone_VDF& zvdf = la_zone_VDF.valeur();
-  const Zone_Cl_VDF& zclvdf = la_zone_Cl_VDF.valeur();
+  const Zone_VDF& zvdf = le_dom_VDF.valeur();
+  const Zone_Cl_VDF& zclvdf = le_dom_Cl_VDF.valeur();
   const DoubleTab& vitesse = la_vitesse->valeurs();
 
   int nb_elem = zvdf.nb_elem();

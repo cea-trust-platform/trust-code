@@ -45,9 +45,9 @@ protected:
   void modifier_zone_cl();
 
 
-  void associer_zones(const Zone_dis& ,const Zone_Cl_dis& ) override;
+  void associer_domaines(const Zone_dis& ,const Zone_Cl_dis& ) override;
   REF(Equation_base) eqn_t;
-  Zone_Cl_dis ma_zonecl_;
+  Zone_Cl_dis mon_domcl_;
   REF(Zone_Cl_dis_base) zonecl_sa;
   int zone_cl_mod_ = 0;
 };

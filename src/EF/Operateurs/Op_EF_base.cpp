@@ -46,8 +46,8 @@
  *
  */
 
-void Op_EF_base::dimensionner(const Zone_EF& la_zone,
-                              const Zone_Cl_EF& la_zone_cl,
+void Op_EF_base::dimensionner(const Zone_EF& le_dom,
+                              const Zone_Cl_EF& le_dom_cl,
                               Matrice_Morse& la_matrice) const
 {
 
@@ -68,28 +68,28 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
   // Pour ce faire il faut chercher les sommets voisins du sommet considere.
 
-  int nb_som=la_zone.nb_som();
-  int nfin = la_zone.nb_som_tot();
+  int nb_som=le_dom.nb_som();
+  int nfin = le_dom.nb_som_tot();
   // essai
   nb_som=nfin;
 
-  const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   int nb_comp = champ_inconnue.line_size();
 
   // on ne s'occupe pas dans un premier temps des composantes
 
-  const IntTab& elems=la_zone.zone().les_elems();
-  //int nb_elem=la_zone.zone().nb_elem();
-  int nb_elem_tot=la_zone.zone().nb_elem_tot();
-  int nb_som_elem=la_zone.zone().nb_som_elem();
-  int nb_som_face=la_zone.nb_som_face();
+  const IntTab& elems=le_dom.zone().les_elems();
+  //int nb_elem=le_dom.zone().nb_elem();
+  int nb_elem_tot=le_dom.zone().nb_elem_tot();
+  int nb_som_elem=le_dom.zone().nb_som_elem();
+  int nb_som_face=le_dom.nb_som_face();
 
   // Computation of the number of non void coeffs:
   int extra_nb_coeff = 0;
   // Specific BC that will require extra terms in the matrix:
-  for(int i=0; i<la_zone_cl.nb_cond_lim(); i++)
+  for(int i=0; i<le_dom_cl.nb_cond_lim(); i++)
     {
-      const Cond_lim_base& ccl = la_zone_cl.les_conditions_limites(i).valeur();
+      const Cond_lim_base& ccl = le_dom_cl.les_conditions_limites(i).valeur();
       if(sub_type(Echange_interne_global_impose, ccl))
         {
           if (nb_som_face != 1)
@@ -126,9 +126,9 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
         }
     }
   // Specific BC that will require extra terms in the matrix:
-  for(int i=0; i<la_zone_cl.nb_cond_lim(); i++)
+  for(int i=0; i<le_dom_cl.nb_cond_lim(); i++)
     {
-      const Cond_lim_base& ccl = la_zone_cl.les_conditions_limites(i).valeur();
+      const Cond_lim_base& ccl = le_dom_cl.les_conditions_limites(i).valeur();
       if(sub_type(Echange_interne_global_impose, ccl))
         {
           const Echange_interne_global_impose& cl = ref_cast(Echange_interne_global_impose, ccl);
@@ -148,20 +148,20 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
               if (is_parfait)
                 {
                   // element attached to the face
-                  int elem1 = la_zone.face_voisins(face_verso, 0);
-                  int elem = (elem1 != -1) ? elem1 : la_zone.face_voisins(face_verso, 1);
+                  int elem1 = le_dom.face_voisins(face_verso, 0);
+                  int elem = (elem1 != -1) ? elem1 : le_dom.face_voisins(face_verso, 1);
                   // other face of the element (i.e. face "after" opp_face)
-                  int f1 = la_zone.elem_faces(elem, 0);
-                  face_plus_2 = f1 != face_verso ? f1 : la_zone.elem_faces(elem, 1);  // 2 faces per elem max - 1D
+                  int f1 = le_dom.elem_faces(elem, 0);
+                  face_plus_2 = f1 != face_verso ? f1 : le_dom.elem_faces(elem, 1);  // 2 faces per elem max - 1D
                 }
 
               // all vertices of recto face are put in correspondance with all vertices of verso face:
               for(int som_idx=0; som_idx < nb_som_face; som_idx++)
                 {
-                  int som_recto = la_zone.face_sommets(face_recto, som_idx);
+                  int som_recto = le_dom.face_sommets(face_recto, som_idx);
                   for(int som_idx2=0; som_idx2 < nb_som_face; som_idx2++)
                     {
-                      int som_verso = la_zone.face_sommets(face_verso, som_idx2);
+                      int som_verso = le_dom.face_sommets(face_verso, som_idx2);
                       // tri-diagonal structure extended through the wall
                       // actually this puts too many coeffs in case of is_parfait, but I can't be bothered ...
                       Indice(tot, 0) = som_recto;
@@ -171,7 +171,7 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
                       if (is_parfait)   // more complicated: recto face takes (i-1), i and ("next face after opp_face")
                         // verso face will just serve to connect recto and verso
                         {
-                          int som_plus_2 = la_zone.face_sommets(face_plus_2, som_idx2);
+                          int som_plus_2 = le_dom.face_sommets(face_plus_2, som_idx2);
                           if(!hit[face_recto-nfacedeb])  // first inner face
                             {
                               Indice(tot, 0) = som_recto;
@@ -246,8 +246,8 @@ void Op_EF_base::dimensionner(const Zone_EF& la_zone,
  *
  */
 
-void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
-                                  const Zone_Cl_EF& la_zone_cl,
+void Op_EF_base::modifier_pour_Cl(const Zone_EF& le_dom,
+                                  const Zone_Cl_EF& le_dom_cl,
                                   Matrice_Morse& la_matrice, DoubleTab& secmem) const
 {
 //  Cerr<<__PRETTY_FUNCTION__<<" ne fait rien "<<finl; return;
@@ -259,18 +259,18 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
 
   int   k, nbvois;
-  //  int nfin = la_zone.nb_faces();
-  const Conds_lim& les_cl = la_zone_cl.les_conditions_limites();
+  //  int nfin = le_dom.nb_faces();
+  const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
 
   const IntVect& tab1=la_matrice.get_tab1();
   DoubleVect& coeff = la_matrice.get_set_coeff();
 
   // determination de la taille du champ inconnue.
   // Cerr << "dans modifier cl " << finl;
-  const DoubleTab& champ_inconnue = la_zone_cl.equation().inconnue().valeurs();
+  const DoubleTab& champ_inconnue = le_dom_cl.equation().inconnue().valeurs();
   int nb_comp = champ_inconnue.line_size();
 
-  const IntTab& faces_sommets=la_zone.face_sommets();
+  const IntTab& faces_sommets=le_dom.face_sommets();
   int nb_som_face=faces_sommets.dimension(1);
 
   int nb_som=secmem.dimension(0);
@@ -351,9 +351,9 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
 
   // On modifie pour la symetrie
 
-  if (la_zone_cl.equation().inconnue().valeur().nature_du_champ()==vectoriel)
+  if (le_dom_cl.equation().inconnue().valeur().nature_du_champ()==vectoriel)
     {
-      la_zone_cl.imposer_symetrie_matrice_secmem(la_matrice,secmem);
+      le_dom_cl.imposer_symetrie_matrice_secmem(la_matrice,secmem);
     }
 
   /*
@@ -372,7 +372,7 @@ void Op_EF_base::modifier_pour_Cl(const Zone_EF& la_zone,
 void Op_EF_base::modifier_flux( const Operateur_base& op) const
 {
   controle_modifier_flux_=1;
-  const Zone_EF& la_zone_EF=ref_cast(Zone_EF,op.equation().zone_dis().valeur());
+  const Zone_EF& le_dom_EF=ref_cast(Zone_EF,op.equation().zone_dis().valeur());
   DoubleTab& flux_bords_=op.flux_bords();
   int nb_compo=flux_bords_.dimension(1);
   const Probleme_base& pb=op.equation().probleme();
@@ -385,7 +385,7 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
       if (sub_type(Champ_Uniforme,rho))
         {
           double coef = rho(0,0);
-          int nb_faces_bord=la_zone_EF.nb_faces_bord();
+          int nb_faces_bord=le_dom_EF.nb_faces_bord();
           for (int face=0; face<nb_faces_bord; face++)
             for(int k=0; k<nb_compo; k++)
               flux_bords_(face,k) *= coef;
@@ -399,7 +399,7 @@ void Op_EF_base::modifier_flux( const Operateur_base& op) const
  */
 int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
 {
-  const Zone_EF& la_zone_EF=ref_cast(Zone_EF,op.equation().zone_dis().valeur());
+  const Zone_EF& le_dom_EF=ref_cast(Zone_EF,op.equation().zone_dis().valeur());
   DoubleTab& flux_bords_=op.flux_bords();
   if (flux_bords_.nb_dim()!=2)
     {
@@ -417,11 +417,11 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   const Schema_Temps_base& sch=pb.schema_temps();
   // On n'imprime les moments que si demande et si on traite l'operateur de diffusion de la vitesse
   int impr_mom=0;
-  if (la_zone_EF.zone().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
+  if (le_dom_EF.zone().moments_a_imprimer() && sub_type(Operateur_Diff_base,op) && op.equation().inconnue().le_nom()=="vitesse")
     impr_mom=1;
 
-  const int impr_sum=(la_zone_EF.zone().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_zone_EF.zone().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_sum=(le_dom_EF.zone().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_EF.zone().bords_a_imprimer().est_vide() ? 0:1);
   int flag=0;
   if (Process::je_suis_maitre()) flag=1;
   //SFichier Flux;
@@ -444,15 +444,15 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
     }
 
   // Calcul des moments
-  const int nb_faces =  la_zone_EF.nb_faces_tot();
+  const int nb_faces =  le_dom_EF.nb_faces_tot();
   DoubleTab xgr(nb_faces,Objet_U::dimension);
   xgr=0.;
   DoubleVect moment(nb_compo);
   moment=0;
   if (impr_mom)
     {
-      const DoubleTab& xgrav = la_zone_EF.xv();
-      const ArrOfDouble& c_grav=la_zone_EF.zone().cg_moments();
+      const DoubleTab& xgrav = le_dom_EF.xv();
+      const ArrOfDouble& c_grav=le_dom_EF.zone().cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<Objet_U::dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
@@ -462,7 +462,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
   DoubleVect flux_bord(nb_compo);
   DoubleVect bilan(nb_compo);
   bilan = 0;
-  for (int num_cl=0; num_cl<la_zone_EF.nb_front_Cl(); num_cl++)
+  for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
       flux_bord=0;
       const Frontiere_dis_base& la_fr = op.equation().zone_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
@@ -503,7 +503,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
             {
               Flux.add_col(flux_bord(k));
               if (impr_mom) Flux_moment.add_col(moment(k));
-              if (la_zone_EF.zone().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
+              if (le_dom_EF.zone().bords_a_imprimer_sum().contient(la_fr.le_nom())) Flux_sum.add_col(flux_bord(k));
 
               // On somme les flux de toutes les frontieres pour mettre dans le tableau bilan
               bilan(k)+=flux_bord(k);
@@ -523,7 +523,7 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
     }
 
   // Impression sur chaque face si demande
-  for (int num_cl=0; num_cl<la_zone_EF.nb_front_Cl(); num_cl++)
+  for (int num_cl=0; num_cl<le_dom_EF.nb_front_Cl(); num_cl++)
     {
       const Frontiere_dis_base& la_fr = op.equation().zone_Cl_dis().les_conditions_limites(num_cl).frontiere_dis();
       const Cond_lim& la_cl = op.equation().zone_Cl_dis().les_conditions_limites(num_cl);
@@ -531,10 +531,10 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
       // Impression sur chaque face
-      if (la_zone_EF.zone().bords_a_imprimer().contient(la_fr.le_nom()))
+      if (le_dom_EF.zone().bords_a_imprimer().contient(la_fr.le_nom()))
         {
           Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
-          const DoubleTab& xv=la_zone_EF.xv();
+          const DoubleTab& xv=le_dom_EF.xv();
           for (int face=ndeb; face<nfin; face++)
             {
               if (Objet_U::dimension==2)

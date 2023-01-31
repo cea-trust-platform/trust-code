@@ -35,7 +35,7 @@ public:
 
   // Entree& lire(Entree&);
   // Sortie& ecrire(Sortie&) const;
-  void associer_zone(const Zone&);
+  void associer_domaine(const Zone&);
   const Zone& zone() const;
   Zone& zone();
   void nommer(const Nom&) override;
@@ -74,7 +74,7 @@ private :
 
   Nom nom;
   Faces les_faces;
-  REF(Zone) la_zone;
+  REF(Zone) le_dom;
   ArrOfInt faces_virt;
   int num_premiere_face_ = -100;
   double aire_ = -100.;

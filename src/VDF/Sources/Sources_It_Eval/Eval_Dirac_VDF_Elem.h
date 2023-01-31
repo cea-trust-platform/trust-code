@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ public:
 protected:
 
   REF(Champ_Don) la_puissance;
-  REF(Zone) ma_zone;
+  REF(Zone) mon_dom;
   double puissance, nb_dirac;
 };
 
@@ -48,13 +48,13 @@ inline void Eval_Dirac_VDF_Elem::associer_champs(const Champ_Don& Q)
 inline void Eval_Dirac_VDF_Elem::mettre_a_jour()
 {
   puissance = la_puissance.valeur()(0);
-  ma_zone = la_zone.valeur().zone();
+  mon_dom = le_dom.valeur().zone();
 }
 
 template <typename Type_Double>
 void Eval_Dirac_VDF_Elem::calculer_terme_source(const int num_elem, Type_Double& source) const
 {
-  const int size = source.size_array(), test = ma_zone.valeur().type_elem().contient(le_point,num_elem);
+  const int size = source.size_array(), test = mon_dom.valeur().type_elem().contient(le_point,num_elem);
   for (int i = 0; i < size; i++) source[i] = (test == 1) ? nb_dirac*puissance : 0.;
 }
 

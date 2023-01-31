@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ private :
   //    0 pour une face d'equation x = cte
   //    1 pour une face d'equation y = cte
   //    2 pour une face d'equation z = cte
-  REF(Zone_VDF) la_zone_VDF;
+  REF(Zone_VDF) le_dom_VDF;
   void swap(int, int);
 
 };
@@ -69,7 +69,7 @@ inline int Faces_VDF::orientation(int i)
  */
 inline void Faces_VDF::associer(const Zone_VDF& une_zone_VDF)
 {
-  la_zone_VDF=une_zone_VDF;
+  le_dom_VDF=une_zone_VDF;
 }
 
 /*! @brief Renvoie la zone
@@ -77,7 +77,7 @@ inline void Faces_VDF::associer(const Zone_VDF& une_zone_VDF)
  */
 inline const Zone_VDF& Faces_VDF::zone_VDF() const
 {
-  return la_zone_VDF.valeur();
+  return le_dom_VDF.valeur();
 }
 
 #endif

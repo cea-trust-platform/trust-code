@@ -59,9 +59,9 @@ public:
     Champ_Fonc_base::mettre_a_jour(un_temps);
   }
 
-  inline void associer_zone_dis_base(const Zone_dis_base& zone_dis) override
+  inline void associer_domaine_dis_base(const Zone_dis_base& zone_dis) override
   {
-    le_champ_tabule_discretise().associer_zone_dis_base(zone_dis);
+    le_champ_tabule_discretise().associer_domaine_dis_base(zone_dis);
   }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& les_valeurs, int le_poly) const override

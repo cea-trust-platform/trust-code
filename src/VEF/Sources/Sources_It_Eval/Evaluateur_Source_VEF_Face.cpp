@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,8 +35,8 @@ void Evaluateur_Source_VEF_Face::changer_volumes_entrelaces_Cl(DoubleVect& vol)
 void Evaluateur_Source_VEF_Face::completer()
 {
   Cerr << "Evaluateur_Source_VEF_Face::completer()" << finl;
-  volumes_entrelaces.ref(ref_cast(Zone_VEF,la_zone.valeur()).volumes_entrelaces());
+  volumes_entrelaces.ref(ref_cast(Zone_VEF,le_dom.valeur()).volumes_entrelaces());
   volumes_entrelaces_Cl.ref(ref_cast(Zone_Cl_VEF,la_zcl.valeur()).volumes_entrelaces_Cl());
   porosite_surf.ref(ref_cast(Zone_Cl_VEF,la_zcl.valeur()).equation().milieu().porosite_face());
-  face_voisins.ref(ref_cast(Zone_VEF,la_zone.valeur()).face_voisins());
+  face_voisins.ref(ref_cast(Zone_VEF,le_dom.valeur()).face_voisins());
 }
