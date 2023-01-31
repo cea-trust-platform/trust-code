@@ -1887,7 +1887,7 @@ AVX_FLAGS=""
 if [ "${TRUST_CC_BASE%icpc}" != "$TRUST_CC_BASE" ]
 then
    # INTEL
-   AVX_FLAGS="-axavx -xavx -xssse3 -vec-report1"
+   AVX_FLAGS="-xavx2 -xavx -xssse3"
 else
    # GNU (il vaut mieux verifier dans le /proc/cpuinfo que l'extension existe
    # car le test de compilation ne suffit pas). A se demander si ce n'est pas
