@@ -175,8 +175,8 @@ static void ecrire_sous_domaines(const Nom& nom_domaines_decoup,
 // XD bloc_decouper objet_lecture nul 1 Auxiliary class to cut a domain.
 // XD attr partitionneur|Partition_tool partitionneur_deriv partitionneur 1 Defines the partitionning algorithm (the effective C++ object used is \'Partitionneur_ALGORITHM_NAME\').
 // XD attr larg_joint entier larg_joint 1 This keyword specifies the thickness of the virtual ghost domaine (data known by one processor though not owned by it). The default value is 1 and is generally correct for all algorithms except the QUICK convection scheme that require a thickness of 2. Since the 1.5.5 version, the VEF discretization imply also a thickness of 2 (except VEF P0). Any non-zero positive value can be used, but the amount of data to store and exchange between processors grows quickly with the thickness.
-// XD attr nom_domaines|domaines_name chaine nom_domaines 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Domaines NL2 name_0002.Domaines NL2 ... NL2 name_000n.Domaines. If this keyword is not specified, the geometry is not written on disk (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
-// XD attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the domaine number for each element\'s mesh. Then you can easily permute domaine numbers in this file. Then read the new partition to create the .Domaines files with the Fichier_Decoupage keyword.
+// XD attr nom_domaines|domaines_name chaine nom_domaines 1 Name of the files containing the different partition of the domain. The files will be : NL2 name_0001.Zones NL2 name_0002.Zones NL2 ... NL2 name_000n.Zones. If this keyword is not specified, the geometry is not written on disk (you might just want to generate a \'ecrire_decoupage\' or \'ecrire_lata\').
+// XD attr ecrire_decoupage chaine ecrire_decoupage 1 After having called the partitionning algorithm, the resulting partition is written on disk in the specified filename. See also partitionneur Fichier_Decoupage. This keyword is useful to change the partition numbers: first, you write the partition into a file with the option ecrire_decoupage. This file contains the domaine number for each element\'s mesh. Then you can easily permute domaine numbers in this file. Then read the new partition to create the .Zones files with the Fichier_Decoupage keyword.
 // XD attr ecrire_lata chaine ecrire_lata 1 not_set
 // XD attr nb_parts_tot entier nb_parts_tot 1 Keyword to generates N .Domaine files, instead of the default number M obtained after the partitionning algorithm. N must be greater or equal to M. This option might be used to perform coupled parallel computations. Supplemental empty domaines from M to N-1 are created. This keyword is used when you want to run a parallel calculation on several domains with for example, 2 processors on a first domain and 10 on the second domain because the first domain is very small compare to second one. You will write Nb_parts 2 and Nb_parts_tot 10 for the first domain and Nb_parts 10 for the second domain.
 // XD attr periodique listchaine periodique 1 N BOUNDARY_NAME_1 BOUNDARY_NAME_2 ... : N is the number of boundary names given. Periodic boundaries must be declared by this method. The partitionning algorithm will ensure that facing nodes and faces in the periodic boundaries are located on the same processor.
@@ -217,7 +217,7 @@ Entree& Decouper::lire(Entree& is)
   param.ajouter_non_std("partitionneur|partition_tool",(this),Param::REQUIRED);
   param.ajouter("larg_joint",&epaisseur_joint);
   param.ajouter_condition("value_of_larg_joint_ge_1","The joint thickness must greater or equal to 1.");
-  param.ajouter("nom_domaines|domaines_name",&nom_domaines_decoup);
+  param.ajouter("nom_zones|zones_name",&nom_domaines_decoup);
   param.ajouter("ecrire_decoupage",&nom_fichier_decoupage);
   param.ajouter("ecrire_lata",&nom_fichier_lata);
   param.ajouter("nb_parts_tot",&nb_parts_tot);
@@ -252,8 +252,8 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
            << "\nGeneration of " << nb_parts_tot - nb_parties << " empty parts." << finl;
       nb_parties = nb_parts_tot;
     }
-  // Force un seul fichier .Domaines au dela d'un certain nombre de rangs MPI:
-  if (Process::force_single_file(nb_parties, nom_domaines_decoup+".Domaines"))
+  // Force un seul fichier .Zones au dela d'un certain nombre de rangs MPI:
+  if (Process::force_single_file(nb_parties, nom_domaines_decoup+".Zones"))
     format_hdf = 1;
 
   if (nom_fichier_decoupage != "?")

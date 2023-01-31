@@ -54,7 +54,7 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
 {
   //Les mots a reconnaitre
   Motcle motlu, accouverte = "{" , accfermee = "}" ;
-  Motcles les_mots(9);
+  Motcles les_mots(11);
   {
     les_mots[0] = "alpha";
     les_mots[1] = "test";
@@ -63,8 +63,10 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
     les_mots[4] = "volumes_etendus";
     les_mots[5] = "volumes_non_etendus";
     les_mots[6] = "amont_sous_domaine";
-    les_mots[7] = "nouvelle_matrice_implicite";
-    les_mots[8] = "alpha_sous_domaine";
+    les_mots[7] = "amont_sous_zone";
+    les_mots[8] = "nouvelle_matrice_implicite";
+    les_mots[9] = "alpha_sous_domaine";
+    les_mots[10] = "alpha_sous_zone";
   }
 
   s >> motlu;
@@ -119,13 +121,15 @@ Entree& Op_Conv_EF_VEF_P1NC_Stab::readOn(Entree& s )
           break;
 
         case 6 :
+        case 7 :
           sous_domaine=true;
           s >> nom_sous_domaine;
           break;
-        case 7 :
+        case 8 :
           s >> new_jacobienne_;
           break;
-        case 8 :
+        case 9 :
+        case 10 :
           ssz_alpha=true;
           s >> nb_ssz_alpha;
           noms_ssz_alpha.dimensionner(nb_ssz_alpha);

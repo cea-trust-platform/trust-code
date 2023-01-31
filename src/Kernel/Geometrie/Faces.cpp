@@ -202,7 +202,7 @@ Type_Face Faces::type(const Motcle& mot) const
         if (mot=="")
           {
             Cerr << "Your splitting seems to have been done with a TRUST version 1.5 or earlier. Since" << finl;
-            Cerr << "the 1.5.1, the files format of .Domaines containing the splitting of your mesh has evolved." << finl;
+            Cerr << "the 1.5.1, the files format of .Zones containing the splitting of your mesh has evolved." << finl;
             Cerr << "You must therefore rebuild the splitting of your mesh with TRUST version 1.5.1 or newer." <<
                  finl;
           }

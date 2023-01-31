@@ -1179,9 +1179,9 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
 /*! @brief Build the name of the ".
  *
  * Domaines" file for a given proc and a domain. If partie == -1 a single filename is returned. For example
- *           DOM.Domaines
+ *           DOM.Zones
  *    instead of
- *           DOM_0001.Domaines
+ *           DOM_0001.Zones
  *
  */
 static void construire_nom_fichier_sous_domaine(const Nom& basename,
@@ -1232,7 +1232,7 @@ void DomaineCutter::writeData(const Domaine& sous_domaine, Sortie& os) const
 {
   os << sous_domaine;
   // Benoit Mathieu: Scatter a besoin de la liste des bords periodiques pour le
-  // calcul des elements distants. Je l'ecris apres le domaine dans le fichier .Domaines.
+  // calcul des elements distants. Je l'ecris apres le domaine dans le fichier .Zones.
   // Pas genial mais c'est pour depanner en attendant mieux.
   os << liste_bords_periodiques_;
 }
@@ -1257,7 +1257,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
   FichierHDF fic_hdf;
 #endif
   Nom nom_fichier_hdf5(basename);
-  nom_fichier_hdf5+=Nom(".Domaines");
+  nom_fichier_hdf5+=Nom(".Zones");
   nom_fichier_hdf5 = nom_fichier_hdf5.nom_me(nb_parties_, "p", 1);
 
   // Build temp arrays to eventually reorder the partition numbering
@@ -1274,7 +1274,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
 
   //if some domaines are splitted between multiple procs,
   //we assign consecutive indices to each of its fragment
-  //(reading the .Domaines files during Scatter will be more efficient)
+  //(reading the .Zones files during Scatter will be more efficient)
   // Possible values for domaines_index[part]:
   // -2    : means that part is detained by multiple procs but not by me
   // -1    : means that part is detained by a single proc
@@ -1487,11 +1487,11 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
             }
           else
             {
-              // Write .Domaines file(s):
+              // Write .Zones file(s):
               if (format == Decouper::BINARY_MULTIPLE)
                 {
                   Nom nom_fichier(basename);
-                  nom_fichier+=Nom(".Domaines");
+                  nom_fichier+=Nom(".Zones");
                   //nom_fichier = nom_fichier.nom_me(i_part);
                   construire_nom_fichier_sous_domaine(basename,i_part, nb_parties_, domaines_index[i_part], nom_fichier);
                   Cerr << "Writing part " << i_part << " into the "

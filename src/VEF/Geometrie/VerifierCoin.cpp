@@ -212,7 +212,7 @@ Entree& VerifierCoin::interpreter_(Entree& is)
                     {
                       Cerr << "Error in VerifierCoin::interpreter" << finl;
                       Cerr << "The node " << somm << " is not found." << finl;
-                      Cerr << "Check the .Domaines files are up to date with your mesh file." << finl;
+                      Cerr << "Check the .Zones files are up to date with your mesh file." << finl;
                       Process::exit();
                     }
                 }

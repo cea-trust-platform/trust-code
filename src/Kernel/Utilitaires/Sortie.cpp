@@ -239,7 +239,7 @@ Sortie& Sortie::operator <<(const char* ob)
       // Ca c'est dommage : dans LIST, il y a "<< blanc <<"
       // qui oblige a mettre ce test :
       // Il faudrait mettre "<< space <<"  mais cela change les fichiers
-      // .Domaines binaires...
+      // .Zones binaires...
       if (strcmp(ob, " "))
         {
           const int n = (int)strlen(ob) + 1;

@@ -75,7 +75,7 @@ void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
   //fichier.close();
   if (0)
     {
-      Nom org=("debug.Domaines");
+      Nom org=("debug.Zones");
       org=org.nom_me(me());
       SFichier  file_out(org);
       file_out << dom << finl<<"0 "<<finl;

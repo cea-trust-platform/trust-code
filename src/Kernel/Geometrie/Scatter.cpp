@@ -473,7 +473,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 {
   // On determine si le fichier est au nouveau format ou a l'ancien
   if (Process::je_suis_maitre())
-    Cerr << "Reading geometry from .Domaines file(s) ..." << finl;
+    Cerr << "Reading geometry from .Zones file(s) ..." << finl;
   barrier(); // Attendre que le message soit affiche
 
   Domaine& dom = domaine();
@@ -553,10 +553,10 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
             {
               EFichierBin fichier_binaire_part;
               Domaine part_dom;
-              std::string tmp = nomentree_with_suffix.getPrefix(".Domaines").getString();
+              std::string tmp = nomentree_with_suffix.getPrefix(".Zones").getString();
               tmp += "_";
               tmp += std::to_string(i);
-              tmp += ".Domaines";
+              tmp += ".Zones";
               Nom nomentree_part(tmp);
               int ok = fichier_binaire_part.ouvrir(nomentree_part);
               if(ok)

@@ -21,6 +21,7 @@
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Sous_Domaines,"Partitionneur_Sous_Domaines",Partitionneur_base);
 // XD partitionneur_sous_domaines partitionneur_deriv sous_domaines -1 This algorithm will create one part for each specified subdomaine/domain. All elements contained in the first subdomaine/domain are put in the first part, all remaining elements contained in the second subdomaine/domain in the second part, etc... NL2 If all elements of the current domain are contained in the specified subdomaines/domain, then N parts are created, otherwise, a supplemental part is created with the remaining elements. NL2 If no subdomaine is specified, all subdomaines defined in the domain are used to split the mesh.
+Add_synonym(Partitionneur_Sous_Domaines, "Partitionneur_Sous_Zones");
 
 Partitionneur_Sous_Domaines::Partitionneur_Sous_Domaines()
 {
@@ -55,7 +56,7 @@ Sortie& Partitionneur_Sous_Domaines::printOn(Sortie& os) const
  */
 void Partitionneur_Sous_Domaines::set_param(Param& param)
 {
-  param.ajouter("sous_domaines",&noms_sous_domaines_);     // XD attr sous_domaines listchaine sous_domaines 1 N SUBZONE_NAME_1 SUBZONE_NAME_2 ...
+  param.ajouter("sous_zones",&noms_sous_domaines_);  // XD attr sous_zones listchaine sous_zones 1 N SUBZONE_NAME_1 SUBZONE_NAME_2 ...
   param.ajouter("domaines",&noms_domaines_);         // XD attr domaines   listchaine domaines   1 N DOMAIN_NAME_1  DOMAIN_NAME_2  ...
 }
 
@@ -116,7 +117,7 @@ void Partitionneur_Sous_Domaines::construire_partition(IntVect& elem_part, int& 
               // Contrairement au sous domaine, le domaine doit exister pour le moment
               Cerr << "Domain " << nom_domaine << " is not existing." << finl;
               Process::exit();
-              // ToDo eventuellement liste de domaines dans des fichiers ex: DOM_0000.Domaines, DOM_0001.Domaines
+              // ToDo eventuellement liste de domaines dans des fichiers ex: DOM_0000.Zones, DOM_0001.Zones
             }
           const Domaine& domaine = ref_cast(Domaine, interprete().objet(nom_domaine));
           DoubleTab domaine_xp;

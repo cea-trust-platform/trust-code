@@ -54,7 +54,7 @@ Entree& Joint::readOn(Entree& s)
     {
       if (Process::je_suis_maitre())
         {
-          Cerr << "The format of .Domaines is not recognized because probably too old." << finl;
+          Cerr << "The format of .Zones is not recognized because probably too old." << finl;
           Cerr << "Split your mesh with an executable which is more recent" << finl;
           Cerr << "than the version 1.5.2 build 240507." << finl;
         }

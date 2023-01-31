@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -195,13 +195,13 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
   Nom org,newd;
   Param param(que_suis_je());
 // XD Raffiner_isotrope_parallele interprete Raffiner_isotrope_parallele 1 Refine parallel mesh in parallel
-  param.ajouter("name_of_initial_domaines",&org,Param::REQUIRED); // XD_ADD_P chaine name of initial Domaines
-  param.ajouter("name_of_new_domaines",&newd,Param::REQUIRED); // XD_ADD_P chaine name of new Domaines
+  param.ajouter("name_of_initial_domaines|name_of_initial_zones",&org,Param::REQUIRED); // XD_ADD_P chaine name of initial Domaines
+  param.ajouter("name_of_new_domaines|name_of_new_zones",&newd,Param::REQUIRED); // XD_ADD_P chaine name of new Domaines
   param.ajouter("ascii",&form);  // XD_ADD_P flag writing Domaines in ascii format
   param.ajouter_flag("single_hdf",&format_hdf); // XD_ADD_P flag writing Domaines in hdf format
   param.lire_avec_accolades(is);
   // Force un fichier unique au dela d'un certain nombre de rangs MPI:
-  if (Process::force_single_file(Process::nproc(), org+".Domaines"))
+  if (Process::force_single_file(Process::nproc(), org+".Zones"))
     format_hdf = 1;
   int binaire=!form;
   if (form && format_hdf)
@@ -211,7 +211,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
     }
   Domaine dom_org;
   Noms liste_bords_periodiques;
-  org+=".Domaines";
+  org+=".Zones";
 
   Nom copy(org);
   copy = copy.nom_me(Process::nproc(), "p", 1);
@@ -267,7 +267,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       if (0)
         {
           Nom debug(newd);
-          debug+="_debug.Domaines";
+          debug+="_debug.Zones";
           EcrFicCollecte os;
           os.set_bin(binaire);
 
@@ -313,7 +313,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
             dom_new.les_sommets().resize(nb_sommet_avant_completion,dimension);
 
             Scatter::uninit_sequential_domain(dom_new);
-            newd+=".Domaines";
+            newd+=".Zones";
 
             if( !format_hdf )
               {

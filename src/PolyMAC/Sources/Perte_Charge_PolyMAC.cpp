@@ -59,7 +59,7 @@ void Perte_Charge_PolyMAC::set_param(Param& param)
 {
   param.ajouter_non_std("lambda",(this),Param::REQUIRED);
   param.ajouter("diam_hydr",&diam_hydr,Param::REQUIRED);
-  param.ajouter_non_std("sous_domaine",(this));
+  param.ajouter_non_std("sous_domaine|sous_zone",(this));
   param.ajouter("implicite",&implicite_);
 }
 

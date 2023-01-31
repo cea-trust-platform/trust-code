@@ -22,9 +22,11 @@
 #include <SFichier.h>
 
 Implemente_instanciable(Create_domain_from_sous_domaine,"Create_domain_from_sous_domaine|Create_domains_from_sous_domaines",Interprete_geometrique_base);
-// XD create_domain_from_sous_domaine interprete_geometrique_base create_domain_from_sous_domaine 1 This keyword fills the domain domaine_final with the subdomaine par_sous_domaine from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
-// 16/10/2017: desactivation du mot-cle par_sous_domaines
-// create_domain_from_sous_domaine interprete_geometrique_base create_domain_from_sous_domaine 1 This keyword fills the domain domaine_final with the subdomaine par_sous_domaine or with several subdomaines par_sous_domaines from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
+// XD create_domain_from_sous_domaine interprete_geometrique_base create_domain_from_sous_domaine 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
+// 16/10/2017: desactivation du mot-cle par_sous_zones
+// create_domain_from_sous_domaine interprete_geometrique_base create_domain_from_sous_domaine 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone or with several subdomaines par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
+
+Add_synonym(Create_domain_from_sous_domaine, "Create_domain_from_sous_zone");
 
 Sortie& Create_domain_from_sous_domaine::printOn(Sortie& os) const
 {
@@ -37,7 +39,7 @@ Entree& Create_domain_from_sous_domaine::readOn(Entree& is)
 
 int Create_domain_from_sous_domaine::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="domaines")
+  if (mot=="domaines" || mot=="zones")
     {
       noms_sous_domaines.reset(), noms_doms.reset();
       Nom ssz, dom;
@@ -56,18 +58,18 @@ Entree& Create_domain_from_sous_domaine::interpreter_(Entree& is)
   noms_sous_domaines.dimensionner(1), noms_doms.dimensionner(1);
   Param param(que_suis_je());
   param.ajouter("domaine_final",&noms_doms[0]); // XD_ADD_P ref_domaine new domain in which faces are stored
-  param.ajouter("par_sous_domaine",&noms_sous_domaines[0]); // XD_ADD_P chaine a sub-area allowing to choose the elements
+  param.ajouter("par_sous_zone",&noms_sous_domaines[0]); // XD_ADD_P chaine a sub-area allowing to choose the elements
   param.ajouter("domaine_init",&nom_dom_org,Param::REQUIRED); // XD_ADD_P ref_domaine initial domain
-  param.ajouter_non_std("domaines", this);
-  // 16/10/2017: desactivation du mot-cle par_sous_domaines
-  //param.ajouter("par_sous_domaines",&vec_nom_ssz); // listchaine several sub-domaines allowing to choose the elements
-  //param.ajouter_condition("is_read_par_sous_domaine_or_is_read_par_sous_domaines","Interpreter Create_domain_from_sous_domaine: one of the keywords par_sous_domaine or par_sous_domaines must be specified.");
+  param.ajouter_non_std("domaines|zones", this);
+  // 16/10/2017: desactivation du mot-cle par_sous_zones
+  //param.ajouter("par_sous_zones",&vec_nom_ssz); // listchaine several sub-domaines allowing to choose the elements
+  //param.ajouter_condition("is_read_par_sous_zone_or_is_read_par_sous_zones","Interpreter Create_domain_from_sous_domaine: one of the keywords par_sous_zone or par_sous_zones must be specified.");
   param.lire_avec_accolades_depuis(is);
 
 
   if (nproc()>1)
     {
-      Cerr<<"Options par_sous_domaine and par_sous_domaines of  "<<que_suis_je()<<" are for sequential." <<finl;
+      Cerr<<"Options par_sous_zone and par_sous_zones of  "<<que_suis_je()<<" are for sequential." <<finl;
       exit();
     }
 

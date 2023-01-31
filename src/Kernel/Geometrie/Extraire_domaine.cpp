@@ -48,7 +48,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   param.ajouter("domaine",&nom_dom,Param::REQUIRED);
   param.ajouter("probleme",&nom_pb,Param::REQUIRED);
   param.ajouter("condition_elements",&expr_elements);
-  param.ajouter("sous_domaine",&nom_sous_domaine);
+  param.ajouter("sous_domaine|sous_zone",&nom_sous_domaine);
   //param.ajouter("condition_faces",&expr_faces);
   // param.ajouter_flag("avec_les_bords",&avec_les_bords);
   param.lire_avec_accolades_depuis(is);

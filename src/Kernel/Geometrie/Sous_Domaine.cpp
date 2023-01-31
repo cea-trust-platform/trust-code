@@ -22,7 +22,7 @@
 #include <Domaine.h>
 
 Implemente_instanciable(Sous_Domaine,"Sous_Domaine",Objet_U);
-
+Add_synonym(Sous_Domaine, "Sous_Zone");
 
 /*! @brief Ecrit la liste des polyedres de la sous-domaine sur un flot de sortie.
  *
@@ -70,7 +70,7 @@ Sortie& Sous_Domaine::printOn(Sortie& os) const
  */
 Entree& Sous_Domaine::readOn(Entree& is)
 {
-  Motcles les_mots(12);
+  Motcles les_mots(13);
   {
     les_mots[0] = "Liste";
     les_mots[1] = "Polynomes";
@@ -83,7 +83,8 @@ Entree& Sous_Domaine::readOn(Entree& is)
     les_mots[8] = "Couronne";
     les_mots[9] = "Tube";
     les_mots[10]= "Tube_Hexagonal";
-    les_mots[11]= "fonction_sous_domaine";
+    les_mots[11]= "fonction_sous_zone";
+    les_mots[12]= "fonction_sous_domaine";
   }
 
   if (!le_dom_.non_nul())
@@ -848,7 +849,8 @@ Entree& Sous_Domaine::readOn(Entree& is)
         }
         break;
       }
-    case 11 :
+    case 11:
+    case 12:
       {
 
         Parser_U F;
