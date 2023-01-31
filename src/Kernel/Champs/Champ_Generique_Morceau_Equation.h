@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,8 +17,9 @@
 #define Champ_Generique_Morceau_Equation_included
 
 #include <Champ_Gen_de_Champs_Gen.h>
-#include <Ref_Equation_base.h>
+#include <TRUST_Ref.h>
 
+class Equation_base;
 class MorEqn;
 
 /*! @brief class Champ_Generique_Morceau_Equation Champ destine a post-traiter une quantite liee a un morceau d equation
@@ -67,7 +68,7 @@ protected:
   Nom type_morceau_;                //type du morceau d equation (ex : Operateur)
   Nom option_;                      //Pour selectionner la quantite a postraiter
   int compo_;                            //Pour identifier la composante a recuperer pour l option flux_bords
-  REF(Equation_base) ref_eq_;       //REF vers l equation qui porte le morceau
+  REF2(Equation_base) ref_eq_;       //REF vers l equation qui porte le morceau
   Motcle  localisation_;            //localisation correspondant au support du champ postraite
 };
 

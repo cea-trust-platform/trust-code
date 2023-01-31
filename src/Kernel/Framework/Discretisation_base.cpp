@@ -24,7 +24,6 @@
 #include <Domaine_VF.h>
 
 Implemente_base(Discretisation_base,"Discretisation_base",Objet_U);
-Implemente_ref(Discretisation_base);
 Implemente_instanciable(Discretisation,"Discretisation",DERIV(Discretisation_base));
 
 const Motcle Discretisation_base::DEMANDE_DESCRIPTION = Motcle("demande_description");

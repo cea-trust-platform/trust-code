@@ -31,10 +31,6 @@
 
 Implemente_instanciable(Domaine_VEF,"Domaine_VEF",Domaine_VF);
 
-
-//// printOn
-//
-
 Sortie& Domaine_VEF::ecrit(Sortie& os) const
 {
   Domaine_VF::printOn(os);
@@ -57,8 +53,6 @@ Sortie& Domaine_VEF::ecrit(Sortie& os) const
   return os;
 }
 
-//// printOn
-//
 
 Sortie& Domaine_VEF::printOn(Sortie& os) const
 {
@@ -76,9 +70,6 @@ Sortie& Domaine_VEF::printOn(Sortie& os) const
   os << rang_elem_non_std_ << finl;
   return os;
 }
-
-//// readOn
-//
 
 Entree& Domaine_VEF::readOn(Entree& is)
 {

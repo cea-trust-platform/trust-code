@@ -18,7 +18,6 @@
 
 #include <DomaineCutter_Correspondance.h>
 #include <Static_Int_Lists.h>
-#include <Ref_Domaine.h>
 #include <TRUST_Ref.h>
 #include <Decouper.h>
 #include <Noms.h>
@@ -66,7 +65,7 @@ private:
   DomaineCutter(const DomaineCutter& dc);
 
   // Reference au domaine global
-  REF(Domaine) ref_domaine_;
+  REF2(Domaine) ref_domaine_;
   // Reference au tableau de decoupage
   //  (pour chaque element du domaine global, numero de sous-domaine)
   REF2(IntVect) ref_elem_part_;

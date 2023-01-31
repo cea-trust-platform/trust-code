@@ -18,11 +18,11 @@
 
 #include <Matrice_Morse_Sym.h>
 #include <Assembleur_base.h>
-class Domaine_VEF;
 #include <TRUST_Ref.h>
+
 class Domaine_Cl_VEF;
-#include <TRUST_Ref.h>
-#include <Ref_Equation_base.h>
+class Equation_base;
+class Domaine_VEF;
 
 class Assembleur_P_VEF: public Assembleur_base
 {
@@ -38,11 +38,10 @@ public:
   int remplir(Matrice&, const DoubleTab&);
   inline int remplir(Matrice&, const DoubleVect&)
   {
-    assert(0);
-    exit();
+    Process::exit();
     return 1;
   }
-  ;
+
   int assembler_QC(const DoubleTab&, Matrice&) override;
   int modifier_secmem(DoubleTab&) override;
   int modifier_solution(DoubleTab&) override;
@@ -51,7 +50,7 @@ public:
   inline const Equation_base& equation() const;
 
 protected:
-  REF(Equation_base) mon_equation;
+  REF2(Equation_base) mon_equation;
   REF2(Domaine_VEF) le_dom_VEF;
   REF2(Domaine_Cl_VEF) le_dom_Cl_VEF;
   DoubleTab les_coeff_pression;

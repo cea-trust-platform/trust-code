@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,24 +14,13 @@
 *****************************************************************************/
 
 #include <Ecrire.h>
+#include <Nom.h>
 
 Implemente_instanciable(Ecrire,"Ecrire",Interprete);
 
-/*! @brief appel a la methode printOn de la classe Interprete
- *
- */
-Sortie& Ecrire::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& Ecrire::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-/*! @brief appel a la methode readOn de la classe Interprete
- *
- */
-Entree& Ecrire::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Entree& Ecrire::readOn(Entree& is) { return Interprete::readOn(is); }
 
 /*! @brief Lit le nom d'un objet dans is Ecrit l'objet correspondant sur la sortie standard
  *

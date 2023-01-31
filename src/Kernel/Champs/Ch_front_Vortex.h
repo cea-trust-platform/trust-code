@@ -13,14 +13,13 @@
 *
 *****************************************************************************/
 
-
 #ifndef Ch_front_Vortex_included
 #define Ch_front_Vortex_included
 
 #include <Champ_front_var_instationnaire.h>
+#include <TRUST_Ref.h>
 
-
-#include <Ref_Domaine.h>
+class Domaine;
 
 /*! @brief classe Ch_fr_Vortex Classe derivee de Champ_front_var qui represente les
  *
@@ -49,7 +48,7 @@ protected :
 
   int init = 1;
   int first_rand = 1;
-  REF(Domaine) mon_domaine;
+  REF2(Domaine) mon_domaine;
   Nom geom;
   double nu = -100., utau = -100.;
   double R = -100., Ox = -100., Oy = -100., Oz = -100., surf = -100.;

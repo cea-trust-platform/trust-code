@@ -51,7 +51,7 @@ public:
   inline const Equation_base& equation() const;
 
 protected :
-  REF(Equation_base) mon_equation;
+  REF2(Equation_base) mon_equation;
   REF2(Domaine_PolyMAC) le_dom_PolyMAC;
   REF2(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   int has_P_ref = 0;

@@ -16,13 +16,14 @@
 #ifndef Domaine_dis_base_included
 #define Domaine_dis_base_included
 
-#include <Domaine.h>
-#include <Ref_Domaine_dis.h>
 #include <Sous_domaines_dis.h>
+#include <TRUST_Ref.h>
+#include <Domaine.h>
 
-class Conds_lim;
 class Domaine_Cl_dis_base;
 class Frontiere_dis_base;
+class Domaine_dis;
+class Conds_lim;
 
 /*! @brief classe Domaine_dis_base Cette classe est la base de la hierarchie des domaines discretisees.
  *

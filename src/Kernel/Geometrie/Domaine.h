@@ -342,7 +342,7 @@ protected:
   // elem_virt_pe_num_(i-nb_elem,1) = numero local de cet element sur le PE qui le possede
   IntTab elem_virt_pe_num_;
 
-  LIST(REF(Domaine)) domaines_frontieres_;
+  LIST(REF2(Domaine)) domaines_frontieres_;
 
   LIST(REF2(Sous_Domaine)) les_ss_domaines_;
 

@@ -17,9 +17,9 @@
 #define Decouper_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
 #include <TRUST_Deriv.h>
 #include <Interprete.h>
+#include <TRUST_Ref.h>
 #include <vector>
 
 class Domaine;
@@ -49,7 +49,7 @@ public:
 
   Nom nom_domaine;
   DERIV(Partitionneur_base) deriv_partitionneur;
-  REF(Domaine) ref_domaine;
+  REF2(Domaine) ref_domaine;
   int nb_parts_tot = -1;
   Noms liste_bords_periodiques;
 

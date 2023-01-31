@@ -16,10 +16,9 @@
 #ifndef Dirichlet_loi_paroi_included
 #define Dirichlet_loi_paroi_included
 
-#include <Ref_Frontiere_dis_base.h>
 #include <Frontiere_dis_base.h>
-#include <Ref_Correlation.h>
 #include <Correlation.h>
+#include <TRUST_Ref.h>
 #include <Dirichlet.h>
 #include <TRUSTTab.h>
 #include <Param.h>
@@ -51,8 +50,8 @@ public:
   void verifie_ch_init_nb_comp() const override { }
 
 protected:
-  REF(Correlation) correlation_loi_paroi_;
-  REF(Frontiere_dis_base) la_frontiere_dis;
+  REF2(Correlation) correlation_loi_paroi_;
+  REF2(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1.e8;
 };
 

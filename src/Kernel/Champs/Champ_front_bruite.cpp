@@ -16,6 +16,7 @@
 #include <Champ_front_bruite.h>
 #include <Frontiere_dis_base.h>
 #include <Frontiere.h>
+#include <Motcle.h>
 
 Implemente_instanciable(Champ_front_bruite,"Champ_front_bruite",Ch_front_var_instationnaire_indep);
 // XD champ_front_bruite front_field_base champ_front_bruite 0 Field which is variable in time and space in a random manner.

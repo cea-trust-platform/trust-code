@@ -36,7 +36,7 @@ public:
                                     ArrOfInt& renum_som);
 protected:
   // Reference au domaine source:
-  REF(Domaine) domaine_source_;
+  REF2(Domaine) domaine_source_;
   // Nom du bord dans le domaine source:
   Nom bord_source_;
   // Pour chaque sommet de ce domaine, indice du meme sommet dans le domaine source:

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -383,7 +383,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
   if (use_medcoupling_)
     {
       // Read a field
-      std::string  meshName = mon_dom.le_nom().getString();
+      std::string  meshName = mon_dom->le_nom().getString();
       std::string fieldName = nom_champ_dans_fichier_med_.getString();
       std::string  fileName = nom_fichier_med_.getString();
       // Etude des conditions pour chercher ou nom un champ dans le fichier MED:
@@ -468,7 +468,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       Char_ptr maa_ass;
       maa_ass.allocate(MED_NAME_SIZE);
       //Cerr<<"nb_dt"<<nb_dt<<finl;
-      Nom nom_dom(mon_dom.le_nom());
+      Nom nom_dom(mon_dom->le_nom());
       int i2 = 0;
       Nom& le_nom_du_champ = nom_champ_dans_fichier_med_;
       med_field_type typcha;
@@ -558,7 +558,7 @@ void Champ_Fonc_MED::lire(double t, int given_it)
                                   MED_ALL_CONSTITUENT, (unsigned char *) le_champ().valeurs().addr());
           if (ret < 0)
             {
-              Cerr << "Problem while reading field " << le_nom_du_champ << " name of domain " << mon_dom.le_nom() << finl;
+              Cerr << "Problem while reading field " << le_nom_du_champ << " name of domain " << mon_dom->le_nom() << finl;
               exit();
             }
           MEDfileClose(fid);
@@ -615,13 +615,13 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcl
               exit();
             }
         }
-      std::string meshName = mon_dom.le_nom().getString();
+      std::string meshName = mon_dom->le_nom().getString();
       std::string fileName = nom_fic.getString();
       // Try to guess the field name in the MED file:
       Noms fieldNamesGuess;
-      fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+mon_dom.le_nom());
+      fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+mon_dom->le_nom());
       if (localisation != Nom())
-        fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+localisation+"_"+mon_dom.le_nom());
+        fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_+"_"+localisation+"_"+mon_dom->le_nom());
       fieldNamesGuess.add((Motcle)nom_champ_dans_fichier_med_);
       if (!fieldNamesGuess.contient_(nom_champ_dans_fichier_med_))
         fieldNamesGuess.add(nom_champ_dans_fichier_med_);

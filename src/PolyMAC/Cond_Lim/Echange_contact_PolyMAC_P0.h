@@ -20,7 +20,6 @@
 #include <Op_Diff_PolyMAC_P0_Elem.h>
 #include <TRUSTTabs_forward.h>
 #include <MD_Vector_tools.h>
-#include <Ref_Front_VF.h>
 #include <TRUST_Ref.h>
 
 class Domaine_PolyMAC_P0;
@@ -46,7 +45,7 @@ public :
   void mettre_a_jour(double temps) override { }; //non utilise
   void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
 
-  mutable REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
+  mutable REF2(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
   mutable int i_fvf = -1, i_o_fvf = -1;  //indices de frontiere de chaque cote
   mutable REF2(Op_Diff_PolyMAC_P0_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
 

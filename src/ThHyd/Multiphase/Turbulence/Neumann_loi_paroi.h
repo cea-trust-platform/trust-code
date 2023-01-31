@@ -16,14 +16,12 @@
 #ifndef Neumann_loi_paroi_included
 #define Neumann_loi_paroi_included
 
-#include <Neumann_paroi.h>
-#include <Param.h>
-#include <TRUSTTab.h>
-#include <Ref_Correlation.h>
-#include <Correlation.h>
 #include <Frontiere_dis_base.h>
-#include <Ref_Frontiere_dis_base.h>
-
+#include <Neumann_paroi.h>
+#include <Correlation.h>
+#include <TRUST_Ref.h>
+#include <TRUSTTab.h>
+#include <Param.h>
 
 /*! @brief Classe Neumann_loi_paroi Classe de base pour les flux impose pour une condition aux limites adaptative faible des equations de turbulence
  *
@@ -39,29 +37,23 @@ class Neumann_loi_paroi : public Neumann_paroi
 public:
 
   virtual void liste_faces_loi_paroi(IntTab&) =0;
-  virtual void associer_correlation(const Correlation& corr)
-  {
-
-    correlation_loi_paroi_ = corr;
-
-  };
+  virtual void associer_correlation(const Correlation& corr) {  correlation_loi_paroi_ = corr;  }
   void associer_fr_dis_base(const Frontiere_dis_base& fr) override {la_frontiere_dis=fr;};
   void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl)  override { mon_dom_cl_dis=zcl;};
 
   // fonctions de cond_lim_base qui necessitent le champ_front qu'on met a zero car on fait abstraction du champ_front
-  virtual void completer() override {};
-  virtual void fixer_nb_valeurs_temporelles(int nb_cases) override {};
-  virtual inline Frontiere_dis_base& frontiere_dis() override {return la_frontiere_dis;};
-  virtual inline const Frontiere_dis_base& frontiere_dis() const override {return la_frontiere_dis;};
-  virtual void changer_temps_futur(double temps,int i) override {};
-  virtual void set_temps_defaut(double temps) override {};
-  virtual void calculer_coeffs_echange(double temps) override {};
-  void verifie_ch_init_nb_comp() const override {};
-
+  virtual void completer() override { }
+  virtual void fixer_nb_valeurs_temporelles(int nb_cases) override { }
+  virtual inline Frontiere_dis_base& frontiere_dis() override { return la_frontiere_dis; }
+  virtual inline const Frontiere_dis_base& frontiere_dis() const override { return la_frontiere_dis; }
+  virtual void changer_temps_futur(double temps,int i) override { }
+  virtual void set_temps_defaut(double temps) override { }
+  virtual void calculer_coeffs_echange(double temps) override { }
+  void verifie_ch_init_nb_comp() const override { }
 
 protected:
-  REF(Correlation) correlation_loi_paroi_;
-  REF(Frontiere_dis_base) la_frontiere_dis;
+  REF2(Correlation) correlation_loi_paroi_;
+  REF2(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1.e8;
 };
 

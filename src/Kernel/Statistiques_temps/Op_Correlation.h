@@ -17,10 +17,11 @@
 #define Op_Correlation_included
 
 #include <Integrale_tps_produit_champs.h>
-#include <Ref_Integrale_tps_Champ.h>
 #include <TRUSTTabs_forward.h>
 #include <Op_Moyenne.h>
 #include <TRUST_Ref.h>
+
+class Integrale_tps_Champ;
 
 class Op_Correlation : public Operateur_Statistique_tps_base
 {
@@ -54,8 +55,8 @@ public:
 protected:
   REF2(Op_Moyenne) la_moyenne_a_;
   REF2(Op_Moyenne) la_moyenne_b_;
-  REF(Integrale_tps_Champ) integrale_tps_a_;
-  REF(Integrale_tps_Champ) integrale_tps_b_;
+  REF2(Integrale_tps_Champ) integrale_tps_a_;
+  REF2(Integrale_tps_Champ) integrale_tps_b_;
   Integrale_tps_produit_champs integrale_tps_ab_;
 };
 

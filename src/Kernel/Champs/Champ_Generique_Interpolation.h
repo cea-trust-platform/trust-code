@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -81,7 +81,7 @@ private:
   Motcle               localisation_;                 // localisation d interpolation elem, som
   Motcle               methode_;                      // calculer_champ_post, etc...
   Nom                nom_domaine_lu_;        // Nom du domaine lu
-  REF(Domaine)         domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
+  REF2(Domaine)         domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
   Domaine_dis le_dom_dis;                     // rempli si domaine d interpolation different du domaine natif
   // ex : Sonde utilise valeur_aux...() qui necessite de disposer d une domaine discretisee
   int optimisation_sous_maillage_,optimisation_demande_;

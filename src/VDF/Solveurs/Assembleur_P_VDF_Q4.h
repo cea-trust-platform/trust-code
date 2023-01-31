@@ -41,7 +41,7 @@ public:
 protected :
   REF2(Domaine_VDF) le_dom_VDF;
   REF2(Domaine_Cl_VDF) le_dom_Cl_VDF;
-  REF(Equation_base) eqn_;
+  REF2(Equation_base) eqn_;
 };
 
 

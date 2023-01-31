@@ -16,10 +16,11 @@
 #ifndef Op_Ecart_type_included
 #define Op_Ecart_type_included
 
-#include <Ref_Integrale_tps_Champ.h>
 #include <TRUSTTabs_forward.h>
 #include <Op_Moyenne.h>
 #include <TRUST_Ref.h>
+
+class Integrale_tps_Champ;
 
 class Op_Ecart_type : public Operateur_Statistique_tps_base
 {
@@ -48,11 +49,9 @@ public:
   inline int reprendre(Entree& is) override;
 
 protected:
-
   REF2(Op_Moyenne) la_moyenne;
-  REF(Integrale_tps_Champ) integrale_champ;
+  REF2(Integrale_tps_Champ) integrale_champ;
   Integrale_tps_Champ integrale_carre_champ;
-
 };
 
 inline void Op_Ecart_type::associer_op_stat(const Operateur_Statistique_tps_base& un_op_stat)

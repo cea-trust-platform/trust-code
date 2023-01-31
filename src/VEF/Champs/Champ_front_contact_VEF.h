@@ -18,12 +18,12 @@
 #define Champ_front_contact_VEF_included
 
 #include <Ch_front_var_instationnaire_dep.h>
-#include <Ref_Champ_Inc_base.h>
-#include <Front_VF.h>
-#include <Ref_Front_VF.h>
 #include <Ref_Champ_front_contact_VEF.h>
-#include <Motcle.h>
+#include <Ref_Champ_Inc_base.h>
 #include <Domaine_VEF.h>
+#include <TRUST_Ref.h>
+#include <Front_VF.h>
+#include <Motcle.h>
 
 class Equation_base;
 class Milieu_base;
@@ -101,7 +101,7 @@ protected :
   REF(Champ_Inc_base) l_inconnue1;
   REF(Champ_Inc_base) l_inconnue2;
   REF(Champ_Inc_base) l_inconnue;
-  REF(Front_VF) fr_vf_autre_pb;
+  REF2(Front_VF) fr_vf_autre_pb;
   REF(Champ_front_contact_VEF) ch_fr_autre_pb;
 
   Nom nom_bord1;

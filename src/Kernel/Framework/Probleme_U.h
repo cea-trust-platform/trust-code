@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,11 @@
 #ifndef Probleme_U_included
 #define Probleme_U_included
 
-#include <Ref_Field_base.h>
 #include <Ref_Champ_Generique_base.h>
 #include <ScalarRegister.h>
+#include <TRUST_Ref.h>
+
+class Field_base;
 class Noms;
 
 namespace ICoCo
@@ -81,7 +83,7 @@ public :
   virtual bool run();
   virtual bool runUntil(double time);
 
-  virtual REF(Field_base) findInputField(const Nom& name) const;
+  virtual REF2(Field_base) findInputField(const Nom& name) const;
   virtual REF(Champ_Generique_base) findOutputField(const Nom& name) const;
   // Methodes d'acces aux membres :
 

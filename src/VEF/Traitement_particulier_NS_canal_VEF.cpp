@@ -16,34 +16,17 @@
 #include <Traitement_particulier_NS_canal_VEF.h>
 #include <Navier_Stokes_std.h>
 #include <Mod_turb_hyd_base.h>
-#include <Ref_Equation_base.h>
+#include <Equation_base.h>
 #include <Domaine_VEF.h>
 #include <Milieu_base.h>
 #include <Fluide_base.h>
+#include <TRUST_Ref.h>
 
 Implemente_instanciable(Traitement_particulier_NS_canal_VEF,"Traitement_particulier_NS_CANAL_VEF",Traitement_particulier_NS_canal);
 
+Sortie& Traitement_particulier_NS_canal_VEF::printOn(Sortie& is) const { return is; }
 
-/*! @brief
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Traitement_particulier_NS_canal_VEF::printOn(Sortie& is) const
-{
-  return is;
-}
-
-
-/*! @brief
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Traitement_particulier_NS_canal_VEF::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Traitement_particulier_NS_canal_VEF::readOn(Entree& is) { return is; }
 
 Entree& Traitement_particulier_NS_canal_VEF::lire(Entree& is)
 {

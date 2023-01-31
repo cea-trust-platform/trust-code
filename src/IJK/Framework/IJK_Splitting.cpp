@@ -22,7 +22,6 @@
 #include <communications.h>
 
 Implemente_instanciable_sans_constructeur(IJK_Splitting, "IJK_Splitting", Objet_U);
-Implemente_ref(IJK_Splitting);
 
 // XD IJK_Splitting objet_u IJK_Splitting -1 Object to specify how the domain will be divided between processors in IJK discretization
 

@@ -238,7 +238,7 @@ int Champ_front_lu::initialiser(double temps, const Champ_Inc_base& inco)
       }
   if (Process::mp_sum(err))
     {
-      erreur_chfront(nom_fic, dim, mon_domaine.le_nom());
+      erreur_chfront(nom_fic, dim, mon_domaine->le_nom());
     }
   les_val.echange_espace_virtuel();
   return 1;

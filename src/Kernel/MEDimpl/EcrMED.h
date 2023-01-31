@@ -20,6 +20,7 @@
 #include <Interprete.h>
 #include <TRUST_Ref.h>
 #include <med++.h>
+#include <Nom.h>
 #include <map>
 
 class Nom;

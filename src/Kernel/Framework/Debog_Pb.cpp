@@ -23,11 +23,10 @@
 #include <Domaine.h>
 #include <Param.h>
 
-REF(Debog_Pb) Debog_Pb::instance_debog_;
+REF2(Debog_Pb) Debog_Pb::instance_debog_;
 
 Implemente_instanciable(Debog_Pb,"Debog_pb",Objet_U);
 Implemente_instanciable(Debog_Pb_Wrapper,"Debog",Interprete);
-Implemente_ref(Debog_Pb);
 
 Sortie& Debog_Pb::printOn(Sortie& os) const
 {

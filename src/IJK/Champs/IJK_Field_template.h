@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,14 @@
 #ifndef IJK_Field_template_included
 #define IJK_Field_template_included
 
-#include <simd_tools.h>
+#include <IJK_Field_local_template.h>
 #include <communications.h>
+#include <IJK_Splitting.h>
 #include <stat_counters.h>
 #include <Statistiques.h>
+#include <simd_tools.h>
+#include <TRUST_Ref.h>
 #include <TRUSTVect.h>
-#include <IJK_Splitting.h>
-#include <IJK_Field_local_template.h>
 
 /*! @brief : This class is an IJK_Field_local with parallel informations.
  *
@@ -63,7 +64,7 @@ public:
   void echange_espace_virtuel(int ghost);
 
 protected:
-  REF(IJK_Splitting) splitting_ref_;
+  REF2(IJK_Splitting) splitting_ref_;
   IJK_Splitting::Localisation localisation_;
 
   void exchange_data(int pe_imin_, /* processor to send to */

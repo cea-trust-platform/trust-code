@@ -16,8 +16,8 @@
 #ifndef Frottement_impose_base_included
 #define Frottement_impose_base_included
 
-#include <Ref_Frontiere_dis_base.h>
 #include <Frontiere_dis_base.h>
+#include <TRUST_Ref.h>
 #include <TRUSTTab.h>
 #include <Navier.h>
 #include <Param.h>
@@ -56,7 +56,7 @@ public:
   void verifie_ch_init_nb_comp() const override { }
 
 protected:
-  REF(Frontiere_dis_base) la_frontiere_dis;
+  REF2(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1e10;
 //  int is_calc_qdm = 1 ;
 };

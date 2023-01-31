@@ -17,8 +17,11 @@
 #define Champ_Post_Operateur_Eqn_included
 
 #include <Champ_Generique_Operateur_base.h>
+#include <TRUST_Ref.h>
 #include <Operateur.h>
-#include <Ref_Equation_base.h>
+
+class Equation_base;
+
 /*! @brief class Champ_Post_Operateur_Eqn Champ destine a post-traiter le gradient d un champ generique
  *
  *  La classe porte un operateur statistique "gradient"
@@ -60,7 +63,7 @@ public:
 
 protected:
   int numero_source_,numero_op_;
-  REF(Equation_base) ref_eq_;
+  REF2(Equation_base) ref_eq_;
   int sans_solveur_masse_;
   Entity localisation_inco_=NODE;
   int compo_;                            //Pour identifier la composante a recuperer

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,30 +14,15 @@
 *****************************************************************************/
 
 #include <Associer.h>
+#include <Nom.h>
 
 Implemente_instanciable(Associer,"Associer|Associate",Interprete);
 
-
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- *     Imprime l'interprete sur un flot de sortie
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Associer::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- *     Ecrit l'interprete sur un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Associer::readOn(Entree& is)
 {
   return Interprete::readOn(is);

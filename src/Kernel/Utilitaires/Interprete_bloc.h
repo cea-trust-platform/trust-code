@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,11 @@
 #define Interprete_bloc_included
 
 #include <Interprete.h>
-#include <Noms.h>
+#include <TRUST_Ref.h>
 #include <liste.h>
+#include <Noms.h>
 
 class Interprete_bloc;
-Declare_ref(Interprete_bloc);
 
 /*! @brief Interprete un bloc d'instructions dans le jeu de donnees.
  *
@@ -48,6 +48,6 @@ protected:
   // Noms des objets lus dans le bloc:
   Noms les_noms_;
   // Reference a l'interprete courant avant la creation de celui-ci
-  REF(Interprete_bloc) pere_;
+  REF2(Interprete_bloc) pere_;
 };
 #endif

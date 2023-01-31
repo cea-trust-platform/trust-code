@@ -57,8 +57,8 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
       is >> nom, m_pb_ch.push_back({});
       if (nom != "{")
         {
-          Cerr << "Errror reading old syntax: " << que_suis_je() << " " << domaine().le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " " << nom << " 1 { ... } ... }" << finl;
-          Cerr << "New syntax is like :       " << que_suis_je() << " " << domaine().le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " { problem_name " << nom << " } { ... } ... }" << finl;
+          Cerr << "Errror reading old syntax: " << que_suis_je() << " " << domaine()->le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " " << nom << " 1 { ... } ... }" << finl;
+          Cerr << "New syntax is like :       " << que_suis_je() << " " << domaine()->le_nom() << " " << nbcomp << " { " << ssz.le_nom() << " { problem_name " << nom << " } { ... } ... }" << finl;
           Cerr << "Check the doc or release notes." << finl;
           Process::exit();
         }

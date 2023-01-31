@@ -17,7 +17,9 @@
 #define Source_Flux_interfacial_base_included
 
 #include <Sources_Multiphase_base.h>
-#include <Ref_Correlation.h>
+#include <TRUST_Ref.h>
+
+class Correlation;
 
 /*! @brief Classe Source_Flux_interfacial_base
  *
@@ -47,7 +49,7 @@ public :
 
 private:
   mutable DoubleTab qpi_, dT_qpi_, da_qpi_, dp_qpi_;
-  REF(Correlation) correlation_; //correlation donnant le coeff de flux interfacial
+  REF2(Correlation) correlation_; //correlation donnant le coeff de flux interfacial
 };
 
 #endif /* Source_Flux_interfacial_base_included */

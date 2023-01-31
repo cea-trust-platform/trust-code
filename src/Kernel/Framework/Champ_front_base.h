@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,20 +13,19 @@
 *
 *****************************************************************************/
 
-
 #ifndef Champ_front_base_included
 #define Champ_front_base_included
 
 #include <Field_base.h>
 #include <Champ_Proto.h>
-#include <Ref_Frontiere_dis_base.h>
+#include <TRUST_Ref.h>
 #include <Roue.h>
 
-
+class Frontiere_dis_base;
 class Champ_Inc_base;
-
 class Domaine_dis_base;
 class Cond_lim_base;
+
 /*! @brief classe Champ_front_base Classe de base pour la hierarchie des champs aux frontieres.
  *
  * Un
@@ -106,7 +105,7 @@ protected:
   // n'est pas specifie. Ce sera en particulier
   // celui utilise par les operateurs et les
   // solveurs.
-  REF(Frontiere_dis_base) la_frontiere_dis;
+  REF2(Frontiere_dis_base) la_frontiere_dis;
   Roue_ptr les_valeurs; // Les valeurs du champ
 };
 

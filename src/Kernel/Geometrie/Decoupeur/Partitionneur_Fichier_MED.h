@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,11 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Partitionneur_Fichier_MED_included
 #define Partitionneur_Fichier_MED_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <TRUST_Ref.h>
+
+class Domaine;
 
 
 /*! @brief Partition d'un domaine a partir d'un fichier MED contenant un champ donnant, pour chaque element, le numero du processeur auquel cet element est attache.
@@ -36,7 +39,7 @@ public:
 
 protected:
   // Parametres du partitionneur
-  REF(Domaine) ref_domaine_;
+  REF2(Domaine) ref_domaine_;
   Nom filename_;
   Nom fieldname_;
 };

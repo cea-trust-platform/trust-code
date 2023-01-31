@@ -33,8 +33,6 @@
 class Probleme_base;
 class Debog_Pb;
 
-Declare_ref(Debog_Pb);
-
 class Debog_Pb : public Objet_U
 {
   Declare_instanciable(Debog_Pb);
@@ -43,7 +41,7 @@ public:
   void verifier_matrice(const char *const msg, const Matrice_Base&, const MD_Vector& md_lignes, const MD_Vector& md_colonnes);
   void verifier_Mat_elems(const char *const msg, const Matrice_Base& la_matrice);
 
-  static REF(Debog_Pb)& get_debog_instance() { return instance_debog_; }
+  static REF2(Debog_Pb)& get_debog_instance() { return instance_debog_; }
 
   template <typename _TYPE_>
   typename std::enable_if< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >::type
@@ -120,7 +118,7 @@ protected:
 
   Nom nom_pb_actuel_;
 
-  static REF(Debog_Pb) instance_debog_;
+  static REF2(Debog_Pb) instance_debog_;
 };
 
 // This is the interpreter (what we use in a data set TRUST).. it will instanciate a Debog_Pb object

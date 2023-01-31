@@ -20,14 +20,12 @@
 #include <Champs_compris_interface.h>
 #include <Sortie_Fichier_base.h>
 #include <Discretisation.h>
-#include <Ref_Field_base.h>
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
 #include <Domaine_dis.h>
 #include <TRUST_List.h>
 #include <Probleme_U.h>
-#include <TRUST_Ref.h>
 #include <TRUST_Ref.h>
 #include <Milieu.h>
 
@@ -36,6 +34,7 @@ class Schema_Temps_base;
 class EcrFicPartageBin;
 class Equation_base;
 class Postraitement;
+class Field_base;
 class Champ_Fonc;
 
 /*! @brief classe Probleme_base C'est un Probleme_U qui n'est pas un couplage.
@@ -179,7 +178,7 @@ public:
   bool updateGivenFields() override { return updateGivenFields_impl(*this); }
   double futureTime() const override { return futureTime_impl(*this); }
 
-  REF(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
+  REF2(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
   REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
   inline bool milieu_via_associer() { return milieu_via_associer_; }
@@ -204,7 +203,7 @@ protected :
   Postraitements les_postraitements;
   REF2(Domaine) le_domaine_;
   REF2(Schema_Temps_base) le_schema_en_temps;
-  REF(Discretisation_base) la_discretisation;
+  REF2(Discretisation_base) la_discretisation;
 
   virtual void typer_lire_milieu(Entree& is) ;
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;

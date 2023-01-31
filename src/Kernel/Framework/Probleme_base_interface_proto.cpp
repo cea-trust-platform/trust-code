@@ -208,13 +208,13 @@ void Probleme_base_interface_proto::getOutputFieldsNames_impl(const Probleme_bas
     }
 }
 
-REF(Field_base) Probleme_base_interface_proto::findInputField_impl(const Probleme_base& pb, const Nom& name) const
+REF2(Field_base) Probleme_base_interface_proto::findInputField_impl(const Probleme_base& pb, const Nom& name) const
 {
   // WEC : there should be a better way to scan the list
   for (int i = 0; i < input_fields.size(); i++)
     if (input_fields[i]->le_nom() == name) return input_fields[i];
 
-  REF(Field_base) ch;
+  REF2(Field_base) ch;
   return ch;
 }
 

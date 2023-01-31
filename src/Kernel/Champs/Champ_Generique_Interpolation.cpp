@@ -635,7 +635,7 @@ const Domaine_dis_base& Champ_Generique_Interpolation::get_ref_domaine_dis_base(
       if (!le_dom_dis.non_nul())
         {
           Cerr << "Error in Interpolation definition:" << finl;
-          Cerr << "The domain " << domaine_.le_nom() << " is not built." << finl;
+          Cerr << "The domain " << domaine_->le_nom() << " is not built." << finl;
           exit();
         }
       const Domaine_dis_base& domaine_dis = le_dom_dis.valeur();
@@ -691,7 +691,7 @@ void Champ_Generique_Interpolation::discretiser_domaine()
           // On verifie que la localisation aux faces est possible sur le domaine (sinon elem ou som)
           if (domaine_.valeur().type_elem().valeur().nb_som_face()<=2 && dimension==3)
             {
-              Cerr << "'localisation faces' is not possible in 3D on the 2D surface mesh " << domaine_.le_nom() << " with the field: " << get_property("NOM")[0] << finl;
+              Cerr << "'localisation faces' is not possible in 3D on the 2D surface mesh " << domaine_->le_nom() << " with the field: " << get_property("NOM")[0] << finl;
               Cerr << "Please use 'localisation elem' instead." << finl;
               exit();
             }

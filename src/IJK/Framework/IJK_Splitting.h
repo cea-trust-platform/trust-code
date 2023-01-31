@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,17 +16,13 @@
 #ifndef IJK_Splitting_included
 #define IJK_Splitting_included
 
+#include <Linear_algebra_tools.h>
 #include <IJK_Grid_Geometry.h>
 #include <FixedVector.h>
-#include <TRUSTTab.h>
 #include <TRUSTArrays.h>
-#include <Ref.h>
-#include <Linear_algebra_tools.h>
+#include <TRUSTTab.h>
 
 typedef FixedVector<int,3> Int3;
-
-class IJK_Splitting;
-Declare_ref(IJK_Splitting);
 
 // This class describes the splitting of a mesh on processors
 // It gives the offset and number of elements, nodes, faces... on the local processor

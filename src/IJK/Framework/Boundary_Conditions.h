@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,8 +15,8 @@
 
 #ifndef Boundary_Conditions_included
 #define Boundary_Conditions_included
+
 #include <Objet_U.h>
-#include <Ref.h>
 
 class Boundary_Conditions : public Objet_U
 {
@@ -35,6 +35,5 @@ protected:
   int bctype_kmin_, bctype_kmax_;
 };
 
-Declare_ref(Boundary_Conditions);
 
 #endif

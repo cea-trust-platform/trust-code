@@ -42,7 +42,7 @@ public:
   inline const Equation_base& equation() const;
 
 protected:
-  REF(Equation_base) mon_equation;
+  REF2(Equation_base) mon_equation;
   REF2(Domaine_EF) le_dom_EF;
   REF2(Domaine_Cl_EF) le_dom_Cl_EF;
   DoubleTab les_coeff_pression;

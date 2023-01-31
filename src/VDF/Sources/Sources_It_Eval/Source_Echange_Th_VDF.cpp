@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ void Source_Echange_Th_VDF::associer_domaines(const Domaine_dis& domaine_dis, co
 
 void Source_Echange_Th_VDF::associer_pb(const Probleme_base& pb)
 {
-  REF(Equation_base) eqn;
+  REF2(Equation_base) eqn;
   Eval_Echange_Himp_VDF_Elem& eval = static_cast<Eval_Echange_Himp_VDF_Elem&> (iter->evaluateur());
   bool eq_OK = false;
 

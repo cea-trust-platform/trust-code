@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,12 +17,13 @@
 #define Scatter_included
 
 #include <TRUSTTabs_forward.h>
-#include <Ref_Domaine.h>
 #include <Interprete.h>
+#include <TRUST_Ref.h>
 #include <Joint.h>
 
-class Joints;
 class Domaine_VF;
+class Domaine;
+class Joints;
 
 class Scatter : public Interprete
 {
@@ -71,7 +72,7 @@ public:
   static void check_consistancy_remote_items( Domaine& dom, const ArrOfInt& mergedDomaines );
 
 protected:
-  REF(Domaine) le_domaine;
+  REF2(Domaine) le_domaine;
 
   void read_domain_no_comm(Entree& fic );
 };

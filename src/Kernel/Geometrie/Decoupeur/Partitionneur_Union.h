@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,11 @@
 #define Partitionneur_Union_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
-#include <map>
+#include <TRUST_Ref.h>
 #include <string>
+#include <map>
+
+class Domaine;
 
 /*! @brief Decoupeur permettant de decouper un domaine global de maniere conforme avec un ensemble de sous-domaines deja decoupes.
  *
@@ -46,7 +48,7 @@ public:
 
 protected:
   // Parametres du partitionneur
-  REF(Domaine) ref_domaine_;
+  REF2(Domaine) ref_domaine_;
   std::map<std::string, std::string> fic_ssz; //fic_ssz[nom de la sous domaine] = { fichier de decoupage }
 };
 #endif

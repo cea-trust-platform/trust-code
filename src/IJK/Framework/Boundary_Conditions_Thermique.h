@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,46 +17,23 @@
 #define Boundary_Conditions_Thermique_included
 
 #include <Objet_U.h>
-#include <Ref.h>
 
 /*! @brief : class Boundary_Conditions_Thermique
  *
  *  <Description of class Boundary_Conditions_Thermique>
  *
- *
- *
  */
 class Boundary_Conditions_Thermique : public Objet_U
 {
-
   Declare_instanciable( Boundary_Conditions_Thermique ) ;
-
 public :
   enum BCType { Paroi_Temperature_imposee = 0, Paroi_Flux_impose = 1, Perio=2 };
-  BCType get_bctype_k_min() const
-  {
-    return (BCType) bctype_kmin_;
-  }
-  BCType get_bctype_k_max() const
-  {
-    return (BCType) bctype_kmax_;
-  }
-  double get_temperature_kmax() const
-  {
-    return temperature_imposee_kmax_;
-  }
-  double get_temperature_kmin() const
-  {
-    return temperature_imposee_kmin_;
-  }
-  double get_flux_kmax() const
-  {
-    return flux_impose_kmax_;
-  }
-  double get_flux_kmin() const
-  {
-    return flux_impose_kmin_;
-  }
+  BCType get_bctype_k_min() const { return (BCType) bctype_kmin_; }
+  BCType get_bctype_k_max() const { return (BCType) bctype_kmax_; }
+  double get_temperature_kmax() const { return temperature_imposee_kmax_; }
+  double get_temperature_kmin() const { return temperature_imposee_kmin_; }
+  double get_flux_kmax() const { return flux_impose_kmax_; }
+  double get_flux_kmin() const { return flux_impose_kmin_; }
 
 protected :
   int bctype_kmin_, bctype_kmax_;
@@ -64,6 +41,5 @@ protected :
   double flux_impose_kmin_, flux_impose_kmax_;
 };
 
-Declare_ref(Boundary_Conditions_Thermique);
 #endif /* Boundary_Conditions_Thermique_included */
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,11 +14,9 @@
 *****************************************************************************/
 
 #include <System.h>
+#include <Nom.h>
 
 Implemente_instanciable(System,"System",Interprete);
-
-
-// printOn et readOn
 
 Sortie& System::printOn(Sortie& s ) const
 {
@@ -27,8 +25,6 @@ Sortie& System::printOn(Sortie& s ) const
 
 Entree& System::readOn(Entree& is )
 {
-  //
-  //
   return is;
 }
 

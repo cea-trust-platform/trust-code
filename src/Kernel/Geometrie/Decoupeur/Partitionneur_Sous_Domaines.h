@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,8 @@
 #define Partitionneur_Sous_Domaines_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <TRUST_Ref.h>
+
 class Domaine;
 
 /*! @brief Partitionneur de domaine a partir de sous-domaines du domaine Voir construire_partition()
@@ -33,7 +34,7 @@ public:
 
 private:
   // Parametres du partitionneur
-  REF(Domaine) ref_domaine_;
+  REF2(Domaine) ref_domaine_;
   // Noms des sous-domaines a utiliser
   Noms noms_sous_domaines_;
   // Noms de domaine a utiliser

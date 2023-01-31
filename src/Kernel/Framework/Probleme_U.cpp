@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -480,11 +480,11 @@ void Probleme_U::getInputFieldsNames(Noms& noms) const
  *   - no optimisation of the number of REF objects created and destroyed.
  *
  * @param (string name) name of the input field we are looking for
- * @return (REF(Field_base)) found <=> non_nul(), then points to a Champ_Input_Proto of that name.
+ * @return (REF2(Field_base)) found <=> non_nul(), then points to a Champ_Input_Proto of that name.
  */
-REF(Field_base) Probleme_U::findInputField(const Nom& name) const
+REF2(Field_base) Probleme_U::findInputField(const Nom& name) const
 {
-  REF(Field_base) ch;
+  REF2(Field_base) ch;
   return ch;
 }
 
@@ -512,7 +512,7 @@ REF(Champ_Generique_base) Probleme_U::findOutputField(const Nom& name) const
  */
 void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
 {
-  REF(Field_base) ch=findInputField(name);
+  REF2(Field_base) ch=findInputField(name);
   if (!ch.non_nul())
     throw WrongArgument(le_nom().getChar(),"getInputFieldTemplate",name.getString(),"no input field of that name");
 
@@ -529,7 +529,7 @@ void Probleme_U::getInputFieldTemplate(const Nom& name, TrioField& afield) const
  */
 void Probleme_U::setInputField(const Nom& name, const TrioField& afield)
 {
-  REF(Field_base) ch=findInputField(name);
+  REF2(Field_base) ch=findInputField(name);
   if (!ch.non_nul())
     throw WrongArgument(le_nom().getChar(),"setInputField",name.getString(),"no input field of that name");
   if (!est_egal(afield._time1,presentTime()))
@@ -562,7 +562,7 @@ void Probleme_U::getOutputField(const Nom& name,  TrioField& afield) const
 // For now: set a field value provided the field has only one item.
 void Probleme_U::setInputDoubleValue(const Nom& name, const double val)
 {
-  REF(Field_base) ch = findInputField(name);
+  REF2(Field_base) ch = findInputField(name);
   if (!ch.non_nul())
     throw WrongArgument(le_nom().getChar(),"setInputDoubleValue",name.getString(),"no input field of that name");
   if (ch->nb_comp() != 1)

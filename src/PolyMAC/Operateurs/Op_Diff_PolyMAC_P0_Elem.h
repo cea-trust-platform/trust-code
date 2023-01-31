@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,5 +71,4 @@ class Op_Dift_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_Elem
   Declare_instanciable( Op_Dift_PolyMAC_P0_Elem ) ;
 };
 
-Declare_ref(Op_Diff_PolyMAC_P0_Elem);
 #endif /* Op_Diff_PolyMAC_P0_Elem_included */

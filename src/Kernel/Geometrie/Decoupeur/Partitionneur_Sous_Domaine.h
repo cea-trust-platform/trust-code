@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,11 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Partitionneur_Sous_Domaine_included
 #define Partitionneur_Sous_Domaine_included
 
 #include <Partitionneur_base.h>
-#include <Ref_Domaine.h>
+#include <TRUST_Ref.h>
+
+class Domaine;
 
 
 /*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sous_domaine de maniere "conforme" : le sous-domaine est decoupe de maniere

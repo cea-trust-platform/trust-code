@@ -18,8 +18,8 @@
 
 #include <Champ_Don_base.h>
 #include <Champ_Uniforme.h>
-#include <Ref_Domaine.h>
 #include <Parser_Eval.h>
+#include <TRUST_Ref.h>
 #include <Domaine.h>
 #include <Interprete.h>
 
@@ -96,7 +96,7 @@ public:
   }
 
 protected:
-  REF(Domaine) mon_domaine;
+  REF2(Domaine) mon_domaine;
   void mettre_a_jour_positions(DoubleTab& );
 
 private:

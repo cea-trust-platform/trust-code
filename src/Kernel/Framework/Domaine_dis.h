@@ -16,9 +16,9 @@
 #ifndef Domaine_dis_included
 #define Domaine_dis_included
 
-#include <Domaine.h>
 #include <Domaine_dis_base.h>
 #include <TRUST_Deriv.h>
+#include <Domaine.h>
 
 class Domaine_Cl_dis_base;
 class Sous_domaine_dis;

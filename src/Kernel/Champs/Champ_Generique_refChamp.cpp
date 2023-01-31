@@ -540,7 +540,7 @@ void Champ_Generique_refChamp::nommer_source(const Postraitement_base& post)
       nom_champ_base = get_ref_champ_base().le_nom();
       if (ref_cast_non_const(Postraitement, post).domaine().non_nul())
         {
-          nom_post_source =  nom_champ_base + "_natif_" + ref_cast_non_const(Postraitement, post).domaine().le_nom();
+          nom_post_source =  nom_champ_base + "_natif_" + ref_cast_non_const(Postraitement, post).domaine()->le_nom();
         }
       else
         {

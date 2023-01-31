@@ -18,7 +18,6 @@
 
 #include <Discretisation_base.h>
 #include <TRUST_Deriv.h>
-#include <Ref.h>
 
 /*! @brief classe Discretisation Classe generique de la hierarchie des discretisation en espace.
  *
@@ -32,7 +31,5 @@ class Discretisation : public DERIV(Discretisation_base)
 {
   Declare_instanciable(Discretisation);
 };
-
-Declare_ref(Discretisation_base);
 
 #endif

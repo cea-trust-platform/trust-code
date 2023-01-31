@@ -13,9 +13,10 @@
 *
 *****************************************************************************/
 
-#include <Ref_Frontiere.h>
 #include <NettoieNoeuds.h>
 #include <Lire_Tgrid.h>
+#include <Frontiere.h>
+#include <TRUST_Ref.h>
 #include <EFichier.h>
 #include <Domaine.h>
 #include <ctype.h>
@@ -37,21 +38,10 @@ inline void decompression(Nom& nom_fichier)
     }
 }
 Implemente_instanciable(Lire_Tgrid,"Lire_Tgrid",Interprete_geometrique_base);
-/*! @brief appel a la methode printOn de la classe Interprete
- *
- */
-Sortie& Lire_Tgrid::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
 
-/*! @brief appel a la methode readOn de la classe Interprete
- *
- */
-Entree& Lire_Tgrid::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
+Sortie& Lire_Tgrid::printOn(Sortie& os) const { return Interprete::printOn(os); }
+
+Entree& Lire_Tgrid::readOn(Entree& is) { return Interprete::readOn(is); }
 
 int chartoint(char c)
 {
@@ -489,7 +479,7 @@ Entree& Lire_Tgrid::interpreter_(Entree& is)
                 }
               ArrOfInt elem(2),som(nb_som_face);
               int nb_face_lu=ifin-ideb+1;
-              REF(Frontiere) nouveau_bord;
+              REF2(Frontiere) nouveau_bord;
               // On lit les sommets de la face et les 2 elements au contact de la face
               for (int i=0; i<nb_face_lu; i++)
                 {

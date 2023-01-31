@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,10 @@
 #ifndef MorEqn_included
 #define MorEqn_included
 
-#include <Ref_Equation_base.h>
+#include <TRUST_Ref.h>
+#include <Motcle.h>
 
+class Equation_base;
 class Champ;
 
 /*! @brief classe MorEqn Classe qui regroupe les fonctionnalites de liaison avec une
@@ -44,7 +46,7 @@ public:
   /* compatibilite avec les equations multiphase : par defaut, message d'erreur */
   virtual void check_multiphase_compatibility() const;
 protected :
-  REF(Equation_base) mon_equation;
+  REF2(Equation_base) mon_equation;
   inline virtual ~MorEqn();
 };
 
