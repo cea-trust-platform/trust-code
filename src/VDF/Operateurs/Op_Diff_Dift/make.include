@@ -10,7 +10,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
@@ -32,7 +32,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Conv\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Diff_Dift/Op_Diff_Dift_base\
 	-I$(TRUST_ROOT)/src/VDF/Operateurs/Op_Divers\
-	-I$(TRUST_ROOT)/src/VDF/Zones\
+	-I$(TRUST_ROOT)/src/VDF/Geometrie\
 	
 
 Lib = $(TRUST_LIB)/libopvdf_diff_dift

@@ -10,7 +10,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
@@ -32,7 +32,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
 	-I$(TRUST_ROOT)/src/VDF/Sources/Sources_It_Eval\
 	-I$(TRUST_ROOT)/src/VDF/Sources\
-	-I$(TRUST_ROOT)/src/VDF/Zones\
+	-I$(TRUST_ROOT)/src/VDF/Geometrie\
 	
 
 Lib = $(TRUST_LIB)/libthhydqcVDF

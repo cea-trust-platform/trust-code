@@ -12,8 +12,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
-	-I$(TRUST_ROOT)/src/VDF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
+	-I$(TRUST_ROOT)/src/VDF/Geometrie\
 	-I$(TRUST_ROOT)/src/VDF/Champs\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\

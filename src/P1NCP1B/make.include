@@ -7,14 +7,14 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/P1NCP1B/Champs\
-	-I$(TRUST_ROOT)/src/P1NCP1B/Zones\
+	-I$(TRUST_ROOT)/src/P1NCP1B/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
 	-I$(TRUST_ROOT)/src/VEF/Champs\
-	-I$(TRUST_ROOT)/src/VEF/Zones\
+	-I$(TRUST_ROOT)/src/VEF/Geometrie\
 	
 
 Lib = $(TRUST_LIB)/libvefp1b

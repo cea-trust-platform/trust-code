@@ -5,7 +5,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\

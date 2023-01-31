@@ -10,8 +10,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
-	-I$(TRUST_ROOT)/src/P1NCP1B/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
+	-I$(TRUST_ROOT)/src/P1NCP1B/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
@@ -34,7 +34,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VEF/Champs\
 	-I$(TRUST_ROOT)/src/VEF/Sources/Sources_It_Eval\
 	-I$(TRUST_ROOT)/src/VEF/Sources\
-	-I$(TRUST_ROOT)/src/VEF/Zones\
+	-I$(TRUST_ROOT)/src/VEF/Geometrie\
 	
 
 Lib = $(TRUST_LIB)/libthhydqcVEF

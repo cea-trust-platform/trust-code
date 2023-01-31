@@ -12,10 +12,10 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/PolyMAC\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
-	-I$(TRUST_ROOT)/src/PolyMAC/Zones\
+	-I$(TRUST_ROOT)/src/PolyMAC/Geometrie\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/ThHyd\

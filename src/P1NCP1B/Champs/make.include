@@ -7,11 +7,11 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
-	-I$(TRUST_ROOT)/src/P1NCP1B/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
+	-I$(TRUST_ROOT)/src/P1NCP1B/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/VEF/Champs\
-	-I$(TRUST_ROOT)/src/VEF/Zones\
+	-I$(TRUST_ROOT)/src/VEF/Geometrie\
 	
 
 Lib = $(TRUST_LIB)/libchvefp1b

@@ -1,7 +1,7 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/EF/Sources\
 	-I$(TRUST_ROOT)/src/EF/Sources/Sources_It_Eval\
-	-I$(TRUST_ROOT)/src/EF/Zones\
+	-I$(TRUST_ROOT)/src/EF/Geometrie\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
 	-I$(TRUST_ROOT)/src/Kernel/Framework\
@@ -9,7 +9,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math/Matrices\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/Kernel/VF/Zones\
+	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 
