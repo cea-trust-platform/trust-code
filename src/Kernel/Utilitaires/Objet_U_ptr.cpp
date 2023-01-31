@@ -13,45 +13,41 @@
 *
 *****************************************************************************/
 
+#include <Synonyme_info.h>
 #include <Objet_U_ptr.h>
 #include <Memoire.h>
 #include <Nom.h>
 
 Implemente_base_sans_constructeur_ni_destructeur(Objet_U_ptr,"Objet_U_ptr",Objet_U);
 
-/*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture de la cle d'un Objet_U_ptr sur un flot de sortie.
- *
- *     A definir avec readOn. Pour l'instant :
- *     os << cle_ << finl;
- *
- */
 Sortie& Objet_U_ptr::printOn(Sortie& os) const
 {
-  get_Objet_U_ptr_check();
-  return os << cle_ << finl;
+  const Objet_U * objet = get_Objet_U_ptr();
+  if (objet)
+    {
+      os << objet->le_type() << finl;
+      os << (*objet);
+    }
+  else os << "vide" << finl;
+
+  return os;
 }
 
-/*! @brief Surcharge Objet_U::readOn(Entree&) Lecture d'un Objet_U_ptr (par sa cle) dans un flot d'entree
- *
- *     ATTENTION: Le comportement de cette fonction est a definir.
- *                Pour l'instant: ne fait rien.
- *
- */
 Entree& Objet_U_ptr::readOn(Entree& is)
 {
-  // Il y aurait deux choix pertinents:
-  // choix 1:
-  //    is >> cle_ >> pointeur_;
-  // choix 2:
-  //    is >> cle_;
-  //    if (cle_ >= 0)
-  //      pointeur_ = la_memoire().objet_u(cle_);
-  //    else
-  //      pointeur_ = 0;
+  detach(); // Efface l'objet existant
+  static Nom nom_type; // static pour le pas creer un Objet_U a chaque fois
+  is >> nom_type;
+  Objet_U * objet = nullptr;
+  if (nom_type != "vide")
+    {
+      objet = typer(nom_type);
+      if (! objet) Process::exit();
+    }
 
-  // B.Mathieu (8/7/2004)
-  // Pour l'instant, ne fait rien : necessaire pour compatibilite
-  // avec le reste du code (exemple Op_Diff_negligeable::readOn)
+  set_Objet_U_ptr(objet);
+  if (objet) is >> (*objet); // On lit
+
   return is;
 }
 
@@ -62,34 +58,27 @@ Entree& Objet_U_ptr::readOn(Entree& is)
  */
 Objet_U_ptr::~Objet_U_ptr()
 {
-  // Paranoia : on rend le pointeur invalide
-  cle_ = -2;
+  cle_ = -2; // Paranoia : on rend le pointeur invalide
 }
 
 /*! @brief construit un pointeur nul (cle a -1)
  *
  */
-Objet_U_ptr::Objet_U_ptr() :
-  cle_(-1),
-  ptr_object_id_(-1)
+Objet_U_ptr::Objet_U_ptr() : cle_(-1), ptr_object_id_(-1) { }
+
+void Objet_U_ptr::detach()
 {
+  Objet_U * ptr = get_Objet_U_ptr();
+  if (ptr) delete ptr;
+  set_Objet_U_ptr(nullptr);
 }
 
-/*! @brief Constructeur par copie
- *
- */
-Objet_U_ptr::Objet_U_ptr(const Objet_U_ptr& ptr): Objet_U(ptr)
+int Objet_U_ptr::associer_(Objet_U& objet)
 {
-  assert(0);
-}
-
-/*! @brief Operateur copie
- *
- */
-const Objet_U_ptr& Objet_U_ptr::operator=(const Objet_U_ptr& ptr)
-{
-  assert(0);
-  return *this;
+  Objet_U * ptr = get_Objet_U_ptr_check();
+  assert(ptr != nullptr);
+  int resu = ptr->associer_(objet);
+  return resu;
 }
 
 /*! @brief Renvoie 1 si le pointeur est non_nul Renvoie 0 sinon.
@@ -130,7 +119,6 @@ Objet_U * Objet_U_ptr::get_Objet_U_ptr_check() const
           std::cerr << "\n &la_memoire().objet_u(cle_) = " << addr << std::endl;
           // Si ca plante a cet endroit, c'est que l'objet en reference
           // a ete detruit et que la reference est encore utilisee.
-          assert(0);
           exit();
         }
     }
@@ -142,8 +130,7 @@ Objet_U * Objet_U_ptr::get_Objet_U_ptr_check() const
  */
 int Objet_U_ptr::check_Objet_U_ptr_type(const Objet_U * ptr) const
 {
-  if (ptr == 0)
-    return 1; // Le pointeur nul est valide
+  if (ptr == nullptr) return 1; // Le pointeur nul est valide
 
   const Objet_U& objet = *ptr;
   // On verifie que l'objet est du bon type :
@@ -162,8 +149,7 @@ int Objet_U_ptr::check_Objet_U_ptr_type(const Objet_U * ptr) const
       std::cerr << "\n &memoire.objet_u(cle_) = " << ptr;
       Cerr << "\n Type accepted by the pointer : " << type_info_ptr.name();
       Cerr << "\n Object type in reference : " << type_info_obj.name();
-      assert(0);
-      exit();
+      Process::exit();
     }
   return 1;
 }
@@ -218,7 +204,7 @@ Objet_U * Objet_U_ptr::get_Objet_U_ptr() const
   const Objet_U * objet;
   if (cle_ < 0)
     {
-      objet =  0;
+      objet = nullptr;
     }
   else
     {
@@ -234,7 +220,7 @@ Objet_U * Objet_U_ptr::get_Objet_U_ptr() const
  */
 void Objet_U_ptr::set_Objet_U_ptr(Objet_U * ptr)
 {
-  if (ptr != 0)
+  if (ptr != nullptr)
     {
       cle_ = ptr->numero();
       ptr_object_id_ = ptr->get_object_id();
@@ -244,19 +230,54 @@ void Objet_U_ptr::set_Objet_U_ptr(Objet_U * ptr)
       cle_ = -1;
       ptr_object_id_ = -1;
     }
-  // Il suffit de tester le type ici : si le type est bon ici
-  // et qu'ensuite l'object_id_ ne change pas, alors le
-  // type est toujours bon.
+  // Il suffit de tester le type ici : si le type est bon ici et qu'ensuite l'object_id_ ne change pas, alors le type est toujours bon.
   assert(check_Objet_U_ptr_type(ptr));
   assert(get_Objet_U_ptr_check() == ptr);
 }
 
-int Objet_U_ptr::get_ptr_cle() const
+/*! @brief Essaie de creer une instance du type "type".
+ *
+ * si type n'est pas un type ou type n'est pas instanciable=>arret
+ *    si type n'est pas un sous-type du type du pointeur=>retour 0
+ *    si ok, renvoie l'adresse de l'objet cree.
+ */
+Objet_U * Objet_U_ptr::typer(const char * type)
 {
-  return cle_;
+  const Type_info * type_info = Type_info::type_info_from_name(type); // Type_info du type demande
+  const Type_info& type_base = get_info_ptr(); // Type de base du DERIV
+
+  if ( get_Objet_U_ptr()) detach();
+
+  Objet_U * instance = nullptr;
+
+  if (type_info == 0)
+    {
+      const Synonyme_info* syn_info= Synonyme_info::synonyme_info_from_name(type);
+
+      if (syn_info!=0) return typer(syn_info->org_name_());
+      else
+        {
+          Cerr << "Error in Deriv_::typer_(const char* const type)" << finl << type << " is not a type." << finl;
+          Cerr << "Type required : derived from " << type_base.name() << finl << finl;
+          Cerr << type << " is not a recognized keyword." << finl << "Check your data set." << finl;
+          Nom nompb = type;
+          if (nompb.find("TURBULENT")!=-1 )
+            Cerr << "Since TRUST V1.8.0, turbulence models are in TrioCFD and not anymore in TRUST.\nTry using TrioCFD executable or contact trust support." << finl;
+          Process::exit();
+        }
+    }
+  if (! type_info->instanciable())
+    {
+      Cerr << "Error in Deriv_::typer_(const char* const type).\n" << type << " is not instanciable." << finl;
+      Process::exit();
+    }
+
+  if (! type_info->has_base(&type_base))
+    Cerr << "Error in Deriv_::typer_(const char* const type).\n " << type << " is not a subtype of " << type_base.name() << finl;
+  else
+    instance = type_info->instance(); // Cree une instance du type decrit dans type_info
+
+  set_Objet_U_ptr(instance);
+  return instance;
 }
 
-int Objet_U_ptr::get_ptr_object_id() const
-{
-  return ptr_object_id_;
-}

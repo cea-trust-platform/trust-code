@@ -25,17 +25,21 @@ class Nom;
  * Le constructeur par defaut construit un pointeur "nul".
  *
  *
- * @sa Ref_ TRUST_Deriv
+ * @sa TRUST_Deriv
  */
 class Objet_U_ptr: public Objet_U
 {
   Declare_base_sans_constructeur_ni_destructeur(Objet_U_ptr);
 
 public:
+  Objet_U_ptr(const Objet_U_ptr&) = delete;
+  const Objet_U_ptr& operator=(const Objet_U_ptr&) = delete;
+
   int non_nul() const;
   const Nom& le_nom() const override;
-  // Renvoie le Type_info du type de base accepte par le pointeur (l'objet pointe derive obligatoirement de ce type).
-  virtual const Type_info& get_info_ptr() const = 0;
+  Objet_U * typer(const char * nom_type);
+  void detach();
+  int associer_(Objet_U& objet) override;
 
 protected:
   ~Objet_U_ptr() override;
@@ -43,8 +47,6 @@ protected:
 
   virtual void set_Objet_U_ptr(Objet_U*);
   virtual Objet_U* get_Objet_U_ptr() const;
-  int get_ptr_cle() const;
-  int get_ptr_object_id() const;
 
   void recopie(const Objet_U&);
   int change_num(const int* const) override; // renumerotation des objets
@@ -52,10 +54,10 @@ protected:
   Objet_U* get_Objet_U_ptr_check() const;
   int check_Objet_U_ptr_type(const Objet_U *ptr) const;
 
-private:
-  Objet_U_ptr(const Objet_U_ptr&);
-  const Objet_U_ptr& operator=(const Objet_U_ptr&);
+  // Renvoie le Type_info du type de base accepte par le pointeur (l'objet pointe derive obligatoirement de ce type).
+  virtual const Type_info& get_info_ptr() const = 0;
 
+private:
   // cle_ est le numero de cle de l'objet en reference.
   // Si cle_ == -1, le pointeur est "nul".
   // L'objet peut etre recupere par la_memoire().objet_u(cle_)
