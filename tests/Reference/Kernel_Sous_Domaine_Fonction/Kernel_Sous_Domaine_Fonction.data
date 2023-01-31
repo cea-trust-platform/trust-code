@@ -27,26 +27,26 @@ Mailler hexaedre
 
     }
 }
-Sous_zone milieu
+Sous_domaine milieu
 Associate milieu hexaedre
 Read milieu
 {
-    fonction_sous_zone ((z>0.25)_and_(z<0.75))
+    fonction_sous_domaine ((z>0.25)_and_(z<0.75))
 }
-Sous_zone sous_zone_milieu
-Associate sous_zone_milieu hexaedre
-Read sous_zone_milieu
+Sous_domaine sous_domaine_milieu
+Associate sous_domaine_milieu hexaedre
+Read sous_domaine_milieu
 {
     restriction milieu
-    fonction_sous_zone (((x-0.3)^2+(y-0.5)^2)<(0.25*0.25))
+    fonction_sous_domaine (((x-0.3)^2+(y-0.5)^2)<(0.25*0.25))
 }
 
-Sous_zone union
+Sous_domaine union
         Associate union hexaedre
             Read union
         {
-            fonction_sous_zone (z>0.5)
-            union sous_zone_milieu
+            fonction_sous_domaine (z>0.5)
+            union sous_domaine_milieu
 
                 }
 
@@ -54,12 +54,12 @@ Sous_zone union
 
 postraiter_domaine {
     domaine  hexaedre
-    fichier Kernel_Sous_Zone_Fonction.lata
+    fichier Kernel_Sous_Domaine_Fonction.lata
     format lata
 }
 postraiter_domaine {
     domaine  hexaedre
-    fichier Kernel_Sous_Zone_Fonction.lml
+    fichier Kernel_Sous_Domaine_Fonction.lml
     format lml
 }
 End

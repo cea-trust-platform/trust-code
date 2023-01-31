@@ -1,4 +1,4 @@
-# Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_zones #
+# Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_domaines #
 # PARALLEL OK #
 dimension 2
 
