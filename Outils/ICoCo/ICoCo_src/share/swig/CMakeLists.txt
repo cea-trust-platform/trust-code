@@ -15,6 +15,9 @@ if(NOT $ENV{TRUST_ARCH_CC} STREQUAL "linux_nvc++")
 add_definitions(-Wno-error)
 add_definitions(-Wno-suggest-override)
 add_definitions(-Wno-shadow)
+else()
+# Disable some warnings for nvc++
+add_definitions(--diag_suppress1349 --diag_suppress550)
 endif()
 
 set(CMAKE_CXX_COMPILER  $ENV{TRUST_CC})
