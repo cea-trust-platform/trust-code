@@ -254,7 +254,7 @@ Milieu_base& Conduction::milieu()
  */
 const Solide& Conduction::solide() const
 {
-  if(!le_solide.non_nul())
+  if(le_solide.est_nul())
     {
       Cerr << "You forgot to associate the solid to the problem named " << probleme().le_nom() << finl;
       Process::exit();

@@ -81,13 +81,19 @@ int Objet_U_ptr::associer_(Objet_U& objet)
   return resu;
 }
 
-/*! @brief Renvoie 1 si le pointeur est non_nul Renvoie 0 sinon.
+/*! @brief Renvoie true si le pointeur est non_nul Renvoie false sinon.
  *
  */
-int Objet_U_ptr::non_nul() const
+bool Objet_U_ptr::non_nul() const
 {
   assert(get_Objet_U_ptr_check() || 1);
-  return (cle_ >= 0);
+  return (cle_ >= 0) ? true : false;
+}
+
+bool Objet_U_ptr::est_nul() const
+{
+  assert(get_Objet_U_ptr_check() || 1);
+  return (cle_ >= 0) ? false : true;
 }
 
 /*! @brief Verifie si le pointeur est valide.

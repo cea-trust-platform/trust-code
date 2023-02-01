@@ -660,7 +660,7 @@ int Assembleur_P_VDF::modifier_solution(DoubleTab& pression)
 }
 int Assembleur_P_VDF::assembler_mat(Matrice& matrice,const DoubleVect& volumes_entrelaces,int incr_pression,int resoudre_en_u)
 {
-  if (! matrice.non_nul())
+  if (matrice.est_nul())
     {
       if (je_suis_maitre())
         Cerr << "Assemblage de la matrice pression : Assembleur_P_VDF::assembler" << finl;
@@ -710,7 +710,7 @@ int Assembleur_P_VDF::assembler_rho_variable(Matrice& matrice,
   // idem pour resoudre en u
   assert(get_resoudre_en_u() >= 0);
   // Si la matrice n'a pas encore ete typee, il faut la construire :
-  if (! matrice.non_nul())
+  if (matrice.est_nul())
     {
       if (je_suis_maitre())
         {
@@ -743,7 +743,7 @@ int Assembleur_P_VDF::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
       set_resoudre_increment_pression(1);
       set_resoudre_en_u(0);
     }
-  if (! matrice.non_nul())
+  if (matrice.est_nul())
     {
       if (je_suis_maitre())
         {

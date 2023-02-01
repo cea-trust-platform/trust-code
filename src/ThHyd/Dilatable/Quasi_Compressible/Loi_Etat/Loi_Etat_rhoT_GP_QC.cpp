@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
   param.ajouter("rho_t",&expression_); // XD_ADD_P chaine Expression of T used to calculate rho. This can lead to a variable rho, both in space and in time.
   param.lire_avec_accolades(is);
 
-  if (expression_ == "??" && !rho_xyz_.non_nul())
+  if (expression_ == "??" && rho_xyz_.est_nul())
     {
       Cerr << "Error in Loi_Etat_rhoT_GP_QC::readOn !" << finl;
       Cerr << "The closure equation of rho is not read in your data file !" << finl;

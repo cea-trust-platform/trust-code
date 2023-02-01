@@ -53,13 +53,13 @@ void Fluide_Dilatable_base::discretiser(const Probleme_base& pb, const  Discreti
   rho = ch_rho.valeur();
 
   Champ_Don& cp = capacite_calorifique();
-  if (!cp.non_nul() || !sub_type(Champ_Uniforme,cp.valeur())) //ie Cp non constant : gaz reels
+  if (cp.est_nul() || !sub_type(Champ_Uniforme,cp.valeur())) //ie Cp non constant : gaz reels
     {
       Cerr<<"Heat capacity Cp is discretized once more for space variable case."<<finl;
       dis.discretiser_champ("temperature",domaine_dis,"cp_prov","neant",1,temps,cp);
     }
 
-  if (!lambda.non_nul() || ((!sub_type(Champ_Uniforme,lambda.valeur())) && (!sub_type(Champ_Fonc_Tabule,lambda.valeur()))))
+  if (lambda.est_nul() || ((!sub_type(Champ_Uniforme,lambda.valeur())) && (!sub_type(Champ_Fonc_Tabule,lambda.valeur()))))
     {
       // cas particulier etait faux en VEF voir quand cela sert (FM slt) : sera nomme par milieu_base
       dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,lambda);
@@ -292,7 +292,7 @@ void Fluide_Dilatable_base::creer_champs_non_lus()
   //
   if (mu.non_nul())
     {
-      if (!(lambda.non_nul())||(!sub_type(Champ_Fonc_Tabule,lambda.valeur())))
+      if ((lambda.est_nul())||(!sub_type(Champ_Fonc_Tabule,lambda.valeur())))
         if ((sub_type(Champ_Uniforme,mu.valeur()))&&(sub_type(Loi_Etat_GP_base,loi_etat_.valeur())))
           {
             if (!sub_type(Loi_Etat_Multi_GP_QC,loi_etat_.valeur()))

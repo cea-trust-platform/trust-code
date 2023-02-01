@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,14 +58,6 @@ Entree& Energie_Multiphase::readOn(Entree& is)
   evanescence.associer_eqn(*this);
   Convection_Diffusion_std::readOn(is);
 
-  // if (!evanescence.non_nul())
-  //   {
-  //     EChaine eva("{ homogene { alpha_res 1e-6 } }");
-  //     eva >> evanescence;
-  //   }
-  //Nom unite;
-  //if (dimension+bidim_axi==2) unite="[W/m]";
-  //else unite="[W]";
   terme_convectif.set_fichier("Convection_chaleur");
   terme_convectif.set_description((Nom)"Convective heat transfer rate=Integral(-h*u*ndS) [W] if SI units used");
   terme_diffusif.set_fichier("Diffusion_chaleur");

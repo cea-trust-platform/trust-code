@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -113,7 +113,7 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
         mu.valeur().valeurs()=mu_prov.valeur().valeurs();
 
       }
-  if (!mu.non_nul())
+  if (mu.est_nul())
     {
       dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,mu);
       dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,nu);
@@ -127,7 +127,7 @@ void Fluide_base::discretiser(const Probleme_base& pb, const  Discretisation_bas
     {
       dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,nu);
     }
-  if (!nu.non_nul())
+  if (nu.est_nul())
     dis.discretiser_champ("champ_elem",domaine_dis,"neant","neant",1,temps,nu);
 
   if (nu.non_nul())
@@ -205,19 +205,19 @@ void Fluide_base::verifier_coherence_champs(int& err,Nom& msg)
         }
 
     }
-  if  ( ( (Cp.non_nul()) || (beta_th.non_nul()) ) && (!lambda.non_nul()) )
+  if  ( ( (Cp.non_nul()) || (beta_th.non_nul()) ) && (lambda.est_nul()) )
     {
       msg += " Physical properties for an anisotherm case : \n";
       msg += "the conductivity lambda has not been specified. \n";
       err = 2;
     }
-  if  ( ( (lambda.non_nul()) || (beta_th.non_nul()) ) && (!Cp.non_nul()) )
+  if  ( ( (lambda.non_nul()) || (beta_th.non_nul()) ) && (Cp.est_nul()) )
     {
       msg += " Physical properties for an anisotherm case : \n";
       msg += "the heat capacity Cp has not been specified. \n";
       err = 2;
     }
-  if ( ( (lambda.non_nul()) || (Cp.non_nul()) ) && (!beta_th.non_nul()) )
+  if ( ( (lambda.non_nul()) || (Cp.non_nul()) ) && (beta_th.est_nul()) )
     {
       msg += " Physical properties for an anisotherm case : \n";
       msg += "the thermal expansion coefficient beta_th has not been specified. \n";
@@ -226,13 +226,13 @@ void Fluide_base::verifier_coherence_champs(int& err,Nom& msg)
 
   // Test de la coherence des proprietees radiatives du fluide incompressible
   // (pour un milieu semi transparent
-  if ( (coeff_absorption_.non_nul()) && (!indice_refraction_.non_nul()) )
+  if ( (coeff_absorption_.non_nul()) && (indice_refraction_.est_nul()) )
     {
       msg += " Physical properties for semi tranparent radiation case : \n";
       msg += "Refraction index has not been specfied while it has been done for absorption coefficient. \n";
       err = 1;
     }
-  if ( (!coeff_absorption_.non_nul()) && (indice_refraction_.non_nul()) )
+  if ( (coeff_absorption_.est_nul()) && (indice_refraction_.non_nul()) )
     {
       msg += " Physical properties for semi tranparent radiation case : \n";
       msg += "Absorption coefficient has not been specfied while it has been done for refraction index. \n";
@@ -451,25 +451,25 @@ void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& 
 
 const Champ_base& Fluide_base::energie_interne() const
 {
-  if (!e_int.non_nul()) creer_e_int();
+  if (e_int.est_nul()) creer_e_int();
   return e_int;
 }
 
 Champ_base& Fluide_base::energie_interne()
 {
-  if (!e_int.non_nul()) creer_e_int();
+  if (e_int.est_nul()) creer_e_int();
   return e_int;
 }
 
 
 const Champ_base& Fluide_base::enthalpie() const
 {
-  if (!h.non_nul() && !e_int.non_nul()) creer_e_int();
+  if (h.est_nul() && e_int.est_nul()) creer_e_int();
   return h.non_nul() ? h : e_int;
 }
 
 Champ_base& Fluide_base::enthalpie()
 {
-  if (!h.non_nul() && !e_int.non_nul()) creer_e_int();
+  if (h.est_nul() && e_int.est_nul()) creer_e_int();
   return h.non_nul() ? h : e_int;
 }

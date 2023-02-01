@@ -176,7 +176,7 @@ void Convection_Diffusion_Temperature::discretiser()
 int Convection_Diffusion_Temperature::preparer_calcul()
 {
   /* derniere chance pour faire ceci : */
-  if  (!le_fluide->conductivite().non_nul() || !le_fluide->capacite_calorifique().non_nul() || !le_fluide->beta_t().non_nul())
+  if  (le_fluide->conductivite().est_nul() || le_fluide->capacite_calorifique().est_nul() || le_fluide->beta_t().est_nul())
     {
       Cerr << "Vous n'avez pas defini toutes les proprietes physiques du fluide " << finl;
       Cerr << "necessaires pour resoudre l'equation d'energie " << finl;
@@ -197,7 +197,7 @@ int Convection_Diffusion_Temperature::preparer_calcul()
  */
 const Fluide_base& Convection_Diffusion_Temperature::fluide() const
 {
-  if(!le_fluide.non_nul())
+  if(le_fluide.est_nul())
     {
       Cerr << "A fluid has not been associated to "
            << "the Convection_Diffusion_Temperature equation" << finl;
@@ -214,7 +214,7 @@ const Fluide_base& Convection_Diffusion_Temperature::fluide() const
  */
 Fluide_base& Convection_Diffusion_Temperature::fluide()
 {
-  if(!le_fluide.non_nul())
+  if(le_fluide.est_nul())
     {
       Cerr << "A fluid has not been associated to"
            << "the Convection_Diffusion_Temperature equation" << finl;
@@ -259,7 +259,7 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
       } */
   if (motlu == "gradient_temperature")
     {
-      if (!gradient_temperature.non_nul())
+      if (gradient_temperature.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
           dis.grad_T(domaine_dis(),domaine_Cl_dis(),la_temperature,gradient_temperature);
@@ -268,7 +268,7 @@ void Convection_Diffusion_Temperature::creer_champ(const Motcle& motlu)
     }
   if (nom_mot.debute_par("H_ECHANGE"))
     {
-      if (!h_echange.non_nul())
+      if (h_echange.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
           temp_mot.suffix("H_ECHANGE_");
@@ -466,7 +466,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco_eq_base(Doubl
         {
           //boucle sur les operateurs
           Operateur_base& op=operateur(i).l_op_base();
-          if(!op.get_matrice().non_nul())
+          if(op.get_matrice().est_nul())
             op.set_matrice().typer("Matrice_Morse");
           if(op.get_decal_temps()==1)
             {

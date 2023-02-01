@@ -86,6 +86,7 @@ public:
   inline const value_type* operator ->() const { assert(p_ != nullptr); return p_; }
   inline value_type* operator ->() { assert(p_ != nullptr); return p_; }
   bool non_nul() const { return p_ != nullptr; }
+  bool est_nul() const { return p_ == nullptr; }
   const Nom& le_nom() const = delete;
   void reset() {  p_ = nullptr; }
 };
@@ -124,6 +125,7 @@ public:
   const TRUST_Ref_Objet_U& operator=(const Objet_U& t);
   const TRUST_Ref_Objet_U& operator=(const TRUST_Ref_Objet_U& t);
   bool non_nul() const;
+  bool est_nul() const;
 
   inline const Objet_U& valeur() const { assert(p_ != nullptr); return *p_; }
   inline Objet_U& valeur() { assert(p_ != nullptr); return *p_; }

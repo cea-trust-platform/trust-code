@@ -1278,7 +1278,7 @@ void Navier_Stokes_std::associer_milieu_base(const Milieu_base& un_milieu)
  */
 const Milieu_base& Navier_Stokes_std::milieu() const
 {
-  if (!le_fluide.non_nul())
+  if (le_fluide.est_nul())
     {
       Cerr << "You forgot to associate a fluid to the problem named " << probleme().le_nom() << finl;
       Process::exit();
@@ -1294,7 +1294,7 @@ const Milieu_base& Navier_Stokes_std::milieu() const
  */
 Milieu_base& Navier_Stokes_std::milieu()
 {
-  if (!le_fluide.non_nul())
+  if (le_fluide.est_nul())
     {
       Cerr << "You forgot to associate a fluid to the problem named " << probleme().le_nom() << finl;
       Process::exit();
@@ -1308,7 +1308,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
 
   if (motlu == "vorticite")
     {
-      if (!la_vorticite.non_nul())
+      if (la_vorticite.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.creer_champ_vorticite(schema_temps(),la_vitesse,la_vorticite);
@@ -1317,7 +1317,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     }
   else if (motlu == "critere_Q")
     {
-      if (!critere_Q.non_nul())
+      if (critere_Q.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
           dis.critere_Q(domaine_dis(),domaine_Cl_dis(),la_vitesse,critere_Q);
@@ -1326,7 +1326,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     }
   else if (motlu == "y_plus")
     {
-      if (!y_plus.non_nul())
+      if (y_plus.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.y_plus(domaine_dis(),domaine_Cl_dis(),la_vitesse,y_plus);
@@ -1335,7 +1335,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     }
   else if (motlu == "distance_paroi_globale")
     {
-      if (!distance_paroi_globale.non_nul())
+      if (distance_paroi_globale.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.distance_paroi_globale(schema_temps(), domaine_dis(), distance_paroi_globale);
@@ -1344,7 +1344,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     }
   else if (motlu == "reynolds_maille")
     {
-      if (!Reynolds_maille.non_nul())
+      if (Reynolds_maille.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.reynolds_maille(domaine_dis(),fluide(),la_vitesse,Reynolds_maille);
@@ -1353,7 +1353,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     }
   else if (motlu == "courant_maille")
     {
-      if (!Courant_maille.non_nul())
+      if (Courant_maille.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.courant_maille(domaine_dis(),schema_temps(),la_vitesse,Courant_maille);
@@ -1362,7 +1362,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     }
   else if (motlu == "taux_cisaillement")
     {
-      if (!Taux_cisaillement.non_nul())
+      if (Taux_cisaillement.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.taux_cisaillement(domaine_dis(),domaine_Cl_dis(),la_vitesse,Taux_cisaillement);
@@ -1371,7 +1371,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
     }
   else if (motlu == "pression_hydrostatique")
     {
-      if (!pression_hydrostatique_.non_nul())
+      if (pression_hydrostatique_.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd,discretisation());
           dis.discretiser_champ("Champ_sommets",domaine_dis(),"pression_hydrostatique","Pa",1,0.,pression_hydrostatique_);
@@ -1381,7 +1381,7 @@ void Navier_Stokes_std::creer_champ(const Motcle& motlu)
 
   else if (motlu == "gradient_vitesse")
     {
-      if (!grad_u.non_nul())
+      if (grad_u.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
           dis.grad_u(domaine_dis(),domaine_Cl_dis(),la_vitesse,grad_u);
@@ -1430,7 +1430,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
   if (nom=="gradient_pression") postraitement_gradient_P_=1;
   if (nom=="vorticite")
     {
-      if (!la_vorticite.non_nul())  throw Champs_compris_erreur();
+      if (la_vorticite.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,la_vorticite.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
@@ -1438,7 +1438,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="critere_Q")
     {
-      if (!critere_Q.non_nul())  throw Champs_compris_erreur();
+      if (critere_Q.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,critere_Q.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
@@ -1446,7 +1446,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="porosite_volumique")
     {
-      if (!porosite_volumique.non_nul())  throw Champs_compris_erreur();
+      if (porosite_volumique.est_nul())  throw Champs_compris_erreur();
       double temps_courant = schema_temps().temps_courant();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,porosite_volumique.valeur());
       if ((ch.temps()!=temps_courant) || (ch.temps()==temps_init))
@@ -1455,7 +1455,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="y_plus")
     {
-      if (!y_plus.non_nul())  throw Champs_compris_erreur();
+      if (y_plus.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,y_plus.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
@@ -1463,7 +1463,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="reynolds_maille")
     {
-      if (!Reynolds_maille.non_nul())  throw Champs_compris_erreur();
+      if (Reynolds_maille.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Reynolds_maille.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
@@ -1471,7 +1471,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="courant_maille")
     {
-      if (!Courant_maille.non_nul())  throw Champs_compris_erreur();
+      if (Courant_maille.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Courant_maille.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
@@ -1479,7 +1479,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="taux_cisaillement")
     {
-      if (!Taux_cisaillement.non_nul())  throw Champs_compris_erreur();
+      if (Taux_cisaillement.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,Taux_cisaillement.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
@@ -1487,7 +1487,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="gradient_vitesse")
     {
-      if (!grad_u.non_nul())  throw Champs_compris_erreur();
+      if (grad_u.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base, grad_u.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         ch.mettre_a_jour(la_vitesse->temps());
@@ -1495,7 +1495,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     }
   if (nom=="pression_hydrostatique")
     {
-      if (!pression_hydrostatique_.non_nul())  throw Champs_compris_erreur();
+      if (pression_hydrostatique_.est_nul())  throw Champs_compris_erreur();
       Champ_Fonc_base& ch=ref_cast_non_const(Champ_Fonc_base,pression_hydrostatique_.valeur());
       if (((ch.temps()!=la_vitesse->temps()) || (ch.temps()==temps_init)) && (la_vitesse->mon_equation_non_nul()))
         {

@@ -231,7 +231,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
   if ((no_qdm_) && (sub_type(Navier_Stokes_std,eqn)))
     {
       Matrice& matrice_en_pression_2 = ref_cast(Navier_Stokes_std, eqn).matrice_pression();
-      if (!matrice_en_pression_2.non_nul()) matrice_en_pression_2.detach();
+      if (matrice_en_pression_2.est_nul()) matrice_en_pression_2.detach();
 
       converge = 1;
       return true;

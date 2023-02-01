@@ -36,7 +36,9 @@ public:
   Objet_U_ptr(const Objet_U_ptr&) = delete;
   const Objet_U_ptr& operator=(const Objet_U_ptr&) = delete;
 
-  int non_nul() const;
+  bool non_nul() const;
+  bool est_nul() const;
+
   const Nom& le_nom() const override;
   Objet_U * typer(const char * nom_type);
   void detach();

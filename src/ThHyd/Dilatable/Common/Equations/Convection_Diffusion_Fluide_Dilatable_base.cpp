@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ const Champ_Don& Convection_Diffusion_Fluide_Dilatable_base::diffusivite_pour_tr
 
 const Fluide_Dilatable_base& Convection_Diffusion_Fluide_Dilatable_base::fluide() const
 {
-  if (!le_fluide.non_nul())
+  if (le_fluide.est_nul())
     {
       Cerr << "You forgot to associate the fluid to the problem named " << probleme().le_nom() << finl;
       Process::exit();

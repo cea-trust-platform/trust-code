@@ -54,7 +54,7 @@ Entree& Modele_turbulence_scal_base::readOn(Entree& is )
   const RefObjU& modele_turbulence = le_pb.equation(0).get_modele(TURBULENCE);
   const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
   const Turbulence_paroi& lp = mod_turb_hydr.loi_paroi();
-  if (!loipar.non_nul() && lp.non_nul())
+  if (loipar.est_nul() && lp.non_nul())
     {
       Cerr << finl;
       Cerr << "Mot cle " << mot << "non trouve !" << finl;

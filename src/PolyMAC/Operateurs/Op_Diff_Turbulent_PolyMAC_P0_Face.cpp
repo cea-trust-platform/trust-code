@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::creer_champ(const Motcle& motlu)
 {
   Op_Diff_PolyMAC_P0_Face::creer_champ(motlu);
   int i = noms_nu_t_post_.rang(motlu);
-  if (i >= 0 && !(nu_t_post_[i].non_nul()))
+  if (i >= 0 && nu_t_post_[i].est_nul())
     {
       const PolyMAC_P0_discretisation dis = ref_cast(PolyMAC_P0_discretisation, equation().discretisation());
       Noms noms(1), unites(1);
@@ -90,7 +90,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::mettre_a_jour(double temps)
 
 void Op_Diff_Turbulent_PolyMAC_P0_Face::modifier_nu(DoubleTab& mu) const
 {
-  if (!corr.non_nul()) return; //rien a faire
+  if (corr.est_nul()) return; //rien a faire
   const DoubleTab& rho = equation().milieu().masse_volumique().passe(),
                    *alpha = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
   int i, nl = mu.dimension(0), n, N = equation().inconnue().valeurs().line_size(), cR = rho.dimension(0) == 1, d, D = dimension;

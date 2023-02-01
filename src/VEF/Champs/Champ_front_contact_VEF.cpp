@@ -352,7 +352,7 @@ void Champ_front_contact_VEF::mettre_a_jour(double temps )
   // On recupere les coefficients gradient_num_transf et gradient_fro_transf de l'autre probleme
   DoubleVect gradient_num_transf_autre_pb(nb_faces);
   DoubleVect gradient_fro_transf_autre_pb(nb_faces);
-  if (!ch_fr_autre_pb.non_nul())
+  if (ch_fr_autre_pb.est_nul())
     {
       Cerr << "Attention: Vous utilisez une condition de contact Champ_front_contact_VEF sur le bord " << nom_bord1 << " sur le probleme "<< nom_pb1 <<" " << finl;
       Cerr << "Vous devez avoir un Champ_front_contact_VEF equivalent sur le bord " << nom_bord2 << " du probleme "<<nom_pb2<<" " << finl;
@@ -457,7 +457,7 @@ const Nom& Champ_front_contact_VEF::nom_bord_oppose() const
 
 const Equation_base& Champ_front_contact_VEF::equation() const
 {
-  if (l_inconnue.non_nul()==0)
+  if (l_inconnue.est_nul())
     {
       Cerr << "\nError in Champ_front_contact_VEF::equation() : not able to return the equation !" << finl;
       Process::exit();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,12 +57,12 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::completer()
 
 void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_nu(DoubleTab& mu) const
 {
-  if (!corr.non_nul()) return; //rien a faire
+  if (corr.est_nul()) return; //rien a faire
   const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
   if (!sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm))
     Process::exit(que_suis_je() + ": no turbulent momentum diffusion found!");
   const Correlation& corr_visc = ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, op_qdm).correlation();
-  if (!corr.non_nul() || !sub_type(Viscosite_turbulente_base, corr_visc.valeur()))
+  if (corr.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc.valeur()))
     Process::exit(que_suis_je() + ": no turbulent viscosity correlation found!");
   //un "simple" appel a la correlation!
   ref_cast(Transport_turbulent_base, corr.valeur()).modifier_nu(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc.valeur()), mu);

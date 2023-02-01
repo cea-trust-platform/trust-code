@@ -80,7 +80,7 @@ Entree& QDM_Multiphase::readOn(Entree& is)
   terme_convectif.valeur().set_incompressible(0);
 
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
-  if (!evanescence.non_nul() && pb.nb_phases() > 1)
+  if (evanescence.est_nul() && pb.nb_phases() > 1)
     {
       // Special treatment for Pb_HEM
       // We enforce the evanescence to a specific value
@@ -281,15 +281,15 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
   if (Taux_cisaillement.non_nul())
     if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
   if (la_vorticite.non_nul())
-    if (!grad_u.non_nul()) creer_champ("gradient_vitesse");
+    if (grad_u.est_nul()) creer_champ("gradient_vitesse");
   int i = noms_vit_phases_.rang(motlu);
-  if (i >= 0 && !(vit_phases_[i].non_nul()))
+  if (i >= 0 && vit_phases_[i].est_nul())
     {
       discretisation().discretiser_champ("vitesse",domaine_dis(), noms_vit_phases_[i], "m/s",dimension, 1, 0, vit_phases_[i]);
       champs_compris_.ajoute_champ(vit_phases_[i]);
     }
   i = noms_grad_vit_phases_.rang(motlu);
-  if (i >= 0 && !(grad_vit_phases_[i].non_nul()))
+  if (i >= 0 && grad_vit_phases_[i].est_nul())
     {
       int D = dimension ;
       Noms noms(D * D), unites(D * D);
@@ -309,7 +309,7 @@ void QDM_Multiphase::creer_champ(const Motcle& motlu)
 
   if (motlu == "gradient_pression")
     {
-      if (!gradient_P.non_nul())
+      if (gradient_P.est_nul())
         {
           const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
           dis.gradient_P(schema_temps(), domaine_dis(), gradient_P, ref_cast(Pb_Multiphase, probleme()).nb_phases());
@@ -385,7 +385,7 @@ int QDM_Multiphase::preparer_calcul()
 
 void QDM_Multiphase::update_y_plus(const DoubleTab& tab)
 {
-  if (!y_plus.non_nul()) Process::exit(que_suis_je() + " : y_plus must be initialised so it can be updated") ;
+  if (y_plus.est_nul()) Process::exit(que_suis_je() + " : y_plus must be initialised so it can be updated") ;
   DoubleTab& tab_y_p = y_plus->valeurs();
   if (tab.nb_dim()==2)
     for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
@@ -399,7 +399,7 @@ double QDM_Multiphase::alpha_res() const
 {
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   if (pb.nb_phases() == 1) return 0.;
-  if (!evanescence.non_nul()) Process::exit( "QDM_Multiphase::alpha_res : the evanescence operator should have been created already !" );
+  if (evanescence.est_nul()) Process::exit( "QDM_Multiphase::alpha_res : the evanescence operator should have been created already !" );
   if sub_type(Operateur_Evanescence_base, evanescence.valeur()) return ref_cast(Operateur_Evanescence_base, evanescence.valeur()).alpha_res();
   return -1.;
 }

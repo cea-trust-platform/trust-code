@@ -18,7 +18,7 @@
 void Eval_Dift_VDF_Elem::init_ind_fluctu_term()
 {
   ind_Fluctu_Term = 0;
-  if (!loipar.non_nul()) ind_Fluctu_Term = 1;
+  if (loipar.est_nul()) ind_Fluctu_Term = 1;
 }
 
 void Eval_Dift_VDF_Elem::associer_loipar(const Turbulence_paroi_scal& loi_paroi)

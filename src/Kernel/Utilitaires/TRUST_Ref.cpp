@@ -39,3 +39,8 @@ bool TRUST_Ref_Objet_U::non_nul() const
 {
   return p_ != nullptr;
 }
+
+bool TRUST_Ref_Objet_U::est_nul() const
+{
+  return p_ == nullptr;
+}

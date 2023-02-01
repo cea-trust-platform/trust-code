@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -51,7 +51,7 @@ void Champ_front_contact_fictif_VEF::mettre_a_jour(double temps )
   // On recupere les coefficients gradient_num_transf et gradient_fro_transf de l'autre probleme
   DoubleVect gradient_num_transf_autre_pb(nb_faces);
   DoubleVect gradient_fro_transf_autre_pb(nb_faces);
-  if (!ch_fr_autre_pb.non_nul())
+  if (ch_fr_autre_pb.est_nul())
     {
       Cerr << "Attention: Vous utilisez une condition de contact Champ_front_contact_fictif_VEF sur le bord " << nom_bord1 << " sur le probleme "<< nom_pb1 <<" " << finl;
       Cerr << "Vous devez avoir un Champ_front_contact_fictif_VEF equivalent sur le bord " << nom_bord2 << " du probleme "<<nom_pb2<<" " << finl;
