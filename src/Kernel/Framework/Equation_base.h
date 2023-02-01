@@ -276,7 +276,7 @@ public :
   };
 
 
-  inline void set_residuals(DoubleTab r)
+  inline void set_residuals(DoubleTab& r)
   {
     if(field_residu_.non_nul())
       {

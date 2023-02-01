@@ -1568,7 +1568,7 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
     {
       if (localisation == "SOM")
         {
-          const DoubleTab coord = dom.coord_sommets();
+          const DoubleTab& coord = dom.coord_sommets();
           format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
         }
       else if (localisation == "ELEM")
@@ -1580,7 +1580,7 @@ int Postraitement::postraiter_tableau(const Domaine& dom,const Noms& unites,cons
       else if (localisation == "FACES")
         {
           const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis_pour_faces.valeur());
-          const DoubleTab coord = domaine_vf.xv();
+          const DoubleTab& coord = domaine_vf.xv();
           format_post->ecrire_champ2(dom,unites,noms_compo,ncomp,temps,id_champ_ecrit,id_du_domaine,localisation,nature,val_post_ecrit,coord);
         }
     }
