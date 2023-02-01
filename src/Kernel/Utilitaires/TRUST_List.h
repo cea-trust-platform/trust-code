@@ -22,6 +22,8 @@
 
 #define LIST(_TYPE_) TRUST_List<_TYPE_>
 
+template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+
 /*! @brief classe TRUST_List
  *
  *  - La classe template TRUST_List est utilisable pour n'importe quelle classe
@@ -162,23 +164,8 @@ public:
     throw;
   }
 
-  _CLASSE_& operator[](const Nom& nom)
-  {
-    assert (size() > 0);
-    for (auto& itr : list_)
-      if (itr.le_nom() == nom) return itr;
-    Cerr << "TRUST_List : We have not found an object with name " << nom << finl;
-    throw;
-  }
-
-  const _CLASSE_& operator[](const Nom& nom) const
-  {
-    assert (size() > 0);
-    for (auto& itr : list_)
-      if (itr.le_nom() == nom) return itr;
-    Cerr << "TRUST_List : We have not found an object with name " << nom << finl;
-    throw;
-  }
+  _CLASSE_& operator[](const Nom& nom) { assert (size() > 0); return operator_<_CLASSE_>(nom); }
+  const _CLASSE_& operator[](const Nom& nom) const { assert (size() > 0); return operator_<_CLASSE_>(nom); }
 
   _CLASSE_& operator()(int i) { return operator[](i); }
   const _CLASSE_& operator()(int i) const { return operator[](i); }
@@ -197,18 +184,9 @@ public:
     return *this;
   }
 
-  int rang(const char* const ch) const
-  {
-    Nom nom(ch);
-    int ind = 0;
-    for (auto& itr : list_)
-      {
-        if (itr.le_nom() == nom) return ind;
-        ind++;
-      }
-    return -1;
-  }
-
+  int contient(const char* const ch) const { return contient_<_CLASSE_>(ch); }
+  int contient(const Objet_U& obj) const { return contient_<_CLASSE_>(obj); }
+  int rang(const char* const ch) const { return rang_<_CLASSE_>(ch); }
   int rang(const _CLASSE_ &obj) const
   {
     int i = 0;
@@ -220,7 +198,85 @@ public:
     return -1;
   }
 
-  int contient(const char* const ch) const
+private:
+
+  template<typename _TYPE_> enable_if_t<_TYPE_::HAS_POINTER, _CLASSE_&>
+  operator_(const Nom& nom)
+  {
+    for (auto& itr : list_)
+      if (itr->le_nom() == nom) return itr;
+    Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+  }
+
+  template<typename _TYPE_> enable_if_t<_TYPE_::HAS_POINTER, const _CLASSE_&>
+  operator_(const Nom& nom) const
+  {
+    for (auto& itr : list_)
+      if (itr->le_nom() == nom) return itr;
+    Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+  }
+
+  template<typename _TYPE_> enable_if_t<_TYPE_::HAS_POINTER, int>
+  rang_(const char* const ch) const
+  {
+    Nom nom(ch);
+    int ind = 0;
+    for (auto& itr : list_)
+      {
+        if (itr->le_nom() == nom) return ind;
+        ind++;
+      }
+    return -1;
+  }
+
+  template<typename _TYPE_> enable_if_t<_TYPE_::HAS_POINTER, int>
+  contient_(const char* const ch) const
+  {
+    Nom nom(ch);
+    for (auto& itr : list_)
+      if (itr->le_nom() == nom) return 1;
+    return 0;
+  }
+
+  template<typename _TYPE_> enable_if_t<_TYPE_::HAS_POINTER, int>
+  contient_(const Objet_U& obj) const
+  {
+    for (auto &itr : list_)
+      if (itr->le_nom() == obj) return 1;
+    return 0;
+  }
+
+  template<typename _TYPE_> enable_if_t<!_TYPE_::HAS_POINTER, _CLASSE_&>
+  operator_(const Nom& nom)
+  {
+    for (auto& itr : list_)
+      if (itr.le_nom() == nom) return itr;
+    Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+  }
+
+  template<typename _TYPE_> enable_if_t<!_TYPE_::HAS_POINTER, const _CLASSE_&>
+  operator_(const Nom& nom) const
+  {
+    for (auto& itr : list_)
+      if (itr.le_nom() == nom) return itr;
+    Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+  }
+
+  template<typename _TYPE_> enable_if_t<!_TYPE_::HAS_POINTER, int>
+  rang_(const char* const ch) const
+  {
+    Nom nom(ch);
+    int ind = 0;
+    for (auto& itr : list_)
+      {
+        if (itr.le_nom() == nom) return ind;
+        ind++;
+      }
+    return -1;
+  }
+
+  template<typename _TYPE_> enable_if_t<!_TYPE_::HAS_POINTER, int>
+  contient_(const char* const ch) const
   {
     Nom nom(ch);
     for (auto& itr : list_)
@@ -228,10 +284,11 @@ public:
     return 0;
   }
 
-  int contient(const Objet_U& obj) const
+  template<typename _TYPE_> enable_if_t<!_TYPE_::HAS_POINTER, int>
+  contient_(const Objet_U& obj) const
   {
     for (auto &itr : list_)
-      if (itr == obj) return 1;
+      if (itr.le_nom() == obj) return 1;
     return 0;
   }
 };

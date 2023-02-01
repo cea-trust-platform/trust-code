@@ -66,6 +66,10 @@ public:
   ~Objet_U() override;
   int        numero() const;
   int        get_object_id() const;
+
+  // Elie Saikali : add to this to statically test if class templates are REF/DERIV or normal !
+  static constexpr bool HAS_POINTER = false;
+
   static int dimension;
   static double precision_geom;
   static int format_precision_geom;

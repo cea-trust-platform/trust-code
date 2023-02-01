@@ -32,6 +32,7 @@ class Objet_U_ptr: public Objet_U
   Declare_base_sans_constructeur_ni_destructeur(Objet_U_ptr);
 
 public:
+  static constexpr bool HAS_POINTER = true;
   Objet_U_ptr(const Objet_U_ptr&) = delete;
   const Objet_U_ptr& operator=(const Objet_U_ptr&) = delete;
 

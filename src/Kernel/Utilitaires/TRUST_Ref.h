@@ -58,6 +58,8 @@ private:
   value_type * p_ = nullptr;
 
 public:
+  static constexpr bool HAS_POINTER = true;
+
   ~TRUST_Ref() = default;
   TRUST_Ref() = default;
   TRUST_Ref(const value_type& t) :  p_((value_type*)&t) { }
@@ -112,6 +114,8 @@ private:
   Objet_U * p_ = nullptr;
 
 public:
+  static constexpr bool HAS_POINTER = true;
+
   ~TRUST_Ref_Objet_U();
   TRUST_Ref_Objet_U();
   TRUST_Ref_Objet_U(const Objet_U& t);
