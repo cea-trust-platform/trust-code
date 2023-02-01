@@ -67,6 +67,13 @@ if [ ! -d ${Build} ]
    #tkdiff  CMakeLists.txt p
    mv p CMakeLists.txt
   # rm -f CMakeCache*
+   if [ "$TRUST_CC_BASE_EXTP" != "" ]
+   then
+      export OMPI_CXX=$TRUST_CC_BASE_EXTP
+      export OMPI_CC=$TRUST_cc_BASE_EXTP
+      export MPICH_CXX=$OMPI_CXX
+      export MPICH_CC=$OMPI_CC
+   fi  
    cmake . -DCMAKE_CXX_COMPILER=$TRUST_CC  -DCMAKE_C_COMPILER=$TRUST_cc -DCMAKE_CXX_STANDARD=11
    [ ! -f Makefile ] && echo "Echec du construction du Makefile par xml2makefile dans ${Build}_plugin" && exit -1
 
