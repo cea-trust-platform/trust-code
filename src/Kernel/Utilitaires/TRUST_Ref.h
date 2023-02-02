@@ -95,7 +95,7 @@ public:
 template<typename _CLASSE_>
 inline int operator ==(const TRUST_Ref<_CLASSE_>& r1, const TRUST_Ref<_CLASSE_>& r2)
 {
-  if ((!r1.non_nul()) && (!r2.non_nul())) return 1;
+  if (r1.est_nul() && r2.est_nul()) return 1;
   if (r1->numero() == r2->numero()) return 1;
   return 0;
 }
@@ -132,6 +132,8 @@ public:
   inline const Objet_U* operator ->() const { assert(p_ != nullptr); return p_; }
   inline Objet_U* operator ->() { assert(p_ != nullptr); return p_; }
 };
+
+int operator ==(const TRUST_Ref_Objet_U& r1, const TRUST_Ref_Objet_U& r2);
 
 using RefObjU = TRUST_Ref_Objet_U;
 
