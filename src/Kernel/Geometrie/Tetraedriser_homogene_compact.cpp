@@ -105,7 +105,7 @@ void Tetraedriser_homogene_compact::decoupe(Domaine& domaine, Faces& faces, IntT
 //
 // ATTENTION: ne considere qu'une seule domaine pour l'instant...
 //
-int Tetraedriser_homogene_compact::creer_sommet(Domaine& dom, Domaine& domaine, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
+int Tetraedriser_homogene_compact::creer_sommet(Domaine& domaine, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
                                                 int& nbnewsoms, IntTab& fait_sommet, int& nface) const
 {
 
@@ -135,7 +135,7 @@ int Tetraedriser_homogene_compact::creer_sommet(Domaine& dom, Domaine& domaine, 
           return fait_sommet(i, 3);
     }
 
-  const DoubleTab& coord_sommets = dom.coord_sommets();
+  const DoubleTab& coord_sommets = domaine.coord_sommets();
 
   double x = 0, y = 0, z = 0;
 
@@ -182,7 +182,6 @@ void Tetraedriser_homogene_compact::trianguler(Domaine& domaine) const
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 7);
       IntTab sommets(8);
-      Domaine& dom = domaine;
       int compteur = 0;
       int nbnewsoms = 0;
       int nface = 0;
@@ -199,7 +198,7 @@ void Tetraedriser_homogene_compact::trianguler(Domaine& domaine) const
       //On dimensionne une premiere fois le tableau des sommets avec la dimension maximun
       //puis on redimensionnera seulement a la fin par la dimension exacte
 
-      DoubleTab& sommets_dom = dom.les_sommets();
+      DoubleTab& sommets_dom = domaine.les_sommets();
       //8 pour les nouveaux sommets et 8 pour les anciens sommets =16
       int dim_som_max = 16 * oldsz;
       int dim_som_old = sommets_dom.dimension(0);
@@ -238,49 +237,49 @@ void Tetraedriser_homogene_compact::trianguler(Domaine& domaine) const
           sommets(5) = i5;
           sommets(6) = i6;
           sommets(7) = i7;
-          indice(0) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(0) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces bas (0-1-3-2)
           sommets(0) = i0;
           sommets(1) = i1;
           sommets(2) = i3;
           sommets(3) = i2;
-          indice(1) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(1) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces haut (4-5-7-6)
           sommets(0) = i4;
           sommets(1) = i5;
           sommets(2) = i7;
           sommets(3) = i6;
-          indice(4) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(4) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces avant (0-1-5-4)
           sommets(0) = i0;
           sommets(1) = i1;
           sommets(2) = i5;
           sommets(3) = i4;
-          indice(3) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(3) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces arriere (2-3-7-6)
           sommets(0) = i2;
           sommets(1) = i3;
           sommets(2) = i7;
           sommets(3) = i6;
-          indice(6) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(6) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces gauche (0-2-6-4)
           sommets(0) = i0;
           sommets(1) = i2;
           sommets(2) = i6;
           sommets(3) = i4;
-          indice(2) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(2) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           //centres des faces droite (1-3-7-5)
           sommets(0) = i1;
           sommets(1) = i3;
           sommets(2) = i7;
           sommets(3) = i5;
-          indice(5) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
+          indice(5) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface);
 
           // Liste des nouveaux sommets pour cet ancien cube
           for (int t = 0; t < 7; t++)

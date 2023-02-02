@@ -177,11 +177,11 @@ void Tetraedriser_homogene_fin::decoupe(Domaine& domaine, Faces& faces, IntTab& 
   sommets.ref(nouveaux);
 }
 
-int Tetraedriser_homogene_fin::creer_sommet(Domaine& dom, Domaine& domaine, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
+int Tetraedriser_homogene_fin::creer_sommet(Domaine& domaine, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
                                             int& nbnewsoms, IntTab& fait_sommet, int& nface, IntTab& fait_sommet_arete, int& narete) const
 {
 
-  const DoubleTab& coord_sommets = dom.coord_sommets();
+  const DoubleTab& coord_sommets = domaine.coord_sommets();
   //int nb_domaines = dom.nb_domaines();
   int _out;
 
@@ -338,7 +338,6 @@ void Tetraedriser_homogene_fin::trianguler(Domaine& domaine) const
       // pour chaque cube, liste des nouveaux sommets qu'il contient :
       IntTab new_soms_old_elems(oldsz, 19);
       IntTab sommets(8);
-      Domaine& dom = domaine;
       int compteur = 0;
       int nbnewsoms = 0;
       int nface = 0;
@@ -357,7 +356,7 @@ void Tetraedriser_homogene_fin::trianguler(Domaine& domaine) const
       //On dimensionne une premiere fois le tableau des sommets avec la dimension maximun
       //puis on redimensionnera seulement a la fin par la dimension exacte
 
-      DoubleTab& sommets_dom = dom.les_sommets();
+      DoubleTab& sommets_dom = domaine.les_sommets();
       //int dim_som_max=19*oldsz*40;
       //19 pour les nouveaux sommets et 8 pour les anciens sommets = 27
       int dim_som_max = 27 * oldsz;
@@ -402,109 +401,109 @@ void Tetraedriser_homogene_fin::trianguler(Domaine& domaine) const
           sommets(5) = i5;
           sommets(6) = i6;
           sommets(7) = i7;
-          indice(0) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(0) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 8, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des faces bas (0-1-3-2)
           sommets(0) = i0;
           sommets(1) = i1;
           sommets(2) = i3;
           sommets(3) = i2;
-          indice(1) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(1) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des faces haut (4-5-7-6)
           sommets(0) = i4;
           sommets(1) = i5;
           sommets(2) = i7;
           sommets(3) = i6;
-          indice(4) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(4) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des faces avant (0-1-5-4)
           sommets(0) = i0;
           sommets(1) = i1;
           sommets(2) = i5;
           sommets(3) = i4;
-          indice(3) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(3) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des faces arriere (2-3-7-6)
           sommets(0) = i2;
           sommets(1) = i3;
           sommets(2) = i7;
           sommets(3) = i6;
-          indice(6) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(6) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des faces gauche (0-2-6-4)
           sommets(0) = i0;
           sommets(1) = i2;
           sommets(2) = i6;
           sommets(3) = i4;
-          indice(2) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(2) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des faces droite (1-3-7-5)
           sommets(0) = i1;
           sommets(1) = i3;
           sommets(2) = i7;
           sommets(3) = i5;
-          indice(5) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(5) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 4, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (0-1)
           sommets(0) = i0;
           sommets(1) = i1;
-          indice(7) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(7) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (1-3)
           sommets(0) = i1;
           sommets(1) = i3;
-          indice(8) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(8) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (3-2)
           sommets(0) = i3;
           sommets(1) = i2;
-          indice(9) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(9) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (2-0)
           sommets(0) = i2;
           sommets(1) = i0;
-          indice(10) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(10) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (1-5)
           sommets(0) = i1;
           sommets(1) = i5;
-          indice(11) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(11) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (3-7)
           sommets(0) = i3;
           sommets(1) = i7;
-          indice(12) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(12) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (2-6)
           sommets(0) = i2;
           sommets(1) = i6;
-          indice(13) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(13) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (0-4)
           sommets(0) = i0;
           sommets(1) = i4;
-          indice(14) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(14) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (4-5)
           sommets(0) = i4;
           sommets(1) = i5;
-          indice(15) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(15) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (5-7)
           sommets(0) = i5;
           sommets(1) = i7;
-          indice(16) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(16) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (7-6)
           sommets(0) = i7;
           sommets(1) = i6;
-          indice(17) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(17) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           //centres des aretes (6-4)
           sommets(0) = i6;
           sommets(1) = i4;
-          indice(18) = creer_sommet(dom, domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
+          indice(18) = creer_sommet(domaine, new_soms, elem_traite, new_soms_old_elems, 2, sommets, compteur, oldnbsom, nbnewsoms, fait_sommet, nface, fait_sommet_arete, narete);
 
           // Liste des nouveaux sommets pour cet ancien cube
           for (int t = 0; t < 19; t++)

@@ -57,7 +57,7 @@ const Nom& Hexaedre_VEF::nom_lml() const
  *
  * @return (Nom&) toujours egal a "HEXA8"
  */
-static int entre_faces(const Domaine& domaine,const Domaine& dom,const ArrOfDouble& pos, int Asom0_, int Asom1_, int Asom2_, int Bsom0_, int Bsom1_, int Bsom2_)
+static int entre_faces(const Domaine& dom,const ArrOfDouble& pos, int Asom0_, int Asom1_, int Asom2_, int Bsom0_, int Bsom1_, int Bsom2_)
 {
   double prodA,prodB;
   const DoubleTab& coord=dom.les_sommets();
@@ -111,7 +111,7 @@ static int entre_faces(const Domaine& domaine,const Domaine& dom,const ArrOfDoub
  *
  * @return (Nom&) toujours egal a "HEXA8"
  */
-static int contient_Tetra(const Domaine& domaine,const Domaine& dom,const ArrOfDouble& pos, int som0_, int som1_, int som2_, int som3_, int aff)
+static int contient_Tetra(const Domaine& dom,const ArrOfDouble& pos, int som0_, int som1_, int som2_, int som3_, int aff)
 {
   double prod1,prod2;
   int som0, som1, som2, som3;
@@ -264,10 +264,10 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
   bool new_algo = true;
   if (new_algo)
     {
-      if (entre_faces(dom, dom, pos, som0, som1, som2, som4, som5, som6))
-        if (entre_faces(dom, dom, pos, som0, som1, som4, som2, som3, som6))
+      if (entre_faces(dom, pos, som0, som1, som2, som4, som5, som6))
+        if (entre_faces(dom, pos, som0, som1, som4, som2, som3, som6))
 
-          if (entre_faces(dom, dom, pos, som0, som2, som4, som1, som3, som5))
+          if (entre_faces(dom, pos, som0, som2, som4, som1, som3, som5))
             return 1;
       return 0;
     }
@@ -279,12 +279,12 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
         {
           aff = 1;
         }
-      if (contient_Tetra(dom, dom, pos, som0, som1, som2, som4, aff) ||
-          contient_Tetra(dom, dom, pos, som1, som2, som3, som6, aff) ||
-          contient_Tetra(dom, dom, pos, som1, som2, som4, som6, aff) ||
-          contient_Tetra(dom, dom, pos, som3, som5, som6, som7, aff) ||
-          contient_Tetra(dom, dom, pos, som1, som4, som5, som6, aff) ||
-          contient_Tetra(dom, dom, pos, som1, som3, som5, som6, aff))
+      if (contient_Tetra(dom, pos, som0, som1, som2, som4, aff) ||
+          contient_Tetra(dom, pos, som1, som2, som3, som6, aff) ||
+          contient_Tetra(dom, pos, som1, som2, som4, som6, aff) ||
+          contient_Tetra(dom, pos, som3, som5, som6, som7, aff) ||
+          contient_Tetra(dom, pos, som1, som4, som5, som6, aff) ||
+          contient_Tetra(dom, pos, som1, som3, som5, som6, aff))
         {
           return 1;
         }

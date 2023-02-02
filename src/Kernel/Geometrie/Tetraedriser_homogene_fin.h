@@ -41,7 +41,7 @@ public :
 
   void decoupe(Domaine&, Faces&, IntTab&, IntTab&, int, IntTab&, int) const;
   void trianguler(Domaine&) const override;
-  int creer_sommet(Domaine&, Domaine&, DoubleTab&, IntTab&, IntTab&, int, IntTab&, int&, int, int&, IntTab&, int&, IntTab&, int&) const;
+  int creer_sommet(Domaine&, DoubleTab&, IntTab&, IntTab&, int, IntTab&, int&, int, int&, IntTab&, int&, IntTab&, int&) const;
   inline int dimension_application() const override;
 };
 

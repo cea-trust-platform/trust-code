@@ -31,7 +31,7 @@ class Extraire_surface : public Interprete_geometrique_base
   Declare_instanciable(Extraire_surface);
 public :
   Entree& interpreter_(Entree&) override;
-  static void extraire_surface(Domaine& dom,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords) ;
+  static void extraire_surface(Domaine& domaine_surfacique,const Domaine& domaine_volumique, const Nom& nom_domaine_surfacique, const Domaine_VF& domaine_vf, const Nom& expr_elements,const Nom& expr_faces, int avec_les_bords, const Noms& noms_des_bords) ;
 };
 
 #endif /* Extraire_surface_included */
