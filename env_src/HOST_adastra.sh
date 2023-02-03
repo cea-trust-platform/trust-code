@@ -10,6 +10,8 @@ define_modules_config()
    #
    # Load modules
    module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric"
+   # Mise a jour du 03/02/23:
+   module="craype-x86-trento craype-network-ofi rocm craype-accel-amd-gfx90a libfabric cce/15.0.0 craype/2.7.19 cray-mpich/8.1.21 cray-libsci/22.11.1.2"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -24,6 +26,7 @@ define_modules_config()
 ##############################
 define_soumission_batch()
 {
+   # ToDo pour adastra:
    soumission=2
    [ "$prod" = 1 ] && soumission=1
    [ "$gpu"  = 1 ] && soumission=1
