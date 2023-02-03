@@ -20,6 +20,7 @@
 #include <Scatter.h>
 #include <Sous_Domaine.h>
 #include <SFichier.h>
+#include <Synonyme_info.h>
 
 Implemente_instanciable(Create_domain_from_sous_domaine,"Create_domain_from_sous_domaine|Create_domains_from_sous_domaines",Interprete_geometrique_base);
 // XD create_domain_from_sous_domaine interprete_geometrique_base create_domain_from_sous_domaine 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.

@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Octree_Zone_included
-#define Octree_Zone_included
+#ifndef Octree_Domaine_included
+#define Octree_Domaine_included
 
 #include <Octree_Double.h>
 #include <TRUST_Ref.h>

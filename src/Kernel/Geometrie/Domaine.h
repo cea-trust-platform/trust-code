@@ -18,6 +18,7 @@
 
 #include <Interprete_geometrique_base.h>
 #include <Faces_Internes.h>
+#include <Sous_Domaine.h>
 #include <TRUSTArrays.h>
 #include <TRUST_Deriv.h>
 #include <TRUST_List.h>
@@ -44,7 +45,6 @@ class Conds_lim;
 class Domaine_dis;
 class Domaine_dis_base;
 class Domaine_dis;
-class Sous_Domaine;
 class Probleme_base;
 
 /*! @brief classe Domaine Une Domaine est un maillage compose d'un ensemble d'elements geometriques

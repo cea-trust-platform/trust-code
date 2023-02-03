@@ -22,9 +22,7 @@
 class Convection_Diffusion_std;
 class Schema_Temps_base;
 class Equation_base;
-class Zone_Cl_dis;
 class Champ_base;
-class Zone_dis;
 class Motcle;
 class Param;
 

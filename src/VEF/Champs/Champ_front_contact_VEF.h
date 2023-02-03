@@ -30,7 +30,6 @@ class Champ_front_contact_VEF;
 class Champ_Inc_base;
 class Front_dis_base;
 class Equation_base;
-class Zone_dis_base;
 class Milieu_base;
 
 /*! @brief classe Champ_front_contact_VEF Permet le couplage scalaire (temperature ou concentration) entre problemes en calculant

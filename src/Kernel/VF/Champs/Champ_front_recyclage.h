@@ -28,7 +28,6 @@ class Domaine_dis_base;
 class Champ_Inc_base;
 class Front_dis_base;
 class Equation_base;
-class Zone_dis_base;
 class Milieu_base;
 class Param;
 

@@ -15,8 +15,9 @@
 
 #include <LecFicDistribue.h>
 #include <communications.h>
-#include <Interprete.h>
+#include <Synonyme_info.h>
 #include <Sous_Domaine.h>
+#include <Interprete.h>
 #include <Polynome.h>
 #include <Parser_U.h>
 #include <Domaine.h>

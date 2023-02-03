@@ -67,7 +67,8 @@ public :
 
 protected :
 
-  REF(Champ_base) la_diffusivite; inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& ) override ;
+  REF(Champ_base) la_diffusivite;
+  inline void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc& ) override ;
 };
 
 class Op_Dift_negligeable: public Op_Diff_negligeable

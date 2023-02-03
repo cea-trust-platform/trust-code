@@ -23,7 +23,6 @@
 
 class Domaine_Cl_dis_base;
 class Probleme_base;
-class Zone_VF;
 
 class Terme_Puissance_Thermique_Echange_Impose_Elem_base: public Source_base
 {

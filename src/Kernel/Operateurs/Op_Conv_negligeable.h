@@ -39,13 +39,13 @@ class Op_Conv_negligeable: public Operateur_negligeable,
 
 public :
 
-  inline void contribuer_au_second_membre(DoubleTab& ) const override;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
+  inline void contribuer_au_second_membre(DoubleTab& ) const override { }
+  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { }
   inline void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override { }
   /* interface {dimensionner,ajouter}_blocs -> ne font rien */
   int  has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { };
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override { };
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override { }
 
   inline void mettre_a_jour(double) override;
   void associer_vitesse(const Champ_base& ) override ;

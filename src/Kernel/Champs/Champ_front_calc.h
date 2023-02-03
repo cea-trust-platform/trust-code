@@ -25,7 +25,6 @@ class Domaine_dis_base;
 class Champ_Inc_base;
 class Front_dis_base;
 class Equation_base;
-class Zone_dis_base;
 class Milieu_base;
 
 /*! @brief classe Champ_front_calc Classe derivee de Champ_front_var qui represente les

@@ -18,7 +18,6 @@
 
 #include <Champ_Fonc_P0_VEF.h>
 #include <Domaine_Cl_VEF.h>
-#include <Zone_Cl_VEF.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_VEF;

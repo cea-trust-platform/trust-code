@@ -12,8 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-#include <Partitionneur_Sous_Domaines.h>
 
+#include <Partitionneur_Sous_Domaines.h>
+#include <Synonyme_info.h>
 #include <Domaine.h>
 #include <Sous_Domaine.h>
 #include <Param.h>

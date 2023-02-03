@@ -23,6 +23,8 @@
 #include <Domaine.h>
 #include <TRUSTLists.h>
 #include <Solv_GCP.h>
+#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_Cl_VEFP1B.h>
 #include <SSOR.h>
 
 Implemente_instanciable(Op_Dift_VEF_P1NCP1B_Face, "Op_Dift_VEF_P1NCP1B_const_P1NC", Op_Dift_VEF_base);
