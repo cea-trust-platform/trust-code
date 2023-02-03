@@ -217,8 +217,8 @@
 <TR><TD><SMALL><A HREF="#Kernel_Post_MED">Kernel_Post_MED</A></TD><TD><SMALL># Pbc_MED #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_Redresser_hexaedres_vdf">Kernel_Redresser_hexaedres_vdf</A></TD><TD><SMALL># Lecture d'un maillage Quadrangle depuis Fluent et transformation en rectangle #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_Remove_elem">Kernel_Remove_elem</A></TD><TD><SMALL># Test of remove_elem keyword #</TD></TR>
-<TR><TD><SMALL><A HREF="#Kernel_Sous_Zone_Fonction">Kernel_Sous_Zone_Fonction</A></TD><TD><SMALL># Tests SousZone restriction/fonction #</TD></TR>
-<TR><TD><SMALL><A HREF="#Kernel_Sous_zone">Kernel_Sous_zone</A></TD><TD><SMALL># Test Sous zones #</TD></TR>
+<TR><TD><SMALL><A HREF="#Kernel_Sous_Domaine_Fonction">Kernel_Sous_Domaine_Fonction</A></TD><TD><SMALL># Tests SousZone restriction/fonction #</TD></TR>
+<TR><TD><SMALL><A HREF="#Kernel_Sous_domaine">Kernel_Sous_domaine</A></TD><TD><SMALL># Test Sous domaines #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_Testeur">Kernel_Testeur</A></TD><TD><SMALL># Test de l'interprete Testeur #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_Transform_Rot_2D">Kernel_Transform_Rot_2D</A></TD><TD><SMALL>#  Tests de rotation d'un domaine 2D (dom) autour de l'axe Oz #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_Transform_Rot_3D">Kernel_Transform_Rot_3D</A></TD><TD><SMALL>#  Tests de rotation d'un domaine 3D (dom) #</TD></TR>
@@ -233,7 +233,7 @@
 <TR><TD><SMALL><A HREF="#Kernel_polygone">Kernel_polygone</A></TD><TD><SMALL># Test polygone #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_quality_3D">Kernel_quality_3D</A></TD><TD><SMALL># 3D Verifier_Qualite_Raffinements #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_regroupe_bord">Kernel_regroupe_bord</A></TD><TD><SMALL># Tests de regroupement des bords #</TD></TR>
-<TR><TD><SMALL><A HREF="#Kernel_remove_invalid_internal_boundary">Kernel_remove_invalid_internal_boundary</A></TD><TD><SMALL># Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_zones #</TD></TR>
+<TR><TD><SMALL><A HREF="#Kernel_remove_invalid_internal_boundary">Kernel_remove_invalid_internal_boundary</A></TD><TD><SMALL># Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_domaines #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_simplex_3D">Kernel_simplex_3D</A></TD><TD><SMALL># 3D Raffiner_Simplexes on tetra mesh #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_splitter_med">Kernel_splitter_med</A></TD><TD><SMALL># test de la lecture de med parallele #</TD></TR>
 <TR><TD><SMALL><A HREF="#Kernel_structured_2D">Kernel_structured_2D</A></TD><TD><SMALL># 2D Raffiner_Simplexes on initial quadrangle mesh #</TD></TR>
@@ -1204,12 +1204,12 @@
 <HR><CENTER><B><A NAME=Kernel_Remove_elem>Kernel_Remove_elem</A></B></CENTER>
 <CENTER># Test of remove_elem keyword #</CENTER>
 <CENTER><a href=../tests/Reference/Kernel_Remove_elem/Kernel_Remove_elem.data>Edit</a> Kernel_Remove_elem.data </CENTER>
-<HR><CENTER><B><A NAME=Kernel_Sous_Zone_Fonction>Kernel_Sous_Zone_Fonction</A></B></CENTER>
+<HR><CENTER><B><A NAME=Kernel_Sous_Domaine_Fonction>Kernel_Sous_Domaine_Fonction</A></B></CENTER>
 <CENTER># Tests SousZone restriction/fonction #</CENTER>
-<CENTER><a href=../tests/Reference/Kernel_Sous_Zone_Fonction/Kernel_Sous_Zone_Fonction.data>Edit</a> Kernel_Sous_Zone_Fonction.data </CENTER>
-<HR><CENTER><B><A NAME=Kernel_Sous_zone>Kernel_Sous_zone</A></B></CENTER>
-<CENTER># Test Sous zones #</CENTER>
-<CENTER><a href=../tests/Reference/Kernel_Sous_zone/Kernel_Sous_zone.data>Edit</a> Kernel_Sous_zone.data </CENTER>
+<CENTER><a href=../tests/Reference/Kernel_Sous_Domaine_Fonction/Kernel_Sous_Domaine_Fonction.data>Edit</a> Kernel_Sous_Domaine_Fonction.data </CENTER>
+<HR><CENTER><B><A NAME=Kernel_Sous_domaine>Kernel_Sous_domaine</A></B></CENTER>
+<CENTER># Test Sous domaines #</CENTER>
+<CENTER><a href=../tests/Reference/Kernel_Sous_domaine/Kernel_Sous_domaine.data>Edit</a> Kernel_Sous_domaine.data </CENTER>
 <HR><CENTER><B><A NAME=Kernel_Testeur>Kernel_Testeur</A></B></CENTER>
 <CENTER># Test de l'interprete Testeur #</CENTER>
 <CENTER><a href=../tests/Reference/Kernel_Testeur/Kernel_Testeur.data>Edit</a> Kernel_Testeur.data </CENTER>
@@ -1264,7 +1264,7 @@
 <CENTER># Tests de regroupement des bords #</CENTER>
 <CENTER><a href=../tests/Reference/Kernel_regroupe_bord/Kernel_regroupe_bord.data>Edit</a> Kernel_regroupe_bord.data </CENTER>
 <HR><CENTER><B><A NAME=Kernel_remove_invalid_internal_boundary>Kernel_remove_invalid_internal_boundary</A></B></CENTER>
-<CENTER># Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_zones #</CENTER>
+<CENTER># Test Remove_Invalid_Internal_Boundaries et que Champ_fonc_med ne touche pas aux sous_domaines #</CENTER>
 <CENTER><a href=../tests/Reference/Kernel_remove_invalid_internal_boundary/Kernel_remove_invalid_internal_boundary.data>Edit</a> Kernel_remove_invalid_internal_boundary.data </CENTER>
 <HR><CENTER><B><A NAME=Kernel_simplex_3D>Kernel_simplex_3D</A></B></CENTER>
 <CENTER># 3D Raffiner_Simplexes on tetra mesh #</CENTER>
