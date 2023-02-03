@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@
  * @sa Champ_base Champ_Don Champ_Fonc
  */
 
-template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
 
 class Champ_Don_base : public Champ_base
 {

@@ -26,7 +26,7 @@ class MD_Vector;
 // MACRO to replace VECT(THECLASS) by TRUST_Vector<THECLASS> & keep previous syntax for some developers
 #define VECT(_TYPE_) TRUST_Vector<_TYPE_>
 
-template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
 
 /*! @brief classe TRUST_Vector
  *
@@ -90,7 +90,7 @@ private:
   STLVect z_vect_;
 
   template<typename _TYPE_>
-  enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
+  enable_if_t_< !(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
   readOn_(Entree& s)
   {
     int i;
@@ -106,7 +106,7 @@ private:
   }
 
   template<typename _TYPE_>
-  enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
+  enable_if_t_< !(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
   printOn_(Sortie& s) const
   {
     s << (int) z_vect_.size() << space;
@@ -116,11 +116,11 @@ private:
 
   // MD_Vector class does not derive from Objet_U => no readOn & printOn
   template<typename _TYPE_>
-  enable_if_t<(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
+  enable_if_t_<(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
   readOn_(Entree& s) { return s; }
 
   template<typename _TYPE_>
-  enable_if_t<(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
+  enable_if_t_<(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
   printOn_(Sortie& s) const { return s ; }
 
 public:

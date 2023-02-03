@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,8 +18,7 @@
 
 #include <type_traits>
 
-// TODO : can be removed when we pass to C++14
-template<bool B, typename T> using enable_if_t = typename std::enable_if<B, T>::type;
+template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
 
 enum class Type_Flux_Arete { FLUIDE, BORD, COIN_FLUIDE, INTERNE, MIXTE, PERIODICITE, PAROI_FLUIDE, PAROI, SYMETRIE_PAROI, SYMETRIE_FLUIDE, SYMETRIE };
 
