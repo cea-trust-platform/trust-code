@@ -20,5 +20,4 @@ instancie_src_Kernel_Solveurs();
 instancie_src_Kernel_Statistiques_temps();
 instancie_src_Kernel_Utilitaires();
 instancie_src_Kernel_VF_Champs();
-instancie_src_Kernel_VF_Zones();
 

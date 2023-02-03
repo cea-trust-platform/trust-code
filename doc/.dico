@@ -232,7 +232,7 @@
  Cosh Cosh StdFunction.h
  Couplage_U Couplage_U Couplage_U.h
  Courant_maille_Champ_Face Courant_maille_Champ_Face Courant_maille_Champ_Face.h
- Create_domain_from_sous_zone|Create_domains_from_sous_zones Create_domain_from_sous_zone Create_domain_from_sous_zone.h
+ Create_domain_from_sous_domaine|Create_domains_from_sous_domaines Create_domain_from_sous_domaine Create_domain_from_sous_domaine.h
  Critere_Q_Champ_Face Critere_Q_Champ_Face Critere_Q_Champ_Face.h
  Critere_Q_Champ_P1NC Critere_Q_Champ_P1NC Critere_Q_Champ_P1NC.h
  Darcy_QC_VDF_Face Darcy_QC_VDF_Face Source_QC_VDF_Face.h
@@ -278,7 +278,25 @@
  DomaineAxi1d DomaineAxi1d DomaineAxi1d.h
  DomaineCutter DomaineCutter DomaineCutter.h
  Domaine_bord Domaine_bord Domaine_bord.h
+ Domaine_Cl_dis Domaine_Cl_dis Domaine_Cl_dis.h
+ Domaine_Cl_dis_base Domaine_Cl_dis_base Domaine_Cl_dis_base.h
+ Domaine_Cl_EF Domaine_Cl_EF Domaine_Cl_EF.h
+ Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC.h
+ Domaine_Cl_VDF Domaine_Cl_VDF Domaine_Cl_VDF.h
+ Domaine_Cl_VEF Domaine_Cl_VEF Domaine_Cl_VEF.h
+ Domaine_Cl_VEFP1B Domaine_Cl_VEFP1B Domaine_Cl_VEFP1B.h
  Domaine_dis Domaine_dis Domaine_dis.h
+ Domaine_dis_base Domaine_dis_base Domaine_dis_base.h
+ Domaine_EF Domaine_EF Domaine_EF.h
+ Domaine_EF_axi Domaine_EF_axi Domaine_EF_axi.h
+ Domaine_PolyMAC Domaine_PolyMAC Domaine_PolyMAC.h
+ Domaine_PolyMAC_P0 Domaine_PolyMAC_P0 Domaine_PolyMAC_P0.h
+ Domaine_Poly_base Domaine_Poly_base Domaine_Poly_base.h
+ Domaine_VDF Domaine_VDF Domaine_VDF.h
+ Domaine_VEF Domaine_VEF Domaine_VEF.h
+ Domaine_VEFPreP1b Domaine_VEF_PreP1b Domaine_VEF_PreP1b.h
+ Domaine_VF Domaine_VF Domaine_VF.h
+ Domaine_VF_inst Domaine_VF_inst Domaine_VF_inst.h
  DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0 DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
  Echange_couplage_thermique Echange_couplage_thermique Echange_couplage_thermique.h
  Echange_impose_base Echange_impose_base Echange_impose_base.h
@@ -498,7 +516,6 @@
  Lire|Read Lire Lire.h
  liste liste liste.h
  Liste_Champ_Generique Liste_Champ_Generique Liste_Champ_Generique.h
- List_Zone List_Zone List_Zone.h
  Ln Ln StdFunction.h
  Loi_Etat Loi_Etat Loi_Etat.h
  Loi_Etat_base Loi_Etat_base Loi_Etat_base.h
@@ -793,7 +810,7 @@
  Partitionneur_Partition Partitionneur_Partition Partitionneur_Partition.h
  Partitionneur_Ptscotch Partitionneur_Ptscotch Partitionneur_Ptscotch.h
  Partitionneur_Sous_Domaine Partitionneur_Sous_Domaine Partitionneur_Sous_Domaine.h
- Partitionneur_Sous_Zones Partitionneur_Sous_Zones Partitionneur_Sous_Zones.h
+ Partitionneur_Sous_Domaines Partitionneur_Sous_Domaines Partitionneur_Sous_Domaines.h
  Partitionneur_Tranche Partitionneur_Tranche Partitionneur_Tranche.h
  Partitionneur_Union Partitionneur_Union Partitionneur_Union.h
  Pave Pave Pave.h
@@ -1068,10 +1085,10 @@
  Source_WC_Chaleur_VEF Source_WC_Chaleur_VEF Source_WC_Chaleur_VEF.h
  Source_WC_Gravite_VDF Source_WC_Gravite_VDF Source_WC_Gravite_VDF.h
  Source_WC_Gravite_VEF Source_WC_Gravite_VEF Source_WC_Gravite_VEF.h
- Sous_Zone Sous_Zone Sous_Zone.h
- Sous_zone_dis Sous_zone_dis Sous_zone_dis.h
- Sous_zone_dis_base Sous_zone_dis_base Sous_zone_dis_base.h
- Sous_zone_VF Sous_zone_VF Sous_zone_VF.h
+ Sous_Domaine Sous_Domaine Sous_Domaine.h
+ Sous_domaine_dis Sous_domaine_dis Sous_domaine_dis.h
+ Sous_domaine_dis_base Sous_domaine_dis_base Sous_domaine_dis_base.h
+ Sous_domaine_VF Sous_domaine_VF Sous_domaine_VF.h
  Sqrt Sqrt StdFunction.h
  SSOR SSOR SSOR.h
  ssor_bloc PrecondA PrecondA.h
@@ -1181,24 +1198,3 @@
  Viscosite_turbulente_multiple Viscosite_turbulente_multiple Viscosite_turbulente_multiple.h
  Y_plus_Champ_Face Y_plus_Champ_Face Y_plus_Champ_Face.h
  Y_plus_Champ_P1NC Y_plus_Champ_P1NC Y_plus_Champ_P1NC.h
- Zone Zone Zone.h
- Zones Zones Zones.h
- Zone_Cl_dis Zone_Cl_dis Zone_Cl_dis.h
- Zone_Cl_dis_base Zone_Cl_dis_base Zone_Cl_dis_base.h
- Zone_Cl_EF Zone_Cl_EF Zone_Cl_EF.h
- Zone_Cl_PolyMAC Zone_Cl_PolyMAC Zone_Cl_PolyMAC.h
- Zone_Cl_VDF Zone_Cl_VDF Zone_Cl_VDF.h
- Zone_Cl_VEF Zone_Cl_VEF Zone_Cl_VEF.h
- Zone_Cl_VEFP1B Zone_Cl_VEFP1B Zone_Cl_VEFP1B.h
- Zone_dis Zone_dis Zone_dis.h
- Zone_dis_base Zone_dis_base Zone_dis_base.h
- Zone_EF Zone_EF Zone_EF.h
- Zone_EF_axi Zone_EF_axi Zone_EF_axi.h
- Zone_PolyMAC Zone_PolyMAC Zone_PolyMAC.h
- Zone_PolyMAC_P0 Zone_PolyMAC_P0 Zone_PolyMAC_P0.h
- Zone_Poly_base Zone_Poly_base Zone_Poly_base.h
- Zone_VDF Zone_VDF Zone_VDF.h
- Zone_VEF Zone_VEF Zone_VEF.h
- Zone_VEFPreP1b Zone_VEF_PreP1b Zone_VEF_PreP1b.h
- Zone_VF Zone_VF Zone_VF.h
- Zone_VF_inst Zone_VF_inst Zone_VF_inst.h

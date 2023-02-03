@@ -20,5 +20,4 @@ void instancie_src_Kernel_Solveurs();
 void instancie_src_Kernel_Statistiques_temps();
 void instancie_src_Kernel_Utilitaires();
 void instancie_src_Kernel_VF_Champs();
-void instancie_src_Kernel_VF_Zones();
 

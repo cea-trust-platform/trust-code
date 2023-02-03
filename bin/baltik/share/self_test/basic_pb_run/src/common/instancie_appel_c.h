@@ -1,6 +1,6 @@
 //
-// Warning : DO NOT EDIT !
-// To update this file, run: make depend
+// Warning : DO NOT EDIT ! file generated automatically
+// TRUST_NO_INDENT
 //
 #include <verifie_pere.h>
 instancie_src_Kernel_Champs();
@@ -20,5 +20,3 @@ instancie_src_Kernel_Solveurs();
 instancie_src_Kernel_Statistiques_temps();
 instancie_src_Kernel_Utilitaires();
 instancie_src_Kernel_VF_Champs();
-instancie_src_Kernel_VF_Zones();
-
