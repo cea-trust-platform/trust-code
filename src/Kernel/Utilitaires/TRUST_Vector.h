@@ -16,6 +16,7 @@
 #ifndef TRUST_Vector_included
 #define TRUST_Vector_included
 
+#include <TRUST_type_traits.h>
 #include <algorithm> // pour std::transform
 #include <vector>
 #include <memory> // pour std::shared_ptr
@@ -25,8 +26,6 @@ class MD_Vector;
 
 // MACRO to replace VECT(THECLASS) by TRUST_Vector<THECLASS> & keep previous syntax for some developers
 #define VECT(_TYPE_) TRUST_Vector<_TYPE_>
-
-template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
 
 /*! @brief classe TRUST_Vector
  *

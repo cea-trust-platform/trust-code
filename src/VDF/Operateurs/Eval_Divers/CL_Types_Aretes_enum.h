@@ -16,9 +16,7 @@
 #ifndef CL_Types_Aretes_enum_included
 #define CL_Types_Aretes_enum_included
 
-#include <type_traits>
-
-template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
+#include <TRUST_type_traits.h>
 
 enum class Type_Flux_Arete { FLUIDE, BORD, COIN_FLUIDE, INTERNE, MIXTE, PERIODICITE, PAROI_FLUIDE, PAROI, SYMETRIE_PAROI, SYMETRIE_FLUIDE, SYMETRIE };
 

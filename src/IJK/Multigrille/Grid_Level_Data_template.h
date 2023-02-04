@@ -16,6 +16,7 @@
 #ifndef Grid_Level_Data_template_included
 #define Grid_Level_Data_template_included
 
+#include <TRUST_type_traits.h>
 #include <IJK_Splitting.h>
 #include <TRUST_Vector.h>
 #include <IJK_Field.h>
@@ -50,8 +51,7 @@ public:
   void compute_faces_coefficients_from_rho();
   void compute_faces_coefficients_from_inv_rho();
 
-  template <typename MY_TYPE = _TYPE_>
-  typename std::enable_if<std::is_same<MY_TYPE,float>::value, void>::type
+  template <typename MY_TYPE = _TYPE_> enable_if_t_<std::is_same<MY_TYPE,float>::value, void>
   compute_faces_coefficients_from_double_coeffs(const Grid_Level_Data_template<double>&);
 
   // Returns the reference to the rho_field (to fill the data)

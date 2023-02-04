@@ -16,11 +16,9 @@
 #ifndef TRUSTSchema_RK_included
 #define TRUSTSchema_RK_included
 
-#include<Schema_Temps_base.h>
+#include <TRUST_type_traits.h>
+#include <Schema_Temps_base.h>
 #include <Equation.h>
-
-template<bool B, typename T>
-using enable_if_t_ = typename std::enable_if<B, T>::type;
 
 using ARR1 = std::array<double, 1>; // OK je sais mais bon ... ne demande pas alors :-)
 using ARR2 = std::array<double, 2>;

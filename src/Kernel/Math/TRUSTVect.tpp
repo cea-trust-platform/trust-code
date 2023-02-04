@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,7 +47,7 @@ inline int TRUSTVect<_TYPE_>::size() const
 }
 
 template<typename _TYPE_> template<typename _T_, typename _SCALAR_TYPE_>
-typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _T_>::value , void>::type
+enable_if_t_<std::is_convertible<_SCALAR_TYPE_, _T_>::value , void>
 inline TRUSTVect<_TYPE_>::ajoute(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt)
 {
   this->checkDataOnHost();

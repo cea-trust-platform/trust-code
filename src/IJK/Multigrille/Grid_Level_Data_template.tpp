@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -709,7 +709,7 @@ void Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_inv_rho_c
 
 
 // Copy double precision coefficients to single precision:
-template<class _TYPE_> template<class MY_TYPE> typename std::enable_if<std::is_same<MY_TYPE, float>::value, void>::type
+template<class _TYPE_> template<class MY_TYPE> enable_if_t_<std::is_same<MY_TYPE, float>::value, void>
 Grid_Level_Data_template<_TYPE_>::compute_faces_coefficients_from_double_coeffs(const Grid_Level_Data_double& dbl_coeffs)
 {
   // Warn: strides might differ due to padding for different simd vector sizes.

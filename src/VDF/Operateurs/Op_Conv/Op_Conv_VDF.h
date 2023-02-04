@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,10 +16,10 @@
 #ifndef Op_Conv_VDF_included
 #define Op_Conv_VDF_included
 
+#include <TRUST_type_traits.h>
 #include <Iterateur_VDF.h>
 #include <Op_VDF_Elem.h>
 #include <Op_VDF_Face.h>
-#include <type_traits>
 
 template <typename OP_TYPE>
 class Op_Conv_VDF : public Op_VDF_Elem, public Op_VDF_Face
@@ -35,7 +35,7 @@ protected:
 
   // pour les deux !
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>::type
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Elem>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Elem>::value;
@@ -44,7 +44,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
-  inline typename std::enable_if<_TYPE_ == Type_Operateur::Op_CONV_FACE, void>::type
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_CONV_FACE, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_vit)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Face>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Face>::value;

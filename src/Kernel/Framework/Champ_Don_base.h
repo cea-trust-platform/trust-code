@@ -16,6 +16,7 @@
 #ifndef Champ_Don_base_included
 #define Champ_Don_base_included
 
+#include <TRUST_type_traits.h>
 #include <Champ_base.h>
 #include <TRUSTTab.h>
 
@@ -27,9 +28,6 @@
  *
  * @sa Champ_base Champ_Don Champ_Fonc
  */
-
-template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
-
 class Champ_Don_base : public Champ_base
 {
   Declare_base(Champ_Don_base);

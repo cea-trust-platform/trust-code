@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -351,8 +351,7 @@ void Debog_Pb::verifier(const char *const msg, const TRUSTVect<_TYPE_>& arr, TRU
   debog_msg_count_++;
 }
 
-template<typename _TYPE_>
-typename std::enable_if< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >::type
+template<typename _TYPE_> enable_if_t_< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >
 Debog_Pb::verifier(const char *const msg, _TYPE_ x, _TYPE_ *ref_value)
 {
   static constexpr bool IS_DOUBLE = std::is_same<_TYPE_,double>::value;

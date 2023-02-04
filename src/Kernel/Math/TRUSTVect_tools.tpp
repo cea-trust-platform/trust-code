@@ -696,7 +696,8 @@ inline void operator_sub(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_vect_option
 }
 
 // ATTENTION : on utilise is_convertible sinon soucis quand TYPE = double et x = int ... ex : operator_multiply(TRUSTVect<double>, 1) ...
-template<typename _TYPE_, typename _SCALAR_TYPE_> typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _TYPE_>::value >::type
+template<typename _TYPE_, typename _SCALAR_TYPE_>
+typename std::enable_if<std::is_convertible<_SCALAR_TYPE_, _TYPE_>::value >::type
 inline operator_multiply(TRUSTVect<_TYPE_>& resu, const _SCALAR_TYPE_ x, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
   operator_vect_single_generic<_TYPE_,TYPE_OPERATOR_SINGLE::MULT_>(resu,x,opt);

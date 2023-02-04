@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,11 @@
 #ifndef Memoire_included
 #define Memoire_included
 
+#include <TRUST_type_traits.h>
 #include <Memoire_ptr.h>
-class Sortie;
+
 class Objet_U;
+class Sortie;
 class Nom;
 
 /*! @brief La memoire de Trio-U
@@ -45,16 +47,13 @@ public :
   inline Float_ptr_trav* add_trav_float(int n) { return trav_float->add(n); }
   inline Int_ptr_trav* add_trav_int(int n) { return trav_int->add(n); }
 
-  template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,double>::value, TRUST_ptr_trav<_TYPE_>*>::type
+  template<typename _TYPE_> inline enable_if_t_<std::is_same<_TYPE_,double>::value, TRUST_ptr_trav<_TYPE_>*>
   add_trav(int n) { return add_trav_double(n); }
 
-  template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,float>::value, TRUST_ptr_trav<_TYPE_>*>::type
+  template<typename _TYPE_> inline enable_if_t_<std::is_same<_TYPE_,float>::value, TRUST_ptr_trav<_TYPE_>*>
   add_trav(int n) { return add_trav_float(n); }
 
-  template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,int>::value, TRUST_ptr_trav<_TYPE_>*>::type
+  template<typename _TYPE_> inline enable_if_t_<std::is_same<_TYPE_,int>::value, TRUST_ptr_trav<_TYPE_>*>
   add_trav(int n) { return add_trav_int(n); }
 
   int verifie() const;

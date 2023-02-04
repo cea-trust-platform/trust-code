@@ -13,37 +13,14 @@
 *
 *****************************************************************************/
 
-#ifndef Eval_VDF_Face_included
-#define Eval_VDF_Face_included
 
-#include <CL_Types_Aretes_enum.h> // For SFINAE later ...
-#include <Champ_Face_VDF.h>
-#include <TRUST_Ref.h>
+#ifndef TRUST_type_traits_included
+#define TRUST_type_traits_included
 
-class Champ_base;
+#include <type_traits>
 
-/*! @brief class Eval_VDF_Face Cette classe represente le prototype fonctionnel des evaluateurs
- *
- *  de flux associes aux equations de conservation integrees
- *  sur les volumes entrelaces
- *
- */
-class Eval_VDF_Face
-{
-public:
-  static constexpr bool CALC_FA7_SORTIE_LIB = false, CALC_ARR_FL = true, CALC_ARR_BORD = true, CALC_ARR_COIN_FL = false,
-                        CALC_ARR_INT = true, CALC_ARR_MIXTE = true, CALC_ARR_PERIO = true, CALC_ARR_PAR_FL = true, CALC_ARR_PAR = true,
-                        CALC_ARR_SYMM_PAR = true, CALC_ARR_SYMM_FL = true, CALC_ARR_SYMM = false;
-  inline void associer_inconnue(const Champ_base& );
+// TODO : XXX : Elie Saikali
+// Remove this and use <type_traits> header when c++14 becomes everywhere
+template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
 
-protected:
-  REF(Champ_base) inconnue;
-};
-
-inline void Eval_VDF_Face::associer_inconnue(const Champ_base& inco)
-{
-  assert(sub_type(Champ_Face_VDF,inco));
-  inconnue=ref_cast(Champ_Face_VDF,inco);
-}
-
-#endif /* Eval_VDF_Face_included */
+#endif /* TRUST_type_traits_included */

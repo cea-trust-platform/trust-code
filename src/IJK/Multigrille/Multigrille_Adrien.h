@@ -16,11 +16,12 @@
 #ifndef Multigrille_Adrien_included
 #define Multigrille_Adrien_included
 
+#include <Grid_Level_Data_template.h>
+#include <Coarsen_Operator_base.h>
+#include <TRUST_type_traits.h>
 #include <Multigrille_base.h>
 #include <Equation_base.h>
 #include <TRUSTArray.h>
-#include <Grid_Level_Data_template.h>
-#include <Coarsen_Operator_base.h>
 
 class IJK_Splitting;
 class Multigrille_Adrien : public Multigrille_base
@@ -130,27 +131,27 @@ protected:
 private:
 
   template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,double>::value, int>::type
+  inline enable_if_t_<std::is_same<_TYPE_,double>::value, int>
   get_grid_data_size() const { return grids_data_double_.size(); }
 
   template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,float>::value, int>::type
+  inline enable_if_t_<std::is_same<_TYPE_,float>::value, int>
   get_grid_data_size() const { return grids_data_float_.size(); }
 
   template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,double>::value, const Grid_Level_Data_template<double>&>::type
+  inline enable_if_t_<std::is_same<_TYPE_,double>::value, const Grid_Level_Data_template<double>&>
   get_grid_data(int level) const { return grids_data_double_[level]; }
 
   template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,float>::value, const Grid_Level_Data_template<float>&>::type
+  inline enable_if_t_<std::is_same<_TYPE_,float>::value, const Grid_Level_Data_template<float>&>
   get_grid_data(int level) const { return grids_data_float_[level]; }
 
   template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,double>::value, Grid_Level_Data_template<double>&>::type
+  inline enable_if_t_<std::is_same<_TYPE_,double>::value, Grid_Level_Data_template<double>&>
   set_grid_data(int level) { return grids_data_double_[level]; }
 
   template<typename _TYPE_>
-  inline typename std::enable_if<std::is_same<_TYPE_,float>::value, Grid_Level_Data_template<float>&>::type
+  inline enable_if_t_<std::is_same<_TYPE_,float>::value, Grid_Level_Data_template<float>&>
   set_grid_data(int level) { return grids_data_float_[level]; }
 
   //ToDo: temporary workaround as virtual templates are not possible...
