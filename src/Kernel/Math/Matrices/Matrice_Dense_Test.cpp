@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #include <cppunit.h>
 #ifdef cppunit_
 #include <TRUSTVect.h>
-#include <TriouError.h>
+#include <TRUST_Error.h>
 #include <Matrice_Dense.h>
 #include <SFichier.h>
 

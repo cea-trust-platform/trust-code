@@ -17,7 +17,7 @@
 #include <EcrFicCollecte.h>
 #include <Param.h>
 #include <EChaine.h>
-#include <TriouError.h>
+#include <TRUST_Error.h>
 #include <Motcle.h>
 #include <TRUSTArray.h>
 #include <TRUST_Deriv.h>
@@ -113,13 +113,13 @@ public:
     {
       EChaine is(" { 5  } ");
 
-      CPPUNIT_ASSERT_THROW_MESSAGE("ne doit pas lire 5 dans lire_sans_accolade",param.lire_sans_accolade(is), TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("ne doit pas lire 5 dans lire_sans_accolade",param.lire_sans_accolade(is), TRUST_Error);
     }
 
     param.ajouter("double",&double1);
     {
       EChaine is(" 5 ");
-      CPPUNIT_ASSERT_THROW_MESSAGE("Optionne pas supporte dans lire_sans_accolade",param.lire_sans_accolade(is), TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("Optionne pas supporte dans lire_sans_accolade",param.lire_sans_accolade(is), TRUST_Error);
     }
 
 #if 0
@@ -141,7 +141,7 @@ public:
     {
       EChaine is(" OPT2 5   ");
 
-      CPPUNIT_ASSERT_THROW_MESSAGE("ne doit pas lire 5 dans lire_sans_accolade",param.lire_sans_accolade(is), TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("ne doit pas lire 5 dans lire_sans_accolade",param.lire_sans_accolade(is), TRUST_Error);
     }
 
 
@@ -155,7 +155,7 @@ public:
     {
       // erreur int non lu mais double lu
       EChaine is("{ double  5 }");
-      CPPUNIT_ASSERT_THROW_MESSAGE("verification de la lecture des objets non optionnels",param.lire_avec_accolades_depuis(is), TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("verification de la lecture des objets non optionnels",param.lire_avec_accolades_depuis(is), TRUST_Error);
       CPPUNIT_ASSERT_EQUAL_MESSAGE(" pb avec la lecture des doubles",5.,double1);
     }
     {
@@ -169,17 +169,17 @@ public:
     {
       // erreur mot non compris
       EChaine is("{  int2 5 }");
-      CPPUNIT_ASSERT_THROW_MESSAGE("mot incompris",param.lire_avec_accolades_depuis(is), TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("mot incompris",param.lire_avec_accolades_depuis(is), TRUST_Error);
     }
     {
       // erreur manque une accolade ouvrante
       EChaine is(" int 5 }");
-      CPPUNIT_ASSERT_THROW_MESSAGE("accolade ouvrante",param.lire_avec_accolades_depuis(is), TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("accolade ouvrante",param.lire_avec_accolades_depuis(is), TRUST_Error);
     }
     {
       // erreur manque une paranthese non compris
       EChaine is(" { int 5 ");
-      CPPUNIT_ASSERT_THROW_MESSAGE("accolade fermante",param.lire_avec_accolades_depuis(is), TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("accolade fermante",param.lire_avec_accolades_depuis(is), TRUST_Error);
     }
     {
       // test flag
@@ -216,7 +216,7 @@ public:
       int i;
 
       param.ajouter("double|float",&i);
-      CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas ",param.ajouter("double",&val),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas ",param.ajouter("double",&val),TRUST_Error);
       // maintenant on retire avant
       param.supprimer("float");
       param.ajouter("double",&val);
@@ -232,7 +232,7 @@ public:
       double val;
       int i;
       param.ajouter("int",&val);
-      CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas ",param.ajouter("int",&val),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas ",param.ajouter("int",&val),TRUST_Error);
       // maintenant on retire avant
       param.supprimer("int");
       param.ajouter("int|entier",&i);
@@ -246,11 +246,11 @@ public:
       }
       {
         EChaine is("{ int  5.1 }");
-        CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas ",param.lire_avec_accolades_depuis(is),TriouError);
+        CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas ",param.lire_avec_accolades_depuis(is),TRUST_Error);
 
       }
       param.supprimer("int");
-      CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas plus de int ",param.supprimer("int"),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("normalement cela ne focntionne pas plus de int ",param.supprimer("int"),TRUST_Error);
     }
   };
   void testDictionnaire()
@@ -281,7 +281,7 @@ public:
     {
       // test lecture dico erreur
       EChaine is("{ value 3 value2 3 }");
-      CPPUNIT_ASSERT_THROW_MESSAGE("test lecture dico erreur value not in dict ",param.lire_avec_accolades_depuis(is),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("test lecture dico erreur value not in dict ",param.lire_avec_accolades_depuis(is),TRUST_Error);
     }
 
     Param& ssp= param.dictionnaire_param("lecture",2);
@@ -308,7 +308,7 @@ public:
       // test lecture dico param
       EChaine is("{  value2 lecture { valeur2 7. } }");
 
-      CPPUNIT_ASSERT_THROW_MESSAGE("test lecture dico erreur mot cles pas dans saous param ",param.lire_avec_accolades_depuis(is),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("test lecture dico erreur mot cles pas dans saous param ",param.lire_avec_accolades_depuis(is),TRUST_Error);
 
     }
 
@@ -345,7 +345,7 @@ public:
     {
       // test lecture_non_standard erreur
       EChaine is("{ objet_non_std mot_test_pas_ok Objet_coucou }");
-      CPPUNIT_ASSERT_THROW_MESSAGE("test lecture_non_standard erreur",param.lire_avec_accolades_depuis(is),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("test lecture_non_standard erreur",param.lire_avec_accolades_depuis(is),TRUST_Error);
 
     }
   };
@@ -414,7 +414,7 @@ public:
         CPPUNIT_ASSERT_EQUAL_MESSAGE("test not",1,status);
 
         param.ajouter_condition("is_read_double*(flag_eq_0)"," double doit etre lu et flag non mais mal ecit");
-        CPPUNIT_ASSERT_THROW_MESSAGE("test condition mal entree",param.check(),TriouError);
+        CPPUNIT_ASSERT_THROW_MESSAGE("test condition mal entree",param.check(),TRUST_Error);
       }
     }
     {
@@ -433,7 +433,7 @@ public:
       param.ajouter("test",&test);
       Cerr<<"value of test "<<param.get_value("value_of_test")<<finl;
       //int status=param.check();
-      CPPUNIT_ASSERT_THROW_MESSAGE("variable non defini",param.get_value("value_of_objet"),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("variable non defini",param.get_value("value_of_objet"),TRUST_Error);
     }
 
   };
@@ -452,7 +452,7 @@ public:
     }
     {
       EChaine is("{ deriv bidon }");
-      CPPUNIT_ASSERT_THROW_MESSAGE("classe inconnue",param.lire_avec_accolades_depuis(is),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("classe inconnue",param.lire_avec_accolades_depuis(is),TRUST_Error);
 
     }
   }
@@ -475,7 +475,7 @@ public:
     }
     {
       EChaine is(" { fils { test2 3 } } ");
-      CPPUNIT_ASSERT_THROW_MESSAGE("test2 incompris par pere/fils",pere.lire_avec_accolades_depuis(is),TriouError);
+      CPPUNIT_ASSERT_THROW_MESSAGE("test2 incompris par pere/fils",pere.lire_avec_accolades_depuis(is),TRUST_Error);
     }
   }
 };

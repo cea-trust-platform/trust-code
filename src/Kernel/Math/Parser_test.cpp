@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,7 +20,7 @@
 #include <Motcle.h>
 #include <Parser_U.h>
 #include <UserUnaryFunction.h>
-#include <TriouError.h>
+#include <TRUST_Error.h>
 
 
 double f_test(double x)
@@ -258,13 +258,13 @@ public:
     p2.addVar("x");
     p2.setString(pb);
     p2.setVar("x",0);
-    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 2x ne marche pas", p2.parseString(),TriouError);
+    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 2x ne marche pas", p2.parseString(),TRUST_Error);
     Parser_U p3;
     p3.setNbVar(3);
     p3.addVar("x");
     p3.addVar("y");
 // pour le moment on ne bloque pas
-//   CPPUNIT_ASSERT_THROW_MESSAGE("verification que ajouter x  ne marche pas si on a deja x", p3.addVar("x"),TriouError);
+//   CPPUNIT_ASSERT_THROW_MESSAGE("verification que ajouter x  ne marche pas si on a deja x", p3.addVar("x"),TRUST_Error);
   };
   void testSyntaxe()
   {
@@ -275,13 +275,13 @@ public:
 
     Nom expr="(12,34*2)";
     p.setString(expr);
-    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 12,34*2 ne marche pas", p.parseString(),TriouError);
+    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 12,34*2 ne marche pas", p.parseString(),TRUST_Error);
     expr="(12,34e+4)";
     p.setString(expr);
-    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 12,34e4 ne marche pas", p.parseString(),TriouError);
+    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 12,34e4 ne marche pas", p.parseString(),TRUST_Error);
     expr="(1234e+1,4)";
     p.setString(expr);
-    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 1234e1,4 ne marche pas", p.parseString(),TriouError);
+    CPPUNIT_ASSERT_THROW_MESSAGE("verification que 1234e1,4 ne marche pas", p.parseString(),TRUST_Error);
 
   };
 

@@ -24,7 +24,7 @@
 #include <Synonyme_info.h>
 #include <petsc_for_kernel.h>
 #include <comm_incl.h>
-#include <TriouError.h>
+#include <TRUST_Error.h>
 #include <Comm_Group_MPI.h>
 #include <unistd.h> // sleep() pour certaines machines
 #include <SChaine.h>
@@ -262,7 +262,7 @@ void Process::exit(const Nom& message ,int i)
   if (exception_sur_exit)
     {
       // Lancement d'une exception (utilise par Execute_parallel)
-      throw TriouError("Error in trust ",Process::me());
+      throw TRUST_Error("Error in trust ",Process::me());
     }
   else
     {

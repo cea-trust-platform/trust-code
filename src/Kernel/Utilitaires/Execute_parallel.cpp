@@ -16,7 +16,7 @@
 #include <LecFicDiffuse_JDD.h>
 #include <Execute_parallel.h>
 #include <Interprete_bloc.h>
-#include <TriouError.h>
+#include <TRUST_Error.h>
 #include <TRUSTArray.h>
 #include <PE_Groups.h>
 #include <Journal.h>
@@ -183,7 +183,7 @@ Entree& Execute_parallel::interpreter(Entree& is)
                                         Interprete_bloc::FIN /* on attend FIN a la fin du fichier */,
                                         0 /* verifie_sans_interpreter=0 */);
               }
-            catch (TriouError& err)
+            catch (TRUST_Error& err)
               {
                 assert(err.get_pe()==Process::me());
                 ok=0;

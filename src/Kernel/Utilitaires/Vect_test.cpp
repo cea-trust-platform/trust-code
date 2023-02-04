@@ -17,7 +17,7 @@
 
 #include <EcrFicCollecte.h>
 #include <TRUST_Vector.h>
-#include <TriouError.h>
+#include <TRUST_Error.h>
 #include <EChaine.h>
 #include <SChaine.h>
 #include <Bord.h>

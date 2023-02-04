@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,32 +13,36 @@
 *
 *****************************************************************************/
 
-#ifndef TriouError_included
-#define TriouError_included
+#include <TRUST_Error.h>
+#include <stdlib.h>
+#include <cstring>
+#include <arch.h>
 
-/*! @brief classe d erreur declenche par process::exit
- *
- */
-
-class TriouError
+TRUST_Error::TRUST_Error(const char *s, int pe)
 {
+  message_ = strdup(s);
+  pe_ = pe;
+}
 
-public:
-  TriouError(const char* s, int pe=-1) ;
-  TriouError(int pe=-1);
-  ~TriouError();
-  TriouError(const TriouError& iii);
-  const TriouError& operator=(const TriouError&);
-  const char* get_msg() const
-  {
-    return message_;
-  };
-  const int& get_pe() const
-  {
-    return pe_;
-  };
-private:
-  char *message_;
-  int pe_;
-};
-#endif
+TRUST_Error::TRUST_Error(int pe)
+{
+  message_ = strdup("not defined");
+  pe_ = pe;
+}
+
+TRUST_Error::~TRUST_Error()
+{
+  free(message_);
+}
+
+TRUST_Error::TRUST_Error(const TRUST_Error& err__)
+{
+  (*this) = err__;
+}
+
+const TRUST_Error& TRUST_Error::operator=(const TRUST_Error& err__)
+{
+  message_ = strdup(err__.message_);
+  pe_ = err__.pe_;
+  return (*this);
+}
