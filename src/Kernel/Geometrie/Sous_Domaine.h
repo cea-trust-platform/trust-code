@@ -36,7 +36,6 @@ class Sous_Domaine : public Objet_U
 public :
 
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline Sous_Domaine(const Domaine& );
   inline const Nom& le_nom() const override;
   inline int operator()(int) const;
   inline int operator[](int) const;
@@ -64,14 +63,6 @@ protected :
   REF(Domaine) le_dom_;
   Nom nom_;
 };
-
-/*! @brief Constructeur d'une sous-domaine a partir d'une domaine.
- *
- * @param (Domaine& domaine) le domaine dont la sous-domaine est une partie
- */
-inline Sous_Domaine::Sous_Domaine(const Domaine& adomaine) : le_dom_(adomaine)
-{}
-
 
 /*! @brief Renvoie le nom de la sous-domaine.
  *
