@@ -33,7 +33,7 @@ Decouper domaine_glob
 }
 Decouper domaine1
 {
-    partitionneur sous_domaine
+    partitionneur sous_domainE
     {
         fichier     domaine_glob.txt
         fichier_ssz domaine_glob_sous_zone_dom1.file
@@ -43,7 +43,7 @@ Decouper domaine1
 }
 Decouper domaine2
 {
-    partitionneur sous_domaine
+    partitionneur sous_domainE
     {
         fichier     domaine_glob.txt
         fichier_ssz domaine_glob_sous_zone_dom2.file
