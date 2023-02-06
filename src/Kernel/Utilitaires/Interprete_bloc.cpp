@@ -16,7 +16,7 @@
 #include <Interprete_bloc.h>
 #include <Type_Verifie.h>
 
-Implemente_instanciable_sans_constructeur_ni_destructeur(Interprete_bloc,"Interprete_bloc",liste);
+Implemente_instanciable_sans_constructeur_ni_destructeur(Interprete_bloc,"Interprete_bloc",Liste_bloc);
 
 // Voir Interprete_bloc::interprete_courant()
 static REF(Interprete_bloc) interprete_courant_;
@@ -37,8 +37,7 @@ Interprete_bloc::Interprete_bloc()
 {
   // S'il existe un interprete courant, il devient le pere
   // de l'interprete en cours de construction:
-  if (interprete_courant_.non_nul())
-    pere_ = interprete_courant_;
+  if (interprete_courant_.non_nul()) pere_ = interprete_courant_;
 
   interprete_courant_ = *this;
 }
@@ -51,13 +50,13 @@ Interprete_bloc::~Interprete_bloc()
 
 Sortie& Interprete_bloc::printOn(Sortie& os) const
 {
-  exit();
+  Process::exit();
   return os;
 }
 
 Entree& Interprete_bloc::readOn(Entree& is)
 {
-  exit();
+  Process::exit();
   return is;
 }
 
@@ -71,16 +70,14 @@ Entree& Interprete_bloc::readOn(Entree& is)
  *   accolades (meme nombre de { que de }).
  *
  */
-Entree& Interprete_bloc::interpreter_bloc(Entree& is,
-                                          Bloc_Type bloc_type,
-                                          int verifie_sans_interpreter)
+Entree& Interprete_bloc::interpreter_bloc(Entree& is, Bloc_Type bloc_type, int verifie_sans_interpreter)
 {
   // Le niveau de sortie des messages journal
   const int jlevel = 3;
-  Journal(jlevel) << "Interprete_bloc::interpreter_bloc bloc_type=" << (int)bloc_type << finl;
+  Journal(jlevel) << "Interprete_bloc::interpreter_bloc bloc_type=" << (int) bloc_type << finl;
   Motcle motlu;
   is >> motlu;
-  while(1)
+  while (1)
     {
       // Est-ce qu'on est a la fin du bloc ?
       if (is.eof())
@@ -94,17 +91,14 @@ Entree& Interprete_bloc::interpreter_bloc(Entree& is,
             }
           else
             {
-              Cerr << "Error in Interprete_bloc: unexpected end of file\n"
-                   << "check for missig \"}\" or missing FIN keyword"
-                   << finl;
-              exit();
+              Cerr << "Error in Interprete_bloc: unexpected end of file\n" << "check for missig \"}\" or missing FIN keyword" << finl;
+              Process::exit();
             }
         }
       // Autres fins possibles:
       if (motlu == "}" || motlu == "FIN|END")
         {
-          if ((motlu == "}" && bloc_type == ACCOLADE)
-              || (motlu == "FIN|END" && bloc_type == FIN))
+          if ((motlu == "}" && bloc_type == ACCOLADE) || (motlu == "FIN|END" && bloc_type == FIN))
             {
               Journal(jlevel) << "Interprete_bloc: reading " << motlu << " => end of bloc" << finl;
               break;
@@ -114,9 +108,8 @@ Entree& Interprete_bloc::interpreter_bloc(Entree& is,
               if (motlu == "}")
                 Cerr << "Error in Interprete_bloc: extra \"}\" in data file" << finl;
               else
-                Cerr << "Error in Interprete_bloc: unexpected FIN, check for missing \"}\""
-                     << finl;
-              exit();
+                Cerr << "Error in Interprete_bloc: unexpected FIN, check for missing \"}\"" << finl;
+              Process::exit();
             }
         }
 
@@ -140,16 +133,14 @@ Entree& Interprete_bloc::interpreter_bloc(Entree& is,
           while (nom_lu != "#");
           if (is.eof())
             {
-              Cerr << "Error in Interprete_bloc: end of file while reading a comment :\n"
-                   << commentaire << "..." << finl;
+              Cerr << "Error in Interprete_bloc: end of file while reading a comment :\n" << commentaire << "..." << finl;
             }
           // Prochain mot a interpreter:
           motlu = nom_lu;
         }
       else if (motlu == "{")
         {
-          Journal(jlevel) << "Interprete_bloc: reading { => creating new Interprete_bloc"
-                          << finl;
+          Journal(jlevel) << "Interprete_bloc: reading { => creating new Interprete_bloc" << finl;
           // Est-ce que c'est un debut de bloc ?
           // Nouvel interprete:
           Interprete_bloc inter;
@@ -165,8 +156,7 @@ Entree& Interprete_bloc::interpreter_bloc(Entree& is,
               // si on trouve }. S'il manque une } a la fin, on obtiendra le message
               // "check for missing }" et s'il y en a une en trop on aura
               // le message "extra }"
-              Journal(jlevel) << "Interprete_bloc: just checking {} => ignore keyword "
-                              << motlu << finl;
+              Journal(jlevel) << "Interprete_bloc: just checking {} => ignore keyword " << motlu << finl;
               verifie(motlu);
             }
           else
@@ -181,8 +171,7 @@ Entree& Interprete_bloc::interpreter_bloc(Entree& is,
                   is >> motlu;
                 }
               // Le mot cle doit etre un type d'objet instanciable
-              Journal(jlevel) << "Interprete_bloc: reading " << motlu
-                              << " => trying to instanciate object" << finl;
+              Journal(jlevel) << "Interprete_bloc: reading " << motlu << " => trying to instanciate object" << finl;
               DerObjU objet;
               objet.typer(motlu);
 
@@ -221,9 +210,8 @@ Objet_U& Interprete_bloc::objet_local(const Nom& nom)
   const int i = les_noms_.search(nom);
   if (i < 0)
     {
-      Cerr << "Internal error in Interprete::objet_local() : object " << nom
-           << " does not exist" << finl;
-      exit();
+      Cerr << "Internal error in Interprete::objet_local() : object " << nom << " does not exist" << finl;
+      Process::exit();
     }
   return operator[](i);
 }
@@ -244,12 +232,11 @@ int Interprete_bloc::objet_local_existant(const Nom& nom)
  */
 Objet_U& Interprete_bloc::ajouter(const Nom& nom, DerObjU& ob)
 {
-  Journal(3) << "Interprete::ajouter(" << nom << ") de type "
-             << ob.valeur().que_suis_je() << finl;
+  Journal(3) << "Interprete::ajouter(" << nom << ") de type " << ob.valeur().que_suis_je() << finl;
   if (les_noms_.search(nom) >= 0)
     {
       Cerr << "Error in Interprete::ajouter: object " << nom << " already exists." << finl;
-      exit();
+      Process::exit();
     }
   les_noms_.add(nom);
   Objet_U& obu = add_deplace(ob);
@@ -276,8 +263,7 @@ Objet_U& Interprete_bloc::objet_global(const Nom& nom)
       ptr = interp.pere_;
     }
   // Objet non trouve !
-  Cerr << "Error in Interprete::objet: object " << nom
-       << " does not exist." << finl;
+  Cerr << "Error in Interprete::objet: object " << nom << " does not exist." << finl;
   Process::exit();
   return objet_global(nom); // Pour le compilo
 }

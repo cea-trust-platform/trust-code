@@ -12,15 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Interprete_bloc_included
 #define Interprete_bloc_included
 
 #include <Interprete.h>
+#include <Liste_bloc.h>
 #include <TRUST_Ref.h>
-#include <liste.h>
 #include <Noms.h>
-
-class Interprete_bloc;
 
 /*! @brief Interprete un bloc d'instructions dans le jeu de donnees.
  *
@@ -28,26 +27,27 @@ class Interprete_bloc;
  *
  *
  */
-class Interprete_bloc : public liste
+class Interprete_bloc: public Liste_bloc
 {
   Declare_instanciable(Interprete_bloc);
 public:
   // Indique si le bloc se termine par une accolade, un EOF ou le mot FIN
   enum Bloc_Type { ACCOLADE, BLOC_EOF, FIN };
-  Entree& interpreter_bloc(Entree& is,
-                           Bloc_Type bloc_type,
-                           int verifier_sans_interpreter);
+
+  Entree& interpreter_bloc(Entree& is, Bloc_Type bloc_type, int verifier_sans_interpreter);
   Objet_U& ajouter(const Nom& nom, DerObjU& object_to_add);
   Objet_U& objet_local(const Nom& nom);
-  int    objet_local_existant(const Nom& nom);
+  int objet_local_existant(const Nom& nom);
 
   static Interprete_bloc& interprete_courant();
-  static Objet_U&          objet_global(const Nom& nom);
-  static int            objet_global_existant(const Nom& nom);
+  static Objet_U& objet_global(const Nom& nom);
+  static int objet_global_existant(const Nom& nom);
+
 protected:
   // Noms des objets lus dans le bloc:
   Noms les_noms_;
   // Reference a l'interprete courant avant la creation de celui-ci
   REF(Interprete_bloc) pere_;
 };
+
 #endif

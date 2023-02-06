@@ -514,7 +514,7 @@
  Lire_MEDfile LireMEDfile LireMEDfile.h
  Lire_Tgrid Lire_Tgrid Lire_Tgrid.h
  Lire|Read Lire Lire.h
- liste liste liste.h
+ Liste_bloc Liste_bloc Liste_bloc.h
  Liste_Champ_Generique Liste_Champ_Generique Liste_Champ_Generique.h
  Ln Ln StdFunction.h
  Loi_Etat Loi_Etat Loi_Etat.h
@@ -931,10 +931,8 @@
  Rectify_Mesh Rectify_Mesh Rectify_Mesh.h
  Redresser_hexaedres_vdf Redresser_hexaedres_vdf Redresser_hexaedres_vdf.h
  Reduction_0D Champ_Generique_Reduction_0D Champ_Generique_Reduction_0D.h
- Ref REF Ref_Objet_U.h
  refChamp Champ_Generique_refChamp Champ_Generique_refChamp.h
  Refine_Mesh Refine_Mesh Refine_Mesh.h
- Ref_ Ref_ Ref_.h
  RegroupeBord RegroupeBord RegroupeBord.h
  Remove_elem Remove_elem Remove_elem.h
  Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries Remove_Invalid_Internal_Boundaries.h
