@@ -17,7 +17,7 @@
 #define Op_Diff_Dift_VDF_included
 
 #include <Modele_turbulence_scal_base.h>
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <Mod_turb_hyd_base.h>
 #include <Iterateur_VDF.h>
 #include <Champ_P0_VDF.h>
@@ -32,7 +32,7 @@ class Op_Diff_Dift_VDF
 protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFF_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
@@ -40,7 +40,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_diffuse.valeur());
@@ -71,7 +71,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_FACE, void>
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFF_FACE, void>
   mettre_a_jour_impl()
   {
     EVAL_TYPE& eval_diff = static_cast<EVAL_TYPE&> (iter_()->evaluateur());
@@ -79,7 +79,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>
   associer_diffusivite_turbulente_impl(const Champ_Fonc& visc_ou_diff_turb)
   {
     static_cast<OP_TYPE *>(this)->associer_diffusivite_turbulente_base(visc_ou_diff_turb); // hohohoho
@@ -88,7 +88,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>
   associer_loipar_impl(const Turbulence_paroi_scal& loi_paroi)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
@@ -96,7 +96,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void> completer_impl()
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_ELEM, void> completer_impl()
   {
     static_cast<OP_TYPE *>(this)->completer_Op_Dift_VDF_base();
     const RefObjU& modele_turbulence = static_cast<OP_TYPE *>(this)->equation().get_modele(TURBULENCE);
@@ -121,7 +121,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_FACE, void> completer_impl()
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_DIFT_FACE, void> completer_impl()
   {
     static_cast<OP_TYPE *>(this)->completer_Op_Dift_VDF_base();
     const RefObjU& modele_turbulence = static_cast<OP_TYPE *>(this)->equation().get_modele(TURBULENCE);

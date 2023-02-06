@@ -103,46 +103,46 @@ private:
   /*
    * SFINAE template functions : can not be implemented directly on overrided functions ==> methodes internes ;-)
    */
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
   valeur_a_(const DoubleVect& position, DoubleVect& valeurs) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
   valeur_a_(const DoubleVect& position, DoubleVect& valeurs) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
   valeur_a_elem_(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
   valeur_a_elem_(const DoubleVect& position, DoubleVect& valeurs, int le_poly) const;
 
-  template <Champ_Don_Type T = _TYPE_> enable_if_t_<T != Champ_Don_Type::TXYZ, double>
+  template <Champ_Don_Type T = _TYPE_> std::enable_if_t<T != Champ_Don_Type::TXYZ, double>
   valeur_a_elem_compo_(const DoubleVect& position, int le_poly, int ncomp) const;
 
-  template <Champ_Don_Type T = _TYPE_> enable_if_t_<T == Champ_Don_Type::TXYZ, double>
+  template <Champ_Don_Type T = _TYPE_> std::enable_if_t<T == Champ_Don_Type::TXYZ, double>
   valeur_a_elem_compo_(const DoubleVect& position, int le_poly, int ncomp) const;
 
-  template <Champ_Don_Type T = _TYPE_> enable_if_t_<T != Champ_Don_Type::LU, DoubleTab&>
+  template <Champ_Don_Type T = _TYPE_> std::enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
   valeur_aux_(const DoubleTab& positions, DoubleTab& valeurs) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T == Champ_Don_Type::LU, DoubleTab&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
   valeur_aux_(const DoubleTab& positions, DoubleTab& valeurs) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
   valeur_aux_compo_(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
   valeur_aux_compo_(const DoubleTab& positions, DoubleVect& valeurs, int ncomp) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T != Champ_Don_Type::LU, DoubleTab&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
   valeur_aux_elems_(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T == Champ_Don_Type::LU, DoubleTab&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
   valeur_aux_elems_(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
   valeur_aux_elems_compo_(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
 
-  template<Champ_Don_Type T = _TYPE_> enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+  template<Champ_Don_Type T = _TYPE_> std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
   valeur_aux_elems_compo_(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& valeurs, int ncomp) const;
 };
 

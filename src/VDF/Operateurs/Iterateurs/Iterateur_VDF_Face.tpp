@@ -105,7 +105,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords(const int ncomp, mat
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
+std::enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
@@ -143,7 +143,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
 }
 
 template <class _TYPE_>  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+std::enable_if_t<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
@@ -188,7 +188,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
 }
 
 template <class _TYPE_>  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+std::enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
@@ -261,7 +261,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins(const int ncomp, mat
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, TypeAreteCoinVDF::type_arete Arete_Type_Coin, typename Type_Double>
-enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI, void>
+std::enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
@@ -301,7 +301,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_<Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+std::enable_if_t<Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
@@ -339,7 +339,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+std::enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_coins_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
@@ -393,7 +393,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_mixtes(const int ncomp, ma
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_<Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
+std::enable_if_t<Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_generique_(const int debut, const int fin, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   // XXX : tab_flux_bords rempli seulement si MIXTE ... ie pas INTERNE !

@@ -16,7 +16,7 @@
 #ifndef Multigrille_base_included
 #define Multigrille_base_included
 
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <Matrice_Grossiere.h>
 #include <SolveurSys.h>
 #include <TRUSTLists.h>
@@ -90,15 +90,15 @@ protected:
   virtual IJK_Field_double& get_storage_double(StorageId, int level) = 0;
 
   template<typename _TYPE_>
-  enable_if_t_<std::is_same<_TYPE_, float>::value, IJK_Field_template<_TYPE_, TRUSTArray<_TYPE_>>&>
-                                                                                               get_storage_template(StorageId id, int level)
+  std::enable_if_t<std::is_same<_TYPE_, float>::value, IJK_Field_template<_TYPE_, TRUSTArray<_TYPE_>>&>
+                                                                                                   get_storage_template(StorageId id, int level)
   {
     return get_storage_float(id, level);
   }
 
   template<typename _TYPE_>
-  enable_if_t_<std::is_same<_TYPE_, double>::value, IJK_Field_template<_TYPE_, TRUSTArray<_TYPE_>>&>
-                                                                                                get_storage_template(StorageId id, int level)
+  std::enable_if_t<std::is_same<_TYPE_, double>::value, IJK_Field_template<_TYPE_, TRUSTArray<_TYPE_>>&>
+                                                                                                    get_storage_template(StorageId id, int level)
   {
     return get_storage_double(id, level);
   }

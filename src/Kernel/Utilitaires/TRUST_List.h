@@ -16,7 +16,7 @@
 #ifndef TRUST_List_included
 #define TRUST_List_included
 
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <algorithm> // for std::find
 #include <Motcle.h>
 #include <list> // pour stl list
@@ -199,7 +199,7 @@ public:
 
 private:
 
-  template<typename _TYPE_> enable_if_t_<_TYPE_::HAS_POINTER, _CLASSE_&>
+  template<typename _TYPE_> std::enable_if_t<_TYPE_::HAS_POINTER, _CLASSE_&>
   operator_(const Nom& nom)
   {
     for (auto& itr : list_)
@@ -207,7 +207,7 @@ private:
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
   }
 
-  template<typename _TYPE_> enable_if_t_<_TYPE_::HAS_POINTER, const _CLASSE_&>
+  template<typename _TYPE_> std::enable_if_t<_TYPE_::HAS_POINTER, const _CLASSE_&>
   operator_(const Nom& nom) const
   {
     for (auto& itr : list_)
@@ -215,7 +215,7 @@ private:
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
   }
 
-  template<typename _TYPE_> enable_if_t_<_TYPE_::HAS_POINTER, int>
+  template<typename _TYPE_> std::enable_if_t<_TYPE_::HAS_POINTER, int>
   rang_(const char* const ch) const
   {
     Nom nom(ch);
@@ -228,7 +228,7 @@ private:
     return -1;
   }
 
-  template<typename _TYPE_> enable_if_t_<_TYPE_::HAS_POINTER, int>
+  template<typename _TYPE_> std::enable_if_t<_TYPE_::HAS_POINTER, int>
   contient_(const char* const ch) const
   {
     Nom nom(ch);
@@ -237,7 +237,7 @@ private:
     return 0;
   }
 
-  template<typename _TYPE_> enable_if_t_<_TYPE_::HAS_POINTER, int>
+  template<typename _TYPE_> std::enable_if_t<_TYPE_::HAS_POINTER, int>
   contient_(const Objet_U& obj) const
   {
     for (auto &itr : list_)
@@ -245,7 +245,7 @@ private:
     return 0;
   }
 
-  template<typename _TYPE_> enable_if_t_<!_TYPE_::HAS_POINTER, _CLASSE_&>
+  template<typename _TYPE_> std::enable_if_t<!_TYPE_::HAS_POINTER, _CLASSE_&>
   operator_(const Nom& nom)
   {
     for (auto& itr : list_)
@@ -253,7 +253,7 @@ private:
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
   }
 
-  template<typename _TYPE_> enable_if_t_<!_TYPE_::HAS_POINTER, const _CLASSE_&>
+  template<typename _TYPE_> std::enable_if_t<!_TYPE_::HAS_POINTER, const _CLASSE_&>
   operator_(const Nom& nom) const
   {
     for (auto& itr : list_)
@@ -261,7 +261,7 @@ private:
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
   }
 
-  template<typename _TYPE_> enable_if_t_<!_TYPE_::HAS_POINTER, int>
+  template<typename _TYPE_> std::enable_if_t<!_TYPE_::HAS_POINTER, int>
   rang_(const char* const ch) const
   {
     Nom nom(ch);
@@ -274,7 +274,7 @@ private:
     return -1;
   }
 
-  template<typename _TYPE_> enable_if_t_<!_TYPE_::HAS_POINTER, int>
+  template<typename _TYPE_> std::enable_if_t<!_TYPE_::HAS_POINTER, int>
   contient_(const char* const ch) const
   {
     Nom nom(ch);
@@ -283,7 +283,7 @@ private:
     return 0;
   }
 
-  template<typename _TYPE_> enable_if_t_<!_TYPE_::HAS_POINTER, int>
+  template<typename _TYPE_> std::enable_if_t<!_TYPE_::HAS_POINTER, int>
   contient_(const Objet_U& obj) const
   {
     for (auto &itr : list_)

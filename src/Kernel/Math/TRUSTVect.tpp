@@ -47,7 +47,7 @@ inline int TRUSTVect<_TYPE_>::size() const
 }
 
 template<typename _TYPE_> template<typename _T_, typename _SCALAR_TYPE_>
-enable_if_t_<std::is_convertible<_SCALAR_TYPE_, _T_>::value , void>
+std::enable_if_t<std::is_convertible<_SCALAR_TYPE_, _T_>::value , void>
 inline TRUSTVect<_TYPE_>::ajoute(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt)
 {
   this->checkDataOnHost();

@@ -18,7 +18,7 @@
 
 #include <communications_array.h>
 #include <TRUSTTabs_forward.h>
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <vector>
 
 // Pour Objet_U ... on buffer !!
@@ -52,7 +52,7 @@ int comm_check_enabled();
 
 // Pour les types simples, on passe par envoyer_array_ qui n'utilise pas un buffer mais envoie directement les valeurs. Plus rapide.
 // TYPES SIMPLES (std::is_arithmetic) => PAS Objet_U => SFINAE
-template<typename _TYPE_> enable_if_t_<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
 inline envoyer(const _TYPE_ t, int source, int cible, int canal)
 {
   return envoyer_array<_TYPE_>(&t, 1, source, cible, canal);
@@ -62,7 +62,7 @@ inline envoyer(const _TYPE_ t, int source, int cible, int canal)
 inline int envoyer(const long t, int source, int cible, int canal) { return envoyer_array<long>(&t, 1, source, cible, canal); }
 #endif
 
-template<typename _TYPE_> enable_if_t_<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
 inline envoyer(const _TYPE_ t, int cible, int canal)
 {
   return envoyer_array<_TYPE_>(&t, 1, Process::me(), cible, canal);
@@ -72,7 +72,7 @@ inline envoyer(const _TYPE_ t, int cible, int canal)
 inline int envoyer(const long t, int cible, int canal) { return envoyer_array<long>(&t, 1, Process::me(), cible, canal); }
 #endif
 
-template<typename _TYPE_> enable_if_t_<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
 inline recevoir(_TYPE_& t, int source, int cible, int canal)
 {
   return recevoir_array<_TYPE_>(&t, 1, source, cible, canal);
@@ -82,7 +82,7 @@ inline recevoir(_TYPE_& t, int source, int cible, int canal)
 inline int recevoir(long& t, int source, int cible, int canal) { return recevoir_array<long>(&t, 1, source, cible, canal); }
 #endif
 
-template<typename _TYPE_> enable_if_t_<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
 inline recevoir(_TYPE_& t, int source, int canal)
 {
   return recevoir_array<_TYPE_>(&t, 1, source, Process::me(), canal);
@@ -92,7 +92,7 @@ inline recevoir(_TYPE_& t, int source, int canal)
 inline int recevoir(long& t, int source, int canal) { return recevoir_array<long>(&t, 1, source, Process::me(), canal); }
 #endif
 
-template<typename _TYPE_> enable_if_t_<std::is_arithmetic<_TYPE_>::value,int >
+template<typename _TYPE_> std::enable_if_t<std::is_arithmetic<_TYPE_>::value,int >
 inline envoyer_broadcast(_TYPE_& t, int source)
 {
   return envoyer_broadcast_array<_TYPE_>(&t, 1, source);
@@ -105,7 +105,7 @@ inline int envoyer_broadcast(long& t, int source) { return envoyer_broadcast_arr
 /*! @brief en mode comm_check_enabled(), verifie que le parametre a la meme valeur sur tous les processeurs
  *
  */
-template<typename _TYPE_> enable_if_t_<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, double>::value),void >
+template<typename _TYPE_> std::enable_if_t<(std::is_same<_TYPE_, int>::value || std::is_same<_TYPE_, double>::value),void >
 inline assert_parallel(const _TYPE_ x)
 {
   if (!Comm_Group::check_enabled())
