@@ -471,7 +471,10 @@ then
    if [ "$minimal_mumps" = 0 ]
    then
       # Cholmod GPU pas portable avec cartes recentes type V100/A100 sur Cuda 11.x, on desactive en attendant montee de version:
-      [ "$TRUST_WITHOUT_HOST" = 1 ] && add_package SuiteSparse && with_packages=$with_packages" --download-suitesparse-disablegpu=1" # Add --with-64-bit-indices ?
+      if [ "$TRUST_USE_CUDA" != 1 ] || [ "$TRUST_WITHOUT_HOST" = 1 ]
+      then
+         add_package SuiteSparse && with_packages=$with_packages" --download-suitesparse-disablegpu=1" # Add --with-64-bit-indices ?
+      fi
    fi
    # New (Pastix) pb sous cygwin
    # Test (27/06/15 : probleme pour portabilite sur Ubuntu16 entre autre)
