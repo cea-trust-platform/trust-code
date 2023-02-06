@@ -20,7 +20,7 @@
 #include <Interprete.h>
 
 Implemente_instanciable_sans_constructeur(Partitionneur_Sous_Domaines,"Partitionneur_Sous_Domaines",Partitionneur_base);
-// XD partitionneur_sous_domaines partitionneur_deriv sous_domaines -1 This algorithm will create one part for each specified subdomaine/domain. All elements contained in the first subdomaine/domain are put in the first part, all remaining elements contained in the second subdomaine/domain in the second part, etc... NL2 If all elements of the current domain are contained in the specified subdomaines/domain, then N parts are created, otherwise, a supplemental part is created with the remaining elements. NL2 If no subdomaine is specified, all subdomaines defined in the domain are used to split the mesh.
+// XD partitionneur_sous_domaines partitionneur_deriv partitionneur_sous_domaines -1 This algorithm will create one part for each specified subdomaine/domain. All elements contained in the first subdomaine/domain are put in the first part, all remaining elements contained in the second subdomaine/domain in the second part, etc... NL2 If all elements of the current domain are contained in the specified subdomaines/domain, then N parts are created, otherwise, a supplemental part is created with the remaining elements. NL2 If no subdomaine is specified, all subdomaines defined in the domain are used to split the mesh.
 Add_synonym(Partitionneur_Sous_Domaines, "Partitionneur_Sous_Zones");
 
 Partitionneur_Sous_Domaines::Partitionneur_Sous_Domaines()

@@ -753,7 +753,7 @@ sous_zone objet_u sous_zone 1 It is an object type describing a domain sub-set. 
   attr polynomes bloc_lecture polynomes 1 A REPRENDRE
   attr couronne bloc_couronne couronne 1 In 2D case, to create a couronne.
   attr tube bloc_tube tube 1 In 3D case, to create a tube.
-  attr fonction_sous_zone chaine fonction_sous_zone 1 Keyword to build a sub-area with the the elements included into the area defined by fonction>0.
+  attr fonction_sous_domaine chaine fonction_sous_domaine 1 Keyword to build a sub-area with the the elements included into the area defined by fonction>0.
   attr union ref_sous_zone union_with 1 The elements of the sub-area nom_sous_zone3 will be added to the sub-area nom_sous_zone. This keyword should be used last in the Read keyword.
   ref domaine domaine
 decouper_bord_coincident interprete decouper_bord_coincident -1 In case of non-coincident meshes and a paroi_contact condition, run is stopped and two external files are automatically generated in VEF (connectivity_failed_boundary_name and connectivity_failed_pb_name.med). In 2D, the keyword Decouper_bord_coincident associated to the connectivity_failed_boundary_name file allows to generate a new coincident mesh.
@@ -1280,3 +1280,4 @@ interpolation_ibm_elem_fluid interpolation_ibm_base ibm_element_fluide 1 Immerse
   attr points_solides field_base points_solides 1 Node field giving the projection of the node on the immersed boundary
   attr elements_fluides field_base elements_fluides 1 Node field giving the number of the element (cell) containing the pure fluid point
   attr correspondance_elements field_base correspondance_elements 1 Cell field giving the SALOME cell number
+create_domain_from_sous_zone create_domain_from_sous_domaine create_domain_from_sous_zone -1 kept for backward compatibility. please use create_domain_from_sous_domaine

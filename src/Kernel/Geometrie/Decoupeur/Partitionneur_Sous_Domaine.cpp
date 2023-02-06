@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #include <Param.h>
 #include <EChaine.h>
 
-// XD partitionneur_sous_domaine partitionneur_deriv sous_domaine -1 Given a global partition of a global domain, 'sous-domaine' allows to produce a conform partition of a sub-domain generated from the bigger one using the keyword create_domain_from_sous_domaine. The sub-domain will be partitionned in a conform fashion with the global domain.
+// XD partitionneur_sous_domaine partitionneur_deriv partitionneur_sous_domaine -1 Given a global partition of a global domain, 'sous-domaine' allows to produce a conform partition of a sub-domain generated from the bigger one using the keyword create_domain_from_sous_domaine. The sub-domain will be partitionned in a conform fashion with the global domain.
 Implemente_instanciable_sans_constructeur(Partitionneur_Sous_Domaine,"Partitionneur_Sous_Domaine",Partitionneur_base);
 
 Partitionneur_Sous_Domaine::Partitionneur_Sous_Domaine()
@@ -54,7 +54,7 @@ Sortie& Partitionneur_Sous_Domaine::printOn(Sortie& os) const
 
 void Partitionneur_Sous_Domaine::set_param(Param& param)
 {
-  param.ajouter("fichier",&filename_,Param::REQUIRED); // XD_ADD_P chaine fichier domaine
+  param.ajouter("fichier",&filename_,Param::REQUIRED); // XD_ADD_P chaine fichier
   param.ajouter("fichier_ssz",&filename_ssz_,Param::REQUIRED); // XD_ADD_P chaine fichier sous zonne
 }
 
