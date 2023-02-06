@@ -106,6 +106,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   REF(Champ_base) ref_ch;
   int reprend_champ_moyen=0;
   int reprend_modele_k_eps=0;
+  int k_eps_realisable = 0;
 
   if (nom_champ_inc=="??")
     nom_champ_inc=nom_champ;
@@ -118,9 +119,16 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
       reprend_champ_moyen=1;
     }
   // Cas du K-Epsilon
-  if (((Motcle)nom_champ_inc)=="K_EPS")
+  if (((Motcle)nom_champ).debute_par("K_EPS"))
     {
       reprend_modele_k_eps=1;
+
+      // cas du k-epsilon realisable
+      if (Motcle(nom_champ).finit_par("_REALISABLE"))
+        {
+          k_eps_realisable = 1;
+          nom_champ_inc=((Motcle)nom_champ).prefix("_REALISABLE");
+        }
     }
   ref_ch = pb.get_champ(Motcle(nom_champ_inc));
   if (sub_type(Champ_Inc_base,ref_ch.valeur()))
@@ -269,6 +277,8 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   else if (reprend_modele_k_eps)
     {
       nom_ident="Modele_turbulence_hyd_K_Epsilon";
+      if(k_eps_realisable)
+        nom_ident+="_Realisable";
       nom_ident+=pb.domaine().le_nom();
       nom_ident+=nom_temps;
       nom_ident_champ_keps=nom_champ_inc;
