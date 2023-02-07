@@ -52,6 +52,8 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::completer()
   //si la correlation a besoin du gradient de u, on doit le creer maintenant
   if (corr.non_nul() && ref_cast(Viscosite_turbulente_base, corr.valeur()).gradu_required())
     equation().probleme().creer_champ("gradient_vitesse");
+  if (corr.non_nul())
+    corr->completer();
 }
 
 void Op_Diff_Turbulent_PolyMAC_P0_Face::creer_champ(const Motcle& motlu)
@@ -64,7 +66,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::creer_champ(const Motcle& motlu)
       Noms noms(1), unites(1);
       noms[0] = noms_nu_t_post_[i];
       Motcle typeChamp = "champ_elem" ;
-      dis.discretiser_champ(typeChamp, equation().domaine_dis(), scalaire, noms , unites, 1, 0, nu_t_post_[0]);
+      dis.discretiser_champ(typeChamp, equation().domaine_dis(), scalaire, noms , unites, 1, 0, nu_t_post_[i]);
       champs_compris_.ajoute_champ(nu_t_post_[i]);
     }
 }
