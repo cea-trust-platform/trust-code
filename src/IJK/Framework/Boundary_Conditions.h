@@ -22,18 +22,22 @@ class Boundary_Conditions : public Objet_U
 {
   Declare_instanciable(Boundary_Conditions);
 public:
-  enum BCType { Paroi = 0, Symetrie = 1, Perio=2 };
-  BCType get_bctype_k_min() const
-  {
-    return (BCType) bctype_kmin_;
-  }
-  BCType get_bctype_k_max() const
-  {
-    return (BCType) bctype_kmax_;
-  }
+  enum BCType { Paroi = 0, Symetrie = 1, Perio = 2, Mixte_shear = 3 };
+  BCType get_bctype_k_min() const { return (BCType) bctype_kmin_; }
+  BCType get_bctype_k_max() const { return (BCType) bctype_kmax_; }
+
+  void set_vx_kmin(double value) { vxkmin_ = value; }
+  void set_vx_kmax(double value) { vxkmax_ = value; }
+  void set_dU_perio(double value) { dU_perio_ = value; }
+
+  double get_vx_kmin() { return vxkmin_; }
+  double get_vx_kmax() { return vxkmax_; }
+  double get_dU_perio() { return dU_perio_; }
+
 protected:
   int bctype_kmin_, bctype_kmax_;
+  double vxkmin_, vxkmax_;
+  double dU_perio_;
 };
 
-
-#endif
+#endif /* Boundary_Conditions_included */

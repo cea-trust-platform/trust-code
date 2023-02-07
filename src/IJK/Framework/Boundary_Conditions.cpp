@@ -22,34 +22,35 @@ Boundary_Conditions::Boundary_Conditions()
 {
   bctype_kmin_ = Paroi;
   bctype_kmax_ = Paroi;
+  vxkmin_ = 0.;
+  vxkmax_ = 0.;
+  dU_perio_ = 0.;
 }
 
 // SYNTAXE:
 //  {
-//    BCTYPE_KMIN paroi|symetrie|perio
-//    BCTYPE_KMAX paroi|symetrie|perio
+//    BCTYPE_KMIN paroi|symetrie|perio|Mixte_shear
+//    BCTYPE_KMAX paroi|symetrie|perio|Mixte_shear
 //  }
-
 Entree& Boundary_Conditions::readOn(Entree& is)
 {
   Param param(que_suis_je());
-
+  param.ajouter("vx_kmin", &vxkmin_);
+  param.ajouter("dU_perio", &dU_perio_);
   param.ajouter("bctype_kmin", &bctype_kmin_, Param::REQUIRED);
   param.dictionnaire("Paroi", Paroi);
   param.dictionnaire("Symetrie", Symetrie);
   param.dictionnaire("Perio", Perio);
-
+  param.dictionnaire("Mixte_shear", Mixte_shear);
+  param.ajouter("vx_kmax", &vxkmax_);
   param.ajouter("bctype_kmax", &bctype_kmax_, Param::REQUIRED);
   param.dictionnaire("Paroi", Paroi);
   param.dictionnaire("Symetrie", Symetrie);
   param.dictionnaire("Perio", Perio);
-
+  param.dictionnaire("Mixte_shear", Mixte_shear);
   param.lire_avec_accolades(is);
 
   return is;
 }
 
-Sortie& Boundary_Conditions::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Boundary_Conditions::printOn(Sortie& os) const { return os; }
