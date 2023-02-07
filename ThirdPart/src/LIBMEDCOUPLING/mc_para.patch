@@ -1,0 +1,2145 @@
+diff --git a/resources/CMakeLists.txt b/resources/CMakeLists.txt
+index 85482604..6a3a63e7 100644
+--- a/resources/CMakeLists.txt
++++ b/resources/CMakeLists.txt
+@@ -39,6 +39,9 @@ SET(MED_other_FILES
+   Test2Dpoly.med
+   Test3D.med
+   Test3Dpoly.med
++  SimpleTest2D.med
++  SimpleTest3D.med
++  Test2DMultiGeoType.med
+   UnitTetraDegenT.med
+   DegenEdgeXY.med
+   DegenFaceXYZ.med
+diff --git a/resources/SimpleTest2D.med b/resources/SimpleTest2D.med
+new file mode 100644
+index 00000000..3c890eba
+Binary files /dev/null and b/resources/SimpleTest2D.med differ
+diff --git a/resources/SimpleTest3D.med b/resources/SimpleTest3D.med
+new file mode 100644
+index 00000000..62bbc2e5
+Binary files /dev/null and b/resources/SimpleTest3D.med differ
+diff --git a/resources/Test2DMultiGeoType.med b/resources/Test2DMultiGeoType.med
+new file mode 100644
+index 00000000..dc6cf553
+Binary files /dev/null and b/resources/Test2DMultiGeoType.med differ
+diff --git a/src/MEDLoader/MEDFileField1TS.cxx b/src/MEDLoader/MEDFileField1TS.cxx
+index bd3db052..671cfede 100644
+--- a/src/MEDLoader/MEDFileField1TS.cxx
++++ b/src/MEDLoader/MEDFileField1TS.cxx
+@@ -772,6 +772,27 @@ void MEDFileAnyTypeField1TSWithoutSDA::loadOnlyStructureOfDataRecursively(med_id
+   _field_per_mesh[0]->loadOnlyStructureOfDataRecursively(fid,_nb_of_tuples_to_be_allocated,nasc);
+ }
+ 
++void MEDFileAnyTypeField1TSWithoutSDA::loadOnlyStructureOfDataRecursively(med_idt fid, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities, const MEDFileCapability *capability)
++{
++  med_int numdt,numit;
++  med_float dt;
++  med_int meshnumdt(-1),meshnumit(-1);
++  MEDFILESAFECALLERRD0(MEDfieldComputingStepInfo,(fid,nasc.getName().c_str(),_csit,&numdt,&numit,&_dt));
++  if(!capability || !capability->isFastReader())
++  {
++    med_bool localMesh;
++    med_int nmesh;
++    INTERP_KERNEL::AutoPtr<char> meshName(MEDLoaderBase::buildEmptyString(MED_NAME_SIZE));
++    MEDFILESAFECALLERRD0(MEDfield23ComputingStepMeshInfo,(fid,nasc.getName().c_str(),_csit,&numdt,&numit,&dt,&nmesh,meshName,&localMesh,&meshnumdt,&meshnumit)); // to check with Adrien for legacy MED files
++  }
++  if(_iteration!=numdt || _order!=numit)
++    throw INTERP_KERNEL::Exception("MEDFileAnyTypeField1TSWithoutSDA::loadBigArraysRecursively : unexpected exception internal error !");
++  _field_per_mesh.resize(1);
++  _field_per_mesh[0]=MEDFileFieldPerMesh::NewOnRead(fid,this,0,FromMedInt<int>(meshnumdt),FromMedInt<int>(meshnumit),nasc,pd,entities);
++  _nb_of_tuples_to_be_allocated=0;
++  _field_per_mesh[0]->loadOnlyStructureOfDataRecursively(fid,_nb_of_tuples_to_be_allocated,nasc);
++}
++
+ void MEDFileAnyTypeField1TSWithoutSDA::loadBigArraysRecursively(med_idt fid, const MEDFileFieldNameScope& nasc)
+ {
+   allocIfNecessaryTheArrayToReceiveDataFromFile();
+@@ -793,6 +814,13 @@ void MEDFileAnyTypeField1TSWithoutSDA::loadStructureAndBigArraysRecursively(med_
+   loadBigArraysRecursively(fid,nasc);
+ }
+ 
++void MEDFileAnyTypeField1TSWithoutSDA::loadStructureAndBigArraysRecursively(med_idt fid, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities)
++{
++  MEDFileCapability cap(fid);
++  loadOnlyStructureOfDataRecursively(fid,nasc,pd,entities,&cap);
++  loadBigArraysRecursively(fid,nasc);
++}
++
+ void MEDFileAnyTypeField1TSWithoutSDA::unloadArrays()
+ {
+   DataArray *thisArr(getUndergroundDataArray());
+@@ -1774,58 +1802,101 @@ MEDFileAnyTypeField1TS::MEDFileAnyTypeField1TS()
+ {
+ }
+ 
+-MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_idt fid, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::AllocateContentFrom(med_idt fid, const std::string& fieldName, int iteration, int order)
+ {
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret;
+   med_field_type typcha;
+-  //
+   std::vector<std::string> infos;
+-  std::string dtunit,fieldName,meshName;
+-  LocateField2(fid,0,true,fieldName,typcha,infos,dtunit,meshName);
+-  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret;
++  std::string dtunit,meshName;
++  int iii(-1);
++  int nbOfStep2(-1);
++  std::string fName(fieldName);
++  if(fName.empty())
++      LocateField2(fid,0,true,fName,typcha,infos,dtunit,meshName);
++  nbOfStep2=LocateField(fid,fName,iii,typcha,infos,dtunit,meshName);
++  if(nbOfStep2<1)
++    {
++      std::ostringstream oss; oss << "MEDFileField1TS(fid,fName) : file \'" << FileNameFromFID(fid) << "\' contains field with name \'" << fName << "\' but there is no time steps on it !";
++      throw INTERP_KERNEL::Exception(oss.str());
++    }
++
+   switch(typcha)
+   {
+     case MED_FLOAT64:
+       {
+-        ret=MEDFileField1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
++        ret=MEDFileField1TSWithoutSDA::New(fName,meshName,-1,iteration,order,std::vector<std::string>());
+         break;
+       }
+     case MED_INT32:
+       {
+-        ret=MEDFileInt32Field1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
++        ret=MEDFileInt32Field1TSWithoutSDA::New(fName,meshName,-1,iteration,order,std::vector<std::string>());
+         break;
+       }
+     case MED_INT64:
+       {
+-        ret=MEDFileInt64Field1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
++        ret=MEDFileInt64Field1TSWithoutSDA::New(fName,meshName,-1,iteration,order,std::vector<std::string>());
+         break;
+       }
+     case MED_FLOAT32:
+       {
+-        ret=MEDFileFloatField1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
++        ret=MEDFileFloatField1TSWithoutSDA::New(fName,meshName,-1,iteration,order,std::vector<std::string>());
+         break;
+       }
+     case MED_INT:
+       {
+         if(sizeof(med_int)==sizeof(int))
+           {
+-            ret=MEDFileInt32Field1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
++            ret=MEDFileInt32Field1TSWithoutSDA::New(fName,meshName,-1,iteration,order,std::vector<std::string>());
+             break;
+           }
+       }
+     default:
+       {
+-        std::ostringstream oss; oss << "MEDFileAnyTypeField1TS::BuildContentFrom(fid) : file \'" << FileNameFromFID(fid) << "\' contains field with name \'" << fieldName << "\' but the type of the first field is not in [MED_FLOAT64, MED_FLOAT32, MED_INT32, MED_INT64] !";
++        std::ostringstream oss; oss << "MEDFileAnyTypeField1TS::AllocateContentFrom(fid,fName,iteration,order) : file \'" << FileNameFromFID(fid) << "\' contains field with name \'" << fName << "\' but the type of field is not in [MED_FLOAT64, MED_INT32, MED_FLOAT32, MED_INT64] !";
+         throw INTERP_KERNEL::Exception(oss.str());
+       }
+   }
+   ret->setDtUnit(dtunit.c_str());
+   ret->getOrCreateAndGetArray()->setInfoAndChangeNbOfCompo(infos);
+-  //
+-  med_int numdt,numit;
+-  med_float dt;
+-  MEDFILESAFECALLERRD0(MEDfieldComputingStepInfo,(fid,fieldName.c_str(),1,&numdt,&numit,&dt));
+-  ret->setTime(FromMedInt<int>(numdt),FromMedInt<int>(numit),dt);
+-  ret->_csit=1;
++
++  // searching for timestep given in parameter
++  bool found=false;
++  std::vector< std::pair<int,int> > dtits(nbOfStep2);
++  for(int i=0;i<nbOfStep2 && !found;i++)
++    {
++      med_int numdt,numit;
++      med_float dt;
++      MEDFILESAFECALLERRD0(MEDfieldComputingStepInfo,(fid,fName.c_str(),i+1,&numdt,&numit,&dt));
++      if (iteration==-1 && order==-1) // either no timestep were given, so we just stop at the first one
++       {
++           found=true;
++           ret->_csit=i+1;
++           ret->setTime(FromMedInt<int>(numdt),FromMedInt<int>(numit),dt);
++       }
++      else if(numdt==iteration && numit==order) // or we found the correct timestep
++        {
++          found=true;
++          ret->_csit=i+1;
++        }
++      else
++        dtits[i]=std::pair<int,int>(numdt,numit);
++    }
++  if(!found)
++    {
++      std::ostringstream oss; oss << "No such iteration (" << iteration << "," << order << ") in existing field '" << fName << "' in file '" << FileNameFromFID(fid) << "' ! Available iterations are : ";
++      for(std::vector< std::pair<int,int> >::const_iterator iter=dtits.begin();iter!=dtits.end();iter++)
++        oss << "(" << (*iter).first << "," << (*iter).second << "), ";
++      throw INTERP_KERNEL::Exception(oss.str());
++    }
++
++  return ret.retn();
++
++}
++
++MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_idt fid, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++{
++  std::string useless;
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret(AllocateContentFrom(fid,useless));
+   if(loadAll)
+     ret->loadStructureAndBigArraysRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
+   else
+@@ -1833,6 +1904,34 @@ MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_i
+   return ret.retn();
+ }
+ 
++MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_idt fid, const std::string& fieldName, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++{
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret(AllocateContentFrom(fid,fieldName));
++  if(loadAll)
++    ret->loadStructureAndBigArraysRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
++  else
++    ret->loadOnlyStructureOfDataRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
++  return ret.retn();
++}
++
++MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++{
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret(AllocateContentFrom(fid,fieldName,iteration,order));
++  if(loadAll)
++    ret->loadStructureAndBigArraysRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
++  else
++    ret->loadOnlyStructureOfDataRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
++  return ret.retn();
++}
++
++MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_idt fid, const std::string& fieldName, int iteration, int order, const PartDefinition *pd, const MEDFileEntities *entities)
++{
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret(AllocateContentFrom(fid,fieldName,iteration,order));
++  ret->loadStructureAndBigArraysRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),pd,entities);
++  return ret.retn();
++}
++
++
+ MEDFileAnyTypeField1TS::MEDFileAnyTypeField1TS(med_idt fid, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
+ try:MEDFileFieldGlobsReal(fid)
+ {
+@@ -1844,79 +1943,21 @@ catch(INTERP_KERNEL::Exception& e)
+     throw e;
+ }
+ 
+-MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_idt fid, const std::string& fieldName, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++MEDFileAnyTypeField1TS::MEDFileAnyTypeField1TS(med_idt fid, const std::string& fieldName, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++try:MEDFileFieldGlobsReal(fid)
+ {
+-  med_field_type typcha;
+-  std::vector<std::string> infos;
+-  std::string dtunit,meshName;
+-  int nbSteps(0);
+-  {
+-    int iii=-1;
+-    nbSteps=LocateField(fid,fieldName,iii,typcha,infos,dtunit,meshName);
+-  }
+-  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret;
+-  switch(typcha)
+-  {
+-    case MED_FLOAT64:
+-      {
+-        ret=MEDFileField1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_INT32:
+-      {
+-        ret=MEDFileInt32Field1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_INT64:
+-      {
+-        ret=MEDFileInt64Field1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_FLOAT32:
+-      {
+-        ret=MEDFileFloatField1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_INT:
+-      {
+-        if(sizeof(med_int)==sizeof(int))
+-          {
+-            ret=MEDFileInt32Field1TSWithoutSDA::New(fieldName,meshName,-1,-1/*iteration*/,-1/*order*/,std::vector<std::string>());
+-            break;
+-          }
+-      }
+-    default:
+-      {
+-        std::ostringstream oss; oss << "MEDFileAnyTypeField1TS::BuildContentFrom(fid,fieldName) : file \'" << FileNameFromFID(fid) << "\' contains field with name \'" << fieldName << "\' but the type of field is not in [MED_FLOAT64, MED_INT32, MED_FLOAT32, MED_INT64] !";
+-        throw INTERP_KERNEL::Exception(oss.str());
+-      }
+-  }
+-  ret->setMeshName(meshName);
+-  ret->setDtUnit(dtunit.c_str());
+-  ret->getOrCreateAndGetArray()->setInfoAndChangeNbOfCompo(infos);
+-  //
+-  if(nbSteps<1)
+-    {
+-      std::ostringstream oss; oss << "MEDFileField1TS(fid,fieldName) : file \'" << FileNameFromFID(fid) << "\' contains field with name \'" << fieldName << "\' but there is no time steps on it !";
+-      throw INTERP_KERNEL::Exception(oss.str());
+-    }
+-  //
+-  med_int numdt,numit;
+-  med_float dt;
+-  MEDFILESAFECALLERRD0(MEDfieldComputingStepInfo,(fid,fieldName.c_str(),1,&numdt,&numit,&dt));
+-  ret->setTime(FromMedInt<int>(numdt),FromMedInt<int>(numit),dt);
+-  ret->_csit=1;
+-  if(loadAll)
+-    ret->loadStructureAndBigArraysRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
+-  else
+-    ret->loadOnlyStructureOfDataRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
+-  return ret.retn();
++  _content=BuildContentFrom(fid,fieldName,loadAll,ms,entities);
++  loadGlobals(fid);
++}
++catch(INTERP_KERNEL::Exception& e)
++{
++    throw e;
+ }
+ 
+-MEDFileAnyTypeField1TS::MEDFileAnyTypeField1TS(med_idt fid, const std::string& fieldName, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++MEDFileAnyTypeField1TS::MEDFileAnyTypeField1TS(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
+ try:MEDFileFieldGlobsReal(fid)
+ {
+-  _content=BuildContentFrom(fid,fieldName,loadAll,ms,entities);
++  _content=BuildContentFrom(fid,fieldName,iteration,order,loadAll,ms,entities);
+   loadGlobals(fid);
+ }
+ catch(INTERP_KERNEL::Exception& e)
+@@ -1976,6 +2017,7 @@ MEDFileAnyTypeField1TS *MEDFileAnyTypeField1TS::New(med_idt fid, bool loadAll)
+   return ret.retn();
+ }
+ 
++
+ MEDFileAnyTypeField1TS *MEDFileAnyTypeField1TS::New(const std::string& fileName, const std::string& fieldName, bool loadAll)
+ {
+   MEDFileUtilities::AutoFid fid(OpenMEDFileForRead(fileName));
+@@ -1998,7 +2040,7 @@ MEDFileAnyTypeField1TS *MEDFileAnyTypeField1TS::New(const std::string& fileName,
+ 
+ MEDFileAnyTypeField1TS *MEDFileAnyTypeField1TS::New(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll)
+ {
+-  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> c(BuildContentFrom(fid,fieldName,iteration,order,loadAll,0,0));
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> c(BuildContentFrom(fid,fieldName,iteration,order,loadAll,(const MEDFileMeshes *)0,0));
+   MCAuto<MEDFileAnyTypeField1TS> ret(BuildNewInstanceFromContent(c,fid));
+   ret->loadGlobals(fid);
+   return ret.retn();
+@@ -2012,98 +2054,24 @@ MEDFileAnyTypeField1TS *MEDFileAnyTypeField1TS::NewAdv(const std::string& fileNa
+ 
+ MEDFileAnyTypeField1TS *MEDFileAnyTypeField1TS::NewAdv(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileEntities *entities)
+ {
+-  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> c(BuildContentFrom(fid,fieldName,iteration,order,loadAll,0,entities));
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> c(BuildContentFrom(fid,fieldName,iteration,order,loadAll,(const MEDFileMeshes *)0,entities));
+   MCAuto<MEDFileAnyTypeField1TS> ret(BuildNewInstanceFromContent(c,fid));
+   ret->loadGlobals(fid);
+   return ret.retn();
+ }
+ 
+-MEDFileAnyTypeField1TSWithoutSDA *MEDFileAnyTypeField1TS::BuildContentFrom(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
++
++MEDFileAnyTypeField1TS *MEDFileAnyTypeField1TS::NewAdv(med_idt fid, const std::string& fieldName, int iteration, int order, const MEDFileEntities *entities, const std::vector<mcIdType>& distrib)
+ {
+-  med_field_type typcha;
+-  std::vector<std::string> infos;
+-  std::string dtunit,meshName;
+-  int iii(-1);
+-  int nbOfStep2(LocateField(fid,fieldName,iii,typcha,infos,dtunit,meshName));
+-  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> ret;
+-  switch(typcha)
+-  {
+-    case MED_FLOAT64:
+-      {
+-        ret=MEDFileField1TSWithoutSDA::New(fieldName,meshName,-1,iteration,order,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_INT32:
+-      {
+-        ret=MEDFileInt32Field1TSWithoutSDA::New(fieldName,meshName,-1,iteration,order,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_INT64:
+-      {
+-        ret=MEDFileInt64Field1TSWithoutSDA::New(fieldName,meshName,-1,iteration,order,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_FLOAT32:
+-      {
+-        ret=MEDFileFloatField1TSWithoutSDA::New(fieldName,meshName,-1,iteration,order,std::vector<std::string>());
+-        break;
+-      }
+-    case MED_INT:
+-      {
+-        if(sizeof(med_int)==sizeof(int))
+-          {
+-            ret=MEDFileInt32Field1TSWithoutSDA::New(fieldName,meshName,-1,iteration,order,std::vector<std::string>());
+-            break;
+-          }
+-      }
+-    default:
+-      {
+-        std::ostringstream oss; oss << "MEDFileAnyTypeField1TS::BuildContentFrom(fid,fieldName,iteration,order) : file \'" << FileNameFromFID(fid) << "\' contains field with name \'" << fieldName << "\' but the type of field is not in [MED_FLOAT64, MED_INT32, MED_FLOAT32, MED_INT64] !";
+-        throw INTERP_KERNEL::Exception(oss.str());
+-      }
+-  }
+-  ret->setDtUnit(dtunit.c_str());
+-  ret->getOrCreateAndGetArray()->setInfoAndChangeNbOfCompo(infos);
+-  //
+-  bool found=false;
+-  std::vector< std::pair<int,int> > dtits(nbOfStep2);
+-  for(int i=0;i<nbOfStep2 && !found;i++)
+-    {
+-      med_int numdt,numit;
+-      med_float dt;
+-      MEDFILESAFECALLERRD0(MEDfieldComputingStepInfo,(fid,fieldName.c_str(),i+1,&numdt,&numit,&dt));
+-      if(numdt==iteration && numit==order)
+-        {
+-          found=true;
+-          ret->_csit=i+1;
+-        }
+-      else
+-        dtits[i]=std::pair<int,int>(numdt,numit);
+-    }
+-  if(!found)
+-    {
+-      std::ostringstream oss; oss << "No such iteration (" << iteration << "," << order << ") in existing field '" << fieldName << "' in file '" << FileNameFromFID(fid) << "' ! Available iterations are : ";
+-      for(std::vector< std::pair<int,int> >::const_iterator iter=dtits.begin();iter!=dtits.end();iter++)
+-        oss << "(" << (*iter).first << "," << (*iter).second << "), ";
+-      throw INTERP_KERNEL::Exception(oss.str());
+-    }
+-  if(loadAll)
+-    ret->loadStructureAndBigArraysRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
+-  else
+-    ret->loadOnlyStructureOfDataRecursively(fid,*((const MEDFileAnyTypeField1TSWithoutSDA*)ret),ms,entities);
++  MCAuto<DataArrayIdType> listOfIds=DataArrayIdType::New();
++  listOfIds->useArray(distrib.data(),false,DeallocType::C_DEALLOC,distrib.size(),1);
++  MCAuto<PartDefinition> pd=PartDefinition::New(listOfIds);
++  MCAuto<MEDFileAnyTypeField1TSWithoutSDA> c(BuildContentFrom(fid,fieldName,iteration,order,pd,entities));
++  MCAuto<MEDFileAnyTypeField1TS> ret(BuildNewInstanceFromContent(c,fid));
++  ret->loadGlobals(fid);
+   return ret.retn();
+ }
+ 
+-MEDFileAnyTypeField1TS::MEDFileAnyTypeField1TS(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities)
+-try:MEDFileFieldGlobsReal(fid)
+-{
+-  _content=BuildContentFrom(fid,fieldName,iteration,order,loadAll,ms,entities);
+-  loadGlobals(fid);
+-}
+-catch(INTERP_KERNEL::Exception& e)
+-{
+-    throw e;
+-}
+ 
+ /*!
+  * This constructor is a shallow copy constructor. If \a shallowCopyOfContent is true the content of \a other is shallow copied.
+diff --git a/src/MEDLoader/MEDFileField1TS.hxx b/src/MEDLoader/MEDFileField1TS.hxx
+index 55864e3f..dffcfa3e 100644
+--- a/src/MEDLoader/MEDFileField1TS.hxx
++++ b/src/MEDLoader/MEDFileField1TS.hxx
+@@ -117,9 +117,11 @@ namespace MEDCoupling
+     MEDLOADER_EXPORT void allocNotFromFile(mcIdType newNbOfTuples);
+     MEDLOADER_EXPORT bool allocIfNecessaryTheArrayToReceiveDataFromFile();
+     MEDLOADER_EXPORT void loadOnlyStructureOfDataRecursively(med_idt fid, const MEDFileFieldNameScope& nasc, const MEDFileMeshes *ms, const MEDFileEntities *entities, const MEDFileCapability *capability = nullptr);
++    MEDLOADER_EXPORT void loadOnlyStructureOfDataRecursively(med_idt fid, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities, const MEDFileCapability *capability = nullptr);
+     MEDLOADER_EXPORT void loadBigArraysRecursively(med_idt fid, const MEDFileFieldNameScope& nasc);
+     MEDLOADER_EXPORT void loadBigArraysRecursivelyIfNecessary(med_idt fid, const MEDFileFieldNameScope& nasc);
+     MEDLOADER_EXPORT void loadStructureAndBigArraysRecursively(med_idt fid, const MEDFileFieldNameScope& nasc, const MEDFileMeshes *ms, const MEDFileEntities *entities);
++    MEDLOADER_EXPORT void loadStructureAndBigArraysRecursively(med_idt fid, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities);
+     MEDLOADER_EXPORT void unloadArrays();
+     MEDLOADER_EXPORT void writeLL(med_idt fid, const MEDFileWritable& opts, const MEDFileFieldNameScope& nasc) const;
+     MEDLOADER_EXPORT static std::string FieldNameToMEDFileConvention(const std::string& nonCorrectFieldName);
+@@ -278,6 +280,8 @@ namespace MEDCoupling
+     MEDLOADER_EXPORT static MEDFileAnyTypeField1TSWithoutSDA *BuildContentFrom(med_idt fid, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities);
+     MEDLOADER_EXPORT static MEDFileAnyTypeField1TSWithoutSDA *BuildContentFrom(med_idt fid, const std::string& fieldName, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities);
+     MEDLOADER_EXPORT static MEDFileAnyTypeField1TSWithoutSDA *BuildContentFrom(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileMeshes *ms, const MEDFileEntities *entities);
++    MEDLOADER_EXPORT static MEDFileAnyTypeField1TSWithoutSDA *BuildContentFrom(med_idt fid, const std::string& fieldName, int iteration, int order, const PartDefinition *pd, const MEDFileEntities *entities);
++    MEDLOADER_EXPORT static MEDFileAnyTypeField1TSWithoutSDA *AllocateContentFrom(med_idt fid, const std::string& fieldName, int iteration=-1, int order=-1);
+     MEDLOADER_EXPORT void writeLL(med_idt fid) const;
+     // direct forwarding to MEDFileAnyTypeField1TSWithoutSDA instance _content
+   public:
+@@ -289,6 +293,8 @@ namespace MEDCoupling
+     MEDLOADER_EXPORT static MEDFileAnyTypeField1TS *New(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll=true);
+     MEDLOADER_EXPORT static MEDFileAnyTypeField1TS *NewAdv(const std::string& fileName, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileEntities *entities);
+     MEDLOADER_EXPORT static MEDFileAnyTypeField1TS *NewAdv(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll, const MEDFileEntities *entities);
++    MEDLOADER_EXPORT static MEDFileAnyTypeField1TS *NewAdv(med_idt fid, const std::string& fieldName, int iteration, int order, const MEDFileEntities *entities, const std::vector<mcIdType>& distrib);
++
+     MEDLOADER_EXPORT int getDimension() const;
+     MEDLOADER_EXPORT int getIteration() const;
+     MEDLOADER_EXPORT int getOrder() const;
+@@ -374,6 +380,7 @@ namespace MEDCoupling
+     MEDLOADER_EXPORT static typename MLFieldTraits<T>::F1TSType *New(const std::string& fileName, const std::string& fieldName, int iteration, int order, bool loadAll=true);
+     MEDLOADER_EXPORT static typename MLFieldTraits<T>::F1TSType *New(med_idt fid, const std::string& fieldName, int iteration, int order, bool loadAll=true);
+     MEDLOADER_EXPORT static typename MLFieldTraits<T>::F1TSType *New(const typename MLFieldTraits<T>::F1TSWSDAType& other, bool shallowCopyOfContent);
++
+   public:
+     MEDLOADER_EXPORT static typename Traits<T>::ArrayType *ReturnSafelyTypedDataArray(MCAuto<DataArray>& arr);
+     MEDLOADER_EXPORT typename Traits<T>::ArrayType *getFieldWithProfile(TypeOfField type, int meshDimRelToMax, const MEDFileMesh *mesh, DataArrayIdType *&pfl) const;
+diff --git a/src/MEDLoader/MEDFileFieldInternal.cxx b/src/MEDLoader/MEDFileFieldInternal.cxx
+index 640b4239..1906229d 100644
+--- a/src/MEDLoader/MEDFileFieldInternal.cxx
++++ b/src/MEDLoader/MEDFileFieldInternal.cxx
+@@ -30,6 +30,8 @@
+ #include "MEDCouplingFieldTemplate.hxx"
+ #include "MEDCouplingFieldDouble.hxx"
+ 
++#include "MEDFilterEntity.hxx"
++
+ #include "CellModel.hxx"
+ 
+ // From MEDLOader.cxx TU
+@@ -591,47 +593,15 @@ void MEDFileFieldPerMeshPerTypePerDisc::goReadZeValuesInFile(med_idt fid, const
+       INTERP_KERNEL::AutoPtr<char> pflname(MEDLoaderBase::buildEmptyString(MED_NAME_SIZE)),locname(MEDLoaderBase::buildEmptyString(MED_NAME_SIZE));
+       med_int profilesize,nbi;
+       med_int overallNval(MEDfieldnValueWithProfile(fid,fieldName.c_str(),iteration,order,menti,mgeoti,FromIdType<int>(_profile_it+1),MED_COMPACT_PFLMODE,pflname,&profilesize,locname,&nbi));
+-      const SlicePartDefinition *spd(dynamic_cast<const SlicePartDefinition *>(pd));
+-      if(spd)
+-        {
+-          mcIdType start,stop,step;
+-          spd->getSlice(start,stop,step);
+-          mcIdType nbOfEltsToLoad(DataArray::GetNumberOfItemGivenBES(start,stop,step,"MEDFileFieldPerMeshPerTypePerDisc::goReadZeValuesInFile"));
+-          med_filter filter=MED_FILTER_INIT;
+-          MEDFILESAFECALLERRD0(MEDfilterBlockOfEntityCr,(fid,/*nentity*/overallNval,/*nvaluesperentity*/nbi,/*nconstituentpervalue*/nbOfCompo,
+-                                                         MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
+-                                                         /*start*/ToMedInt(start+1),/*stride*/ToMedInt(step),/*count*/1,/*blocksize*/ToMedInt(nbOfEltsToLoad),
+-                                                         /*lastblocksize=useless because count=1*/0,&filter));
+-          MEDFILESAFECALLERRD0(MEDfieldValueAdvancedRd,(fid,fieldName.c_str(),iteration,order,menti,mgeoti,&filter,startFeedingPtr));
+-          MEDfilterClose(&filter);
+-          return ;
+-        }
+-      const DataArrayPartDefinition *dpd(dynamic_cast<const DataArrayPartDefinition *>(pd));
+-      if(dpd)
+-        {
+-          dpd->checkConsistencyLight();
+-          MCAuto<DataArrayIdType> myIds(dpd->toDAI());
+-          mcIdType a(myIds->getMinValueInArray()),b(myIds->getMaxValueInArray());
+-          myIds=myIds->deepCopy();// WARNING deep copy here because _pd is modified by applyLin !!!
+-          myIds->applyLin(1,-a);
+-          mcIdType nbOfEltsToLoad(b-a+1);
+-          med_filter filter=MED_FILTER_INIT;
+-          {//TODO : manage int32 !
+-            MCAuto<DataArrayDouble> tmp(DataArrayDouble::New());
+-            tmp->alloc(nbOfEltsToLoad,nbOfCompo);
+-            MEDFILESAFECALLERRD0(MEDfilterBlockOfEntityCr,(fid,/*nentity*/overallNval,/*nvaluesperentity*/nbi,/*nconstituentpervalue*/nbOfCompo,
+-                                                           MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
+-                                                           /*start*/ToMedInt(a+1),/*stride*/1,/*count*/1,/*blocksize*/ToMedInt(nbOfEltsToLoad),
+-                                                           /*lastblocksize=useless because count=1*/0,&filter));
+-            MEDFILESAFECALLERRD0(MEDfieldValueAdvancedRd,(fid,fieldName.c_str(),iteration,order,menti,mgeoti,&filter,reinterpret_cast<unsigned char *>(tmp->getPointer())));
+-            MCAuto<DataArrayDouble> feeder(DataArrayDouble::New());
+-            feeder->useExternalArrayWithRWAccess(reinterpret_cast<double *>(startFeedingPtr),_nval,nbOfCompo);
+-            feeder->setContigPartOfSelectedValues(0,tmp,myIds);
+-          }
+-          MEDfilterClose(&filter);
+-        }
+-      else
+-        throw INTERP_KERNEL::Exception("Not implemented yet for not slices!");
++
++      {//TODO : manage int32 !
++        pd->checkConsistencyLight();
++        MEDFilterEntity filter;
++        filter.fill(fid,/*nentity*/overallNval,/*nvaluesperentity*/nbi,/*nconstituentpervalue*/nbOfCompo,
++                  MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
++                  pd);
++        MEDFILESAFECALLERRD0(MEDfieldValueAdvancedRd,(fid,fieldName.c_str(),iteration,order,menti,mgeoti,filter.getPtr(),startFeedingPtr));
++      }
+     }
+ }
+ 
+@@ -748,6 +718,7 @@ void MEDFileFieldPerMeshPerTypePerDisc::loadBigArray(med_idt fid, const MEDFileF
+   throw INTERP_KERNEL::Exception("Error on array reading ! Unrecognized type of field ! Should be in FLOAT64 FLOAT32 INT32 or INT64 !");
+ }
+ 
++
+ /*!
+  * Set a \c this->_start **and** \c this->_end keeping the same delta between the two.
+  */
+@@ -1990,6 +1961,11 @@ MEDFileFieldPerMesh *MEDFileFieldPerMesh::NewOnRead(med_idt fid, MEDFileAnyTypeF
+   return new MEDFileFieldPerMesh(fid,fath,meshCsit,meshIteration,meshOrder,nasc,mm,entities);
+ }
+ 
++MEDFileFieldPerMesh *MEDFileFieldPerMesh::NewOnRead(med_idt fid, MEDFileAnyTypeField1TSWithoutSDA *fath, int meshCsit, int meshIteration, int meshOrder, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities)
++{
++  return new MEDFileFieldPerMesh(fid,fath,meshCsit,meshIteration,meshOrder,nasc,pd,entities);
++}
++
+ MEDFileFieldPerMesh *MEDFileFieldPerMesh::New(MEDFileAnyTypeField1TSWithoutSDA *fath, const MEDCouplingMesh *mesh)
+ {
+   return new MEDFileFieldPerMesh(fath,mesh);
+@@ -3050,7 +3026,7 @@ DataArray *MEDFileFieldPerMesh::finishField4(const std::vector<std::pair<mcIdTyp
+ 
+ /// @cond INTERNAL
+ 
+-class MFFPMIter
++class MFFPMIter  // MEDFileFieldPerMeshIterator
+ {
+ public:
+   static MFFPMIter *NewCell(const MEDFileEntities *entities);
+@@ -3152,6 +3128,9 @@ MEDFileFieldPerMesh::MEDFileFieldPerMesh(med_idt fid, MEDFileAnyTypeField1TSWith
+   INTERP_KERNEL::AutoPtr<char> locName(MEDLoaderBase::buildEmptyString(MED_NAME_SIZE));
+   const MEDFileUMesh *mmu(dynamic_cast<const MEDFileUMesh *>(mm));
+   INTERP_KERNEL::AutoCppPtr<MFFPMIter> iter0(MFFPMIter::NewCell(entities));
++
++  // for each geometric type inside my mesh, check if there is a field profile ie if the field is defined on this type of cells (whether the discretization is on cells or on gauss_ne)
++  // and if this is the case, retrieve the part to be read and build a new MedFileField from it
+   for(iter0->begin();!iter0->finished();iter0->next())
+     {
+       med_int nbProfile (MEDfield23nProfile(fid,nasc.getName().c_str(),getIteration(),getOrder(),MED_CELL        ,typmai[iter0->current()],meshCsit+1,meshName,pflName,locName));
+@@ -3170,8 +3149,13 @@ MEDFileFieldPerMesh::MEDFileFieldPerMesh(med_idt fid, MEDFileAnyTypeField1TSWith
+             setMeshName(name1);
+         }
+     }
++
++
++  // entities are pairs of a field discretization and geometric type
++  // if no entities have been passed, then it means we can consider nodes by default
+   if(MFFPMIter::IsPresenceOfNode(entities))
+     {
++      // if there is a profile on nodes for the current field, retrieve the part to be read and build a new MedFileField from it
+       med_int nbProfile(MEDfield23nProfile(fid,nasc.getName().c_str(),getIteration(),getOrder(),MED_NODE,MED_NONE,meshCsit+1,meshName,pflName,locName));
+       if(nbProfile>0)
+         {
+@@ -3215,6 +3199,41 @@ MEDFileFieldPerMesh::MEDFileFieldPerMesh(med_idt fid, MEDFileAnyTypeField1TSWith
+     }
+ }
+ 
++MEDFileFieldPerMesh::MEDFileFieldPerMesh(med_idt fid, MEDFileAnyTypeField1TSWithoutSDA *fath, int meshCsit, int meshIteration, int meshOrder, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities):_mesh_iteration(meshIteration),_mesh_order(meshOrder),
++    _father(fath)
++{
++  INTERP_KERNEL::AutoPtr<char> meshName(MEDLoaderBase::buildEmptyString(MED_NAME_SIZE));
++  INTERP_KERNEL::AutoPtr<char> pflName(MEDLoaderBase::buildEmptyString(MED_NAME_SIZE));
++  INTERP_KERNEL::AutoPtr<char> locName(MEDLoaderBase::buildEmptyString(MED_NAME_SIZE));
++  INTERP_KERNEL::AutoCppPtr<MFFPMIter> iter0(MFFPMIter::NewCell(entities));
++  for(iter0->begin();!iter0->finished();iter0->next())
++    {
++      med_int nbProfile (MEDfield23nProfile(fid,nasc.getName().c_str(),getIteration(),getOrder(),MED_CELL        ,typmai[iter0->current()],meshCsit+1,meshName,pflName,locName));
++      std::string name0(MEDLoaderBase::buildStringFromFortran(meshName,MED_NAME_SIZE+1));
++      med_int nbProfile2(MEDfield23nProfile(fid,nasc.getName().c_str(),getIteration(),getOrder(),MED_NODE_ELEMENT,typmai[iter0->current()],meshCsit+1,meshName,pflName,locName));
++      std::string name1(MEDLoaderBase::buildStringFromFortran(meshName,MED_NAME_SIZE+1));
++      if(nbProfile>0 || nbProfile2>0)
++        {
++          _field_pm_pt.push_back(MEDFileFieldPerMeshPerType::NewOnRead(fid,this,ON_CELLS,typmai2[iter0->current()],nasc,pd));
++          if(nbProfile>0)
++            setMeshName(name0);
++          else
++            setMeshName(name1);
++        }
++    }
++
++  if(MFFPMIter::IsPresenceOfNode(entities))
++    {
++      med_int nbProfile(MEDfield23nProfile(fid,nasc.getName().c_str(),getIteration(),getOrder(),MED_NODE,MED_NONE,meshCsit+1,meshName,pflName,locName));
++      if(nbProfile>0)
++        {
++          _field_pm_pt.push_back(MEDFileFieldPerMeshPerType::NewOnRead(fid,this,ON_NODES,INTERP_KERNEL::NORM_ERROR,nasc,pd));
++          setMeshName(MEDLoaderBase::buildStringFromFortran(meshName,MED_NAME_SIZE));
++        }
++    }
++}
++
++
+ MEDFileFieldPerMesh::MEDFileFieldPerMesh(MEDFileAnyTypeField1TSWithoutSDA *fath, const MEDCouplingMesh *mesh):_father(fath)
+ {
+   copyTinyInfoFrom(mesh);
+diff --git a/src/MEDLoader/MEDFileFieldInternal.hxx b/src/MEDLoader/MEDFileFieldInternal.hxx
+index 0b61b61f..13881899 100644
+--- a/src/MEDLoader/MEDFileFieldInternal.hxx
++++ b/src/MEDLoader/MEDFileFieldInternal.hxx
+@@ -342,6 +342,7 @@ namespace MEDCoupling
+   public:
+     static MEDFileFieldPerMesh *New(MEDFileAnyTypeField1TSWithoutSDA *fath, const MEDCouplingMesh *mesh);
+     static MEDFileFieldPerMesh *NewOnRead(med_idt fid, MEDFileAnyTypeField1TSWithoutSDA *fath, int meshCsit, int meshIteration, int meshOrder, const MEDFileFieldNameScope& nasc, const MEDFileMesh *mm, const MEDFileEntities *entities);
++    static MEDFileFieldPerMesh *NewOnRead(med_idt fid, MEDFileAnyTypeField1TSWithoutSDA *fath, int meshCsit, int meshIteration, int meshOrder, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities);
+     std::string getClassName() const override { return std::string("MEDFileFieldPerMesh"); }
+     std::size_t getHeapMemorySizeWithoutChildren() const;
+     std::vector<const BigMemoryObject *> getDirectChildrenWithNull() const;
+@@ -413,6 +414,7 @@ namespace MEDCoupling
+                                   std::vector<mcIdType>& code, std::vector<DataArrayIdType *>& notNullPfls);
+     static mcIdType ComputeNbOfElems(const MEDFileFieldGlobsReal *glob, TypeOfField type, const std::vector<INTERP_KERNEL::NormalizedCellType>& geoTypes, const std::vector< std::pair<mcIdType,mcIdType> >& dads, const std::vector<int>& locs);
+     MEDFileFieldPerMesh(med_idt fid, MEDFileAnyTypeField1TSWithoutSDA *fath, int meshCsit, int meshIteration, int meshOrder, const MEDFileFieldNameScope& nasc, const MEDFileMesh *mm, const MEDFileEntities *entities);
++    MEDFileFieldPerMesh(med_idt fid, MEDFileAnyTypeField1TSWithoutSDA *fath, int meshCsit, int meshIteration, int meshOrder, const MEDFileFieldNameScope& nasc, const PartDefinition *pd, const MEDFileEntities *entities);
+     MEDFileFieldPerMesh(MEDFileAnyTypeField1TSWithoutSDA *fath, const MEDCouplingMesh *mesh);
+     MEDFileFieldPerMesh(MEDFileAnyTypeField1TSWithoutSDA *fath, const std::string& meshName, int meshIt, int meshOrd):_mesh_iteration(meshIt),_mesh_order(meshOrd),_father(fath) { }
+   private:
+diff --git a/src/MEDLoader/MEDFileMesh.cxx b/src/MEDLoader/MEDFileMesh.cxx
+index 8bed8693..2da4f8c7 100644
+--- a/src/MEDLoader/MEDFileMesh.cxx
++++ b/src/MEDLoader/MEDFileMesh.cxx
+@@ -2502,6 +2502,26 @@ MEDFileUMesh *MEDFileUMesh::LoadPartOf(med_idt fid, const std::string& mName, co
+   return ret.retn();
+ }
+ 
++/*!
++ * This method loads from file with name \a fileName a part of the mesh called \a mName as MEDFileUMesh::LoadPartOf does. The difference is that
++ * here we are not limited to slice of cells, but we can potentially load a random selection of cells, defined in the \a distrib vector.
++ * Another difference is that the selected cells must have the same geometrical type.
++ * \param [in] fid - id of the file
++ * \param [in] mName - the name of the mesh to be read
++ * \param [in] type - geometrical type of the cells to be selected
++ * \param [in] distrib - vector of cells we want to load with c-type indexing (starting from zero).
++ * \param [in] dt - the iteration, that is to say the first element of the pair that locates the asked time step.
++ * \param [in] it - the order, that is to say the second element of the pair that locates the asked time step.
++ * \param [in] mrs - the request for what to be loaded.
++ * \return MEDFileUMesh * - a new instance of MEDFileUMesh. The caller is to delete this mesh using decrRef() as it is no more needed.
++ */
++MEDFileUMesh *MEDFileUMesh::LoadPartOfFromUserDistrib(med_idt fid, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt, int it, MEDFileMeshReadSelector *mrs)
++{
++  MCAuto<MEDFileUMesh> ret(MEDFileUMesh::New());
++  ret->loadPartUMeshFromFileFromUserDistrib(fid,mName,distrib,dt,it,mrs);
++  return ret.retn();
++}
++
+ /*!
+  * This method is an helper to load only consecutive nodes chunk of data of MED file pointed by \a fileName.
+  * Consecutive chunk is specified classicaly by start (included) stop (excluded) format with \a startNodeId and \a stopNodeId respectively.
+@@ -2889,6 +2909,30 @@ void MEDFileUMesh::loadPartUMeshFromFile(med_idt fid, const std::string& mName,
+   dispatchLoadedPart(fid,loaderl2,mName,mrs);
+ }
+ 
++/*!
++ * This method loads only a part of specified cells in the \a distrib vector
++ * See MEDFileUMesh::LoadPartOfFromUserDistrib for detailed description.
++ *
++ * \sa loadLL
++ */
++void MEDFileUMesh::loadPartUMeshFromFileFromUserDistrib(med_idt fid, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt, int it, MEDFileMeshReadSelector *mrs)
++{
++  MEDFileUMeshL2 loaderl2;
++  MEDCoupling::MEDCouplingMeshType meshType;
++  int dummy0,dummy1;
++  std::string dummy2;
++  MEDCoupling::MEDCouplingAxisType dummy3;
++  INTERP_KERNEL::AutoCppPtr<MeshOrStructMeshCls> mid(MEDFileUMeshL2::GetMeshIdFromName(fid,mName,meshType,dummy3,dummy0,dummy1,dummy2));
++  if(meshType!=UNSTRUCTURED)
++    {
++      std::ostringstream oss; oss << "loadPartUMeshFromFileFromUserDistrib : Trying to load as unstructured an existing mesh with name '" << mName << "' !";
++      throw INTERP_KERNEL::Exception(oss.str().c_str());
++    }
++  loaderl2.loadPartFromUserDistrib(fid,mid,mName,distrib,dt,it,mrs);
++  dispatchLoadedPart(fid,loaderl2,mName,mrs);
++}
++
++
+ /*!
+  * \brief Write joints in a file
+  */
+diff --git a/src/MEDLoader/MEDFileMesh.hxx b/src/MEDLoader/MEDFileMesh.hxx
+index 171f6aab..24b3e045 100644
+--- a/src/MEDLoader/MEDFileMesh.hxx
++++ b/src/MEDLoader/MEDFileMesh.hxx
+@@ -271,6 +271,7 @@ namespace MEDCoupling
+     MEDLOADER_EXPORT std::string getClassName() const override { return std::string("MEDFileUMesh"); }
+     MEDLOADER_EXPORT static MEDFileUMesh *LoadPartOf(const std::string& fileName, const std::string& mName, const std::vector<INTERP_KERNEL::NormalizedCellType>& types, const std::vector<mcIdType>& slicPerTyp, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
+     MEDLOADER_EXPORT static MEDFileUMesh *LoadPartOf(med_idt fid, const std::string& mName, const std::vector<INTERP_KERNEL::NormalizedCellType>& types, const std::vector<mcIdType>& slicPerTyp, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
++    MEDLOADER_EXPORT static MEDFileUMesh *LoadPartOfFromUserDistrib(med_idt fid, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
+     MEDLOADER_EXPORT static void LoadPartCoords(const std::string& fileName, const std::string& mName, int dt, int it, const std::vector<std::string>& infosOnComp, mcIdType startNodeId, mcIdType stopNodeId,
+ MCAuto<DataArrayDouble>& coords, MCAuto<PartDefinition>& partCoords, MCAuto<DataArrayIdType>& famCoords, MCAuto<DataArrayIdType>& numCoords, MCAuto<DataArrayAsciiChar>& nameCoords);
+     MEDLOADER_EXPORT static const char *GetSpeStr4ExtMesh() { return SPE_FAM_STR_EXTRUDED_MESH; }
+@@ -382,6 +383,7 @@ MCAuto<DataArrayDouble>& coords, MCAuto<PartDefinition>& partCoords, MCAuto<Data
+     MEDFileUMesh();
+     MEDFileUMesh(med_idt fid, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs);
+     void loadPartUMeshFromFile(med_idt fid, const std::string& mName, const std::vector<INTERP_KERNEL::NormalizedCellType>& types, const std::vector<mcIdType>& slicPerTyp, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
++    void loadPartUMeshFromFileFromUserDistrib(med_idt fid, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
+     void loadLL(med_idt fid, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs);
+     void dispatchLoadedPart(med_idt fid, const MEDFileUMeshL2& loaderl2, const std::string& mName, MEDFileMeshReadSelector *mrs);
+     const MEDFileUMeshSplitL1 *getMeshAtLevSafe(int meshDimRelToMaxExt) const;
+@@ -392,6 +394,7 @@ MCAuto<DataArrayDouble>& coords, MCAuto<PartDefinition>& partCoords, MCAuto<Data
+     void changeFamilyIdArr(mcIdType oldId, mcIdType newId);
+     std::list< MCAuto<DataArrayIdType> > getAllNonNullFamilyIds() const;
+     MCAuto<MEDFileUMeshSplitL1>& checkAndGiveEntryInSplitL1(int meshDimRelToMax, MEDCouplingPointSet *m);
++
+   private:
+     static const char SPE_FAM_STR_EXTRUDED_MESH[];
+   private:
+diff --git a/src/MEDLoader/MEDFileMeshElt.cxx b/src/MEDLoader/MEDFileMeshElt.cxx
+index c61e94d0..a36397d1 100644
+--- a/src/MEDLoader/MEDFileMeshElt.cxx
++++ b/src/MEDLoader/MEDFileMeshElt.cxx
+@@ -29,8 +29,11 @@
+ #include "InterpKernelAutoPtr.hxx"
+ #include "CellModel.hxx"
+ 
++#include "MEDFilterEntity.hxx"
++
+ #include <iostream>
+ 
++
+ // From MEDLOader.cxx TU
+ extern med_geometry_type typmai3[INTERP_KERNEL::NORM_MAXTYPE];
+ 
+@@ -106,6 +109,7 @@ MEDFileUMeshPerType *MEDFileUMeshPerType::New(med_idt fid, const char *mName, in
+   return new MEDFileUMeshPerType(fid,mName,dt,it,mdim,geoElt,geoElt2,whichEntity,mrs);
+ }
+ 
++
+ MEDFileUMeshPerType *MEDFileUMeshPerType::NewPart(med_idt fid, const char *mName, int dt, int it, int mdim, INTERP_KERNEL::NormalizedCellType geoElt2, mcIdType strt, mcIdType stp, mcIdType step, MEDFileMeshReadSelector *mrs)
+ {
+   int geoElt2i((int)geoElt2);
+@@ -120,6 +124,20 @@ MEDFileUMeshPerType *MEDFileUMeshPerType::NewPart(med_idt fid, const char *mName
+   return ret.retn();
+ }
+ 
++MEDFileUMeshPerType *MEDFileUMeshPerType::NewPart(med_idt fid, const char *mName, int dt, int it, int mdim, INTERP_KERNEL::NormalizedCellType geoElt2, const std::vector<mcIdType>& distrib, MEDFileMeshReadSelector *mrs)
++{
++  int geoElt2i((int)geoElt2);
++  if(geoElt2i<0 || geoElt2i>=INTERP_KERNEL::NORM_MAXTYPE)
++    throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::NewPart : Not recognized MEDCoupling/MEDLoader geometric type !");
++  med_geometry_type geoElt(typmai3[geoElt2]);
++  med_entity_type whichEntity;
++  if(!isExisting(fid,mName,dt,it,geoElt,whichEntity))
++    throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::NewPart : The specified geo type is not present in the specified mesh !");
++  MCAuto<MEDFileUMeshPerType> ret(new MEDFileUMeshPerType);
++  ret->loadPart(fid,mName,dt,it,mdim,geoElt,geoElt2,whichEntity,distrib,mrs);
++  return ret.retn();
++}
++
+ std::size_t MEDFileUMeshPerType::getHeapMemorySizeWithoutChildren() const
+ {
+   return MEDFileUMeshPerTypeCommon::getHeapMemorySizeWithoutChildren()+0;
+@@ -180,6 +198,23 @@ MEDFileUMeshPerType::MEDFileUMeshPerType(med_idt fid, const char *mName, int dt,
+   loadPolyh(fid,mName,dt,it,mdim,curNbOfElem,geoElt,entity,mrs);
+ }
+ 
++void MEDFileUMeshPerType::loadPart(med_idt fid, const char *mName, int dt, int it, int mdim, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
++                                   med_entity_type entity, const std::vector<mcIdType>& distrib, MEDFileMeshReadSelector *mrs)
++{
++  med_bool changement,transformation;
++  mcIdType curNbOfElem(MEDmeshnEntity(fid,mName,dt,it,entity,geoElt,MED_CONNECTIVITY,MED_NODAL,&changement,&transformation));
++  const INTERP_KERNEL::CellModel& cm(INTERP_KERNEL::CellModel::GetCellModel(type));
++  MCAuto<DataArrayIdType> listOfIds=DataArrayIdType::New();
++  listOfIds->useArray(distrib.data(),false,DeallocType::C_DEALLOC,distrib.size(),1);
++  _pd=PartDefinition::New(listOfIds);
++  if(!cm.isDynamic())
++    {
++      loadPartStaticType(fid,mName,dt,it,mdim,curNbOfElem,geoElt,type,entity,mrs);
++    }
++  else
++    throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::loadPart : not implemented yet for the dynamic type !");
++}
++
+ void MEDFileUMeshPerType::loadPart(med_idt fid, const char *mName, int dt, int it, int mdim, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
+                                    med_entity_type entity, mcIdType strt, mcIdType end, mcIdType step, MEDFileMeshReadSelector *mrs)
+ {
+@@ -189,12 +224,13 @@ void MEDFileUMeshPerType::loadPart(med_idt fid, const char *mName, int dt, int i
+   _pd=PartDefinition::New(strt,end,step);
+   if(!cm.isDynamic())
+     {
+-      loadPartStaticType(fid,mName,dt,it,mdim,curNbOfElem,geoElt,type,entity,strt,end,step,mrs);
++      loadPartStaticType(fid,mName,dt,it,mdim,curNbOfElem,geoElt,type,entity,mrs);
+     }
+   else
+     throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::loadPart : not implemented yet for the dynamic type !");
+ }
+ 
++
+ void MEDFileUMeshPerType::loadFromStaticType(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
+                                              med_entity_type entity, MEDFileMeshReadSelector *mrs)
+ {
+@@ -210,50 +246,49 @@ void MEDFileUMeshPerType::loadFromStaticType(med_idt fid, const char *mName, int
+ }
+ 
+ void MEDFileUMeshPerType::loadPartStaticType(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
+-                                             med_entity_type entity, mcIdType strt, mcIdType end, mcIdType step, MEDFileMeshReadSelector *mrs)
++                                             med_entity_type entity, MEDFileMeshReadSelector *mrs)
+ {
+-  if(strt<0)
+-    throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::loadPartStaticType : start pos is negative !");
+-  if(end>curNbOfElem)
+-    throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::loadPartStaticType : end is after the authorized range !");
+-  mcIdType nbOfEltsToLoad(DataArray::GetNumberOfItemGivenBES(strt,end,step,"MEDFileUMeshPerType::loadPartStaticType"));
+   _m=MEDCoupling1SGTUMesh::New(mName,type);
+   MEDCoupling1SGTUMesh *mc(dynamic_cast<MEDCoupling1SGTUMesh *>((MEDCoupling1GTUMesh *)_m));
+   MCAuto<DataArrayMedInt> conn(DataArrayMedInt::New());
+   mcIdType nbOfNodesPerCell(mc->getNumberOfNodesPerCell());
++  if(!_pd)
++    throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::loadPartStaticType : no part definition !");
++  mcIdType nbOfEltsToLoad(_pd->getNumberOfElems());
+   conn->alloc(nbOfNodesPerCell*nbOfEltsToLoad,1);
+-  med_filter filter=MED_FILTER_INIT;
+-  MEDfilterBlockOfEntityCr(fid,/*nentity*/ToMedInt(curNbOfElem),/*nvaluesperentity*/1,/*nconstituentpervalue*/ToMedInt(nbOfNodesPerCell),
+-                           MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
+-                           /*start*/ToMedInt(strt+1),/*stride*/ToMedInt(step),/*count*/1,/*blocksize*/ToMedInt(nbOfEltsToLoad),
+-                           /*lastblocksize=useless because count=1*/0,&filter);
+-  MEDFILESAFECALLERRD0(MEDmeshElementConnectivityAdvancedRd,(fid,mName,dt,it,entity,geoElt,MED_NODAL,&filter,conn->getPointer()));
+-  MEDfilterClose(&filter);
++  {
++    MEDFilterEntity filter;
++    filter.fill(fid,/*nentity*/curNbOfElem,/*nvaluesperentity*/1,/*nconstituentpervalue*/nbOfNodesPerCell,
++        MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
++        _pd);
++    MEDFILESAFECALLERRD0(MEDmeshElementConnectivityAdvancedRd,(fid,mName,dt,it,entity,geoElt,MED_NODAL,filter.getPtr(),conn->getPointer()));
++  }
+   std::transform(conn->begin(),conn->end(),conn->getPointer(),std::bind(std::plus<med_int>(),std::placeholders::_1,-1));
+   mc->setNodalConnectivity(FromMedIntArray<mcIdType>(conn));
+-  loadPartOfCellCommonPart(fid,mName,strt,end,step,dt,it,mdim,curNbOfElem,geoElt,entity,mrs);
++  loadPartOfCellCommonPart(fid,mName,dt,it,mdim,curNbOfElem,geoElt,entity,mrs);
+ }
+ 
+-void MEDFileUMeshPerType::loadPartOfCellCommonPart(med_idt fid, const char *mName, mcIdType strt, mcIdType stp, mcIdType step, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, med_entity_type entity, MEDFileMeshReadSelector *mrs)
++
++void MEDFileUMeshPerType::loadPartOfCellCommonPart(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, med_entity_type entity, MEDFileMeshReadSelector *mrs)
+ {
+   med_bool changement,transformation;
++  if(!_pd)
++    throw INTERP_KERNEL::Exception("MEDFileUMeshPerType::loadPartOfCellCommonPart : no part definition !");
++  mcIdType nbOfEltsToLoad(_pd->getNumberOfElems());
+   _fam=0;
+-  mcIdType nbOfEltsToLoad(DataArray::GetNumberOfItemGivenBES(strt,stp,step,"MEDFileUMeshPerType::loadPartOfCellCommonPart"));
+   if(MEDmeshnEntity(fid,mName,dt,it,entity,geoElt,MED_FAMILY_NUMBER,MED_NODAL,&changement,&transformation)>0)
+     {
+       if(!mrs || mrs->isCellFamilyFieldReading())
+         {
+           MCAuto<DataArrayMedInt> miFam(DataArrayMedInt::New());
+           miFam->alloc(nbOfEltsToLoad,1);
+-          med_filter filter=MED_FILTER_INIT;
+-          MEDfilterBlockOfEntityCr(fid,/*nentity*/ToMedInt(curNbOfElem),/*nvaluesperentity*/1,/*nconstituentpervalue*/1,
+-                                   MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
+-                                   /*start*/ToMedInt(strt+1),/*stride*/ToMedInt(step),/*count*/1,/*blocksize*/ToMedInt(nbOfEltsToLoad),
+-                                   /*lastblocksize=useless because count=1*/0,&filter);
+-          if(MEDmeshEntityAttributeAdvancedRd(fid,mName,MED_FAMILY_NUMBER,dt,it,entity,geoElt,&filter,miFam->getPointer())!=0)
++          MEDFilterEntity filter;
++          filter.fill(fid,/*nentity*/curNbOfElem,/*nvaluesperentity*/1,/*nconstituentpervalue*/1,
++              MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
++              _pd);
++          if(MEDmeshEntityAttributeAdvancedRd(fid,mName,MED_FAMILY_NUMBER,dt,it,entity,geoElt,filter.getPtr(),miFam->getPointer())!=0)
+             miFam->fillWithZero();
+           _fam=FromMedIntArray<mcIdType>(miFam);
+-          MEDfilterClose(&filter);
+         }
+     }
+   _num=0;
+@@ -263,15 +298,13 @@ void MEDFileUMeshPerType::loadPartOfCellCommonPart(med_idt fid, const char *mNam
+         {
+           MCAuto<DataArrayMedInt> miNum(DataArrayMedInt::New());
+           miNum->alloc(nbOfEltsToLoad,1);
+-          med_filter filter=MED_FILTER_INIT;
+-          MEDfilterBlockOfEntityCr(fid,/*nentity*/ToMedInt(curNbOfElem),/*nvaluesperentity*/1,/*nconstituentpervalue*/1,
+-                                   MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
+-                                   /*start*/ToMedInt(strt+1),/*stride*/ToMedInt(step),/*count*/1,/*blocksize*/ToMedInt(nbOfEltsToLoad),
+-                                   /*lastblocksize=useless because count=1*/0,&filter);
+-          if(MEDmeshEntityAttributeAdvancedRd(fid,mName,MED_NUMBER,dt,it,entity,geoElt,&filter,miNum->getPointer())!=0)
++          MEDFilterEntity filter;
++          filter.fill(fid,/*nentity*/curNbOfElem,/*nvaluesperentity*/1,/*nconstituentpervalue*/1,
++              MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
++              _pd);
++          if(MEDmeshEntityAttributeAdvancedRd(fid,mName,MED_NUMBER,dt,it,entity,geoElt,filter.getPtr(),miNum->getPointer())!=0)
+             miNum->fillWithZero();
+           _num=FromMedIntArray<mcIdType>(miNum);
+-          MEDfilterClose(&filter);
+         }
+     }
+   _names=0;
+@@ -281,16 +314,14 @@ void MEDFileUMeshPerType::loadPartOfCellCommonPart(med_idt fid, const char *mNam
+         {
+           _names=DataArrayAsciiChar::New();
+           _names->alloc(nbOfEltsToLoad+1,MED_SNAME_SIZE);//not a bug to avoid the memory corruption due to last \0 at the end
+-          med_filter filter=MED_FILTER_INIT;
+-          MEDfilterBlockOfEntityCr(fid,/*nentity*/ToMedInt(curNbOfElem),/*nvaluesperentity*/1,/*nconstituentpervalue*/1,
+-                                   MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
+-                                   /*start*/ToMedInt(strt+1),/*stride*/ToMedInt(step),/*count*/1,/*blocksize*/ToMedInt(nbOfEltsToLoad),
+-                                   /*lastblocksize=useless because count=1*/0,&filter);
+-          if(MEDmeshEntityAttributeAdvancedRd(fid,mName,MED_NAME,dt,it,entity,geoElt,&filter,_names->getPointer())!=0)
++          MEDFilterEntity filter;
++          filter.fill(fid,/*nentity*/curNbOfElem,/*nvaluesperentity*/1,/*nconstituentpervalue*/1,
++              MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
++              _pd);
++          if(MEDmeshEntityAttributeAdvancedRd(fid,mName,MED_NAME,dt,it,entity,geoElt,filter.getPtr(),_names->getPointer())!=0)
+             _names=0;
+           else
+             _names->reAlloc(nbOfEltsToLoad);//not a bug to avoid the memory corruption due to last \0 at the end
+-          MEDfilterClose(&filter);
+         }
+     }
+ }
+diff --git a/src/MEDLoader/MEDFileMeshElt.hxx b/src/MEDLoader/MEDFileMeshElt.hxx
+index 746a0a9b..cc65f166 100644
+--- a/src/MEDLoader/MEDFileMeshElt.hxx
++++ b/src/MEDLoader/MEDFileMeshElt.hxx
+@@ -58,6 +58,8 @@ namespace MEDCoupling
+   public:
+     static MEDFileUMeshPerType *New(med_idt fid, const char *mName, int dt, int it, int mdim, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType geoElt2, MEDFileMeshReadSelector *mrs);
+     static MEDFileUMeshPerType *NewPart(med_idt fid, const char *mName, int dt, int it, int mdim, INTERP_KERNEL::NormalizedCellType geoElt2, mcIdType strt, mcIdType stp, mcIdType step, MEDFileMeshReadSelector *mrs);
++    static MEDFileUMeshPerType *NewPart(med_idt fid, const char *mName, int dt, int it, int mdim, INTERP_KERNEL::NormalizedCellType geoElt2, const std::vector<mcIdType>& distrib, MEDFileMeshReadSelector *mrs);
++
+     std::string getClassName() const override { return std::string("MEDFileUMeshPerType"); }
+     static bool isExisting(med_idt fid, const char *mName, int dt, int it, med_geometry_type geoElt, med_entity_type& whichEntity);
+     std::size_t getHeapMemorySizeWithoutChildren() const;
+@@ -72,19 +74,21 @@ namespace MEDCoupling
+                         med_entity_type entity, MEDFileMeshReadSelector *mrs);
+     void loadPart(med_idt fid, const char *mName, int dt, int it, int mdim, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
+                   med_entity_type entity, mcIdType strt, mcIdType end, mcIdType step, MEDFileMeshReadSelector *mrs);
++    void loadPart(med_idt fid, const char *mName, int dt, int it, int mdim, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
++                  med_entity_type entity, const std::vector<mcIdType>& distrib, MEDFileMeshReadSelector *mrs);
+     void loadFromStaticType(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
+                             med_entity_type entity, MEDFileMeshReadSelector *mrs);
+     void loadPartStaticType(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, INTERP_KERNEL::NormalizedCellType type,
+-                            med_entity_type entity, mcIdType strt, mcIdType end, mcIdType step, MEDFileMeshReadSelector *mrs);
++                            med_entity_type entity, MEDFileMeshReadSelector *mrs);
+     void loadPolyg(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType arraySize, med_geometry_type geoElt,
+                    med_entity_type entity, MEDFileMeshReadSelector *mrs);
+     void loadPolyh(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType connFaceLgth, med_geometry_type geoElt,
+                    med_entity_type entity, MEDFileMeshReadSelector *mrs);
+-    void loadPartOfCellCommonPart(med_idt fid, const char *mName, mcIdType strt, mcIdType stp, mcIdType step, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, med_entity_type entity, MEDFileMeshReadSelector *mrs);
++    void loadPartOfCellCommonPart(med_idt fid, const char *mName, int dt, int it, int mdim, mcIdType curNbOfElem, med_geometry_type geoElt, med_entity_type entity, MEDFileMeshReadSelector *mrs);
++
+   private:
+     MCAuto<MEDCoupling1GTUMesh> _m;
+     MCAuto<PartDefinition> _pd;
+   };
+ }
+-
+ #endif
+diff --git a/src/MEDLoader/MEDFileMeshLL.cxx b/src/MEDLoader/MEDFileMeshLL.cxx
+index 656955a1..91b81931 100644
+--- a/src/MEDLoader/MEDFileMeshLL.cxx
++++ b/src/MEDLoader/MEDFileMeshLL.cxx
+@@ -31,6 +31,7 @@
+ #include "InterpKernelAutoPtr.hxx"
+ #include "CellModel.hxx"
+ 
++#include "MEDFilterEntity.hxx"
+ #include <set>
+ #include <iomanip>
+ 
+@@ -582,6 +583,51 @@ void MEDFileUMeshL2::loadPart(med_idt fid, const MeshOrStructMeshCls *mId, const
+   }
+ }
+ 
++/*!
++ * This method loads from file \a fid a part of the mesh (made of same geometrical type cells \a type) called \a mName. The loading is done in 2 steps:
++ * First, we load the connectivity of nodes. Second, we load coordinates of nodes lying in the specified cells.
++ * \throw exception if multiple load sessions are requested
++ */
++void MEDFileUMeshL2::loadPartFromUserDistrib(med_idt fid, const MeshOrStructMeshCls *mId, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt, int it, MEDFileMeshReadSelector *mrs)
++{
++  int Mdim;
++  std::vector<std::string> infosOnComp(loadCommonPart(fid,mId,mName,dt,it,Mdim));
++  if(Mdim==-4)
++    return ;
++
++  /* First step : loading connectivity of nodes, ie building a new mesh of one geometrical type with only the specified cells in distrib */
++  loadPartOfConnectivityFromUserDistrib(fid,Mdim,mName,distrib,dt,it,mrs);
++
++  /* Second step : loading nodes */
++  med_bool changement,transformation;
++  mcIdType nCoords(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NONE,MED_COORDINATE,MED_NO_CMODE,&changement,&transformation));
++  std::vector<bool> fetchedNodeIds(nCoords,false);
++  for(std::vector< std::vector< MCAuto<MEDFileUMeshPerType> > >::const_iterator it0=_per_type_mesh.begin();it0!=_per_type_mesh.end();it0++)
++    for(std::vector< MCAuto<MEDFileUMeshPerType> >::const_iterator it1=(*it0).begin();it1!=(*it0).end();it1++)
++      (*it1)->getMesh()->computeNodeIdsAlg(fetchedNodeIds);    // for each node in the original mesh, which ones are laying on the current single geometrical type partial mesh
++
++  if(!mrs || mrs->getNumberOfCoordsLoadSessions()==1)
++    {
++      // renumbering nodes inside the connectivity of the partial mesh:
++      // until now, the numbering used in the connectivity of the cells was that of the integral mesh,
++      // so it might be sparsed as some original nodes are missing in the partial mesh,
++      // thus we want each node to be renumbered so that the sequence of their numbers form a range
++      MCAuto<DataArrayIdType> fni(DataArrayIdType::BuildListOfSwitchedOn(fetchedNodeIds));
++      MCAuto< MapKeyVal<mcIdType, mcIdType> > o2n(fni->invertArrayN2O2O2NOptimized());
++      for(std::vector< std::vector< MCAuto<MEDFileUMeshPerType> > >::const_iterator it0=_per_type_mesh.begin();it0!=_per_type_mesh.end();it0++)
++        for(std::vector< MCAuto<MEDFileUMeshPerType> >::const_iterator it1=(*it0).begin();it1!=(*it0).end();it1++)
++          (*it1)->getMesh()->renumberNodesInConn(o2n->data());
++
++      // loading coordinates of fetched nodes
++      std::vector<mcIdType> distribNodes;
++      for(std::map<mcIdType,mcIdType>::const_iterator mapIter = o2n->data().begin(); mapIter != o2n->data().end(); ++mapIter)
++          distribNodes.push_back(mapIter->first);
++      this->loadPartCoords(fid,infosOnComp,mName,dt,it,distribNodes);
++    }
++  else
++    throw INTERP_KERNEL::Exception("MEDFileUMeshL2::loadPartFromUserDistrib: multiple load sessions not handled!");
++}
++
+ void MEDFileUMeshL2::loadConnectivity(med_idt fid, int mdim, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs)
+ {
+   _per_type_mesh.resize(1);
+@@ -614,6 +660,23 @@ void MEDFileUMeshL2::loadPartOfConnectivity(med_idt fid, int mdim, const std::st
+   sortTypes();
+ }
+ 
++/*!
++ * This method builds a new mesh of single geometrical type based on the partition of cells \a distrib, from mesh \a mName in file \a fid.
++ * This distribution is not necessarily a slice.
++ */
++void MEDFileUMeshL2::loadPartOfConnectivityFromUserDistrib(med_idt fid, int mdim, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt, int it, MEDFileMeshReadSelector *mrs)
++{
++  _per_type_mesh.resize(1);
++  _per_type_mesh[0].clear();
++  std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>::const_iterator iter;
++  for (iter = distrib.begin(); iter != distrib.end(); iter++)
++    {
++        MCAuto<MEDFileUMeshPerType> tmp(MEDFileUMeshPerType::NewPart(fid,mName.c_str(),dt,it,mdim,iter->first/*type*/,iter->second/*distrib over the current type*/,mrs));
++        _per_type_mesh[0].push_back(tmp);
++    }
++  sortTypes();
++}
++
+ void MEDFileUMeshL2::loadCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it)
+ {
+   int spaceDim((int)infosOnComp.size());
+@@ -662,55 +725,108 @@ void MEDFileUMeshL2::loadCoords(med_idt fid, const std::vector<std::string>& inf
+     _coords->setInfoOnComponent(i,infosOnComp[i]);
+ }
+ 
++
++void MEDFileUMeshL2::LoadPartCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, const std::vector<mcIdType>& distribNodes,
++MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords)
++{
++  med_int spaceDim((int)infosOnComp.size());
++  allocCoordsPartCoords(spaceDim,distribNodes,_coords,_part_coords);
++  _coords->setInfoOnComponents(infosOnComp);
++  fillPartCoords(fid,spaceDim,mName,dt,it,_part_coords,_coords,_fam_coords,_num_coords,_name_coords);
++}
++
+ void MEDFileUMeshL2::LoadPartCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, mcIdType nMin, mcIdType nMax,
+ MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords)
+ {
+-  med_bool changement,transformation;
+-  med_int spaceDim((int)infosOnComp.size()),nCoords(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NONE,MED_COORDINATE,MED_NO_CMODE,&changement,&transformation));
++  med_int spaceDim((int)infosOnComp.size());
++  allocCoordsPartCoords(spaceDim,nMin,nMax,_coords,_part_coords);
++  _coords->setInfoOnComponents(infosOnComp);
++  fillPartCoords(fid,spaceDim,mName,dt,it,_part_coords,_coords,_fam_coords,_num_coords,_name_coords);
++}
++
++/*!
++ * This method allocates the space needed to load coordinates of nodes specified in the vector \a nodeIds and creates a PartDefinition object to store the ids in \a nodeIds
++ */
++void MEDFileUMeshL2::allocCoordsPartCoords(mcIdType spaceDim, const std::vector<mcIdType>& nodeIds, MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords)
++{
++  mcIdType nbNodesToLoad(nodeIds.size());
++  _coords=DataArrayDouble::New();
++  _coords->alloc(nbNodesToLoad,spaceDim);
++
++  MCAuto<DataArrayIdType> nodeIdsArray=DataArrayIdType::New();
++  nodeIdsArray->useArray(nodeIds.data(),false,DeallocType::C_DEALLOC,nbNodesToLoad,1);
++  _part_coords=PartDefinition::New(nodeIdsArray);
++}
++
++/*!
++ * This method allocates the space needed to load coordinates of all nodes between \a nMin and \a nMax and creates a PartDefinition object to store them
++ */
++void MEDFileUMeshL2::allocCoordsPartCoords(mcIdType spaceDim, mcIdType nMin, mcIdType nMax, MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords)
++{
+   _coords=DataArrayDouble::New();
+   mcIdType nbNodesToLoad(nMax-nMin);
+   _coords->alloc(nbNodesToLoad,spaceDim);
+-  med_filter filter=MED_FILTER_INIT,filter2=MED_FILTER_INIT;
+-  MEDfilterBlockOfEntityCr(fid,/*nentity*/nCoords,/*nvaluesperentity*/1,/*nconstituentpervalue*/spaceDim,
+-                           MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
+-                           /*start*/ToMedInt(nMin+1),/*stride*/1,/*count*/1,/*blocksize*/ToMedInt(nbNodesToLoad),
+-                           /*lastblocksize=useless because count=1*/0,&filter);
+-  MEDFILESAFECALLERRD0(MEDmeshNodeCoordinateAdvancedRd,(fid,mName.c_str(),dt,it,&filter,_coords->getPointer()));
++
+   _part_coords=PartDefinition::New(nMin,nMax,1);
+-  MEDfilterClose(&filter);
+-  MEDfilterBlockOfEntityCr(fid,nCoords,1,1,MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,
+-                           MED_NO_PROFILE,ToMedInt(nMin+1),1,1,ToMedInt(nbNodesToLoad),0,&filter2);
+-  if(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NO_GEOTYPE,MED_FAMILY_NUMBER,MED_NODAL,&changement,&transformation)>0)
+-    {
+-      MCAuto<DataArrayMedInt> miFamCoord=DataArrayMedInt::New();
+-      miFamCoord->alloc(nbNodesToLoad,1);
+-      MEDFILESAFECALLERRD0(MEDmeshEntityAttributeAdvancedRd,(fid,mName.c_str(),MED_FAMILY_NUMBER,dt,it,MED_NODE,MED_NO_GEOTYPE,&filter2,miFamCoord->getPointer()));
+-      _fam_coords=FromMedIntArray<mcIdType>(miFamCoord);
+-    }
+-  else
+-    _fam_coords=nullptr;
+-  if(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NO_GEOTYPE,MED_NUMBER,MED_NODAL,&changement,&transformation)>0)
+-    {
+-      MCAuto<DataArrayMedInt> miNumCoord=DataArrayMedInt::New();
+-      miNumCoord->alloc(nbNodesToLoad,1);
+-      MEDFILESAFECALLERRD0(MEDmeshEntityAttributeAdvancedRd,(fid,mName.c_str(),MED_NUMBER,dt,it,MED_NODE,MED_NO_GEOTYPE,&filter2,miNumCoord->getPointer()));
+-      _num_coords=FromMedIntArray<mcIdType>(miNumCoord);
+-    }
+-  else
+-    _num_coords=nullptr;
+-  if(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NO_GEOTYPE,MED_NAME,MED_NODAL,&changement,&transformation)>0)
+-    {
+-      _name_coords=DataArrayAsciiChar::New();
+-      _name_coords->alloc(nbNodesToLoad+1,MED_SNAME_SIZE);//not a bug to avoid the memory corruption due to last \0 at the end
+-      MEDFILESAFECALLERRD0(MEDmeshEntityAttributeAdvancedRd,(fid,mName.c_str(),MED_NAME,dt,it,MED_NODE,MED_NO_GEOTYPE,&filter2,_name_coords->getPointer()));
+-      _name_coords->reAlloc(nbNodesToLoad);//not a bug to avoid the memory corruption due to last \0 at the end
+-    }
+-  else
+-    _name_coords=nullptr;
+-  MEDfilterClose(&filter2);
+-  _coords->setInfoOnComponents(infosOnComp);
+ }
+ 
++/*!
++ * This method loads coordinates of every node in \a partCoords and additionnal low-level information
++ */
++void MEDFileUMeshL2::fillPartCoords(med_idt fid, mcIdType spaceDim, const std::string& mName, int dt, int it, const PartDefinition *partCoords,
++                                    MCAuto<DataArrayDouble>& _coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords)
++{
++  med_bool changement,transformation;
++  med_int nCoords(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NONE,MED_COORDINATE,MED_NO_CMODE,&changement,&transformation));
++  mcIdType nbNodesToLoad = partCoords->getNumberOfElems();
++
++  // Based on the ids in \a partCoords, defining the appropriate med_filter (filter of block if the ids form a slice, a generic filter otherwise)
++  {
++    MEDFilterEntity filter1;
++    filter1.fill(fid,/*nentity*/nCoords,/*nvaluesperentity*/1,/*nconstituentpervalue*/spaceDim,
++        MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE,
++        partCoords);
++    // With the filter defined above, retrieve coordinates of nodes
++    MEDFILESAFECALLERRD0(MEDmeshNodeCoordinateAdvancedRd,(fid,mName.c_str(),dt,it,filter1.getPtr(),_coords->getPointer()));
++  }
++
++  {
++    MEDFilterEntity filter2;
++    filter2.fill(fid,nCoords,1,1,
++        MED_ALL_CONSTITUENT,MED_FULL_INTERLACE,MED_COMPACT_STMODE,MED_NO_PROFILE, partCoords);
++
++    // Retrieve additional information regarding nodes
++    if(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NO_GEOTYPE,MED_FAMILY_NUMBER,MED_NODAL,&changement,&transformation)>0)
++      {
++        MCAuto<DataArrayMedInt> miFamCoord=DataArrayMedInt::New();
++        miFamCoord->alloc(nbNodesToLoad,1);
++        MEDFILESAFECALLERRD0(MEDmeshEntityAttributeAdvancedRd,(fid,mName.c_str(),MED_FAMILY_NUMBER,dt,it,MED_NODE,MED_NO_GEOTYPE,filter2.getPtr(),miFamCoord->getPointer()));
++        _fam_coords=FromMedIntArray<mcIdType>(miFamCoord);
++      }
++    else
++      _fam_coords=nullptr;
++    if(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NO_GEOTYPE,MED_NUMBER,MED_NODAL,&changement,&transformation)>0)
++      {
++        MCAuto<DataArrayMedInt> miNumCoord=DataArrayMedInt::New();
++        miNumCoord->alloc(nbNodesToLoad,1);
++        MEDFILESAFECALLERRD0(MEDmeshEntityAttributeAdvancedRd,(fid,mName.c_str(),MED_NUMBER,dt,it,MED_NODE,MED_NO_GEOTYPE,filter2.getPtr(),miNumCoord->getPointer()));
++        _num_coords=FromMedIntArray<mcIdType>(miNumCoord);
++      }
++    else
++      _num_coords=nullptr;
++    if(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_NODE,MED_NO_GEOTYPE,MED_NAME,MED_NODAL,&changement,&transformation)>0)
++      {
++        _name_coords=DataArrayAsciiChar::New();
++        _name_coords->alloc(nbNodesToLoad+1,MED_SNAME_SIZE);//not a bug to avoid the memory corruption due to last \0 at the end
++        MEDFILESAFECALLERRD0(MEDmeshEntityAttributeAdvancedRd,(fid,mName.c_str(),MED_NAME,dt,it,MED_NODE,MED_NO_GEOTYPE,filter2.getPtr(),_name_coords->getPointer()));
++        _name_coords->reAlloc(nbNodesToLoad);//not a bug to avoid the memory corruption due to last \0 at the end
++      }
++    else
++      _name_coords=nullptr;
++  }  // filter2
++}
++
++
+ /*!
+  * For performance reasons LoadPartCoordsArray method calls LoadPartCoords
+  */
+@@ -745,6 +861,12 @@ void MEDFileUMeshL2::loadPartCoords(med_idt fid, const std::vector<std::string>&
+   LoadPartCoords(fid,infosOnComp,mName,dt,it,nMin,nMax,_coords,_part_coords,_fam_coords,_num_coords,_name_coords);
+ }
+ 
++void MEDFileUMeshL2::loadPartCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, const std::vector<mcIdType>& distribNodes)
++{
++  LoadPartCoords(fid,infosOnComp,mName,dt,it,distribNodes,_coords,_part_coords,_fam_coords,_num_coords,_name_coords);
++}
++
++
+ void MEDFileUMeshL2::loadPartCoordsSlice(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, const DataArrayIdType *nodeIds, mcIdType nbOfCoordLS)
+ {
+   nodeIds->checkAllocated();
+diff --git a/src/MEDLoader/MEDFileMeshLL.hxx b/src/MEDLoader/MEDFileMeshLL.hxx
+index c79c371c..95246ff2 100644
+--- a/src/MEDLoader/MEDFileMeshLL.hxx
++++ b/src/MEDLoader/MEDFileMeshLL.hxx
+@@ -121,10 +121,15 @@ namespace MEDCoupling
+     std::vector<std::string> loadCommonPart(med_idt fid, const MeshOrStructMeshCls *mId, const std::string& mName, int dt, int it, int& Mdim);
+     void loadAll(med_idt fid, const MeshOrStructMeshCls *mId, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs);
+     void loadPart(med_idt fid, const MeshOrStructMeshCls *mId, const std::string& mName, const std::vector<INTERP_KERNEL::NormalizedCellType>& types, const std::vector<mcIdType>& slicPerTyp, int dt, int it, MEDFileMeshReadSelector *mrs);
++    void loadPartFromUserDistrib(med_idt fid, const MeshOrStructMeshCls *mId, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt, int it, MEDFileMeshReadSelector *mrs);
++
+     void loadConnectivity(med_idt fid, int mdim, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs);
+     void loadPartOfConnectivity(med_idt fid, int mdim, const std::string& mName, const std::vector<INTERP_KERNEL::NormalizedCellType>& types, const std::vector<mcIdType>& slicPerTyp, int dt, int it, MEDFileMeshReadSelector *mrs);
++    void loadPartOfConnectivityFromUserDistrib(med_idt fid, int mdim, const std::string& mName, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, int dt, int it, MEDFileMeshReadSelector *mrs);
++
+     void loadCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it);
+     void loadPartCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, mcIdType nMin, mcIdType nMax);
++    void loadPartCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, const std::vector<mcIdType>& distribNodes);
+     void loadPartCoordsSlice(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, const DataArrayIdType *nodeIds, mcIdType nbOfCoordLS);
+     int getNumberOfLevels() const { return (int)_per_type_mesh.size(); }
+     bool emptyLev(int levId) const { return _per_type_mesh[levId].empty(); }
+@@ -138,10 +143,15 @@ namespace MEDCoupling
+     MCAuto<DataArrayIdType> getCoordsGlobalNum() const { return _global_num_coords; }
+     MCAuto<DataArrayAsciiChar> getCoordsName() const { return _name_coords; }
+     static void WriteCoords(med_idt fid, const std::string& mname, int dt, int it, double time, const DataArrayDouble *coords, const DataArrayIdType *famCoords, const DataArrayIdType *numCoords, const DataArrayAsciiChar *nameCoords, const DataArrayIdType *globalNumCoords);
++    static void LoadPartCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, const std::vector<mcIdType>& distribNodes,
++    MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords);
+     static void LoadPartCoords(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, mcIdType nMin, mcIdType nMax,
+-MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords);
++    MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords);
+     static void LoadPartCoordsArray(med_idt fid, const std::vector<std::string>& infosOnComp, const std::string& mName, int dt, int it, const DataArrayIdType *nodeIds,
+ MCAuto<DataArrayDouble>& _coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords);
++    static void allocCoordsPartCoords(mcIdType spaceDim, mcIdType nMin, mcIdType nMax, MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords);
++    static void allocCoordsPartCoords(mcIdType spaceDim, const std::vector<mcIdType>& nodeIds, MCAuto<DataArrayDouble>& _coords, MCAuto<PartDefinition>& _part_coords);
++    static void fillPartCoords(med_idt fid, mcIdType spaceDim, const std::string& mName, int dt, int it, const PartDefinition *partCoords, MCAuto<DataArrayDouble>& _coords, MCAuto<DataArrayIdType>& _fam_coords, MCAuto<DataArrayIdType>& _num_coords, MCAuto<DataArrayAsciiChar>& _name_coords);
+   private:
+     void sortTypes();
+   private:
+diff --git a/src/MEDLoader/MEDFilterEntity.hxx b/src/MEDLoader/MEDFilterEntity.hxx
+new file mode 100644
+index 00000000..af626266
+--- /dev/null
++++ b/src/MEDLoader/MEDFilterEntity.hxx
+@@ -0,0 +1,105 @@
++// Copyright (C) 2007-2022  CEA/DEN, EDF R&D
++//
++// This library is free software; you can redistribute it and/or
++// modify it under the terms of the GNU Lesser General Public
++// License as published by the Free Software Foundation; either
++// version 2.1 of the License, or (at your option) any later version.
++//
++// This library is distributed in the hope that it will be useful,
++// but WITHOUT ANY WARRANTY; without even the implied warranty of
++// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++// Lesser General Public License for more details.
++//
++// You should have received a copy of the GNU Lesser General Public
++// License along with this library; if not, write to the Free Software
++// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
++//
++// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
++//
++// Author : Anida Khizar (CEA/DES)
++
++#ifndef __MEDFILTERENTITY_HXX__
++#define __MEDFILTERENTITY_HXX__
++
++#include "MEDCouplingPartDefinition.hxx"
++#include "med.h"
++#include <memory>
++
++namespace MEDCoupling
++{
++
++  /*!
++   *
++   * This class encapsulates the med_filter object to create the appropriate filter based on the partition given as input:
++   * if the partition represents a slice of values, then it's more efficient to have a block filter (to treat a block of data)
++   * otherwise, a generic filter is necessary
++   *
++   */
++  class MEDFilterEntity
++  {
++  public:
++    inline MEDFilterEntity();
++    ~MEDFilterEntity() { if (_filter != nullptr) MEDfilterClose(_filter.get()); }
++
++    inline void fill(med_idt fid, mcIdType nbOfEntity, mcIdType nbOfValuesPerEntity, mcIdType nbOfConstituentPerValue,
++                     const med_int constituentSelect, const med_switch_mode switchMode, const med_storage_mode storageMode, const char * const profileName,
++                     const PartDefinition* pd);
++    const med_filter *getPtr() const { return _filter.get(); }
++
++  private:
++    std::shared_ptr<med_filter> _filter;
++  };
++
++  MEDFilterEntity::MEDFilterEntity() : _filter(std::make_shared<med_filter>())
++  {
++    med_filter& ref = *_filter.get();
++    ref = (med_filter)MED_FILTER_INIT;
++  }
++
++  void MEDFilterEntity::fill(med_idt fid, mcIdType nbOfEntity, mcIdType nbOfValuesPerEntity, mcIdType nbOfConstituentPerValue,
++                             const med_int constituentSelect, const med_switch_mode switchMode, const med_storage_mode storageMode, const char * const profileName,
++                             const PartDefinition* pd)
++  {
++    const SlicePartDefinition *spd(dynamic_cast<const SlicePartDefinition *>(pd));
++    if(spd)
++      {
++        //Here, pd contains a slice, so it's more efficient to define a filter of block
++        //(which will load contiguous values)
++        mcIdType nbOfEltsToLoad = spd->getNumberOfElems();
++        mcIdType strt,end,step;
++        spd->getSlice(strt,end,step);
++        if(strt<0)
++          throw INTERP_KERNEL::Exception("MEDFilterEntity::fill : start pos is negative !");
++        if(end>nbOfEntity)
++          throw INTERP_KERNEL::Exception("MEDFilterEntity::fill : end is after the authorized range !");
++        MEDfilterBlockOfEntityCr(fid,ToMedInt(nbOfEntity),ToMedInt(nbOfValuesPerEntity),ToMedInt(nbOfConstituentPerValue),
++                                 constituentSelect,switchMode,storageMode,profileName,
++                                 /*start*/ToMedInt(strt+1),/*stride*/ToMedInt(step),/*count*/1,/*blocksize*/ToMedInt(nbOfEltsToLoad),
++                                 /*lastblocksize=useless because count=1*/0,_filter.get());
++        return;
++      }
++    const DataArrayPartDefinition *dpd(dynamic_cast<const DataArrayPartDefinition *>(pd));
++    if(dpd)
++      {
++        mcIdType nbOfEltsToLoad = dpd->getNumberOfElems();
++
++      //convert to fortran indexing
++      std::vector<mcIdType> dpdPlus1;
++      MCAuto<DataArrayIdType> partition(pd->toDAI());
++      std::copy(partition->begin(), partition->end(), std::back_inserter(dpdPlus1));
++      std::for_each(dpdPlus1.begin(), dpdPlus1.end(), [](mcIdType &node){ node+=1; });
++
++        //Here, pd contains a random selection of non-contiguous values:
++        //we need to use a more generic filter (less efficient)
++        MEDfilterEntityCr(fid,ToMedInt(nbOfEntity),ToMedInt(nbOfValuesPerEntity),ToMedInt(nbOfConstituentPerValue),
++                          constituentSelect,switchMode,storageMode,profileName,
++                          ToMedInt(nbOfEltsToLoad), dpdPlus1.data(),
++                          _filter.get());
++        return;
++      }
++    throw INTERP_KERNEL::Exception("MEDFilterEntity::fill : empty part definition !");
++  }
++
++} // namespace
++
++#endif
+diff --git a/src/MEDPartitioner/MEDPARTITIONER_MeshCollection.cxx b/src/MEDPartitioner/MEDPARTITIONER_MeshCollection.cxx
+index 0f748cb6..43419d3f 100644
+--- a/src/MEDPartitioner/MEDPARTITIONER_MeshCollection.cxx
++++ b/src/MEDPartitioner/MEDPARTITIONER_MeshCollection.cxx
+@@ -151,7 +151,7 @@ MEDPARTITIONER::MeshCollection::MeshCollection(MeshCollection& initialCollection
+                this->getMesh(),
+                initialCollection.getCellFamilyIds(),
+                "cellFamily");
+-  castIntField(initialCollection.getFaceMesh(), 
++  castIntField(initialCollection.getFaceMesh(),
+                this->getFaceMesh(),
+                initialCollection.getFaceFamilyIds(),
+                "faceFamily");
+@@ -591,13 +591,14 @@ void MEDPARTITIONER::MeshCollection::castFaceMeshes(MeshCollection& initialColle
+   meshesCastTo.resize(nbNewDomain);
+   for (int inew=0; inew<nbNewDomain; inew++)
+     {
+-      vector<const MEDCoupling::MEDCouplingUMesh*> myMeshes;
++      vector<MEDCoupling::MEDCouplingUMesh*> myMeshes;
+       for (int iold=0; iold<nbOldDomain; iold++)
+         {
+           MEDCoupling::MEDCouplingUMesh *umesh=splitMeshes[inew][iold];
+           if (umesh!=0)
+             if (umesh->getNumberOfCells()>0)
+                 myMeshes.push_back(umesh);
++
+         }
+ 
+       MEDCoupling::MEDCouplingUMesh *bndMesh = 0;
+@@ -608,12 +609,28 @@ void MEDPARTITIONER::MeshCollection::castFaceMeshes(MeshCollection& initialColle
+           bndMesh =
+             ((MEDCoupling::MEDCouplingUMesh *)_mesh[inew]->buildBoundaryMesh(/*keepCoords=*/true));
+           if (bndMesh->getNumberOfCells()>0)
+-            myMeshes.push_back( bndMesh );
++              myMeshes.push_back( bndMesh );
+         }
+ 
+       if (myMeshes.size()>0)
+         {
+-          meshesCastTo[inew]=MEDCoupling::MEDCouplingUMesh::MergeUMeshes(myMeshes);
++          // Need to merge faces that are both in the initial set of faces and in the boundary mesh
++          // which is the last element in myMeshes:
++          if(bndMesh)
++            {
++              for (int iold2 = 0; iold2 < (int)myMeshes.size()-1; iold2++)
++                myMeshes[iold2]->tryToShareSameCoordsPermute(*bndMesh, 1.e-10);
++              vector<const MEDCoupling::MEDCouplingUMesh*> myMeshes_c;
++              for (auto & mesh: myMeshes) myMeshes_c.push_back(mesh);
++              meshesCastTo[inew]=MEDCoupling::MEDCouplingUMesh::MergeUMeshesOnSameCoords(myMeshes_c);
++              MCAuto<DataArrayIdType> tmp = meshesCastTo[inew]->zipConnectivityTraducer(2);
++            }
++          else
++            {
++              vector<const MEDCoupling::MEDCouplingUMesh*> myMeshes_c;
++              for (auto & mesh: myMeshes) myMeshes_c.push_back(mesh);
++              meshesCastTo[inew]=MEDCoupling::MEDCouplingUMesh::MergeUMeshes(myMeshes_c);
++            }
+           meshesCastTo[inew]->sortCellsInMEDFileFrmt()->decrRef();
+         }
+       else
+diff --git a/src/ParaMEDLoader/ParaMEDFileMesh.cxx b/src/ParaMEDLoader/ParaMEDFileMesh.cxx
+index c5b64689..d31ccbc3 100644
+--- a/src/ParaMEDLoader/ParaMEDFileMesh.cxx
++++ b/src/ParaMEDLoader/ParaMEDFileMesh.cxx
+@@ -23,9 +23,48 @@
+ #include "MEDFileMesh.hxx"
+ #include "MEDFileMeshLL.hxx"
+ #include "MEDLoader.hxx"
++#include "MEDFileField1TS.hxx"
++#include "MEDFileUtilities.hxx"
++#include "MEDFileEntities.hxx"
++#include <iostream>
++#include <fstream>
++
++
++// From MEDLOader.cxx TU
++extern med_geometry_type typmai3[INTERP_KERNEL::NORM_MAXTYPE];
+ 
+ using namespace MEDCoupling;
+ 
++void getSingleGeometricType(const std::string& fileName, const std::string& mName, INTERP_KERNEL::NormalizedCellType& geoType)
++{
++  int meshDim, spaceDim;
++   mcIdType numberOfNodes;
++   std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > typesDistrib(GetUMeshGlobalInfo(fileName,mName,meshDim,spaceDim,numberOfNodes));
++   std::size_t numberOfTypesMaxDimension = typesDistrib[0].size();
++   if(numberOfTypesMaxDimension != 1)
++     throw INTERP_KERNEL::Exception("ParaMEDFileMesh : only mesh with single geometrical type are supported with given distribution !");
++   geoType = typesDistrib[0][0].first;
++}
++
++void checkDistribution(const MPI_Comm& com, mcIdType totalNumberOfElements, const std::vector<mcIdType>& distrib)
++{
++  mcIdType nbEltsInDistribLoc = distrib.size();
++  mcIdType nbEltsInDistribTot = -1;
++#ifdef HAVE_MPI
++  MPI_Allreduce(&nbEltsInDistribLoc, &nbEltsInDistribTot, 1, MPI_LONG, MPI_SUM, com);
++#else
++      throw INTERP_KERNEL::Exception("not(HAVE_MPI) incompatible with MPI_World_Size>1");
++#endif
++  if(nbEltsInDistribTot != totalNumberOfElements)
++    {
++      if(nbEltsInDistribTot > totalNumberOfElements)
++        throw INTERP_KERNEL::Exception("ParaMEDFileMesh : Some of your partitions overlap each other ! Each element in your distribution vector must appear only once ! ");
++      else
++        throw INTERP_KERNEL::Exception("ParaMEDFileMesh : The distribution does not cover the whole mesh ! Each element of the mesh must appear once in your distribution vector ");
++    }
++}
++
++
+ MEDFileMesh *ParaMEDFileMesh::New(int iPart, int nbOfParts, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs)
+ {
+   MEDFileUtilities::CheckFileForRead(fileName);
+@@ -73,18 +112,88 @@ MEDFileUMesh *ParaMEDFileUMesh::New(int iPart, int nbOfParts, const std::string&
+   return ParaMEDFileUMesh::NewPrivate(fid,iPart,nbOfParts,fileName,mName,dt,it,mrs);
+ }
+ 
+-// MPI_COMM_WORLD, MPI_INFO_NULL 
+-MEDFileUMesh *ParaMEDFileUMesh::ParaNew(int iPart, int nbOfParts, const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs)
++/*!
++ * Opens the given file in parallel so that each processor can load a specific part of the mesh \a mName.
++ * Each processor will load the cells contained in the vector \a distrib (only nodes lying on those cells will be loaded),
++ * in order to read the entire mesh in parallel (memory consumption is thus distributed among all the processes).
++ * \param [in] distrib - vector of cells we want to load with c-type indexing (starting from zero). This vector has to differ from one processor to another,
++ * as to ensure that:
++ * 1) each processor only loads a unique part of the mesh
++ * 2) the combined distribution vectors cover the entire mesh
++ * \param [in] com - group of MPI processes that will read the file
++ * \param [in] nfo- MPI info object (used to manage MPI routines)
++ * \param [in] filename - name of the file we want to read
++ * \param [in] mName - name of the mesh we want to read
++ * \param [in] dt - order at which to read the mesh
++ * \param [in] it - iteration at which to read the mesh
++ * \param [in] mrs - object used to read additional low-level information
++ * \return MEDFileUMesh* - a new instance of MEDFileUMesh. The
++ *         caller is to delete this mesh using decrRef() as it is no more needed.
++ * \throw exception if the mesh contains multiple types of cells
++ * \throw exception if the partition of the mesh cells defined by \a distrib does not cover the whole mesh
++ */
++MEDFileUMesh *ParaMEDFileUMesh::ParaNew(const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>> &distrib, const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs)
+ {
+   MEDFileUtilities::CheckFileForRead(fileName);
+ #ifdef HDF5_IS_PARALLEL
+   MEDFileUtilities::AutoFid fid(MEDparFileOpen(fileName.c_str(),MED_ACC_RDONLY,com,nfo));
+ #else
+   MEDFileUtilities::AutoFid fid(MEDfileOpen(fileName.c_str(),MED_ACC_RDONLY));
++#endif
++  return ParaMEDFileUMesh::NewPrivate(fid,com,distrib,fileName,mName,dt,it,mrs);
++}
++
++
++/*!
++ * Opens the given file in parallel so that each processor can load its part of the mesh \a mName.
++ * The mesh will be equally and linearly distributed among all processes:
++ * the list of cells will be divided into \a nbOfParts slices and only slice \a iPart (cells and nodes lying on those cells) will be loaded by the current processor.
++ * The entire mesh is thus read in parallel and memory consumption is divided among the group of processes.
++ * \param [in] iPart - part of the mesh that will be loaded
++ * \param [in] nbOfParts - total number of parts in which to divide the mesh
++ * \param [in] com - group of MPI processes that will read the file
++ * \param [in] nfo- MPI info object (used to manage MPI routines)
++ * \param [in] filename - name of the file we want to read
++ * \param [in] mName - name of the mesh we want to read
++ * \param [in] dt - Time order at which to read the mesh
++ * \param [in] it - Time iteration at which to read the mesh
++ * \param [in] mrs - object used to read additional low-level information
++ * \return MEDFileUMesh* - a new instance of MEDFileUMesh. The
++ *         caller is to delete this mesh using decrRef() as it is no more needed.
++ */
++MEDFileUMesh *ParaMEDFileUMesh::ParaNew(int iPart, int nbOfParts, const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs)
++{
++  MEDFileUtilities::CheckFileForRead(fileName);
++#ifdef HDF5_IS_PARALLEL
++  MEDFileUtilities::AutoFid fid(MEDparFileOpen(fileName.c_str(),MED_ACC_RDONLY,com,nfo)); // MPI_COMM_WORLD, MPI_INFO_NULL
++#else
++  MEDFileUtilities::AutoFid fid(MEDfileOpen(fileName.c_str(),MED_ACC_RDONLY));
+ #endif
+   return ParaMEDFileUMesh::NewPrivate(fid,iPart,nbOfParts,fileName,mName,dt,it,mrs);
+ }
+ 
++/*!
++ * Loads mesh \a mName in parallel using a custom partition of the mesh cells among the processes.
++ * See ParaMEDFileUMesh::ParaNew for detailed description.
++ */
++MEDFileUMesh *ParaMEDFileUMesh::NewPrivate(med_idt fid, const MPI_Comm& com, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>& distrib, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs)
++{
++  MCAuto<MEDFileUMesh> ret;
++  for(std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>::const_iterator iter=distrib.begin(); iter!= distrib.end(); iter++)
++    {
++        med_geometry_type geoMedType(typmai3[iter->first /*current geometric type*/]);
++        med_bool changement,transformation;
++        med_int totalNumberOfElements(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_CELL,geoMedType,MED_CONNECTIVITY,MED_NODAL,&changement,&transformation));
++        checkDistribution(com,totalNumberOfElements,iter->second /*distrib over this geometric type*/);
++    }
++  ret=MEDFileUMesh::LoadPartOfFromUserDistrib(fid,mName,distrib,dt,it,mrs);
++  return ret.retn();
++}
++
++/*!
++ * Loads mesh \a mName in parallel using a slice partition of the mesh cells among the processes
++ * See ParaMEDFileUMesh::ParaNew for detailed description.
++ */
+ MEDFileUMesh *ParaMEDFileUMesh::NewPrivate(med_idt fid, int iPart, int nbOfParts, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs)
+ {
+   MCAuto<MEDFileUMesh> ret;
+@@ -106,6 +215,62 @@ MEDFileUMesh *ParaMEDFileUMesh::NewPrivate(med_idt fid, int iPart, int nbOfParts
+   return ret.retn();
+ }
+ 
++/*!
++ * Loads field \a fName laying on mesh \a mName from the filename \a fileName in parallel:
++ * each processor will load their portion of the field (ie the portion laying on the cells in the vector \a distrib given in the parameters).
++ * WARNING : this will only load the array of values of the field, additionnal information of the local field such as the number of its tuples might be incorrect
++ * \param [in] com - group of MPI processes that will read the file
++ * \param [in] nfo- MPI info object (used to manage MPI routines)
++ * \param [in] fileName - name of the file containing the field
++ * \param [in] fName - name of the field we want to load
++ * \param [in] mName - name of the mesh on which the field is defined
++ * \param [in] distrib - vector of cells on which we want to load the field \a fName (with c-type indexing, so starting from zero). For the moment, field on nodes are not supported!
++ * \param [in] dt - Time order at which to read the field
++ * \param [in] it - Time iteration at which to read the field
++ * \return MEDFileField1TS* - a new instance of MEDFileField1TS. The
++ *         caller is to delete it using decrRef() as it is no more needed.
++ * \throw exception if the field is not of type FLOAT64
++ * \throw exception if the mesh contains more than one geometric type
++ * \throw exception if the given distribution does not cover the entire mesh on which the field is defined
++ */
++MEDFileField1TS *ParaMEDFileField1TS::ParaNew(const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName, const std::string& fName, const std::string& mName, const std::vector<mcIdType>& distrib, TypeOfField loc, int dt, int it)
++{
++  MEDFileUtilities::CheckFileForRead(fileName);
++#ifdef HDF5_IS_PARALLEL
++  MEDFileUtilities::AutoFid fid(MEDparFileOpen(fileName.c_str(),MED_ACC_RDONLY,com,nfo));
++#else
++  MEDFileUtilities::AutoFid fid(MEDfileOpen(fileName.c_str(),MED_ACC_RDONLY));
++#endif
++  return ParaMEDFileField1TS::NewPrivate(fid,com,fName,mName,distrib,loc,dt,it);
++}
++
++/*!
++ * Loads field \a fName in parallel using a custom partition of the mesh cells on which the field is defined among the processes.
++ * See ParaMEDFileField1TS::ParaNew for detailed description.
++ */
++MEDFileField1TS *ParaMEDFileField1TS::NewPrivate(med_idt fid, const MPI_Comm& com, const std::string& fName, const std::string& mName, const std::vector<mcIdType>& distrib, TypeOfField loc, int dt, int it)
++{
++  INTERP_KERNEL::NormalizedCellType geoType;
++  getSingleGeometricType(MEDFileWritable::FileNameFromFID(fid),mName,geoType);
++  if(loc==ON_CELLS) //if distribution is on nodes, no fast way to check it (as a node can be shared by multiple processors)
++    {
++      med_geometry_type geoMedType(typmai3[geoType]);
++      med_bool changement,transformation;
++      med_int totalNumberOfElements(MEDmeshnEntity(fid,mName.c_str(),dt,it,MED_CELL,geoMedType,MED_FAMILY_NUMBER,MED_NODAL,&changement,&transformation));
++      checkDistribution(com,totalNumberOfElements,distrib);
++    }
++  std::vector<std::pair<TypeOfField,INTERP_KERNEL::NormalizedCellType>> tmp={ {loc, geoType} };
++  INTERP_KERNEL::AutoCppPtr<MEDFileEntities> entities(MEDFileEntities::BuildFrom(&tmp));
++  MCAuto<MEDFileAnyTypeField1TS> partFile(MEDFileAnyTypeField1TS::NewAdv(fid,fName,dt,it,entities,distrib));
++
++  MCAuto<MEDFileField1TS> ret(MEDCoupling::DynamicCast<MEDFileAnyTypeField1TS,MEDFileField1TS>(partFile));
++  if(ret.isNotNull())
++    return ret.retn();
++  else
++    throw INTERP_KERNEL::Exception("ParaMEDFileField1TS::ParaNew : only FLOAT64 field supported for the moment !");
++}
++
++
+ MEDFileMeshes *ParaMEDFileMeshes::New(int iPart, int nbOfParts, const std::string& fileName)
+ {
+   std::vector<std::string> ms(GetMeshNames(fileName));
+diff --git a/src/ParaMEDLoader/ParaMEDFileMesh.hxx b/src/ParaMEDLoader/ParaMEDFileMesh.hxx
+index da482e30..18a3dc86 100644
+--- a/src/ParaMEDLoader/ParaMEDFileMesh.hxx
++++ b/src/ParaMEDLoader/ParaMEDFileMesh.hxx
+@@ -26,6 +26,11 @@
+ #include "mpi.h"
+ 
+ #include <string>
++#include <vector>
++#include <map>
++#include "MCIdType.hxx"
++#include "MEDCouplingRefCountObject.hxx"
++#include "NormalizedGeometricTypes"
+ 
+ namespace MEDCoupling
+ {
+@@ -33,6 +38,7 @@ namespace MEDCoupling
+   class MEDFileUMesh;
+   class MEDFileMeshes;
+   class MEDFileMeshReadSelector;
++  class MEDFileField1TS;
+ 
+   class ParaMEDFileMesh
+   {
+@@ -46,16 +52,30 @@ namespace MEDCoupling
+   public:
+     static MEDFileUMesh *New(int iPart, int nbOfParts, const std::string& fileName, const std::string& mName, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
+     static MEDFileUMesh *ParaNew(int iPart, int nbOfParts, const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName, const std::string& mName, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
++    static MEDFileUMesh *ParaNew(const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>&, const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName, const std::string& mName, int dt=-1, int it=-1, MEDFileMeshReadSelector *mrs=0);
++
+   private:
+     static MEDFileUMesh *NewPrivate(med_idt fid, int iPart, int nbOfParts, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs);
++    static MEDFileUMesh *NewPrivate(med_idt fid, const MPI_Comm& com, const std::map<INTERP_KERNEL::NormalizedCellType,std::vector<mcIdType>>&, const std::string& fileName, const std::string& mName, int dt, int it, MEDFileMeshReadSelector *mrs);
+   };
+ 
++
+   class ParaMEDFileMeshes
+   {
+   public:
+     static MEDFileMeshes *New(int iPart, int nbOfParts, const std::string& fileName);
+     static MEDFileMeshes *ParaNew(int iPart, int nbOfParts, const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName);
+   };
++
++  class ParaMEDFileField1TS
++  {
++  public:
++      static MEDFileField1TS *ParaNew(const MPI_Comm& com, const MPI_Info& nfo, const std::string& fileName, const std::string& fName, const std::string& mName, const std::vector<mcIdType>& distrib, TypeOfField loc, int dt=-1, int it=-1);
++  private:
++      static MEDFileField1TS *NewPrivate(med_idt fid, const MPI_Comm& com, const std::string& fName, const std::string& mName, const std::vector<mcIdType>& distrib, TypeOfField loc, int dt, int it);
++
++  };
++
+ }
+ 
+ #endif
+diff --git a/src/ParaMEDMEMTest/CMakeLists.txt b/src/ParaMEDMEMTest/CMakeLists.txt
+index b6813e2a..83c1b764 100644
+--- a/src/ParaMEDMEMTest/CMakeLists.txt
++++ b/src/ParaMEDMEMTest/CMakeLists.txt
+@@ -23,6 +23,7 @@ ADD_DEFINITIONS(${MPI_DEFINITIONS} ${CPPUNIT_DEFINITIONS})
+ 
+ INCLUDE_DIRECTORIES(
+   ${MPI_INCLUDE_DIRS}
++  ${MEDFILE_INCLUDE_DIRS}
+   ${CPPUNIT_INCLUDE_DIRS}
+   ${CMAKE_CURRENT_SOURCE_DIR}/../ParaMEDLoader
+   ${CMAKE_CURRENT_SOURCE_DIR}/../ParaMEDMEM
+@@ -46,6 +47,7 @@ SET(ParaMEDMEMTest_SOURCES
+   ParaMEDMEMTest_FabienAPI.cxx
+   ParaMEDMEMTest_NonCoincidentDEC.cxx
+   ParaMEDMEMTest_OverlapDEC.cxx
++  ParaMEDMEMTest_MEDLoader.cxx
+ )
+ 
+ ADD_LIBRARY(ParaMEDMEMTest ${ParaMEDMEMTest_SOURCES})
+diff --git a/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx b/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx
+index 240f9483..3223aaf4 100644
+--- a/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx
++++ b/src/ParaMEDMEMTest/ParaMEDMEMTest.hxx
+@@ -85,6 +85,11 @@ class ParaMEDMEMTest : public CppUnit::TestFixture
+   CPPUNIT_TEST(testFabienAPI1);       // 3 procs
+   CPPUNIT_TEST(testFabienAPI2);       // 3 procs
+ 
++  CPPUNIT_TEST(testParallelLoad1);   // 2 procs
++  CPPUNIT_TEST(testParallelLoad2);   // 3 procs
++  CPPUNIT_TEST(testParallelLoad3);   // 2 procs
++  CPPUNIT_TEST(testParallelLoad4);   // 2 procs
++  CPPUNIT_TEST(testParallelLoad5);   // 2 procs
+   CPPUNIT_TEST_SUITE_END();
+ 
+ public:
+@@ -148,6 +153,12 @@ public:
+   void testFabienAPI1();
+   void testFabienAPI2();
+ 
++  void testParallelLoad1();
++  void testParallelLoad2();
++  void testParallelLoad3();
++  void testParallelLoad4();
++  void testParallelLoad5();
++
+   std::string getTmpDirectory();
+   std::string makeTmpFile( const std::string&, const std::string& = "" );
+ 
+@@ -166,6 +177,8 @@ private:
+   void testInterpKernelDEC2_2D_(const char *srcMeth, const char *targetMeth);
+   void testInterpKernelDEC_3D_(const char *srcMeth, const char *targetMeth);
+   void testGauthier3_GEN(bool, int);
++
++
+ };
+ 
+ // to automatically remove temporary files from disk
+diff --git a/src/ParaMEDMEMTest/ParaMEDMEMTest_MEDLoader.cxx b/src/ParaMEDMEMTest/ParaMEDMEMTest_MEDLoader.cxx
+index 485186b0..38deb0b3 100644
+--- a/src/ParaMEDMEMTest/ParaMEDMEMTest_MEDLoader.cxx
++++ b/src/ParaMEDMEMTest/ParaMEDMEMTest_MEDLoader.cxx
+@@ -19,7 +19,11 @@
+ 
+ #include "ParaMEDMEMTest.hxx"
+ #include "MEDLoader.hxx"
+-#include "MEDCouplingUMesh.hxx"
++
++#include "ParaMEDFileMesh.hxx"
++#include "MEDFileMesh.hxx"
++#include "MEDFileField1TS.hxx"
++#include "TestInterpKernelUtils.hxx"
+ #include "MEDCouplingFieldDouble.hxx"
+ 
+ #include <cppunit/TestAssert.h>
+@@ -29,7 +33,351 @@
+ #include <iostream>
+ #include <iterator>
+ 
+-using namespace std;
+-using namespace INTERP_KERNEL;
+ using namespace MEDCoupling;
+ 
++/*
++ * Generate a 2D mesh that is supposed to match the part that will be loaded by each proc in testParallelLoad1
++ */
++MEDCouplingUMesh* genLocMesh2D(int rk)
++{
++  int nxTot=4,nyTot=2;
++  int nx=2,ny=2;
++  MCAuto<MEDCouplingCMesh> msh = MEDCouplingCMesh::New("mesh");
++  MCAuto<DataArrayDouble> dax = DataArrayDouble::New(); dax->alloc(nx+1,1);
++  MCAuto<DataArrayDouble> day = DataArrayDouble::New(); day->alloc(ny+1,1);
++  dax->iota(); day->iota();
++  if (rk == 0)
++    {
++      std::transform(dax->begin(), dax->end(),
++                     dax->rwBegin(),
++                     [nxTot](const int& c){return c/(float)nxTot;});
++      std::transform(day->begin(), day->end(),
++                     day->rwBegin(),
++                     [nyTot](const int& c){return c/(float)nyTot;});
++    }
++  else
++    {
++      std::transform(dax->begin(), dax->end(),
++                     dax->rwBegin(),
++                     [nxTot](const int& c){return c/(float)nxTot+0.5; });
++      std::transform(day->begin(), day->end(),
++                     day->rwBegin(),
++                     [nyTot](const int& c){return c/(float)nyTot;});
++    }
++  msh->setCoords(dax, day);
++  MCAuto<MEDCouplingUMesh> ret = msh->buildUnstructured();
++  return ret.retn();
++}
++
++/*
++ * Generate a 2D mesh that is supposed to match the part that will be loaded by proc0 in testParallelLoad2
++ */
++MEDCouplingUMesh* genLocMeshMultipleTypes1()
++{
++  MCAuto<MEDCouplingUMesh> ret= MEDCouplingUMesh::New("mesh",2);
++  double coords[10] = {0.,1.,  0.,2.,  1.,2.,   0.,3.,  1.,3.};
++  DataArrayDouble *myCoords=DataArrayDouble::New();
++  myCoords->alloc(5,2);
++  std::copy(coords,coords+10,myCoords->getPointer());
++  ret->setCoords(myCoords);
++  myCoords->decrRef();
++  mcIdType conn[7]={0,2,1, 1,2,4,3};
++  ret->allocateCells(2);
++  ret->insertNextCell(INTERP_KERNEL::NORM_TRI3,3,conn);
++  ret->insertNextCell(INTERP_KERNEL::NORM_QUAD4,4,conn+3);
++  ret->finishInsertingCells();
++  return ret.retn();
++}
++
++/*
++ * Generate a 2D mesh that is supposed to match the part that will be loaded by proc1 in testParallelLoad2
++ */
++MEDCouplingUMesh* genLocMeshMultipleTypes2()
++{
++  MCAuto<MEDCouplingUMesh> ret= MEDCouplingUMesh::New("mesh",2);
++  double coords[10] = {0.,0.,  1.,0.,  0.,1.,   1.,1.,  1.,2.};
++  DataArrayDouble *myCoords=DataArrayDouble::New();
++  myCoords->alloc(5,2);
++  std::copy(coords,coords+10,myCoords->getPointer());
++  ret->setCoords(myCoords);
++  myCoords->decrRef();
++  mcIdType conn[7]={2,3,4, 0,1,3,2};
++  ret->allocateCells(2);
++  ret->insertNextCell(INTERP_KERNEL::NORM_TRI3,3,conn);
++  ret->insertNextCell(INTERP_KERNEL::NORM_QUAD4,4,conn+3);
++  ret->finishInsertingCells();
++  return ret.retn();
++}
++
++/*
++ * Generate a 2D mesh that is supposed to match the part that will be loaded by proc2 in testParallelLoad2
++ */
++MEDCouplingUMesh* genLocMeshMultipleTypes3()
++{
++  MCAuto<MEDCouplingUMesh> ret= MEDCouplingUMesh::New("mesh",2);
++  double coords[16] = {1.,0., 2.,0., 1.,1., 2.,1., 1.,2., 2.,2., 1.,3., 2.,3.};
++  DataArrayDouble *myCoords=DataArrayDouble::New();
++  myCoords->alloc(8,2);
++  std::copy(coords,coords+16,myCoords->getPointer());
++  ret->setCoords(myCoords);
++  myCoords->decrRef();
++  mcIdType conn[14]={0,1,3, 0,3,2, 2,3,5,4, 4,5,7,6};
++  ret->allocateCells(4);
++  ret->insertNextCell(INTERP_KERNEL::NORM_TRI3,3,conn);
++  ret->insertNextCell(INTERP_KERNEL::NORM_TRI3,3,conn+3);
++  ret->insertNextCell(INTERP_KERNEL::NORM_QUAD4,4,conn+6);
++  ret->insertNextCell(INTERP_KERNEL::NORM_QUAD4,4,conn+10);
++  ret->finishInsertingCells();
++  return ret.retn();
++}
++
++/*
++ * Generate a 2D field that is supposed to match the local field loaded by each proc in testParallelLoad4
++ */
++MEDCouplingFieldDouble *genLocFieldCells(int rank)
++{
++  MCAuto<MEDCouplingUMesh> mesh = genLocMesh2D(rank);
++  MCAuto<MEDCouplingFieldDouble> f1=MEDCouplingFieldDouble::New(ON_CELLS,ONE_TIME);
++  f1->setName("field");
++  f1->setMesh(mesh);
++
++  MCAuto<DataArrayDouble> array(DataArrayDouble::New());
++  array->alloc(4,2);
++  std::vector<double> values;
++  if(rank == 0)
++    values = { 0., 10., 20., 30., 80., 90., 100., 110.};
++  else
++    values = { 40., 50., 60., 70., 120., 130., 140., 150.};
++  std::copy(values.data(),values.data()+8,array->getPointer());
++  array->setInfoOnComponent(0,"");
++  f1->setArray(array);
++  return f1.retn();
++}
++
++/*
++ * Generate a 2D field that is supposed to match the local field loaded by each proc in testParallelLoad5
++ */
++MEDCouplingFieldDouble *genLocFieldNodes(int rank)
++{
++  MCAuto<MEDCouplingUMesh> mesh = genLocMesh2D(rank);
++  MCAuto<MEDCouplingFieldDouble> f1=MEDCouplingFieldDouble::New(ON_NODES,ONE_TIME);
++  f1->setName("field");
++  f1->setMesh(mesh);
++
++  MCAuto<DataArrayDouble> array(DataArrayDouble::New());
++  array->alloc(9,2);
++  std::vector<double> values;
++  if(rank == 0)
++      values= { 0., 10., 20., 30., 40., 50., 100., 110., 120., 130., 140., 150., 200., 210., 220., 230., 240., 250. };
++   else
++       values= { 40., 50., 60., 70., 80., 90., 140., 150., 160., 170., 180., 190., 240., 250., 260., 270., 280., 290. };
++  std::copy(values.data(),values.data()+18,array->getPointer());
++  array->setInfoOnComponent(0,"");
++  f1->setArray(array);
++  return f1.retn();
++}
++
++/*!
++ * Test case to load a simple 2D cartesian mesh in parallel on 2 procs
++ */
++void ParaMEDMEMTest::testParallelLoad1()
++{
++  int size;
++  int rank;
++  MPI_Comm_size(MPI_COMM_WORLD,&size);
++  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
++  //
++  if(size!=2)
++    return ;
++
++  std::map<INTERP_KERNEL::NormalizedCellType, std::vector<mcIdType>> distrib;
++  if (rank == 0)
++      distrib = { {INTERP_KERNEL::NORM_QUAD4,{0,1,4,5}/*c++ type of indexing: index starts from zero!*/} };
++  else
++      distrib = { {INTERP_KERNEL::NORM_QUAD4,{2,3,6,7}} };
++
++  std::string filename=INTERP_TEST::getResourceFile("SimpleTest2D.med");
++  MCAuto<MEDFileUMesh> mu = ParaMEDFileUMesh::ParaNew(distrib, MPI_COMM_WORLD, MPI_INFO_NULL, filename, "mesh");
++  MCAuto<MEDCouplingUMesh> mesh = mu->getMeshAtLevel(0);
++  MCAuto<MEDCouplingUMesh> meshRef = genLocMesh2D(rank);
++  CPPUNIT_ASSERT(mesh->isEqual(meshRef,1e-12));
++  MPI_Barrier(MPI_COMM_WORLD);
++}
++
++/*!
++ * Test case to load a 2D mesh made of squares and triangles in parallel on 3 procs.
++ * Each proc is going to load a part of the mesh.
++ */
++void ParaMEDMEMTest::testParallelLoad2()
++{
++  int size;
++  int rank;
++  MPI_Comm_size(MPI_COMM_WORLD,&size);
++  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
++  //
++  if(size!=3)
++    return ;
++
++  std::map<INTERP_KERNEL::NormalizedCellType, std::vector<mcIdType>> distrib;
++  // independant numerotation for each geometric type!
++  if (rank == 0)
++   distrib = { {INTERP_KERNEL::NORM_TRI3,{3}}  , {INTERP_KERNEL::NORM_QUAD4,{2}} };
++ else if(rank == 1)
++   distrib = { {INTERP_KERNEL::NORM_TRI3,{2}}  , {INTERP_KERNEL::NORM_QUAD4,{0}} };
++ else
++   distrib= { {INTERP_KERNEL::NORM_TRI3,{0,1}} , {INTERP_KERNEL::NORM_QUAD4,{1,3}} };
++
++  std::string filename=INTERP_TEST::getResourceFile("Test2DMultiGeoType.med");
++  MCAuto<MEDFileUMesh> mu = ParaMEDFileUMesh::ParaNew(distrib, MPI_COMM_WORLD, MPI_INFO_NULL, filename, "mesh");
++  MCAuto<MEDCouplingUMesh> mesh = mu->getMeshAtLevel(0);
++  MEDCouplingUMesh *meshRef;
++  if(rank==0)
++      meshRef=genLocMeshMultipleTypes1();
++  else if(rank==1)
++      meshRef=genLocMeshMultipleTypes2();
++  else
++      meshRef=genLocMeshMultipleTypes3();
++  //checking that all 3 procs have correctly loaded their part
++  int equal = (int)mesh->isEqual(meshRef,1e-12);
++  int allEqual = -1;
++  MPI_Allreduce(&equal, &allEqual, 1, MPI_INT,MPI_SUM,MPI_COMM_WORLD);
++  CPPUNIT_ASSERT(allEqual==3);
++
++  meshRef->decrRef();
++  MPI_Barrier(MPI_COMM_WORLD);
++}
++
++/*!
++ * Test case to load a 3D box meshed with tetras in parallel on 2 procs
++ */
++void ParaMEDMEMTest::testParallelLoad3()
++{
++  int size;
++  int rank;
++  MPI_Comm_size(MPI_COMM_WORLD,&size);
++  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
++  //
++  if(size!=2)
++    return ;
++
++  std::map<INTERP_KERNEL::NormalizedCellType, std::vector<mcIdType>> distrib;
++  if (rank == 0)
++    {
++      std::vector<mcIdType> distribCells = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,48,49,50,51,52,53,54,55,56,57,
++        58,59,60,61,62,63,64,65,66,67,68,69,70,71,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,
++        119,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167};
++      distrib = { {INTERP_KERNEL::NORM_TETRA4,distribCells} };
++    }
++  else
++    {
++      std::vector<mcIdType> distribCells = {24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,72,73,74,75,76,77,78,79,80,
++        81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,
++        143,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191};
++      distrib = { {INTERP_KERNEL::NORM_TETRA4,distribCells} };
++    }
++
++  std::string filename=INTERP_TEST::getResourceFile("SimpleTest3D.med");
++  MCAuto<MEDFileUMesh> mu = ParaMEDFileUMesh::ParaNew(distrib, MPI_COMM_WORLD, MPI_INFO_NULL, filename, "mesh");
++  MCAuto<MEDCouplingUMesh> mesh = mu->getMeshAtLevel(0);
++  CPPUNIT_ASSERT_EQUAL(96,(int)mesh->getNumberOfCells());
++
++  // checking nodal connectivity
++  double nodalConnec[480] = {14, 1, 7, 18, 24, 14, 7, 6, 18, 24, 14, 6, 0, 18, 24, 14, 0, 1, 18, 24, 14, 1, 0, 19, 24, 14, 0, 2, 19, 24, 14, 2, 3, 19, 24,
++    14, 3, 1, 19, 24, 14, 1, 3, 20, 24, 14, 3, 9, 20, 24, 14, 9, 7, 20, 24, 14, 7, 1, 20, 24, 14, 0, 6, 21, 24, 14, 6, 8, 21, 24, 14, 8, 2, 21, 24,
++    14, 2, 0, 21, 24, 14, 7, 9, 22, 24, 14, 9, 8, 22, 24, 14, 8, 6, 22, 24, 14, 6, 7, 22, 24, 14, 2, 8, 23, 24, 14, 8, 9, 23, 24, 14, 9, 3, 23, 24,
++    14, 3, 2, 23, 24, 14, 3, 9, 25, 31, 14, 9, 8, 25, 31, 14, 8, 2, 25, 31, 14, 2, 3, 25, 31, 14, 3, 2, 26, 31, 14, 2, 4, 26, 31, 14, 4, 5, 26, 31,
++    14, 5, 3, 26, 31, 14, 3, 5, 27, 31, 14, 5, 11, 27, 31, 14, 11, 9, 27, 31, 14, 9, 3, 27, 31, 14, 2, 8, 28, 31, 14, 8, 10, 28, 31, 14, 10, 4, 28, 31,
++    14, 4, 2, 28, 31, 14, 9, 11, 29, 31, 14, 11, 10, 29, 31, 14, 10, 8, 29, 31, 14, 8, 9, 29, 31, 14, 4, 10, 30, 31, 14, 10, 11, 30, 31, 14, 11, 5, 30, 31,
++    14, 5, 4, 30, 31, 14, 7, 13, 32, 38, 14, 13, 12, 32, 38, 14, 12, 6, 32, 38, 14, 6, 7, 32, 38, 14, 7, 6, 33, 38, 14, 6, 8, 33, 38, 14, 8, 9, 33, 38,
++    14, 9, 7, 33, 38, 14, 7, 9, 34, 38, 14, 9, 15, 34, 38, 14, 15, 13, 34, 38, 14, 13, 7, 34, 38, 14, 6, 12, 35, 38, 14, 12, 14, 35, 38, 14, 14, 8, 35, 38,
++    14, 8, 6, 35, 38, 14, 13, 15, 36, 38, 14, 15, 14, 36, 38, 14, 14, 12, 36, 38, 14, 12, 13, 36, 38, 14, 8, 14, 37, 38, 14, 14, 15, 37, 38, 14, 15, 9, 37, 38,
++    14, 9, 8, 37, 38, 14, 9, 15, 39, 45, 14, 15, 14, 39, 45, 14, 14, 8, 39, 45, 14, 8, 9, 39, 45, 14, 9, 8, 40, 45, 14, 8, 10, 40, 45, 14, 10, 11, 40, 45,
++    14, 11, 9, 40, 45, 14, 9, 11, 41, 45, 14, 11, 17, 41, 45, 14, 17, 15, 41, 45, 14, 15, 9, 41, 45, 14, 8, 14, 42, 45, 14, 14, 16, 42, 45, 14, 16, 10, 42, 45,
++    14, 10, 8, 42, 45, 14, 15, 17, 43, 45, 14, 17, 16, 43, 45, 14, 16, 14, 43, 45, 14, 14, 15, 43, 45, 14, 10, 16, 44, 45, 14, 16, 17, 44, 45, 14, 17, 11, 44, 45,
++    14, 11, 10, 44, 45};
++  const mcIdType *nc=mesh->getNodalConnectivity()->getConstPointer();
++  CPPUNIT_ASSERT_EQUAL(480,(int)mesh->getNodalConnectivity()->getNumberOfTuples());
++  CPPUNIT_ASSERT(std::equal(nodalConnec,nodalConnec+480,nc));
++
++  double nodalConnecInd[97] = {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155,
++    160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265 ,270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320,
++    325, 330, 335, 340, 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 405, 410, 415, 420, 425, 430, 435, 440, 445, 450, 455, 460, 465, 470, 475, 480};
++  const mcIdType *ncIndx=mesh->getNodalConnectivityIndex()->getConstPointer();
++  CPPUNIT_ASSERT_EQUAL(97,(int)mesh->getNodalConnectivityIndex()->getNumberOfTuples());
++  CPPUNIT_ASSERT(std::equal(nodalConnecInd,nodalConnecInd+97,ncIndx));
++
++  // checking coords
++  std::vector<double> coords(138);
++  if(rank == 0)
++    coords = {0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 2.0, 0.0, 2.0, 2.0, 0.0, 0.0, 4.0, 0.0, 2.0, 4.0, 0.0, 0.0, 0.0, 2.0, 2.0, 0.0, 2.0, 0.0, 2.0,
++    2.0, 2.0, 2.0, 2.0, 0.0, 4.0, 2.0, 2.0, 4.0, 2.0, 0.0, 0.0, 4.0, 2.0, 0.0, 4.0, 0.0, 2.0, 4.0, 2.0, 2.0, 4.0, 0.0, 4.0, 4.0, 2.0, 4.0, 4.0, 1.0, 0.0,
++    1.0, 1.0, 1.0, 0.0, 2.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 3.0, 0.0, 2.0, 3.0, 1.0, 0.0, 3.0,
++    1.0, 1.0, 3.0, 2.0, 1.0, 4.0, 1.0, 1.0, 3.0, 1.0, 1.0, 0.0, 3.0, 1.0, 1.0, 2.0, 2.0, 1.0, 3.0, 0.0, 1.0, 3.0, 1.0, 1.0, 4.0, 1.0, 2.0, 3.0, 1.0, 1.0,
++    3.0, 1.0, 2.0, 3.0, 1.0, 3.0, 2.0, 2.0, 3.0, 3.0, 0.0, 3.0, 3.0, 1.0, 3.0, 4.0, 1.0, 4.0, 3.0, 1.0, 3.0, 3.0 };
++  else
++    coords = {2.0, 0.0, 0.0, 4.0, 0.0, 0.0, 2.0, 2.0, 0.0, 4.0, 2.0, 0.0, 2.0, 4.0, 0.0, 4.0, 4.0, 0.0, 2.0, 0.0, 2.0, 4.0, 0.0, 2.0, 2.0, 2.0, 2.0, 4.0,
++      2.0, 2.0, 2.0, 4.0, 2.0, 4.0, 4.0, 2.0, 2.0, 0.0, 4.0, 4.0, 0.0, 4.0, 2.0, 2.0, 4.0, 4.0, 2.0, 4.0, 2.0, 4.0, 4.0, 4.0, 4.0, 4.0, 3.0, 0.0, 1.0, 3.0,
++      1.0, 0.0, 4.0, 1.0, 1.0, 2.0, 1.0, 1.0, 3.0, 1.0, 2.0, 3.0, 2.0, 1.0, 3.0, 1.0, 1.0, 3.0, 2.0, 1.0, 3.0, 3.0, 0.0, 4.0, 3.0, 1.0, 2.0, 3.0, 1.0, 3.0,
++      3.0, 2.0, 3.0, 4.0, 1.0, 3.0, 3.0, 1.0, 3.0, 0.0, 3.0, 3.0, 1.0, 2.0, 4.0, 1.0, 3.0, 2.0, 1.0, 3.0, 3.0, 1.0, 4.0, 3.0, 2.0, 3.0, 3.0, 1.0, 3.0, 3.0,
++      2.0, 3.0, 3.0, 3.0, 2.0, 4.0, 3.0, 3.0, 2.0, 3.0, 3.0, 3.0, 3.0, 4.0, 3.0, 4.0, 3.0, 3.0, 3.0, 3.0 };
++  const double *coo=mesh->getCoords()->getConstPointer();
++  CPPUNIT_ASSERT_EQUAL(46,(int)mesh->getCoords()->getNumberOfTuples());
++  CPPUNIT_ASSERT(std::equal(coords.data(),coords.data()+138,coo));
++
++  MPI_Barrier(MPI_COMM_WORLD);
++}
++
++/*!
++ * Test case to load a field located on cells in parallel on 2 procs.
++ */
++void ParaMEDMEMTest::testParallelLoad4()
++{
++  int size;
++  int rank;
++  MPI_Comm_size(MPI_COMM_WORLD,&size);
++  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
++  //
++  if(size!=2)
++    return ;
++
++  std::vector<mcIdType> distrib;
++  if (rank == 0)
++      distrib = {0,1,4,5};    //c++ type of indexing: index starts from zero!
++  else
++      distrib = {2,3,6,7};
++
++  std::string filename=INTERP_TEST::getResourceFile("SimpleTest2D.med");
++  MCAuto<MEDFileField1TS> f1TS = ParaMEDFileField1TS::ParaNew(MPI_COMM_WORLD, MPI_INFO_NULL,filename,"fieldOnCells","mesh",distrib,ON_CELLS);
++  MCAuto<MEDCouplingFieldDouble> fieldRef = genLocFieldCells(rank);
++  CPPUNIT_ASSERT(f1TS->getUndergroundDataArray()->isEqual(*fieldRef->getArray(),1e-12));
++  MPI_Barrier(MPI_COMM_WORLD);
++}
++
++/*!
++ * Test case to load a field located on nodes in parallel on 2 procs.
++ */
++void ParaMEDMEMTest::testParallelLoad5()
++{
++  int size;
++  int rank;
++  MPI_Comm_size(MPI_COMM_WORLD,&size);
++  MPI_Comm_rank(MPI_COMM_WORLD,&rank);
++  //
++  if(size!=2)
++    return ;
++
++  std::vector<mcIdType> distrib;
++  if (rank == 0)
++      distrib = {0,1,2,5,6,7,10,11,12};    //c++ type of indexing: index starts from zero!
++  else
++      distrib = {2,3,4,7,8,9,12,13,14};
++
++  std::string filename=INTERP_TEST::getResourceFile("SimpleTest2D.med");
++  MCAuto<MEDFileField1TS> f1TS = ParaMEDFileField1TS::ParaNew(MPI_COMM_WORLD, MPI_INFO_NULL,filename,"fieldOnNodes","mesh",distrib,ON_NODES);
++  MCAuto<MEDCouplingFieldDouble> fieldRef = genLocFieldNodes(rank);
++  CPPUNIT_ASSERT(f1TS->getUndergroundDataArray()->isEqual(*fieldRef->getArray(),1e-12));
++  MPI_Barrier(MPI_COMM_WORLD);
++}
++
++
++

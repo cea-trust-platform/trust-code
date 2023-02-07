@@ -77,10 +77,16 @@ then
    export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
 fi
 # Patch for MacOS
-[ `uname -s` = "Darwin" ] && (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/medcoupling_9.8.0_mac.diff)
+[ `uname -s` = "Darwin" ] && (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/medcoup_mac.patch)
 # Patch for GNU 4.8.5
 cd ../$src_dir/src/INTERP_KERNEL; patch -p0 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/medcoupling_9.10.0_gnu_485.diff || exit -1
 cd - 1>/dev/null 2>&1
+# Other patches
+echo "Applying patch for // loading of fields ..."
+(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_para.patch)
+echo "Applying patch for write40 ..."
+(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/write40.patch)
+
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
 # We use now python from conda so:

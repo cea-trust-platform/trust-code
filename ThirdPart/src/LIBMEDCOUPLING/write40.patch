@@ -1,0 +1,28 @@
+diff --git a/src/MEDLoader/MEDFileUtilities.cxx b/src/MEDLoader/MEDFileUtilities.cxx
+index fded828a..f24b633a 100644
+--- a/src/MEDLoader/MEDFileUtilities.cxx
++++ b/src/MEDLoader/MEDFileUtilities.cxx
+@@ -203,6 +203,11 @@ void MEDCoupling::MEDFileWritableStandAlone::write30(const std::string& fileName
+   this->writeXX(fileName,mode,3,0,6);
+ }
+ 
++void MEDCoupling::MEDFileWritableStandAlone::write40(const std::string& fileName, int mode) const
++{
++  this->writeXX(fileName,mode,4,0,1);
++}
++
+ void MEDCoupling::MEDFileWritableStandAlone::writeXX(const std::string& fileName, int mode, med_int maj, med_int min, med_int rel) const
+ {
+ #if ( MED_NUM_MAJEUR>4 || ( MED_NUM_MAJEUR==4 && MED_NUM_MINEUR>=1 ) )
+diff --git a/src/MEDLoader/MEDFileUtilities.hxx b/src/MEDLoader/MEDFileUtilities.hxx
+index bd98ea9e..e41e7820 100644
+--- a/src/MEDLoader/MEDFileUtilities.hxx
++++ b/src/MEDLoader/MEDFileUtilities.hxx
+@@ -72,6 +72,7 @@ namespace MEDCoupling
+     MEDLOADER_EXPORT virtual void write(const std::string& fileName, int mode) const;
+     MEDLOADER_EXPORT virtual void write33(const std::string& fileName, int mode) const;
+     MEDLOADER_EXPORT virtual void write30(const std::string& fileName, int mode) const;
++    MEDLOADER_EXPORT virtual void write40(const std::string& fileName, int mode) const;
+     MEDLOADER_EXPORT MCAuto<DataArrayByte> serialize() const;
+     MEDLOADER_EXPORT static std::string GenerateUniqueDftFileNameInMem();
+   public:
