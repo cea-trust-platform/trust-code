@@ -709,6 +709,9 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                 for (k2 = k1 + 1; k2 < N[0]; k2++)
                   (*pqpi)(e, k1, k2) += Qec(i, t_e, k1, k2);
       }
+
+  if (pqpi) (*pqpi).echange_espace_virtuel();
+
 #endif
 }
 

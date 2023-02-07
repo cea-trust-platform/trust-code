@@ -30,6 +30,7 @@ Entree& Source_Frottement_interfacial_base::readOn(Entree& is)
   param.ajouter("a_res", &a_res_);
   param.ajouter("dv_min", &dv_min);
   param.ajouter("exp_res", &exp_res);
+  param.ajouter("beta", &beta_);
   param.lire_avec_accolades_depuis(is);
 
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());

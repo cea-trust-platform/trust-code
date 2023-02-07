@@ -322,19 +322,19 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
                   //on suppose que la limite thermique s'applique d'un cote : c (=0,1) / n_c (=k,l) / signe du flux sortant de la phase k : s_c (=1,-1)
                   int c = (a_r(e, k) > a_r(e, l)), n_c = c ? l : k, n_d = c ? k : l, s_c = c ? -1 : 1;
                   double Tc = c ? Tl : Tk, hc = c ? hl : hk, dT_hc = c ? dTl_hl : dTk_hk, dP_hc = c ? dP_hl : dP_hk;
-                  for (i = 0; i < 2; i++) secmem(e, i ? l : k) -= vol * (i ? -1 : 1) * (s_c * hi(n_c, n_d) * (Tc - Ts) + G * hc) - (i != c) * qi(e, k, l);
+                  for (i = 0; i < 2; i++) secmem(e, i ? l : k)-= vol * (i ? -1 : 1) * (s_c *        hi(n_c, n_d) * (Tc - Ts)                              + G * hc)                                              - (i != c) * qi(e, k, l);
                   /* derivees (y compris celles en G, sauf dans le cas limite)*/
                   if (Ma)
                     for (i = 0; i < 2; i++)
                       for (n = 0; n < N; n++) //derivees en alpha
-                        (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * da_hi(n_c, n_d, n) * (Tc - Ts) + (n_lim < 0) * da_G(n) * hc) - (i != c) * daqi(e, k, l, n);
+                        (*Ma)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c *  da_hi(n_c, n_d, n) * (Tc - Ts)                              + (n_lim < 0) * da_G(n) * hc)                          - (i != c) * daqi(e, k, l, n);
                   if (Mt)
                     for (i = 0; i < 2; i++)
                       for (n = 0; n < N; n++) //derivees en T
                         (*Mt)(N * e + (i ? l : k), N * e + n) += vol * (i ? -1 : 1) * (s_c * (dT_hi(n_c, n_d, n) * (Tc - Ts) + (n == n_c) * hi(n_c, n_d)) + (n_lim < 0) * dT_G(n) * hc + G * (n == n_c) * dT_hc) - (i != c) * dTqi(e, k, l, n);
                   if (Mp)
                     for (i = 0; i < 2; i++) //derivees en p
-                      (*Mp)(N * e + (i ? l : k), e) += vol * (i ? -1 : 1) * (s_c * (dP_hi(n_c, n_d) * (Tc - Ts) - hi(n_c, n_d) * dP_Ts) + (n_lim < 0) * dP_G * hc + G * dP_hc) - (i != c) * dpqi(e, k, l);
+                      (*Mp)(N * e + (i ? l : k), e)           += vol * (i ? -1 : 1) * (s_c * (dP_hi(n_c, n_d)    * (Tc - Ts) - hi(n_c, n_d) * dP_Ts)      + (n_lim < 0) * dP_G * hc + G * dP_hc)                 - (i != c) * dpqi(e, k, l);
                   if (n_lim >= 0)
                     for (auto &s_d : vec_m) /* derivees de G dans le cas evanescent */
                       for (j = s_d[0]->get_tab1()(N * e + n_lim) - 1; j < s_d[0]->get_tab1()(N * e + n_lim + 1) - 1; j++)

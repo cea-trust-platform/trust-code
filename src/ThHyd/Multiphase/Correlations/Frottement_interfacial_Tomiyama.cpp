@@ -105,7 +105,5 @@ void Frottement_interfacial_Tomiyama::coefficient_CD(const DoubleTab& alpha, con
         if (contamination_==2) Cd = beta_ * std::max(           24./Re*(1+0.15*std::pow(Re, 0.687))              , 8.*Eo/(3.*(Eo+4.)));
 
         coeff(k, n_l) = (coeff(n_l, k) = Cd);
-        coeff(n_l, k, 0) =  coeff(k, n_l, 0);
-        coeff(n_l, k, 1) =  coeff(k, n_l, 1);
       }
 }

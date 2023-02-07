@@ -35,6 +35,7 @@ protected:
   int n_l = -1; //number of the liquid phase
   double a_min_coeff = 1.e-1;
   double a_min = 1.e-2;
+  double a_res_ = -1.;
 };
 
 #endif

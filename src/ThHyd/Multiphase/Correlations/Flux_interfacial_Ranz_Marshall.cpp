@@ -19,7 +19,13 @@
 Implemente_instanciable(Flux_interfacial_Ranz_Marshall, "Flux_interfacial_Ranz_Marshall", Flux_interfacial_base);
 
 Sortie& Flux_interfacial_Ranz_Marshall::printOn(Sortie& os) const { return Flux_interfacial_base::printOn(os); }
-Entree& Flux_interfacial_Ranz_Marshall::readOn(Entree& is) { return Flux_interfacial_base::readOn(is); }
+Entree& Flux_interfacial_Ranz_Marshall::readOn(Entree& is)
+{
+  Param param(que_suis_je());
+  param.ajouter("dv_min", &dv_min_);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
 
 void Flux_interfacial_Ranz_Marshall::completer()
 {

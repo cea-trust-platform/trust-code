@@ -24,8 +24,5 @@ Sortie& Flux_interfacial_base::printOn(Sortie& os) const
 
 Entree& Flux_interfacial_base::readOn(Entree& is)
 {
-  Param param(que_suis_je());
-  param.ajouter("dv_min", &dv_min_);
-  param.lire_avec_accolades_depuis(is);
   return is;
 }

@@ -132,7 +132,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
           for (l = 0; l < N; l++)
             if (k != l)
               {
-                double fac = pf(f) * vf(f);
+                double fac = beta_ * pf(f) * vf(f);
                 /* on essaie d'impliciter coeff sans ralentir la convergence en en faisant un developpement limite autour de pvit (dans la direction d'interet seulement) */
                 secmem(f, k) -= fac * (coeff(k, l, 0) * (inco(f, k) - inco(f, l)) + coeff(k, l, 1) * ddv(k, l, 3) * (pvit(f, k) - pvit(f, l)) * ((inco(f, k) - inco(f, l)) - (pvit(f, k) - pvit(f, l))));
                 if (mat)
@@ -177,7 +177,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
           for (l = 0; l < N; l++)
             if (k != l)
               {
-                double fac = pe(e) * ve(e);
+                double fac = beta_ * pe(e) * ve(e);
                 /* on essaie d'impliciter coeff sans ralentir la convergence en en faisant un developpement limite autour de pvit (dans la direction d'interet seulement) */
                 secmem(i, k) -= fac * (coeff(k, l, 0) * (inco(i, k) - inco(i, l)) + coeff(k, l, 1) * ddv(k, l, d) * (pvit(i, k) - pvit(i, l)) * ((inco(i, k) - inco(i, l)) - (pvit(i, k) - pvit(i, l))));
                 if (mat)
