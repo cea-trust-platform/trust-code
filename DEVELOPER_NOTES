@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.2_beta : Changes since version 1.9.1 :
 -------------------------------------------------------------
+07/02/23 (TRUST) Major change : TRUST_Ref is a template class now. No need for macros to declare/implement. Used always with the REF macro.
 02/02/23 (TRUST) Major Change : Domain and Zone are now merged into a single concept: Domaine. All former keywords remain supported (Sous_Zone, Create_domain_from_sous_zone, etc...), but internally the code now only work with Domaine. All Zone_* classes become Domaine_* class (Domaine_VDF, Domaine_VEF, Domaine_Cl_dis_base, etc...)
 27/01/23 (TRUST) Major change : Move from C++11 to C++14
 24/01/23 (TRUST) Major change : TRUST_Deriv is a template class now. No need for macros to declare/implement. Used always with the DERIV macro.
