@@ -5,6 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <Testeur2.h>
+#include <Nom.h>
 
 Implemente_instanciable(Testeur2,"Testeur2",Interprete);
 

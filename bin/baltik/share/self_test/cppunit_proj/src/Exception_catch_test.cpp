@@ -2,7 +2,7 @@
 #ifdef cppunit_
 #include <TRUSTArray.h>
 #include <EChaine.h>
-#include <TriouError.h>
+#include <TRUST_Error.h>
 #include <Motcle.h>
 
 
@@ -17,7 +17,7 @@ public:
   {
     ArrOfDouble toto;
     EChaine erreur(" 20000000000000000000");
-    CPPUNIT_ASSERT_THROW_MESSAGE("verification de la levee d'erreur si depassement memoire",(erreur>>toto), TriouError);
+    CPPUNIT_ASSERT_THROW_MESSAGE("verification de la levee d'erreur si depassement memoire",(erreur>>toto), TRUST_Error);
   }
 };
 
