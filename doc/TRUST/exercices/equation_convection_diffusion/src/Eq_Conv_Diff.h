@@ -3,7 +3,9 @@
 #define Eq_Conv_Diff_included
 
 #include <Convection_Diffusion_Concentration.h>
-#include <Ref_Constituant_Avec_Vitesse.h>
+#include <TRUST_Ref.h>
+
+class Constituant_Avec_Vitesse;
 
 class Eq_Conv_Diff : public Convection_Diffusion_Concentration
 {
