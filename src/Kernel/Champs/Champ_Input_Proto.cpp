@@ -75,7 +75,7 @@ void Champ_Input_Proto::read(Entree& is)
         {
           is >> nom_pb;
         }
-      else if (motlu=="sous_domaine")
+      else if (motlu=="sous_domaine" || motlu=="sous_zone")
         {
           is >> nom_sous_domaine;
         }
