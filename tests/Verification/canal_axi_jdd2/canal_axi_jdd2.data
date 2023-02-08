@@ -1,0 +1,131 @@
+# PARALLEL OK 8 #
+dimension 2
+bidim_axi
+pb_thermohydraulique pbt
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave tube
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 10 30
+        Longueurs 0.1 1.0
+    }
+    {
+        bord axi    X = 0   0 <= Y <= 1.0
+        bord haut   Y = 1.0   0 <= X <= 0.1
+        bord bas    Y = 0   0 <= X <= 0.1
+        bord wall   X = 0.1 0 <= Y <= 1.0
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max 0.1
+    facsec 1e30
+    facsec_max 1e30
+    seuil_statio 1e-6
+    dt_impr 1e-10
+    gnuplot_header 1
+    solveur implicite
+    {
+        solveur petsc cholesky { }
+        # {
+            -pc_type hypre
+            -pc_hypre_type boomeramg
+            -ksp_check_norm_iteration 4
+            -ksp_rtol 1e-10
+            -ksp_monitor
+        } #
+        seuil_convergence_implicite 1e30
+    }
+}
+
+VDF dis
+
+associate pbt dom
+
+Associate pbt sch
+Discretize pbt dis
+
+Read pbt
+{
+
+    fluide_incompressible
+    {
+        mu       champ_uniforme 1 50.0
+        rho      champ_uniforme 1 2000.0
+        cp       champ_uniforme 1 3075.0
+        lambda   champ_uniforme 1 0.5
+        beta_th  champ_uniforme 1 0.0002
+        gravite  champ_uniforme 2 0 -9.81
+    }
+
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { vitesse champ_uniforme 2 0.0 0.0 }
+        boundary_conditions
+        {
+            axi    symetrie
+            bas    frontiere_ouverte_vitesse_imposee champ_front_uniforme 2 0 1
+            wall   paroi_fixe
+            haut   frontiere_ouverte_pression_imposee champ_front_uniforme 1 0
+        }
+    }
+
+    convection_diffusion_temperature
+    {
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { temperature  champ_uniforme  1  100.0 }
+        boundary_conditions
+        {
+            axi     symetrie
+            bas     frontiere_ouverte_temperature_imposee champ_front_uniforme 1 100
+            wall    paroi_flux_impose champ_front_uniforme 1 100000.0
+            haut    frontiere_ouverte t_ext champ_front_uniforme 1 200
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            T grav temperature periode 1e8 segment 500 0 0.5 0.1 0.5
+            V grav     vitesse periode 1e8 segment 500 0 0.5 0.1 0.5
+        }
+        format lml
+        fields dt_post 1e8
+        {
+            vitesse          elem
+            temperature      elem
+        }
+    }
+}
+
+Solve pbt
+End

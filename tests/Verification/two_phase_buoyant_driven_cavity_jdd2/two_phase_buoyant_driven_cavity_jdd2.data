@@ -9,14 +9,14 @@ Mailler dom
     Pave Cavite
     {
         Origine 0. 0.
-        Nombre_de_Noeuds 30 2
-        Longueurs 1 0.05
+        Nombre_de_Noeuds 30 30
+        Longueurs 2 2
     }
     {
-        bord gauche X = 0     0 <= Y <= 0.05
-        bord haut   Y = 0.05  0 <= X <= 1
-        bord bas    Y = 0     0 <= X <= 1
-        bord droite X = 1     0 <= Y <= 0.05
+        bord gauche X = 0  0 <= Y <= 2
+        bord haut   Y = 2  0 <= X <= 2
+        bord bas    Y = 0  0 <= X <= 2
+        bord droite X = 2  0 <= Y <= 2
     }
 }
 # END MESH #
@@ -41,6 +41,7 @@ Schema_euler_implicite sch_ice
 Read sch_ice
 {
     tinit 0
+	nb_pas_dt_max 3
     facsec 1
     seuil_statio 1e-6
     dt_impr 1e-10
@@ -53,7 +54,7 @@ Read sch_ice
     }
 }
 
-$dis dis
+PolyMAC_P0 dis
 
 associate pbt dom
 
@@ -67,17 +68,17 @@ Read pbt
 		liquide_eau fluide_incompressible
 		{
             mu       champ_uniforme 1 50.0
-            rho      champ_uniforme 1 1.0
-            cp       champ_uniforme 1 1.0
-            lambda   champ_uniforme 1 100
+            rho      champ_uniforme 1 2000.0
+            cp       champ_uniforme 1 3075.0
+            lambda   champ_uniforme 1 0.5
             beta_th  champ_uniforme 1 0.0002
 		}
         gaz_eau fluide_incompressible
 		{
             mu       champ_uniforme 1 50.0
-            rho      champ_uniforme 1 1.0
-            cp       champ_uniforme 1 1.0
-            lambda   champ_fonc_xyz dom 1 100*(x<0.5)+50*(x]0.5)
+            rho      champ_uniforme 1 2000.0
+            cp       champ_uniforme 1 3075.0
+            lambda   champ_uniforme 1 0.5
             beta_th  champ_uniforme 1 0.0002
 		}
 	}
@@ -86,7 +87,7 @@ Read pbt
     {
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
         convection { amont }
-        diffusion  { negligeable }
+        diffusion  { }
         initial_conditions
         {
             vitesse  champ_uniforme 4 0 0 0 0
@@ -97,7 +98,7 @@ Read pbt
             bas    paroi_fixe
             gauche paroi_fixe
             droite paroi_fixe
-            haut   paroi_fixe
+            haut   paroi_defilante champ_front_uniforme 4 0.5 0.5 0.0 0.0
         }
     }
     Masse_Multiphase
@@ -116,13 +117,22 @@ Read pbt
     {
         diffusion { }
         convection { amont }
-        initial_conditions { temperature Champ_Uniforme 2 900 450 }
+        initial_conditions { temperature Champ_Uniforme 2 900 900 }
         boundary_conditions
         {
             bas     paroi_adiabatique
-            gauche  paroi_temperature_imposee champ_front_uniforme 2 800 1000
-            droite  paroi_temperature_imposee champ_front_uniforme 2 500 400
+            gauche  paroi_adiabatique
+            droite  paroi_adiabatique
             haut    paroi_adiabatique
+        }
+        sources
+        {
+            puissance_thermique champ_fonc_xyz dom 2 1e8*sin(0.5*x*pi)*sin(0.5*y*pi) 1e8*sin(0.5*x*pi)*sin(0.5*y*pi) ,
+            terme_puissance_thermique_echange_impose
+            {
+                himp  champ_uniforme 2 1e6 1e6
+                Text  champ_uniforme 2 900 900
+            }
         }
     }
 
@@ -130,7 +140,10 @@ Read pbt
     {
         Probes
         {
-            T grav temperature periode 1e8 segment 500 0 0.025 1 0.025
+            T_A grav temperature periode 1e8 segment 500 0 1 2 1
+            V_A grav     vitesse periode 1e8 segment 500 0 1 2 1
+            T_B grav temperature periode 1e8 segment 500 1 0 1 2
+            V_B grav     vitesse periode 1e8 segment 500 1 0 1 2
         }
         format lml
         fields dt_post 10

@@ -41,6 +41,7 @@ Schema_euler_implicite sch_ice
 Read sch_ice
 {
     tinit 0
+	nb_pas_dt_max 3
     facsec 1
     seuil_statio 1e-6
     dt_impr 1e-10
@@ -53,7 +54,7 @@ Read sch_ice
     }
 }
 
-$dis dis
+VDF dis
 
 associate pbt dom
 

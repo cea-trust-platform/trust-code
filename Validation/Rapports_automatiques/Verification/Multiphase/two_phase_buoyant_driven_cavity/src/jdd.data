@@ -144,7 +144,7 @@ Read pbt
             T_B grav temperature periode 1e8 segment 500 1 0 1 2
             V_B grav     vitesse periode 1e8 segment 500 1 0 1 2
         }
-        format med
+        format lml
         fields dt_post 10
         {
             vitesse     elem

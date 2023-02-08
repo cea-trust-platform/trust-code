@@ -1,0 +1,144 @@
+# PARALLEL OK 8 #
+dimension 2
+pb_thermohydraulique pbt
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0.
+        Nombre_de_Noeuds 30 30
+        Longueurs 2 2
+    }
+    {
+        bord gauche X = 0  0 <= Y <= 2
+        bord haut   Y = 2  0 <= X <= 2
+        bord bas    Y = 0  0 <= X <= 2
+        bord droite X = 2  0 <= Y <= 2
+    }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Decouper dom
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones dom
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter dom.Zones dom
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max 0.1
+    facsec 1e30
+    facsec_max 1e30
+    seuil_statio 1e-6
+    dt_impr 1e-10
+    solveur implicite
+    {
+        solveur petsc cholesky { }
+        # {
+            -pc_type hypre
+            -pc_hypre_type boomeramg
+            -ksp_check_norm_iteration 4
+            -ksp_rtol 1e-10
+            -ksp_monitor
+        } #
+        seuil_convergence_implicite 1e30
+    }
+}
+
+PolyMAC_P0 dis
+
+associate pbt dom
+
+Associate pbt sch
+Discretize pbt dis
+
+Read pbt
+{
+
+    fluide_incompressible
+    {
+        mu       champ_uniforme 1 50.0
+        rho      champ_uniforme 1 2000.0
+        cp       champ_uniforme 1 3075.0
+        lambda   champ_uniforme 1 0.5
+        beta_th  champ_uniforme 1 0.0002
+        gravite  champ_uniforme 2 0 -9.81
+    }
+
+    navier_stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { vitesse champ_uniforme 2 0.0 0.0 }
+        boundary_conditions
+        {
+            bas    paroi_fixe
+            gauche paroi_fixe
+            droite paroi_fixe
+            haut   paroi_defilante champ_front_uniforme 2 0.5 0.0
+        }
+        sources
+        {
+            boussinesq_temperature { T0  900.0  verif_boussinesq  0 }
+        }
+    }
+
+    convection_diffusion_temperature
+    {
+        convection  { amont }
+        diffusion   { }
+        initial_conditions  { temperature  champ_uniforme  1  900.0 }
+        boundary_conditions
+        {
+            bas     paroi_adiabatique
+            gauche  paroi_adiabatique
+            droite  paroi_adiabatique
+            haut    paroi_adiabatique
+        }
+        sources
+        {
+            puissance_thermique champ_fonc_xyz dom 1 1e8*sin(0.5*x*pi)*sin(0.5*y*pi) ,
+            terme_puissance_thermique_echange_impose
+            {
+                himp  champ_uniforme  1  1e6
+                Text  champ_uniforme  1  900
+            }
+        }
+    }
+
+    Post_processing
+    {
+        Probes
+        {
+            T_A grav temperature periode 1e8 segment 500 0 1 2 1
+            V_A grav     vitesse periode 1e8 segment 500 0 1 2 1
+            T_B grav temperature periode 1e8 segment 500 1 0 1 2
+            V_B grav     vitesse periode 1e8 segment 500 1 0 1 2
+        }
+        format lml
+        fields dt_post 0
+        {
+            vitesse          elem
+            temperature      elem
+        }
+    }
+}
+
+Solve pbt
+End
