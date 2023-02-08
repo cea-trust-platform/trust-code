@@ -57,8 +57,8 @@ Entree& Sous_domaine_VF::readOn(Entree& is)
 
 void Sous_domaine_VF::discretiser()
 {
-  Cerr << "Sous_domaine_VF::discretiser : discretization of the subarea "
-       << la_sous_domaine->le_nom() << "... ";
+  Cerr << "Sous_domaine_VF::discretiser : discretization of the sub-domain "
+       << le_sous_domaine->le_nom() << "... ";
 
   le_dom_VF=ref_cast(Domaine_VF,le_dom_dis.valeur());
 
@@ -86,8 +86,8 @@ void Sous_domaine_VF::discretiser()
   elem_app=0;
 
   // Remplissage de elem_app
-  for (int i=0; i<la_sous_domaine->nb_elem_tot(); i++)
-    elem_app[la_sous_domaine.valeur()(i)]=1;
+  for (int i=0; i<le_sous_domaine->nb_elem_tot(); i++)
+    elem_app[le_sous_domaine.valeur()(i)]=1;
 
   // Boucle sur les faces
   for (int i=0; i<nb_faces_tot; i++)
@@ -99,29 +99,29 @@ void Sous_domaine_VF::discretiser()
       // Remplissage des tableaux temporaires.
       if (elem1==-1)                           // face au bord du domaine
         {
-          if (elem_app[elem0])                         // dans la sous_domaine
+          if (elem_app[elem0])                         // dans le sous_domaine
             {
               faces_bord(nb_faces_bord++)=i;
             }
         }
       else if (elem0==-1)                      // face au bord du domaine
         {
-          if (elem_app[elem1])                         // dans la sous_domaine
+          if (elem_app[elem1])                         // dans le sous_domaine
             {
               faces_bord(nb_faces_bord++)=i;
             }
         }
       else                                     // face interne au domaine
         {
-          if (elem_app[elem0] && elem_app[elem1])          // interne a la sous_domaine
+          if (elem_app[elem0] && elem_app[elem1])          // interne a le sous_domaine
             {
               faces_internes(nb_faces_internes++)=i;
             }
-          else if (elem_app[elem0])                    // seul elem0 est dans la sous-domaine
+          else if (elem_app[elem0])                    // seul elem0 est dans le sous-domaine
             {
               faces_bord_0(nb_faces_bord_0++)=i;
             }
-          else if (elem_app[elem1])                    // seul elem1 est dans la sous-domaine
+          else if (elem_app[elem1])                    // seul elem1 est dans le sous-domaine
             {
               faces_bord_1(nb_faces_bord_1++)=i;
             }
@@ -157,13 +157,13 @@ void Sous_domaine_VF::discretiser()
 
   // Affichage du volume des sous domaines (ca peut etre pratique)
   double volume_sous_domaine=0;
-  for (int j=0; j<la_sous_domaine->nb_elem_tot(); j++)
+  for (int j=0; j<le_sous_domaine->nb_elem_tot(); j++)
     {
       // On ne compte que les mailles reelles
-      if (la_sous_domaine.valeur()(j)<le_dom_VF->domaine().nb_elem())
-        volume_sous_domaine+=volumes(la_sous_domaine.valeur()(j));
+      if (le_sous_domaine.valeur()(j)<le_dom_VF->domaine().nb_elem())
+        volume_sous_domaine+=volumes(le_sous_domaine.valeur()(j));
     }
   volume_sous_domaine=mp_sum(volume_sous_domaine);
   if (je_suis_maitre())
-    Cerr << "Volume of subarea " << la_sous_domaine->le_nom() << ": " << volume_sous_domaine << finl;
+    Cerr << "Volume of sub-domain " << le_sous_domaine->le_nom() << ": " << volume_sous_domaine << finl;
 }

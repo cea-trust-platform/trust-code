@@ -83,7 +83,7 @@ const Nom& Prisme::nom_lml() const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0.
  *
- * Renvoie 1 si l'element "element" du domaine associee a
+ * Renvoie 1 si l'element "element" du domaine associe a
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
@@ -181,7 +181,7 @@ int Prisme::contient(const ArrOfDouble& pos, int ielem ) const
 
 /*! @brief NE FAIT RIEN: A CODER, renvoie toujours 0 Renvoie 1 si les sommets specifies par le parametre "pos"
  *
- *     sont les sommets de l'element "element" du domaine associee a
+ *     sont les sommets de l'element "element" du domaine associe a
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements "element"
@@ -196,7 +196,7 @@ int Prisme::contient(const ArrOfInt& pos, int element ) const
 }
 
 
-/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements du domaine associee.
+/*! @brief NE FAIT RIEN: A CODER Calcule les volumes des elements du domaine associe.
  *
  * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */

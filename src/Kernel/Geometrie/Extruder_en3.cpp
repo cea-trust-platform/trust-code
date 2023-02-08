@@ -41,11 +41,11 @@ Entree& Extruder_en3::readOn(Entree& is) { return Interprete::readOn(is); }
  *     On triangule le domaine grace a la methode:
  *       void Extruder_en3::extruder(Domaine& domaine) const
  *     Extruder_en3 signifie ici transformer en triangle des
- *     elements geometrique d'une domaine.
+ *     elements geometrique d'un domaine.
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree
- * @throws l'objet a mailler n'est pas du type Domaine
+ * @throws l'objet a mailler n'est pas de type Domaine
  */
 Entree& Extruder_en3::interpreter_(Entree& is)
 {

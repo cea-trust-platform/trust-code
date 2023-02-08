@@ -31,7 +31,7 @@
  *     A la destruction du tableau, si p->ref_count_ est nul on libere la memoire. data_ n'est pas nul.
  *     L'espace memoire du tableau peut etre partage entre plusieurs TRUSTArray (le pointeur "p" pointe alors sur une meme structure).
  *     Ce type de tableau est produit par ref_array().
- *     Le dernier TRUSTArray a utiliser une domaine de memoire la detruit lorsqu'il a fini (voir detach_array())
+ *     Le dernier TRUSTArray a utiliser une zone de memoire la detruit lorsqu'il a fini (voir detach_array())
  *     Si smart_resize_==0, alors on a toujours size_array_==p->size_.
  *   * ref_data : p_==0, data_ pointe vers un tableau existant, la memoire n'est pas liberee a la destruction du TRUSTArray.
  *     Ces tableaux sont obtenus par appel a ref_data(...) et peuvent servir pour importer un tableau fourni par une routine exterieure (C ou fortran)
@@ -251,11 +251,11 @@ private:
 
   inline void memory_resize(int new_size, Array_base::Resize_Options opt = COPY_INIT);
 
-  // Domaine de memoire contenant les valeurs du tableau. Pointeur nul => le tableau est "detache" ou "ref_data", Pointeur non nul => le tableau est "normal"
+  // Zone de memoire contenant les valeurs du tableau. Pointeur nul => le tableau est "detache" ou "ref_data", Pointeur non nul => le tableau est "normal"
   VTRUSTdata<_TYPE_>* p_;
 
   // Pointeur vers le premier element du tableau= Pointeur nul => le tableau est "detache". Pointeur non nul => le tableau est "normal" ou "ref_data"
-  // Si p_ est non nul, data_ pointe quelque part a l'interieur du domaine allouee (en general au debut, sauf si le tableau a ete initialise avec ref() ou attach_array() avec start > 0)
+  // Si p_ est non nul, data_ pointe quelque part a l'interieur de la zone allouee (en general au debut, sauf si le tableau a ete initialise avec ref() ou attach_array() avec start > 0)
   _TYPE_* data_;
 
   // Nombre d'elements du tableau (inferieur ou egal a memory_size_). Si le tableau est "detache", alors size_array_=0

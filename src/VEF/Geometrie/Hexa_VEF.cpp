@@ -50,7 +50,7 @@ Hexa_VEF::Hexa_VEF()
       KEL_(i,j)=tmp[i][j];
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_VEF
+/*! @brief remplit le tableau face_normales dans le Domaine_VEF
  *
  */
 

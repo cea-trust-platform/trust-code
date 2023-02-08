@@ -371,7 +371,7 @@ void Champ_Fonc_MED::mettre_a_jour(double t)
 
 void Champ_Fonc_MED::lire(double t, int given_it)
 {
-  if (domainebidon_inst.nb_elem()==0) // Cas d'une domaine vide
+  if (domainebidon_inst.nb_elem()==0) // Cas d'un domaine vide
     {
       // Mise a jour:
       Champ_Fonc_base::mettre_a_jour(t);

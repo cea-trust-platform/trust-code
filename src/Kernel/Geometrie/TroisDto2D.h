@@ -22,7 +22,7 @@
 
 /*! @brief Classe TroisDto2D x->alpha x
  *
- * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
+ * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domain est l'objet Pave
  */
 class TroisDto2D : public Interprete_geometrique_base
 {

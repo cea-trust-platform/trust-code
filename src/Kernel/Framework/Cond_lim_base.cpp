@@ -149,12 +149,12 @@ void Cond_lim_base::associer_fr_dis_base(const Frontiere_dis_base& fr)
   modifier_val_imp = 0;
 }
 
-/*! @brief Associe la Domaine_Cl_dis_base (Domaine des conditions aux limites discretisees) a l'objet.
+/*! @brief Associe le Domaine_Cl_dis_base (Domaine des conditions aux limites discretisees) a l'objet.
  *
- * Cette Domaine_Cl_dis_base stocke (reference) toutes les conditions
- *     aux limites relative a une Domaine geometrique.
+ * Ce Domaine_Cl_dis_base stocke (reference) toutes les conditions
+ *     aux limites relative a un Domaine geometrique.
  *
- * @param (Domaine_Cl_dis_base& zcl) une Domaine des conditions aux limites discretisees a laquelle l'objet Cond_lim_base se rapporte
+ * @param (Domaine_Cl_dis_base& zcl) un Domaine des conditions aux limites discretisees a laquelle l'objet Cond_lim_base se rapporte
  */
 void Cond_lim_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl)
 {

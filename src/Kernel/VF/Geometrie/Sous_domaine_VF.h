@@ -25,24 +25,24 @@
    On suppose que chaque face a au plus deux elements voisins dans la
    domaine, ce qui est toujours le cas en maillage conforme.
 
-   Le tableau les_faces contient l'ensemble des faces de la Domaine_dis qui
-   appartiennent a cette sous-domaine, classees de la facon suivante :
-   * Les faces internes a la sous-domaine
+   Le tableau les_faces contient l'ensemble des faces du Domaine_dis qui
+   appartiennent a ce sous-domaine, classees de la facon suivante :
+   * Les faces internes au sous-domaine
    * Les faces internes au domaine, mais dont seul le premier element voisin
-   appartient a la sous-domaine
+   appartient au sous-domaine
    * Les faces internes au domaine, mais dont seul le deuxieme element voisin
-   appartient a la sous-domaine
+   appartient au sous-domaine
    * Les faces qui ne presentent qu'un element dans le domaine.
    Les separations sont indiquees respectivement par les variables
    premiere_face_bord_0, premiere_face_bord_1, et premiere_face_bord.
 
    les_faces : nb_dim=1
-   dimension(0) = le nombre de faces de la sous_domaine
+   dimension(0) = le nombre de faces du sous_domaine
    valeur de l'entier = indice dans les tableaux le_dom_VF->face_voisins_,
    le_dom_VF->face_sommets_,...
 
    volumes_entrelaces(int face) renvoie le volume entrelace restreint
-   a la sous-domaine. Le numero de la face fait reference au tableau
+   au sous-domaine. Le numero de la face fait reference au tableau
    les_faces. Seuls sont stockes localement les volumes entrelaces
    differents de ceux du domaine.
 */
@@ -75,12 +75,12 @@ public:
   {
     return premiere_face_bord_;
   }
-  //! Renvoie le volume entrelace restreint a la sous-domaine. face est l'indice dans le tableau les_faces_.
+  //! Renvoie le volume entrelace restreint au sous-domaine. face est l'indice dans le tableau les_faces_.
   inline double volumes_entrelaces(int) const;
 
   // Methodes propres
 
-  //! Genere les_faces en parcourant les faces du domaine_dis et en cherchant quels voisins appartiennent a la_sous_domaine.
+  //! Genere les_faces en parcourant les faces du domaine_dis et en cherchant quels voisins appartiennent a le_sous_domaine.
   void discretiser() override;
 
 protected:

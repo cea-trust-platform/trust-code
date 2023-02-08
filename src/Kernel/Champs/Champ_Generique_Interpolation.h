@@ -83,7 +83,7 @@ private:
   Nom                nom_domaine_lu_;        // Nom du domaine lu
   REF(Domaine)         domaine_;                      // domaine sur lequel on veut interpoler le champ (domaine natif si reference nulle)
   Domaine_dis le_dom_dis;                     // rempli si domaine d interpolation different du domaine natif
-  // ex : Sonde utilise valeur_aux...() qui necessite de disposer d une domaine discretisee
+  // ex : Sonde utilise valeur_aux...() qui necessite de disposer d un domaine discretise
   int optimisation_sous_maillage_,optimisation_demande_;
   ArrOfInt renumerotation_maillage_;
 };

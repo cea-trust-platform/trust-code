@@ -56,21 +56,21 @@ public :
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Associe une domaine (non discretisee) a l'objet.
+ * Associe un domaine (non discretise) a l'objet.
  *
- * @param (Domaine& une_domaine)
+ * @param (Domaine& un_domaine)
  */
-inline void Domaine_dis::associer_domaine(const Domaine& une_domaine)
+inline void Domaine_dis::associer_domaine(const Domaine& un_domaine)
 {
-  valeur().associer_domaine(une_domaine);
+  valeur().associer_domaine(un_domaine);
 }
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie le domaine associee.
+ * Renvoie le domaine associe.
  *     (version const)
  *
- * @return (Domaine&) le domaine associee
+ * @return (Domaine&) le domaine associe
  */
 inline const Domaine& Domaine_dis::domaine() const
 {
@@ -79,9 +79,9 @@ inline const Domaine& Domaine_dis::domaine() const
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie le domaine associee.
+ * Renvoie le domaine associe.
  *
- * @return (Domaine&) le domaine associee
+ * @return (Domaine&) le domaine associe
  */
 inline Domaine& Domaine_dis::domaine()
 {

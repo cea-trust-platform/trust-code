@@ -234,7 +234,7 @@ DoubleTab& Op_Conv_Muscl_old_VEF_Face::ajouter(const DoubleTab& transporte,
   // le calcul du pas de temps de stabilite
   fluent_ = 0;
 
-  // Les polyedres non standard sont ranges en 2 groupes dans la Domaine_VEF:
+  // Les polyedres non standard sont ranges en 2 groupes dans le Domaine_VEF:
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent

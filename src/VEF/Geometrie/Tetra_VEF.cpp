@@ -122,7 +122,7 @@ void Tetra_VEF::normale(int num_Face,DoubleTab& Face_normales,
 
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_VEF
+/*! @brief remplit le tableau face_normales dans le Domaine_VEF
  *
  */
 void Tetra_VEF::creer_facette_normales(const Domaine& domaine_geom,
@@ -214,7 +214,7 @@ void Tetra_VEF::creer_facette_normales(const Domaine& domaine_geom,
 }
 
 
-/*! @brief remplit le tableau normales_facettes_Cl dans la Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans le Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
  *
  */
 void Tetra_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,

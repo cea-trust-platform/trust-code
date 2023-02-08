@@ -33,7 +33,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   is >> nom;
   interprete_get_domaine(nom);
   mon_domaine->creer_tableau_elements(i_mor);
-  i_mor = -1; // pour planter si on a oublie une sous-domaine
+  i_mor = -1; // pour planter si on a oublie un sous-domaine
 
   int nbcomp;
   is >> nbcomp;
@@ -49,7 +49,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
   for (is >> nom; nom != "}"; is >> nom)
     {
       CHTAB ch_lu;
-      /* 1. lecture de la sous-domaine */
+      /* 1. lecture du sous-domaine */
       REF(Sous_Domaine) refssz = les_sous_domaines.add(mon_domaine->ss_domaine(nom));
       Sous_Domaine& ssz = refssz.valeur();
 
@@ -141,7 +141,7 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
           IntVect polys(tab.dimension_tot(0));
           for (int i = 0; i < tab.dimension_tot(0); i++) polys[i] = i;
           tval.push_back(DoubleTab(tab.dimension_tot(0), pch->nb_comp()));
-          pch->valeur_aux_elems(pch->a_une_domaine_dis_base() ? ref_cast(Domaine_VF, pch->domaine_dis_base()).xp() : vide, polys, tval.back());
+          pch->valeur_aux_elems(pch->a_un_domaine_dis_base() ? ref_cast(Domaine_VF, pch->domaine_dis_base()).xp() : vide, polys, tval.back());
           pval.push_back(&tval.back());
         }
       is_multi.push_back(pval.back()->dimension(1) > 1);

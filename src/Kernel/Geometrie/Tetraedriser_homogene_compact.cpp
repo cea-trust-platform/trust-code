@@ -103,7 +103,7 @@ void Tetraedriser_homogene_compact::decoupe(Domaine& domaine, Faces& faces, IntT
 }
 
 //
-// ATTENTION: ne considere qu'une seule domaine pour l'instant...
+// ATTENTION: ne considere qu'un seul domaine pour l'instant...
 //
 int Tetraedriser_homogene_compact::creer_sommet(Domaine& domaine, DoubleTab& new_soms, IntTab& elem_traite, IntTab& new_soms_old_elems, int NbSom, IntTab& sommets, int& compteur, int oldnbsom,
                                                 int& nbnewsoms, IntTab& fait_sommet, int& nface) const

@@ -114,7 +114,7 @@ inline void Elem_geom::calculer_centres_gravite(DoubleTab& xp) const
 }
 
 
-/*! @brief Appel a l'objet sous-jacent Calcule les volumes des elements du domaine associee.
+/*! @brief Appel a l'objet sous-jacent Calcule les volumes des elements du domaine associe.
  *
  * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
@@ -123,7 +123,7 @@ inline void Elem_geom::calculer_volumes(DoubleVect& volumes) const
   valeur().calculer_volumes(volumes);
 }
 
-/*! @brief Appel a l'objet sous-jacent Calcule les normales aux faces des elements du domaine associee.
+/*! @brief Appel a l'objet sous-jacent Calcule les normales aux faces des elements du domaine associe.
  *
  * @param (DoubleTab& face_sommets) les numeros des sommets des faces dans la liste des sommets du domaine
  * @param (DoubleTab& face_normales) le vecteur contenant les normales aux faces des elements du domaine
@@ -194,7 +194,7 @@ inline const Nom& Elem_geom::nom_lml() const
 }
 
 
-/*! @brief Appel a l'objet sous-jacent Renvoie 1 si l'element i du domaine associee a
+/*! @brief Appel a l'objet sous-jacent Renvoie 1 si l'element i du domaine associe a
  *
  *               l'element geometrique contient le point
  *               de coordonnees specifiees par le parametre "pos".
@@ -212,7 +212,7 @@ inline int Elem_geom::contient(const ArrOfDouble& pos, int i ) const
 
 /*! @brief Appel a l'objet sous-jacent Renvoie 1 si les sommets specifies par le parametre "pos"
  *
- *     sont les sommets de l'element i du domaine associee a
+ *     sont les sommets de l'element i du domaine associe a
  *     l'element geometrique.
  *
  * @param (IntVect& pos) les numeros des sommets a comparer avec ceux de l'elements i

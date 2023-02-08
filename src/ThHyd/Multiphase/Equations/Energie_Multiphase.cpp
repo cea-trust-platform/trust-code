@@ -289,10 +289,10 @@ void Energie_Multiphase::calculer_alpha_rho_e(const Objet_U& obj, DoubleTab& val
   for (i = 0; i < Nl; i++)
     for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * en(i, n);
 
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a un domaine_dis_base */
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_en = ch_en.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
-  if (ch_rho.a_une_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
+  if (ch_rho.a_un_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
   else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_en(i, n);
@@ -332,10 +332,10 @@ void Energie_Multiphase::calculer_alpha_rho_h(const Objet_U& obj, DoubleTab& val
   for (i = 0; i < Nl; i++)
     for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n) * h(i, n);
 
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a un domaine_dis_base */
   DoubleTab b_al = ch_alpha.valeur_aux_bords(), b_rho, b_h = ch_h.valeur_aux_bords();
   int Nb = b_al.dimension_tot(0);
-  if (ch_rho.a_une_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
+  if (ch_rho.a_un_domaine_dis_base()) b_rho = ch_rho.valeur_aux_bords();
   else b_rho.resize(Nb, N), ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), b_rho);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = b_al(i, n) * b_rho(i, n) * b_h(i, n);

@@ -128,7 +128,7 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
       int *p = afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
       for (int i = 0, j, k, e, f, s; i < (ma_sous_domaine.non_nul() ? ma_sous_domaine.valeur().nb_elem_tot() : zvf.nb_elem()); i++)
         {
-          if (ma_sous_domaine.non_nul() && ma_sous_domaine.valeur()[i] >= zvf.nb_elem()) continue; //element non reel de la sous-domaine -> on saute
+          if (ma_sous_domaine.non_nul() && ma_sous_domaine.valeur()[i] >= zvf.nb_elem()) continue; //element non reel du sous-domaine -> on saute
           e = ma_sous_domaine.non_nul() ? ma_sous_domaine.valeur()[i] : i; //numero de l'element
           int *pf = p + afield._nodes_per_elem; //fin de la ligne
           /* insertion de la connectivite de chaque face, suivie d'un -1 */

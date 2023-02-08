@@ -60,7 +60,7 @@ Sortie& EF_discretisation::printOn(Sortie& s) const
  *  Cette methode determine le type du champ a creer en fonction du type d'element
  *  et de la directive de discretisation. Elle determine ensuite le nombre de ddl
  *  et fixe l'ensemble des parametres du champ (type, nb_compo, nb_ddl, nb_pas_dt,
- *  nom(s), unite(s) et nature du champ) et associe la Domaine_dis au champ.
+ *  nom(s), unite(s) et nature du champ) et associe le Domaine_dis au champ.
  *  Voir le code pour avoir la correspondance entre les directives et
  *  le type de champ cree.
  *

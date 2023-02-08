@@ -199,18 +199,18 @@ inline int& Faces::voisin(int face, int i)
   return faces_voisins(face,i);
 }
 
-/*! @brief Associe les faces a une Domaine.
+/*! @brief Associe les faces a une Domain.
  *
- * @param (Domaine& z) le domaine a laquelle l'objet s'associe
+ * @param (Domaine& z) le domaine auquel l'objet s'associe
  */
 inline void Faces::associer_domaine(const Domaine& z)
 {
   mon_dom=z;
 }
 
-/*! @brief Renvoie le domaine associee.
+/*! @brief Renvoie le domaine associe.
  *
- * @return (Domaine&) le domaine associee
+ * @return (Domaine&) le domaine associe
  */
 inline const Domaine& Faces::domaine() const
 {

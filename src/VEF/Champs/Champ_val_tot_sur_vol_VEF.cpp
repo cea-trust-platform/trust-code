@@ -89,8 +89,8 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Domaine_dis_base& 
                       //Quatre situations possibles
                       //-elem_test=-1 condition limite
                       //-elem_test est aussi dans la sous domaine courante
-                      //-elem_test est dans une autre sous domaine
-                      //-elem_test est dans la partie par defaut du domaine (pas dans une sous domaine)
+                      //-elem_test est dans un autre sous domaine
+                      //-elem_test est dans la partie par defaut du domaine (pas dans un sous domaine)
 
                       int ok_trouve_loc = 0;
                       //Recherche si elem_test est dans la sous domaine courante
@@ -110,7 +110,7 @@ DoubleVect& Champ_val_tot_sur_vol_VEF::eval_contrib_loc(const Domaine_dis_base& 
                       //elem_test est dans la sous domaine courante (en element reel) ou est en condition limite
                       if ((ok_trouve_loc==1) || (elem_test==-1))
                         fac_pond = 1.;
-                      //elem_test est dans une autre sous domaine ou dans la partie par defaut
+                      //elem_test est dans un autre sous domaine ou dans la partie par defaut
                       //ou dans la sous domaine courante mais en element virtuel
                       else
                         fac_pond = 0.5;

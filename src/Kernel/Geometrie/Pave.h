@@ -18,7 +18,7 @@
 #include <Domaine.h>
 
 
-/*! @brief Classe Pave Une domaine particulierement facile a mailler!
+/*! @brief Classe Pave Un domaine particulierement facile a mailler!
  *
  *     La structure du jeu de donnee pour specifier un Pave est:
  *     Pave nom_pave

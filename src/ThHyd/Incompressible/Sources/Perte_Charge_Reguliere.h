@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 
 /*! @brief Classe Perte_Charge_Reguliere Cette classe derivee de Perte_Charge est utiliseelorsque l'on veut
  *
- *     modeliser une domaine de l'ecoulement dans laquelle des obstacles sont
+ *     modeliser un domaine de l'ecoulement dans lequel des obstacles sont
  *     immerges (faisceau de tubes par exemple)
  *
  * @sa Perte_Charge Perte_Charge_Singuliere

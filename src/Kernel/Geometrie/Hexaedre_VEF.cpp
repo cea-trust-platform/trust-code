@@ -237,7 +237,7 @@ static int contient_Tetra(const Domaine& dom,const ArrOfDouble& pos, int som0_, 
   return 1;
 }
 
-/*! @brief Renvoie 1 si l'element ielem du domaine associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element ielem du domaine associe a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
@@ -293,7 +293,7 @@ int Hexaedre_VEF::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associe a
  *
  *     l'element geometrique.
  *
@@ -317,7 +317,7 @@ int Hexaedre_VEF::contient(const ArrOfInt& som, int element ) const
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements du domaine associee.
+/*! @brief Calcule les volumes des elements du domaine associe.
  *
  * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */

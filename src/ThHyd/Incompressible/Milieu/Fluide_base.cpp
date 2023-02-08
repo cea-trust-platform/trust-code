@@ -439,7 +439,7 @@ void Fluide_base::calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& 
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++) val(i, n) = fl.h0_ + Cp(!cCp * i, n) * (T(i, n0 + n) - fl.T0_);
   DoubleTab bT = ch_T.valeur_aux_bords(), bCp;
-  if (ch_Cp.a_une_domaine_dis_base()) bCp = ch_Cp.valeur_aux_bords();
+  if (ch_Cp.a_un_domaine_dis_base()) bCp = ch_Cp.valeur_aux_bords();
   else bCp.resize(bval.dimension_tot(0), N), ch_Cp.valeur_aux(ref_cast(Domaine_VF, ch_T.domaine_dis_base()).xv_bord() , bCp);
   for (i = 0; i < Nb; i++)
     for (n = 0; n < N; n++) bval(i, n) = fl.h0_ + bCp(i, n) * (bT(i, n0 + n) - fl.T0_);

@@ -24,7 +24,7 @@ class Static_Int_Lists;
 class Faces;
 class Frontiere;
 
-/*! @brief classe outil pour construire les faces d'une domaine
+/*! @brief classe outil pour construire les faces d'un domaine
  * (utilisee uniquement pour creer les tableau des faces reelles)
  *
  */

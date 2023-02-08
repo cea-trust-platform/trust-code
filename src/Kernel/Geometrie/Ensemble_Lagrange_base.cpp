@@ -35,9 +35,9 @@ Entree& Ensemble_Lagrange_base::readOn(Entree& is)
   return is;
 }
 
-void Ensemble_Lagrange_base::associer_domaine(const Domaine& une_domaine)
+void Ensemble_Lagrange_base::associer_domaine(const Domaine& un_domaine)
 {
-  mon_dom_=une_domaine;
+  mon_dom_=un_domaine;
 }
 
 void Ensemble_Lagrange_base::remplir_sommets_tmp(DoubleTab& soms_tmp)

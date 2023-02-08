@@ -33,28 +33,28 @@ Entree& Sous_domaine_dis_base::readOn(Entree& is)
 // Not inlined to avoid cyclic includes
 const Sous_Domaine& Sous_domaine_dis_base::sous_domaine() const
 {
-  return la_sous_domaine.valeur();
+  return le_sous_domaine.valeur();
 }
 
 Sous_Domaine& Sous_domaine_dis_base::sous_domaine()
 {
-  return la_sous_domaine.valeur();
+  return le_sous_domaine.valeur();
 }
 
-/*! @brief Associe une Sous_Domaine a l'objet.
+/*! @brief Associe un Sous_Domaine a l'objet.
  *
  */
 void Sous_domaine_dis_base::associer_sous_domaine(const Sous_Domaine& une_sous_domaine)
 {
-  la_sous_domaine=une_sous_domaine;
+  le_sous_domaine=une_sous_domaine;
 }
 
-/*! @brief Associe une Domaine_dis a l'objet.
+/*! @brief Associe un Domaine_dis a l'objet.
  *
  */
-void Sous_domaine_dis_base::associer_domaine_dis(const Domaine_dis_base& une_domaine_dis)
+void Sous_domaine_dis_base::associer_domaine_dis(const Domaine_dis_base& un_domaine_dis)
 {
-  le_dom_dis=une_domaine_dis;
+  le_dom_dis=un_domaine_dis;
 }
 
 const Domaine_dis_base& Sous_domaine_dis_base::domaine_dis() const

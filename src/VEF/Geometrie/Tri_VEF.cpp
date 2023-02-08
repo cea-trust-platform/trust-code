@@ -50,7 +50,7 @@ Tri_VEF::Tri_VEF()
       KEL_(i,j)=tmp[i][j];
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_VEF
+/*! @brief remplit le tableau face_normales dans le Domaine_VEF
  *
  */
 void Tri_VEF::normale(int num_Face,DoubleTab& Face_normales,
@@ -169,7 +169,7 @@ void Tri_VEF::creer_facette_normales(const Domaine& domaine_geom,
   facette_normales.echange_espace_virtuel();
 }
 
-/*! @brief remplit le tableau normales_facettes_Cl dans la Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans le Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
  *
  */
 void Tri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,

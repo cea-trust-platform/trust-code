@@ -20,8 +20,8 @@
 
 /*! @brief Classe Frontiere.
  *
- * Une Frontiere decrit une partie de la frontiere d'une Domaine,
- *     elle possede un Nom, elle porte des Faces et a une Domaine associee.
+ * Une Frontiere decrit une partie de la frontiere d'un Domaine,
+ *     elle possede un Nom, elle porte des Faces et a un Domaine associe.
  *     Une Frontiere peut etre specialisee en un Bord, un Joint un
  *     Raccord ou une Face Interne.
  *

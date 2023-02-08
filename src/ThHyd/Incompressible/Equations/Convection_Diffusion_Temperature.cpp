@@ -350,7 +350,7 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
       const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
       // Specific code if temperature equation is penalized
       derivee=inconnue().valeurs();
-      //   Mise en place d'une methode de mise en place d'une domaine fantome
+      //   Mise en place d'une methode de mise en place d'un domaine fantome
       mise_en_place_domaine_fantome(derivee);
       DoubleTab& inc=inconnue().valeurs();
       inc = derivee;
@@ -1376,7 +1376,7 @@ void Convection_Diffusion_Temperature::calculer_rho_cp_T(const Objet_U& obj, Dou
   for (int i = 0; i < Nl; i++)
     for (int n = 0; n < N; n++) val(i, n) = rho(0, n) * cp(!cCp * i, n) * T(i, n);
 
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a un domaine_dis_base */
   DoubleTab b_cp = cCp ? cp : ch_cp->valeur_aux_bords(), b_T = ch_T.valeur_aux_bords();
   int Nb = b_T.dimension_tot(0);
   // on suppose que rho est un champ_uniforme : on utilise directement le tableau du champ

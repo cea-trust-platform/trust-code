@@ -2101,12 +2101,12 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
       for (int i=0; i<nb_ssz_alpha; i++)
         {
           REF(Sous_domaine_VF) la_ssz;
-          const Sous_Domaine& la_sous_domaine=equation().probleme().domaine().ss_domaine(noms_ssz_alpha[i]);
+          const Sous_Domaine& le_sous_domaine=equation().probleme().domaine().ss_domaine(noms_ssz_alpha[i]);
           const Domaine_dis_base& le_domaine_dis=le_dom_vef.valeur();
           bool trouve=false;
           for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_domaines_dis(); ssz++)
             {
-              if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(la_sous_domaine))
+              if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(le_sous_domaine))
                 {
                   trouve=true;
                   la_ssz=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
@@ -2115,7 +2115,7 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
 
           if(!trouve)
             {
-              Cerr << "On ne trouve pas la sous_domaine discretisee associee a " << noms_ssz_alpha[i] << finl;
+              Cerr << "On ne trouve pas le sous_domaine discretise associe a " << noms_ssz_alpha[i] << finl;
               Process::exit();
             }
           const Sous_domaine_VF& ssz=la_ssz.valeur();
@@ -2136,24 +2136,24 @@ void Op_Conv_EF_VEF_P1NC_Stab::completer()
   if (sous_domaine)
     {
       sous_domaine=false;
-      const Sous_Domaine& la_sous_domaine=equation().probleme().domaine().ss_domaine(nom_sous_domaine);
+      const Sous_Domaine& le_sous_domaine=equation().probleme().domaine().ss_domaine(nom_sous_domaine);
       const Domaine_dis_base& le_domaine_dis=le_dom_vef.valeur();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_domaines_dis(); ssz++)
         {
-          if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(la_sous_domaine))
+          if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(le_sous_domaine))
             {
               sous_domaine=true;
-              la_sous_domaine_dis=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
+              le_sous_domaine_dis=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
             }
         }
 
       if(!sous_domaine)
         {
-          Cerr << "On ne trouve pas la sous_domaine discretisee associee a " << nom_sous_domaine << finl;
+          Cerr << "On ne trouve pas le sous_domaine discretise associe a " << nom_sous_domaine << finl;
           Process::exit();
         }
 
-      const Sous_domaine_VF& ssz=la_sous_domaine_dis.valeur();
+      const Sous_domaine_VF& ssz=le_sous_domaine_dis.valeur();
       int nb_faces = ssz.les_faces().size();
 
       for (int face=0; face<nb_faces; face++)

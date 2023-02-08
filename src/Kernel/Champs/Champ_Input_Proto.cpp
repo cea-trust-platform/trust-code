@@ -30,7 +30,7 @@ using ICoCo::WrongArgument;
  *      { nb_comp nombre_de_composantes_du_champ
  *        nom nom_du_champ
  *        probleme nom_du_probleme_base_associe
- *        [sous_domaine nom_de_la_sous_domaine_associee] }
+ *        [sous_domaine nom_du_sous_domaine_associe] }
  *
  * @param (Entree& is) flot d'entree
  * @return le flot d'entre modifie

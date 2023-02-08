@@ -156,7 +156,7 @@ DoubleTab& Op_Conv_Vort_VEF_Face::ajouter(const DoubleTab& transporte,
 
   //  Cerr << "tab=" << tab << finl;
 
-  // Les polyedres non standard sont ranges en 2 groupes dans la Domaine_VEF:
+  // Les polyedres non standard sont ranges en 2 groupes dans le Domaine_VEF:
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent

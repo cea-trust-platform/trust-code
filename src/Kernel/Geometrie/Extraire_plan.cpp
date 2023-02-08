@@ -176,7 +176,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
       exit();
     }
 
-  // creation d'une domaine pipo pour pouvoir chercher les faces
+  // creation d'un domaine pipo pour pouvoir chercher les faces
   Domaine domaine_test;
   ArrOfDouble normal(3);
   {

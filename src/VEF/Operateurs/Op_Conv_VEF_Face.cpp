@@ -464,7 +464,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           type_op_boucle = centre;
           gradient.ref(gradient_elem);
         }
-      // Les polyedres non standard sont ranges en 2 groupes dans la Domaine_VEF:
+      // Les polyedres non standard sont ranges en 2 groupes dans le Domaine_VEF:
       //  - polyedres bords et joints
       //  - polyedres bords et non joints
       // On traite les polyedres en suivant l'ordre dans lequel ils figurent
@@ -1230,7 +1230,7 @@ void Op_Conv_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice
     istetra=1;
 
 
-  // Les polyedres non standard sont ranges en 2 groupes dans la Domaine_VEF:
+  // Les polyedres non standard sont ranges en 2 groupes dans le Domaine_VEF:
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent
@@ -1562,7 +1562,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   // le calcul du pas de temps de stabilite
   fluent_ = 0;
 
-  // Les polyedres non standard sont ranges en 2 groupes dans la Domaine_VEF:
+  // Les polyedres non standard sont ranges en 2 groupes dans le Domaine_VEF:
   //  - polyedres bords et joints
   //  - polyedres bords et non joints
   // On traite les polyedres en suivant l'ordre dans lequel ils figurent

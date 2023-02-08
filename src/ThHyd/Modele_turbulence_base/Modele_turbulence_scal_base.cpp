@@ -109,8 +109,8 @@ void Modele_turbulence_scal_base::associer_eqn(const Equation_base& eqn)
 
 /*! @brief NE FAIT RIEN
  *
- * @param (Domaine_dis&) une domaine discretisee
- * @param (Domaine_Cl_dis&) une domaine de conditions aux limites discretisees
+ * @param (Domaine_dis&) un domaine discretise
+ * @param (Domaine_Cl_dis&) un domaine de conditions aux limites discretisees
  */
 void Modele_turbulence_scal_base::associer(const Domaine_dis& , const Domaine_Cl_dis& )
 {

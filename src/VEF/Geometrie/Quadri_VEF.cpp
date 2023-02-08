@@ -49,7 +49,7 @@ Quadri_VEF::Quadri_VEF()
       KEL_(i,j)=tmp[i][j];
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_VEF
+/*! @brief remplit le tableau face_normales dans le Domaine_VEF
  *
  */
 void Quadri_VEF::normale(int num_Face,DoubleTab& Face_normales,
@@ -245,7 +245,7 @@ void Quadri_VEF::creer_facette_normales(const Domaine& domaine_geom,
   //  Cerr << "facette_normales internes (Quadri_VEF::creer_normales_facettes) : " << facette_normales << finl;
 }
 
-/*! @brief remplit le tableau normales_facettes_Cl dans la Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
+/*! @brief remplit le tableau normales_facettes_Cl dans le Domaine_Cl_VEF pour la facette fa7 de l'element num_elem
  *
  */
 void Quadri_VEF::creer_normales_facettes_Cl(DoubleTab& normales_facettes_Cl,

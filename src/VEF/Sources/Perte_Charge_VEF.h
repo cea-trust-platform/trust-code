@@ -92,10 +92,10 @@ protected:
   REF(Domaine_VEF) le_dom_VEF;
   REF(Domaine_Cl_VEF) le_dom_Cl_VEF;
 
-  // Cas d'une sous-domaine
-  bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?
-  Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
-  REF(Sous_domaine_VF) la_sous_domaine_dis; //!< Initialise dans completer()
+  // Cas d'un sous-domaine
+  bool sous_domaine=false; //!< Le terme est-il limite a un sous-domaine ?
+  Nom nom_sous_domaine; //!< Nom du sous-domaine, initialise dans readOn()
+  REF(Sous_domaine_VF) le_sous_domaine_dis; //!< Initialise dans completer()
   int implicite_;
 
   mutable Parser_U lambda;

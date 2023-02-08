@@ -92,7 +92,7 @@ DoubleTab& valeur_P1_L2(Champ_P1NC& cha, const Domaine& dom)
       miiK= 1./12.;
     }
 
-  // dans le cas d'une domaine nulle on doit effectuer le dimensionnement
+  // dans le cas d'un domaine nul on doit effectuer le dimensionnement
   // mais une seule fois
   double non_prepare=0;
   if (cha.MatP1NC2P1_L2.nb_lignes() <2)
@@ -503,7 +503,7 @@ DoubleTab& valeur_P1_L2(Champ_Fonc_P1NC& cha, const Domaine& dom)
       miiK= 1./12.;
     }
 
-  // dans le cas d'une domaine nulle on doit effectuer le dimensionnement
+  // dans le cas d'un domaine nul on doit effectuer le dimensionnement
   // mais une seule fois
   double non_prepare=0;
   if (cha.MatP1NC2P1_L2.nb_lignes() <2)

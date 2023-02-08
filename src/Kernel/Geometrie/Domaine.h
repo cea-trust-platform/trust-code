@@ -47,14 +47,14 @@ class Domaine_dis_base;
 class Domaine_dis;
 class Probleme_base;
 
-/*! @brief classe Domaine Une Domaine est un maillage compose d'un ensemble d'elements geometriques
+/*! @brief classe Domaine un Domaine est un maillage compose d'un ensemble d'elements geometriques
  *
  *     de meme type. Les differents types d'elements sont des objets de
  *     classes derivees de Elem_geom_base.
- *     Une domaine est constituee  de noeuds, d'elements, de bords, de bords periodiques,
+ *     Une domaine est constitue  de noeuds, d'elements, de bords, de bords periodiques,
  *     de joints, de raccords et de face internes.
  *
- * @sa Domaine SousDomaine Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Faces_Interne
+ * @sa Domaine Sous_Domaine Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Faces_Interne
  */
 class Domaine : public Objet_U
 {
@@ -329,7 +329,7 @@ protected:
   // Les faces de joint sont les faces communes avec les autres processeurs (bords
   //  du domaine locale a ce processeur qui se raccordent a un processeur voisin)
   Joints mes_faces_joint_;
-  // Pour les faces virtuelles de la Domaine_VF, indices de la meme face dans le tableau des faces de bord
+  // Pour les faces virtuelles du Domaine_VF, indices de la meme face dans le tableau des faces de bord
   // (voir Domaine::init_faces_virt_bord())
   ArrOfInt ind_faces_virt_bord_; // contient les indices des faces virtuelles de bord
 

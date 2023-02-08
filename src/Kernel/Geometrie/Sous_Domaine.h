@@ -22,7 +22,7 @@
 
 class Domaine;
 
-/*! @brief Classe Sous_Domaine Represente une sous domaine volumique i.
+/*! @brief Classe Sous_Domaine Represente un sous domaine volumique i.
  *
  * e un sous ensemble
  *     de polyedres d'un objet de type Domaine.
@@ -66,9 +66,9 @@ protected :
   Nom nom_;
 };
 
-/*! @brief Renvoie le nom de la sous-domaine.
+/*! @brief Renvoie le nom du sous-domaine.
  *
- * @return (Nom&) le nom de la sous-domaine
+ * @return (Nom&) le nom du sous-domaine
  */
 inline const Nom& Sous_Domaine::le_nom() const
 {
@@ -76,9 +76,9 @@ inline const Nom& Sous_Domaine::le_nom() const
 }
 
 
-/*! @brief Renvoie le numero du i-ieme polyedre de la sous-domaine.
+/*! @brief Renvoie le numero du i-ieme polyedre du sous-domaine.
  *
- * @return (int) le numero du i-ieme polyedre de la sous-domaine
+ * @return (int) le numero du i-ieme polyedre du sous-domaine
  */
 inline int Sous_Domaine::operator()(int i) const
 {
@@ -86,9 +86,9 @@ inline int Sous_Domaine::operator()(int i) const
 }
 
 
-/*! @brief Renvoie le numero du i-ieme polyedre de la sous-domaine.
+/*! @brief Renvoie le numero du i-ieme polyedre du sous-domaine.
  *
- * @return (int) le numero du i-ieme polyedre de la sous-domaine
+ * @return (int) le numero du i-ieme polyedre du sous-domaine
  */
 inline int Sous_Domaine::operator[](int i) const
 {
@@ -96,9 +96,9 @@ inline int Sous_Domaine::operator[](int i) const
 }
 
 
-/*! @brief Renvoie le nombre de polyedre de la sous-domaine.
+/*! @brief Renvoie le nombre de polyedre du sous-domaine.
  *
- * @return (int) le nombre de polyedre de la sous-domaine
+ * @return (int) le nombre de polyedre du sous-domaine
  */
 inline int Sous_Domaine::nb_elem_tot() const
 {

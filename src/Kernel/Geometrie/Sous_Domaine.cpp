@@ -967,7 +967,7 @@ int Sous_Domaine::lire_motcle_non_standard(const Motcle& motlu , Entree& is)
 
 
 
-/*! @brief Ajoute un polyedre a la sous-domaine.
+/*! @brief Ajoute un polyedre au sous-domaine.
  *
  * @return (int)
  */
@@ -988,7 +988,7 @@ int Sous_Domaine::add_poly(const int poly)
 }
 
 
-/*! @brief Enleve un polyedre a la sous-domaine.
+/*! @brief Enleve un polyedre du sous-domaine.
  *
  * @return (int)
  */
@@ -1013,24 +1013,24 @@ int Sous_Domaine::remove_poly(const int poly)
 }
 
 
-/*! @brief Associe une domaine a la sous-domaine.
+/*! @brief Associe un sous-domaine au domaine.
  *
- * La sous-domaine sera une sous-domaine de la Domaine specifiee.
+ * Le sous-domaine sera un sous-domaine du Domaine specifie.
  *
- * @param (Domaine& domaine) le domaine a associe a la sous-domaine
+ * @param (Domaine& domaine) le domaine a associer au sous-domaine
  */
-void Sous_Domaine::associer_domaine(const Domaine& une_domaine)
+void Sous_Domaine::associer_domaine(const Domaine& un_domaine)
 {
-  le_dom_=une_domaine;
+  le_dom_=un_domaine;
 }
 
 
-/*! @brief Associe un Objet_U a la sous-domaine.
+/*! @brief Associe un Objet_U au sous-domaine.
  *
  * On controle le type de l'objet a associer
  *     dynamiquement.
  *
- * @param (Objet_U& ob) objet a associer a la sous-domaine.
+ * @param (Objet_U& ob) objet a associer au sous-domaine.
  * @return (int) renvoie 1 si l'association a reussi 0 sinon.
  */
 int Sous_Domaine::associer_(Objet_U& ob)
@@ -1048,9 +1048,9 @@ int Sous_Domaine::associer_(Objet_U& ob)
 
 
 
-/*! @brief Donne un nom a la sous-domaine.
+/*! @brief Donne un nom au sous-domaine.
  *
- * @param (Nom& nom) le nom a donner a la sous-domaine
+ * @param (Nom& nom) le nom a donner au sous-domaine
  */
 void Sous_Domaine::nommer(const Nom& nom)
 {

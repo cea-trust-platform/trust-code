@@ -47,13 +47,13 @@ Sous_domaine_dis& Domaine_dis_base::sous_domaine_dis(int i)
   return les_sous_domaines_dis[i];
 }
 
-/*! @brief Associe une Domaine a l'objet.
+/*! @brief Associe un Domaine a l'objet.
  *
- * @param (Domaine& une_domaine) le domaine a associee au domaine discretisee
+ * @param (Domaine& un_domaine) le domaine a associer au domaine discretise
  */
-void Domaine_dis_base::associer_domaine(const Domaine& une_domaine)
+void Domaine_dis_base::associer_domaine(const Domaine& un_domaine)
 {
-  le_dom=une_domaine;
+  le_dom=un_domaine;
 }
 
 /*! @brief Renvoie la frontiere de Nom nom.

@@ -39,7 +39,7 @@ Hexa_EF::Hexa_EF()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_EF
+/*! @brief remplit le tableau face_normales dans le Domaine_EF
  *
  */
 

@@ -25,7 +25,7 @@ class Memoire;
 template<typename _TYPE_> class TRUSTArray;
 template<typename _TYPE_> class TRUST_ptr_trav;
 
-/*! @brief VTRUSTdata alloue une domaine de memoire de la taille specifiee au constructeur, et libere le domaine de memoire a la destruction.
+/*! @brief VTRUSTdata alloue une zone de memoire de la taille specifiee au constructeur, et libere la zone de memoire a la destruction.
  *
  * La memoire peut etre allouee sur le tas (avec new) ou par le mecanisme Memoire::add_trav_double.
  *  "ref_count" compte le nombre de pointeurs qui font reference a "this". (permet au dernier utilisateur de l'objet de le detruire)
@@ -42,8 +42,8 @@ public:
 
   VTRUSTdata(int size, Array_base::Storage storage);
 
-  // Detruit le domaine de memoire allouee.
-  // Precondition : ref_count == 0 (le domaine de memoire ne doit etre referencee nulle part)
+  // Detruit la zone de memoire allouee.
+  // Precondition : ref_count == 0 (la zone de memoire ne doit etre referencee nulle part)
   ~VTRUSTdata()
   {
     assert(ref_count_ == 0);
@@ -59,8 +59,8 @@ public:
 
   inline _TYPE_ * get_data() { return data_; }
   inline const _TYPE_ * get_data() const { return data_; }
-  inline int add_one_ref() { return ++ref_count_; } // Un nouveau tableau utilise cette domaine memoire : incremente ref_count
-  inline int suppr_one_ref() { assert(ref_count_ > 0); return (--ref_count_); } // Un tableau de moins utilise cette domaine memoire : decremente ref_count
+  inline int add_one_ref() { return ++ref_count_; } // Un nouveau tableau utilise cette zone memoire : incremente ref_count
+  inline int suppr_one_ref() { assert(ref_count_ > 0); return (--ref_count_); } // Un tableau de moins utilise cette zone memoire : decremente ref_count
   inline int ref_count() const { return ref_count_; }
   inline int get_size() const { return size_; }
 
@@ -79,7 +79,7 @@ private:
   VTRUSTdata(const VTRUSTdata& v) = delete;
   VTRUSTdata& operator=(const VTRUSTdata& v) = delete;
 
-  // "data" est un pointeur sur une domaine de memoire de taille sz * sizeof(_TYPE_), allouee par le constructeur et liberee par le destructeur.
+  // "data" est un pointeur sur une zone de memoire de taille sz * sizeof(_TYPE_), allouee par le constructeur et liberee par le destructeur.
   // Ce pointeur n'est jamais nul meme si size_==0
   _TYPE_ * data_;
 
@@ -89,7 +89,7 @@ private:
   // "sz" est la taille du tableau "data_" alloue. On a sz >= 0.
   int size_;
 
-  // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference au domaine allouee, sinon le pointeur est nul.
+  // Si storage est de type TEMP_STORAGE, d_ptr_trav porte la reference au zone allouee, sinon le pointeur est nul.
   TRUST_ptr_trav<_TYPE_> * d_ptr_trav_;
 
   // Drapeau du statut du data sur le Device:

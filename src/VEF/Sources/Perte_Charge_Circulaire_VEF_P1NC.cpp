@@ -210,7 +210,7 @@ void  Perte_Charge_Circulaire_VEF_P1NC::coeffs_perte_charge(const DoubleVect& u,
   const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
-  const Sous_domaine_VF& ssz=sous_domaine?la_sous_domaine_dis.valeur():Sous_domaine_VF();
+  const Sous_domaine_VF& ssz=sous_domaine?le_sous_domaine_dis.valeur():Sous_domaine_VF();
   const Domaine_VEF& zvef=le_dom_VEF.valeur();
 
   // Parametres pour perte_charge()

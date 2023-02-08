@@ -123,18 +123,18 @@ void Domaine_Cl_VEF::associer(const Domaine_VEF& le_dom_VEF)
 /*! @brief remplissage des tableaux
  *
  */
-void Domaine_Cl_VEF::completer(const Domaine_dis& une_domaine_dis)
+void Domaine_Cl_VEF::completer(const Domaine_dis& un_domaine_dis)
 {
-  if (sub_type(Domaine_VEF,une_domaine_dis.valeur()))
+  if (sub_type(Domaine_VEF,un_domaine_dis.valeur()))
     {
-      const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF, une_domaine_dis.valeur());
+      const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF, un_domaine_dis.valeur());
       remplir_type_elem_Cl(le_dom_VEF);
       remplir_volumes_entrelaces_Cl(le_dom_VEF);
       remplir_normales_facettes_Cl(le_dom_VEF);
     }
   else
     {
-      Cerr << "Domaine_Cl_VEF::completer() prend comme argument une Domaine_VEF " << finl;
+      Cerr << "Domaine_Cl_VEF::completer() prend comme argument un Domaine_VEF " << finl;
       exit();
     }
 }
@@ -736,7 +736,7 @@ int Domaine_Cl_VEF::initialiser(double temps)
     {
       if (modif_perio_fait_ == 0)
         {
-          Cerr <<"modification de la Domaine_Cl_VEF pour periodicite" << finl;
+          Cerr <<"modification du Domaine_Cl_VEF pour periodicite" << finl;
           const Domaine_VEF& le_dom_VEF = ref_cast(Domaine_VEF,domaine_dis().valeur());
           const DoubleVect& volumes_entrelaces = le_dom_VEF.volumes_entrelaces();
           remplir_volumes_entrelaces_Cl(le_dom_VEF);

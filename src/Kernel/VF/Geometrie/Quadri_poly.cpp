@@ -39,7 +39,7 @@ Quadri_poly::Quadri_poly()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_poly
+/*! @brief remplit le tableau face_normales dans le Domaine_poly
  *
  */
 void Quadri_poly::normale(int num_Face,DoubleTab& Face_normales,

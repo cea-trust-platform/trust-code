@@ -106,7 +106,7 @@ DoubleTab& Perte_Charge_VEF::ajouter(DoubleTab& resu) const
   const DoubleTab& xv=zvef.xv() ;                 // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
-  const Sous_domaine_VF& ssz = sous_domaine ? la_sous_domaine_dis.valeur() : Sous_domaine_VF();
+  const Sous_domaine_VF& ssz = sous_domaine ? le_sous_domaine_dis.valeur() : Sous_domaine_VF();
 
   // Parametres pour perte_charge()
   DoubleVect u(dimension);
@@ -187,7 +187,7 @@ void Perte_Charge_VEF::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
   const DoubleTab& xv=le_dom_VEF->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
-  const Sous_domaine_VF& ssz=sous_domaine?la_sous_domaine_dis.valeur():Sous_domaine_VF();
+  const Sous_domaine_VF& ssz=sous_domaine?le_sous_domaine_dis.valeur():Sous_domaine_VF();
   const Domaine_VEF& zvef=le_dom_VEF.valeur();
 
   // Parametres pour perte_charge()
@@ -295,20 +295,20 @@ void Perte_Charge_VEF::completer()
   if (sous_domaine)
     {
       sous_domaine=false;
-      const Sous_Domaine& la_sous_domaine=equation().probleme().domaine().ss_domaine(nom_sous_domaine);
+      const Sous_Domaine& le_sous_domaine=equation().probleme().domaine().ss_domaine(nom_sous_domaine);
       const Domaine_dis_base& le_domaine_dis=le_dom_VEF.valeur();
       for (int ssz=0; ssz<le_domaine_dis.nombre_de_sous_domaines_dis(); ssz++)
         {
-          if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(la_sous_domaine))
+          if (le_domaine_dis.sous_domaine_dis(ssz)->sous_domaine().est_egal_a(le_sous_domaine))
             {
               sous_domaine=true;
-              la_sous_domaine_dis=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
+              le_sous_domaine_dis=ref_cast(Sous_domaine_VF,le_domaine_dis.sous_domaine_dis(ssz).valeur());
             }
         }
 
       if(!sous_domaine)
         {
-          Cerr << "On ne trouve pas la sous_domaine discretisee associee a " << nom_sous_domaine << finl;
+          Cerr << "On ne trouve pas le sous_domaine discretise associe a " << nom_sous_domaine << finl;
           exit();
         }
     }

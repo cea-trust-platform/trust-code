@@ -18,7 +18,7 @@
 
 #include <Interprete_geometrique_base.h>
 
-/*! @brief Classe Mailler Un mailleur par agglomeration de domaines (paves pour le moment)
+/*! @brief Classe Mailler Un mailleur par agglomeration de domaines (paves en 2D et blocks en 3D)
  *
  *     Structure du jeu de donnee (en dimension 2) :
  *     Mailler dom
@@ -41,7 +41,7 @@
  *     Deux points seront confondus des que la distance entre eux est
  *     inferieure a Epsilon.
  *
- * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par Trio-U pour mailler, une domaine est l'objet Pave
+ * @sa Interprete Pave, Actuellement le seul tyep d'objet reconnu par TRUST pour mailler, un domaine est l'objet Pave
  */
 class Mailler : public Interprete_geometrique_base
 {

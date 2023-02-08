@@ -22,10 +22,10 @@ class Nom;
 
 /*! @brief Classe Elem_geom_base Cette classe est la classe de base pour la definition d'elements
  *
- *     geometriques constituant un maillage (i.e. une Domaine geometrique)
- *     Un element geometrique a une Domaine associe a laquelle il fournit
+ *     geometriques constituant un maillage (i.e. un Domaine geometrique)
+ *     Un element geometrique a un Domaine associe auquel il fournit
  *     les routines de base pour la manipulation des ses elements.
- *     (Une domaine n'a qu'un seul type d'element geometrique)
+ *     (Un domaine n'a qu'un seul type d'element geometrique)
  *
  * @sa Hexaedre Prisme Rectangle Segment Tetraedre Triangle, Domaine, Classe abstraite, Methodes abstraites:, int face_sommet(int i, int j) const, int nb_som() const, int nb_faces(int=0) const, int nb_som_face(int=0) const, int est_structure() const, const Nom& nom_lml() const, int contient(const ArrOfDouble&, int ) const, int contient(const ArrOfInt&, int ) const, Type_Face type_face(int=0) const, void calculer_volumes(DoubleVect& ) const, void calculer_normales(const IntTab& , DoubleTab& ) const
  */
@@ -61,11 +61,11 @@ protected:
 
 /*! @brief Associe l'element geometrique a sa domaine.
  *
- * @param (Domaine& une_domaine) le domaine a associee a l'element
+ * @param (Domaine& un_domaine) le domaine a associee a l'element
  */
-inline void Elem_geom_base::associer_domaine(const Domaine& une_domaine)
+inline void Elem_geom_base::associer_domaine(const Domaine& un_domaine)
 {
-  mon_dom=une_domaine;
+  mon_dom=un_domaine;
 }
 
 

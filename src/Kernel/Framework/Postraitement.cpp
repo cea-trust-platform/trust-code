@@ -320,7 +320,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
   param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
-  param.ajouter_non_std("Sous_domaine|Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sous_domaine on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
+  param.ajouter_non_std("Sous_domaine|Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sub_domaine on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
   param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
@@ -479,20 +479,20 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
           exit();
         }
 
-      // Recuperation de la sous-domaine
-      Nom nom_de_la_sous_domaine;
-      s >> nom_de_la_sous_domaine;
-      Sous_Domaine la_sous_domaine;
-      if (!Interprete_bloc::objet_global_existant(nom_de_la_sous_domaine))
+      // Recuperation du sous-domaine
+      Nom nom_du_sous_domaine;
+      s >> nom_du_sous_domaine;
+      Sous_Domaine le_sous_domaine;
+      if (!Interprete_bloc::objet_global_existant(nom_du_sous_domaine))
         {
-          Cerr << "Unknown sous_domaine : " << nom_de_la_sous_domaine << finl;
+          Cerr << "Unknown sous_domaine : " << nom_du_sous_domaine << finl;
           Process::exit();
         }
-      la_sous_domaine=ref_cast(Sous_Domaine,Interprete_bloc::objet_global(nom_de_la_sous_domaine));
+      le_sous_domaine=ref_cast(Sous_Domaine,Interprete_bloc::objet_global(nom_du_sous_domaine));
 
       // Declaration du domaine
-      Nom nom_du_dom(la_sous_domaine.domaine().le_nom());
-      Nom nom_du_nouveau_dom = nom_du_dom + Nom("_") + nom_de_la_sous_domaine;
+      Nom nom_du_dom(le_sous_domaine.domaine().le_nom());
+      Nom nom_du_nouveau_dom = nom_du_dom + Nom("_") + nom_du_sous_domaine;
 
       Nom in("domaine ");
       in += nom_du_nouveau_dom;
@@ -500,11 +500,11 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       EChaine IN(in);
       Interprete_bloc::interprete_courant().interpreter_bloc(IN, Interprete_bloc::BLOC_EOF, 0);
 
-      // Definition du domaine a partir de la sous-domaine
+      // Definition du domaine a partir du sous-domaine
       in = "Create_domain_from_sous_domaine { domaine_final ";
       in += nom_du_nouveau_dom;
       in += " par_sous_zone ";
-      in += nom_de_la_sous_domaine;
+      in += nom_du_sous_domaine;
       in += " domaine_init ";
       in += nom_du_dom;
       in += " } ";

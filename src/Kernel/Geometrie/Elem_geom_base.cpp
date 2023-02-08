@@ -94,7 +94,7 @@ void Elem_geom_base::creer_faces_elem(Faces& les_faces ,
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements du domaine associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements du domaine associe a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */

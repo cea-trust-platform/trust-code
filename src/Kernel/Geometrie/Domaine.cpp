@@ -153,7 +153,7 @@ static void corriger_type(Faces& faces, const Elem_geom_base& type_elem)
     }
 }
 
-/*! @brief Lit les objets constituant une Domaine a partir d'un flot d'entree.
+/*! @brief Lit les objets constituant un Domaine a partir d'un flot d'entree.
  *
  * Une fois les objets
  *     lus on les associe au domaine.
@@ -1465,7 +1465,7 @@ void Domaine::init_faces_virt_bord(const MD_Vector& md_vect_faces, MD_Vector& md
       const int nb_faces_tot_frontiere = faces_sommets_frontiere.dimension_tot(0);
       const int nb_faces_virt_frontiere = nb_faces_tot_frontiere - nb_faces_front;
       tab.resize_array(nb_faces_virt_frontiere);
-      const int ndebut = nb_faces; // nombre de faces de la Domaine !
+      const int ndebut = nb_faces; // nombre de faces du Domaine !
       const int nfin = nb_faces_tot; // idem !
       for (int i = ndebut; i < nfin; i++)
         {
@@ -1824,7 +1824,7 @@ void Domaine::creer_mes_domaines_frontieres(const Domaine_VF& domaine_vf)
     }
 }
 
-/*! @brief Association d'une Sous_Domaine au Domaine.
+/*! @brief Association d'un Sous_Domaine au Domaine.
  *
  * L'interface permet de passer n'importe quel
  *     Objet_U mais ne gere (dynamiquement) que
@@ -1844,9 +1844,9 @@ int Domaine::associer_(Objet_U& ob)
   return 0;
 }
 
-/*! @brief Ajoute une Sous_Domaine au domaine.
+/*! @brief Ajoute un Sous_Domaine au domaine.
  *
- * @param (Sous_Domaine& ssz) la Sous-domaine a ajouter au domaine
+ * @param (Sous_Domaine& ssz) le Sous-domaine a ajouter au domaine
  */
 void Domaine::add(const Sous_Domaine& ssz)
 {

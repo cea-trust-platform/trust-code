@@ -71,7 +71,7 @@ void Assembleur::associer_domaine_dis_base(const Domaine_dis_base& zdis)
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Permet d'associer l'objet a la Domaine_Cl_dis
+ * Permet d'associer l'objet au Domaine_Cl_dis
  *
  */
 void Assembleur::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcldis)
@@ -81,7 +81,7 @@ void Assembleur::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcldis)
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie le domaine discretisee associee a l'objet.
+ * Renvoie le domaine discretise associe a l'objet.
  *
  * @return (int)
  */
@@ -92,7 +92,7 @@ const Domaine_dis_base& Assembleur::domaine_dis_base() const
 
 /*! @brief Appel a l'objet sous-jacent.
  *
- * Renvoie la Domaine_Cl_dis associee a l'objet.
+ * Renvoie le Domaine_Cl_dis associe a l'objet.
  *
  * @return (int)
  */

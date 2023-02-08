@@ -59,16 +59,16 @@ void Domaine_Cl_EF::associer(const Domaine_EF& le_dom_EF)
 /*! @brief remplissage des tableaux
  *
  */
-void Domaine_Cl_EF::completer(const Domaine_dis& une_domaine_dis)
+void Domaine_Cl_EF::completer(const Domaine_dis& un_domaine_dis)
 {
-  if (sub_type(Domaine_EF,une_domaine_dis.valeur()))
+  if (sub_type(Domaine_EF,un_domaine_dis.valeur()))
     {
-      const Domaine_EF& le_dom_EF = ref_cast(Domaine_EF, une_domaine_dis.valeur());
+      const Domaine_EF& le_dom_EF = ref_cast(Domaine_EF, un_domaine_dis.valeur());
       remplir_type_elem_Cl(le_dom_EF);
     }
   else
     {
-      Cerr << "Domaine_Cl_EF::completer() prend comme argument une Domaine_EF " << finl;
+      Cerr << "Domaine_Cl_EF::completer() prend comme argument un Domaine_EF " << finl;
       exit();
     }
 }

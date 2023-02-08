@@ -21,13 +21,13 @@ Sortie& Bords::printOn(Sortie& os) const { return LIST(Bord)::printOn(os); }
 
 Entree& Bords::readOn(Entree& is) { return LIST(Bord)::readOn(is); }
 
-/*! @brief Associe une domaine a tous les bords de la liste.
+/*! @brief Associe un domaine a tous les bords de la liste.
  *
- * @param (Domaine& une_domaine) le domaine a associer aux bords de la liste
+ * @param (Domaine& un_domaine) le domaine a associer aux bords de la liste
  */
-void Bords::associer_domaine(const Domaine& une_domaine)
+void Bords::associer_domaine(const Domaine& un_domaine)
 {
-  for (auto &itr : *this) itr.associer_domaine(une_domaine);
+  for (auto &itr : *this) itr.associer_domaine(un_domaine);
 }
 
 /*! @brief Renvoie le nombre total de faces de tous les bords de la liste

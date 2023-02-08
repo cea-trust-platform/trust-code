@@ -111,7 +111,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                    &mu = le_fluide->viscosite_dynamique().valeurs(), &rho = le_fluide->masse_volumique().passe(), *alp = pbm ? &pbm->eq_masse.inconnue().passe() : NULL;
   const DoubleVect& pe = le_fluide->porosite_elem(), &pf = le_fluide->porosite_face(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const Multiplicateur_diphasique_base *fmult = pbm && pbm->has_correlation("multiplicateur_diphasique") ? &ref_cast(Multiplicateur_diphasique_base, pbm->get_correlation("multiplicateur_diphasique").valeur()) : NULL;
-  const Sous_Domaine *pssz = sous_domaine ? &la_sous_domaine.valeur() : NULL;
+  const Sous_Domaine *pssz = sous_domaine ? &le_sous_domaine.valeur() : NULL;
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : NULL;
   int i, j, k, f, d, D = dimension, cN = nu.dimension(0) == 1, cM = mu.dimension(0) == 1, cR = rho.dimension(0) == 1, C_dh = sub_type(Champ_Uniforme,diam_hydr.valeur()), m, n,
@@ -192,7 +192,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
 void Perte_Charge_PolyMAC::completer()
 {
   Source_base::completer();
-  if (sous_domaine) la_sous_domaine = equation().probleme().domaine().ss_domaine(nom_sous_domaine);
+  if (sous_domaine) le_sous_domaine = equation().probleme().domaine().ss_domaine(nom_sous_domaine);
 }
 
 ////////////////////////////////////////////////////////////////

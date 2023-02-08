@@ -26,7 +26,7 @@ Sortie& Champ_val_tot_sur_vol_base::printOn(Sortie& os) const { return Champ_Uni
 Entree& Champ_val_tot_sur_vol_base::readOn(Entree& is) { return Champ_Uniforme_Morceaux::readOn(is); }
 
 //Evaluation du champ sur le domaine par defaut et les sous domaines specifiees
-//-Pour chacune des sous domaines et pour le domaine complet on calcul CONTRIB_loc:
+//-Pour chacun des sous domaines et pour le domaine complet on calcul CONTRIB_loc:
 //   loc designe une localisation (sous domaine i ou domaine par defaut)
 //   cas VDF : CONTRIB_loc = somme de volume(elem)*porosite(elem) pour les elements de loc
 //   cas VEF : CONTRIB_loc = somme de vol_entrelaces(face)*por_face(face) pour les faces de loc

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ Entree& Trianguler::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques du domaine en triangles.
+/*! @brief Triangule tous les element d'un domaine: transforme les elements goemetriques du domaine en triangles.
  *
  *     Pour l'instant on ne sait trianguler que des Rectangles
  *     (on les coupe en 2).

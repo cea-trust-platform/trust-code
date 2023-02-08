@@ -53,12 +53,12 @@ Sortie& Frontiere::printOn(Sortie& os) const
 
 /*! @brief Associe la frontiere au domaine dont elle depend.
  *
- * @param (Domaine& une_domaine) le domaine a associee a la frontiere
+ * @param (Domaine& un_domaine) le domaine a associer a la frontiere
  */
-void Frontiere::associer_domaine(const Domaine& une_domaine)
+void Frontiere::associer_domaine(const Domaine& un_domaine)
 {
-  le_dom=une_domaine;
-  les_faces.associer_domaine(une_domaine);
+  le_dom=un_domaine;
+  les_faces.associer_domaine(un_domaine);
 }
 
 /*! @brief Donne un nom a la frontiere
@@ -130,20 +130,20 @@ void Frontiere::renum(const IntVect& Les_Nums)
       les_sommets(i,j)=Les_Nums[les_sommets(i,j)];
 }
 
-/*! @brief Renvoie la Domaine associee a la frontiere.
+/*! @brief Renvoie le domaine associe a la frontiere.
  *
  * (version const)
  *
- * @return (Domaine&) le domaine associee a la frontiere
+ * @return (Domaine&) le domaine associe a la frontiere
  */
 const Domaine& Frontiere::domaine() const
 {
   return le_dom.valeur();
 }
 
-/*! @brief Renvoie la Domaine associee a la frontiere.
+/*! @brief Renvoie le domaine associe a la frontiere.
  *
- * @return (Domaine&) le domaine associee a la frontiere
+ * @return (Domaine&) le domaine associe a la frontiere
  */
 Domaine& Frontiere::domaine()
 {

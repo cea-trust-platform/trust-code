@@ -37,9 +37,9 @@ class Geometrie;
  *       Cette distinction correspond au traitement des conditions aux limites:les
  *       faces standard ne "voient pas" les conditions aux limites.
  *       L'ensemble des faces est numerote comme suit:
- *            - les faces qui sont sur une Domaine_joint apparaissent en premier
+ *            - les faces qui sont sur un Domaine_joint apparaissent en premier
  *     	       (dans l'ordre du vecteur les_joints)
- *    	     - les faces qui sont sur une Domaine_bord apparaissent ensuite
+ *    	     - les faces qui sont sur un Domaine_bord apparaissent ensuite
  * 	       (dans l'ordre du vecteur les_bords)
  *   	     - les faces internes non standard apparaissent ensuite
  *            - les faces internes standard en dernier

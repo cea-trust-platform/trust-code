@@ -697,7 +697,7 @@ const Domaine& OctreeRoot::domaine() const
 }
 
 
-/*! @brief Associe une domaine a l'octree
+/*! @brief Associe un domaine a l'octree
  *
  * @param (Domaine& z) le domaine a associer a l'octree
  */
@@ -1107,7 +1107,7 @@ void OctreeRoot::rang_elems_sommet(ArrOfInt& elements, double x, double y, doubl
 }
 
 
-/*! @brief Renvoie vrai si le domaine associee a l'octree est non nulle.
+/*! @brief Renvoie vrai si le domaine associe a l'octree est non nulle.
  *
  * @return (int) code de retour propage
  */

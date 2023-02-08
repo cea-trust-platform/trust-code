@@ -39,7 +39,7 @@ Tri_EF::Tri_EF()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_EF
+/*! @brief remplit le tableau face_normales dans le Domaine_EF
  *
  */
 void Tri_EF::normale(int num_Face,DoubleTab& Face_normales,

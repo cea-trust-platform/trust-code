@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,10 +63,10 @@ public:
   // de fixer le nb_valeurs_nodales.
   virtual int fixer_nb_valeurs_nodales(int n);
   // Par defaut, ces deux methodes provoquent une erreur. L'appel
-  // est invalide sauf si le champ possede une Domaine_dis
+  // est invalide sauf si le champ possede un Domaine_dis
   virtual void associer_domaine_dis_base(const Domaine_dis_base&);
   virtual const Domaine_dis_base& domaine_dis_base() const;
-  virtual int a_une_domaine_dis_base() const { return 0; } // Par defaut, on ne sait pas si une domaine_dis_base sera definie
+  virtual int a_un_domaine_dis_base() const { return 0; } // Par defaut, on ne sait pas si un domain_dis_base sera defini
 
   virtual void mettre_a_jour(double);
   virtual void abortTimeStep();
@@ -96,7 +96,7 @@ public:
   virtual DoubleTab& valeur_aux_sommets(const Domaine&, DoubleTab&) const;
   virtual DoubleVect& valeur_aux_sommets_compo(const Domaine&, DoubleVect&, int) const;
 
-  /* ces methodes ne s'appliquent que si a_une_domaine_dis_base() */
+  /* ces methodes ne s'appliquent que si a_un_domaine_dis_base() */
   virtual DoubleTab& valeur_aux_faces(DoubleTab& result) const;
   virtual DoubleTab valeur_aux_bords() const;
 

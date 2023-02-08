@@ -98,7 +98,7 @@ protected:
 
 
 private:
-  /* Fonction membre qui retourne la Domaine_VEF du domaine. */
+  /* Fonction membre qui retourne le Domaine_VEF du domaine. */
   inline const Domaine_VEF& domaine_vef() const;
 
   /* Fonction membre qui retourne le Domaine du probleme. */

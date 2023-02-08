@@ -475,7 +475,7 @@ const Domaine& Domaine_Cl_dis_base::domaine() const
   return domaine_dis().domaine();
 }
 
-/*! @brief A partir d'un indice de face de bord dans la Domaine_VF, renvoie la condition aux limites a laquelle cette face
+/*! @brief A partir d'un indice de face de bord dans le Domaine_VF, renvoie la condition aux limites a laquelle cette face
  *
  *   appartient, pour 0 <= num_face < nb_faces_Cl().
  *
@@ -485,7 +485,7 @@ const Cond_lim& Domaine_Cl_dis_base::la_cl_de_la_face(int num_face) const
   //  Algorithme generique: on parcourt les bords jusqu'a trouver
   //  celui qui contient la face.
   //  Les faces du bord 0, puis celle du bord 1, etc... se suivent
-  //  dans la Domaine_VF.
+  //  dans le Domaine_VF.
   assert(num_face >= 0);
   int i = 0;
   const int nb_cl = les_conditions_limites_.size();

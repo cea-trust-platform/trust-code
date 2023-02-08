@@ -82,7 +82,7 @@ static void decoupe(Domaine& dom, Faces& faces)
   sommets.ref(nouveaux);
 }
 
-/*! @brief Tetraedrise tous les elements d'une domaine : transforme les elements goemetriques du domaine en tetraedres IDENTIQUES
+/*! @brief Tetraedrise tous les elements d'un domaine : transforme les elements goemetriques du domaine en tetraedres IDENTIQUES
  *
  *     par la methode des prismes.
  *     Pour l'instant on ne sait tetraedriser que des Hexaedre.

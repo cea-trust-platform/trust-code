@@ -157,7 +157,7 @@ const Nom& Hexaedre::nom_lml() const
 }
 
 
-/*! @brief Renvoie 1 si l'element "elemen" du domaine associee a l'element geometrique contient le point
+/*! @brief Renvoie 1 si l'element "elemen" du domaine associe a l'element geometrique contient le point
  *
  *               de coordonnees specifiees par le parametre "pos".
  *     Renvoie 0 sinon.
@@ -182,7 +182,7 @@ int Hexaedre::contient(const ArrOfDouble& pos, int element ) const
 }
 
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associe a
  *
  *     l'element geometrique.
  *
@@ -206,7 +206,7 @@ int Hexaedre::contient(const ArrOfInt& som, int element ) const
     return 0;
 }
 
-/*! @brief Calcule les volumes des elements du domaine associee.
+/*! @brief Calcule les volumes des elements du domaine associe.
  *
  * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
@@ -232,9 +232,9 @@ void Hexaedre::calculer_volumes(DoubleVect& volumes) const
     }
 }
 
-/*! @brief Calcule les normales aux faces des elements du domaine associee.
+/*! @brief Calcule les normales aux faces des elements du domaine associe.
  *
- * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets du domaine associee
+ * @param (IntTab& face_sommets) les numeros des sommets des faces dans la liste des sommets du domaine associe
  * @param (DoubleTab& face_normales)
  */
 void Hexaedre::calculer_normales(const IntTab& Face_sommets ,DoubleTab& face_normales) const

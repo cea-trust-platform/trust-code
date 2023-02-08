@@ -91,10 +91,10 @@ protected:
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
 
-  // Cas d'une sous-domaine
-  bool sous_domaine=false; //!< Le terme est-il limite a une sous-domaine ?
-  Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
-  REF(Sous_Domaine) la_sous_domaine; //!< Initialise dans completer()
+  // Cas d'un sous-domaine
+  bool sous_domaine=false; //!< Le terme est-il limite a un sous-domaine ?
+  Nom nom_sous_domaine; //!< Nom du sous-domaine, initialise dans readOn()
+  REF(Sous_Domaine) le_sous_domaine; //!< Initialise dans completer()
   int implicite_;
 
   mutable Parser_U lambda;

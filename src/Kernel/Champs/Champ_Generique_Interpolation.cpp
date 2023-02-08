@@ -673,7 +673,7 @@ const Motcle Champ_Generique_Interpolation::get_directive_pour_discr() const
 }
 
 //Discretisation du domaine d interpolation si celui-ci n est pas le domaine de calcul
-//Cette discretisation est necessaire pour associer une domaine discretisee a l espace de
+//Cette discretisation est necessaire pour associer un domaine discretise a l espace de
 //stockage dans la methode get_champ()
 void Champ_Generique_Interpolation::discretiser_domaine()
 {

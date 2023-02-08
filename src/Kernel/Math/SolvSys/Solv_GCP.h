@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ protected:
   Matrice_Morse_Sym tmp_mat_;
   // Matrice des coefficients reels-virtuels (stockage sans les lignes vides)
   Matrice_SuperMorse tmp_mat_virt_;
-  // La domaine de memoire dans laquelle on stocke les vecteurs temporaires et eventuellement
+  // le Domaine de memoire dans lequel on stocke les vecteurs temporaires et eventuellement
   // les matrices (ne pas lire dedans, il y a aussi des entiers !)
   // Je prends des double pour etre certain que le domaine alloueee est correctement alignee en memoire
   ArrOfDouble tmp_data_block_;

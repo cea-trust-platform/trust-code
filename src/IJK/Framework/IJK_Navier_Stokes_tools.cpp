@@ -177,7 +177,7 @@ Probleme_base& creer_domaine_vdf(const IJK_Splitting& splitting, const Nom& nom_
   Interprete_bloc::interprete_courant().interpreter_bloc(is, Interprete_bloc::BLOC_EOF,
                                                          0 /* flag verifie sans interpreter */);
 
-  // Il faut construire une structure de donnees de la Domaine_VF qui n'est pas construite par defaut:
+  // Il faut construire une structure de donnees du Domaine_VF qui n'est pas construite par defaut:
   Probleme_base& pb =  ref_cast(Probleme_base, Interprete_bloc::objet_global(pb_name));
   Domaine& domaine = pb.domaine_dis().valeur().domaine();
   domaine.construire_elem_virt_pe_num();

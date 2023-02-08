@@ -270,7 +270,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
           Champ my_field;
 
           const Champ_base& source_i = get_source( i ).get_champ_without_evaluation( my_field );
-          if( source_i.a_une_domaine_dis_base( ) )
+          if( source_i.a_un_domaine_dis_base( ) )
             {
               const Domaine_dis_base& domaine_source_i = source_i.domaine_dis_base( );
               if( ! sub_type( Domaine_VF , domaine_source_i ) )

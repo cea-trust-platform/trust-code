@@ -97,7 +97,7 @@ public:
 
   int lire_donnees(Entree&);
   int imprime(Sortie&, int) const override;
-  int a_une_domaine_dis_base() const override { return 1; }
+  int a_un_domaine_dis_base() const override { return 1; }
 
   virtual void associer_eqn(const Equation_base&);
   virtual void associer_domaine_cl_dis(const Domaine_Cl_dis&);

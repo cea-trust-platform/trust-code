@@ -113,9 +113,9 @@ Entree& Mailler::interpreter_(Entree& is)
       else
         {
           dom_lst2.push_back(DERIV(Domaine)()); // to keep them alive till the end of the method
-          DERIV(Domaine)& une_domaine = dom_lst2.back();
-          une_domaine.typer(typ_domaine); // Most likely a Pave ...
-          Domaine& ze_domaine = une_domaine.valeur();
+          DERIV(Domaine)& un_domaine = dom_lst2.back();
+          un_domaine.typer(typ_domaine); // Most likely a Pave ...
+          Domaine& ze_domaine = un_domaine.valeur();
           is >> ze_domaine;
           dom_lst.push_back(&ze_domaine);
           is >> motlu;

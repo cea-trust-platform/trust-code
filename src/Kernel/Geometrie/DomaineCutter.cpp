@@ -188,7 +188,7 @@ static void remplir_coordsommets_sous_domaine(const DoubleTab& sommets_glob,
 // dans la partie part. On utilise la liste_inverse pour obtenir les
 // nouveaux numeros des sommets.
 // Les elements du domaine local sont crees dans l'ordre croissant de
-// leur indice dans le domaine globale.
+// leur indice dans le domaine global.
 
 void construire_elems_sous_domaine(const IntTab&    elems_domaine_globale,
                                    const ArrOfInt& liste_elements,
@@ -553,7 +553,7 @@ void DomaineCutter::construire_elements_distants_ssdom(const int     partie,
                                   elements_virtuels);
   }
   const int nb_elements_virtuels = elements_virtuels.size_array();
-  // Construire la liste des numeros de domaines voisines et ajouter les joints manquants:
+  // Construire la liste des numeros de domaines voisins et ajouter les joints manquants:
   ArrOfInt parties_voisines;
   {
     parties_voisines.set_smart_resize(1);
@@ -1057,7 +1057,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
 
 /*! @brief Prepare les structures de donnees pour la construction des sous-domaines en fonction d'un decoupage fourni dans elem_part.
  *
- * @param (domaine_global) le domaine a decouper (doit avoir une domaine). On prend une ref a ce domaine (il doit donc rester valide).
+ * @param (domaine_global) le domaine a decouper (doit avoir un domaine). On prend une ref a ce domaine (il doit donc rester valide).
  * @param (elem_part) pour chaque element, numero du sous-domaine auquel il appartient, avec 0 <= elem_part[i] < nb_parts. Attention, on prend une ref a ce tableau, on ne fait pas une copie local. Le tableau doit continuer a exister jusqu'a ce qu'on a fini d'utiliser DomaineCutter.
  * @param (nb_parts) nombre total de sous-domaines
  * @param (les_faces)
@@ -1549,7 +1549,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
 
               for (int i_sous_domaine = 0; i_sous_domaine < nb_sous_domaines; i_sous_domaine++)
                 {
-                  // Indices des elements du sous-domaine qui sont dans la sous-domaine:
+                  // Indices des elements du sous-domaine qui sont dans le sous-domaine:
                   const Sous_Domaine& sous_dom = liste_sous_domaines[i_sous_domaine];
                   ArrOfInt elements;
                   {

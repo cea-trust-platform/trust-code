@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ protected :
   double K_;
 
   //pour la regulation de K;
-  Nom identifiant_;          //nom pour le fichier de sortie : celui de la surface, ou celui de la sous-domaine et de la coupe
+  Nom identifiant_;          //nom pour le fichier de sortie : celui de la surface, ou celui du sous-domaine et de la coupe
   int regul_;                //1 si regulation activee
   Parser_U deb_cible_, eps_; //K_ peut varier entre [K_ * (1 - eps_(t)), K_ * (1 + eps_(t))] par seconde pour atteindre deb_cible_(t)
 };

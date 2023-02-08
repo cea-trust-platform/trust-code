@@ -31,9 +31,9 @@ class Geometrie;
  *          la methode des Volumes Differences Finis.
  *          La classe porte un certain nombre d'informations concernant les faces
  *       L'ensemble des faces est numerote comme suit:
- *            - les faces qui sont sur une Domaine_joint apparaissent en premier
+ *            - les faces qui sont sur un Domaine_joint apparaissent en premier
  *                    (dans l'ordre du vecteur les_joints)
- *                 - les faces qui sont sur une Domaine_bord apparaissent ensuite
+ *                 - les faces qui sont sur un Domaine_bord apparaissent ensuite
  *                (dans l'ordre du vecteur les_bords)
  *                - les faces internes apparaissent ensuite
  *       A chaque face on fait correspondre un int qui indique son orientation.

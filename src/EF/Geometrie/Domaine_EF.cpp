@@ -806,7 +806,7 @@ void Domaine_EF::modifier_pour_Cl(const Conds_lim& conds_lim)
     {
 
       calculer_volumes_sommets(conds_lim[0]->domaine_Cl_dis());
-      Cerr << "La Domaine_EF a ete remplie avec succes" << finl;
+      Cerr << "le Domaine_EF a ete rempli avec succes" << finl;
 
       calculer_h_carre();
       // Calcul des porosites

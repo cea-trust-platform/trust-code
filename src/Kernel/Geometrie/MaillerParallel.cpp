@@ -721,7 +721,7 @@ Entree& MaillerParallel::interpreter(Entree& is)
       }
   }
 
-  // On cree une domaine pour le domaine
+  // On cree un domaine
   Domaine empty_domaine;
   Elem_geom& elem = domaine.type_elem();
   switch(dim)

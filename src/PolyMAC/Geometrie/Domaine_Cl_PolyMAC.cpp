@@ -66,17 +66,17 @@ void Domaine_Cl_PolyMAC::associer(const Domaine_PolyMAC& le_dom_PolyMAC)
 /*! @brief remplissage des tableaux
  *
  */
-void Domaine_Cl_PolyMAC::completer(const Domaine_dis& une_domaine_dis)
+void Domaine_Cl_PolyMAC::completer(const Domaine_dis& un_domaine_dis)
 {
   modif_perio_fait_ = 0;
-  if (sub_type(Domaine_PolyMAC,une_domaine_dis.valeur()))
+  if (sub_type(Domaine_PolyMAC,un_domaine_dis.valeur()))
     {
-      const Domaine_PolyMAC& le_dom_poly = ref_cast(Domaine_PolyMAC, une_domaine_dis.valeur());
+      const Domaine_PolyMAC& le_dom_poly = ref_cast(Domaine_PolyMAC, un_domaine_dis.valeur());
       remplir_type_elem_Cl(le_dom_poly);
     }
   else
     {
-      cerr << "Domaine_Cl_PolyMAC::completer() prend comme argument une Domaine_PolyMAC\n";
+      cerr << "Domaine_Cl_PolyMAC::completer() prend comme argument un Domaine_PolyMAC\n";
       exit();
     }
 }

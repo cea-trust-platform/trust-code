@@ -23,7 +23,7 @@
 //    * Si la nouvelle taille est inferieure ou egale a la taille alouee (p->get_size()) on ne realloue pas de memoire
 //    * sinon, on realloue et on copie les donnees existantes.
 //    Astuce pour ne pas copier les anciennes donnees : resize(0); resize(n);
-//  - Si smart_resize est nul, on realloue une nouvelle domaine memoire uniquement si la nouvelle taille est differente de l'ancienne.
+//  - Si smart_resize est nul, on realloue une nouvelle zone memoire uniquement si la nouvelle taille est differente de l'ancienne.
 // Parametre: new_size
 // Signification: nouvelle valeur demandee pour size_array() (doit etre >= 0)
 // Parametre: opt
@@ -73,7 +73,7 @@ inline void TRUSTArray<_TYPE_>::set_mem_storage(const Storage storage)
 }
 
 //
-//    Fait pointer le tableau vers le domaine de memoire "data_". On detache le domaine de memoire existante.
+//    Fait pointer le tableau vers la zone de memoire "data_". On detache la zone de memoire existante.
 //    Le tableau devient de type "ref_data". Attention : ptr doit etre non nul. La taille est initialisee avec size.
 //   Attention: methode virtuelle: dans les classes derivee, cette methode initialise les structures pour creer
 //    un tableau sequentiel. Pour faire une ref sur un tableau parallele utiliser DoubleVect::ref()
@@ -216,7 +216,7 @@ inline int TRUSTArray<_TYPE_>::ref_count() const
 //  Ajoute une case en fin de tableau et y stocke la "valeur"
 // Precondition:
 //  Tableau doit etre de type "smart_resize" (sinon, ecroulement des performances). De plus, le tableau ne doit pas etre "ref_data",
-//  et il ne doit pas y avoir plus d'une reference au domaine de memoire pointee (meme precondition que resize_array())
+//  et il ne doit pas y avoir plus d'une reference a la zone de memoire pointee (meme precondition que resize_array())
 //  Le tableau doit etre de type TRUSTArray (pas un type derive)
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
@@ -348,7 +348,7 @@ inline void TRUSTArray<_TYPE_>::array_trier_retirer_doublons()
   resize_array(new_size_);
 }
 
-//  Amene le tableau dans l'etat "normal", "detache" ou "ref_array" en associant une sous-domaine de memoire du tableau m,
+//  Amene le tableau dans l'etat "normal", "detache" ou "ref_array" en associant une sous-zone de memoire du tableau m,
 //    definie par start et size. Si size < 0, on prend le tableau m jusqu'a la fin.
 // Precondition: Le tableau doit etre "detache"
 // Parametre: const ArrOfDouble& m
@@ -461,7 +461,7 @@ inline int TRUSTArray<_TYPE_>::detach_array()
   int retour = 0;
   if (p_)
     {
-      // Le tableau est de type "normal". Si le domaine de memoire n'est plus utilisee par personne, on la detruit.
+      // Le tableau est de type "normal". Si la zone de memoire n'est plus utilisee par personne, on la detruit.
       if ((p_->suppr_one_ref()) == 0)
         {
 #ifdef _OPENMP
@@ -481,7 +481,7 @@ inline int TRUSTArray<_TYPE_>::detach_array()
   return retour;
 }
 
-//  Si besoin, alloue une nouvelle domaine de memoire, copie les donnees et efface l'ancienne domaine de memoire.
+//  Si besoin, alloue une nouvelle zone de memoire, copie les donnees et efface l'ancienne zone de memoire.
 //  Attention, on suppose que cette methode est appelee par resize_array().
 //  Attention: si ref_count_>1, l'appel a resize_array() est autorise uniquement si la nouvelle taille est identique a la precedente (auquel cas on ne fait rien)
 //  Si ref_count_ == 1, l'appel est invalide si p_->data_ est different de data_ (le tableau a ete construit avec ref_array() avec start > 0)
@@ -530,14 +530,14 @@ inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_O
       if (new_mem_size == 0) detach_array(); // La nouvelle taille est nulle, on cree un tableau "detache"
       else
         {
-          // Allocation d'une nouvelle domaine
+          // Allocation d'une nouvelle zone
           VTRUSTdata<_TYPE_> * new_p = new VTRUSTdata<_TYPE_>(new_mem_size, storage_type_);
           _TYPE_ * new_data = new_p->get_data();
           // Raccourci si le tableau etait "detache", inutile de copier les anciennes donnees. On copie si COPY_OLD est demande
           int copy_size = 0;
           if (data_ != 0)
             {
-              // Calcul du nombre d'elements a copier vers la nouvelle domaine de memoire : c'est le min de l'ancienne et de la nouvelle taille.
+              // Calcul du nombre d'elements a copier vers la nouvelle zone de memoire : c'est le min de l'ancienne et de la nouvelle taille.
               if (opt != NOCOPY_NOINIT)
                 {
                   copy_size = size_array_;
@@ -545,9 +545,9 @@ inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_O
                   // Copie des valeurs dans le nouveau tableau
                   for (int i = 0; i < copy_size; i++) new_data[i] = data_[i];
                 }
-              detach_array(); // Destruction de l'ancienne domaine (si plus aucune reference)
+              detach_array(); // Destruction de l'ancienne zone (si plus aucune reference)
             }
-          // On attache la nouvelle domaine de memoire
+          // On attache la nouvelle zone de memoire
           p_ = new_p;
           data_ = new_data;
           memory_size_ = new_mem_size;

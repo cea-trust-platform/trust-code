@@ -54,9 +54,9 @@ protected :
 
   Noms nom_sz;                //nom des sous domaines ou l on genere des particules
   IntVect nb_marqs_sz;        //nombre de marqueurs par sous domaine
-  IntTab nb_marqs_par_dir;        //nombre de marqueurs dans chacune des directions d une sous domaine
+  IntTab nb_marqs_par_dir;        //nombre de marqueurs dans chacune des directions d un sous domaine
   //si distribution uniforme sur la sous domaine
-  REF(Domaine) mon_dom_;                //REF a la Domaine du maillage Eulerien
+  REF(Domaine) mon_dom_;                //REF au Domaine du maillage Eulerien
 
   DoubleTab sommets_lu_;      //Coordonnees des sommets lus dans le cas d une lecture dans un fichier
 

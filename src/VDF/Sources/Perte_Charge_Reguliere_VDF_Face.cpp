@@ -35,7 +35,7 @@ Entree& Perte_Charge_Reguliere_VDF_Face::readOn(Entree& s )
   Perte_Charge_Reguliere::lire_donnees(s);
   Nom nom_sous_domaine;
   s >> nom_sous_domaine;
-  Cerr << " nom de la sous domaine " << nom_sous_domaine << finl ;
+  Cerr << " nom du sous domaine " << nom_sous_domaine << finl ;
   remplir_num_faces(nom_sous_domaine);
   return s ;
 }
@@ -57,8 +57,8 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_domaine)
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const DoubleVect& volumes = domaine_VDF.volumes();
   const DoubleTab& xv = domaine_VDF.xv() ;
-  const Sous_Domaine& la_sous_domaine = le_domaine.ss_domaine(nom_sous_domaine);
-  int nb_poly_ss_domaine = la_sous_domaine.nb_elem_tot();
+  const Sous_Domaine& le_sous_domaine = le_domaine.ss_domaine(nom_sous_domaine);
+  int nb_poly_ss_domaine = le_sous_domaine.nb_elem_tot();
   int k = direction_perte_charge();
   DoubleVect xv_(dimension) ;
   int dir_a_faire ;
@@ -76,7 +76,7 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_domaine)
   num_loc = -1;
   int num_elem,num_face;
   for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
-    num_loc[la_sous_domaine(num_elem)] = num_elem;
+    num_loc[le_sous_domaine(num_elem)] = num_elem;
 
   for (int direction = 0; direction<dimension; direction++)
     {
@@ -88,7 +88,7 @@ void Perte_Charge_Reguliere_VDF_Face::remplir_num_faces(Nom& nom_sous_domaine)
           if (dir[direction] == 1 ) dir_a_faire = direction ;
           for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
             {
-              num_poly = la_sous_domaine(num_elem);
+              num_poly = le_sous_domaine(num_elem);
               num_face =  elem_faces(num_poly,dir_a_faire);
               num_faces[nfac++] = num_face;
               for (int ifa=0; ifa<dimension; ifa++) xv_(ifa)= xv(num_face,ifa) ;

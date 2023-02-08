@@ -29,7 +29,7 @@ Entree& Polygone_poly::readOn( Entree& is )
   Elem_poly_base::readOn( is );
   return is;
 }
-/*! @brief remplit le tableau face_normales dans la Domaine_poly
+/*! @brief remplit le tableau face_normales dans le Domaine_poly
  *
  */
 void Polygone_poly::normale(int num_Face,DoubleTab& Face_normales,

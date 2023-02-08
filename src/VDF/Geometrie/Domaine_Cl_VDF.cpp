@@ -62,12 +62,12 @@ void Domaine_Cl_VDF::associer(const Domaine_VDF& domaine_vdf)
   num_Cl_face_.resize(domaine_vdf.nb_faces_bord());
 }
 
-void Domaine_Cl_VDF::completer(const Domaine_dis& une_domaine_dis)
+void Domaine_Cl_VDF::completer(const Domaine_dis& un_domaine_dis)
 {
   Cerr << "Domaine_Cl_VDF::completer ..." << finl;
-  if (sub_type(Domaine_VDF,une_domaine_dis.valeur()))
+  if (sub_type(Domaine_VDF,un_domaine_dis.valeur()))
     {
-      const Domaine_VDF& le_dom_VDF = ref_cast(Domaine_VDF,une_domaine_dis.valeur());
+      const Domaine_VDF& le_dom_VDF = ref_cast(Domaine_VDF,un_domaine_dis.valeur());
 
       //  Remplissage du tableau d'entiers type_arete_bord_
       //  tableau intermediaire : les_faces_Cl
@@ -358,7 +358,7 @@ void Domaine_Cl_VDF::completer(const Domaine_dis& une_domaine_dis)
 
   else
     {
-      Cerr << "Domaine_Cl_VDF::completer() attend en argument une Domaine_VDF\n";
+      Cerr << "Domaine_Cl_VDF::completer() attend en argument un Domaine_VDF\n";
       exit();
     }
   Cerr << "Domaine_Cl_VDF::completer OK" << finl;

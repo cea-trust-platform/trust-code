@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,7 +21,7 @@
 class Domaine_EF;
 
 /*! @brief classe Champ_P0_EF Classe qui represente un champ discret P0 par element
- *  associe a une domaine discretisee de type Domaine_EF
+ *  associe a un domaine discretise de type Domaine_EF
  *
  * @sa Champ_Inc_P0_base
  */

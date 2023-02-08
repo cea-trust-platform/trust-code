@@ -208,8 +208,8 @@ void Mod_turb_hyd_base::associer_eqn(const Equation_base& eqn)
  *     Associe le domaine discretisee et le domaine des conditions
  *     aux limites discretisees au modele de turbulence.
  *
- * @param (Domaine_dis&) une domaine discretisee
- * @param (Domaine_Cl_dis&) une domaine de conditions aux limites discretisees
+ * @param (Domaine_dis&) un domaine discretisee
+ * @param (Domaine_Cl_dis&) un domaine de conditions aux limites discretisees
  */
 void Mod_turb_hyd_base::associer(const Domaine_dis& , const Domaine_Cl_dis&  )
 {

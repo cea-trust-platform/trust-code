@@ -21,13 +21,13 @@ Sortie& Raccords::printOn(Sortie& os) const { return LIST(Raccord)::printOn(os);
 
 Entree& Raccords::readOn(Entree& is) { return LIST(Raccord)::readOn(is); }
 
-/*! @brief Associe une domaine a tous les raccords de la liste.
+/*! @brief Associe un domaine a tous les raccords de la liste.
  *
- * @param (Domaine& une_domaine) le domaine a associer
+ * @param (Domaine& un_domaine) le domaine a associer
  */
-void Raccords::associer_domaine(const Domaine& une_domaine)
+void Raccords::associer_domaine(const Domaine& un_domaine)
 {
-  for (auto& itr : *this) itr->associer_domaine(une_domaine);
+  for (auto& itr : *this) itr->associer_domaine(un_domaine);
 }
 
 /*! @brief Renvoie le nombre de face total des Raccords de la liste.

@@ -21,15 +21,15 @@ Sortie& Joints::printOn(Sortie& os) const { return LIST(Joint)::printOn(os); }
 
 Entree& Joints::readOn(Entree& is) { return LIST(Joint)::readOn(is); }
 
-/*! @brief Associe une domaine a tous les joints de la liste.
+/*! @brief Associe un domaine a tous les joints de la liste.
  *
- * Les joints de la liste feront partie de cette domaine.
+ * Les joints de la liste feront partie de cet domaine.
  *
- * @param (Domaine& une_domaine) le domaine a associer aux joint
+ * @param (Domaine& un_domaine) le domaine a associer aux joints
  */
-void Joints::associer_domaine(const Domaine& une_domaine)
+void Joints::associer_domaine(const Domaine& un_domaine)
 {
-  for (auto& itr : *this) itr.associer_domaine(une_domaine);
+  for (auto& itr : *this) itr.associer_domaine(un_domaine);
 }
 
 /*! @brief Renvoie le nombre de face total des Joints de la liste.

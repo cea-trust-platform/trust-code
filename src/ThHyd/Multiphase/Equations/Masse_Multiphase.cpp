@@ -266,8 +266,8 @@ void Masse_Multiphase::calculer_alpha_rho(const Objet_U& obj, DoubleTab& val, Do
     for (n = 0; n < N; n++) val(i, n) = alpha(i, n) * rho(!cR * i, n);
 
   /* valeur aux bords */
-  /* on ne peut utiliser valeur_aux_bords que si ch_rho a une domaine_dis_base */
-  ch_rho.a_une_domaine_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), bval);
+  /* on ne peut utiliser valeur_aux_bords que si ch_rho a un domaine_dis_base */
+  ch_rho.a_un_domaine_dis_base() ? bval = ch_rho.valeur_aux_bords() : ch_rho.valeur_aux(ref_cast(Domaine_VF, eqn.domaine_dis().valeur()).xv_bord(), bval);
   tab_multiply_any_shape(bval, ch_alpha.valeur_aux_bords(), VECT_ALL_ITEMS);
 
   /* derivees */

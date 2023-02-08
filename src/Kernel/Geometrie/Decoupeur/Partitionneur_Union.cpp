@@ -74,7 +74,7 @@ void Partitionneur_Union::construire_partition(IntVect& elem_part, int& nb_parts
   elem_part = -1;
   for (auto &&kv : fic_ssz)
     {
-      //on recupere la sous-domaine par son nom et le decoupage en ouvrant le fichier...
+      //on recupere le sous-domaine par son nom et le decoupage en ouvrant le fichier...
       const Sous_Domaine& ssz = ref_cast(Sous_Domaine, Interprete::objet(kv.first));
       EFichier file;
       file.ouvrir(kv.second.c_str());

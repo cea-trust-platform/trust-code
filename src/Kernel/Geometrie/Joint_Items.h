@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,9 +18,9 @@
 
 #include <TRUSTTab.h>
 
-/*! @brief Joint_Items contient les informations de distribution parallele d'un item geometrique particulier avec une domaine
+/*! @brief Joint_Items contient les informations de distribution parallele d'un item geometrique particulier avec un domaine
  *
- *     voisine particuliere (item = sommet, element, face, etc..)
+ *     voisin particulier (item = sommet, element, face, etc..)
  *     Ces structures sont initialisees dans Scatter.
  *     Elles sont ensuite utilisees par exemple pour creer
  *     un tableau distribue indexe par les indices des items

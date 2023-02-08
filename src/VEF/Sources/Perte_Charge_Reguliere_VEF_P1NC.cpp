@@ -67,8 +67,8 @@ void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_domaine
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleVect& volumes = domaine_VEF.volumes();
-  const Sous_Domaine& la_sous_domaine = le_domaine.ss_domaine(un_nom_sous_domaine);
-  int nb_poly_ss_domaine = la_sous_domaine.nb_elem_tot();
+  const Sous_Domaine& le_sous_domaine = le_domaine.ss_domaine(un_nom_sous_domaine);
+  int nb_poly_ss_domaine = le_sous_domaine.nb_elem_tot();
 
   int nfe=domaine_VEF.domaine().nb_faces_elem();
   int nfac;
@@ -90,12 +90,12 @@ void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_domaine
 
   for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
     {
-      num_loc[la_sous_domaine(num_elem)] = num_elem;
+      num_loc[le_sous_domaine(num_elem)] = num_elem;
     }
 
   for (num_elem=0; num_elem<nb_poly_ss_domaine; num_elem++)
     {
-      num_poly = la_sous_domaine(num_elem);
+      num_poly = le_sous_domaine(num_elem);
       for  (face_loc = 0; face_loc < nfe ; face_loc++)
         {
           num_face =  elem_faces(num_poly,face_loc);
@@ -107,7 +107,7 @@ void Perte_Charge_Reguliere_VEF_P1NC::remplir_num_faces(Nom& un_nom_sous_domaine
                 {
                   num_poly_vois = face_voisins(num_face,i);
                   if (num_poly_vois != -1)
-                    if (num_loc[num_poly_vois] == -1)  // le poly voisin n'est pas dans la sous_domaine
+                    if (num_loc[num_poly_vois] == -1)  // le poly voisin n'est pas dans le sous_domaine
                       {
                         corr_front_ss[nfac-1] = volumes(num_poly)/(volumes(num_poly)+volumes(num_poly_vois)) ;
                       }

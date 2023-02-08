@@ -119,7 +119,7 @@ void Domaine_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)
       }
     md_vector_p1b_.copy(md_p1b);
   }
-  Cerr << "La Domaine_VEF_PreP1b a ete remplie avec succes" << finl;
+  Cerr << "le Domaine_VEF_PreP1b a ete rempli avec succes" << finl;
 }
 
 void Domaine_VEF_PreP1b::discretiser_arete()
@@ -130,7 +130,7 @@ void Domaine_VEF_PreP1b::discretiser_arete()
   domaine().creer_aretes();
   md_vector_aretes_ = domaine().aretes_som().get_md_vector();
 
-  // Calcul des centres de gravite des aretes xa_ stockes dans la Domaine_VF
+  // Calcul des centres de gravite des aretes xa_ stockes dans le Domaine_VF
   const IntTab& aretes_som = domaine().aretes_som();
   const int nb_aretes = aretes_som.dimension(0);
   const DoubleTab& coord = dom.les_sommets();

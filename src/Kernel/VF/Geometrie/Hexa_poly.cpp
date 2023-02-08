@@ -39,7 +39,7 @@ Hexa_poly::Hexa_poly()
 {
 }
 
-/*! @brief remplit le tableau face_normales dans la Domaine_poly
+/*! @brief remplit le tableau face_normales dans le Domaine_poly
  *
  */
 

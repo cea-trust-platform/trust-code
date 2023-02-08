@@ -47,7 +47,7 @@ public:
   virtual DoubleTab& remplir_coord_noeuds_compo(DoubleTab&, int) const;
   DoubleTab& valeur_aux(const DoubleTab&, DoubleTab&) const override;
   const Domaine& domaine() const;
-  int a_une_domaine_dis_base() const override { return 1; }
+  int a_un_domaine_dis_base() const override { return 1; }
   // Obsolete method: signature changed in order to generate a compiler error if old code is not removed
   virtual void creer_espace_distant(int dummy) { }
 

@@ -29,13 +29,13 @@ Sortie& Extruder_en20::printOn(Sortie& os) const { return Interprete::printOn(os
 
 Entree& Extruder_en20::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Fonction principale de l'interprete Extruder_en20 Triangule 1 a 1 toutes les domaines du domaine
+/*! @brief Fonction principale de l'interprete Extruder_en20 Triangule tout le domaine
  *
  *     specifie par la directive.
  *     On triangule le domaine grace a la methode:
  *       void Extruder_en20::extruder(Domaine& domaine) const
  *     Extruder signifie ici transformer en triangle des
- *     elements geometrique d'une domaine.
+ *     elements geometrique d'un domaine.
  *
  * @param (Entree& is) un flot d'entree
  * @return (Entree&) le flot d'entree
@@ -56,7 +56,7 @@ Entree& Extruder_en20::interpreter_(Entree& is)
   return is;
 }
 
-/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques du domaine en triangles.
+/*! @brief Triangule tous les element d'un domaine: transforme les elements goemetriques du domaine en triangles.
  *
  *     Pour l'instant on ne sait raffiner que des Rectangles
  *     (on les coupe en 4).

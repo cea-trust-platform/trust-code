@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ Entree& ScatterMED::readOn(Entree& is)
  *   (selon fichier_domaine_format_binaire_)
  *   Le format historique n'est plus supporte.
  *   Format attendu : Domaine::ReadOn
- *   La domaine est renommee comme le domaine (pour lance_test_seq_par)
+ *   le Domaine est renomme comme le domaine (pour lance_test_seq_par)
  *
  */
 void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)

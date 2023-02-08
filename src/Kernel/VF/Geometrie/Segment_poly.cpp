@@ -36,7 +36,7 @@ Entree& Segment_poly::readOn(Entree& s )
 }
 
 
-/*! @brief remplit le tableau face_normales dans la Domaine_poly
+/*! @brief remplit le tableau face_normales dans le Domaine_poly
  *
  */
 void Segment_poly::normale(int num_Face,DoubleTab& Face_normales,

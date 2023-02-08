@@ -125,7 +125,7 @@ void Domaine_bord::extraire_domaine_bord(const Domaine& src,
 
   // Le domaine destination doit etre vide:
   assert(dest.nb_elem() == 0);
-  // Initialisation du domaine et d'une domaine:
+  // Initialisation du domaine:
   // On choisit un nom pour le domaine
   dest.nommer(src.le_nom() + Nom("_") + nom_bord);
   // Type des elements du domaine dest:

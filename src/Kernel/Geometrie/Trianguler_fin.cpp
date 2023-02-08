@@ -22,7 +22,7 @@ Sortie& Trianguler_fin::printOn(Sortie& os) const { return Interprete::printOn(o
 
 Entree& Trianguler_fin::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Triangule tous les element d'une domaine: transforme les elements goemetriques du domaine en triangles.
+/*! @brief Triangule tous les element d'un domaine: transforme les elements goemetriques du domaine en triangles.
  *
  *     Pour l'instant on ne sait trianguler que des Rectangles
  *     (on les coupe en 8).

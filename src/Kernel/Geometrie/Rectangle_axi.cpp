@@ -41,7 +41,7 @@ Entree& Rectangle_axi::readOn(Entree& s )
 }
 
 
-/*! @brief Calcule les centres de gravites de tous les elements du domaine associee a l'element goemetrique.
+/*! @brief Calcule les centres de gravites de tous les elements du domaine associe a l'element goemetrique.
  *
  * @param (DoubleTab& xp) le tableau contenant les coordonnees des centres de gravite
  */
@@ -107,7 +107,7 @@ const Nom& Rectangle_axi::nom_lml() const
 
 
 
-/*! @brief Calcule les volumes des elements du domaine associee.
+/*! @brief Calcule les volumes des elements du domaine associe.
  *
  * @param (DoubleVect& volumes) le vecteur contenant les valeurs  des des volumes des elements du domaine
  */
@@ -133,7 +133,7 @@ void Rectangle_axi::calculer_volumes(DoubleVect& volumes) const
     }
 }
 
-/*! @brief //    Renvoie 1 si l'element ielem du domaine associee a //              l'element geometrique contient le point
+/*! @brief //    Renvoie 1 si l'element ielem du domaine associe a //              l'element geometrique contient le point
  *
  *  //              de coordonnees specifiees par le parametre "pos".
  *  //    Renvoie 0 sinon.
@@ -181,7 +181,7 @@ int Rectangle_axi::contient(const ArrOfDouble& pos, int element ) const
     return 0;
 }
 
-/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associee a
+/*! @brief Renvoie 1 si les sommets specifies par le parametre "pos" sont les sommets de l'element "element" du domaine associe a
  *
  *     l'element geometrique.
  *

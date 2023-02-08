@@ -85,11 +85,11 @@ void Partitionneur_Sous_Domaines::initialiser(const Noms& noms_sous_domaines)
  *    Les processeurs sont attribues dans l'ordre d'apparition des
  *    sous-domaines/domaines dans le domaine (et non dans l'ordre d'apparition dans
  *    la liste de sous-domaines).
- *    Premiere sous_domaine/domaine qui figure dans la liste => proc 0
- *    Element de la deuxieme sous_domaine => proc 1
+ *    Premier sous_domaine/domaine qui figure dans la liste => proc 0
+ *    Element du deuxieme sous_domaine => proc 1
  *    ...
- *    Elements restants qui ne figurent dans aucune sous_domaine => sur un nouveau pe.
- *    Si un element figure dans plusieurs sous-domaines, c'est la premiere sous_domaine
+ *    Elements restants qui ne figurent dans aucun sous_domaine => sur un nouveau pe.
+ *    Si un element figure dans plusieurs sous-domaines, c'est l premier sous_domaine
  *    qui gagne.
  *
  */

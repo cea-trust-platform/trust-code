@@ -36,7 +36,7 @@ Entree& Point_EF::readOn(Entree& s )
 }
 
 
-/*! @brief remplit le tableau face_normales dans la Domaine_EF
+/*! @brief remplit le tableau face_normales dans le Domaine_EF
  *
  */
 void Point_EF::normale(int num_Face,DoubleTab& Face_normales,

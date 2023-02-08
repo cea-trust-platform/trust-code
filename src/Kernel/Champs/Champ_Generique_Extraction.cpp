@@ -165,7 +165,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   const Frontiere& la_frontiere = fr_dis.frontiere();
   nb_ddl = la_frontiere.nb_faces();
 
-  //La domaine discretisee a associer n est actuellement pas disponible
+  //le Domaine discretise a associer n est actuellement pas disponible
   //On associe pas de domaine_discretisee et on ne fixe pas nb_valeurs_nodales
   espace_stockage.typer(type_espace_stockage);
   ////espace_stockage->associer_domaine_dis_base(domaine_dis);
@@ -248,7 +248,7 @@ void Champ_Generique_Extraction::nommer_source()
 
 // La methode completer complete le domaine d extraction declare dans le jeu de donnes
 // auquel la classe fait reference:
-// - ajout d une domaine (de type Pave)
+// - ajout d un domaine (de type Pave)
 // - on determine les coordonnees des sommets contenus dans le plan d extraction
 // Actuellement on ne procede pas a la discretisation du domaine d extraction (pb dimension)
 void Champ_Generique_Extraction::completer(const Postraitement_base& post)
@@ -425,7 +425,7 @@ Entity Champ_Generique_Extraction::get_localisation(const int index) const
 
 
 //Discretisation du domaine d extraction
-//Cette discretisation est necessaire pour associer une domaine discretisee
+//Cette discretisation est necessaire pour associer un domaine discretise
 //a l espace de stockage dans la methode get_champ()
 void Champ_Generique_Extraction::discretiser_domaine()
 {

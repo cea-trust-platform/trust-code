@@ -355,7 +355,7 @@ void Milieu_composite::calculer_masse_volumique(const Objet_U& obj, DoubleTab& v
 
   std::vector<DoubleTab> bsplit(N);
   for (n = 0; n < N; n++)
-    if (mil.fluides[n]->masse_volumique()->a_une_domaine_dis_base())
+    if (mil.fluides[n]->masse_volumique()->a_un_domaine_dis_base())
       bsplit[n] = mil.fluides[n]->masse_volumique()->valeur_aux_bords();
     else bsplit[n].resize(bval.dimension_tot(0), 1), mil.fluides[n]->masse_volumique()->valeur_aux(zvf.xv_bord(), bsplit[n]);
   for (i = 0; i < Nb; i++)
