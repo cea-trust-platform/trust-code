@@ -52,6 +52,8 @@ public:
         for (int e = 0; e < tab_diffusivite_.dimension(0); e++)
           for (int n = 0; n < tab_diffusivite_.dimension(1); n++)
             tab_diffusivite_(e, n) = std::max(tab_alpha_(e, n), 1e-8) * ref_diffusivite_->valeurs()(is_var_ * e, n);
+
+        tab_diffusivite_.echange_espace_virtuel();
       }
     else
       tab_diffusivite_.ref(ref_diffusivite_->valeurs());
