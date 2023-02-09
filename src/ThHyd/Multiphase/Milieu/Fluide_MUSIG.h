@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,29 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Composite_included
-#define Champ_Composite_included
+#ifndef Fluide_MUSIG_included
+#define Fluide_MUSIG_included
 
-#include <Champ_Don.h>
+#include <Fluide_base.h>
+#include <Fluide.h>
+#include <vector>
+#include <map>
 
-class Champ_Composite : public Champ_Don_base
+/*! @brief Classe Fluide_MUSIG
+ *
+ *  Cette classe permettant d'instancier plusieurs phases d'un coup
+ *
+ *  Chaque sous phases possèdent la même loi d'état
+ *
+ *  Deux paramètres : 'nbPhases' et 'fluide'
+ *
+ * @sa Fluide_base
+ */
+class Fluide_MUSIG : public Fluide_base
 {
-  Declare_instanciable(Champ_Composite);
-public:
-  // methodes classique
-  void mettre_a_jour(double tps) override;
-  DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& tab_valeurs) const override;
+  Declare_instanciable( Fluide_MUSIG ) ;
+public :
+  inline DoubleTab getdiametres() { return diametres_; }
+  inline int getNbSubPhase() { return nbSubPhases_; }
+  inline Fluide getFluide() { return fluide_; }
 
-  // methodes specifiques
-  int get_champ_composite_dim() { return dim_; }
-  const int& get_champ_composite_dim() const { return dim_; }
-  Champ_Don& get_champ_composite(const int i) { return z_fld_[i]; }
-  const Champ_Don& get_champ_composite(const int i) const { return z_fld_[i]; }
+  int initialiser(const double temps) override;
 
-protected:
-  void fill_valeurs_composite();
-  std::vector<Champ_Don> z_fld_;
-  int dim_ = -1;
+protected :
+  DoubleTab diametres_;
+  int nbSubPhases_ = -1;
+  Fluide fluide_;
 };
 
-#endif /* Champ_Composite_included */
+#endif /* Fluide_MUSIG_included */

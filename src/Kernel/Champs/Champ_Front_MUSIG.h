@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,29 +13,14 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Composite_included
-#define Champ_Composite_included
+#ifndef Champ_Front_MUSIG_included
+#define Champ_Front_MUSIG_included
 
-#include <Champ_Don.h>
+#include <Champ_Front_Composite.h>
 
-class Champ_Composite : public Champ_Don_base
+class Champ_Front_MUSIG: public Champ_Front_Composite
 {
-  Declare_instanciable(Champ_Composite);
-public:
-  // methodes classique
-  void mettre_a_jour(double tps) override;
-  DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& tab_valeurs) const override;
-
-  // methodes specifiques
-  int get_champ_composite_dim() { return dim_; }
-  const int& get_champ_composite_dim() const { return dim_; }
-  Champ_Don& get_champ_composite(const int i) { return z_fld_[i]; }
-  const Champ_Don& get_champ_composite(const int i) const { return z_fld_[i]; }
-
-protected:
-  void fill_valeurs_composite();
-  std::vector<Champ_Don> z_fld_;
-  int dim_ = -1;
+  Declare_instanciable( Champ_Front_MUSIG );
 };
 
-#endif /* Champ_Composite_included */
+#endif /* Champ_Front_MUSIG_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ public:
   const DoubleTab& valeurs_au_temps(double temps) const override { return les_valeurs->valeurs(); }
   Champ_front_base& affecter_(const Champ_front_base& ch) override { return *this; }
 
-private:
+protected:
   void fill_valeurs_composite();
   std::vector<Champ_front> z_fld_;
   int dim_ = -1;

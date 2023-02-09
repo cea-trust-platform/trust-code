@@ -13,39 +13,47 @@
 *
 *****************************************************************************/
 
-#include <Champ_Composite.h>
+#include <Champ_MUSIG.h>
 #include <Motcle.h>
 
-Implemente_instanciable(Champ_Composite,"Champ_Composite",Champ_Don_base);
-// XD champ_composite champ_don_base champ_composite 0 Composite field. Used in multiphase problems to associate data to each phase.
-// XD attr dim int dim 0 Number of field components.
-// XD attr bloc bloc_lecture bloc 0 Values Various pieces of the field, defined per phase. Part 1 goes to phase 1, etc...
+Implemente_instanciable(Champ_MUSIG, "Champ_MUSIG", Champ_Composite ) ;
+// XD champ_musig champ_composite champ_musig 0 MUSIG field. Used in multiphase problems to associate data to each phase.
+// XD attr dim suppress_param dim 1 del
+// XD attr bloc bloc_lecture bloc 0 Not set
 
-Sortie& Champ_Composite::printOn(Sortie& os) const { return Champ_Don_base::printOn(os); }
+Sortie& Champ_MUSIG::printOn(Sortie& os) const { return Champ_Composite::printOn(os); }
 
-Entree& Champ_Composite::readOn(Entree& is)
+Entree& Champ_MUSIG::readOn( Entree& is )
 {
   nommer(que_suis_je()); // pour printOn
 
   Motcle motlu, acc_ouv("{"), acc_fer("}");
-  is >> dim_;
-  assert (dim_ > 0);
-  z_fld_.resize(dim_);
+  dim_ = 0;
 
   is >> motlu;
   if (motlu != acc_ouv)
     {
-      Cerr << "Error in the readOn of Champ_Composite ! We expected a { and not " << motlu << "  ! Call the 911 !" << finl;
+      Cerr << "Error in the readOn of Champ_MUSIG ! We expected a { and not " << motlu << "  ! Call Maximus Decimus !" << finl;
       Process::exit();
     }
 
-  for (int i = 0; i < dim_; i++) is >> z_fld_[i];
-
-  is >> motlu;
-  if (motlu != acc_fer)
+  for (is >> motlu; motlu != "}"; is >> motlu)
     {
-      Cerr << "Error in the readOn of Champ_Composite ! We expected a } and not " << motlu << "  ! Call the 911 !" << finl;
-      Process::exit();
+      if (motlu != "NBPHASES")
+        {
+          Cerr << "Error in the readOn of Champ_MUSIG ! You need yo specify the number of subphases with NBPHASES !" << finl;
+          Process::exit();
+        }
+      int nbSubPhases;
+      is >> nbSubPhases;
+      Champ_Don tmp;
+      is >> tmp;
+      for(int j=0; j<nbSubPhases; j++)
+        {
+          Champ_Don tmp2(tmp);
+          z_fld_.push_back(tmp2);
+        }
+      dim_ += nbSubPhases;
     }
 
   // XXX : On verifie qu'on a lu les memes types de champs ...
@@ -61,39 +69,6 @@ Entree& Champ_Composite::readOn(Entree& is)
   fixer_nb_comp(ncompo);
   fixer_nb_valeurs_nodales(nnodes);
   fill_valeurs_composite();
+
   return is;
-}
-
-/*
- * On stock comme ca : X X X ... Y Y Y ... Z Z Z ...
- */
-void Champ_Composite::fill_valeurs_composite()
-{
-  for (int nbp = 0; nbp < dim_; nbp++)
-    for (int i = 0; i < nb_valeurs_nodales(); i++)
-      for (int j = 0; j < z_fld_[0]->nb_comp(); j++)
-        valeurs_(i, nbp + j * dim_) = z_fld_[nbp]->valeurs()(i, j);
-}
-
-void Champ_Composite::mettre_a_jour(double tps)
-{
-  for (auto &fld : z_fld_)
-    fld->mettre_a_jour(tps);
-}
-
-DoubleTab& Champ_Composite::valeur_aux(const DoubleTab& xv, DoubleTab& tab_valeurs) const
-{
-  for (int nbp = 0; nbp < dim_; nbp++)
-    {
-      DoubleTab tmp(tab_valeurs.dimension_tot(0), tab_valeurs.line_size() / dim_);
-      z_fld_[nbp]->valeur_aux(xv,tmp);
-      assert (tab_valeurs.dimension_tot(0) == tmp.dimension_tot(0));
-      assert (tmp.line_size() * dim_ == tab_valeurs.line_size());
-      for (int i = 0; i < tab_valeurs.dimension_tot(0); i++)
-        for (int j = 0; j < tmp.line_size(); j++)
-          tab_valeurs(i, nbp + j * dim_) = tmp(i,j);
-    }
-  tab_valeurs.echange_espace_virtuel();
-
-  return tab_valeurs;
 }

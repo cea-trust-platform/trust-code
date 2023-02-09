@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,29 +13,24 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Composite_included
-#define Champ_Composite_included
+#ifndef Milieu_MUSIG_included
+#define Milieu_MUSIG_included
 
-#include <Champ_Don.h>
+#include <Milieu_composite.h>
+#include <Fluide_MUSIG.h>
 
-class Champ_Composite : public Champ_Don_base
+class Milieu_MUSIG : public Milieu_composite
 {
-  Declare_instanciable(Champ_Composite);
-public:
-  // methodes classique
-  void mettre_a_jour(double tps) override;
-  DoubleTab& valeur_aux(const DoubleTab& , DoubleTab& tab_valeurs) const override;
+  Declare_instanciable( Milieu_MUSIG ) ;
+public :
+  double getDiameter(int iPhaseMilieu);
 
-  // methodes specifiques
-  int get_champ_composite_dim() { return dim_; }
-  const int& get_champ_composite_dim() const { return dim_; }
-  Champ_Don& get_champ_composite(const int i) { return z_fld_[i]; }
-  const Champ_Don& get_champ_composite(const int i) const { return z_fld_[i]; }
+private :
+  std::vector<Fluide_MUSIG> fluidesMUSIG_;
 
-protected:
-  void fill_valeurs_composite();
-  std::vector<Champ_Don> z_fld_;
-  int dim_ = -1;
+  // Pour toutes les phases, on sauvegarde un tableau de 3 int :
+  // numero de phases pour le milieu | numéro de FluideMUSIG (-1 si pas FluideMUSIG) | index de la phase dans fluideMUSIG.
+  std::vector<std::vector<int>> indexMilieuToIndexFluide_; // il y a sans doute mieux
 };
 
-#endif /* Champ_Composite_included */
+#endif /* Milieu_MUSIG_included */
