@@ -37,15 +37,15 @@ Entree& Vitesse_derive_Ishii::readOn(Entree& is)
   return is;
 }
 
-void Vitesse_derive_Ishii::evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const
+void Vitesse_derive_Ishii::evaluate_C0_vg0(const input_t& input) const
 {
   const int D = dimension;
-  const double norm_g = sqrt(local_carre_norme_vect(g));
+  const double norm_g = sqrt(local_carre_norme_vect(input.g));
 
   /* distribution parameter */
-  C0 = Cinf + (1.0 - Cinf) * std::sqrt(rho(n_g) / rho(n_l)) * (1.0 - sb_ * exp(-zeta * alpha(n_g)));
+  C0 = Cinf + (1.0 - Cinf) * std::sqrt(input.rho(n_g) / input.rho(n_l)) * (1.0 - sb_ * exp(-zeta * input.alpha(n_g)));
 
   /* drift velocity */
-  double dv = std::sqrt(2.0) * pow((rho(n_l) - rho(n_g)) * norm_g * sigma(n_l, n_g) / rho(n_l) / rho(n_l), 0.25) * pow(1.0 - alpha(n_g), theta);
-  for (int d = 0; d < D; d++) vg0(d) = dv * std::fabs(g(d)) / norm_g;
+  double dv = std::sqrt(2.0) * pow((input.rho(n_l) - input.rho(n_g)) * norm_g * input.sigma(n_l, n_g) / input.rho(n_l) / input.rho(n_l), 0.25) * pow(1.0 - input.alpha(n_g), theta);
+  for (int d = 0; d < D; d++) vg0(d) = dv * std::fabs(input.g(d)) / norm_g;
 }

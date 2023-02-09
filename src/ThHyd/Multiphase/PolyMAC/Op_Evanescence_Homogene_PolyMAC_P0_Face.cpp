@@ -83,24 +83,26 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
       else abort();
 
       /* calcul de la vitesse de derive */
-      DoubleTab a_l(N), rho_l(N), v(N, D), sigma(N, N); // arguments pour la vitesse de derive : alpha, coefficients du calcul de vitesse de derive
-      DoubleTab ur(N, N, D);               // vitesse relative de la phase i par rapport a la phase j
+      Vitesse_relative_base::input_t in;
+      Vitesse_relative_base::output_t out;
+      in.alpha.resize(N), in.rho.resize(N), in.v.resize(N, D), in.sigma.resize(N, N), out.vr.resize(N, N, D);
+      in.dh = dh_e(e), in.g = g;
       if (pbm.has_correlation("vitesse_relative"))
         {
           const Vitesse_relative_base& correlation_vd =  ref_cast(Vitesse_relative_base, correlation_.valeur());
-          for (n = 0; n < N; n++) a_l(n) = alpha(e, n);
-          for (n = 0; n < N; n++) rho_l(n) = rho(!cR * e, n);
+          for (n = 0; n < N; n++) in.alpha(n) = alpha(e, n);
+          for (n = 0; n < N; n++) in.rho(n) = rho(!cR * e, n);
           for (n = 0; n < N; n++)
-            for (d = 0; d < D; d++) v(n, d) = vp(nf_tot + D * e + d, n);
+            for (d = 0; d < D; d++) in.v(n, d) = vp(nf_tot + D * e + d, n);
           for (n = 0; n < N; n++)
-            for (k = 0; k < N; k++)
-              if (milc.has_interface(n, k))
+            for (m = 0; m < N; m++)
+              if (milc.has_interface(n, m))
                 {
-                  Interface_base& sat = milc.get_interface(n, k);
-                  sigma(n, k) = sat.sigma_(temp(e, n), press(e, n * (Np > 1)));
+                  Interface_base& sat = milc.get_interface(n, m);
+                  in.sigma(n, m) = sat.sigma_(temp(e, n), press(e, n * (Np > 1)));
                 }
 
-          correlation_vd.vitesse_relative(dh_e(e), sigma, a_l, rho_l, v, g, ur);
+          correlation_vd.vitesse_relative(in, out);
         }
 
       /* coeff d'evanescence */
@@ -109,7 +111,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
           if (n != k && (a_m = alpha(e, n)) < a_eps)
             {
               coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
-              double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k) - ur(n, k, d));
+              double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k) - out.vr(n, k, d));
               secmem(i, k) += flux, secmem(i, n) -= flux;
             }
     }

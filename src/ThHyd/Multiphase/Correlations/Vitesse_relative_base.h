@@ -39,7 +39,21 @@ class Vitesse_relative_base : public Correlation_base
   Declare_base(Vitesse_relative_base);
 
 public:
-  virtual void vitesse_relative(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g, DoubleTab& ur) const = 0;
+  struct input_t
+  {
+    double dh = 0.0;       // diametre hydraulique
+    DoubleTab sigma; // tension superficielle
+    DoubleTab alpha; // taux de vide
+    DoubleTab rho;   // masse volumique
+    DoubleTab v;     // v(n, d) : vitesse de la phase n dans la direction d
+    DoubleVect g;    // vecteur gravite
+  };
+  /* valeurs de sortie */
+  struct output_t
+  {
+    DoubleTab vr; // vr(n, m, d) : vitesse relative des phases n et m dans la direction d (v(n, d) - v(m, d))
+  };
+  virtual void vitesse_relative(const input_t& input, output_t& output) const = 0;
 
 protected:
   int n_l = -1, n_g = -1; // phases traitees : liquide / gaz continu

@@ -120,28 +120,28 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
         else abort();
 
         /* calcul de la vitesse de derive */
-        DoubleTab a_l(N), rho_l(N), v(N, D), sigma(N, N); // arguments pour la vitesse de derive : alpha, coefficients du calcul de vitesse de derive
-        DoubleTab ur(N, N, D);               // vitesse relative de la phase i par rapport a la phase j
-        double dh;
+        Vitesse_relative_base::input_t in;
+        Vitesse_relative_base::output_t out;
+        in.alpha.resize(N), in.rho.resize(N), in.v.resize(N, D), in.sigma.resize(N, N), out.vr.resize(N, N, D);
         if (pbm.has_correlation("Vitesse_relative"))
           {
             const Vitesse_relative_base& correlation_vd = ref_cast(Vitesse_relative_base, correlation_.valeur());
             for (n = 0; n < N; n++)
-              for (d = 0; d < D; d++) v(n, d) = vp(f, n) * zone.face_normales(f, d) / zone.face_surfaces(f);
-            for (a_l = 0, rho_l = 0, dh = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+              for (d = 0; d < D; d++) in.v(n, d) = vp(f, n) * zone.face_normales(f, d) / zone.face_surfaces(f);
+            for (in.alpha = 0, in.rho = 0, in.dh = 0, in.g = g, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
               {
-                for (n = 0; n < N; n++)   a_l(n) += vfd(f, i) / vf(f) * alpha(e, n);
-                for (n = 0; n < N; n++) rho_l(n) += vfd(f, i) / vf(f) * rho(!cR * e, n);
-                for (n = 0; n < N; n++)       dh += vfd(f, i) / vf(f) * dh_e(e);
+                for (n = 0; n < N; n++) in.alpha(n) += vfd(f, i) / vf(f) * alpha(e, n);
+                for (n = 0; n < N; n++)   in.rho(n) += vfd(f, i) / vf(f) * rho(!cR * e, n);
+                for (n = 0; n < N; n++)       in.dh += vfd(f, i) / vf(f) * dh_e(e);
                 for (n = 0; n < N; n++)
-                  for (k = 0; k < N; k++)
-                    if (milc.has_interface(n,k))
+                  for (m = 0; m < N; m++)
+                    if (milc.has_interface(n,m))
                       {
                         Interface_base& sat = milc.get_interface(n, k);
-                        sigma(n, k) += vfd(f, i) / vf(f) * sat.sigma_(temp(e, n), press(e, n * (Np > 1)));
+                        in.sigma(n, m) += vfd(f, i) / vf(f) * sat.sigma_(temp(e, n), press(e, n * (Np > 1)));
                       }
               }
-            correlation_vd.vitesse_relative(dh, sigma, a_l, rho_l, v, g, ur);
+            correlation_vd.vitesse_relative(in, out);
           }
         /* phases evanescentes : avec alpha amont. La phase majoritaire ne peut pas etre evanescente! */
         for (n = 0; n < N; n++)
@@ -156,9 +156,9 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
             if (n != k && a_m < a_eps)
               {
                 coeff(f, n, 1) = mat_diag(N * f + k, N * f + k) * (coeff(f, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
-                DoubleTab ur_face(N, N);
-                for (d = 0; d < dimension; ++d) ur_face(n, k) += ur(n, k, d) * zone.face_normales(f, d) / zone.face_surfaces(f);
-                double flux = coeff(f, n, 0) * secmem(f, n) + coeff(f, n, 1) * (inco(f, n) - inco(f, k) - ur_face(n, k));
+                DoubleTab vr_face(N, N);
+                for (d = 0; d < D; ++d) vr_face(n, k) += out.vr(n, k, d) * zone.face_normales(f, d) / zone.face_surfaces(f);
+                double flux = coeff(f, n, 0) * secmem(f, n) + coeff(f, n, 1) * (inco(f, n) - inco(f, k) - vr_face(n, k));
                 secmem(f, k) += flux, secmem(f, n) -= flux;
               }
           }

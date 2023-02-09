@@ -31,15 +31,15 @@ Entree& Vitesse_derive_base::readOn(Entree& is)
   return Vitesse_relative_base::readOn(is);
 }
 
-void Vitesse_derive_base::vitesse_relative(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g, DoubleTab& ur) const
+void Vitesse_derive_base::vitesse_relative(const input_t& input, output_t& output) const
 {
-  ur = 0.0;
+  output.vr = 0.0;
   // if (alpha(n_g) < 1e-7) return;
-  evaluate_C0_vg0(Dh, sigma, alpha, rho, v, g);
+  evaluate_C0_vg0(input);
 
   for (int d = 0; d < dimension; d++)
     {
-      ur(n_g, n_l, d) = ((C0 - 1.0) * v(n_l, d) + vg0(d)) / (1.0 - C0 * alpha(n_g));
-      ur(n_l, n_g, d) = ur(n_g, n_l, d);
+      output.vr(n_g, n_l, d) = ((C0 - 1.0) * input.v(n_l, d) + vg0(d)) / (1.0 - C0 * input.alpha(n_g));
+      output.vr(n_l, n_g, d) = output.vr(n_g, n_l, d);
     }
 }

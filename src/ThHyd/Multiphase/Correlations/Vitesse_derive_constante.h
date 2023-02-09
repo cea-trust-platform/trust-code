@@ -37,7 +37,7 @@ class Vitesse_derive_constante : public Vitesse_derive_base
   Declare_instanciable(Vitesse_derive_constante);
 
 protected:
-  void evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const override {}
+  void evaluate_C0_vg0(const input_t& input) const override {}
 };
 
 #endif
