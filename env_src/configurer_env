@@ -827,6 +827,7 @@ then
    PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==379||v==376?1:0)}'`
    PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
    INSTALL_OK=1
+
    # list of packages already-installed/to-install in conda, we ignore mpi4py since installed with pip
    $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py > conda_list.check
    if [ "$system" = "Linux" ] && [ $model = "x86_64" ] #&& [ -f $TRUST_ROOT/exec/conda_list.ref ]
@@ -847,6 +848,8 @@ then
          rm -f conda_list.ref
       fi
    else
+      # pour mac, on verifie pas strictement le numero de version python, par contre on teste que ce python fonctionne
+      [ "$system" = "MacOSX" ] && PYTHON_VERSION_OK=1
       for pkg in $pkgs
       do
         pkg=`echo $pkg | awk -F= '{print $1}'` # Pour ne pas avoir le numero de version
