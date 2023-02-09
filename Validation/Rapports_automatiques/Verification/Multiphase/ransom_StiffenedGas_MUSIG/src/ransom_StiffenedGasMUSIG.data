@@ -1,0 +1,257 @@
+# PARALLEL OK 8 #
+dimension 2
+Pb_multiphase pb
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+        Pave cylindre
+        {
+        Origine 0.0 0.0
+        Nombre_de_Noeuds 11 121
+        Longueurs 1 12
+        facteurs 1.0 1.0
+        }
+        {
+        Bord Inlet      Y = 12.0        0.0 <= X <= 1.0
+        Bord Outlet     Y = 0.0         0.0 <= X <= 1.0
+        Bord gauche     X = 0.0         0.0 <= Y <= 12.0
+        Bord droite     X = 1.0         0.0 <= Y <= 12.0
+        }
+}
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 1 }
+    Larg_joint 2
+    ecrire_lata mesh
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+
+PolyMAC_P0  dis
+Option_PolyMAC_P0 {  }
+
+
+Schema_euler_implicite sch
+Read sch
+{
+        # Time step #
+          # Initial time [s] #
+	tinit .0
+          # Min time step #
+	dt_min 1.e-8
+          # Max time step #
+	dt_max 5.e-1  # dt_min=dt_max so dt imposed #
+
+	# CLF #
+        facsec 0.8
+        facsec_max 0.8
+
+        # Output criteria #
+          # .out files printing period #
+        dt_impr 5.e-5 # Note: small value to print at each time step #
+          # .sauv files printing period #
+	dt_sauv 100
+        periode_sauvegarde_securite_en_heures 23
+
+        # Stop if one of the following criteria is checked: #
+          # End time [s] #
+	tmax 0.8
+          # Max number of time steps #
+        # nb_pas_dt_max 3 #
+          # Convergence threshold (see .dt_ev file) #
+	seuil_statio 1.e-4
+
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 pression 1e-2 temperature 1e-2 vitesse 1e-2 } 
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+	Milieu_MUSIG
+	{
+		gaz_helium FLUIDE_MUSIG 
+			{
+				fluide StiffenedGas { gamma 1.4 pinf 0.0 }
+				nbPhases 4
+				diametres { rmin 0.01 rmax 0.1 lin }
+			}
+		liquide_sodium FLUIDE_MUSIG 
+			{
+				fluide StiffenedGas { gamma 4.4 pinf 6e8 }
+				nbPhases 8
+			}
+	}
+
+    QDM_Multiphase
+    {
+	evanescence { homogene { alpha_res 1e-5 alpha_res_min 1e-6 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { negligeable }
+        sources
+        {
+            source_qdm Champ_MUSIG  
+            {
+                nbPhases 4 Champ_Fonc_xyz dom 2 0 -10.0
+                nbPhases 8 Champ_Fonc_xyz dom 2 0 -10.0
+            }
+	}
+        initial_conditions
+        {
+            vitesse  Champ_MUSIG /* champ par phase */
+            {
+                nbPhases 4 Champ_Fonc_xyz dom 2 0 0
+                nbPhases 8 Champ_Fonc_xyz dom 2 0 -10.0
+            }
+            pression Champ_Fonc_xyz dom 1  1e5
+        }
+        boundary_conditions
+        {
+            droite paroi_fixe
+	    gauche paroi_fixe
+	    Inlet frontiere_ouverte_vitesse_imposee Champ_Front_MUSIG {
+		nbPhases 12 champ_front_uniforme 2 0.0 -10.0
+	    }
+            Outlet frontiere_ouverte_pression_imposee champ_front_uniforme 1 1.e5 
+        }
+    }
+ 
+    Masse_Multiphase
+    {
+        initial_conditions
+	{
+		alpha Champ_MUSIG  /* champ par phase */
+		    {
+		        nbPhases 1 Champ_Fonc_xyz dom 1 0.03 # Gaz 0 #
+			nbPhases 1 Champ_Fonc_xyz dom 1 0.04 # Gaz 1 #
+			nbPhases 1 Champ_Fonc_xyz dom 1 0.05 # Gaz 2 #
+			nbPhases 1 Champ_Fonc_xyz dom 1 0.07 # Gaz 3 #
+		        nbPhases 1 Champ_Fonc_xyz dom 1 0.03 # Liquide 0 #
+			nbPhases 1 Champ_Fonc_xyz dom 1 0.05 # Liquide 1 #
+		        nbPhases 1 Champ_Fonc_xyz dom 1 0.07 # Liquide 2 #
+			nbPhases 1 Champ_Fonc_xyz dom 1 0.09 # Liquide 3 #
+		        nbPhases 1 Champ_Fonc_xyz dom 1 0.11 # Liquide 4 #
+			nbPhases 1 Champ_Fonc_xyz dom 1 0.13 # Liquide 5 #
+		        nbPhases 1 Champ_Fonc_xyz dom 1 0.15 # Liquide 6 #
+			nbPhases 1 Champ_Fonc_xyz dom 1 0.17 # Liquide 7 #
+		    }
+	}
+        convection { amont }
+        boundary_conditions
+        {
+            droite paroi
+	    gauche paroi
+	    Inlet frontiere_ouverte a_ext Champ_Front_MUSIG {
+	    
+		 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Gaz 0 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.04 # Gaz 1 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Gaz 2 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.07 # Gaz 3 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Liquide 0 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Liquide 1 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.07 # Liquide 2 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.09 # Liquide 3 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.11 # Liquide 4 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.13 # Liquide 5 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.15 # Liquide 6 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.17 # Liquide 7 #
+		}
+	    Outlet frontiere_ouverte a_ext Champ_Front_MUSIG {
+		 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Gaz 0 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.04 # Gaz 1 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Gaz 2 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.07 # Gaz 3 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.03 # Liquide 0 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.05 # Liquide 1 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.07 # Liquide 2 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.09 # Liquide 3 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.11 # Liquide 4 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.13 # Liquide 5 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.15 # Liquide 6 #
+		 nbPhases 1 Champ_Front_Uniforme 1 0.17 # Liquide 7 #
+		}	
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions
+	{
+		temperature Champ_MUSIG  
+		    {
+		        nbPhases 12 Champ_Fonc_xyz dom 1 50.0
+		    }
+	}
+        boundary_conditions
+        {
+	    droite paroi_adiabatique
+	    gauche paroi_adiabatique
+	    Inlet frontiere_ouverte_temperature_imposee Champ_Front_MUSIG { 
+			nbPhases 12 Champ_Front_uniforme 1 50.0 
+		}		
+	    Outlet frontiere_ouverte_temperature_imposee Champ_Front_MUSIG { 
+			nbPhases 12 Champ_Front_uniforme 1 50.0 
+		}	
+        }
+    }
+    Post_processing
+    {
+
+		# Probes #
+		Probes
+		{
+		        sonde_alpha_gaz_helium_0 alpha_gaz_helium_0 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_gaz_helium_1 alpha_gaz_helium_1 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_gaz_helium_2 alpha_gaz_helium_2 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_gaz_helium_3 alpha_gaz_helium_3 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_0 alpha_liquide_sodium_0 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_1 alpha_liquide_sodium_1 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_2 alpha_liquide_sodium_2 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_3 alpha_liquide_sodium_3 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_4 alpha_liquide_sodium_4 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_5 alpha_liquide_sodium_5 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_6 alpha_liquide_sodium_6 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_alpha_liquide_sodium_7 alpha_liquide_sodium_7 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+
+
+			sonde_vitesse_gaz_helium_0 vitesse_gaz_helium_0 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_gaz_helium_1 vitesse_gaz_helium_1 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_gaz_helium_2 vitesse_gaz_helium_2 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_gaz_helium_3 vitesse_gaz_helium_3 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_0 vitesse_liquide_sodium_0 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_1 vitesse_liquide_sodium_1 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_2 vitesse_liquide_sodium_2 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_3 vitesse_liquide_sodium_3 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_4 vitesse_liquide_sodium_4 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_5 vitesse_liquide_sodium_5 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_6 vitesse_liquide_sodium_6 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+			sonde_vitesse_liquide_sodium_7 vitesse_liquide_sodium_7 periode 0.1 segment 121 0.5 0.0 0.5 12.0
+
+		}
+		
+    }
+}
+Solve pb
+End
