@@ -32,7 +32,6 @@ Entree& Interface_base::readOn(Entree& is)
 
 void Interface_base::sigma(const SpanD T, const SpanD P, SpanD res, int ncomp, int ind) const
 {
-//  assert(ncomp * (int )P.size() == (int )res.size() && (int )T.size() == (int )res.size());
   if (sigma__ >= 0)
     for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = sigma__;
   else sigma_(T,P,res,ncomp,ind);
@@ -41,6 +40,6 @@ void Interface_base::sigma(const SpanD T, const SpanD P, SpanD res, int ncomp, i
 double Interface_base::sigma(const double T, const double P) const
 {
   ArrayD Tt = {T}, Pp = {P}, res_ = {0.};
-  sigma_(SpanD(Tt),SpanD(Pp),SpanD(res_),1,0);
+  sigma(SpanD(Tt),SpanD(Pp),SpanD(res_),1,0);
   return res_[0];
 }
