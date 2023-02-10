@@ -17,9 +17,9 @@
 #include <Op_Grad_PolyMAC_P0_Face.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Vitesse_relative_base.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC_P0.h>
 #include <Milieu_composite.h>
-#include <Zone_Cl_PolyMAC.h>
-#include <Zone_PolyMAC_P0.h>
 #include <Interface_base.h>
 #include <Pb_Multiphase.h>
 
@@ -50,29 +50,26 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::dimensionner_blocs_aux(std::set<in
 void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, DoubleTrav coeff, matrices_t matrices, DoubleTab& secmem) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+  const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   const DoubleTab& inco = ch.valeurs(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
-                      &rho = equation().milieu().masse_volumique().passe(),
-                     &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
-                      &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
-                                             &vp = ch.passe();
-  const DoubleVect& dh_e = zone.diametre_hydraulique_elem();
-
+                  &rho = equation().milieu().masse_volumique().passe(),
+                   &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
+                    &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe();
+  const DoubleVect& dh_e = milc.diametre_hydraulique_elem();
+  int e, i, j, k, l, n, m, N = inco.line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot(), cR = (rho.dimension_tot(0) == 1), Np = press.line_size();
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
-  const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
+
+  DoubleTab dvr_elem(domaine.nb_elem_tot()*dimension, N, N, N); // Derivee de vr(n,k) en e par rapport a la phase l selon d ; pour l'instant toujours selon d2=d
+                                                                // On se le trimballe parce que quelqu'un a separe la boucle sur les matrices de celle sur le secmem
 
   if (N == 1) return; //pas d'evanescence en simple phase!
 
-  /* recherche de phases evanescentes et traitement des seconds membres */
-  IntTrav maj(inco.dimension_tot(0)); //maj(i) : phase majoritaire de la ligne i
-  DoubleTrav coeff(inco.dimension_tot(0), inco.line_size(), 2); // coeff(i, n, 0/1) : coeff a appliquer a l'equation existante / a l'eq. "inco = v_maj"
   DoubleVect g(D);                                              // arguments pour la vitesse de derive : gravite
   g = 0., g(D - 1) = -9.81;                                     // FIXME
 
-  int e, f, i, j, k, l, n, N = inco.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(), cR = (rho.dimension_tot(0) == 1), Np = press.line_size(),
-                           iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration : 0;
   for (e = 0; e < domaine.nb_elem_tot(); e++) /* elements : a faire D fois par element */
     {
       /* phase majoritaire : directement dans l'element */
@@ -85,21 +82,22 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
       /* calcul de la vitesse de derive */
       Vitesse_relative_base::input_t in;
       Vitesse_relative_base::output_t out;
-      in.alpha.resize(N), in.rho.resize(N), in.v.resize(N, D), in.sigma.resize(N, N), out.vr.resize(N, N, D);
+      in.alpha.resize(N), in.rho.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
       in.dh = dh_e(e), in.g = g;
       if (pbm.has_correlation("vitesse_relative"))
         {
-          const Vitesse_relative_base& correlation_vd =  ref_cast(Vitesse_relative_base, correlation_.valeur());
+          const Vitesse_relative_base& correlation_vd =  ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur());
           for (n = 0; n < N; n++) in.alpha(n) = alpha(e, n);
           for (n = 0; n < N; n++) in.rho(n) = rho(!cR * e, n);
           for (n = 0; n < N; n++)
-            for (d = 0; d < D; d++) in.v(n, d) = vp(nf_tot + D * e + d, n);
+            for (d = 0; d < D; d++) in.v(n, d) = inco(nf_tot + D * e + d, n);
           for (n = 0; n < N; n++)
-            for (m = 0; m < N; m++)
+            for (m = n+1; m < N; m++)
               if (milc.has_interface(n, m))
                 {
+                  const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1); // Et oui ! matrice triang sup !
                   Interface_base& sat = milc.get_interface(n, m);
-                  in.sigma(n, m) = sat.sigma_(temp(e, n), press(e, n * (Np > 1)));
+                  in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
                 }
 
           correlation_vd.vitesse_relative(in, out);
@@ -111,6 +109,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
           if (n != k && (a_m = alpha(e, n)) < a_eps)
             {
               coeff(i, n, 1) = mat_diag(N * i + k, N * i + k) * (coeff(i, n, 0) = std::min(std::max((a_eps - a_m) / (a_eps - a_eps_min), 0.), 1.));
+              for (l=0 ; l<N ; l++) dvr_elem(D*e+d, n, k, l) = out.dvr(n, k, d, l*D+d) ;
               double flux = coeff(i, n, 0) * secmem(i, n) + coeff(i, n, 1) * (inco(i, n) - inco(i, k) - out.vr(n, k, d));
               secmem(i, k) += flux, secmem(i, n) -= flux;
             }
@@ -132,6 +131,9 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
                     int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
                     mat.get_set_coeff()(j) += coeff(l, n, 0) * mat.get_set_coeff()(i) - coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));
                     mat.get_set_coeff()(i) += -coeff(l, n, 0) * mat.get_set_coeff()(i) + coeff(l, n, 1) * ((c == N * l + n) - (c == N * l + k));
+
+                    mat.get_set_coeff()(j) +=  - coeff(l, n, 1) * ( - dvr_elem(D*e+d, n, k, n)*(c == N * l + n) - dvr_elem(D*e+d, n, k, k)*(c == N * l + k));
+                    mat.get_set_coeff()(i) +=  + coeff(l, n, 1) * ( - dvr_elem(D*e+d, n, k, n)*(c == N * l + n) - dvr_elem(D*e+d, n, k, k)*(c == N * l + k));
                   }
       }
 }

@@ -26,10 +26,6 @@ class Op_Evanescence_Homogene_PolyMAC_P0_Face: public Op_Evanescence_Homogene_Fa
 protected:
   void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const override;
   void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab& ) const override;
-
-public :
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
 };
 
 #endif /* Op_Evanescence_Homogene_PolyMAC_P0_Face_included */

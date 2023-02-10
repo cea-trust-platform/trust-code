@@ -42,7 +42,7 @@ public:
   struct input_t
   {
     double dh = 0.0;       // diametre hydraulique
-    DoubleTab sigma; // tension superficielle
+    DoubleTab sigma; // tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
     DoubleTab alpha; // taux de vide
     DoubleTab rho;   // masse volumique
     DoubleTab v;     // v(n, d) : vitesse de la phase n dans la direction d
@@ -52,6 +52,8 @@ public:
   struct output_t
   {
     DoubleTab vr; // vr(n, m, d) : vitesse relative des phases n et m dans la direction d (v(n, d) - v(m, d))
+    DoubleTab dvr;//dvr(n, m, d, D*l+d2) : derivee de la vitesse relative des phases n et m dans la direction d (v(n, d) - v(m, d))
+                  // par rapport a la vitesse de la phase l selon la direction d2 
   };
   virtual void vitesse_relative(const input_t& input, output_t& output) const = 0;
 

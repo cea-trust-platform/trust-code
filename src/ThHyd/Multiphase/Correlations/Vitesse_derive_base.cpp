@@ -34,12 +34,16 @@ Entree& Vitesse_derive_base::readOn(Entree& is)
 void Vitesse_derive_base::vitesse_relative(const input_t& input, output_t& output) const
 {
   output.vr = 0.0;
+  output.dvr= 0.0;
   // if (alpha(n_g) < 1e-7) return;
-  evaluate_C0_vg0(input);
+  evaluate_C0_vg0(input); // No dependency in v in evaluate_C0_vg0 => No need for derivative
 
   for (int d = 0; d < dimension; d++)
     {
       output.vr(n_g, n_l, d) = ((C0 - 1.0) * input.v(n_l, d) + vg0(d)) / (1.0 - C0 * input.alpha(n_g));
-      output.vr(n_l, n_g, d) = output.vr(n_g, n_l, d);
+      output.vr(n_l, n_g, d) = - output.vr(n_g, n_l, d);
+
+      output.dvr(n_g, n_l, d, dimension*n_l+d) =  (C0 - 1.0) / (1.0 - C0 * input.alpha(n_g));
+      output.dvr(n_l, n_g, d, dimension*n_l+d) = -(C0 - 1.0) / (1.0 - C0 * input.alpha(n_g));
     }
 }
