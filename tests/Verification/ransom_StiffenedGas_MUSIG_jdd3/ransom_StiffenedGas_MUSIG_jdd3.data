@@ -38,7 +38,7 @@ END SCATTER #
 
 
 
-$dis dis
+PolyMAC_P0 dis
 Option_PolyMAC_P0 {  }
 
 
@@ -48,6 +48,7 @@ Read sch
         # Time step #
           # Initial time [s] #
 	tinit .0
+	nb_pas_dt_max 3
           # Min time step #
 	dt_min 1.e-8
           # Max time step #
@@ -68,7 +69,6 @@ Read sch
           # End time [s] #
 	tmax 0.8
           # Max number of time steps #
-        # nb_pas_dt_max 3 #
           # Convergence threshold (see .dt_ev file) #
 	seuil_statio 1.e-4
 
@@ -165,7 +165,7 @@ Read pb
 			sonde_masse_volumique_liquide masse_volumiqueY periode 0.1 segment 121 0.5 0.0 0.5 12.0
 		}
 		
-        Format lata
+        Format lml
         fields dt_post 0.1
         {
             /* vitesse_gaz_helium elem
