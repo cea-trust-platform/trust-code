@@ -104,8 +104,8 @@ void Domaine_VF::discretiser()
 
   Domaine_dis_base::discretiser();
 
-  Domaine& ladomaine=domaine();
-  histogramme_angle(ladomaine,Cerr);
+  Domaine& ledomaine=domaine();
+  histogramme_angle(ledomaine,Cerr);
   Faces* les_faces_ptr=creer_faces();
   Faces& les_faces= *les_faces_ptr;
   {
@@ -134,16 +134,16 @@ void Domaine_VF::discretiser()
 
     // Les faces sont dans l'ordre definitif, on peut remplir
     // renum_items_communs des faces:
-    Scatter::calculer_renum_items_communs(ladomaine.faces_joint(), Joint::FACE);
+    Scatter::calculer_renum_items_communs(ledomaine.faces_joint(), Joint::FACE);
 
     // Remplissage de face_voisins des frontieres:
     // a factoriser avec DomaineCut.cpp
     {
       const IntTab& facevoisins = les_faces.voisins();
-      const int nb_frontieres = ladomaine.nb_front_Cl();
+      const int nb_frontieres = ledomaine.nb_front_Cl();
       for (int i_frontiere = 0; i_frontiere < nb_frontieres; i_frontiere++)
         {
-          Frontiere&   fr               = ladomaine.frontiere(i_frontiere);
+          Frontiere&   fr               = ledomaine.frontiere(i_frontiere);
           IntTab&      mes_face_voisins = fr.faces().voisins();
           const int nbfaces         = fr.nb_faces();
           const int premiere_face    = fr.num_premiere_face();
@@ -173,7 +173,7 @@ void Domaine_VF::discretiser()
     // Idem pour elem_faces_
     Scatter::construire_espace_virtuel_traduction(md_vect_elements, md_vector_faces_, elem_faces_);
 
-    ladomaine.init_faces_virt_bord(md_vector_faces_, md_vector_faces_front_);
+    ledomaine.init_faces_virt_bord(md_vector_faces_, md_vector_faces_front_);
 
     // Calcul des surfaces:
     les_faces.calculer_surfaces(face_surfaces_);
@@ -190,14 +190,14 @@ void Domaine_VF::discretiser()
     face_sommets().ref(les_faces.les_sommets());
 
     // Calcul des volumes
-    ladomaine.calculer_volumes(volumes_, inverse_volumes_);
+    ledomaine.calculer_volumes(volumes_, inverse_volumes_);
   }
   {
-    int i=0, derniere=ladomaine.nb_bords();
+    int i=0, derniere=ledomaine.nb_bords();
     les_bords_.dimensionner(domaine().nb_front_Cl());
     for(; i<derniere; i++)
       {
-        les_bords_[i].associer_frontiere(ladomaine.bord(i));
+        les_bords_[i].associer_frontiere(ledomaine.bord(i));
         les_bords_[i].associer_Domaine_dis(*this);
       }
     int decal=derniere;
@@ -205,7 +205,7 @@ void Domaine_VF::discretiser()
     for(; i<derniere; i++)
       {
         int j=i-decal;
-        les_bords_[i].associer_frontiere(ladomaine.raccord(j).valeur());
+        les_bords_[i].associer_frontiere(ledomaine.raccord(j).valeur());
         les_bords_[i].associer_Domaine_dis(*this);
       }
     decal=derniere;
@@ -213,18 +213,18 @@ void Domaine_VF::discretiser()
     for(; i<derniere; i++)
       {
         int j=i-decal;
-        les_bords_[i].associer_frontiere(ladomaine.faces_interne(j));
+        les_bords_[i].associer_frontiere(ledomaine.faces_interne(j));
         les_bords_[i].associer_Domaine_dis(*this);
       }
   }
   // Centre de gravite des elements (tableau xp_)
-  ladomaine.calculer_centres_gravite(xp_);
+  ledomaine.calculer_centres_gravite(xp_);
   // Centre de gravite du domaine
   ArrOfDouble c(dimension);
-  ladomaine.calculer_mon_centre_de_gravite(c);
+  ledomaine.calculer_mon_centre_de_gravite(c);
 
   // On cree les domaines frontieres
-  ladomaine.creer_mes_domaines_frontieres(*this);
+  ledomaine.creer_mes_domaines_frontieres(*this);
 
   // Attention : ca ne remplit pas elem_faces, ca fait
   // creer_faces_virtuelles_non_std() en VEF :
@@ -238,7 +238,7 @@ void Domaine_VF::discretiser()
   ///////////////////////
   // On imprime des infos
   ///////////////////////
-  ladomaine.imprimer();        // Extremas du domaine et volumes
+  ledomaine.imprimer();        // Extremas du domaine et volumes
   infobord();                        // Aires des bords
   info_elem_som();                // Nombre elements et sommets
   Cerr << "<<<<<< End of Discretization VF >>>>>>>>>>" << finl;
@@ -602,12 +602,12 @@ void Domaine_VF::remplir_face_numero_bord()
   Cerr << " Domaine_VF::remplir_face_numero_bord" << finl;
   face_numero_bord_.resize(nb_faces());
   face_numero_bord_=-1; // init for inner faces.
-  Domaine& ladomaine=domaine();
+  Domaine& ledomaine=domaine();
   int ndeb, nfin, num_face;
-  const int nb_bords = ladomaine.nb_bords();
+  const int nb_bords = ledomaine.nb_bords();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
-      const Bord& le_bord = ladomaine.bord(n_bord);
+      const Bord& le_bord = ledomaine.bord(n_bord);
       ndeb = le_bord.num_premiere_face();
       nfin = ndeb + le_bord.nb_faces();
       for (num_face=ndeb; num_face<nfin; num_face++)

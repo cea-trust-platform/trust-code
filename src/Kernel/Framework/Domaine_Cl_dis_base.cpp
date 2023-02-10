@@ -54,7 +54,7 @@ Sortie& Domaine_Cl_dis_base::printOn(Sortie& os) const
 Entree& Domaine_Cl_dis_base::readOn(Entree& is)
 {
   assert(mon_equation.non_nul());
-  const Domaine& ladomaine=equation().domaine_dis()->domaine();
+  const Domaine& ledomaine=equation().domaine_dis()->domaine();
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Nom nomlu;
@@ -68,7 +68,7 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
       exit();
     }
 
-  int n = ladomaine.nb_front_Cl();
+  int n = ledomaine.nb_front_Cl();
   IntTab front_deja_lu(n);
   front_deja_lu = 0;
   les_conditions_limites().dimensionner(n);
@@ -86,7 +86,7 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
       Cerr << "Reading the " << nomlu << " boundary condition of the " << equation().que_suis_je() << " equation from the problem " << equation().probleme().le_nom() << finl;
       Journal()<< "Reading the boundary condition " << nomlu <<finl;
 
-      int rang=ladomaine.rang_frontiere(nomlu);
+      int rang=ledomaine.rang_frontiere(nomlu);
 
       // Test supplementaire sur les conditions aux limites qui ont ete lues :
       // on test si deux frontieres ont le meme nom
@@ -123,7 +123,7 @@ Entree& Domaine_Cl_dis_base::readOn(Entree& is)
       associer_fr_dis_base(domaine_dis().frontiere_dis(rang));
 
       //Test pour empecher l utilisation de 'Raccord_distant_homogene' en calcul sequentiel
-      const Frontiere& frontiere=ladomaine.frontiere(rang);
+      const Frontiere& frontiere=ledomaine.frontiere(rang);
       if ((frontiere.que_suis_je()=="Raccord_distant_homogene") && (Process::nproc()==1))
         {
           Cerr<<"At least one connection (adjacent boundary on two domains) is of type 'Raccord distant homogene'." << finl;

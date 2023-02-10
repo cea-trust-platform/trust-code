@@ -95,12 +95,12 @@ Entree& Sous_Domaine::readOn(Entree& is)
       exit();
     }
 
-  const Domaine& ladomaine=le_dom_.valeur();
-  const Domaine& dom=ladomaine;
+  const Domaine& ledomaine=le_dom_.valeur();
+  const Domaine& dom=ledomaine;
   ArrOfInt les_polys_possibles_;
 
   // GF de prendre nb_elem_tot au lieu de nb_elem permet de ne plus avoir besoin de decouper les sous domaines..
-  int nb_pol_possible=ladomaine.nb_elem_tot();
+  int nb_pol_possible=ledomaine.nb_elem_tot();
   les_polys_possibles_.resize_array(nb_pol_possible);
   for (int i=0; i<nb_pol_possible; i++)
     les_polys_possibles_[i]=i;
@@ -187,7 +187,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
               for(int le_som=0; le_som<nbsom; le_som++)
                 {
                   for(int k=0; k<dimension; k++)
-                    x(k)+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),k);
+                    x(k)+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),k);
                 }
               x/=((double)(nbsom));
               int test = 1;
@@ -262,7 +262,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
               le_poly=les_polys_possibles_[n_pol];
               x=y=z=0;
               int s, nb_som_poly = 0;
-              for(int le_som = 0; le_som < nbsom && ((s = ladomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
+              for(int le_som = 0; le_som < nbsom && ((s = ledomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
                   x+=dom.coord(s, 0);
                   y+=dom.coord(s, 1);
@@ -329,8 +329,8 @@ Entree& Sous_Domaine::readOn(Entree& is)
               x=y=0;
               for(int le_som=0; le_som<nbsom; le_som++)
                 {
-                  x+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),0);
-                  y+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),1);
+                  x+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),0);
+                  y+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),1);
                 }
               x/=((double)(nbsom));
               y/=((double)(nbsom));
@@ -396,7 +396,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
         // Ajout a la liste "les_polys_" des indices des elements virtuels
         // de la sous-domaine.
         // On cree un tableau distribue de marqueurs des elements de la sous-domaine
-        const int nb_elem = ladomaine.nb_elem();
+        const int nb_elem = ledomaine.nb_elem();
         IntVect marqueurs;
         dom.creer_tableau_elements(marqueurs);
         const int nb_polys_reels = les_polys_.size();
@@ -407,7 +407,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
           }
         marqueurs.echange_espace_virtuel();
         // Compter les elements virtuels dans la sous-domaine:
-        const int domaine_nb_elem_tot = ladomaine.nb_elem_tot();
+        const int domaine_nb_elem_tot = ledomaine.nb_elem_tot();
         int nb_polys = nb_polys_reels;
         for (int i = nb_elem; i < domaine_nb_elem_tot; i++)
           nb_polys += marqueurs[i];
@@ -470,7 +470,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
               le_poly=les_polys_possibles_[n_pol];
               int le_som, s, nb_som_poly = 0;
               x=y=z=0;
-              for(le_som=0; le_som<nbsom && ((s = ladomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
+              for(le_som=0; le_som<nbsom && ((s = ledomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
                   x+=dom.coord(s, 0);
                   y+=dom.coord(s, 1);
@@ -479,13 +479,13 @@ Entree& Sous_Domaine::readOn(Entree& is)
                 }
               le_som=0;
               double xmin,xmax,ymin,ymax,zmin,zmax;
-              xmin=dom.coord(ladomaine.sommet_elem(le_poly,le_som),0);
-              ymin=dom.coord(ladomaine.sommet_elem(le_poly,le_som),1);
-              zmin=dom.coord(ladomaine.sommet_elem(le_poly,le_som),2);
+              xmin=dom.coord(ledomaine.sommet_elem(le_poly,le_som),0);
+              ymin=dom.coord(ledomaine.sommet_elem(le_poly,le_som),1);
+              zmin=dom.coord(ledomaine.sommet_elem(le_poly,le_som),2);
               xmax=xmin;
               ymax=ymin;
               zmax=zmin;
-              for(le_som=1; le_som<nbsom && ((s = ladomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
+              for(le_som=1; le_som<nbsom && ((s = ledomaine.sommet_elem(le_poly,le_som)) >= 0); le_som++)
                 {
                   xmin=std::min(xmin,dom.coord(s, 0));
                   ymin=std::min(ymin,dom.coord(s, 1));
@@ -565,21 +565,21 @@ Entree& Sous_Domaine::readOn(Entree& is)
               x=y=0;
               for(le_som=0; le_som<nbsom; le_som++)
                 {
-                  x+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),0);
-                  y+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),1);
+                  x+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),0);
+                  y+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),1);
                 }
               le_som=0;
               double xmin,xmax,ymin,ymax;
-              xmin=dom.coord(ladomaine.sommet_elem(le_poly,le_som),0);
-              ymin=dom.coord(ladomaine.sommet_elem(le_poly,le_som),1);
+              xmin=dom.coord(ledomaine.sommet_elem(le_poly,le_som),0);
+              ymin=dom.coord(ledomaine.sommet_elem(le_poly,le_som),1);
               xmax=xmin;
               ymax=ymin;//zmax=zmin;
               for(le_som=1; le_som<nbsom; le_som++)
                 {
-                  xmin=std::min(xmin,dom.coord(ladomaine.sommet_elem(le_poly,le_som),0));
-                  ymin=std::min(ymin,dom.coord(ladomaine.sommet_elem(le_poly,le_som),1));
-                  xmax=std::max(xmax,dom.coord(ladomaine.sommet_elem(le_poly,le_som),0));
-                  ymax=std::max(ymax,dom.coord(ladomaine.sommet_elem(le_poly,le_som),1));
+                  xmin=std::min(xmin,dom.coord(ledomaine.sommet_elem(le_poly,le_som),0));
+                  ymin=std::min(ymin,dom.coord(ledomaine.sommet_elem(le_poly,le_som),1));
+                  xmax=std::max(xmax,dom.coord(ledomaine.sommet_elem(le_poly,le_som),0));
+                  ymax=std::max(ymax,dom.coord(ledomaine.sommet_elem(le_poly,le_som),1));
                 }
               x/=((double)(nbsom));
               y/=((double)(nbsom));
@@ -647,7 +647,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
               for(int som=0; som<nbsom; som++)
                 {
                   for(int k=0; k<dimension; k++)
-                    x(k)+=dom.coord(ladomaine.sommet_elem(le_poly,som),k);
+                    x(k)+=dom.coord(ledomaine.sommet_elem(le_poly,som),k);
                 }
               x/=((double)(nbsom)); // Center of gravity of the cell
               if ( sup_strict((x(0)-xo)*(x(0)-xo)+(x(1)-yo)*(x(1)-yo),ri2) && sup_strict(re2,(x(0)-xo)*(x(0)-xo)+ (x(1)-yo)*(x(1)-yo)) )
@@ -762,7 +762,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
               for(int le_som=0; le_som<nbsom; le_som++)
                 {
                   for(int k=0; k<dimension; k++)
-                    x(k)+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),k);
+                    x(k)+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),k);
                 }
               x/=((double)(nbsom));
               double tmp = dir[0]*(x(0)-xo)*(x(0)-xo)+ dir[1]*(x(1)-yo)*(x(1)-yo) + dir[2]*(x(2)-zo)*(x(2)-zo);
@@ -823,7 +823,7 @@ Entree& Sous_Domaine::readOn(Entree& is)
               for(int le_som=0; le_som<nbsom; le_som++)
                 {
                   for(int k=0; k<dimension; k++)
-                    x(k)+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),k);
+                    x(k)+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),k);
                 }
               x/=((double)(nbsom));
 
@@ -878,10 +878,10 @@ Entree& Sous_Domaine::readOn(Entree& is)
               x=0;
               int nbsom_loc = 0;
               for(int le_som=0; le_som<nbsom; le_som++)
-                if (ladomaine.sommet_elem(le_poly,le_som) >= 0)
+                if (ledomaine.sommet_elem(le_poly,le_som) >= 0)
                   {
                     for(int k=0; k<dimension; k++)
-                      x(k)+=dom.coord(ladomaine.sommet_elem(le_poly,le_som),k);
+                      x(k)+=dom.coord(ledomaine.sommet_elem(le_poly,le_som),k);
                     nbsom_loc++;
                   }
               x *= 1. / nbsom_loc;

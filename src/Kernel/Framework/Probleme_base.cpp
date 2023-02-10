@@ -374,9 +374,8 @@ void Probleme_base::discretiser_equations()
 
 /*! @brief Affecte une discretisation au probleme Discretise le Domaine associe au probleme avec la discretisation
  *
- *      Associe la premiere domaine du Domaine aux equations du probleme
+ *      Associe le premier Domaine aux equations du probleme
  *      Discretise les equations associees au probleme
- *      NOTE: TRUST V1 une seule Domaine_dis pas Domaine_dis est traitee
  *
  * @param (Discretisation_base& discretisation) une discretisation pour le probleme
  */
