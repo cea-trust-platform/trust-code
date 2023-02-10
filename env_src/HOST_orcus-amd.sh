@@ -18,12 +18,14 @@ define_modules_config()
       # Il est critique de mettre nvidia_hpc_sdk en premier car sinon undefined reference __pgi car dans LD_LIBRARY_PATH le lib de nvidia avant celui de gcc
       module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.5 mais plante cuSolver (on teste sur altair)
       module="slurm nvidia_hpc_sdk/21.2             compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.2
+      module=$module" cmake/3.25.0"
    elif [ $intel = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI
       module="slurm compilers/intel/2019_update3 mpi/openmpi/intel/2019_update3/4.0.1" # Marche pas attention (crashes TRUST)
       module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3 texlive/2020" # Recommande par AG
-      source="source mpivars.sh release -ofi_internal" # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
+      #source="source mpivars.sh release -ofi_internal" # TRES IMPORTANT pour intelmpi car sinon plantage sur plusieurs noeuds avec MLX5_SINGLE_THREAD
+      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Sur orcus-amd, je teste gcc+openmpi comme sur orcus-intel. Voir pour mumps sur partition rome
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="slurm aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"
@@ -52,6 +54,7 @@ squeue" > $TRUST_ROOT/bin/qstat
 define_soumission_batch()
 {
    soumission=2
+   reservation="centos79"
    [ "$prod" = 1 ] && soumission=1
    [ "$gpu"  = 1 ] && soumission=1
    # sinfo :

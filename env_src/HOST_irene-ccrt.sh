@@ -30,7 +30,8 @@ define_modules_config()
       cuda_version=10.2.89
       module="gnu/7.3.0 mpi/openmpi/2.0.4 cuda/$cuda_version"
    else
-      intel="intel/18.0.3.222" 
+      # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
+      intel="intel/18.0.3.222 gnu/7.3.0" 
       romio_hints="feature/openmpi/io/collective_buffering"
       mpi="mpi/intelmpi/2018.0.3.222"       # 1.8.2
       #mpi="mpi/openmpi/2.0.4 $romio_hints"  # 1.8.3 (car crash intelmpi sur grands nbrs de procs)
