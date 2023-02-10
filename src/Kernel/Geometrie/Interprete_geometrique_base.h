@@ -42,6 +42,7 @@ public :
   Entree& interpreter(Entree& is) override;
   void associer_domaine(Nom& nom_dom);
   void associer_domaine(Entree& is);
+  void associer_domaine(Domaine& dom);
   inline Domaine& domaine(int i=0) { return domains_(i).valeur(); }
   inline const Domaine& domaine(int i=0) const { return domains_(i).valeur(); }
   inline LIST(REF(Domaine))& domaines() { return domains_; }

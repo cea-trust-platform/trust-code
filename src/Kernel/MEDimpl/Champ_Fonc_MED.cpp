@@ -210,11 +210,10 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
       // Ce test ne peut etre fait qu'en sequentiel car en parallele, dom=domaine_complet, un_dom=domaine_local
       if (nproc()==1)
         {
-          LireMED liremed;
+          LireMED liremed(nom_fichier_med_, nom_dom_);
           dom_med_.nommer(nom_dom_);
-          // ne pas initialiser le nom du domaine va conduire a ne pas creer les fichiers sous domaines
-          Nom nom_dom_trio_non_nomme;
-          liremed.lire_geom(nom_fichier_med_,dom_med_,nom_dom_,nom_dom_trio_non_nomme);
+          liremed.associer_domaine(dom_med_);
+          liremed.lire_geom(false);  // false to *not* create sub-dom files
 
           DoubleTab diff_som(dom_med_.les_sommets());
           IntTab diff_elem(dom_med_.les_elems());
@@ -232,7 +231,6 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           */
           double err_som0 = max_abs_array(diff_som);
           int err_elem0 = max_abs_array(diff_elem);
-
 
           // Le domaine un_dom a peut etre ete reordonne, on refait le test en reordonnant le domaine dom .....
           dom_med_.reordonner();
@@ -260,15 +258,13 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
   else
     {
       if (domain_exist && !use_existing_domain_)
-        {
-          Cerr<<"INFO: You can toggle the flag 'use_existing_domain' in 'Champ_Fonc_MED' to optimize reading since it seems that the domain already exists."<<finl;
-        }
-      LireMED liremed;
+        Cerr<<"INFO: You can toggle the flag 'use_existing_domain' in 'Champ_Fonc_MED' to optimize reading since it seems that the domain already exists."<<finl;
+      LireMED liremed(nom_fichier_med_, nom_dom_);
       dom_med_.nommer(nom_dom_);
-      // ne pas initialiser le nom du domaine va conduire a ne pas creer les fichiers sous domaines
       Nom nom_dom_trio_non_nomme;
       // Remplit dom:
-      liremed.lire_geom(nom_fichier_med_,dom_med_,nom_dom_,nom_dom_trio_non_nomme);
+      liremed.associer_domaine(dom_med_);
+      liremed.lire_geom(false); // false: do not create sub-dom files
       if (multiple_med)
         {
           // On verifie que l'on a bien des recouvrements identiques (verification imparfaite sur les BoundingBox)

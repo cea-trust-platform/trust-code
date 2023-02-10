@@ -210,7 +210,7 @@ Objet_U& Interprete_bloc::objet_local(const Nom& nom)
   const int i = les_noms_.search(nom);
   if (i < 0)
     {
-      Cerr << "Internal error in Interprete::objet_local() : object " << nom << " does not exist" << finl;
+      Cerr << "Internal error in Interprete::objet_local() : object '" << nom << "' does not exist" << finl;
       Process::exit();
     }
   return operator[](i);

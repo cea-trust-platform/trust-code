@@ -26,6 +26,8 @@
 #include <MEDLoader.hxx>
 #endif
 
+#include <numeric>
+
 // fonction utile pour creer un Nom d'une taille donnee
 void dimensionne_char_ptr_taille(Char_ptr& nom ,int taille_d_un_mot,int nb)
 {
@@ -283,8 +285,9 @@ med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem)
 }
 #endif
 
-// passage de la connectivite trio a MED si sens=1 de MED a trio si sens=-1
-void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens)
+/*! @brief Passage de la connectivite TRUST a MED si sens=1 de MED a trio si sens=-1
+ */
+void renum_conn(IntTab& les_elems2,Nom& type_elem,bool toMED)
 {
   int nele=les_elems2.dimension(0);
   // cas face_bord vide
@@ -296,110 +299,63 @@ void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens)
   switch (type_elem_med)
     {
     case MED_POINT1  :
-      {
-        filter.resize_array(1) ;
-        filter[0] = 0 ;
-        break ;
-      }
+      filter.resize_array(1) ;
+      filter[0] = 0 ;
+      break ;
     case MED_SEG2    :
-      {
-        filter.resize_array(2) ;
-        filter[0] = 0 ;
-        filter[1] = 1 ;
-
-        break ;
-      }
+      filter.resize_array(2) ;
+      std::iota(filter.addr(), filter.addr()+2, 0);
+      break ;
     case MED_SEG3    :
-      {
-        break ;
-      }
+      break ;
     case MED_TRIA3   :
-      {
-        filter.resize_array(3) ;
-        filter[0] = 0 ;
-        filter[1] = 1 ;
-        filter[2] = 2 ;
-        break ;
-      }
+      filter.resize_array(3) ;
+      std::iota(filter.addr(), filter.addr()+3, 0);
+      break ;
     case MED_QUAD4   :
-      {
-        filter.resize_array(4) ;
-        filter[0] = 0 ;
-        filter[1] = 2 ;
-        filter[2] = 3 ;
-        filter[3] = 1 ;
-        break ;
-      }
+      filter.resize_array(4) ;
+      filter[0] = 0 ;
+      filter[1] = 2 ;
+      filter[2] = 3 ;
+      filter[3] = 1 ;
+      break ;
     case MED_TRIA6   :
-      {
-        break ;
-      }
     case MED_QUAD8   :
-      {
-        break ;
-      }
+      break ;
     case MED_TETRA4  :
-      {
-        filter.resize_array(4) ;
-        //exit();
-        filter[0] = 0 ;
-        filter[1] = 1 ;
-        filter[2] = 2 ;  // 3td element in med are 4th in vtk (array begin at 0 !)
-        filter[3] = 3 ;  // 4th element in med are 3rd in vtk (array begin at 0 !)
-        break ;
-      }
+      filter.resize_array(4) ;
+      std::iota(filter.addr(), filter.addr()+4, 0);
+      break ;
     case MED_PYRA5   :
-      {
-        filter.resize_array(5) ;
-        filter[0] = 0 ;
-        filter[1] = 3 ;  // 2nd element in med are 4th in vtk (array begin at 0 !)
-        filter[2] = 2 ;
-        filter[3] = 1 ;  // 4th element in med are 2nd in vtk (array begin at 0 !)
-        filter[4] = 4 ;
-        break ;
-      }
+      filter.resize_array(5) ;
+      filter[0] = 0 ;
+      filter[1] = 3 ;  // 2nd element in med are 4th in vtk (array begin at 0 !)
+      filter[2] = 2 ;
+      filter[3] = 1 ;  // 4th element in med are 2nd in vtk (array begin at 0 !)
+      filter[4] = 4 ;
+      break ;
     case MED_PENTA6  :
-      {
-        filter.resize_array(6) ;
-        filter[0] = 0 ;
-        filter[1] = 1 ;
-        filter[2] = 2 ;
-        filter[3] = 3 ;
-        filter[4] = 4 ;
-        filter[5] = 5 ;
-        break ;
-      }
+      filter.resize_array(6) ;
+      std::iota(filter.addr(), filter.addr()+6, 0);
+      break ;
     case MED_HEXA8   :
-      {
-        filter.resize_array(8) ;
-
-        filter[0] = 0 ;
-        filter[1] = 2 ;
-        filter[2] = 3 ;
-        filter[3] = 1 ;
-        filter[4] = 4 ;
-        filter[5] = 6 ;
-        filter[6] = 7 ;
-        filter[7] = 5 ;
-        break ;
-      }
+      filter.resize_array(8) ;
+      filter[0] = 0 ;
+      filter[1] = 2 ;
+      filter[2] = 3 ;
+      filter[3] = 1 ;
+      filter[4] = 4 ;
+      filter[5] = 6 ;
+      filter[6] = 7 ;
+      filter[7] = 5 ;
+      break ;
     case MED_TETRA10 :
-      {
-        break ;
-      }
     case MED_PYRA13  :
-      {
-        break ;
-      }
     case MED_PENTA15 :
-      {
-        break ;
-      }
     case MED_HEXA20  :
-      {
-        break ;
-      }
-    case MED_OCTA12 :
+      break ;
+
+    case MED_OCTA12:
     case MED_POLYGON:
     case MED_POLYHEDRON:
       {
@@ -409,10 +365,8 @@ void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens)
         break ;
       }
     default:
-      {
-        Cerr<<"case not scheduled"<<finl;
-        Process::exit();
-      }
+      Cerr<<"case not scheduled"<<finl;
+      Process::exit();
     }
 
   int ns=filter.size_array();
@@ -421,30 +375,17 @@ void renum_conn(IntTab& les_elems2,Nom& type_elem,int sens)
       Cerr<<"Problem for filtering operation "<<finl;
       Process::exit();
     }
-  if (filter.size_array()!=les_elems2.dimension(1))
-    {
-#ifndef POURSATURNE
-      Cerr<<"Problem for filtering operation "<<finl;
-      Process::exit();
-#endif
-    }
-  if (sens==1)
+  if (toMED)
     {
       for (int el=0; el<nele; el++)
         for (int n=0; n<ns; n++)
           les_elems2(el,n)=les_elemsn(el,filter[n])+1;
-
     }
-  else if (sens==-1)
+  else
     {
       for (int el=0; el<nele; el++)
         for (int n=0; n<ns; n++)
           les_elems2(el,filter[n])=les_elemsn(el,n)-1;
-    }
-  else
-    {
-      Cerr<<"error in renum_conn : meaning "<<sens<<"not valid"<<finl;
-      Process::exit();
     }
 }
 

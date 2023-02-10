@@ -20,12 +20,16 @@
  *
  *     Structure du jeu de donnee (en dimension 2) :
  *     LireMED dom medfile
- *
  */
-
 #include <Interprete_geometrique_base.h>
 #include <TRUSTTabs_forward.h>
 #include <med++.h>
+#include <medcoupling++.h>
+
+#ifdef MEDCOUPLING_
+#include <MEDLoader.hxx>
+#include <MEDFileMesh.hxx>
+#endif
 
 class Nom;
 class Domaine;
@@ -34,8 +38,37 @@ class LireMED : public Interprete_geometrique_base
 {
   Declare_instanciable(LireMED);
 public :
+
+  LireMED(const Nom& file_name, const Nom& mesh_name);
   Entree& interpreter_(Entree&) override;
-  void lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const Nom& nom_dom1, int isvef=0, int convertAllToPoly=0, int isfamilyshort=0);
+  void lire_geom(bool subDom=true);
+
+protected:
+  Nom nom_fic_lu_;               ///< Name of the MED file to read
+  Nom nom_mesh_lu_ = "--any--";  ///< Name of the mesh in the MED file to read
+  bool axi1d_ = false;           ///< Are we in Axi1D
+  bool convertAllToPoly_ = false;///< Should the mesh be converted to polygons/polyedrons
+  bool isVEFForce_ = false;      ///< Should we force element type to be VEF compatible
+  int isFamilyShort_ = 0;
+  int space_dim_ = -1;           ///< Space dimension read in the MED file
+  Elem_geom type_elem_;          ///< Highest dimension element type
+  Nom type_face_;                ///< Boundary element type
+  Noms noms_bords_;              ///< Names of the boundaries
+#ifdef MEDCOUPLING_
+  MEDCoupling::MEDCouplingAxisType axis_type_  = MEDCoupling::MEDCouplingAxisType::AX_CART ;
+  MEDCoupling::MCAuto<MEDCoupling::MEDCouplingUMesh> mcumesh_;
+  MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;
+#endif
+
+  void interp_old_syntax(Entree& is, Nom& nom_dom_trio);
+  Nom type_medcoupling_to_type_geo_trio(int type_cell, bool cell_from_boundary) const;
+  void retrieve_MC_objects();
+  void prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2);
+  void finalize_sommets(const DoubleTab& sommets2, DoubleTab& sommets) const;
+  void write_sub_dom_datasets() const;
+  void read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab& all_faces_bords);
+  void fill_frontieres(const IntVect& indices_bords, const ArrOfInt& familles, const IntTab& all_faces_bords);
+
 };
 
 #endif

@@ -128,8 +128,9 @@ Entree& Pb_MED::readOn(Entree& is )
   associer_domaine(dom);
 
   // Read domain in MED file:
-  LireMED lire;
-  lire.lire_geom(nom_fic, dom, nom_dom, nom_dom);
+  LireMED lire(nom_fic, nom_dom);
+  lire.associer_domaine(dom);
+  lire.lire_geom(true);
   dom.reordonner();
 
   Nom typ = "NO_FACE_Domaine_VF_inst";

@@ -48,19 +48,18 @@ Entree& ScatterMED::readOn(Entree& is)
  */
 void ScatterMED::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
 {
-
-
   Nom fichiermed(nomentree);
   fichiermed.prefix(".med");
   Nom n(me()+1);
   fichiermed+=n;
   fichiermed+=".med";
   Domaine& dom = domaine();
-  LireMED lire_med;
   Nom nom_lu(dom.le_nom());
   nom_lu+="_";
   nom_lu+=n;
-  lire_med.lire_geom(fichiermed,dom,nom_lu,dom.le_nom());
+  LireMED lire_med(fichiermed, nom_lu);
+  lire_med.associer_domaine(dom);
+  lire_med.lire_geom(true);
 
   // Renseigne dans quel fichier le domaine a ete lu
   dom.set_fichier_lu(nomentree);

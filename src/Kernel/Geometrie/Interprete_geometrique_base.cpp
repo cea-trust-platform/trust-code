@@ -45,6 +45,12 @@ void Interprete_geometrique_base::associer_domaine(Entree& is)
   domains_.add(ref_cast(Domaine, objet(nom_dom)));
 }
 
+void Interprete_geometrique_base::associer_domaine(Domaine& dom)
+{
+  Cerr << "Association of the domain object on which the interpreter applies " << que_suis_je() << finl;
+  domains_.add(dom);
+}
+
 Entree& Interprete_geometrique_base::interpreter(Entree& is)
 {
   Cerr << "Execution of the interpreter " << que_suis_je() << finl;

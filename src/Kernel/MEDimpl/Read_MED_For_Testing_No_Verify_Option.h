@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,6 @@ class Read_MED_For_Testing_No_Verify_Option : public LireMED
   Declare_instanciable(Read_MED_For_Testing_No_Verify_Option);
 public :
   Entree& interpreter_(Entree&) override;
-  void lire_geom(Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom1,int isvef=0, int isfamilyshort=0);
 };
 
 #endif

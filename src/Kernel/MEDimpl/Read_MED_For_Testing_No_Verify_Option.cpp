@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,19 +33,11 @@ Entree& Read_MED_For_Testing_No_Verify_Option::interpreter_(Entree& is)
   LireMED::interpreter_( is );
   return is;
 }
-void Read_MED_For_Testing_No_Verify_Option::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
-{
-  LireMED::lire_geom( nom_fic, dom, nom_dom, nom_dom_trio, isvef, isfamilyshort );
-}
 #else
 Entree& Read_MED_For_Testing_No_Verify_Option::interpreter_(Entree& is)
 {
   LireMED::interpreter_( is );
   return is;
-}
-void Read_MED_For_Testing_No_Verify_Option::lire_geom( Nom& nom_fic,Domaine& dom,const Nom& nom_dom,const Nom& nom_dom_trio,int isvef, int isfamilyshort)
-{
-  LireMED::lire_geom( nom_fic, dom, nom_dom, nom_dom_trio, isvef, isfamilyshort );
 }
 
 #endif
