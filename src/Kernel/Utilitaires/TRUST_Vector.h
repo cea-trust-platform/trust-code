@@ -16,7 +16,7 @@
 #ifndef TRUST_Vector_included
 #define TRUST_Vector_included
 
-#include <type_traits>
+#include <TRUST_type_traits.h>
 #include <algorithm> // pour std::transform
 #include <vector>
 #include <memory> // pour std::shared_ptr
@@ -89,7 +89,7 @@ private:
   STLVect z_vect_;
 
   template<typename _TYPE_>
-  std::enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
+  enable_if_t_< !(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
   readOn_(Entree& s)
   {
     int i;
@@ -105,7 +105,7 @@ private:
   }
 
   template<typename _TYPE_>
-  std::enable_if_t< !(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
+  enable_if_t_< !(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
   printOn_(Sortie& s) const
   {
     s << (int) z_vect_.size() << space;
@@ -115,11 +115,11 @@ private:
 
   // MD_Vector class does not derive from Objet_U => no readOn & printOn
   template<typename _TYPE_>
-  std::enable_if_t<(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
+  enable_if_t_<(std::is_same<_TYPE_,MD_Vector>::value), Entree&>
   readOn_(Entree& s) { return s; }
 
   template<typename _TYPE_>
-  std::enable_if_t<(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
+  enable_if_t_<(std::is_same<_TYPE_,MD_Vector>::value), Sortie&>
   printOn_(Sortie& s) const { return s ; }
 
 public:

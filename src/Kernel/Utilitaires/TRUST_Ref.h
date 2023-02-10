@@ -16,7 +16,7 @@
 #ifndef TRUST_Ref_included
 #define TRUST_Ref_included
 
-#include <type_traits>
+#include <TRUST_type_traits.h>
 #include <assert.h>
 
 class Objet_U;

@@ -16,7 +16,7 @@
 #ifndef Memoire_included
 #define Memoire_included
 
-#include <type_traits>
+#include <TRUST_type_traits.h>
 #include <Memoire_ptr.h>
 
 class Objet_U;
@@ -47,13 +47,13 @@ public :
   inline Float_ptr_trav* add_trav_float(int n) { return trav_float->add(n); }
   inline Int_ptr_trav* add_trav_int(int n) { return trav_int->add(n); }
 
-  template<typename _TYPE_> inline std::enable_if_t<std::is_same<_TYPE_,double>::value, TRUST_ptr_trav<_TYPE_>*>
+  template<typename _TYPE_> inline enable_if_t_<std::is_same<_TYPE_,double>::value, TRUST_ptr_trav<_TYPE_>*>
   add_trav(int n) { return add_trav_double(n); }
 
-  template<typename _TYPE_> inline std::enable_if_t<std::is_same<_TYPE_,float>::value, TRUST_ptr_trav<_TYPE_>*>
+  template<typename _TYPE_> inline enable_if_t_<std::is_same<_TYPE_,float>::value, TRUST_ptr_trav<_TYPE_>*>
   add_trav(int n) { return add_trav_float(n); }
 
-  template<typename _TYPE_> inline std::enable_if_t<std::is_same<_TYPE_,int>::value, TRUST_ptr_trav<_TYPE_>*>
+  template<typename _TYPE_> inline enable_if_t_<std::is_same<_TYPE_,int>::value, TRUST_ptr_trav<_TYPE_>*>
   add_trav(int n) { return add_trav_int(n); }
 
   int verifie() const;

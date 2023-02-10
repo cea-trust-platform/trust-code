@@ -16,7 +16,7 @@
 #ifndef TRUSTSchema_RK_included
 #define TRUSTSchema_RK_included
 
-#include <type_traits>
+#include <TRUST_type_traits.h>
 #include <Schema_Temps_base.h>
 #include <Equation.h>
 
@@ -90,43 +90,43 @@ private:
 
   // SFINAE template functions
   template<Ordre_RK _O_ = _ORDRE_, int NB>
-  std::enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  enable_if_t_<_O_ == Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
   inline const get_a() { return A2; }
 
   template<Ordre_RK _O_ = _ORDRE_, int NB>
-  std::enable_if_t<_O_ != Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  enable_if_t_<_O_ != Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
   inline const get_a() { return _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? A3 : A4; }
 
   template<Ordre_RK _O_ = _ORDRE_, int NB>
-  std::enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  enable_if_t_<_O_ == Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
   inline const get_b() { return B2; }
 
   template<Ordre_RK _O_ = _ORDRE_, int NB>
-  std::enable_if_t<_O_ != Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
+  enable_if_t_<_O_ != Ordre_RK::DEUX_WILLIAMSON, std::array<double, NB>>
   inline const get_b() { return _ORDRE_ == Ordre_RK::TROIS_WILLIAMSON ? B3 : B4; }
 
   template<Ordre_RK _O_ = _ORDRE_>
-  std::enable_if_t<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
+  enable_if_t_<_O_ == Ordre_RK::DEUX_WILLIAMSON || _O_ == Ordre_RK::TROIS_WILLIAMSON || _O_ == Ordre_RK::QUATRE_WILLIAMSON, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
 
   template<Ordre_RK _O_ = _ORDRE_, int NB>
-  std::enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE, std::array<std::array<double, NB>, NB> >
+  enable_if_t_<_O_ == Ordre_RK::DEUX_CLASSIQUE, std::array<std::array<double, NB>, NB> >
   inline const get_butcher_coeff() { return BUTCHER_2; }
 
   template<Ordre_RK _O_ = _ORDRE_, int NB>
-  std::enable_if_t<_O_ == Ordre_RK::TROIS_CLASSIQUE, std::array<std::array<double, NB>, NB> >
+  enable_if_t_<_O_ == Ordre_RK::TROIS_CLASSIQUE, std::array<std::array<double, NB>, NB> >
   inline const get_butcher_coeff() { return BUTCHER_3; }
 
   template<Ordre_RK _O_ = _ORDRE_, int NB>
-  std::enable_if_t<_O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, std::array<std::array<double, NB>, NB> >
+  enable_if_t_<_O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, std::array<std::array<double, NB>, NB> >
   inline const get_butcher_coeff() { return _O_ == Ordre_RK::QUATRE_CLASSIQUE ? BUTCHER_4 : BUTCHER_4_3_8; }
 
   template<Ordre_RK _O_ = _ORDRE_>
-  std::enable_if_t<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
+  enable_if_t_<_O_ == Ordre_RK::DEUX_CLASSIQUE || _O_ == Ordre_RK::TROIS_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE || _O_ == Ordre_RK::QUATRE_CLASSIQUE_3_8, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq);
 
   // DANGER : SHOULD NOT GO HERE
-  template<Ordre_RK _O_ = _ORDRE_> std::enable_if_t<_O_ == Ordre_RK::UN || _O_ == Ordre_RK::RATIO_DEUX, int>
+  template<Ordre_RK _O_ = _ORDRE_> enable_if_t_<_O_ == Ordre_RK::UN || _O_ == Ordre_RK::RATIO_DEUX, int>
   faire_un_pas_de_temps_eqn_base_generique(Equation_base& eq) { throw; } // From VTABLE
 };
 

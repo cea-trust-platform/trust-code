@@ -13,15 +13,14 @@
 *
 *****************************************************************************/
 
-#ifndef CL_Types_Aretes_enum_included
-#define CL_Types_Aretes_enum_included
 
-#include <TRUST_type_traits.h>
+#ifndef TRUST_type_traits_included
+#define TRUST_type_traits_included
 
-enum class Type_Flux_Arete { FLUIDE, BORD, COIN_FLUIDE, INTERNE, MIXTE, PERIODICITE, PAROI_FLUIDE, PAROI, SYMETRIE_PAROI, SYMETRIE_FLUIDE, SYMETRIE };
+#include <type_traits>
 
-enum class Type_Flux_Fa7 { ELEM, SORTIE_LIBRE };
+// TODO : XXX : Elie Saikali
+// Remove this and use <type_traits> header when c++14 becomes everywhere
+template<bool B, typename T> using enable_if_t_ = typename std::enable_if<B, T>::type;
 
-//enum class Type_Champ { SCALAIRE, VECTORIEL };
-
-#endif /* CL_Types_Aretes_enum_included */
+#endif /* TRUST_type_traits_included */
