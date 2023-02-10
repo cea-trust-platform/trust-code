@@ -150,7 +150,7 @@ void Masse_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, doubl
                 for (m = 0; m < N; m++) secmem(f, n) += fac * masse(n, m) * passe(f, m);
               else if (fcl(f, 0) == 3)
                 for (d = 0; d < D; d++)
-                  secmem(f, n) += fac * masse(n, n) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N *  + n) * domaine.face_normales(f, d) / fs(f);
+                  secmem(f, n) += fac * masse(n, n) * ref_cast(Dirichlet, cls[fcl(f, 1)].valeur()).val_imp(fcl(f, 2), N * d + n) * domaine.face_normales(f, d) / fs(f);
               if (mat)
                 for (m = 0; m < N; m++)
                   if (masse(n, m)) (*mat)(N * f + n, N * f + m) += fac * masse(n, m);
