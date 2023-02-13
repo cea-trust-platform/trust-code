@@ -319,12 +319,16 @@ void  FichierHDF::check_int_size(Nom filename)
   else if (TRUST_int_type_exists_in_file == 0)
     {
       Cerr << "Warning, we can't find whether the " << filename << " HDF file was written with -int32 or -int64" << finl;
+      Cerr << "Possibly old files created before 1.8.4 version" << finl;
       Cerr << "If an error occurs, or results seem weird, try opening it with ";
 #ifdef INT_is_64_
       Cerr << "an -int32 TRUST version." << finl;
 #else
       Cerr << "an -int64 TRUST version." << finl;
 #endif
+      Cerr << "Or set environment variable TRUST_FORCE_DIFFERENT_INT_SIZE to 1 to try" << finl;
+      Cerr << "reading the int32 (or int64) file by a int64 (or int32) TRUST binary." << finl;
+      if (getenv("TRUST_FORCE_DIFFERENT_INT_SIZE")!=NULL) is_different_int_size_ = true;
     }
   else
     {
