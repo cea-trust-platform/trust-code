@@ -582,6 +582,12 @@ inline void TRUSTTab<_TYPE_>::lit(Entree& is, int resize_and_read)
           // Si on cherche a relire un tableau de taille inconnue, le tableau doit etre reset() a l'entree. On n'aura pas la structure parallele du tableau !
           Cerr << finl;
           Cerr << "Error in DoubleTab::lit: array has wrong dimensions" << finl;
+          if (Process::nproc()>1 && dimension(0) != tmp[0]) // Add message to detect different partitionning
+            {
+              Cerr << "We try to read an array with " << dimension(0) << " items whereas we are waiting for a size of " << tmp[0] << "!" << finl;
+              Cerr << "Probably a different partitionning from your previous calculation..." << finl;
+              Cerr << "Change your current partitionning to match the previous calculation or try .xyz restart protocol." << finl;
+            }
           Process::exit();
         }
     }
