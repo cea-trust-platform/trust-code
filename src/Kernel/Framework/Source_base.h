@@ -22,12 +22,12 @@
 #include <Champs_compris.h>
 #include <Matrice_Bloc.h>
 #include <MorEqn.h>
+#include <SFichier.h>
 
 class Probleme_base;
 class Domaine_dis;
 class Domaine_Cl_dis;
 class Matrice_Morse;
-class SFichier;
 
 /*! @brief classe Source_base Un objet Source_base est un terme apparaissant au second membre d'une
  *
@@ -92,7 +92,7 @@ protected:
   Nom description_;
   Noms col_names_;            //nom des colonnes (optionnel)
   mutable DoubleVect bilan_; // Vecteur contenant les valeurs du terme source dans le domaine
-
+  mutable SFichier Flux;
   Champs_compris champs_compris_;
 
 };

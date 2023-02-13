@@ -170,8 +170,8 @@ int Source_base::impr(Sortie& os) const
       else
         {
           int flag=je_suis_maitre();
-          SFichier Flux;
-          ouvrir_fichier(Flux,"",flag);
+          //SFichier Flux;
+          if (!Flux.is_open()) ouvrir_fichier(Flux,"",flag);
           const Probleme_base& pb=equation().probleme();
           const Schema_Temps_base& sch=pb.schema_temps();
           double temps=sch.temps_courant();

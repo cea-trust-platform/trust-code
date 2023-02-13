@@ -33,9 +33,6 @@ public:
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const override;
   void calculer_flux_bords() const override;
-
-protected:
-  mutable SFichier Flux_grad, Flux_grad_moment, Flux_grad_sum;
 };
 
 #endif /* Op_Grad_VDF_Face_included */

@@ -367,12 +367,12 @@ int Op_Grad_EF::impr(Sortie& os) const
   int face;
   const ArrOfDouble& c_grav=le_dom_EF->domaine().cg_moments();
   int flag=je_suis_maitre();
-  SFichier Flux_grad;
-  ouvrir_fichier(Flux_grad,"",flag);
-  SFichier Flux_grad_moment;
-  ouvrir_fichier( Flux_grad_moment,"moment",impr_mom&&flag);
-  SFichier Flux_grad_sum;
-  ouvrir_fichier(Flux_grad_sum,"sum",impr_sum&&flag);
+  //SFichier Flux_grad;
+  if (!Flux_grad.is_open()) ouvrir_fichier(Flux_grad,"",flag);
+  //SFichier Flux_grad_moment;
+  if (!Flux_grad_moment.is_open()) ouvrir_fichier( Flux_grad_moment,"moment",impr_mom&&flag);
+  //SFichier Flux_grad_sum;
+  if (!Flux_grad_sum.is_open()) ouvrir_fichier(Flux_grad_sum,"sum",impr_sum&&flag);
   EcrFicPartage Flux_grad_face;
   ouvrir_fichier_partage(Flux_grad_face,"",impr_bord);
   if (je_suis_maitre())

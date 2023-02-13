@@ -31,7 +31,6 @@
 #include <Porosites_champ.h>
 #include <SChaine.h>
 #include <VerifierCoin.h>
-#include <SFichier.h>
 #include <Device.h>
 
 Implemente_instanciable(Op_Div_VEFP1B_Elem,"Op_Div_VEFPreP1B_P1NC",Op_Div_VEF_Elem);

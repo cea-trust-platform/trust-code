@@ -21,7 +21,6 @@
 #include <Schema_Temps_base.h>
 #include <Check_espace_virtuel.h>
 #include <EcrFicPartage.h>
-#include <SFichier.h>
 #include <Matrice_Morse.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
@@ -190,9 +189,9 @@ DoubleTab& Op_Div_PolyMAC::calculer(const DoubleTab& vit, DoubleTab& div) const
 int Op_Div_PolyMAC::impr(Sortie& os) const
 {
 
-  const int impr_bord=(le_dom_PolyMAC->domaine().bords_a_imprimer().est_vide() ? 0:1);
-  SFichier Flux_div;
-  ouvrir_fichier(Flux_div,"",je_suis_maitre());
+  const int impr_bord=(le_dom_PolyMAC->zone().bords_a_imprimer().est_vide() ? 0:1);
+  //SFichier Flux_div;
+  if (!Flux_div.is_open()) ouvrir_fichier(Flux_div,"",je_suis_maitre());
   EcrFicPartage Flux_face;
   ouvrir_fichier_partage(Flux_face,"",impr_bord);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();

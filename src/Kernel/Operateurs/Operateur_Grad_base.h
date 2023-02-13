@@ -44,6 +44,9 @@ public :
 
   virtual DoubleVect& multvect(const DoubleTab&, DoubleTab&) const;
   virtual void calculer_flux_bords() const {};
+
+protected:
+  mutable SFichier Flux_grad, Flux_grad_moment, Flux_grad_sum;
 };
 
 #endif

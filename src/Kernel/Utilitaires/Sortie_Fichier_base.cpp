@@ -190,7 +190,7 @@ int Sortie_Fichier_base::ouvrir(const char* name,IOS_OPEN_MODE mode)
 
     }
 #endif
-  if (++counters[name]%1000==0) Cerr << "Warning, file " << name << " has been opened/closed " << counters[name] << " times..." << finl;
+  if (++counters[name]%100==0) Cerr << "Warning, file " << name << " has been opened/closed " << counters[name] << " times..." << finl;
   if(ofstream_)
     delete ofstream_;
   IOS_OPEN_MODE ios_mod=mode;

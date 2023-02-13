@@ -20,7 +20,6 @@
 #include <Schema_Temps_base.h>
 
 #include <EcrFicPartage.h>
-#include <SFichier.h>
 #include <TRUSTTrav.h>
 #include <communications.h>
 
@@ -113,8 +112,8 @@ int Op_Div_VEF_Elem::impr(Sortie& os) const
   // Print
   if(je_suis_maitre())
     {
-      SFichier Flux_div;
-      ouvrir_fichier(Flux_div,"",1);
+      //SFichier Flux_div;
+      if (!Flux_div.is_open()) ouvrir_fichier(Flux_div,"",1);
       Flux_div.add_col(temps);
       for (int num_cl=0; num_cl<nb_cl; num_cl++)
         {
