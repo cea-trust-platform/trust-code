@@ -14,43 +14,41 @@
 *****************************************************************************/
 //////////////////////////////////////////////////////////////////////////////
 //
-// File:        Vitesse_derive_Ishii.cpp
+// File:        Vitesse_derive_Forces.h
 // Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
 // Version:     /main/18
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#include <Vitesse_derive_Ishii.h>
-#include <cmath>
+#ifndef Vitesse_derive_Forces_included
+#define Vitesse_derive_Forces_included
+#include <Vitesse_derive_base.h>
 
-Implemente_instanciable(Vitesse_derive_Ishii, "Vitesse_relative_derive_Ishii", Vitesse_derive_base);
+//////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION
+//    classe Vitesse_derive_Forces
+//      vitesse de derive entre une phase gaz et une phase liquide
+//      -> correlation de Ishii de la forme : v_g = C0 * (alpha_g * v_g + alpha_l * v_l) + v_g0
+//////////////////////////////////////////////////////////////////////////////
 
-Sortie& Vitesse_derive_Ishii::printOn(Sortie& os) const { return os; }
-
-Entree& Vitesse_derive_Ishii::readOn(Entree& is)
+class Vitesse_derive_Forces : public Vitesse_derive_base
 {
-  Vitesse_derive_base::readOn(is);
+  Declare_instanciable(Vitesse_derive_Forces);
 
-  Param param(que_suis_je());
-  param.ajouter("subcooled_boiling", &sb_, Param::REQUIRED);
-  param.lire_avec_accolades_depuis(is);
-  return is;
-}
+public:
+  bool needs_grad_alpha() const override {return needs_grad_alpha_;};
+  void completer() override;
+  
+protected:
+  void evaluate_C0_vg0(const input_t& input) const override;
 
-void Vitesse_derive_Ishii::evaluate_C0_vg0(const input_t& input) const
-{
-  const int D = dimension;
-  const double norm_g = sqrt(local_carre_norme_vect(input.g));
+  // correlation parameters (circular channel)
+  int sb_ = 0;       // subcooled boiling (0 = no, 1 = yes)
+  double Cinf = 1.2; // asymptotic value of C0
+  double theta = 1.75;
+  double zeta = 18.0;
+  bool needs_grad_alpha_ = 0;  
+};
 
-  int N = input.v.dimension(0);
-  int ind_trav = 0 ; // Et oui ! matrice triang sup !
-  if (n_g>n_l) ind_trav = (n_l*(N-1)-(n_l-1)*(n_l)/2) + (n_g-n_l-1);
-  else         ind_trav = (n_g*(N-1)-(n_g-1)*(n_g)/2) + (n_l-n_g-1);
-
-  /* distribution parameter */
-  C0 = Cinf + (1.0 - Cinf) * std::sqrt(input.rho(n_g) / input.rho(n_l)) * (1.0 - sb_ * exp(-zeta * input.alpha(n_g)));
-
-  /* drift velocity */
-  double dv = std::sqrt(2.0) * pow((input.rho(n_l) - input.rho(n_g)) * norm_g * input.sigma(ind_trav) / input.rho(n_l) / input.rho(n_l), 0.25) * pow(1.0 - input.alpha(n_g), theta);
-  for (int d = 0; d < D; d++) vg0(d) = - dv * input.g(d) / norm_g;
-}
+#endif

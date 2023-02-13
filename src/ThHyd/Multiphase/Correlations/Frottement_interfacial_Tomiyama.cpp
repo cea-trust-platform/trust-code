@@ -67,19 +67,41 @@ void Frottement_interfacial_Tomiyama::coefficient(const DoubleTab& alpha, const 
       {
         int ind_trav = (k>n_l) ? (n_l*(N-1)-(n_l-1)*(n_l)/2) + (k-n_l-1) : (k*(N-1)-(k-1)*(k)/2) + (n_l-k-1);
 
-        double Re = rho(n_l) * std::max(ndv(n_l,k), 1.e-6)  * d_bulles(k)/mu(n_l);
+        double Re      = rho(n_l) * std::max(ndv(n_l,k), 1.e-6)    * d_bulles(k)/mu(n_l);
+        double dndv_Re = rho(n_l) * (ndv(n_l,k)> 1.e-6 ? 1. : 0. ) * d_bulles(k)/mu(n_l);
         double Eo = g_ * std::abs(rho(n_l)-rho(k)) * d_bulles(k)*d_bulles(k)/sigma(ind_trav);
+
         double Cd = -1;
+        double dndv_Cd = 0.;
         if (contamination_==0) Cd = beta_ * std::max( std::min( 16./Re*(1+0.15*std::pow(Re, 0.687)) , 48./Re )   , 8.*Eo/(3.*(Eo+4.)));
         if (contamination_==1) Cd = beta_ * std::max( std::min( 24./Re*(1+0.15*std::pow(Re, 0.687)) , 72./Re )   , 8.*Eo/(3.*(Eo+4.)));
         if (contamination_==2) Cd = beta_ * std::max(           24./Re*(1+0.15*std::pow(Re, 0.687))              , 8.*Eo/(3.*(Eo+4.)));
 
-        coeff(k, n_l, 1) = (alpha(n_l) < 1.e-6) ? 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * alpha(n_l) * 1.e6
-                           : 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l);
-        coeff(k, n_l, 0) = coeff(k, n_l, 1) * ndv(n_l,k);
-        coeff(n_l, k, 0) = coeff(k, n_l, 0);
-        coeff(n_l, k, 1) = coeff(k, n_l, 1);
+        if      ((contamination_==0) && (16./Re*(1+0.15*std::pow(Re, 0.687)) < 48./Re ) && (16./Re*(1+0.15*std::pow(Re, 0.687)) > 8.*Eo/(3.*(Eo+4.))) )
+          dndv_Cd = beta_ * -16.*dndv_Re/(Re*Re)*(1+0.15*std::pow(Re, 0.687)) + beta_ * 16./Re*0.15*dndv_Re*std::pow(Re, 0.687-1.);
+        else if ((contamination_==0) && (16./Re*(1+0.15*std::pow(Re, 0.687)) > 48./Re ) && (48./Re > 8.*Eo/(3.*(Eo+4.))) )
+          dndv_Cd = beta_ * -48.*dndv_Re/(Re*Re);
+        else if ((contamination_==1) && (24./Re*(1+0.15*std::pow(Re, 0.687)) < 72./Re ) && (24./Re*(1+0.15*std::pow(Re, 0.687)) > 8.*Eo/(3.*(Eo+4.))) )
+          dndv_Cd = beta_ * -24.*dndv_Re/(Re*Re)*(1+0.15*std::pow(Re, 0.687)) + beta_ * 24./Re*0.15*dndv_Re*std::pow(Re, 0.687-1.);
+        else if ((contamination_==1) && (24./Re*(1+0.15*std::pow(Re, 0.687)) > 72./Re ) && (72./Re > 8.*Eo/(3.*(Eo+4.))) )
+          dndv_Cd = beta_ * -72.*dndv_Re/(Re*Re);
+        else if ((contamination_==2) && (24./Re*(1+0.15*std::pow(Re, 0.687)) > 8.*Eo/(3.*(Eo+4.))) )
+          dndv_Cd = beta_ * -24.*dndv_Re/(Re*Re)*(1+0.15*std::pow(Re, 0.687)) + beta_ * 24./Re*0.15*dndv_Re*std::pow(Re, 0.687-1.);
 
+        if (alpha(n_l) > 1.e-6) 
+        {
+        coeff(k, n_l, 0) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k);
+        coeff(n_l, k, 0) = coeff(k, n_l, 0);
+        coeff(k, n_l, 1) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) + 3./4.*dndv_Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k);
+        coeff(n_l, k, 1) = coeff(k, n_l, 1);
+        }
+        else
+        {
+        coeff(k, n_l, 0) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k) * alpha(n_l) * 1.e6;
+        coeff(n_l, k, 0) = coeff(k, n_l, 0);
+        coeff(k, n_l, 1) = (3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) + 3./4.*dndv_Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k) )* alpha(n_l) * 1.e6;
+        coeff(n_l, k, 1) = coeff(k, n_l, 1);
+        }
       }
 }
 

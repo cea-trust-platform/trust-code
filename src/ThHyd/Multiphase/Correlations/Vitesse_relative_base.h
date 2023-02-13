@@ -45,7 +45,12 @@ public:
     DoubleTab sigma; // tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
     DoubleTab alpha; // taux de vide
     DoubleTab rho;   // masse volumique
+    DoubleTab mu;    // viscosite
+    DoubleTab d_bulles;   // diametre bulles
+    DoubleTab k;     // energie cinetique turbulente
+    DoubleTab nut;   // energie cinetique turbulente
     DoubleTab v;     // v(n, d) : vitesse de la phase n dans la direction d
+    DoubleTab gradAlpha;// gradAlpha(n,d) : gradient du taux de vide ; calcule que si requis par la correlation
     DoubleVect g;    // vecteur gravite
   };
   /* valeurs de sortie */
@@ -56,6 +61,7 @@ public:
                   // par rapport a la vitesse de la phase l selon la direction d2 
   };
   virtual void vitesse_relative(const input_t& input, output_t& output) const = 0;
+  virtual bool needs_grad_alpha() const {return 0;};
 
 protected:
   int n_l = -1, n_g = -1; // phases traitees : liquide / gaz continu

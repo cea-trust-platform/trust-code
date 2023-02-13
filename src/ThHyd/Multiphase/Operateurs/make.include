@@ -22,6 +22,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Correlations\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Turbulence\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
 	
 
