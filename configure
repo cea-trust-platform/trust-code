@@ -271,6 +271,7 @@ echo "[-rocalution=0|path to rocALUTION]Disable or specify extern rocALUTION lib
 echo "[-disable-petsc]                  Disable PETSc library installation."
 echo "[-disable-petsc-optionals]        Disable some PETSc optionals for Cathare (visualization features, HDF5 support,...)"
 echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
+echo "[-with-eos=<path_to_eos>]         Compiles TRUST and links with an external static EOS library"
 #echo "[-with-med=dir]                   Force Using external MED library"
 #echo "[-with-hdf=dir]                   Force Using external HDF library"
 #echo "[-with-medcoupling=dir]           Force Using external MEDCoupling library"
@@ -347,6 +348,7 @@ export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
 export TRUST_INT64=0
 export TRUST_USE_CUDA=0
+export TRUST_USE_EOS=0
 export TRUST_ROCALUTION=1
 export TRUST_USE_OPENMP=0
 export TRUST_USE_AVX=1
@@ -363,6 +365,7 @@ unset CUDA_NVCC
 unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
+unset EOS_HOME
 
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
@@ -468,6 +471,11 @@ do
       export TRUST_USE_CUDA=1
       [ "${1#-cuda=}" != "$1" ] && CUDA_NVCC=${1#-cuda=}
 
+   elif [ "${1#-with-eos}" != "$1" ]
+   then
+      export TRUST_USE_EOS=1
+      export EOS_HOME=${1#-with-eos=}
+      
    elif [ "${1#-rocalution}" != "$1" ]
    then
       export TRUST_ROCALUTION=${1#-rocalution=}
@@ -661,9 +669,19 @@ then
     echo "export TRUST_USE_EXTERNAL_HDF=1" >> $var
     echo "export HDF5_ROOT_DIR=$TRUST_USE_EXTERNAL_HDF" >> $var
 else
-    echo "unset  TRUST_USE_EXTERNAL_HDF" >> $var
+    echo "unset TRUST_USE_EXTERNAL_HDF" >> $var
     #echo "unset HDF5_ROOT_DIR" >> $var
 fi
+
+if [ "$EOS_HOME" != "" ]
+then
+    echo "export TRUST_USE_EOS=1" >> $var
+    echo "export TRUST_EOS_HOME_DIR=$EOS_HOME" >> $var
+else
+    echo "export TRUST_USE_EOS=0" >> $var
+    echo "unset EOS_HOME" >> $var
+fi
+
 # IF HDF5 tools are not installed, detect h5dump version mismatch
 if [ "`h5dump -help 1>/dev/null 2>&1;echo $?`" = 0 ]; then
     h5versionOK=`h5dump --version 2>/dev/null | awk '/h5dump/ {split($3,a,".");v=a[1]*1000+a[2]*10+a[3];print (v<=1103?1:0)}'`

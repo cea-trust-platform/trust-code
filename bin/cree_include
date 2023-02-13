@@ -30,6 +30,16 @@ done
 file="Create_domain_from_sous_zone.h"
 echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include to Create_domain_from_sub_domain.h" > backward/$file
 
+# EOS includes in backward if 
+if [ "$TRUST_EOS_HOME_DIR" != "" ]
+then
+    ln -nsf $TRUST_EOS_HOME_DIR/include/EOS backward/.
+    ln -nsf $TRUST_EOS_HOME_DIR/include/Common backward/.
+    ln -nsf $TRUST_EOS_HOME_DIR/include/Language backward/.
+    echo "TRUST configured with the EOS library found in $TRUST_EOS_HOME_DIR"
+    echo "EOS header files added in $TRUST_ROOT/include/backward !"
+fi
+
 # Ouverture de $INC
 echo "s?$MPI_INCLUDE/mpi\.h?\$(MPI_INCLUDE)/mpi\.h?g">.tmp
 echo "s?$METIS_ROOT/include/metis\.h?\$(METIS_ROOT)/include/metis\.h?g">>.tmp
