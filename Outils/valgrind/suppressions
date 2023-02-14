@@ -21,7 +21,6 @@
 
 {
    <insert_a_suppression_name_here>
-   Memcheck:Leak
    fun:*alloc
    ...
    obj:/usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.470.103.01
@@ -274,6 +273,20 @@
 ###
 ###  CUDA library
 ###
+# Triggered by test case when build with local Cuda 11.6 (is157091.intra.cea.fr)
+{
+   <CUSPARSE_LIB>
+   Memcheck:Leak
+   ...
+   obj:*/libcusparse.so.*
+}
+# Triggered by test case when build with local Cuda 11.6 (is157091.intra.cea.fr)
+{
+   <CUFFT_LIB>
+   Memcheck:Leak
+   ...
+   obj:*/libcufft.so.*
+}
 # Triggered by all test case using Cuda
 {
    <XDCORE>
