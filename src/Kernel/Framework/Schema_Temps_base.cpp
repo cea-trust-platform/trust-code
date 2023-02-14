@@ -754,33 +754,23 @@ int Schema_Temps_base::reprendre(Entree& is)
 int Schema_Temps_base::stop_lu() const
 {
   int stop_lu_l = 0;
-  Nom nomfic(nom_du_cas());
-  nomfic+=".stop";
-  if (nb_pas_dt_ < 1)
+  if (!get_disable_stop())
     {
-      if(je_suis_maitre())
+      Nom nomfic(nom_du_cas());
+      nomfic += ".stop";
+      if (nb_pas_dt_ < 1)
         {
-          SFichier ficstop(nomfic);
-          ficstop << stop_lu_l;
+          if (je_suis_maitre())
+            {
+              SFichier ficstop(nomfic);
+              ficstop << stop_lu_l;
+            }
         }
-    }
-  else
-    {
-      LecFicDiffuse ficstop(nomfic);
-      // On verifie s'il reste de la place
-      // sur le disque en fonction de la
-      // taille du probleme estimee
-      //int ram=
-#ifdef HPPA
-      Nom command("bdf");
-#else
-      Nom command("df -k");
-#endif
-      // Essayer avec stat -f -t . | awk '{print 4*$8}' ? Ca semble plus rapide...
-      // Mieux : stat -f -t . | cut -d " " -f8
-      command+=" . | awk '/\\// && /%/ {print $(NF-2)\" Kbytes available sur \" $NF}'";
-      //Cerr << system(command) << finl;
-      ficstop >> stop_lu_l;
+      else
+        {
+          LecFicDiffuse ficstop(nomfic);
+          ficstop >> stop_lu_l;
+        }
     }
   return stop_lu_l;
 }

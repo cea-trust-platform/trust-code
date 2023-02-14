@@ -56,6 +56,7 @@ Implemente_instanciable_sans_constructeur_ni_destructeur(Sonde,"Sonde",Objet_U);
 // XD attr teta2 floattant teta2 0 not_set
 
 static int fichier_sondes_cree=0;
+static SFichier fichier_sondes;
 
 /*! @brief Constructeur d'une sonde a partir de son nom.
  *
@@ -631,15 +632,18 @@ Entree& Sonde::readOn(Entree& is)
     {
       // Ajout du nom du fichier sonde dans le fichier listant les sondes
       // Ce fichier sera utilise par Run_sonde
-      SFichier fichier_sondes;
-      Nom nom_fich=nom_du_cas();
-      nom_fich+=".sons";
-      if (!fichier_sondes_cree)
-        fichier_sondes.ouvrir(nom_fich);
-      else
-        fichier_sondes.ouvrir(nom_fich,ios::app);
+      // SFichier fichier_sondes;
+      Nom nom_fich = nom_du_cas();
+      nom_fich += ".sons";
+      if (!fichier_sondes.is_open())
+        {
+          if (!fichier_sondes_cree)
+            fichier_sondes.ouvrir(nom_fich);
+          else
+            fichier_sondes.ouvrir(nom_fich, ios::app);
+        }
       fichier_sondes << nom_fichier_ << finl;
-      fichier_sondes_cree=1;
+      fichier_sondes_cree = 1;
     }
   return is;
 }
