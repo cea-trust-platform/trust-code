@@ -16,6 +16,7 @@
 #ifndef Eval_Dift_VDF_leaves_included
 #define Eval_Dift_VDF_leaves_included
 
+#include <Eval_Dift_Multiphase_VDF.h>
 #include <Eval_Diff_VDF_Face_Gen.h>
 #include <Eval_Diff_VDF_Elem_Gen.h>
 #include <Mod_turb_hyd_base.h>
@@ -97,6 +98,13 @@ private:
   REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Turbulence_paroi_base) loipar;
   DoubleTab tau_tan_;
+};
+
+class Eval_Dift_Multiphase_VDF_Face : public Eval_Diff_VDF_Face_Gen<Eval_Dift_Multiphase_VDF_Face>, public Eval_Dift_Multiphase_VDF
+{
+public:
+  static constexpr bool IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
+  inline bool uses_wall() const { return false; }
 };
 
 #endif /* Eval_Dift_VDF_leaves_included */

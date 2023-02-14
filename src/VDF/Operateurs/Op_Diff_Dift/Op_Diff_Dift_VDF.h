@@ -21,6 +21,7 @@
 #include <Mod_turb_hyd_base.h>
 #include <Iterateur_VDF.h>
 #include <Champ_P0_VDF.h>
+#include <Correlation.h>
 
 class Turbulence_paroi_scal;
 class Champ_Fonc;
@@ -40,7 +41,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE, void>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_FACE || _TYPE_ == Type_Operateur::Op_DIFT_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_Face_VDF& inco = ref_cast(Champ_Face_VDF,ch_diffuse.valeur());
@@ -59,6 +60,22 @@ protected:
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
     eval_diff_turb.associer_pb(pb);
+  }
+
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
+  associer_corr_impl(const Correlation& corr)
+  {
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    return eval_diff_turb.associer_corr(corr);
+  }
+
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
+  set_nut_impl(const DoubleTab& nut)
+  {
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    return eval_diff_turb.set_nut(nut);
   }
 
   template <typename EVAL_TYPE>
