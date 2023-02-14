@@ -23,18 +23,35 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                                                              int is, int js, int ks, /* ijk coordinates of first data to send */
                                                              int pe_recv_, /* processor to recv from */
                                                              int ir, int jr, int kr, /* ijk coordinates of first data to recv */
-                                                             int isz, int jsz, int ksz) /* size of block data to send/recv */
+                                                             int isz, int jsz, int ksz, /* size of block data to send/recv */
+															 double offset)  /* decallage a appliquer pour la condition de shear periodique*/
 {
-  if (pe_send_ == Process::me() && pe_recv_ == Process::me())
+
+	// si un seul proc, besoin quand meme d'un echange
+	if (pe_send_ == Process::me() && pe_recv_ == Process::me())
     {
+      // a changer si decoupage en i
 
       // Self (periodicity on same processor)
       _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++)
-            dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + i, js + j, ks + k);
-      return;
+          {
+        	  _TYPE_ offset_i = (_TYPE_) offset;
+        	  _TYPE_ istmp = (_TYPE_)is + (_TYPE_)i + offset_i;
+              int ifloor = (int) floor(istmp);
+              ifloor = ifloor % isz;
+              int iceil = (int) ceil(istmp) ;
+              iceil = iceil % isz ;
+              _TYPE_ weight = (_TYPE_)(istmp - floor(istmp));
+              _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloor, js + j, ks + k);
+              _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(iceil, js + j, ks + k);
+
+              dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] =
+            		  ((_TYPE_)1.- weight) * vmin + weight * vmax;
+          }
+       return;
     }
   const int data_size = isz * jsz * ksz;
   const int type_size = sizeof(_TYPE_);
@@ -46,10 +63,28 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       send_buffer = new _TYPE_[data_size];
       // Pack send data
       _TYPE_ *buf = send_buffer;
+
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++, buf++)
-            *buf = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + i, js + j, ks + k);
+          {
+        	  // is, js, ks, coordone du premier element a envoyer
+        	  // ajouter un offset pour aller chercher un element decalle
+        	  // le faire uniquement si le proc na pas de voisin, donc que cest un bord (methode dispo dans splitting)
+        	  // si je m'en sort pas, demander a Anida en lui donnant un cas test
+        	  // changer uniquement a cet endroit (valeur envoyée dans le buffer), rien ne change pour la reception.
+        	  _TYPE_ offset_i = (_TYPE_) offset;
+        	  _TYPE_ istmp = (_TYPE_)is + (_TYPE_)i + offset_i;
+              int ifloor = (int) floor(istmp);
+              ifloor = ifloor % isz;
+              int iceil = (int) ceil(istmp) ;
+              iceil = iceil % isz ;
+              _TYPE_ weight = (_TYPE_)(istmp - floor(istmp));
+              _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloor, js + j, ks + k);
+              _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(iceil, js + j, ks + k);
+
+            *buf = ((_TYPE_)1.- weight) * vmin + weight * vmax;
+    }
     }
   if (pe_recv_ >= 0)
     recv_buffer = new _TYPE_[data_size];
@@ -75,23 +110,39 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
  *
  */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost, double Shear_x_time)
 {
   statistiques().begin_count(echange_vect_counter_);
   assert(le_ghost <= (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost()));
   // Exchange in i direction real cells,
   // then in j direction with ghost cells in i,
   // then in k direction, with ghost cells in i and j
+
+  // dans un premier temps, pas de splitting en i pour avoir a gerer que les voisins
+  // sinon il faudra faire des choses compliquees et potentiellement lourdes, appeler les voisins des voisins etc..
   const IJK_Splitting& splitting = splitting_ref_.valeur();
   int pe_imin_ = splitting.get_neighbour_processor(0, 0);
   int pe_imax_ = splitting.get_neighbour_processor(1, 0);
   int pe_jmin_ = splitting.get_neighbour_processor(0, 1);
   int pe_jmax_ = splitting.get_neighbour_processor(1, 1);
+
+  // si pe_kmin_ = -1 >> bord z=0 (mais peut-être pas pour un domaine periodique....)
+  // si pe_kmax = -1 >> bord z=Lz
+  // si marche pas en perio, creer une fonction dans le splitting pour reperer les procs en question.
   int pe_kmin_ = splitting.get_neighbour_processor(0, 2);
   int pe_kmax_ = splitting.get_neighbour_processor(1, 2);
+  int z_index = splitting.get_local_slice_index(2);
+  int z_index_min = 0;
+  int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
+
   const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
+  double Lz =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_K)[2];
+  double Lx =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_I)[0];
+  double DX = Lx/nii ;
+  double offset_i = Shear_x_time*Lz/DX;
+  // get_neighbour_processor renvoie -1 sur pas de proc (bord du domaine). Appeler dans ce cas pour la condition de cisaillement perio
 
   // send left layer of real cells to right layer of virtual cells
   exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */
@@ -103,9 +154,26 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   exchange_data(pe_jmax_, -le_ghost, njj - le_ghost, 0, pe_jmin_, -le_ghost, -le_ghost, 0, nii + 2 * le_ghost, le_ghost, nkk);
 
+  if (z_index == z_index_min)
+  {
+  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, -offset_i);
+  }
+  else
+  {
   exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
+  }
 
-  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
+  if (z_index == z_index_max)
+  {
+	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, offset_i);
+  }
+  else
+  {
+	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
+  }
+
+
+
 
   statistiques().end_count(echange_vect_counter_);
 }
