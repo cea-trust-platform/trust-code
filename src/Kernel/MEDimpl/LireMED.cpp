@@ -810,6 +810,19 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
         }
     }
 
+  // Order "noms_bords_" so that they come by increasing family number:
+  std::map<int, Nom> mp;  // will take advantage from the fact that C++ map are key-ordered
+  int i = 0;
+  for(const auto& ib: indices_bords)
+    mp[ib] = noms_bords_[i++];
+  i = 0;
+  for(const auto &kv: mp)
+    {
+      noms_bords_[i] = kv.second;
+      indices_bords[i] = kv.first;
+      i++;
+    }
+
   if (noms_bords_.size()==0)
     {
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
