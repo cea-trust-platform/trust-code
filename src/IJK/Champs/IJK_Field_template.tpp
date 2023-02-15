@@ -17,6 +17,7 @@
 #define IJK_Field_template_TPP_H
 
 #include <IJK_communications.h>
+#include <iostream>
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* processor to send to */
@@ -39,14 +40,44 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
           for (int i = 0; i < isz; i++)
           {
         	  _TYPE_ offset_i = (_TYPE_) offset;
-        	  _TYPE_ istmp = (_TYPE_)is + (_TYPE_)i + offset_i;
-              int ifloor = (int) floor(istmp);
-              ifloor = ifloor % isz;
+        	  _TYPE_ istmp = (_TYPE_)i + offset_i;
+
+              // ifloor et iceil comprised between (0 & isz-1) + is
+              // modulo fonctionne aussi si ifloor est negatif normalement, mais pas ici...
+        	  int ifloor = (int) floor(istmp);
+              if (ifloor < 0)
+              {
+              	  ifloor = -(-ifloor %isz - isz);
+              }
+              else
+              {
+                  ifloor = ifloor %isz;
+              }
+
               int iceil = (int) ceil(istmp) ;
-              iceil = iceil % isz ;
+              if (iceil < 0)
+              {
+            	  iceil = -(-iceil %isz - isz);
+              }
+              else
+              {
+            	  iceil = iceil %isz;
+              }
               _TYPE_ weight = (_TYPE_)(istmp - floor(istmp));
-              _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloor, js + j, ks + k);
-              _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(iceil, js + j, ks + k);
+              _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor, js + j, ks + k);
+              _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + iceil, js + j, ks + k);
+
+              if (offset != 0.)
+              {
+//              std::cout<<"i,j,k= " << i <<" " << j <<" " << k  <<std::endl;
+//              std::cout<<"is,js,ks= " << is <<" " << js <<" " << ks  <<std::endl;
+//              std::cout<<"isz,jsz,ksz= " << isz <<" " << jsz <<" " << ksz  <<std::endl;
+//              std::cout<<"is+1,js+j,ks+k= " << is+i <<" " << js+j <<" " << ks+k  <<std::endl;
+//              std::cout<<"iceil= " << iceil <<"ifloor= " << ifloor <<" is+i= " << is + i <<std::endl;
+//              std::cout<<" vmin= " << vmin <<" vmax= " << vmax <<std::endl;
+//              std::cout<<" v_sans_shear= " << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is+i, js + j, ks + k) <<std::endl;
+//              std::cout<<" " <<std::endl;
+              }
 
               dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] =
             		  ((_TYPE_)1.- weight) * vmin + weight * vmax;
@@ -74,14 +105,29 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         	  // si je m'en sort pas, demander a Anida en lui donnant un cas test
         	  // changer uniquement a cet endroit (valeur envoyée dans le buffer), rien ne change pour la reception.
         	  _TYPE_ offset_i = (_TYPE_) offset;
-        	  _TYPE_ istmp = (_TYPE_)is + (_TYPE_)i + offset_i;
-              int ifloor = (int) floor(istmp);
-              ifloor = ifloor % isz;
+        	  _TYPE_ istmp = (_TYPE_)i + offset_i;
+        	  int ifloor = (int) floor(istmp);
+              if (ifloor < 0)
+              {
+              	  ifloor = -(-ifloor %isz - isz);
+              }
+              else
+              {
+                  ifloor = ifloor %isz;
+              }
+
               int iceil = (int) ceil(istmp) ;
-              iceil = iceil % isz ;
+              if (iceil < 0)
+              {
+            	  iceil = -(-iceil %isz - isz);
+              }
+              else
+              {
+            	  iceil = iceil %isz;
+              }
               _TYPE_ weight = (_TYPE_)(istmp - floor(istmp));
-              _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloor, js + j, ks + k);
-              _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(iceil, js + j, ks + k);
+              _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor, js + j, ks + k);
+              _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + iceil, js + j, ks + k);
 
             *buf = ((_TYPE_)1.- weight) * vmin + weight * vmax;
     }
@@ -138,10 +184,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-  double Lz =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_K)[2];
+  //double Lz =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_K)[2];
   double Lx =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_I)[0];
   double DX = Lx/nii ;
-  double offset_i = Shear_x_time*Lz/DX;
+  double offset_i = Shear_x_time/DX;
   // get_neighbour_processor renvoie -1 sur pas de proc (bord du domaine). Appeler dans ce cas pour la condition de cisaillement perio
 
   // send left layer of real cells to right layer of virtual cells
@@ -156,6 +202,15 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   if (z_index == z_index_min)
   {
+	  if (offset_i != 0.)
+	  {
+//  std::cout << "ici1" << std::endl;
+//  std::cout << "Shear_x_time =" << Shear_x_time << std::endl;
+//  std::cout << "Lz =" << Lz << std::endl;
+//  std::cout << "DX =" << DX << std::endl;
+//  std::cout << "offset_i =" << offset_i << std::endl;
+//  std::cout << " " << offset_i << std::endl;
+	  }
   exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, -offset_i);
   }
   else
@@ -165,6 +220,15 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   if (z_index == z_index_max)
   {
+	  if (offset_i != 0.)
+	  {
+//  std::cout << "ici2" << std::endl;
+//  std::cout << "Shear_x_time =" << Shear_x_time << std::endl;
+//  std::cout << "Lz =" << Lz << std::endl;
+//  std::cout << "DX =" << DX << std::endl;
+//  std::cout << "offset_i =" << offset_i << std::endl;
+//  std::cout << " " << offset_i << std::endl;
+	  }
 	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, offset_i);
   }
   else
