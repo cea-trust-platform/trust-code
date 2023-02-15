@@ -40,7 +40,7 @@ public:
     tab_alpha_.ref(ref_cast(Pb_Multiphase, ref_probleme_.valeur()).eq_masse.inconnue().passe());
     for (int e = 0; e < tab_diffusivite_turbulente.dimension(0); e++)
       for (int n = 0; n < tab_diffusivite_turbulente.dimension(1); n++)
-        tab_diffusivite_turbulente(e, n) = std::max(tab_alpha_(e, n), 1e-8) * ref_diffusivite_->valeurs()(is_var_ * e, n);
+        tab_diffusivite_turbulente(e, n) = std::max(tab_alpha_(e, n), 1e-8) * tab_diffusivite_turbulente(e, n);
 
     tab_diffusivite_turbulente.echange_espace_virtuel();
   }
