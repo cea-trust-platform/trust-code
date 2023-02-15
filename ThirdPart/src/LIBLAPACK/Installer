@@ -9,7 +9,7 @@ install_OpenBlas()
 
    # Installation
    rm -r -f *-OpenBLAS-*
-   echo "Installation of $package (USE_THREAD=$TRUST_USE_OPENMP)..."
+   echo "Installation of $package (USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP)..."
    gunzip -f -c $package | tar -xf -
    cd OpenBLAS-$version_openblas
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
@@ -21,7 +21,7 @@ install_OpenBlas()
       FC=$TRUST_F77
    fi  
    # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
-   $TRUST_MAKE CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP NO_AVX512=1
+   $TRUST_MAKE CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1
 }
 install_NetLib()
 {
@@ -102,7 +102,12 @@ then
    # Bench OpenBlas:
    # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
    cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
-   (cd benchmark && make dgemm.goto && ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log)
+   if [ "$TRUST_USE_OPENMP" = 1 ]
+   then
+      (cd benchmark && CFLAGS=-fopenmp make dgemm.goto && OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log)
+   else
+      (cd benchmark && make dgemm.goto && ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log)
+   fi
    # On copie la librairie si elle existe sinon on sort
    if [ -f $lib ]
    then
