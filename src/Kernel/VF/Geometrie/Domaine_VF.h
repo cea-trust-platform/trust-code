@@ -154,6 +154,13 @@ public :
   //produit vectoriel
   inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
+  inline virtual double dist_norm(int ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
+  inline virtual double dist_norm_bord(int ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
+  inline virtual double dist_face_elem0(int ,int ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
+  inline virtual double dist_face_elem1(int ,int ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
+  inline virtual double dist_face_elem0_period(int ,int ,double ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
+  inline virtual double dist_face_elem1_period(int ,int ,double ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
+
 private:
   DoubleVect face_surfaces_;                // surface des faces
 

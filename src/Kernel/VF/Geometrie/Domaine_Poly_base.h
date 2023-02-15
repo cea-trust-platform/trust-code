@@ -103,13 +103,13 @@ public :
   inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
 
 
-  inline double dist_norm(int num_face) const;
-  inline double dist_norm_bord(int num_face) const;
+  inline double dist_norm(int num_face) const override;
+  inline double dist_norm_bord(int num_face) const override;
   DoubleVect& dist_norm_bord(DoubleVect& , const Nom& nom_bord) const;
-  inline double dist_face_elem0(int num_face,int n0) const;
-  inline double dist_face_elem1(int num_face,int n1) const;
-  inline double dist_face_elem0_period(int num_face,int n0,double l) const;
-  inline double dist_face_elem1_period(int num_face,int n1,double l) const;
+  inline double dist_face_elem0(int num_face,int n0) const override;
+  inline double dist_face_elem1(int num_face,int n1) const override;
+  inline double dist_face_elem0_period(int num_face,int n0,double l) const override;
+  inline double dist_face_elem1_period(int num_face,int n1,double l) const override;
 
   void detecter_faces_non_planes() const;
 
