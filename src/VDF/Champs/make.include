@@ -14,6 +14,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
 	-I$(TRUST_ROOT)/src/VDF/Geometrie\
+	-I$(TRUST_ROOT)/src/VDF\
 	
 
 Lib = $(TRUST_LIB)/libchvdf

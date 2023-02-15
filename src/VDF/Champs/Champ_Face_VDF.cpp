@@ -20,12 +20,13 @@
 #include <Mod_turb_hyd_base.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Face_VDF.h>
+#include <Domaine_Cl_VDF.h>
 #include <distances_VDF.h>
 #include <Equation_base.h>
 #include <Champ_Don_lu.h>
 #include <Fluide_base.h>
-#include <Domaine_Cl_VDF.h>
 #include <Periodique.h>
+#include <Option_VDF.h>
 #include <Symetrie.h>
 
 // XXX : Elie Saikali : je garde Champ_Face aussi sinon faut changer typer et reprise dans bcp des endroits ...
@@ -625,6 +626,35 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
               //            sur les 4 elements qui l'entourent.
             } // fin du for k
         }
+
+      if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
+        if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
+          {
+            num0 = Qdm(num_arete, 0);
+            num1 = Qdm(num_arete, 1);
+            num2 = Qdm(num_arete, 2);
+            signe = Qdm(num_arete, 3);
+            int j = 0;
+            j = orientation(num2);
+
+            double temp2;
+            double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);                // dui/dxj
+            double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));        // vitesse tangentielle
+
+            temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+
+            element(0) = face_voisins(num2, 0);
+            element(1) = face_voisins(num2, 1);
+
+            int i = orientation(num1);
+
+            for (int k = 0; k < 2; k++)
+              if (element(k) != -1)
+                {
+                  gij(element(k), i, j) += temp1 * 0.25;
+                  gij(element(k), j, i) += temp2 * 0.25;
+                }
+          }
     }
 
   // 1ere partie:boucles sur les aretes et remplissage de Sij pour la partie
@@ -1009,6 +1039,32 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
 
             }                // fin du for k
         }
+
+      if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
+        if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
+          {
+            num0 = Qdm(num_arete, 0);
+            num1 = Qdm(num_arete, 1);
+            num2 = Qdm(num_arete, 2);
+            signe = Qdm(num_arete, 3);
+            int j = 0;
+            j = orientation(num2);
+
+            double temp2;
+            double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
+            double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
+
+            if (n_type == 0 && contribution_paroi == 0)
+              temp2 = 0;
+            else
+              temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+
+            element[0] = face_voisins(num2, 0);
+            element[1] = face_voisins(num2, 1);
+
+            for (int k = 0; k < 2; k++)
+              SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
+          }
     }
 
   // 1ere partie:boucles sur les aretes et remplissage de Sij pour la partie

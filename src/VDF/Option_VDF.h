@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -20,19 +20,15 @@
 
 class Motcle;
 
-class Option_VDF : public Interprete
+class Option_VDF: public Interprete
 {
   Declare_instanciable(Option_VDF);
-
-public :
-
+public:
   Entree& interpreter(Entree&) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   int test_mot(const Motcle& mot) const;
-  static int traitement_coins;
+  static int traitement_coins, traitement_gradients;
   static double coeff_P_neumann;
-
 };
 
-
-#endif
+#endif /* Option_VDF_included */
