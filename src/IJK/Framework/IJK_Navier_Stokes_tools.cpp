@@ -319,8 +319,6 @@ void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Fie
         {
           for (int i = 0; i < imax; i++)
             {
-        	  // si espace virtuel a changer les valeurs au bord...
-        	  // a changer
               double x = (vx(i+1,j,k) - vx(i,j,k)) * fx
                          + (vy(i,j+1,k) - vy(i,j,k)) * fy
                          + (vz(i,j,k+1) - vz(i,j,k)) * fz;
@@ -401,7 +399,6 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
       bool perio_k=vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
       if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
         on_the_wall = true;
-
       if (k < vz.nk() && (!on_the_wall))
         {
           const int jmax = vz.nj();
@@ -417,8 +414,7 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
             }
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-          	  vz(i,j,k) += (pressure(i,j,k) - pressure(i,j,k-1)) * f;
-
+              vz(i,j,k) += (pressure(i,j,k) - pressure(i,j,k-1)) * f;
         }
     }
 }
@@ -485,7 +481,6 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
 void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure, const IJK_Field_double& inv_rho, const double constant,
                                                IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
 {
-
   const IJK_Grid_Geometry& geom = vx.get_splitting().get_grid_geometry();
   const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
   for (int k = 0; k < kmax; k++)
@@ -516,8 +511,6 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
       const int nk_tot = vz.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
       const int offset = vz.get_splitting().get_offset_local(DIRECTION_K);
       const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-
-      // modif pour prendre en compte le shear sur la pression
       bool perio_k=vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
 
       if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
@@ -554,37 +547,29 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
                          int check_divergence,
-                         Multigrille_Adrien& poisson_solver)
+                         Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
   // We need the velocity on the face at right to compute the divergence:
-  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
+  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-
-  // pressure_rhs = div u (-1/dt)
-  // condition au limite dans le calcul de divU (projection de la vitesse a changer
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
   double divergence_before = 0.;
   if (check_divergence)
     {
       divergence_before = norme_ijk(pressure_rhs);
     }
-  // resolution de lequation de poisson.
-  // conditions aux limites sur la pression dans le laplacien de P ?
-  // pourtant on ne donne pas d'info sur les BC au solver...
-  // Peut etre que le champ de vitesse suffit...
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
   // pressure gradient requires the "left" value in all directions:
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
-  // correction de la vitesse, calcul d'un gradP (a corriger avec la nouvelle condition limite).
   add_gradient_times_constant(pressure, -dt, vx, vy, vz);
   if (check_divergence)
     {
       IJK_Field rhs_after(pressure_rhs);
 
-      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
+      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
@@ -608,12 +593,12 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
                                   int check_divergence,
-                                  Multigrille_Adrien& poisson_solver)
+                                  Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
   // We need the velocity on the face at right to compute the divergence:
-  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
+  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
@@ -631,7 +616,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
     {
       IJK_Field rhs_after(pressure_rhs);
 
-      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
+      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
@@ -648,12 +633,12 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
                                       int check_divergence,
-                                      Multigrille_Adrien& poisson_solver)
+                                      Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
   // We need the velocity on the face at right to compute the divergence:
-  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
+  vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
@@ -672,7 +657,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
     {
       IJK_Field rhs_after(pressure_rhs);
 
-      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/);
+      vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 

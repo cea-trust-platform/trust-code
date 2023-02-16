@@ -14,9 +14,11 @@
 *****************************************************************************/
 
 #include <Boundary_Conditions.h>
+#include <IJK_Splitting.h>
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Boundary_Conditions,"Boundary_Conditions",Objet_U);
+double IJK_Splitting::shear_x_time_=0.;
 
 Boundary_Conditions::Boundary_Conditions()
 {
@@ -25,6 +27,7 @@ Boundary_Conditions::Boundary_Conditions()
   vxkmin_ = 0.;
   vxkmax_ = 0.;
   dU_perio_ = 0.;
+
 }
 
 // SYNTAXE:

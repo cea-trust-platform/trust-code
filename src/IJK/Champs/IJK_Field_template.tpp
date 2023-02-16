@@ -17,7 +17,7 @@
 #define IJK_Field_template_TPP_H
 
 #include <IJK_communications.h>
-#include <iostream>
+#include <IJK_Splitting.h>
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* processor to send to */
@@ -25,25 +25,23 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                                                              int pe_recv_, /* processor to recv from */
                                                              int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                                                              int isz, int jsz, int ksz, /* size of block data to send/recv */
-															 double offset)  /* decallage a appliquer pour la condition de shear periodique*/
+															 double offset, double jump_i)  /* decallage a appliquer pour la condition de shear periodique*/
 {
 
-	// si un seul proc, besoin quand meme d'un echange
 	if (pe_send_ == Process::me() && pe_recv_ == Process::me())
     {
-      // a changer si decoupage en i
-
       // Self (periodicity on same processor)
       _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++)
           {
+
+        	  _TYPE_ jump = (_TYPE_) jump_i;
         	  _TYPE_ offset_i = (_TYPE_) offset;
         	  _TYPE_ istmp = (_TYPE_)i + offset_i;
 
               // ifloor et iceil comprised between (0 & isz-1) + is
-              // modulo fonctionne aussi si ifloor est negatif normalement, mais pas ici...
         	  int ifloor = (int) floor(istmp);
               if (ifloor < 0)
               {
@@ -67,20 +65,8 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
               _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor, js + j, ks + k);
               _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + iceil, js + j, ks + k);
 
-              if (offset != 0.)
-              {
-//              std::cout<<"i,j,k= " << i <<" " << j <<" " << k  <<std::endl;
-//              std::cout<<"is,js,ks= " << is <<" " << js <<" " << ks  <<std::endl;
-//              std::cout<<"isz,jsz,ksz= " << isz <<" " << jsz <<" " << ksz  <<std::endl;
-//              std::cout<<"is+1,js+j,ks+k= " << is+i <<" " << js+j <<" " << ks+k  <<std::endl;
-//              std::cout<<"iceil= " << iceil <<"ifloor= " << ifloor <<" is+i= " << is + i <<std::endl;
-//              std::cout<<" vmin= " << vmin <<" vmax= " << vmax <<std::endl;
-//              std::cout<<" v_sans_shear= " << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is+i, js + j, ks + k) <<std::endl;
-//              std::cout<<" " <<std::endl;
-              }
-
               dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] =
-            		  ((_TYPE_)1.- weight) * vmin + weight * vmax;
+            		  ((_TYPE_)1.- weight) * vmin + weight * vmax + jump;
           }
        return;
     }
@@ -99,11 +85,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++, buf++)
           {
-        	  // is, js, ks, coordone du premier element a envoyer
-        	  // ajouter un offset pour aller chercher un element decalle
-        	  // le faire uniquement si le proc na pas de voisin, donc que cest un bord (methode dispo dans splitting)
-        	  // si je m'en sort pas, demander a Anida en lui donnant un cas test
-        	  // changer uniquement a cet endroit (valeur envoyée dans le buffer), rien ne change pour la reception.
+        	  _TYPE_ jump = (_TYPE_) jump_i;
         	  _TYPE_ offset_i = (_TYPE_) offset;
         	  _TYPE_ istmp = (_TYPE_)i + offset_i;
         	  int ifloor = (int) floor(istmp);
@@ -129,7 +111,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
               _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor, js + j, ks + k);
               _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + iceil, js + j, ks + k);
 
-            *buf = ((_TYPE_)1.- weight) * vmin + weight * vmax;
+            *buf = ((_TYPE_)1.- weight) * vmin + weight * vmax + jump;
     }
     }
   if (pe_recv_ >= 0)
@@ -156,25 +138,25 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
  *
  */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost, double Shear_x_time)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost, double jump_i)
 {
+  // jump_i used to impose a jump at the domain z-boundary
   statistiques().begin_count(echange_vect_counter_);
   assert(le_ghost <= (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost()));
   // Exchange in i direction real cells,
   // then in j direction with ghost cells in i,
   // then in k direction, with ghost cells in i and j
 
-  // dans un premier temps, pas de splitting en i pour avoir a gerer que les voisins
-  // sinon il faudra faire des choses compliquees et potentiellement lourdes, appeler les voisins des voisins etc..
+  // new function for shear_periodic conditions works without any splitting in i-direction
+  // if splitting in i-direction --> get_neighbour_processor has to be changed
   const IJK_Splitting& splitting = splitting_ref_.valeur();
   int pe_imin_ = splitting.get_neighbour_processor(0, 0);
   int pe_imax_ = splitting.get_neighbour_processor(1, 0);
   int pe_jmin_ = splitting.get_neighbour_processor(0, 1);
   int pe_jmax_ = splitting.get_neighbour_processor(1, 1);
 
-  // si pe_kmin_ = -1 >> bord z=0 (mais peut-être pas pour un domaine periodique....)
-  // si pe_kmax = -1 >> bord z=Lz
-  // si marche pas en perio, creer une fonction dans le splitting pour reperer les procs en question.
+  // if pe_kmin_ = -1 >> boundary z=0
+  // if pe_kmax = -1 >> boundary z=Lz
   int pe_kmin_ = splitting.get_neighbour_processor(0, 2);
   int pe_kmax_ = splitting.get_neighbour_processor(1, 2);
   int z_index = splitting.get_local_slice_index(2);
@@ -184,11 +166,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-  //double Lz =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_K)[2];
   double Lx =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_I)[0];
   double DX = Lx/nii ;
+  double Shear_x_time = IJK_Splitting::shear_x_time_;
   double offset_i = Shear_x_time/DX;
-  // get_neighbour_processor renvoie -1 sur pas de proc (bord du domaine). Appeler dans ce cas pour la condition de cisaillement perio
 
   // send left layer of real cells to right layer of virtual cells
   exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */
@@ -202,16 +183,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   if (z_index == z_index_min)
   {
-	  if (offset_i != 0.)
-	  {
-//  std::cout << "ici1" << std::endl;
-//  std::cout << "Shear_x_time =" << Shear_x_time << std::endl;
-//  std::cout << "Lz =" << Lz << std::endl;
-//  std::cout << "DX =" << DX << std::endl;
-//  std::cout << "offset_i =" << offset_i << std::endl;
-//  std::cout << " " << offset_i << std::endl;
-	  }
-  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, -offset_i);
+  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, -offset_i, jump_i);
   }
   else
   {
@@ -220,16 +192,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   if (z_index == z_index_max)
   {
-	  if (offset_i != 0.)
-	  {
-//  std::cout << "ici2" << std::endl;
-//  std::cout << "Shear_x_time =" << Shear_x_time << std::endl;
-//  std::cout << "Lz =" << Lz << std::endl;
-//  std::cout << "DX =" << DX << std::endl;
-//  std::cout << "offset_i =" << offset_i << std::endl;
-//  std::cout << " " << offset_i << std::endl;
-	  }
-	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, offset_i);
+	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, offset_i, -jump_i);
   }
   else
   {

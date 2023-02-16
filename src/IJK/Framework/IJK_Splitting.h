@@ -34,6 +34,7 @@ protected:
   typedef FixedVector<Int3,3> Int33;
   typedef FixedVector<Int3,2> Int23;
 public:
+  static double shear_x_time_ ;
   enum Localisation { ELEM, NODES, FACES_I, FACES_J, FACES_K };
   static Localisation FacesDirToLocalisation(int dir)
   {

@@ -50,21 +50,21 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
                          int check_divergence,
-                         Multigrille_Adrien& poisson_solver);
+                         Multigrille_Adrien& poisson_solver, double Shear_DU);
 
 void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
                                   int check_divergence,
-                                  Multigrille_Adrien& poisson_solver);
+                                  Multigrille_Adrien& poisson_solver,double Shear_DU);
 
 void pressure_projection_with_inv_rho(const IJK_Field_double& rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
                                       int check_divergence,
-                                      Multigrille_Adrien& poisson_solver);
+                                      Multigrille_Adrien& poisson_solver, double Shear_DU);
 
 void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Field_double& v,
                          const int step, const int k_layer, double dt_tot);
