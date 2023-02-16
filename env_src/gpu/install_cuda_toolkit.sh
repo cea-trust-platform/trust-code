@@ -16,8 +16,8 @@ then
       fi
       echo "It may take some minutes to install Cuda Toolkit..."
       # --override pour ne pas verifier la version de gcc par rapport a Cuda (risque...)
-      # ToDo supprimer la fenetre lors d'une remote install par ssh...
-      bash ./$installer --override --silent --no-drm --no-man-page --toolkit --installpath=`dirname $CUDA_BIN`
+      # ToDo supprimer la fenetre lors d'une remote install par ssh... Done: --nox11
+      bash ./$installer --override --silent --no-drm --no-man-page --toolkit --nox11 --installpath=`dirname $CUDA_BIN`
       [ $? != 0 ] && echo "Error during Cuda install under `dirname $CUDA_BIN`" && exit -1
       rm -f $installer
       # Bizarre petra:
