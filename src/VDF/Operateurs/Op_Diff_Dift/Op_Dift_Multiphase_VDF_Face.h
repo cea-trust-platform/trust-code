@@ -57,7 +57,7 @@ public:
     return diffusivite_impl<Eval_Dift_Multiphase_VDF_Face>();
   }
 
-  double calculer_dt_stab() const override { return 1.e-4;  /* mdrrrrrrrrrrrrrrrrr */ }
+  double calculer_dt_stab() const override;
 
 protected :
   DoubleTab nu_t_;
