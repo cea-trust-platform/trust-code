@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Discretisation_base.h>
+#include <Domaine_dis_cache.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Fonc_Tabule.h>
 #include <Champ_Uniforme.h>
@@ -285,10 +286,8 @@ void Discretisation_base::discretiser(Domaine_dis& dom_dis) const
 {
   Nom type="Domaine_";
   type+=que_suis_je();
-  dom_dis.typer(type);
   const Domaine& dom = le_domaine_.valeur();
-  dom_dis->associer_domaine(dom);
-  dom_dis->discretiser_root(type);
+  dom_dis = Domaine_dis_cache::Build_or_get(type, dom);
 }
 
 void Discretisation_base::volume_maille(const Schema_Temps_base& sch,

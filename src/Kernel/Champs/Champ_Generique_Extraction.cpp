@@ -18,6 +18,7 @@
 #include <Domaine_VF.h>
 #include <Postraitement.h>
 #include <Discretisation_base.h>
+#include <Domaine_dis_cache.h>
 #include <TRUST_Deriv.h>
 #include <Domaine.h>
 #include <Equation_base.h>
@@ -436,9 +437,7 @@ void Champ_Generique_Extraction::discretiser_domaine()
       const Nom& type_discr = discr.que_suis_je();
       Nom type = "NO_FACE_Domaine_";
       type += type_discr;
-      le_dom_dis.typer(type);
-      le_dom_dis->associer_domaine(domaine_.valeur());
-      le_dom_dis->discretiser_root(type);
+      le_dom_dis = Domaine_dis_cache::Build_or_get(type, domaine_.valeur());
     }
 }
 

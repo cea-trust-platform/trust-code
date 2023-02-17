@@ -152,15 +152,6 @@ const IntTab& Domaine_dis_base::face_voisins() const
 
 void Domaine_dis_base::discretiser_root(const Nom& typ)
 {
-//  const Domaine& dom=le_domaine.valeur();
-//  i_am_allocator_of_les_domaines = domaine().le_nom()+"_"+type; // Nom unique
-//  if (domaines_dis.find(i_am_allocator_of_les_domaines.getChar()) != domaines_dis.end()) //on a deja discretise ce domaine!
-//    {
-//      *this = domaines_dis[i_am_allocator_of_les_domaines.getChar()].valeur();
-//      i_am_allocator_of_les_domaines = "";
-//      return;
-//    }
-
   // Should we handle faces
   Nom ze_typ(typ);
   ze_typ.suffix("NO_FACE_");
@@ -188,7 +179,4 @@ void Domaine_dis_base::discretiser_root(const Nom& typ)
       if (face_ok)
         typer_discretiser_ss_domaine(i);
     }
-  //    //memoization
-  //    domaines_dis[i_am_allocator_of_les_domaines.getChar()] = *this;
-  //    domaines_dis[Nom(Nom("NO_FACE_") + i_am_allocator_of_les_domaines).getChar()] = *this;
 }

@@ -19,6 +19,7 @@
 #include <Domaine_VF.h>
 #include <Synonyme_info.h>
 #include <Param.h>
+#include <Domaine_dis_cache.h>
 
 Implemente_instanciable_sans_constructeur(Champ_Generique_Interpolation,"Interpolation",Champ_Gen_de_Champs_Gen);
 Add_synonym(Champ_Generique_Interpolation,"Champ_Post_Interpolation");
@@ -697,8 +698,6 @@ void Champ_Generique_Interpolation::discretiser_domaine()
             }
         }
       type += type_discr;
-      le_dom_dis.typer(type);
-      le_dom_dis->associer_domaine(domaine_.valeur());
-      le_dom_dis->discretiser_root(type);
+      le_dom_dis = Domaine_dis_cache::Build_or_get(type, domaine_.valeur());
     }
 }

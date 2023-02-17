@@ -18,6 +18,7 @@
 #include <LireMED.h>
 #include <Postraitement.h>
 #include <Interprete_bloc.h>
+#include <Domaine_dis_cache.h>
 
 Implemente_instanciable(Pb_MED,"Pb_MED",Probleme_base);
 Implemente_instanciable(Pbc_MED,"Pbc_MED",Probleme_Couple);
@@ -135,9 +136,7 @@ Entree& Pb_MED::readOn(Entree& is )
   dom.reordonner();
 
   Nom typ = "NO_FACE_Domaine_VF_inst";
-  le_domaine_dis.typer(typ);
-  le_domaine_dis->associer_domaine(dom);
-  le_domaine_dis->discretiser_root(typ);
+  le_domaine_dis = Domaine_dis_cache::Build_or_get(typ, dom);
 
   Cerr<<"Reading the name of existing fields in "<<nom_fic<<finl;
 #ifdef MED_
