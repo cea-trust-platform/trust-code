@@ -405,6 +405,14 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
     }
   if (set_cache)
     {
+      // Securite car vu sur un calcul FT (cache qui augmente indefiniment, nombre de particules variables...)
+      if (cached_memory>1e8) // 100Mo/proc
+        // Vide le cache
+        cached_elements_.reset();
+      cached_positions_.reset();
+    }
+  else
+    {
       // Met en cache
       cached_positions_.add(positions);
       cached_elements_.add(elements);
@@ -412,13 +420,11 @@ ArrOfInt& Domaine::chercher_elements(const DoubleTab& positions, ArrOfInt& eleme
       cached_memory += elements.size_array() * (int) sizeof(int);
       if (cached_memory > 1e7)   // 10Mo
         {
-          Cerr << 2 * cached_positions_.size() << " arrays cached in memory for Domaine::chercher_elements(...): ";
+          Cerr << 2 * cached_positions_.size() << " arrays cached in memory for Zone::chercher_elements(...): ";
           if (cached_memory < 1e6)
             Cerr << int(cached_memory / 1024) << " KBytes" << finl;
-          else if (cached_memory < 1e9)
-            Cerr << int(cached_memory / 1024 / 1024) << " MBytes" << finl;
           else
-            Cerr << int(cached_memory / 1024 / 1024 / 1024) << " GBytes" << finl;
+            Cerr << int(cached_memory / 1024 / 1024) << " MBytes" << finl;
         }
     }
   return elements;
