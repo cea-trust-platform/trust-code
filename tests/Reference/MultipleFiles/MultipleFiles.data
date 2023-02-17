@@ -1,4 +1,5 @@
 # Teste le mot cle MultipleFiles NP qui force l'ecriture de fichiers uniques pour partitionnement, sauvegarde, etc... au dela de NP MPI processes #
+# Teste egalement la relecture de fichiers .Zones ancien de type HDF #
 # PARALLEL ONLY 4 #
 MultipleFiles 1
 dimension 2
