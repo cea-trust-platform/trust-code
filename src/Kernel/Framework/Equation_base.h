@@ -275,19 +275,7 @@ public :
     return calculate_time_derivative_;
   };
 
-
-  inline void set_residuals(DoubleTab& r)
-  {
-    if(field_residu_.non_nul())
-      {
-        if (field_residu_.valeur().valeurs().dimension_tot(0) == r.dimension_tot(0)) field_residu_.valeur().valeurs() = r;
-        else
-          {
-            DoubleTab_parts parts(r);
-            if (parts[0].dimension_tot(0) == field_residu_.valeur().valeurs().dimension_tot(0)) field_residu_.valeur().valeurs() = parts[0];
-          }
-      }
-  };
+  void set_residuals(const DoubleTab& residual);
   virtual int positive_unkown() {return 0;};
 
 protected :

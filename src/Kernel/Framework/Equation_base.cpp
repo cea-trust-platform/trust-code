@@ -1172,6 +1172,7 @@ void Equation_base::creer_champ(const Motcle& motlu)
         }
     }
 // pour recuperer une equation const !!!!!
+
   const Equation_base& me_const =(*this);
   const Nom& nom_inco=me_const.inconnue()->le_nom();
   Nom inco(nom_inco);
@@ -2273,6 +2274,32 @@ void Equation_base::initialise_residu(int size)
   residu_initial_=0;
 }
 
+// Remplit le champ field_residu_ si existant
+void Equation_base::set_residuals(const DoubleTab& residual)
+{
+  if(field_residu_.non_nul())
+    {
+      DoubleTrav residual_abs(residual);
+      const int n = residual_abs.dimension_tot(0);
+      int size = get_residu().size_array();
+      if(size == 1)
+        for(int i=0; i< n; i++)
+          residual_abs(i) = std::fabs(residual(i));
+      else
+        for(int j=0; j<size; j++)
+          for(int i=0; i< n; i++)
+            residual_abs(i,j) = std::fabs(residual(i,j));
+      DoubleTab& tab = field_residu_.valeur().valeurs();
+      if (tab.dimension_tot(0) == residual_abs.dimension_tot(0))
+        tab = residual_abs;
+      else
+        {
+          DoubleTab_parts parts(residual_abs);
+          if (parts[0].dimension_tot(0) == tab.dimension_tot(0))
+            tab = parts[0];
+        }
+    }
+}
 
 const Operateur& Equation_base::operateur_fonctionnel(int i) const
 {

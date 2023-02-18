@@ -1,27 +1,27 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       9.69676
+Temps total                       38.9498
 
 Statistiques de resolution du probleme
 
-Temps total                       9.59093
+Temps total                       13.5382
 
 
 Timesteps                         10
-Secondes / pas de temps           0.959086
-Dont solveurs Ax=B                0.24594 25% (1 appel/pas de temps)
-Dont mettre_a_jour                0.0867702 9% (1 appel/pas de temps)
-Dont operateurs convection        0.258288 26% (1 appel/pas de temps)
-Dont operateurs diffusion         0.0512259 5% (1 appel/pas de temps)
-Dont operateurs gradient          0.0597047 6% (2 appels/pas de temps)
-Dont operateurs divergence        0.0351222 3% (2 appels/pas de temps)
-Dont operations postraitement     0.0074642 0% (1 appel/pas de temps)
-Dont calcul dt                    0.0227704 2% (2 appels/pas de temps)
-Dont calcul divers                0.1918 19% (0 appels/pas de temps)
-Nb echange_espace_virtuel / pas de temps 11
+Secondes / pas de temps           1.35381
+Dont solveurs Ax=B                0.489953 36% (1 appel/pas de temps)
+Dont mettre_a_jour                0.0876285 6% (1 appel/pas de temps)
+Dont operateurs convection        0.260522 19% (1 appel/pas de temps)
+Dont operateurs diffusion         0.0526803 3% (1 appel/pas de temps)
+Dont operateurs gradient          0.128634 9% (2 appels/pas de temps)
+Dont operateurs divergence        0.0520777 3% (2 appels/pas de temps)
+Dont operations postraitement     0.0087413 0% (1 appel/pas de temps)
+Dont calcul dt                    0.0234281 1% (2 appels/pas de temps)
+Dont calcul divers                0.250144 18% (0 appels/pas de temps)
+Nb echange_espace_virtuel / pas de temps 15
 Nb solveur / pas de temps         1
-Secondes / solveur                0.24594
-Iterations / solveur              35.8
+Secondes / solveur                0.489953
+Iterations / solveur              93.2
 I/O:
 
 Timesteps = number of time steps
@@ -40,5 +40,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.207962
+Temps total                       0.047033
 
