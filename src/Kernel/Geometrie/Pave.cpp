@@ -1249,7 +1249,6 @@ void Pave::typer_()
       break;
     default :
       throw;
-      break;
     }
 }
 

@@ -27,8 +27,14 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
-      module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"
+      if [ "$TRUST_USE_OPENMP" = 1 ]
+      then
+         #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # Champ_P1NC.cpp ne compile pas car nvhpc trop recent
+         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.5 nvhpc/22.1" # Cuda 11.5 donc c-amg ne marchera pas en multi-gpu, tant pis
+      else
+         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
+         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"      
+      fi
    else
       module="gnu/11.1.0 mpi/openmpi/4.0.5"
       module="intel/20.0.4 mpi/openmpi/4.0.5"

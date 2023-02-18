@@ -205,6 +205,7 @@ private:
     for (auto& itr : list_)
       if (itr->le_nom() == nom) return itr;
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+    return list_.front();
   }
 
   template<typename _TYPE_> std::enable_if_t<_TYPE_::HAS_POINTER, const _CLASSE_&>
@@ -213,6 +214,7 @@ private:
     for (auto& itr : list_)
       if (itr->le_nom() == nom) return itr;
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+    return list_.front();
   }
 
   template<typename _TYPE_> std::enable_if_t<_TYPE_::HAS_POINTER, int>
@@ -251,6 +253,7 @@ private:
     for (auto& itr : list_)
       if (itr.le_nom() == nom) return itr;
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+    return list_.front();
   }
 
   template<typename _TYPE_> std::enable_if_t<!_TYPE_::HAS_POINTER, const _CLASSE_&>
@@ -259,6 +262,7 @@ private:
     for (auto& itr : list_)
       if (itr.le_nom() == nom) return itr;
     Cerr << "TRUST_List : We have not found an object with name " << nom << finl, throw;
+    return list_.front();
   }
 
   template<typename _TYPE_> std::enable_if_t<!_TYPE_::HAS_POINTER, int>

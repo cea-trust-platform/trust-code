@@ -377,6 +377,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
 
   const double * inverse_volumes_addr = copyToDevice(domaine_VEF.inverse_volumes());
   start_timer();
+  // Parfois un crash du build avec nvc++ recent (par exemple topaze, 22.7. Marche avec 22.1). Supprimer alors le if (Objet_U::computeOnDevice)
   if (gradient_elem_nb_dim==3)
     #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
     for (int elem=0; elem<nb_elem; elem++)

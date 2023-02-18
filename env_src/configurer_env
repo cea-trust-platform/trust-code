@@ -1294,8 +1294,9 @@ else
             then
                mpif=$MPI_BIN/mpif90
                echo $ECHO_OPTS "# Check `basename $mpif` (mpif.log file): "
-               echo $mpif -o ./test_mpi_f90 $rep_test_mpi/test_mpi.f
-               $mpif -o ./test_mpi_f90 $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1
+               mpif_flag="" && [ "`basename $TRUST_F77_BASE`" = nvfortran ] && mpif_flag="-noswitcherror"
+               echo $mpif $mpif_flag -o ./test_mpi_f90 $rep_test_mpi/test_mpi.f
+               $mpif $mpif_flag -o ./test_mpi_f90 $rep_test_mpi/test_mpi.f 1>mpif.log 2>&1
                err=$?
                [ $err = 0 ] && run_test_mpi test_mpi_f90 1>>mpif.log 2>&1
                OK $err
@@ -2011,7 +2012,7 @@ then
         openmp_target="-target=gpu $march"
         # Sur cluster pour compiler sur la frontale (pas de carte):
         # https://forums.developer.nvidia.com/t/compile-error-for-openmp-code-with-target-offloading-in-nvhpc-20-11/164188
-        [ "$BATCH_SYSTEM_DETECTED" = 1 ] && openmp_target=$openmp_target" -gpu=cc70"
+        [ "$BATCH_SYSTEM_DETECTED" = 1 ] && openmp_target=$openmp_target" -gpu=cc70,cc80" # cc80 pour topaze (A100)
         #Flags utiles du debug:
         #export NVCOMPILER_ACC_NOTIFY = 1|2|4|8|16
         #export NVCOMPILER_ACC_TIME = 1

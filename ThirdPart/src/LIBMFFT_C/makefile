@@ -7,13 +7,13 @@ LIB=$(TRUST_ROOT)/lib/libmfft_c.a
 
 .SUFFIXES: .cpp .C .c .f .o
 .cpp.o:
-	@echo $< $(Defines); $(TRUST_CC) -c $< $(CppFlags)
+	@echo $< $(Defines); $(TRUST_CC_BASE) -c $< $(CppFlags)
 .C.o:
-	@echo $< $(Defines); $(TRUST_cc) -c $< $(ccFLAGS)
+	@echo $< $(Defines); $(TRUST_cc_BASE) -c $< $(ccFLAGS)
 .c.o:
-	@echo $< $(Defines); $(TRUST_cc) -c $< $(ccFLAGS)
+	@echo $< $(Defines); $(TRUST_cc_BASE) -c $< $(ccFLAGS)
 .f.o:
-	@echo $< $(Defines); $(TRUST_F77) -c $< $(F77Flags)
+	@echo $< $(Defines); $(TRUST_F77_BASE) -c $< $(F77Flags)
 
 all:	$(LIB)
 

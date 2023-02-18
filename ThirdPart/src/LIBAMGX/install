@@ -76,8 +76,13 @@ then
    # On specifie CC et CXX:
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      export CXX=$TRUST_CC_BASE_EXTP
-      export CC=$TRUST_cc_BASE_EXTP
+      #export CXX=$TRUST_CC_BASE_EXTP
+      #export CC=$TRUST_cc_BASE_EXTP
+      # Suite retour topaze:
+      export OMPI_CXX=$TRUST_CC_BASE_EXTP
+      export OMPI_CC=$TRUST_cc_BASE_EXTP
+      export MPICH_CXX=$OMPI_CXX
+      export MPICH_CC=$OMPI_CC
    else
       export CXX=$TRUST_CC
       export CC=$TRUST_cc
