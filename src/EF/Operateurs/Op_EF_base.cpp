@@ -444,19 +444,10 @@ int Op_EF_base::impr(Sortie& os, const Operateur_base& op) const
     }
 
   // Calcul des moments
-  const int nb_faces =  le_dom_EF.nb_faces_tot();
-  DoubleTab xgr(nb_faces,Objet_U::dimension);
-  xgr=0.;
+  DoubleTab xgr;
+  if (impr_mom) xgr = le_dom_EF.calculer_xgr();
   DoubleVect moment(nb_compo);
   moment=0;
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = le_dom_EF.xv();
-      const ArrOfDouble& c_grav=le_dom_EF.domaine().cg_moments();
-      for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<Objet_U::dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
-    }
 
   // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord
   DoubleVect flux_bord(nb_compo);

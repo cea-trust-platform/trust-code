@@ -77,17 +77,8 @@ int Iterateur_VDF_Face<_TYPE_>::impr(Sortie& os) const
   const Schema_Temps_base& sch = la_zcl->equation().probleme().schema_temps();
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   DoubleVect bilan(tab_flux_bords.dimension(1));
-  const int nb_faces = le_dom->nb_faces_tot();
-  DoubleTab xgr(nb_faces, dimension);
-  xgr = 0.;
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = le_dom->xv();
-      const ArrOfDouble& c_grav = mon_dom.cg_moments();
-      for (int num_face = 0; num_face < nb_faces; num_face++)
-        for (int i = 0; i < dimension; i++)
-          xgr(num_face, i) = xgrav(num_face, i) - c_grav[i];
-    }
+  DoubleTab xgr;
+  if (impr_mom) xgr = le_dom->calculer_xgr();
   int k, face, nb_front_Cl = le_dom->nb_front_Cl();
   DoubleTrav flux_bords2(5, nb_front_Cl, tab_flux_bords.dimension(1));
   flux_bords2 = 0;

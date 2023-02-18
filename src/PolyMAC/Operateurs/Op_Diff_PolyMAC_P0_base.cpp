@@ -97,17 +97,8 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
   DoubleTab& tab_flux_bords= flux_bords();
   int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
   DoubleVect bilan(nb_comp);
-  const int nb_faces = le_dom_poly_->nb_faces_tot();
-  DoubleTab xgr(nb_faces,dimension);
-  xgr=0.;
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = le_dom_poly_->xv();
-      const ArrOfDouble& c_grav=mon_dom.cg_moments();
-      for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
-    }
+  DoubleTab xgr;
+  if (impr_mom) xgr = le_dom_poly_->calculer_xgr();
   int k,face;
   int nb_front_Cl=le_dom_poly_->nb_front_Cl();
   DoubleTrav flux_bords2( 5, nb_front_Cl , nb_comp) ;

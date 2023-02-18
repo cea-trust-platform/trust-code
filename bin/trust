@@ -436,6 +436,8 @@ do
    elif [ "$1" = "-vtune" ]
    then 
       VTUNE=1
+      vtune=`ls /opt/intel/oneapi/vtune/latest/bin64/vtune 2>/dev/null`
+      [ "$vtune" != "" ] && export PATH=`dirname $vtune`:$PATH
       [ "`vtune --help 2>/dev/null`" = "" ] && echo "vtune is not available." && exit
    elif [ "$1" = "-perf" ]
    then 

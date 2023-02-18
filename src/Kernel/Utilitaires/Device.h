@@ -26,22 +26,20 @@ extern void init_openmp();
 extern bool self_test();
 static double clock_start;
 static char* clock_on=NULL;
-inline void start_timer()
+inline void start_timer(int size=-1)
 {
   clock_on = getenv ("TRUST_CLOCK_ON");
   if (clock_on!=NULL) clock_start = Statistiques::get_time_now();
-  statistiques().begin_count(gpu_kernel_counter_);
+  if (size==-1) statistiques().begin_count(gpu_kernel_counter_);
 }
 inline void end_timer(const std::string& str, int size=-1) // Return in [ms]
 {
-  if (clock_on!=NULL)
+  if (size==-1) statistiques().end_count(gpu_kernel_counter_);
+  if (clock_on!=NULL) // Affichage
     {
       double ms = 1000 * (Statistiques::get_time_now() - clock_start);
       if (size==-1)
-        {
-          statistiques().end_count(gpu_kernel_counter_);
-          printf("[clock] %7.3f ms [Kernel] %15s\n", ms, str.c_str());
-        }
+        printf("[clock] %7.3f ms [Kernel] %15s\n", ms, str.c_str());
       else
         {
           double mo = (double)size / 1024 / 1024;
@@ -83,8 +81,8 @@ inline _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation,
   _TYPE_* tab_addr = tab.addr(); // Car addr() contient un mecanisme de verification
 #ifdef _OPENMP
   std::string message;
-  start_timer();
   int size=0;
+  start_timer(size);
   if (currentLocation==HostOnly)
     {
       //#pragma omp target enter data if (Objet_U::computeOnDevice) map(to:tab_addr[0:tab.size_array()])
@@ -133,8 +131,8 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
   _TYPE_* tab_addr = tab.addr();
   if (tab.get_dataLocation()==Device)
     {
-      start_timer();
       int size = sizeof(_TYPE_) * tab.size_array();
+      start_timer(size);
       statistiques().begin_count(gpu_copyfromdevice_counter_, size);
       #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[0:tab.size_array()])
       statistiques().end_count(gpu_copyfromdevice_counter_, size);
@@ -147,4 +145,45 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 #endif
 }
 
+// ToDo: test
+template <typename _TYPE_>
+inline void updatePartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
+{
+#ifdef _OPENMP
+  _TYPE_* tab_addr = tab.addr();
+  if (tab.get_dataLocation()==Device)
+    {
+      int size = sizeof(_TYPE_) * (fin-deb);
+      start_timer(size);
+      statistiques().begin_count(gpu_copyfromdevice_counter_, size);
+      #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[deb:fin])
+      statistiques().end_count(gpu_copyfromdevice_counter_, size);
+      std::string message;
+      message = "Partial update from device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      end_timer(message, size);
+      if (clock_on) printf("\n");
+      //tab.set_dataLocation(Host);
+    }
+#endif
+}
+template <typename _TYPE_>
+inline void updatePartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
+{
+#ifdef _OPENMP
+  _TYPE_* tab_addr = tab.addr();
+  if (tab.get_dataLocation()==Host)
+    {
+      int size = sizeof(_TYPE_) * (fin-deb);
+      start_timer(size);
+      statistiques().begin_count(gpu_copytodevice_counter_, size);
+      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin])
+      statistiques().end_count(gpu_copytodevice_counter_, size);
+      std::string message;
+      message = "Partial update to device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      end_timer(message, size);
+      if (clock_on) printf("\n");
+      tab.set_dataLocation(HostDevice); //ToDo
+    }
+#endif
+}
 #endif

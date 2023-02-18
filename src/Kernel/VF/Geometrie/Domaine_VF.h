@@ -146,6 +146,7 @@ public :
   virtual const MD_Vector& md_vector_aretes() const { return md_vector_aretes_; }
 
   virtual const DoubleTab& xv_bord() const;
+  DoubleTab calculer_xgr() const;
 
   //produit scalaire (a - ma).(b - mb)
   inline double dot (const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
@@ -486,5 +487,6 @@ inline std::array<double, 3> Domaine_VF::cross(int dima, int dimb, const double 
   for (int i = 0; i < 3; i++) res[i] = va[(i + 1) % 3] * vb[(i + 2) % 3] - va[(i + 2) % 3] * vb[(i + 1) % 3];
   return res;
 }
+
 
 #endif /* Domaine_VF_included */

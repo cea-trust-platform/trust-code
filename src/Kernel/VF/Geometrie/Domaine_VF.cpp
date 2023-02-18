@@ -635,3 +635,19 @@ inline int Domaine_VF::nb_faces_bord_tot() const
 {
   return md_vector_faces_bord().valeur().get_nb_items_tot();
 }
+
+/*! @brief calcul le tableau xgr pour le calcul des moments des forces aux bords :
+ *
+ *
+ */
+DoubleTab Domaine_VF::calculer_xgr() const
+{
+  const DoubleTab& xgrav = xv();
+  const ArrOfDouble& c_grav=domaine().cg_moments();
+  int nb_faces = premiere_face_int();
+  DoubleTab xgr(nb_faces, dimension);
+  for (int num_face=0; num_face <nb_faces; num_face++)
+    for (int i=0; i<dimension; i++)
+      xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
+  return xgr;
+}

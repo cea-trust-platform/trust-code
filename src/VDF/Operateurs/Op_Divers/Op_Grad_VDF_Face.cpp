@@ -82,16 +82,8 @@ int Op_Grad_VDF_Face::impr(Sortie& os) const
   const Domaine_VDF& zvdf = le_dom_vdf.valeur();
   const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   int face, ori;
-  const int nb_faces =  zvdf.nb_faces_tot();
-  DoubleTab xgr(nb_faces,dimension);
-  xgr=0.;
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = zvdf.xv();
-      const ArrOfDouble& c_grav=zvdf.domaine().cg_moments();
-      for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<dimension; i++) xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
-    }
+  DoubleTab xgr;
+  if (impr_mom) xgr = zvdf.calculer_xgr();
   // flux_bords contains the sum of flux on each boundary:
   DoubleTrav tab_flux_bords(3,zvdf.nb_front_Cl(),3);
   tab_flux_bords=0.;

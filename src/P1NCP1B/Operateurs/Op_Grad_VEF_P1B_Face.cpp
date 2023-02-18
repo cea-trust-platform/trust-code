@@ -755,18 +755,9 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine_VEF_PreP1b& domaine_VEF = domaine_Vef();
-  const int nb_faces = domaine_VEF.nb_faces_tot();
-  DoubleTab xgr(nb_faces,dimension);
-  xgr=0.;
-  //DoubleVect moment(dimension);
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = domaine_VEF.xv();
-      const ArrOfDouble& c_grav=le_dom_vef->domaine().cg_moments();
-      for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
-    }
+  DoubleTab xgr;
+  if (impr_mom) xgr = domaine_VEF.calculer_xgr();
+
   DoubleTrav tab_flux_bords(3,domaine_VEF.nb_front_Cl(),dimension);
   tab_flux_bords=0.;
   /*

@@ -473,17 +473,8 @@ int Op_VEF_Face::impr(Sortie& os, const Operateur_base& op) const
   const int impr_bord=(le_dom_vef.domaine().bords_a_imprimer().est_vide() ? 0:1);
 
   // Calcul des moments
-  const int nb_faces =  le_dom_vef.nb_faces_tot();
-  DoubleTab xgr(nb_faces,Objet_U::dimension);
-  xgr=0.;
-  if (impr_mom)
-    {
-      const DoubleTab& xgrav = le_dom_vef.xv();
-      const ArrOfDouble& c_grav=le_dom_vef.domaine().cg_moments();
-      for (int num_face=0; num_face <nb_faces; num_face++)
-        for (int i=0; i<Objet_U::dimension; i++)
-          xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
-    }
+  DoubleTab xgr;
+  if (impr_mom) xgr = le_dom_vef.calculer_xgr();
 
   // On parcours les frontieres pour sommer les flux par frontiere dans le tableau flux_bord
   DoubleVect bilan(nb_compo);
