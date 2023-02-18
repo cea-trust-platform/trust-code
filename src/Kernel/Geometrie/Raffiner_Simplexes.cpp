@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -922,7 +922,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
         array_trier_retirer_doublons(liste_sommets);
         int n1=liste_sommets.size_array();
 
-        Journal()<<" du boulot "<<boundaries_src[boundary].PEvoisin()<<finl;
+        //Journal()<<" du boulot "<<boundaries_src[boundary].PEvoisin()<<finl;
 
         //if (n0!=liste_sommets.size_array())
         {
@@ -1040,10 +1040,11 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
                                   exit();
                                 }
                             }
-                          Journal()<<io<<" sommets "<<s<<" Node "<<node ;
+                          //Journal()<<io<<" sommets "<<s<<" Node "<<node ;
+                          /*
                           for (int dir=0; dir<dimension; dir++)
                             Journal()<<" "<<nodes_dest(node,dir);
-                          Journal()<<finl;
+                          Journal()<<finl; */
 
                           liste_sommets.append_array(node);
                         }
@@ -1052,7 +1053,7 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
 
             }
           array_trier_retirer_doublons(liste_sommets);
-          Journal()<<liste_sommets<<" old "<<liste_sommets_old<<finl;
+          //Journal()<<liste_sommets<<" old "<<liste_sommets_old<<finl;
           //abort();
 
         }
