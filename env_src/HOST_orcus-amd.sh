@@ -18,7 +18,7 @@ define_modules_config()
       # Il est critique de mettre nvidia_hpc_sdk en premier car sinon undefined reference __pgi car dans LD_LIBRARY_PATH le lib de nvidia avant celui de gcc
       module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.5 mais plante cuSolver (on teste sur altair)
       module="slurm nvidia_hpc_sdk/21.2             compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.2
-      module=$module" cmake/3.25.0"
+      #module=$module" cmake/3.22.0"
    elif [ $intel = 1 ]
    then
       # Compilateur Intel + MPI IntelMPI

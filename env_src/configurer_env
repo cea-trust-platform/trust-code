@@ -359,12 +359,25 @@ check_nvidia_cuda()
    ################
    # Ajout du nvcc local en priorite si trouve pour coherence avec driver
    # local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
-   m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";ecrit $m"|"$e"|"$env;eval $e
+   m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";
    # Verifie si NVIdia SDK que l'on pointe vers une version specifique du Cuda Toolkit integree et non sur /compilers/bin/nvcc:
    if [ "`echo $CUDA_NVCC | grep Linux_x86_64`" != "" ]
    then
-      echo "Using NVidia SDK." && [ "`echo $CUDA_NVCC | grep /compilers/`" != "" ] && echo "Error, you should specify nvcc to a specific Cuda Toolkit version inside the HPC SDK." && exit -1
+      echo "Using NVidia SDK."
+      if [ "`echo $CUDA_NVCC | grep /compilers/`" != "" ]
+      then
+        #echo "Error, you should specify a specific Cuda Toolkit version inside the HPC SDK:"
+        #ls `dirname $CUDA_NVCC`/../../cuda | grep "\."
+        #echo "Add -cuda=X.Y to configure option."
+        #exit -1
+        NVHPC_ROOT=`echo $CUDA_NVCC | sed "1,$ s?/compilers/bin/nvcc??g"`
+        NVCC_VERSION=`ls $NVHPC_ROOT/cuda | grep "\." | tail -1`
+        echo "Warning, using last Cuda version of the NVidia SDK: $NVCC_VERSION"
+        PATH=$NVHPC_ROOT/cuda/$NVCC_VERSION/bin:$PATH
+        e="`cherche_file CUDA_NVCC nvcc`";
+      fi
    fi
+   ecrit $m"|"$e"|"$env;eval $e
    # Version que le compilateur fonctionne (typiquement GNU trop recent par rapport a nvcc, build echoue ensuite dans PETSc ou AmgX)
    CCBIN=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CCBIN=$TRUST_CC_BASE_EXTP
    check_nvcc="touch test.cu && $CUDA_NVCC -ccbin $CCBIN -c ./test.cu -o test"
@@ -1132,6 +1145,11 @@ then
    ecrit $m"|"$e"|"$env;eval $e
    [ "$CUDA_ROOT" != /usr ] && echo "ADD_PATH \$CUDA_ROOT/bin" >> $env # Ne pas ajouter /usr/bin au PATH car sinon python, conda pris sont ceux du systeme !
    echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT${CUDA_LIB#$CUDA_ROOT} " >> $env
+   # Ajout librairies des cuda sous NVidia SDK:
+   for lib in math_libs/lib64 extras/CUPTI/lib64
+   do
+      [ -d $CUDA_ROOT/$lib ] && echo "ADD_LD_LIBRARY_PATH \$CUDA_ROOT/$lib " >> $env
+   done
    echo "ADD_LD_LIBRARY_PATH \$TRUST_ROOT/lib/src/LIBAMGX/AmgX/lib" >> $env
 else
    TRUST_USE_CUDA=0
