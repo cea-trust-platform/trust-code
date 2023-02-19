@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,7 +24,7 @@ Sortie& Scalaire_impose_paroi::printOn(Sortie& s) const { return s << que_suis_j
 Entree& Scalaire_impose_paroi::readOn(Entree& s)
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Concentration"), Motcle("Turbulence"), Motcle("indetermine") };
-  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0")   };
+  if (supp_discs.size() == 0) supp_discs = { Nom("VEF"), Nom("EF"), Nom("EF_axi"), Nom("VEF_P1_P1"), Nom("VEFPreP1B"), Nom("PolyMAC"), Nom("PolyMAC_P0"), Nom("VDF") };
 
   return Dirichlet::readOn(s);
 }
