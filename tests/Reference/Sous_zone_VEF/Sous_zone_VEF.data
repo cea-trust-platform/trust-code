@@ -96,7 +96,7 @@ Read pb
             seuil 1.e-15
             impr
         }
-        convection { muscl }
+        convection { muscl3 { alpha 0.5 } }
         diffusion { }
         sources { boussinesq_temperature { T0 5. } }
         initial_conditions {

@@ -67,7 +67,7 @@ protected:
   mutable ArrOfInt traitement_pres_bord_;
   mutable ArrOfInt est_une_face_de_dirichlet_;
   mutable ArrOfInt type_elem_Cl_;
-  mutable DoubleTab gradient;
+  mutable DoubleTab gradient_face;
   mutable DoubleTab gradient_elem;
 };
 

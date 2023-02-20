@@ -184,6 +184,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& normales_facettes_Cl = domaine_Cl_VEF.normales_facettes_Cl();
   int premiere_face_int = domaine_VEF.premiere_face_int();
+  int nb_faces_ = domaine_VEF.nb_faces();
   int nfac = domaine.nb_faces_elem();
   int nsom = domaine.nb_som_elem();
   const DoubleTab& vecteur_face_facette = ref_cast_non_const(Domaine_VEF,domaine_VEF).vecteur_face_facette();
@@ -329,8 +330,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
         }
     }
 
-  int nb_faces_ = domaine_VEF.nb_faces();
-
+  DoubleTab gradient; // Peut pointer vers gradient_elem ou gradient_face selon schema
   if(type_op==centre || type_op==muscl)
     {
       // Tableau gradient base sur gradient_elem selon schema
@@ -351,10 +351,10 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           if (type_lim_int == type_lim_chakravarthy) cas = 4;
           if (type_lim_int == type_lim_superbee) cas = 5;
           //  application du limiteur
-          if (gradient.size_array() == 0)
+          if (gradient_face.size_array() == 0)
             {
-              gradient.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
-              domaine_VEF.creer_tableau_faces(gradient);
+              gradient_face.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
+              domaine_VEF.creer_tableau_faces(gradient_face);
             }
           for (int n_bord = 0; n_bord < nb_bord; n_bord++)
             {
@@ -373,7 +373,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                           {
                             double grad1 = gradient_elem(elem1, comp0, i);
                             double grad2 = gradient_elem(elem2, comp0, i);
-                            gradient(fac, comp0, i) = (*LIMITEUR)(grad1, grad2);
+                            gradient_face(fac, comp0, i) = (*LIMITEUR)(grad1, grad2);
                           }
                     }
                 }
@@ -384,7 +384,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                       int elem1 = face_voisins(fac, 0);
                       for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
                         for (int i = 0; i < dimension; i++)
-                          gradient(fac, comp0, i) = gradient_elem(elem1, comp0, i);
+                          gradient_face(fac, comp0, i) = gradient_elem(elem1, comp0, i);
 
                       if (ordre == 3)
                         {
@@ -400,13 +400,14 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                   {
                                     double ndS = facenormales(fac, j);
                                     carre_surface += ndS * ndS;
-                                    tmp += gradient(fac, comp0, j) * ndS;
+                                    tmp += gradient_face(fac, comp0, j) * ndS;
                                   }
-                                gradient(fac, comp0, i) -= tmp * facenormales(fac, i) / carre_surface;
+                                gradient_face(fac, comp0, i) -= tmp * facenormales(fac, i) / carre_surface;
                               }
                         }
                     }
                 }
+              gradient.ref(gradient_face);
             }
           end_timer("Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
           // Need offload
