@@ -1382,7 +1382,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
                         {
                           if(domaines_index[part] == -1)
                             {
-                              std::string dname = "/domaine_"  + std::to_string(part);
+                              std::string dname = "/zone_"  + std::to_string(part);
                               Nom dataset_name(dname);
                               dataset_names.add(dataset_name);
                             }
@@ -1392,7 +1392,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
                                 {
                                   if(domaines_indices[proc][part] >=0)
                                     {
-                                      std::string dname = "/domaine_"  + std::to_string(part) + "_" + std::to_string(domaines_indices[proc][part]);
+                                      std::string dname = "/zone_"  + std::to_string(part) + "_" + std::to_string(domaines_indices[proc][part]);
                                       Nom dataset_name(dname);
                                       dataset_names.add(dataset_name);
                                     }
@@ -1513,7 +1513,7 @@ void DomaineCutter::ecrire_domaines(const Nom& basename, const Decouper::Domaine
                   Sortie_Brute os_hdf;
                   writeData(sous_domaine, os_hdf);
 
-                  std::string dname = "/domaine_" + std::to_string(i_part);
+                  std::string dname = "/zone_" + std::to_string(i_part);
                   if(domaines_index[i_part] >=0)
                     dname += "_" + std::to_string(domaines_index[i_part]);
                   Nom datasetname(dname);

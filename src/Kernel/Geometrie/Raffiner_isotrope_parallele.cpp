@@ -236,7 +236,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
       fic_hdf.open(org, true);
       Entree_Brute data;
 
-      fic_hdf.read_dataset("/domaine", Process::me(), data);
+      fic_hdf.read_dataset("//zone", Process::me(), data);
 
       // Feed TRUST objects:
       data >> dom_org;
@@ -336,7 +336,7 @@ Entree&  Raffiner_isotrope_parallele::interpreter(Entree& is)
                 FichierHDFPar fic_hdf;
                 newd = newd.nom_me(Process::nproc(), "p", 1);
                 fic_hdf.create(newd);
-                fic_hdf.create_and_fill_dataset_MW("/domaine", os_hdf);
+                fic_hdf.create_and_fill_dataset_MW("/zone", os_hdf);
                 fic_hdf.close();
               }
           }

@@ -500,7 +500,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       nomentree = copy;
       fic_hdf.open(nomentree, true);
 
-      std::string dname = "/domaine_"  + std::to_string(Process::me());
+      std::string dname = "/zone_"  + std::to_string(Process::me());
       bool ok = fic_hdf.exists(dname.c_str());
       if(!ok)
         {
@@ -530,7 +530,7 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
       else
         {
           Entree_Brute data;
-          fic_hdf.read_dataset("/domaine", Process::me(), data);
+          fic_hdf.read_dataset("/zone", Process::me(), data);
 
           // Feed TRUST objects:
           read_domain_no_comm(data);
