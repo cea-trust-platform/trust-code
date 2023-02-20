@@ -277,7 +277,7 @@ xxx()
 	      ok=0 # We don't take ccache/g++ version for the moment (eg:Fedora 18)
 	   else
           # Ajout du test du support obligatoire de C++14 a partir de TRUST 1.9.2
-          echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 && nedit $log
+          echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 #&& nedit $log
 	   fi;;
 	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
 	   then

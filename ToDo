@@ -10,7 +10,6 @@ Version	Qui				Tache
 1.9.2   pierre.ledac@cea.fr     Supprimer OSQP dans le futur des que PolyMAC_old disparait
 1.9.2   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
 1.9.2   pierre.ledac@cea.fr     Port muscl_new sur GPU avec OpenMP et optimisation du code (3 fois plus lent que muscl actuellement). Trouver nom adequat.
-1.9.2   anida.khizar@cea.fr     coder la resolution en increment dans le solveur_masse
 1.9.2   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC/orcus/...
 1.9.2   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.9.2   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
@@ -48,7 +47,6 @@ Version	Qui				Tache
 1.9.x   pierre.ledac@cea.fr     Supprimer OSQP dans le futur des que PolyMAC_old disparait
 1.9.x   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
 1.9.x   pierre.ledac@cea.fr     Port muscl_new sur GPU avec OpenMP et optimisation du code (3 fois plus lent que muscl actuellement). Trouver nom adequat.
-1.9.x   anida.khizar@cea.fr     coder la resolution en increment dans le solveur_masse
 1.9.x   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC/orcus/...
 1.9.x   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
 1.9.x   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
