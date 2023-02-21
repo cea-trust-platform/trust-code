@@ -1,0 +1,36 @@
+#!/bin/bash
+
+source $TRUST_ROOT/Outils/ICoCo/ICoCo_src/env_MEDICoCo.sh
+
+trust -check CasCouplage_jdd1
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok1
+else
+  rm -f is_ok1
+fi
+
+trust -check CasCouplage_jdd2
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok2
+else
+  rm -f is_ok2
+fi
+
+trust -check CasCouplage_jdd3
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok3
+else
+  rm -f is_ok3
+fi
+
+trust -check CasCouplage_jdd4
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok4
+else
+  rm -f is_ok4
+fi
+

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+source $TRUST_ROOT/Outils/ICoCo/ICoCo_src/env_MEDICoCo.sh
+
+trust -check Test_interpolation_jdd1
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok1
+else
+  rm -f is_ok1
+fi
+
