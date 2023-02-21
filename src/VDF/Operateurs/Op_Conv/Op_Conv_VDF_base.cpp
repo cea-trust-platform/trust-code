@@ -70,6 +70,12 @@ void Op_Conv_VDF_base::preparer_calcul()
 {
   Operateur_Conv_base::preparer_calcul(); /* ne fait rien */
   iter->set_convective_op_pb_type(true /* convective op */, sub_type(Pb_Multiphase, equation().probleme()));
+  const DoubleTab& vit_associe = vitesse().valeurs();
+  const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
+  const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
+  fluent_.resize(0, N);
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  domaine_VDF.domaine().creer_tableau_elements(fluent_);
 }
 
 void Op_Conv_VDF_base::associer_champ_convecte_elem()
@@ -193,10 +199,8 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
 
-  DoubleTab fluent(0, N);
-  // fluent est initialise a zero par defaut:
-  domaine_VDF.domaine().creer_tableau_elements(fluent);
 
+  fluent_ = 0;
   // Remplissage du tableau fluent
   double psc;
   int num1, num2, face, elem1;
@@ -216,10 +220,10 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
                 psc = vit(face, n) * face_surfaces(face);
                 if ( (elem1 = face_voisins(face,0)) != -1)
                   {
-                    if (psc < 0) fluent(elem1, n) -= psc;
+                    if (psc < 0) fluent_(elem1, n) -= psc;
                   }
                 else // (elem2 != -1)
-                  if (psc > 0) fluent(face_voisins(face,1), n) += psc;
+                  if (psc > 0) fluent_(face_voisins(face,1), n) += psc;
               }
         }
     }
@@ -230,12 +234,12 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
     for (int n = 0; n < N; n++)
       {
         psc = vit(face, n) * face_surfaces(face);
-        eval_fluent(psc, face_voisins(face, 0), face_voisins(face, 1), n, fluent);
+        eval_fluent(psc, face_voisins(face, 0), face_voisins(face, 1), n, fluent_);
       }
 
   // Calcul du pas de temps de stabilite a partir du tableau fluent
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
-    diviser_par_rho_si_dilatable(fluent,equation().milieu());
+    diviser_par_rho_si_dilatable(fluent_,equation().milieu());
 
   const double alpha_min_dt = 1e-3; // avoid stupid time steps during vanishing phase
   double dt_stab = 1.e30;
@@ -245,7 +249,7 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
     for (int n = 0; n < N; n++)
       if ((!alp || (*alp)(num_poly, n) > alpha_min_dt))
         {
-          double dt_elem = volumes(num_poly)/(fluent(num_poly, n)+DMINFLOAT);
+          double dt_elem = volumes(num_poly)/(fluent_(num_poly, n)+DMINFLOAT);
           if (dt_elem<dt_stab) dt_stab = dt_elem;
         }
 

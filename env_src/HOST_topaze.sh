@@ -31,6 +31,7 @@ define_modules_config()
       then
          #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # Champ_P1NC.cpp ne compile pas car nvhpc trop recent
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.5 nvhpc/22.1" # Cuda 11.5 donc c-amg ne marchera pas en multi-gpu, tant pis
+         echo "export NVHPC_CUDA_HOME=\$CUDA_HOME;unset CUDA_HOME" >> $env # Pour desactiver des warnings a la compilation
       else
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"      
@@ -72,8 +73,12 @@ define_soumission_batch()
 # test          a100        40                           2               2    00:30:00
 # test         milan        40      768      768         6               2    00:30:00
    cpu=1800 && [ "$prod" = 1 ] && cpu=86400 # 30 minutes or 1 day
+   if [ "$gpu" = 1 ]
+   then
    # Partition a100 (4 cartes a100 par noeud, 48 noeuds au total soit 192 GPU au total): 1 GPU par 32 coeurs alloues donc si moins de 32 coeurs, on fixe a 32:
-   [ "$gpu" = 1 ] && queue=a100 && ntasks=128 && [ $NB_PROCS -lt 32 ] && cpus_per_task=32
+      queue=a100 && ntasks=128 && [ $NB_PROCS -lt 32 ] && cpus_per_task=32
+      # ToDo avec OpenMP, travail a faire car AmgX plante au dela de 8 tasks...
+   fi
    # Priorite superieure avec test si pas plus de 768 coeurs
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt 768 ]
    then

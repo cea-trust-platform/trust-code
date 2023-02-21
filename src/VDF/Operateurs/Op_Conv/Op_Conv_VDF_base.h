@@ -77,6 +77,7 @@ private:
   Motcles noms_vd_phases_; //leurs noms
   std::vector<Champ_Inc> x_phases_; //titres par phase
   Motcles noms_x_phases_; //leurs noms
+  mutable DoubleTab fluent_;
 };
 
 // Fonction utile pour le calcul du pas de temps de stabilite
