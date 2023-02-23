@@ -36,9 +36,9 @@ public:
 
   void mettre_a_jour(double ) override;
 
-  void modifier_nu(DoubleTab& ) const; //prend en compte la diffusivite turbulente
+  void modifier_nu(DoubleTab& ) const { throw; }
 
-  inline const Correlation& correlation() const { return corr_ ;};
+  inline const Correlation& correlation() const { return corr_ ; }
 
   inline void associer(const Domaine_dis& zd, const Domaine_Cl_dis& zcd, const Champ_Inc& ch) override
   {
