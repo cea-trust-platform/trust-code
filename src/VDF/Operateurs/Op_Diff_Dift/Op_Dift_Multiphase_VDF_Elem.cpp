@@ -14,6 +14,8 @@
 *****************************************************************************/
 
 #include <Op_Dift_Multiphase_VDF_Elem.h>
+#include <Op_Dift_Multiphase_VDF_Face.h>
+#include <Viscosite_turbulente_base.h>
 #include <Transport_turbulent_base.h>
 #include <VDF_discretisation.h>
 #include <Pb_Multiphase.h>
@@ -25,6 +27,9 @@ Entree& Op_Dift_Multiphase_VDF_Elem::readOn(Entree& is)
 {
   //lecture de la correlation de transport turbulente
   corr_.typer_lire(equation().probleme(), "transport_turbulent", is);
+
+  associer_corr_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(corr_);
+
   return is;
 }
 
@@ -39,10 +44,28 @@ void Op_Dift_Multiphase_VDF_Elem::completer()
   //si la correlation a besoin du gradient de u, on doit le creer maintenant
   if (ref_cast(Transport_turbulent_base, corr_.valeur()).gradu_required())
     equation().probleme().creer_champ("gradient_vitesse");
+
+  // on initialise d_t_ a 0 avec la bonne structure //
+  d_t_ = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue()->valeurs();
+  d_t_ = 0.;
+  set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(d_t_);
 }
 
 void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
 {
   Op_Dift_VDF_Elem_base::mettre_a_jour(temps);
+
+  // on calcule d_t_
+  d_t_ = 0.;
+  const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
+  if (!sub_type(Op_Dift_Multiphase_VDF_Face, op_qdm))
+    Process::exit(que_suis_je() + ": no turbulent momentum diffusion found!");
+  const Correlation& corr_visc = ref_cast(Op_Dift_Multiphase_VDF_Face, op_qdm).correlation();
+  if (!sub_type(Viscosite_turbulente_base, corr_visc.valeur()))
+    Process::exit(que_suis_je() + ": no turbulent viscosity correlation found!");
+
+  //un "simple" appel a la correlation!
+  ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_nu(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc.valeur()), d_t_);
+  set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(d_t_);
 }
 

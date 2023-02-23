@@ -33,7 +33,7 @@ public:
 
   double calculer_dt_stab() const override { return 1.e-4; }
 
-  inline double alpha_(const int i) const override { return alpha_impl<Eval_Dift_VDF_Elem>(i); }
+  inline double alpha_(const int i) const override { return alpha_impl<Eval_Dift_Multiphase_VDF_Elem>(i); }
 
   inline void associer_loipar(const Turbulence_paroi_scal& ) { throw; }
 
@@ -54,15 +54,6 @@ public:
     return diffusivite_impl<Eval_Dift_Multiphase_VDF_Elem>();
   }
 
-//  inline void completer() override
-//  {
-//    completer_impl<Type_Operateur::Op_DIFT_ELEM, Eval_Dift_VDF_Elem>();
-//    associer_pb<Eval_Dift_VDF_Elem>(equation().probleme());
-//  }
-
-
-
-
   int dimension_min_nu() const //pour que la correlation force l'anisotrope (cf. GGDH)
   {
     throw;
@@ -80,6 +71,7 @@ public:
   inline const Correlation& correlation() const { return corr_ ;};
 
 protected :
+  DoubleTab d_t_; // diffusivite turbulente
   Correlation corr_; //correlation de viscosite turbulente
 };
 

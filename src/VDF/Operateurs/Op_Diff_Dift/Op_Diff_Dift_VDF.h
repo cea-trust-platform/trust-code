@@ -63,7 +63,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
   associer_corr_impl(const Correlation& corr)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
@@ -71,7 +71,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
   set_nut_impl(const DoubleTab& nut)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
