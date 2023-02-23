@@ -33,7 +33,7 @@ class Op_Diff_Dift_VDF
 protected:
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_ELEM, void>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_ELEM || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_diffuse)
   {
     const Champ_P0_VDF& inco = ref_cast(Champ_P0_VDF,ch_diffuse.valeur());
