@@ -43,7 +43,7 @@ Sortie& Sous_Domaine::printOn(Sortie& os) const
 }
 
 
-/*! @brief Lit les specifications d'une sous-domaine dans le jeu de donnee a partir d'un flot d'entree.
+/*! @brief Lit les specifications d'un sous-domaine dans le jeu de donnee a partir d'un flot d'entree.
  *
  *     Format:
  *      { Rectangle Origine x0 y0 Cotes lx ly } en dimension 2

@@ -102,7 +102,7 @@ private :
   int version_ = 2;
   int facsec_auto_ = 0;
 
-//  bool sous_domaine;  // Cas d'une sous-domaine a definir pour que l'EF_Stab degenere en Amont
+//  bool sous_domaine;  // Cas d'un sous-domaine a definir pour que l'EF_Stab degenere en Amont
   Nom nom_sous_domaine;
   REF(Sous_domaine_VF) le_sous_domaine_dis;
 

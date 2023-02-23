@@ -89,7 +89,7 @@ void Partitionneur_Sous_Domaines::initialiser(const Noms& noms_sous_domaines)
  *    Element du deuxieme sous_domaine => proc 1
  *    ...
  *    Elements restants qui ne figurent dans aucun sous_domaine => sur un nouveau pe.
- *    Si un element figure dans plusieurs sous-domaines, c'est l premier sous_domaine
+ *    Si un element figure dans plusieurs sous-domaines, c'est le premier sous_domaine
  *    qui gagne.
  *
  */

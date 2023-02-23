@@ -108,7 +108,7 @@ private :
   int old_ = 0;
   int volumes_etendus_ = 1;
 
-  bool sous_domaine = false;  // Cas d'une sous-domaine a definir pour que l'EF_Stab degenere en Amont
+  bool sous_domaine = false;  // Cas d'un sous-domaine a definir pour que l'EF_Stab degenere en Amont
   int new_jacobienne_ = 0;
   Nom nom_sous_domaine;
   REF(Sous_domaine_VF) le_sous_domaine_dis;

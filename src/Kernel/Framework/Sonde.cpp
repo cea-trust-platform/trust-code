@@ -71,7 +71,7 @@ Sonde::Sonde(const Nom& nom)  :
   nodes(false),
   chsom(false),
   grav(false),
-  gravcl(false),  // Valeurs aux centres de gravite (comme grav) mais avec ajout eventuel des valeurs aux bords viau domaine Cl du champ post-traite
+  gravcl(false),  // Valeurs aux centres de gravite (comme grav) mais avec ajout eventuel des valeurs aux bords via domaine Cl du champ post-traite
   som(false),
   nb_bip(0.),
   reprise(0),
