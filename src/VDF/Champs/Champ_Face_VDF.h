@@ -1,3 +1,4 @@
+
 /****************************************************************************
 * Copyright (c) 2023, CEA
 * All rights reserved.
@@ -126,13 +127,13 @@ public:
   inline double v_norm(const DoubleTab& val, const DoubleTab& val_f, int e, int f, int k, int l, double *v_ext, double *dnv) const
   {
     const Domaine_VDF& domaine = domaine_vdf();
-    int d, D = dimension;
+    int d, D = dimension, N = val_f.line_size();
     const DoubleTab& nf = domaine.face_normales();
     const DoubleVect& fs = domaine.face_surfaces();
 
     double scal = 0, vf = f >= 0 ? val_f(f, k) - (l >= 0 ? val_f(f, l) : 0) : 0, v_temp[3], *v = v_ext ? v_ext : v_temp;
     for (d = 0; d < D; d++)
-      v[d] = val(e, k + d * D) - (l >= 0 ? val(e, l + d * D) : 0);
+      v[d] = val(e, N*d+k ) - (l >= 0 ? val(e, N*d+l ) : 0);
 
     if (f >= 0)
       for (d = 0, scal = domaine.dot(v, &nf(f, 0)) / fs(f); d < D; d++) v[d] += (vf - scal) * nf(f, d) / fs(f);

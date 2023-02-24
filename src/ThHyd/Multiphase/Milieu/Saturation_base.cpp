@@ -136,7 +136,7 @@ void Saturation_base::compute_all_frottement_interfacial(MSpanD sats, int ncomp,
   assert((int )sats.size() == 3);
 
   const SpanD P = sats.at("pressure");
-  const SpanD T = sats.at("pressure");
+  const SpanD T = sats.at("temperature");
   SpanD Sigma__ = sats.at("sigma");
 
   assert(ncomp * (int )P.size() == (int )Sigma__.size());
