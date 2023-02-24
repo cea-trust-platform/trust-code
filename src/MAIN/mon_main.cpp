@@ -132,43 +132,6 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 #endif
 }
 
-#ifdef PETSC_HAVE_CUDA
-//#include <cuda.h>
-#include <cuda_runtime.h>
-void init_cuda()
-{
-  char* local_rank_env;
-  cudaError_t cudaRet;
-
-  /* Recuperation du rang local du processus via la variable d'environnement
-     positionnee par Slurm, l'utilisation de MPI_Comm_rank n'etant pas encore
-     possible puisque cette routine est utilisee AVANT l'initialisation de MPI */
-  local_rank_env = getenv("SLURM_LOCALID");
-  if (local_rank_env)
-    {
-      int local_rank = atoi(local_rank_env);
-      if (local_rank==0) printf("The MPI library has CUDA-aware support and TRUST will try using this feature...\n");
-      /* Definition du GPU a utiliser pour chaque processus MPI */
-      int num_devices = 0;
-      cudaGetDeviceCount(&num_devices);
-      cudaRet = cudaSetDevice(local_rank % num_devices);
-      if(cudaRet != cudaSuccess)
-        {
-          printf("Error: cudaSetDevice failed\n");
-          abort();
-        }
-      else
-        {
-          if (local_rank==0) printf("init_cuda() done!");
-        }
-    }
-  else
-    {
-      printf("Error : can't guess the local rank of the task\n");
-      abort();
-    }
-}
-#endif
 ///////////////////////////////////////////////////////////
 // Desormais Petsc/MPI_Initialize et Petsc/MPI_Finalize
 // sont dans un seul fichier: mon_main
@@ -176,14 +139,8 @@ void init_cuda()
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
-#ifdef PETSC_HAVE_CUDA
-  // Necessaire sur JeanZay pour utiliser GPU Direct (http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-mpi-cuda-aware-gpudirect.html)
-  // mais performances moins bonnes (trust PAR_gpu_3D 2) donc desactive en attendant d'autres tests:
-  // Absolument necessaire sur JeanZay (si OpenMPU-Cuda car sinon plantages lors des IO)
-  // Voir: https://www.open-mpi.org/faq/?category=runcuda#mpi-cuda-aware-support pour activer ou non a la compilation !
-#if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
+#ifdef TRUST_USE_CUDA
   init_cuda();
-#endif /* MPIX_CUDA_AWARE_SUPPORT */
 #endif
   // Variable pour desactiver le calcul sur GPU et ainsi facilement comparer avec le meme binaire
   // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:

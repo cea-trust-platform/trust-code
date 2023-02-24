@@ -23,6 +23,7 @@
 #include <Array_base.h>
 #include <stat_counters.h>
 extern void init_openmp();
+extern void init_cuda();
 extern bool self_test();
 static double clock_start;
 static char* clock_on=NULL;

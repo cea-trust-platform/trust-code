@@ -18,25 +18,96 @@
 #include <Device.h>
 #include <string>
 #include <sstream>
+#include <comm_incl.h>
+
+// Voir AmgXWrapper (src/init.cpp)
+int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
+{
+  int devID;
+  if (nRanks <= nDevs) // Less process than devices
+    devID = rank;
+  else // More processes than devices
+    {
+      int nBasic = nRanks / nDevs,
+          nRemain = nRanks % nDevs;
+      if (rank < (nBasic+1)*nRemain)
+        devID = rank / (nBasic + 1);
+      else
+        devID = (rank - (nBasic+1)*nRemain) / nBasic + nRemain;
+    }
+  return devID;
+}
 
 #ifdef _OPENMP
 #include <omp.h>
-#include <comm_incl.h>
+// Set MPI processes to devices
 void init_openmp()
 {
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  int device = rank % omp_get_num_devices();
-  omp_set_default_device(device);
+  bool round_robin=false;
+  int devID;
+  int nDevs = omp_get_num_devices();
+  int rank = Process::me();
+  int nRanks = Process::nproc();
+  if (round_robin)
+    devID = rank % nDevs;
+  else
+    devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
   if (Process::je_suis_maitre())
     {
       Cerr << "Initializing OpenMP offload on devices..."  << finl;
-      Cerr << "Detecting " << omp_get_num_devices() << " devices." << finl;
-      Cerr << "Assigning rank " << rank << " to device " << device << finl;
+      Cerr << "Detecting " << nDevs << " devices." << finl;
     }
+  cerr << "[OpenMP] Assigning rank " << rank << " to device " << devID << endl;
+  omp_set_default_device(devID);
   // Dummy target region, so as not to measure startup time later:
   #pragma omp target
   { ; }
+}
+#endif
+
+#ifdef TRUST_USE_CUDA
+#include <cuda_runtime.h>
+void init_cuda()
+{
+  // Necessaire sur JeanZay pour utiliser GPU Direct (http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-mpi-cuda-aware-gpudirect.html)
+  // mais performances moins bonnes (trust PAR_gpu_3D 2) donc desactive en attendant d'autres tests:
+  // Absolument necessaire sur JeanZay (si OpenMPU-Cuda car sinon plantages lors des IO)
+  // Voir: https://www.open-mpi.org/faq/?category=runcuda#mpi-cuda-aware-support pour activer ou non a la compilation !
+#if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
+  char* local_rank_env;
+  cudaError_t cudaRet;
+  /* Recuperation du rang local du processus via la variable d'environnement
+     positionnee par Slurm, l'utilisation de MPI_Comm_rank n'etant pas encore
+     possible puisque cette routine est utilisee AVANT l'initialisation de MPI */
+  // ToDo pourrait etre appelee plus tard dans AmgX ou PETSc GPU...
+  local_rank_env = getenv("SLURM_LOCALID");
+  if (local_rank_env)
+    {
+      int rank = atoi(local_rank_env);
+      int nRanks = atoi(getenv("SLURM_NTASKS"));
+      if (rank==0) printf("The MPI library has CUDA-aware support and TRUST will try using this feature...\n");
+      /* Definition du GPU a utiliser pour chaque processus MPI */
+      int nDevs = 0;
+      cudaGetDeviceCount(&nDevs);
+      int devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
+      cudaRet = cudaSetDevice(devID);
+      if(cudaRet != cudaSuccess)
+        {
+          printf("Error: cudaSetDevice failed\n");
+          abort();
+        }
+      else
+        {
+          if (rank==0) printf("init_cuda() done!");
+          cerr << "[MPI] Assigning rank " << rank << " to device " << devID << endl;
+        }
+    }
+  else
+    {
+      printf("Error : can't guess the local rank of the task\n");
+      abort();
+    }
+#endif     /* MPIX_CUDA_AWARE_SUPPORT */
 }
 #endif
 
