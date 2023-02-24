@@ -20,6 +20,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Poly_base.h>
+#include <Option_PolyMAC_P0.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
@@ -65,12 +66,12 @@ double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const
   for (e = 0; e < domaine.nb_elem(); e++)
     {
       for (vol = pe(e) * ve(e), flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        for (n = 0; n < N; n++)
-          {
-            flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
-            if (0 && fcl(f, 0) < 2)
-              vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //prise en compte de la contribution aux faces
-          }
+        if (!Option_PolyMAC_P0::traitement_axi || (Option_PolyMAC_P0::traitement_axi && fcl(f,0) != 2) )
+          for (n = 0; n < N; n++)
+            {
+              flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
+              if (0 && fcl(f, 0) < 2) vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //prise en compte de la contribution aux faces
+            }
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && std::abs(flux(n)) > 1e-12 /* eviter les valeurs “tres proches de 0 mais pas completement nulles” */)
           dt = std::min(dt, vol(n) / flux(n));

@@ -42,7 +42,7 @@ public :
   //              2 -> Echange_global_impose
   //              3 -> Echange_contact_PolyMAC_P0P1NC
   //              4 -> Neumann_paroi
-  //              5 -> Neumann_val_ext
+  //              5 -> Neumann_val_ext ou Neumann_homogene ou Symetrie
   //              6 -> Dirichlet
   //              7 -> Dirichlet_homogene
   inline const IntTab& fcl() const

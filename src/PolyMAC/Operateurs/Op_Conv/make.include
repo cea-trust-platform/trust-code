@@ -15,6 +15,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
+	-I$(TRUST_ROOT)/src/PolyMAC\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Cond_Lim\
 	-I$(TRUST_ROOT)/src/PolyMAC/Solveurs\

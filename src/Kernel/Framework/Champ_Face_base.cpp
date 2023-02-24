@@ -19,6 +19,7 @@
 #include <Domaine_Cl_dis.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
+#include <Symetrie.h>
 #include <Neumann.h>
 #include <Navier.h>
 

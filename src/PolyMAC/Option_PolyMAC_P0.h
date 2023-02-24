@@ -27,6 +27,7 @@ public :
   Entree& interpreter(Entree&) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   static int interp_ve1;
+  static int traitement_axi;
 };
 
 #endif /* Option_PolyMAC_P0_included */

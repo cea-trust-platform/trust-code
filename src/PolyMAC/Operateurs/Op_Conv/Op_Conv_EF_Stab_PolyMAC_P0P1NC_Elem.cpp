@@ -23,6 +23,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Poly_base.h>
+#include <Option_PolyMAC_P0.h>
 #include <Pb_Multiphase.h>
 #include <Probleme_base.h>
 #include <Matrix_tools.h>
@@ -98,16 +99,18 @@ double Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::calculer_dt_stab() const
   double dt = 1e10;
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem();
-  const DoubleTab& vit = vitesse_->valeurs(), *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
+  const DoubleTab& vit = vitesse_->valeurs(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl();
   int i, e, f, n, N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   DoubleTrav flux(N); //somme des flux pf * |f| * vf
 
   for (e = 0; e < domaine.nb_elem(); e++)
     {
-      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        for (n = 0; n < N; n++)
-          flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
+      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 ; i++)
+        if (!Option_PolyMAC_P0::traitement_axi || (Option_PolyMAC_P0::traitement_axi && !(fcl(f,0) == 4 || fcl(f,0) == 5)) )
+          for (n = 0; n < N; n++)
+            flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
 
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && std::abs(flux(n)) > 1e-12 /* eviter les valeurs “tres proches de 0 mais pas completement nulles” */)

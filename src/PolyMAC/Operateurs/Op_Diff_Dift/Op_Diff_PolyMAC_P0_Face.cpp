@@ -20,6 +20,7 @@
 #include <Dirichlet_homogene.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
+#include <Option_PolyMAC_P0.h>
 #include <Champ_Uniforme.h>
 #include <MD_Vector_base.h>
 #include <Synonyme_info.h>
@@ -72,13 +73,14 @@ double Op_Diff_PolyMAC_P0_Face::calculer_dt_stab() const
   DoubleTrav flux(N), vol(N);
   for (e = 0; e < domaine.nb_elem(); e++)
     {
-      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        for (n = 0; n < N; n++)
-          {
-            flux(n) += domaine.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
-            if (fcl(f, 0) < 2)
-              vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //cf. Op_Conv_EF_Stab_PolyMAC_P0_Face.cpp
-          }
+      for (flux = 0, vol = pe(e) * ve(e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 ; i++)
+        if (!Option_PolyMAC_P0::traitement_axi || (Option_PolyMAC_P0::traitement_axi && fcl(f,0) != 2) )
+          for (n = 0; n < N; n++)
+            {
+              flux(n) += domaine.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+              if (fcl(f, 0) < 2)
+                vol(n) = std::min(vol(n), pf(f) * vf(f) / vfd(f, e != f_e(f, 0)) * vf(f)); //cf. Op_Conv_EF_Stab_PolyMAC_P0_Face.cpp
+            }
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 0.25) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, vol(n) * (a_r ? (*a_r)(e, n) : 1) / flux(n));

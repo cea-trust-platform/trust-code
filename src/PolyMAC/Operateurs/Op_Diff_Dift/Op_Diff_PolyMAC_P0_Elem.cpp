@@ -23,6 +23,7 @@
 #include <Flux_parietal_base.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
+#include <Option_PolyMAC_P0.h>
 #include <Champ_front_calc.h>
 #include <Milieu_composite.h>
 #include <communications.h>
@@ -197,11 +198,11 @@ void Op_Diff_PolyMAC_P0_Elem::init_op_ext() const
 double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
 {
   const Domaine_PolyMAC_P0& domaine = le_dom_poly_.valeur();
-  const IntTab& e_f = domaine.elem_faces();
-  const DoubleTab& nf = domaine.face_normales(), *alp =
-                          sub_type(Pb_Multiphase, equation().probleme()) ?
-                          &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : nullptr), &diffu =
-                            diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
+  const Champ_Elem_PolyMAC_P0& 	ch	= ref_cast(Champ_Elem_PolyMAC_P0, equation().inconnue().valeur());
+  const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
+  const DoubleTab& nf = domaine.face_normales(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL),
+                    &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
 
@@ -210,9 +211,10 @@ double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
   DoubleTrav flux(N);
   for (e = 0; e < domaine.nb_elem(); e++)
     {
-      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        for (n = 0; n < N; n++)
-          flux(n) += domaine.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
+      for (flux = 0, i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0 ; i++)
+        if (!Option_PolyMAC_P0::traitement_axi || (Option_PolyMAC_P0::traitement_axi && !(fcl(f,0) == 4 || fcl(f,0) == 5)) )
+          for (n = 0; n < N; n++)
+            flux(n) += domaine.nu_dot(&nu_, e, n, &nf(f, 0), &nf(f, 0)) / vf(f);
       for (n = 0; n < N; n++)
         if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) /* sous 0.5e-6, on suppose que l'evanescence fait le job */
           dt = std::min(dt, pe(e) * ve(e) * (alp ? (*alp)(e, n) : 1) * (lambda(!cL * e, n) / diffu(!cD * e, n)) / flux(n));
@@ -637,8 +639,8 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             Flux_parietal_base::input_t in;
                             Flux_parietal_base::output_t out;
                             DoubleTrav Tf(N[p]), qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);
-                            in.N = N[p], in.f = f, in.y = (e == f_e[p](f, 0)) ? domaine[p].get().dist_face_elem0(f,e) : domaine[p].get().dist_face_elem1(f,e), in.D_h = dh(e), in.D_ch = dh(e), 
-                              in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
+                            in.N = N[p], in.f = f, in.y = (e == f_e[p](f, 0)) ? domaine[p].get().dist_face_elem0(f,e) : domaine[p].get().dist_face_elem1(f,e), in.D_h = dh(e), in.D_ch = dh(e),
+                               in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
                             if (corr.needs_saturation()) in.Lvap = &Lvap_tab[p](e, 0), in.Sigma = &Sigma_tab[p](e, 0), in.Tsat = &Ts_tab[p](e, 0);
                             else                         in.Lvap = nullptr           , in.Sigma = nullptr            , in.Tsat = nullptr        ;
                             out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc = &d_nuc;
