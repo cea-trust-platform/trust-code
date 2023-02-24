@@ -173,8 +173,8 @@ class FileAccumulator(object):
             if len(glob(jointFiles)):  cls.Append(jointFiles)
             jointFiles2 = file + ".decal_*." + dom_name    # Seen only on FT (Sloshing ...)
             if len(glob(jointFiles2)):  cls.Append(jointFiles2)
-            # Interface files for Front Tracking! Need all of them(?)
-            interfFiles = file + ".INTERFACES.*"
+            # Interface files for Front Tracking + IJK ! Need all of them(?)
+            interfFiles = file + "*.INTERFACES.*"
             if len(glob(interfFiles)):  cls.Append(interfFiles)
 
     @classmethod
