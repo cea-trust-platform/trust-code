@@ -504,15 +504,22 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab* a_r, int fac1, int 
       double psc = is_COIN ? 0.5 * dt_vitesse(fac1,k) * porosite(fac1) * surface(fac1) : 0.25 * ((dt_vitesse(fac1,k) * porosite(fac1) + dt_vitesse(fac2,k) * porosite(fac2)) * (surface(fac1) + surface(fac2)));
       if ((psc * signe) > 0)
         {
-          const double aa_r = (a_r && DERIVED_T::IS_AMONT) ? (*a_r)(elem_(fac3, 0), k) : 1.0;
+          const int elem = elem_(fac3, 0), elem2 = elem_(fac3, 1);
+          const int e = elem > -1 ? elem : elem2;
+          const double aa_r = (a_r && DERIVED_T::IS_AMONT) ? (*a_r)(e, k) : 1.0;
           aii3_4[k] = aa_r * psc;
         }
       else
         aii3_4[k] = 0.;
 
-      double aa_r = (a_r && DERIVED_T::IS_AMONT) ? (*a_r)(elem_(fac1, 0), k) : 1.0;
+      int elem = elem_(fac1, 0), elem2 = elem_(fac1, 1);
+      int e = elem > -1 ? elem : elem2;
+      double aa_r = (a_r && DERIVED_T::IS_AMONT) ? (*a_r)(e, k) : 1.0;
       const double psc1 = aa_r * 0.5 * dt_vitesse(fac3,k) * surface(fac3) * porosite(fac3);
-      aa_r = (a_r && DERIVED_T::IS_AMONT) ? (*a_r)(elem_(fac2, 0), k) : 1.0;
+
+      elem = elem_(fac2, 0), elem2 = elem_(fac2, 1);
+      e = elem > -1 ? elem : elem2;
+      aa_r = (a_r && DERIVED_T::IS_AMONT) ? (*a_r)(e, k) : 1.0;
       const double psc2 = aa_r * 0.5 * dt_vitesse(fac3,k) * surface(fac3) * porosite(fac3);
       fill_coeffs_proto < Type_Double > (k, psc1, psc2, aii1_2, ajj1_2);
     }
