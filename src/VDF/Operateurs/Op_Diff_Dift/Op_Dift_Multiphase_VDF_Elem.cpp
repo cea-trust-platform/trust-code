@@ -69,3 +69,41 @@ void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(d_t_);
 }
 
+double Op_Dift_Multiphase_VDF_Elem::calculer_dt_stab() const
+{
+  const Domaine_VDF& domaine_VDF = iter->domaine();
+  double dt_stab, coef = -1.e10;
+  const IntTab& elem_faces = domaine_VDF.elem_faces();
+  const DoubleTab& lambda = alpha_(), &diffu = diffusivite_pour_pas_de_temps().valeurs();
+  const int cL = (lambda.dimension(0) == 1), cD = (diffu.dimension(0) == 1), nb_elem = domaine_VDF.nb_elem(), dim = Objet_U::dimension;
+
+  ArrOfInt numfa(2 * dim);
+  for (int elem = 0; elem < nb_elem; elem++)
+    {
+      double moy = 0.;
+      for (int i = 0; i < 2 * dim; i++)
+        numfa[i] = elem_faces(elem, i);
+
+      for (int d = 0; d < dim; d++)
+        {
+          const double hd = domaine_VDF.dist_face(numfa[d], numfa[dim + d], d);
+          moy += 1. / (hd * hd);
+        }
+
+      double diff_physique = lambda(!cL * elem, 0), diff_turbulent = d_t_(elem, 0);
+
+      for (int ncomp = 1; ncomp < lambda.line_size(); ncomp++)
+        diff_physique = std::max(diff_physique, lambda(!cL * elem, ncomp));
+      for (int ncomp = 1; ncomp < d_t_.line_size(); ncomp++)
+        diff_turbulent = std::max(diff_turbulent, d_t_(elem, ncomp));
+
+      const double alpha_local = (diff_physique + diff_turbulent) / (lambda(!cL * elem, 0) / diffu(!cD * elem, 0)) * moy;
+      coef = std::max(coef, alpha_local);
+    }
+
+  coef = Process::mp_max(coef);
+  dt_stab = 0.5 / (coef + DMINFLOAT);
+
+  return dt_stab;
+}
+

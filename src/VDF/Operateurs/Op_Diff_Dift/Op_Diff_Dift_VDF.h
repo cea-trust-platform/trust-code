@@ -94,6 +94,15 @@ protected:
     return diffu.valeurs()(is_var * i);
   }
 
+  template <typename EVAL_TYPE>
+  const DoubleTab& tab_alpha_impl() const
+  {
+    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    const Champ_base& diffu = eval_diff_turb.get_diffusivite();
+    return diffu.valeurs();
+  }
+
+
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
   inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFF_FACE, void>
   mettre_a_jour_impl()

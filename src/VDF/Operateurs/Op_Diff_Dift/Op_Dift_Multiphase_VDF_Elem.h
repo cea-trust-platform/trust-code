@@ -31,9 +31,11 @@ class Op_Dift_Multiphase_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff
 public:
   Op_Dift_Multiphase_VDF_Elem();
 
-  double calculer_dt_stab() const override { return 1.e-4; }
+  double calculer_dt_stab() const override;
 
-  inline double alpha_(const int i) const override { return alpha_impl<Eval_Dift_Multiphase_VDF_Elem>(i); }
+  inline double alpha_(const int i) const override { throw; }
+
+  inline const DoubleTab& alpha_() const { return tab_alpha_impl<Eval_Dift_Multiphase_VDF_Elem>(); }
 
   inline void associer_loipar(const Turbulence_paroi_scal& ) { throw; }
 
@@ -65,8 +67,6 @@ public:
   void completer() override;
 
   void mettre_a_jour(double ) override;
-
-  void modifier_nu(DoubleTab& ) const; //prend en compte la diffusivite turbulente
 
   inline const Correlation& correlation() const { return corr_ ;};
 
