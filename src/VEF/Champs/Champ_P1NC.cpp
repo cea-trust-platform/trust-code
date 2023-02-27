@@ -146,12 +146,21 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
   // ToDo merge in one region the 2 loops
   const double * inverse_volumes_addr = copyToDevice(domaine_VEF.inverse_volumes());
   start_timer();
-  // Parfois un crash du build avec nvc++ recent (par exemple topaze, 22.7. Marche avec 22.1). Supprimer alors le if (Objet_U::computeOnDevice)
-  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-  for (int elem=0; elem<nb_elem; elem++)
-    for (int icomp=0; icomp<nb_comp; icomp++)
+  if (gradient_elem_nb_dim==3)
+    {
+      int gpu = Objet_U::computeOnDevice; // Passer par cette variable temporaire, car sinon crash compilateur nvc++ 22.7 (marche avec 22.1)
+      // See https://forums.developer.nvidia.com/t/regression-crash-with-nvc-22-7-not-with-22-1/243698/1
+      #pragma omp target teams distribute parallel for if (gpu)
+      for (int elem = 0; elem < nb_elem; elem++)
+        for (int icomp = 0; icomp < nb_comp; icomp++)
+          for (int i = 0; i < dimension; i++)
+            gradient_elem_addr[(elem * nb_comp + icomp) * dimension + i] *= inverse_volumes_addr[elem];
+    }
+  else
+    #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+    for (int elem=0; elem<nb_elem; elem++)
       for (int i=0; i<dimension; i++)
-        gradient_elem_addr[(elem*nb_comp+icomp)*dimension+i] *= inverse_volumes_addr[elem];
+        gradient_elem_addr[(elem*nb_comp)*dimension+i] *= inverse_volumes_addr[elem];
   end_timer("Elem loop in Champ_P1NC::calculer_gradientP1NC");
   copyFromDevice(gradient_elem, "gradient_elem");
 }

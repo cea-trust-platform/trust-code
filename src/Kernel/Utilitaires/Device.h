@@ -148,42 +148,42 @@ inline void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 
 // ToDo: test
 template <typename _TYPE_>
-inline void updatePartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
+inline void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
 {
 #ifdef _OPENMP
-  _TYPE_* tab_addr = tab.addr();
-  if (tab.get_dataLocation()==Device)
+  if (tab.get_dataLocation()==Device) // ToDo ?
     {
       int size = sizeof(_TYPE_) * (fin-deb);
+      _TYPE_* tab_addr = tab.addr();
       start_timer(size);
       statistiques().begin_count(gpu_copyfromdevice_counter_, size);
-      #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[deb:fin])
+      #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[deb:fin-deb])
       statistiques().end_count(gpu_copyfromdevice_counter_, size);
       std::string message;
       message = "Partial update from device of array "+arrayName+" ["+toString(tab.addr())+"]";
       end_timer(message, size);
       if (clock_on) printf("\n");
-      //tab.set_dataLocation(Host);
+      tab.set_dataLocation(Host); // ToDo set Mixed ?
     }
 #endif
 }
 template <typename _TYPE_>
-inline void updatePartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
+inline void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
 {
 #ifdef _OPENMP
-  _TYPE_* tab_addr = tab.addr();
-  if (tab.get_dataLocation()==Host)
+  if (tab.get_dataLocation()==Host) // ToDo ?
     {
       int size = sizeof(_TYPE_) * (fin-deb);
+      _TYPE_* tab_addr = tab.addr();
       start_timer(size);
       statistiques().begin_count(gpu_copytodevice_counter_, size);
-      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin])
+      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin-deb])
       statistiques().end_count(gpu_copytodevice_counter_, size);
       std::string message;
       message = "Partial update to device of array "+arrayName+" ["+toString(tab.addr())+"]";
       end_timer(message, size);
       if (clock_on) printf("\n");
-      tab.set_dataLocation(HostDevice); //ToDo
+      tab.set_dataLocation(Device); // ToDo ?
     }
 #endif
 }

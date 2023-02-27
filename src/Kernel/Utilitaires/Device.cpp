@@ -115,7 +115,7 @@ void init_cuda()
 static bool self_tested_ = false;
 bool self_test()
 {
-  if (!self_tested_)
+  if (!self_tested_ && Objet_U::computeOnDevice)
     {
       self_tested_ = true;
       int N = 10;
@@ -239,7 +239,7 @@ bool self_test()
       }
       assert(inco.get_dataLocation() == HostDevice);
 
-      // Test de operator+= sur GPU
+      // Test d'operations ArrOfDouble sur GPU
       {
         ArrOfDouble a(10), b(10);
         a=1;
@@ -247,23 +247,70 @@ bool self_test()
         copyToDevice(a);
         copyToDevice(b);
         b+=a; // TRUSTArray& operator+=(const TRUSTArray& y) sur le device
+        b+=3; // TRUSTArray& operator+=(const _TYPE_ dy)
+        b-=2; // TRUSTArray& operator-=(const _TYPE_ dy)
+        b-=a; // TRUSTArray& operator-=(const TRUSTArray& y)
+        // ToDo regler: Multiple definition of 'nvkernel__ZN10TRUST
+        //b*=10; // TRUSTArray& operator*= (const _TYPE_ dy)
+        //b/=2;  // TRUSTArray& operator/= (const _TYPE_ dy)
         assert(a.get_dataLocation() == HostDevice);
         assert(b.get_dataLocation() == Device);
 #ifndef NDEBUG
         const ArrOfDouble& const_b = b;
 #endif
         // Operations sur le device:
-        // ToDo: Multiple definition of 'nvkernel__ZN10TRUST
-        //b+=3; // TRUSTArray& operator+=(const _TYPE_ dy)
-        //b-=2; // TRUSTArray& operator-=(const _TYPE_ dy)
-        //b*=10; // TRUSTArray& operator*= (const _TYPE_ dy)
-        //b/=2; // TRUSTArray& operator/= (const _TYPE_ dy)
-        //b-=a; // TRUSTArray& operator-=(const TRUSTArray& y)
         // Retour sur le host pour verifier le resultat
         copyFromDevice(b);
         assert(const_b[0] == 3);
       }
 
+      // Test de copyPartialFromDevice/copyPartialToDevice
+      {
+        ArrOfDouble a(4);
+#ifndef NDEBUG
+        const ArrOfDouble& const_a = a;
+#endif
+        a=0;
+        copyToDevice(a);
+        a+=1; // Done on device
+        copyPartialFromDevice(a, 1, 3);
+        assert(a.get_dataLocation() == Host);
+        assert(const_a[0]==0);
+        assert(const_a[1]==1);
+        assert(const_a[2]==1);
+        assert(const_a[3]==0);
+        a[1]=2; // Done on host
+        a[2]=2; // Done on host
+        copyPartialToDevice(a, 1, 3);
+        assert(a.get_dataLocation() == Device);
+        copyFromDevice(a);
+        assert(const_a[0]==1);
+        assert(const_a[1]==2);
+        assert(const_a[2]==2);
+        assert(const_a[3]==1);
+      }
+      // ToDo: porter operator_vect_single_generic sur GPU !!! DoubleTab a; a+=1;
+      {
+        /*
+        DoubleTab a(10), b(10);
+        a=1;
+        b=2;
+        copyToDevice(a);
+        copyToDevice(b);
+        b=a;  // operator_vect_vect_generic(IS_EGAL_)
+        b+=a; // operator_vect_vect_generic(ADD_)
+        b-=a; // operator_vect_vect_generic(SUB_)
+        assert(a.get_dataLocation() == HostDevice);
+        assert(b.get_dataLocation() == Device);
+        #ifndef NDEBUG
+        const ArrOfDouble& const_b = b;
+        #endif
+        // Operations sur le device:
+        // Retour sur le host pour verifier le resultat
+        copyFromDevice(b);
+        assert(const_b[0] == 3);
+         */
+      }
       // ToDo: Ameliorer DoubleTrav:
       {
         DoubleTrav a(N);
