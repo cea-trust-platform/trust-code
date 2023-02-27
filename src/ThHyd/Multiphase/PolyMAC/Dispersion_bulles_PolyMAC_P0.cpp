@@ -71,9 +71,13 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   int N = pvit.line_size() , Np = press.line_size(), D = dimension, nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces(), ne_tot = domaine.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
   DoubleTrav nut(domaine.nb_elem_tot(), N); //viscosite turbulente
   if (is_turb) ref_cast(Viscosite_turbulente_base, ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, equation().operateur(0).l_op_base()).correlation().valeur()).eddy_viscosity(nut); //remplissage par la correlation
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N*(N-1)/2), dv(N, N), ddv(N, N, 4), ddv_c(4), nut_l(N), k_l(Nk), d_b_l(N), coeff(N, N); //arguments pour coeff
 
+  // Input-output
   const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
+  Dispersion_bulles_base::input_t in;
+  Dispersion_bulles_base::output_t out;
+  in.alpha.resize(N), in.T.resize(N), in.p.resize(N), in.rho.resize(N), in.mu.resize(N), in.sigma.resize(N*(N-1)/2), in.k_turb.resize(N), in.nut.resize(N), in.d_bulles.resize(N), in.nv.resize(N, N);
+  out.Ctd.resize(N, N);
 
   /* calculaiton of the gradient of alpha at the face */
   const Champ_Elem_PolyMAC_P0& ch_a = ref_cast(Champ_Elem_PolyMAC_P0, ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeur());
@@ -83,7 +87,6 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleTab&  fg_w = ch_a.fgrad_w;
   const Conds_lim& cls_a = ch_a.domaine_Cl_dis().les_conditions_limites(); 		// conditions aux limites du champ alpha
   const IntTab&    fcl_a = ch_a.fcl();	// tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
-
 
   // Et pour les methodes span de la classe Interface pour choper la tension de surface
   const int nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
@@ -150,48 +153,39 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
   for (int f = 0; f < nf; f++)
     if (fcl(f, 0) < 2)
       {
-        a_l = 0 ;
-        p_l = 0 ;
-        T_l = 0 ;
-        rho_l = 0;
-        mu_l = 0 ;
-        nut_l = 0 ;
-        k_l = 0 ;
-        d_b_l=0;
-        sigma_l=0;
-        dv = 0 ;
+        in.alpha=0., in.T=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.nut=0., in.d_bulles=0., in.nv=0.;
         int e;
         for (int c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           {
             for (int n = 0; n < N; n++)
               {
-                a_l(n)   += vf_dir(f, c)/vf(f) * alpha(e, n);
-                p_l(n)   += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
-                T_l(n)   += vf_dir(f, c)/vf(f) * temp(e, n);
-                rho_l(n) += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
-                mu_l(n)  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
-                nut_l(n) += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
-                d_b_l(n) += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
+                in.alpha[n]   += vf_dir(f, c)/vf(f) * alpha(e, n);
+                in.p[n]   += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
+                in.T[n]   += vf_dir(f, c)/vf(f) * temp(e, n);
+                in.rho[n] += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
+                in.mu[n]  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
+                in.nut[n] += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
+                in.d_bulles[n] += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
                 for (int k = n+1; k < N; k++)
                   if (milc.has_interface(n,k))
                     {
                       const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
-                      sigma_l(ind_trav) += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
+                      in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                     }
                 for (int k = 0; k < N; k++)
-                  dv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
+                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
               }
-            for (int n = 0; n <Nk; n++) k_l(n)   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
+            for (int n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
           }
 
-        correlation_db.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, nut_l, k_l, d_b_l, dv, coeff); // correlation identifies the liquid phase
+        correlation_db.coefficient(in, out);
 
         for (int k = 0; k < N; k++)
           for (int l = 0; l < N; l++)
             if (k != l)
               {
                 double fac = beta_*pf(f) * vf(f);
-                secmem(f, k) += fac * ( - coeff(k, l) * grad_f_a(f, k) + coeff(l, k) * grad_f_a(f, l));
+                secmem(f, k) += fac * ( - out.Ctd(k, l) * grad_f_a(f, k) + out.Ctd(l, k) * grad_f_a(f, l));
               }
       }
 
@@ -201,25 +195,25 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
       /* arguments de coeff */
       for (int n = 0; n < N; n++)
         {
-          a_l(n)   = alpha(e, n);
-          p_l(n)   = press(e, n * (Np > 1));
-          T_l(n)   =  temp(e, n);
-          rho_l(n) =   rho(!cR * e, n);
-          mu_l(n)  =    mu(!cM * e, n);
-          nut_l(n) = is_turb    ? nut(e,n) : 0;
-          d_b_l(n) = (d_bulles) ? (*d_bulles)(e,n) : 0;
+          in.alpha[n] = alpha(e, n);
+          in.p[n]     = press(e, n * (Np > 1));
+          in.T[n]     = temp(e, n);
+          in.rho[n]   = rho(!cR * e, n);
+          in.mu[n]    = mu(!cM * e, n);
+          in.nut[n]   = is_turb    ? nut(e,n) : 0;
+          in.d_bulles[n] = (d_bulles) ? (*d_bulles)(e,n) : 0;
           for (int k = n+1; k < N; k++)
             if (milc.has_interface(n,k))
               {
                 const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
-                sigma_l(ind_trav) = Sigma_tab(e, ind_trav);
+                in.sigma[ind_trav] = Sigma_tab(e, ind_trav);
               }
-
           for (int k = 0; k < N; k++)
-            dv(k, n) = ch.v_norm(pvit, pvit, e, -1, k, n, nullptr, nullptr);
+            in.nv(k, n) = ch.v_norm(pvit, pvit, e, -1, k, n, nullptr, nullptr);
         }
-      for (int n = 0; n <Nk; n++) k_l(n)   = (k_turb)   ? (*k_turb)(e,0) : 0;
-      correlation_db.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, nut_l, k_l, d_b_l, dv, coeff);
+      for (int n = 0; n <Nk; n++) in.k_turb[n]   = (k_turb) ? (*k_turb)(e,0) : 0;
+
+      correlation_db.coefficient(in, out);
 
       for (int d = 0, i = nf_tot + D * e; d < D; d++, i++)
         for (int k = 0; k < N; k++)
@@ -227,7 +221,7 @@ void Dispersion_bulles_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab&
             if (k != l)
               {
                 double fac = beta_*pe(e) * ve(e);
-                secmem(i, k) += fac * ( - coeff(k, l) * grad_f_a(i, k) + coeff(l, k) * grad_f_a(i, l));
+                secmem(i, k) += fac * ( - out.Ctd(k, l) * grad_f_a(i, k) + out.Ctd(l, k) * grad_f_a(i, l));
               }
     }
 }

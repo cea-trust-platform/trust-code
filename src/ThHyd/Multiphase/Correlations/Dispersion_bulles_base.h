@@ -15,8 +15,9 @@
 
 #ifndef Dispersion_bulles_base_included
 #define Dispersion_bulles_base_included
-#include <TRUSTTab.h>
+
 #include <Correlation_base.h>
+#include <TRUSTTab.h>
 
 /*! @brief classe Dispersion_bulles_base utilitaire pour les operateurs de dispersion turbulente ou la force
  *
@@ -37,10 +38,28 @@ class Dispersion_bulles_base : public Correlation_base
 {
   Declare_base(Dispersion_bulles_base);
 public:
-  virtual void coefficient(const DoubleTab& alpha, const DoubleTab& p, const DoubleTab& T,
-                           const DoubleTab& rho, const DoubleTab& mu, const DoubleTab& sigma,
-                           const DoubleTab& nut, const DoubleTab& k_turb, const DoubleTab& d_bulles,
-                           const DoubleTab& ndv, DoubleTab& coeff) const  = 0;
+  struct input_t
+  {
+    double dh = 0.;            // diametre hyd
+    DoubleTab alpha;  // alpha[n] : taux de vide de la phase n
+    DoubleTab T;      // T[n]     : temperature de la phase n
+    DoubleTab p;      // pression
+    DoubleTab rho;    // rho[n]        : masse volumique de la phase n
+    DoubleTab mu;     // mu[n]         : viscosite dynamique de la phase n
+    DoubleTab sigma;  // sigma[ind_trav]:tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
+    DoubleTab k_turb; // k_turb[n]     : energie cinetique turbulente de la phase n
+    DoubleTab nut;    // nut[n]        : viscosite turbulente de la phase n
+    DoubleTab d_bulles;//d_bulles[n]   : diametre de bulles de la phase n
+    DoubleTab nv;     // nv(k, l) : norme de ||v_k - v_l||
+    int e;                // indice d'element
+  };
+  /* valeurs de sortie */
+  struct output_t
+  {
+    DoubleTab Ctd;    //Cl(k, l)       : coeff de portance entre les phases k et l
+  };
+
+  virtual void coefficient(const input_t& input, output_t& output) const  = 0;
 };
 
 #endif
