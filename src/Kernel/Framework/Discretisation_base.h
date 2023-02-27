@@ -68,7 +68,7 @@ public :
 
   virtual void discretiser_variables() const;
   virtual void discretiser_Domaine_Cl_dis(const Domaine_dis&, Domaine_Cl_dis&) const;
-  virtual void discretiser(Domaine_dis&) const;
+  virtual void discretiser(REF(Domaine_dis)&) const;
   virtual void domaine_Cl_dis(Domaine_dis&, Domaine_Cl_dis&) const = 0;
 
   // Creation de champs scalaires ou vectoriels (essentiellement appel a la

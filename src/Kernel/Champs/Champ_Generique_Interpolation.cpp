@@ -633,13 +633,13 @@ const Domaine_dis_base& Champ_Generique_Interpolation::get_ref_domaine_dis_base(
 {
   if (domaine_.non_nul())
     {
-      if (!le_dom_dis.non_nul())
+      if (le_dom_dis.est_nul() || le_dom_dis->est_nul())
         {
           Cerr << "Error in Interpolation definition:" << finl;
           Cerr << "The domain " << domaine_->le_nom() << " is not built." << finl;
           exit();
         }
-      const Domaine_dis_base& domaine_dis = le_dom_dis.valeur();
+      const Domaine_dis_base& domaine_dis = le_dom_dis.valeur().valeur();
       return domaine_dis;
     }
   else

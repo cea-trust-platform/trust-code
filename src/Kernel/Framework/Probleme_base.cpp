@@ -94,7 +94,7 @@ Sortie& Probleme_base::printOn(Sortie& os) const
   for (int i = 0; i < nombre_d_equations(); i++)
     os << equation(i).que_suis_je() << " " << equation(i) << finl;
   os << les_postraitements;
-  os << le_domaine_dis;
+  os << le_domaine_dis.valeur();
   return os;
 }
 
@@ -394,7 +394,7 @@ void Probleme_base::discretiser(Discretisation_base& une_discretisation)
   une_discretisation.associer_domaine(le_domaine_.valeur());
   une_discretisation.discretiser(le_domaine_dis);
   // Can not do this before, since the Domaine_dis is not typed yet:
-  le_domaine_dis.associer_domaine(le_domaine_);
+  le_domaine_dis->associer_domaine(le_domaine_);
 
   if (milieu_via_associer() || is_pb_FT())
     {
@@ -633,7 +633,7 @@ Domaine& Probleme_base::domaine()
  */
 const Domaine_dis& Probleme_base::domaine_dis() const
 {
-  return le_domaine_dis;
+  return le_domaine_dis.valeur();
 }
 
 /*! @brief Renvoie le domaine discretise associe au probleme.
@@ -642,7 +642,7 @@ const Domaine_dis& Probleme_base::domaine_dis() const
  */
 Domaine_dis& Probleme_base::domaine_dis()
 {
-  return le_domaine_dis;
+  return le_domaine_dis.valeur();
 }
 
 /*! @brief Associe un milieu physique aux equations du probleme.

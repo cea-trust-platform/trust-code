@@ -46,30 +46,12 @@ public :
                          Champ_Don& champ) const override;
   void domaine_Cl_dis(Domaine_dis& z,Domaine_Cl_dis& zcl) const override;
 
-  int get_P1Bulle() const
-  {
-    return P1Bulle_;
-  };
-  int get_alphaE() const
-  {
-    return alphaE_;
-  };
-  int get_alphaS() const
-  {
-    return alphaS_;
-  };
-  int get_alphaA() const
-  {
-    return alphaA_;
-  };
-  int get_modif_div_face_dirichlet() const
-  {
-    return modif_div_face_dirichlet_;
-  };
-  int get_cl_pression_sommet_faible() const
-  {
-    return cl_pression_sommet_faible_;
-  };
+  int get_P1Bulle() const { return P1Bulle_; }
+  int get_alphaE() const  { return alphaE_;  }
+  int get_alphaS() const  { return alphaS_;  }
+  int get_alphaA() const  { return alphaA_;  }
+  int get_modif_div_face_dirichlet() const  { return modif_div_face_dirichlet_;  }
+  int get_cl_pression_sommet_faible() const { return cl_pression_sommet_faible_; }
 
 private:
   void discretiser_champ_fonc_don(
@@ -78,8 +60,8 @@ private:
     const Noms& nom, const Noms& unite,
     int nb_comp, double temps,
     Objet_U& champ) const;
-  void discretiser(Domaine_dis&) const override;
-private :
+  void discretiser(REF(Domaine_dis)&) const override;
+
   int P1Bulle_;
   int alphaE_;
   int alphaS_;

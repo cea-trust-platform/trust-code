@@ -405,7 +405,7 @@ const Domaine_dis_base& Champ_Generique_Extraction::get_ref_domaine_dis_base() c
 {
   if (domaine_.non_nul())
     {
-      const Domaine_dis_base& domaine_dis = le_dom_dis.valeur();
+      const Domaine_dis_base& domaine_dis = le_dom_dis.valeur().valeur();
       return  domaine_dis;
     }
   else

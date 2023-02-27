@@ -38,6 +38,7 @@
 class Champ_Generique_Extraction : public Champ_Gen_de_Champs_Gen
 {
   Declare_instanciable_sans_constructeur(Champ_Generique_Extraction);
+
 public:
   Champ_Generique_Extraction();
   void set_param(Param& param) override;
@@ -54,12 +55,11 @@ public:
   const  Motcle  get_directive_pour_discr() const override;
 
 protected :
-
-  Nom dom_extrac_;                //Nom du domaine d extraction
-  Nom nom_fr_;                        //Nom de la frontiere sur laquelle on fait l extraction
-  Nom methode_;                        //Type de methode pour extraire ("trace" ou "champ_frontiere")
-  REF(Domaine) domaine_;        //Reference sur le domaine d extraction
-  Domaine_dis le_dom_dis;        //Le domaine discretise correspondant a domaine_.valeur()
+  Nom dom_extrac_;              // Nom du domaine d extraction
+  Nom nom_fr_;                  // Nom de la frontiere sur laquelle on fait l extraction
+  Nom methode_;                 // Type de methode pour extraire ("trace" ou "champ_frontiere")
+  REF(Domaine) domaine_;        // Reference sur le domaine d extraction
+  REF(Domaine_dis) le_dom_dis;  // Le domaine discretise - real owner is Domaine_dis_cache
 };
 
 #endif

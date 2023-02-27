@@ -198,7 +198,7 @@ protected :
   // ***************************************************************************
 
   std::vector<Milieu> le_milieu_;
-  Domaine_dis le_domaine_dis;
+  REF(Domaine_dis) le_domaine_dis;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
   Postraitements les_postraitements;
   REF(Domaine) le_domaine_;
   REF(Schema_Temps_base) le_schema_en_temps;

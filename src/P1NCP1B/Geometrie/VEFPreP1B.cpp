@@ -284,9 +284,9 @@ void VEFPreP1B::domaine_Cl_dis(Domaine_dis& z,
   Cerr << "discretisation des conditions limites OK" << finl;
 }
 
-void VEFPreP1B::discretiser(Domaine_dis& dom) const
+void VEFPreP1B::discretiser(REF(Domaine_dis)& dom) const
 {
   Discretisation_base::discretiser(dom);
-  Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b, dom.valeur());
+  Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b, dom.valeur().valeur());
   zvef.discretiser_suite(*this);
 }
