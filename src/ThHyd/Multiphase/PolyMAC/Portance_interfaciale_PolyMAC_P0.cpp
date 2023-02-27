@@ -94,19 +94,11 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
       /* arguments de coeff */
 
       for (n = 0; n < N; n++)
-        {
-          for (k = n+1; k < N; k++)
-            if(milc.has_interface(n, k))
-              {
-                const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
-                sigma_l(ind_trav) = Sigma_tab(e, ind_trav);
-              }
           for (k = 0; k < N; k++)
             dv(k, n) = ch.v_norm(pvit, pvit, e, -1, k, n, nullptr, nullptr);
-        }
 
       in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &dv(0, 0);
-      in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.sigma = &sigma_l(0);
+      in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.sigma = &Sigma_tab(e, 0);
       in.k_turb  = (k_turb)   ? &(*k_turb)(e,0) : nullptr, in.d_bulles= (d_bulles) ? &(*d_bulles)(e,0) : nullptr;
 
       correlation_pi.coefficient(in, out);

@@ -45,7 +45,7 @@ public:
     const double *nv;     // nv[N * k + l] : norme de ||v_k - v_l||
     const double *mu;     // mu[n]         : viscosite dynamique de la phase n
     const double *rho;    // rho[n]        : masse volumique de la phase n
-    const double *sigma;  // sigma[N*k+l]  : tension superficielle entre la phase k et l
+    const double *sigma;  // sigma[ind_trav]:tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
     const double *k_turb; // k_turb[n]     : energie cinetique turbulente de la phase n
     const double *d_bulles;//d_bulles[n]   : diametre de bulles de la phase n
     int e;                // indice d'element

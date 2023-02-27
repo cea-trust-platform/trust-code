@@ -45,10 +45,12 @@ void Portance_interfaciale_Constante::coefficient(const input_t& in, output_t& o
 {
   int k, N = out.Cl.dimension(0);
 
+  double fac = (in.alpha[n_l]>0.3) ? 1. : ( in.alpha[n_l] <0.05 ? 0 : (in.alpha[n_l]-0.05)/0.25 );
+
   for (k = 0; k < N; k++)
     if (k!=n_l) // k gas phase
       {
-        out.Cl(k, n_l) = Cl_ * in.rho[n_l] * in.alpha[k] ;
+        out.Cl(k, n_l) = Cl_ * in.rho[n_l] * in.alpha[k] * fac ;
         out.Cl(n_l, k) =  out.Cl(k, n_l);
       }
 }
