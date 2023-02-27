@@ -57,7 +57,8 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
 
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot(),
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N*(N-1)/2), dv(N, N), ddv(N, N, 4), ddv_c(4), d_bulles_l(N), coeff(N, N, 2); //arguments pour coeff
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N*(N-1)/2), dv(N, N), ddv(N, N, 4), d_bulles_l(N), coeff(N, N, 2); //arguments pour coeff
+  double ddv_c[4] = {0., 0., 0., 0. };
   double dh;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
 
@@ -114,9 +115,9 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
               dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
               for (k = 0; k < N; k++)
                 {
-                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, n, nullptr, &ddv_c(0));
+                  double dv_c = ch.v_norm(pvit, pvit, e, f, k, n, nullptr, &ddv_c[0]);
                   if (dv_c > dv(k, n))
-                    for (dv(k, n) = dv_c, i = 0; i < 4; i++) ddv(k, n, i) = ddv_c(i);
+                    for (dv(k, n) = dv_c, i = 0; i < 4; i++) ddv(k, n, i) = ddv_c[i];
                 }
               d_bulles_l(n) += (d_bulles) ? vfd(f, c) / vf(f) * (*d_bulles)(e,n) : 0;
             }
