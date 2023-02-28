@@ -13,22 +13,22 @@
 *
 *****************************************************************************/
 
-#ifndef Create_domain_from_sous_domaine_included
-#define Create_domain_from_sous_domaine_included
+#ifndef Create_domain_from_sub_domain_included
+#define Create_domain_from_sub_domain_included
 
 #include <Interprete_geometrique_base.h>
 
 class Nom;
 class Domaine;
 
-/*! @brief Classe Create_domain_from_sous_domaine Lecture d'un fichier
+/*! @brief Classe Create_domain_from_sub_domain Lecture d'un fichier
  *
  * @sa Interprete
  */
 
-class Create_domain_from_sous_domaine : public Interprete_geometrique_base
+class Create_domain_from_sub_domain : public Interprete_geometrique_base
 {
-  Declare_instanciable(Create_domain_from_sous_domaine);
+  Declare_instanciable(Create_domain_from_sub_domain);
 public :
   Entree& interpreter_(Entree&) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;

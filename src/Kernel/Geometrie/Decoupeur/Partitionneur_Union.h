@@ -35,7 +35,7 @@ class Domaine;
  *     }
  *
  *
- * @sa Partitionneur_Sous_Domaine Create_domain_from_sous_domaine
+ * @sa Partitionneur_Sous_Domaine Create_domain_from_sub_domain
  */
 class Partitionneur_Union : public Partitionneur_base
 {

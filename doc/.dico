@@ -232,7 +232,7 @@
  Cosh Cosh StdFunction.h
  Couplage_U Couplage_U Couplage_U.h
  Courant_maille_Champ_Face Courant_maille_Champ_Face Courant_maille_Champ_Face.h
- Create_domain_from_sous_domaine|Create_domains_from_sous_domaines Create_domain_from_sous_domaine Create_domain_from_sous_domaine.h
+ Create_domain_from_sub_domain|Create_domain_from_sub_domains Create_domain_from_sub_domain Create_domain_from_sub_domain.h
  Critere_Q_Champ_Face Critere_Q_Champ_Face Critere_Q_Champ_Face.h
  Critere_Q_Champ_P1NC Critere_Q_Champ_P1NC Critere_Q_Champ_P1NC.h
  Darcy_QC_VDF_Face Darcy_QC_VDF_Face Source_QC_VDF_Face.h

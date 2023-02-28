@@ -1280,4 +1280,4 @@ interpolation_ibm_elem_fluid interpolation_ibm_base ibm_element_fluide 1 Immerse
   attr points_solides field_base points_solides 1 Node field giving the projection of the node on the immersed boundary
   attr elements_fluides field_base elements_fluides 1 Node field giving the number of the element (cell) containing the pure fluid point
   attr correspondance_elements field_base correspondance_elements 1 Cell field giving the SALOME cell number
-create_domain_from_sous_zone create_domain_from_sous_domaine create_domain_from_sous_zone -1 kept for backward compatibility. please use create_domain_from_sous_domaine
+create_domain_from_sous_zone Create_domain_from_sub_domain create_domain_from_sous_zone -1 kept for backward compatibility. please use Create_domain_from_sub_domain

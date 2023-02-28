@@ -22,14 +22,14 @@
 class Domaine;
 
 
-/*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sous_domaine de maniere "conforme" : le sous-domaine est decoupe de maniere
+/*! @brief Decoupeur permettant de decouper des sous-domaines (se recouvrant potentiellement)  crees par Create_domain_from_sub_domain de maniere "conforme" : le sous-domaine est decoupe de maniere
  *
  *   "conforme" avec le domaine complet.
  *
  *   Utilisation:
  *       - creer un domaine global, et deux sous-domaines (qui se recouvrent partiellement) pour Domaine1 et Domaine2
  *       - decouper le domaine global et ecrire le fichier de decoupe
- *       - creer Domaine1 et Domaine2 par Create_domain_from_sous_domaine
+ *       - creer Domaine1 et Domaine2 par Create_domain_from_sub_domain
  *       - decouper D1 et D2 par Partitionneur sous_domaine en prenant pour source le decoupage du domaine global.
  *
  *   Syntaxe:
@@ -44,7 +44,7 @@ class Domaine;
  *     }
  *
  *
- * @sa Partitionneur_Union Create_domain_from_sous_domaine
+ * @sa Partitionneur_Union Create_domain_from_sub_domain
  */
 class Partitionneur_Sous_Domaine : public Partitionneur_base
 {

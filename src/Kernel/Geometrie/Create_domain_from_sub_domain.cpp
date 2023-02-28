@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Create_domain_from_sous_domaine.h>
+#include <Create_domain_from_sub_domain.h>
 #include <Domaine.h>
 #include <Param.h>
 #include <DomaineCutter.h>
@@ -22,23 +22,23 @@
 #include <SFichier.h>
 #include <Synonyme_info.h>
 
-Implemente_instanciable(Create_domain_from_sous_domaine,"Create_domain_from_sous_domaine|Create_domains_from_sous_domaines",Interprete_geometrique_base);
-// XD create_domain_from_sous_domaine interprete_geometrique_base create_domain_from_sous_domaine 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
+Implemente_instanciable(Create_domain_from_sub_domain,"Create_domain_from_sub_domain|Create_domain_from_sub_domains",Interprete_geometrique_base);
+// XD Create_domain_from_sub_domain interprete_geometrique_base Create_domain_from_sub_domain 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
 // 16/10/2017: desactivation du mot-cle par_sous_zones
-// create_domain_from_sous_domaine interprete_geometrique_base create_domain_from_sous_domaine 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone or with several subdomaines par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
+// Create_domain_from_sub_domain interprete_geometrique_base Create_domain_from_sub_domain 1 This keyword fills the domain domaine_final with the subdomaine par_sous_zone or with several subdomaines par_sous_zones from the domain domaine_init. It is very useful when meshing several mediums with Gmsh. Each medium will be defined as a subdomaine into Gmsh. A MED mesh file will be saved from Gmsh and read with Lire_Med keyword by the TRUST data file. And with this keyword, a domain will be created for each medium in the TRUST data file.
 
-Add_synonym(Create_domain_from_sous_domaine, "Create_domain_from_sous_zone");
+Add_synonym(Create_domain_from_sub_domain, "Create_domain_from_sous_zone");
 
-Sortie& Create_domain_from_sous_domaine::printOn(Sortie& os) const
+Sortie& Create_domain_from_sub_domain::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
-Entree& Create_domain_from_sous_domaine::readOn(Entree& is)
+Entree& Create_domain_from_sub_domain::readOn(Entree& is)
 {
   return Interprete::readOn(is);
 }
 
-int Create_domain_from_sous_domaine::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Create_domain_from_sub_domain::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   if (mot=="domaines" || mot=="zones")
     {
@@ -53,7 +53,7 @@ int Create_domain_from_sous_domaine::lire_motcle_non_standard(const Motcle& mot,
   return 0;
 }
 
-Entree& Create_domain_from_sous_domaine::interpreter_(Entree& is)
+Entree& Create_domain_from_sub_domain::interpreter_(Entree& is)
 {
   Nom nom_dom_org;
   noms_sous_domaines.dimensionner(1), noms_doms.dimensionner(1);
@@ -64,7 +64,7 @@ Entree& Create_domain_from_sous_domaine::interpreter_(Entree& is)
   param.ajouter_non_std("domaines|zones", this);
   // 16/10/2017: desactivation du mot-cle par_sous_zones
   //param.ajouter("par_sous_zones",&vec_nom_ssz); // listchaine several sub-domaines allowing to choose the elements
-  //param.ajouter_condition("is_read_par_sous_zone_or_is_read_par_sous_zones","Interpreter Create_domain_from_sous_domaine: one of the keywords par_sous_zone or par_sous_zones must be specified.");
+  //param.ajouter_condition("is_read_par_sous_zone_or_is_read_par_sous_zones","Interpreter Create_domain_from_sub_domain: one of the keywords par_sous_zone or par_sous_zones must be specified.");
   param.lire_avec_accolades_depuis(is);
 
 
@@ -88,7 +88,7 @@ Entree& Create_domain_from_sous_domaine::interpreter_(Entree& is)
       for (int j = 0; j < ssz.nb_elem_tot(); j++)
         {
           if (index(ssz(j))) /* element deja pris -> erreur */
-            Process::exit(Nom("Create_domain_from_sous_domaine : collision detected between ") + noms_sous_domaines[i] + " and " + noms_sous_domaines[index(ssz(j)) - 1] + " !");
+            Process::exit(Nom("Create_domain_from_sub_domain : collision detected between ") + noms_sous_domaines[i] + " and " + noms_sous_domaines[index(ssz(j)) - 1] + " !");
           index(ssz(j)) = i + 1;
         }
     }

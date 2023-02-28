@@ -28,7 +28,7 @@
 #include <Operateur.h>
 #include <Param.h>
 #include <LecFicDiffuse_JDD.h>
-#include <Create_domain_from_sous_domaine.h>
+#include <Create_domain_from_sub_domain.h>
 #include <Sous_Domaine.h>
 #include <EChaine.h>
 #include <Interprete_bloc.h>
@@ -501,7 +501,7 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       Interprete_bloc::interprete_courant().interpreter_bloc(IN, Interprete_bloc::BLOC_EOF, 0);
 
       // Definition du domaine a partir du sous-domaine
-      in = "Create_domain_from_sous_domaine { domaine_final ";
+      in = "Create_domain_from_sub_domain { domaine_final ";
       in += nom_du_nouveau_dom;
       in += " par_sous_zone ";
       in += nom_du_sous_domaine;

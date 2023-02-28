@@ -27,6 +27,8 @@ for file in $Deprecated_includes_v192
 do
 echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include. See TRUST_ROOT/DEVELOPER_NOTES for more information" > backward/$file
 done
+file="Create_domain_from_sous_zone.h"
+echo "#error File $file deprecated in TRUST 1.9.2. You SHOULD change the include to Create_domain_from_sub_domain.h" > backward/$file
 
 # Ouverture de $INC
 echo "s?$MPI_INCLUDE/mpi\.h?\$(MPI_INCLUDE)/mpi\.h?g">.tmp
