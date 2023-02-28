@@ -274,7 +274,7 @@ then
    if [ 0 -eq 1 ]
    then
    # GF ajout du repertoire LIBLATAFILTER car la librairie depend du noyau
-   for dir in `cat $TRUST_ENV/rep.TRUST` lib/src/LIBLATAFILTER/build
+   for dir in `cat $TRUST_ENV/rep.TRUST`
    do
    if [ -f $dir/makefile ] || [ -f $dir/Makefile ]
    then

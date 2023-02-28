@@ -498,7 +498,7 @@ else()
   # GF bidouille importante pour forcer les dependances si ajout d un fichier .h
   execute_process(COMMAND find . -name depend.internal -exec rm {} \; RESULT_VARIABLE toto ERROR_VARIABLE err )
   message("New files in rep_dev"  )
-  set(LATACOMMON ThirdPart/src/LIBLATAFILTER/trust_commun)
+  set(LATACOMMON Outils/lata_tools/src/trust_commun)
   if ((${kernel} STREQUAL "micro") OR (${kernel} STREQUAL "numeric"))
   set(LATACOMMON "")
   endif()
