@@ -77,8 +77,10 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   const double * volumes_entrelaces_addr = copyToDevice(volumes_entrelaces);
   double * sm_addr = sm.addr();
   start_timer();
-  //PL: desactive le kernel GPU car plus 2 fois plus lent que sur CPU pour le moment (copie de sm tofrom):
-  //#pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:sm_addr[0:sm.size_array()])
+#ifdef _OPENMP
+  bool dataOnDevice = sm.isDataOnDevice();
+  #pragma omp target teams distribute parallel for if (dataOnDevice && computeOnDevice)
+#endif
   for (int face=num_std; face<nfa; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
@@ -89,7 +91,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   // les faces internes non standard ne portent pas de C.L
 
   // On traite les conditions aux limites
-
+  copyPartialFromDevice(sm, 0, domaine_VEF.premiere_face_int() * nbcomp, "sm on boundary");
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
 
@@ -143,12 +145,13 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
                 sm(face,comp) /= (volumes_entrelaces_Cl(face)*porosite_face(face));
             }
     }
-
-  // On traite les faces internes non standard
+  copyPartialToDevice(sm, 0, domaine_VEF.premiere_face_int() * nbcomp, "sm on boundary");  // On traite les faces internes non standard
   const double * volumes_entrelaces_Cl_addr = copyToDevice(volumes_entrelaces_Cl);
   start_timer();
-  //PL: desactive le kernel GPU car plus 50 fois plus lent que sur CPU ! pour le moment num_std-num_face trop petit...
-  //#pragma omp target teams distribute parallel for if (computeOnDevice) map(tofrom:sm_addr[0:sm.size_array()])
+#ifdef _OPENMP
+  dataOnDevice = sm.isDataOnDevice();
+  #pragma omp target teams distribute parallel for if (dataOnDevice && computeOnDevice)
+#endif
   for (int face=num_int; face<num_std; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
