@@ -46,7 +46,7 @@ Read pb
         diffusion { }
         sources { boussinesq_temperature { T0 5. } }
         initial_conditions {
-            vitesse Champ_Fonc_MEDFile {
+            vitesse Champ_Fonc_MED {
                 domain dom
                 file initial.med
                 field vitesse
@@ -75,7 +75,7 @@ Read pb
             Droit  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
         }
         initial_conditions {
-            Temperature Champ_Fonc_MEDFile {
+            Temperature Champ_Fonc_MED {
                 domain dom
                 file single_file.med
                 field temperature

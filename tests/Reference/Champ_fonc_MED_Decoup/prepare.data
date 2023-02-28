@@ -26,7 +26,7 @@ Partition dom
     Partition_tool Metis { nb_parts 3 }
     Larg_joint 2
     zones_name dom0
-    ecrire_decoupage dom0.dec
+    ecrire_decoupage_sommets dom0.dec
     single_hdf
 }
 End

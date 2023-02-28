@@ -6,3 +6,4 @@ make_PAR.data prepare
 trust PAR_prepare $? 1>PAR_prepare.out_err 2>&1 || exit -1
 mv -f PAR_prepare_0000.med single_file.med
 echo "Creation of single_file.med" # Renumerotation suite au partitionnement en //
+rm -f initial_000*med 

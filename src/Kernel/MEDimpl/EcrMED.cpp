@@ -100,13 +100,13 @@ void EcrMED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
 Entree& EcrMED::interpreter(Entree& is)
 {
   Cerr<<"syntax : EcrMED [ append ] nom_dom nom_fic "<<finl;
-  int mode=-1;
+  bool append=false;
   Nom nom_dom;
   is >> nom_dom ;
   Motcle app("append");
   if (app==nom_dom)
     {
-      mode=0;
+      append=true;
       is >> nom_dom;
       Cerr<<" Adding "<<nom_dom<<finl;
     }
@@ -118,7 +118,7 @@ Entree& EcrMED::interpreter(Entree& is)
       exit();
     }
   dom_ = ref_cast(Domaine, objet(nom_dom));
-  ecrire_domaine(mode);
+  ecrire_domaine(append);
   return is;
 }
 
@@ -282,7 +282,6 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
            << "noms_bords= " << noms_bords<< finl;
     }
 #ifdef MEDCOUPLING_
-  Cerr << "Trying to write MED file with MEDCoupling API. To use the MEDFile API, use EcrMEDfile or MEDFile keyword." << finl;
   Cerr << "Creating a MEDCouplingUMesh object for the domain " << nom_dom << finl;
   // Get MEDCoupling cell type and mesh dimension:
   int mesh_dimension = -1;

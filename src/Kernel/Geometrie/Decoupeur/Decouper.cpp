@@ -99,6 +99,43 @@ static void ecrire_fichier_decoupage(const Nom& nom_fichier_decoupage,
   file << nb_parts_tot;
 }
 
+static void ecrire_fichier_decoupage_som(const Nom& nom_fichier_decoupage,
+                                         const Domaine& domaine,
+                                         const IntVect& elem_part
+                                        )
+{
+  Cerr << "Writing of the splitting array at the format IntVect ascii\n"
+       << " in the file " << nom_fichier_decoupage
+       << "\n(for each node, list of the destination processors)" << finl;
+  SFichier file; // Fichier ascii
+  if (! file.ouvrir(nom_fichier_decoupage))
+    {
+      Cerr << " Error in the opening of the file." << finl;
+      Process::exit();
+    }
+
+  const IntTab& elems = domaine.les_elems();
+  int nbOfNodesPerElems = elems.dimension(1);
+  int nbSom = domaine.nb_som();
+  std::vector<std::set<int>> node_part(nbSom);
+  for(int i=0; i<elem_part.size(); i++)
+    {
+      for (int j = 0; j < nbOfNodesPerElems; j++)
+        {
+          int node = elems(i, j);
+          node_part[node].insert(elem_part[i]);
+        }
+    }
+  file << domaine.nb_som() << finl;
+  for(int i=0; i<nbSom; i++)
+    {
+      file << i << " " << node_part[i].size() << " ";
+      for(std::set<int>::iterator it = node_part[i].begin(); it!=node_part[i].end(); ++it)
+        file << *it << " ";
+      file << finl;
+    }
+}
+
 static void postraiter_decoupage(const Nom& nom_fichier_lata,
                                  const Domaine& domaine,
                                  const IntVect& elem_part)
@@ -219,6 +256,7 @@ Entree& Decouper::lire(Entree& is)
   param.ajouter_condition("value_of_larg_joint_ge_1","The joint thickness must greater or equal to 1.");
   param.ajouter("nom_zones|zones_name",&nom_domaines_decoup);
   param.ajouter("ecrire_decoupage",&nom_fichier_decoupage);
+  param.ajouter("ecrire_decoupage_sommets",&nom_fichier_decoupage_sommets);
   param.ajouter("ecrire_lata",&nom_fichier_lata);
   param.ajouter("nb_parts_tot",&nb_parts_tot);
   param.ajouter("reorder",&reorder);
@@ -258,6 +296,9 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
 
   if (nom_fichier_decoupage != "?")
     ecrire_fichier_decoupage(nom_fichier_decoupage, elem_part, nb_parts_tot);
+
+  if (nom_fichier_decoupage_sommets != "?")
+    ecrire_fichier_decoupage_som(nom_fichier_decoupage_sommets, ref_domaine.valeur(), elem_part);
 
   if (nom_domaines_decoup != "?")
     {

@@ -61,6 +61,7 @@ private:
   int epaisseur_joint = 1;
   Nom nom_domaines_decoup = "?";
   Nom nom_fichier_decoupage = "?";
+  Nom nom_fichier_decoupage_sommets = "?";
   Nom nom_fichier_lata = "?";
   int format_binaire = 1;
   int format_hdf = 0;

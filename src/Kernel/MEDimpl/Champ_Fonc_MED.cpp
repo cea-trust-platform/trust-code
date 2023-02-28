@@ -20,10 +20,12 @@
 #include <EChaine.h>
 #include <medcoupling++.h>
 #include <trust_med_utils.h>
+#include <Comm_Group_MPI.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
 #include <MEDCouplingField.hxx>
 #include <MEDCouplingFieldDouble.hxx>
+#include <ParaMEDFileMesh.hxx>
 #pragma GCC diagnostic ignored "-Wreorder"
 #include <MEDFileField.hxx>
 #include <communications.h>
@@ -189,7 +191,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
         {
           // use_existing_domain utilisable en parallele uniquement si le process 0 gere tout le domaine ou si decoup specifie:
           const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom_));
-          if (Process::nproc()>1 && mp_max((int)(le_domaine.nb_som()>0)) != 0)
+          if (Process::nproc()>1 && mp_max((int)(le_domaine.nb_som()>0)) != 0 && !nom_decoup_lu)
             {
               Cerr << "Warning, you can't use use_existing_domain on a partitionned domain like " << nom_dom_ << finl;
               Cerr << "It is not parallelized yet... So we use MED mesh, which is not optimal." << finl;
@@ -294,17 +296,49 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
   /* si on est en parallele : creation du filtre */
   if (Process::nproc() > 1 && field_size != le_champ().valeurs().dimension(0))
     {
-      ArrOfInt dec;
       filter.set_smart_resize(1);
       EFichier fdec;
       fdec.ouvrir(nom_decoup_);
       // Cas ou le maillage du fichier .med suit la numerotation du maillage initial (necessite le fichier du decoupage pour retrouver la numerotation)
       if (fdec.good())
         {
-          fdec >> dec;
-          for (int i = 0; i < dec.size_array(); i++)
-            if (dec[i] == Process::me()) filter.append_array(i + 1);//les indices commencent a 1
-          if (field_size != dec.size_array())
+          int dec_size=-1;
+          if(loc_ == "elem")
+            {
+              ArrOfInt dec;
+              fdec >> dec;
+              dec_size = dec.size_array();
+              for (int i = 0; i < dec_size; i++)
+                if (dec[i] == Process::me()) filter.append_array(i);
+            }
+          else if(loc_ == "som")
+            {
+              int nbNodes;
+              fdec >> nbNodes;
+              std::vector<std::set<int>> dec(nbNodes);
+              for(int n=0; n<nbNodes; n++)
+                {
+                  int node,size;
+                  fdec >> node >> size;
+                  for(int p=0; p<size; p++)
+                    {
+                      int proc;
+                      fdec >> proc;
+                      dec[node].insert(proc);
+                    }
+                }
+              dec_size = (int)dec.size();
+              for (int n=0; n < dec_size; n++)
+                for(std::set<int>::iterator it = dec[n].begin(); it!=dec[n].end(); ++it)
+                  if (*it == Process::me()) filter.append_array(n);
+            }
+          else
+            {
+              Cerr << "Champ_Fonc_MED on parallel domain : decoup file only handled for field located on nodes or on cells!" << finl;
+              Process::exit();
+            }
+
+          if (field_size != dec_size)
             {
               Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between 'decoup' file and field!" << finl;
               Process::exit();
@@ -315,7 +349,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           int nb_item = le_champ().valeurs().dimension(0);
           int first_item = mppartial_sum(nb_item);
           for (int i=0; i<nb_item; i++)
-            filter.append_array(first_item + i + 1);//les indices commencent a 1
+            filter.append_array(first_item);
         }
       filter.set_smart_resize(0), filter.resize(filter.size_array());
       Cerr << "Creating a filter to access efficiently values in " << nom_fichier_med_ << finl;
@@ -330,7 +364,6 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
       Cerr << "Champ_Fonc_MED on existing domain : inconsistency between domain file and field!" << finl;
       Process::exit();
     }
-
   le_champ().nommer(nom_champ_);
   le_champ().corriger_unite_nom_compo();
   mettre_a_jour(temps_);
@@ -404,21 +437,35 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       int iteration = time_steps_[given_it].first;
       int order = time_steps_[given_it].second;
 
-      // Only one MCAuto below to avoid double deletion:
-      MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, iteration, order);
-      Cerr << " at time " << t << " ... " << finl;
-      MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
-      if (field == 0)
+      if(filter.size_array() > 0) // Partial reading of field (only field values are loaded, not its structure!)
         {
-          Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
-          Process::exit(-1);
+#ifdef MPI_
+          std::vector<int> distrib;
+          distrib.insert(distrib.begin(), filter.addr(), filter.addr() + filter.size_array());
+          MCAuto<MEDFileField1TS> fieldFile = MEDCoupling::ParaMEDFileField1TS::ParaNew(Comm_Group_MPI::get_trio_u_world(), MPI_INFO_NULL, fileName, fieldName, meshName, distrib, field_type, iteration, order);
+          MEDCoupling::DataArrayDouble *field_values = fieldFile->getUndergroundDataArray();
+#endif
+          std::copy(field_values->begin(),field_values->end(),
+                    le_champ().valeurs().addr());
         }
-      const double *field_values = field->getArray()->begin();
-      assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
-      assert((int) field->getNumberOfComponents() ==
-             (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
-      memcpy(le_champ().valeurs().addr(), field_values,
-             le_champ().valeurs().size_array() * sizeof(double));
+      else
+        {
+          // Only one MCAuto below to avoid double deletion:
+          MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, iteration, order);
+          Cerr << " at time " << t << " ... " << finl;
+          MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
+          if (field == 0)
+            {
+              Cerr << "ERROR reading MED field! Not a MEDCouplingFieldDouble!!" << finl;
+              Process::exit(-1);
+            }
+          assert(field->getNumberOfTuplesExpected() == le_champ().valeurs().dimension(0));
+          assert((int) field->getNumberOfComponents() ==
+                 (le_champ().valeurs().nb_dim() == 1 ? 1 : le_champ().valeurs().dimension(1)));
+          MEDCoupling::DataArrayDouble *field_values = field->getArray();
+          std::copy(field_values->begin(),field_values->end(),
+                    le_champ().valeurs().addr());
+        }
     }
 #endif  // MEDCOUPLING_
   // Mise a jour:
@@ -547,14 +594,19 @@ MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName,
   bool fast = meshName == domaine().le_nom() && domaine().getUMesh() != NULL;
   Cerr << "Reading" << (fast ? " (fast)" : "") << " the field " << fieldName << " on the " << meshName << " mesh into " << fileName << " file";
   MCAuto<MEDCouplingField> ffield;
-  if (fast)
+  Cerr << "meshName " << meshName << " " << domaine().le_nom()  << " " << (int)(domaine().getUMesh()!=NULL) << finl;
+
+  if (fast) // Lecture plus rapide du field sans lecture du mesh associe
     {
-      // Lecture plus rapide du field sans lecture du mesh associe
       MCAuto<MEDFileField1TS> file = MEDCoupling::MEDFileField1TS::New(fileName, fieldName, iteration, order);
       ffield = file->getFieldOnMeshAtLevel(field_type, domaine().getUMesh(), 0);
+
     }
   else   // Lecture ~deux fois plus lente du field avec lecture du mesh associe
-    ffield = ReadField(field_type, fileName, meshName, 0, fieldName, iteration, order);
+    {
+      ffield = ReadField(field_type, fileName, meshName, 0, fieldName, iteration, order);
+    }
+
   return ffield;
 }
 
@@ -570,7 +622,6 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
   unsigned int nn = temps_sauv.size_array();
   int last_iter  = time_steps_[nn-1].first;
   int last_order = time_steps_[nn-1].second;
-
   // Only one MCAuto below to avoid double deletion:
   MCAuto<MEDCouplingField> ffield = lire_champ(fileName, meshName, fieldName, last_iter, last_order);
   MEDCouplingFieldDouble * field = dynamic_cast<MEDCouplingFieldDouble *>((MEDCouplingField *)ffield);
@@ -582,15 +633,27 @@ void Champ_Fonc_MED::lire_donnees_champ(const std::string& fileName, const std::
   size = field->getNumberOfTuplesExpected();
   nbcomp = (int) field->getNumberOfComponents();
 
+//  nbcomp = (int)MEDCoupling::GetComponentsNamesOfField(fileName,fieldName).size();
+//  int meshDim, spaceDim;
+//  int numberOfNodes;
+//  std::vector< std::vector< std::pair<INTERP_KERNEL::NormalizedCellType,int> > > typesOfCells(MEDCoupling::GetUMeshGlobalInfo(fileName,meshName,meshDim,spaceDim,numberOfNodes));
+//  size = -1;
   if (field_type == MEDCoupling::ON_NODES)
     {
       if ((cell_type == INTERP_KERNEL::NORM_QUAD4) || (cell_type == INTERP_KERNEL::NORM_HEXA8))
         type_champ = "Champ_Fonc_Q1_MED";
       else
         type_champ = "Champ_Fonc_P1_MED";
+//      size = numberOfNodes;
     }
   else if (field_type == MEDCoupling::ON_CELLS)
-    type_champ = "Champ_Fonc_P0_MED";
+    {
+      type_champ = "Champ_Fonc_P0_MED";
+//      int numberOfCells = 0;
+//      for(int i=0; i<(int)typesOfCells[0].size(); i++) //iterate over cells of maximal dimension
+//        numberOfCells+=(int)typesOfCells[0][i].second;
+//      size = numberOfCells;
+    }
 }
 #endif // MEDCOUPLING_
 
