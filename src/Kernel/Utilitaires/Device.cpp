@@ -15,10 +15,14 @@
 
 #include <TRUSTTab.h>
 #include <TRUSTTrav.h>
+#include <TRUSTArray.h>
+#include <Array_base.h>
 #include <Device.h>
+#include <ctime>
 #include <string>
 #include <sstream>
 #include <comm_incl.h>
+#include <stat_counters.h>
 
 // Voir AmgXWrapper (src/init.cpp)
 int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
@@ -111,223 +115,189 @@ void init_cuda()
 }
 #endif
 
-// Teste intensivement les methodes de l'interface Device.h:
-static bool self_tested_ = false;
-bool self_test()
+#include <sstream>
+inline std::string toString(const void* adr)
 {
-  if (!self_tested_ && Objet_U::computeOnDevice)
-    {
-      self_tested_ = true;
-      int N = 10;
-      // Teste les methodes d'acces sur le device:
-      DoubleTab inco(N);
-      inco = 1;
-      copyToDevice(inco, "inco"); // copy
-      assert(inco.get_dataLocation() == HostDevice);
-      assert(inco.ref_count() == 1);
-      {
-        // Exemple 1er operateur
-        DoubleTab a;
-        a.ref(inco); // Doit prendre l'etat de inco
-        assert(a.get_dataLocation() == HostDevice);
-        assert(a.ref_count() == 2);
-        assert(inco.ref_count() == 2);
-        DoubleTab b(N);
-
-        const double *a_addr = copyToDevice(a, "a"); // up-to-date
-        double *b_addr = b.addr();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
-
-#ifndef NDEBUG
-        const DoubleTab& const_b = b;
-        const DoubleTab& const_a = a;
-#endif
-        assert(const_b[5] == const_a[5]);
-        assert(const_b[5] == 1);
-        //assert(b[5] == a[5]); // Argh double& TRUSTArray<double>::operator[](int i) appele pour a et donc repasse sur host
-        // Comment detecter que operator[](int i) est utilise en read ou write ? Possible ? Non, sauf si const utilise.
-        assert(a.get_dataLocation() == HostDevice);
-        assert(b.get_dataLocation() == HostOnly);
-        assert(inco.get_dataLocation() == HostDevice);
-      }
-      assert(inco.get_dataLocation() == HostDevice);
-      assert(inco.ref_count() == 1);
-      {
-        // Exemple 2eme operateur
-        DoubleTab a;
-        a.ref(inco); // Doit prendre l'etat de inco qui est toujours HostDevice
-        assert(a.get_dataLocation() == HostDevice);
-        assert(a.ref_count() == 2);
-        assert(inco.ref_count() == 2);
-        const double *a_addr = copyToDevice(a, "a"); // up-to-date
-
-        DoubleTab b(N);
-        double *b_addr = b.addr();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
-
-#ifndef NDEBUG
-        const DoubleTab& const_b = b;
-        const DoubleTab& const_a = a;
-#endif
-        assert(const_b[5] == const_a[5]);
-        assert(const_b[5] == 1);
-        assert(a.get_dataLocation() == HostDevice);
-        assert(b.get_dataLocation() == HostOnly);
-      }
-      assert(inco.ref_count() == 1);
-
-      // Mise a jour de l'inconnue sur le host:
-      inco += 1;
-      assert(inco.get_dataLocation() == Host);
-      assert(inco.ref_count() == 1);
-      {
-        // Pas de temps suivant, nouvel operateur:
-        DoubleTab a;
-        a.ref(inco); // Doit prendre l'etat de inco
-        assert(a.get_dataLocation() == Host);
-        assert(a.ref_count() == 2);
-        assert(inco.ref_count() == 2);
-        const double *a_addr = copyToDevice(a, "a"); // update
-
-        DoubleTab b(N);
-        double *b_addr = b.addr();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
-#ifndef NDEBUG
-        const DoubleTab& const_b = b;
-        const DoubleTab& const_a = a;
-#endif
-        assert(const_b[5] == const_a[5]);
-        assert(const_b[5] == 2);
-        assert(a.get_dataLocation() == HostDevice);
-        assert(b.get_dataLocation() == HostOnly);
-        assert(inco.get_dataLocation() == HostDevice); // Car a ref sur inco
-      }
-      assert(inco.get_dataLocation() == HostDevice);
-      // Mise a jour de l'inconnue sur le host et mise a jour sur le device:
-      {
-        inco += 1;
-        copyToDevice(inco, "inco"); // update
-        assert(inco.get_dataLocation() == HostDevice);
-
-        DoubleTab a;
-        a.ref(inco); // Doit prendre l'etat de inco
-        assert(a.get_dataLocation() == HostDevice);
-        assert(a.ref_count() == 2);
-        assert(inco.ref_count() == 2);
-        const double *a_addr = copyToDevice(a, "a"); // up-to-date
-
-        DoubleTab b(N);
-        double *b_addr = b.addr();
-        #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
-        for (int i = 0; i < N; i++)
-          b_addr[i] = a_addr[i];
-#ifndef NDEBUG
-        const DoubleTab& const_b = b;
-        const DoubleTab& const_a = a;
-#endif
-        assert(const_b[5] == const_a[5]);
-        assert(const_b[5] == 3);
-        assert(a.get_dataLocation() == HostDevice);
-        assert(b.get_dataLocation() == HostOnly);
-        assert(inco.get_dataLocation() == HostDevice);
-      }
-      assert(inco.get_dataLocation() == HostDevice);
-
-      // Test d'operations ArrOfDouble sur GPU
-      {
-        ArrOfDouble a(10), b(10);
-        a=1;
-        b=2;
-        copyToDevice(a);
-        copyToDevice(b);
-        b+=a; // TRUSTArray& operator+=(const TRUSTArray& y) sur le device
-        b+=3; // TRUSTArray& operator+=(const _TYPE_ dy)
-        b-=2; // TRUSTArray& operator-=(const _TYPE_ dy)
-        b-=a; // TRUSTArray& operator-=(const TRUSTArray& y)
-        // ToDo regler: Multiple definition of 'nvkernel__ZN10TRUST
-        //b*=10; // TRUSTArray& operator*= (const _TYPE_ dy)
-        //b/=2;  // TRUSTArray& operator/= (const _TYPE_ dy)
-        assert(a.get_dataLocation() == HostDevice);
-        assert(b.get_dataLocation() == Device);
-#ifndef NDEBUG
-        const ArrOfDouble& const_b = b;
-#endif
-        // Operations sur le device:
-        // Retour sur le host pour verifier le resultat
-        copyFromDevice(b);
-        assert(const_b[0] == 3);
-      }
-
-      // Test de copyPartialFromDevice/copyPartialToDevice
-      {
-        ArrOfDouble a(4);
-#ifndef NDEBUG
-        const ArrOfDouble& const_a = a;
-#endif
-        a=0;
-        copyToDevice(a);
-        a+=1; // Done on device
-        copyPartialFromDevice(a, 1, 3);
-        assert(a.get_dataLocation() == Host);
-        assert(const_a[0]==0);
-        assert(const_a[1]==1);
-        assert(const_a[2]==1);
-        assert(const_a[3]==0);
-        a[1]=2; // Done on host
-        a[2]=2; // Done on host
-        copyPartialToDevice(a, 1, 3);
-        assert(a.get_dataLocation() == Device);
-        copyFromDevice(a);
-        assert(const_a[0]==1);
-        assert(const_a[1]==2);
-        assert(const_a[2]==2);
-        assert(const_a[3]==1);
-      }
-      // ToDo: porter operator_vect_single_generic sur GPU !!! DoubleTab a; a+=1;
-      {
-        /*
-        DoubleTab a(10), b(10);
-        a=1;
-        b=2;
-        copyToDevice(a);
-        copyToDevice(b);
-        b=a;  // operator_vect_vect_generic(IS_EGAL_)
-        b+=a; // operator_vect_vect_generic(ADD_)
-        b-=a; // operator_vect_vect_generic(SUB_)
-        assert(a.get_dataLocation() == HostDevice);
-        assert(b.get_dataLocation() == Device);
-        #ifndef NDEBUG
-        const ArrOfDouble& const_b = b;
-        #endif
-        // Operations sur le device:
-        // Retour sur le host pour verifier le resultat
-        copyFromDevice(b);
-        assert(const_b[0] == 3);
-         */
-      }
-      // ToDo: Ameliorer DoubleTrav:
-      {
-        DoubleTrav a(N);
-        a = 1;
-        copyToDevice(a, "a"); // copy
-        assert(a.get_dataLocation() == HostDevice);
-        assert(a.ref_count() == 1);
-      }
-      {
-        DoubleTrav b(N);
-        assert(b.get_dataLocation() == HostOnly); // ToDo: devrait etre en Host (recupere la zone memoire precedente)
-        b = 2;
-        assert(b.get_dataLocation() == HostOnly);
-        copyToDevice(b, "b"); // copy ToDo cela devrait etre un update
-      }
-    }
-  return self_tested_;
+  std::stringstream ss;
+  ss << adr;
+  return ss.str();
 }
 
+// Timers pour OpenMP:
+void start_timer(int size)
+{
+  clock_on = getenv ("TRUST_CLOCK_ON");
+  if (clock_on!=NULL) clock_start = Statistiques::get_time_now();
+  if (size==-1) statistiques().begin_count(gpu_kernel_counter_);
+}
+void end_timer(const std::string& str, int size) // Return in [ms]
+{
+  if (size==-1) statistiques().end_count(gpu_kernel_counter_);
+  if (clock_on!=NULL) // Affichage
+    {
+      double ms = 1000 * (Statistiques::get_time_now() - clock_start);
+      if (size==-1)
+        printf("[clock] %7.3f ms [Kernel] %15s\n", ms, str.c_str());
+      else
+        {
+          double mo = (double)size / 1024 / 1024;
+          if (ms == 0 || size==0)
+            printf("[clock]            [Data]   %15s\n", str.c_str());
+          else
+            printf("[clock] %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", ms, str.c_str(), long(size), mo/ms);
+          //printf("[clock] %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", ms, str.c_str(), long(mo), mo/ms);
+        }
+      fflush(stdout);
+    }
+}
 
+// Copy const array on device if necessary
+template <typename _TYPE_>
+const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName)
+{
+  // const array will matches on host and device
+  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), HostDevice, arrayName);
+  return tab_addr;
+}
+
+template <typename _TYPE_>
+_TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName)
+{
+#ifdef _OPENMP
+#ifndef NDEBUG
+  if (self_test()) self_test();
+#endif
+  tab.nommer(arrayName); // ToDo implementer nom dans Array_base car ici Objet_U appele
+  DataLocation currentLocation = tab.get_dataLocation();
+  tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
+#endif
+  _TYPE_* tab_addr = tab.addr(); // Car addr() contient un mecanisme de verification
+#ifdef _OPENMP
+  std::string message;
+  int size=0;
+  start_timer(size);
+  if (currentLocation==HostOnly)
+    {
+      //#pragma omp target enter data if (Objet_U::computeOnDevice) map(to:tab_addr[0:tab.size_array()])
+      //Argh le bug trouve: si plusieurs appels de copy (DoubleTrav?), l'update ne se fait pas car tableau deja alloue
+      //donc on alloue puis on update pour etre certain de la copie:
+      size = sizeof(_TYPE_) * tab.size_array();
+      statistiques().begin_count(gpu_copytodevice_counter_);
+      #pragma omp target enter data if (Objet_U::computeOnDevice) map(alloc:tab_addr[0:tab.size_array()])
+      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
+      statistiques().end_count(gpu_copytodevice_counter_, size);
+      message = "Copy to device array "+arrayName+" ["+toString(tab.addr())+"]";
+    }
+  else if (currentLocation==Host)
+    {
+      size = sizeof(_TYPE_) * tab.size_array();
+      statistiques().begin_count(gpu_copytodevice_counter_);
+      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
+      statistiques().end_count(gpu_copytodevice_counter_, size);
+      message = "Update on device array "+arrayName+" ["+toString(tab.addr())+"]";
+    }
+  else
+    {
+      if (arrayName!="??")
+        {
+          message = "No change on device array "+arrayName+" ["+toString(tab.addr())+"]";
+          size = 0;
+        }
+    }
+  if (message!="") end_timer(message, size);
+#endif
+  return tab_addr;
+}
+
+// Copy non-const array on device if necessary for computation on device
+template <typename _TYPE_>
+_TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
+{
+  // non-const array will be modified on device:
+  _TYPE_ *tab_addr = copyToDevice_(tab, Device, arrayName);
+  return tab_addr;
+}
+
+// Copy non-const array to host from device
+template <typename _TYPE_>
+void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
+{
+#ifdef _OPENMP
+  _TYPE_* tab_addr = tab.addr();
+  if (tab.get_dataLocation()==Device)
+    {
+      int size = sizeof(_TYPE_) * tab.size_array();
+      start_timer(size);
+      statistiques().begin_count(gpu_copyfromdevice_counter_, size);
+      #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[0:tab.size_array()])
+      statistiques().end_count(gpu_copyfromdevice_counter_, size);
+      std::string message;
+      message = "Copy from device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      end_timer(message, size);
+      if (clock_on) printf("\n");
+      tab.set_dataLocation(HostDevice);
+    }
+#endif
+}
+
+// Partial copy of an array (from deb to fin element) from host to device
+template <typename _TYPE_>
+void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
+{
+#ifdef _OPENMP
+  if (tab.get_dataLocation()==Device)
+    {
+      int size = sizeof(_TYPE_) * (fin-deb);
+      _TYPE_* tab_addr = tab.addr();
+      start_timer(size);
+      statistiques().begin_count(gpu_copyfromdevice_counter_, size);
+      #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[deb:fin-deb])
+      statistiques().end_count(gpu_copyfromdevice_counter_, size);
+      std::string message;
+      message = "Partial update from device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      end_timer(message, size);
+      if (clock_on) printf("\n");
+      tab.set_dataLocation(PartialHostDevice);
+    }
+#endif
+}
+
+// Partial copy of an array (from deb to fin element) from host to device
+template <typename _TYPE_>
+void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
+{
+#ifdef _OPENMP
+  if (tab.get_dataLocation()==PartialHostDevice)
+    {
+      int size = sizeof(_TYPE_) * (fin-deb);
+      _TYPE_* tab_addr = tab.addr();
+      start_timer(size);
+      statistiques().begin_count(gpu_copytodevice_counter_, size);
+      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin-deb])
+      statistiques().end_count(gpu_copytodevice_counter_, size);
+      std::string message;
+      message = "Partial update to device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      end_timer(message, size);
+      if (clock_on) printf("\n");
+      tab.set_dataLocation(Device);
+    }
+#endif
+}
+
+void instantiate_template_functions()
+{
+  TRUSTArray<int> i;
+  TRUSTArray<double> d;
+  TRUSTArray<float> f;
+  copyToDevice(i, "");
+  copyToDevice(d, "");
+  computeOnTheDevice(i, "");
+  computeOnTheDevice(d, "");
+  copyFromDevice(i, "");
+  copyFromDevice(d, "");
+  copyFromDevice(f, "");
+  copyPartialFromDevice(i, 0, 0, "");
+  copyPartialFromDevice(d, 0, 0, "");
+  copyPartialToDevice(i, 0, 0, "");
+  copyPartialToDevice(d, 0, 0, "");
+}

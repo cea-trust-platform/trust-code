@@ -32,7 +32,7 @@ template<typename _TYPE_> class TRUST_ptr_trav;
  *
  * @sa TRUSTArray
  */
-enum DataLocation { HostOnly, Host, Device, HostDevice };
+enum DataLocation { HostOnly, Host, Device, HostDevice, PartialHostDevice };
 
 template<typename _TYPE_>
 class VTRUSTdata
@@ -95,8 +95,9 @@ private:
   // Drapeau du statut du data sur le Device:
   // HostOnly  : Non alloue sur le device encore
   // Host      : A jour sur le host pas sur le device
-  // Device    : A jour sur le device mais pas sur le host
+  // Device    : A jour sur le device pas sur le host
   // HostDevice: A jour sur le host et le device
+  // PartialHostDevice : Etat temporaire: certaines valeurs sont plus a jour sur le host que le device (ex: faces frontieres ou items distants)
   DataLocation dataLocation_ = HostOnly;
 };
 
