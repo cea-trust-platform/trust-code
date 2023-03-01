@@ -88,24 +88,27 @@ Read pb
             pression elem
         }
     }
-    # Postraitement sur le domaine (ici egale au domaine de calcul) #
-    postraitement
+    Postraitements
     {
-    	format med fichier domaine
-	domaine dom
-	sondes { sonde_domaine vitesse periode 1.00e+07 point 1 0 0 0 }
-        champs dt_post 1e8 {
-            pression elem
+        # Postraitement sur le domaine (ici egale au domaine de calcul) #
+        post_dom
+        {
+            format med fichier domaine
+            domaine dom
+            sondes { sonde_domaine vitesse periode 1.00e+07 point 1 0 0 0 }
+            champs dt_post 1e8 {
+                pression elem
+            }
         }
-    }
-    # Postraitement sur une zone (ici egale au domaine de calcul) #
-    postraitement
-    {
-    	format med fichier sous_zone
-	sous_zone zone_tot
-	sondes { sonde_sous_zone vitesse periode 1.00e+07 point 1 0 0 0 }
-        champs dt_post 1e8 {
-            pression elem
+        # Postraitement sur une zone (ici egale au domaine de calcul) #
+        post_sous_zone
+        {
+            format med fichier sous_zone
+            sous_zone zone_tot
+            sondes { sonde_sous_zone vitesse periode 1.00e+07 point 1 0 0 0 }
+            champs dt_post 1e8 {
+                pression elem
+            }
         }
     }
 }

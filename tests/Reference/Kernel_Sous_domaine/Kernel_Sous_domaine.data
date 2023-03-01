@@ -60,7 +60,7 @@ Read domaine0 { Couronne  Origine  1.0  0. ri 0. re 0.2 }
 
 Sous_Domaine domaine1
 Associate domaine1 dom
-Read domaine1 { Fonction_sous_domaine (x-1.)^2+y^2<0.2 }
+Read domaine1 { Fonction_sous_zone (x-1.)^2+y^2<0.2 }
 
 Sous_Domaine domaine2
 Associate domaine2 dom
