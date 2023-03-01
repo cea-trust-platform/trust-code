@@ -28,11 +28,12 @@ foreach(dir ${listdir})
  include_directories(${dir})
 endforeach()
 
-include_directories(${lib} ${TRUST_ROOT}/src/Kernel/Utilitaires/
+add_library(${lib} STATIC ${lib_src})
+
+target_include_directories(${lib} PRIVATE ${TRUST_ROOT}/src/Kernel/Utilitaires/
                            ${TRUST_ROOT}/src/Kernel/Math/
                            ${TRUST_ROOT}/src/Kernel/Geometrie/)
 
-add_library(${lib} STATIC ${lib_src})
 
 install(TARGETS  latafilter
         EXPORT   ${PROJECT_NAME}
