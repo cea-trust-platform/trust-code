@@ -31,13 +31,13 @@ void Op_Grad_P0_to_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
 
 void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  if (sub_type(Pb_Multiphase, equation().probleme()))
+/*  if (sub_type(Pb_Multiphase, equation().probleme()))
     {
       Cerr << "Op_Grad_P0_to_Face::" << __func__ << " is not yet compatible with Pb_Multiphase !" << finl;
       Cerr << "You should instead use Op_Grad_VDF_Face ... Otherwise you should add the contripution of alpha to the secmem ..." << finl;
       Process::exit();
     }
-
+*/
   statistiques().begin_count(gradient_counter_);
   const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : equation().inconnue().valeur().valeurs();
   assert_espace_virtuel_vect(inco);
@@ -76,9 +76,9 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
               if (face_opposee == num_face) face_opposee = zvdf.elem_faces(n0,ori+dimension);
 
               n1 = face_voisins(face_opposee,0);
-              if (n1==n0) n1 = face_voisins(face_opposee,1);
+              if ((n1<0) || ((n1==n0) && face_voisins(face_opposee,1)>=0)) n1 = face_voisins(face_opposee,1);
 
-              secmem(num_face) -= (inco(n1)-inco(n0)) / (xp(n1,ori)- xp(n0,ori));
+              if (n1!=n0) secmem(num_face) -= (inco(n1)-inco(n0)) / (xp(n1,ori)- xp(n0,ori));
             }
         }
     }
