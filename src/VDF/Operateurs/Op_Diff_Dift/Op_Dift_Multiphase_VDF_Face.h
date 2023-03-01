@@ -58,6 +58,8 @@ public:
   }
 
   double calculer_dt_stab() const override;
+  bool is_turb() const override { return true; }
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
 
 protected :
   DoubleTab nu_t_;

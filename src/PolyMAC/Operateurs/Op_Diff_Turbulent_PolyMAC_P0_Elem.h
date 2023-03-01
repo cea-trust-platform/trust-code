@@ -45,6 +45,7 @@ class Op_Diff_Turbulent_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_Elem
   void creer_champ(const Motcle& motlu) override;
   void mettre_a_jour(double temps) override;
   bool is_turb() const override { return true; }
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
 
 protected:
   Correlation corr; //correlation de transport turbulent

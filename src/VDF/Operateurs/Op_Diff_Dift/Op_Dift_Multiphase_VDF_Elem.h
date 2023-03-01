@@ -69,8 +69,8 @@ public:
   void completer() override;
 
   void mettre_a_jour(double ) override;
-
   inline const Correlation& correlation() const { return corr_ ;};
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
 
 protected :
   DoubleTab d_t_; // diffusivite turbulente
