@@ -628,7 +628,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
         }
 
       if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
-        if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
+        if (n_type == 14 || n_type == 15 || n_type == 16) // arete de type fluide-paroi ou paroi-fluide ou fluide-fluide
           {
             num0 = Qdm(num_arete, 0);
             num1 = Qdm(num_arete, 1);
@@ -1041,7 +1041,7 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
         }
 
       if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
-        if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
+        if (n_type == 14 || n_type == 15 || n_type == 16) // arete de type fluide-paroi ou paroi-fluide ou fluide-fluide
           {
             num0 = Qdm(num_arete, 0);
             num1 = Qdm(num_arete, 1);
