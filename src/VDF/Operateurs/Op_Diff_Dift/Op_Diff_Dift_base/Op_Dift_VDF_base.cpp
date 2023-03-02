@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Eval_Dift_Multiphase_VDF.h>
 #include <Mod_turb_hyd_base.h>
 #include <Op_Dift_VDF_base.h>
 #include <Eval_Dift_VDF.h>
@@ -56,24 +57,36 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
           const IntTab& face_voisins = zvdf.face_voisins();
           const DoubleVect& volumes_entrelaces = zvdf.volumes_entrelaces();
           int face, nb_faces = zvdf.nb_faces(); //, cst;
-          DoubleTrav diffu_tot(zvdf.nb_elem_tot());
           double db_diffusivite;
 
+          const Eval_Diff_VDF& eval = dynamic_cast<const Eval_Diff_VDF&>(iter->evaluateur());
+          const Champ_base& ch = eval.get_diffusivite();
+          const DoubleTab& tab_diffusivite = ch.valeurs();
+          const int N = tab_diffusivite.dimension(1);
+          DoubleTrav diffu_tot(zvdf.nb_elem_tot(), N);
+
+          int size = diffu_tot.dimension_tot(0);
+          int cM = (tab_diffusivite.dimension(0) == 1);
+
           const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-          if (sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
+          if (is_turb()) // Cas turbulence multiphase
+          {
+            const Eval_Dift_Multiphase_VDF& eval_dift = dynamic_cast<const Eval_Dift_Multiphase_VDF&>(iter->evaluateur()) ;
+            const DoubleTab& diffusivite_turb = eval_dift.tab_nu_t() ;
+            const DoubleTab& alpharho = equation().probleme().equation(1).champ_conserve().passe();
+            assert(diffusivite_turb.nb_dim()==2);
+
+            for (int i = 0; i < size; i++) 
+              for (int n=0; n<N; n++)
+                diffu_tot(i, n) = tab_diffusivite(!cM*i, n) + alpharho(i, n)*diffusivite_turb(i,n);
+          }
+          else if (sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
             {
-              const Eval_Diff_VDF& eval = dynamic_cast<const Eval_Diff_VDF&>(iter->evaluateur());
-              const Champ_base& ch = eval.get_diffusivite();
-              const DoubleVect& tab_diffusivite = ch.valeurs();
-              int size = diffu_tot.size_totale();
               const Eval_Dift_VDF& eval_dift = static_cast<const Eval_Dift_VDF&>(eval);
               const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
               const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
-
-              if (tab_diffusivite.size() == 1)
-                for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[0] + diffusivite_turb[i];
-              else
-                for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[i] + diffusivite_turb[i];
+ 
+              for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[!cM*i] + diffusivite_turb[i];
             }
           else
             {
@@ -84,22 +97,23 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
               Process::exit();
             }
 
-          for (face = 0; face < nb_faces; face++)
-            if (ori(face) == 0)
-              {
-                const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
+              for (face = 0; face < nb_faces; face++)
+                for (int n = 0; n < N; n++)
+                  if (ori(face) == 0)
+                    {
+                      const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
 
-                if (elem1 == -1) db_diffusivite = diffu_tot(elem2);
-                else if (elem2 == -1) db_diffusivite = diffu_tot(elem1);
-                else db_diffusivite = 0.5 * (diffu_tot(elem2) + diffu_tot(elem1));
+                      if (elem1 == -1) db_diffusivite = diffu_tot(elem2, n);
+                      else if (elem2 == -1) db_diffusivite = diffu_tot(elem1, n);
+                      else db_diffusivite = 0.5 * (diffu_tot(elem2, n) + diffu_tot(elem1, n));
 
-                double r = xv(face, 0);
-                if (r >= 1.e-24)
-                  {
-                    if (mat) (*mat)(face, face) += db_diffusivite * volumes_entrelaces(face) / (r * r);
-                    secmem(face) -= inco(face) * db_diffusivite * volumes_entrelaces(face) / (r * r);
-                  }
-              }
+                      double r = xv(face, 0);
+                      if (r >= 1.e-24)
+                        {
+                          if (mat) (*mat)(N * face + n, N * face + n) += db_diffusivite * volumes_entrelaces(face) / (r * r);
+                          secmem(face, n) -= inco(face, n) * db_diffusivite * volumes_entrelaces(face) / (r * r);
+                        }
+                    }
         }
     }
 }

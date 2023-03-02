@@ -49,6 +49,7 @@ public:
   }
 
   const Champ_Fonc& diffusivite_turbulente() const { throw; }
+  const DoubleTab& tab_nu_t() const { return nu_t_.valeur(); }
 
   void associer_diff_turb(const Champ_Fonc& diff_turb) { throw; }
 
