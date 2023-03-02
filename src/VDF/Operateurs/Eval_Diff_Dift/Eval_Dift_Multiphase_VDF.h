@@ -30,16 +30,20 @@ public:
     update_diffusivite_turbulente();
   }
 
-  inline void set_nut(const DoubleTab& nut) { nu_t_ = nut; }
+  inline void set_nut(const DoubleTab& nut, const bool need_ar) { nu_t_ = nut; need_alpha_rho_ = need_ar; }
 
   inline virtual void update_diffusivite_turbulente() final
   {
     const DoubleTab& rho = ref_probleme_->milieu().masse_volumique().passe();
     const int cR = rho.dimension(0) == 1;
     tab_diffusivite_turbulente = nu_t_;
-    for (int e = 0; e < nu_t_->dimension(0); e++)
-      for (int n = 0; n < nu_t_->dimension(1); n++)
-        tab_diffusivite_turbulente(e, n) = tab_alpha_(e, n) * rho(!cR * e, n) * nu_t_.valeur()(e, n);
+
+    if (need_alpha_rho_)
+      {
+        for (int e = 0; e < nu_t_->dimension(0); e++)
+          for (int n = 0; n < nu_t_->dimension(1); n++)
+            tab_diffusivite_turbulente(e, n) = tab_alpha_(e, n) * rho(!cR * e, n) * nu_t_.valeur()(e, n);
+      }
 
     tab_diffusivite_turbulente.echange_espace_virtuel();
   }
@@ -56,6 +60,7 @@ public:
 protected:
   REF(Correlation) corr_; //attention REF + DERIV => 2 valeur() deso
   REF(DoubleTab) nu_t_;
+  bool need_alpha_rho_ = true;
 };
 
 #endif /* Eval_Dift_Multiphase_VDF_included */

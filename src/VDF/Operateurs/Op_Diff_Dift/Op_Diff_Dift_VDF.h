@@ -71,11 +71,19 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE, void>
   set_nut_impl(const DoubleTab& nut)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
-    return eval_diff_turb.set_nut(nut);
+    return eval_diff_turb.set_nut(nut, true /* need alpha * rho */ );
+  }
+
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, void>
+  set_nut_impl(const DoubleTab& nut)
+  {
+    EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
+    return eval_diff_turb.set_nut(nut, false /* DO NOT need alpha * rho */);
   }
 
   template <typename EVAL_TYPE>
