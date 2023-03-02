@@ -31,6 +31,8 @@ class Op_Dift_Multiphase_VDF_Elem : public Op_Dift_VDF_Elem_base, public Op_Diff
 public:
   Op_Dift_Multiphase_VDF_Elem();
 
+  void creer_champ(const Motcle& motlu) override;
+
   double calculer_dt_stab() const override;
 
   inline double alpha_(const int i) const override { throw; }
@@ -73,6 +75,8 @@ public:
 protected :
   DoubleTab d_t_; // diffusivite turbulente
   Correlation corr_; //correlation de viscosite turbulente
+  std::vector<Champ_Fonc> d_t_post_;
+  Motcles noms_d_t_post_; //leurs noms
 };
 
 #endif /* Op_Dift_Multiphase_VDF_Elem_included */
