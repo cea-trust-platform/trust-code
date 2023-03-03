@@ -390,7 +390,6 @@ option_configure=" -disable-ccache"
 echo "--------------------------------------------------------"
 echo "Configure on $HOST at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"
-# [ "`$TRUST_ROOT/bin/admin/liste_machines "\-build64" | grep ^$HOST"\."`" != "" ] && [ ! -f GO ] && ./bin/BUILD64/GO
 ./configure $option_configure
 [ $? != 0 ] && echo "Error in the configure... We leave." && exit_ -1
 
@@ -399,8 +398,6 @@ HOST=$HOST_tmp
 ###############################
 # Initialize TRUST environment
 ###############################
-source env_TRUST.sh # necessaire pour connaitre le nom de $TRUST_TMP
-rm -r -f $TRUST_TMP # suppression des anciens log sur machine distante
 source env_TRUST.sh 1>/dev/null 2>&1 # necessaire pour creer le dossier $TRUST_TMP
 
 echo "--------------------------------------------------------"

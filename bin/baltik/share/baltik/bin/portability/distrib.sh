@@ -69,7 +69,7 @@ for phase in prepare configure make make_check make_install
   option=""
   if [[ $machine_cible = *"jean-zay"* ]] && [ $phase !=  make_check ]
   then
-      option="srun -p compil -A fej@cpu -t 10:00:00 -c 10 --hint=nomultithread "
+      option="srun -p compil -A aih@cpu -t 10:00:00 -c 10 --hint=nomultithread "
   fi
   
   #ssh -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh;${path_to_run}/englobe.sh ./$phase.sh $* 2>&1  " > ${log_phase}

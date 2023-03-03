@@ -39,6 +39,7 @@ make_()
       echo "You need $1 installed correctly." >> $TRUST_ROOT/NON_INSTALLED
       if [ "$package_name" = "Tcl/Tk" ] ; then
          echo "=> You may have to first install libX11-dev" >> $TRUST_ROOT/NON_INSTALLED
+         echo "=> You can run ./configure by adding: -disable-tcl_tk"
       elif [ "$package_name" = "mpich" ] && [ "$TRUST_DISABLE_CCACHE" != 1 ] ; then
          #echo "=> Adding the option -disable-ccache in the configure step may fix this problem." >> $TRUST_ROOT/NON_INSTALLED
          echo "=> Try using another MPI package, for instance -force_latest_mpich in the configure step, to fix this problem." >> $TRUST_ROOT/NON_INSTALLED

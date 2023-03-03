@@ -17,7 +17,7 @@ ssh_command()
     then
        scp -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $command $log@$adr:~/command_$machine 1>/dev/null 2>&1
        # Add -X to have DISPLAY ? not on jean-zay cause it hangs
-       opt_="-X" && [ "$log" = "ugz82dj" ] && opt_=""
+       opt_="-X" && [ "${machine:0:8}" = jean-zay ] && opt_=""
        [ "${adr#mezel}" != "$adr" ] && opt_=""
        [ "${adr#topaze}" != "$adr" ] && opt_=""
        ssh $opt_ -o "StrictHostKeyChecking no" -o ConnectTimeout=10 -o BatchMode=yes $log@$adr -n 'chmod +x ~/command_'$machine';~/command_'$machine 2>/dev/null
@@ -78,7 +78,7 @@ then
    then 
       #if [ "`git log --since=1.days..HEAD --name-status | grep ^D | grep -v ^Date`" != "" ]
       # Look for the last commit where at least on file was deleted:
-      last_commit=`git log --diff-filter=D | awk '/commit / {print substr($2,1,7)}' | head -1`
+      last_commit=`git log --diff-filter=RD | awk '/commit / {print substr($2,1,7)}' | head -1`
       # Check if this commit is in the last day compared to the HEAD or if future commit contains deleted files:
       if [ "`git log --since=1.days..HEAD --name-status | grep $last_commit`" != "" ] || [ "`git status --u=no | grep deleted:`" != "" ]
       then
@@ -90,9 +90,9 @@ then
       then
          cd $TRUST_ROOT/externalpackages
          # Look for the last commit where at least on branch was merged:
-         last_commit=`git log --merges | awk '/commit / {print substr($2,1,7)}' | head -1`
+         last_commit=`git log --diff-filter=RD | awk '/commit / {print substr($2,1,7)}' | head -1`
          # Check if this commit is in the last day compared to the HEAD or if future commit contains merged branchs:
-         if [ "`git log --since=1.days..HEAD | grep $last_commit`" != "" ]
+         if [ "`git log --since=1.days..HEAD --name-status | grep $last_commit`" != "" ]
          then
             delete_version_machine_cible=1
             echo "Several branchs were merged in Git since yesterday then we must make a delete on remote machines." 
@@ -303,6 +303,8 @@ git pull" > $TRUST_TMP/ssh_com
 	       # Creation du fichier pattern pour --include-from
 	       cd $TRUST_ROOT
 	       rm -f $Build/rsync_include_from
+	       # Ajout des differents HOSTS non suivi par git
+	       (cd ../;find TRUST/env_src/ -name HOST_*.sh -type l) >> $Build/TRUST.files
 	       for file in $Build/TRUST.files
 	       do
 	          VOB=${file%.files}
@@ -368,7 +370,7 @@ git pull" > $TRUST_TMP/ssh_com
 	       echo "Launching in background the update by ssh then sbatch on $log@$adr at "`date '+%H:%M:%S'`
 	    elif [ "${machine:0:8}" = jean-zay ]
 	    then
-               option="srun -p compil -A fej@cpu -t 10:00:00 -c 2 "
+               option="srun -p compil -A aih@cpu -t 10:00:00 -c 2 "
 	       # On ne lance plus sur la frontale
 	       ssh_command "export WORKBASE=$WORKBASE;cd $WORKDIR/$version/TRUST/bin/admin;$option./mise_a_jour_TRUST_arch -rsync 1>~/CR_$machine 2>&1" &
 	       echo "Launching in background the update by ssh then sbatch on $log@$adr at "`date '+%H:%M:%S'`
