@@ -44,10 +44,6 @@ protected:
   void evaluate_C0_vg0(const input_t& input) const override;
 
   // correlation parameters (circular channel)
-  int sb_ = 0;       // subcooled boiling (0 = no, 1 = yes)
-  double Cinf = 1.2; // asymptotic value of C0
-  double theta = 1.75;
-  double zeta = 18.0;
   bool needs_grad_alpha_ = 0;  
 };
 

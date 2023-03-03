@@ -66,7 +66,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
                       *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
                        *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
   const DoubleVect& dh_e = milc.diametre_hydraulique_elem();
-  int e, i, j, k, l, n, m, N = inco.line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot(), cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size();
+  int e, i, j, k, l, n, m, N = inco.line_size(), Nk = (k_turb) ? (*k_turb).line_size() : 0, d, D = dimension, nf_tot = domaine.nb_faces_tot(), cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size();
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
 
@@ -113,10 +113,10 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
           const Vitesse_relative_base& correlation_vd =  ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur());
           for (n = 0; n < N; n++) in.alpha(n) = alpha(e, n);
           for (n = 0; n < N; n++) in.rho(n) = rho(!cR * e, n);
-          for (n = 0; n < N; n++) in.mu(n) = rho(!cM * e, n);
+          for (n = 0; n < N; n++) in.mu(n) = mu(!cM * e, n);
           for (n = 0; n < N; n++) in.d_bulles(n) = (d_bulles) ? (*d_bulles)(e, n) : -1. ;
-          for (n = 0; n < N; n++) in.k(n) = (k_turb) ? (*k_turb)(e, n) : -1. ;
-          for (n = 0; n < N; n++) in.nut(n) = (is_turb) ? nut(e, n) : -1. ;
+          for (n = 0; n < Nk; n++) in.k(n) = (k_turb) ? (*k_turb)(e, n) : -1. ;
+          for (n = 0; n < Nk; n++) in.nut(n) = (is_turb) ? nut(e, n) : -1. ;
           for (n = 0; n < N; n++)
             for (d = 0; d < D; d++) in.v(n, d) = inco(nf_tot + D * e + d, n);
           for (n = 0; n < N; n++)

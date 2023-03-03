@@ -70,7 +70,7 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
   C0 = 1;
 
   /* drift velocity along gravity */
-  for (int d = 0; d < D; d++) vg0(d) = dv0 * std::fabs(in.g(d)) / norm_g;
+  for (int d = 0; d < D; d++) vg0(d) = - dv0 * in.g(d) / norm_g;
 
   if (pbm.has_correlation("dispersion_bulles"))
   {

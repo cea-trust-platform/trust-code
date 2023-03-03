@@ -94,7 +94,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                        *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
 
   const DoubleVect& vf = domaine.volumes_entrelaces(), &dh_e = milc.diametre_hydraulique_elem();
-  int e, f, i, j, k, l, n, m, N = inco.line_size(), d, D = dimension, cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size(),
+  int e, f, i, j, k, l, n, m, N = inco.line_size(), Nk = (k_turb) ? (*k_turb).line_size() : 0, d, D = dimension, cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size(),
                            iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration : 0;
   if (N == 1) return; //pas d'evanescence en simple phase!
 
@@ -156,10 +156,10 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
               {
                 for (n = 0; n < N; n++) in.alpha(n) += vfd(f, i) / vf(f) * alpha(e, n);
                 for (n = 0; n < N; n++)   in.rho(n) += vfd(f, i) / vf(f) * rho(!cR * e, n);
-                for (n = 0; n < N; n++)    in.mu(n) += vfd(f, i) / vf(f) * rho(!cM * e, n);
+                for (n = 0; n < N; n++)    in.mu(n) += vfd(f, i) / vf(f) * mu(!cM * e, n);
                 for (n = 0; n < N; n++)in.d_bulles(n)+=vfd(f, i) / vf(f) *((d_bulles) ? (*d_bulles)(e, n) : -1.) ;
-                for (n = 0; n < N; n++)     in.k(n) += vfd(f, i) / vf(f) *((k_turb) ? (*k_turb)(e, n) : -1.) ;
-                for (n = 0; n < N; n++)   in.nut(n) += vfd(f, i) / vf(f) *((is_turb) ? nut(e, n) : -1.) ;
+                for (n = 0; n < Nk; n++)    in.k(n) += vfd(f, i) / vf(f) *((k_turb) ? (*k_turb)(e, n) : -1.) ;
+                for (n = 0; n < Nk; n++)  in.nut(n) += vfd(f, i) / vf(f) *((is_turb) ? nut(e, n) : -1.) ;
                 for (n = 0; n < N; n++)       in.dh += vfd(f, i) / vf(f) * dh_e(e);
                 for (n = 0; n < N; n++)
                   for (m = n+1; m < N; m++)

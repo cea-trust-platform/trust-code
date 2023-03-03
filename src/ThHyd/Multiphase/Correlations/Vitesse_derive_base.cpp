@@ -35,7 +35,7 @@ void Vitesse_derive_base::vitesse_relative(const input_t& input, output_t& outpu
 {
   output.vr = 0.0;
   output.dvr= 0.0;
-  // if (alpha(n_g) < 1e-7) return;
+
   evaluate_C0_vg0(input); // No dependency in v in evaluate_C0_vg0 => No need for derivative
 
   for (int d = 0; d < dimension; d++)
