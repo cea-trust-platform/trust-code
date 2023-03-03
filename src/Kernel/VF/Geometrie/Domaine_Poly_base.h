@@ -128,11 +128,6 @@ public :
   //pour chaque sommet, produit porosite * volume
   const DoubleTab& pvol_som(const DoubleVect& poro) const;
 
-// Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
-  void init_dist_paroi_globale(const Conds_lim& conds_lim) override;
-  const DoubleTab& normale_paroi_elem()  const {return n_y_elem_;} ;
-  const DoubleTab& normale_paroi_faces() const {return n_y_faces_;} ;
-
 protected:
   double h_carre = DMAXFLOAT;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
@@ -152,9 +147,6 @@ protected:
   mutable Static_Int_Lists som_elem_;
   mutable IntTab elem_som_d_, elem_arete_d_;
   mutable DoubleTab vol_elem_som_, pvol_som_;
-
-  DoubleTab n_y_elem_ ; // vecteur normal entre le bord le plus proche et l'element
-  DoubleTab n_y_faces_; // vecteur normal entre le bord le plus proche et la face
 };
 
 // Fonctions inline

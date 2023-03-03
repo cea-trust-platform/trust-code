@@ -26,6 +26,17 @@
 #include <Analyse_Angle.h>
 #include <Linear_algebra_tools_impl.h>
 
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingMemArray.hxx>
+
+using namespace MEDCoupling;
+#endif
+#include <Dirichlet_homogene.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Navier.h>
+#include <Symetrie.h>
+#include <Dirichlet_loi_paroi.h>
 
 Implemente_base(Domaine_VF,"Domaine_VF",Domaine_dis_base);
 
@@ -650,4 +661,191 @@ DoubleTab Domaine_VF::calculer_xgr() const
     for (int i=0; i<dimension; i++)
       xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
   return xgr;
+}
+
+void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode inspiree de Raccord_distant_homogene::initialise
+{
+  if(dist_paroi_initialisee_) return;
+
+  const Domaine_VF& domaine_ = *this;
+  int D=Objet_U::dimension, nf = domaine_.nb_faces(), ne = domaine_.nb_elem();
+  const IntTab& f_s = face_sommets();
+  const DoubleTab& xs = domaine_.domaine().coord_sommets();
+
+  // On initialise les tables y_faces_ et y_elem_
+  domaine_.creer_tableau_faces(y_faces_);
+  domaine_.domaine().creer_tableau_elements(y_elem_);
+
+  n_y_elem_.resize(0,D);
+  n_y_faces_.resize(0,D);
+
+  MD_Vector_tools::creer_tableau_distribue(y_elem_.get_md_vector(), n_y_elem_);
+  MD_Vector_tools::creer_tableau_distribue(y_faces_.get_md_vector(), n_y_faces_);
+
+  // On va identifier les faces par leur centres de gravite
+  int parts = Process::nproc();
+  int moi = Process::me();
+  DoubleTabs remote_xv(parts);
+
+  // On initialise la table de faces/sommets/aretes de bords locale, on cree une table de sommets locale et on compte les aretes
+  int nb_faces_bord_ = 0;
+  int nb_aretes = 0;
+  std::set<int> soms;
+  for (auto& itr : conds_lim)
+    if ( sub_type(Dirichlet_paroi_defilante, itr.valeur()) || sub_type(Dirichlet_homogene, itr.valeur()) || 
+       (sub_type(Navier, itr.valeur()) && !sub_type(Symetrie, itr.valeur()) ) || sub_type(Dirichlet_loi_paroi, itr.valeur()))
+      {
+        int num_face_1_cl = itr.frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = itr.frontiere_dis().frontiere().nb_faces();
+
+        nb_faces_bord_ += itr.frontiere_dis().frontiere().nb_faces();
+
+        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
+          {
+            int nb_som_loc = 0;
+            while ( (nb_som_loc < nb_som_face()) && (f_s(f, nb_som_loc) != -1))
+              {
+                soms.insert(f_s(f, nb_som_loc));
+                nb_som_loc++;
+              }
+            nb_aretes += (D == 3 ? nb_som_loc : 0)  ; // Autant d'aretes autour d'une face que de sommets !
+          }
+      }
+  if (nb_faces_bord_==0) Process::exit(que_suis_je() + " : at least one boundary must be solid for the distance to the edge to be calculated !!!");
+  remote_xv[moi].resize(nb_faces_bord_ + (int)soms.size() + nb_aretes,D);
+
+  // On remplit les coordonnes des faces et aretes de bord locales
+  int ind_tab = 0 ; // indice de la face/sommet/arete dans le tableau
+  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || (sub_type(Navier, conds_lim[ind_cl].valeur()) && !sub_type(Symetrie, conds_lim[ind_cl].valeur()) ) )
+      {
+        int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
+
+        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
+          {
+            for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = domaine_.xv(f, d); // Remplissage des faces
+            ind_tab++;
+
+            if (D==3) // Remplissage des aretes
+              {
+                int id_som = 1 ;
+                while ( (id_som < nb_som_face()) && (f_s(f, id_som) != -1))
+                  {
+                    for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = (xs(f_s(f, id_som), d) + xs(f_s(f, id_som-1), d)) / 2;
+                    id_som++;
+                    ind_tab++;
+                  }
+                for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = (xs(f_s(f, 0), d) + xs(f_s(f, id_som-1), d)) / 2;
+                ind_tab++;
+              }
+          }
+      }
+
+  for (auto som:soms) // Remplissage des sommets
+    {
+      for (int d=0 ; d<D ; d++) remote_xv[moi](ind_tab,d) = xs(som, d);
+      ind_tab++;
+    }
+
+  // Puis on echange les tableaux des centres de gravites
+  // envoi des tableaux
+  for (int p = 0; p < parts; p++)
+    envoyer_broadcast(remote_xv[p], p);
+
+  VECT(ArrOfInt) racc_vois(parts);
+  for (int p = 0; p < parts; p++)
+    racc_vois[p].set_smart_resize(1);
+
+#ifdef MEDCOUPLING_
+  // On traite les informations, chaque proc connait tous les XV
+
+  // On boucle sur toutes les faces puis tous les elems
+  const DoubleTab& local_xv = domaine_.xv(),
+                   & local_xp = domaine_.xp();
+
+  //DataArrayDoubles des xv locaux et de tous les remote_xv (a la suite)
+  std::vector<MCAuto<DataArrayDouble> > vxv(parts);
+  std::vector<const DataArrayDouble*> cvxv(parts);
+  for (int p = 0; p < parts; p++)
+    {
+      vxv[p] = DataArrayDouble::New();
+      vxv[p]->useExternalArrayWithRWAccess(remote_xv[p].addr(), remote_xv[p].dimension(0), remote_xv[p].dimension(1));
+      cvxv[p] = vxv[p];
+    }
+  MCAuto<DataArrayDouble> remote_xvs(DataArrayDouble::Aggregate(cvxv)), local_xs(DataArrayDouble::New());
+  local_xs->alloc(nf+ne, D);
+  for (int f = 0; f < nf; f++)
+    for (int d = 0; d < D; d++)
+      local_xs->setIJ(f, d, local_xv(f, d));
+  for (int e = 0; e < ne; e++)
+    for (int d = 0; d < D; d++)
+      local_xs->setIJ(nf+e, d, local_xp(e, d));
+
+  //indices des points de remote_xvs les plus proches de chaque point de local_xv
+  MCAuto<DataArrayInt> glob_idx(DataArrayInt::New());
+  glob_idx = remote_xvs->findClosestTupleId(local_xs);
+
+  //pour chaque element et face de local_xs : remplissage des tableaux
+  for (int fe = 0; fe<nf+ne; fe++)
+    {
+      //retour de l'indice global (glob_idx(ind_face)) au couple (proc, ind_face2)
+      int proc = 0, fe2 = glob_idx->getIJ(fe, 0);
+      while (fe2 >= remote_xv[proc].dimension(0)) fe2 -= remote_xv[proc].dimension(0), proc++;
+      assert(fe2 <  remote_xv[proc].dimension(0));
+
+      double distance2 = 0;
+      for (int d=0; d<D; d++)
+        {
+          double x1 = 0 ;
+          if (fe<nf) x1=local_xv(fe,d);
+          else if (fe<nf+ne) x1=local_xp(fe-nf,d);
+          else { Cerr<<"Domaine_Poly_base::init_dist_bord : problem in the ditance to the edge calculation. Contact TRUST support."<<finl; Process::exit();}
+          double x2=remote_xv[proc](fe2,d);
+          distance2 += (x1-x2)*(x1-x2);
+        }
+      if (fe<nf)
+        {
+          y_faces_(fe) = std::sqrt(distance2);
+          if (y_faces_(fe)>1.e-8)
+            for (int d = 0 ; d<D ; d++) n_y_faces_(fe, d) = ( local_xv(fe,d)-remote_xv[proc](fe2,d) )/ y_faces_(fe);
+        }
+      else
+        {
+          y_elem_(fe-nf)  = std::sqrt(distance2);
+          for (int d = 0 ; d<D ; d++) n_y_elem_(fe-nf, d) = ( local_xp(fe-nf,d)-remote_xv[proc](fe2,d) )/ y_elem_(fe-nf);
+        }
+    }
+
+#else
+  Cerr<<"Domaine_Poly_base::init_dist_bord needs TRUST compiled with MEDCoupling."<<finl;
+  exit();
+#endif
+
+  // Pour les elems de bord, on calcule la distance de facon propre avec le produit scalaire
+  for (int ind_cl = 0 ; ind_cl < conds_lim.size() ; ind_cl++)
+    if ( sub_type(Dirichlet_paroi_defilante, conds_lim[ind_cl].valeur()) || sub_type(Dirichlet_homogene, conds_lim[ind_cl].valeur()) || (sub_type(Navier, conds_lim[ind_cl].valeur()) && !sub_type(Symetrie, conds_lim[ind_cl].valeur()) ))
+      {
+        int num_face_1_cl = conds_lim[ind_cl].frontiere_dis().frontiere().num_premiere_face();
+        int nb_faces_cl   = conds_lim[ind_cl].frontiere_dis().frontiere().nb_faces();
+
+        for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
+          {
+            if ( dist_face_elem0(f, face_voisins(f, 0)) < y_elem_(face_voisins(f, 0)) ) // Prise en compte du cas ou l'element a plusieurs faces de bord
+              {
+                y_elem_(face_voisins(f, 0)) = dist_face_elem0(f, face_voisins(f, 0)) ;
+                for (int d = 0 ; d<D ; d++)
+                  n_y_elem_(face_voisins(f, 0), d) = -face_normales(f,  d)/face_surfaces(f);
+              }
+            for (int d = 0 ; d<D ; d++)
+              n_y_faces_(f, d)                 = -face_normales(f,  d)/face_surfaces(f); // Coherent normal vector for border faces
+          }
+      }
+
+  n_y_faces_.echange_espace_virtuel();
+  n_y_elem_.echange_espace_virtuel();
+  y_faces_.echange_espace_virtuel();
+  y_elem_.echange_espace_virtuel();
+  dist_paroi_initialisee_ = 1;
+  Cerr <<"Initialize the y table " << domaine_.domaine().le_nom();
 }

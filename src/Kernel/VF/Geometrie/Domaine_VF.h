@@ -161,6 +161,11 @@ public :
   inline virtual double dist_face_elem0_period(int ,int ,double ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
   inline virtual double dist_face_elem1_period(int ,int ,double ) const { Cerr << __func__ << " method should be overrided in a derived class !! " << finl; throw; }
 
+// Methodes pour le calcul et l'appel de la distance au bord solide le plus proche ; en entree on met le tableau des CL de la QDM
+  void init_dist_paroi_globale(const Conds_lim& conds_lim) override;
+  const DoubleTab& normale_paroi_elem()  const {return n_y_elem_;} ;
+  const DoubleTab& normale_paroi_faces() const {return n_y_faces_;} ;
+
 private:
   DoubleVect face_surfaces_;                // surface des faces
 
@@ -200,6 +205,9 @@ protected:
   IntTab face_virt_pe_num_;
 
   virtual void remplir_elem_faces()=0;
+
+  DoubleTab n_y_elem_ ; // vecteur normal entre le bord le plus proche et l'element
+  DoubleTab n_y_faces_; // vecteur normal entre le bord le plus proche et la face
 
 };
 

@@ -139,7 +139,7 @@ void Discret_Thyd::y_plus(const Domaine_dis&, const Domaine_Cl_dis&, const Champ
 
 void Discret_Thyd::distance_paroi_globale(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const
 {
-  Cerr << "Discret_Thyd::distance_paroi() does nothing" << finl;
+  Cerr << "Discret_Thyd::distance_paroi_globale() does nothing" << finl;
   Cerr << que_suis_je() << " needs to overload it !" << finl;
   Process::exit();
 }
