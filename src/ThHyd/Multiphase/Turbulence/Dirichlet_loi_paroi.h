@@ -33,7 +33,7 @@ class Dirichlet_loi_paroi: public Dirichlet
 {
   Declare_base(Dirichlet_loi_paroi);
 public:
-  virtual void liste_faces_loi_paroi(IntTab&) =0;
+  virtual void liste_faces_loi_paroi(IntTab&);
   virtual void associer_correlation(const Correlation& corr) { correlation_loi_paroi_ = corr; }
 
   void associer_fr_dis_base(const Frontiere_dis_base& fr) override { la_frontiere_dis = fr; }

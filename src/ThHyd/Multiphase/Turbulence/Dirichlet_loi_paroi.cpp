@@ -19,4 +19,14 @@ Implemente_base(Dirichlet_loi_paroi, "Dirichlet_loi_paroi", Dirichlet);
 
 Sortie& Dirichlet_loi_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 
-Entree& Dirichlet_loi_paroi::readOn(Entree& s) { return s; }
+Entree& Dirichlet_loi_paroi::readOn(Entree& s) { le_champ_front.typer("Champ_front_vide"); return s; }
+
+void Dirichlet_loi_paroi::liste_faces_loi_paroi(IntTab& tab)
+{
+  int nf = la_frontiere_dis.valeur().frontiere().nb_faces(), f1 = la_frontiere_dis.valeur().frontiere().num_premiere_face();
+  int N = tab.line_size();
+
+  for (int f =0 ; f < nf ; f++)
+    for (int n = 0 ; n<N ; n++)
+      tab(f + f1, n) |= 1;
+}

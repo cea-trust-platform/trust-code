@@ -18,12 +18,28 @@
 
 Implemente_base(Viscosite_turbulente_base, "Viscosite_turbulente_base", Correlation_base);
 
-Sortie& Viscosite_turbulente_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Viscosite_turbulente_base::printOn(Sortie& os) const{return os;}
 
-Entree& Viscosite_turbulente_base::readOn(Entree& is)
+Entree& Viscosite_turbulente_base::readOn(Entree& is){return is;}
+
+void Viscosite_turbulente_base::modifier_mu(DoubleTab& mu) const
 {
-  return is;
+  const DoubleTab& rho = pb_->get_champ("masse_volumique").passe(),
+                   *alpha = pb_->has_champ("alpha") ? &(pb_->get_champ("alpha").passe()) : nullptr;
+  int i, nl = mu.dimension(0), n, N = rho.line_size(), cR = rho.dimension(0) == 1, d, D = dimension;
+  DoubleTrav nu_t(nl, N); //viscosite turbulente : toujours scalaire
+  eddy_viscosity(nu_t); //remplissage par la correlation
+  if (mu.nb_dim() == 2) //nu scalaire
+    for (i = 0; i < nl; i++)
+      for (n = 0; n < N; n++) mu(i, n) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
+  else if (mu.nb_dim() == 3) //nu anisotrope diagonal
+    for (i = 0; i < nl; i++)
+      for (n = 0; n < N; n++)
+        for (d = 0; d < D; d++) mu(i, n, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
+  else if (mu.nb_dim() == 4) //nu anisotrope complet
+    for (i = 0; i < nl; i++)
+      for (n = 0; n < N; n++)
+        for (d = 0; d < D; d++) mu(i, n, d, d) += (alpha ? (*alpha)(i, n) : 1) * rho(!cR * i, n) * nu_t(i, n);
+  else abort();
+  mu.echange_espace_virtuel();
 }

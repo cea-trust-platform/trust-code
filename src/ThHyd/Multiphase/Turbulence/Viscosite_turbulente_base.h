@@ -35,6 +35,7 @@ class Viscosite_turbulente_base : public Correlation_base
 {
   Declare_base(Viscosite_turbulente_base);
 public:
+  virtual void modifier_mu(DoubleTab& nu_t) const;
   virtual void eddy_viscosity(DoubleTab& nu_t) const = 0;
   virtual void reynolds_stress(DoubleTab& R_ij) const = 0;
   virtual void k_over_eps(DoubleTab& k_sur_eps) const = 0;
