@@ -22,7 +22,7 @@
 
 #include <Vitesse_derive_constante.h>
 
-Implemente_instanciable(Vitesse_derive_constante, "Vitesse_derive_constante", Vitesse_derive_base);
+Implemente_instanciable(Vitesse_derive_constante, "Vitesse_relative_derive_constante", Vitesse_derive_base);
 
 Sortie& Vitesse_derive_constante::printOn(Sortie& os) const { return os; }
 
@@ -30,7 +30,6 @@ Entree& Vitesse_derive_constante::readOn(Entree& is)
 {
   Vitesse_derive_base::readOn(is);
 
-  vg0.resize(dimension);
   Param param(que_suis_je());
   param.ajouter("C0", &C0, Param::REQUIRED);
   param.ajouter("vg0_x", &vg0[0], Param::REQUIRED);

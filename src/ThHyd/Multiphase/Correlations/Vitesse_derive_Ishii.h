@@ -39,9 +39,9 @@ class Vitesse_derive_Ishii : public Vitesse_derive_base
 protected:
   void evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const override;
 
-  // parametres de la correlation (circular channel)
-  int sb_ = 0;          // subcooled boing (0 = no, 1 = yes)
-  double Cinf = 1.2;    // asymptotic value of C0
+  // correlation parameters (circular channel)
+  int sb_ = 0;       // subcooled boiling (0 = no, 1 = yes)
+  double Cinf = 1.2; // asymptotic value of C0
   double theta = 1.75;
   double zeta = 18.0;
 };

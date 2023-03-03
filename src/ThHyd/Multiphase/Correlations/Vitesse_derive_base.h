@@ -30,21 +30,22 @@
 // .DESCRIPTION
 //    classe Vitesse_derive_base
 //      correlations de vitesse de derive de la forme
-//      ur = 1 / (1 - C0 alpha_g) * ((C0 - 1) * v_l + vg0)
+//      ur = ((C0 - 1) * v_l + vg0) / (1 - C0 alpha_g)
 //
 //////////////////////////////////////////////////////////////////////////////
 
 class Vitesse_derive_base : public Vitesse_relative_base
 {
   Declare_base(Vitesse_derive_base);
+
 public:
   void vitesse_relative(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g, DoubleTab& ur) const override;
 
 protected:
   virtual void evaluate_C0_vg0(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g) const = 0;
 
-  mutable double C0 = -1;
-  mutable ArrOfDouble vg0;
+  mutable double C0 = -1;  // distribution parameter
+  mutable ArrOfDouble vg0; // drift velocity
 };
 
 #endif

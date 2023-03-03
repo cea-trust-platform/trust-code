@@ -37,10 +37,12 @@
 class Vitesse_relative_base : public Correlation_base
 {
   Declare_base(Vitesse_relative_base);
+
 public:
   virtual void vitesse_relative(const double Dh, const DoubleTab& sigma, const DoubleTab& alpha, const DoubleTab& rho, const DoubleTab& v, const DoubleVect& g, DoubleTab& ur) const = 0;
+
 protected:
-  int n_l = -1, n_g = -1; //phases traitees : liquide / gaz continu
+  int n_l = -1, n_g = -1; // phases traitees : liquide / gaz continu
 };
 
 #endif

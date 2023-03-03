@@ -23,7 +23,7 @@
 #include <Vitesse_derive_Ishii.h>
 #include <cmath>
 
-Implemente_instanciable(Vitesse_derive_Ishii, "Vitesse_derive_Ishii", Vitesse_derive_base);
+Implemente_instanciable(Vitesse_derive_Ishii, "Vitesse_relative_derive_Ishii", Vitesse_derive_base);
 
 Sortie& Vitesse_derive_Ishii::printOn(Sortie& os) const { return os; }
 
@@ -47,5 +47,5 @@ void Vitesse_derive_Ishii::evaluate_C0_vg0(const double Dh, const DoubleTab& sig
 
   /* drift velocity */
   double dv = std::sqrt(2.0) * pow((rho(n_l) - rho(n_g)) * norm_g * sigma(n_l, n_g) / rho(n_l) / rho(n_l), 0.25) * pow(1.0 - alpha(n_g), theta);
-  for (int d = 0; d < D; d++) vg0(d) = -dv * g(d) / norm_g;
+  for (int d = 0; d < D; d++) vg0(d) = dv * std::fabs(g(d)) / norm_g;
 }

@@ -85,7 +85,9 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
                       &rho = equation().milieu().masse_volumique().passe(),
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
-                      &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe();
+                      &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
+                                             &vp = ch.passe();
+
   const DoubleVect& vf = domaine.volumes_entrelaces(), &dh_e = domaine.diametre_hydraulique_elem();
   int e, f, i, j, k, l, n, N = inco.line_size(), d, D = dimension, nf_tot = zone.nb_faces_tot(), cR = (rho.dimension_tot(0) == 1), Np = press.line_size(),
                            iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration : 0;
@@ -125,7 +127,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
           {
             const Vitesse_relative_base& correlation_vd = ref_cast(Vitesse_relative_base, correlation_.valeur());
             for (n = 0; n < N; n++)
-              for (d = 0; d < D; d++) v(n, d) = inco(f, n) * zone.face_normales(f, d) / zone.face_surfaces(f);
+              for (d = 0; d < D; d++) v(n, d) = vp(f, n) * zone.face_normales(f, d) / zone.face_surfaces(f);
             for (a_l = 0, rho_l = 0, dh = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
               {
                 for (n = 0; n < N; n++)   a_l(n) += vfd(f, i) / vf(f) * alpha(e, n);
@@ -179,8 +181,6 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                     int c = diag * mat.get_tab2()(i) - 1; //indice de colonne (commun aux deux lignes grace au dimensionner_blocs())
                     mat.get_set_coeff()(j) +=  coeff(f, n, 0) * mat.get_set_coeff()(i) - coeff(f, n, 1) * ((c == N * f + n) - (c == N * f + k));
                     mat.get_set_coeff()(i) += -coeff(f, n, 0) * mat.get_set_coeff()(i) + coeff(f, n, 1) * ((c == N * f + n) - (c == N * f + k));
-                    // mat.get_set_coeff()(j) +=  coeff(f, n, 0) * mat.get_set_coeff()(i) - coeff(f, n, 1) * (C0(n, k) * (c == N * f + n) + C0(k, n) * (c == N * f + k));
-                    // mat.get_set_coeff()(i) += -coeff(f, n, 0) * mat.get_set_coeff()(i) + coeff(f, n, 1) * (C0(n, k) * (c == N * f + n) + C0(k, n) * (c == N * f + k));
                   }
       }
 
