@@ -20,6 +20,7 @@
 #include <Champ_Elem_PolyMAC_P0.h>
 #include <Vitesse_relative_base.h>
 #include <Echange_impose_base.h>
+#include <Gravite_Multiphase.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Milieu_composite.h>
@@ -64,35 +65,43 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
                     &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
                      &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
                       *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
-                       *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
+                       *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
+                         *gravity = (equation().probleme().has_champ("gravite")) ? &equation().probleme().get_champ("gravite").valeurs() : nullptr ;
+                       
   const DoubleVect& dh_e = milc.diametre_hydraulique_elem();
   int e, i, j, k, l, n, m, N = inco.line_size(), Nk = (k_turb) ? (*k_turb).line_size() : 0, d, D = dimension, nf_tot = domaine.nb_faces_tot(), cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size();
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
 
+  if (N == 1) return; //pas d'evanescence en simple phase!
+
+  DoubleTab dvr_elem(domaine.nb_elem_tot()*dimension, N, N, N); // Derivee de vr(n,k) en e par rapport a la phase l selon d ; pour l'instant toujours selon d2=d
+                                                                // On se le trimballe parce que quelqu'un a separe la boucle sur les matrices de celle sur le secmem
+
+
+  /* calcul de la vitesse de derive : on va chercher les quantites intermediaires requises */
+  Vitesse_relative_base::input_t in;
+  Vitesse_relative_base::output_t out;
+  out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
+  const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur()) : nullptr;
+  DoubleTab gradAlpha;
   DoubleTrav nut; //viscosite turbulente
   const int is_turb = ref_cast(Operateur_Diff_base, pbm.eq_qdm.operateur_diff().l_op_base()).is_turb();
+  if (correlation_vd)
+  {
+    in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), in.g.resize(D);
+    if (correlation_vd->needs_grad_alpha())
+    {
+      gradAlpha.resize(domaine.nb_elem_tot(), N, D);
+      calc_grad_alpha_elem(gradAlpha);
+      in.gradAlpha.resize(N,D);
+    }
   if (is_turb)
   {
     nut.resize(domaine.nb_elem_tot(), N);
     ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation    
   }
-
-  DoubleTab dvr_elem(domaine.nb_elem_tot()*dimension, N, N, N); // Derivee de vr(n,k) en e par rapport a la phase l selon d ; pour l'instant toujours selon d2=d
-                                                                // On se le trimballe parce que quelqu'un a separe la boucle sur les matrices de celle sur le secmem
-
-  if (N == 1) return; //pas d'evanescence en simple phase!
-
-  DoubleVect g(D);                                              // arguments pour la vitesse de derive : gravite
-  g = 0., g(D - 1) = -9.81;                                     // FIXME
-
-  DoubleTab gradAlpha;
-  if (pbm.has_correlation("Vitesse_relative"))
-    if (ref_cast(Vitesse_relative_base, pbm.get_correlation("Vitesse_relative").valeur()).needs_grad_alpha())
-    {
-      gradAlpha.resize(domaine.nb_elem_tot(), N, D);
-      calc_grad_alpha_elem(gradAlpha);
-    }
+  }
 
   for (e = 0; e < domaine.nb_elem_tot(); e++) /* elements : a faire D fois par element */
     {
@@ -104,22 +113,16 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
       else abort();
 
       /* calcul de la vitesse de derive */
-      Vitesse_relative_base::input_t in;
-      Vitesse_relative_base::output_t out;
-      in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
-      in.dh = dh_e(e), in.g = g;
-      if (pbm.has_correlation("vitesse_relative"))
+      if (correlation_vd)
         {
-          const Vitesse_relative_base& correlation_vd =  ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur());
-          for (n = 0; n < N; n++) in.alpha(n) = alpha(e, n);
-          for (n = 0; n < N; n++) in.rho(n) = rho(!cR * e, n);
-          for (n = 0; n < N; n++) in.mu(n) = mu(!cM * e, n);
-          for (n = 0; n < N; n++) in.d_bulles(n) = (d_bulles) ? (*d_bulles)(e, n) : -1. ;
-          for (n = 0; n < Nk; n++) in.k(n) = (k_turb) ? (*k_turb)(e, n) : -1. ;
-          for (n = 0; n < Nk; n++) in.nut(n) = (is_turb) ? nut(e, n) : -1. ;
-          for (n = 0; n < N; n++)
+          in.dh = dh_e(e) ;
+          for (n = 0; n < N; n++) 
+          {
+            in.alpha(n) = alpha(e, n);
+            in.rho(n) = rho(!cR * e, n);
+            in.mu(n) = mu(!cM * e, n);
+            in.d_bulles(n) = (d_bulles) ? (*d_bulles)(e, n) : -1. ;
             for (d = 0; d < D; d++) in.v(n, d) = inco(nf_tot + D * e + d, n);
-          for (n = 0; n < N; n++)
             for (m = n+1; m < N; m++)
               if (milc.has_interface(n, m))
                 {
@@ -127,14 +130,17 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
                   Interface_base& sat = milc.get_interface(n, m);
                   in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
                 }
-                if (correlation_vd.needs_grad_alpha())
+          }
+          for (n = 0; n < Nk; n++) in.k(n) = (k_turb) ? (*k_turb)(e, n) : -1., in.nut(n) = (is_turb) ? nut(e, n) : -1. ;
+          for (d = 0; d < D; d++) in.g(d) = (*gravity)(e,d);
+          if (correlation_vd->needs_grad_alpha())
                 {
                   in.gradAlpha.resize(N,D);
                   for (n = 0; n < N; n++)
                     for (d = 0; d < D; d++) in.gradAlpha(n,d) = gradAlpha(e , n, d);
                 }
 
-          correlation_vd.vitesse_relative(in, out);
+          correlation_vd->vitesse_relative(in, out);
         }
 
       /* coeff d'evanescence */

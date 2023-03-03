@@ -16,6 +16,7 @@
 #include <Op_Evanescence_Homogene_Face_base.h>
 #include <Viscosite_turbulente_base.h>
 #include <Vitesse_relative_base.h>
+#include <Gravite_Multiphase.h>
 #include <Milieu_composite.h>
 #include <Champ_Face_base.h>
 #include <Champ_Uniforme.h>
@@ -35,6 +36,10 @@ Entree& Op_Evanescence_Homogene_Face_base::readOn(Entree& is)
   param.ajouter("alpha_res", &alpha_res_, Param::REQUIRED);
   param.ajouter("alpha_res_min", &alpha_res_min_);
   param.lire_avec_accolades_depuis(is);
+
+  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+  if (pbm.has_correlation("Vitesse_relative") && !pbm.has_correlation("gravite")) Process::exit(que_suis_je() + " : you must define a multiphase gravity field if you want a drift flux!!");
+
   return is;
 }
 
@@ -91,39 +96,47 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                     &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
                      &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
                       *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
-                       *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr ;
+                       *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
+                         *gravity = (equation().probleme().has_champ("gravite")) ? &equation().probleme().get_champ("gravite").valeurs() : nullptr ;
 
   const DoubleVect& vf = domaine.volumes_entrelaces(), &dh_e = milc.diametre_hydraulique_elem();
   int e, f, i, j, k, l, n, m, N = inco.line_size(), Nk = (k_turb) ? (*k_turb).line_size() : 0, d, D = dimension, cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size(),
                            iter = sub_type(SETS, equation().schema_temps()) ? 0 * ref_cast(SETS, equation().schema_temps()).iteration : 0;
   if (N == 1) return; //pas d'evanescence en simple phase!
 
-  DoubleTrav nut; //viscosite turbulente
-  const int is_turb = ref_cast(Operateur_Diff_base, pbm.eq_qdm.operateur_diff().l_op_base()).is_turb();
-  if (is_turb)
-  {
-    nut.resize(domaine.nb_elem_tot(), N);
-    ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation    
-  }
-
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
 
   /* recherche de phases evanescentes et traitement des seconds membres */
   IntTrav maj(inco.dimension_tot(0)); //maj(i) : phase majoritaire de la ligne i
   DoubleTrav coeff(inco.dimension_tot(0), inco.line_size(), 2); //coeff(i, n, 0/1) : coeff a appliquer a l'equation existante / a l'eq. "inco = v_maj"
-  DoubleVect g(D);                                              // arguments pour la vitesse de derive : gravite
-  g = 0., g(D - 1) = -9.81;                                     // FIXME
   Matrice_Morse& mat_diag = *matrices.at(ch.le_nom().getString());
 
   DoubleTab dvr_face(domaine.nb_faces(), N, N, N); // Derivee de vr(n,k) en f par rapport a la phase l ; pour l'instant toujours selon d2=d
                                                    // On se le trimballe parce que quelqu'un a separe la boucle sur les matrices de celle sur le secmem
+
+  /* calcul de la vitesse de derive : on va chercher les quantites intermediaires requises */
+  Vitesse_relative_base::input_t in;
+  Vitesse_relative_base::output_t out;
+  out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
+  const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur()) : nullptr;
   DoubleTab gradAlpha;
-  if (pbm.has_correlation("Vitesse_relative"))
-    if (ref_cast(Vitesse_relative_base, pbm.get_correlation("Vitesse_relative").valeur()).needs_grad_alpha())
+  DoubleTrav nut; //viscosite turbulente
+  const int is_turb = ref_cast(Operateur_Diff_base, pbm.eq_qdm.operateur_diff().l_op_base()).is_turb();
+  if (correlation_vd)
+  {
+    in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), in.g.resize(D);
+    if (correlation_vd->needs_grad_alpha())
     {
       gradAlpha.resize(domaine.nb_faces(), N, D);
       calc_grad_alpha_faces(gradAlpha);
+      in.gradAlpha.resize(N,D);
     }
+  if (is_turb)
+  {
+    nut.resize(domaine.nb_elem_tot(), N);
+    ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation    
+  }
+  }
 
   for (f = 0; f < domaine.nb_faces(); f++)
     if (fcl(f, 0) < 2)
@@ -143,25 +156,20 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
         if (k >= 0) maj(f) = k;
         else abort();
 
-        /* calcul de la vitesse de derive */
-        Vitesse_relative_base::input_t in;
-        Vitesse_relative_base::output_t out;
-        in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
-        if (pbm.has_correlation("Vitesse_relative"))
+        if (correlation_vd)
           {
-            const Vitesse_relative_base& correlation_vd = ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur());
             for (n = 0; n < N; n++)
               for (d = 0; d < D; d++) in.v(n, d) = inco(f, n) * domaine.face_normales(f, d) / domaine.face_surfaces(f);
-            for (in.alpha = 0, in.rho = 0, in.mu = 0, in.d_bulles = 0, in.k = 0, in.nut = 0, in.dh = 0, in.g = g, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
+          
+            for (in.alpha = 0, in.rho = 0, in.mu = 0, in.d_bulles = 0, in.k = 0, in.nut = 0, in.dh = 0, in.g = 0, i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
               {
-                for (n = 0; n < N; n++) in.alpha(n) += vfd(f, i) / vf(f) * alpha(e, n);
-                for (n = 0; n < N; n++)   in.rho(n) += vfd(f, i) / vf(f) * rho(!cR * e, n);
-                for (n = 0; n < N; n++)    in.mu(n) += vfd(f, i) / vf(f) * mu(!cM * e, n);
-                for (n = 0; n < N; n++)in.d_bulles(n)+=vfd(f, i) / vf(f) *((d_bulles) ? (*d_bulles)(e, n) : -1.) ;
-                for (n = 0; n < Nk; n++)    in.k(n) += vfd(f, i) / vf(f) *((k_turb) ? (*k_turb)(e, n) : -1.) ;
-                for (n = 0; n < Nk; n++)  in.nut(n) += vfd(f, i) / vf(f) *((is_turb) ? nut(e, n) : -1.) ;
-                for (n = 0; n < N; n++)       in.dh += vfd(f, i) / vf(f) * dh_e(e);
-                for (n = 0; n < N; n++)
+                for (n = 0; n < N; n++) 
+                {
+                  in.alpha(n) += vfd(f, i) / vf(f) * alpha(e, n);
+                  in.rho(n) += vfd(f, i) / vf(f) * rho(!cR * e, n);
+                  in.mu(n) += vfd(f, i) / vf(f) * mu(!cM * e, n);
+                  in.d_bulles(n)+=vfd(f, i) / vf(f) *((d_bulles) ? (*d_bulles)(e, n) : -1.) ;
+                  in.dh += vfd(f, i) / vf(f) * dh_e(e);
                   for (m = n+1; m < N; m++)
                     if (milc.has_interface(n, m))
                       {
@@ -169,15 +177,16 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                         Interface_base& sat = milc.get_interface(n, m);
                         in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
                       }
-                if (correlation_vd.needs_grad_alpha())
-                {
-                  in.gradAlpha.resize(N,D);
+                }
+                for (n = 0; n < Nk; n++) in.k(n) += vfd(f, i) / vf(f) *((k_turb) ? (*k_turb)(e, n) : -1.), in.nut(n) += vfd(f, i) / vf(f) *((is_turb) ? nut(e, n) : -1.) ;
+                for (d = 0; d < D; d++) in.g(d) += vfd(f, i) / vf(f) * (*gravity)(e,d);
+                if (correlation_vd->needs_grad_alpha())
                   for (n = 0; n < N; n++)
                     for (d = 0; d < D; d++) in.gradAlpha(n,d) = gradAlpha(f, n, d);
-                }
               }
-            correlation_vd.vitesse_relative(in, out);
+            correlation_vd->vitesse_relative(in, out);
           }
+
         /* phases evanescentes : avec alpha amont. La phase majoritaire ne peut pas etre evanescente! */
         for (n = 0; n < N; n++)
           {
