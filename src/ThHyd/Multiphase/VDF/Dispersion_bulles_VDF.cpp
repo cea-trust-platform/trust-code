@@ -15,121 +15,133 @@
 
 #include <Dispersion_bulles_VDF.h>
 
-Implemente_instanciable(Dispersion_bulles_VDF, "Dispersion_bulles_Face_VDF", Source_Dispersion_bulles_base);
+#include <Viscosite_turbulente_base.h>
+#include <Dispersion_bulles_base.h>
+#include <Operateur_Diff_base.h>
+#include <Milieu_composite.h>
+#include <Masse_Multiphase.h>
+#include <Champ_Face_VDF.h>
+#include <Operateur_Grad.h>
+#include <Pb_Multiphase.h>
+#include <Domaine_VF.h>
+
+Implemente_instanciable(Dispersion_bulles_VDF, "Dispersion_bulles_VDF_Face", Source_Dispersion_bulles_base);
 
 Sortie& Dispersion_bulles_VDF::printOn(Sortie& os) const { return os; }
 
 Entree& Dispersion_bulles_VDF::readOn(Entree& is)
 {
   Source_Dispersion_bulles_base::readOn(is);
-  // TODO : FIXME : pour coco
-//  if sub_type(Op_Diff_Turbulent_PolyMAC_P0_Face, equation().operateur(0).l_op_base()) is_turb = 1;
+  if (ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).is_turb()) is_turb = 1;
   return is;
 }
 
 void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-  throw;
-//  const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
-//  const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis().valeur());
-//  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl(), &e_f = domaine.elem_faces();
-//  const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
-//  const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir(), &xp = domaine.xp(), &xv = domaine.xv();
-//  const DoubleTab& pvit = ch.passe(),
-//                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
-//                    &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
-//                     &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
-//                      &rho   = equation().milieu().masse_volumique().passe(),
-//                       &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
-//
-//  const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
-//
-//  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL ;
-//  DoubleTab const * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
-//
-//  int N = pvit.line_size() , Np = press.line_size(), D = dimension, nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces(), ne_tot = domaine.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
-//  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), dv(N, N), nut_l(N), k_l(Nk), d_b_l(N), coeff(N, N, 2); //arguments pour coeff
-//
-//  // TODO : FIXME : pour coco
-////  DoubleTrav nut(domaine.nb_elem_tot(), N); //viscosite turbulente
-////  if (is_turb) ref_cast(Viscosite_turbulente_base, ref_cast(Op_Diff_Turbulent_PolyMAC_P0_Face, equation().operateur(0).l_op_base()).correlation().valeur()).eddy_viscosity(nut); //remplissage par la correlation
-//
-//  const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
-//
-//  /* calculaiton of the gradient of alpha at the face */
-//  const Champ_P0_VDF& ch_a = ref_cast(Champ_P0_VDF, ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeur());
-//  DoubleTrav grad_f_a(pvit);
-//  ch_a.init_grad(0);
-//  const IntTab& fg_d = ch_a.fgrad_d, &fg_e = ch_a.fgrad_e;  // Tables utilisees dans domaine_PolyMAC_P0::fgrad pour le calcul du gradient
-//  const DoubleTab&  fg_w = ch_a.fgrad_w;
-//  const Conds_lim& cls_a = ch_a.domaine_Cl_dis().les_conditions_limites();     // conditions aux limites du champ alpha
-//  const IntTab&    fcl_a = ch_a.fcl();  // tableaux utilitaires sur les CLs : fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
-//
-//  for (int n = 0; n < N; n++)
-//    for (int f = 0; f < nf_tot; f++)
-//      {
-//        grad_f_a(f, n) = 0;
-//        for (int j = fg_d(f); j < fg_d(f+1) ; j++)
-//          {
-//            int e = fg_e(j);
-//            int f_bord;
-//            if ( (f_bord = e-ne_tot) < 0) //contribution d'un element
-//              grad_f_a(f, n) += fg_w(j) * alpha(e, n);
-//            else if (fcl_a(f_bord, 0) == 1 || fcl_a(f_bord, 0) == 2) //Echange_impose_base
-//              grad_f_a(f, n) += fg_w(j) ? fg_w(j) * ref_cast(Echange_impose_base, cls_a[fcl_a(f_bord, 1)].valeur()).T_ext(fcl_a(f_bord, 2), n) : 0;
-//            else if (fcl_a(f_bord, 0) == 4) //Neumann non homogene
-//              grad_f_a(f, n) += fg_w(j) ? fg_w(j) * ref_cast(Neumann_paroi      , cls_a[fcl_a(f_bord, 1)].valeur()).flux_impose(fcl_a(f_bord, 2), n) : 0;
-//            else if (fcl_a(f_bord, 0) == 6) // Dirichlet
-//              grad_f_a(f, n) += fg_w(j) * ref_cast(Dirichlet, cls_a[fcl_a(f_bord, 1)].valeur()).val_imp(fcl_a(f_bord, 2), n);
-//          }
-//      }
-//
-//  /* faces */
-//  for (int f = 0; f < nf; f++)
-//    if (fcl(f, 0) < 2)
-//      {
-//        a_l = 0 ;
-//        p_l = 0 ;
-//        T_l = 0 ;
-//        rho_l = 0;
-//        mu_l = 0 ;
-//        nut_l = 0 ;
-//        k_l = 0 ;
-//        d_b_l=0;
-//        sigma_l=0;
-//        dv = 0 ;
-//        int e;
-//        for (int c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-//          {
-//            for (int n = 0; n < N; n++)
-//              {
-//                a_l(n)   += vf_dir(f, c)/vf(f) * alpha(e, n);
-//                p_l(n)   += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
-//                T_l(n)   += vf_dir(f, c)/vf(f) * temp(e, n);
-//                rho_l(n) += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
-//                mu_l(n)  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
-//                nut_l(n) += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
-//                d_b_l(n) += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
-//                for (int k = 0; k < N; k++)
-//                  if (milc.has_interface(n,k))
-//                    {
-//                      Interface_base& sat = milc.get_interface(n, k);
-//                      sigma_l(n,k) += vf_dir(f, c)/vf(f) * sat.sigma(temp(e,n),press(e,n * (Np > 1)));
-//                    }
-//                for (int k = 0; k < N; k++)
-//                  dv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
-//              }
-//            for (int n = 0; n <Nk; n++) k_l(n)   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
-//          }
-//
-//        correlation_db.coefficient(a_l, p_l, T_l, rho_l, mu_l, sigma_l, nut_l, k_l, d_b_l, dv, coeff); // correlation identifies the liquid phase
-//
-//        for (int k = 0; k < N; k++)
-//          for (int l = 0; l < N; l++)
-//            if (k != l)
-//              {
-//                double fac = beta_*pf(f) * vf(f);
-//                secmem(f, k) += fac * ( - coeff(k, l, 0) * grad_f_a(f, k) + coeff(l, k, 0) * grad_f_a(f, l));
-//              }
-//      }
+  const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
+  const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir();
+  const DoubleTab& pvit = ch.passe(),
+                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
+                    &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
+                     &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
+                      &rho   = equation().milieu().masse_volumique().passe(),
+                       &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
+  const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
+
+  DoubleTab const * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL ;
+  DoubleTab const * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
+
+  int N = pvit.line_size() , Np = press.line_size(), nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces(), ne_tot = domaine.nb_elem_tot(),  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Nk = (k_turb) ? (*k_turb).dimension(1) : 1;
+  DoubleTrav nut(domaine.nb_elem_tot(), N); //viscosite turbulente
+  if (is_turb) ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation
+
+  // Input-output
+  const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
+  Dispersion_bulles_base::input_t in;
+  Dispersion_bulles_base::output_t out;
+  in.alpha.resize(N), in.T.resize(N), in.p.resize(N), in.rho.resize(N), in.mu.resize(N), in.sigma.resize(N*(N-1)/2), in.k_turb.resize(N), in.nut.resize(N), in.d_bulles.resize(N), in.nv.resize(N, N);
+  out.Ctd.resize(N, N);
+
+  /* Calcul de grad alpha aux faces */
+
+  DoubleTab grad_f_a(nf_tot, N);
+  assert ( alpha.dimension_tot(0) == ne_tot );
+  const Masse_Multiphase& eq_alp = ref_cast(Masse_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).eq_masse);
+  const Operateur_Grad& Op_Grad_alp = eq_alp.operateur_gradient_inconnue();
+  Op_Grad_alp.calculer(alpha,grad_f_a); // compute grad(diss) at faces
+
+  // Et pour les methodes span de la classe Interface pour choper la tension de surface
+  const int nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+  DoubleTrav Sigma_tab(ne_tot,nb_max_sat);
+
+  // remplir les tabs ...
+  for (int k = 0; k < N; k++)
+    for (int l = k + 1; l < N; l++)
+      {
+        if (milc.has_saturation(k, l))
+          {
+            Saturation_base& z_sat = milc.get_saturation(k, l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            // XXX XXX XXX
+            // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
+            // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
+            assert(press.line_size() == 1);
+            assert(temp.line_size() == N);
+
+            std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span_tot() /* elem reel */}, {"temperature", temp.get_span_tot() } };
+
+            sats_all.insert( { "sigma", Sigma_tab.get_span_tot() });
+
+            z_sat.compute_all_frottement_interfacial(sats_all, nb_max_sat, ind_trav);
+          }
+        else if (milc.has_interface(k, l))
+          {
+            Interface_base& sat = milc.get_interface(k,l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            for (int i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+          }
+      }
+
+  /* faces */
+  for (int f = 0; f < nf; f++)
+    if (fcl(f, 0) < 2)
+      {
+        in.alpha=0., in.T=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.nut=0., in.d_bulles=0., in.nv=0.;
+        int e;
+        for (int c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+          {
+            for (int n = 0; n < N; n++)
+              {
+                in.alpha[n]   += vf_dir(f, c)/vf(f) * alpha(e, n);
+                in.p[n]   += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
+                in.T[n]   += vf_dir(f, c)/vf(f) * temp(e, n);
+                in.rho[n] += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
+                in.mu[n]  += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
+                in.nut[n] += is_turb    ? vf_dir(f, c)/vf(f) * nut(e,n) : 0;
+                in.d_bulles[n] += (d_bulles) ? vf_dir(f, c)/vf(f) * (*d_bulles)(e,n) : 0;
+                for (int k = n+1; k < N; k++)
+                  if (milc.has_interface(n,k))
+                    {
+                      const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                      in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
+                    }
+                for (int k = 0; k < N; k++)
+                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
+              }
+            for (int n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
+          }
+
+        correlation_db.coefficient(in, out);
+
+        for (int k = 0; k < N; k++)
+          for (int l = 0; l < N; l++)
+            if (k != l)
+              {
+                double fac = beta_*pf(f) * vf(f);
+                secmem(f, k) += fac * ( - out.Ctd(k, l) * grad_f_a(f, k) + out.Ctd(l, k) * grad_f_a(f, l));
+              }
+      }
 }

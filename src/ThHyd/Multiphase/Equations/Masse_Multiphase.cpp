@@ -155,6 +155,18 @@ void Masse_Multiphase::completer()
 {
   Equation_base::completer();
   terme_convectif.valeur().check_multiphase_compatibility();
+
+  const Domaine_dis& zdis = domaine_dis();
+  if (zdis.valeur().que_suis_je().debute_par("Domaine_VDF"))
+  {
+  // initialiser l'operateur grad SI VDF
+  Op_Grad_.associer_eqn(*this);
+  Op_Grad_.typer();
+  Op_Grad_.l_op_base().associer_eqn(*this);
+  const Domaine_Cl_dis& zcl = domaine_Cl_dis();
+  const Champ_Inc& inco = inconnue();
+  Op_Grad_->associer(zdis, zcl, inco);
+  }
 }
 
 /*! @brief Discretise l'equation.

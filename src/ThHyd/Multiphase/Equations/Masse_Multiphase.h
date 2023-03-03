@@ -18,6 +18,7 @@
 
 #include <Convection_Diffusion_std.h>
 #include <Operateur_Evanescence.h>
+#include <Operateur_Grad.h>
 #include <TRUST_Ref.h>
 
 class Fluide_base;
@@ -76,10 +77,13 @@ public :
   /////////////////////////////////////////////////////
   const Motcle& domaine_application() const override;
 
+  inline const Operateur_Grad& operateur_gradient_inconnue() const { return Op_Grad_;}
+
 protected :
 
   Champ_Inc l_inco_ch;
   REF(Fluide_base) le_fluide;
+  Operateur_Grad Op_Grad_; // Pour calculer le gradient en VDF
 
   Operateur_Evanescence evanescence;
 };

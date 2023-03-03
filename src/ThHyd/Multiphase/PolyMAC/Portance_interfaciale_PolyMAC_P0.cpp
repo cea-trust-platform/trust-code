@@ -171,15 +171,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
     for (f = 0 ; f<domaine.nb_faces() ; f++)
       if (fcl(f, 0) < 2)
         {
-          a_l = 0;
-          p_l = 0;
-          T_l = 0;
-          rho_l = 0;
-          mu_l = 0;
-          d_b_l = 0 ;
-          sigma_l = 0;
-          dv = 0 ;
-          k_l = 0;
+          a_l = 0, p_l = 0, T_l = 0, rho_l = 0, mu_l = 0, d_b_l = 0, sigma_l = 0, dv = 0, k_l = 0;
           for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
             {
               for (n = 0; n < N; n++)
