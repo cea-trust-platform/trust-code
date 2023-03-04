@@ -711,7 +711,10 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
             nb_aretes += (D == 3 ? nb_som_loc : 0)  ; // Autant d'aretes autour d'une face que de sommets !
           }
       }
-  if (nb_faces_bord_==0) Process::exit(que_suis_je() + " : at least one boundary must be solid for the distance to the edge to be calculated !!!");
+
+  if (Process::mp_max(nb_faces_bord_) == 0) /* test all procs */
+    Process::exit(que_suis_je() + " : at least one boundary must be solid for the distance to the edge to be calculated !!!");
+
   remote_xv[moi].resize(nb_faces_bord_ + (int)soms.size() + nb_aretes,D);
 
   // On remplit les coordonnes des faces et aretes de bord locales
