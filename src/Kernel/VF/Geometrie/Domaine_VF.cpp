@@ -692,8 +692,8 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
   int nb_aretes = 0;
   std::set<int> soms;
   for (auto& itr : conds_lim)
-    if ( sub_type(Dirichlet_paroi_defilante, itr.valeur()) || sub_type(Dirichlet_homogene, itr.valeur()) || 
-       (sub_type(Navier, itr.valeur()) && !sub_type(Symetrie, itr.valeur()) ) || sub_type(Dirichlet_loi_paroi, itr.valeur()))
+    if ( sub_type(Dirichlet_paroi_defilante, itr.valeur()) || sub_type(Dirichlet_homogene, itr.valeur()) ||
+         (sub_type(Navier, itr.valeur()) && !sub_type(Symetrie, itr.valeur()) ) || sub_type(Dirichlet_loi_paroi, itr.valeur()))
       {
         int num_face_1_cl = itr.frontiere_dis().frontiere().num_premiere_face();
         int nb_faces_cl   = itr.frontiere_dis().frontiere().nb_faces();

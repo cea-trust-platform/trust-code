@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,32 +12,23 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Vitesse_derive_constante.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Vitesse_derive_constante_included
 #define Vitesse_derive_constante_included
+
 #include <Vitesse_derive_base.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Vitesse_derive_constante
-//      vitesse de derive constante entre une phase gaz et une phase liquide
-//      parametres : non!
-//////////////////////////////////////////////////////////////////////////////
+/*! @brief classe Vitesse_derive_constante
+ *
+ *  vitesse de derive constante entre une phase gaz et une phase liquide parametres : non!
+ *
+ */
 
 class Vitesse_derive_constante : public Vitesse_derive_base
 {
   Declare_instanciable(Vitesse_derive_constante);
-
 protected:
   void evaluate_C0_vg0(const input_t& input) const override {}
 };
 
-#endif
+#endif /* Vitesse_derive_constante_included */

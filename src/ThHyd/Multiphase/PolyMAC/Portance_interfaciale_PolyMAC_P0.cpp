@@ -94,8 +94,8 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
       /* arguments de coeff */
 
       for (n = 0; n < N; n++)
-          for (k = 0; k < N; k++)
-            dv(k, n) = ch.v_norm(pvit, pvit, e, -1, k, n, nullptr, nullptr);
+        for (k = 0; k < N; k++)
+          dv(k, n) = ch.v_norm(pvit, pvit, e, -1, k, n, nullptr, nullptr);
 
       in.alpha = &alpha(e, 0), in.T = &temp(e, 0), in.p = press(e, 0), in.nv = &dv(0, 0);
       in.mu = &mu(!cM * e, 0), in.rho = &rho(!cR * e, 0), in.sigma = &Sigma_tab(e, 0);

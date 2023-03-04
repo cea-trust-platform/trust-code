@@ -27,7 +27,7 @@ protected:
   void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const override;
   void ajouter_blocs_aux(IntTrav& , DoubleTrav , matrices_t , DoubleTab& ) const override;
   void calc_grad_alpha_elem(DoubleTab&) const;
-  void calc_grad_alpha_faces(DoubleTab&) const override;  
+  void calc_grad_alpha_faces(DoubleTab&) const override;
 
 };
 

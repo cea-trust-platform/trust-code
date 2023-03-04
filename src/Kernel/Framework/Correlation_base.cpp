@@ -14,22 +14,14 @@
 *****************************************************************************/
 
 #include <Correlation_base.h>
+
 Implemente_base(Correlation_base, "Correlation_base", Objet_U);
 
-Sortie& Correlation_base::printOn(Sortie& os) const
-{
-  return os;
-}
+Sortie& Correlation_base::printOn(Sortie& os) const { return os; }
 
-Entree& Correlation_base::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Correlation_base::readOn(Entree& is) { return is; }
 
-Entree& Correlation_base::lire(Entree& is)
-{
-  return readOn(is);
-}
+Entree& Correlation_base::lire(Entree& is) { return readOn(is); }
 
 void Correlation_base::associer_pb(const Probleme_base& pb)
 {

@@ -70,22 +70,22 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
 
           const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
           if (is_turb()) // Cas turbulence multiphase
-          {
-            const Eval_Dift_Multiphase_VDF& eval_dift = dynamic_cast<const Eval_Dift_Multiphase_VDF&>(iter->evaluateur()) ;
-            const DoubleTab& diffusivite_turb = eval_dift.tab_nu_t() ;
-            const DoubleTab& alpharho = equation().probleme().equation(1).champ_conserve().passe();
-            assert(diffusivite_turb.nb_dim()==2);
+            {
+              const Eval_Dift_Multiphase_VDF& eval_dift = dynamic_cast<const Eval_Dift_Multiphase_VDF&>(iter->evaluateur()) ;
+              const DoubleTab& diffusivite_turb = eval_dift.tab_nu_t() ;
+              const DoubleTab& alpharho = equation().probleme().equation(1).champ_conserve().passe();
+              assert(diffusivite_turb.nb_dim()==2);
 
-            for (int i = 0; i < size; i++) 
-              for (int n=0; n<N; n++)
-                diffu_tot(i, n) = tab_diffusivite(!cM*i, n) + alpharho(i, n)*diffusivite_turb(i,n);
-          }
+              for (int i = 0; i < size; i++)
+                for (int n=0; n<N; n++)
+                  diffu_tot(i, n) = tab_diffusivite(!cM*i, n) + alpharho(i, n)*diffusivite_turb(i,n);
+            }
           else if (sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
             {
               const Eval_Dift_VDF& eval_dift = static_cast<const Eval_Dift_VDF&>(eval);
               const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();
               const DoubleVect& diffusivite_turb = ch_diff_turb.valeurs();
- 
+
               for (int i = 0; i < size; i++) diffu_tot[i] = tab_diffusivite[!cM*i] + diffusivite_turb[i];
             }
           else
@@ -97,23 +97,23 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
               Process::exit();
             }
 
-              for (face = 0; face < nb_faces; face++)
-                for (int n = 0; n < N; n++)
-                  if (ori(face) == 0)
+          for (face = 0; face < nb_faces; face++)
+            for (int n = 0; n < N; n++)
+              if (ori(face) == 0)
+                {
+                  const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
+
+                  if (elem1 == -1) db_diffusivite = diffu_tot(elem2, n);
+                  else if (elem2 == -1) db_diffusivite = diffu_tot(elem1, n);
+                  else db_diffusivite = 0.5 * (diffu_tot(elem2, n) + diffu_tot(elem1, n));
+
+                  double r = xv(face, 0);
+                  if (r >= 1.e-24)
                     {
-                      const int elem1 = face_voisins(face, 0), elem2 = face_voisins(face, 1);
-
-                      if (elem1 == -1) db_diffusivite = diffu_tot(elem2, n);
-                      else if (elem2 == -1) db_diffusivite = diffu_tot(elem1, n);
-                      else db_diffusivite = 0.5 * (diffu_tot(elem2, n) + diffu_tot(elem1, n));
-
-                      double r = xv(face, 0);
-                      if (r >= 1.e-24)
-                        {
-                          if (mat) (*mat)(N * face + n, N * face + n) += db_diffusivite * volumes_entrelaces(face) / (r * r);
-                          secmem(face, n) -= inco(face, n) * db_diffusivite * volumes_entrelaces(face) / (r * r);
-                        }
+                      if (mat) (*mat)(N * face + n, N * face + n) += db_diffusivite * volumes_entrelaces(face) / (r * r);
+                      secmem(face, n) -= inco(face, n) * db_diffusivite * volumes_entrelaces(face) / (r * r);
                     }
+                }
         }
     }
 }

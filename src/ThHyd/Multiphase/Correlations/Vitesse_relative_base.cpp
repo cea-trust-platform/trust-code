@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,19 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Vitesse_relative_base.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Vitesse_relative_base.h>
 #include <Pb_Multiphase.h>
 
 Implemente_base(Vitesse_relative_base, "Vitesse_relative_base", Correlation_base);
-// XD vitesse_derive source_base frottement_interfacial 0 Source term which corresponds to the drift-velocity between a liquid and a gas phase
+// XD vitesse_relative_base source_base vitesse_relative_base 0 Basic class for drift-velocity source term between a liquid and a gas phase
 
 Sortie& Vitesse_relative_base::printOn(Sortie& os) const { return os; }
 Entree& Vitesse_relative_base::readOn(Entree& is)

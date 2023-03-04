@@ -31,13 +31,13 @@ void Op_Grad_P0_to_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& s
 
 void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
-/*  if (sub_type(Pb_Multiphase, equation().probleme()))
-    {
-      Cerr << "Op_Grad_P0_to_Face::" << __func__ << " is not yet compatible with Pb_Multiphase !" << finl;
-      Cerr << "You should instead use Op_Grad_VDF_Face ... Otherwise you should add the contripution of alpha to the secmem ..." << finl;
-      Process::exit();
-    }
-*/
+  /*  if (sub_type(Pb_Multiphase, equation().probleme()))
+      {
+        Cerr << "Op_Grad_P0_to_Face::" << __func__ << " is not yet compatible with Pb_Multiphase !" << finl;
+        Cerr << "You should instead use Op_Grad_VDF_Face ... Otherwise you should add the contripution of alpha to the secmem ..." << finl;
+        Process::exit();
+      }
+  */
   statistiques().begin_count(gradient_counter_);
   const DoubleTab& inco = semi_impl.count("pression") ? semi_impl.at("pression") : equation().inconnue().valeur().valeurs();
   assert_espace_virtuel_vect(inco);

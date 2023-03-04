@@ -60,14 +60,14 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   const DoubleTab& inco = ch.valeurs(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
-                  &rho = equation().milieu().masse_volumique().passe(),
-                   &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
-                    &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
-                     &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
-                      *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
-                       *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
+                   &rho = equation().milieu().masse_volumique().passe(),
+                    &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
+                     &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
+                      &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
+                       *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
+                        *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
                          *gravity = (equation().probleme().has_champ("gravite")) ? &equation().probleme().get_champ("gravite").valeurs() : nullptr ;
-                       
+
   const DoubleVect& dh_e = milc.diametre_hydraulique_elem();
   int e, i, j, k, l, n, m, N = inco.line_size(), Nk = (k_turb) ? (*k_turb).line_size() : 0, d, D = dimension, nf_tot = domaine.nb_faces_tot(), cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size();
   double a_eps = alpha_res_, a_eps_min = alpha_res_min_, a_m, a_max; //seuil de declenchement du traitement de l'evanescence
@@ -76,7 +76,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   if (N == 1) return; //pas d'evanescence en simple phase!
 
   DoubleTab dvr_elem(domaine.nb_elem_tot()*dimension, N, N, N); // Derivee de vr(n,k) en e par rapport a la phase l selon d ; pour l'instant toujours selon d2=d
-                                                                // On se le trimballe parce que quelqu'un a separe la boucle sur les matrices de celle sur le secmem
+  // On se le trimballe parce que quelqu'un a separe la boucle sur les matrices de celle sur le secmem
 
 
   /* calcul de la vitesse de derive : on va chercher les quantites intermediaires requises */
@@ -88,20 +88,20 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   DoubleTrav nut; //viscosite turbulente
   const int is_turb = ref_cast(Operateur_Diff_base, pbm.eq_qdm.operateur_diff().l_op_base()).is_turb();
   if (correlation_vd)
-  {
-    in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), in.g.resize(D);
-    if (correlation_vd->needs_grad_alpha())
     {
-      gradAlpha.resize(domaine.nb_elem_tot(), N, D);
-      calc_grad_alpha_elem(gradAlpha);
-      in.gradAlpha.resize(N,D);
+      in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), in.g.resize(D);
+      if (correlation_vd->needs_grad_alpha())
+        {
+          gradAlpha.resize(domaine.nb_elem_tot(), N, D);
+          calc_grad_alpha_elem(gradAlpha);
+          in.gradAlpha.resize(N,D);
+        }
+      if (is_turb)
+        {
+          nut.resize(domaine.nb_elem_tot(), N);
+          ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation
+        }
     }
-  if (is_turb)
-  {
-    nut.resize(domaine.nb_elem_tot(), N);
-    ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation    
-  }
-  }
 
   for (e = 0; e < domaine.nb_elem_tot(); e++) /* elements : a faire D fois par element */
     {
@@ -116,29 +116,29 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
       if (correlation_vd)
         {
           in.dh = dh_e(e) ;
-          for (n = 0; n < N; n++) 
-          {
-            in.alpha(n) = alpha(e, n);
-            in.rho(n) = rho(!cR * e, n);
-            in.mu(n) = mu(!cM * e, n);
-            in.d_bulles(n) = (d_bulles) ? (*d_bulles)(e, n) : -1. ;
-            for (d = 0; d < D; d++) in.v(n, d) = inco(nf_tot + D * e + d, n);
-            for (m = n+1; m < N; m++)
-              if (milc.has_interface(n, m))
-                {
-                  const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1); // Et oui ! matrice triang sup !
-                  Interface_base& sat = milc.get_interface(n, m);
-                  in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
-                }
-          }
+          for (n = 0; n < N; n++)
+            {
+              in.alpha(n) = alpha(e, n);
+              in.rho(n) = rho(!cR * e, n);
+              in.mu(n) = mu(!cM * e, n);
+              in.d_bulles(n) = (d_bulles) ? (*d_bulles)(e, n) : -1. ;
+              for (d = 0; d < D; d++) in.v(n, d) = inco(nf_tot + D * e + d, n);
+              for (m = n+1; m < N; m++)
+                if (milc.has_interface(n, m))
+                  {
+                    const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1); // Et oui ! matrice triang sup !
+                    Interface_base& sat = milc.get_interface(n, m);
+                    in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
+                  }
+            }
           for (n = 0; n < Nk; n++) in.k(n) = (k_turb) ? (*k_turb)(e, n) : -1., in.nut(n) = (is_turb) ? nut(e, n) : -1. ;
           for (d = 0; d < D; d++) in.g(d) = (*gravity)(e,d);
           if (correlation_vd->needs_grad_alpha())
-                {
-                  in.gradAlpha.resize(N,D);
-                  for (n = 0; n < N; n++)
-                    for (d = 0; d < D; d++) in.gradAlpha(n,d) = gradAlpha(e , n, d);
-                }
+            {
+              in.gradAlpha.resize(N,D);
+              for (n = 0; n < N; n++)
+                for (d = 0; d < D; d++) in.gradAlpha(n,d) = gradAlpha(e , n, d);
+            }
 
           correlation_vd->vitesse_relative(in, out);
         }
@@ -272,22 +272,22 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
   for (int n = 0; n < N; n++)
     for (int e = 0; e < ne_tot; e++)
       for (int d = 0; d < D; d++)
-          for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-            gradAlphaElem(e, n, d) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
+        for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
+          gradAlphaElem(e, n, d) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
 
   /* Calcul du grad vectoriel aux faces */
   double scalGradElem=0.;
   int c, e;
   for (int n = 0; n < N; n++)
     for (int f = 0; f < nf; f++)
-    {
-      for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
+      {
+        for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
+          for (int d = 0; d < D; d++)
+            gradAlphaFaces(f,n,d) += vf_dir(f, c)/vf(f)*gradAlphaElem(e, n, d);
+        scalGradElem=0;
         for (int d = 0; d < D; d++)
-          gradAlphaFaces(f,n,d) += vf_dir(f, c)/vf(f)*gradAlphaElem(e, n, d);
-      scalGradElem=0;
-      for (int d = 0; d < D; d++)
-        scalGradElem += gradAlphaFaces(f,n,d)*n_f(f,d)/fs(f);
-      for (int d = 0; d < D; d++)
-        gradAlphaFaces(f,n,d) += (grad_f_a(f, n) - scalGradElem)*n_f(f,d)/fs(f);
-    }
+          scalGradElem += gradAlphaFaces(f,n,d)*n_f(f,d)/fs(f);
+        for (int d = 0; d < D; d++)
+          gradAlphaFaces(f,n,d) += (grad_f_a(f, n) - scalGradElem)*n_f(f,d)/fs(f);
+      }
 }

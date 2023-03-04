@@ -88,20 +88,20 @@ void Frottement_interfacial_Tomiyama::coefficient(const DoubleTab& alpha, const 
         else if ((contamination_==2) && (24./Re*(1+0.15*std::pow(Re, 0.687)) > 8.*Eo/(3.*(Eo+4.))) )
           dndv_Cd = beta_ * -24.*dndv_Re/(Re*Re)*(1+0.15*std::pow(Re, 0.687)) + beta_ * 24./Re*0.15*dndv_Re*0.687*std::pow(Re, 0.687-1.);
 
-        if (alpha(n_l) > 1.e-6) 
-        {
-        coeff(k, n_l, 0) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k);
-        coeff(n_l, k, 0) = coeff(k, n_l, 0);
-        coeff(k, n_l, 1) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) + 3./4.*dndv_Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k);
-        coeff(n_l, k, 1) = coeff(k, n_l, 1);
-        }
+        if (alpha(n_l) > 1.e-6)
+          {
+            coeff(k, n_l, 0) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k);
+            coeff(n_l, k, 0) = coeff(k, n_l, 0);
+            coeff(k, n_l, 1) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) + 3./4.*dndv_Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k);
+            coeff(n_l, k, 1) = coeff(k, n_l, 1);
+          }
         else
-        {
-        coeff(k, n_l, 0) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k) * alpha(n_l) * 1.e6;
-        coeff(n_l, k, 0) = coeff(k, n_l, 0);
-        coeff(k, n_l, 1) = (3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) + 3./4.*dndv_Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k) )* alpha(n_l) * 1.e6;
-        coeff(n_l, k, 1) = coeff(k, n_l, 1);
-        }
+          {
+            coeff(k, n_l, 0) = 3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k) * alpha(n_l) * 1.e6;
+            coeff(n_l, k, 0) = coeff(k, n_l, 0);
+            coeff(k, n_l, 1) = (3./4.*Cd/d_bulles(k) * alpha(k) * rho(n_l) + 3./4.*dndv_Cd/d_bulles(k) * alpha(k) * rho(n_l) * ndv(n_l,k) )* alpha(n_l) * 1.e6;
+            coeff(n_l, k, 1) = coeff(k, n_l, 1);
+          }
       }
 }
 

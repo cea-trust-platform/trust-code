@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,32 +12,23 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Vitesse_derive_base.h
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Vitesse_derive_base_included
 #define Vitesse_derive_base_included
-#include <TRUSTTab.h>
+
 #include <Vitesse_relative_base.h>
+#include <TRUSTTab.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION
-//    classe Vitesse_derive_base
-//      correlations de vitesse de derive de la forme
-//      ur = ((C0 - 1) * v_l + vg0) / (1 - C0 alpha_g)
-//
-//////////////////////////////////////////////////////////////////////////////
-
+/*! @brief classe Vitesse_derive_base
+ *
+ *  correlations de vitesse de derive de la forme
+ *
+ *  ur = ((C0 - 1) * v_l + vg0) / (1 - C0 alpha_g)
+ *
+ */
 class Vitesse_derive_base : public Vitesse_relative_base
 {
   Declare_base(Vitesse_derive_base);
-
 public:
   void vitesse_relative(const input_t& input, output_t& output) const override;
 
@@ -48,4 +39,4 @@ protected:
   mutable ArrOfDouble vg0; // drift velocity
 };
 
-#endif
+#endif /* Vitesse_derive_base */

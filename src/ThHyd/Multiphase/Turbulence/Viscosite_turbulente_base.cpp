@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,9 +18,9 @@
 
 Implemente_base(Viscosite_turbulente_base, "Viscosite_turbulente_base", Correlation_base);
 
-Sortie& Viscosite_turbulente_base::printOn(Sortie& os) const{return os;}
+Sortie& Viscosite_turbulente_base::printOn(Sortie& os) const {return os;}
 
-Entree& Viscosite_turbulente_base::readOn(Entree& is){return is;}
+Entree& Viscosite_turbulente_base::readOn(Entree& is) {return is;}
 
 void Viscosite_turbulente_base::modifier_mu(DoubleTab& mu) const
 {

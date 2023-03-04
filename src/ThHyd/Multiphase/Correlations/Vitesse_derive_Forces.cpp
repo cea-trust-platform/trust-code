@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Vitesse_derive_Forces.cpp
-// Directory:   $TRUST_ROOT/src/ThHyd/Multiphase/Correlations
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Frottement_interfacial_base.h>
 #include <Dispersion_bulles_base.h>
@@ -30,13 +23,9 @@ Implemente_instanciable(Vitesse_derive_Forces, "Vitesse_relative_derive_Forces",
 
 Sortie& Vitesse_derive_Forces::printOn(Sortie& os) const { return os; }
 
-Entree& Vitesse_derive_Forces::readOn(Entree& is)
-{
-  Vitesse_derive_base::readOn(is);
-  return is;
-}
+Entree& Vitesse_derive_Forces::readOn(Entree& is) { return Vitesse_derive_base::readOn(is); }
 
-void Vitesse_derive_Forces::completer() 
+void Vitesse_derive_Forces::completer()
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
   if (!pbm.has_correlation("frottement_interfacial")) Process::exit(que_suis_je() + " : there must be an interfacial friction correlation in the problem !");
@@ -56,15 +45,16 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, pbm.get_correlation("frottement_interfacial").valeur());
   for (int n=0; n<N ; n++) alpha_l(n)= std::max(in.alpha(n), 1.e-3);
 
-	do
-	{
-    dv(n_g,n_l) = dv0;
-    dv(n_l,n_g) = dv0;
-    correlation_fi.coefficient(alpha_l, p, T, in.rho, in.mu, in.sigma, in.dh, dv, in.d_bulles, coeff);		
-    dv0 = dv0 - (coeff(n_l, n_g, 0)*dv0 - norm_g*alpha_l(n_g)*(in.rho[n_l]*in.alpha[n_l]+in.rho[n_g]*in.alpha[n_g] - in.rho[n_g])) / (coeff(n_l, n_g, 1)*dv0 + coeff(n_l, n_g, 0));
-	  step = step+1;
-    if(step > iter_max) Process::exit(que_suis_je() + " : Newton algorithm not converging to find relative velocity !");
-  }while(std::abs(coeff(n_l, n_g, 0)*dv0 - norm_g*alpha_l(n_g)*(in.rho[n_l]*in.alpha[n_l]+in.rho[n_g]*in.alpha[n_g]- in.rho[n_g])) > epsilon);
+  do
+    {
+      dv(n_g,n_l) = dv0;
+      dv(n_l,n_g) = dv0;
+      correlation_fi.coefficient(alpha_l, p, T, in.rho, in.mu, in.sigma, in.dh, dv, in.d_bulles, coeff);
+      dv0 = dv0 - (coeff(n_l, n_g, 0)*dv0 - norm_g*alpha_l(n_g)*(in.rho[n_l]*in.alpha[n_l]+in.rho[n_g]*in.alpha[n_g] - in.rho[n_g])) / (coeff(n_l, n_g, 1)*dv0 + coeff(n_l, n_g, 0));
+      step = step+1;
+      if(step > iter_max) Process::exit(que_suis_je() + " : Newton algorithm not converging to find relative velocity !");
+    }
+  while(std::abs(coeff(n_l, n_g, 0)*dv0 - norm_g*alpha_l(n_g)*(in.rho[n_l]*in.alpha[n_l]+in.rho[n_g]*in.alpha[n_g]- in.rho[n_g])) > epsilon);
 
   /* distribution parameter */
   C0 = 1;
@@ -73,17 +63,17 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
   for (int d = 0; d < D; d++) vg0(d) = - dv0 * in.g(d) / norm_g;
 
   if (pbm.has_correlation("dispersion_bulles"))
-  {
-    const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, pbm.get_correlation("dispersion_bulles").valeur());
-    Dispersion_bulles_base::input_t in_td;
-    Dispersion_bulles_base::output_t out_td;
-    DoubleTab& Ctd = out_td.Ctd;
-    Ctd.resize(N,N);
-    dv(n_g,n_l) = ( dv(n_l,n_g) = dv0) ;
-    correlation_fi.coefficient(alpha_l, p, T, in.rho, in.mu, in.sigma, in.dh, dv, in.d_bulles, coeff);		// MAJ du coeff frottement interf
-    in_td.alpha = alpha_l, in_td.rho = in.rho, in_td.mu = in.mu, in_td.sigma = in.sigma, in_td.nut = in.nut, in_td.k_turb = in.k, in_td.d_bulles = in.d_bulles, in_td.nv = dv;
-    correlation_db.coefficient(in_td, out_td); // correlation identifies the liquid phase
-    for (int d = 0; d < D; d++) vg0(d) +=  (- out_td.Ctd(n_g, n_l) * in.gradAlpha(n_g, d) + out_td.Ctd(n_l, n_g) * in.gradAlpha(n_l, d))/coeff(n_g,n_l,0);
-  }
+    {
+      const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, pbm.get_correlation("dispersion_bulles").valeur());
+      Dispersion_bulles_base::input_t in_td;
+      Dispersion_bulles_base::output_t out_td;
+      DoubleTab& Ctd = out_td.Ctd;
+      Ctd.resize(N,N);
+      dv(n_g,n_l) = ( dv(n_l,n_g) = dv0) ;
+      correlation_fi.coefficient(alpha_l, p, T, in.rho, in.mu, in.sigma, in.dh, dv, in.d_bulles, coeff);		// MAJ du coeff frottement interf
+      in_td.alpha = alpha_l, in_td.rho = in.rho, in_td.mu = in.mu, in_td.sigma = in.sigma, in_td.nut = in.nut, in_td.k_turb = in.k, in_td.d_bulles = in.d_bulles, in_td.nv = dv;
+      correlation_db.coefficient(in_td, out_td); // correlation identifies the liquid phase
+      for (int d = 0; d < D; d++) vg0(d) +=  (- out_td.Ctd(n_g, n_l) * in.gradAlpha(n_g, d) + out_td.Ctd(n_l, n_g) * in.gradAlpha(n_l, d))/coeff(n_g,n_l,0);
+    }
   for (int d = 0; d < D; d++) vg0(d) *=  (1.0 - C0 * in.alpha(n_g)) ;
 }
