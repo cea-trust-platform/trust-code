@@ -394,7 +394,6 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Domaine_Cl_VDF& doma
                 }
               else
                 {
-
                   if (dimension == 2)
                     {
                       ori = orientation(num_face);
@@ -422,231 +421,149 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Domaine_Cl_VDF& doma
                   y_plus(elem) = dist * u_etoile / d_visco;
 
                 } // else yplus already computed
-
             } // loop on faces
-
         } // Fin paroi fixe
-
     } // Fin boucle sur les bords
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//Methode qui renvoie gij aux elements a partir de la vitesse aux faces
-//(gij represente la derivee partielle dui/dxj)
-//
-//A partir de gij, on peut calculer Sij = 0.5(gij(i,j)+gij(j,i))
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*! @brief Methode qui renvoie gij aux elements a partir de la vitesse aux faces (gij represente la derivee partielle dui/dxj)
+ *
+ *  A partir de gij, on peut calculer Sij = 0.5(gij(i,j)+gij(j,i))
+ *
+ */
 DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Domaine_Cl_VDF& domaine_Cl_VDF) const
 {
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
   const Domaine_VDF& domaine_VDF = domaine_vdf();
-  int nb_elem = domaine_VDF.domaine().nb_elem_tot();
-  const IntTab& face_voisins = domaine_VDF.face_voisins();
-  const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const IntTab& Qdm = domaine_VDF.Qdm();
+  const int nb_elem = domaine_VDF.domaine().nb_elem_tot();
+  const IntTab& face_voisins = domaine_VDF.face_voisins(), &elem_faces = domaine_VDF.elem_faces(), &Qdm = domaine_VDF.Qdm();
   const IntVect& orientation = domaine_VDF.orientation();
 
-  int premiere_arete_mixte = domaine_VDF.premiere_arete_mixte();
-  int premiere_arete_interne = domaine_VDF.premiere_arete_interne();
-  int derniere_arete_mixte = premiere_arete_mixte + domaine_VDF.nb_aretes_mixtes();
-  int derniere_arete_interne = premiere_arete_interne + domaine_VDF.nb_aretes_internes();
-  int elem;
-  int num_arete;
+  const int prem_am = domaine_VDF.premiere_arete_mixte(), dern_am = prem_am + domaine_VDF.nb_aretes_mixtes();
+  const int prem_ai = domaine_VDF.premiere_arete_interne(), dern_ai = prem_ai + domaine_VDF.nb_aretes_internes();
   IntVect element(4);
-
-  int num0, num1, num2, num3, signe;
-  int ndeb = domaine_VDF.premiere_arete_bord();
-  int nfin = ndeb + domaine_VDF.nb_aretes_bord();
-  int n_type;
-
   gij = 0.;
 
-  ///////////////////////////////////////////////
-  // On parcourt toutes les aretes qui permettent
-  //  de calculer les termes croises dui/dxj.
-  //
-  // (les termes non-croises sont calcules
-  //  en bouclant sur les elements)
-  ///////////////////////////////////////////////
+  // On parcourt toutes les aretes qui permettent de calculer les termes croises du_i/dx_j
+  // (les termes non-croises sont calcules en bouclant sur les elements)
 
-  for (num_arete = ndeb; num_arete < nfin; num_arete++)
+  // On commence par les bords
+  int ndeb = domaine_VDF.premiere_arete_bord(), nfin = ndeb + domaine_VDF.nb_aretes_bord();
+  for (int num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
+      const int n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
 
       if (n_type == 4) // arete de type periodicite
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          num3 = Qdm(num_arete, 3);
-          int i = 0;
-          int j = 0;
-          i = orientation(num0);
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+          const int i = orientation(num0), j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dui/dxj
-          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // duj/dxi
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+          const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
+
           element(0) = face_voisins(num0, 0);
           element(1) = face_voisins(num0, 1);
           element(2) = face_voisins(num1, 0);
           element(3) = face_voisins(num1, 1);
+
           for (int k = 0; k < 4; k++)
             {
+              // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
+              // 2) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
               gij(element(k), i, j) += temp1 * 0.5 * 0.25;
               gij(element(k), j, i) += temp2 * 0.5 * 0.25;
-
-              // Justification des coeff derriere :
-              // 1) 0.5 : pour la periodicite,
-              //           car on distribuera deux fois sur
-              //           les elements qui "touchent" cette arete
-              //           puisqu'elle existe en double.
-              // 2) 0.25 : on distribue le gradient de vitesse
-              //            sur les 4 elements qui l'entourent.
-            }        // fin du for k
+            }
         }
-      else
+      else /* les autres aretes bords ... */
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          signe = Qdm(num_arete, 3);
-          int j = 0;
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+          const int i = orientation(num0), j = orientation(num2);
 
-          double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
-          double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
-          //Dans cette partie, on conserve le codage de Hyd_SGE_Wale_VDF (num1 et non num2)
-          //pour calculer la distance entre le centre de la maille et le bord.
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+          const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j)); // vitesse tangentielle
 
-          temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+          //Dans cette partie, on conserve le codage de Hyd_SGE_Wale_VDF (num1 et non num2) pour calculer la distance entre le centre de la maille et le bord.
+          const double temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
           element(0) = face_voisins(num2, 0);
           element(1) = face_voisins(num2, 1);
 
-          int i = orientation(num0);
-
           for (int k = 0; k < 2; k++)
             {
+              // 1) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
               gij(element(k), i, j) += temp1 * 0.25;
               gij(element(k), j, i) += temp2 * 0.25;
-
-              // Justification des coeff derriere :
-              // 1) 0.25 : on distribue le gradient de vitesse
-              //            sur les 4 elements qui l'entourent.
-            } // fin du for k
+            }
         }
     }
 
-  //*******************************
-  //On parcourt les aretes coins
-  //*******************************
+  // On continue avec les coins
+  ndeb = domaine_VDF.premiere_arete_coin(), nfin = ndeb + domaine_VDF.nb_aretes_coin();
 
-  ndeb = domaine_VDF.premiere_arete_coin();
-  nfin = ndeb + domaine_VDF.nb_aretes_coin();
-
-  for (num_arete = ndeb; num_arete < nfin; num_arete++)
+  for (int num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
-      //***************************************
-      // Traitement des aretes coin perio-perio
-      //***************************************
+      const int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
 
-      if (n_type == 0) // arete de type periodicite-periodicite
+      if (n_type == 0) // arete de type perio-perio
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          num3 = Qdm(num_arete, 3);
-          int i = 0;
-          int j = 0;
-          i = orientation(num0);
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+          const int i = orientation(num0), j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
-          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);        // duj/dxi
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+          const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
+
           element(0) = face_voisins(num0, 0);
           element(1) = face_voisins(num0, 1);
           element(2) = face_voisins(num1, 0);
           element(3) = face_voisins(num1, 1);
+
           for (int k = 0; k < 4; k++)
             {
+              // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
+              // 2) 0.5 : idem ci-dessus, car cette fois-ci on a un coin perio-perio.
+              // 3) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
               gij(element(k), i, j) += temp1 * 0.5 * 0.5 * 0.25;
               gij(element(k), j, i) += temp2 * 0.5 * 0.5 * 0.25;
-
-              // Justification des coeff derriere :
-              // 1) 0.5 : pour la periodicite,
-              //           car on distribuera deux fois sur
-              //           les elements qui "touchent" cette arete
-              //           puisqu'elle existe en double.
-              // 2) 0.5 : idem ci-dessus, car cette fois-ci on a
-              //           un coin perio-perio.
-              // 3) 0.25 : on distribue le gradient de vitesse
-              //            sur les 4 elements qui l'entourent.
-            } // fin du for k
-
+            }
         }
 
-      //***************************************
-      // Traitement des aretes coin perio-paroi
-      //***************************************
-      if (n_type == 1) // arete de type periodicite-paroi
+      if (n_type == 1) // arete de type perio-paroi
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          signe = Qdm(num_arete, 3);
-          int j = 0;
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+          const int i = orientation(num1), j = orientation(num2);
 
-          double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);                // dui/dxj
-          double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));        // vitesse tangentielle
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+          const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j)); // vitesse tangentielle
 
-          temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+          const double temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
           element(0) = face_voisins(num2, 0);
           element(1) = face_voisins(num2, 1);
 
-          int i = orientation(num1);
-
           for (int k = 0; k < 2; k++)
             {
+              // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
+              // 2) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
               gij(element(k), i, j) += temp1 * 0.5 * 0.25;
               gij(element(k), j, i) += temp2 * 0.5 * 0.25;
-
-              // Justification des coeff derriere :
-              // 1) 0.5 : pour la periodicite,
-              //           car on distribuera deux fois sur
-              //           les elements qui "touchent" cette arete
-              //           puisqu'elle existe en double.
-              // 2) 0.25 : on distribue le gradient de vitesse
-              //            sur les 4 elements qui l'entourent.
-            } // fin du for k
+            }
         }
 
+      // XXX : Elie Saikali : j'ajoute ca pour les coins juste si option_vdf active pour le moment ...
+      // pour le cas fluide_fluide, attention soucis avec les valeurs de la vitesse sur les coins ... par exemple un champ_fonc_xyz x+y+z donne pas le bon truc sur les coins
       if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
         if (n_type == 14 || n_type == 15 || n_type == 16) // arete de type fluide-paroi ou paroi-fluide ou fluide-fluide
           {
-            num0 = Qdm(num_arete, 0);
-            num1 = Qdm(num_arete, 1);
-            num2 = Qdm(num_arete, 2);
-            signe = Qdm(num_arete, 3);
-            int j = 0;
-            j = orientation(num2);
+            const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+            const int i = orientation(num1), j = orientation(num2);
 
-            double temp2;
-            double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);                // dui/dxj
-            double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));        // vitesse tangentielle
+            const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+            const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j)); // vitesse tangentielle
 
-            temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+            const double temp2 = -signe * (vitesse[num2] - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
             element(0) = face_voisins(num2, 0);
             element(1) = face_voisins(num2, 1);
-
-            int i = orientation(num1);
 
             for (int k = 0; k < 2; k++)
               if (element(k) != -1)
@@ -657,26 +574,15 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
           }
     }
 
-  // 1ere partie:boucles sur les aretes et remplissage de Sij pour la partie
-  // derivees croisees (dui/dxj)
-  // vitesse[face] renvoie la vitesse NORMALE a la face
-  //   for (num_arete = premiere_arete_bord ; num_arete<derniere_arete_bord ; num_arete ++)
-  //     {
-  //       const IntVect& type_arete_bord = domaine_Cl_VDF.type_arete_bord();
+  // On continue avec les aretes mixtes
 
-  for (num_arete = premiere_arete_mixte; num_arete < derniere_arete_mixte; num_arete++)
+  for (int num_arete = prem_am; num_arete < dern_am; num_arete++)
     {
-      num0 = Qdm(num_arete, 0);
-      num1 = Qdm(num_arete, 1);
-      num2 = Qdm(num_arete, 2);
-      num3 = Qdm(num_arete, 3);
-      int i = 0;
-      int j = 0;
-      i = orientation(num0);
-      j = orientation(num2);
+      const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+      const int i = orientation(num0), j = orientation(num2);
 
-      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
-      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);        // duj/dxi
+      const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+      const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
 
       element(0) = face_voisins(num0, 0);
       element(1) = face_voisins(num0, 1);
@@ -684,78 +590,59 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
       element(3) = face_voisins(num1, 1);
 
       for (int k = 0; k < 4; k++)
-        {
-          if (element(k) != -1)
-            {
-              gij(element(k), i, j) += temp1 * 0.25;
-              gij(element(k), j, i) += temp2 * 0.25;
+        if (element(k) != -1)
+          {
+            // 1) 0.25 : on distribue le gradient de vitesse sur les 3 elements qui l'entourent.
+            // C'est pour cela que l'on regarde si element(k)!=-1, car dans ce cas la, c'est qu'il s'agit de "la case qui manque" !
+            gij(element(k), i, j) += temp1 * 0.25;
+            gij(element(k), j, i) += temp2 * 0.25;
+          }
+    }
 
-              // Justification des coeff derriere :
-              // 1) 0.25 : on distribue le gradient de vitesse
-              //            sur les 3 elements qui l'entourent.
-              //            C'est pour cela que l'on regarde si element(k)!=-1,
-              //            car dans ce cas la, c'est qu'il s'agit de "la case qui manque" !
-            } // fin de else if
-        } // fin du for k
-    } // fin de la boucle sur les aretes mixtes
+  // On continue avec les aretes internes
 
-  for (num_arete = premiere_arete_interne; num_arete < derniere_arete_interne; num_arete++)
+  for (int num_arete = prem_ai; num_arete < dern_ai; num_arete++)
     {
-      num0 = Qdm(num_arete, 0);
-      num1 = Qdm(num_arete, 1);
-      num2 = Qdm(num_arete, 2);
-      num3 = Qdm(num_arete, 3);
-      int i = 0;
-      int j = 0;
-      i = orientation(num0);
-      j = orientation(num2);
+      const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+      const int i = orientation(num0), j = orientation(num2);
 
-      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dui/dxj
+      const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
       assert(est_egal(domaine_VDF.dist_face_period(num0, num1, j), domaine_VDF.dist_face(num0, num1, j)));
-      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);        // duj/dxi
+
+      const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
       assert(est_egal(domaine_VDF.dist_face_period(num2, num3, j), domaine_VDF.dist_face(num2, num3, j)));
+
       element(0) = face_voisins(num0, 0);
       element(1) = face_voisins(num0, 1);
       element(2) = face_voisins(num1, 0);
       element(3) = face_voisins(num1, 1);
+
       for (int k = 0; k < 4; k++)
         {
+          // 1) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
           gij(element(k), i, j) += temp1 * 0.25;
           gij(element(k), j, i) += temp2 * 0.25;
-
-          // Justification des coeff :
-          // 1) 0.25 : on distribue le gradient de vitesse
-          //            sur les 4 elements qui l'entourent.
-        } // fin du for k
-    } // fin de la boucle sur les aretes internes
-
-  // 2eme partie: boucle sur les elements et remplissage de Sij pour les
-  //  derivees non croisees (dui/dxi).
-  // En fait dans ces cas la, on calcul directement le gradient dans l'element
-  //  et on ne redistribue pas.
-
-  for (elem = 0; elem < nb_elem; elem++)
-    {
-      for (int i = 0; i < dimension; i++)
-        {
-          double temp1 = (vitesse[elem_faces(elem, i)] - vitesse[elem_faces(elem, i + dimension)]) / domaine_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
-
-          gij(elem, i, i) = -temp1;
-
         }
     }
+
+  // 2eme partie : boucle sur les elements et remplissage de Sij pour les derivees non croisees (du_i / dx_i).
+  // En fait dans ces cas la, on calcul directement le gradient dans l'element et on ne redistribue pas.
+
+  for (int elem = 0; elem < nb_elem; elem++)
+    for (int i = 0; i < dimension; i++)
+      {
+        double temp1 = (vitesse[elem_faces(elem, i)] - vitesse[elem_faces(elem, i + dimension)]) / domaine_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
+        gij(elem, i, i) = -temp1;
+      }
 
   return gij;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//Methode qui renvoie gij aux elements a partir de la vitesse aux elements
-//(gij represente la derivee partielle dui/dxj)
-//
-//A partir de gij, on peut calculer Sij = 0.5(gij(i,j)+gij(j,i))
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/*! @brief Methode qui renvoie gij aux elements a partir de la vitesse aux elements (gij represente la derivee partielle dui/dxj)
+ *
+ *  A partir de gij, on peut calculer Sij = 0.5(gij(i,j)+gij(j,i))
+ *
+ */
 DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij) const
 {
 
@@ -764,7 +651,6 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
   const IntTab& face_voisins = domaine_VDF.face_voisins();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
 
-  int element_number;
   int num0, num1, num2, num3, num4, num5;
   int f0, f1, f2, f3, f4, f5;
 
@@ -773,7 +659,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
   //
   if (dimension == 2)
     {
-      for (element_number = 0; element_number < nb_elem_tot; element_number++)
+      for (int element_number = 0; element_number < nb_elem_tot; element_number++)
         {
           f0 = elem_faces(element_number, 0);
           num0 = face_voisins(f0, 0);
@@ -800,7 +686,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
     }
   else
     {
-      for (element_number = 0; element_number < nb_elem_tot; element_number++)
+      for (int element_number = 0; element_number < nb_elem_tot; element_number++)
         {
           f0 = elem_faces(element_number, 0);
           num0 = face_voisins(f0, 0);
@@ -850,86 +736,63 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
 
 }
 
-//Methode qui renvoie SMA_barre aux elements a partir de la vitesse aux faces
-//SMA_barre = Sij*Sij (sommation sur les indices i et j)
+/*! @brief Methode qui renvoie SMA_barre aux elements a partir de la vitesse aux faces
+ *
+ *  SMA_barre = Sij*Sij (sommation sur les indices i et j)
+ *
+ *  On calcule directement S_barre(num_elem)!!!!!!!!!!
+ *  Le parametre contribution_paroi (ici fixe a 0) permet de ne pas prendre en compte la contribution de la paroi au produit SMA_barre = Sij*Sij
+ *
+ */
 DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre, const Domaine_Cl_VDF& domaine_Cl_VDF) const
 {
-  // On calcule directement S_barre(num_elem)!!!!!!!!!!
-  // Le parametre contribution_paroi (ici fixe a 0) permet de ne pas prendre en compte
-  // la contribution de la paroi au produit SMA_barre = Sij*Sij
-
-  int contribution_paroi;
-  contribution_paroi = 0;
+  const int contribution_paroi = 0;
 
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
   const Domaine_VDF& domaine_VDF = domaine_vdf();
-
-  int nb_elem = domaine_VDF.domaine().nb_elem();
-  const IntTab& face_voisins = domaine_VDF.face_voisins();
-  const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const IntTab& Qdm = domaine_VDF.Qdm();
+  const IntTab& face_voisins = domaine_VDF.face_voisins(), &elem_faces = domaine_VDF.elem_faces(), &Qdm = domaine_VDF.Qdm();
   const IntVect& orientation = domaine_VDF.orientation();
 
-  int premiere_arete_mixte = domaine_VDF.premiere_arete_mixte();
-  int premiere_arete_interne = domaine_VDF.premiere_arete_interne();
-  int derniere_arete_mixte = premiere_arete_mixte + domaine_VDF.nb_aretes_mixtes();
-  int derniere_arete_interne = premiere_arete_interne + domaine_VDF.nb_aretes_internes();
-  int elem;
-  int num_arete;
+  const int nb_elem = domaine_VDF.domaine().nb_elem();
+  const int prem_am = domaine_VDF.premiere_arete_mixte(), dern_am = prem_am + domaine_VDF.nb_aretes_mixtes();
+  const int prem_ai = domaine_VDF.premiere_arete_interne(), dern_ai = prem_ai + domaine_VDF.nb_aretes_internes();
+
   ArrOfInt element(4);
 
-  int num0, num1, num2, num3, signe;
-  int ndeb = domaine_VDF.premiere_arete_bord();
-  int nfin = ndeb + domaine_VDF.nb_aretes_bord();
-  int n_type;
+  int ndeb = domaine_VDF.premiere_arete_bord(), nfin = ndeb + domaine_VDF.nb_aretes_bord();
 
-  for (num_arete = ndeb; num_arete < nfin; num_arete++)
+  for (int num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
+      int n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
 
       if (n_type == 4) // arete de type periodicite
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          num3 = Qdm(num_arete, 3);
-          int i = 0;
-          int j = 0;
-          i = orientation(num0);
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+          const int i = orientation(num0), j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
-          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j); // dv/dx
+          const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i); // du/dy
+
           element[0] = face_voisins(num0, 0);
           element[1] = face_voisins(num0, 1);
           element[2] = face_voisins(num1, 0);
           element[3] = face_voisins(num1, 1);
+
+          // on calcule la somme des termes croises : 2*( (0.5*Sij)^2+(0.5*Sji)^2)
+          // Comme on est sur les aretes et qu on distribue sur l'element il faut multiplier par 0.25, d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
+          // le 0.5 devant vient du fait que nous parcourons les faces de periodicite comme les aretes periodiques sont les "memes", on ajoute deux fois ce qu il faut aux elements -> 0.5!!!
           for (int k = 0; k < 4; k++)
-            {
-              SMA_barre[element[k]] += 0.5 * (temp1 + temp2) * (temp1 + temp2) * 0.25;
-              // Justification du coeff :
-              // on calcule la somme des termes croises :
-              // 2*( (0.5*Sij)^2+(0.5*Sji)^2)
-              // Comme on est sur les aretes et qu on distribue sur l'element
-              // il faut multiplier par 0.25
-              // d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
-              // le 0.5 devant vient du fait que nous parcourons les faces de periodicite
-              // comme les aretes periodiques sont les "memes", on ajoute deux fois ce qu il faut
-              // aux elements -> 0.5!!!
-            }        // fin du for k
+            SMA_barre[element[k]] += 0.5 * (temp1 + temp2) * (temp1 + temp2) * 0.25;
         }
       else
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          signe = Qdm(num_arete, 3);
-          int j = 0;
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+          const int j = orientation(num2);
+
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
+          double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
 
           double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
-          double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
 
           if (n_type == 0 && contribution_paroi == 0)
             temp2 = 0;
@@ -939,83 +802,50 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
           element[0] = face_voisins(num2, 0);
           element[1] = face_voisins(num2, 1);
 
+          // on calcule la somme des termes croises : 2*( (0.5*Sij)^2+(0.5*Sji)^2)
+          // Comme on est sur les aretes et qu on distribue sur l'element il faut multiplier par 0.25 d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
+          // Prise en compte des 2 termes symetriques : SijSij+SjiSji
           for (int k = 0; k < 2; k++)
-            {
-              SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
-              // Justification du coeff :
-              // on calcule la somme des termes croises :
-              // 2*( (0.5*Sij)^2+(0.5*Sji)^2)
-              // Comme on est sur les aretes et qu on distribue sur l'element
-              // il faut multiplier par 0.25
-              // d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
-              // Prise en compte des 2 termes symetriques : SijSij+SjiSji
-            }                // fin du for k
+            SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
         }
     }
 
-  /////////////////////////////////
-  //On parcourt les aretes coins
-  ////////////////////////////////
+  ndeb = domaine_VDF.premiere_arete_coin(), nfin = ndeb + domaine_VDF.nb_aretes_coin();
 
-  ndeb = domaine_VDF.premiere_arete_coin();
-  nfin = ndeb + domaine_VDF.nb_aretes_coin();
-
-  for (num_arete = ndeb; num_arete < nfin; num_arete++)
+  for (int num_arete = ndeb; num_arete < nfin; num_arete++)
     {
-      n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
-      //////////////////////////////////////////
-      // Traitement des aretes coin perio-perio
-      //////////////////////////////////////////
+      int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
 
-      if (n_type == 0) // arete de type periodicite-periodicite
+      if (n_type == 0) // arete de type perio-perio
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          num3 = Qdm(num_arete, 3);
-          int i = 0;
-          int j = 0;
-          i = orientation(num0);
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+          const int i = orientation(num0), j = orientation(num2);
 
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
-          double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
+          const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
+
           element[0] = face_voisins(num0, 0);
           element[1] = face_voisins(num0, 1);
           element[2] = face_voisins(num1, 0);
           element[3] = face_voisins(num1, 1);
-          for (int k = 0; k < 4; k++)
-            {
-              SMA_barre[element[k]] += 0.5 * 0.5 * (temp1 + temp2) * (temp1 + temp2) * 0.25;
-              // Justification du coeff :
-              // on calcule la somme des termes croises :
-              // 2*( (0.5*Sij)^2+(0.5*Sji)^2)
-              // Comme on est sur les aretes et qu on distribue sur l'element
-              // il faut multiplier par 0.25
-              // d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
-              // le 0.5 devant vient du fait que nous parcourons les faces de periodicite
-              // comme les aretes periodiques sont les "memes", on ajoute deux fois ce qu il faut
-              // aux elements -> 0.5!!!
-              // encore un *0.5 car ce sont des aretes perio perio donc que l on parcourt 4 fois!!!!
-            }        // fin du for k
 
+          // on calcule la somme des termes croises : 2*( (0.5*Sij)^2+(0.5*Sji)^2)
+          // Comme on est sur les aretes et qu on distribue sur l'element il faut multiplier par 0.25 d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
+          // le 0.5 devant vient du fait que nous parcourons les faces de periodicite comme les aretes periodiques sont les "memes", on ajoute deux fois ce qu il faut aux elements -> 0.5!!!
+          // encore un *0.5 car ce sont des aretes perio perio donc que l on parcourt 4 fois!!!!
+          for (int k = 0; k < 4; k++)
+            SMA_barre[element[k]] += 0.5 * 0.5 * (temp1 + temp2) * (temp1 + temp2) * 0.25;
         }
 
-      //////////////////////////////////////////
-      // Traitement des aretes coin perio-paroi
-      //////////////////////////////////////////
-      if (n_type == 1) // arete de type periodicite-paroi
+      if (n_type == 1) // arete de type perio-paroi
         {
-          num0 = Qdm(num_arete, 0);
-          num1 = Qdm(num_arete, 1);
-          num2 = Qdm(num_arete, 2);
-          signe = Qdm(num_arete, 3);
-          int j = 0;
-          j = orientation(num2);
+          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+          const int j = orientation(num2);
+
+          const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
+          const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));             // vitesse tangentielle
 
           double temp2;
-          double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
-          double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));             // vitesse tangentielle
 
           if (contribution_paroi == 0)
             temp2 = 0;
@@ -1026,33 +856,19 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
           element[1] = face_voisins(num2, 1);
 
           for (int k = 0; k < 2; k++)
-            {
-              SMA_barre[element[k]] += 0.5 * (temp1 + temp2) * (temp1 + temp2) * 0.25;
-              // Justification du coeff :
-              // on calcule la somme des termes croises :
-              // 2*( (0.5*Sij)^2+(0.5*Sji)^2)
-              // Comme on est sur les aretes et qu on distribue sur l'element
-              // il faut multiplier par 0.25
-              // d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
-              // Prise en compte des 2 termes symetriques : SijSij+SjiSji
-              // encore un *0.5 car ce sont des aretes perio perio donc que l on parcourt 2 fois!!!!
-
-            }                // fin du for k
+            SMA_barre[element[k]] += 0.5 * (temp1 + temp2) * (temp1 + temp2) * 0.25;
         }
 
       if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
         if (n_type == 14 || n_type == 15 || n_type == 16) // arete de type fluide-paroi ou paroi-fluide ou fluide-fluide
           {
-            num0 = Qdm(num_arete, 0);
-            num1 = Qdm(num_arete, 1);
-            num2 = Qdm(num_arete, 2);
-            signe = Qdm(num_arete, 3);
-            int j = 0;
-            j = orientation(num2);
+            const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+            const int j = orientation(num2);
+
+            const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
+            const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
 
             double temp2;
-            double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);        // dv/dx
-            double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, j) + vit.val_imp_face_bord_private(num1, j));                // vitesse tangentielle
 
             if (n_type == 0 && contribution_paroi == 0)
               temp2 = 0;
@@ -1063,30 +879,18 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
             element[1] = face_voisins(num2, 1);
 
             for (int k = 0; k < 2; k++)
-              SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
+              if (element[k] != -1)
+                SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
           }
     }
 
-  // 1ere partie:boucles sur les aretes et remplissage de Sij pour la partie
-  // derivees croisees (dv/dx+du/dy)
-  // vitesse[face] renvoie la vitesse NORMALE a la face
-  //   for (num_arete = premiere_arete_bord ; num_arete<derniere_arete_bord ; num_arete ++)
-  //     {
-  //       const IntVect& type_arete_bord = domaine_Cl_VDF.type_arete_bord();
-
-  for (num_arete = premiere_arete_mixte; num_arete < derniere_arete_mixte; num_arete++)
+  for (int num_arete = prem_am; num_arete < dern_am; num_arete++)
     {
-      num0 = Qdm(num_arete, 0);
-      num1 = Qdm(num_arete, 1);
-      num2 = Qdm(num_arete, 2);
-      num3 = Qdm(num_arete, 3);
-      int i = 0;
-      int j = 0;
-      i = orientation(num0);
-      j = orientation(num2);
+      const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+      const int i = orientation(num0), j = orientation(num2);
 
-      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);          // dv/dx
-      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);          // du/dy
+      const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);          // dv/dx
+      const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);          // du/dy
 
       element[0] = face_voisins(num0, 0);
       element[1] = face_voisins(num0, 1);
@@ -1094,55 +898,30 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
       element[3] = face_voisins(num1, 1);
 
       for (int k = 0; k < 4; k++)
-        {
-          if (element[k] != -1)
-            {
-              SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
-              // Justification du coeff :
-              // on calcule la somme des termes croises :
-              // 2*( (0.5*Sij)^2+(0.5*Sji)^2)
-              // Comme on est sur les aretes et qu on distribue sur l'element
-              // il faut multiplier par 0.25
-              // d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
-              // Prise en compte des 2 termes symetriques : SijSij+SjiSji
-            }        // fin de else if
-        }                // fin du for k
-    }                // fin de la boucle sur les aretes mixtes
-
-  for (num_arete = premiere_arete_interne; num_arete < derniere_arete_interne; num_arete++)
-    {
-      num0 = Qdm(num_arete, 0);
-      num1 = Qdm(num_arete, 1);
-      num2 = Qdm(num_arete, 2);
-      num3 = Qdm(num_arete, 3);
-      int i = 0;
-      int j = 0;
-      i = orientation(num0);
-      j = orientation(num2);
-
-      double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
-      double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
-      element[0] = face_voisins(num0, 0);
-      element[1] = face_voisins(num0, 1);
-      element[2] = face_voisins(num1, 0);
-      element[3] = face_voisins(num1, 1);
-      for (int k = 0; k < 4; k++)
-        {
+        if (element[k] != -1)
           SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
-          // Justification du coeff :
-          // on calcule la somme des termes croises :
-          // 2*( (0.5*Sij)^2+(0.5*Sji)^2)
-          // Comme on est sur les aretes et qu on distribue sur l'element
-          // il faut multiplier par 0.25
-          // d ou : 0.25*(2*(2*0.5^2))=0.25*4*0.25=0.25!!!!!!
-          // Prise en compte des 2 termes symetriques : SijSij+SjiSji
-        }        // fin du for k
-    }        // fin de la boucle sur les aretes internes
+    }
 
-  // 2eme partie: boucle sur les elements et remplissage de Sij pour les
-  // derivees non croisees (du/dx et dv/dy)
+  for (int num_arete = prem_ai; num_arete < dern_ai; num_arete++)
+    {
+      const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+      const int i = orientation(num0), j = orientation(num2);
 
-  for (elem = 0; elem < nb_elem; elem++)
+      const double temp1 = (vitesse[num1] - vitesse[num0]) / domaine_VDF.dist_face_period(num0, num1, j);            // dv/dx
+      const double temp2 = (vitesse[num3] - vitesse[num2]) / domaine_VDF.dist_face_period(num2, num3, i);            // du/dy
+
+      element[0] = face_voisins(num0, 0);
+      element[1] = face_voisins(num0, 1);
+      element[2] = face_voisins(num1, 0);
+      element[3] = face_voisins(num1, 1);
+
+      for (int k = 0; k < 4; k++)
+        SMA_barre[element[k]] += (temp1 + temp2) * (temp1 + temp2) * 0.25;
+    }
+
+  // 2eme partie: boucle sur les elements et remplissage de Sij pour les derivees non croisees (du/dx et dv/dy)
+
+  for (int elem = 0; elem < nb_elem; elem++)
     {
       for (int i = 0; i < dimension; i++)
         {
@@ -1153,7 +932,6 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre_sans_contrib_paroi(const DoubleTab& v
 
   // On prend la racine carre!!!!!  ATTENTION SMA_barre=invariant au carre!!!
   //  racine_carree(SMA_barre)
-
   return SMA_barre;
 }
 
