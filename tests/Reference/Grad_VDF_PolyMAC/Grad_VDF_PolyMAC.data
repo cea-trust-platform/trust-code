@@ -1,0 +1,142 @@
+# PARALLEL OK #
+
+# We test the stress tensor (grad u) calculation in vdf and polymac_p0 ! #
+# Attention option_vdf { all_options } MUST BE USED !!!! #
+
+Dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    pave bloc1
+    {
+        origine 0 0 0
+        longueurs 10 1 .1
+        nombre_de_noeuds 21 11 2
+    }
+    {
+        bord entree	 X = 0.            0. <= Y <= 1	0. <= Z <= 0.1
+        bord sortie	 X = 10	    0. <= Y <= 1.	0. <= Z <= 0.1
+        bord bas	 Y = 0. 	    0. <= X <= 10	0. <= Z <= 0.1
+        bord sym	 Y = 1. 	    0. <= X <= 10	0. <= Z <= 0.1
+        bord sym	 Z = 0.	    0. <= X <= 10	 0. <= Y <= 1.
+        bord sym	 Z = 0.1 	    0. <= X <= 10	 0. <= Y <= 1.
+    }
+}
+# END MESH #
+
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+vdf dis option_vdf { all_options }
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    tmax 500
+    dt_impr 1e-8
+    facsec 1
+    facsec_max 1
+    seuil_statio 1.e-4
+    dt_max 1.e-5
+    nb_pas_dt_max 10
+    solveur ice /* sets */
+    {
+        criteres_convergence { alpha 1e-5 pression 1. vitesse 1e-5 temperature 1e8 k 1e-5 omega 1e-5 }
+        iter_min 2
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Lire pb
+{
+    milieu_composite
+    {
+        liquide_eau Fluide_Incompressible
+        {
+            mu champ_uniforme      1 2
+            rho champ_uniforme     1 1000.0
+            lambda Champ_Uniforme  1 1
+            Cp Champ_Uniforme      1 1e3
+            beta_th Champ_Uniforme 1 0
+        }
+    }
+    correlations { }
+    QDM_Multiphase
+    {
+        evanescence { homogene { alpha_res 1.e-6 alpha_res_min 5.e-7 } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg -ksp_type fgmres }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse  champ_fonc_xyz dom 3 1 0 0
+            pression Champ_Fonc_xyz dom 1 1e5
+        }
+        conditions_limites
+        {
+            bas paroi_fixe
+            sym symetrie
+            entree frontiere_ouverte_vitesse_imposee_sortie Champ_front_Fonc_xyz 3 1 0 0
+            sortie frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
+        convection { amont }
+        conditions_limites
+        {
+            bas paroi
+            sym symetrie
+            entree	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            sortie	frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 0 }
+        boundary_conditions
+        {
+            bas paroi_adiabatique
+            sym symetrie
+            entree	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+            sortie	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
+        }
+    }
+    Postraitement
+    {
+        format lml
+        champs binaire dt_post 10.
+        {
+            vitesse elem
+            taux_cisaillement elem
+            /* gradient_vitesse elem */
+        }
+    }
+}
+
+Resoudre pb
+Fin

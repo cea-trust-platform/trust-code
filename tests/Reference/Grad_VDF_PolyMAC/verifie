@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Compare VDF and PolyMAC_P0 simulations
+compare_lata Grad_VDF_PolyMAC.lml Grad_PolyMAC_P0.lml 1>verifie.log 2>&1 || exit -1
+
+numb_diff=`awk '$1=="Number"{print $5}' verifie.log`
+if [[ "$numb_diff" -gt "0" ]]
+then
+  echo "   ===> Error ! The velocity gradient is NOT SIMILARLY computed in VDF and PolyMAC_P0 !"
+  exit -1
+else
+  echo "   ===> All OK ! The velocity gradient is similarly computed in VDF and PolyMAC_P0 !"
+fi
