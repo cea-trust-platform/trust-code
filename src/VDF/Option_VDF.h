@@ -26,9 +26,12 @@ class Option_VDF: public Interprete
 public:
   Entree& interpreter(Entree&) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  int test_mot(const Motcle& mot) const;
+  int test_mot(const Motcle& mot_cle, const Motcle& mot_lu) const;
   static int traitement_coins, traitement_gradients;
   static double coeff_P_neumann;
+
+private:
+  bool all_options_ = false;
 };
 
 #endif /* Option_VDF_included */

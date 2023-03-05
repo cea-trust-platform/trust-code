@@ -14,43 +14,21 @@
 *****************************************************************************/
 
 #include <Option_PolyMAC_P0.h>
+#include <Synonyme_info.h>
 #include <Motcle.h>
 #include <Param.h>
-#include <Synonyme_info.h>
 
 Implemente_instanciable(Option_PolyMAC_P0,"Option_PolyMAC_P0|Option_CoviMAC",Interprete);
 Add_synonym(Option_PolyMAC_P0,"Option_PolyMAC_V2");
 // XD Option_PolyMAC_P0 interprete Option_Covimac 1 Class of PolyMAC_P0 options.
-// XD attr interp_ve1 entier interp_ve1 1 Flag to enable a first order velocity face-to-element interpolation (the default value is 0 which means a second order interpolation)
+// XD attr interp_ve1 rien interp_ve1 1 Flag to enable a first order velocity face-to-element interpolation (the default value is 0 which means a second order interpolation)
 
 int Option_PolyMAC_P0::interp_ve1 = 0;
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Option_PolyMAC_P0::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Sortie& Option_PolyMAC_P0::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
+Entree& Option_PolyMAC_P0::readOn(Entree& is) { return Interprete::readOn(is); }
 
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Option_PolyMAC_P0::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
-/*! @brief Fonction principale de l'interprete Option_PolyMAC_P0 Lit la dimension d'espace du probleme.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Option_PolyMAC_P0::interpreter(Entree& is)
 {
   Param param(que_suis_je());
