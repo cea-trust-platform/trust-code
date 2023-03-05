@@ -160,24 +160,21 @@ const Champ_Proto& Champ_Face_VDF::affecter(const DoubleTab& v)
           else
             {
               Cerr << "Erreur TRUST dans Champ_Face_VDF::affecter(const DoubleTab& )" << finl;
-              Cerr << "les dimensions du DoubleTab passe en parametre sont incompatibles " << finl;
-              Cerr << "avec celles du Champ_Face_VDF " << finl;
+              Cerr << "Les dimensions du DoubleTab passe en parametre sont incompatibles avec celles du Champ_Face_VDF " << finl;
               Process::exit();
             }
         }
       else
         {
           Cerr << "Erreur TRUST dans Champ_Face_VDF::affecter(const DoubleTab& )" << finl;
-          Cerr << "les dimensions du DoubleTab passe en parametre sont incompatibles " << finl;
-          Cerr << "avec celles du Champ_Face_VDF " << finl;
+          Cerr << "Les dimensions du DoubleTab passe en parametre sont incompatibles avec celles du Champ_Face_VDF " << finl;
           Process::exit();
         }
     }
   return *this;
 }
 
-//-Cas CL periodique : assure que les valeurs sur des faces periodiques
-// en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
+// Cas CL periodique : assure que les valeurs sur des faces periodiques en vis a vis sont identiques. Pour cela on prend la demi somme des deux valeurs.
 void Champ_Face_VDF::verifie_valeurs_cl()
 {
   const Domaine_Cl_dis_base& zcl = domaine_Cl_dis().valeur();
@@ -550,9 +547,9 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
         }
 
       // XXX : Elie Saikali : j'ajoute ca pour les coins juste si option_vdf active pour le moment ...
-      // pour le cas fluide_fluide, attention soucis avec les valeurs de la vitesse sur les coins ... par exemple un champ_fonc_xyz x+y+z donne pas le bon truc sur les coins
+
       if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
-        if (n_type == 14 || n_type == 15 || n_type == 16) // arete de type fluide-paroi ou paroi-fluide ou fluide-fluide
+        if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
           {
             const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
             const int i = orientation(num1), j = orientation(num2);
@@ -623,6 +620,37 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
           gij(element(k), i, j) += temp1 * 0.25;
           gij(element(k), j, i) += temp2 * 0.25;
         }
+    }
+
+
+  // XXX : Elie Saikali : HACK pour coins fluides-fluides
+  // pour ce cas (j'avoue cas rare), attention soucis avec les valeurs de la vitesse sur les coins ... par exemple un champ_fonc_xyz x+y+z donne pas le bon truc sur les coins
+
+  // On continue avec les coins
+
+  ndeb = domaine_VDF.premiere_arete_coin(), nfin = ndeb + domaine_VDF.nb_aretes_coin();
+
+  for (int num_arete = ndeb; num_arete < nfin; num_arete++)
+    {
+      const int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
+
+      if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
+        if (n_type == 16) // arete de type fluide-fluide
+          {
+            const int num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2);
+            const int i = orientation(num1), j = orientation(num2);
+
+            element(0) = face_voisins(num2, 0);
+            element(1) = face_voisins(num2, 1);
+
+            for (int k = 0; k < 2; k++)
+              if (element(k) != -1)
+                {
+                  // XXX : 1/3 car on veut un truc comme ca : (a+b+c+d)/4 = (a+b+c)/3 => d = (a+b+c)/3
+                  gij(element(k), i, j) += gij(element(k), i, j) / 3.;
+                  gij(element(k), j, i) += gij(element(k), j, i) / 3.;
+                }
+          }
     }
 
   // 2eme partie : boucle sur les elements et remplissage de Sij pour les derivees non croisees (du_i / dx_i).
@@ -1318,7 +1346,7 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, c
         return 0;
       else
         {
-          Cerr << "You should call Champ_Face_get_val_imp_face_bord_sym and not  Champ_Face_get_val_imp_face_bord" << finl;
+          Cerr << "You should call Champ_Face_get_val_imp_face_bord_sym and not Champ_Face_get_val_imp_face_bord" << finl;
           Process::exit();
           return 1e9;
         }
