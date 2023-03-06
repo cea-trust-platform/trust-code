@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@ private:
   void Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { HVsat(P,res,ncomp,ind); /* Hsat(P) + Lvap_Na(P) */ }
   void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DHVsat(P,res,ncomp,ind); /* DHsat(P) + DLvap_Na(P) */ }
 
-  void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { SigmaL(T,res,ncomp,ind); }
+  void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { SigmaL(T,P,res,ncomp,ind); }
 };
 
 #endif /* Saturation_sodium_included */

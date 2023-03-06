@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -145,9 +145,32 @@ inline void LambdaL(const SpanD T, SpanD res, int ncomp, int id)
 }
 
 /* tension superficielle */
-inline void SigmaL(const SpanD T, SpanD res, int ncomp, int id)
+inline void SigmaL(const SpanD T, const SpanD P, SpanD res, int ncomp, int id)
 {
-  assert ((int)T.size() == ncomp * (int)res.size()); // FIXME : perdu ....
+  /*
+   * Elie a dit :
+   *
+   * - Je suis perdu dans mes spans .... en fait, c'est quoi la dimension de sigma (tension de surface ? ) comme T ou comme P ?
+   *
+   * Corentin a repondu :
+   *
+   * - Sigma est en N/m, ou J/m^2. En longueur de tableau, elle est en N*(N-1)/2 (et c'est ta faute :-P)
+   *
+   * Elie a dit :
+   *
+   * - comme P alors ? nb_elem et pas nb_elem * N ? et dans loi_Sodium, pour calculer sigma, faut utiliser quel T ?
+   *
+   * Corentin a repondu :
+   *
+   * - P fait nb_elem*1. Sigma fait nb_elem*N*(N-1)/2 avec N le nbr de phases, donc comme P en diphasique mais pas en triphasique ou au-dela.
+   *  Pour moi, l'ideal est d'utiliser T_sat pour calculer Sigma, mais je laisse Antoine confirmer
+   *
+   * Antoine a repondu :
+   *
+   * - Si il y a une saturation, alors on doit prendre T_sat : par contre, si il n'y en a pas (genre Interface), alors il faut prendre T_liq !
+   *    -> ce n'est peut-etre pas ce qu'on fait en ce moment, on doit prendre T_liq tout le temps :-)
+   */
+  assert (ncomp * (int)P.size() == (int)res.size());
   for (auto& val : res)
     {
       const double tk = T[i_it * ncomp + id] + 273.15;
