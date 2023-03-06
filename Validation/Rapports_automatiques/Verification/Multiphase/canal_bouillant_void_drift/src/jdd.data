@@ -1,5 +1,4 @@
 # PARALLEL OK #
-system "rm -rf lata; mkdir -p lata"
 dimension 3
 Domaine dom
 
@@ -139,8 +138,7 @@ Read pb
 	$sondes
 	}
 
-        Format Lata
-        fichier lata/jdd
+        Format lml 
         fields dt_post 1e-2
         {
             vitesse_liquide_sodium elem
