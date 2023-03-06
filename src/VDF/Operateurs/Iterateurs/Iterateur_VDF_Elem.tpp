@@ -142,7 +142,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_interne(const int N, matrices_t m
   const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
   Type_Double flux(N), aii(N), ajj(N), aef(N);
-  const int ndeb = le_dom->premiere_face_int(), nfin = le_dom->nb_faces(), Mv = N; // il faudrait Mv = vitesse.line_size();
+  const int ndeb = le_dom->premiere_face_int(), nfin = le_dom->nb_faces(), Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
   for (int face = ndeb; face < nfin; face++)
     {
       flux_evaluateur.flux_faces_interne(donnee, face, flux);
@@ -190,7 +190,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const BC& cl, const int nd
       const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs(),
                        val_b = sub_type(Champ_Face_base, le_champ_convecte_ou_inc.valeur()) ? DoubleTab() : (use_base_val_b_ ? le_champ_convecte_ou_inc->Champ_base::valeur_aux_bords() : le_champ_convecte_ou_inc->valeur_aux_bords()); // si le champ associe est un champ_face, alors on est dans un operateur de div
 
-      int e, Mv = N;
+      int e, Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
       Type_Double flux(N), aii(N), ajj(N), aef(N);
       for (int face = ndeb; face < nfin; face++)
         {
@@ -298,7 +298,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
       if (le_dom.valeur().front_VF(num_cl).le_nom() == frontiere_dis.le_nom())
         boundary_index = num_cl;
 
-      int e, Mv = N;
+      int e, Mv = le_ch_v.non_nul() ? le_ch_v->valeurs().line_size() : N;
       for (int face = ndeb; face < nfin; face++)
         {
           const int local_face = le_dom.valeur().front_VF(boundary_index).num_local_face(face);
