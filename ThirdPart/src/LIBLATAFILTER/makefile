@@ -6,7 +6,7 @@ OPT=_opt
 include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
 
 all:
-	cmake -S $(SRC_DIR) -B $(BUILD_DIR) -DCMAKE_CXX_FLAGS="$(CppFlags)" -DTRUST_DEFINES="$(Defines)"
+	cmake -S $(SRC_DIR) -B $(BUILD_DIR) -DCMAKE_CXX_FLAGS="$(CppFlags)" -DTRUST_DEFINES="$(Defines)" -DCMAKE_C_COMPILER=$(TRUST_cc) -DCMAKE_CXX_COMPILER=$(TRUST_CC)
 	$(TRUST_MAKE) -C $(BUILD_DIR) install
 
 clean:

@@ -11,36 +11,29 @@ set(lib latafilter)
 set(TRUST_ROOT $ENV{TRUST_ROOT})
 set(CMAKE_INSTALL_LIBDIR $ENV{TRUST_LATAFILTER})
 
-# Compiler, flags and TRUST_DEFINES (NEEDED WHEN LINKING $exec)
-set(CMAKE_CXX_COMPILER  $ENV{TRUST_CC})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-set(TRUST_DEFINES ${TRUST_DEFINES})
+# TRUST_DEFINES (NEEDED WHEN LINKING $exec)
 add_definitions(${TRUST_DEFINES})
 
 
 # List of source files
-set(listdir ${TRUST_ROOT}/Outils/lata_tools/src/trust_commun/)
+set(sourcedir ${TRUST_ROOT}/Outils/lata_tools/src/trust_commun/)
+file(GLOB cpp_sources ${sourcedir}/*.cpp)
 
-set(lib_src)
-foreach(dir ${listdir})
- file(GLOB srcs ${dir}/*.cpp)
- list(APPEND lib_src ${srcs})
- include_directories(${dir})
-endforeach()
+add_library(${lib} STATIC ${cpp_sources})
 
-add_library(${lib} STATIC ${lib_src})
-
-target_include_directories(${lib} PRIVATE ${TRUST_ROOT}/src/Kernel/Utilitaires/
+target_include_directories(${lib} PRIVATE
+                           ${sourcedir}
+                           ${TRUST_ROOT}/src/Kernel/Utilitaires/
                            ${TRUST_ROOT}/src/Kernel/Math/
                            ${TRUST_ROOT}/src/Kernel/Geometrie/)
 
 
-install(TARGETS  latafilter
+install(TARGETS  ${lib}
         EXPORT   ${PROJECT_NAME}
         ARCHIVE  DESTINATION "${CMAKE_INSTALL_LIBDIR}/lib/")
 
-install(DIRECTORY   ${listdir}
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/include/
+install(DIRECTORY   ${sourcedir}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/include
         FILES_MATCHING REGEX "/*.(h)$")
 
 
