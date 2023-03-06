@@ -1,0 +1,162 @@
+# PARALLEL OK #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+mailler  dom
+{
+    pave carre
+    {
+        origine  0.0  0.0 0.0
+        nombre_de_noeuds  2  2 201
+        longueurs 1 1 1
+    }
+    {
+        bord  bas       Z = 0.0    0.0 <= X <= 1.0 0.0 <= Y <= 1.
+        bord  haut      Z = 1.0    0.0 <= X <= 1.0 0.0 <= Y <= 1.
+        bord  boundary  X = 0.0    0.0 <= Y <= 1.0 0.0 <= Z <= 1.
+        bord  boundary  X = 1.0    0.0 <= Y <= 1.0 0.0 <= Z <= 1.
+        bord  boundary  Y = 0.0    0.0 <= X <= 1.0 0.0 <= Z <= 1. 
+        bord  boundary  Y = 1.0    0.0 <= X <= 1.0 0.0 <= Z <= 1. 
+    }
+}
+polyedriser dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+        /* Choose Nb_parts so to have ~ 25000 cells per processor */
+        Partition_tool metis { nb_parts 4 }
+        Larg_joint 2
+        zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+polymac_p0  dis option_covimac {  }
+
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    tmax 3
+    seuil_statio 1e-4
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5  }
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+
+Pb_Multiphase pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    Milieu_composite
+    {
+        liquide_sodium Fluide_sodium_liquide {  P_ref 100000.0 T_ref 800 }
+        gaz_sodium Fluide_sodium_gaz { P_ref 100000.0 T_ref 879.9430097752451 }
+        saturation_sodium saturation_sodium { P_ref 100000.0 T_ref 879.9430097752451 }
+    }
+    correlations
+    {
+	flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10  }
+	Gravite Multiphase champ_uniforme 3 0 0 -9.81
+	 frottement_interfacial bulles   { coeff_derive .5 rayon_bulle 1.e-3 } vitesse_relative derive_forces 
+    }
+    QDM_Multiphase
+    {
+        evanescence { homogene {  alpha_res 1 alpha_res_min 0.5  } }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions
+        {
+            vitesse  Champ_Fonc_xyz dom 6 0 0 0 0 1 1
+            pression Champ_Fonc_xyz dom 1 100000
+        }
+        boundary_conditions
+        {
+            boundary symetrie
+            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 6 0 0 0 0 1 1
+            haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000
+        }
+	sources
+	{
+	
+	}
+    }
+    Masse_Multiphase
+    {
+        initial_conditions { alpha Champ_Fonc_xyz dom 2 1 0 }
+        convection { amont }
+        boundary_conditions
+        {
+            boundary paroi
+            bas  frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+            haut frontiere_ouverte a_ext Champ_Front_Uniforme 2 1 0
+        }
+        sources { flux_interfacial }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 2 879.5 879.9430097752451 }
+        boundary_conditions
+        {
+            boundary paroi_adiabatique
+            bas    frontiere_ouverte T_ext Champ_Front_Uniforme 2 879.5 879.9430097752451
+            haut   frontiere_ouverte T_ext Champ_Front_Uniforme 2 879.5 879.9430097752451
+        }
+        sources
+        {
+            travail_pression ,
+            puissance_thermique Champ_composite 2
+            {
+                champ_uniforme 1 2000000.0
+                champ_uniforme 1 0
+            } ,
+            flux_interfacial
+        }
+    }
+    Post_processing
+    {
+	sondes
+	{
+	  alpha_gaz_sodium alpha_gaz_sodium periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
+ vitesse_liquide_sodium vitesse_liquide_sodium periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
+ vitesse_gaz_sodium vitesse_gaz_sodium periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
+ temperature temperature periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
+ masse_volumique masse_volumique periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
+ pression pression periode 1.e-2 segment 1000 0.5 0.5 0.0005 0.5 0.5 0.9995 
+
+	}
+
+        Format lml 
+        fields dt_post 1e-2
+        {
+            vitesse_liquide_sodium elem
+            vitesse_gaz_sodium elem
+            alpha_gaz_sodium elem
+            pression elem
+            temperature elem
+            energie_interne elem
+            enthalpie elem
+        }
+    }
+}
+Solve pb
+End
