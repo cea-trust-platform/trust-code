@@ -20,6 +20,11 @@
 #include <Nom.h>
 #include <TRUSTTabs_forward.h>
 #include <med++.h>
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#   include <NormalizedGeometricTypes>
+#endif
+
 
 ////
 //// Useful MED-related fonctions
@@ -33,6 +38,7 @@ inline void med_non_installe()
 {
   Process::exit("This version has not been built with MED library.");
 }
+
 void lire_nom_med(Nom& nom_champ, Entree& is);
 void test_version(Nom& nom) ;
 void dimensionne_char_ptr_taille(Char_ptr& nom, int taille_d_un_mot, int nb=1);
@@ -43,6 +49,11 @@ void renum_conn(IntTab& les_elems2, Nom& type_elem, bool toMED);
 #ifdef MED_
 med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem);
 med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem_,med_axis_type& rep);
+
+#ifdef MEDCOUPLING_
+INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& type_elem_, int& mesh_dimension);
+#endif
+
 #endif
 
 #endif

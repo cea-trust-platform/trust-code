@@ -283,6 +283,89 @@ med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem)
   med_axis_type rep;
   return type_geo_trio_to_type_med(type_elem,rep);
 }
+
+#ifdef MEDCOUPLING_
+/*! @brief Return MEDCoupling type from TRUST type
+ * See file NormalizedGeometricTypes in MEDCoupling includes.
+ */
+INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& type_elem_, int& mesh_dimension)
+{
+  Motcle type_elem;
+  type_elem=type_elem_;
+  type_elem.prefix("_AXI");
+  if (type_elem!=Motcle(type_elem_))
+    {
+      if (type_elem == "QUADRILATERE_2D")
+        type_elem = "SEGMENT_2D";
+      if (type_elem == "RECTANGLE_2D")
+        {
+          type_elem = "RECTANGLE";
+        }
+    }
+  mesh_dimension = -1;
+  INTERP_KERNEL::NormalizedCellType type_cell;
+  if ((type_elem=="RECTANGLE") || (type_elem=="QUADRANGLE") || (type_elem=="QUADRANGLE_3D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_QUAD4;
+      mesh_dimension = 2;
+    }
+  else if  ((type_elem=="HEXAEDRE") || (type_elem=="HEXAEDRE_VEF"))
+    {
+      type_cell = INTERP_KERNEL::NORM_HEXA8;
+      mesh_dimension = 3;
+    }
+  else if  ((type_elem=="TRIANGLE") || (type_elem=="TRIANGLE_3D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_TRI3;
+      mesh_dimension = 2;
+    }
+  else if  (type_elem=="TETRAEDRE")
+    {
+      type_cell = INTERP_KERNEL::NORM_TETRA4;
+      mesh_dimension = 3;
+    }
+  else if ((type_elem=="SEGMENT") || (type_elem=="SEGMENT_2D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_SEG2;
+      mesh_dimension = 1;
+    }
+  else if (type_elem=="PRISME")
+    {
+      type_cell = INTERP_KERNEL::NORM_PENTA6;
+      mesh_dimension = 3;
+    }
+  else if (type_elem=="POLYEDRE")
+    {
+      type_cell = INTERP_KERNEL::NORM_POLYHED;
+      mesh_dimension = 3;
+    }
+  else if ((type_elem=="POLYGONE") || (type_elem=="POLYGONE_3D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_POLYGON;
+      mesh_dimension = 2;
+    }
+  else if(type_elem=="PRISME_HEXAG")
+    {
+      type_cell = INTERP_KERNEL::NORM_HEXGP12;
+      mesh_dimension = 3;
+    }
+  else if ((type_elem=="POINT") || (type_elem=="POINT_1D"))
+    {
+      type_cell = INTERP_KERNEL::NORM_POINT1;
+      mesh_dimension = 0;
+    }
+  else
+    {
+      Cerr<<type_elem<< " no available cell." <<finl;
+      Process::exit();
+      return INTERP_KERNEL::NORM_POINT1;
+    }
+  assert(mesh_dimension>=0);
+  return type_cell;
+}
+#endif
+
+
 #endif
 
 /*! @brief Passage de la connectivite TRUST a MED si sens=1 de MED a trio si sens=-1

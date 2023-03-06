@@ -15,13 +15,10 @@
 #ifndef Format_Post_Med_major_included
 #define Format_Post_Med_major_included
 
-#include <Format_Post_Medfile.h>
-
+#include <Format_Post_Med.h>
 
 /*! @brief : Exactly the same as Format_Post_Med but with the last major version of MED
- *
  */
-
 class Format_Post_Med_major : public Format_Post_Med
 {
   Declare_instanciable_sans_constructeur(Format_Post_Med_major);
@@ -29,7 +26,6 @@ public:
   Format_Post_Med_major()
   {
     ecr_med.setMajorMode(true);
-    ecr_med.setMEDCoupling(false);
   }
 
 protected:
