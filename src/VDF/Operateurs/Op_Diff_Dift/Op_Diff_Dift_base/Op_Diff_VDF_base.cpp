@@ -167,6 +167,13 @@ double Op_Diff_VDF_base::calculer_dt_stab_(const Domaine_VDF& zone_VDF) const
   // Si la diffusivite est variable, ce doit etre un champ aux elements.
   assert(Cdiffu || diffu.size() == diffu.line_size() * zone_VDF.nb_elem());
 
+  int rho_comme_diff = 0;
+  if (has_champ_masse_volumique())
+    {
+      const DoubleTab& rho = get_champ_masse_volumique().valeurs();
+      rho_comme_diff = (rho.dimension(1) == diffu.dimension(1));
+    }
+
   for (int elem = 0; elem < zone_VDF.nb_elem(); elem++)
     {
       double h = 0;
@@ -181,7 +188,7 @@ double Op_Diff_VDF_base::calculer_dt_stab_(const Domaine_VDF& zone_VDF) const
           if (has_champ_masse_volumique())
             {
               const DoubleTab& rho = get_champ_masse_volumique().valeurs();
-              alpha_loc/= rho(elem, n);
+              alpha_loc/= rho(elem, rho_comme_diff * n);
             }
           const double dt_loc = (alp ? (*alp)(elem, n) : 1.0) * 0.5 / ((alpha_loc + DMINFLOAT) * h);
           if (dt_loc < dt_stab) dt_stab = dt_loc;
