@@ -182,8 +182,8 @@ void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const 
 
 
 LireMED::LireMED(const Nom& file_name, const Nom& mesh_name) :
-  nom_fic_lu_(file_name),
-  nom_mesh_lu_(mesh_name)
+  nom_fichier_(file_name),
+  nom_mesh_(mesh_name)
 { }
 
 /*! @brief Simple appel a: Interprete::printOn(Sortie&)
@@ -245,8 +245,8 @@ void LireMED::interp_old_syntax(Entree& is, Nom& nom_dom_trio)
       is>>nom_dom_trio;
     }
 
-  lire_nom_med(nom_mesh_lu_,is);
-  is >> nom_fic_lu_;
+  lire_nom_med(nom_mesh_,is);
+  is >> nom_fichier_;
 }
 
 Entree& LireMED::interpreter_(Entree& is)
@@ -279,9 +279,9 @@ Entree& LireMED::interpreter_(Entree& is)
       param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD_ADD_P flag Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
 
       param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD_ADD_P ref_domaine Corresponds to the domain name.
-      param.ajouter("file|fichier", &nom_fic_lu_, Param::REQUIRED);        // XD_ADD_P chaine File (written in the MED format, with extension '.med') containing the mesh
+      param.ajouter("file|fichier", &nom_fichier_, Param::REQUIRED);        // XD_ADD_P chaine File (written in the MED format, with extension '.med') containing the mesh
 
-      param.ajouter("mesh|maillage", &nom_mesh_lu_);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
+      param.ajouter("mesh|maillage", &nom_mesh_);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
 
       EChaine is2(s);
       param.lire_avec_accolades(is2);
@@ -292,9 +292,9 @@ Entree& LireMED::interpreter_(Entree& is)
     interp_old_syntax(is, nom_dom_trio);
 
   // Strip _0000 if there, and create proper file name
-  Nom nom_fic2(nom_fic_lu_);
+  Nom nom_fic2(nom_fichier_);
   nom_fic2.prefix(".med");
-  if (nom_fic2==nom_fic_lu_)
+  if (nom_fic2==nom_fichier_)
     {
       Cerr<<"Error, the MED file should have .med as extension."<<finl;
       Cerr<<"See the syntax of Read_MED keyword." << finl;
@@ -304,7 +304,7 @@ Entree& LireMED::interpreter_(Entree& is)
   if (nom_fic3.prefix("_0000") != nom_fic2 )
     {
       nom_fic3+=".med";
-      nom_fic_lu_=nom_fic3.nom_me(me());
+      nom_fichier_=nom_fic3.nom_me(me());
     }
   associer_domaine(nom_dom_trio);
   lire_geom(true);
@@ -406,8 +406,8 @@ Nom LireMED::type_medcoupling_to_type_geo_trio(int type_cell, bool cell_from_bou
 #ifdef MEDCOUPLING_
 void LireMED::retrieve_MC_objects()
 {
-  std::string fileName = nom_fic_lu_.getString();
-  std::string meshName = nom_mesh_lu_.getString();
+  std::string fileName = nom_fichier_.getString();
+  std::string meshName = nom_mesh_.getString();
 
   // Check the mesh name is in the file:
   const MCAuto<MEDFileMeshes> data(MEDFileMeshes::New(fileName));
@@ -417,7 +417,7 @@ void LireMED::retrieve_MC_objects()
       if (meshName == "--any--") meshName = meshes_names[0]; //magic name -> we take the first mesh
       else
         {
-          Cerr << "Mesh " << nom_mesh_lu_ << " not found in the med file " << nom_fic_lu_ << " !" << finl;
+          Cerr << "Mesh " << nom_mesh_ << " not found in the med file " << nom_fichier_ << " !" << finl;
           Cerr << "List of meshes found:" << finl;
           for(unsigned int i = 0; i<meshes_names.size(); i++)
             Cerr << meshes_names[i] << finl;
@@ -849,7 +849,7 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
   faces_joint.vide();
 
   Noms noms_des_joints;
-  recuperer_info_des_joints(noms_des_joints,nom_fic_lu_,nom_mesh_lu_,sommets_joints,tab_pe_voisin);
+  recuperer_info_des_joints(noms_des_joints,nom_fichier_,nom_mesh_,sommets_joints,tab_pe_voisin);
 
   int nfacebord=all_faces_bords.dimension(0);
   for (int ib=nbord-1; ib>-1; ib--)
@@ -957,7 +957,7 @@ void LireMED::lire_geom(bool subDom)
       Cerr << "Dimension is not defined. Check your data file." << finl;
       Process::exit();
     }
-  Cerr << "Trying to read the domain " << nom_mesh_lu_ << " from the file " << nom_fic_lu_ << " in order to affect to domain "
+  Cerr << "Trying to read the domain " << nom_mesh_ << " from the file " << nom_fichier_ << " in order to affect to domain "
        << nom_dom_trio << "..." << finl;
 
   retrieve_MC_objects();

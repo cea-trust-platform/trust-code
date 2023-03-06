@@ -44,8 +44,8 @@ public :
   void lire_geom(bool subDom=true);
 
 protected:
-  Nom nom_fic_lu_;               ///< Name of the MED file to read
-  Nom nom_mesh_lu_ = "--any--";  ///< Name of the mesh in the MED file to read
+  Nom nom_fichier_;              ///< Name of the MED file to read
+  Nom nom_mesh_ = "--any--";     ///< Name of the mesh in the MED file to read
   bool axi1d_ = false;           ///< Are we in Axi1D
   bool convertAllToPoly_ = false;///< Should the mesh be converted to polygons/polyedrons
   bool isVEFForce_ = false;      ///< Should we force element type to be VEF compatible
