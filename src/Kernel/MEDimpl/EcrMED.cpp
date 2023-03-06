@@ -46,72 +46,9 @@ using MEDCoupling::MEDFileMesh;
 
 Implemente_instanciable(EcrMED,"Ecrire_MED",Interprete);
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& EcrMED::printOn(Sortie& os) const
+// Anonymous namespace for local functions:
+namespace
 {
-  return Interprete::printOn(os);
-}
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& EcrMED::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-// XD writemed interprete ecrire_med -1 Write a domain to MED format into a file.
-// XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
-// XD attr file chaine file 0 Name of file.
-Entree& EcrMED::interpreter(Entree& is)
-{
-  Cerr<<"syntax : EcrMED [ append ] nom_dom nom_fic "<<finl;
-  int mode=-1;
-  Nom nom_dom, nom_fic;
-  is >> nom_dom ;
-  Motcle app("append");
-  if (app==nom_dom)
-    {
-      mode=0;
-      is >> nom_dom;
-      Cerr<<" Adding "<<nom_dom<<finl;
-    }
-  is >> nom_fic;
-  if(! sub_type(Domaine, objet(nom_dom)))
-    {
-      Cerr << nom_dom << " type is " << objet(nom_dom).que_suis_je() << finl;
-      Cerr << "Only Domaine type objects can be meshed" << finl;
-      exit();
-    }
-  const Domaine& dom=ref_cast(Domaine, objet(nom_dom));
-  ecrire_domaine(nom_fic,dom,nom_dom,mode);
-  return is;
-}
-
-#ifndef MED_
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time,int compteur)
-{
-  med_non_installe();
-}
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
-{
-  med_non_installe();
-}
-#else
-
-med_idt trustMEDfileOpen(const char* const filename, const med_access_mode accessmode, bool major_mode)
-{
-  if (major_mode)
-    return MEDfileVersionOpen(filename, accessmode, MED_NUM_MAJEUR,0,0);
-  return MEDfileOpen(filename, accessmode );
-}
-
-
 // permet de boucler sur les bords,raccords,joints
 const Frontiere& mes_faces_fr(const Domaine& domaine,int i)
 {
@@ -121,7 +58,6 @@ const Frontiere& mes_faces_fr(const Domaine& domaine,int i)
     return domaine.frontiere(i);
   else return domaine.joint(i-nb_std);
 }
-
 
 // a partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
 void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
@@ -222,6 +158,67 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_
         }
     }
 }
+
+} // namespace
+
+
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
+Sortie& EcrMED::printOn(Sortie& os) const
+{
+  return Interprete::printOn(os);
+}
+
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
+Entree& EcrMED::readOn(Entree& is)
+{
+  return Interprete::readOn(is);
+}
+// XD writemed interprete ecrire_med -1 Write a domain to MED format into a file.
+// XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
+// XD attr file chaine file 0 Name of file.
+Entree& EcrMED::interpreter(Entree& is)
+{
+  Cerr<<"syntax : EcrMED [ append ] nom_dom nom_fic "<<finl;
+  int mode=-1;
+  Nom nom_dom, nom_fic;
+  is >> nom_dom ;
+  Motcle app("append");
+  if (app==nom_dom)
+    {
+      mode=0;
+      is >> nom_dom;
+      Cerr<<" Adding "<<nom_dom<<finl;
+    }
+  is >> nom_fic;
+  if(! sub_type(Domaine, objet(nom_dom)))
+    {
+      Cerr << nom_dom << " type is " << objet(nom_dom).que_suis_je() << finl;
+      Cerr << "Only Domaine type objects can be meshed" << finl;
+      exit();
+    }
+  const Domaine& dom=ref_cast(Domaine, objet(nom_dom));
+  ecrire_domaine(nom_fic,dom,nom_dom,mode);
+  return is;
+}
+
+#ifndef MED_
+void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time,int compteur)
+{
+  med_non_installe();
+}
+void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
+{
+  med_non_installe();
+}
+#else
 
 void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
 {
@@ -451,7 +448,10 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
   // Write:
   int option = (mode == -1 ? 2 : 1); /* 2: reset file. 1: append, 0: overwrite objects */
   Cerr<<"Writing file " << nom_fic<<" (mode=" << mode << ") ..."<<finl;
-  file->write(nom_fic.getString(), option);
+  if (major_mode)
+    file->write40(nom_fic.getString(), option);
+  else
+    file->write(nom_fic.getString(), option);
 #else
   med_non_installe(); // actually MEDCoupling ... but will do.
 #endif
