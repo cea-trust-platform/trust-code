@@ -36,7 +36,7 @@ public:
 
   void mettre_a_jour(double ) override;
 
-  void modifier_nu(DoubleTab& ) const { throw; }
+  void modifier_mu(DoubleTab& ) const { throw; }
 
   inline const Correlation& correlation() const { return corr_ ; }
 

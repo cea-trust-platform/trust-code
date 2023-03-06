@@ -253,7 +253,7 @@ void Op_Diff_PolyMAC_base::update_nu() const
         nu_.addr()[N_nu * e + i] *= equation().milieu().porosite_elem()(e) * (alp ? std::max((*alp)(e, n), 1e-8) : 1);
 
   /* modification par une classe fille */
-  modifier_nu(nu_);
+  modifier_mu(nu_);
 
   nu_a_jour_ = 1;
 }

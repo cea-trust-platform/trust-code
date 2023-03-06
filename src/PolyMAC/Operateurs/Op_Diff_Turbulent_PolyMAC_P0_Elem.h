@@ -40,7 +40,7 @@ class Op_Diff_Turbulent_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_Elem
     return ref_cast(Transport_turbulent_base, corr.valeur()).dimension_min_nu();
   }
   void completer() override;
-  void modifier_nu(DoubleTab& ) const override; //prend en compte la diffusivite turbulente
+  void modifier_mu(DoubleTab& ) const override; //prend en compte la diffusivite turbulente
 
   void creer_champ(const Motcle& motlu) override;
   void mettre_a_jour(double temps) override;

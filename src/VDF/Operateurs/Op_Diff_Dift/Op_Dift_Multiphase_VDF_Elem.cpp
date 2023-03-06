@@ -85,7 +85,7 @@ void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
   // on calcule d_t_
   d_t_ = 0.; // XXX : pour n'avoir pas la partie laminaire
   //un "simple" appel a la correlation!
-  ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_nu(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc.valeur()), d_t_);
+  ref_cast(Transport_turbulent_base, corr_.valeur()).modifier_mu(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc.valeur()), d_t_);
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(d_t_);
 
   int N = ref_cast(Pb_Multiphase, equation().probleme()).nb_phases();

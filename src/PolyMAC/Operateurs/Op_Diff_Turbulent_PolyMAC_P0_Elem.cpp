@@ -55,7 +55,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::completer()
     equation().probleme().creer_champ("gradient_vitesse");
 }
 
-void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_nu(DoubleTab& mu) const
+void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_mu(DoubleTab& mu) const
 {
   if (corr.est_nul()) return; //rien a faire
   const Operateur_base& op_qdm = equation().probleme().equation(0).operateur(0).l_op_base();
@@ -65,6 +65,6 @@ void Op_Diff_Turbulent_PolyMAC_P0_Elem::modifier_nu(DoubleTab& mu) const
   if (corr.est_nul() || !sub_type(Viscosite_turbulente_base, corr_visc.valeur()))
     Process::exit(que_suis_je() + ": no turbulent viscosity correlation found!");
   //un "simple" appel a la correlation!
-  ref_cast(Transport_turbulent_base, corr.valeur()).modifier_nu(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc.valeur()), mu);
+  ref_cast(Transport_turbulent_base, corr.valeur()).modifier_mu(ref_cast(Convection_Diffusion_std, equation()), ref_cast(Viscosite_turbulente_base, corr_visc.valeur()), mu);
   mu.echange_espace_virtuel();
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@
  * ..)
  *     Methodes implementees :
  *     - dimension_min_nu() -> nombre de composantes minimal du tenseur de diffusion par composante (1, D, D^2)
- *     - modifier_nu() -> ajoute au tenseur de diffusion de l'equation la contribution de la turbulence
+ *     - modifier_mu() -> ajoute au tenseur de diffusion de l'equation la contribution de la turbulence
  *                        prend en argument la correlation de viscosite turbulente de l'operateur de diffusion de la QDM
  *     - gradu_required() -> 1 si la correlation a besoin du tenseur grad u
  *
@@ -41,7 +41,7 @@ public:
   {
     return 0;
   };
-  virtual void modifier_nu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const = 0;
+  virtual void modifier_mu(const Convection_Diffusion_std& eq, const Viscosite_turbulente_base& visc_turb, DoubleTab& nu) const = 0;
 };
 
 #endif

@@ -48,7 +48,7 @@ public:
   {
     return 1;
   };
-  virtual void modifier_nu(DoubleTab& ) const { };
+  virtual void modifier_mu(DoubleTab& ) const { };
 
   /* versions etendues de dimensionner/ajouter_blocs permettant de traiter les seules variables auxiliaires */
   virtual void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = {}) const = 0;

@@ -90,7 +90,7 @@ void Op_Diff_Turbulent_PolyMAC_P0_Face::mettre_a_jour(double temps)
       }
 }
 
-void Op_Diff_Turbulent_PolyMAC_P0_Face::modifier_nu(DoubleTab& mu) const
+void Op_Diff_Turbulent_PolyMAC_P0_Face::modifier_mu(DoubleTab& mu) const
 {
   if (corr.est_nul()) return; //rien a faire
   const DoubleTab& rho = equation().milieu().masse_volumique().passe(),

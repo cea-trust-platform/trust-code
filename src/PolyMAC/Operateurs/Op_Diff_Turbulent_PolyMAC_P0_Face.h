@@ -39,7 +39,7 @@ public:
   void creer_champ(const Motcle& motlu) override;
   void mettre_a_jour(double temps) override;
   void completer() override;
-  void modifier_nu(DoubleTab& ) const override; //prend en compte la diffusivite turbulente
+  void modifier_mu(DoubleTab& ) const override; //prend en compte la diffusivite turbulente
   inline const Correlation& correlation() const { return corr ;};
   bool is_turb() const override { return true; }
   const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
