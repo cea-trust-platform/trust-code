@@ -6,9 +6,11 @@ source $TRUST_MEDCOUPLING_ROOT/env.sh || exit 1
 
 # Version of file
 #  Skip funny char printed out when importing MEDLoader
-vers_file=`python -c "import MEDLoader as ml; print (ml.MEDFileVersionOfFileStr('$filen'))" | tail -1 | sed 's/\([0-9]\)\.[0-9]\.[0-9]/\1/'`
-# Version read from MED header
-vers_med=`grep MED_MAJOR_NUM $TRUST_MED_ROOT/include/med.h | sed 's/[^0-9]*\([0-9]\)/\1/'`
+vers_file=`python -c "import medcoupling as mc; print (mc.MEDFileVersionOfFileStr('$filen'))" | tail -1 | sed 's/\([0-9]\.[0-9]\)\.[0-9]/\1/'`
+# Version read from MED header - we build the major med version, e.g. 4.0:
+vers_med_maj=`grep MED_MAJOR_NUM $TRUST_MED_ROOT/include/med.h | sed 's/[^0-9]*\([0-9]\)/\1/'`
+vers_med_min=0  # MUST STAY 0 !!! This is the purpose of the MED_major keyword
+vers_med="${vers_med_maj}.${vers_med_min}"
 
 if [ "x${vers_file}" == "x${vers_med}" ]; then
   exit 0
