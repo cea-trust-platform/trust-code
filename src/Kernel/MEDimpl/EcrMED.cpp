@@ -59,9 +59,85 @@ const Frontiere& mes_faces_fr(const Domaine& domaine,int i)
   else return domaine.joint(i-nb_std);
 }
 
-// a partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
-void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
+} // namespace
+
+/*! @brief Simple appel a: Interprete::printOn(Sortie&)
+ *
+ * @param (Sortie& os) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
+ */
+Sortie& EcrMED::printOn(Sortie& os) const
 {
+  return Interprete::printOn(os);
+}
+
+/*! @brief Simple appel a: Interprete::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ */
+Entree& EcrMED::readOn(Entree& is)
+{
+  return Interprete::readOn(is);
+}
+
+EcrMED::EcrMED(const Nom& file_name, const Domaine& dom):
+  major_mode_(false),
+  nom_fichier_(file_name),
+  dom_(dom)
+{
+}
+
+void EcrMED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
+{
+  nom_fichier_ = file_name;
+  dom_ = dom;
+}
+
+// XD writemed interprete ecrire_med -1 Write a domain to MED format into a file.
+// XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
+// XD attr file chaine file 0 Name of file.
+Entree& EcrMED::interpreter(Entree& is)
+{
+  Cerr<<"syntax : EcrMED [ append ] nom_dom nom_fic "<<finl;
+  int mode=-1;
+  Nom nom_dom;
+  is >> nom_dom ;
+  Motcle app("append");
+  if (app==nom_dom)
+    {
+      mode=0;
+      is >> nom_dom;
+      Cerr<<" Adding "<<nom_dom<<finl;
+    }
+  is >> nom_fichier_;
+  if(! sub_type(Domaine, objet(nom_dom)))
+    {
+      Cerr << nom_dom << " type is " << objet(nom_dom).que_suis_je() << finl;
+      Cerr << "Only Domaine type objects can be meshed" << finl;
+      exit();
+    }
+  dom_ = ref_cast(Domaine, objet(nom_dom));
+  ecrire_domaine(mode);
+  return is;
+}
+
+#ifndef MED_
+void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time)
+{
+  med_non_installe();
+}
+void EcrMED::ecrire_domaine(const Nom& nom_dom,int mode)
+{
+  med_non_installe();
+}
+#else
+
+/*! @brief A partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
+ */
+void EcrMED::creer_all_faces_bord(Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
+{
+  const Domaine& dom = dom_.valeur();
   int nb_type_face=dom.type_elem().nb_type_face();
   type_face.dimensionner(nb_type_face);
   all_faces_bord.dimensionner(nb_type_face);
@@ -81,10 +157,10 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_
   int nb_type_trouve=0;
   for (int ii=0; ii<nb_bords; ii++)
     {
-      if (mes_faces_fr(dom,ii).faces().nb_faces()!=0)
+      if (::mes_faces_fr(dom,ii).faces().nb_faces()!=0)
         {
           Nom type_face_b;
-          type_face_b=mes_faces_fr(dom,ii).faces().type(mes_faces_fr(dom,ii).faces().type_face());
+          type_face_b=::mes_faces_fr(dom,ii).faces().type(::mes_faces_fr(dom,ii).faces().type_face());
           int existe=0;
           for (int j=0; j<nb_type_trouve; j++)
             if (type_face_b==type_face[j])
@@ -116,20 +192,20 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_
   ArrOfInt nb_som(nb_type_face);
   for(int i=0; i<nb_bords; i++)
     {
-      if (sub_type(Raccord_base,mes_faces_fr(dom,i)))
+      if (sub_type(Raccord_base,::mes_faces_fr(dom,i)))
         {
           noms_bords[i]="type_raccord_";
-          noms_bords[i]+=mes_faces_fr(dom,i).le_nom();
+          noms_bords[i]+=::mes_faces_fr(dom,i).le_nom();
         }
       else
-        noms_bords[i]=mes_faces_fr(dom,i).le_nom();
-      const IntTab& les_sommets_des_faces=mes_faces_fr(dom,i).les_sommets_des_faces();
+        noms_bords[i]=::mes_faces_fr(dom,i).le_nom();
+      const IntTab& les_sommets_des_faces=::mes_faces_fr(dom,i).les_sommets_des_faces();
       int nb_fac=les_sommets_des_faces.dimension(0);
       // on cherche de quel type est le bord
       int ref=0;
       if (nb_fac>0)
         {
-          Nom type_face_b=mes_faces_fr(dom,i).faces().type(mes_faces_fr(dom,i).faces().type_face());
+          Nom type_face_b=::mes_faces_fr(dom,i).faces().type(::mes_faces_fr(dom,i).faces().type_face());
           ref=type_face.search(type_face_b);
         }
       for(int j=0; j<nb_fac; j++)
@@ -159,91 +235,31 @@ void creer_all_faces_bord(const Domaine& dom,Noms& type_face,IntTabs& all_faces_
     }
 }
 
-} // namespace
 
-
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& EcrMED::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& EcrMED::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
-// XD writemed interprete ecrire_med -1 Write a domain to MED format into a file.
-// XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
-// XD attr file chaine file 0 Name of file.
-Entree& EcrMED::interpreter(Entree& is)
-{
-  Cerr<<"syntax : EcrMED [ append ] nom_dom nom_fic "<<finl;
-  int mode=-1;
-  Nom nom_dom, nom_fic;
-  is >> nom_dom ;
-  Motcle app("append");
-  if (app==nom_dom)
-    {
-      mode=0;
-      is >> nom_dom;
-      Cerr<<" Adding "<<nom_dom<<finl;
-    }
-  is >> nom_fic;
-  if(! sub_type(Domaine, objet(nom_dom)))
-    {
-      Cerr << nom_dom << " type is " << objet(nom_dom).que_suis_je() << finl;
-      Cerr << "Only Domaine type objects can be meshed" << finl;
-      exit();
-    }
-  const Domaine& dom=ref_cast(Domaine, objet(nom_dom));
-  ecrire_domaine(nom_fic,dom,nom_dom,mode);
-  return is;
-}
-
-#ifndef MED_
-void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite, const Noms& noms_compo, const Nom& type_elem,double time,int compteur)
-{
-  med_non_installe();
-}
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
-{
-  med_non_installe();
-}
-#else
-
-void EcrMED::ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine(bool append)
 {
   REF(Domaine_dis_base) domaine_dis_base; // Pas de domaine discretisee
-  ecrire_domaine_dis(nom_fic, dom, domaine_dis_base, nom_dom, mode);
+  ecrire_domaine_dis(domaine_dis_base, append);
 }
 
-// ecrit le domaine dom dans le fichier nom_fic
-// mode = -1 nouveau fichier
-// mode = 0 ajout du domaine dans le fichier
-void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_dom,int mode)
+/*! @brief Ecrit le domaine dom dans le fichier nom_fichier_
+ *
+ * @param append = false nouveau fichier, append = true ajout du domaine dans le fichier
+ */
+void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
 {
-  //Cerr<<"Here writing of the domain "<<nom_dom<<" in "<<nom_fic<<" mode "<<mode<<finl;
-  const  DoubleTab& sommets=dom.les_sommets();
-  Nom type_elem=dom.type_elem()->que_suis_je();
+  const Nom& nom_dom = dom_->le_nom();
+  const  DoubleTab& sommets=dom_->les_sommets();
+  Nom type_elem=dom_->type_elem()->que_suis_je();
 
-  const IntTab& les_elems=dom.les_elems();
+  const IntTab& les_elems=dom_->les_elems();
 
   Noms type_face;
   IntTabs all_faces_bord;
   Noms noms_bords;
   ArrsOfInt familles;
   // remplit le tableau all_faces_bords ainsi que noms_bords et familles
-  creer_all_faces_bord( dom, type_face, all_faces_bord,  noms_bords,familles);
+  creer_all_faces_bord(type_face, all_faces_bord,  noms_bords,familles);
   // connectivite Trio a MED
   for (int j=0; j<type_face.size(); j++)
     renum_conn(all_faces_bord[j],type_face[j],1);
@@ -260,7 +276,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
   if (0)
     {
       Cerr << "Writing of the domain at the med format"<<finl
-           <<"nom_fic = " << nom_fic<< finl
+           <<"nom_fichier_ = " << nom_fichier_<< finl
            << "nom_dom ="<<nom_dom<<finl;
       Cerr << "dimension = " << dimension<< finl
            << "noms_bords= " << noms_bords<< finl;
@@ -291,7 +307,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
     {
       // Polyedron is special, seepage 10:
       // http://trac.lecad.si/vaje/chrome/site/doc8.3.0/extra/Normalisation_pour_le_couplage_de_codes.pdf
-      const Polyedre& Poly = ref_cast(Polyedre, dom.type_elem().valeur());
+      const Polyedre& Poly = ref_cast(Polyedre, dom_->type_elem().valeur());
       ArrOfInt Nodes_glob;
       Poly.remplir_Nodes_glob(Nodes_glob, les_elems2);
       const ArrOfInt& FacesIndex = Poly.getFacesIndex();
@@ -343,7 +359,7 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
 #ifndef NDEBUG
   mesh->checkConsistency();
 #endif
-  dom.setUMesh(mesh);
+  dom_->setUMesh(mesh);
 
   // Family for the cells:
   int global_family_id = -1000;
@@ -352,8 +368,8 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
   famArr->fillWithValue(global_family_id);
   file->setFamilyFieldArr(0, famArr);
   // Name the family and check unicity:
-  Nom family_name = noms_bords.search(dom.le_nom()) != -1 ? "cpy_" : "";
-  family_name += dom.le_nom();
+  Nom family_name = noms_bords.search(dom_->le_nom()) != -1 ? "cpy_" : "";
+  family_name += dom_->le_nom();
   file->addFamily(family_name.getString(), global_family_id);
 
   // Faces:
@@ -363,8 +379,8 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
   if (domaine_dis_base.non_nul() && ref_cast(Domaine_VF, domaine_dis_base.valeur()).elem_faces().size()>0)
     {
       // Faces mesh:
-      dom.buildUFacesMesh(domaine_dis_base.valeur());
-      MCAuto<MEDCouplingUMesh>& faces_mesh = dom.getUFacesMesh();
+      dom_->buildUFacesMesh(domaine_dis_base.valeur());
+      MCAuto<MEDCouplingUMesh>& faces_mesh = dom_->getUFacesMesh();
       faces_mesh->setCoords(mesh->getCoords());
       faces_mesh->setName(mesh->getName());
       renum_boundary_cell = faces_mesh->sortCellsInMEDFileFrmt();
@@ -447,30 +463,29 @@ void EcrMED::ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(
       file->setGroupsOnFamily(name, grps);
     }
   // Write:
-  int option = (mode == -1 ? 2 : 1); /* 2: reset file. 1: append, 0: overwrite objects */
-  Cerr<<"Writing file " << nom_fic<<" (mode=" << mode << ") ..."<<finl;
-  if (major_mode)
-    file->write40(nom_fic.getString(), option);
+  int option = (append ? 1 : 2); /* 2: reset file. 1: append, 0: overwrite objects */
+  Cerr<<"Writing file " << nom_fichier_<<" (append=" << (append ? "true": "false") << ") ..."<<finl;
+  if (major_mode_)
+    file->write40(nom_fichier_.getString(), option);
   else
-    file->write(nom_fic.getString(), option);
+    file->write(nom_fichier_.getString(), option);
 #else
   med_non_installe(); // actually MEDCoupling ... but will do.
 #endif
 }
 
-// permet d'ecrire le tableau de valeurs val comme un champ dans le
-// fichier med de nom nom_fic, avec pour support le domaine de nom nom_dom.
-// type: CHAMPPOINT,CHAMPMAILLE,CHAMPFACES
-// nom_cha1 le nom du champ
-// unite : les unites
-// type_elem le type des elems du domaine
-// time le temps
-// compteur le numero du pas de temps (ne sert pas pour l'instant)
-// ToDo: suppress compteur variable (set to 1 and NEVER used !)
-void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& dom, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
-                          const Noms& noms_compo, const Nom& type_elem, double time, int compteur)
+/*! @brief Permet d'ecrire le tableau de valeurs val comme un champ dans le fichier med de nom nom_fichier_, avec pour support le domaine de nom nom_dom.
+ *
+ *   @param type: CHAMPPOINT,CHAMPMAILLE,CHAMPFACES
+ *   @param nom_cha1 le nom du champ
+ *   @param unite : les unites
+ *   @param type_elem le type des elems du domaine
+ *   @param time le temps
+ */
+void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab& val, const Noms& unite,
+                          const Noms& noms_compo, const Nom& type_elem, double time)
 {
-  const Nom& nom_dom = dom.le_nom();
+  const Nom& nom_dom = dom_->le_nom();
 #ifdef MEDCOUPLING_
   // Create MEDCouplingField
   MEDCoupling::TypeOfField field_type;
@@ -486,7 +501,7 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
       Process::exit();
       return;
     }
-  std::string file_name = nom_fic.getString();
+  std::string file_name = nom_fichier_.getString();
   std::string field_name = nom_cha1.getString();
   // Get the previous timestep:
   if (timestep_.find(field_name)==timestep_.end())
@@ -508,12 +523,12 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_fic, const Domaine& do
   field->setTimeUnit("s");
 
   // Try to get directly the mesh from the domain:
-  if (dom.getUMesh() != NULL)
+  if (dom_->getUMesh() != NULL)
     {
       if (type == "CHAMPFACES")
-        field->setMesh(dom.getUFacesMesh());
+        field->setMesh(dom_->getUFacesMesh());
       else
-        field->setMesh(dom.getUMesh());
+        field->setMesh(dom_->getUMesh());
     }
   else
     {

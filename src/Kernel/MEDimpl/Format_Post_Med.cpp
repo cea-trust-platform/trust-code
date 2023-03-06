@@ -49,7 +49,7 @@ Format_Post_Med::Format_Post_Med()
 void Format_Post_Med::reset()
 {
   med_basename_ = "??";
-  ecr_med.setMajorMode(false);
+  ecr_med.set_major_mode(false);
 }
 
 /*! @brief erreur => exit
@@ -81,19 +81,16 @@ void Format_Post_Med::set_param(Param& param)
 }
 
 /*! @brief Initialisation de la classe avec des parametres par defaut
- *
  */
 int Format_Post_Med::initialize_by_default(const Nom& file_basename)
 {
   med_basename_= file_basename;
-
   return 1;
 }
 
 int Format_Post_Med::initialize(const Nom& file_basename, const int format, const Nom& option_para)
 {
   med_basename_= file_basename;
-
   return 1;
 }
 
@@ -108,7 +105,6 @@ int Format_Post_Med::ecrire_entete(const double temps_courant,const int reprise,
 
   ecrire_entete_med(nom_fich,est_le_premier_post);
   return 1;
-
 }
 
 int Format_Post_Med::finir(const int est_le_dernier_post)
@@ -126,43 +122,6 @@ int Format_Post_Med::completer_post(const Domaine& dom,const int is_axi,
                                     const Motcle& loc_post,const Nom& le_nom_champ_post)
 {
   return 1;
-  /*
-  Nom nom_fich2(med_basename_);
-  Nom format="med";
-  nom_fich2 += ".";
-  nom_fich2 += format;
-  nom_fich2 += ".med1";
-
-  Nom nom1(le_nom_champ_post);
-  nom1 += "_";
-  Nom nom2(Nom(loc_post).majuscule());
-  nom1 += nom2;
-
-  Nom nom_post(le_nom_champ_post);
-  if (loc_post=="SOM")
-    {
-      nom_post.prefix(dom.le_nom());
-      nom_post.prefix("_som_");
-      nom_post.prefix("_SOM_");
-    }
-  else if (loc_post=="ELEM")
-    {
-      nom_post.prefix(dom.le_nom());
-      nom_post.prefix("_ELEM_");
-      nom_post.prefix("_elem_");
-    }
-  else if (loc_post=="FACES")
-    {
-      nom_post.prefix(dom.le_nom());
-      nom_post.prefix("_FACES_");
-      nom_post.prefix("_faces_");
-    }
-  nom_post+="_";
-  nom_post+=nom2;
-
-  completer_post_med(nom_fich2,nom_post,nom2);
-
-  return 1;*/
 }
 
 int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_premier_post,
@@ -170,28 +129,6 @@ int Format_Post_Med::preparer_post(const Nom& id_du_domaine,const int est_le_pre
                                    const double t_init)
 {
   return 1;
-  /*
-  Nom nom_fich1(med_basename_);
-  Nom nom_fich2(med_basename_);
-  Nom nom_fich3(med_basename_);
-
-
-  Nom format="med";
-  nom_fich1 += ".";
-  nom_fich1 += format;
-  nom_fich1 += ".med0";
-
-  nom_fich2 += ".";
-  nom_fich2 += format;
-  nom_fich2 += ".med1";
-
-  nom_fich3 += ".";
-  nom_fich3 += format;
-  nom_fich3 += ".med2";
-
-  preparer_post_med(nom_fich1,nom_fich2,nom_fich3,id_du_domaine,est_le_premier_post);
-  return 1;*/
-
 }
 
 int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
@@ -201,7 +138,6 @@ int Format_Post_Med::ecrire_domaine(const Domaine& domaine,const int est_le_prem
 }
 
 /*! @brief voir Format_Post_base::ecrire_domaine
- *
  */
 int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const int est_le_premier_post)
 {
@@ -221,10 +157,10 @@ int Format_Post_Med::ecrire_domaine_dis(const Domaine& domaine,const REF(Domaine
   return 1; // ok tout va bien
 }
 
-/*! @brief commence l'ecriture d'un nouveau pas de temps Ouvre le fichier maitre en mode APPEND et ajoute une ligne
+/*! @brief commence l'ecriture d'un nouveau pas de temps
  *
+ * Ouvre le fichier maitre en mode APPEND et ajoute une ligne
  *    "TEMPS xxxxx" si ce temps n'a pas encore ete ecrit
- *
  */
 int Format_Post_Med::ecrire_temps(const double temps)
 {
@@ -250,9 +186,6 @@ int Format_Post_Med::ecrire_champ(const Domaine& domaine,const Noms& unite_,cons
                                   const Nom&   nature,
                                   const DoubleTab& valeurs)
 {
-
-  //Attention au sens du compteur
-
   Nom nom_fich_index(med_basename_);
   nom_fich_index +=".";
   Nom format="med";
@@ -307,59 +240,46 @@ int Format_Post_Med::finir_med(Nom& nom_fich,int& est_le_dernier_post)
   nom_fichier += ".";
   nom_fichier += format;
 
-  if (est_le_dernier_post)
+  if (!est_le_dernier_post || !Process::je_suis_maitre()) return 1;
+
+  // on veut concatainer les 3 fichiers
+  SFichier file3(nom_fichier+".data");
+  SFichier file("postmed.data");
+  for (int i=0; i<3; i++)
     {
-      if (je_suis_maitre())
-        {
-
-          // on veut concatainer les 3 fichiers
-          SFichier file3(nom_fichier+".data");
-          SFichier file("postmed.data");
-          for (int i=0; i<3; i++)
-            {
-              Nom num(i);
-              Nom fic2(nom_fichier);
-              fic2+=".med";
-              fic2+=num;
-              {
-                EFichier file2(fic2);
-                Nom motlu;
-                file2>>motlu;
-                while (!file2.eof())
-                  {
-                    file<<motlu<<" "<<finl;
-                    if (motlu!="#")
-                      file3<<motlu<<" "<<finl;
-                    file2>>motlu;
-
-                  }
-              }
-
-            }
-
-        }
-
-      if (Process::je_suis_maitre())
-        {
-          SFichier s;
-          s.ouvrir(nom_fich,ios::app);
-          s << "FIN" << finl;
-        }
+      Nom num(i);
+      Nom fic2(nom_fichier);
+      fic2+=".med";
+      fic2+=num;
+      {
+        EFichier file2(fic2);
+        Nom motlu;
+        file2>>motlu;
+        while (!file2.eof())
+          {
+            file<<motlu<<" "<<finl;
+            if (motlu!="#")
+              file3<<motlu<<" "<<finl;
+            file2>>motlu;
+          }
+      }
     }
+
+  SFichier s;
+  s.ouvrir(nom_fich,ios::app);
+  s << "FIN" << finl;
 
   return 1;
 }
 
 int Format_Post_Med::completer_post_med(const Nom& nom_fich2,const Nom& nom1,const Nom& nom2)
 {
-
   if (je_suis_maitre())
     {
       SFichier file;
       file.ouvrir(nom_fich2,ios::app);
       file <<nom1<<" "<<nom2<<finl;
     }
-
   return 1;
 }
 
@@ -369,40 +289,37 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
   Nom nom_fich(nom_fich1);
   nom_fich.prefix(".med0");
 
-  if (je_suis_maitre())
+  if (!je_suis_maitre()) return 1;
+
+  if (est_le_premier_post)
     {
-
-      if (est_le_premier_post)
-        {
-          SFichier file(nom_fich1);
-          file<<"{ Dimension "<<dimension<<finl<<"# export Domaine "<<id_du_domaine<<finl;
-        }
-      else
-        {
-          SFichier file(nom_fich1,ios::app);
-          file<<" export Domaine "<<id_du_domaine<<finl;
-        }
-
-      SFichier file;
-      if (est_le_premier_post)
-        {
-          file.ouvrir(nom_fich2);
-          file<<"# \n Pbc_MED pbmed\n Lire pbmed { "<<finl;
-        }
-      else
-        {
-          file.ouvrir(nom_fich2,ios::app);
-          file<<"} } } , "<<finl;
-        }
-      file<<nom_fich<<" "<<id_du_domaine<<"  { Postraitement { Champs dt_post 1e-9 {"<<finl;
-
-      if (est_le_premier_post)
-        {
-          SFichier file2(nom_fich3);
-          file2<<"} } } } }"<<finl;
-        }
+      SFichier file(nom_fich1);
+      file<<"{ Dimension "<<dimension<<finl<<"# export Domaine "<<id_du_domaine<<finl;
+    }
+  else
+    {
+      SFichier file(nom_fich1,ios::app);
+      file<<" export Domaine "<<id_du_domaine<<finl;
     }
 
+  SFichier file;
+  if (est_le_premier_post)
+    {
+      file.ouvrir(nom_fich2);
+      file<<"# \n Pbc_MED pbmed\n Lire pbmed { "<<finl;
+    }
+  else
+    {
+      file.ouvrir(nom_fich2,ios::app);
+      file<<"} } } , "<<finl;
+    }
+  file<<nom_fich<<" "<<id_du_domaine<<"  { Postraitement { Champs dt_post 1e-9 {"<<finl;
+
+  if (est_le_premier_post)
+    {
+      SFichier file2(nom_fich3);
+      file2<<"} } } } }"<<finl;
+    }
 
   return 1;
 }
@@ -410,8 +327,7 @@ int Format_Post_Med::preparer_post_med(const Nom& nom_fich1,const Nom& nom_fich2
 int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_fic,const int est_le_premier_post,Nom& nom_fich)
 {
   int dim = domaine.les_sommets().dimension(1);
-  int mode=-1;
-  if (est_le_premier_post==0)  mode=0;
+  bool append = !est_le_premier_post;
   if (je_suis_maitre())
     {
       SFichier s;
@@ -421,10 +337,11 @@ int Format_Post_Med::ecrire_domaine_med(const Domaine& domaine,const REF(Domaine
       s << "domaine: " << domaine.le_nom() << finl;
       s << "nb_proc: " << Process::nproc() << finl;
       Cerr << "Opening MED file " << nom_fic << " with " << ecr_med.version() << " format. ";
-      if (!ecr_med.getMajorMode()) Cerr << "Try using med_major format if you have issue when opening this file with older Salome versions.";
+      if (!ecr_med.get_major_mode()) Cerr << "Try using med_major format if you have issue when opening this file with older Salome versions.";
       Cerr << finl;
     }
-  ecr_med.ecrire_domaine_dis(nom_fic,domaine,domaine_dis_base,domaine.le_nom(),mode);
+  ecr_med.set_file_name_and_dom(nom_fic, domaine);
+  ecr_med.ecrire_domaine_dis(domaine_dis_base, append);
   return 1;
 
 }
@@ -447,14 +364,9 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
                                       const Nom&   loc_post,
                                       const DoubleTab& valeurs,Nom& nom_fich)
 {
-  //compteur est declare en variable locale car toujours fixe a 1
-  int compteur;
-
   Nom fic = nom_pdb.nom_me(me());
+  ecr_med.set_file_name_and_dom(fic, dom);
 
-  //Ce compteur est en fait anciennement passe sous est_le_premier_post_pour_nom_fich_
-  //et n est pas reellement utilise
-  compteur = 1;
   Nom nom_post(id_du_champ);
   Noms noms_compo_courts(noms_compo);
   if (ncomp != -1)
@@ -508,11 +420,11 @@ int Format_Post_Med::ecrire_champ_med(const Domaine& dom,const Noms& unite_, con
     noms_compo_courts[i] = Motcle(noms_compo_courts[i]).getSuffix(nom_post);
 
   if (loc_post == "SOM")
-    ecr_med.ecrire_champ("CHAMPPOINT", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPPOINT", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
   else if (loc_post == "ELEM")
-    ecr_med.ecrire_champ("CHAMPMAILLE", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPMAILLE", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
   else if (loc_post == "FACES")
-    ecr_med.ecrire_champ("CHAMPFACES", fic, dom, id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_, compteur);
+    ecr_med.ecrire_champ("CHAMPFACES", id_du_champ, valeurs, unite_, noms_compo_courts, type_elem, temps_);
   else
     {
       Cerr << "We do not know to postprocess " << id_du_champ

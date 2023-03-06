@@ -29,32 +29,39 @@ class Champ_Inc_base;
 class Domaine_dis_base;
 class Domaine;
 
-/*! @brief Classe EcrMED Ecr un fichier MED
+/*! @brief Classe EcrMED Ecrit un fichier MED.
  *
  *     Structure du jeu de donnee (en dimension 2) :
  *     EcrMED dom medfile
- *
  */
 class EcrMED : public Interprete
 {
   Declare_instanciable(EcrMED);
 public :
-  ///! Set major mode for MED file writing. See major_mode member below.
-  void setMajorMode(bool majorMod) { major_mode = majorMod; }
-  bool getMajorMode() { return major_mode; }
+  EcrMED(const Nom& file_name, const Domaine& dom);
 
-  inline Nom version()  { return major_mode ? _MED_VERSION(MED_NUM_MAJEUR,0,0) : MED_VERSION_STR; }
+  void set_file_name_and_dom(const Nom& file_name, const Domaine& dom);
+
+  ///! Set major mode for MED file writing. See major_mode member below.
+  void set_major_mode(bool majorMod) { major_mode_ = majorMod; }
+  bool get_major_mode() { return major_mode_; }
+
+  inline Nom version()  { return major_mode_ ? _MED_VERSION(MED_NUM_MAJEUR,0,0) : MED_VERSION_STR; }
 
   Entree& interpreter(Entree&) override;
 
-  void ecrire_domaine(const Nom& nom_fic,const Domaine& dom,const Nom& nom_dom,int mode=0);
-  void ecrire_domaine_dis(const Nom& nom_fic,const Domaine& dom,const REF(Domaine_dis_base)& domaine_dis_base,const Nom& nom_dom,int mode=0);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Noms& noms_compo,const Nom& type_elem,double time,int compteur);
-  void ecrire_champ(const Nom& type,const Nom& nom_fic,const Domaine& dom,const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,int compteur,const Champ_Inc_base& le_champ);
+  void ecrire_domaine(bool append=true);
+  void ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append=true);
+
+  void ecrire_champ(const Nom& type, const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Noms& noms_compo,const Nom& type_elem,double time);
+  void ecrire_champ(const Nom& type, const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,const Champ_Inc_base& le_champ);
 
 protected:
-  ///! False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
-  bool major_mode = false;
+  void creer_all_faces_bord(Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles);
+
+  bool major_mode_ = false;   ///< False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
+  Nom nom_fichier_;           ///< Name of the MED file to write
+  REF(Domaine) dom_;          ///< Domain that will be written
   std::map<std::string, int> timestep_;
 };
 
