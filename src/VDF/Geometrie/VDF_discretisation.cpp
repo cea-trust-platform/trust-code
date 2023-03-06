@@ -352,32 +352,34 @@ void VDF_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vitesse.valeur());
   const Domaine_VDF& domaine_vdf=ref_cast(Domaine_VDF, z.valeur());
   const Domaine_Cl_VDF& domaine_cl_vdf=ref_cast(Domaine_Cl_VDF, zcl.valeur());
+  const int N = ch_vitesse.valeurs().line_size();
   ch.typer("grad_U_Champ_Face");
   grad_U_Champ_Face& ch_grad_u=ref_cast(grad_U_Champ_Face,ch.valeur());
   ch_grad_u.associer_domaine_dis_base(domaine_vdf);
   ch_grad_u.associer_domaine_Cl_dis_base(domaine_cl_vdf);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("gradient_vitesse");
-  ch_grad_u.fixer_nb_comp(dimension*dimension);
+  ch_grad_u.fixer_nb_comp(dimension*dimension*N);
 
+  for (int n=0; n<N; n++)
   if (dimension == 2)
     {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(3,"dVdY"); // dv/dy
+      ch_grad_u.fixer_nom_compo(N*0+n,"dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(N*1+n,"dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(N*2+n,"dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(N*3+n,"dVdY"); // dv/dy
     }
   else
     {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dUdZ"); // du/dz
-      ch_grad_u.fixer_nom_compo(3,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(4,"dVdY"); // dv/dy
-      ch_grad_u.fixer_nom_compo(5,"dVdZ"); // dv/dz
-      ch_grad_u.fixer_nom_compo(6,"dWdX"); // dw/dx
-      ch_grad_u.fixer_nom_compo(7,"dWdY"); // dw/dy
-      ch_grad_u.fixer_nom_compo(8,"dWdZ"); // dw/dz
+      ch_grad_u.fixer_nom_compo(N*0+n,"dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(N*1+n,"dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(N*2+n,"dUdZ"); // du/dz
+      ch_grad_u.fixer_nom_compo(N*3+n,"dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(N*4+n,"dVdY"); // dv/dy
+      ch_grad_u.fixer_nom_compo(N*5+n,"dVdZ"); // dv/dz
+      ch_grad_u.fixer_nom_compo(N*6+n,"dWdX"); // dw/dx
+      ch_grad_u.fixer_nom_compo(N*7+n,"dWdY"); // dw/dy
+      ch_grad_u.fixer_nom_compo(N*8+n,"dWdZ"); // dw/dz
     }
   ch_grad_u.fixer_nature_du_champ(vectoriel);
   ch_grad_u.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
@@ -542,19 +544,21 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
     {
       const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vitesse.valeur());
       const Domaine_VDF& domaine_VDF = ref_cast(Domaine_VDF,vit.domaine_dis_base());
+      int N = ch_vitesse.valeurs().line_size();
       ch.typer("Rotationnel_Champ_Face");
       Rotationnel_Champ_Face& ch_W=ref_cast(Rotationnel_Champ_Face,ch.valeur());
       ch_W.associer_domaine_dis_base(domaine_VDF);
       ch_W.associer_champ(vit);
       ch_W.nommer("vorticite");
       if (dimension == 2)
-        ch_W.fixer_nb_comp(1);
+        ch_W.fixer_nb_comp(N);
       else
+      for (int n=0; n<N; n++)
         {
-          ch_W.fixer_nb_comp(dimension);
-          ch_W.fixer_nom_compo(0, "vorticiteX");
-          ch_W.fixer_nom_compo(1, "vorticiteY");
-          ch_W.fixer_nom_compo(2, "vorticiteZ");
+          ch_W.fixer_nb_comp(dimension*N);
+          ch_W.fixer_nom_compo(N*0+n, "vorticiteX");
+          ch_W.fixer_nom_compo(N*1+n, "vorticiteY");
+          ch_W.fixer_nom_compo(N*2+n, "vorticiteZ");
         }
       ch_W.fixer_nb_valeurs_nodales(domaine_VDF.nb_elem());
       ch_W.fixer_unite("s-1");

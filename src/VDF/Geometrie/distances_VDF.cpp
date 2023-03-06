@@ -177,6 +177,8 @@ void calcul_interne2D(int num_elem, int elx0, int elx1, int ely0, int ely1, cons
   double delta_x, delta_y;
   double deriv_vx, deriv_uy;
 
+  int N = val.line_size(), n;
+
   deriv_vx = 0;
   deriv_uy = 0;
 
@@ -188,16 +190,18 @@ void calcul_interne2D(int num_elem, int elx0, int elx1, int ely0, int ely1, cons
   delta_x = (delta_x_1 - delta_x_0) * (delta_x_1 + delta_x_0) / (delta_x_1 * delta_x_0);
   delta_y = (delta_y_1 - delta_y_0) * (delta_y_1 + delta_y_0) / (delta_y_1 * delta_y_0);
 
-  deriv_vx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1)) + delta_x * val(elem_faces(num_elem, 1)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1)));
-  deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 3)) + delta_x * val(elem_faces(num_elem, 3)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 3)));
+  for (n=0; n<N; n++)
+  {
+  deriv_vx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1), n) + delta_x * val(elem_faces(num_elem, 1), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1), n));
+  deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 3), n) + delta_x * val(elem_faces(num_elem, 3), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 3), n));
   deriv_vx *= 0.5 / (delta_x_0 + delta_x_1);
 
-  deriv_uy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0)) + delta_y * val(elem_faces(num_elem, 0)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0)));
-  deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2)) + delta_y * val(elem_faces(num_elem, 2)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2)));
+  deriv_uy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0), n) + delta_y * val(elem_faces(num_elem, 0), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0), n));
+  deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2), n) + delta_y * val(elem_faces(num_elem, 2), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2), n));
   deriv_uy *= 0.5 / (delta_y_0 + delta_y_1);
 
-  rot[num_elem] = deriv_vx - deriv_uy;
-
+  rot(num_elem,n) = deriv_vx - deriv_uy;
+  }
 }
 
 void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const Domaine_VDF& domaine_VDF, const DoubleTab& val, DoubleTab& rot)
@@ -207,9 +211,13 @@ void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const D
   double delta_x, delta_y;
   double deriv_vx, deriv_uy;
 
+  int N = val.line_size(), n;
+
   deriv_vx = 0;
   deriv_uy = 0;
 
+  for (n=0; n<N; n++)
+  {
   // Traitement des elements bord
   if ((elx0 == -1) || (elx1 == -1))
     {
@@ -218,7 +226,7 @@ void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const D
           if (elx1 != -1)
             {
               delta_x_1 = domaine_VDF.dist_elem_period(elx1, num_elem, 0);
-              deriv_vx = (val(elem_faces(elx1, 1)) - val(elem_faces(num_elem, 1)) + val(elem_faces(elx1, 3)) - val(elem_faces(num_elem, 3)));
+              deriv_vx = (val(elem_faces(elx1, 1), n) - val(elem_faces(num_elem, 1), n) + val(elem_faces(elx1, 3), n) - val(elem_faces(num_elem, 3), n));
               deriv_vx *= 0.5 / delta_x_1;
 
             }
@@ -228,7 +236,7 @@ void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const D
       else // elx1 = -1 et elx0 != -1
         {
           delta_x_0 = domaine_VDF.dist_elem_period(num_elem, elx0, 0);
-          deriv_vx = (val(elem_faces(num_elem, 1)) - val(elem_faces(elx0, 1)) + val(elem_faces(num_elem, 3)) - val(elem_faces(elx0, 3)));
+          deriv_vx = (val(elem_faces(num_elem, 1), n) - val(elem_faces(elx0, 1), n) + val(elem_faces(num_elem, 3), n) - val(elem_faces(elx0, 3), n));
           deriv_vx *= 0.5 / delta_x_0;
 
         }
@@ -238,8 +246,8 @@ void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const D
       delta_x_0 = domaine_VDF.dist_elem_period(num_elem, elx0, 0);
       delta_x_1 = domaine_VDF.dist_elem_period(elx1, num_elem, 0);
       delta_x = (delta_x_1 - delta_x_0) * (delta_x_1 + delta_x_0) / (delta_x_1 * delta_x_0);
-      deriv_vx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1)) + delta_x * val(elem_faces(num_elem, 1)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1)));
-      deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 3)) + delta_x * val(elem_faces(num_elem, 3)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 3)));
+      deriv_vx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1), n) + delta_x * val(elem_faces(num_elem, 1), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1), n));
+      deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 3), n) + delta_x * val(elem_faces(num_elem, 3), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 3), n));
       deriv_vx *= 0.5 / (delta_x_0 + delta_x_1);
 
     }
@@ -251,7 +259,7 @@ void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const D
           if (ely1 != -1)
             {
               delta_y_1 = domaine_VDF.dist_elem_period(ely1, num_elem, 1);
-              deriv_uy = (val(elem_faces(ely1, 0)) - val(elem_faces(num_elem, 0)) + val(elem_faces(ely1, 2)) - val(elem_faces(num_elem, 2)));
+              deriv_uy = (val(elem_faces(ely1, 0), n) - val(elem_faces(num_elem, 0), n) + val(elem_faces(ely1, 2), n) - val(elem_faces(num_elem, 2), n));
               deriv_uy *= 0.5 / delta_y_1;
 
             }
@@ -261,7 +269,7 @@ void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const D
       else // ely1 = -1 et ely0 != -1
         {
           delta_y_0 = domaine_VDF.dist_elem_period(num_elem, ely0, 1);
-          deriv_uy = (val(elem_faces(num_elem, 0)) - val(elem_faces(ely0, 0)) + val(elem_faces(num_elem, 2)) - val(elem_faces(ely0, 2)));
+          deriv_uy = (val(elem_faces(num_elem, 0), n) - val(elem_faces(ely0, 0), n) + val(elem_faces(num_elem, 2), n) - val(elem_faces(ely0, 2), n));
           deriv_uy *= 0.5 / delta_y_0;
 
         }
@@ -272,13 +280,14 @@ void calcul_bord2D(int num_elem, int elx0, int elx1, int ely0, int ely1, const D
       delta_y_1 = domaine_VDF.dist_elem_period(ely1, num_elem, 1);
       delta_y = (delta_y_1 - delta_y_0) * (delta_y_1 + delta_y_0) / (delta_y_1 * delta_y_0);
 
-      deriv_uy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0)) + delta_y * val(elem_faces(num_elem, 0)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0)));
-      deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2)) + delta_y * val(elem_faces(num_elem, 2)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2)));
+      deriv_uy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0), n) + delta_y * val(elem_faces(num_elem, 0), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0), n));
+      deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2), n) + delta_y * val(elem_faces(num_elem, 2), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2), n));
       deriv_uy *= 0.5 / (delta_y_0 + delta_y_1);
 
     }
 
-  rot[num_elem] = deriv_vx - deriv_uy;
+  rot(num_elem,n) = deriv_vx - deriv_uy;
+  }
 }
 
 void calrotord2centelemdim2(DoubleTab& rot, const DoubleTab& val, const Domaine_VDF& domaine_VDF, int nb_elem, const IntTab& face_voisins, const IntTab& elem_faces)
@@ -311,6 +320,8 @@ void calcul_interne3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int 
   double delta_x, delta_y, delta_z;
   double deriv_wy, deriv_vz, deriv_uz, deriv_wx, deriv_vx, deriv_uy;
 
+  int N = val.line_size();
+
   deriv_wy = 0;
   deriv_vz = 0;
   deriv_uz = 0;
@@ -329,34 +340,36 @@ void calcul_interne3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int 
   delta_y = (delta_y_1 - delta_y_0) * (delta_y_1 + delta_y_0) / (delta_y_1 * delta_y_0);
   delta_z = (delta_z_1 - delta_z_0) * (delta_z_1 + delta_z_0) / (delta_z_1 * delta_z_0);
 
-  deriv_vz = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 1)) + delta_z * val(elem_faces(num_elem, 1)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 1)));
-  deriv_vz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 4)) + delta_z * val(elem_faces(num_elem, 4)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 4)));
+  for (int n=0; n<N; n++)
+  {
+  deriv_vz  = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 1), n) + delta_z * val(elem_faces(num_elem, 1), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 1), n));
+  deriv_vz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 4), n) + delta_z * val(elem_faces(num_elem, 4), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 4), n));
   deriv_vz *= 0.5 / (delta_z_0 + delta_z_1);
 
-  deriv_wy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2)) + delta_y * val(elem_faces(num_elem, 2)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2)));
-  deriv_wy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 5)) + delta_y * val(elem_faces(num_elem, 5)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 5)));
+  deriv_wy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2), n) + delta_y * val(elem_faces(num_elem, 2), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2), n));
+  deriv_wy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 5), n) + delta_y * val(elem_faces(num_elem, 5), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 5), n));
   deriv_wy *= 0.5 / (delta_y_0 + delta_y_1);
 
-  deriv_uz = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 0)) + delta_z * val(elem_faces(num_elem, 0)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 0)));
-  deriv_uz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 3)) + delta_z * val(elem_faces(num_elem, 3)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 3)));
+  deriv_uz  = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 0), n) + delta_z * val(elem_faces(num_elem, 0), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 0), n));
+  deriv_uz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 3), n) + delta_z * val(elem_faces(num_elem, 3), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 3), n));
   deriv_uz *= 0.5 / (delta_z_0 + delta_z_1);
 
-  deriv_wx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 2)) + delta_x * val(elem_faces(num_elem, 2)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 2)));
-  deriv_wx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 5)) + delta_x * val(elem_faces(num_elem, 5)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 5)));
+  deriv_wx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 2), n) + delta_x * val(elem_faces(num_elem, 2), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 2), n));
+  deriv_wx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 5), n) + delta_x * val(elem_faces(num_elem, 5), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 5), n));
   deriv_wx *= 0.5 / (delta_x_0 + delta_x_1);
 
-  deriv_vx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1)) + delta_x * val(elem_faces(num_elem, 1)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1)));
-  deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 4)) + delta_x * val(elem_faces(num_elem, 4)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 4)));
+  deriv_vx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1), n) + delta_x * val(elem_faces(num_elem, 1), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1), n));
+  deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 4), n) + delta_x * val(elem_faces(num_elem, 4), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 4), n));
   deriv_vx *= 0.5 / (delta_x_0 + delta_x_1);
 
-  deriv_uy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0)) + delta_y * val(elem_faces(num_elem, 0)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0)));
-  deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 3)) + delta_y * val(elem_faces(num_elem, 3)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 3)));
+  deriv_uy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0), n) + delta_y * val(elem_faces(num_elem, 0), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0), n));
+  deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 3), n) + delta_y * val(elem_faces(num_elem, 3), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 3), n));
   deriv_uy *= 0.5 / (delta_y_0 + delta_y_1);
 
-  rot(num_elem, 0) = deriv_wy - deriv_vz;
-  rot(num_elem, 1) = deriv_uz - deriv_wx;
-  rot(num_elem, 2) = deriv_vx - deriv_uy;
-
+  rot(num_elem, N*0+n) = deriv_wy - deriv_vz;
+  rot(num_elem, N*1+n) = deriv_uz - deriv_wx;
+  rot(num_elem, N*2+n) = deriv_vx - deriv_uy;
+  }
 }
 
 // Traitement des elements bord
@@ -367,12 +380,17 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
   double delta_x, delta_y, delta_z;
   double deriv_wy, deriv_vz, deriv_uz, deriv_wx, deriv_vx, deriv_uy;
 
+  int N = val.line_size();
+
   deriv_wy = 0;
   deriv_vz = 0;
   deriv_uz = 0;
   deriv_wx = 0;
   deriv_vx = 0;
   deriv_uy = 0;
+
+  for (int n=0; n<N; n++)
+  {
 
   // Traitement des elements bord
 
@@ -383,9 +401,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           if (elx1 != -1)
             {
               delta_x_1 = domaine_VDF.dist_elem_period(elx1, num_elem, 0);
-              deriv_vx = (val(elem_faces(elx1, 1)) - val(elem_faces(num_elem, 1)) + val(elem_faces(elx1, 4)) - val(elem_faces(num_elem, 4)));
+              deriv_vx = (val(elem_faces(elx1, 1), n) - val(elem_faces(num_elem, 1), n) + val(elem_faces(elx1, 4), n) - val(elem_faces(num_elem, 4), n));
               deriv_vx *= 0.5 / delta_x_1;
-              deriv_wx = (val(elem_faces(elx1, 2)) - val(elem_faces(num_elem, 2)) + val(elem_faces(elx1, 5)) - val(elem_faces(num_elem, 5)));
+              deriv_wx = (val(elem_faces(elx1, 2), n) - val(elem_faces(num_elem, 2), n) + val(elem_faces(elx1, 5), n) - val(elem_faces(num_elem, 5), n));
               deriv_wx *= 0.5 / delta_x_1;
             }
           else
@@ -397,9 +415,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
       else // elx1 = -1 et elx0 != -1
         {
           delta_x_0 = domaine_VDF.dist_elem_period(num_elem, elx0, 0);
-          deriv_vx = (val(elem_faces(num_elem, 1)) - val(elem_faces(elx0, 1)) + val(elem_faces(num_elem, 4)) - val(elem_faces(elx0, 4)));
+          deriv_vx = (val(elem_faces(num_elem, 1), n) - val(elem_faces(elx0, 1), n) + val(elem_faces(num_elem, 4), n) - val(elem_faces(elx0, 4), n));
           deriv_vx *= 0.5 / delta_x_0;
-          deriv_wx = (val(elem_faces(num_elem, 2)) - val(elem_faces(elx0, 2)) + val(elem_faces(num_elem, 5)) - val(elem_faces(elx0, 5)));
+          deriv_wx = (val(elem_faces(num_elem, 2), n) - val(elem_faces(elx0, 2), n) + val(elem_faces(num_elem, 5), n) - val(elem_faces(elx0, 5), n));
           deriv_wx *= 0.5 / delta_x_0;
         }
 
@@ -410,9 +428,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
               if (ely1 != -1)
                 {
                   delta_y_1 = domaine_VDF.dist_elem_period(ely1, num_elem, 1);
-                  deriv_uy = (val(elem_faces(ely1, 0)) - val(elem_faces(num_elem, 0)) + val(elem_faces(ely1, 3)) - val(elem_faces(num_elem, 3)));
+                  deriv_uy = (val(elem_faces(ely1, 0), n) - val(elem_faces(num_elem, 0), n) + val(elem_faces(ely1, 3), n) - val(elem_faces(num_elem, 3), n));
                   deriv_uy *= 0.5 / delta_y_1;
-                  deriv_wy = (val(elem_faces(ely1, 2)) - val(elem_faces(num_elem, 2)) + val(elem_faces(ely1, 5)) - val(elem_faces(num_elem, 5)));
+                  deriv_wy = (val(elem_faces(ely1, 2), n) - val(elem_faces(num_elem, 2), n) + val(elem_faces(ely1, 5), n) - val(elem_faces(num_elem, 5), n));
                   deriv_wy *= 0.5 / delta_y_1;
                 }
               else
@@ -424,9 +442,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           else // ely1 = -1 et ely0 != -1
             {
               delta_y_0 = domaine_VDF.dist_elem_period(num_elem, ely0, 1);
-              deriv_uy = (val(elem_faces(num_elem, 0)) - val(elem_faces(ely0, 0)) + val(elem_faces(num_elem, 3)) - val(elem_faces(ely0, 3)));
+              deriv_uy = (val(elem_faces(num_elem, 0), n) - val(elem_faces(ely0, 0), n) + val(elem_faces(num_elem, 3), n) - val(elem_faces(ely0, 3), n));
               deriv_uy *= 0.5 / delta_y_0;
-              deriv_wy = (val(elem_faces(num_elem, 2)) - val(elem_faces(ely0, 2)) + val(elem_faces(num_elem, 5)) - val(elem_faces(ely0, 5)));
+              deriv_wy = (val(elem_faces(num_elem, 2), n) - val(elem_faces(ely0, 2), n) + val(elem_faces(num_elem, 5), n) - val(elem_faces(ely0, 5), n));
               deriv_wy *= 0.5 / delta_y_0;
             }
         }
@@ -436,12 +454,12 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           delta_y_1 = domaine_VDF.dist_elem_period(ely1, num_elem, 1);
           delta_y = (delta_y_1 - delta_y_0) * (delta_y_1 + delta_y_0) / (delta_y_1 * delta_y_0);
 
-          deriv_uy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0)) + delta_y * val(elem_faces(num_elem, 0)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0)));
-          deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 3)) + delta_y * val(elem_faces(num_elem, 3)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 3)));
+          deriv_uy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0), n) + delta_y * val(elem_faces(num_elem, 0), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0), n));
+          deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 3), n) + delta_y * val(elem_faces(num_elem, 3), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 3), n));
           deriv_uy *= 0.5 / (delta_y_0 + delta_y_1);
 
-          deriv_wy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2)) + delta_y * val(elem_faces(num_elem, 2)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2)));
-          deriv_wy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 5)) + delta_y * val(elem_faces(num_elem, 5)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 5)));
+          deriv_wy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2), n) + delta_y * val(elem_faces(num_elem, 2), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2), n));
+          deriv_wy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 5), n) + delta_y * val(elem_faces(num_elem, 5), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 5), n));
           deriv_wy *= 0.5 / (delta_y_0 + delta_y_1);
         }
 
@@ -452,9 +470,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
               if (elz1 != -1)
                 {
                   delta_z_1 = domaine_VDF.dist_elem_period(elz1, num_elem, 2);
-                  deriv_uz = (val(elem_faces(elz1, 0)) - val(elem_faces(num_elem, 0)) + val(elem_faces(elz1, 3)) - val(elem_faces(num_elem, 3)));
+                  deriv_uz = (val(elem_faces(elz1, 0), n) - val(elem_faces(num_elem, 0), n) + val(elem_faces(elz1, 3), n) - val(elem_faces(num_elem, 3), n));
                   deriv_uz *= 0.5 / delta_z_1;
-                  deriv_vz = (val(elem_faces(elz1, 1)) - val(elem_faces(num_elem, 1)) + val(elem_faces(elz1, 4)) - val(elem_faces(num_elem, 4)));
+                  deriv_vz = (val(elem_faces(elz1, 1), n) - val(elem_faces(num_elem, 1), n) + val(elem_faces(elz1, 4), n) - val(elem_faces(num_elem, 4), n));
                   deriv_vz *= 0.5 / delta_z_1;
                 }
               else
@@ -466,9 +484,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           else // elz1 = -1 et elz0 != -1
             {
               delta_z_0 = domaine_VDF.dist_elem_period(num_elem, elz0, 2);
-              deriv_uz = (val(elem_faces(num_elem, 0)) - val(elem_faces(elz0, 0)) + val(elem_faces(num_elem, 3)) - val(elem_faces(elz0, 3)));
+              deriv_uz = (val(elem_faces(num_elem, 0), n) - val(elem_faces(elz0, 0), n) + val(elem_faces(num_elem, 3), n) - val(elem_faces(elz0, 3), n));
               deriv_uz *= 0.5 / delta_z_0;
-              deriv_vz = (val(elem_faces(num_elem, 1)) - val(elem_faces(elz0, 1)) + val(elem_faces(num_elem, 4)) - val(elem_faces(elz0, 4)));
+              deriv_vz = (val(elem_faces(num_elem, 1), n) - val(elem_faces(elz0, 1), n) + val(elem_faces(num_elem, 4), n) - val(elem_faces(elz0, 4), n));
               deriv_vz *= 0.5 / delta_z_0;
             }
         }
@@ -478,12 +496,12 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           delta_z_1 = domaine_VDF.dist_elem_period(elz1, num_elem, 2);
           delta_z = (delta_z_1 - delta_z_0) * (delta_z_1 + delta_z_0) / (delta_z_1 * delta_z_0);
 
-          deriv_uz = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 0)) + delta_z * val(elem_faces(num_elem, 0)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 0)));
-          deriv_uz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 3)) + delta_z * val(elem_faces(num_elem, 3)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 3)));
+          deriv_uz  = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 0), n) + delta_z * val(elem_faces(num_elem, 0), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 0), n));
+          deriv_uz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 3), n) + delta_z * val(elem_faces(num_elem, 3), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 3), n));
           deriv_uz *= 0.5 / (delta_z_0 + delta_z_1);
 
-          deriv_vz = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 1)) + delta_z * val(elem_faces(num_elem, 1)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 1)));
-          deriv_vz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 4)) + delta_z * val(elem_faces(num_elem, 4)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 4)));
+          deriv_vz  = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 1), n) + delta_z * val(elem_faces(num_elem, 1), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 1), n));
+          deriv_vz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 4), n) + delta_z * val(elem_faces(num_elem, 4), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 4), n));
           deriv_vz *= 0.5 / (delta_z_0 + delta_z_1);
         }
 
@@ -496,9 +514,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           if (ely1 != -1)
             {
               delta_y_1 = domaine_VDF.dist_elem_period(ely1, num_elem, 1);
-              deriv_uy = (val(elem_faces(ely1, 0)) - val(elem_faces(num_elem, 0)) + val(elem_faces(ely1, 3)) - val(elem_faces(num_elem, 3)));
+              deriv_uy = (val(elem_faces(ely1, 0), n) - val(elem_faces(num_elem, 0), n) + val(elem_faces(ely1, 3), n) - val(elem_faces(num_elem, 3), n));
               deriv_uy *= 0.5 / delta_y_1;
-              deriv_wy = (val(elem_faces(ely1, 2)) - val(elem_faces(num_elem, 2)) + val(elem_faces(ely1, 5)) - val(elem_faces(num_elem, 5)));
+              deriv_wy = (val(elem_faces(ely1, 2), n) - val(elem_faces(num_elem, 2), n) + val(elem_faces(ely1, 5), n) - val(elem_faces(num_elem, 5), n));
               deriv_wy *= 0.5 / delta_y_1;
             }
           else
@@ -510,9 +528,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
       else  // ely1 = -1 et ely0 != -1
         {
           delta_y_0 = domaine_VDF.dist_elem_period(num_elem, ely0, 1);
-          deriv_uy = (val(elem_faces(num_elem, 0)) - val(elem_faces(ely0, 0)) + val(elem_faces(num_elem, 3)) - val(elem_faces(ely0, 3)));
+          deriv_uy = (val(elem_faces(num_elem, 0), n) - val(elem_faces(ely0, 0), n) + val(elem_faces(num_elem, 3), n) - val(elem_faces(ely0, 3), n));
           deriv_uy *= 0.5 / delta_y_0;
-          deriv_wy = (val(elem_faces(num_elem, 2)) - val(elem_faces(ely0, 2)) + val(elem_faces(num_elem, 5)) - val(elem_faces(ely0, 5)));
+          deriv_wy = (val(elem_faces(num_elem, 2), n) - val(elem_faces(ely0, 2), n) + val(elem_faces(num_elem, 5), n) - val(elem_faces(ely0, 5), n));
           deriv_wy *= 0.5 / delta_y_0;
         }
 
@@ -520,12 +538,12 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
       delta_x_1 = domaine_VDF.dist_elem_period(elx1, num_elem, 0);
       delta_x = (delta_x_1 - delta_x_0) * (delta_x_1 + delta_x_0) / (delta_x_1 * delta_x_0);
 
-      deriv_wx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 2)) + delta_x * val(elem_faces(num_elem, 2)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 2)));
-      deriv_wx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 5)) + delta_x * val(elem_faces(num_elem, 5)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 5)));
+      deriv_wx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 2), n) + delta_x * val(elem_faces(num_elem, 2), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 2), n));
+      deriv_wx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 5), n) + delta_x * val(elem_faces(num_elem, 5), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 5), n));
       deriv_wx *= 0.5 / (delta_x_0 + delta_x_1);
 
-      deriv_vx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1)) + delta_x * val(elem_faces(num_elem, 1)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1)));
-      deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 4)) + delta_x * val(elem_faces(num_elem, 4)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 4)));
+      deriv_vx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1), n) + delta_x * val(elem_faces(num_elem, 1), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1), n));
+      deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 4), n) + delta_x * val(elem_faces(num_elem, 4), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 4), n));
       deriv_vx *= 0.5 / (delta_x_0 + delta_x_1);
 
       if ((elz0 == -1) || (elz1 == -1))
@@ -535,9 +553,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
               if (elz1 != -1)
                 {
                   delta_z_1 = domaine_VDF.dist_elem_period(elz1, num_elem, 2);
-                  deriv_uz = (val(elem_faces(elz1, 0)) - val(elem_faces(num_elem, 0)) + val(elem_faces(elz1, 3)) - val(elem_faces(num_elem, 3)));
+                  deriv_uz = (val(elem_faces(elz1, 0), n) - val(elem_faces(num_elem, 0), n) + val(elem_faces(elz1, 3), n) - val(elem_faces(num_elem, 3), n));
                   deriv_uz *= 0.5 / delta_z_1;
-                  deriv_vz = (val(elem_faces(elz1, 1)) - val(elem_faces(num_elem, 1)) + val(elem_faces(elz1, 4)) - val(elem_faces(num_elem, 4)));
+                  deriv_vz = (val(elem_faces(elz1, 1), n) - val(elem_faces(num_elem, 1), n) + val(elem_faces(elz1, 4), n) - val(elem_faces(num_elem, 4), n));
                   deriv_vz *= 0.5 / delta_z_1;
                 }
               else
@@ -549,9 +567,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           else
             {
               delta_z_0 = domaine_VDF.dist_elem_period(num_elem, elz0, 2);
-              deriv_uz = (val(elem_faces(num_elem, 0)) - val(elem_faces(elz0, 0)) + val(elem_faces(num_elem, 3)) - val(elem_faces(elz0, 3)));
+              deriv_uz = (val(elem_faces(num_elem, 0), n) - val(elem_faces(elz0, 0), n) + val(elem_faces(num_elem, 3), n) - val(elem_faces(elz0, 3), n));
               deriv_uz *= 0.5 / delta_z_0;
-              deriv_vz = (val(elem_faces(num_elem, 1)) - val(elem_faces(elz0, 1)) + val(elem_faces(num_elem, 4)) - val(elem_faces(elz0, 4)));
+              deriv_vz = (val(elem_faces(num_elem, 1), n) - val(elem_faces(elz0, 1), n) + val(elem_faces(num_elem, 4), n) - val(elem_faces(elz0, 4), n));
               deriv_vz *= 0.5 / delta_z_0;
             }
         }
@@ -561,12 +579,12 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           delta_z_1 = domaine_VDF.dist_elem_period(elz1, num_elem, 2);
           delta_z = (delta_z_1 - delta_z_0) * (delta_z_1 + delta_z_0) / (delta_z_1 * delta_z_0);
 
-          deriv_uz = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 0)) + delta_z * val(elem_faces(num_elem, 0)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 0)));
-          deriv_uz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 3)) + delta_z * val(elem_faces(num_elem, 3)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 3)));
+          deriv_uz  = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 0), n) + delta_z * val(elem_faces(num_elem, 0), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 0), n));
+          deriv_uz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 3), n) + delta_z * val(elem_faces(num_elem, 3), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 3), n));
           deriv_uz *= 0.5 / (delta_z_0 + delta_z_1);
 
-          deriv_vz = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 1)) + delta_z * val(elem_faces(num_elem, 1)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 1)));
-          deriv_vz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 4)) + delta_z * val(elem_faces(num_elem, 4)) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 4)));
+          deriv_vz  = (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 1), n) + delta_z * val(elem_faces(num_elem, 1), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 1), n));
+          deriv_vz += (delta_z_0 / delta_z_1 * val(elem_faces(elz1, 4), n) + delta_z * val(elem_faces(num_elem, 4), n) - delta_z_1 / delta_z_0 * val(elem_faces(elz0, 4), n));
           deriv_vz *= 0.5 / (delta_z_0 + delta_z_1);
         }
     }
@@ -577,9 +595,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
           if (elz1 != -1)
             {
               delta_z_1 = domaine_VDF.dist_elem_period(elz1, num_elem, 2);
-              deriv_uz = (val(elem_faces(elz1, 0)) - val(elem_faces(num_elem, 0)) + val(elem_faces(elz1, 3)) - val(elem_faces(num_elem, 3)));
+              deriv_uz = (val(elem_faces(elz1, 0), n) - val(elem_faces(num_elem, 0), n) + val(elem_faces(elz1, 3), n) - val(elem_faces(num_elem, 3), n));
               deriv_uz *= 0.5 / delta_z_1;
-              deriv_vz = (val(elem_faces(elz1, 1)) - val(elem_faces(num_elem, 1)) + val(elem_faces(elz1, 4)) - val(elem_faces(num_elem, 4)));
+              deriv_vz = (val(elem_faces(elz1, 1), n) - val(elem_faces(num_elem, 1), n) + val(elem_faces(elz1, 4), n) - val(elem_faces(num_elem, 4), n));
               deriv_vz *= 0.5 / delta_z_1;
             }
           else
@@ -591,9 +609,9 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
       else // elz1 = -1 et elz0 != -1
         {
           delta_z_0 = domaine_VDF.dist_elem_period(num_elem, elz0, 2);
-          deriv_uz = (val(elem_faces(num_elem, 0)) - val(elem_faces(elz0, 0)) + val(elem_faces(num_elem, 3)) - val(elem_faces(elz0, 3)));
+          deriv_uz = (val(elem_faces(num_elem, 0), n) - val(elem_faces(elz0, 0), n) + val(elem_faces(num_elem, 3), n) - val(elem_faces(elz0, 3), n));
           deriv_uz *= 0.5 / delta_z_0;
-          deriv_vz = (val(elem_faces(num_elem, 1)) - val(elem_faces(elz0, 1)) + val(elem_faces(num_elem, 4)) - val(elem_faces(elz0, 4)));
+          deriv_vz = (val(elem_faces(num_elem, 1), n) - val(elem_faces(elz0, 1), n) + val(elem_faces(num_elem, 4), n) - val(elem_faces(elz0, 4), n));
           deriv_vz *= 0.5 / delta_z_0;
         }
 
@@ -601,30 +619,31 @@ void calcul_bord3D(int num_elem, int elx0, int elx1, int ely0, int ely1, int elz
       delta_x_1 = domaine_VDF.dist_elem_period(elx1, num_elem, 0);
       delta_x = (delta_x_1 - delta_x_0) * (delta_x_1 + delta_x_0) / (delta_x_1 * delta_x_0);
 
-      deriv_wx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 2)) + delta_x * val(elem_faces(num_elem, 2)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 2)));
-      deriv_wx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 5)) + delta_x * val(elem_faces(num_elem, 5)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 5)));
+      deriv_wx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 2), n) + delta_x * val(elem_faces(num_elem, 2), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 2), n));
+      deriv_wx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 5), n) + delta_x * val(elem_faces(num_elem, 5), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 5), n));
       deriv_wx *= 0.5 / (delta_x_0 + delta_x_1);
 
-      deriv_vx = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1)) + delta_x * val(elem_faces(num_elem, 1)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1)));
-      deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 4)) + delta_x * val(elem_faces(num_elem, 4)) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 4)));
+      deriv_vx  = (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 1), n) + delta_x * val(elem_faces(num_elem, 1), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 1), n));
+      deriv_vx += (delta_x_0 / delta_x_1 * val(elem_faces(elx1, 4), n) + delta_x * val(elem_faces(num_elem, 4), n) - delta_x_1 / delta_x_0 * val(elem_faces(elx0, 4), n));
       deriv_vx *= 0.5 / (delta_x_0 + delta_x_1);
 
       delta_y_0 = domaine_VDF.dist_elem_period(num_elem, ely0, 1);
       delta_y_1 = domaine_VDF.dist_elem_period(ely1, num_elem, 1);
       delta_y = (delta_y_1 - delta_y_0) * (delta_y_1 + delta_y_0) / (delta_y_1 * delta_y_0);
 
-      deriv_wy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2)) + delta_y * val(elem_faces(num_elem, 2)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2)));
-      deriv_wy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 5)) + delta_y * val(elem_faces(num_elem, 5)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 5)));
+      deriv_wy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 2), n) + delta_y * val(elem_faces(num_elem, 2), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 2), n));
+      deriv_wy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 5), n) + delta_y * val(elem_faces(num_elem, 5), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 5), n));
       deriv_wy *= 0.5 / (delta_y_0 + delta_y_1);
 
-      deriv_uy = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0)) + delta_y * val(elem_faces(num_elem, 0)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0)));
-      deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 3)) + delta_y * val(elem_faces(num_elem, 3)) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 3)));
+      deriv_uy  = (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 0), n) + delta_y * val(elem_faces(num_elem, 0), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 0), n));
+      deriv_uy += (delta_y_0 / delta_y_1 * val(elem_faces(ely1, 3), n) + delta_y * val(elem_faces(num_elem, 3), n) - delta_y_1 / delta_y_0 * val(elem_faces(ely0, 3), n));
       deriv_uy *= 0.5 / (delta_y_0 + delta_y_1);
     }
 
-  rot(num_elem, 0) = deriv_wy - deriv_vz;
-  rot(num_elem, 1) = deriv_uz - deriv_wx;
-  rot(num_elem, 2) = deriv_vx - deriv_uy;
+  rot(num_elem, N*0+n) = deriv_wy - deriv_vz;
+  rot(num_elem, N*1+n) = deriv_uz - deriv_wx;
+  rot(num_elem, N*2+n) = deriv_vx - deriv_uy;
+  }
 }
 
 void calrotord2centelemdim3(DoubleTab& rot, const DoubleTab& val, const Domaine_VDF& domaine_VDF, int nb_elem, const IntTab& face_voisins, const IntTab& elem_faces)
