@@ -45,7 +45,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
 
   int e, f, c, d, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
                               cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N,N), k_l(Nk), d_b_l(N), dv(N, N), ddv_c(4), coeff(N, N), //arguments pour coeff
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N*(N-1)/2), k_l(Nk), d_b_l(N), dv(N, N), ddv_c(4), coeff(N, N), //arguments pour coeff
              vr_l(N,D), scal_ur(N), scal_u(N), pvit_l(N, D), vort_l( D==2 ? 1 :D), grad_l(D,D), scal_grad(D); // Requis pour corrections vort et u_l-u-g
   double fac_f, vl_norm;
   const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, correlation_.valeur());
@@ -115,7 +115,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
                       sigma_l(ind_trav) += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                     }
                 for (k = 0; k < N; k++)
-                  dv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
+                  dv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit_elem, pvit, e, f, k, n, nullptr, nullptr);
               }
             for (n = 0; n < Nk; n++)  k_l(n)   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
           }
@@ -147,9 +147,18 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
 
         // Quid de n_l != 0 ?
         vort_l = 0;
+        n = 0;
+        if (D==2)
+        {
+        for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+            vort_l(0) += vort(e, n) * vf_dir(f, c)/vf(f);
+        }
+        if (D==3)
+        {
         for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
           for (d=0; d<D; d++)
-            vort_l(d) += vort(e) * vf_dir(f, c)/vf(f);
+            vort_l(d) += vort(e, N*d+n) * vf_dir(f, c)/vf(f);
+        }
 
         // We also need to calculate relative velocity at the face
         pvit_l = 0 ;

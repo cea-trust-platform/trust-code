@@ -41,7 +41,7 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
   DoubleTab const *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr;
 
   int e, f, c, i, j, k, l, n, N = inco.line_size(), Np = press.line_size(), cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1);
-  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N, N), dv(N, N), ddv(N, N, 4), d_bulles_l(N), coeff(N, N, 2); //arguments pour coeff
+  DoubleTrav a_l(N), p_l(N), T_l(N), rho_l(N), mu_l(N), sigma_l(N*(N-1)/2), dv(N, N), ddv(N, N, 4), d_bulles_l(N), coeff(N, N, 2); //arguments pour coeff
   double ddv_c[4] = {0., 0., 0., 0. };
   double dh;
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, correlation_.valeur());
@@ -49,6 +49,38 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
   DoubleTab pvit_elem(0, N * dimension);
   domaine.domaine().creer_tableau_elements(pvit_elem);
   ch.get_elem_vector_field(pvit_elem, true);
+
+  // Et pour les methodes span de la classe Saturation
+  const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+  DoubleTrav Sigma_tab(ne_tot,nb_max_sat);
+
+  // remplir les tabs ...
+  for (k = 0; k < N; k++)
+    for (l = k + 1; l < N; l++)
+      {
+        if (milc.has_saturation(k, l))
+          {
+            Saturation_base& z_sat = milc.get_saturation(k, l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            // XXX XXX XXX
+            // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
+            // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
+            assert(press.line_size() == 1);
+            assert(temp.line_size() == N);
+
+            std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span_tot() /* elem reel */}, {"temperature", temp.get_span_tot() } };
+
+            sats_all.insert( { "sigma", Sigma_tab.get_span_tot() });
+
+            z_sat.compute_all_frottement_interfacial(sats_all, nb_max_sat, ind_trav);
+          }
+        else if (milc.has_interface(k, l))
+          {
+            Interface_base& sat = milc.get_interface(k,l);
+            const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+            for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+          }
+      }
 
   /* faces */
   for (f = 0; f < domaine.nb_faces(); f++)
@@ -64,11 +96,11 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
                 T_l(n) += vfd(f, c) / vf(f) * temp(e, n);
                 rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
                 mu_l(n) += vfd(f, c) / vf(f) * mu(!cM * e, n);
-                for (k = 0; k < N; k++)
+                for (k = n+1; k < N; k++)
                   if (milc.has_interface(n, k))
                     {
-                      Interface_base& sat = milc.get_interface(n, k);
-                      sigma_l(n, k) += vfd(f, c) / vf(f) * sat.sigma(temp(e, n), press(e, n * (Np > 1)));
+                      const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                      sigma_l(ind_trav) += vfd(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                     }
                 dh += vfd(f, c) / vf(f) * alpha(e, n) * dh_e(e);
 

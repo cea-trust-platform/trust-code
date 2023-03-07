@@ -73,6 +73,11 @@ void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const Operateur_Grad& Op_Grad_alp = eq_alp.operateur_gradient_inconnue();
   Op_Grad_alp.calculer(alpha,grad_f_a); // compute grad(diss) at faces
 
+  // Vitesse passee aux elems
+  DoubleTab pvit_elem(0, N * dimension);
+  domaine.domaine().creer_tableau_elements(pvit_elem);
+  ch.get_elem_vector_field(pvit_elem, true);
+
   // Et pour les methodes span de la classe Interface pour choper la tension de surface
   const int nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
   DoubleTrav Sigma_tab(ne_tot,nb_max_sat);
@@ -129,7 +134,7 @@ void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
                       in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                     }
                 for (int k = 0; k < N; k++)
-                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
+                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit_elem, pvit, e, f, k, n, nullptr, nullptr);
               }
             for (int n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
           }
