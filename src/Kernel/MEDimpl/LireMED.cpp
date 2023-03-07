@@ -547,7 +547,6 @@ void LireMED::prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2)
             les_elems2(i, j) = conn[index + j];
         }
     }
-  les_elems2+=1;  // +1 cause C++ -> Fortran
 }
 #endif
 
@@ -687,14 +686,14 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
   // Filling face connectivity:
   Cerr << "Detecting " << nfaces << " faces (" << type_face_ << ")." << finl;
   all_faces_bords.resize(nfaces, max_som_face);
-  all_faces_bords = 0;
+  all_faces_bords = -1;
   familles.resize_array(nfaces);
   for (int i = 0; i < nfaces; i++)
     {
       int index = connIndex[i] + 1;
       int nb_som = connIndex[i + 1] - index;
       for (int j = 0; j < nb_som; j++)
-        all_faces_bords(i, j) = conn[index + j] + 1; // +1 cause C++ -> Fortran
+        all_faces_bords(i, j) = conn[index + j] ;
     }
 
   /////

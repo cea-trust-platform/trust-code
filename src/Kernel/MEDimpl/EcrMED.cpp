@@ -324,7 +324,7 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
             {
               for (int node = FacesIndex[face]; node < FacesIndex[face + 1]; node++)
                 {
-                  cell_def[size] = Nodes_glob[node] - 1; // Numerotation Fortran -> C++
+                  cell_def[size] = Nodes_glob[node];
                   size++;
                 }
               if (size < cell_def.size_array())
@@ -340,7 +340,6 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
   else
     {
       // Other cells:
-      les_elems2 -= 1; // Numerotation Fortran -> C++
       for (int i = 0; i < ncells; i++)
         {
           int nvertices = nverts;
@@ -407,7 +406,6 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
                                                                                                        boundary_mesh_dimension);
               assert(boundary_mesh_dimension == mesh_dimension - 1);
               nverts = all_faces_bord[j].dimension(1);
-              all_faces_bord[j] -= 1; // Numerotation Fortran -> C++
               for (int i = 0; i < size; i++)
                 {
                   int nvertices = nverts;

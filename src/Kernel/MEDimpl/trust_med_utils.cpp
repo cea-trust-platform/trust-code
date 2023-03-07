@@ -462,13 +462,13 @@ void renum_conn(IntTab& les_elems2,Nom& type_elem,bool toMED)
     {
       for (int el=0; el<nele; el++)
         for (int n=0; n<ns; n++)
-          les_elems2(el,n)=les_elemsn(el,filter[n])+1;
+          les_elems2(el,n)=les_elemsn(el,filter[n]);
     }
   else
     {
       for (int el=0; el<nele; el++)
         for (int n=0; n<ns; n++)
-          les_elems2(el,filter[n])=les_elemsn(el,n)-1;
+          les_elems2(el,filter[n])=les_elemsn(el,n);
     }
 }
 
