@@ -960,8 +960,9 @@ then
 	    echo "Test $i skipped (TRUST is not built with mpi4py support)"
 	    liste_skipped=$liste_skipped" $i"
 	    i=""
-	fi	
-	# Discard ICoCo test case
+	fi
+	
+	# Discard ICoCo test cases if ICoCo baltik is not built with TRUST
 	ICoCo_exec=$TRUST_ROOT/Outils/ICoCo/ICoCo_src/`basename $exec` && ICoCo_exec=`echo $ICoCo_exec | sed "1,$ s?TRUST_mpi?ICoCo?g"`
 	test_case=`basename $file`
 	if [ ${test_case#ICoCo_} != $test_case ] && [ ! -f $ICoCo_exec ] # Cas test ICoCo
@@ -970,7 +971,16 @@ then
 	    liste_skipped=$liste_skipped" $i"
 	    i=""	
 	fi
-        if [ -f $REP/skipped ]
+	
+	# Discard EOS test cases if EOS library is not linked with TRUST
+	if [ ${test_case#EOS_} != $test_case ] && [ $TRUST_USE_EOS != "1" ] # Cas test EOS
+	then
+	    echo "Test $i skipped (TRUST compiled without EOS)"
+	    liste_skipped=$liste_skipped" $i"
+	    i=""	
+	fi
+	
+  if [ -f $REP/skipped ]
 	then
 	echo "Test $i skipped (file skipped)"
 	liste_skipped=$liste_skipped" $i"
