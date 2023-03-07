@@ -1,5 +1,11 @@
+#!/bin/bash
+
 sed "s/VDF dis/ VEFPreP1B dis/
      s/\/\* tetra_here \*\//Trianguler_H dom/" 2D_VDF.data > 2D_VEF.data
 
 sed "s/VDF dis/ VEFPreP1B dis/
      s/\/\* tetra_here \*\//tetraedriser_homogene_compact dom/" 3D_VDF.data > 3D_VEF.data
+
+sed "s/VDF dis/ VDF dis option_vdf { traitement_gradients oui }/" 2D_VDF.data > 2D_VDF_option.data
+
+sed "s/VDF dis/ VDF dis option_vdf { traitement_gradients oui }/" 3D_VDF.data > 3D_VDF_option.data
