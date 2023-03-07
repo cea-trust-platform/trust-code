@@ -101,14 +101,15 @@ void Op_Dift_Multiphase_VDF_Elem::mettre_a_jour(double temps)
 
 double Op_Dift_Multiphase_VDF_Elem::calculer_dt_stab() const
 {
-  const Domaine_VDF& domaine_VDF = iter->domaine();
   double dt_stab, coef = -1.e10;
+  const Domaine_VDF& domaine_VDF = iter->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
-  const DoubleTab& lambda = alpha_(), &diffu = diffusivite_pour_pas_de_temps().valeurs();
-  const int cL = (lambda.dimension(0) == 1), cD = (diffu.dimension(0) == 1), nb_elem = domaine_VDF.nb_elem(), dim = Objet_U::dimension;
+  const DoubleTab& lambda = alpha_() /* comme mu */, &diffu = diffusivite_pour_pas_de_temps().valeurs() /* comme nu */;
+  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
+  const int cL = (lambda.dimension(0) == 1), cD = (diffu.dimension(0) == 1), dim = Objet_U::dimension;
 
   ArrOfInt numfa(2 * dim);
-  for (int elem = 0; elem < nb_elem; elem++)
+  for (int elem = 0; elem < domaine_VDF.nb_elem(); elem++)
     {
       double moy = 0.;
       for (int i = 0; i < 2 * dim; i++)
@@ -120,14 +121,25 @@ double Op_Dift_Multiphase_VDF_Elem::calculer_dt_stab() const
           moy += 1. / (hd * hd);
         }
 
-      double diff_physique = lambda(!cL * elem, 0), diff_turbulent = d_t_(elem, 0);
+      // TODO : FIXME : peut etre si alp > 1 e-3 pour eviter dt <<<< ??
+      double alpha_diff_physique = alp(elem, 0) * lambda(!cL * elem, 0), alpha_diff_turbulent = alp(elem, 0) * d_t_(elem, 0),
+             diff_physique = lambda(!cL * elem, 0), diffu_ = diffu(!cD * elem, 0);
 
       for (int ncomp = 1; ncomp < lambda.line_size(); ncomp++)
-        diff_physique = std::max(diff_physique, lambda(!cL * elem, ncomp));
-      for (int ncomp = 1; ncomp < d_t_.line_size(); ncomp++)
-        diff_turbulent = std::max(diff_turbulent, d_t_(elem, ncomp));
+        {
+          alpha_diff_physique = std::max(alpha_diff_physique, alp(elem, ncomp) * lambda(!cL * elem, ncomp));
+          diff_physique = std::max(diff_physique, lambda(!cL * elem, ncomp));
+        }
 
-      const double alpha_local = (diff_physique + diff_turbulent) / (lambda(!cL * elem, 0) / diffu(!cD * elem, 0)) * moy;
+      for (int ncomp = 1; ncomp < d_t_.line_size(); ncomp++)
+        alpha_diff_turbulent = std::max(alpha_diff_turbulent, alp(elem, ncomp) * d_t_(elem, ncomp));
+
+      for (int ncomp = 1; ncomp < diffu.line_size(); ncomp++)
+        diffu_ = std::max(diffu_, diffu(!cD * elem, ncomp));
+
+      // si on a associe mu au lieu de nu , on a nu sans diffu_dt
+      // le pas de temps de stab est alpha(nu+nu_t), on calcule a(mu+mu_t)*(nu/mu)=a(mu+mu_t)/rho=a(nu+nu_t) (avantage par rapport a la division par rho ca marche aussi pour alpha et lambda et en VEF
+      const double alpha_local = (alpha_diff_physique + alpha_diff_turbulent) / (diff_physique / diffu_) * moy;
       coef = std::max(coef, alpha_local);
     }
 
