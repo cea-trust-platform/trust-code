@@ -233,7 +233,8 @@ void EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial(MSpanD sats, int n
 
   int i_out = 0;
   const int nb_out = 7; /* 7 variables to fill */
-  EOS_Error_Field ferr((int)P.size());
+  ArrOfInt tmp((int)P.size());
+  EOS_Error_Field ferr(tmp);
   EOS_Fields flds_out(nb_out);
   EOS_Field P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
 

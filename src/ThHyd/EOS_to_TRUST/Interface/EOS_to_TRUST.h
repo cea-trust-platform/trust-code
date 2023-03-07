@@ -21,6 +21,7 @@
 #ifdef HAVE_LEOS
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #include <EOS/API/EOS_Std_Error_Handler.hxx>
 #include <EOS/API/EOS.hxx>
 #pragma GCC diagnostic pop

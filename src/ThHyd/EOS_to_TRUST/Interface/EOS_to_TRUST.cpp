@@ -38,8 +38,9 @@ void EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *c
   const char *const tt_ = is_T ? "T" : "P";
   EOS_Field P_fld(pp_, tt_,  (int)P_ou_T.size(), (double*)P_ou_T.begin());
   EOS_Field z_fld(property_title,property_name, (int)res.size(), (double*)res.begin());
-  EOS_Error_Field ferr((int)P_ou_T.size()) ;
-  fluide->compute(P_fld, z_fld, ferr) ;
+  ArrOfInt tmp((int)P_ou_T.size());
+  EOS_Error_Field ferr(tmp);
+  fluide->compute(P_fld, z_fld, ferr);
 #else
   Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
@@ -51,8 +52,9 @@ void EOS_to_TRUST::compute_eos_field(const SpanD P, const SpanD T, SpanD res,con
 #ifdef HAVE_LEOS
   EOS_Field T_fld("Temperature", "T", (int)T.size(),(double*)T.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
   EOS_Field z_fld(property_title,property_name, (int)res.size(), (double*)res.begin());
-  EOS_Error_Field ferr((int)P.size()) ;
-  fluide->compute(P_fld, T_fld, z_fld, ferr) ;
+  ArrOfInt tmp((int)P.size());
+  EOS_Error_Field ferr(tmp);
+  fluide->compute(P_fld, T_fld, z_fld, ferr);
 #else
   Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;

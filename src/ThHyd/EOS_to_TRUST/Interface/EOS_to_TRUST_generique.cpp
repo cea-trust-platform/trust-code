@@ -237,7 +237,8 @@ void EOS_to_TRUST_generique::eos_get_cp_mu_lambda_beta_pT(const SpanD P, const S
   const int nb_out = 5; /* 5 variables to fill */
   VectorD drho_dt_((int) P.size()), rho_((int) P.size());
   SpanD drho_dt(drho_dt_), rho(rho_);
-  EOS_Error_Field ferr((int) P.size());
+  ArrOfInt tmp((int)P.size());
+  EOS_Error_Field ferr(tmp);
   EOS_Fields flds_out(nb_out);
   int i_out = 0;
 
@@ -291,7 +292,8 @@ void EOS_to_TRUST_generique::eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )dTH.size());
 
   const int nb_out = 6, bnb_out = 2; /* 8 variables to fill */
-  EOS_Error_Field ferr((int)P.size()), bferr((int)bP.size());
+  ArrOfInt tmp((int)P.size()), btmp((int)bP.size());
+  EOS_Error_Field ferr(tmp), bferr(btmp);
   EOS_Fields flds_out(nb_out), bflds_out(bnb_out);
 
   int i_out = 0, bi_out = 0;
