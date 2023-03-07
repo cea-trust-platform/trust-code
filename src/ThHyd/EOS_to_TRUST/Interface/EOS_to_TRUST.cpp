@@ -21,7 +21,7 @@ using namespace NEPTUNE;
 
 EOS_to_TRUST::EOS_to_TRUST()
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   fluide = nullptr;
   handler.set_exit_on_error(ok); // to deactivate use EOS_Std_Error_Handler::disable_feature
   handler.set_throw_on_error(ok);
@@ -33,7 +33,7 @@ EOS_to_TRUST::~EOS_to_TRUST() { /* delete fluide; */ }
 
 void EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *const property_title, const char *const property_name, bool is_T) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   const char *const pp_ = is_T ? "Temperature" : "Pressure";
   const char *const tt_ = is_T ? "T" : "P";
   EOS_Field P_fld(pp_, tt_,  (int)P_ou_T.size(), (double*)P_ou_T.begin());
@@ -49,7 +49,7 @@ void EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *c
 
 void EOS_to_TRUST::compute_eos_field(const SpanD P, const SpanD T, SpanD res,const char *const property_title, const char *const property_name) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   EOS_Field T_fld("Temperature", "T", (int)T.size(),(double*)T.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
   EOS_Field z_fld(property_title,property_name, (int)res.size(), (double*)res.begin());
   ArrOfInt tmp((int)P.size());
@@ -63,7 +63,7 @@ void EOS_to_TRUST::compute_eos_field(const SpanD P, const SpanD T, SpanD res,con
 
 void EOS_to_TRUST::verify_model_fluid(Motcle& model_name, Motcle& fluid_name)
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   if (!(std::find(supp.AVAIL_MODELS.begin(), supp.AVAIL_MODELS.end(), model_name) != supp.AVAIL_MODELS.end()))
     {
       Cerr << "You define the : < " << model_name << " model which is not yet tested !" << finl;

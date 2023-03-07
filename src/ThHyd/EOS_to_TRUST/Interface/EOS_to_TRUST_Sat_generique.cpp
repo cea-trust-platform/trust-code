@@ -24,7 +24,7 @@ using namespace NEPTUNE ;
 
 void EOS_to_TRUST_Sat_generique::set_EOS_Sat_generique(const char *const model_name, const char *const fluid_name)
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   fluide = new NEPTUNE::EOS(model_name, fluid_name);
   assert(fluide->fluid_name() == fluid_name);
   fluide->set_error_handler(handler); // Set error handler
@@ -36,7 +36,7 @@ void EOS_to_TRUST_Sat_generique::set_EOS_Sat_generique(const char *const model_n
 
 void EOS_to_TRUST_Sat_generique::eos_get_T_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert (ncomp * (int)P.size() == (int)res.size());
   if (ncomp == 1) compute_eos_field(P, res, "tsat", "T_sat");
   else /* attention stride */
@@ -55,7 +55,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_T_sat_p(const SpanD P, SpanD res, int n
 
 void EOS_to_TRUST_Sat_generique::eos_get_d_T_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert (ncomp * (int)P.size() == (int)res.size());
   if (ncomp == 1) compute_eos_field(P, res, "dtsatdp", "d_T_sat_d_p");
   else /* attention stride */
@@ -74,7 +74,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_d_T_sat_d_p_p(const SpanD P, SpanD res,
 
 void EOS_to_TRUST_Sat_generique::eos_get_p_sat_T(const SpanD T, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert ((int)T.size() == (int)res.size());
   compute_eos_field(T, res, "psat", "P_sat",true /* is_T */);
 #else
@@ -85,7 +85,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_p_sat_T(const SpanD T, SpanD res, int n
 
 void EOS_to_TRUST_Sat_generique::eos_get_d_p_sat_d_T_T(const SpanD T, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   Cerr << "EOS_to_TRUST_Sat_generique::eos_get_d_p_sat_d_T_T not coded ! Call the 911 !" << finl;
   Process::exit();
 #else
@@ -96,7 +96,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_d_p_sat_d_T_T(const SpanD T, SpanD res,
 
 void EOS_to_TRUST_Sat_generique::eos_get_lvap_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   VectorD arr1_((int)P.size()), arr2_((int)P.size());
   eos_get_h_v_sat_p(P,SpanD(arr1_),1,0);
   eos_get_h_l_sat_p(P,SpanD(arr2_),1,0);
@@ -109,7 +109,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_lvap_p(const SpanD P, SpanD res, int nc
 
 void EOS_to_TRUST_Sat_generique::eos_get_d_lvap_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   VectorD arr1_((int)P.size()), arr2_((int)P.size());
   eos_get_d_h_v_sat_d_p_p(P,SpanD(arr1_),1,0);
   eos_get_d_h_l_sat_d_p_p(P,SpanD(arr2_),1,0);
@@ -122,7 +122,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_d_lvap_d_p_p(const SpanD P, SpanD res, 
 
 void EOS_to_TRUST_Sat_generique::eos_get_h_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert (ncomp * (int)P.size() == (int)res.size());
   if (ncomp == 1) compute_eos_field(P, res, "hlsat", "h_l_sat");
   else /* attention stride */
@@ -141,7 +141,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_h_l_sat_p(const SpanD P, SpanD res, int
 
 void EOS_to_TRUST_Sat_generique::eos_get_d_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert (ncomp * (int)P.size() == (int)res.size());
   if (ncomp == 1) compute_eos_field(P, res, "dhlsatdp", "d_h_l_sat_d_p");
   else /* attention stride */
@@ -160,7 +160,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_d_h_l_sat_d_p_p(const SpanD P, SpanD re
 
 void EOS_to_TRUST_Sat_generique::eos_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert (ncomp * (int)P.size() == (int)res.size());
   if (ncomp == 1) compute_eos_field(P, res, "hvsat", "h_v_sat");
   else /* attention stride */
@@ -179,7 +179,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_h_v_sat_p(const SpanD P, SpanD res, int
 
 void EOS_to_TRUST_Sat_generique::eos_get_d_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert (ncomp * (int)P.size() == (int)res.size());
   if (ncomp == 1) compute_eos_field(P, res, "dhvsatdp", "d_h_v_sat_d_p");
   else /* attention stride */
@@ -198,7 +198,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_d_h_v_sat_d_p_p(const SpanD P, SpanD re
 
 void EOS_to_TRUST_Sat_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "sigma", "sigma");
   else /* attention stride */
@@ -217,7 +217,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, 
 
 void EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial(MSpanD sats, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )sats.size() == 8);
 
   const SpanD P = sats.at("pressure");

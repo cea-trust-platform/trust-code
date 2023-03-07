@@ -16,9 +16,9 @@
 #ifndef EOS_to_TRUST_included
 #define EOS_to_TRUST_included
 
-#define HAVE_LEOS 1
+#include <eos++.h>
 
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
@@ -81,7 +81,7 @@ protected :
   void compute_eos_field(const SpanD P, SpanD res, const char *const pt, const char *const pn, bool is_T = false) const;
   void compute_eos_field(const SpanD P, const SpanD T, SpanD res, const char *const pt, const char *const pn) const;
 
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   NEPTUNE::EOS_Std_Error_Handler handler ;
   NEPTUNE::EOS *fluide;
 #endif

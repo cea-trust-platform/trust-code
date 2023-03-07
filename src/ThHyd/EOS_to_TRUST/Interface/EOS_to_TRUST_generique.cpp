@@ -25,7 +25,7 @@ using namespace NEPTUNE ;
 
 void EOS_to_TRUST_generique::set_EOS_generique(const char *const model_name, const char *const fluid_name)
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   fluide = new NEPTUNE::EOS(model_name, fluid_name);
   assert (fluide->fluid_name() == fluid_name);
   fluide->set_error_handler(handler); // Set error handler
@@ -37,7 +37,7 @@ void EOS_to_TRUST_generique::set_EOS_generique(const char *const model_name, con
 
 void EOS_to_TRUST_generique::eos_get_rho_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "rho", "rho");
   else /* attention stride */
@@ -55,7 +55,7 @@ void EOS_to_TRUST_generique::eos_get_rho_pT(const SpanD P, const SpanD T, SpanD 
 
 void EOS_to_TRUST_generique::eos_get_rho_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "drhodp", "d_rho_d_p_T");
   else /* attention stride */
@@ -73,7 +73,7 @@ void EOS_to_TRUST_generique::eos_get_rho_dp_pT(const SpanD P, const SpanD T, Spa
 
 void EOS_to_TRUST_generique::eos_get_rho_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "drhodT", "d_rho_d_T_p");
   else /* attention stride */
@@ -91,7 +91,7 @@ void EOS_to_TRUST_generique::eos_get_rho_dT_pT(const SpanD P, const SpanD T, Spa
 
 void EOS_to_TRUST_generique::eos_get_h_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "enthalpie", "h");
   else /* attention stride */
@@ -109,7 +109,7 @@ void EOS_to_TRUST_generique::eos_get_h_pT(const SpanD P, const SpanD T, SpanD R,
 
 void EOS_to_TRUST_generique::eos_get_h_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "dhdp", "d_h_d_p_T");
   else /* attention stride */
@@ -127,7 +127,7 @@ void EOS_to_TRUST_generique::eos_get_h_dp_pT(const SpanD P, const SpanD T, SpanD
 
 void EOS_to_TRUST_generique::eos_get_h_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "dhdT", "d_h_d_T_p");
   else /* attention stride */
@@ -145,7 +145,7 @@ void EOS_to_TRUST_generique::eos_get_h_dT_pT(const SpanD P, const SpanD T, SpanD
 
 void EOS_to_TRUST_generique::eos_get_cp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "cp", "cp");
   else /* attention stride */
@@ -163,7 +163,7 @@ void EOS_to_TRUST_generique::eos_get_cp_pT(const SpanD P, const SpanD T, SpanD R
 
 void EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "beta", "beta");
   else
@@ -188,7 +188,7 @@ void EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD
 
 void EOS_to_TRUST_generique::eos_get_mu_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "mu", "mu");
   else /* attention stride */
@@ -206,7 +206,7 @@ void EOS_to_TRUST_generique::eos_get_mu_pT(const SpanD P, const SpanD T, SpanD R
 
 void EOS_to_TRUST_generique::eos_get_lambda_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
   if (ncomp == 1) compute_eos_field(P, T, R, "lambda", "lambda");
   else /* attention stride */
@@ -224,7 +224,7 @@ void EOS_to_TRUST_generique::eos_get_lambda_pT(const SpanD P, const SpanD T, Spa
 
 void EOS_to_TRUST_generique::eos_get_cp_mu_lambda_beta_pT(const SpanD P, const SpanD T, MSpanD prop, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )prop.size() == 4);
 
   // BEEM
@@ -273,7 +273,7 @@ void EOS_to_TRUST_generique::eos_get_cp_mu_lambda_beta_pT(const SpanD P, const S
 
 void EOS_to_TRUST_generique::eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp, int id) const
 {
-#ifdef HAVE_LEOS
+#ifdef HAS_EOS
   assert((int )inter.size() == 8 && (int )bord.size() == 4);
 
   const SpanD T = inter.at("temperature"), P = inter.at("pressure"), bT = bord.at("temperature"), bP = bord.at("pressure");
