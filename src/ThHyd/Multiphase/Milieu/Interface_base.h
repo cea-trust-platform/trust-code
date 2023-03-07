@@ -34,7 +34,7 @@ public:
 
 protected:
   virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
-  mutable double sigma__ = -1.;
+  double sigma__ = -1.;
 };
 
 #endif /* Interface_base_included */
