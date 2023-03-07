@@ -5,7 +5,8 @@ INSTALL_DIR=$(TRUST_ROOT)/lib/src/LIBLATAFILTER
 OPT=_opt
 include $(TRUST_ENV)/make.$(TRUST_ARCH_CC)$(OPT)
 
-all:
+all: src/CMakeLists.txt makefile
+	rm -rf ../../../lib/src/LIBLATAFILTER/*
 	cmake -S $(SRC_DIR) -B $(BUILD_DIR) -DCMAKE_CXX_FLAGS="$(CppFlags)" -DTRUST_DEFINES="$(Defines)" -DCMAKE_C_COMPILER=$(TRUST_cc) -DCMAKE_CXX_COMPILER=$(TRUST_CC)
 	$(TRUST_MAKE) -C $(BUILD_DIR) install
 

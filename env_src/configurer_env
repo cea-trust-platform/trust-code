@@ -551,6 +551,9 @@ then
       elif [ "${HOST#summer}" != $HOST ]
       then
         TRUST_NB_PROCS=1
+      elif [ "${HOST#uruk}" != $HOST ]
+      then
+        TRUST_NB_PROCS=40
       fi
    elif [ `uname -s` = "Darwin" ]; then
      TRUST_NB_PROCS=$(sysctl -n hw.perflevel0.logicalcpu)
