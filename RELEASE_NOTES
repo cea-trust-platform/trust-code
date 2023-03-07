@@ -1,6 +1,12 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+07/03/23 (TRUST) New feature  : Add MUSIG fields/medium + validation (from SCONE baltik) used with Pb_Multiphase
+07/03/23 (TRUST) New feature  : Add void_drift multiphase models + validation (both in VDF and PolyMAC_P0) 
+07/03/23 (TRUST) Validation   : Add series of jupyter notebooks to validate Pb_Multiphase and compare VDF/PolyMAC_P0 results
+07/03/23 (TRUST) New feature  : It is possible to perform axi-symetrical simulations with Pb_Multiphase in VDF
+07/03/23 (TRUST) New feature  : New Option_VDF added "traitement_gradient" to compute correctly the velocity gradient at the corners. Can use also all_options to activate all Option_VDF options
+07/03/23 (TRUST) New feature  : Pb_Multiphase is compatable with the VDF discretization (CMFD baltik supports too the VDF discretization) 
 07/02/23 (TRUST) Fix          : It was not possible to resume the field k_eps_realisable
 02/02/23 (TRUST) Major Change : Domain and Zone are now merged into a single concept: Domaine. All former keywords remain supported (Sous_Zone, Create_domain_from_sous_zone, etc...), but internally the code now only work with Domaine.
 27/01/23 (TRUST) Portability  : Adastra (CINES) cluster is supported
