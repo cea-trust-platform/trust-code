@@ -509,7 +509,7 @@ void PolyMAC_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& z
   Cerr << "Discretisation de y plus" << finl; // Utilise comme modele distance paroi globale
   Noms noms(1), unites(1);
   noms[0] = Nom("y_plus");
-  unites[0] = Nom("m");
+  unites[0] = Nom("adimensionnel");
   discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms , unites, 1, 0, ch);
   DoubleTab& tab_y_p = ch->valeurs();
   for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)

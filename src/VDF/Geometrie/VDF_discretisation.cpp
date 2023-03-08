@@ -32,6 +32,7 @@
 #include <Domaine_Cl_VDF.h>
 #include <Navier_Stokes_std.h>
 #include <Domaine_VDF.h>
+#include <Probleme_base.h>
 
 Implemente_instanciable(VDF_discretisation,"VDF",Discret_Thyd);
 
@@ -362,25 +363,25 @@ void VDF_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
   ch_grad_u.fixer_nb_comp(dimension*dimension*N);
 
   for (int n=0; n<N; n++)
-  if (dimension == 2)
-    {
-      ch_grad_u.fixer_nom_compo(N*0+n,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(N*1+n,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(N*2+n,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(N*3+n,"dVdY"); // dv/dy
-    }
-  else
-    {
-      ch_grad_u.fixer_nom_compo(N*0+n,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(N*1+n,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(N*2+n,"dUdZ"); // du/dz
-      ch_grad_u.fixer_nom_compo(N*3+n,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(N*4+n,"dVdY"); // dv/dy
-      ch_grad_u.fixer_nom_compo(N*5+n,"dVdZ"); // dv/dz
-      ch_grad_u.fixer_nom_compo(N*6+n,"dWdX"); // dw/dx
-      ch_grad_u.fixer_nom_compo(N*7+n,"dWdY"); // dw/dy
-      ch_grad_u.fixer_nom_compo(N*8+n,"dWdZ"); // dw/dz
-    }
+    if (dimension == 2)
+      {
+        ch_grad_u.fixer_nom_compo(N*0+n,"dUdX"); // du/dx
+        ch_grad_u.fixer_nom_compo(N*1+n,"dUdY"); // du/dy
+        ch_grad_u.fixer_nom_compo(N*2+n,"dVdX"); // dv/dx
+        ch_grad_u.fixer_nom_compo(N*3+n,"dVdY"); // dv/dy
+      }
+    else
+      {
+        ch_grad_u.fixer_nom_compo(N*0+n,"dUdX"); // du/dx
+        ch_grad_u.fixer_nom_compo(N*1+n,"dUdY"); // du/dy
+        ch_grad_u.fixer_nom_compo(N*2+n,"dUdZ"); // du/dz
+        ch_grad_u.fixer_nom_compo(N*3+n,"dVdX"); // dv/dx
+        ch_grad_u.fixer_nom_compo(N*4+n,"dVdY"); // dv/dy
+        ch_grad_u.fixer_nom_compo(N*5+n,"dVdZ"); // dv/dz
+        ch_grad_u.fixer_nom_compo(N*6+n,"dWdX"); // dw/dx
+        ch_grad_u.fixer_nom_compo(N*7+n,"dWdY"); // dw/dy
+        ch_grad_u.fixer_nom_compo(N*8+n,"dWdZ"); // dw/dz
+      }
   ch_grad_u.fixer_nature_du_champ(vectoriel);
   ch_grad_u.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
   ch_grad_u.fixer_unite("s-1");
@@ -446,16 +447,30 @@ void VDF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,c
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF,ch_vitesse.valeur());
   const Domaine_VDF& domaine_vdf=ref_cast(Domaine_VDF, z.valeur());
   const Domaine_Cl_VDF& domaine_cl_vdf=ref_cast(Domaine_Cl_VDF, zcl.valeur());
-  ch.typer("Y_plus_Champ_Face");
-  Y_plus_Champ_Face& ch_y_plus=ref_cast(Y_plus_Champ_Face,ch.valeur());
-  ch_y_plus.associer_domaine_dis_base(domaine_vdf);
-  ch_y_plus.associer_domaine_Cl_dis_base(domaine_cl_vdf);
-  ch_y_plus.associer_champ(vit);
-  ch_y_plus.nommer("Y_plus");
-  ch_y_plus.fixer_nb_comp(1);
-  ch_y_plus.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
-  ch_y_plus.fixer_unite("adimensionnel");
-  ch_y_plus.changer_temps(ch_vitesse.temps());
+  if (domaine_cl_vdf.equation().probleme().que_suis_je() == "Pb_Multiphase")
+    {
+      Cerr << "Discretisation de y plus" << finl; // Utilise comme modele distance paroi globale
+      Noms noms(1), unites(1);
+      noms[0] = Nom("Y_plus");
+      unites[0] = Nom("adimensionnel");
+      discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms , unites, 1, 0, ch);
+      DoubleTab& tab_y_p = ch->valeurs();
+      for (int i = 0 ; i < tab_y_p.dimension_tot(0) ; i++)
+        for (int n = 0 ; n < tab_y_p.dimension_tot(1) ; n++) tab_y_p(i,n) = -1.;
+    }
+  else
+    {
+      ch.typer("Y_plus_Champ_Face");
+      Y_plus_Champ_Face& ch_y_plus=ref_cast(Y_plus_Champ_Face,ch.valeur());
+      ch_y_plus.associer_domaine_dis_base(domaine_vdf);
+      ch_y_plus.associer_domaine_Cl_dis_base(domaine_cl_vdf);
+      ch_y_plus.associer_champ(vit);
+      ch_y_plus.nommer("Y_plus");
+      ch_y_plus.fixer_nb_comp(1);
+      ch_y_plus.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
+      ch_y_plus.fixer_unite("adimensionnel");
+      ch_y_plus.changer_temps(ch_vitesse.temps());
+    }
 }
 
 /* void VDF_discretisation::t_paroi(const Domaine_dis& z,const Domaine_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const
@@ -553,13 +568,13 @@ void VDF_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
       if (dimension == 2)
         ch_W.fixer_nb_comp(N);
       else
-      for (int n=0; n<N; n++)
-        {
-          ch_W.fixer_nb_comp(dimension*N);
-          ch_W.fixer_nom_compo(N*0+n, "vorticiteX");
-          ch_W.fixer_nom_compo(N*1+n, "vorticiteY");
-          ch_W.fixer_nom_compo(N*2+n, "vorticiteZ");
-        }
+        for (int n=0; n<N; n++)
+          {
+            ch_W.fixer_nb_comp(dimension*N);
+            ch_W.fixer_nom_compo(N*0+n, "vorticiteX");
+            ch_W.fixer_nom_compo(N*1+n, "vorticiteY");
+            ch_W.fixer_nom_compo(N*2+n, "vorticiteZ");
+          }
       ch_W.fixer_nb_valeurs_nodales(domaine_VDF.nb_elem());
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(sch.temps_courant());
