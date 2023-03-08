@@ -342,6 +342,93 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
       grp.all_to_all(src.addr(), dest.addr(), sz);
     }
 }
+template <typename T>
+void envoyer_all_gather_(const TRUSTTab<T>& src, TRUSTTab<T>& dest)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+
+  if (dest.addr() == src.addr())
+    {
+      assert(src.dimension(0) == grp.nproc());
+      assert(dest.dimension(0) == grp.nproc());
+      const int sz = src.size() / grp.nproc() * (int)sizeof(T);
+      TRUSTTab<T> tmp(src);
+      grp.all_gather(src.addr(), tmp.addr(), sz);
+      dest = tmp;
+    }
+  else
+    {
+      const int sz = src.size() * (int)sizeof(T);
+      assert( dest.size_array() == grp.nproc()*src.size_array());
+      grp.all_gather(src.addr(), dest.addr(), sz);
+    }
+}
+
+template <typename T>
+void envoyer_gather_(const TRUSTTab<T>& src, TRUSTTab<T>& dest, int root)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+
+  if (dest.addr() == src.addr())
+    {
+      assert(src.dimension(0) == grp.nproc());
+      assert(dest.dimension(0) == grp.nproc());
+      const int sz = src.size() / grp.nproc() * (int)sizeof(T);
+      TRUSTTab<T> tmp(src);
+      grp.gather(src.addr(), tmp.addr(), sz, root);
+      dest = tmp;
+    }
+  else
+    {
+      const int sz = src.size() * (int)sizeof(T);
+      assert( dest.size_array() == grp.nproc()*src.size_array());
+      grp.gather(src.addr(), dest.addr(), sz, root);
+    }
+}
+
+void envoyer_gather(const DoubleTab& src, DoubleTab& dest, int root)
+{
+  envoyer_gather_(src,dest,root);
+}
+
+void envoyer_gather(const IntTab& src, IntTab& dest, int root)
+{
+  envoyer_gather_(src,dest,root);
+}
+
+void envoyer_all_gather(const DoubleTab& src, DoubleTab& dest)
+{
+  envoyer_all_gather_(src,dest);
+}
+
+void envoyer_all_gather(const IntTab& src, IntTab& dest)
+{
+  envoyer_all_gather_(src,dest);
+}
+
+void envoyer_all_gatherv(const DoubleTab& src, DoubleTab& dest, const IntTab& recv_size)
+{
+  const Comm_Group& grp = PE_Groups::current_group();
+
+  assert(dest.size_array()==local_somme_vect(recv_size));
+  assert(src.size_array()==recv_size[grp.me()]);
+
+  const int nbprocs = grp.nproc();
+
+  IntTab sz(nbprocs);
+  for (int p=0; p<nbprocs; p++)
+    sz[p] = recv_size[p] * (int)sizeof(double);
+
+  int sz0 =  src.size() * (int)sizeof(double);
+
+  IntTab displs(nbprocs);
+  displs[0] = 0;
+  for (int p=1; p<nbprocs; p++)
+    displs[p] = displs[p-1]+sz[p-1];
+
+  grp.all_gatherv(src.addr(), dest.addr(), sz0 , sz.addr(),displs.addr());
+}
+
 
 /*! @brief renvoie le drapeau Comm_Group::check_enabled().
  *

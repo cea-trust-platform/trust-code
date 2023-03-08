@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -497,6 +497,37 @@ void Comm_Group_MPI::all_to_all(const void *src_buffer, void *dest_buffer, int d
   statistiques().end_count(mpi_alltoall_counter_, data_size);
 #endif
 }
+
+void Comm_Group_MPI::gather(const void *src_buffer, void *dest_buffer, int data_size, int root) const
+{
+#ifdef MPI_
+  statistiques().begin_count(mpi_gather_counter_);
+  void * ptr = (void *) src_buffer; // Cast a cause de l'interface de MPI_Alltoall
+  mpi_error(MPI_Gather(ptr, data_size, MPI_CHAR, dest_buffer, data_size, MPI_CHAR, root, mpi_comm_));
+  statistiques().end_count(mpi_gather_counter_, data_size);
+#endif
+}
+
+void Comm_Group_MPI::all_gather(const void *src_buffer, void *dest_buffer, int data_size) const
+{
+#ifdef MPI_
+  statistiques().begin_count(mpi_allgather_counter_);
+  void * ptr = (void *) src_buffer; // Cast a cause de l'interface de MPI_Alltoall
+  mpi_error(MPI_Allgather(ptr, data_size, MPI_CHAR, dest_buffer, data_size, MPI_CHAR, mpi_comm_));
+  statistiques().end_count(mpi_allgather_counter_, data_size);
+#endif
+}
+
+void Comm_Group_MPI::all_gatherv(const void *src_buffer, void *dest_buffer, int send_size, const int* recv_size, const int* displs) const
+{
+#ifdef MPI_
+  statistiques().begin_count(mpi_allgather_counter_);
+  void * ptr = (void *) src_buffer; // Cast a cause de l'interface de MPI_Alltoall
+  mpi_error(MPI_Allgatherv(ptr, send_size, MPI_CHAR, dest_buffer, recv_size, displs, MPI_CHAR, mpi_comm_));
+  statistiques().end_count(mpi_allgather_counter_, send_size);
+#endif
+}
+
 
 #ifdef MPI_
 

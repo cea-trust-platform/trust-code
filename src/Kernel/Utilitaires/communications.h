@@ -42,6 +42,11 @@ int envoyer_all_to_all(const TRUST_Vector<TRUSTTab<double>>& src, TRUST_Vector<T
 int envoyer_all_to_all(const TRUST_Vector<TRUSTArray<int>>& src, TRUST_Vector<TRUSTArray<int>>& dest);
 int envoyer_all_to_all(std::vector<long long>& src, std::vector<long long>& dest);
 void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest);
+void envoyer_all_gather(const DoubleTab& src, DoubleTab& dest);
+void envoyer_gather(const IntTab& src, IntTab& dest, int root);
+void envoyer_gather(const DoubleTab& src, DoubleTab& dest, int root);
+void envoyer_all_gather(const IntTab& src, IntTab& dest);
+void envoyer_all_gatherv(const DoubleTab& src, DoubleTab& dest, const IntTab& recv_size);
 
 int reverse_send_recv_pe_list(const ArrOfInt& src_list, ArrOfInt& dest_list);
 int comm_check_enabled();

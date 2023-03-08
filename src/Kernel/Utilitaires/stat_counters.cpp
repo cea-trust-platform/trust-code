@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,8 @@ Stat_Counter_Id mpi_send_counter_;
 Stat_Counter_Id mpi_recv_counter_;
 Stat_Counter_Id mpi_bcast_counter_;
 Stat_Counter_Id mpi_alltoall_counter_;
+Stat_Counter_Id mpi_allgather_counter_;
+Stat_Counter_Id mpi_gather_counter_;
 Stat_Counter_Id mpi_partialsum_counter_;
 Stat_Counter_Id mpi_sendrecv_io_counter_;
 Stat_Counter_Id mpi_sumdouble_counter_;
@@ -163,6 +165,8 @@ void declare_stat_counters()
   mpi_recv_counter_      = statistiques().new_counter(2, "MPI_recv",      "MPI_sendrecv", 1);
   mpi_bcast_counter_     = statistiques().new_counter(2, "MPI_broadcast", "MPI_sendrecv", 1);
   mpi_alltoall_counter_  = statistiques().new_counter(2, "MPI_alltoall",  "MPI_sendrecv", 1);
+  mpi_allgather_counter_ = statistiques().new_counter(2, "MPI_allgather", "MPI_sendrecv", 1);
+  mpi_gather_counter_    = statistiques().new_counter(2, "MPI_gather", "MPI_sendrecv", 1);
   mpi_partialsum_counter_= statistiques().new_counter(2, "MPI_partialsum","MPI_allreduce", 1);
   mpi_sumdouble_counter_ = statistiques().new_counter(2, "MPI_sumdouble", "MPI_allreduce", 1);
   mpi_mindouble_counter_ = statistiques().new_counter(2, "MPI_mindouble", "MPI_allreduce", 1);

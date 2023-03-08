@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,6 +22,8 @@ extern Stat_Counter_Id mpi_send_counter_;
 extern Stat_Counter_Id mpi_recv_counter_;
 extern Stat_Counter_Id mpi_bcast_counter_;
 extern Stat_Counter_Id mpi_alltoall_counter_;
+extern Stat_Counter_Id mpi_allgather_counter_;
+extern Stat_Counter_Id mpi_gather_counter_;
 extern Stat_Counter_Id mpi_partialsum_counter_;
 extern Stat_Counter_Id mpi_sumdouble_counter_;
 extern Stat_Counter_Id mpi_mindouble_counter_;

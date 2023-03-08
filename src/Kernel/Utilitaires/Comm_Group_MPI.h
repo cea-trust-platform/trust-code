@@ -62,6 +62,9 @@ public:
   void recv(int pe, void *buffer, int size, int tag) const override; // Reception bloquante
   void broadcast(void *buffer, int size, int pe_source) const override;
   void all_to_all(const void *src_buffer, void *dest_buffer, int data_size) const override;
+  void all_gather(const void *src_buffer, void *dest_buffer, int data_size) const override;
+  void gather(const void *src_buffer, void *dest_buffer, int data_size, int root) const override;
+  void all_gatherv(const void *src_buffer, void *dest_buffer, int send_size, const int* recv_size, const int* displs) const override;
 
 #ifdef MPI_
   void init_group_trio();
