@@ -448,111 +448,86 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
   // On commence par les bords
   int ndeb = domaine_VDF.premiere_arete_bord(), nfin = ndeb + domaine_VDF.nb_aretes_bord();
   for (int num_arete = ndeb; num_arete < nfin; num_arete++)
-  for (int n=0; n<N; n++)
-    {
-      const int n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
+    for (int n=0; n<N; n++)
+      {
+        const int n_type = domaine_Cl_VDF.type_arete_bord(num_arete - ndeb);
 
-      if (n_type == 4) // arete de type periodicite
-        {
-          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
-          const int i = orientation(num0), j = orientation(num2);
+        if (n_type == 4) // arete de type periodicite
+          {
+            const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+            const int i = orientation(num0), j = orientation(num2);
 
-          const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
-          const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
+            const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+            const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
 
-          element(0) = face_voisins(num0, 0);
-          element(1) = face_voisins(num0, 1);
-          element(2) = face_voisins(num1, 0);
-          element(3) = face_voisins(num1, 1);
+            element(0) = face_voisins(num0, 0);
+            element(1) = face_voisins(num0, 1);
+            element(2) = face_voisins(num1, 0);
+            element(3) = face_voisins(num1, 1);
 
-          for (int k = 0; k < 4; k++)
-            {
-              // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
-              // 2) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
-              gij(element(k), i, j, n) += temp1 * 0.5 * 0.25;
-              gij(element(k), j, i, n) += temp2 * 0.5 * 0.25;
-            }
-        }
-      else /* les autres aretes bords ... */
-        {
-          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
-          const int i = orientation(num0), j = orientation(num2);
+            for (int k = 0; k < 4; k++)
+              {
+                // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
+                // 2) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
+                gij(element(k), i, j, n) += temp1 * 0.5 * 0.25;
+                gij(element(k), j, i, n) += temp2 * 0.5 * 0.25;
+              }
+          }
+        else /* les autres aretes bords ... */
+          {
+            const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+            const int i = orientation(num0), j = orientation(num2);
 
-          const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
-          const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, N*j+n) + vit.val_imp_face_bord_private(num1, N*j+n)); // vitesse tangentielle
+            const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+            const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, N*j+n) + vit.val_imp_face_bord_private(num1, N*j+n)); // vitesse tangentielle
 
-          //Dans cette partie, on conserve le codage de Hyd_SGE_Wale_VDF (num1 et non num2) pour calculer la distance entre le centre de la maille et le bord.
-          const double temp2 = -signe * (vitesse(num2, n) - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+            //Dans cette partie, on conserve le codage de Hyd_SGE_Wale_VDF (num1 et non num2) pour calculer la distance entre le centre de la maille et le bord.
+            const double temp2 = -signe * (vitesse(num2, n) - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
-          element(0) = face_voisins(num2, 0);
-          element(1) = face_voisins(num2, 1);
+            element(0) = face_voisins(num2, 0);
+            element(1) = face_voisins(num2, 1);
 
-          for (int k = 0; k < 2; k++)
-            {
-              // 1) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
-              gij(element(k), i, j, n) += temp1 * 0.25;
-              gij(element(k), j, i, n) += temp2 * 0.25;
-            }
-        }
-    }
+            for (int k = 0; k < 2; k++)
+              {
+                // 1) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
+                gij(element(k), i, j, n) += temp1 * 0.25;
+                gij(element(k), j, i, n) += temp2 * 0.25;
+              }
+          }
+      }
 
   // On continue avec les coins
   ndeb = domaine_VDF.premiere_arete_coin(), nfin = ndeb + domaine_VDF.nb_aretes_coin();
 
   for (int num_arete = ndeb; num_arete < nfin; num_arete++)
-  for (int n=0; n<N; n++)
-    {
-      const int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
+    for (int n=0; n<N; n++)
+      {
+        const int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
 
-      if (n_type == 0) // arete de type perio-perio
-        {
-          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
-          const int i = orientation(num0), j = orientation(num2);
+        if (n_type == 0) // arete de type perio-perio
+          {
+            const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+            const int i = orientation(num0), j = orientation(num2);
 
-          const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
-          const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
+            const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+            const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
 
-          element(0) = face_voisins(num0, 0);
-          element(1) = face_voisins(num0, 1);
-          element(2) = face_voisins(num1, 0);
-          element(3) = face_voisins(num1, 1);
+            element(0) = face_voisins(num0, 0);
+            element(1) = face_voisins(num0, 1);
+            element(2) = face_voisins(num1, 0);
+            element(3) = face_voisins(num1, 1);
 
-          for (int k = 0; k < 4; k++)
-            {
-              // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
-              // 2) 0.5 : idem ci-dessus, car cette fois-ci on a un coin perio-perio.
-              // 3) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
-              gij(element(k), i, j, n) += temp1 * 0.5 * 0.5 * 0.25;
-              gij(element(k), j, i, n) += temp2 * 0.5 * 0.5 * 0.25;
-            }
-        }
+            for (int k = 0; k < 4; k++)
+              {
+                // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
+                // 2) 0.5 : idem ci-dessus, car cette fois-ci on a un coin perio-perio.
+                // 3) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
+                gij(element(k), i, j, n) += temp1 * 0.5 * 0.5 * 0.25;
+                gij(element(k), j, i, n) += temp2 * 0.5 * 0.5 * 0.25;
+              }
+          }
 
-      if (n_type == 1) // arete de type perio-paroi
-        {
-          const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
-          const int i = orientation(num1), j = orientation(num2);
-
-          const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
-          const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, N*j+n) + vit.val_imp_face_bord_private(num1, N*j+n)); // vitesse tangentielle
-
-          const double temp2 = -signe * (vitesse(num2, n) - vit_imp) / domaine_VDF.dist_norm_bord(num1);
-
-          element(0) = face_voisins(num2, 0);
-          element(1) = face_voisins(num2, 1);
-
-          for (int k = 0; k < 2; k++)
-            {
-              // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
-              // 2) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
-              gij(element(k), i, j, n) += temp1 * 0.5 * 0.25;
-              gij(element(k), j, i, n) += temp2 * 0.5 * 0.25;
-            }
-        }
-
-      // XXX : Elie Saikali : j'ajoute ca pour les coins juste si option_vdf active pour le moment ...
-
-      if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
-        if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
+        if (n_type == 1) // arete de type perio-paroi
           {
             const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
             const int i = orientation(num1), j = orientation(num2);
@@ -566,66 +541,91 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
             element(1) = face_voisins(num2, 1);
 
             for (int k = 0; k < 2; k++)
-              if (element(k) != -1)
-                {
-                  gij(element(k), i, j, n) += temp1 * 0.25;
-                  gij(element(k), j, i, n) += temp2 * 0.25;
-                }
+              {
+                // 1) 0.5 : pour la periodicite, car on distribuera deux fois sur les elements qui "touchent" cette arete puisqu'elle existe en double.
+                // 2) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
+                gij(element(k), i, j, n) += temp1 * 0.5 * 0.25;
+                gij(element(k), j, i, n) += temp2 * 0.5 * 0.25;
+              }
           }
-    }
+
+        // XXX : Elie Saikali : j'ajoute ca pour les coins juste si option_vdf active pour le moment ...
+
+        if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
+          if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
+            {
+              const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+              const int i = orientation(num1), j = orientation(num2);
+
+              const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+              const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, N*j+n) + vit.val_imp_face_bord_private(num1, N*j+n)); // vitesse tangentielle
+
+              const double temp2 = -signe * (vitesse(num2, n) - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+
+              element(0) = face_voisins(num2, 0);
+              element(1) = face_voisins(num2, 1);
+
+              for (int k = 0; k < 2; k++)
+                if (element(k) != -1)
+                  {
+                    gij(element(k), i, j, n) += temp1 * 0.25;
+                    gij(element(k), j, i, n) += temp2 * 0.25;
+                  }
+            }
+      }
 
   // On continue avec les aretes mixtes
 
   for (int num_arete = prem_am; num_arete < dern_am; num_arete++)
-  for (int n=0; n<N; n++)
-    {
-      const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
-      const int i = orientation(num0), j = orientation(num2);
+    for (int n=0; n<N; n++)
+      {
+        const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+        const int i = orientation(num0), j = orientation(num2);
 
-      const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
-      const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
+        const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+        const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
 
-      element(0) = face_voisins(num0, 0);
-      element(1) = face_voisins(num0, 1);
-      element(2) = face_voisins(num1, 0);
-      element(3) = face_voisins(num1, 1);
+        element(0) = face_voisins(num0, 0);
+        element(1) = face_voisins(num0, 1);
+        element(2) = face_voisins(num1, 0);
+        element(3) = face_voisins(num1, 1);
 
-      for (int k = 0; k < 4; k++)
-        if (element(k) != -1)
-          {
-            // 1) 0.25 : on distribue le gradient de vitesse sur les 3 elements qui l'entourent.
-            // C'est pour cela que l'on regarde si element(k)!=-1, car dans ce cas la, c'est qu'il s'agit de "la case qui manque" !
-            gij(element(k), i, j, n) += temp1 * 0.25;
-            gij(element(k), j, i, n) += temp2 * 0.25;
-          }
-    }
+        for (int k = 0; k < 4; k++)
+          if (element(k) != -1)
+            {
+              // 1) 0.25 : on distribue le gradient de vitesse sur les 3 elements qui l'entourent.
+              // C'est pour cela que l'on regarde si element(k)!=-1, car dans ce cas la, c'est qu'il s'agit de "la case qui manque" !
+              gij(element(k), i, j, n) += temp1 * 0.25;
+              gij(element(k), j, i, n) += temp2 * 0.25;
+            }
+      }
 
   // On continue avec les aretes internes
 
   for (int num_arete = prem_ai; num_arete < dern_ai; num_arete++)
-  for (int n=0; n<N; n++)
-    {
-      const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
-      const int i = orientation(num0), j = orientation(num2);
+    for (int n=0; n<N; n++)
+      {
+        const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+        const int i = orientation(num0), j = orientation(num2);
 
-      const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
-      assert(est_egal(domaine_VDF.dist_face_period(num0, num1, j), domaine_VDF.dist_face(num0, num1, j)));
+        const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+        assert(est_egal(domaine_VDF.dist_face_period(num0, num1, j), domaine_VDF.dist_face(num0, num1, j)));
 
-      const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
-      assert(est_egal(domaine_VDF.dist_face_period(num2, num3, j), domaine_VDF.dist_face(num2, num3, j)));
+        const double temp2 = (vitesse(num3, n) - vitesse(num2, n)) / domaine_VDF.dist_face_period(num2, num3, i); // du_j / dx_i
+        assert(est_egal(domaine_VDF.dist_face_period(num2, num3, j), domaine_VDF.dist_face(num2, num3, j)));
 
-      element(0) = face_voisins(num0, 0);
-      element(1) = face_voisins(num0, 1);
-      element(2) = face_voisins(num1, 0);
-      element(3) = face_voisins(num1, 1);
+        element(0) = face_voisins(num0, 0);
+        element(1) = face_voisins(num0, 1);
+        element(2) = face_voisins(num1, 0);
+        element(3) = face_voisins(num1, 1);
 
-      for (int k = 0; k < 4; k++)
-        {
-          // 1) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
-          gij(element(k), i, j, n) += temp1 * 0.25;
-          gij(element(k), j, i, n) += temp2 * 0.25;
-        }
-    }
+        for (int k = 0; k < 4; k++)
+          {
+            // 1) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
+            gij(element(k), i, j, n) += temp1 * 0.25;
+            gij(element(k), j, i, n) += temp2 * 0.25;
+          }
+      }
 
 
   // XXX : Elie Saikali : HACK pour coins fluides-fluides
@@ -636,39 +636,39 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
   ndeb = domaine_VDF.premiere_arete_coin(), nfin = ndeb + domaine_VDF.nb_aretes_coin();
 
   for (int num_arete = ndeb; num_arete < nfin; num_arete++)
-  for (int n=0; n<N; n++)
-    {
-      const int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
+    for (int n=0; n<N; n++)
+      {
+        const int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
 
-      if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
-        if (n_type == 16) // arete de type fluide-fluide
-          {
-            const int num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2);
-            const int i = orientation(num1), j = orientation(num2);
+        if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
+          if (n_type == 16) // arete de type fluide-fluide
+            {
+              const int num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2);
+              const int i = orientation(num1), j = orientation(num2);
 
-            element(0) = face_voisins(num2, 0);
-            element(1) = face_voisins(num2, 1);
+              element(0) = face_voisins(num2, 0);
+              element(1) = face_voisins(num2, 1);
 
-            for (int k = 0; k < 2; k++)
-              if (element(k) != -1)
-                {
-                  // XXX : 1/3 car on veut un truc comme ca : (a+b+c+d)/4 = (a+b+c)/3 => d = (a+b+c)/3
-                  gij(element(k), i, j, n) += gij(element(k), i, j, n) / 3.;
-                  gij(element(k), j, i, n) += gij(element(k), j, i, n) / 3.;
-                }
-          }
-    }
+              for (int k = 0; k < 2; k++)
+                if (element(k) != -1)
+                  {
+                    // XXX : 1/3 car on veut un truc comme ca : (a+b+c+d)/4 = (a+b+c)/3 => d = (a+b+c)/3
+                    gij(element(k), i, j, n) += gij(element(k), i, j, n) / 3.;
+                    gij(element(k), j, i, n) += gij(element(k), j, i, n) / 3.;
+                  }
+            }
+      }
 
   // 2eme partie : boucle sur les elements et remplissage de Sij pour les derivees non croisees (du_i / dx_i).
   // En fait dans ces cas la, on calcul directement le gradient dans l'element et on ne redistribue pas.
 
   for (int elem = 0; elem < nb_elem; elem++)
-  for (int n=0; n<N; n++)
-    for (int i = 0; i < dimension; i++)
-      {
-        double temp1 = (vitesse(elem_faces(elem, i), n) - vitesse(elem_faces(elem, i + dimension), n)) / domaine_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
-        gij(elem, i, i, n) = -temp1;
-      }
+    for (int n=0; n<N; n++)
+      for (int i = 0; i < dimension; i++)
+        {
+          double temp1 = (vitesse(elem_faces(elem, i), n) - vitesse(elem_faces(elem, i + dimension), n)) / domaine_VDF.dim_elem(elem, orientation(elem_faces(elem, i)));
+          gij(elem, i, i, n) = -temp1;
+        }
 
   return gij;
 }
@@ -695,78 +695,78 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& in_vel, DoubleTab& gij
   if (dimension == 2)
     {
       for (int element_number = 0; element_number < nb_elem_tot; element_number++)
-      for (int n=0; n<N; n++)
-        {
-          f0 = elem_faces(element_number, 0);
-          num0 = face_voisins(f0, 0);
-          if (num0 == -1)
-            num0 = element_number;
-          f1 = elem_faces(element_number, 1);
-          num1 = face_voisins(f1, 0);
-          if (num1 == -1)
-            num1 = element_number;
-          f2 = elem_faces(element_number, 2);
-          num2 = face_voisins(f2, 1);
-          if (num2 == -1)
-            num2 = element_number;
-          f3 = elem_faces(element_number, 3);
-          num3 = face_voisins(f3, 1);
-          if (num3 == -1)
-            num3 = element_number;
+        for (int n=0; n<N; n++)
+          {
+            f0 = elem_faces(element_number, 0);
+            num0 = face_voisins(f0, 0);
+            if (num0 == -1)
+              num0 = element_number;
+            f1 = elem_faces(element_number, 1);
+            num1 = face_voisins(f1, 0);
+            if (num1 == -1)
+              num1 = element_number;
+            f2 = elem_faces(element_number, 2);
+            num2 = face_voisins(f2, 1);
+            if (num2 == -1)
+              num2 = element_number;
+            f3 = elem_faces(element_number, 3);
+            num3 = face_voisins(f3, 1);
+            if (num3 == -1)
+              num3 = element_number;
 
-          gij(element_number, 0, 0, n) = 0.5 * ((in_vel(num2, N*0+n) - in_vel(num0, N*0+n)) / domaine_VDF.dim_elem(element_number, 0));
-          gij(element_number, 0, 1, n) = 0.5 * ((in_vel(num3, N*0+n) - in_vel(num1, N*0+n)) / domaine_VDF.dim_elem(element_number, 1));
-          gij(element_number, 1, 0, n) = 0.5 * ((in_vel(num2, N*1+n) - in_vel(num0, N*1+n)) / domaine_VDF.dim_elem(element_number, 0));
-          gij(element_number, 1, 1, n) = 0.5 * ((in_vel(num3, N*1+n) - in_vel(num1, N*1+n)) / domaine_VDF.dim_elem(element_number, 1));
-        }
+            gij(element_number, 0, 0, n) = 0.5 * ((in_vel(num2, N*0+n) - in_vel(num0, N*0+n)) / domaine_VDF.dim_elem(element_number, 0));
+            gij(element_number, 0, 1, n) = 0.5 * ((in_vel(num3, N*0+n) - in_vel(num1, N*0+n)) / domaine_VDF.dim_elem(element_number, 1));
+            gij(element_number, 1, 0, n) = 0.5 * ((in_vel(num2, N*1+n) - in_vel(num0, N*1+n)) / domaine_VDF.dim_elem(element_number, 0));
+            gij(element_number, 1, 1, n) = 0.5 * ((in_vel(num3, N*1+n) - in_vel(num1, N*1+n)) / domaine_VDF.dim_elem(element_number, 1));
+          }
     }
   else
     {
       for (int element_number = 0; element_number < nb_elem_tot; element_number++)
-      for (int n=0; n<N; n++)
-        {
-          f0 = elem_faces(element_number, 0);
-          num0 = face_voisins(f0, 0);
-          if (num0 == -1)
-            num0 = element_number;
-          f1 = elem_faces(element_number, 1);
-          num1 = face_voisins(f1, 0);
-          if (num1 == -1)
-            num1 = element_number;
-          f2 = elem_faces(element_number, 2);
-          num2 = face_voisins(f2, 0);
-          if (num2 == -1)
-            num2 = element_number;
-          f3 = elem_faces(element_number, 3);
-          num3 = face_voisins(f3, 1);
-          if (num3 == -1)
-            num3 = element_number;
-          f4 = elem_faces(element_number, 4);
-          num4 = face_voisins(f4, 1);
-          if (num4 == -1)
-            num4 = element_number;
-          f5 = elem_faces(element_number, 5);
-          num5 = face_voisins(f5, 1);
-          if (num5 == -1)
-            num5 = element_number;
+        for (int n=0; n<N; n++)
+          {
+            f0 = elem_faces(element_number, 0);
+            num0 = face_voisins(f0, 0);
+            if (num0 == -1)
+              num0 = element_number;
+            f1 = elem_faces(element_number, 1);
+            num1 = face_voisins(f1, 0);
+            if (num1 == -1)
+              num1 = element_number;
+            f2 = elem_faces(element_number, 2);
+            num2 = face_voisins(f2, 0);
+            if (num2 == -1)
+              num2 = element_number;
+            f3 = elem_faces(element_number, 3);
+            num3 = face_voisins(f3, 1);
+            if (num3 == -1)
+              num3 = element_number;
+            f4 = elem_faces(element_number, 4);
+            num4 = face_voisins(f4, 1);
+            if (num4 == -1)
+              num4 = element_number;
+            f5 = elem_faces(element_number, 5);
+            num5 = face_voisins(f5, 1);
+            if (num5 == -1)
+              num5 = element_number;
 
-          gij(element_number, 0, 0, n) = 0.5 * ((in_vel(num3, N*0+n) - in_vel(num0, N*0+n)) / domaine_VDF.dim_elem(element_number, 0));
+            gij(element_number, 0, 0, n) = 0.5 * ((in_vel(num3, N*0+n) - in_vel(num0, N*0+n)) / domaine_VDF.dim_elem(element_number, 0));
 
-          gij(element_number, 0, 1, n) = 0.5 * ((in_vel(num4, N*0+n) - in_vel(num1, N*0+n)) / domaine_VDF.dim_elem(element_number, 1));
-          gij(element_number, 1, 0, n) = 0.5 * ((in_vel(num3, N*1+n) - in_vel(num0, N*1+n)) / domaine_VDF.dim_elem(element_number, 0));
+            gij(element_number, 0, 1, n) = 0.5 * ((in_vel(num4, N*0+n) - in_vel(num1, N*0+n)) / domaine_VDF.dim_elem(element_number, 1));
+            gij(element_number, 1, 0, n) = 0.5 * ((in_vel(num3, N*1+n) - in_vel(num0, N*1+n)) / domaine_VDF.dim_elem(element_number, 0));
 
-          gij(element_number, 0, 2, n) = 0.5 * ((in_vel(num5, N*0+n) - in_vel(num2, N*0+n)) / domaine_VDF.dim_elem(element_number, 2));
+            gij(element_number, 0, 2, n) = 0.5 * ((in_vel(num5, N*0+n) - in_vel(num2, N*0+n)) / domaine_VDF.dim_elem(element_number, 2));
 
-          gij(element_number, 2, 0, n) = 0.5 * ((in_vel(num3, N*2+n) - in_vel(num0, N*2+n)) / domaine_VDF.dim_elem(element_number, 0));
+            gij(element_number, 2, 0, n) = 0.5 * ((in_vel(num3, N*2+n) - in_vel(num0, N*2+n)) / domaine_VDF.dim_elem(element_number, 0));
 
-          gij(element_number, 1, 1, n) = 0.5 * ((in_vel(num4, N*1+n) - in_vel(num1, N*1+n)) / domaine_VDF.dim_elem(element_number, 1));
+            gij(element_number, 1, 1, n) = 0.5 * ((in_vel(num4, N*1+n) - in_vel(num1, N*1+n)) / domaine_VDF.dim_elem(element_number, 1));
 
-          gij(element_number, 1, 2, n) = 0.5 * ((in_vel(num5, N*1+n) - in_vel(num2, N*1+n)) / domaine_VDF.dim_elem(element_number, 2));
-          gij(element_number, 2, 1, n) = 0.5 * ((in_vel(num4, N*2+n) - in_vel(num1, N*2+n)) / domaine_VDF.dim_elem(element_number, 1));
+            gij(element_number, 1, 2, n) = 0.5 * ((in_vel(num5, N*1+n) - in_vel(num2, N*1+n)) / domaine_VDF.dim_elem(element_number, 2));
+            gij(element_number, 2, 1, n) = 0.5 * ((in_vel(num4, N*2+n) - in_vel(num1, N*2+n)) / domaine_VDF.dim_elem(element_number, 1));
 
-          gij(element_number, 2, 2, n) = 0.5 * ((in_vel(num5, N*2+n) - in_vel(num2, N*2+n)) / domaine_VDF.dim_elem(element_number, 2));
+            gij(element_number, 2, 2, n) = 0.5 * ((in_vel(num5, N*2+n) - in_vel(num2, N*2+n)) / domaine_VDF.dim_elem(element_number, 2));
 
-        }
+          }
     }
 
   return gij;
@@ -987,17 +987,17 @@ DoubleVect& Champ_Face_VDF::calcul_S_barre(const DoubleTab& vitesse, DoubleVect&
   calcul_duidxj(vitesse, duidxj, domaine_Cl_VDF);
 
   for (elem = 0; elem < nb_elem; elem++)
-  for (int n=0; n<N; n++)
-    {
-      temp = 0.;
-      for (i = 0; i < dimension; i++)
-        for (j = 0; j < dimension; j++)
-          {
-            Sij = 0.5 * (duidxj(elem, i, j, n) + duidxj(elem, j, i, n));
-            temp += Sij * Sij;
-          }
-      SMA_barre(elem) = 2. * temp;
-    }
+    for (int n=0; n<N; n++)
+      {
+        temp = 0.;
+        for (i = 0; i < dimension; i++)
+          for (j = 0; j < dimension; j++)
+            {
+              Sij = 0.5 * (duidxj(elem, i, j, n) + duidxj(elem, j, i, n));
+              temp += Sij * Sij;
+            }
+        SMA_barre(elem) = 2. * temp;
+      }
 
   return SMA_barre;
 

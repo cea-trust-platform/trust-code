@@ -139,11 +139,11 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
           for (n = 0; n < Nk; n++) in.k(n) = (k_turb) ? (*k_turb)(e, n) : -1., in.nut(n) = (is_turb) ? nut(e, n) : -1. ;
           for (d = 0; d < D; d++) in.g(d) = (*gravity)(e,d);
           if (correlation_vd->needs_grad_alpha())
-              for (n = 0; n < N; n++)
-                for (d = 0; d < D; d++) in.gradAlpha(d, n) = gradAlpha(e, d, n);
+            for (n = 0; n < N; n++)
+              for (d = 0; d < D; d++) in.gradAlpha(d, n) = gradAlpha(e, d, n);
           if (correlation_vd->needs_vort())
-              for (n = 0; n < N; n++)
-                for (d = 0; d < D; d++) in.vort(d, n) = vort(e, d, n);
+            for (n = 0; n < N; n++)
+              for (d = 0; d < D; d++) in.vort(d, n) = vort(e, d, n);
 
           correlation_vd->vitesse_relative(in, out);
         }

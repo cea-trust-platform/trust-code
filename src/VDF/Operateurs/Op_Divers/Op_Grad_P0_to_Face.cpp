@@ -51,46 +51,46 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   // Boucle sur les bords pour traiter les conditions aux limites
   for (int n_bord = 0; n_bord<zvdf.nb_front_Cl(); n_bord++)
     for (k=0; k<N; k++)
-    {
-      const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+      {
+        const Cond_lim& la_cl = zclvdf.les_conditions_limites(n_bord);
+        const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+        const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
-      if (sub_type(Periodique,la_cl.valeur())) // Correction periodicite
-        {
-          for (int num_face = ndeb; num_face < nfin; num_face++)
-            {
-              n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
-              dist = volume_entrelaces(num_face) / face_surfaces(num_face);
-              secmem(num_face, k) -= ((inco(n1, k) - inco(n0, k)))/dist;
-            }
-        }
-      else
-        {
-          for (int num_face = ndeb; num_face < nfin; num_face++)
-            {
-              n0 = face_voisins(num_face,0);
-              if (n0<0) n0 = face_voisins(num_face,1);
+        if (sub_type(Periodique,la_cl.valeur())) // Correction periodicite
+          {
+            for (int num_face = ndeb; num_face < nfin; num_face++)
+              {
+                n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
+                dist = volume_entrelaces(num_face) / face_surfaces(num_face);
+                secmem(num_face, k) -= ((inco(n1, k) - inco(n0, k)))/dist;
+              }
+          }
+        else
+          {
+            for (int num_face = ndeb; num_face < nfin; num_face++)
+              {
+                n0 = face_voisins(num_face,0);
+                if (n0<0) n0 = face_voisins(num_face,1);
 
-              ori = orientation(num_face);
-              int face_opposee = zvdf.elem_faces(n0,ori);
-              if (face_opposee == num_face) face_opposee = zvdf.elem_faces(n0,ori+dimension);
+                ori = orientation(num_face);
+                int face_opposee = zvdf.elem_faces(n0,ori);
+                if (face_opposee == num_face) face_opposee = zvdf.elem_faces(n0,ori+dimension);
 
-              n1 = face_voisins(face_opposee,0);
-              if ((n1<0) || ((n1==n0) && face_voisins(face_opposee,1)>=0)) n1 = face_voisins(face_opposee,1);
+                n1 = face_voisins(face_opposee,0);
+                if ((n1<0) || ((n1==n0) && face_voisins(face_opposee,1)>=0)) n1 = face_voisins(face_opposee,1);
 
-              if (n1!=n0) secmem(num_face, k) -= (inco(n1, k)-inco(n0, k)) / (xp(n1,ori)- xp(n0,ori));
-            }
-        }
-    }
+                if (n1!=n0) secmem(num_face, k) -= (inco(n1, k)-inco(n0, k)) / (xp(n1,ori)- xp(n0,ori));
+              }
+          }
+      }
 
   // Boucle sur les faces internes
   for (int num_face = zvdf.premiere_face_int(); num_face < zvdf.nb_faces(); num_face++)
     for (k=0; k<N; k++)
-    {
-      n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1), ori = orientation(num_face);
-      secmem(num_face, k) -= (inco(n1, k)-inco(n0, k))/(xp(n1,ori)- xp(n0,ori));
-    }
+      {
+        n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1), ori = orientation(num_face);
+        secmem(num_face, k) -= (inco(n1, k)-inco(n0, k))/(xp(n1,ori)- xp(n0,ori));
+      }
 
   secmem.echange_espace_virtuel();
   statistiques().end_count(gradient_counter_);

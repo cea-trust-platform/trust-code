@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ Implemente_base(Echange_global_impose_turbulent,"Echange_global_impose_turbulent
 
 Sortie& Echange_global_impose_turbulent::printOn(Sortie& s ) const {return Echange_global_impose::printOn(s);}
 
-Entree& Echange_global_impose_turbulent::readOn(Entree& s ) 
+Entree& Echange_global_impose_turbulent::readOn(Entree& s )
 {
   h_imp_.typer("Champ_front_vide");
   le_champ_front.typer("Champ_front_vide");

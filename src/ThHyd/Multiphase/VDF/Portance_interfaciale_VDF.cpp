@@ -144,16 +144,16 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
         vort_l = 0;
         n = 0;
         if (D==2)
-        {
-        for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-            vort_l(0) += vort(e, n) * vf_dir(f, c)/vf(f);
-        }
+          {
+            for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+              vort_l(0) += vort(e, n) * vf_dir(f, c)/vf(f);
+          }
         if (D==3)
-        {
-        for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-          for (d=0; d<D; d++)
-            vort_l(d) += vort(e, N*d+n) * vf_dir(f, c)/vf(f);
-        }
+          {
+            for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+              for (d=0; d<D; d++)
+                vort_l(d) += vort(e, N*d+n) * vf_dir(f, c)/vf(f);
+          }
 
         // We also need to calculate relative velocity at the face
         pvit_l = 0 ;
