@@ -38,7 +38,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VDF dis
+ VDF dis option_vdf { traitement_gradients oui }
 
 Scheme_euler_explicit sch
 Read sch
