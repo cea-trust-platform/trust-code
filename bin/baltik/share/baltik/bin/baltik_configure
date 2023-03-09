@@ -413,6 +413,10 @@ then
     rm -f $project_makefile
 fi
 printf "# helplist of target\n"  >> $project_makefile
+printf "\n" >> $project_makefile
+printf "# Parameter initialization\n" >> $project_makefile
+printf "TESTLIST ?= \"\"\n" >> $project_makefile
+printf "\n" >> $project_makefile
 printf "default: erreur\n" >> $project_makefile
 printf "# help help \t\t: to show this message\n">> $project_makefile
 printf "help:\n">> $project_makefile
@@ -431,7 +435,7 @@ printf "check_$type : $type\n"                                  >> $project_make
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@echo \"# Running test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type\n"               >> $project_makefile
+printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type \$(TESTLIST)\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
 printf "# help ctest_$type \t: Running baltik test suite in `human_name_from_name $type` mode with ctest\n" >>$project_makefile

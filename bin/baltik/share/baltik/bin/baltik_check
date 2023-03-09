@@ -115,7 +115,21 @@ then
 	echo "Last problem mode : $mode2"
 	param=$mode2
 	liste_cas=`basename $last_pb`
+    elif [ $(echo ${param} | grep -E "testList_") ]
+    then
+      if [[ ! -f "${project_directory}/${param}" ]]
+      then
+        echo -e "Error: the test list "${project_directory}/${param}" does not exist !"
+        exit 1
+      fi
+      liste_cas=$(basename ${param})
+      echo -e "A customized test list is used : ${project_directory}/${param}"
+      cp "${project_directory}/${param}" "${project_test_directory}"
+      mode2=""
+      echo "mode : $mode2"
+      param=$mode2
     fi
+
     [ "$param" = "deps" ] && mode=$param &&shift && shift && TRUST_TESTS=$project_test_directory/deps&& Rapports_auto_root=$project_test_directory/share/deps
     [ "$param" = "trio" ] && mode=$param &&shift && shift && TRUST_TESTS=$TRUST_ROOT/tests && Rapports_auto_root=$TRUST_ROOT
     [ "$param" = "trust" ] && mode=$param &&shift && shift && TRUST_TESTS=$TRUST_ROOT/tests && Rapports_auto_root=$TRUST_ROOT
