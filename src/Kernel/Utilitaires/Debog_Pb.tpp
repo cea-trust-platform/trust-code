@@ -94,10 +94,29 @@ void Debog_Pb::verifier_partie(const TRUSTVect<_TYPE_>& reference, const TRUSTVe
 }
 
 template <typename _TYPE_>
-void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRUSTVect<_TYPE_>& arr, TRUSTVect<_TYPE_> *arr_reference)
+void Debog_Pb::verifier_partie_std(const TRUSTVect<_TYPE_>& reference, const TRUSTVect<_TYPE_>& array, TRUSTVect<_TYPE_> *arr_reference)
 {
-  static constexpr bool IS_DOUBLE = std::is_same<_TYPE_,double>::value;
+  TRUSTVect<_TYPE_> arr(array);
+  // Verification sanitaire si HostDevice (ex: le tableau a ete modifie sur le host via des pointeurs mais flag non mis a jour!)
+  if (array.get_dataLocation()==HostDevice)
+    {
+      // Force la copie sur le host:
+      arr.set_dataLocation(Device);
+      copyFromDevice(arr, "(Debog forced)");
+      assert(arr.get_dataLocation()==HostDevice);
+      // Comparaison avec array:
+      int size = arr.size_array();
+      for (int i = 0; i < size; i++)
+        if (arr.addr()[i] != array.addr()[i])
+          {
+            Cerr << "An array has a wrong status of HostDevice!" << finl;
+            Process::exit();
+          }
+    }
+  else
+    copyFromDevice(arr, "(Debog)"); // Copie sur le host si Device
 
+  static constexpr bool IS_DOUBLE = std::is_same<_TYPE_,double>::value;
   Nom identificateur;
   // Recherche du descripteur du tableau arr parmi les descripteurs connus
   const IntVect& renum = find_renum_vector(arr.get_md_vector(), identificateur);
@@ -394,6 +413,10 @@ Debog_Pb::verifier(const char *const msg, _TYPE_ x, _TYPE_ *ref_value)
         }
 
       err = mp_sum(err);
+      if (err)
+        {
+
+        }
       if (Process::je_suis_maitre())
         {
           const char *ok = (err > 0.) ? " ERROR       " : " OK           ";
