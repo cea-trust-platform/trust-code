@@ -364,12 +364,12 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 
   int premiere_face_int = domaine_VEF.premiere_face_int();
   // On traite les faces internes
-  const int * face_voisins_addr = copyToDevice(domaine_VEF.face_voisins());
-  const int * elem_faces_addr = copyToDevice(domaine_VEF.elem_faces());
-  const double * inverse_volumes_addr = copyToDevice(inverse_volumes);
-  const double * face_normales_addr = copyToDevice(face_normales);
-  const double * nu_addr = copyToDevice(nu, "nu");
-  const double * inconnue_addr = copyToDevice(inconnue, "inconnue");
+  const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
+  const int * elem_faces_addr = mapToDevice(domaine_VEF.elem_faces());
+  const double * inverse_volumes_addr = mapToDevice(inverse_volumes);
+  const double * face_normales_addr = mapToDevice(face_normales);
+  const double * nu_addr = mapToDevice(nu, "nu");
+  const double * inconnue_addr = mapToDevice(inconnue, "inconnue");
   double * resu_addr = computeOnTheDevice(resu, "resu");
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
@@ -417,7 +417,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
         }
     }// Fin faces internes
   end_timer("Face loop in Op_Diff_VEF_Face::ajouter");
-  //copyFromDevice(resu,"resu");
+  copyFromDevice(resu,"resu"); // ToDo supprimer
 
   // Update flux_bords on symmetry:
   for (int n_bord=0; n_bord<nb_bords; n_bord++)

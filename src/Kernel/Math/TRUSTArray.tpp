@@ -228,49 +228,6 @@ inline void TRUSTArray<_TYPE_>::append_array(_TYPE_ valeur)
   data_[n] = valeur;
 }
 
-//  Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
-//    Les autres elements de (*this) sont inchanges.
-// Precondition:
-// Parametre:       const ArrOfDouble& m
-//  Signification:   le tableau a utiliser, doit etre different de *this !
-// Parametre:       int nb_elements
-//  Signification:   nombre d'elements a copier, nb_elements >= -1. Si nb_elements==-1, on copie tout le tableau m.
-//  Valeurs par defaut: -1
-// Parametre:       int first_element_dest
-//  Valeurs par defaut: 0
-// Parametre:       int first_element_source
-//  Valeurs par defaut: 0
-// Retour: ArrOfDouble&
-//    Signification: *this
-// Exception: Sort en erreur si la taille du tableau m est plus grande que la taille de tableau this.
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& source, int nb_elements, int first_element_dest, int first_element_source)
-{
-  checkDataOnHost(*this);
-  checkDataOnHost(source);
-  assert(&source != this && nb_elements >= -1);
-  assert(first_element_dest >= 0 && first_element_source >= 0);
-
-  if (nb_elements < 0) nb_elements = source.size_array();
-
-  assert(first_element_source + nb_elements <= source.size_array());
-  assert(first_element_dest + nb_elements <= size_array());
-
-  if (nb_elements > 0)
-    {
-      _TYPE_ * addr_dest = data_ + first_element_dest;
-      const _TYPE_ * addr_source = source.addr() + first_element_source;
-      // PL: On utilise le memcpy car c'est VRAIMENT plus rapide (10% +vite sur RNR_G20)
-      memcpy(addr_dest , addr_source, nb_elements * sizeof(_TYPE_));
-      /*
-        int i;
-        for (i = 0; i < nb_elements; i++) {
-        addr_dest[i] = addr_source[i];
-        } */
-    }
-  return *this;
-}
-
 //  Fonction de comparaison utilisee pour trier le tableau dans ArrOfDouble::trier(). Voir man qsort
 template<typename _TYPE_ /* double ou float */ >
 static True_int fonction_compare_arrofdouble_ordonner(const void * data1, const void * data2)
@@ -429,7 +386,6 @@ inline void TRUSTArray<_TYPE_>::fill_default_value(Array_base::Resize_Options op
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::resize_array_(int new_size, Array_base::Resize_Options opt)
 {
-  this->checkDataOnHost();
   assert(new_size >= 0);
   // Soit le tableau est detache (data_==0), soit il est normal (p_!=0)
   // S'il est normal, il ne faut pas qu'il y ait d'autre reference au tableau, ou alors la taille ne doit pas changer.
@@ -498,7 +454,6 @@ inline int TRUSTArray<_TYPE_>::detach_array()
 template <typename _TYPE_>
 inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_Options opt)
 {
-  this->checkDataOnHost();
   assert(new_size >= 0);
 
   // Si new_size==size_array_, on ne fait rien, c'est toujours autorise
@@ -540,6 +495,7 @@ inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_O
               // Calcul du nombre d'elements a copier vers la nouvelle zone de memoire : c'est le min de l'ancienne et de la nouvelle taille.
               if (opt != NOCOPY_NOINIT)
                 {
+                  this->checkDataOnHost();
                   copy_size = size_array_;
                   if (new_size < copy_size) copy_size = new_size;
                   // Copie des valeurs dans le nouveau tableau
@@ -564,86 +520,4 @@ inline void TRUSTArray<_TYPE_>::memory_resize(int new_size, Array_base::Resize_O
     }
 }
 
-// Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const TRUSTArray& y)
-{
-  assert(size_array()==y.size_array());
-  _TYPE_* dx = data_;
-  const _TYPE_* dy = y.data_;
-#ifdef _OPENMP
-  bool dataOnDevice = isDataOnDevice(*this, y);
-  #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
-#endif
-  for (int i = 0; i < size_array(); i++) dx[i] += dy[i];
-  return *this;
-}
-// ajoute la meme valeur a toutes les cases du tableau
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator+=(const _TYPE_ dy)
-{
-  _TYPE_ * data = data_;
-#ifdef _OPENMP
-  bool dataOnDevice = isDataOnDevice(*this);
-  #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
-#endif
-  for(int i = 0; i < size_array(); i++) data[i] += dy;
-  return *this;
-}
-
-// Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const TRUSTArray& y)
-{
-  assert(size_array() == y.size_array());
-  _TYPE_ * data = data_;
-  const _TYPE_ * data_y = y.data_;
-#ifdef _OPENMP
-  bool dataOnDevice = isDataOnDevice(*this, y);
-  #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
-#endif
-  for (int i = 0; i < size_array(); i++) data[i] -= data_y[i];
-  return *this;
-}
-
-// soustrait la meme valeur a toutes les cases
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator-=(const _TYPE_ dy)
-{
-  _TYPE_ * data = data_;
-#ifdef _OPENMP
-  bool dataOnDevice = isDataOnDevice(*this);
-  #pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
-#endif
-  for(int i = 0; i < size_array(); i++) data[i] -= dy;
-  return *this;
-}
-
-// muliplie toutes les cases par dy
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator*= (const _TYPE_ dy)
-{
-  _TYPE_ * data = data_;
-#ifdef _OPENMP
-  //bool dataOnDevice = isDataOnDevice(*this);
-  //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
-#endif
-  for(int i=0; i < size_array(); i++) data[i] *= dy;
-  return *this;
-}
-
-// divise toutes les cases par dy (pas pour TRUSTArray<int>)
-template <typename _TYPE_>
-inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
-{
-  if (std::is_same<_TYPE_,int>::value) throw;
-  const _TYPE_ i_dy = 1. / dy;
-  _TYPE_ * data = data_;
-#ifdef _OPENMP
-  //bool dataOnDevice = isDataOnDevice(*this);
-  //#pragma omp target teams distribute parallel for if (dataOnDevice && Objet_U::computeOnDevice)
-#endif
-  for(int i=0; i < size_array(); i++) data[i] *= i_dy;
-  return *this;
-}
 #endif /* TRUSTArray_TPP_included */

@@ -411,9 +411,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
             }
           end_timer("Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
           // Need offload
-          const int *traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
-          const int *face_voisins_addr = copyToDevice(face_voisins);
-          const double *gradient_elem_addr = copyToDevice(gradient_elem, "gradient_elem");
+          const int *traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
+          const int *face_voisins_addr = mapToDevice(face_voisins);
+          const double *gradient_elem_addr = mapToDevice(gradient_elem, "gradient_elem");
           double *gradient_addr = computeOnTheDevice(gradient, "gradient");
           start_timer();
           #pragma omp target teams distribute parallel for if (computeOnDevice)
@@ -433,7 +433,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   }
             } // fin du for faces
           end_timer("Face loop in Op_Conv_VEF_Face::ajouter");
-          copyFromDevice(gradient, "gradient");
+          copyFromDevice(gradient, "gradient"); // ToDo supprimer
           gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
         }// fin if(type_op==muscl)
     }
@@ -472,26 +472,26 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       // boucle sur les polys
       if(nom_elem=="Tetra_VEF")
         {
-          const int * rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);
-          const int * elem_faces_addr = copyToDevice(elem_faces);
-          const double * porosite_face_addr = copyToDevice(porosite_face);
-          const double * porosite_elem_addr = copyToDevice(porosite_elem, "porosite_elem"); // ToDo find why porosite_elem change, not normal !
-          const double * coord_sommets_addr = copyToDevice(coord_sommets);
-          const int * les_elems_addr = copyToDevice(les_elems);
-          const double * facette_normales_addr = facette_normales.addr();
-          const int * est_une_face_de_dirichlet_addr = copyToDevice(est_une_face_de_dirichlet_);
-          const double * vecteur_face_facette_addr = copyToDevice(vecteur_face_facette);
-          const double * xv_addr = copyToDevice(xv);
-          const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
-          const int * traitement_pres_bord_addr = copyToDevice(traitement_pres_bord_);
-          const int * KEL_addr = copyToDevice(type_elemvef.KEL());
-          const double * normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
-          const double * vecteur_face_facette_Cl_addr = copyToDevice(vecteur_face_facette_Cl);
+          const int * rang_elem_non_std_addr = mapToDevice(rang_elem_non_std);
+          const int * elem_faces_addr = mapToDevice(elem_faces);
+          const double * porosite_face_addr = mapToDevice(porosite_face);
+          const double * porosite_elem_addr = mapToDevice(porosite_elem, "porosite_elem"); // ToDo find why porosite_elem change, not normal !
+          const double * coord_sommets_addr = mapToDevice(coord_sommets);
+          const int * les_elems_addr = mapToDevice(les_elems);
+          const double * facette_normales_addr = mapToDevice(facette_normales);
+          const int * est_une_face_de_dirichlet_addr = mapToDevice(est_une_face_de_dirichlet_);
+          const double * vecteur_face_facette_addr = mapToDevice(vecteur_face_facette);
+          const double * xv_addr = mapToDevice(xv);
+          const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
+          const int * traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
+          const int * KEL_addr = mapToDevice(type_elemvef.KEL());
+          const double * normales_facettes_Cl_addr = mapToDevice(normales_facettes_Cl);
+          const double * vecteur_face_facette_Cl_addr = mapToDevice(vecteur_face_facette_Cl);
 
-          const double * vitesse_addr = copyToDevice(la_vitesse.valeurs(), "la_vitesse");
-          const double * vitesse_face_absolue_addr = copyToDevice(vitesse_face_absolue, "vitesse_face_absolue");
-          const double * transporte_face_addr = copyToDevice(transporte_face, "transporte_face");
-          const double * gradient_addr = copyToDevice(gradient, "gradient");
+          const double * vitesse_addr = mapToDevice(la_vitesse.valeurs(), "la_vitesse");
+          const double * vitesse_face_absolue_addr = mapToDevice(vitesse_face_absolue, "vitesse_face_absolue");
+          const double * transporte_face_addr = mapToDevice(transporte_face, "transporte_face");
+          const double * gradient_addr = mapToDevice(gradient, "gradient");
 
           double * resu_addr = computeOnTheDevice(resu, "resu");
           double * flux_b_addr = computeOnTheDevice(flux_b, "flux_b");
@@ -787,7 +787,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               } // fin de la boucle
           }
           end_timer("Elem loop in Op_Conv_VEF_Face::ajouter");
-          //copyFromDevice(resu, "resu");
+          copyFromDevice(resu, "resu"); // ToDo supprimer
           copyFromDevice(flux_b, "flux_b");
         }
       else
@@ -1127,6 +1127,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
         }
     }
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
+  copyFromDevice(resu); // ToDo supprimer
   modifier_flux(*this);
   end_timer("Boundary condition on resu in Op_Conv_VEF_Face::ajouter");
   return resu;
@@ -1570,15 +1571,15 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   // dans le domaine
   if (nom_elem=="Tetra_VEF")
     {
-      const int *rang_elem_non_std_addr = copyToDevice(rang_elem_non_std);
-      const int *elem_faces_addr = copyToDevice(elem_faces);
-      const double *porosite_face_addr = copyToDevice(porosite_face);
-      const double *porosite_elem_addr = copyToDevice(porosite_elem, "porosite_elem");
-      const double *facette_normales_addr = copyToDevice(facette_normales);
-      const int *KEL_addr = copyToDevice(KEL);
-      const double *normales_facettes_Cl_addr = copyToDevice(normales_facettes_Cl);
-      const double *vitesse_face_addr = copyToDevice(vitesse_face,"vitesse_face");
-      const int *type_elem_Cl_addr = copyToDevice(type_elem_Cl_);
+      const int *rang_elem_non_std_addr = mapToDevice(rang_elem_non_std);
+      const int *elem_faces_addr = mapToDevice(elem_faces);
+      const double *porosite_face_addr = mapToDevice(porosite_face);
+      const double *porosite_elem_addr = mapToDevice(porosite_elem, "porosite_elem");
+      const double *facette_normales_addr = mapToDevice(facette_normales);
+      const int *KEL_addr = mapToDevice(KEL);
+      const double *normales_facettes_Cl_addr = mapToDevice(normales_facettes_Cl);
+      const double *vitesse_face_addr = mapToDevice(vitesse_face,"vitesse_face");
+      const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
       double *fluent_addr = computeOnTheDevice(fluent_, "fluent_");
       start_timer();
       #pragma omp target teams if (computeOnDevice)

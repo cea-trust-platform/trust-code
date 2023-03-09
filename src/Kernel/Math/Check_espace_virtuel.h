@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,7 @@ inline void remplir_items_non_calcules_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur)
       const int sz = blocs.size_array() / 2, line_size = v.line_size();
       int j = 0;
       // Ne pas passer par operator[], sinon plantage si la valeur actuelle est invalide
+      v.checkDataOnHost();
       _TYPE_ *ptr = v.addr();
       for (int i = 0; i < sz; i++)
         {

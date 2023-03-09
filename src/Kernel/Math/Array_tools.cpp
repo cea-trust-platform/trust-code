@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -247,6 +247,7 @@ int tri_lexicographique_tableau(IntTab& tab)
 
   if (nb_lignes != 0)
     {
+      tab.checkDataOnHost();
       if (nb_colonnes == 1)
         tab.ordonne_array();
       else if (nb_colonnes == 2)

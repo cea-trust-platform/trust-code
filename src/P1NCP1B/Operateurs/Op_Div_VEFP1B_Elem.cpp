@@ -108,10 +108,10 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   const IntTab& face_voisins=domaine_VEF.face_voisins();
   int nfe=domaine.nb_faces_elem();
   int nb_elem=domaine.nb_elem();
-  const int * face_voisins_addr = copyToDevice(face_voisins);
-  const double * face_normales_addr = copyToDevice(face_normales);
-  const int * elem_faces_addr = copyToDevice(elem_faces);
-  const double * vit_addr = copyToDevice(vit,"vit");
+  const int * face_voisins_addr = mapToDevice(face_voisins);
+  const double * face_normales_addr = mapToDevice(face_normales);
+  const int * elem_faces_addr = mapToDevice(elem_faces);
+  const double * vit_addr = mapToDevice(vit,"vit");
   double * div_addr = computeOnTheDevice(div, "div");
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
@@ -130,7 +130,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
       div_addr[elem]+=pscf;
     }
   end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
-  copyFromDevice(div, "div");
+  copyFromDevice(div, "div"); // ToDo supprimer
   assert_invalide_items_non_calcules(div);
   return div;
 }
@@ -378,11 +378,11 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   else
     {
       const double coeff_som = 1. / (dimension * (dimension + 1));
-      const int *elem_faces_addr = copyToDevice(elem_faces);
-      const int *face_voisins_addr = copyToDevice(face_voisins);
-      const double *face_normales_addr = copyToDevice(face_normales);
-      const int *som_addr = copyToDevice(som_);
-      const double *vit_addr = copyToDevice(vit,"vit");
+      const int *elem_faces_addr = mapToDevice(elem_faces);
+      const int *face_voisins_addr = mapToDevice(face_voisins);
+      const double *face_normales_addr = mapToDevice(face_normales);
+      const int *som_addr = mapToDevice(som_);
+      const double *vit_addr = mapToDevice(vit,"vit");
       double *div_addr = computeOnTheDevice(div);
       start_timer();
       #pragma omp target teams distribute parallel for if (computeOnDevice)
@@ -413,9 +413,9 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
             }
         }
       end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
-      copyFromDevice(div, "div");
+      copyFromDevice(div, "div"); // ToDo supprimer
     }
-
+  // ToDo ajout CL copyPartial
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = domaine_VEF.face_sommets();

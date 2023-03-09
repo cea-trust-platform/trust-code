@@ -151,23 +151,43 @@ void end_timer(const std::string& str, int size) // Return in [ms]
     }
 }
 
-// Copy const array on device if necessary
+// Allocate on device:
 template <typename _TYPE_>
-const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName)
+void allocateOnDevice(const TRUSTArray<_TYPE_>& tab)
 {
-  // const array will matches on host and device
-  const _TYPE_ *tab_addr = copyToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), HostDevice, arrayName);
+  const _TYPE_* tab_addr = tab.addr();
+  #pragma omp target enter data if (Objet_U::computeOnDevice) map(alloc:tab_addr[0:tab.size_array()])
+  tab.set_dataLocation(Device);
+  if (clock_on)
+    {
+      int size = sizeof(_TYPE_) * tab.size_array();
+      //double mo = (double)size / 1024 / 1024;
+      printf("[clock]            [Data]   Allocate an array on device [%9s] %6ld Bytes\n", toString(tab.addr()).c_str(), long(size));
+    }
+}
+
+// Copy const array on device if necessary
+// Before		After		Copie ?
+// HostOnly	    HostDevice	Oui
+// Host		    HostDevice	Oui
+// HostDevice	HostDevice	Non
+// Device		Device		Non
+template <typename _TYPE_>
+const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName)
+{
+  // Update data on device if necessary
+  const _TYPE_ *tab_addr = mapToDevice_(const_cast<TRUSTArray <_TYPE_>&>(tab), tab.isDataOnDevice() ? tab.get_dataLocation() : HostDevice, arrayName);
   return tab_addr;
 }
 
 template <typename _TYPE_>
-_TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName)
+_TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName)
 {
 #ifdef _OPENMP
 #ifndef NDEBUG
   if (self_test()) self_test();
 #endif
-  tab.nommer(arrayName); // ToDo implementer nom dans Array_base car ici Objet_U appele
+  //tab.nommer(arrayName); // ToDo implementer nom dans Array_base car ici Objet_U appele
   DataLocation currentLocation = tab.get_dataLocation();
   tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
 #endif
@@ -214,7 +234,7 @@ template <typename _TYPE_>
 _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
 {
   // non-const array will be modified on device:
-  _TYPE_ *tab_addr = copyToDevice_(tab, Device, arrayName);
+  _TYPE_ *tab_addr = mapToDevice_(tab, Device, arrayName);
   return tab_addr;
 }
 
@@ -237,6 +257,20 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
       if (clock_on) printf("\n");
       tab.set_dataLocation(HostDevice);
     }
+  else
+    {
+      Cerr << "Warning, copyFromeDevice() whereas the array was not on the device." << finl;
+      //Process::exit();
+    }
+#endif
+}
+
+// Copy const array to host from device
+template <typename _TYPE_>
+void copyFromDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName)
+{
+#ifdef _OPENMP
+  copyFromDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), arrayName);
 #endif
 }
 
@@ -284,13 +318,15 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
 #endif
 }
 
-void instantiate_template_functions()
+void instantiate_Device_template_functions()
 {
   TRUSTArray<int> i;
   TRUSTArray<double> d;
   TRUSTArray<float> f;
-  copyToDevice(i, "");
-  copyToDevice(d, "");
+  allocateOnDevice(i);
+  allocateOnDevice(d);
+  mapToDevice(i, "");
+  mapToDevice(d, "");
   computeOnTheDevice(i, "");
   computeOnTheDevice(d, "");
   copyFromDevice(i, "");
@@ -300,4 +336,10 @@ void instantiate_template_functions()
   copyPartialFromDevice(d, 0, 0, "");
   copyPartialToDevice(i, 0, 0, "");
   copyPartialToDevice(d, 0, 0, "");
+  const TRUSTArray<int> ci;
+  const TRUSTArray<double> cd;
+  const TRUSTArray<float> cf;
+  copyFromDevice(ci, "");
+  copyFromDevice(cd, "");
+  copyFromDevice(cf, "");
 }

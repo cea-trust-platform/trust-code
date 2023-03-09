@@ -314,11 +314,11 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
         }
     }
 
-  const int * face_voisins_addr = copyToDevice(face_voisins);
-  const double* porosite_face_addr = copyToDevice(porosite_face);
-  const double * face_normales_addr = copyToDevice(face_normales);
-  const int * elem_faces_addr = copyToDevice(elem_faces);
-  const double * pre_addr = copyToDevice(pre,"pre");
+  const int * face_voisins_addr = mapToDevice(face_voisins);
+  const double* porosite_face_addr = mapToDevice(porosite_face);
+  const double * face_normales_addr = mapToDevice(face_normales);
+  const int * elem_faces_addr = mapToDevice(elem_faces);
+  const double * pre_addr = mapToDevice(pre,"pre");
   double * grad_addr = computeOnTheDevice(grad, "grad");
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
@@ -338,7 +338,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
         }
     }
   end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
-  copyFromDevice(grad, "grad");
+  copyFromDevice(grad, "grad"); // ToDo supprimer
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::
@@ -373,13 +373,13 @@ ajouter_som(const DoubleTab& pre,
         }
     }
 
-  const int * elem_faces_addr = copyToDevice(elem_faces);
-  const int * face_voisins_addr = copyToDevice(face_voisins);
-  const double * face_normales_addr = copyToDevice(face_normales);
-  const double* porosite_face_addr = copyToDevice(porosite_face);
-  const double * coeff_som_addr = copyToDevice(coeff_som_);
-  const int * som_addr = copyToDevice(som_);
-  const double * pre_addr = copyToDevice(pre,"pre");
+  const int * elem_faces_addr = mapToDevice(elem_faces);
+  const int * face_voisins_addr = mapToDevice(face_voisins);
+  const double * face_normales_addr = mapToDevice(face_normales);
+  const double* porosite_face_addr = mapToDevice(porosite_face);
+  const double * coeff_som_addr = mapToDevice(coeff_som_);
+  const int * som_addr = mapToDevice(som_);
+  const double * pre_addr = mapToDevice(pre,"pre");
   double * grad_addr = computeOnTheDevice(grad, "grad");
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
@@ -407,7 +407,7 @@ ajouter_som(const DoubleTab& pre,
         }
     }
   end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
-  copyFromDevice(grad, "grad");
+  copyFromDevice(grad, "grad"); // ToDo supprimer
 
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = domaine_VEF.face_sommets();

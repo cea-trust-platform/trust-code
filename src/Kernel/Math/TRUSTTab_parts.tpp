@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 template<typename _TYPE_>
 inline void init_parts(TRUSTVect<_TYPE_>& vect, TRUST_Vector<TRUSTTab<_TYPE_>>& parts, TRUSTTab<_TYPE_> *dummy_type_ptr)
 {
+  vect.checkDataOnHost(); // Complique de gerer un TRUSTTab_parts. On fait sur CPU
   const MD_Vector& md = vect.get_md_vector();
   TRUSTTab<_TYPE_>* Tab_ptr = dynamic_cast<TRUSTTab<_TYPE_>*>(&vect);
   if (! md.non_nul() || !sub_type(MD_Vector_composite, md.valeur()))

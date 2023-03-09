@@ -22,6 +22,7 @@
 #include <Double.h>
 #include <span.hpp>
 #include <climits>
+#include <Device.h>
 
 /*! @brief Represente un tableau d'elements de type int/double/float.
  *
@@ -130,6 +131,7 @@ public:
         size_array_ = size;
         memory_size_ = size;
         smart_resize_ = A.smart_resize_;
+        if (A.isDataOnDevice()) allocateOnDevice(*this);
         inject_array(A);
       }
     else
@@ -160,16 +162,6 @@ public:
   // Operateur copie
   inline TRUSTArray& operator=(const TRUSTArray&);
 
-  // Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
-  inline TRUSTArray& operator=(_TYPE_ x)
-  {
-    checkDataOnHost(*this);
-    const int n = size_array_;
-    _TYPE_ *data = data_;
-    for (int i = 0; i < n; i++) data[i] = x;
-    return *this;
-  }
-
   inline _TYPE_& operator[](int i);
   inline const _TYPE_& operator[](int i) const;
 
@@ -189,25 +181,28 @@ public:
   // Ajoute une case en fin de tableau et y stocke la "valeur"
   inline void append_array(_TYPE_ valeur);
 
+  // Remplit le tableau avec la x en parametre (x est affecte a toutes les cases du tableau)
+  TRUSTArray& operator=(_TYPE_ x);
+
   // Addition case a case sur toutes les cases du tableau : la taille de y doit etre au moins egale a la taille de this
-  inline TRUSTArray& operator+=(const TRUSTArray& y);
+  TRUSTArray& operator+=(const TRUSTArray& y);
 
   // ajoute la meme valeur a toutes les cases du tableau
-  inline TRUSTArray& operator+=(const _TYPE_ dy);
+  TRUSTArray& operator+=(const _TYPE_ dy);
 
   // Soustraction case a case sur toutes les cases du tableau : tableau de meme taille que *this
-  inline TRUSTArray& operator-=(const TRUSTArray& y);
+  TRUSTArray& operator-=(const TRUSTArray& y);
 
   // soustrait la meme valeur a toutes les cases
-  inline TRUSTArray& operator-=(const _TYPE_ dy);
+  TRUSTArray& operator-=(const _TYPE_ dy);
 
   // muliplie toutes les cases par dy
-  inline TRUSTArray& operator*= (const _TYPE_ dy);
+  TRUSTArray& operator*= (const _TYPE_ dy);
 
   // divise toutes les cases par dy (pas pour TRUSTArray<int>)
-  inline TRUSTArray& operator/= (const _TYPE_ dy);
+  TRUSTArray& operator/= (const _TYPE_ dy);
 
-  inline TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements = -1,  int first_element_dest = 0, int first_element_source = 0);
+  TRUSTArray& inject_array(const TRUSTArray& source, int nb_elements = -1,  int first_element_dest = 0, int first_element_source = 0);
 
   inline TRUSTArray& copy_array(const TRUSTArray& a)
   {
@@ -234,6 +229,10 @@ public:
   inline void set_dataLocation(DataLocation flag) const { if (p_!=NULL) p_->set_dataLocation(flag); }
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
+  inline bool isDataOnDevice() const { return isDataOnDevice(*this); }
+  inline bool isKernelOnDevice(std::string kernel_name="??") { return isKernelOnDevice(*this, kernel_name); }
+  inline bool isKernelOnDevice(std::string kernel_name="??") const { return isKernelOnDevice(*this, kernel_name); }
+  inline bool isKernelOnDevice(const TRUSTArray& arr, std::string kernel_name="??") { return isKernelOnDevice(*this, arr, kernel_name); }
 
   inline virtual Span_ get_span() { return Span_(data_,size_array_); }
   inline virtual Span_ get_span_tot() { return Span_(data_,size_array_); }
@@ -270,18 +269,21 @@ private:
 
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
   Storage storage_type_;
+  // ToDo: essayer de deplacer ces implementations de methodes dans Device? Attention a l'inline
   #pragma omp declare target
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
 #ifdef _OPENMP
-#ifndef NDEBUG
+//#ifndef NDEBUG
     if (tab.get_dataLocation()==Device)
       {
-        Cerr << "Error! A const TRUSTArray tab is used on the host whereas its dataLocation=Device" << finl;
-        Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
-        Process::exit();
+        Cerr << "Warning! copyFromDevice(tab) done cause const TRUSTArray tab will used on the host... Try to keep data on the device!" << finl;
+        copyFromDevice(tab);
+        //Cerr << "Error! A const TRUSTArray tab is used on the host whereas its dataLocation=Device" << finl;
+        //Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
+        //Process::exit();
       }
-#endif
+//#endif
 #endif
   }
   #pragma omp end declare target
@@ -289,42 +291,71 @@ private:
   inline void checkDataOnHost(TRUSTArray& tab)
   {
 #ifdef _OPENMP
-#ifndef NDEBUG
+//#ifndef NDEBUG
     if (tab.get_dataLocation()==Device)
       {
-        Cerr << "Error! A non-const TRUSTArray tab will be computed on the host whereas its dataLocation=Device" << finl;
-        Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
-        Process::exit();
+        Cerr << "Warning! copyFromDevice(tab) done cause non-const TRUSTArray tab will be changed on the host... Try to keep data on the device!" << finl;
+        copyFromDevice(tab);
+        //Cerr << "Error! A non-const TRUSTArray tab will be computed on the host whereas its dataLocation=Device" << finl;
+        //Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
+        //Process::exit();
       }
-#endif
-    if (tab.get_dataLocation()!=HostOnly)
+//#endif
+    if (tab.get_dataLocation()!=HostOnly && tab.get_dataLocation()!=PartialHostDevice)
       set_dataLocation(Host); // On va modifier le tableau sur le host
 #endif
   }
   #pragma omp end declare target
-  // Est ce que le tableau est le plus a jour sur le Device ?
-  inline bool isDataOnDevice(TRUSTArray& tab)
+
+  // Fonction pour connaitre la localisation du tableau
+  inline bool isDataOnDevice(const TRUSTArray& tab) const
   {
-    bool flag = tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice;
+    return tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice;
+  }
+  // Fonctions isKernelOnDevice pour lancement conditionnel de kernels sur le device:
+  // -Si les tableaux passes en parametre sont sur a jour sur le device
+  // -Si ce n'est pas le cas, les tableaux sont copies sur le host via checkDataOnHost
+  inline bool isKernelOnDevice(const TRUSTArray& tab, std::string kernel_name) const
+  {
+    bool flag = tab.isDataOnDevice();
     if (!flag)
       checkDataOnHost(tab);
     else
-      tab.set_dataLocation(Device); // non const array will be computed on device
+      {
+        tab.set_dataLocation(Device); // non const array will be computed on device
+        if (getenv ("TRUST_CLOCK_ON")!=NULL)
+          Cout << "[clock] Launch GPU kernel " << kernel_name << " with a loop of " << tab.size_array() << " elements." << finl;
+      }
     return flag;
   }
-  inline bool isDataOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const)
+  inline bool isKernelOnDevice(TRUSTArray& tab, std::string kernel_name)
   {
-    bool flag = (tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice) &&
-                (tab_const.get_dataLocation() == Device || tab_const.get_dataLocation() == HostDevice);
-    // Si un des deux tableaux n'est pas a jour sur le GPU
-    // alors l'operation se fera sur le device:
+    bool flag = tab.isDataOnDevice();
+    if (!flag)
+      checkDataOnHost(tab);
+    else
+      {
+        tab.set_dataLocation(Device); // non const array will be computed on device
+        if (getenv ("TRUST_CLOCK_ON")!=NULL)
+          Cout << "[clock] Launch GPU kernel " << kernel_name << " with a loop of " << tab.size_array() << " elements." << finl;
+      }
+    return flag;
+  }
+  inline bool isKernelOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name)
+  {
+    bool flag = tab.isDataOnDevice() && tab_const.isDataOnDevice();
+    // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:
     if (!flag)
       {
         checkDataOnHost(tab);
         checkDataOnHost(tab_const);
       }
     else
-      tab.set_dataLocation(Device); // non const array will be computed on device
+      {
+        tab.set_dataLocation(Device); // non const array will be computed on device
+        if (getenv ("TRUST_CLOCK_ON")!=NULL)
+          Cout << "[clock] Launch GPU kernel " << kernel_name << " with a loop of " << tab.size_array() << " elements." << finl;
+      }
     return flag;
   }
 };

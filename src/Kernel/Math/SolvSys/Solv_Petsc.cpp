@@ -1689,6 +1689,8 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       }
     else
       ix[i] = -1;
+  secmem.checkDataOnHost();   // Car on travaille avec le pointeur sur le device
+  solution.checkDataOnHost(); // Idem
   VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
   VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
   VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);

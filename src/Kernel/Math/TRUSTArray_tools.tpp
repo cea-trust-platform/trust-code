@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,6 +33,8 @@ int operator==(const TRUSTArray<_TYPE_>& v, const TRUSTArray<_TYPE_>& a)
     }
   else
     {
+      v.checkDataOnHost();
+      a.checkDataOnHost();
       const _TYPE_ * vv = v.addr();
       const _TYPE_ * av = a.addr();
       for (int i = 0; i < n; i++)
@@ -182,6 +184,8 @@ _TYPE_ dotproduct_array(const TRUSTArray<_TYPE_>& dx, const TRUSTArray<_TYPE_>& 
     {
       integer n = size;
       integer incx = 1;
+      dx.checkDataOnHost();
+      dy.checkDataOnHost();
       resultat = F77NAME(DDOT)(&n, dx.addr(), &incx, dy.addr(), &incx);
     }
   return resultat;
@@ -199,6 +203,7 @@ _TYPE_ norme_array(const TRUSTArray<_TYPE_>& dx)
   if (n > 0)
     {
       integer incx = 1;
+      dx.checkDataOnHost();
       resultat = F77NAME(DNRM2)(&n, &dx[0], &incx);
     }
   return resultat;

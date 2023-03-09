@@ -101,7 +101,6 @@ inline void TRUSTVect<_TYPE_>::resize(int n, Array_base::Resize_Options opt)
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::resize_vect_(int n, Array_base::Resize_Options opt)
 {
-  this->checkDataOnHost();
   // Note B.M.: j'aurais voulu interdire completement resize des qu'on a un descripteur mais il y en a partout dans le code (on resize les tableaux alors qu'ils ont deja
   //  la bonne taille). Donc j'autorise si la taille ne change pas.
   //assert(!md_vector_.non_nul() || n == size_array());
@@ -187,14 +186,16 @@ inline void TRUSTVect<_TYPE_>::copy(const TRUSTVect& v, Array_base::Resize_Optio
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::copy_(const TRUSTVect& v, Array_base::Resize_Options opt)
 {
-  this->checkDataOnHost();
-  v.checkDataOnHost();
   assert(&v != this); // Il faut avoir fait le test avant !
   // Si le vecteur a deja une structure parallele, la copie n'est autorisee que si
   // le vecteur source a la meme structure. Si ce n'est pas le cas, utiliser inject_array() pour copier uniquement les valeurs, ou faire d'abord reset() si on veut ecraser la structure.
   assert((!md_vector_.non_nul()) || (md_vector_ == v.md_vector_));
   TRUSTArray<_TYPE_>::resize_array_(v.size_array(), Array_base::NOCOPY_NOINIT);
-  if (opt != Array_base::NOCOPY_NOINIT) TRUSTArray<_TYPE_>::inject_array(v);
+  if (opt != Array_base::NOCOPY_NOINIT)
+    {
+      if (v.isDataOnDevice()) allocateOnDevice(*this); // ToDo check
+      TRUSTArray<_TYPE_>::inject_array(v);
+    }
   md_vector_ = v.md_vector_; // Pour le cas ou md_vector_ est nul et pas v.md_vector_
   size_reelle_ = v.size_reelle_;
   line_size_ = v.line_size_;

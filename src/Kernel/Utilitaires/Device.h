@@ -28,16 +28,22 @@ extern void start_timer(int size=-1);
 extern void end_timer(const std::string& str, int size=-1);
 
 template <typename _TYPE_>
-extern const _TYPE_* copyToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
+extern void allocateOnDevice(const TRUSTArray<_TYPE_>& tab);
 
 template <typename _TYPE_>
-extern _TYPE_* copyToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName);
+extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
+
+template <typename _TYPE_>
+extern _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName);
 
 template <typename _TYPE_>
 extern _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
 
 template <typename _TYPE_>
 extern void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
+
+template <typename _TYPE_>
+extern void copyFromDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
 
 template <typename _TYPE_>
 extern void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
