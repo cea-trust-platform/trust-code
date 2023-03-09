@@ -82,6 +82,21 @@ get_list_prm()
     done
 }
 
+get_list_validation_from_a_file()
+{
+  # Check the existence of the file containing the customized list of validation test cases
+  [[ ! -f ${1} ]] && exit 1
+  
+  for t in $(cat ${1})
+  do
+    # The test is added unless the line is commented with a '#'
+    if [[ $(echo ${t} | grep -Ev "^ *#") ]]
+    then
+      echo ${project_directory}/${t}
+    fi
+  done
+}
+
 genere_fiche()
 {
     GENERE_COURBE=$TRUST_ROOT/Validation/Outils/Genere_courbe/
@@ -196,7 +211,20 @@ pdf_only=0
 with_sjob=0
 [ "$1" = "-parallel_sjob" ] && with_sjob=1 && shift
 
-liste_prm=`get_list_prm`
+if [[ "${testListValidation}" == "" ]]
+then
+  # Standard case : all validation tests are launched
+  liste_prm=`get_list_prm`
+else
+  # A customized list of validation tests has been given
+  liste_prm=$(get_list_validation_from_a_file "${testListValidation}")
+  if [[ $? -ne 0 ]]
+  then
+    echo -e "Error : a problem occured when reading the file"
+    exit 1
+  fi
+fi
+
 [ "$1" = "-from-Times" ] && shift && file=$1 && shift&& liste_prm=`get_list_prm_from_Times $file` 
 force=0
 [ "$*" != "" ] && echo On passe les cas precises && liste_prm="$@" && force=1 

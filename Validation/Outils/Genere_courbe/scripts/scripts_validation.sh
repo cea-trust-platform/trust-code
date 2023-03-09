@@ -90,24 +90,39 @@ verif_archives()
       [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type d -name  $(basename $f .pdf)`" = "" ] && [ "`find $Rapports_auto_root/Validation/Rapports_automatiques/ -follow -type l -name  $(basename $f .pdf)`" = "" ] &&echo $f not in Validation/Rapports_automatiques ?  && PB=3
     done
 
-    for file in `find  $Rapports_auto_root/Validation/Rapports_automatiques/$1 -follow -name '*'.prm`
+    thePRMList=""
+    if [[ "${testListValidation}" == "" ]]
+    then
+      thePRMList=$(find $Rapports_auto_root/Validation/Rapports_automatiques/$1 -follow -name '*'.prm)
+    else
+      for t in $(cat ${testListValidation})
       do
+        if [[ $(echo ${t} | grep -Ev "^ *#") ]]
+        then
+          prmFile="${project_directory}/${t}/$(basename ${t}).prm"
+          [[ -f ${prmFile} ]] && thePRMList+="${prmFile} "
+        fi
+      done
+    fi
+
+    for file in ${thePRMList}
+    do
       f=`dirname $file`
       ze_dir=`dirname $f`
       f=`basename $ze_dir`
       if [ -f $ze_dir/skip_prm ] || [ -f $ze_dir/src/skip_prm ]
-    then
-    if [ -f $f.pdf ]
+      then
+        if [ -f $f.pdf ]
         then
-        echo $f is skipped. Deleting corresponding PDF.
-        rm $f.pdf  
-    fi 
+          echo $f is skipped. Deleting corresponding PDF.
+          rm $f.pdf  
+        fi 
       else
-    if [ ! -f $f.pdf ]  
+        if [ ! -f $f.pdf ]  
         then
-        echo $f not run ? 
-        PB=1
-    fi
+          echo $f not run ? 
+          PB=1
+        fi
       fi
     done
     # echo `wc -l ../nettoie` repertoires a effacer

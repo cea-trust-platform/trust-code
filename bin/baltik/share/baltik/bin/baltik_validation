@@ -48,8 +48,27 @@ if [ "${TRUST_ROOT}" = "" ]
 then
     TRUST_environnement_error
 fi
+
 reduit=0
 [ "$1" = "reduit" ] && reduit=1 && shift
+
+if [[ "$1" != "" ]]
+then
+  testListValidation="$(pwd)/${1}"
+  echo -e "A test list of validation is used : ${testListValidation}"
+  
+  # Check the existence of the file containing the customized list of validation test cases
+  if [[ ! -f ${testListValidation} ]]
+  then
+    echo -e "Error: the file '${testListValidation}' doesn't exist !"
+    exit 1
+  fi
+  
+  export testListValidation
+  shift
+fi
+
+[ "$1" = "" ] && [ $# -eq 1 ] && shift
 
 # verification du nombre d'arguments
 if [ $# -ne 0 ]
