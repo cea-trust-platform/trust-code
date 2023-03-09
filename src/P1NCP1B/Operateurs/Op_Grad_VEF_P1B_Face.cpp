@@ -338,7 +338,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
         }
     }
   end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
-  copyFromDevice(grad, "grad"); // ToDo supprimer
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::
@@ -358,6 +357,7 @@ ajouter_som(const DoubleTab& pre,
   int nfe=domaine.nb_faces_elem();
   int nps=domaine_VEF.numero_premier_sommet();
   int nb_elem_tot=domaine.nb_elem_tot();
+  int premiere_face_int = domaine_VEF.premiere_face_int();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
   if (som_.size_array()==0)
@@ -407,8 +407,8 @@ ajouter_som(const DoubleTab& pre,
         }
     }
   end_timer("Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
-  copyFromDevice(grad, "grad"); // ToDo supprimer
 
+  copyPartialFromDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = domaine_VEF.face_sommets();
   int nb_bords = les_cl.size();
@@ -435,6 +435,7 @@ ajouter_som(const DoubleTab& pre,
             } //fin du if sur "Neumann_sortie_libre"
         }
     }
+  copyPartialToDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::

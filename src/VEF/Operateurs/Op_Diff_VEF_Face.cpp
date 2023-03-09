@@ -417,7 +417,6 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
         }
     }// Fin faces internes
   end_timer("Face loop in Op_Diff_VEF_Face::ajouter");
-  copyFromDevice(resu,"resu"); // ToDo supprimer
 
   // Update flux_bords on symmetry:
   for (int n_bord=0; n_bord<nb_bords; n_bord++)

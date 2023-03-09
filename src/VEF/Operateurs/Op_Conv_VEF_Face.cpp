@@ -433,7 +433,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   }
             } // fin du for faces
           end_timer("Face loop in Op_Conv_VEF_Face::ajouter");
-          copyFromDevice(gradient, "gradient"); // ToDo supprimer
           gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
         }// fin if(type_op==muscl)
     }
@@ -787,7 +786,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               } // fin de la boucle
           }
           end_timer("Elem loop in Op_Conv_VEF_Face::ajouter");
-          copyFromDevice(resu, "resu"); // ToDo supprimer
           copyFromDevice(flux_b, "flux_b");
         }
       else
@@ -1127,7 +1125,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
         }
     }
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
-  copyFromDevice(resu); // ToDo supprimer
   modifier_flux(*this);
   end_timer("Boundary condition on resu in Op_Conv_VEF_Face::ajouter");
   return resu;

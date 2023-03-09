@@ -130,7 +130,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
       div_addr[elem]+=pscf;
     }
   end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
-  copyFromDevice(div, "div"); // ToDo supprimer
+  //copyFromDevice(div, "div"); // ToDo supprimer
   assert_invalide_items_non_calcules(div);
   return div;
 }
@@ -415,7 +415,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
       end_timer("Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
       copyFromDevice(div, "div"); // ToDo supprimer
     }
-  // ToDo ajout CL copyPartial
+  // ToDo ajout CL copyPartial (pas facile car div au sommet) avant de supprimer le copyFromDevice au dessus
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = domaine_VEF.face_sommets();
