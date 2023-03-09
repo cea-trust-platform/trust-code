@@ -44,7 +44,7 @@ void test_version(Nom& nom) ;
 void dimensionne_char_ptr_taille(Char_ptr& nom, int taille_d_un_mot, int nb=1);
 void traite_nom_fichier_med(Nom& nom_fic);
 void read_med_field_names(const Nom& nom_fic, Noms& noms_chps, ArrOfDouble& temps_sauv);
-void renum_conn(IntTab& les_elems2, Nom& type_elem, bool toMED);
+void conn_trust_to_med(IntTab& les_elems2, Nom& type_elem, bool toMED);
 
 #ifdef MED_
 med_geometry_type type_geo_trio_to_type_med(const Nom& type_elem);

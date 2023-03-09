@@ -23,6 +23,12 @@
 #include <Nom.h>
 #include <map>
 
+#include <medcoupling++.h>
+#ifdef MEDCOUPLING_
+#include <MEDCouplingUMesh.hxx>
+#include <MEDFileMesh.hxx>
+#endif
+
 class Nom;
 class Noms;
 class Champ_Inc_base;
@@ -58,11 +64,18 @@ public :
 
 protected:
   void creer_all_faces_bord(Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles);
+  void fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base);
 
   bool major_mode_ = false;   ///< False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)
   Nom nom_fichier_;           ///< Name of the MED file to write
   REF(Domaine) dom_;          ///< Domain that will be written
   std::map<std::string, int> timestep_;
+  int mesh_dimension_ = -1;
+
+#ifdef MEDCOUPLING_
+  const MEDCoupling::MEDCouplingUMesh *mcumesh_ = nullptr;   ///! Real owner is Domain class
+  MEDCoupling::MCAuto<MEDCoupling::MEDFileUMesh> mfumesh_;   ///! EcrMED is the owner
+#endif
 };
 
 #endif /* EcrMED_included */

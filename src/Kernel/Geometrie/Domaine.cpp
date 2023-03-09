@@ -36,6 +36,8 @@
 #include <Frontiere.h>
 #include <Conds_lim.h>
 #include <NettoieNoeuds.h>
+#include <Polyedre.h>
+#include <trust_med_utils.h>
 
 #ifdef MEDCOUPLING_
 using MEDCoupling::DataArrayInt;
@@ -2050,86 +2052,152 @@ void Domaine::imprimer() const
   Cerr << "==============================================" << finl;
 }
 
-// Build the faces mesh:
-void Domaine::buildUFacesMesh(const Domaine_dis_base& domaine_dis_base) const
+/*! @brief Build the MEDCoupling mesh corresponding to the TRUST mesh.
+ *
+ * Not necessary when the domain was read from a MED file
+ */
+void Domaine::build_mc_mesh() const
 {
 #ifdef MEDCOUPLING_
-  MCAuto<DataArrayInt> desc(DataArrayInt::New());
-  MCAuto<DataArrayInt> descIndx(DataArrayInt::New());
-  MCAuto<DataArrayInt> revDesc(DataArrayInt::New());
-  MCAuto<DataArrayInt> revDescIndx(DataArrayInt::New());
-  faces_mesh_ = mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
-  // Renumber faces to have the same numbering than Domaine_dis
-  std::size_t size = faces_mesh_->getNumberOfCells();
-  IntVect renum((int)size);
-  // Compute Center of Mass
-  MCAuto<DataArrayDouble> xv_med = faces_mesh_->computeCellCenterOfMass();
-  // On boucle sur les elements des tableaux Domaine_VF::elem_faces et desc
-  // Ensuite on compare geometriquement les centres des faces de ces tableaux pour trouver les relations
-  // Boucle sur les mailles
-  const IntTab& elem_faces = ref_cast(Domaine_VF, domaine_dis_base).elem_faces();
-  int nb_elem = elem_faces.dimension(0);
-  assert(nb_elem == (int)descIndx->getNbOfElems()-1);
-  // Centre des faces TRUST:
-  const DoubleTab& xv = ref_cast(Domaine_VF, domaine_dis_base).xv();
-  //int nb_faces = xv.dimension_tot(0);
-  int nb_comp = xv.dimension_tot(1), f;
+  // This method should not be called if MC mesh was already filled when reading domain from MED
+  assert(mc_mesh_.isNull());
 
-  // Boucle sur les elements
-  MCAuto<DataArrayInt> renum_local(DataArrayInt::New());
-  for (int elem=0; elem<nb_elem; elem++)
+  // Initialize mesh
+  Nom type_ele = elem_->que_suis_je();
+  int mesh_dim;
+  INTERP_KERNEL::NormalizedCellType cell_type = type_geo_trio_to_type_medcoupling(type_ele, mesh_dim);
+  mc_mesh_ = MEDCouplingUMesh::New(nom_.getChar(), mesh_dim);
+
+  //
+  // Nodes
+  //
+  int nnodes = sommets_.dimension(0);
+  MCAuto<DataArrayDouble> coord(DataArrayDouble::New());
+  if (nnodes==0)
+    coord->alloc(0, Objet_U::dimension);
+  else
+    // Avoid deep copy of vertices:
+    coord->useArray(sommets_.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, nnodes, Objet_U::dimension);
+  coord->setInfoOnComponent(0, "x");
+  coord->setInfoOnComponent(1, "y");
+  if (Objet_U::dimension == 3) coord->setInfoOnComponent(2, "z");
+  mc_mesh_->setCoords(coord);
+
+  //
+  // Connectivity
+  //
+  int ncells = mes_elems_.dimension(0);
+  int nverts = mes_elems_.dimension(1);
+
+  // Connectivite TRUST -> MED
+  IntTab les_elems2(mes_elems_);
+  conn_trust_to_med(les_elems2, type_ele, true);
+
+  mc_mesh_->allocateCells(ncells);
+  if (cell_type == INTERP_KERNEL::NORM_POLYHED)
     {
-      //Cerr << "elem=" << elem << finl;
-      int nb_face_elem = 0;
-      for (int i = 0; i < elem_faces.dimension(1) && elem_faces(elem, i) >= 0; i++)
-        nb_face_elem++;
-      // xv1, xv2 tableaux temporaires des centres des faces de l'element elem pour comparaison
-      MCAuto<DataArrayDouble> xv1(DataArrayDouble::New());
-      xv1->alloc(nb_face_elem, nb_comp);
-      MCAuto<DataArrayDouble> xv2(DataArrayDouble::New());
-      xv2->alloc(nb_face_elem, nb_comp);
-      for (int i = 0; i < elem_faces.dimension(1) && (f = elem_faces(elem, i)) >= 0; i++)
+      // Polyedron is special, seepage 10:
+      // http://trac.lecad.si/vaje/chrome/site/doc8.3.0/extra/Normalisation_pour_le_couplage_de_codes.pdf
+      const Polyedre& poly = ref_cast(Polyedre, elem_.valeur());
+      ArrOfInt nodes_glob;
+      poly.remplir_Nodes_glob(nodes_glob, les_elems2);
+      const ArrOfInt& facesIndex = poly.getFacesIndex();
+      const ArrOfInt& polyhedronIndex = poly.getPolyhedronIndex();
+      assert(ncells == polyhedronIndex.size_array() - 1);
+      for (int i = 0; i < ncells; i++)
         {
-          /*
-          Cerr << "\tface=" << face;
-          for (int j=0; j<nb_comp; j++) Cerr << " " << xv(face, j);
-          Cerr << finl; */
-          // Face globale MED
-          int index = descIndx->getIJ(elem, 0);
-          int face_med = desc->getIJ(index + i, 0);
-          /*
-          Cerr << "\tface_med=" << face_med;
-          for (int j=0; j<nb_comp; j++) Cerr << " " << xv_med->getIJ(face_med, j);
-          Cerr << finl; */
-          // Centre des faces TRUST et MED
-          for (int j=0; j<nb_comp; j++)
+          int size = 0;
+          for (int face = polyhedronIndex[i]; face < polyhedronIndex[i + 1]; face++)
+            size += facesIndex[face + 1] - facesIndex[face] + 1;
+          size--; // No -1 at the end of the cell
+          ArrOfInt cell_def(size);
+          size = 0;
+          for (int face = polyhedronIndex[i]; face < polyhedronIndex[i + 1]; face++)
             {
-              xv1->setIJ(i, j, xv(f, j));
-              xv2->setIJ(i, j, xv_med->getIJ(face_med, j));
+              for (int node = facesIndex[face]; node < facesIndex[face + 1]; node++)
+                cell_def[size++] = nodes_glob[node];
+              if (size < cell_def.size_array())
+                // Add -1 to mark the end of a face:
+                cell_def[size++] = -1;
             }
-        }
-      renum_local = xv2->findClosestTupleId(xv1);
-      for (int i=0; i<renum_local->getNumberOfTuples(); i++)
-        {
-          int i_med = renum_local->getIJ(i, 0);
-          int face_med = desc->getIJ(descIndx->getIJ(elem, 0) + i_med, 0);
-          int face = elem_faces(elem, i);
-          /*
-          Cerr << "Local: " << i_med << " -> " << (int)i << finl;
-          Cerr << "Global:" << face_med << " -> " << face << finl;
-           */
-          renum(face_med) = face;
+          mc_mesh_->insertNextCell(cell_type, cell_def.size_array(), cell_def.addr());
         }
     }
+  else
+    {
+      // Other cells:
+      for (int i = 0; i < ncells; i++)
+        {
+          int nvertices = nverts;
+          for (int j = 0; j < nverts; j++)
+            if (les_elems2(i, j) < 0)
+              nvertices--; // Some cell type has not a constant number of vertices (eg: Polyhedron)
+          mc_mesh_->insertNextCell(cell_type, nvertices, les_elems2.addr() + i * nverts);
+        }
+    }
+
+#endif
+}
+
+/*! @brief Build the MEDCoupling **face** mesh.
+ *  It is always made of polygons (in 3D) for simplicity purposes.
+ *  Face numbers (and node numbers) are the same as in TRUST.
+ *
+ *  It unfortunately needs a Domaine_dis_base since this is at this level that the face_sommets relationship is held ...
+ */
+void Domaine::build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const
+{
+#ifdef MEDCOUPLING_
+  using DAId = MCAuto<DataArrayIdType>;
+
+  // Build descending connectivity and convert it to polygons
+  assert(mc_mesh_.isNotNull());
+  DAId desc(DataArrayIdType::New()), descIndx(DataArrayInt::New()), revDesc(DataArrayInt::New()), revDescIndx(DataArrayInt::New());
+  mc_face_mesh_ = mc_mesh_->buildDescendingConnectivity(desc, descIndx, revDesc, revDescIndx);
+  if (Objet_U::dimension == 3) mc_face_mesh_->convertAllToPoly();
+
+  // Build second temporary mesh (with shared nodes!) having the TRUST connectivity
+  MCAuto<MEDCouplingUMesh> faces_tmp = mc_face_mesh_->deepCopyConnectivityOnly();
+  const IntTab& faces_sommets = ref_cast(Domaine_VF, domaine_dis_base).face_sommets();
+  int nb_fac = faces_sommets.dimension(0);
+  int max_som_fac = faces_sommets.dimension(1);
+  assert((int)mc_face_mesh_->getNumberOfCells() == nb_fac);
+  DAId c(DataArrayInt::New()), cI(DataArrayInt::New());
+  c->alloc(0,1);
+  cI->alloc(nb_fac+1, 1);
+  mcIdType *cIP = cI->getPointer();
+  cIP[0] = 0; // better not forget this ...
+  mcIdType typ = Objet_U::dimension == 3 ? INTERP_KERNEL::NormalizedCellType::NORM_POLYGON : INTERP_KERNEL::NormalizedCellType::NORM_SEG2;
+
+  for (int fac=0; fac<nb_fac; fac++)  // Fills the two MC arrays c and cI describing the connectivity of the face mesh
+    {
+      c->pushBackSilent(typ);
+      int i=0, s=-1;
+      for (; i <  max_som_fac && (s = faces_sommets(fac, i)) >= 0; i++)  c->pushBackSilent(s);
+      cIP[fac+1] = cIP[fac] + i + 1; // +1 because of type
+    }
+  faces_tmp->setConnectivity(c, cI);
+
+  // Then we can simply identify cells by their nodal connectivity:
+  DataArrayIdType * mP;
+  mc_face_mesh_->areCellsIncludedIn(faces_tmp,2, mP);
+  DAId renum(mP);
+#ifndef NDEBUG
+  // All cells should be found:
+  DAId outliers = renum->findIdsNotInRange(0, nb_fac);
+  if (outliers->getNumberOfTuples() != 0)
+    Process::exit("Invalid renumbering arrays! Should not happen. Some faces could not be matched between the TRUST face domain and the buildDescendingConnectivity() version.");
+#endif
+
 #ifdef NDEBUG
   bool check = false;
 #else
   bool check = true;
 #endif
-  // Apply the renumbering:
-  faces_mesh_->renumberCells(renum.addr(), check);
+  // Apply the renumbering so that final mc_face_mesh_ has the same face number as in TRUST
+  mc_face_mesh_->renumberCells(renum->begin(), check);
 #ifndef NDEBUG
-  faces_mesh_->checkConsistency();
+  mc_face_mesh_->checkConsistency();
 #endif
 #endif
 }

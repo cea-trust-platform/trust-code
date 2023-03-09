@@ -17,11 +17,7 @@
 #include <Domaine.h>
 #include <med++.h>
 #include <Domaine_VF.h>
-#include <Champ_Inc_base.h>
 #include <TRUSTTabs.h>
-#include <LireMED.h>
-#include <Polyedre.h>
-#include <Polygone.h>
 #include <Char_ptr.h>
 #include <medcoupling++.h>
 #include <ctime>
@@ -84,7 +80,8 @@ Entree& EcrMED::readOn(Entree& is)
 EcrMED::EcrMED(const Nom& file_name, const Domaine& dom):
   major_mode_(false),
   nom_fichier_(file_name),
-  dom_(dom)
+  dom_(dom),
+  mcumesh_(nullptr)
 {
 }
 
@@ -242,154 +239,51 @@ void EcrMED::ecrire_domaine(bool append)
   ecrire_domaine_dis(domaine_dis_base, append);
 }
 
-/*! @brief Ecrit le domaine dom dans le fichier nom_fichier_
- *
- * @param append = false nouveau fichier, append = true ajout du domaine dans le fichier
+
+/*! @brief Fill the face mesh of the MEDFileUMesh member  mfumesh_
  */
-void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
+void EcrMED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base)
 {
-  const Nom& nom_dom = dom_->le_nom();
-  const  DoubleTab& sommets=dom_->les_sommets();
-  Nom type_elem=dom_->type_elem()->que_suis_je();
-
-  const IntTab& les_elems=dom_->les_elems();
-
-  Noms type_face;
-  IntTabs all_faces_bord;
-  Noms noms_bords;
+  int ncells = (int)mcumesh_->getNumberOfCells();
   ArrsOfInt familles;
-  // remplit le tableau all_faces_bords ainsi que noms_bords et familles
+
+  // Remplit le tableau all_faces_bords ainsi que noms_bords et familles
+  IntTabs all_faces_bord;
+  Noms type_face;
+  Noms noms_bords;
   creer_all_faces_bord(type_face, all_faces_bord,  noms_bords,familles);
   // connectivite Trio a MED
   for (int j=0; j<type_face.size(); j++)
-    renum_conn(all_faces_bord[j],type_face[j],1);
-  IntTab les_elems2(les_elems);
-
-  // connectivite Trio a MED
-  renum_conn(les_elems2,type_elem,1);
-
-  if (dimension==0)
-    {
-      Cerr << "Dimension is not defined. Check your data file." << finl;
-      Process::exit();
-    }
-  if (0)
-    {
-      Cerr << "Writing of the domain at the med format"<<finl
-           <<"nom_fichier_ = " << nom_fichier_<< finl
-           << "nom_dom ="<<nom_dom<<finl;
-      Cerr << "dimension = " << dimension<< finl
-           << "noms_bords= " << noms_bords<< finl;
-    }
-#ifdef MEDCOUPLING_
-  Cerr << "Creating a MEDCouplingUMesh object for the domain " << nom_dom << finl;
-  // Get MEDCoupling cell type and mesh dimension:
-  int mesh_dimension = -1;
-  INTERP_KERNEL::NormalizedCellType cell_type = type_geo_trio_to_type_medcoupling(type_elem, mesh_dimension);
-  int ncells = les_elems2.dimension(0);
-  int nverts = les_elems2.dimension(1);
-  MCAuto<MEDCouplingUMesh> mesh(MEDCouplingUMesh::New(nom_dom.getChar(), mesh_dimension));
-  // Nodes:
-  int nnodes = sommets.dimension(0);
-  MCAuto<DataArrayDouble> points(DataArrayDouble::New());
-  if (nnodes==0)
-    points->alloc(0, dimension);
-  else
-    points->useArray(sommets.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, nnodes, dimension);
-  points->setInfoOnComponent(0, "x");
-  points->setInfoOnComponent(1, "y");
-  if (dimension == 3) points->setInfoOnComponent(2, "z");
-  mesh->setCoords(points);
-  mesh->allocateCells(ncells);
-  // Cells
-  if (cell_type == INTERP_KERNEL::NORM_POLYHED)
-    {
-      // Polyedron is special, seepage 10:
-      // http://trac.lecad.si/vaje/chrome/site/doc8.3.0/extra/Normalisation_pour_le_couplage_de_codes.pdf
-      const Polyedre& Poly = ref_cast(Polyedre, dom_->type_elem().valeur());
-      ArrOfInt Nodes_glob;
-      Poly.remplir_Nodes_glob(Nodes_glob, les_elems2);
-      const ArrOfInt& FacesIndex = Poly.getFacesIndex();
-      const ArrOfInt& PolyhedronIndex = Poly.getPolyhedronIndex();
-      assert(ncells == PolyhedronIndex.size_array() - 1);
-      for (int i = 0; i < ncells; i++)
-        {
-          int size = 0;
-          for (int face = PolyhedronIndex[i]; face < PolyhedronIndex[i + 1]; face++)
-            size += FacesIndex[face + 1] - FacesIndex[face] + 1;
-          size--; // No -1 at the end of the cell
-          ArrOfInt cell_def(size);
-          size = 0;
-          for (int face = PolyhedronIndex[i]; face < PolyhedronIndex[i + 1]; face++)
-            {
-              for (int node = FacesIndex[face]; node < FacesIndex[face + 1]; node++)
-                {
-                  cell_def[size] = Nodes_glob[node];
-                  size++;
-                }
-              if (size < cell_def.size_array())
-                {
-                  // Add -1 to mark the end of a face:
-                  cell_def[size] = -1;
-                  size++;
-                }
-            }
-          mesh->insertNextCell(cell_type, cell_def.size_array(), cell_def.addr());
-        }
-    }
-  else
-    {
-      // Other cells:
-      for (int i = 0; i < ncells; i++)
-        {
-          int nvertices = nverts;
-          for (int j = 0; j < nverts; j++)
-            if (les_elems2(i, j) < 0)
-              nvertices--; // Some cell type has not a constant number of vertices (eg: Polyhedron)
-          mesh->insertNextCell(cell_type, nvertices, les_elems2.addr() + i * nverts);
-        }
-    }
-  MCAuto<MEDFileUMesh> file(MEDFileUMesh::New());
-  file->setName(mesh->getName()); //name needed to be non empty
-  file->setCoords(mesh->getCoords());
-  file->setMeshAtLevel(0, mesh, false);
-  // Check and store the mesh
-#ifndef NDEBUG
-  mesh->checkConsistency();
-#endif
-  dom_->setUMesh(mesh);
+    conn_trust_to_med(all_faces_bord[j],type_face[j],1);
 
   // Family for the cells:
   int global_family_id = -1000;
   MCAuto<DataArrayInt> famArr(DataArrayInt::New());
   famArr->alloc(ncells);
   famArr->fillWithValue(global_family_id);
-  file->setFamilyFieldArr(0, famArr);
+  mfumesh_->setFamilyFieldArr(0, famArr);
   // Name the family and check unicity:
   Nom family_name = noms_bords.search(dom_->le_nom()) != -1 ? "cpy_" : "";
   family_name += dom_->le_nom();
-  file->addFamily(family_name.getString(), global_family_id);
+  mfumesh_->addFamily(family_name.getString(), global_family_id);
 
-  // Faces:
-  int nfaces;
-  MCAuto<DataArrayInt> renum_boundary_cell(DataArrayInt::New());
-  // If the domain has faces (eg:domain computation), we can create a faces mesh, else only a boundary mesh
+  int nfaces=-1;
+  // If the domain has faces (eg:domain computation), we can create a face mesh (all faces, incl internal ones), else only a boundary mesh
   if (domaine_dis_base.non_nul() && ref_cast(Domaine_VF, domaine_dis_base.valeur()).elem_faces().size()>0)
     {
       // Faces mesh:
-      dom_->buildUFacesMesh(domaine_dis_base.valeur());
-      MCAuto<MEDCouplingUMesh>& faces_mesh = dom_->getUFacesMesh();
-      faces_mesh->setCoords(mesh->getCoords());
-      faces_mesh->setName(mesh->getName());
-      renum_boundary_cell = faces_mesh->sortCellsInMEDFileFrmt();
-      file->setMeshAtLevel(-1, faces_mesh, false);
+      dom_->build_mc_face_mesh(domaine_dis_base.valeur());
+      const MEDCouplingUMesh *faces_mesh = dom_->get_mc_face_mesh();
+      MCAuto<MEDCouplingUMesh> face_mesh2 = faces_mesh->clone(false); // perform a super light copy, no data array copied
+      face_mesh2->setName(mfumesh_->getName());  // names have to be aligned ...
+      mfumesh_->setMeshAtLevel(-1, face_mesh2, false);
       nfaces = faces_mesh->getNumberOfCells();
     }
   else
     {
       // Boundary mesh:
-      MCAuto<MEDCouplingUMesh> boundary_mesh(MEDCouplingUMesh::New(mesh->getName(), mesh_dimension - 1));
-      boundary_mesh->setCoords(mesh->getCoords());
+      MCAuto<MEDCouplingUMesh> boundary_mesh(MEDCouplingUMesh::New(mcumesh_->getName(), mesh_dimension_ - 1));
+      boundary_mesh->setCoords(mcumesh_->getCoords());
       nfaces = 0;
       int nb_type_face = familles.size();
       for (int j = 0; j < nb_type_face; j++)
@@ -400,12 +294,12 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
           int size = familles[j].size_array();
           if (size)
             {
-              // Converting trio to medcoupling boundary cell:
+              // Converting TRUST to MC boundary cell:
               int boundary_mesh_dimension = -1;
               INTERP_KERNEL::NormalizedCellType type_boundary_cell = type_geo_trio_to_type_medcoupling(type_face[j],
                                                                                                        boundary_mesh_dimension);
-              assert(boundary_mesh_dimension == mesh_dimension - 1);
-              nverts = all_faces_bord[j].dimension(1);
+              assert(boundary_mesh_dimension == mesh_dimension_ - 1);
+              int nverts = all_faces_bord[j].dimension(1);
               for (int i = 0; i < size; i++)
                 {
                   int nvertices = nverts;
@@ -416,11 +310,10 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
                 }
             }
         }
-      renum_boundary_cell = boundary_mesh->sortCellsInMEDFileFrmt();
-      file->setMeshAtLevel(-1, boundary_mesh, false);
+      mfumesh_->setMeshAtLevel(-1, boundary_mesh, false);
     }
 
-  bool use_group_instead_of_family = false;
+  constexpr bool use_group_instead_of_family = false;
   if (use_group_instead_of_family)
     {
       //(ToDo try to hide family notion for MEDCoupling and use group instead)
@@ -436,38 +329,76 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
         for (int i = 0; i < familles[j].size_array(); i++)
           {
             int family_id = familles[j][i];
-            family_array->setIJ(renum_boundary_cell->getIJ(face, 0), 0, family_id);
+            family_array->setIJ(face, 0, family_id);
             face++;
           }
       // Faces internes (faimily_id=0):
       for (; face<nfaces; face++)
-        family_array->setIJ(renum_boundary_cell->getIJ(face, 0), 0, 0);
-      file->setFamilyFieldArr(-1, family_array);
+        family_array->setIJ(face, 0, 0);
+      mfumesh_->setFamilyFieldArr(-1, family_array);
       // Naming family on boundaries:
       for (int i = 0; i < noms_bords.size(); i++)
         {
           int family_id = -(i + 1);
-          file->addFamily(noms_bords[i].getString(), family_id);
+          mfumesh_->addFamily(noms_bords[i].getString(), family_id);
           std::vector<std::string> grps(1);
           grps[0] = noms_bords[i].getString();
-          file->setGroupsOnFamily(noms_bords[i].getString(), grps);
+          mfumesh_->setGroupsOnFamily(noms_bords[i].getString(), grps);
         }
       // Faces internes:
       std::string name = "faces_internes";
-      file->addFamily(name, 0);
+      mfumesh_->addFamily(name, 0);
       std::vector<std::string> grps(1);
       grps[0] = name;
-      file->setGroupsOnFamily(name, grps);
+      mfumesh_->setGroupsOnFamily(name, grps);
     }
+}
+
+/*! @brief Ecrit le domaine dom dans le fichier nom_fichier_
+ *
+ * @param append = false nouveau fichier, append = true ajout du domaine dans le fichier
+ */
+void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
+{
+  if (Objet_U::dimension==0)
+    Process::exit("Dimension is not defined. Check your data file.");
+#ifndef MEDCOUPLING_
+  med_non_installe(); // actually MEDCoupling ... but will do.
+#else
+
+  // Retrieve (or build!) the MEDCouplingUMesh associated with the domain:
+  if (dom_->get_mc_mesh() == nullptr)  // was not already filled when the domain was read from MED for example
+    {
+      Cerr << "EcrMED: Creating a MEDCouplingUMesh object for the domain '" << dom_->le_nom() << "'" << finl;
+      dom_->build_mc_mesh();
+    }
+  else
+    Cerr << "EcrMED: Found an existing MEDCouplingUMesh object for the domain '" << dom_->le_nom() << "'" << finl;
+  mcumesh_ = dom_->get_mc_mesh();
+  mesh_dimension_ = mcumesh_->getMeshDimension();
+  MEDCouplingUMesh *mc_no_const = const_cast<MEDCouplingUMesh *>(mcumesh_);  // because of setCoords() and setMeshAtLevel()
+
+  // Prepare final MEDFileUMesh object:
+  mfumesh_ = MEDFileUMesh::New();
+  mfumesh_->setName(mcumesh_->getName());      // name must be provided
+  mfumesh_->setCoords(mc_no_const->getCoords());  // should be the same coord array for all levels (i.e. dom->les_sommets())
+  mfumesh_->setMeshAtLevel(0, mc_no_const, false);
+
+  // Check the mesh
+#ifndef NDEBUG
+  mcumesh_->checkConsistency();
+#endif
+
+  // Faces and group of faces representing boundaries:
+  fill_faces_and_boundaries(domaine_dis_base);
+
   // Write:
   int option = (append ? 1 : 2); /* 2: reset file. 1: append, 0: overwrite objects */
-  Cerr<<"Writing file " << nom_fichier_<<" (append=" << (append ? "true": "false") << ") ..."<<finl;
+  Cerr<<"Writing file '" << nom_fichier_<<"' with mesh name '" << mfumesh_->getName() << "' (append=" << (append ? "true": "false") << ") ..."<<finl;
   if (major_mode_)
-    file->write40(nom_fichier_.getString(), option);
+    mfumesh_->write40(nom_fichier_.getString(), option);
   else
-    file->write(nom_fichier_.getString(), option);
-#else
-  med_non_installe(); // actually MEDCoupling ... but will do.
+    mfumesh_->write(nom_fichier_.getString(), option);
 #endif
 }
 
@@ -520,18 +451,16 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab&
   field->setTimeUnit("s");
 
   // Try to get directly the mesh from the domain:
-  if (dom_->getUMesh() != NULL)
+  if (dom_->get_mc_mesh() != nullptr)
     {
       if (type == "CHAMPFACES")
-        field->setMesh(dom_->getUFacesMesh());
+        field->setMesh(dom_->get_mc_face_mesh());
       else
-        field->setMesh(dom_->getUMesh());
+        field->setMesh(dom_->get_mc_mesh());
     }
   else
     {
       // Get mesh from the file (less optimal but sometime necessary: eg: call from latatoother::interpreter())
-      //const MCAuto<MEDFileUMesh> file_mesh(MEDFileUMesh::New(file_name));
-      //const MCAuto<MEDCouplingUMesh> umesh = file_mesh->getMeshAtLevel(0);
       std::string mesh_name = nom_dom.getString();
       if (nom_dom!="PARTICULES")
         {
@@ -551,7 +480,6 @@ void EcrMED::ecrire_champ(const Nom& type, const Nom& nom_cha1, const DoubleTab&
               throw INTERP_KERNEL::Exception(oss.str());
             }
 
-          //const MCAuto<MEDCouplingUMesh> umesh_particles = file_mesh->getMeshAtLevel(1);
           const MCAuto<MEDCouplingUMesh> umesh_particles = mmuPtr->getMeshAtLevel(1);
           field->setMesh(umesh_particles);
         }

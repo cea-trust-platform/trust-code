@@ -591,16 +591,15 @@ ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const 
 MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order)
 {
   // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
-  bool fast = meshName == domaine().le_nom() && domaine().getUMesh() != NULL;
+  bool fast = meshName == domaine().le_nom() && domaine().get_mc_mesh() != nullptr;
   Cerr << "Reading" << (fast ? " (fast)" : "") << " the field " << fieldName << " on the " << meshName << " mesh into " << fileName << " file";
   MCAuto<MEDCouplingField> ffield;
-  Cerr << "meshName " << meshName << " " << domaine().le_nom()  << " " << (int)(domaine().getUMesh()!=NULL) << finl;
+  Cerr << "meshName " << meshName << " " << domaine().le_nom()  << " " << (int)(domaine().get_mc_mesh() != nullptr) << finl;
 
   if (fast) // Lecture plus rapide du field sans lecture du mesh associe
     {
       MCAuto<MEDFileField1TS> file = MEDCoupling::MEDFileField1TS::New(fileName, fieldName, iteration, order);
-      ffield = file->getFieldOnMeshAtLevel(field_type, domaine().getUMesh(), 0);
-
+      ffield = file->getFieldOnMeshAtLevel(field_type, domaine().get_mc_mesh(), 0);
     }
   else   // Lecture ~deux fois plus lente du field avec lecture du mesh associe
     {

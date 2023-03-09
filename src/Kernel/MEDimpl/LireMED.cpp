@@ -401,7 +401,7 @@ Nom LireMED::type_medcoupling_to_type_geo_trio(int type_cell, bool cell_from_bou
 #endif
 
 
-/*! @brief Load the mesh from the MED file as a MEDCouplingUMesh.
+/*! @brief Load the mesh from the MED file as a MEDCouplingUMesh, and name it as the domain.
  */
 #ifdef MEDCOUPLING_
 void LireMED::retrieve_MC_objects()
@@ -426,6 +426,9 @@ void LireMED::retrieve_MC_objects()
     }
 
   mfumesh_ = MEDFileUMesh::New(fileName, meshName);
+  // Name it correctly here so that all extracted MEDCouplingUMesh will be correctly named:
+  mfumesh_->setName( domaine().le_nom().getChar());
+
   axis_type_ = mfumesh_->getAxisType();
   // Some checks:
   std::vector<int> nel = mfumesh_->getNonEmptyLevels();
@@ -964,7 +967,7 @@ void LireMED::lire_geom(bool subDom)
   // Stockage du mesh au niveau du domaine, utile pour:
   //  - Champ_Fonc_MED plus rapide (maillage non relu)
   //  - futurs developpements avec MEDCoupling
-  dom.setUMesh(mcumesh_);
+  dom.set_mc_mesh(mcumesh_);
 
   // Reading vertices and element descriptions:
   DoubleTab sommets2;
@@ -989,8 +992,8 @@ void LireMED::lire_geom(bool subDom)
 
   // Converting from MED to TRUST connectivity
   Nom type_elem_n = type_elem_.valeur().que_suis_je();  // prepare_som_and_elem() has performed the 'typer' operation on type_elem_
-  renum_conn(les_elems2,type_elem_n,false);
-  renum_conn(all_faces_bords,type_face_,false);
+  conn_trust_to_med(les_elems2,type_elem_n,false);
+  conn_trust_to_med(all_faces_bords,type_face_,false);
 
   Scatter::uninit_sequential_domain(dom);
 

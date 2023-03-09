@@ -288,11 +288,12 @@ public:
   /// MEDCoupling:
   ///
 #ifdef MEDCOUPLING_
-  inline MCAuto<MEDCouplingUMesh>& getUMesh() const  {   return mesh_;   };
-  inline MCAuto<MEDCouplingUMesh>& getUFacesMesh() const   {   return faces_mesh_;   };
-  inline void setUMesh(MCAuto<MEDCouplingUMesh>& m) const  {   mesh_ = m->clone(true);   };
+  inline const MEDCouplingUMesh* get_mc_mesh() const         {   return mc_mesh_;   };
+  inline const MEDCouplingUMesh* get_mc_face_mesh() const    {   return mc_face_mesh_;   };
+  inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  {   mc_mesh_ = m;   };
 #endif
-  void buildUFacesMesh(const Domaine_dis_base& domaine_dis_base) const;
+  void build_mc_mesh() const;
+  void build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const;
 
   ///
   /// Parallelism and virtual items management
@@ -357,9 +358,9 @@ protected:
 
 #ifdef MEDCOUPLING_
   ///! MEDCoupling version of the domain:
-  mutable MCAuto<MEDCouplingUMesh> mesh_;
-  ///! MEDCoupling version of the faces domain:
-  mutable MCAuto<MEDCouplingUMesh> faces_mesh_;
+  mutable MCAuto<MEDCouplingUMesh> mc_mesh_;
+  ///! MEDCoupling version of the face domain:
+  mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
 #endif
 
   void duplique_faces_internes();
