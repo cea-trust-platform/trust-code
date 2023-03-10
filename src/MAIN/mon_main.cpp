@@ -198,7 +198,11 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
     Cerr << arguments_info;
 
 #ifdef _OPENMP
-  init_openmp();
+  // ToDo: OMP_TARGET_OFFLOAD=DISABLED equivaut a TRUST_DISABLE_DEVICE=1
+  // donc peut etre supprimer cette derniere variable (qui disable aussi rocALUTION sur GPU dans le code mais pas AmgX encore)...
+  // https://www.openmp.org/spec-html/5.0/openmpse65.html
+  char const* var = getenv("OMP_TARGET_OFFLOAD");
+  if (var==NULL || std::string(var)!="DISABLED") init_openmp();
 #endif
 }
 
