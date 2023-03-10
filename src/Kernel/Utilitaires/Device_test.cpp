@@ -283,7 +283,7 @@ bool self_test()
         assert(const_b[0] == -10);
         assert(const_b[b.size()-1] == -10);
       }
-      // ToDo: Ameliorer DoubleTrav:
+      // DoubleTrav
       {
         DoubleTrav a(N);
         a = 1;
@@ -298,6 +298,15 @@ bool self_test()
         assert(b.get_dataLocation() == HostOnly);
         mapToDevice(b, "b"); // copy ToDo cela devrait etre un update
       }
+      // ToDo: Ameliorer DoubleTrav: En particulier:
+      /*
+      {
+          DoubleTab a(N);
+          a=1;
+          mapToDevice(a); // Sur le device
+          DoubleTrav b(a); // b doit etre sur le device ? Attention il faut gerer un DoubleTrav sur le GPU...
+          assert(b.get_dataLocation()==Device);
+      }*/
       // ToDo:Comment gerer les DoubleTab_Parts ? Pas facile donc pour le moment
       // le constructeur par copie fait un copyFromDevice du DoubleTab...
       /*

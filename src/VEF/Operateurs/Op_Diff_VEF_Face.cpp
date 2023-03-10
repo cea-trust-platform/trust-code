@@ -281,7 +281,8 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   assert(nb_comp>1);
   int nb_bords=domaine_VEF.nb_front_Cl();
   int ind_face;
-
+  // ToDo OpenMP ajouter copyPartial resu/inconnue pourrait etre deja sur le device...
+  start_timer();
   for (n_bord0=0; n_bord0<nb_bords; n_bord0++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord0);
@@ -359,6 +360,8 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
             }
         }
     }//Fin for n_bord
+  end_timer(0, "Boundary condition on resu in Op_Diff_VEF_Face::ajouter_cas_vectoriel");
+
   const DoubleTab& face_normales=domaine_VEF.face_normales();
   const DoubleVect& inverse_volumes=domaine_VEF.inverse_volumes();
 
@@ -416,7 +419,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
             }
         }
     }// Fin faces internes
-  end_timer("Face loop in Op_Diff_VEF_Face::ajouter");
+  end_timer(1, "Face loop in Op_Diff_VEF_Face::ajouter");
 
   // Update flux_bords on symmetry:
   for (int n_bord=0; n_bord<nb_bords; n_bord++)

@@ -76,16 +76,17 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   const double * porosite_face_addr = mapToDevice(porosite_face);
   const double * volumes_entrelaces_addr = mapToDevice(volumes_entrelaces);
   double * sm_addr = sm.addr();
-  start_timer();
 #ifdef _OPENMP
-  bool kernelOnDevice = sm.isKernelOnDevice("Masse_VEF_P1NC::appliquer_impl");
+  start_timer();
+  bool kernelOnDevice = sm.isKernelOnDevice("Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
   #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
 #endif
   for (int face=num_std; face<nfa; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
-  end_timer("Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
-
+#ifdef _OPENMP
+  end_timer(kernelOnDevice, "Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
+#endif
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
   // les faces internes non standard ne portent pas de C.L
@@ -147,16 +148,17 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
   copyPartialToDevice(sm, 0, domaine_VEF.premiere_face_int() * nbcomp, "sm on boundary");  // On traite les faces internes non standard
   const double * volumes_entrelaces_Cl_addr = mapToDevice(volumes_entrelaces_Cl);
-  start_timer();
 #ifdef _OPENMP
-  kernelOnDevice = sm.isKernelOnDevice("Masse_VEF_P1NC::appliquer_impl");
+  start_timer();
+  kernelOnDevice = sm.isKernelOnDevice("Face loop (non-std) in Masse_VEF_P1NC::appliquer_impl");
   #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
 #endif
   for (int face=num_int; face<num_std; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
-  end_timer("Face loop (non-std) in Masse_VEF_P1NC::appliquer_impl");
-  copyFromDevice(sm); // ToDo supprimer
+#ifdef _OPENMP
+  end_timer(kernelOnDevice, "Face loop (non-std) in Masse_VEF_P1NC::appliquer_impl");
+#endif
   //sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, sm=",sm);
   return sm;

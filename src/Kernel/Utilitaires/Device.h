@@ -24,8 +24,9 @@ extern bool self_test();
 
 extern void init_openmp();
 extern void init_cuda();
+extern std::string toString(const void* adr);
 extern void start_timer(int size=-1);
-extern void end_timer(const std::string& str, int size=-1);
+extern void end_timer(int onDevice, const std::string& str, int size=-1);
 
 template <typename _TYPE_>
 extern void allocateOnDevice(const TRUSTArray<_TYPE_>& tab);

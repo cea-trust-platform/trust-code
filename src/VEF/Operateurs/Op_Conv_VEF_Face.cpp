@@ -337,7 +337,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       if (gradient_elem.size_array() == 0) gradient_elem.resize(nb_elem_tot, ncomp_ch_transporte, dimension);  // (du/dx du/dy dv/dx dv/dy) pour un poly
       Champ_P1NC::calcul_gradient(transporte_face, gradient_elem, domaine_Cl_VEF);
 
-      start_timer();
       if (type_op == centre)
         {
           gradient.ref(gradient_elem);
@@ -356,6 +355,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               gradient_face.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
               domaine_VEF.creer_tableau_faces(gradient_face);
             }
+          // ToDo OpenMP copyPartial ?
+          start_timer();
           for (int n_bord = 0; n_bord < nb_bord; n_bord++)
             {
               const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -409,7 +410,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                 }
               gradient.ref(gradient_face);
             }
-          end_timer("Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
+          end_timer(0, "Boundary condition on gradient in Op_Conv_VEF_Face::ajouter");
           // Need offload
           const int *traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
           const int *face_voisins_addr = mapToDevice(face_voisins);
@@ -432,7 +433,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                                                                                       limiteur);
                   }
             } // fin du for faces
-          end_timer("Face loop in Op_Conv_VEF_Face::ajouter");
+          end_timer(1, "Face loop in Op_Conv_VEF_Face::ajouter\n");
           gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
         }// fin if(type_op==muscl)
     }
@@ -474,7 +475,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           const int * rang_elem_non_std_addr = mapToDevice(rang_elem_non_std);
           const int * elem_faces_addr = mapToDevice(elem_faces);
           const double * porosite_face_addr = mapToDevice(porosite_face);
-          const double * porosite_elem_addr = mapToDevice(porosite_elem, "porosite_elem"); // ToDo find why porosite_elem change, not normal !
+          const double * porosite_elem_addr = mapToDevice(porosite_elem, "porosite_elem");
           const double * coord_sommets_addr = mapToDevice(coord_sommets);
           const int * les_elems_addr = mapToDevice(les_elems);
           const double * facette_normales_addr = mapToDevice(facette_normales);
@@ -785,7 +786,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   }
               } // fin de la boucle
           }
-          end_timer("Elem loop in Op_Conv_VEF_Face::ajouter");
+          end_timer(1, "Elem loop in Op_Conv_VEF_Face::ajouter");
           copyFromDevice(flux_b, "flux_b");
         }
       else
@@ -1029,7 +1030,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
       alpha = 1 - alpha;
     } // fin de la boucle
 
-  start_timer();
   int voisine;
   nb_faces_perio = 0;
   double diff1,diff2;
@@ -1038,6 +1038,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   // Boucle sur les bords pour traiter les conditions aux limites
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
+  start_timer();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -1124,9 +1125,9 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
             }
         }
     }
+  end_timer(0, "Boundary condition on resu in Op_Conv_VEF_Face::ajouter\n");
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
   modifier_flux(*this);
-  end_timer("Boundary condition on resu in Op_Conv_VEF_Face::ajouter");
   return resu;
 }
 
@@ -1683,7 +1684,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
               } // fin de la boucle sur les facettes
           } // fin de la boucle
       }
-      end_timer("Elem loop in Op_Conv_VEF_Face::remplir_fluent");
+      end_timer(1, "Elem loop in Op_Conv_VEF_Face::remplir_fluent");
       copyFromDevice(fluent_, "fluent_");
     }
   else

@@ -130,14 +130,17 @@ void start_timer(int size)
   if (clock_on!=NULL) clock_start = Statistiques::get_time_now();
   if (size==-1) statistiques().begin_count(gpu_kernel_counter_);
 }
-void end_timer(const std::string& str, int size) // Return in [ms]
+void end_timer(int onDevice, const std::string& str, int size) // Return in [ms]
 {
-  if (size==-1) statistiques().end_count(gpu_kernel_counter_);
+  if (size==-1 && onDevice) statistiques().end_count(gpu_kernel_counter_); // ToDo cancel if not onDevice
   if (clock_on!=NULL) // Affichage
     {
       double ms = 1000 * (Statistiques::get_time_now() - clock_start);
       if (size==-1)
-        printf("[clock] %7.3f ms [Kernel] %15s\n", ms, str.c_str());
+        if (onDevice)
+          printf("[clock] %7.3f ms [Kernel] %15s\n", ms, str.c_str());
+        else
+          printf("[clock] %7.3f ms [Host]   %15s\n", ms, str.c_str());
       else
         {
           double mo = (double)size / 1024 / 1024;
@@ -224,7 +227,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
           size = 0;
         }
     }
-  if (message!="") end_timer(message, size);
+  if (message!="") end_timer(1, message, size);
 #endif
   return tab_addr;
 }
@@ -253,7 +256,7 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
       statistiques().end_count(gpu_copyfromdevice_counter_, size);
       std::string message;
       message = "Copy from device of array "+arrayName+" ["+toString(tab.addr())+"]";
-      end_timer(message, size);
+      end_timer(1, message, size);
       if (clock_on) printf("\n");
       tab.set_dataLocation(HostDevice);
     }
@@ -289,8 +292,7 @@ void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::strin
       statistiques().end_count(gpu_copyfromdevice_counter_, size);
       std::string message;
       message = "Partial update from device of array "+arrayName+" ["+toString(tab.addr())+"]";
-      end_timer(message, size);
-      if (clock_on) printf("\n");
+      end_timer(1, message, size);
       tab.set_dataLocation(PartialHostDevice);
     }
 #endif
@@ -311,8 +313,7 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
       statistiques().end_count(gpu_copytodevice_counter_, size);
       std::string message;
       message = "Partial update to device of array "+arrayName+" ["+toString(tab.addr())+"]";
-      end_timer(message, size);
-      if (clock_on) printf("\n");
+      end_timer(1, message, size);
       tab.set_dataLocation(Device);
     }
 #endif

@@ -269,48 +269,47 @@ private:
 
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
   Storage storage_type_;
-  // ToDo: essayer de deplacer ces implementations de methodes dans Device? Attention a l'inline
-  #pragma omp declare target
+
+  // Methodes de verification que le tableau est a jour sur le host:
+  // ToDo:Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
 #ifdef _OPENMP
-//#ifndef NDEBUG
     if (tab.get_dataLocation()==Device)
       {
-        Cerr << "Warning! copyFromDevice(tab) done cause const TRUSTArray tab will used on the host... Try to keep data on the device!" << finl;
-        copyFromDevice(tab);
+        copyFromDevice(tab, "const detected with checkDataOnHost()");
         //Cerr << "Error! A const TRUSTArray tab is used on the host whereas its dataLocation=Device" << finl;
         //Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
         //Process::exit();
       }
-//#endif
 #endif
   }
-  #pragma omp end declare target
-  #pragma omp declare target
   inline void checkDataOnHost(TRUSTArray& tab)
   {
 #ifdef _OPENMP
-//#ifndef NDEBUG
-    if (tab.get_dataLocation()==Device)
+    const DataLocation& loc = tab.get_dataLocation();
+    if (loc==Host || loc==HostOnly || loc==PartialHostDevice) return;
+    else if (loc==Device)
       {
-        Cerr << "Warning! copyFromDevice(tab) done cause non-const TRUSTArray tab will be changed on the host... Try to keep data on the device!" << finl;
-        copyFromDevice(tab);
+        copyFromDevice(tab, "non-const detected with checkDataOnHost()");
         //Cerr << "Error! A non-const TRUSTArray tab will be computed on the host whereas its dataLocation=Device" << finl;
         //Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
         //Process::exit();
       }
-//#endif
-    if (tab.get_dataLocation()!=HostOnly && tab.get_dataLocation()!=PartialHostDevice)
-      set_dataLocation(Host); // On va modifier le tableau sur le host
+    // On va modifier le tableau (non const) sur le host:
+    tab.set_dataLocation(Host);
 #endif
   }
-  #pragma omp end declare target
 
   // Fonction pour connaitre la localisation du tableau
   inline bool isDataOnDevice(const TRUSTArray& tab) const
   {
     return tab.get_dataLocation() == Device || tab.get_dataLocation() == HostDevice;
+  }
+  inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const
+  {
+    if (tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=NULL)
+      Cout << "[clock]            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name << " with a loop on array [" << toString(tab.addr()).c_str() << "]" << tab.size_array() << " elements" << finl;
   }
   // Fonctions isKernelOnDevice pour lancement conditionnel de kernels sur le device:
   // -Si les tableaux passes en parametre sont sur a jour sur le device
@@ -321,11 +320,8 @@ private:
     if (!flag)
       checkDataOnHost(tab);
     else
-      {
-        tab.set_dataLocation(Device); // non const array will be computed on device
-        if (getenv ("TRUST_CLOCK_ON")!=NULL)
-          Cout << "[clock] Launch GPU kernel " << kernel_name << " with a loop of " << tab.size_array() << " elements." << finl;
-      }
+      tab.set_dataLocation(Device); // non const array will be computed on device
+    printKernel(flag, tab, kernel_name);
     return flag;
   }
   inline bool isKernelOnDevice(TRUSTArray& tab, std::string kernel_name)
@@ -334,11 +330,8 @@ private:
     if (!flag)
       checkDataOnHost(tab);
     else
-      {
-        tab.set_dataLocation(Device); // non const array will be computed on device
-        if (getenv ("TRUST_CLOCK_ON")!=NULL)
-          Cout << "[clock] Launch GPU kernel " << kernel_name << " with a loop of " << tab.size_array() << " elements." << finl;
-      }
+      tab.set_dataLocation(Device); // non const array will be computed on device
+    printKernel(flag, tab, kernel_name);
     return flag;
   }
   inline bool isKernelOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name)
@@ -351,11 +344,8 @@ private:
         checkDataOnHost(tab_const);
       }
     else
-      {
-        tab.set_dataLocation(Device); // non const array will be computed on device
-        if (getenv ("TRUST_CLOCK_ON")!=NULL)
-          Cout << "[clock] Launch GPU kernel " << kernel_name << " with a loop of " << tab.size_array() << " elements." << finl;
-      }
+      tab.set_dataLocation(Device); // non const array will be computed on device
+    printKernel(flag, tab, kernel_name);
     return flag;
   }
 };
