@@ -42,10 +42,17 @@ sed -i "1,$ s?#ifdef ROCALUTION_HIP_PINNED_MEMORY?#ifndef ROCALUTION_HIP_PINNED_
 rm -r -f build
 mkdir -p build
 cd build
+
+# Gtest
 [ -f /usr/include/gtest ] && BUILD_CLIENTS="-DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON"
+
+# Valgrind: Disable avx512 instructions cause valgrind don't support yet
+export CXXFLAGS="-mno-avx512f"
+
 # rocALUTION se construit avec GNU/HP-CRAY/INTEL
-CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BASE_EXTP
-CXX=$CXX cmake .. $BUILD_CLIENTS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION || exit -1
+export CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BASE_EXTP
+
+cmake .. $BUILD_CLIENTS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION -DBUILD_SHARED_LIBS=ON || exit -1
 
 # Bidouille pour ROCM anciens... (Attention Adastra (rocm 5.2.0) donc supprimer cette partie si necessaire):
 #if [ -f $ROCM_PATH/include/rocsparse.h ]
