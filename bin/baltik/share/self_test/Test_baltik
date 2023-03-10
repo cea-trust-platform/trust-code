@@ -172,9 +172,9 @@ export TRUST_CREATE_TESTS_FROM_VALIDATION_FORMS=${TRUST_CREATE_TESTS_FROM_VALIDA
 
 #err=0 
 
-if [ "${TRUST_CC_BASE%clang++}" != "$TRUST_CC_BASE" ]
+if [ "${TRUST_CC_BASE%clang++}" != "$TRUST_CC_BASE" ] || [ "${TRUST_CC_BASE%nvc++}" != "$TRUST_CC_BASE" ]
 then
-   echo "Test de cppunit_proj (skipped on clang)"
+   echo "Test de cppunit_proj (skipped on clang and nvc)"
 else
    status_cppunit=0
    #test_cpp_unit 

@@ -14,7 +14,7 @@ define_modules_config()
       echo "source /etc/profile" >> $env
       echo "module purge" >> $env
       #echo "module load gcc/6.5.0 mpich/gcc_6.5.0/3.2.1 || exit -1" >> $env
-      echo "module load gcc/6.5.0 texlive/20220321 || exit -1" >> $env
+      echo "module load gcccore/.8.3.0 gcc/8.3.0 texlive/20220321 || exit -1" >> $env
    fi
    if [ $TRUST_USE_CUDA = 1 ]
    then

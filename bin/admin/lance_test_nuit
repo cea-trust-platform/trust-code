@@ -999,9 +999,10 @@ fi
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "flica5" ]]
       then
-         git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
+         git checkout .
+         git pull 1>tmp.log 2>&1
          cat tmp.log
-         [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
+         [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git pull origin TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
          cd $WORKDIR/tuleap/Maintenance/Composants/$Composant
          git remote update

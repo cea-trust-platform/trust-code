@@ -236,6 +236,8 @@ git pull" > $TRUST_TMP/ssh_com
 	       # Creation du fichier pattern pour --include-from
 	       cd $TRUST_ROOT
 	       rm -f $Build/rsync_include_from
+	       # Ajout des differents HOSTS non suivi par git
+	       (cd ../;find TRUST/env_src/ -name HOST_*.sh -type l) >> $Build/TRUST.files
 	       for file in $Build/TRUST.files
 	       do
 	          VOB=${file%.files}

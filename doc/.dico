@@ -127,6 +127,7 @@
  Champ_front_instationnaire_base Champ_front_instationnaire_base Champ_front_instationnaire_base.h
  Champ_front_lu Champ_front_lu Champ_front_lu.h
  Champ_front_MED Champ_front_MED Champ_front_MED.h
+ Champ_Front_MUSIG Champ_Front_MUSIG Champ_Front_MUSIG.h
  Champ_front_normal Champ_front_normal Champ_front_normal.h
  Champ_front_normal_VEF Champ_front_normal_VEF Boundary_field_inward.h
  Champ_front_pression_from_u Champ_front_pression_from_u Champ_front_pression_from_u.h
@@ -160,6 +161,7 @@
  Champ_input_P0 Champ_input_P0 Champ_input_P0.h
  Champ_Input_P0_Composite Champ_Input_P0_Composite Champ_Input_P0_Composite.h
  Champ_input_uniforme Ch_input_uniforme Ch_input_uniforme.h
+ Champ_MUSIG Champ_MUSIG Champ_MUSIG.h
  Champ_Ostwald Champ_Ostwald Champ_Ostwald.h
  Champ_Ostwald_VDF Champ_Ostwald_VDF Champ_Ostwald_VDF.h
  Champ_Ostwald_VEF Champ_Ostwald_VEF Champ_Ostwald_VEF.h
@@ -271,7 +273,7 @@
  Discret_Thyd Discret_Thyd Discret_Thyd.h
  Dispersion_bulles_base Dispersion_bulles_base Dispersion_bulles_base.h
  Dispersion_bulles_Face_PolyMAC_P0 Dispersion_bulles_PolyMAC_P0 Dispersion_bulles_PolyMAC_P0.h
- Dispersion_bulles_Face_VDF Dispersion_bulles_VDF Dispersion_bulles_VDF.h
+ Dispersion_bulles_VDF_Face Dispersion_bulles_VDF Dispersion_bulles_VDF.h
  Distance_paroi Distanceparoi Distanceparoi.h
  Divergence Champ_Generique_Divergence Champ_Generique_Divergence.h
  Domaine Domaine Domaine.h
@@ -372,6 +374,7 @@
  Fluide_base Fluide_base Fluide_base.h
  Fluide_Dilatable_base Fluide_Dilatable_base Fluide_Dilatable_base.h
  Fluide_Incompressible Fluide_Incompressible Fluide_Incompressible.h
+ Fluide_MUSIG Fluide_MUSIG Fluide_MUSIG.h
  Fluide_Ostwald Fluide_Ostwald Fluide_Ostwald.h
  Fluide_Quasi_Compressible Fluide_Quasi_Compressible Fluide_Quasi_Compressible.h
  Fluide_reel_base Fluide_reel_base Fluide_reel_base.h
@@ -451,6 +454,7 @@
  grad_Champ_Face_PolyMAC_P0 grad_Champ_Face_PolyMAC_P0 grad_Champ_Face_PolyMAC_P0.h
  grad_U_Champ_Face grad_U_Champ_Face grad_U_Champ_Face.h
  grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
+ Gravite_Multiphase Gravite_Multiphase Gravite_Multiphase.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
  Hexaedre Hexaedre Hexaedre.h
  Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
@@ -576,6 +580,7 @@
  Milieu Milieu Milieu.h
  Milieu_base Milieu_base Milieu_base.h
  Milieu_composite Milieu_composite Milieu_composite.h
+ Milieu_MUSIG Milieu_MUSIG Milieu_MUSIG.h
  Modele_Permeabilite Modele_Permeabilite Modele_Permeabilite.h
  Modele_Permeabilite_base Modele_Permeabilite_base Modele_Permeabilite_base.h
  Modele_turbulence_hyd_nul Modele_turbulence_hyd_nul Modele_turbulence_hyd_nul.h
@@ -697,6 +702,8 @@
  Op_Diff_Turbulent_PolyMAC_P0_Elem|Op_Diff_Turbulente_PolyMAC_P0_Elem Op_Diff_Turbulent_PolyMAC_P0_Elem Op_Diff_Turbulent_PolyMAC_P0_Elem.h
  Op_Diff_Turbulent_PolyMAC_P0_Face|Op_Diff_Turbulente_PolyMAC_P0_Face Op_Diff_Turbulent_PolyMAC_P0_Face Op_Diff_Turbulent_PolyMAC_P0_Face.h
  Op_Diff_VDFANISOTROPE_P0_VDF|Op_Diff_VDFANISO_P0_VDF Op_Diff_VDF_Elem_aniso Op_Diff_VDF_Elem_leaves.h
+ Op_Diff_VDFTURBULENTE_Face Op_Dift_Multiphase_VDF_Face Op_Dift_Multiphase_VDF_Face.h
+ Op_Diff_VDFTURBULENTE_P0_VDF Op_Dift_Multiphase_VDF_Elem Op_Dift_Multiphase_VDF_Elem.h
  Op_Diff_VDF_base Op_Diff_VDF_base Op_Diff_VDF_base.h
  Op_Diff_VDF_Elem_base Op_Diff_VDF_Elem_base Op_Diff_VDF_Elem_base.h
  Op_Diff_VDF_Face Op_Diff_VDF_Face Op_Diff_VDF_Face_leaves.h
@@ -887,9 +894,9 @@
  Portance_interfaciale_base Portance_interfaciale_base Portance_interfaciale_base.h
  Portance_interfaciale_Constante Portance_interfaciale_Constante Portance_interfaciale_Constante.h
  Portance_interfaciale_Face_PolyMAC_P0 Portance_interfaciale_PolyMAC_P0 Portance_interfaciale_PolyMAC_P0.h
- Portance_interfaciale_Face_VDF Portance_interfaciale_VDF Portance_interfaciale_VDF.h
  Portance_interfaciale_Sugrue Portance_interfaciale_Sugrue Portance_interfaciale_Sugrue.h
  Portance_interfaciale_Tomiyama Portance_interfaciale_Tomiyama Portance_interfaciale_Tomiyama.h
+ Portance_interfaciale_VDF_Face Portance_interfaciale_VDF Portance_interfaciale_VDF.h
  Postraitements|Post_processings Postraitements Postraitements.h
  Postraitement_base Postraitement_base Postraitement_base.h
  Postraitement|Post_processing Postraitement Postraitement.h
@@ -1198,5 +1205,10 @@
  VF_inst Discr_inst Discr_inst.h
  Viscosite_turbulente_base Viscosite_turbulente_base Viscosite_turbulente_base.h
  Viscosite_turbulente_multiple Viscosite_turbulente_multiple Viscosite_turbulente_multiple.h
+ Vitesse_relative_base Vitesse_relative_base Vitesse_relative_base.h
+ Vitesse_relative_derive_base Vitesse_derive_base Vitesse_derive_base.h
+ Vitesse_relative_derive_constante Vitesse_derive_constante Vitesse_derive_constante.h
+ Vitesse_relative_derive_Forces Vitesse_derive_Forces Vitesse_derive_Forces.h
+ Vitesse_relative_derive_Ishii Vitesse_derive_Ishii Vitesse_derive_Ishii.h
  Y_plus_Champ_Face Y_plus_Champ_Face Y_plus_Champ_Face.h
  Y_plus_Champ_P1NC Y_plus_Champ_P1NC Y_plus_Champ_P1NC.h

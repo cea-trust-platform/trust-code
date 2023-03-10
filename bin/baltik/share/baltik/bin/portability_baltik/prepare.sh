@@ -128,6 +128,7 @@ echo "./configure" >> configure.sh
 
 #echo "./configure && make $MODE" >> make.sh # ajout du configure, necessaire quand il a un pre_configure (ex -std=c++0x)
 echo "make $MODE" >> make.sh
+echo "ret=\$?" >> make.sh
 
 # droits apres la compilation
 if [ "$titan" = "1" ]
@@ -168,6 +169,7 @@ setfacl -Rdm g:dm2s-projet-genepi-rw:rwx $projet
 setfacl -Rx g:dm2s-projet-trust_trio-r $projet
 cd $projet/$projet" >> make.sh
 fi
+echo "exit \$ret" >> make.sh
 
 if [ "$cases" != ""  ]
 then
@@ -203,8 +205,6 @@ if [ $doclean -ge 2 ]
     then
     echo on efface le repertoire
     [ -d $projet ] && rm -rf $projet  && echo repertoire $projet efface
-    # Cas particulier pour FT_IJK avec liens symboliques, necessite menage
-    [ "$projet" = "Front_tracking_IJK" ] && rm -r ../Turbulence Front_tracking_discontinu && echo repertoire Turbulence pour le projet $projet efface
     if [ $doclean -eq 2 ]  && [ -f $project.tar ]
 	then
 	set -xv
