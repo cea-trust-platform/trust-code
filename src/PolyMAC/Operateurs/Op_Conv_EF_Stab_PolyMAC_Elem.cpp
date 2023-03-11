@@ -112,7 +112,8 @@ double Op_Conv_EF_Stab_PolyMAC_Elem::calculer_dt_stab() const
           flux(n) += pf(f) * fs(f) * std::max((e == f_e(f, 1) ? 1 : -1) * vit(f, n), 0.); //seul le flux entrant dans e compte
 
       for (n = 0; n < N; n++)
-        if ((!alp || (*alp)(e, n) > 1e-3) && flux(n)) dt = std::min(dt, pe(e) * ve(e) / flux(n));
+        if ((!alp || (*alp)(e, n) > 1e-3) && std::abs(flux(n)) > 1e-12 /* eviter les valeurs “tres proches de 0 mais pas completement nulles” */)
+          dt = std::min(dt, pe(e) * ve(e) / flux(n));
     }
 
   return Process::mp_min(dt);
