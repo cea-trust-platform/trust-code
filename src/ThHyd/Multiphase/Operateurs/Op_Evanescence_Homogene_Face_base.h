@@ -37,6 +37,7 @@ public :
 protected:
   double alpha_res_ = 0., alpha_res_min_ = 0.; //seuil de declenchement du traitement de l'evanescence
   virtual void calc_grad_alpha_faces(DoubleTab&) const {Process::exit(que_suis_je() + " : calc_grad_alpha_faces is not defined !");};
+  virtual void calc_vort_faces(DoubleTab&) const {Process::exit(que_suis_je() + " : calc_grad_alpha_faces is not defined !");};
 
 private:
   virtual void dimensionner_blocs_aux(std::set<int>&, IntTrav& ,  Matrice_Morse& ) const = 0;

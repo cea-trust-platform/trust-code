@@ -31,6 +31,7 @@ class Vitesse_derive_Forces : public Vitesse_derive_base
 
 public:
   bool needs_grad_alpha() const override {return needs_grad_alpha_;};
+  bool needs_vort() const override {return needs_vort_;};
   void completer() override;
 
 protected:
@@ -38,6 +39,8 @@ protected:
 
   // correlation parameters (circular channel)
   bool needs_grad_alpha_ = 0;
+  bool needs_vort_ = 0;
+  double alpha_lim_=1.e-5;
 };
 
 #endif /* Vitesse_derive_Forces_included */

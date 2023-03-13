@@ -42,6 +42,7 @@ public:
     DoubleTab nut;   // energie cinetique turbulente
     DoubleTab v;     // v(n, d) : vitesse de la phase n dans la direction d
     DoubleTab gradAlpha;// gradAlpha(n,d) : gradient du taux de vide ; calcule que si requis par la correlation
+    DoubleTab vort;  // vort(n,d) : gradient du taux de vide ; calcule que si requis par la correlation
     DoubleVect g;    // vecteur gravite
   };
   /* valeurs de sortie */
@@ -53,6 +54,7 @@ public:
   };
   virtual void vitesse_relative(const input_t& input, output_t& output) const = 0;
   virtual bool needs_grad_alpha() const {return 0;};
+  virtual bool needs_vort() const {return 0;};
 
 protected:
   int n_l = -1, n_g = -1; // phases traitees : liquide / gaz continu

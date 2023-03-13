@@ -84,17 +84,22 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
   Vitesse_relative_base::output_t out;
   out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
   const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur()) : nullptr;
-  DoubleTab gradAlpha;
-  DoubleTrav nut; //viscosite turbulente
+  DoubleTab gradAlpha, vort, nut;
   const int is_turb = ref_cast(Operateur_Diff_base, pbm.eq_qdm.operateur_diff().l_op_base()).is_turb();
   if (correlation_vd)
     {
-      in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(N, D), in.sigma.resize(N*(N-1)/2), in.g.resize(D);
+      in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(D, N), in.sigma.resize(N*(N-1)/2), in.g.resize(D);
       if (correlation_vd->needs_grad_alpha())
         {
-          gradAlpha.resize(domaine.nb_elem_tot(), N, D);
+          gradAlpha.resize(domaine.nb_elem_tot(), D, N);
           calc_grad_alpha_elem(gradAlpha);
-          in.gradAlpha.resize(N,D);
+          in.gradAlpha.resize(D, N);
+        }
+      if (correlation_vd->needs_vort())
+        {
+          vort.resize(domaine.nb_elem_tot(), D, N);
+          calc_vort_elem(vort);
+          in.vort.resize(D, N);
         }
       if (is_turb)
         {
@@ -122,7 +127,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
               in.rho(n) = rho(!cR * e, n);
               in.mu(n) = mu(!cM * e, n);
               in.d_bulles(n) = (d_bulles) ? (*d_bulles)(e, n) : -1. ;
-              for (d = 0; d < D; d++) in.v(n, d) = inco(nf_tot + D * e + d, n);
+              for (d = 0; d < D; d++) in.v(d, n) = inco(nf_tot + D * e + d, n);
               for (m = n+1; m < N; m++)
                 if (milc.has_interface(n, m))
                   {
@@ -134,11 +139,11 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::ajouter_blocs_aux(IntTrav& maj, Do
           for (n = 0; n < Nk; n++) in.k(n) = (k_turb) ? (*k_turb)(e, n) : -1., in.nut(n) = (is_turb) ? nut(e, n) : -1. ;
           for (d = 0; d < D; d++) in.g(d) = (*gravity)(e,d);
           if (correlation_vd->needs_grad_alpha())
-            {
-              in.gradAlpha.resize(N,D);
               for (n = 0; n < N; n++)
-                for (d = 0; d < D; d++) in.gradAlpha(n,d) = gradAlpha(e , n, d);
-            }
+                for (d = 0; d < D; d++) in.gradAlpha(d, n) = gradAlpha(e, d, n);
+          if (correlation_vd->needs_vort())
+              for (n = 0; n < N; n++)
+                for (d = 0; d < D; d++) in.vort(d, n) = vort(e, d, n);
 
           correlation_vd->vitesse_relative(in, out);
         }
@@ -221,9 +226,9 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_elem(DoubleTab& gr
     for (int e = 0; e < ne_tot; e++)
       for (int d = 0; d < D; d++)
         {
-          gradAlphaElem(e, n, d) = 0 ;
+          gradAlphaElem(e, d, n) = 0 ;
           for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-            gradAlphaElem(e, n, d) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
+            gradAlphaElem(e, d, n) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
         }
 }
 
@@ -238,7 +243,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
 
   int N = alpha.line_size(), D = dimension, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), nf = domaine.nb_faces();
 
-  DoubleTrav gradAlphaElem(ne_tot, N, D);
+  DoubleTrav gradAlphaElem(ne_tot, D, N);
 
   /* calculaiton of the gradient of alpha at the face */
   const Champ_Elem_PolyMAC_P0& ch_a = ref_cast(Champ_Elem_PolyMAC_P0, ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().valeur());
@@ -273,7 +278,7 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
     for (int e = 0; e < ne_tot; e++)
       for (int d = 0; d < D; d++)
         for (int j = 0, f; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-          gradAlphaElem(e, n, d) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
+          gradAlphaElem(e, d, n) += (e == f_e(f, 0) ? 1 : -1) * fs(f) * (xv(f, d) - xp(e, d)) / ve(e) * grad_f_a(f, n);
 
   /* Calcul du grad vectoriel aux faces */
   double scalGradElem=0.;
@@ -283,11 +288,39 @@ void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_grad_alpha_faces(DoubleTab& g
       {
         for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
           for (int d = 0; d < D; d++)
-            gradAlphaFaces(f,n,d) += vf_dir(f, c)/vf(f)*gradAlphaElem(e, n, d);
+            gradAlphaFaces(f, d, n) += vf_dir(f, c)/vf(f)*gradAlphaElem(e, d, n);
         scalGradElem=0;
         for (int d = 0; d < D; d++)
-          scalGradElem += gradAlphaFaces(f,n,d)*n_f(f,d)/fs(f);
+          scalGradElem += gradAlphaFaces(f, d, n)*n_f(f,d)/fs(f);
         for (int d = 0; d < D; d++)
-          gradAlphaFaces(f,n,d) += (grad_f_a(f, n) - scalGradElem)*n_f(f,d)/fs(f);
+          gradAlphaFaces(f, d, n) += (grad_f_a(f, n) - scalGradElem)*n_f(f,d)/fs(f);
       }
+}
+
+void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_vort_faces(DoubleTab& vort) const
+{
+  vort = 0;
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
+  const IntTab& f_e = domaine.face_voisins();
+  const DoubleTab& vfd = domaine.volumes_entrelaces_dir();
+  const DoubleVect& vf = domaine.volumes_entrelaces();
+  const DoubleTab& vorticite = equation().probleme().get_champ("vorticite").valeurs();
+  int D = dimension, N = vort.dimension_tot(2), nf = domaine.nb_faces() ;
+  int c, e, f, n, d ;
+  for (f = 0 ; f<nf ; f++)
+    for (c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+      for (n=0; n<N; n++)
+        for (d=0; d<D; d++)
+          vort(f, d, n) += vorticite(e, N*d+n)*vfd(f, c)/vf(f);
+}
+
+void Op_Evanescence_Homogene_PolyMAC_P0_Face::calc_vort_elem(DoubleTab& vort) const
+{
+  const DoubleTab& vorticite = equation().probleme().get_champ("vorticite").valeurs();
+  int D = dimension, N = vort.dimension_tot(2), ne_tot = vort.dimension_tot(0);
+  int e, n, d ;
+  for (e=0; e<ne_tot; e++)
+    for (n=0; n<N; n++)
+      for (d=0; d<D; d++)
+        vort(e, d, n) = vorticite(e, N*d+n);
 }

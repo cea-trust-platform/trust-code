@@ -15,6 +15,7 @@
 
 #include <Frottement_interfacial_base.h>
 #include <Dispersion_bulles_base.h>
+#include <Portance_interfaciale_base.h>
 #include <Vitesse_derive_Forces.h>
 #include <Pb_Multiphase.h>
 #include <cmath>
@@ -23,13 +24,20 @@ Implemente_instanciable(Vitesse_derive_Forces, "Vitesse_relative_derive_Forces",
 
 Sortie& Vitesse_derive_Forces::printOn(Sortie& os) const { return os; }
 
-Entree& Vitesse_derive_Forces::readOn(Entree& is) { return Vitesse_derive_base::readOn(is); }
+Entree& Vitesse_derive_Forces::readOn(Entree& is) 
+{ 
+  Param param(que_suis_je());
+  param.ajouter("alpha_lim", &alpha_lim_);
+  param.lire_avec_accolades_depuis(is);
+  return Vitesse_derive_base::readOn(is); 
+}
 
 void Vitesse_derive_Forces::completer()
 {
-  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
+  Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
   if (!pbm.has_correlation("frottement_interfacial")) Process::exit(que_suis_je() + " : there must be an interfacial friction correlation in the problem !");
   if (pbm.has_correlation("dispersion_bulles")) needs_grad_alpha_ = 1;
+  if (pbm.has_correlation("portance_interfaciale")) needs_vort_ = 1, pbm.creer_champ("vorticite");  
 }
 
 void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
@@ -43,7 +51,9 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
   int step = 1, iter_max = 20;
   DoubleTab p, T, dv(N, N), coeff(N, N, 2), alpha_l(N);
   const Frottement_interfacial_base& correlation_fi = ref_cast(Frottement_interfacial_base, pbm.get_correlation("frottement_interfacial").valeur());
-  for (int n=0; n<N ; n++) alpha_l(n)= std::max(in.alpha(n), 1.e-3);
+  double sum_alpha = 0; 
+  for (int n=0; n<N ; n++) alpha_l(n)= std::max(in.alpha(n), alpha_lim_), sum_alpha+=alpha_l(n);
+  for (int n=0; n<N ; n++) alpha_l(n)/=sum_alpha;
 
   do
     {
@@ -62,18 +72,44 @@ void Vitesse_derive_Forces::evaluate_C0_vg0(const input_t& in) const
   /* drift velocity along gravity */
   for (int d = 0; d < D; d++) vg0(d) = - dv0 * in.g(d) / norm_g;
 
+  DoubleTrav forces(D);
   if (pbm.has_correlation("dispersion_bulles"))
     {
       const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, pbm.get_correlation("dispersion_bulles").valeur());
       Dispersion_bulles_base::input_t in_td;
       Dispersion_bulles_base::output_t out_td;
-      DoubleTab& Ctd = out_td.Ctd;
-      Ctd.resize(N,N);
+      out_td.Ctd.resize(N,N);
       dv(n_g,n_l) = ( dv(n_l,n_g) = dv0) ;
       correlation_fi.coefficient(alpha_l, p, T, in.rho, in.mu, in.sigma, in.dh, dv, in.d_bulles, coeff);		// MAJ du coeff frottement interf
       in_td.alpha = alpha_l, in_td.rho = in.rho, in_td.mu = in.mu, in_td.sigma = in.sigma, in_td.nut = in.nut, in_td.k_turb = in.k, in_td.d_bulles = in.d_bulles, in_td.nv = dv;
       correlation_db.coefficient(in_td, out_td); // correlation identifies the liquid phase
-      for (int d = 0; d < D; d++) vg0(d) +=  (- out_td.Ctd(n_g, n_l) * in.gradAlpha(n_g, d) + out_td.Ctd(n_l, n_g) * in.gradAlpha(n_l, d))/coeff(n_g,n_l,0);
+      for (int d = 0; d < D; d++) forces(d) +=  - out_td.Ctd(n_g, n_l) * in.gradAlpha(d, n_g) + out_td.Ctd(n_l, n_g) * in.gradAlpha(d, n_l);
     }
+
+  if (pbm.has_correlation("portance_interfaciale"))
+    {
+      const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, pbm.get_correlation("portance_interfaciale").valeur());
+      Portance_interfaciale_base::input_t in_pi;
+      Portance_interfaciale_base::output_t out_pi;
+      out_pi.Cl.resize(N,N);
+      dv(n_g,n_l) = ( dv(n_l,n_g) = dv0) ;
+      correlation_fi.coefficient(alpha_l, p, T, in.rho, in.mu, in.sigma, in.dh, dv, in.d_bulles, coeff);		// MAJ du coeff frottement interf
+      in_pi.alpha = alpha_l, in_pi.rho = in.rho, in_pi.mu = in.mu, in_pi.sigma = in.sigma, in_pi.k_turb = in.k, in_pi.d_bulles = in.d_bulles, in_pi.nv = dv;
+      correlation_pi.coefficient(in_pi, out_pi); // correlation identifies the liquid phase
+      if (D==2)
+      {
+        forces(0) -= out_pi.Cl(n_l, n_g) * (- dv0 * in.g(1) / norm_g * in.vort(0, n_l)) ;
+        forces(1) += out_pi.Cl(n_l, n_g) * (- dv0 * in.g(0) / norm_g * in.vort(0, n_l)) ;
+      }
+      if (D==3)
+      {
+        forces(0) -= out_pi.Cl(n_l, n_g) * (- dv0 * in.g(1) / norm_g * in.vort(2, n_l) + dv0 * in.g(2) / norm_g * in.vort(1, n_l)) ;
+        forces(1) -= out_pi.Cl(n_l, n_g) * (- dv0 * in.g(2) / norm_g * in.vort(0, n_l) + dv0 * in.g(0) / norm_g * in.vort(2, n_l)) ;
+        forces(2) -= out_pi.Cl(n_l, n_g) * (- dv0 * in.g(0) / norm_g * in.vort(1, n_l) + dv0 * in.g(1) / norm_g * in.vort(0, n_l)) ;
+      }
+    }
+
+
+  for (int d = 0; d < D; d++) vg0(d) += forces(d)/coeff(n_g,n_l,0) ;
   for (int d = 0; d < D; d++) vg0(d) *=  (1.0 - C0 * in.alpha(n_g)) ;
 }

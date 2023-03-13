@@ -34,7 +34,7 @@ void Vitesse_derive_base::vitesse_relative(const input_t& input, output_t& outpu
 
   for (int d = 0; d < dimension; d++)
     {
-      output.vr(n_g, n_l, d) = ((C0 - 1.0) * input.v(n_l, d) + vg0(d)) / (1.0 - C0 * input.alpha(n_g));
+      output.vr(n_g, n_l, d) = ((C0 - 1.0) * input.v(d, n_l) + vg0(d)) / (1.0 - C0 * input.alpha(n_g));
       output.vr(n_l, n_g, d) = - output.vr(n_g, n_l, d);
 
       output.dvr(n_g, n_l, d, dimension*n_l+d) =  (C0 - 1.0) / (1.0 - C0 * input.alpha(n_g));
