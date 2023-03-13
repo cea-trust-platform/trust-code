@@ -116,6 +116,7 @@ public :
   inline const IntTab& elem_faces() const;
   inline ArrOfInt& faces_doubles();
   inline const ArrOfInt& faces_doubles() const;
+  inline const ArrOfInt& faces_perio() const;
   inline IntTab& face_sommets() override;
   inline const IntTab& face_sommets() const override;
   void modifier_pour_Cl(const Conds_lim&) override;
@@ -197,7 +198,8 @@ protected:
   VECT(Front_VF) les_bords_;
 
   IntTab num_fac_loc_;
-  ArrOfInt faces_doubles_;                  // faces a double contribution (faces periodiques et items communs)
+  ArrOfInt faces_perio_;   // faces periodiques (utile si on boucle de 0 a nb_faces_tot)
+  ArrOfInt faces_doubles_; // faces a double contribution (faces periodiques et items communs). Utile si on boucle de 0 a nb_faces pour une reduction ensuite
 
   // Pour chaque face virtuelle i avec nb_faces_<=i<nb_faces_tot on a :
   // face_virt_pe_num_(i-nb_faces_,0) = numero du PE qui possede la face
@@ -395,6 +397,13 @@ inline const ArrOfInt& Domaine_VF::faces_doubles() const
   return faces_doubles_;
 }
 
+/*! @brief renvoie 1 pour les faces appartenant a un bord perio
+ *
+ */
+inline const ArrOfInt& Domaine_VF::faces_perio() const
+{
+  return faces_perio_;
+}
 /*! @brief renvoie le numero du ieme sommet de la face num_face.
  *
  */

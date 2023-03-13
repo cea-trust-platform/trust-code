@@ -246,6 +246,9 @@ void Domaine_VF::discretiser()
 // Fill in the table face_numero_bord
   remplir_face_numero_bord();
 
+  faces_perio_.resize_array(nb_faces_tot());
+  faces_doubles_.resize_array(nb_faces());
+
   ///////////////////////
   // On imprime des infos
   ///////////////////////
@@ -485,10 +488,22 @@ DoubleTab Domaine_VF::normalized_boundaries_outward_vector(int global_face_numbe
 void Domaine_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
 {
   Journal() << " Domaine_VF::marquer_faces_double_contrib" << finl;
-  faces_doubles_.resize_array(nb_faces());
   // marquage des faces periodiques
   ////////////////////////////////////////////////
-
+  for (auto& itr : conds_lim)
+    {
+      const Cond_lim_base& cl=itr.valeur();
+      if (sub_type(Periodique, cl))
+        {
+          const Periodique& la_cl_period = ref_cast(Periodique,cl);
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl_period.frontiere_dis());
+          for (int ind_face = 0; ind_face < le_bord.nb_faces_tot(); ind_face++)
+            {
+              int num_face = le_bord.num_face(ind_face);
+              faces_perio_[num_face]=1;
+            }
+        }
+    }
   for (auto& itr : conds_lim)
     {
       const Cond_lim_base& cl=itr.valeur();
@@ -498,11 +513,8 @@ void Domaine_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
           const Front_VF& frontieredis = ref_cast(Front_VF,la_cl_period.frontiere_dis());
           int ndeb = frontieredis.num_premiere_face();
           int nfin = ndeb + frontieredis.nb_faces();
-
           for (int face=ndeb; face<nfin; face++)
-            {
-              faces_doubles_[face]=1;
-            }
+            faces_doubles_[face]=1;
         }
     }
 
