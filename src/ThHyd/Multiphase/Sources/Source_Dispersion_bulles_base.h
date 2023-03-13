@@ -18,6 +18,7 @@
 
 #include <Sources_Multiphase_base.h>
 #include <Correlation.h>
+#include <TRUST_Ref.h>
 
 /*! @brief Classe Source_Dispersion_bulles_base
  *
@@ -38,7 +39,7 @@ public :
   const Correlation& correlation() const {return correlation_;};
 
 protected:
-  Correlation correlation_; //correlation donnant le coeff de dispersion turbulente
+  REF(Correlation) correlation_; //correlation donnant le coeff de dispersion turbulente
   int is_turb = 0;
   double beta_ = 1.; // To adjust the force in .data
 
