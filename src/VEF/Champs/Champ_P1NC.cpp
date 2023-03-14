@@ -110,11 +110,9 @@ void Champ_P1NC::cal_rot_ordre1(DoubleTab& vorticite) const
 void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine_VEF, const Domaine_Cl_VEF& domaine_Cl_VEF, DoubleTab& gradient_elem)
 {
   const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const int nb_faces = domaine_VEF.nb_faces_tot();
+  const int nb_faces_tot = domaine_VEF.nb_faces_tot();
   const int nb_elem = domaine_VEF.nb_elem_tot();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int premiere_face_int = domaine_VEF.premiere_face_int();
-
   int dimension = Objet_U::dimension;
   const int nb_comp = variable.line_size();
 
@@ -122,273 +120,38 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
 
   const int * face_voisins_addr = copyToDevice(face_voisins);
   const double * face_normales_addr = copyToDevice(face_normales);
+  const int * faces_perio = copyToDevice( domaine_VEF.faces_perio());
   const double * variable_addr = copyToDevice(variable,"variable");
-  double * gradient_elem_addr;
-  int gradient_elem_nb_dim = gradient_elem.nb_dim();
-  // Cas du calcul du gradient d'un tableau de vecteurs
-  if (nb_comp != 1)
+  double * gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
+  start_timer();
+  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+  for (int fac=0; fac<nb_faces_tot; fac++)
     {
-      start_timer();
-      for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          int num1 = 0;
-          int num2 = le_bord.nb_faces_tot();
-          int nb_faces_bord = le_bord.nb_faces();
-          if (sub_type(Periodique,la_cl.valeur()))
-            {
-              for (int ind_face = num1; ind_face < num2; ind_face++)
-                {
-                  int num_face = le_bord.num_face(ind_face);
-                  int elem1 = face_voisins(num_face, 0);
-                  int elem2 = face_voisins(num_face, 1);
-                  for (int icomp = 0; icomp < nb_comp; icomp++)
-                    for (int i = 0; i < dimension; i++)
-                      {
-                        if (ind_face < nb_faces_bord)
-                          {
-                            gradient_elem(elem1, icomp, i) += 0.5 * face_normales(num_face, i) * variable(num_face, icomp);
-                            gradient_elem(elem2, icomp, i) -= 0.5 * face_normales(num_face, i) * variable(num_face, icomp);
-                          }
-                        else
-                          {
-                            //Correction pour prise en compte des faces virtuelles periodiques
-                            //On retranche la contribution en exces ajoutee quand on traite
-                            //les faces entre nb_faces et nb_faces_tot (dans le cas des faces periodiques)
-
-                            gradient_elem(elem1, icomp, i) -= 0.5 * face_normales(num_face, i) * variable(num_face, icomp);
-                            gradient_elem(elem2, icomp, i) += 0.5 * face_normales(num_face, i) * variable(num_face, icomp);
-                          }
-                      }
-                }
-            }
-          else
-            for (int ind_face = num1; ind_face < nb_faces_bord; ind_face++)
-              {
-                int fac = le_bord.num_face(ind_face);
-                int elem1 = face_voisins(fac, 0);
-                for (int icomp = 0; icomp < nb_comp; icomp++)
-                  for (int i = 0; i < dimension; i++)
-                    {
-                      gradient_elem(elem1, icomp, i) += face_normales(fac, i) * variable(fac, icomp);
-                    }
-              }
-        }
-      end_timer("Boundary condition on gradient_elem in Champ_P1NC::calculer_gradientP1NC");
-      gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
-      start_timer();
-      #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-      for (int fac=premiere_face_int; fac<nb_faces; fac++)
-        {
-          int elem1 = face_voisins_addr[fac * 2];
-          int elem2 = face_voisins_addr[fac * 2 + 1];
-          // Deroulement de la boucle pour optimiser un peu (-20% sur 12000 mailles):
-          if (elem1 >= 0 && elem2 >= 0)
-            {
-              if (dimension == 2)
-                {
-                  for (int icomp = 0; icomp < nb_comp; icomp++)
-                    {
-                      double var = variable_addr[fac * nb_comp + icomp];
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem1 * nb_comp + icomp) * 2] += face_normales_addr[fac * 2] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem2 * nb_comp + icomp) * 2] -= face_normales_addr[fac * 2] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem1 * nb_comp + icomp) * 2 + 1] += face_normales_addr[fac * 2 + 1] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem2 * nb_comp + icomp) * 2 + 1] -= face_normales_addr[fac * 2 + 1] * var;
-                    }
-                }
-              else
-                {
-                  for (int icomp = 0; icomp < nb_comp; icomp++)
-                    {
-                      double var = variable_addr[fac * nb_comp + icomp];
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem1 * nb_comp + icomp) * dimension] += face_normales_addr[fac * dimension] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension] -= face_normales_addr[fac * dimension] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem1 * nb_comp + icomp) * dimension + 1] += face_normales_addr[fac * dimension + 1] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension + 1] -= face_normales_addr[fac * dimension + 1] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem1 * nb_comp + icomp) * dimension + 2] += face_normales_addr[fac * dimension + 2] * var;
-                      #pragma omp atomic
-                      gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension + 2] -= face_normales_addr[fac * dimension + 2] * var;
-                    }
-                }
-            }
-          else
-            {
-              for (int icomp = 0; icomp < nb_comp; icomp++)
-                for (int i = 0; i < dimension; i++)
-                  {
-                    if (elem1 >= 0)
-                      {
-                        #pragma omp atomic
-                        gradient_elem_addr[(elem1 * nb_comp + icomp) * dimension + i] += face_normales_addr[fac * dimension + i] * variable_addr[fac * nb_comp + icomp];
-                      }
-                    if (elem2 >= 0)
-                      {
-                        #pragma omp atomic
-                        gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension + i] -= face_normales_addr[fac * dimension + i] * variable_addr[fac * nb_comp + icomp];
-                      }
-                  }
-            }
-        }
-      end_timer("Face loop in Champ_P1NC::calculer_gradientP1NC");
+      double contrib = faces_perio[fac] ? 0.5 : 1;
+      int elem1 = face_voisins_addr[fac * 2];
+      int elem2 = face_voisins_addr[fac * 2 + 1];
+      for (int icomp = 0; icomp < nb_comp; icomp++)
+        for (int i = 0; i < dimension; i++)
+          {
+            double grad = contrib * face_normales_addr[fac * dimension + i] * variable_addr[fac * nb_comp + icomp];
+            if (elem1 >= 0)
+              #pragma omp atomic
+              gradient_elem_addr[(elem1 * nb_comp + icomp) * dimension + i] += grad;
+            if (elem2 >= 0)
+              #pragma omp atomic
+              gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension + i] -= grad;
+          }
     }
-  // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,,)
-  else if (gradient_elem.nb_dim() == 3)
-    {
-      for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          int num1 = 0;
-          int num2 = le_bord.nb_faces_tot();
-          int nb_faces_bord = le_bord.nb_faces();
-
-          if (sub_type(Periodique, la_cl.valeur()))
-            {
-              for (int ind_face = num1; ind_face < num2; ind_face++)
-                {
-                  int num_face = le_bord.num_face(ind_face);
-                  int elem1 = face_voisins(num_face, 0);
-                  int elem2 = face_voisins(num_face, 1);
-                  for (int i = 0; i < dimension; i++)
-                    {
-                      if (ind_face < nb_faces_bord)
-                        {
-                          gradient_elem(elem1, 0, i) += 0.5 * face_normales(num_face, i) * variable(num_face);
-                          gradient_elem(elem2, 0, i) -= 0.5 * face_normales(num_face, i) * variable(num_face);
-                        }
-                      else
-                        {
-                          //Correction pour prise en compte des faces virtuelles periodiques
-                          //On retranche la contribution en exces ajoutee quand on traite
-                          //les faces entre nb_faces et nb_faces_tot (dans le cas des faces periodiques)
-                          gradient_elem(elem1, 0, i) -= 0.5 * face_normales(num_face, i) * variable(num_face);
-                          gradient_elem(elem2, 0, i) += 0.5 * face_normales(num_face, i) * variable(num_face);
-
-                        }
-
-                    }
-                }
-            }
-          else
-            for (int ind_face = num1; ind_face < nb_faces_bord; ind_face++)
-              {
-                int fac = le_bord.num_face(ind_face);
-                int elem1 = face_voisins(fac, 0);
-                for (int i = 0; i < dimension; i++)
-                  {
-                    gradient_elem(elem1, 0, i) += face_normales(fac, i) * variable(fac);
-                  }
-              }
-        }
-      gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
-      start_timer();
-      #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-      for (int fac=premiere_face_int; fac<nb_faces; fac++)
-        {
-          int elem1 = face_voisins_addr[fac * 2];
-          int elem2 = face_voisins_addr[fac * 2 + 1];
-          for (int i = 0; i < dimension; i++)
-            {
-              if (elem1 >= 0)
-                #pragma omp atomic
-                gradient_elem_addr[(elem1 * nb_comp) * dimension + i] += face_normales_addr[fac * dimension + i] * variable_addr[fac];
-              if (elem2 >= 0)
-                #pragma omp atomic
-                gradient_elem_addr[(elem2 * nb_comp) * dimension + i] -= face_normales_addr[fac * dimension + i] * variable_addr[fac];
-            }
-        }
-      end_timer("Face loop in Champ_P1NC::calculer_gradientP1NC");
-    }
-  // Cas du calcul du gradient d'un tableau de scalaire dans un tableau gradient_elem(,)
-  else
-    {
-      for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
-        {
-          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          int num1 = 0;
-          int num2 = le_bord.nb_faces_tot();
-          int nb_faces_bord = le_bord.nb_faces();
-          if (sub_type(Periodique,la_cl.valeur()))
-            {
-              for (int ind_face = num1; ind_face < num2; ind_face++)
-                {
-                  int num_face = le_bord.num_face(ind_face);
-                  int elem1 = face_voisins(num_face, 0);
-                  int elem2 = face_voisins(num_face, 1);
-                  for (int i = 0; i < dimension; i++)
-                    {
-                      if (ind_face < nb_faces_bord)
-                        {
-                          gradient_elem(elem1, i) += 0.5 * face_normales(num_face, i) * variable(num_face);
-                          gradient_elem(elem2, i) -= 0.5 * face_normales(num_face, i) * variable(num_face);
-                        }
-                      else
-                        {
-                          //Correction pour prise en compte des faces virtuelles periodiques
-                          //On retranche la contribution en exces ajoutee quand on traite
-                          //les faces entre nb_faces et nb_faces_tot (dans le cas des faces periodiques)
-                          gradient_elem(elem1, i) -= 0.5 * face_normales(num_face, i) * variable(num_face);
-                          gradient_elem(elem2, i) += 0.5 * face_normales(num_face, i) * variable(num_face);
-                        }
-                    }
-                }
-            }
-          else
-            for (int ind_face = num1; ind_face < nb_faces_bord; ind_face++)
-              {
-                int fac = le_bord.num_face(ind_face);
-                int elem1 = face_voisins(fac, 0);
-                for (int i = 0; i < dimension; i++)
-                  {
-                    gradient_elem(elem1, i) += face_normales(fac, i) * variable(fac);
-                  }
-              }
-        }
-      gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
-      start_timer();
-      #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-      for (int fac=premiere_face_int; fac<nb_faces; fac++)
-        {
-          int elem1 = face_voisins_addr[fac * 2];
-          int elem2 = face_voisins_addr[fac * 2 + 1];
-          for (int i = 0; i < dimension; i++)
-            {
-              if (elem1 >= 0)
-                #pragma omp atomic
-                gradient_elem_addr[(elem1 * nb_comp) * dimension + i] += face_normales_addr[fac * dimension + i] * variable_addr[fac];
-              if (elem2 >= 0)
-                #pragma omp atomic
-                gradient_elem_addr[(elem2 * nb_comp) * dimension + i] -= face_normales_addr[fac * dimension + i] * variable_addr[fac];
-            }
-        }
-      end_timer("Face loop in Champ_P1NC::calculer_gradientP1NC");
-    }
-
+  end_timer("Face loop in Champ_P1NC::calculer_gradientP1NC");
+  // ToDo merge in one region the 2 loops
   const double * inverse_volumes_addr = copyToDevice(domaine_VEF.inverse_volumes());
   start_timer();
   // Parfois un crash du build avec nvc++ recent (par exemple topaze, 22.7. Marche avec 22.1). Supprimer alors le if (Objet_U::computeOnDevice)
-  if (gradient_elem_nb_dim==3)
-    #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-    for (int elem=0; elem<nb_elem; elem++)
-      for (int icomp=0; icomp<nb_comp; icomp++)
-        for (int i=0; i<dimension; i++)
-          gradient_elem_addr[(elem*nb_comp+icomp)*dimension+i] *= inverse_volumes_addr[elem];
-  else
-    #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
-    for (int elem=0; elem<nb_elem; elem++)
+  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+  for (int elem=0; elem<nb_elem; elem++)
+    for (int icomp=0; icomp<nb_comp; icomp++)
       for (int i=0; i<dimension; i++)
-        gradient_elem_addr[(elem*nb_comp)*dimension+i] *= inverse_volumes_addr[elem];
+        gradient_elem_addr[(elem*nb_comp+icomp)*dimension+i] *= inverse_volumes_addr[elem];
   end_timer("Elem loop in Champ_P1NC::calculer_gradientP1NC");
   copyFromDevice(gradient_elem, "gradient_elem");
 }
