@@ -57,39 +57,8 @@ protected:
     return xxx->numero();
   }
 
-  Sortie& printOn(Sortie& os) const override
-  {
-    int sz = size_array();
-    os << sz << finl;
-    if (sz > 0)
-      {
-        const _TYPE_* v = data_;
-        os.put(v,sz,sz);
-      }
-    return os;
-  }
-
-  Entree& readOn(Entree& is) override
-  {
-    int sz;
-    is >> sz;
-    if (sz >= 0)
-      {
-        // Appel a la methode sans precondition sur le type derive (car readOn est virtuelle, les autres proprietes seront initialisees correctement)
-        resize_array_(sz);
-        if (sz > 0)
-          {
-            _TYPE_* v = data_;
-            is.get(v,sz);
-          }
-      }
-    else
-      {
-        Cerr << "Error in TRUSTArray:readOn : size = " << sz << finl;
-        Process::exit();
-      }
-    return is;
-  }
+  Sortie& printOn(Sortie& os) const override;
+  Entree& readOn(Entree& is) override;
 
 public:
   using value_type = _TYPE_; // return int, double ou float

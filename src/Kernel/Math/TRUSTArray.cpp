@@ -17,6 +17,41 @@
 #include <string.h>
 
 // TRUSTArray kernels for device moved in .cpp file to avoid multiple definition during link
+template <typename _TYPE_>
+Sortie&  TRUSTArray<_TYPE_>::printOn(Sortie& os) const
+{
+  int sz = size_array();
+  os << sz << finl;
+  if (sz > 0)
+    {
+      const _TYPE_* v = data_;
+      os.put(v,sz,sz);
+    }
+  return os;
+}
+
+template <typename _TYPE_>
+Entree&  TRUSTArray<_TYPE_>::readOn(Entree& is)
+{
+  int sz;
+  is >> sz;
+  if (sz >= 0)
+    {
+// Appel a la methode sans precondition sur le type derive (car readOn est virtuelle, les autres proprietes seront initialisees correctement)
+      resize_array_(sz);
+      if (sz > 0)
+        {
+          _TYPE_* v = data_;
+          is.get(v,sz);
+        }
+    }
+  else
+    {
+      Cerr << "Error in TRUSTArray:readOn : size = " << sz << finl;
+      Process::exit();
+    }
+  return is;
+}
 
 //  Copie les elements source[first_element_source + i] dans les elements  (*this)[first_element_dest + i] pour 0 <= i < nb_elements
 //    Les autres elements de (*this) sont inchanges.
@@ -160,23 +195,6 @@ TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
 }
 
 // Pour instancier les methodes templates dans un .cpp
-// Necessaire pour les kernels OpenMP (sinon multiple definition)
 template class TRUSTArray<double>;
 template class TRUSTArray<int>;
-void instantiate_TRUSTArray_template_functions()
-{
-  TRUSTArray<int> i;
-  TRUSTArray<double> d;
-  TRUSTArray<float> f;
-  i=0;
-  d=0;
-  f=0;
-  i+=0;
-  d+=0;
-  i*=0;
-  d*=0;
-  i/=1;
-  d/=1;
-  i-=0;
-  d-=0;
-}
+template class TRUSTArray<float>;

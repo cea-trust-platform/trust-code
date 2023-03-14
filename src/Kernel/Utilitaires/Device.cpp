@@ -319,28 +319,36 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
 #endif
 }
 
-void instantiate_Device_template_functions()
-{
-  TRUSTArray<int> i;
-  TRUSTArray<double> d;
-  TRUSTArray<float> f;
-  allocateOnDevice(i);
-  allocateOnDevice(d);
-  mapToDevice(i, "");
-  mapToDevice(d, "");
-  computeOnTheDevice(i, "");
-  computeOnTheDevice(d, "");
-  copyFromDevice(i, "");
-  copyFromDevice(d, "");
-  copyFromDevice(f, "");
-  copyPartialFromDevice(i, 0, 0, "");
-  copyPartialFromDevice(d, 0, 0, "");
-  copyPartialToDevice(i, 0, 0, "");
-  copyPartialToDevice(d, 0, 0, "");
-  const TRUSTArray<int> ci;
-  const TRUSTArray<double> cd;
-  const TRUSTArray<float> cf;
-  copyFromDevice(ci, "");
-  copyFromDevice(cd, "");
-  copyFromDevice(cf, "");
-}
+template void allocateOnDevice<double>(const TRUSTArray<double>& tab);
+template void allocateOnDevice<int>(const TRUSTArray<int>& tab);
+template void allocateOnDevice<float>(const TRUSTArray<float>& tab);
+
+template const double* mapToDevice<double>(const TRUSTArray<double>& tab, std::string arrayName);
+template const int* mapToDevice<int>(const TRUSTArray<int>& tab, std::string arrayName);
+template const float* mapToDevice<float>(const TRUSTArray<float>& tab, std::string arrayName);
+
+template double* mapToDevice_<double>(TRUSTArray<double>& tab, DataLocation nextLocation, std::string arrayName);
+template int* mapToDevice_<int>(TRUSTArray<int>& tab, DataLocation nextLocation, std::string arrayName);
+template float* mapToDevice_<float>(TRUSTArray<float>& tab, DataLocation nextLocation, std::string arrayName);
+
+template double* computeOnTheDevice<double>(TRUSTArray<double>& tab, std::string arrayName);
+template int* computeOnTheDevice<int>(TRUSTArray<int>& tab, std::string arrayName);
+template float* computeOnTheDevice<float>(TRUSTArray<float>& tab, std::string arrayName);
+
+template void copyFromDevice<double>(TRUSTArray<double>& tab, std::string arrayName);
+template void copyFromDevice<int>(TRUSTArray<int>& tab, std::string arrayName);
+template void copyFromDevice<float>(TRUSTArray<float>& tab, std::string arrayName);
+
+template void copyFromDevice<double>(const TRUSTArray<double>& tab, std::string arrayName);
+template void copyFromDevice<int>(const TRUSTArray<int>& tab, std::string arrayName);
+template void copyFromDevice<float>(const TRUSTArray<float>& tab, std::string arrayName);
+
+template void copyPartialFromDevice<double>(TRUSTArray<double>& tab, int deb, int fin, std::string arrayName);
+template void copyPartialFromDevice<int>(TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
+template void copyPartialFromDevice<float>(TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
+
+template void copyPartialToDevice<double>(TRUSTArray<double>& tab, int deb, int fin, std::string arrayName);
+template void copyPartialToDevice<int>(TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
+template void copyPartialToDevice<float>(TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
+
+
