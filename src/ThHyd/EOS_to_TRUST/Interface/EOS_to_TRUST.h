@@ -72,6 +72,22 @@ public :
   virtual inline void eos_get_d_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
   virtual inline void eos_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
   virtual inline void eos_get_d_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_lambda_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_lambda_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_lambda_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_lambda_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_mu_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_mu_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_mu_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_mu_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
 
   virtual inline void eos_get_all_flux_interfacial(MSpanD sats, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 

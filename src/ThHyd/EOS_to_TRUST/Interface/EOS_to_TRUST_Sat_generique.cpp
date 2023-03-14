@@ -196,6 +196,158 @@ void EOS_to_TRUST_Sat_generique::eos_get_d_h_v_sat_d_p_p(const SpanD P, SpanD re
 #endif
 }
 
+void EOS_to_TRUST_Sat_generique::eos_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "rholsat", "rho_l_sat");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "rholsat", "rho_l_sat");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_d_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "drholsatdp", "d_rho_l_sat_d_p");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "drholsatdp", "d_rho_l_sat_d_p");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "rhovsat", "rho_v_sat");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "rhovsat", "rho_v_sat");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_d_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "drhovsatdp", "d_rho_v_sat_d_p");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "drhovsatdp", "d_rho_v_sat_d_p");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "cp_l_sat", "cp_l_sat");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "cp_l_sat", "cp_l_sat");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_d_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "d_cp_l_sat_d_p", "d_cp_l_sat_d_p");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "d_cp_l_sat_d_p", "d_cp_l_sat_d_p");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "cp_v_sat", "cp_v_sat");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "cp_v_sat", "cp_v_sat");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_d_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_EOS
+  assert (ncomp * (int)P.size() == (int)res.size());
+  if (ncomp == 1) compute_eos_field(P, res, "d_cp_v_sat_d_p", "d_cp_v_sat_d_p");
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+      compute_eos_field(P, RR, "d_cp_v_sat_d_p", "d_cp_v_sat_d_p");
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
 void EOS_to_TRUST_Sat_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
