@@ -488,8 +488,6 @@ DoubleTab Domaine_VF::normalized_boundaries_outward_vector(int global_face_numbe
 void Domaine_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
 {
   Journal() << " Domaine_VF::marquer_faces_double_contrib" << finl;
-  faces_perio_.resize_array(nb_faces_tot());
-  faces_doubles_.resize_array(nb_faces());
   // marquage des faces periodiques
   ////////////////////////////////////////////////
   for (auto& itr : conds_lim)
