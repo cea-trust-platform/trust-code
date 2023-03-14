@@ -476,7 +476,7 @@ set(ATELIER  ON)
 
 include(CMakeLists.txt.trio)
 
-include_directories(${TRUST_ROOT}/include/backward)
+include_directories(${TRUST_ROOT}/include/backward ${TRUST_ROOT}/include/EOS)
 
 
 Project(atelier)
