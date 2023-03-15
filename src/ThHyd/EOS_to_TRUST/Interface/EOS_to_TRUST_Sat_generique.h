@@ -42,11 +42,11 @@ public :
   void eos_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
   void eos_get_d_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-
-
   void eos_get_all_flux_interfacial(MSpanD sats, int ncomp = 1, int id = 0) const override;
 
   void eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  void eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
+  void eos_get_d_sigma_d_p_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
 };
 
 #endif /* EOS_to_TRUST_Sat_generique_included */

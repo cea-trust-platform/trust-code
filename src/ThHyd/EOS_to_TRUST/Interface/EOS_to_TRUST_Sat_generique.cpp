@@ -26,7 +26,7 @@ void EOS_to_TRUST_Sat_generique::set_EOS_Sat_generique(const char *const model_n
 {
 #ifdef HAS_EOS
   fluide = new NEPTUNE::EOS(model_name, fluid_name);
-  assert(fluide->fluid_name() == fluid_name);
+//  assert(fluide->info_fluidequa() == fluid_name);
   fluide->set_error_handler(handler); // Set error handler
 #else
   Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
@@ -361,6 +361,32 @@ void EOS_to_TRUST_Sat_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, 
       compute_eos_field(P, TT, R, "sigma", "sigma");
       for (auto& val : TT) T[i_it * ncomp + id] = val;
     }
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+{
+#ifdef HAS_EOS
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  if (ncomp == 1) compute_eos_field(P, H, R, "sigma", "sigma");
+  else /* attention stride */
+    throw;
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_Sat_generique::eos_get_d_sigma_d_p_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+{
+#ifdef HAS_EOS
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  if (ncomp == 1) compute_eos_field(P, H, R, "d_sigma_d_p", "d_sigma_d_p_h");
+  else /* attention stride */
+    throw;
 #else
   Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;

@@ -61,6 +61,20 @@ void EOS_to_TRUST::compute_eos_field(const SpanD P, const SpanD T, SpanD res,con
 #endif
 }
 
+void EOS_to_TRUST::compute_eos_field_h(const SpanD P, const SpanD H, SpanD res,const char *const property_title, const char *const property_name) const
+{
+#ifdef HAS_EOS
+  EOS_Field H_fld("Enthalpy", "h", (int)H.size(),(double*)H.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
+  EOS_Field z_fld(property_title,property_name, (int)res.size(), (double*)res.begin());
+  ArrOfInt tmp((int)P.size());
+  EOS_Error_Field ferr(tmp);
+  fluide->compute(P_fld, H_fld, z_fld, ferr);
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
 void EOS_to_TRUST::verify_model_fluid(Motcle& model_name, Motcle& fluid_name)
 {
 #ifdef HAS_EOS

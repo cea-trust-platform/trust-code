@@ -33,6 +33,7 @@
 #include <map>
 
 using MSpanD = std::map<std::string, tcb::span<double>>;
+using ArrayD = std::array<double,1>;
 using VectorD = std::vector<double>;
 using SpanD = tcb::span<double>;
 
@@ -47,6 +48,7 @@ public :
   void verify_model_fluid(Motcle& model_name, Motcle& fluid_name);
 
   // pour les fluides
+  // en temperature
   virtual inline void eos_get_rho_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
   virtual inline void eos_get_rho_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
   virtual inline void eos_get_rho_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
@@ -60,6 +62,23 @@ public :
 
   virtual inline void eos_get_cp_mu_lambda_beta_pT(const SpanD P, const SpanD T, MSpanD prop, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
   virtual inline void eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+
+  // en enthalpie
+  virtual inline void eos_get_rho_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_rho_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_rho_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_T_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_T_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_T_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_cp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_cp_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_cp_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_mu_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_mu_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_mu_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_lambda_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_lambda_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_lambda_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 
   // pour la saturation
   virtual inline void eos_get_T_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
@@ -92,10 +111,15 @@ public :
   virtual inline void eos_get_all_flux_interfacial(MSpanD sats, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 
   virtual inline void eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_sigma_d_T_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_sigma_d_p_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_d_sigma_d_h_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 
 protected :
   void compute_eos_field(const SpanD P, SpanD res, const char *const pt, const char *const pn, bool is_T = false) const;
   void compute_eos_field(const SpanD P, const SpanD T, SpanD res, const char *const pt, const char *const pn) const;
+  void compute_eos_field_h(const SpanD P, const SpanD H, SpanD res, const char *const pt, const char *const pn) const;
 
 #ifdef HAS_EOS
   NEPTUNE::EOS_Std_Error_Handler handler ;
