@@ -373,6 +373,7 @@
  Fluide Fluide Fluide.h
  Fluide_base Fluide_base Fluide_base.h
  Fluide_Dilatable_base Fluide_Dilatable_base Fluide_Dilatable_base.h
+ Fluide_generique_EOS Fluide_generique_EOS Fluide_generique_EOS.h
  Fluide_Incompressible Fluide_Incompressible Fluide_Incompressible.h
  Fluide_MUSIG Fluide_MUSIG Fluide_MUSIG.h
  Fluide_Ostwald Fluide_Ostwald Fluide_Ostwald.h
@@ -971,6 +972,7 @@
  Rupture_bulles_1groupe_base Rupture_bulles_1groupe_base Rupture_bulles_1groupe_base.h
  Saturation_base Saturation_base Saturation_base.h
  Saturation_constant Saturation_constant Saturation_constant.h
+ Saturation_generique_EOS Saturation_generique_EOS Saturation_generique_EOS.h
  Saturation_sodium Saturation_sodium Saturation_sodium.h
  Scalaire_impose_paroi Scalaire_impose_paroi Scalaire_impose_paroi.h
  Scatter Scatter Scatter.h
