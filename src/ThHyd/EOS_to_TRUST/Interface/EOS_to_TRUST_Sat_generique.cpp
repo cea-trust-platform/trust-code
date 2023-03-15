@@ -371,7 +371,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_sigma_ph(const SpanD P, const SpanD H, 
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "sigma", "sigma");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "sigma", "sigma");
   else /* attention stride */
     throw;
 #else
@@ -384,7 +384,7 @@ void EOS_to_TRUST_Sat_generique::eos_get_d_sigma_d_p_ph(const SpanD P, const Spa
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "d_sigma_d_p", "d_sigma_d_p_h");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "d_sigma_d_p", "d_sigma_d_p_h");
   else /* attention stride */
     throw;
 #else

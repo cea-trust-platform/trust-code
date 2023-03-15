@@ -57,7 +57,7 @@ void EOS_to_TRUST_generique::eos_get_rho_ph(const SpanD P, const SpanD H, SpanD 
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "rho", "rho");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "rho", "rho");
   else /* attention stride */
     throw;
 #else
@@ -88,7 +88,7 @@ void EOS_to_TRUST_generique::eos_get_rho_dp_ph(const SpanD P, const SpanD H, Spa
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "drhodp", "d_rho_d_p_h");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "drhodp", "d_rho_d_p_h");
   else /* attention stride */
     throw;
 #else
@@ -119,7 +119,7 @@ void EOS_to_TRUST_generique::eos_get_rho_dh_ph(const SpanD P, const SpanD H, Spa
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "drhodh", "d_rho_d_h_p");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "drhodh", "d_rho_d_h_p");
   else /* attention stride */
     throw;
 #else
@@ -150,7 +150,7 @@ void EOS_to_TRUST_generique::eos_get_T_ph(const SpanD P, const SpanD H, SpanD R,
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "temperature", "T");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "temperature", "T");
   else /* attention stride */
     throw;
 #else
@@ -181,7 +181,7 @@ void EOS_to_TRUST_generique::eos_get_T_dp_ph(const SpanD P, const SpanD H, SpanD
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dTdp", "d_T_d_p_h");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dTdp", "d_T_d_p_h");
   else /* attention stride */
     throw;
 #else
@@ -212,7 +212,7 @@ void EOS_to_TRUST_generique::eos_get_T_dh_ph(const SpanD P, const SpanD H, SpanD
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dTdh", "d_T_d_h_p");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dTdh", "d_T_d_h_p");
   else /* attention stride */
     throw;
 #else
@@ -243,7 +243,7 @@ void EOS_to_TRUST_generique::eos_get_cp_ph(const SpanD P, const SpanD H, SpanD R
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "cp", "cp");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "cp", "cp");
   else /* attention stride */
     throw;
 #else
@@ -256,7 +256,7 @@ void EOS_to_TRUST_generique::eos_get_cp_dp_ph(const SpanD P, const SpanD H, Span
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dcpdp", "d_cp_d_p_h");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dcpdp", "d_cp_d_p_h");
   else /* attention stride */
     throw;
 #else
@@ -269,7 +269,7 @@ void EOS_to_TRUST_generique::eos_get_cp_dh_ph(const SpanD P, const SpanD H, Span
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dcpdh", "d_cp_d_h_p");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dcpdh", "d_cp_d_h_p");
   else /* attention stride */
     throw;
 #else
@@ -325,7 +325,7 @@ void EOS_to_TRUST_generique::eos_get_mu_ph(const SpanD P, const SpanD H, SpanD R
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "mu", "mu");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "mu", "mu");
   else /* attention stride */
     throw;
 #else
@@ -338,7 +338,7 @@ void EOS_to_TRUST_generique::eos_get_mu_dp_ph(const SpanD P, const SpanD H, Span
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dmudp", "d_mu_d_p_h");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dmudp", "d_mu_d_p_h");
   else /* attention stride */
     throw;
 #else
@@ -351,7 +351,7 @@ void EOS_to_TRUST_generique::eos_get_mu_dh_ph(const SpanD P, const SpanD H, Span
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dmudh", "d_mu_d_h_p");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dmudh", "d_mu_d_h_p");
   else /* attention stride */
     throw;
 #else
@@ -382,7 +382,7 @@ void EOS_to_TRUST_generique::eos_get_lambda_ph(const SpanD P, const SpanD H, Spa
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "lambda", "lambda");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "lambda", "lambda");
   else /* attention stride */
     throw;
 #else
@@ -395,7 +395,7 @@ void EOS_to_TRUST_generique::eos_get_lambda_dp_ph(const SpanD P, const SpanD H, 
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dlambdadp", "d_lambda_d_p_h");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dlambdadp", "d_lambda_d_p_h");
   else /* attention stride */
     throw;
 #else
@@ -408,7 +408,7 @@ void EOS_to_TRUST_generique::eos_get_lambda_dh_ph(const SpanD P, const SpanD H, 
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, H, R, "dlambdadh", "d_lambda_d_h_p");
+  if (ncomp == 1) compute_eos_field_h(P, H, R, "dlambdadh", "d_lambda_d_h_p");
   else /* attention stride */
     throw;
 #else
