@@ -17,7 +17,7 @@
 #include <TRUSTVect_tools.tpp>
 
 template <typename _TYPE_, TYPE_OPERATOR_VECT _TYPE_OP_ >
-inline void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
+void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
   static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_VECT::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_VECT::SUB_),
                         IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_VECT::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_VECT::DIV_), IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_VECT::EGAL_);
@@ -89,6 +89,90 @@ inline void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<
   return;
 }
 
+template <typename _TYPE_, TYPE_OPERATOR_SINGLE _TYPE_OP_ >
+void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_vect_options opt)
+{
+  static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ADD_), IS_SUB = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::SUB_),
+                        IS_MULT = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::MULT_), IS_DIV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::DIV_), IS_EGAL = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::EGAL_),
+                        IS_NEGATE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::NEGATE_), IS_INV = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::INV_), IS_ABS = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::ABS_),
+                        IS_RACINE_CARRE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::RACINE_CARRE_), IS_CARRE = (_TYPE_OP_ == TYPE_OPERATOR_SINGLE::CARRE_);
+
+  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
+  const TRUSTVect<_TYPE_>& master_vect = resu;
+  const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
+  const MD_Vector& md = master_vect.get_md_vector();
+  // Determine blocs of data to process, depending on " opt"
+  int nblocs_left = 1, one_bloc[2];
+  const int *bloc_ptr;
+  if (opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+    return;
+
+  _TYPE_ *resu_base = resu.addr();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      _TYPE_ *resu_ptr = resu_base + begin_bloc;
+#ifdef _OPENMP
+      bool kernelOnDevice = resu.isKernelOnDevice("operator_vect_single_generic(x,y)");
+      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+#endif
+      for (int count=0; count < end_bloc - begin_bloc; count++)
+        {
+          _TYPE_ &p_resu = resu_ptr[count];
+          if (IS_ADD) p_resu += x;
+          if (IS_SUB) p_resu -= x;
+          if (IS_MULT) p_resu *= x;
+          if (IS_EGAL) p_resu = x;
+          if (IS_NEGATE) p_resu = -p_resu;
+          if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,int>::value ? std::abs(p_resu) : std::fabs(p_resu));
+          if (IS_RACINE_CARRE) p_resu = (_TYPE_) sqrt(p_resu);  // _TYPE_ casting just to pass 'int' instanciation of the template wo triggering -Wconversion warning
+          if (IS_CARRE) p_resu *= p_resu;
+
+          if (IS_DIV)
+            {
+#ifndef _OPENMP
+              if (x == 0.) error_divide(__func__);
+#endif
+              p_resu /= x;
+            }
+
+          if (IS_INV)
+            {
+#ifndef _OPENMP
+              if (p_resu == 0.) error_divide(__func__);
+#endif
+              p_resu = (_TYPE_) (1. / p_resu); // same as sqrt above
+            }
+        }
+    }
+  // In debug mode, put invalid values where data has not been computed
+#ifndef NDEBUG
+  invalidate_data(resu, opt);
+#endif
+  return;
+}
+
+//template void operator_vect_single_generic<double, TYPE_OPERATOR_VECT::MULT_>(TRUSTVect<double>& resu, const double x, Mp_vect_options);
+// ToDo
 void instantiate_TRUSTVect_tools_template_functions()
 {
   TRUSTVect<int> i;
@@ -102,4 +186,21 @@ void instantiate_TRUSTVect_tools_template_functions()
   operator_egal(i,i);
   operator_egal(d,d);
   operator_divide(d,d);
+
+  operator_add(i,0);
+  operator_add(d,0.0);
+  operator_sub(i,0);
+  operator_sub(d,0.0);
+  operator_multiply(i,(int)1);
+  operator_multiply(d,(double)1.0);
+  operator_divide(d, 1.0);
+  operator_egal(i,0);
+  operator_egal(d,0.0);
+  operator_negate(i);
+  operator_negate(d);
+  operator_inverse(d);
+  operator_abs(i);
+  operator_abs(d);
+  //racine_carree(i);
+  racine_carree(d);
 }

@@ -191,11 +191,9 @@ inline void TRUSTVect<_TYPE_>::copy_(const TRUSTVect& v, Array_base::Resize_Opti
   // le vecteur source a la meme structure. Si ce n'est pas le cas, utiliser inject_array() pour copier uniquement les valeurs, ou faire d'abord reset() si on veut ecraser la structure.
   assert((!md_vector_.non_nul()) || (md_vector_ == v.md_vector_));
   TRUSTArray<_TYPE_>::resize_array_(v.size_array(), Array_base::NOCOPY_NOINIT);
+  if (v.isDataOnDevice()) allocateOnDevice(*this); // Alloue de la memoire sur le device si v est deja alloue sur le device
   if (opt != Array_base::NOCOPY_NOINIT)
-    {
-      if (v.isDataOnDevice()) allocateOnDevice(*this); // ToDo check
-      TRUSTArray<_TYPE_>::inject_array(v);
-    }
+    TRUSTArray<_TYPE_>::inject_array(v);
   md_vector_ = v.md_vector_; // Pour le cas ou md_vector_ est nul et pas v.md_vector_
   size_reelle_ = v.size_reelle_;
   line_size_ = v.line_size_;

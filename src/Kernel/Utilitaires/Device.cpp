@@ -158,15 +158,18 @@ void end_timer(int onDevice, const std::string& str, int size) // Return in [ms]
 template <typename _TYPE_>
 void allocateOnDevice(const TRUSTArray<_TYPE_>& tab)
 {
+#ifdef _OPENMP
   const _TYPE_* tab_addr = tab.addr();
+  clock_start = Statistiques::get_time_now();
   #pragma omp target enter data if (Objet_U::computeOnDevice) map(alloc:tab_addr[0:tab.size_array()])
-  tab.set_dataLocation(Device);
   if (clock_on)
     {
+      double ms = 1000 * (Statistiques::get_time_now() - clock_start);
       int size = sizeof(_TYPE_) * tab.size_array();
-      //double mo = (double)size / 1024 / 1024;
-      printf("[clock]            [Data]   Allocate an array on device [%9s] %6ld Bytes\n", toString(tab.addr()).c_str(), long(size));
+      printf("[clock] %7.3f ms [Data]   Allocate an array on device [%9s] %6ld Bytes\n", ms, toString(tab.addr()).c_str(), long(size));
     }
+  tab.set_dataLocation(Device);
+#endif
 }
 
 // Copy const array on device if necessary

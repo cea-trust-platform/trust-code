@@ -113,15 +113,15 @@ bool self_test()
       }
       assert(inco.ref_count() == 1);
 
-      // Mise a jour de l'inconnue sur le host:
+      // Mise a jour de l'inconnue sur le device:
       inco += 1;
-      assert(inco.get_dataLocation() == Host);
+      assert(inco.get_dataLocation() == Device);
       assert(inco.ref_count() == 1);
       {
         // Pas de temps suivant, nouvel operateur:
         DoubleTab a;
         a.ref(inco); // Doit prendre l'etat de inco
-        assert(a.get_dataLocation() == Host);
+        assert(a.get_dataLocation() == Device);
         assert(a.ref_count() == 2);
         assert(inco.ref_count() == 2);
         const double *a_addr = mapToDevice(a, "a"); // update
@@ -142,15 +142,14 @@ bool self_test()
         assert(inco.get_dataLocation() == HostDevice); // Car a ref sur inco
       }
       assert(inco.get_dataLocation() == HostDevice);
-      // Mise a jour de l'inconnue sur le host et mise a jour sur le device:
+      // Mise a jour de l'inconnue sur le device
       {
         inco += 1;
-        mapToDevice(inco, "inco"); // update
-        assert(inco.get_dataLocation() == HostDevice);
+        assert(inco.get_dataLocation() == Device);
 
         DoubleTab a;
         a.ref(inco); // Doit prendre l'etat de inco
-        assert(a.get_dataLocation() == HostDevice);
+        assert(a.get_dataLocation() == Device);
         assert(a.ref_count() == 2);
         assert(inco.ref_count() == 2);
         const double *a_addr = mapToDevice(a, "a"); // up-to-date
@@ -298,15 +297,22 @@ bool self_test()
         assert(b.get_dataLocation() == HostOnly);
         mapToDevice(b, "b"); // copy ToDo cela devrait etre un update
       }
-      // ToDo: Ameliorer DoubleTrav: En particulier:
-      /*
+      // Constructeur par copie DoubleTrab
       {
-          DoubleTab a(N);
-          a=1;
-          mapToDevice(a); // Sur le device
-          DoubleTrav b(a); // b doit etre sur le device ? Attention il faut gerer un DoubleTrav sur le GPU...
-          assert(b.get_dataLocation()==Device);
-      }*/
+        DoubleTab a(N);
+        a=-1;
+        mapToDevice(a); // Sur le device
+        DoubleTrav b(a); // b doit etre sur le device (=0)
+        assert(b.get_dataLocation()==Device);
+        b+=1; // Operation doit etre faite sur le device (=1)
+        assert(b.get_dataLocation()==Device);
+        copyFromDevice(b);
+#ifndef NDEBUG
+        const ArrOfDouble& const_b = b;
+#endif
+        assert(const_b[0] == 1);
+        assert(const_b[b.size()-1] == 1);
+      }
       // ToDo:Comment gerer les DoubleTab_Parts ? Pas facile donc pour le moment
       // le constructeur par copie fait un copyFromDevice du DoubleTab...
       /*
