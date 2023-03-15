@@ -15,8 +15,8 @@
 
 #ifndef Portance_interfaciale_base_included
 #define Portance_interfaciale_base_included
-#include <TRUSTTab.h>
 #include <Correlation_base.h>
+#include <TRUSTTab.h>
 
 /*! @brief classe Portance_interfaciale_base utilitaire pour les operateurs de frottement interfacial prenant la forme
  *
@@ -39,15 +39,15 @@ public:
   struct input_t
   {
     double dh;            // diametre hyd
-    const double *alpha;  // alpha[n] : taux de vide de la phase n
-    const double *T;      // T[n]     : temperature de la phase n
-    double p;             // pression
-    const double *nv;     // nv[N * k + l] : norme de ||v_k - v_l||
-    const double *mu;     // mu[n]         : viscosite dynamique de la phase n
-    const double *rho;    // rho[n]        : masse volumique de la phase n
-    const double *sigma;  // sigma[ind_trav]:tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
-    const double *k_turb; // k_turb[n]     : energie cinetique turbulente de la phase n
-    const double *d_bulles;//d_bulles[n]   : diametre de bulles de la phase n
+    DoubleTab alpha;  // alpha[n] : taux de vide de la phase n
+    DoubleTab T;      // T[n]     : temperature de la phase n
+    DoubleTab p;             // pression
+    DoubleTab nv;     // nv[k, l] : norme de ||v_k - v_l||
+    DoubleTab mu;     // mu[n]         : viscosite dynamique de la phase n
+    DoubleTab rho;    // rho[n]        : masse volumique de la phase n
+    DoubleTab sigma;  // sigma[ind_trav]:tension superficielle sigma(ind_trav), ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1)
+    DoubleTab k_turb; // k_turb[n]     : energie cinetique turbulente de la phase n
+    DoubleTab d_bulles;//d_bulles[n]   : diametre de bulles de la phase n
     int e;                // indice d'element
   };
   /* valeurs de sortie */
