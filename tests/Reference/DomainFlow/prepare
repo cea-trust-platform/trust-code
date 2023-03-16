@@ -1,0 +1,3 @@
+#!/bin/bash
+trust BuildMeshes.data
+trust DomainFlow.data 6

@@ -1,0 +1,75 @@
+# Tasks:
+a) Read/build the mesh
+b) Partition the mesh
+c) Create a periodic box
+#
+
+# Dimension #
+dimension 3
+
+# Geometric tolerance #
+PrecisionGeom 1.e-5
+
+# Define the domain and read the Tgrid mesh (~460000 cells) #
+domaine dom
+# lire_tgrid dom Tube_coude_463259.msh #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 6 6 6
+        Longueurs 6 2 2
+    }
+    {
+        Bord inlet  X = 0.            0. <= Y <= 2.0           0. <= Z <= 2.
+        Bord outlet  X = 6            0. <= Y <= 2.0           0. <= Z <= 2.
+        Bord wall     Y = 0.            0. <= X <= 6            0. <= Z <= 2.
+        Bord wall    Y = 2.            0. <= X <= 6            0. <= Z <= 2.
+        Bord sym  Z = 0.            0. <= X <= 6            0. <= Y <= 2.0
+        Bord sym  Z = 2.            0. <= X <= 6            0. <= Y <= 2.0
+    }
+}
+
+tetraedriser_homogene dom
+
+# Partition the domain #
+Partition dom
+{
+    Partition_tool metis { nb_parts 6 }	# 6 parts for a 6 cores parallel calculation (rule of thumb: elements per part>20000) #
+    larg_joint 2				# Joint width #
+    zones_name dom				# Name of the partitioned mesh .Zones files #
+}
+
+# Define the box #
+# and fill it with the extracted boundary inlet from the 3D domain #
+domaine box
+ExtrudeBord {
+    domaine_init dom
+    direction -1 0 0
+    domaine_final box
+    nom_bord inlet
+    nb_tranches 2
+}
+
+
+# The box has by default "devant" and "derriere" boundaries on the top and bottom end #
+# Merge the box boundaries "devant" and "derriere" in a boundary named "perio" #
+RegroupeBord box perio { devant derriere }
+
+# Check the boundary is periodic and fix otherwise #
+Corriger_frontiere_periodique { domaine box bord perio }
+
+# Partition the box #
+Partition box
+{
+    Partition_tool metis { nb_parts 2 } nb_parts_tot 6	# Divided in 2 parts (rule of thumb: elements per part>20000) and will run for 2-6 cores parallel calculation #
+    larg_joint 2						# Joint width #
+    zones_name box						# Name of the partitioned mesh .Zones files #
+    periodique 1 perio					# Partition should care about the periodic boundary #
+}
+
+# Post process the box in a box.lata file #
+Postraiter_domaine { domaine box fichier box.lata format lata }
+# Post process the domain in a dom.lata file #
+Postraiter_domaine { domaine dom fichier dom.lata format lata }

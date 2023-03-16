@@ -1,0 +1,215 @@
+# Parallel anisoproc simulation of a flow #
+# PARALLEL ONLY 6 #
+
+# Dimension #
+dimension 3
+
+# Navier Stokes problems with energy #
+Pb_Thermohydraulique pb_box	# For the box    #
+Pb_Thermohydraulique pb_dom	# For the domain #
+
+# Define the 2 domains and read the partitioned meshes #
+Domaine box
+Scatter box.Zones box
+Domaine dom
+Scatter dom.Zones dom
+
+# Discretization #
+VEFPreP1B dis
+
+# High order explicit scheme #
+Runge_kutta_ordre_3 sch
+Read sch
+{
+    # Maximal number of time steps #
+    nb_pas_dt_max 180
+    # Initial time #
+    tinit 0.
+    # End time #
+    tmax 0.5
+    # .out output file printing period #
+    dt_impr 0.001
+    # Backup period #
+    dt_sauv 400.
+    # Runge Kutta 3 scheme, the stability time step is increased 3 times compared to Euler explicit #
+    facsec 3
+}
+
+# Objects linked #
+Associate pb_box box
+Associate pb_dom dom
+
+# Coupling problem which solves the two previous problems #
+Probleme_Couple pb
+Associate pb pb_box
+Associate pb pb_dom
+Associate pb sch
+Discretize pb dis
+
+# Read the first problem #
+Read pb_box
+{
+    # Water defined in the box #
+    Fluide_Incompressible
+    {
+        # Dynamic viscosity #
+        mu  Champ_Uniforme 1 1.90e-5
+        # Volumic mass #
+        rho Champ_Uniforme 1 1.205
+        # Thermal conductivity #
+        lambda Champ_Uniforme 1 0.6
+        # Heat capacity #
+        cp Champ_Uniforme 1 4185
+        # Thermal expanson coefficient #
+        beta_th Champ_Uniforme 1 0.0034
+        # Gravity field #
+        gravite Champ_Uniforme 3 0 -9.81 0
+    }
+
+    Navier_Stokes_Standard
+    {
+        # Direct method to solve pressure linear system #
+        solveur_pression petsc Cholesky { }
+        # EF_stab scheme for advection operator #
+        convection { EF_stab { alpha 1. } }
+        diffusion { }
+        # Initial conditions for velocity read from the .xyz file of the previous box calculation #
+        initial_conditions { vitesse Champ_Uniforme 3 0. 10.4 0.  }
+        # Source term to force a constant flow rate #
+        sources { Canal_perio { bord perio } }
+        # Boundary conditions #
+        boundary_conditions
+        {
+            # Periodic boundary condition #
+            perio		periodique
+            # Wall u=0 #
+            wall 		paroi_fixe
+            # Symmetry condition : u.n=0 #
+            sym	symetrie
+        }
+    }
+    # Energy equation #
+    Convection_Diffusion_Temperature
+    {
+        # muscl scheme for advection operator #
+        convection { muscl }
+        diffusion { }
+        # Initial conditions for temperature read from the .xyz file of the previous box calculation #
+        initial_conditions { temperature Champ_Uniforme 1 20 }
+        boundary_conditions {
+            # Periodic boundary condition #
+            perio		periodique
+            # Temperature imposed from a file #
+            wall		paroi_temperature_imposee champ_front_uniforme 1 50
+            # Symmetry condition dT/dn=0 #
+            sym 	symetrie
+        }
+    }
+    # Post processing definition #
+    Post_processing
+    {
+        # 1D probes to monitor #
+        Probes
+        {
+            # Define a velocity probe for checking evolution #
+            velocity 	nodes 	vitesse			periode 0.005 point   1 -0.5 -0.1524 0.
+            velocity2 	nodes 	vitesse			periode 0.005 point   1 -0.496362 -0.1524 0.021194
+            # Define non-interpolated profiles for velocity and temperature #
+            inlet_velocity 	nodes	vitesse			periode 0.005 segment 30 -0.5334 -0.1524 0. -0.4572 -0.1524 0.
+            inlet_T 	nodes	temperature		periode 0.005 segment 30 -0.5334 -0.1524 0. -0.4572 -0.1524 0.
+        }
+        
+        Format lml
+        fields dt_post 0.2 # 1000 #
+        {
+            vitesse			elem	# velocity at the faces #
+            temperature		elem	# temperature at the faces #
+        }
+    }
+}
+
+# Read the second problem #
+Read pb_dom
+{
+    # Water defined in the domain #
+    Fluide_Incompressible
+    {
+        # Dynamic viscosity #
+        mu  Champ_Uniforme 1 1.90e-5
+        # Volumic mass #
+        rho Champ_Uniforme 1 1.205
+        # Thermal conductivity #
+        lambda Champ_Uniforme 1 0.6
+        # Heat capacity #
+        cp Champ_Uniforme 1 4185
+        # Thermal expanson coefficient #
+        beta_th Champ_Uniforme 1 0.0034
+        # Gravity field #
+        gravite Champ_Uniforme 3 0 -9.81 0
+    }
+    Navier_Stokes_Standard
+    {
+        # Method to solve pressure linear system #
+        solveur_pression Petsc cholesky { }
+        # EF_stab scheme for advection operator #
+        convection { EF_stab { alpha 0.2 } }
+        diffusion { }
+        # Initial conditions for velocity #
+        initial_conditions { vitesse champ_uniforme 3 0 0 0 }
+        # Boundary conditions #
+        boundary_conditions {
+            # Velocity imposed from the previous problem (box) #
+            inlet 		frontiere_ouverte_vitesse_imposee  Champ_front_recyclage { pb_champ_evaluateur pb_box vitesse 3 }
+            # Pressure imposed #
+            outlet 		frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+            # Wall u=0 #
+            wall  		paroi_fixe
+            # Symmetry condition : u.n=0 #
+            sym 	symetrie
+        }
+    }
+    # Energy equation #
+    Convection_Diffusion_Temperature
+    {
+        # EF_stab scheme for advection operator #
+        convection { EF_stab { alpha 1. } }
+        diffusion { }
+        # Initial conditions for temperature #
+        initial_conditions { temperature Champ_Uniforme 1 20 }
+        boundary_conditions {
+            # Temperature imposed #
+            wall	paroi_temperature_imposee champ_front_uniforme 1 50
+            # Temperature imposed from the previous problem (box) #
+            inlet 	frontiere_ouverte_temperature_imposee Champ_front_recyclage { pb_champ_evaluateur pb_box temperature 1 }
+            # Outlet boundary condition dT/dn=0 with ambiant temperature imposed if re-entering flow #
+            outlet 	frontiere_ouverte T_Ext Champ_Front_Uniforme 1 20.
+            # Symmetry condition dT/dn=0 #
+            sym 	symetrie
+        }
+    }
+    # Post processing definition #
+    Post_processing
+    {
+        # 1D probes to monitor #
+        Probes
+        {
+            vitesse_a_teta_22.5		vitesse	periode 1.e-3 point 1 -0.4576 0.1894 0
+            vitesse_a_S_sur_D_egal_1 	vitesse	periode 1.e-3 point 1  0.4953 -0.0762 0
+            pression_paroi_interne 	 	pression_pa periode 1.e-3 point 1  -0.4572 -0.1524 0
+            pression_paroi_externe  	pression_pa periode 1.e-3 point 1  -0.5334 -0.1524 0
+            temperature_a_teta_22.5		temperature periode 1.e-3 point 1 -0.4576 0.1894 0
+        }
+        
+        format lml
+        fields dt_post 0.2 # 1000.0 #
+        {
+            vitesse 	elem	# velocity at the elements #
+            pression_pa 	elem	# pressure [Pa] at the elements #
+            temperature	elem	# temperature at the faces #
+        }
+    }
+}
+
+# Solve the problem #
+Solve pb
+
