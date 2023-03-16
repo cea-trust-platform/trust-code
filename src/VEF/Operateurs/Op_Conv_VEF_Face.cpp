@@ -140,6 +140,8 @@ void Op_Conv_VEF_Face::completer()
           int rang = rang_elem_non_std(poly);
           type_elem_Cl_[poly] = rang == -1 ? 0 : domaine_Cl_VEF.type_elem_Cl(rang);
         }
+      // Appel a vecteur_face_facette() des le completer:
+      Cerr << "Build of vecteur_face_facette() size:" << ref_cast_non_const(Domaine_VEF,domaine_VEF).vecteur_face_facette().size_array() << finl;
     }
 }
 //
@@ -787,7 +789,6 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               } // fin de la boucle
           }
           end_timer(1, "Elem loop in Op_Conv_VEF_Face::ajouter");
-          copyFromDevice(flux_b, "flux_b");
         }
       else
         {
@@ -1035,6 +1036,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   double diff1,diff2;
 
   copyPartialFromDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
+  copyPartialFromDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
   // Boucle sur les bords pour traiter les conditions aux limites
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
@@ -1127,6 +1129,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
     }
   end_timer(0, "Boundary condition on resu in Op_Conv_VEF_Face::ajouter\n");
   copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
+  copyPartialToDevice(transporte_face, 0, premiere_face_int * ncomp_ch_transporte, "transporte_face on boundary");
   modifier_flux(*this);
   return resu;
 }
@@ -1685,7 +1688,6 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
           } // fin de la boucle
       }
       end_timer(1, "Elem loop in Op_Conv_VEF_Face::remplir_fluent");
-      copyFromDevice(fluent_, "fluent_");
     }
   else
     {
@@ -1812,6 +1814,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   // il y a prise en compte d'un terme de convection pour les
   // conditions aux limites de Neumann_sortie_libre seulement
   int nb_bord = domaine_VEF.nb_front_Cl();
+  copyPartialFromDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -1831,6 +1834,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
             }
         }
     }
+  copyPartialToDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
 }
 
 void Op_Conv_VEF_Face::get_ordre(int& ord) const

@@ -1677,7 +1677,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
   start = Statistiques::get_time_now();
   // Assemblage du second membre et de la solution
-  // ToDo calculer ix au moment de item_to_keep_
+  // ToDo OpenMP calculer ix au moment de item_to_keep_
   int size=secmem.size_array();
   int colonne_globale=decalage_local_global_;
   ArrOfInt ix(size);
@@ -1689,8 +1689,10 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       }
     else
       ix[i] = -1;
-  secmem.checkDataOnHost();   // Car on travaille avec le pointeur sur le device
-  solution.checkDataOnHost(); // Idem
+  // ToDo OpenMP: passer a AmgX les pointeurs sur le device de secmem et solution
+  bool solutionOnDevice = solution.isDataOnDevice();
+  secmem.checkDataOnHost();
+  solution.checkDataOnHost();
   VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
   VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
   VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
@@ -1829,6 +1831,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
             }
         }
     }
+  if (solutionOnDevice) mapToDevice(solution, "Provisoire solution after solve PETSc");
   return nbiter;
 #else
   return -1;

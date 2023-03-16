@@ -477,7 +477,10 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 #ifdef ROCALUTION_ROCALUTION_HPP_
   if (write_system_) save++;
   double tick;
-
+  // ToDo OpenMP: essayer de passer x et b directement sur le device a rocALUTION
+  bool solutionOnDevice = x.isDataOnDevice();
+  b.checkDataOnHost();
+  x.checkDataOnHost();
 #ifdef MPI_
   MPI_Comm comm = MPI_COMM_WORLD;
   pm.SetMPICommunicator(&comm);
@@ -564,8 +567,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
           row_ghost++;
         }
     }
-  x_.checkDataOnHost();
-  b_.checkDataOnHost();
+
   sol.GetInterior().CopyFromData(x_.addr());
   rhs.GetInterior().CopyFromData(b_.addr());
   // ToDo pour eviter une copie (mais bizarre ne marche pas):
@@ -688,6 +690,9 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   //e.Clear();
   if (nb_iter>1) first_solve_ = false;
   Cout << "[rocALUTION] Time to get solution: " << (rocalution_time() - tick) / 1e6 << finl;
+  // ToDo OpenMP: pouvoir passer des pointeurs sur le device a rocALUTION x,b
+  // En attendant on reenvoie x sur le device pour la suite:
+  if (solutionOnDevice) mapToDevice(x,"Provisoire x after rocALUTION");
   return nb_iter;
 #else
   Process::exit("Sorry, rocALUTION solvers not available with this build.");

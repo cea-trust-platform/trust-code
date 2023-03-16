@@ -52,4 +52,13 @@ extern void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std
 template <typename _TYPE_>
 extern void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
 
+template <typename _TYPE_>
+void copyPartialFromDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
+{
+  copyPartialFromDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), deb, fin, arrayName);
+}
+
+template <typename _TYPE_>
+void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
+
 #endif

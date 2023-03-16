@@ -21,28 +21,7 @@
 inline void local_carre_norme_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
 
 template <typename _T_>
-inline void local_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne)
-{
-  norme_colonne = 0.;
-  const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_sum();
-  const int nblocs = blocs.size_array() >> 1;
-  const TRUSTVect<_T_>& vect = tableau;
-  const int lsize = vect.line_size();
-  assert(lsize == norme_colonne.size_array());
-  for (int ibloc = 0; ibloc < nblocs; ibloc++)
-    {
-      const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
-      for (int i = begin_bloc; i < end_bloc; i++)
-        {
-          int k = i * lsize;
-          for (int j = 0; j < lsize; j++)
-            {
-              const _T_ x = vect[k++];
-              norme_colonne[j] += x*x;
-            }
-        }
-    }
-}
+extern void local_carre_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_colonne);
 
 inline void mp_carre_norme_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
 
@@ -65,29 +44,7 @@ inline void mp_norme_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& norme_co
 inline void local_max_abs_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
 
 template <typename _T_>
-inline void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonne)
-{
-  max_colonne = std::numeric_limits<_T_>::min();
-  const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_compute();
-  const int nblocs = blocs.size_array() >> 1;
-  const TRUSTVect<_T_>& vect = tableau;
-  const int lsize = vect.line_size();
-  for (int j = 0; j < lsize; j++) max_colonne[j] = 0;
-  assert(lsize == max_colonne.size_array());
-  for (int ibloc = 0; ibloc < nblocs; ibloc++)
-    {
-      const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
-      for (int i = begin_bloc; i < end_bloc; i++)
-        {
-          int k = i * lsize;
-          for (int j = 0; j < lsize; j++)
-            {
-              const _T_ x = std::fabs(vect[k++]);
-              max_colonne[j] = (x > max_colonne[j]) ? x : max_colonne[j];
-            }
-        }
-    }
-}
+extern void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonne);
 
 inline void mp_max_abs_tab(const TRUSTTab<int>& , TRUSTArray<int>& ) = delete;
 

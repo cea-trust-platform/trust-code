@@ -121,9 +121,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
       for(int indice=0; indice<nfe; indice++)
         {
           int face = elem_faces_addr[elem*nfe+indice];
-          int signe=1;
-          if(elem!=face_voisins_addr[face*2])
-            signe=-1;
+          int signe= (elem==face_voisins_addr[face*2]) ? 1 : -1;
           for(int comp=0; comp<dimension; comp++)
             pscf+=signe*vit_addr[face*dimension+comp]*face_normales_addr[face*dimension+comp];
         }
@@ -413,7 +411,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
         }
       end_timer(1, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
     }
-  // ToDo ajout CL copyPartial (pas facile car div au sommet) pour eviter la copie implicite copyFromDevice(div) dans la boucle des
+  // ToDo OpenMP ajout CL copyPartial (pas facile car div au sommet)
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_sommets = domaine_VEF.face_sommets();

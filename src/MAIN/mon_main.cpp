@@ -27,7 +27,6 @@
 #include <stat_counters.h>
 #include <info_atelier.h>
 #include <unistd.h> // Pour chdir for other compiler
-#include <Device.h>
 #ifndef __CYGWIN__
 #include <catch_and_trace.h>
 #endif
@@ -196,14 +195,6 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
-
-#ifdef _OPENMP
-  // ToDo: OMP_TARGET_OFFLOAD=DISABLED equivaut a TRUST_DISABLE_DEVICE=1
-  // donc peut etre supprimer cette derniere variable (qui disable aussi rocALUTION sur GPU dans le code mais pas AmgX encore)...
-  // https://www.openmp.org/spec-html/5.0/openmpse65.html
-  char const* var = getenv("OMP_TARGET_OFFLOAD");
-  if (var==NULL || std::string(var)!="DISABLED") init_openmp();
-#endif
 }
 
 void mon_main::finalize()

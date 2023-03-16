@@ -252,7 +252,6 @@ inline _TYPE_ mp_min_vect(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = VECT
 template <typename _TYPE_>
 inline _TYPE_ mp_somme_vect(const TRUSTVect<_TYPE_>& vx)
 {
-  vx.checkDataOnHost();
   _TYPE_ x = local_somme_vect(vx);
   _TYPE_ y = Process::mp_sum(x);
   return y;
@@ -372,62 +371,7 @@ inline _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_
 enum class TYPE_OPERATION_VECT_BIS { CARRE_ , SOMME_ };
 
 template <typename _TYPE_, TYPE_OPERATION_VECT_BIS _TYPE_OP_ >
-inline _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_options opt)
-{
-  vx.checkDataOnHost();
-  static constexpr bool IS_CARRE = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::CARRE_), IS_SOMME = (_TYPE_OP_ == TYPE_OPERATION_VECT_BIS::SOMME_);
-
-  _TYPE_ sum = 0;
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_>& master_vect = vx;
-  const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
-  assert(vx.line_size() == line_size);
-  assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
-  assert(vx.get_md_vector() == md);
-  // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return sum;
-
-  const _TYPE_ *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      int count = end_bloc - begin_bloc;
-      for (; count; count--)
-        {
-          const _TYPE_ x = *x_ptr;
-
-          if (IS_CARRE) sum += x * x;
-          if (IS_SOMME) sum += x;
-
-          x_ptr++;
-        }
-    }
-  return sum;
-}
+extern _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_options opt);
 
 template<typename _TYPE_>
 inline _TYPE_ local_carre_norme_vect(const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_SEQUENTIAL_ITEMS)
@@ -458,7 +402,6 @@ inline int mp_norme_vect(const TRUSTVect<int>& vx) = delete; // forbidden
 template<typename _TYPE_>
 inline _TYPE_ mp_norme_vect(const TRUSTVect<_TYPE_>& vx)
 {
-  vx.checkDataOnHost();
   _TYPE_ x = mp_carre_norme_vect(vx);
   x = sqrt(x);
   return x;
@@ -467,7 +410,6 @@ inline _TYPE_ mp_norme_vect(const TRUSTVect<_TYPE_>& vx)
 template<typename _TYPE_>
 inline _TYPE_ mp_norme_vect_(const TRUSTVect<_TYPE_>& vx)
 {
-  vx.checkDataOnHost();
   return mp_norme_vect(vx);
 }
 
@@ -476,7 +418,6 @@ inline int mp_moyenne_vect(const TRUSTVect<int>& x) = delete; // forbidden
 template<typename _TYPE_>
 inline _TYPE_ mp_moyenne_vect(const TRUSTVect<_TYPE_>& x)
 {
-  x.checkDataOnHost();
   _TYPE_ s = mp_somme_vect(x), n;
   const MD_Vector& md = x.get_md_vector();
   if (md.non_nul()) n = md.valeur().nb_items_seq_tot() * x.line_size();
@@ -632,6 +573,7 @@ enum class TYPE_OPERATION_VECT_SPEC { ADD_ , CARRE_ };
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ >
 inline void ajoute_operation_speciale_generic(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden ... ajoute si besoin
 
+// ToDo OpenMP offload in .cpp
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ ,typename _TYPE_>
 inline void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
@@ -719,6 +661,7 @@ inline void ajoute_carre_(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect
   ajoute_carre(resu,alpha,vx,opt);
 }
 
+// ToDo OpenMP offload in .cpp
 template <typename _TYPE_>
 inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
@@ -788,6 +731,7 @@ enum class TYPE_OPERATION_VECT_SPEC_GENERIC { MUL_ , DIV_ };
 template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ >
 inline void operation_speciale_tres_generic(TRUSTVect<int>& resu, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden !!
 
+// ToDo OpenMP offload in .cpp
 template <TYPE_OPERATION_VECT_SPEC_GENERIC _TYPE_OP_ , typename _TYPE_>
 inline void operation_speciale_tres_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
 {
@@ -886,8 +830,6 @@ inline void tab_divide_any_shape_(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE
 template<typename _TYPE_>
 inline void tab_multiply_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  resu.checkDataOnHost();
-  vx.checkDataOnHost();
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // Produit par une constante
     {
       const _TYPE_ x = vx[0];
@@ -905,8 +847,6 @@ inline void tab_multiply_any_shape(TRUSTVect<int>& resu, const TRUSTVect<int>& v
 template<typename _TYPE_>
 inline void tab_divide_any_shape(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
-  resu.checkDataOnHost();
-  vx.checkDataOnHost();
   if (vx.size_array() == 1 && !vx.get_md_vector().non_nul()) // division par une constante
     {
       if (vx[0] == 0) error_divide(__func__);

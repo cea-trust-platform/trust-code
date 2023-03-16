@@ -267,10 +267,10 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 {
   const IntTab& elemfaces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int i0,j,num_face;
+  int premiere_face_int = domaine_VEF.premiere_face_int();
   int nb_faces = domaine_VEF.nb_faces();
+  int nb_faces_tot = domaine_VEF.nb_faces_tot();
   int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
-  int n_bord0;
   DoubleVect n(Objet_U::dimension);
   DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
@@ -280,10 +280,14 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
 
   assert(nb_comp>1);
   int nb_bords=domaine_VEF.nb_front_Cl();
-  int ind_face;
-  // ToDo OpenMP ajouter copyPartial resu/inconnue pourrait etre deja sur le device...
+
+  // copyPartialFromDevice(resu, 0, premiere_face_int * nb_comp, "resu real on boundary");
+  // copyPartialFromDevice(resu, nb_faces * nb_comp, nb_faces_tot * nb_comp, "resu virtual");
+  // copyPartialFromDevice(inconnue, 0, premiere_face_int * nb_comp, "inconnue real on boundary");
+  // copyPartialFromDevice(inconnue, nb_faces * nb_comp, nb_faces_tot * nb_comp, "inconnue virtual");
+  // ToDo OpenMP ecarts sur le cas 2Cubes Pourquoi ? Tester avec un copyFromDevice(inconnue); Est ce que les faces virtuelles sont touchees ?
   start_timer();
-  for (n_bord0=0; n_bord0<nb_bords; n_bord0++)
+  for (int n_bord0=0; n_bord0<nb_bords; n_bord0++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord0);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
@@ -291,20 +295,20 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
       int num1 = 0;
       int num2 = le_bord.nb_faces_tot();
       int nb_faces_bord_reel = le_bord.nb_faces();
+      int j = 0;
 
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          int fac_asso;
-          for (ind_face=num1; ind_face<nb_faces_bord_reel; ind_face++)
+          for (int ind_face=num1; ind_face<nb_faces_bord_reel; ind_face++)
             {
-              fac_asso = la_cl_perio.face_associee(ind_face);
+              int fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
-              num_face = le_bord.num_face(ind_face);
+              int num_face = le_bord.num_face(ind_face);
               for (int kk=0; kk<2; kk++)
                 {
                   int elem = face_voisins(num_face, kk);
-                  for (i0=0; i0<nb_faces_elem; i0++)
+                  for (int i0=0; i0<nb_faces_elem; i0++)
                     {
                       if ( ( (j= elemfaces(elem,i0)) > num_face ) && (j != fac_asso ) )
                         {
@@ -313,15 +317,11 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                             {
                               resu(num_face,nc)+=valA*inconnue(j,nc);
                               resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                              // resu(num_face,nc)+=valA*inconnue(j,nc)*porosite_face(num_face);
-                              // resu(num_face,nc)-=valA*inconnue(num_face,nc)*porosite_face(num_face);
                               if(j<nb_faces) // face reelle
                                 {
                                   ////ATENTION DIFF NUM_face avec ma version
                                   resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
                                   resu(j,nc)-=0.5*valA*inconnue(j,nc);
-                                  // resu(j,nc)+=0.5*valA*inconnue(num_face,nc)*porosite_face(j);
-                                  // resu(j,nc)-=0.5*valA*inconnue(j,nc)*porosite_face(j);
                                 }
                             }
                         }
@@ -332,9 +332,9 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
         }// fin if periodique
       else
         {
-          for (ind_face=num1; ind_face<num2; ind_face++)
+          for (int ind_face=num1; ind_face<num2; ind_face++)
             {
-              num_face = le_bord.num_face(ind_face);
+              int num_face = le_bord.num_face(ind_face);
               int elem=face_voisins(num_face,0);
 
               // Boucle sur les faces :
@@ -350,22 +350,20 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                             resu(num_face,nc)+=flux;
                             tab_flux_bords(num_face,nc)+=flux;
                           }
-
                         if(j<nb_faces) // face reelle
-                          {
-                            resu(j,nc)-=flux;
-                          }
+                          resu(j,nc)-=flux;
                       }
                   }
             }
         }
     }//Fin for n_bord
   end_timer(0, "Boundary condition on resu in Op_Diff_VEF_Face::ajouter_cas_vectoriel");
+// copyPartialToDevice(resu, 0, premiere_face_int * nb_comp, "resu reel on boundary");
+// copyPartialToDevice(resu, nb_faces * nb_comp, nb_faces_tot * nb_comp, "resu virtual");
 
   const DoubleTab& face_normales=domaine_VEF.face_normales();
   const DoubleVect& inverse_volumes=domaine_VEF.inverse_volumes();
 
-  int premiere_face_int = domaine_VEF.premiere_face_int();
   // On traite les faces internes
   const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
   const int * elem_faces_addr = mapToDevice(domaine_VEF.elem_faces());
@@ -376,12 +374,13 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   double * resu_addr = computeOnTheDevice(resu, "resu");
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
-  for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
+  for (int num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)
         {
           int elem = face_voisins_addr[2*num_face+k];
-          for (i0=0; i0<nb_faces_elem; i0++)
+          int j=0;
+          for (int i0=0; i0<nb_faces_elem; i0++)
             {
               if ( (j= elem_faces_addr[nb_faces_elem*elem+i0]) > num_face )
                 {

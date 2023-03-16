@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <Domaine_VF.h>
 #include <Debog.h>
 #include <Check_espace_virtuel.h>
+#include <Device.h>
 
 void Discretisation_tools::nodes_to_cells(const Champ_base& Hn,  Champ_base& He)
 {
@@ -110,13 +111,11 @@ void Discretisation_tools::faces_to_cells(const Champ_base& Hf,  Champ_base& He)
 }
 void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
 {
-
   DoubleTab& tabHf=Hf.valeurs();
   const DoubleTab& tabHe=He.valeurs();
   Debog::verifier("element_face entreee",tabHe);
   assert_espace_virtuel_vect(tabHe);
   const Domaine_dis_base& domaine_dis_base=He.domaine_dis_base();
-
   const Domaine_VF& domaine_vf= ref_cast(Domaine_VF,domaine_dis_base);
   // en realite on fait P1B vers face
   //assert(tabHe.dimension_tot(0)==domaine_dis_base.nb_elem_tot());
@@ -130,51 +129,63 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
   int nb_face_elem=elem_faces.dimension(1);
   int nb_elem_tot=domaine_dis_base.nb_elem_tot();
 
-  double coeffb=nb_face_elem;
-  double coeffi=coeffb;
-  if (domaine_vf.que_suis_je()=="Domaine_VDF")
-    {
-      coeffb=1;
-      coeffi=2;
-    }
-
   // TODO : FIXME
   // XXX : codage pas coherent... à voir : volumes ou volumes_entrelaces ???
   if (tabHe.line_size() == 1)
     {
-      DoubleTab vol_tot(tabHf);
-      for (int ele=0; ele<nb_elem_tot; ele++)
-        for (int s=0; s<nb_face_elem; s++)
+      int nb_faces = domaine_vf.nb_faces();
+      DoubleTrav vol_tot(tabHf);
+      // Lancement de ce kernel multi-discretisation et copie de donnees selon conditions (les deux tableaux doivent etre deja sur le device)
+      bool kernelOnDevice = false;
+      // ToDo OpenMP : merge two loops in one parallel region
+#ifdef _OPENMP
+      start_timer();
+      kernelOnDevice = tabHf.isKernelOnDevice(tabHe, "2 loops in Discretisation_tools::cells_to_faces()");
+#endif
+      const int* elem_faces_addr = kernelOnDevice ? mapToDevice(elem_faces) : elem_faces.addr();
+      const double* volumes_addr = kernelOnDevice ? mapToDevice(volumes) : volumes.addr();
+      const double* tabHe_addr   = kernelOnDevice ? mapToDevice(tabHe) : tabHe.addr();
+      double* vol_tot_addr       = kernelOnDevice ? computeOnTheDevice(vol_tot) : vol_tot.addr();
+      double* tabHf_addr         = kernelOnDevice ? computeOnTheDevice(tabHf) : tabHf.addr();
+      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      for (int ele = 0; ele < nb_elem_tot; ele++)
+        for (int s = 0; s < nb_face_elem; s++)
           {
-            tabHf(elem_faces(ele,s))+=tabHe(ele,0)*volumes(ele);
-            vol_tot(elem_faces(ele,s)) += volumes(ele);
+            int face = elem_faces_addr[ele * nb_face_elem + s];
+            #pragma omp atomic
+            tabHf_addr[face] += tabHe_addr[ele] * volumes_addr[ele];
+            #pragma omp atomic
+            vol_tot_addr[face] += volumes_addr[ele];
           }
-      for (int f = 0; f < domaine_vf.nb_faces(); f++)
-        tabHf(f) /= vol_tot(f);
+      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      for (int face = 0; face < nb_faces; face++)
+        tabHf_addr[face] /= vol_tot_addr[face];
+
+#ifdef _OPENMP
+      end_timer(kernelOnDevice, "2 loops in Discretisation_tools::cells_to_faces()");
+#endif
     }
   else
     {
       // TODO : factorize these cases ...
       if (tabHf.nb_dim()==1)
         {
-          assert(coeffi==2);
-          assert(coeffb==1);
           // VDF
-          //abort();
+          double coeffb=1;
+          double coeffi=2;
+          assert(domaine_vf.que_suis_je()=="Domaine_VDF");
           for (int ele=0; ele<nb_elem_tot; ele++)
-            {
-              for (int s=0; s<nb_face_elem; s++)
-                {
-                  int face=elem_faces(ele,s);
-                  for (int r = 0; r < domaine_vf.dimension; r++)
-                    {
-                      // Change of basis N.K.N, with N the normal of the face, and K the tensorial coefficient to get the value of the diffusivity
-                      // on the direction of the surface normal.
-                      double normOnSurf = domaine_vf.face_normales(face, r) / domaine_vf.face_surfaces(face);
-                      tabHf(face) += tabHe(ele, r) * normOnSurf * normOnSurf * volumes(ele);
-                    }
-                }
-            }
+            for (int s=0; s<nb_face_elem; s++)
+              {
+                int face=elem_faces(ele,s);
+                for (int r = 0; r < domaine_vf.dimension; r++)
+                  {
+                    // Change of basis N.K.N, with N the normal of the face, and K the tensorial coefficient to get the value of the diffusivity
+                    // on the direction of the surface normal.
+                    double normOnSurf = domaine_vf.face_normales(face, r) / domaine_vf.face_surfaces(face);
+                    tabHf(face) += tabHe(ele, r) * normOnSurf * normOnSurf * volumes(ele);
+                  }
+              }
           for (int f=0; f<domaine_vf.premiere_face_int(); f++)
             tabHf(f)/=volumes_entrelaces(f)*coeffb;
           for (int f=domaine_vf.premiere_face_int(); f<domaine_vf.nb_faces(); f++)
@@ -182,17 +193,16 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
         }
       else
         {
-          //abort();
+          double coeffb=nb_face_elem;
+          double coeffi=coeffb;
           int nb_comp=tabHf.dimension(1);
           for (int ele=0; ele<nb_elem_tot; ele++)
-            {
-              for (int s=0; s<nb_face_elem; s++)
-                {
-                  int face=elem_faces(ele,s);
-                  for (int comp=0; comp<nb_comp; comp++)
-                    tabHf(face,comp)+=tabHe(ele,comp)*volumes(ele);
-                }
-            }
+            for (int s=0; s<nb_face_elem; s++)
+              {
+                int face=elem_faces(ele,s);
+                for (int comp=0; comp<nb_comp; comp++)
+                  tabHf(face,comp)+=tabHe(ele,comp)*volumes(ele);
+              }
 
           for (int f=0; f<domaine_vf.premiere_face_int(); f++)
             for (int comp=0; comp<nb_comp; comp++)
@@ -200,13 +210,9 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
           for (int f=domaine_vf.premiere_face_int(); f<domaine_vf.nb_faces(); f++)
             for (int comp=0; comp<nb_comp; comp++)
               tabHf(f,comp)/=volumes_entrelaces(f)*coeffi;
-
         }
     }
   tabHf.echange_espace_virtuel();
-//  Cerr<<min_array(tabHe)<<" elem  "<<max_array(tabHe)<<finl;
-//  Cerr<<min_array(tabHf)<<" face  "<<max_array(tabHf)<<finl;
-
   Debog::verifier("element_face sortie",tabHf);
 }
 

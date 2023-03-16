@@ -44,9 +44,19 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
 
 #ifdef _OPENMP
 #include <omp.h>
+static bool init_openmp_ = false;
 // Set MPI processes to devices
 void init_openmp()
 {
+  // ToDo: OMP_TARGET_OFFLOAD=DISABLED equivaut a TRUST_DISABLE_DEVICE=1
+  // donc peut etre supprimer cette derniere variable (qui disable aussi rocALUTION sur GPU dans le code mais pas AmgX encore)...
+  // https://www.openmp.org/spec-html/5.0/openmpse65.html
+  if (init_openmp_ || getenv("TRUST_DISABLE_DEVICE")!=NULL)
+    return;
+  char const* var = getenv("OMP_TARGET_OFFLOAD");
+  if (var!=NULL && std::string(var)=="DISABLED")
+    return;
+  init_openmp_ = true;
   bool round_robin=false;
   int devID;
   int nDevs = omp_get_num_devices();
@@ -190,6 +200,7 @@ template <typename _TYPE_>
 _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::string arrayName)
 {
 #ifdef _OPENMP
+  init_openmp();
 #ifndef NDEBUG
   if (self_test()) self_test();
 #endif
@@ -243,7 +254,7 @@ _TYPE_* computeOnTheDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
   _TYPE_ *tab_addr = mapToDevice_(tab, Device, arrayName);
   return tab_addr;
 }
-
+// ToDo OpenMP: rename copy -> update or map ?
 // Copy non-const array to host from device
 template <typename _TYPE_>
 void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
@@ -281,11 +292,14 @@ void copyFromDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName)
 }
 
 // Partial copy of an array (from deb to fin element) from host to device
+// Typical example: Deal with boundary condition (small loop) on the host
+// copyPartialFromDevice(resu, 0, premiere_face_int);   // Faces de bord
+// copyPartialFromDevice(resu, nb_faces, nb_faces_tot); // Pour ajouter les faces de bord virtuelles si necessaire
 template <typename _TYPE_>
 void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
 {
 #ifdef _OPENMP
-  if (tab.get_dataLocation()==Device)
+  if (tab.get_dataLocation()==Device || tab.get_dataLocation()==PartialHostDevice)
     {
       int size = sizeof(_TYPE_) * (fin-deb);
       _TYPE_* tab_addr = tab.addr();
@@ -317,6 +331,27 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
       std::string message;
       message = "Partial update to device of array "+arrayName+" ["+toString(tab.addr())+"]";
       end_timer(1, message, size);
+      tab.set_dataLocation(Device);
+    }
+#endif
+}
+
+template <typename _TYPE_>
+void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName)
+{
+#ifdef _OPENMP
+  if (tab.get_dataLocation()==PartialHostDevice)
+    {
+      // ToDo OpenMP par de recopie car si le tableau est const il n'a ete modifie sur le host
+      //int size = sizeof(_TYPE_) * (fin-deb);
+      //_TYPE_* tab_addr = tab.addr();
+      //start_timer(size);
+      //statistiques().begin_count(gpu_copytodevice_counter_, size);
+      //#pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin-deb])
+      //statistiques().end_count(gpu_copytodevice_counter_, size);
+      //std::string message;
+      //message = "Partial update to device of const array "+arrayName+" ["+toString(tab.addr())+"]";
+      //end_timer(1, message, size);
       tab.set_dataLocation(Device);
     }
 #endif
@@ -354,4 +389,7 @@ template void copyPartialToDevice<double>(TRUSTArray<double>& tab, int deb, int 
 template void copyPartialToDevice<int>(TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
 template void copyPartialToDevice<float>(TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
 
+template void copyPartialToDevice<double>(const TRUSTArray<double>& tab, int deb, int fin, std::string arrayName);
+template void copyPartialToDevice<int>(const TRUSTArray<int>& tab, int deb, int fin, std::string arrayName);
+template void copyPartialToDevice<float>(const TRUSTArray<float>& tab, int deb, int fin, std::string arrayName);
 

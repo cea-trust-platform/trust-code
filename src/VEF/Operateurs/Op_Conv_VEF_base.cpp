@@ -70,11 +70,12 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
     diviser_par_rho_si_dilatable(fluent,equation().milieu());
 
-  double dt_face,dt_stab =1.e30;
+  double dt_stab =1.e30;
 
   // On traite les conditions aux limites
   // Si une face porte une condition de Dirichlet on n'en tient pas compte
   // dans le calcul de dt_stab
+  copyPartialFromDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -87,7 +88,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
           int nfin = ndeb + le_bord.nb_faces();
           for (int num_face=ndeb; num_face<nfin; num_face++)
             {
-              dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+1.e-30);
+              double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+1.e-30);
               dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
             }
         }
@@ -96,20 +97,25 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   // On traite les faces internes non standard
   int ndeb = domaine_VEF.premiere_face_int();
   int nfin = domaine_VEF.premiere_face_std();
-
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
-      dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
+      double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
       dt_stab =(dt_face < dt_stab) ? dt_face : dt_stab;
     }
+  copyPartialToDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
 
   // On traite les faces internes standard
   ndeb = nfin;
   nfin = domaine_VEF.nb_faces();
+
+  const double* fluent_addr = fluent.addr();
+  bool kernelOnDevice = fluent.isKernelOnDevice("Face loop in Op_Conv_VEF_base::calculer_dt_stab()");
+  const double* volumes_entrelaces_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces) : volumes_entrelaces.addr();
+  #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(min:dt_stab)
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
-      dt_face = volumes_entrelaces(num_face)/(fluent[num_face]+DMINFLOAT);
-      dt_stab =(dt_face < dt_stab) ? dt_face : dt_stab;
+      double dt_face = volumes_entrelaces_addr[num_face]/(fluent_addr[num_face]+DMINFLOAT);
+      dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
     }
 
   dt_stab = Process::mp_min(dt_stab);

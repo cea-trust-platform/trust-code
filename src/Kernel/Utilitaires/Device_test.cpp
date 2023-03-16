@@ -282,6 +282,15 @@ bool self_test()
         assert(const_b[0] == -10);
         assert(const_b[b.size()-1] == -10);
       }
+      // local_operations_vect_bis_generic
+      {
+        DoubleTab a(2);
+        a(0)=1;
+        a(1)=2;
+        mapToDevice(a, "a");
+        assert(est_egal(mp_norme_vect(a),sqrt(Process::nproc()*5)));
+        assert(a.get_dataLocation() == Device); // Operation faite sur le device
+      }
       // DoubleTrav
       {
         DoubleTrav a(N);
