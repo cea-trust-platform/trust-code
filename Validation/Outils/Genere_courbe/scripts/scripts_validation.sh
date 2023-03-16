@@ -13,7 +13,7 @@ Extract_Times()
     org=`pwd`
     cd $files_dir
     ref=`pwd`
-    archives=`ls *.tgz`
+    archives=`\ls *.tgz`
     archives_ok=`for arc in $archives ; do [ -f ${arc%.tgz}.pdf ] && echo ${arc}; done`
     echo $archives_ok
 
@@ -51,7 +51,7 @@ verif_BUILD()
         Rapports_auto_root=$TRUST_ROOT
         export Rapports_auto_root
     fi
-    for f in `ls BUILD`
+    for f in `\ls BUILD`
       do
       [ ! -d BUILD/$f ]  && continue
       echo $f
@@ -78,7 +78,7 @@ verif_archives()
     DIR=`(cd $DIR;pwd)`
     cat /dev/null > nettoie
     cd archives
-    for f in `ls *.pdf`
+    for f in `\ls *.pdf`
       do
       if [ ! -f `basename $f .pdf`.tgz ] 
           then
@@ -144,7 +144,7 @@ compare_pdf_batch()
     pdftoppm -r 100 ${new}  $ppm_dir_new/${base_new}_oo
     ret_code=0
 
-    for file_ref in `ls $ppm_dir_ref/${base_ref}_oo*ppm`
+    for file_ref in `\ls $ppm_dir_ref/${base_ref}_oo*ppm`
     do
       file_new=`echo $file_ref | sed "s?$ppm_dir_ref1?$ppm_dir_new1?; s?$base_ref?$base_new?g"`
       diff $file_ref $file_new 1> /dev/null 2>&1
@@ -172,9 +172,9 @@ compare_pdf_batch()
     if [ "$ret_code" = "0" ]; then
       rm -rf $ppm_dir_new $ppm_dir_ref $ppm_dir_diff
     else
-      for f in `ls $ppm_dir_new/*.ppm`; do convert $f $f.png; done
-      for f in `ls $ppm_dir_ref/*.ppm`; do convert $f $f.png; done
-      for f in `ls $ppm_dir_diff/*.ppm`; do convert $f $f.png; done      
+      for f in `\ls $ppm_dir_new/*.ppm`; do convert $f $f.png; done
+      for f in `\ls $ppm_dir_ref/*.ppm`; do convert $f $f.png; done
+      for f in `\ls $ppm_dir_diff/*.ppm`; do convert $f $f.png; done
     fi
 
     return $ret_code
@@ -251,7 +251,7 @@ comp_fiche()
 echo "def compare_new_rap_old_rap [-batch]"
 compare_new_rap_old_rap()
 {
-    cd new_rap/; fiches=`ls *.pdf`; cd -
+    cd new_rap/; fiches=`\ls *.pdf`; cd -
     mkdir -p new_rap/OK new_rap/KO
     batch_mode=$1
 
@@ -270,13 +270,13 @@ gen_fiche()
     # Test if Jupyter or PRM - first PRM case:
     if ls preserve/*.prm  1>&2 2>/dev/null; then
         cd preserve
-        python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p `ls *prm| grep -v test_lu.prm` --no_prereq
+        python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p `\ls *prm| grep -v test_lu.prm` --no_prereq
         status=$?
         cd ..
     else
         # Check Jupyter exists - for Jupyter, the build directory has to be called 'build'
         mv preserve build
-        jy_nb=`ls build/*.ipynb 2>/dev/null`
+        jy_nb=`\ls build/*.ipynb 2>/dev/null`
         if [ "$?" != "0" ]; then
             echo "ERROR: scripts_validation.sh::gen_fiche() -- Strange - Jupyter notebook not found in archive!"
             return 1
@@ -284,7 +284,7 @@ gen_fiche()
         # Make a dummy src directory pointing to build ... (some images are expected there) 
         ln -nsf build src
         cp $jy_nb .
-        jy_nb=`ls *.ipynb 2>/dev/null`
+        jy_nb=`\ls *.ipynb 2>/dev/null`
         curr_dir=`pwd`
         env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/build/rapport.pdf" --execute $jy_nb
         status=$?
@@ -414,7 +414,7 @@ genere_new_rap_old_rap()
     REF=$2
     [ "$NEW" = "" ] && return 1
     [ "$REF" = "" ] && return 1
-    cd $NEW/; fiches=`ls *.tgz`; cd -
+    cd $NEW/; fiches=`\ls *.tgz`; cd -
 
     for fiche in $fiches
       do
