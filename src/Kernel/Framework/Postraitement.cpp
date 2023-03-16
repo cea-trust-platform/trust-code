@@ -297,6 +297,7 @@ Entree& Postraitement::readOn(Entree& s )
   // lu le bloc statistiques ET le bloc sondes)
 
   les_sondes_.completer();
+  les_sondes_mobiles_.completer();
 
   //On type l objet Format_Post
   Nom type_format = "Format_Post_";
@@ -328,6 +329,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Definition_champs",(this));// XD_ADD_P definition_champs  Keyword to create new or more complex field for advanced postprocessing.
   param.ajouter_non_std("Definition_champs_fichier|Definition_champs_file",(this));// XD_ADD_P Definition_champs_fichier  Definition_champs read from file.
   param.ajouter_non_std("Sondes|Probes",(this)); // XD_ADD_P sondes Probe.
+  param.ajouter_non_std("Sondes_mobiles|Mobile_probes",(this)); // XD_ADD_P Sondes_mobile Mobile_probes.
   param.ajouter_non_std("Sondes_fichier|Probes_file",(this)); // XD_ADD_P sondes_fichier Probe read in a file.
   param.ajouter("DeprecatedKeepDuplicatedProbes",&DeprecatedKeepDuplicatedProbes); // XD_ADD_P entier Flag to not remove duplicated probes in .son files (1: keep duplicate probes, 0: remove duplicate probes)
   param.ajouter_non_std("champs|fields",(this)); // XD_ADD_P champs_posts Field\'s write mode.
@@ -372,6 +374,15 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       sondes_demande_ = 1;
       return 1;
     }
+  if (mot=="Sondes_mobiles|Mobile_probes")
+    {
+      Cerr << "Reading of mobile probes" << finl;
+      les_sondes_mobiles_.associer_post(*this);
+      s >>  les_sondes_mobiles_;
+      sondes_demande_ = 1;
+      return 1;
+    }
+
   if (mot=="Sondes_fichier|Probes_file")
     {
       Nom file;
@@ -764,11 +775,13 @@ int Postraitement::reprendre(Entree& is)
 void Postraitement::completer()
 {
   les_sondes_.init_bords();
+  les_sondes_mobiles_.init_bords();
 }
 
 void Postraitement::completer_sondes()
 {
   les_sondes_.completer();
+  les_sondes_mobiles_.completer();
 }
 
 /*! @brief Lit le nom des champs a postraiter sur un flot d'entree.
@@ -1517,6 +1530,7 @@ int Postraitement::traiter_tableaux()
 int Postraitement::postraiter_sondes()
 {
   les_sondes_.postraiter();
+  les_sondes_mobiles_.postraiter();
   les_sondes_int_.postraiter(mon_probleme->schema_temps().temps_courant());
   return 1;
 }
@@ -1531,6 +1545,7 @@ int Postraitement::traiter_sondes()
   double temps=mon_probleme->schema_temps().temps_courant();
   double tinit=temps-mon_probleme->schema_temps().temps_calcul();
   les_sondes_.mettre_a_jour(temps,tinit);
+  les_sondes_mobiles_.mettre_a_jour(temps,tinit);
   return 1;
 }
 

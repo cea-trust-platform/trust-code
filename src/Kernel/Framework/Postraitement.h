@@ -30,6 +30,7 @@
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 #include <Sondes.h>
+#include <Sondes_mobiles.h>
 
 /*! @brief classe Postraitement La classe est dotee -d une liste de champs generiques champs_post_complet_ qui contient
  *
@@ -188,6 +189,7 @@ protected:
   Parser_U fdt_post;
 
   Sondes les_sondes_;           // Sondes a traiter
+  Sondes_mobiles les_sondes_mobiles_;           // Sondes_mobiles a traiter
   Sondes_Int les_sondes_int_;   // Sondes pour des tableaux d'entiers
   Operateurs_Statistique_tps les_statistiques_; // Liste d'operateurs statistiques a traiter
 
