@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2021, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,18 +12,34 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Loi_paroi_faible_tau.cpp
+// Directory:   $TRUST_ROOT/src/ThHyd/Incompressible/Cond_Lim
+// Version:     /main/28
+//
+//////////////////////////////////////////////////////////////////////////////
 
-#include <Dirichlet_loi_paroi.h>
-#include <Equation_base.h>
+#include <Echange_global_impose_turbulent.h>
+#include <Pb_Multiphase.h>
+#include <Domaine_VF.h>
+#include <Frontiere.h>
 #include <Motcle.h>
 
-Implemente_base(Dirichlet_loi_paroi, "Dirichlet_loi_paroi", Dirichlet);
+#include <math.h>
 
-Sortie& Dirichlet_loi_paroi::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
+Implemente_base(Echange_global_impose_turbulent,"Echange_global_impose_turbulent",Echange_global_impose);
 
-Entree& Dirichlet_loi_paroi::readOn(Entree& s) { le_champ_front.typer("Champ_front_vide"); return s; }
+Sortie& Echange_global_impose_turbulent::printOn(Sortie& s ) const {return Echange_global_impose::printOn(s);}
 
-void Dirichlet_loi_paroi::liste_faces_loi_paroi(IntTab& tab)
+Entree& Echange_global_impose_turbulent::readOn(Entree& s ) 
+{
+  h_imp_.typer("Champ_front_vide");
+  le_champ_front.typer("Champ_front_vide");
+  return s;
+}
+
+void Echange_global_impose_turbulent::liste_faces_loi_paroi(IntTab& tab)
 {
   int nf = la_frontiere_dis.valeur().frontiere().nb_faces(), f1 = la_frontiere_dis.valeur().frontiere().num_premiere_face();
   int N = tab.line_size();
@@ -33,7 +49,7 @@ void Dirichlet_loi_paroi::liste_faces_loi_paroi(IntTab& tab)
       tab(f + f1, n) |= 1;
 }
 
-int Dirichlet_loi_paroi::compatible_avec_eqn(const Equation_base& eqn) const
+int Echange_global_impose_turbulent::compatible_avec_eqn(const Equation_base& eqn) const
 {
   Motcle dom_app=eqn.domaine_application();
   Motcle Turbulence="Turbulence";
@@ -44,14 +60,23 @@ int Dirichlet_loi_paroi::compatible_avec_eqn(const Equation_base& eqn) const
   return 0;
 }
 
-void Dirichlet_loi_paroi::mettre_a_jour(double tps)
+void Echange_global_impose_turbulent::mettre_a_jour(double tps)
 {
   if (mon_temps!=tps) {me_calculer() ; mon_temps=tps;}
 }
 
-int Dirichlet_loi_paroi::initialiser(double temps)
+int Echange_global_impose_turbulent::initialiser(double temps)
 {
-  d_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
-  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(d_);
+  h_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
+  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(h_);
+
+  h_grad_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
+  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(h_grad_);
+
+  T_.resize(0,domaine_Cl_dis().equation().inconnue().valeurs().line_size());
+  la_frontiere_dis.valeur().frontiere().creer_tableau_faces(T_);
+
+  correlation_loi_paroi_ = ref_cast(Pb_Multiphase, domaine_Cl_dis().equation().probleme()).get_correlation("Loi_paroi");
+
   return 1;
 }

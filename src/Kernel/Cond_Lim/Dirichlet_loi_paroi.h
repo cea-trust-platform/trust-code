@@ -33,9 +33,14 @@ class Dirichlet_loi_paroi: public Dirichlet
 {
   Declare_base(Dirichlet_loi_paroi);
 public:
-  virtual void liste_faces_loi_paroi(IntTab&);
-  virtual void associer_correlation(const Correlation& corr) { correlation_loi_paroi_ = corr; }
 
+  virtual int initialiser(double temps) override;
+  virtual void liste_faces_loi_paroi(IntTab&);
+  int compatible_avec_eqn(const Equation_base&) const override;
+  virtual int avancer(double temps) override {return 1;}; // Avancer ne fait rien car le champ est modifie dans mettre_a_jour
+  void mettre_a_jour(double tps) override;
+
+  virtual void associer_correlation(const Correlation& corr) { correlation_loi_paroi_ = corr; }
   void associer_fr_dis_base(const Frontiere_dis_base& fr) override { la_frontiere_dis = fr; }
   void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& zcl) override { mon_dom_cl_dis = zcl; }
 
@@ -49,10 +54,18 @@ public:
   virtual void calculer_coeffs_echange(double temps) override { }
   void verifie_ch_init_nb_comp() const override { }
 
+  virtual double val_imp(int i) const override {return d_(i,0);};
+  virtual double val_imp(int i, int j) const override {return d_(i,j);};
+  virtual double val_imp_au_temps(double temps, int i) const override {Process::exit(que_suis_je() + " : You shouldn't go through val_imp_au_temps but through val_imp ! ") ; return 1.;};
+  virtual double val_imp_au_temps(double temps, int i, int j) const override {Process::exit(que_suis_je() + " : You shouldn't go through val_imp_au_temps but through val_imp ! ") ; return 1.;};
+
 protected:
+  virtual void me_calculer()=0;
+
   REF(Correlation) correlation_loi_paroi_;
   REF(Frontiere_dis_base) la_frontiere_dis;
   double mon_temps = -1.e8;
+  DoubleTab d_;
 };
 
 #endif
