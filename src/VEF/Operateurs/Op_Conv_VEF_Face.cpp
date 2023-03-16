@@ -351,7 +351,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           if (type_lim_int == type_lim_chakravarthy) cas = 4;
           if (type_lim_int == type_lim_superbee) cas = 5;
           //  application du limiteur
-          if (gradient_face.size_array() == 0)
+          if (!gradient_face.get_md_vector().non_nul())
             {
               gradient_face.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
               domaine_VEF.creer_tableau_faces(gradient_face);
