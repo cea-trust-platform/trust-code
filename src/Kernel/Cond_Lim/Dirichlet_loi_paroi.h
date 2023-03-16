@@ -23,7 +23,7 @@
 #include <TRUSTTab.h>
 #include <Param.h>
 
-/*! @brief Classe Neumann_loi_paroi Classe de base pour les flux impose pour une condition aux limites adaptative faible des equations de turbulence
+/*! @brief Classe Dirichlet_loi_paroi Classe de base pour les valeurs impose pour une condition aux limites des equations de turbulence
  *
  *     Le flux impose est calcule a partir de la correlation de loi de paroi adaptative.
  *
