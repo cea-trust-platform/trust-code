@@ -62,6 +62,8 @@ public :
 
   virtual inline void eos_get_cp_mu_lambda_beta_pT(const SpanD P, const SpanD T, MSpanD prop, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
   virtual inline void eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_all_prop_loi_F5(MSpanD , int ncomp = 1, int id = 0, bool is_liq = true) const { return not_implemented<void>(__func__); }
+
 
   // en enthalpie
   virtual inline void eos_get_rho_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
