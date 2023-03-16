@@ -556,3 +556,55 @@ void EOS_to_TRUST_generique::eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp
   throw;
 #endif
 }
+
+void EOS_to_TRUST_generique::eos_get_all_loi_F5(MSpanD spans, int ncomp, int id, bool is_liq) const
+{
+#ifdef HAS_EOS
+  assert((int )spans.size() == 6 && ncomp == 1);
+  if (is_liq)
+    {
+      const SpanD H = spans.at("H_L_SAT"), P = spans.at("pression");
+      SpanD lambdalsatp__ = spans.at("LAMBDA_L_SAT"), dlambdalsatp_dp__ = spans.at("LAMBDA_L_SAT_DP"),
+            mulsatp__ = spans.at("MU_L_SAT"), dmulsatp_dp__ = spans.at("MU_L_SAT_DP");
+
+      const int nb_out = 4; /* 4 variables to fill */
+      ArrOfInt tmp((int)P.size());
+      EOS_Error_Field ferr(tmp);
+      EOS_Fields flds_out(nb_out);
+
+      int i_out = 0;
+
+      flds_out[i_out++] = EOS_Field("lambda", "lambda", (int) lambdalsatp__.size(), (double*) lambdalsatp__.begin());
+      flds_out[i_out++] = EOS_Field("dlambdadp", "d_lambda_d_p_h", (int) dlambdalsatp_dp__.size(), (double*) dlambdalsatp_dp__.begin());
+      flds_out[i_out++] = EOS_Field("mu", "mu", (int) mulsatp__.size(), (double*) mulsatp__.begin());
+      flds_out[i_out++] = EOS_Field("dmudp", "d_mu_d_p_h", (int) dmulsatp_dp__.size(), (double*) dmulsatp_dp__.begin());
+
+      EOS_Field T_fld("Enthalpy", "h", (int)H.size(),(double*)H.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
+      fluide->compute(P_fld, T_fld, flds_out, ferr) ;
+    }
+  else // vapeur
+    {
+      const SpanD H = spans.at("H_V_SAT"), P = spans.at("pression");
+      SpanD lambdavsatp__ = spans.at("LAMBDA_V_SAT"), dlambdavsatp_dp__ = spans.at("LAMBDA_V_SAT_DP"),
+            muvsatp__ = spans.at("MU_V_SAT"), dmuvsatp_dp__ = spans.at("MU_V_SAT_DP");
+
+      const int nb_out = 4; /* 4 variables to fill */
+      ArrOfInt tmp((int)P.size());
+      EOS_Error_Field ferr(tmp);
+      EOS_Fields flds_out(nb_out);
+
+      int i_out = 0;
+
+      flds_out[i_out++] = EOS_Field("lambda", "lambda", (int) lambdavsatp__.size(), (double*) lambdavsatp__.begin());
+      flds_out[i_out++] = EOS_Field("dlambdadp", "d_lambda_d_p_h", (int) dlambdavsatp_dp__.size(), (double*) dlambdavsatp_dp__.begin());
+      flds_out[i_out++] = EOS_Field("mu", "mu", (int) muvsatp__.size(), (double*) muvsatp__.begin());
+      flds_out[i_out++] = EOS_Field("dmudp", "d_mu_d_p_h", (int) dmuvsatp_dp__.size(), (double*) dmuvsatp_dp__.begin());
+
+      EOS_Field T_fld("Enthalpy", "h", (int)H.size(),(double*)H.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
+      fluide->compute(P_fld, T_fld, flds_out, ferr) ;
+    }
+#else
+  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}

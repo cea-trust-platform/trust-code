@@ -109,6 +109,8 @@ public :
   virtual inline void eos_get_d_mu_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const { return not_implemented<void>(__func__); }
 
   virtual inline void eos_get_all_flux_interfacial(MSpanD sats, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_all_loi_F5(MSpanD sats, int ncomp = 1, int id = 0, bool is_liq = true) const { return not_implemented<void>(__func__); }
+
 
   virtual inline void eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
   virtual inline void eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
