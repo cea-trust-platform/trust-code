@@ -325,6 +325,8 @@ echo "   [-disable-plot2d]                   Disable PLOT2D installation and bui
 echo "   [-disable-checks]                   Disable checks for external packages, sources, disk space and speed."
 echo "   [-disable-check_sources]            Disable check sources before compiling."
 echo " "
+echo "   [-without-conda]                    Do not use Miniconda for Python packages, CMake, swig and other crucial system tools for TRUST."
+echo "                                       !!WARNING!! Use at your own risks, no support will be provided."
 echo "   [-without-host_file]                Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
 echo "   [-without-doc]                      Do not build the documentation."
 echo "   [-without-pdflatex]                 Do not build the pdf documentation."
@@ -399,6 +401,7 @@ export TRUST_DISABLE_JUPYTER=0
 export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_PDFLATEX=0
 export TRUST_WITHOUT_VISIT=0
+export TRUST_WITHOUT_CONDA=0
 export TRUST_DOWNLOAD_VISIT=0
 export TRUST_WITHOUT_HOST=0
 export TRUST_ENABLE_DOC_DOXYGEN=0
@@ -630,6 +633,10 @@ do
    elif [ "${1#-without-host_file}" != $1 ]
    then
       export TRUST_WITHOUT_HOST=1
+   elif [ "${1#-without-conda}" != $1 ]
+   then
+      export TRUST_WITHOUT_CONDA=1
+      export TRUST_DISABLE_JUPYTER=1
 
    else
       echo "Unknown option $1."

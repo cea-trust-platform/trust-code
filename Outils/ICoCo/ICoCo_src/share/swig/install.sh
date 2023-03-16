@@ -10,7 +10,7 @@ echo Sourcing MEDCoupling
 
 cd build
 
-cmake .. -DCMAKE_CXX_FLAGS_RELEASE="" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install -DSWIG_EXECUTABLE=$TRUST_ROOT/exec/python/bin/swig
+cmake .. -DCMAKE_CXX_FLAGS_RELEASE="" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install 
 
 make -j install || exit -1
 
