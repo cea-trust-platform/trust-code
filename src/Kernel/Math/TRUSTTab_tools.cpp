@@ -46,18 +46,16 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
   const TRUSTArray<int>& blocs = tableau.get_md_vector().valeur().get_items_to_compute();
   const int nblocs = blocs.size_array() >> 1;
   const TRUSTVect<_T_>& vect = tableau;
-  _T_* max_colonne_addr = max_colonne.addr();
   const _T_* vect_addr = vect.addr();
   const int lsize = vect.line_size();
   for (int j = 0; j < lsize; j++) max_colonne[j] = 0;
   assert(lsize == max_colonne.size_array());
+  bool kernelOnDevice = vect.isKernelOnDevice("local_max_abs_tab(x)");
+  _T_* max_colonne_addr = kernelOnDevice ? computeOnTheDevice(max_colonne) : max_colonne.addr();
   for (int ibloc = 0; ibloc < nblocs; ibloc++)
     {
       const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
-#ifdef _OPENMP
-      bool kernelOnDevice = max_colonne.isKernelOnDevice(vect, "local_max_abs_tab(x)");
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
-#endif
+      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(max:max_colonne_addr[0:lsize])
       for (int i = begin_bloc; i < end_bloc; i++)
         {
           int k = i * lsize;
@@ -67,6 +65,7 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
               max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
             }
         }
+      copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab");
     }
 }
 

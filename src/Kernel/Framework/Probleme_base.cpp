@@ -1606,7 +1606,7 @@ void Probleme_base::sauver() const
 void Probleme_base::finir()
 {
   Debog::set_nom_pb_actuel(le_nom());
-
+  schema_temps().finir();
   les_postraitements.finir();
   if (schema_temps().temps_sauv() > 0.0)
     sauver();

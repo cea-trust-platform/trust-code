@@ -87,6 +87,14 @@ void Schema_Temps_base::initialize()
   dt_stab_=dt_;
   dt_failed_ = DBL_MAX;
 }
+void Schema_Temps_base::finir() const
+{
+  if (je_suis_maitre() && dt_ev_.is_open())
+    {
+      dt_ev_ << finl;
+      dt_ev_.close();
+    }
+}
 
 double Schema_Temps_base::computeTimeStep(bool& is_stop) const
 {
