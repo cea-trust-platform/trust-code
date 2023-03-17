@@ -505,3 +505,28 @@ void EOS_to_TRUST_Sat_generique::eos_get_all_loi_F5(MSpanD sats, int ncomp, int 
   throw;
 #endif
 }
+
+void EOS_to_TRUST_Sat_generique::eos_get_hv_drhov_loi_F5(MSpanD sats, int ncomp, int id, bool is_liq) const
+{
+#ifdef HAS_EOS
+  assert((int )sats.size() == 3 && ncomp == 1);
+  const SpanD P = sats.at("pression");
+
+  SpanD hvsatp__ = sats.at("H_V_SAT"), drhovsatp_dp__ = sats.at("RHO_V_SAT_DP");
+
+  int i_out = 0;
+  const int nb_out = 2; /* 2 variables to fill */
+  ArrOfInt tmp((int)P.size());
+  EOS_Error_Field ferr(tmp);
+  EOS_Fields flds_out(nb_out);
+  EOS_Field P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
+
+  flds_out[i_out++] = EOS_Field("hvsat", "h_v_sat", (int) hvsatp__.size(), (double*) hvsatp__.begin());
+  flds_out[i_out++] = EOS_Field("drhovsatdp", "d_rho_v_sat_d_p", (int) drhovsatp_dp__.size(), (double*) drhovsatp_dp__.begin());
+
+  fluide->compute(P_fld, flds_out, ferr);
+#else
+  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
