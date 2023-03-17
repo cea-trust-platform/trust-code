@@ -48,6 +48,11 @@ public:
     tab_diffusivite_turbulente.echange_espace_virtuel();
   }
 
+  const DoubleTab& get_diffusivite_turbulente_multiphase() const
+  {
+    return tab_diffusivite_turbulente;
+  }
+
   const Champ_Fonc& diffusivite_turbulente() const { throw; }
   const DoubleTab& tab_nu_t() const { return nu_t_.valeur(); }
 

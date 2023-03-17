@@ -67,7 +67,15 @@ protected:
   associer_corr_impl(const Correlation& corr)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
-    return eval_diff_turb.associer_corr(corr);
+    eval_diff_turb.associer_corr(corr);
+  }
+
+  template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
+  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_FACE || _TYPE_ == Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, const DoubleTab&>
+  get_diffusivite_turbulente_multiphase_impl() const
+  {
+    const EVAL_TYPE& eval_diff_turb = static_cast<const EVAL_TYPE&>(iter_()->evaluateur());
+    return eval_diff_turb.get_diffusivite_turbulente_multiphase();
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
@@ -75,7 +83,7 @@ protected:
   set_nut_impl(const DoubleTab& nut)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
-    return eval_diff_turb.set_nut(nut, true /* need alpha * rho */ );
+    eval_diff_turb.set_nut(nut, true /* need alpha * rho */ );
   }
 
   template <Type_Operateur _TYPE_ ,typename EVAL_TYPE>
@@ -83,7 +91,7 @@ protected:
   set_nut_impl(const DoubleTab& nut)
   {
     EVAL_TYPE& eval_diff_turb = static_cast<EVAL_TYPE&>(iter_()->evaluateur());
-    return eval_diff_turb.set_nut(nut, false /* DO NOT need alpha * rho */);
+    eval_diff_turb.set_nut(nut, false /* DO NOT need alpha * rho */);
   }
 
   template <typename EVAL_TYPE>

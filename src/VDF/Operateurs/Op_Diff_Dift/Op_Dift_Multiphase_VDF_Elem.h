@@ -64,6 +64,11 @@ public:
 //    return ref_cast(Transport_turbulent_base, corr_.valeur()).dimension_min_nu();
   }
 
+  inline const DoubleTab& get_diffusivite_turbulente() const
+  {
+    return get_diffusivite_turbulente_multiphase_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM,Eval_Dift_Multiphase_VDF_Elem>();
+  }
+
   bool is_turb() const override { return true; }
 
   void completer() override;

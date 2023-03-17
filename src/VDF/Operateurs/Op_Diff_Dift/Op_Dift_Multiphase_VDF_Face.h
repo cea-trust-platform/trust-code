@@ -57,6 +57,11 @@ public:
     return diffusivite_impl<Eval_Dift_Multiphase_VDF_Face>();
   }
 
+  inline const DoubleTab& get_diffusivite_turbulente() const
+  {
+    return get_diffusivite_turbulente_multiphase_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE,Eval_Dift_Multiphase_VDF_Face>();
+  }
+
   double calculer_dt_stab() const override;
   bool is_turb() const override { return true; }
   const Correlation* correlation_viscosite_turbulente() const override { return &corr_; }
