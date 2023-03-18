@@ -14,13 +14,12 @@
 *****************************************************************************/
 
 #include <EOS_to_TRUST_generique.h>
-#include <Process.h>
 
 using namespace NEPTUNE ;
 
 // iterator index !
-#define i_it  std::distance(TT.begin(), &val)
-#define bi_it  std::distance(bTT.begin(), &bval)
+#define i_it std::distance(TT.begin(), &val)
+#define bi_it std::distance(bTT.begin(), &bval)
 #define i_itR std::distance(R.begin(), &val)
 
 void EOS_to_TRUST_generique::set_EOS_generique(const char *const model_name, const char *const fluid_name)
@@ -35,414 +34,223 @@ void EOS_to_TRUST_generique::set_EOS_generique(const char *const model_name, con
 #endif
 }
 
-void EOS_to_TRUST_generique::eos_get_rho_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+void EOS_to_TRUST_generique::eos_get_single_property_T_(Loi_en_T enum_prop, const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "rho", "rho");
+  if (ncomp == 1)
+    compute_eos_field(P, T, R, EOS_prop_en_T[(int)enum_prop][0], EOS_prop_en_T[(int)enum_prop][1]);
   else /* attention stride */
     {
       VectorD temp_((int)P.size());
       SpanD TT(temp_);
       for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "rho", "rho");
+      compute_eos_field(P, TT, R, EOS_prop_en_T[(int)enum_prop][0], EOS_prop_en_T[(int)enum_prop][1]);
     }
 #else
   Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
 #endif
+}
+
+void EOS_to_TRUST_generique::eos_get_single_property_h_(Loi_en_h enum_prop, const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+{
+#ifdef HAS_EOS
+  assert((int )H.size() == (int )P.size() && (int )H.size() == (int )R.size());
+  assert (ncomp == 1);
+  if (ncomp == 1)
+    compute_eos_field_h(P, H, R, EOS_prop_en_h[(int)enum_prop][0], EOS_prop_en_h[(int)enum_prop][1]);
+  else
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+#else
+  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+void EOS_to_TRUST_generique::eos_get_rho_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::RHO, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_rho_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "rho", "rho");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::RHO, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_rho_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "drhodp", "d_rho_d_p_T");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "drhodp", "d_rho_d_p_T");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::RHO_DP, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_rho_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "drhodp", "d_rho_d_p_h");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::RHO_DP, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_rho_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "drhodT", "d_rho_d_T_p");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "drhodT", "d_rho_d_T_p");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::RHO_DT, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_rho_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "drhodh", "d_rho_d_h_p");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::RHO_DH, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_h_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "enthalpie", "h");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "enthalpie", "h");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::H, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_T_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "temperature", "T");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::T, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_h_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "dhdp", "d_h_d_p_T");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "dhdp", "d_h_d_p_T");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::H_DP, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_T_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dTdp", "d_T_d_p_h");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::T_DP, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_h_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "dhdT", "d_h_d_T_p");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "dhdT", "d_h_d_T_p");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::H_DT, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_T_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dTdh", "d_T_d_h_p");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::T_DH, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_cp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "cp", "cp");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "cp", "cp");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::CP, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_cp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "cp", "cp");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::CP, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_cp_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::CP_DP, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_cp_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dcpdp", "d_cp_d_p_h");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::CP_DP, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_cp_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::CP_DT, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_cp_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dcpdh", "d_cp_d_h_p");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
-}
-
-void EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
-{
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "beta", "beta");
-  else
-    {
-      VectorD drho_dt_((int)P.size());
-      SpanD drho_dt(drho_dt_);
-      VectorD rho_((int)P.size());
-      SpanD rho(rho_);
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, rho, "rho", "rho");
-      compute_eos_field(P, TT, rho, "drhodT", "d_rho_d_T_p");
-      for (auto& val : R)
-        val = drho_dt[i_itR] / rho[i_itR];
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::CP_DH, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_mu_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "mu", "mu");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "mu", "mu");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::MU, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_mu_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "mu", "mu");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::MU, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_mu_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::MU_DP, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_mu_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dmudp", "d_mu_d_p_h");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::MU_DP, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_mu_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::MU_DT, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_mu_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dmudh", "d_mu_d_h_p");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::MU_DH, P, H, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_lambda_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "lambda", "lambda");
-  else /* attention stride */
-    {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, R, "lambda", "lambda");
-    }
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::LAMBDA, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_lambda_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "lambda", "lambda");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::LAMBDA, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_lambda_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::LAMBDA_DP, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_lambda_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dlambdadp", "d_lambda_d_p_h");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::LAMBDA_DP, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_lambda_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::LAMBDA_DT, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_lambda_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )R.size() && (int )H.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "dlambdadh", "d_lambda_d_h_p");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::LAMBDA_DH, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::SIGMA, P, T, R, ncomp, id);
 }
 
 void EOS_to_TRUST_generique::eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "sigma", "sigma");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_h_(Loi_en_h::SIGMA, P, H, R, ncomp, id);
 }
 
-void EOS_to_TRUST_generique::eos_get_d_sigma_d_p_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+void EOS_to_TRUST_generique::eos_get_sigma_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-#ifdef HAS_EOS
-  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
-  if (ncomp == 1) compute_eos_field_h(P, H, R, "d_sigma_d_p", "d_sigma_d_p_h");
-  else /* attention stride */
-    throw;
-#else
-  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
+  eos_get_single_property_T_(Loi_en_T::SIGMA_DP, P, T, R, ncomp, id);
 }
 
+void EOS_to_TRUST_generique::eos_get_sigma_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_h_(Loi_en_h::SIGMA_DP, P, H, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_sigma_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_T_(Loi_en_T::SIGMA_DT, P, T, R, ncomp, id);
+}
+
+void EOS_to_TRUST_generique::eos_get_sigma_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+{
+  eos_get_single_property_h_(Loi_en_h::SIGMA_DH, P, H, R, ncomp, id);
+}
+
+/////////////////////////////////////
+/// NEXT STEP TODO FIXME
+/////////////////////////////////////
 void EOS_to_TRUST_generique::eos_get_cp_mu_lambda_beta_pT(const SpanD P, const SpanD T, MSpanD prop, int ncomp, int id) const
 {
 #ifdef HAS_EOS
@@ -697,6 +505,28 @@ void EOS_to_TRUST_generique::eos_get_all_prop_loi_F5(MSpanD spans, int ncomp, in
       EOS_Field T_fld("Enthalpy", "h", (int)H.size(),(double*)H.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
       fluide->compute(P_fld, T_fld, flds_out, ferr) ;
 
+    }
+#else
+  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+// si incompressible et en T ...
+void EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+#ifdef HAS_EOS
+  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
+  if (ncomp == 1) compute_eos_field(P, T, R, "beta", "beta");
+  else
+    {
+      VectorD drho_dt_((int)P.size()), rho_((int)P.size()), temp_((int)P.size());
+      SpanD drho_dt(drho_dt_), rho(rho_), TT(temp_);
+      for (auto& val : TT) val = T[i_it * ncomp + id];
+      compute_eos_field(P, TT, rho, "rho", "rho");
+      compute_eos_field(P, TT, rho, "drhodT", "d_rho_d_T_p");
+      for (auto& val : R)
+        val = drho_dt[i_itR] / rho[i_itR];
     }
 #else
   Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;

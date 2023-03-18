@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,7 +28,7 @@ private:
     EOStT.eos_get_T_sat_p(P, res, ncomp, ind);
     Tc_(res); // return res en kelvin => on corrige
   }
-  void dP_Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_d_T_sat_d_p_p(P, res, ncomp, ind); }
+  void dP_Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_T_sat_d_p_p(P, res, ncomp, ind); }
   void Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override
   {
     EOStT.eos_get_p_sat_T(Tk_(T), res, ncomp, ind);
@@ -36,15 +36,15 @@ private:
   }
   void dT_Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override
   {
-    EOStT.eos_get_d_p_sat_d_T_T(Tk_(T), res, ncomp, ind);
+    EOStT.eos_get_p_sat_d_T_T(Tk_(T), res, ncomp, ind);
     Tc_(T); /* put back T in C */
   }
   void Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_lvap_p(P, res, ncomp, ind); }
-  void dP_Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_d_lvap_d_p_p(P, res, ncomp, ind); }
+  void dP_Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_lvap_d_p_p(P, res, ncomp, ind); }
   void Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_h_l_sat_p(P, res, ncomp, ind); }
-  void dP_Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_d_h_l_sat_d_p_p(P, res, ncomp, ind); }
+  void dP_Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_h_l_sat_d_p_p(P, res, ncomp, ind); }
   void Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_h_v_sat_p(P, res, ncomp, ind); }
-  void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_d_h_v_sat_d_p_p(P, res, ncomp, ind); }
+  void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.eos_get_h_v_sat_d_p_p(P, res, ncomp, ind); }
   void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
   {
     EOStT.eos_get_sigma_pT(P, Tk_(T), res, ncomp, ind);
