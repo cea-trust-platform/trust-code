@@ -97,6 +97,10 @@ public :
 private:
   void eos_get_single_property_T_(Loi_en_T , const SpanD , const SpanD , SpanD , int ncomp = 1, int id = 0) const;
   void eos_get_single_property_h_(Loi_en_h , const SpanD , const SpanD , SpanD , int ncomp = 1, int id = 0) const;
+
+#ifdef HAS_EOS
+  void eos_get_all_properties_T_(const MSpanD , NEPTUNE::EOS_Fields& , NEPTUNE::EOS_Error_Field&  , int ncomp = 1, int id = 0) const;
+#endif
 };
 
 #endif /* EOS_to_TRUST_generique_included */

@@ -249,37 +249,10 @@ void EOS_to_TRUST_generique::eos_get_sigma_dh_ph(const SpanD P, const SpanD H, S
 }
 
 // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
-void EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int id) const
-{
 #ifdef HAS_EOS
-  assert((int )prop.size() == 4 && (int )input.size() == 2);
-
+void EOS_to_TRUST_generique::eos_get_all_properties_T_(const MSpanD input , EOS_Fields& flds_out, EOS_Error_Field& ferr, int ncomp, int id) const
+{
   const SpanD T = input.at("temperature"), P = input.at("pressure");
-
-  // XXX : ATTENTION : need Kelvin
-  Tk_(T);
-
-  // BEEM
-  SpanD CP = prop.at(Loi_en_T::CP), M = prop.at(Loi_en_T::MU), L = prop.at(Loi_en_T::LAMBDA), B = prop.at(Loi_en_T::BETA);
-  assert((int )T.size() == ncomp * (int )CP.size() && (int )T.size() == ncomp * (int )P.size());
-  assert((int )T.size() == ncomp * (int )B.size() && (int )T.size() == ncomp * (int )P.size());
-  assert((int )T.size() == ncomp * (int )M.size() && (int )T.size() == ncomp * (int )P.size());
-  assert((int )T.size() == ncomp * (int )L.size() && (int )T.size() == ncomp * (int )P.size());
-
-  const int nb_out = 5; /* 5 variables to fill */
-  VectorD drho_dt_((int) P.size()), rho_((int) P.size());
-  SpanD drho_dt(drho_dt_), rho(rho_);
-  ArrOfInt tmp((int)P.size());
-  EOS_Error_Field ferr(tmp);
-  EOS_Fields flds_out(nb_out);
-  int i_out = 0;
-
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::CP][0], EOS_prop_en_T[(int) Loi_en_T::CP][1], (int) CP.size(), (double*) CP.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::MU][0], EOS_prop_en_T[(int) Loi_en_T::MU][1], (int) M.size(), (double*) M.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::LAMBDA][0], EOS_prop_en_T[(int) Loi_en_T::LAMBDA][1], (int) L.size(), (double*) L.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) rho.size(), (double*) rho.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO_DT][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DT][1], (int) drho_dt.size(), (double*) drho_dt.begin());
-
   if (ncomp == 1)
     {
       EOS_Field T_fld("Temperature", "T", (int) T.size(), (double*) T.begin()), P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
@@ -294,6 +267,42 @@ void EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, 
       EOS_Field T_fld("Temperature", "T", (int) TT.size(), (double*) TT.begin()), P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
       fluide->compute(P_fld, T_fld, flds_out, ferr);
     }
+}
+#endif
+
+void EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int id) const
+{
+#ifdef HAS_EOS
+  assert((int )prop.size() == 4 && (int )input.size() == 2);
+
+  const SpanD T = input.at("temperature"), P = input.at("pressure");
+  assert((int )T.size() == ncomp * (int )P.size());
+
+  Tk_(T); // XXX : ATTENTION : need Kelvin
+
+  SpanD B = prop.at(Loi_en_T::BETA);
+
+  const int nb_out = 5; /* 5 variables to fill */
+  VectorD drho_dt_((int) P.size()), rho_((int) P.size());
+  SpanD drho_dt(drho_dt_), rho(rho_);
+  ArrOfInt tmp((int)P.size());
+  EOS_Error_Field ferr(tmp);
+  EOS_Fields flds_out(nb_out);
+  int i_out = 0;
+
+  for (auto& itr : prop)
+    {
+      assert((int )T.size() == ncomp * (int )itr.second.size());
+      if (itr.first != Loi_en_T::BETA)
+        flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) itr.first][0], EOS_prop_en_T[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+      else /* pour beta on recalcule sans appel a beta de eos ... */
+        {
+          flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) rho.size(), (double*) rho.begin());
+          flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO_DT][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DT][1], (int) drho_dt.size(), (double*) drho_dt.begin());
+        }
+    }
+
+  eos_get_all_properties_T_(input, flds_out, ferr, ncomp, id);
 
   /* beta */
   for (int i = 0; i < (int) B.size(); i++) B[i] = drho_dt[i] / rho[i];
@@ -312,60 +321,32 @@ void EOS_to_TRUST_generique::eos_get_all_pb_multiphase_pT(const MSpanD input, ML
   assert( (int )input.size() == 4 && (int )inter.size() == 6 && (int )bord.size() == 2);
 
   const SpanD T = input.at("temperature"), P = input.at("pressure"), bT = input.at("bord_temperature"), bP = input.at("bord_pressure");
+  assert ((int )bT.size() == ncomp * (int )bP.size() && (int )T.size() == ncomp * (int )P.size());
 
   // XXX : ATTENTION : need Kelvin
   Tk_(T), Tk_(bT);
 
-  SpanD R = inter.at(Loi_en_T::RHO), dP = inter.at(Loi_en_T::RHO_DP), dT = inter.at(Loi_en_T::RHO_DT),
-        H = inter.at(Loi_en_T::H), dPH = inter.at(Loi_en_T::H_DP), dTH = inter.at(Loi_en_T::H_DT);
-
-  SpanD bR = bord.at(Loi_en_T::RHO), bH = bord.at(Loi_en_T::H);
-
-  assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bR.size());
-  assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bH.size());
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )dP.size());
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )dT.size());
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )H.size());
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )dPH.size());
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )dTH.size());
-
-  const int nb_out = 6, bnb_out = 2; /* 8 variables to fill */
+  const int nb_out = (int )inter.size(), bnb_out = (int )bord.size();
   ArrOfInt tmp((int)P.size()), btmp((int)bP.size());
   EOS_Error_Field ferr(tmp), bferr(btmp);
   EOS_Fields flds_out(nb_out), bflds_out(bnb_out);
 
   int i_out = 0, bi_out = 0;
-  bflds_out[bi_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) bR.size(), (double*) bR.begin());
-  bflds_out[bi_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H][0], EOS_prop_en_T[(int) Loi_en_T::H][1], (int) bH.size(), (double*) bH.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) R.size(), (double*) R.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO_DP][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DP][1], (int) dP.size(), (double*) dP.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO_DT][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DT][1], (int) dT.size(), (double*) dT.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H][0], EOS_prop_en_T[(int) Loi_en_T::H][1], (int) H.size(), (double*) H.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H_DP][0], EOS_prop_en_T[(int) Loi_en_T::H_DP][1], (int) dPH.size(), (double*) dPH.begin());
-  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H_DT][0], EOS_prop_en_T[(int) Loi_en_T::H_DT][1], (int) dTH.size(), (double*) dTH.begin());
 
-  if (ncomp == 1)
+  for (auto& itr : bord)
     {
-      EOS_Field bT_fld("Temperature", "T", (int)bT.size(),(double*)bT.begin()), bP_fld("Pressure", "P", (int)bP.size(), (double*)bP.begin());
-      fluide->compute(bP_fld, bT_fld, bflds_out, bferr) ;
-
-      EOS_Field T_fld("Temperature", "T", (int)T.size(),(double*)T.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
-      fluide->compute(P_fld, T_fld, flds_out, ferr) ;
+      assert((int )bT.size() == ncomp * (int )itr.second.size());
+      bflds_out[bi_out++] = EOS_Field(EOS_prop_en_T[(int) itr.first][0], EOS_prop_en_T[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
     }
-  else
+
+  for (auto& itr : inter)
     {
-      VectorD temp_((int)P.size()), btemp_((int)bP.size());
-      SpanD TT(temp_), bTT(btemp_);
-      for (auto& bval : bTT) bval = bT[bi_it * ncomp + id];
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-
-      EOS_Field bT_fld("Temperature", "T", (int) bTT.size(), (double*) bTT.begin()), bP_fld("Pressure", "P", (int) bP.size(), (double*) bP.begin());
-      fluide->compute(bP_fld, bT_fld, bflds_out, bferr);
-
-      EOS_Field T_fld("Temperature", "T", (int) TT.size(), (double*) TT.begin()), P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
-      fluide->compute(P_fld, T_fld, flds_out, ferr);
+      assert((int )T.size() == ncomp * (int )itr.second.size());
+      flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) itr.first][0], EOS_prop_en_T[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
     }
+
+  eos_get_all_properties_T_( { { "temperature", bT }, { "pressure", bP } }, bflds_out, bferr, ncomp, id); // bords
+  eos_get_all_properties_T_( { { "temperature", T }, { "pressure", P } }, flds_out, ferr, ncomp, id); // interne
 
   // XXX : ATTENTION : need to put back T in C
   Tc_(T), Tc_(bT);
