@@ -48,7 +48,8 @@ enum class Loi_en_T
   CP, CP_DP, CP_DT,
   MU, MU_DP, MU_DT,
   LAMBDA, LAMBDA_DP, LAMBDA_DT,
-  SIGMA, SIGMA_DP, SIGMA_DT
+  SIGMA, SIGMA_DP, SIGMA_DT,
+  BETA /* pour l'incompressible si besoin */
 };
 
 static constexpr std::array<PairCharArray, 18> EOS_prop_en_T =
@@ -112,6 +113,8 @@ static constexpr std::array<PairCharArray, 17> EOS_prop_sat =
     { "sigma", "sigma" }
   }
 };
+
+using MLoiSpanD = std::map<Loi_en_T, tcb::span<double>>;
 
 class EOS_to_TRUST
 {
@@ -187,8 +190,8 @@ public :
   virtual inline void eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 
   // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
-  virtual inline void eos_get_cp_mu_lambda_beta_pT(const SpanD P, const SpanD T, MSpanD prop, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
-  virtual inline void eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 
   /*
    * ***************** *

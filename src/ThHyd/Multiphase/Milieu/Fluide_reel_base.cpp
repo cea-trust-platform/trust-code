@@ -19,8 +19,9 @@
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <EChaine.h>
+#include <EOS_to_TRUST.h>
 #include <Domaine_VF.h>
+#include <EChaine.h>
 #include <cfloat>
 #include <cmath>
 
@@ -140,13 +141,17 @@ void Fluide_reel_base::mettre_a_jour(double t)
   int Ni = mu.valeurs().dimension_tot(0), cR = tab_rho.dimension_tot(0) == 1;
   if (t > tp || first_maj_)
     {
-      MSpanD spans_interne = { { "cp", tab_Cp.get_span_tot() }, { "mu", tab_mu.get_span_tot() }, { "lambda", tab_lambda.get_span_tot() }, { "beta", tab_beta.get_span_tot() } };
-      if (is_incompressible()) _cp_mu_lambda_beta_(spans_interne);
+      MLoiSpanD spans_interne = { { Loi_en_T::CP, tab_Cp.get_span_tot() }, { Loi_en_T::MU, tab_mu.get_span_tot() },
+        { Loi_en_T::LAMBDA, tab_lambda.get_span_tot() }, { Loi_en_T::BETA, tab_beta.get_span_tot() }
+      };
+
+      if (is_incompressible()) _compute_CPMLB_pb_multiphase_(spans_interne);
       else
         {
           assert(pres.line_size() == 1 && tab_Cp.line_size() == 1 && tab_mu.line_size() == 1 && tab_lambda.line_size() == 1 && tab_beta.line_size() == 1);
           const int n_comp = temp.line_size(); /* on a temp(xx,id_composite) */
-          cp_mu_lambda_beta_(temp.get_span_tot(), pres.get_span_tot(), spans_interne, n_comp, id_composite);
+          MSpanD spans_input = { { "temperature", temp.get_span_tot() }, { "pressure", pres.get_span_tot() } };
+          compute_CPMLB_pb_multiphase_(spans_input, spans_interne, n_comp, id_composite);
         }
 
       for (int i = 0; i < Ni; i++) // fill values
@@ -216,8 +221,9 @@ void Fluide_reel_base::calculate_fluid_properties_incompressible()
   dT_e.resize(Ni, 1);
 
   VectorD H_(Ni), dTH_(Ni), bH_(Nb), bdTH_(Nb); // Je suis desole ...
-  MSpanD spans_interne = { { "h", SpanD(H_) }, { "dT_h", SpanD(dTH_) } }, spans_bord = { { "h", SpanD(bH_) }, { "dT_h", SpanD(bdTH_) } };
-  _compute_all_(spans_interne, spans_bord);
+  MLoiSpanD spans_interne = { { Loi_en_T::H, SpanD(H_) }, { Loi_en_T::H_DT, SpanD(dTH_) } };
+  MLoiSpanD spans_bord = { { Loi_en_T::H, SpanD(bH_) }, { Loi_en_T::H_DT, SpanD(bdTH_) } };
+  _compute_all_pb_multiphase_(spans_interne, spans_bord);
 
   for (int i = 0; i < Ni; i++) /* interne */
     {
@@ -263,21 +269,22 @@ void Fluide_reel_base::calculate_fluid_properties()
   dT_e.resize(Ni, 1);
   dp_e.resize(Ni, 1);
 
-  MSpanD spans_interne = { { "temperature", T.get_span_tot() }, { "pressure", p.get_span_tot() } }, spans_bord = { { "temperature", bT.get_span_tot() }, { "pressure", bp.get_span_tot() } };
+  MSpanD spans_input = { { "temperature", T.get_span_tot() }, { "pressure", p.get_span_tot() }, { "bord_temperature", bT.get_span_tot() }, { "bord_pressure", bp.get_span_tot() } };
+  MLoiSpanD spans_interne = { }, spans_bord = { };
 
   // pour rho
-  spans_interne.insert( { "rho", val_rho.get_span_tot() });
-  spans_interne.insert( { "dp_rho", dp_rho.get_span_tot() });
-  spans_interne.insert( { "dT_rho", dT_rho.get_span_tot() });
-  spans_bord.insert( { "rho", bval_rho.get_span_tot() });
+  spans_interne.insert( { Loi_en_T::RHO, val_rho.get_span_tot() });
+  spans_interne.insert( { Loi_en_T::RHO_DP, dp_rho.get_span_tot() });
+  spans_interne.insert( { Loi_en_T::RHO_DT, dT_rho.get_span_tot() });
+  spans_bord.insert( { Loi_en_T::RHO, bval_rho.get_span_tot() });
 
   // pour h
-  spans_interne.insert( { "h", val_h.get_span_tot() });
-  spans_interne.insert( { "dp_h", dp_h.get_span_tot() });
-  spans_interne.insert( { "dT_h", dT_h.get_span_tot() });
-  spans_bord.insert( { "h", bval_h.get_span_tot() });
+  spans_interne.insert( { Loi_en_T::H, val_h.get_span_tot() });
+  spans_interne.insert( { Loi_en_T::H_DP, dp_h.get_span_tot() });
+  spans_interne.insert( { Loi_en_T::H_DT, dT_h.get_span_tot() });
+  spans_bord.insert( { Loi_en_T::H, bval_h.get_span_tot() });
 
-  compute_all_(spans_interne, spans_bord, n_comp, n);
+  compute_all_pb_multiphase_(spans_input, spans_interne, spans_bord, n_comp, n);
 
   // energie_interne
   for (int i = 0; i < Ni; i++) /* interne */
@@ -290,32 +297,33 @@ void Fluide_reel_base::calculate_fluid_properties()
   for (int i = 0; i < Nb; i++) bval_e(i) = bval_h(i) -  bp(i, m) / bval_rho(i); /* bord */
 }
 
-void Fluide_reel_base::_cp_mu_lambda_beta_(MSpanD prop) const
+void Fluide_reel_base::_compute_CPMLB_pb_multiphase_(MLoiSpanD prop) const
 {
   assert((int )prop.size() == 4);
-  SpanD CP = prop.at("cp"), M = prop.at("mu"), L = prop.at("lambda"), B = prop.at("beta");
+  SpanD CP = prop.at(Loi_en_T::CP), M = prop.at(Loi_en_T::MU), L = prop.at(Loi_en_T::LAMBDA), B = prop.at(Loi_en_T::BETA);
   _cp_(T_ref_, P_ref_, CP);
   _mu_(T_ref_, P_ref_, M);
   _lambda_(T_ref_, P_ref_, L);
   _beta_(T_ref_, P_ref_, B);
 }
 
-void Fluide_reel_base::_compute_all_(MSpanD inter, MSpanD bord) const
+void Fluide_reel_base::_compute_all_pb_multiphase_(MLoiSpanD inter, MLoiSpanD bord) const
 {
   assert((int )inter.size() == 2 && (int )bord.size() == 2);
-  SpanD H = inter.at("h"), dTH = inter.at("dT_h"), bH = bord.at("h"), bdTH = bord.at("dT_h");
+  SpanD H = inter.at(Loi_en_T::H), dTH = inter.at(Loi_en_T::H_DT), bH = bord.at(Loi_en_T::H), bdTH = bord.at(Loi_en_T::H_DT);
   _h_(T_ref_, P_ref_, H);
   _h_(T_ref_, P_ref_, bH);
   _dT_h_(T_ref_, P_ref_, dTH);
   _dT_h_(T_ref_, P_ref_, bdTH);
 }
 
-void Fluide_reel_base::cp_mu_lambda_beta_(const SpanD T, const SpanD P, MSpanD prop, int ncomp, int id) const
+void Fluide_reel_base::compute_CPMLB_pb_multiphase_(const MSpanD input, MLoiSpanD prop, int ncomp, int id) const
 {
   assert((int )prop.size() == 4);
+  const SpanD T = input.at("temperature"), P = input.at("pressure");
 
   // BEEM
-  SpanD CP = prop.at("cp"), M = prop.at("mu"), L = prop.at("lambda"), B = prop.at("beta");
+  SpanD CP = prop.at(Loi_en_T::CP), M = prop.at(Loi_en_T::MU), L = prop.at(Loi_en_T::LAMBDA), B = prop.at(Loi_en_T::BETA);
   assert((int )T.size() == ncomp * (int )CP.size() && (int )T.size() == ncomp * (int )P.size());
   assert((int )T.size() == ncomp * (int )B.size() && (int )T.size() == ncomp * (int )P.size());
   assert((int )T.size() == ncomp * (int )M.size() && (int )T.size() == ncomp * (int )P.size());
@@ -328,12 +336,16 @@ void Fluide_reel_base::cp_mu_lambda_beta_(const SpanD T, const SpanD P, MSpanD p
   beta_(T, P, B, ncomp, id);
 }
 
-void Fluide_reel_base::compute_all_(MSpanD inter, MSpanD bord, int ncomp, int id) const
+void Fluide_reel_base::compute_all_pb_multiphase_(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp, int id) const
 {
-  assert((int )inter.size() == 8 && (int )bord.size() == 4);
+  assert( (int )input.size() == 4 && (int )inter.size() == 6 && (int )bord.size() == 2);
 
-  const SpanD T = inter.at("temperature"), P = inter.at("pressure"), bT = bord.at("temperature"), bP = bord.at("pressure");
-  SpanD R = inter.at("rho"), dP = inter.at("dp_rho"), dT = inter.at("dT_rho"), H = inter.at("h"), dPH = inter.at("dp_h"), dTH = inter.at("dT_h"), bR = bord.at("rho"), bH = bord.at("h");
+  const SpanD T = input.at("temperature"), P = input.at("pressure"), bT = input.at("bord_temperature"), bP = input.at("bord_pressure");
+
+  SpanD R = inter.at(Loi_en_T::RHO), dP = inter.at(Loi_en_T::RHO_DP), dT = inter.at(Loi_en_T::RHO_DT),
+        H = inter.at(Loi_en_T::H), dPH = inter.at(Loi_en_T::H_DP), dTH = inter.at(Loi_en_T::H_DT);
+
+  SpanD bR = bord.at(Loi_en_T::RHO), bH = bord.at(Loi_en_T::H);
 
   assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bR.size());
   assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bH.size());

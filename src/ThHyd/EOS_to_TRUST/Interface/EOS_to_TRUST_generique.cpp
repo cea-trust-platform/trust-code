@@ -248,16 +248,19 @@ void EOS_to_TRUST_generique::eos_get_sigma_dh_ph(const SpanD P, const SpanD H, S
   eos_get_single_property_h_(Loi_en_h::SIGMA_DH, P, H, R, ncomp, id);
 }
 
-/////////////////////////////////////
-/// NEXT STEP TODO FIXME
-/////////////////////////////////////
-void EOS_to_TRUST_generique::eos_get_cp_mu_lambda_beta_pT(const SpanD P, const SpanD T, MSpanD prop, int ncomp, int id) const
+// methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
+void EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int id) const
 {
 #ifdef HAS_EOS
-  assert((int )prop.size() == 4);
+  assert((int )prop.size() == 4 && (int )input.size() == 2);
+
+  const SpanD T = input.at("temperature"), P = input.at("pressure");
+
+  // XXX : ATTENTION : need Kelvin
+  Tk_(T);
 
   // BEEM
-  SpanD CP = prop.at("cp"), M = prop.at("mu"), L = prop.at("lambda"), B = prop.at("beta");
+  SpanD CP = prop.at(Loi_en_T::CP), M = prop.at(Loi_en_T::MU), L = prop.at(Loi_en_T::LAMBDA), B = prop.at(Loi_en_T::BETA);
   assert((int )T.size() == ncomp * (int )CP.size() && (int )T.size() == ncomp * (int )P.size());
   assert((int )T.size() == ncomp * (int )B.size() && (int )T.size() == ncomp * (int )P.size());
   assert((int )T.size() == ncomp * (int )M.size() && (int )T.size() == ncomp * (int )P.size());
@@ -271,11 +274,11 @@ void EOS_to_TRUST_generique::eos_get_cp_mu_lambda_beta_pT(const SpanD P, const S
   EOS_Fields flds_out(nb_out);
   int i_out = 0;
 
-  flds_out[i_out++] = EOS_Field("cp", "cp", (int) CP.size(), (double*) CP.begin());
-  flds_out[i_out++] = EOS_Field("mu", "mu", (int) M.size(), (double*) M.begin());
-  flds_out[i_out++] = EOS_Field("lambda", "lambda", (int) L.size(), (double*) L.begin());
-  flds_out[i_out++] = EOS_Field("rho", "rho", (int) rho.size(), (double*) rho.begin());
-  flds_out[i_out++] = EOS_Field("drhodT", "d_rho_d_T_p", (int) drho_dt.size(), (double*) drho_dt.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::CP][0], EOS_prop_en_T[(int) Loi_en_T::CP][1], (int) CP.size(), (double*) CP.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::MU][0], EOS_prop_en_T[(int) Loi_en_T::MU][1], (int) M.size(), (double*) M.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::LAMBDA][0], EOS_prop_en_T[(int) Loi_en_T::LAMBDA][1], (int) L.size(), (double*) L.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) rho.size(), (double*) rho.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO_DT][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DT][1], (int) drho_dt.size(), (double*) drho_dt.begin());
 
   if (ncomp == 1)
     {
@@ -294,22 +297,29 @@ void EOS_to_TRUST_generique::eos_get_cp_mu_lambda_beta_pT(const SpanD P, const S
 
   /* beta */
   for (int i = 0; i < (int) B.size(); i++) B[i] = drho_dt[i] / rho[i];
+
+  // XXX : ATTENTION : need to put back T in C
+  Tc_(T);
 #else
   Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
 #endif
 }
 
-void EOS_to_TRUST_generique::eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp, int id) const
+void EOS_to_TRUST_generique::eos_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp, int id) const
 {
 #ifdef HAS_EOS
-  assert((int )inter.size() == 8 && (int )bord.size() == 4);
+  assert( (int )input.size() == 4 && (int )inter.size() == 6 && (int )bord.size() == 2);
 
-  const SpanD T = inter.at("temperature"), P = inter.at("pressure"), bT = bord.at("temperature"), bP = bord.at("pressure");
-  SpanD R = inter.at("rho"), dP = inter.at("dp_rho"), dT = inter.at("dT_rho"), H = inter.at("h"), dPH = inter.at("dp_h"), dTH = inter.at("dT_h"), bR = bord.at("rho"), bH = bord.at("h");
+  const SpanD T = input.at("temperature"), P = input.at("pressure"), bT = input.at("bord_temperature"), bP = input.at("bord_pressure");
 
   // XXX : ATTENTION : need Kelvin
   Tk_(T), Tk_(bT);
+
+  SpanD R = inter.at(Loi_en_T::RHO), dP = inter.at(Loi_en_T::RHO_DP), dT = inter.at(Loi_en_T::RHO_DT),
+        H = inter.at(Loi_en_T::H), dPH = inter.at(Loi_en_T::H_DP), dTH = inter.at(Loi_en_T::H_DT);
+
+  SpanD bR = bord.at(Loi_en_T::RHO), bH = bord.at(Loi_en_T::H);
 
   assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bR.size());
   assert((int )bT.size() == ncomp * (int )bP.size() && (int )bT.size() == ncomp * (int )bH.size());
@@ -326,14 +336,14 @@ void EOS_to_TRUST_generique::eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp
   EOS_Fields flds_out(nb_out), bflds_out(bnb_out);
 
   int i_out = 0, bi_out = 0;
-  bflds_out[bi_out++] = EOS_Field("rho", "rho", (int) bR.size(), (double*) bR.begin());
-  bflds_out[bi_out++] = EOS_Field("enthalpie", "h", (int) bH.size(), (double*) bH.begin());
-  flds_out[i_out++] = EOS_Field("rho", "rho", (int) R.size(), (double*) R.begin());
-  flds_out[i_out++] = EOS_Field("drhodp", "d_rho_d_p_T", (int) dP.size(), (double*) dP.begin());
-  flds_out[i_out++] = EOS_Field("drhodT", "d_rho_d_T_p", (int) dT.size(), (double*) dT.begin());
-  flds_out[i_out++] = EOS_Field("enthalpie", "h", (int) H.size(), (double*) H.begin());
-  flds_out[i_out++] = EOS_Field("dhdp", "d_h_d_p_T", (int) dPH.size(), (double*) dPH.begin());
-  flds_out[i_out++] = EOS_Field("dhdT", "d_h_d_T_p", (int) dTH.size(), (double*) dTH.begin());
+  bflds_out[bi_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) bR.size(), (double*) bR.begin());
+  bflds_out[bi_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H][0], EOS_prop_en_T[(int) Loi_en_T::H][1], (int) bH.size(), (double*) bH.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) R.size(), (double*) R.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO_DP][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DP][1], (int) dP.size(), (double*) dP.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO_DT][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DT][1], (int) dT.size(), (double*) dT.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H][0], EOS_prop_en_T[(int) Loi_en_T::H][1], (int) H.size(), (double*) H.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H_DP][0], EOS_prop_en_T[(int) Loi_en_T::H_DP][1], (int) dPH.size(), (double*) dPH.begin());
+  flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::H_DT][0], EOS_prop_en_T[(int) Loi_en_T::H_DT][1], (int) dTH.size(), (double*) dTH.begin());
 
   if (ncomp == 1)
     {
@@ -517,17 +527,13 @@ void EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD
 {
 #ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
-  if (ncomp == 1) compute_eos_field(P, T, R, "beta", "beta");
-  else
-    {
-      VectorD drho_dt_((int)P.size()), rho_((int)P.size()), temp_((int)P.size());
-      SpanD drho_dt(drho_dt_), rho(rho_), TT(temp_);
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      compute_eos_field(P, TT, rho, "rho", "rho");
-      compute_eos_field(P, TT, rho, "drhodT", "d_rho_d_T_p");
-      for (auto& val : R)
-        val = drho_dt[i_itR] / rho[i_itR];
-    }
+  VectorD drho_dt_((int)P.size()), rho_((int)P.size()), temp_((int)P.size());
+  SpanD drho_dt(drho_dt_), rho(rho_), TT(temp_);
+  for (auto& val : TT) val = T[i_it * ncomp + id];
+  compute_eos_field(P, TT, rho, "rho", "rho");
+  compute_eos_field(P, TT, rho, "drhodT", "d_rho_d_T_p");
+  // fill beta ...
+  for (auto& val : R) val = drho_dt[i_itR] / rho[i_itR];
 #else
   Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;

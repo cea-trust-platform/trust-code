@@ -76,16 +76,13 @@ private:
     EOStT.eos_get_lambda_pT(P, Tk_(T), L, ncomp, id);
     Tc_(T); /* put back T in C */
   }
-
-  void cp_mu_lambda_beta_(const SpanD T, const SpanD P, MSpanD prop, int ncomp = 1, int id = 0) const override
+  void compute_CPMLB_pb_multiphase_(const MSpanD input, MLoiSpanD prop, int ncomp = 1, int id = 0) const override
   {
-    EOStT.eos_get_cp_mu_lambda_beta_pT(P, Tk_(T), prop, ncomp, id);
-    Tc_(T); /* put back T in C */
+    EOStT.eos_get_CPMLB_pb_multiphase_pT(input, prop, ncomp, id);
   }
-
-  void compute_all_(MSpanD inter, MSpanD bord, int ncomp = 1, int id = 0) const override
+  void compute_all_pb_multiphase_(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp = 1, int id = 0) const override
   {
-    EOStT.eos_get_all_pT(inter, bord, ncomp, id);
+    EOStT.eos_get_all_pb_multiphase_pT(input,inter, bord, ncomp, id);
   }
 
   EOS_to_TRUST_generique EOStT;

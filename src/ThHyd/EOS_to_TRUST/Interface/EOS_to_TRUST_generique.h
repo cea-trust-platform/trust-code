@@ -57,8 +57,8 @@ public :
   void eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
 
   // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
-  void eos_get_cp_mu_lambda_beta_pT(const SpanD P, const SpanD T, MSpanD prop, int ncomp = 1, int id = 0) const override;
-  void eos_get_all_pT(MSpanD inter, MSpanD bord, int ncomp = 1, int id = 0) const override;
+  void eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp = 1, int id = 0) const override;
+  void eos_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp = 1, int id = 0) const override;
 
   /*
    * ***************** *

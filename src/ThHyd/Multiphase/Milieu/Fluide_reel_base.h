@@ -24,10 +24,14 @@
 #include <array>
 #include <map>
 
+enum class Loi_en_T;
+
+using MLoiSpanD = std::map<Loi_en_T, tcb::span<double>>;
 using MSpanD = std::map<std::string, tcb::span<double>>;
 using VectorD = std::vector<double>;
 using ArrayD = std::array<double,1>;
 using SpanD = tcb::span<double>;
+
 
 /*! @brief Classe Fluide_reel_base Cette classe represente un fluide reel ainsi que
  *
@@ -80,8 +84,8 @@ protected :
   virtual void mu_(const SpanD T, const SpanD P, SpanD M, int ncomp = 1, int id = 0) const = 0;
   virtual void lambda_(const SpanD T, const SpanD P, SpanD L, int ncomp = 1, int id = 0) const = 0;
 
-  virtual void cp_mu_lambda_beta_(const SpanD T, const SpanD P, MSpanD, int ncomp = 1, int id = 0) const;
-  virtual void compute_all_(MSpanD , MSpanD , int ncomp = 1, int id = 0) const;
+  virtual void compute_CPMLB_pb_multiphase_(const MSpanD , MLoiSpanD, int ncomp = 1, int id = 0) const;
+  virtual void compute_all_pb_multiphase_(const MSpanD , MLoiSpanD, MLoiSpanD , int ncomp = 1, int id = 0) const;
 
   // Methods that can be called if point-to-point calculation is required
   double _rho_(const double T, const double P) const { return double_to_span<&Fluide_reel_base::rho_>(T,P); }
@@ -126,8 +130,8 @@ private:
   void _mu_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::mu_>(T,P,res); }
   void _lambda_(const double T, const double P, SpanD res) const { double_to_span<&Fluide_reel_base::lambda_>(T,P,res); }
 
-  void _cp_mu_lambda_beta_(MSpanD ) const;
-  void _compute_all_(MSpanD , MSpanD ) const;
+  void _compute_CPMLB_pb_multiphase_(MLoiSpanD ) const;
+  void _compute_all_pb_multiphase_(MLoiSpanD , MLoiSpanD ) const;
 };
 
 #endif /* Fluide_reel_base_included */
