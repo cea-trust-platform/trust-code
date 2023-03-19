@@ -271,66 +271,23 @@ void EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial_pb_multiphase(cons
 #endif
 }
 
-void EOS_to_TRUST_Sat_generique::eos_get_all_loi_F5(MSpanD sats, int ncomp, int id, bool is_liq) const
+void EOS_to_TRUST_Sat_generique::eos_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
 {
 #ifdef HAS_EOS
-  assert((int )sats.size() == 15 && ncomp == 1);
-  const SpanD P = sats.at("pression");
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression");
 
-  SpanD Tsatp__ = sats.at("T_SAT"), dTsatp_dp__ = sats.at("T_SAT_DP"),
-        hlsatp__ = sats.at("H_L_SAT"), dhlsatp_dp__ = sats.at("H_L_SAT_DP"),
-        hvsatp__ = sats.at("H_V_SAT"), dhvsatp_dp__ = sats.at("H_V_SAT_DP"),
-        rholsatp__ = sats.at("RHO_L_SAT"), drholsatp_dp__ = sats.at("RHO_L_SAT_DP"),
-        rhovsatp__ = sats.at("RHO_V_SAT"), drhovsatp_dp__ = sats.at("RHO_V_SAT_DP"),
-        Cplsatp__ = sats.at("CP_L_SAT"), dCplsatp_dp__ = sats.at("CP_L_SAT_DP"),
-        Cpvsatp__ = sats.at("CP_V_SAT"), dCpvsatp_dp__ = sats.at("CP_V_SAT_DP");
-
-  int i_out = 0;
-  const int nb_out = 14; /* 14 variables to fill */
-  ArrOfInt tmp((int)P.size());
+  int i_out = 0, nb_out = (int) sats.size(), sz = (int) P.size();
+  ArrOfInt tmp(sz);
   EOS_Error_Field ferr(tmp);
   EOS_Fields flds_out(nb_out);
   EOS_Field P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
 
-  flds_out[i_out++] = EOS_Field("tsat", "T_sat", (int) Tsatp__.size(), (double*) Tsatp__.begin());
-  flds_out[i_out++] = EOS_Field("dtsatdp", "d_T_sat_d_p", (int) dTsatp_dp__.size(), (double*) dTsatp_dp__.begin());
-  flds_out[i_out++] = EOS_Field("hlsat", "h_l_sat", (int) hlsatp__.size(), (double*) hlsatp__.begin());
-  flds_out[i_out++] = EOS_Field("dhlsatdp", "d_h_l_sat_d_p", (int) dhlsatp_dp__.size(), (double*) dhlsatp_dp__.begin());
-  flds_out[i_out++] = EOS_Field("hvsat", "h_v_sat", (int) hvsatp__.size(), (double*) hvsatp__.begin());
-  flds_out[i_out++] = EOS_Field("dhvsatdp", "d_h_v_sat_d_p", (int) dhvsatp_dp__.size(), (double*) dhvsatp_dp__.begin());
-  flds_out[i_out++] = EOS_Field("rholsat", "rho_l_sat", (int) rholsatp__.size(), (double*) rholsatp__.begin());
-  flds_out[i_out++] = EOS_Field("drholsatdp", "d_rho_l_sat_d_p", (int) drholsatp_dp__.size(), (double*) drholsatp_dp__.begin());
-  flds_out[i_out++] = EOS_Field("rhovsat", "rho_v_sat", (int) rhovsatp__.size(), (double*) rhovsatp__.begin());
-  flds_out[i_out++] = EOS_Field("drhovsatdp", "d_rho_v_sat_d_p", (int) drhovsatp_dp__.size(), (double*) drhovsatp_dp__.begin());
-  flds_out[i_out++] = EOS_Field("cp_l_sat", "cp_l_sat", (int) Cplsatp__.size(), (double*) Cplsatp__.begin());
-  flds_out[i_out++] = EOS_Field("d_cp_l_sat_d_p", "d_cp_l_sat_d_p", (int) dCplsatp_dp__.size(), (double*) dCplsatp_dp__.begin());
-  flds_out[i_out++] = EOS_Field("cp_v_sat", "cp_v_sat", (int) Cpvsatp__.size(), (double*) Cpvsatp__.begin());
-  flds_out[i_out++] = EOS_Field("d_cp_v_sat_d_p", "d_cp_v_sat_d_p", (int) dCpvsatp_dp__.size(), (double*) dCpvsatp_dp__.begin());
-
-  fluide->compute(P_fld, flds_out, ferr);
-#else
-  Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
-}
-
-void EOS_to_TRUST_Sat_generique::eos_get_hv_drhov_loi_F5(MSpanD sats, int ncomp, int id, bool is_liq) const
-{
-#ifdef HAS_EOS
-  assert((int )sats.size() == 3 && ncomp == 1);
-  const SpanD P = sats.at("pression");
-
-  SpanD hvsatp__ = sats.at("H_V_SAT"), drhovsatp_dp__ = sats.at("RHO_V_SAT_DP");
-
-  int i_out = 0;
-  const int nb_out = 2; /* 2 variables to fill */
-  ArrOfInt tmp((int)P.size());
-  EOS_Error_Field ferr(tmp);
-  EOS_Fields flds_out(nb_out);
-  EOS_Field P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
-
-  flds_out[i_out++] = EOS_Field("hvsat", "h_v_sat", (int) hvsatp__.size(), (double*) hvsatp__.begin());
-  flds_out[i_out++] = EOS_Field("drhovsatdp", "d_rho_v_sat_d_p", (int) drhovsatp_dp__.size(), (double*) drhovsatp_dp__.begin());
+  for (auto &itr : sats)
+    {
+      assert(sz == (int )itr.second.size());
+      flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) itr.first][0], EOS_prop_sat[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+    }
 
   fluide->compute(P_fld, flds_out, ferr);
 #else

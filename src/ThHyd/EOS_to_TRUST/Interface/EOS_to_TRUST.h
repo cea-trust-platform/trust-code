@@ -109,12 +109,13 @@ static constexpr std::array<PairCharArray, 17> EOS_prop_sat =
     { "hvsat", "h_v_sat" }, { "dhvsatdp", "d_h_v_sat_d_p" },
     { "rholsat", "rho_l_sat" }, { "drholsatdp", "d_rho_l_sat_d_p" },
     { "rhovsat", "rho_v_sat" }, { "drhovsatdp", "d_rho_v_sat_d_p" },
-    { "cp_l_sat", "cp_l_sat" }, { "d_cp_l_sat_d_p", "d_cp_l_sat_d_p" },
-    { "cp_v_sat", "cp_v_sat" }, {  "d_cp_v_sat_d_p", "d_cp_v_sat_d_p" },
+    { "cplsat", "cp_l_sat" }, { "dcplsatdp", "d_cp_l_sat_d_p" },
+    { "cpvsat", "cp_v_sat" }, {  "dcpvsatdp", "d_cp_v_sat_d_p" },
     { "sigma", "sigma" }
   }
 };
 
+using MLoiSpanD_h = std::map<Loi_en_h, tcb::span<double>>;
 using MLoiSpanD = std::map<Loi_en_T, tcb::span<double>>;
 using MSatSpanD = std::map<SAT, tcb::span<double>>;
 
@@ -229,7 +230,7 @@ public :
   virtual inline void eos_get_beta_ph(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 
   // methods particuliers par application pour gagner en performance : utilise dans F5 (pour le moment !)
-  virtual inline void eos_get_all_prop_loi_F5(MSpanD , int ncomp = 1, int id = 0, bool is_liq = true) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_all_prop_loi_F5(const MSpanD , MLoiSpanD_h  , int ncomp = 1, int id = 0, bool is_liq = true) const { return not_implemented<void>(__func__); }
 
   /*
    * ****************** *
@@ -278,8 +279,7 @@ public :
 
   // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase et F5 (pour le moment !)
   virtual inline void eos_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
-  virtual inline void eos_get_hv_drhov_loi_F5(MSpanD sats, int ncomp = 1, int id = 0, bool is_liq = true) const { return not_implemented<void>(__func__); }
-  virtual inline void eos_get_all_loi_F5(MSpanD sats, int ncomp = 1, int id = 0, bool is_liq = true) const { return not_implemented<void>(__func__); }
+  virtual inline void eos_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int id = 0) const { return not_implemented<void>(__func__); }
 
 protected :
   void compute_eos_field(const SpanD P, SpanD res, const char *const pt, const char *const pn, bool is_T = false) const;
