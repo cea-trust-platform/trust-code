@@ -248,6 +248,24 @@ void EOS_to_TRUST_generique::eos_get_sigma_dh_ph(const SpanD P, const SpanD H, S
   eos_get_single_property_h_(Loi_en_h::SIGMA_DH, P, H, R, ncomp, id);
 }
 
+// si incompressible et en T ...
+void EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+{
+#ifdef HAS_EOS
+  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
+  VectorD drho_dt_((int)P.size()), rho_((int)P.size()), temp_((int)P.size());
+  SpanD drho_dt(drho_dt_), rho(rho_), TT(temp_);
+  for (auto& val : TT) val = T[i_it * ncomp + id];
+  compute_eos_field(P, TT, rho, EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1]);
+  compute_eos_field(P, TT, drho_dt, EOS_prop_en_T[(int) Loi_en_T::RHO_DT][0], EOS_prop_en_T[(int) Loi_en_T::RHO_DT][1]);
+  // fill beta ...
+  for (auto& val : R) val = drho_dt[i_itR] / rho[i_itR];
+#else
+  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
 // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
 #ifdef HAS_EOS
 void EOS_to_TRUST_generique::eos_get_all_properties_T_(const MSpanD input , EOS_Fields& flds_out, EOS_Error_Field& ferr, int ncomp, int id) const
@@ -503,20 +521,4 @@ void EOS_to_TRUST_generique::eos_get_all_prop_loi_F5(MSpanD spans, int ncomp, in
 #endif
 }
 
-// si incompressible et en T ...
-void EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
-{
-#ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
-  VectorD drho_dt_((int)P.size()), rho_((int)P.size()), temp_((int)P.size());
-  SpanD drho_dt(drho_dt_), rho(rho_), TT(temp_);
-  for (auto& val : TT) val = T[i_it * ncomp + id];
-  compute_eos_field(P, TT, rho, "rho", "rho");
-  compute_eos_field(P, TT, rho, "drhodT", "d_rho_d_T_p");
-  // fill beta ...
-  for (auto& val : R) val = drho_dt[i_itR] / rho[i_itR];
-#else
-  Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
-}
+
