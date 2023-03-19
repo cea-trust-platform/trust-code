@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Saturation_base.h>
+#include <EOS_to_TRUST.h>
 
 Implemente_base(Saturation_base, "Saturation_base", Interface_base);
 // XD saturation_base objet_u saturation_base -1 fluide-gas interface with phase change (used in pb_multiphase)
@@ -105,21 +106,23 @@ void Saturation_base::dP_Hvs(const SpanD P, SpanD res, int ncomp, int ind) const
   else dP_Hvs_(P,res,ncomp,ind);
 }
 
-void Saturation_base::compute_all_flux_interfacial(MSpanD sats, int ncomp, int ind) const
+void Saturation_base::get_sigma(const SpanD T, const SpanD P, SpanD sig, int ncomp, int ind) const
 {
-  assert((int )sats.size() == 9);
+  assert(ncomp * (int )P.size() == (int )sig.size());
+  sigma_(T, P, sig, ncomp, ind);
+}
 
-  const SpanD P = sats.at("pressure");
-  SpanD Ts__ = sats.at("Tsat"), dPTs__ = sats.at("dP_Tsat"), Hvs__ = sats.at("Hvs"), Hls__ = sats.at("Hls"), dPHvs__ = sats.at("dP_Hvs"), dPHls__ = sats.at("dP_Hls"), Lvap__ = sats.at("Lvap"), dPLvap__ = sats.at("dP_Lvap");
+void Saturation_base::compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
+{
+  assert((int )sats.size() == 8);
 
-  assert(ncomp * (int )P.size() == (int )Ts__.size());
-  assert(ncomp * (int )P.size() == (int )dPTs__.size());
-  assert(ncomp * (int )P.size() == (int )Hvs__.size());
-  assert(ncomp * (int )P.size() == (int )Hls__.size());
-  assert(ncomp * (int )P.size() == (int )dPHvs__.size());
-  assert(ncomp * (int )P.size() == (int )dPHls__.size());
-  assert(ncomp * (int )P.size() == (int )Lvap__.size());
-  assert(ncomp * (int )P.size() == (int )dPLvap__.size());
+  SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
+        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
+
+  assert(ncomp * (int )P.size() == (int )Ts__.size() && ncomp * (int )P.size() == (int )dPTs__.size());
+  assert(ncomp * (int )P.size() == (int )Hvs__.size() && ncomp * (int )P.size() == (int )Hls__.size());
+  assert(ncomp * (int )P.size() == (int )dPHvs__.size() && ncomp * (int )P.size() == (int )dPHls__.size());
+  assert(ncomp * (int )P.size() == (int )Lvap__.size() && ncomp * (int )P.size() == (int )dPLvap__.size());
 
   Tsat(P, Ts__, ncomp, ind);
   dP_Tsat(P, dPTs__, ncomp, ind);
@@ -131,34 +134,16 @@ void Saturation_base::compute_all_flux_interfacial(MSpanD sats, int ncomp, int i
   dP_Lvap(P, dPLvap__, ncomp, ind);
 }
 
-void Saturation_base::compute_all_frottement_interfacial(MSpanD sats, int ncomp, int ind) const
+void Saturation_base::compute_all_flux_parietal_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
   assert((int )sats.size() == 3);
 
-  const SpanD P = sats.at("pressure");
-  const SpanD T = sats.at("temperature");
-  SpanD Sigma__ = sats.at("sigma");
+  SpanD Ts__ = sats.at(SAT::T_SAT), Lvap__ = sats.at(SAT::LV_SAT), Sigma__ = sats.at(SAT::SIGMA);
 
-  assert(ncomp * (int )P.size() == (int )Sigma__.size());
-
-  sigma_(T, P, Sigma__, ncomp, ind);
-}
-
-void Saturation_base::compute_all_flux_parietal(MSpanD sats, int ncomp, int ind) const
-{
-  assert((int )sats.size() == 4);
-
-  const SpanD P = sats.at("pressure");
-  SpanD Ts__ = sats.at("Tsat");
-  SpanD Lvap__ = sats.at("Lvap");
-  SpanD Sigma__ = sats.at("sigma");
-
-  assert(ncomp * (int )P.size() == (int )Ts__.size());
-  assert(ncomp * (int )P.size() == (int )Lvap__.size());
+  assert(ncomp * (int )P.size() == (int )Ts__.size() && ncomp * (int )P.size() == (int )Lvap__.size());
   assert(ncomp * (int )P.size() == (int )Sigma__.size());
 
   Tsat(P, Ts__, ncomp, ind);
   Lvap(P, Lvap__, ncomp, ind);
   sigma_(Ts__ ,P, Sigma__, ncomp, ind);
-
 }

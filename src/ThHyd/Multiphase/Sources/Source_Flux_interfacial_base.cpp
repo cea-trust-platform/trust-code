@@ -26,6 +26,7 @@
 #include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
 #include <Matrix_tools.h>
+#include <EOS_to_TRUST.h>
 #include <Array_tools.h>
 #include <Domaine_VF.h>
 #include <Domaine.h>
@@ -229,18 +230,18 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
           assert(press.line_size() == 1);
 
-          std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span() /* elem reel */} };
+          MSatSpanD sats_all = { };
 
-          sats_all.insert( { "Tsat", Ts_tab.get_span() });
-          sats_all.insert( { "dP_Tsat", dPTs_tab.get_span() });
-          sats_all.insert( { "Hvs", Hvs_tab.get_span() });
-          sats_all.insert( { "Hls", Hls_tab.get_span() });
-          sats_all.insert( { "dP_Hvs", dPHvs_tab.get_span() });
-          sats_all.insert( { "dP_Hls", dPHls_tab.get_span() });
-          sats_all.insert( { "Lvap", Lvap_tab.get_span() });
-          sats_all.insert( { "dP_Lvap", dP_Lvap_tab.get_span() });
+          sats_all.insert( { SAT::T_SAT, Ts_tab.get_span() });
+          sats_all.insert( { SAT::T_SAT_DP, dPTs_tab.get_span() });
+          sats_all.insert( { SAT::HV_SAT, Hvs_tab.get_span() });
+          sats_all.insert( { SAT::HL_SAT, Hls_tab.get_span() });
+          sats_all.insert( { SAT::HV_SAT_DP, dPHvs_tab.get_span() });
+          sats_all.insert( { SAT::HL_SAT_DP, dPHls_tab.get_span() });
+          sats_all.insert( { SAT::LV_SAT, Lvap_tab.get_span() });
+          sats_all.insert( { SAT::LV_SAT_DP, dP_Lvap_tab.get_span() });
 
-          z_sat.compute_all_flux_interfacial(sats_all, nb_max_sat, ind_trav);
+          z_sat.compute_all_flux_interfacial_pb_multiphase(press.get_span() /* elem reel */, sats_all, nb_max_sat, ind_trav);
         }
 
   for (e = 0; e < domaine.nb_elem(); e++)

@@ -1,4 +1,5 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/include/EOS\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
@@ -36,6 +37,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/PolyMAC\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Turbulence\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/EOS_to_TRUST/Interface\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 

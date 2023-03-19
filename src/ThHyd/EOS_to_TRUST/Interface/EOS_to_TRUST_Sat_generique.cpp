@@ -201,55 +201,54 @@ void EOS_to_TRUST_Sat_generique::eos_get_sigma_ph(const SpanD P, const SpanD H, 
 #endif
 }
 
-void EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial(MSpanD sats, int ncomp, int id) const
+void EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )sats.size() == 8);
 
-  const SpanD P = sats.at("pressure");
-  SpanD Ts__ = sats.at("Tsat"), dPTs__ = sats.at("dP_Tsat"), Hvs__ = sats.at("Hvs"), Hls__ = sats.at("Hls"), dPHvs__ = sats.at("dP_Hvs"), dPHls__ = sats.at("dP_Hls"), Lvap__ = sats.at("Lvap");
+  SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
+        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
 
-  assert(ncomp * (int )P.size() == (int )Ts__.size());
-  assert(ncomp * (int )P.size() == (int )dPTs__.size());
-  assert(ncomp * (int )P.size() == (int )Hvs__.size());
-  assert(ncomp * (int )P.size() == (int )Hls__.size());
-  assert(ncomp * (int )P.size() == (int )dPHvs__.size());
-  assert(ncomp * (int )P.size() == (int )dPHls__.size());
-  assert(ncomp * (int )P.size() == (int )Lvap__.size());
-
+  const int sz = (int) P.size(), nb_out = 6; /* NOTA BENE : 6 car LV_SAT et LV_SAT_DP on recalcule apres  */
   int i_out = 0;
-  const int nb_out = 7; /* 7 variables to fill */
-  ArrOfInt tmp((int)P.size());
+  ArrOfInt tmp(sz);
   EOS_Error_Field ferr(tmp);
   EOS_Fields flds_out(nb_out);
-  EOS_Field P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
+  EOS_Field P_fld("Pressure", "P", sz, (double*) P.begin());
 
   if (ncomp == 1)
     {
-      flds_out[i_out++] = EOS_Field("tsat", "T_sat", (int) Ts__.size(), (double*) Ts__.begin());
-      flds_out[i_out++] = EOS_Field("dtsatdp", "d_T_sat_d_p", (int) dPTs__.size(), (double*) dPTs__.begin());
-      flds_out[i_out++] = EOS_Field("hvsat", "h_v_sat", (int) Hvs__.size(), (double*) Hvs__.begin());
-      flds_out[i_out++] = EOS_Field("hlsat", "h_l_sat", (int) Hls__.size(), (double*) Hls__.begin());
-      flds_out[i_out++] = EOS_Field("dhvsatdp", "d_h_v_sat_d_p", (int) dPHvs__.size(), (double*) dPHvs__.begin());
-      flds_out[i_out++] = EOS_Field("dhlsatdp", "d_h_l_sat_d_p", (int) dPHls__.size(), (double*) dPHls__.begin());
-      flds_out[i_out++] = EOS_Field("hlsat", "h_l_sat", (int) Lvap__.size(), (double*) Lvap__.begin());
+      for (auto &itr : sats)
+        {
+          assert(ncomp * (int )P.size() == (int )itr.second.size());
+          if (itr.first != SAT::LV_SAT && itr.first != SAT::LV_SAT_DP)
+            flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) itr.first][0], EOS_prop_sat[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+        }
       fluide->compute(P_fld, flds_out, ferr);
+
+      // on rempli LV_SAT et LV_SAT_DP
+      for (int i = 0; i < sz; i++)
+        {
+          Lvap__[i] = Hvs__[i] - Hls__[i];
+          dPLvap__[i] = dPHvs__[i] - dPHls__[i];
+        }
     }
-  else
+  else /* attention stride */
     {
-      const int sz = (int) P.size();
-      VectorD Ts(sz), dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz);
-      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap);
+#ifndef NDEBUG
+      for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
+#endif
+      VectorD Ts(sz), dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz), dPLvap;
+      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap);
 
-      flds_out[i_out++] = EOS_Field("tsat", "T_sat", (int) Ts_.size(), (double*) Ts_.begin());
-      flds_out[i_out++] = EOS_Field("dtsatdp", "d_T_sat_d_p", (int) dPTs_.size(), (double*) dPTs_.begin());
-      flds_out[i_out++] = EOS_Field("hvsat", "h_v_sat", (int) Hvs_.size(), (double*) Hvs_.begin());
-      flds_out[i_out++] = EOS_Field("hlsat", "h_l_sat", (int) Hls_.size(), (double*) Hls_.begin());
-      flds_out[i_out++] = EOS_Field("dhvsatdp", "d_h_v_sat_d_p", (int) dPHvs_.size(), (double*) dPHvs_.begin());
-      flds_out[i_out++] = EOS_Field("dhlsatdp", "d_h_l_sat_d_p", (int) dPHls_.size(), (double*) dPHls_.begin());
-      flds_out[i_out++] = EOS_Field("hlsat", "h_l_sat", (int) Lvap_.size(), (double*) Lvap_.begin());
+      MSatSpanD sats_loc = { { SAT::T_SAT, Ts_ }, { SAT::T_SAT_DP, dPTs_ }, { SAT::HV_SAT, Hvs_ }, { SAT::HL_SAT, Hls_ },
+        { SAT::HV_SAT_DP, dPHvs_ }, { SAT::HL_SAT_DP, dPHls_ }
+      };
+
+      for (auto &itr : sats_loc)
+        flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) itr.first][0], EOS_prop_sat[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+
       fluide->compute(P_fld, flds_out, ferr);
-
 
       for (int i = 0; i < sz; i++)
         {
@@ -259,7 +258,8 @@ void EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial(MSpanD sats, int n
           Hls__[i * ncomp + id] = Hls_[i];
           dPHvs__[i * ncomp + id] = dPHvs_[i];
           dPHls__[i * ncomp + id] = dPHls_[i];
-          Lvap__[i * ncomp + id] = Lvap_[i];
+          Lvap__[i * ncomp + id] = Hvs_[i] - Hls_[i];
+          dPLvap__[i] = dPHvs_[i] - dPHls_[i];
         }
     }
 

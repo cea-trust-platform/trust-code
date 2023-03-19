@@ -55,7 +55,8 @@ public :
   void eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
   void eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
 
-  void eos_get_all_flux_interfacial(MSpanD sats, int ncomp = 1, int id = 0) const override;
+  // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase et F5 (pour le moment !)
+  void eos_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int id = 0) const override;
   void eos_get_all_loi_F5(MSpanD sats, int ncomp = 1, int id = 0, bool is_liq = true) const override;
   void eos_get_hv_drhov_loi_F5(MSpanD sats, int ncomp = 1, int id = 0, bool is_liq = true) const override;
 

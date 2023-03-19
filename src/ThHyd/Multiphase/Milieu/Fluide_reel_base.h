@@ -84,6 +84,7 @@ protected :
   virtual void mu_(const SpanD T, const SpanD P, SpanD M, int ncomp = 1, int id = 0) const = 0;
   virtual void lambda_(const SpanD T, const SpanD P, SpanD L, int ncomp = 1, int id = 0) const = 0;
 
+  // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
   virtual void compute_CPMLB_pb_multiphase_(const MSpanD , MLoiSpanD, int ncomp = 1, int id = 0) const;
   virtual void compute_all_pb_multiphase_(const MSpanD , MLoiSpanD, MLoiSpanD , int ncomp = 1, int id = 0) const;
 

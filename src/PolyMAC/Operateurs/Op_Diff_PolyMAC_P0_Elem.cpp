@@ -13,29 +13,30 @@
 *
 *****************************************************************************/
 
-#include <Op_Diff_PolyMAC_P0_Elem.h>
-#include <Pb_Multiphase.h>
-#include <Schema_Temps_base.h>
-#include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <TRUSTLists.h>
-#include <Dirichlet.h>
-#include <Neumann_paroi.h>
-#include <Echange_contact_PolyMAC_P0.h>
-#include <Echange_externe_impose.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Champ_Elem_PolyMAC_P0.h>
-#include <Champ_front_calc.h>
 #include <Modele_turbulence_scal_base.h>
-#include <Synonyme_info.h>
+#include <Echange_contact_PolyMAC_P0.h>
+#include <Flux_interfacial_PolyMAC.h>
+#include <Op_Diff_PolyMAC_P0_Elem.h>
+#include <Echange_externe_impose.h>
+#include <Champ_Elem_PolyMAC_P0.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Flux_parietal_base.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Schema_Temps_base.h>
+#include <Champ_front_calc.h>
+#include <Milieu_composite.h>
 #include <communications.h>
 #include <MD_Vector_base.h>
-#include <cmath>
+#include <Pb_Multiphase.h>
+#include <Neumann_paroi.h>
+#include <Synonyme_info.h>
+#include <Matrix_tools.h>
+#include <EOS_to_TRUST.h>
+#include <Array_tools.h>
+#include <TRUSTLists.h>
+#include <Dirichlet.h>
 #include <functional>
-#include <Flux_parietal_base.h>
-#include <Flux_interfacial_PolyMAC.h>
-#include <Milieu_composite.h>
+#include <cmath>
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_P0_Elem, "Op_Diff_PolyMAC_P0_Elem|Op_Diff_PolyMAC_P0_var_Elem", Op_Diff_PolyMAC_P0_base);
 Implemente_instanciable(Op_Dift_PolyMAC_P0_Elem, "Op_Dift_PolyMAC_P0_Elem_PolyMAC_P0|Op_Dift_PolyMAC_P0_var_Elem_PolyMAC_P0", Op_Diff_PolyMAC_P0_Elem);
@@ -378,13 +379,13 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                     // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
                     assert (press.line_size() == 1);
 
-                    std::map<std::string, SpanD> sats_all = { { "pressure", press.get_span_tot() /* elem reel */} };
+                    MSatSpanD sats_all = { };
 
-                    sats_all.insert( { "Tsat", Ts_tab[i].get_span_tot() });
-                    sats_all.insert( { "Lvap", Lvap_tab[i].get_span_tot() });
-                    sats_all.insert( {"sigma", Sigma_tab[i].get_span_tot() });
+                    sats_all.insert( { SAT::T_SAT, Ts_tab[i].get_span_tot() });
+                    sats_all.insert( { SAT::LV_SAT, Lvap_tab[i].get_span_tot() });
+                    sats_all.insert( { SAT::SIGMA, Sigma_tab[i].get_span_tot() });
 
-                    z_sat.compute_all_flux_parietal(sats_all, nb_max_sat, ind_trav);
+                    z_sat.compute_all_flux_parietal_pb_multiphase(press.get_span_tot() /* elem reel */, sats_all, nb_max_sat, ind_trav);
                   }
           }
       }
