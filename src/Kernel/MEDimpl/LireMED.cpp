@@ -1366,7 +1366,7 @@ void LireMED::lire_geom(Nom& nom_fic, Domaine& dom, const Nom& nom_dom, const No
       // Get the volume mesh:
       MCAuto<MEDCouplingUMesh> mesh(file->getMeshAtLevel(nel[0])); // ToDo can not make it const because of ArrOfInt
       dim = mesh->getSpaceDimension();
-      Cerr << "Detecting a " << mesh->getMeshDimension() << "D mesh in " << dim << "D space." << finl;
+      Cerr << "Detecting a " << (int)mesh->getMeshDimension() << "D mesh in " << dim << "D space." << finl;
       if (dim != dimension)
         {
           Cerr << "The mesh space dimension may be higher than the computation space dimension" << finl;

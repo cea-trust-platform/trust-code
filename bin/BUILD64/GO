@@ -41,12 +41,7 @@ sed -i "s/vector<pair<pair<long,long>,double> > vtimes=MEDCoupling::GetAllFieldI
 #
 # TRUST src
 #
-sed -i "s/<< type_codage <</<</g" src/Kernel/Framework/Equation_base.cpp
-sed -i "s/%d/%ld/g" src/PolyMAC/Zones/Zone_PolyMAC.cpp
-sed -i "s/vector<long> P_c(nv + 1), P_l(nv), A_c, A_l;/vector<long long> P_c(nv + 1), P_l(nv), A_c, A_l;/" src/PolyMAC/Zones/Zone_PolyMAC.cpp
 sed -i "s/std::vector< std::pair<long,long> > time_steps_;/std::vector< std::pair<int,int> > time_steps_;/" src/Kernel/MEDimpl/Champ_Fonc_MED.h
 sed -i "s/std::vector< std::pair<long,long> > tst = ft1->getTimeSteps(tps);/std::vector< std::pair<int,int> > tst = ft1->getTimeSteps(tps);/" src/Kernel/MEDimpl/Champ_Fonc_MED_Table_Temps.cpp
 sed -i "s/std::vector<long> nel = file->getNonEmptyLevels();/std::vector<int> nel = file->getNonEmptyLevels();/" src/Kernel/MEDimpl/LireMED.cpp
 sed -i "s/std::vector< std::pair< std::pair< long, long >, double > > ts = GetAllFieldIterations(file_name, field_name);/std::vector< std::pair< std::pair< int, int >, double > > ts = GetAllFieldIterations(file_name, field_name);/" src/Kernel/MEDimpl/EcrMED.cpp
-sed -i "s/Cerr << \"Detecting a \" << mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/Cerr << \"Detecting a \" << (long)mesh->getMeshDimension() << \"D mesh in \" << dim << \"D space.\" << finl;/" src/Kernel/MEDimpl/LireMED.cpp
-

@@ -301,6 +301,7 @@
  Domaine_VF_inst Domaine_VF_inst Domaine_VF_inst.h
  DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0 DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
  Echange_couplage_thermique Echange_couplage_thermique Echange_couplage_thermique.h
+ Echange_global_impose_turbulent Echange_global_impose_turbulent Echange_global_impose_turbulent.h
  Echange_impose_base Echange_impose_base Echange_impose_base.h
  Echange_thermique_h_imp_VDF_P0_VDF Source_Echange_Th_VDF Source_Echange_Th_VDF.h
  EcrFicCollecte EcrFicCollecte EcrFicCollecte.h
@@ -612,7 +613,6 @@
  NettoiePasNoeuds NettoieNoeuds NettoieNoeuds.h
  Neumann Neumann Neumann.h
  Neumann_homogene Neumann_homogene Neumann_homogene.h
- Neumann_loi_paroi Neumann_loi_paroi Neumann_loi_paroi.h
  Neumann_paroi Neumann_paroi Neumann_paroi.h
  Neumann_Paroi_adiabatique Neumann_paroi_adiabatique Neumann_paroi_adiabatique.h
  Neumann_val_ext Neumann_val_ext Neumann_val_ext.h
