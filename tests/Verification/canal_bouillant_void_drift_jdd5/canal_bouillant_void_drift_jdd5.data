@@ -74,7 +74,7 @@ Read pb
     {
 	flux_interfacial coef_constant { liquide_sodium 1e10 gaz_sodium 1e10  }
 	Gravite Multiphase champ_uniforme 3 0 0 -9.81
-	 frottement_interfacial bulles   { coeff_derive .5 rayon_bulle 1.e-3 } vitesse_relative derive_forces 
+	 frottement_interfacial bulles   { coeff_derive .5 rayon_bulle 1.e-3 } vitesse_relative derive_forces { }
     }
     QDM_Multiphase
     {
