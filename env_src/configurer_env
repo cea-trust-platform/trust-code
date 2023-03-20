@@ -101,7 +101,8 @@ configure_compilateur_ccache()
          eval $e
          if [ "$TRUST_CC_BASE" = "" ]
          then
-            echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0" && exit -1
+            [ "$STDCPP" = c++11 ] && echo "Error! No C++11 compiler found. For a GNU compiler, you would need a version>=4.8.5" && exit -1
+            [ "$STDCPP" = c++14 ] && echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0" && exit -1
          fi
       elif [ "${chemin%nvc++}" != "$chemin" ]
       then
@@ -277,8 +278,10 @@ xxx()
 	   then
 	      ok=0 # We don't take ccache/g++ version for the moment (eg:Fedora 18)
 	   else
-          # Ajout du test du support obligatoire de C++14 a partir de TRUST 1.9.2
-          echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 #&& nedit $log
+          # Ajout du test du support obligatoire de C++11 a partir de TRUST 1.7.9
+          [ "$STDCPP" = c++11 ] && echo $ECHO_OPTS "#include <iostream>\n#include <vector>\nint main() {std::vector<int> v = {0,1};for (auto i : v) std::cout << i << ' ';return 0;}" > main.cpp;$f -std=c++11 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
+          # Ajout du test du support obligatoire de C++14
+          [ "$STDCPP" = c++14 ] && echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 #&& nedit $log
 	   fi;;
 	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
 	   then
@@ -688,6 +691,12 @@ then
    echo "TRUST_DISABLE_JUPYTER=$TRUST_DISABLE_JUPYTER && export TRUST_DISABLE_JUPYTER  # disable jupyter build." >> configure.env
    . ./configure.env
 fi
+
+#######################
+# Quelle norme C++ ?
+#######################
+STDCPP=c++14
+STDCPP=c++11
 
 #######################
 # Quelle architecture ?
@@ -1718,27 +1727,26 @@ SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
-   linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
-	TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=500 && ver<=1201) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+  linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
+  [ "$STDCPP" = c++11 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=485 && ver<=1201) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	[ "$STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=500 && ver<=1201) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
 	# 26/03/10, passage enfin a -03
 	# 01/07/19, passage a C++ 11
-	# 20/12/22, passage a C++ 14
+	# ??/??/??, passage a C++ 14
 	[ "$TRUST_USE_OPENMP" = 1 ] && PTHREAD="-pthread" # Pour OpenBLAS ?
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
-	CppFlags="-O3 $FPIC $PTHREAD -std=c++14 -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
-	CppFlags=$CppFlags=" -fno-math-errno" # Operations mathematiques optimisees sans ecarts crees (vient de F5)
+	CppFlags="-O3 $FPIC $PTHREAD -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
+	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.0") print 1}'`" = 1 ] && [ $TRUST_ARCH_CC = linux_g++ ] && CppFlags=$CppFlags" -Wshadow -Werror" # Uniquement si gcc>=5
+	CppFlags=$CppFlags" -fno-math-errno" # Operations mathematiques optimisees sans ecarts crees (vient de F5)
 	[ "`echo $TRUST_VERSION_GNU | awk '{if ($1>="5.1") print 1}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds"
 	[ "$TRUST_INT64" != "1" ] && CppFlags=$CppFlags" -Wconversion"
 	# flag -Wsuggest-override available on gcc version >= 5.1; on gcc 5.4.0 (ub 16) this flag suggests to fix mpich 3.2, so we do not add this flag
 	[ "`echo $TRUST_VERSION_GNU | awk '{split($1,a,".");print (a[1]>5||(a[1]==5&&(a[2]>4))?1:0)}'`" = 1 ] && CppFlags=$CppFlags" -Wno-array-bounds -Wsuggest-override"
-	# include <sstream> fait un warning sur gcc 2.96, impossible d'utiliser #pragma supporte dans 4.2.x:
-	# Idem OpenMPI 1.3.2 sur certaines clusters provoque un warning: type-punning to incomplete type might break strict-aliasing rules
-	[ $TRUST_ARCH_CC = linux_g++ ] && [ "`echo $Mpirun | grep 1.3.2`" = "" ] && CppFlags=$CppFlags" -Werror"
 	SYSLIBS=$SYSLIBS"-lgfortran"
 	F77Flags="-O3 -std=legacy $FPIC" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -fdefault-integer-8"
 	# -fallow-argument-mismatch pour gfortran>=10.0.0 (plusieurs librairies Fortran ne compilent pas sinon dont LIBSKIT la premiere):
@@ -1752,7 +1760,7 @@ case $TRUST_ARCH_CC in
         [ "`$TRUST_CC_BASE -version 2>&1 | grep aocc`" != "" ] && AoccFlags="-march=znver1 -mfma -fvectorize -mfma -mavx2 -m3dnow -floop-unswitch-aggressive -fuse-ld=lld"
    	Defines="-D_COMPILE_AVEC_CLANG"
    	# 26/03/10, passage enfin a -03
-	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=c++14 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
+	CppFlags="-O3 -fPIC $ArmFlags $AoccFlags -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth"
 	CppFlags=$CppFlags" -Wshadow -Wextra  -Qunused-arguments -Wno-unused-parameter -Wno-cpp " #  -Wno-infinite-recursion"
 	TRUST_VERSION_CLANG=`print_CLANG_VERSION`
 	# sur clang v > 10 ou 11, ajouter -ffp-model=strict -ffp-exception-behavior=strict pour eviter fausses FPE
@@ -1774,7 +1782,7 @@ case $TRUST_ARCH_CC in
 	;;
    linux_crayCC) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
-    CppFlags="-O3 -fPIC -std=c++14 -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
+    CppFlags="-O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
     SYSLIBS="-lrt "
     F77Flags="-O3 -fPIC"
     ccFLAGS="-O3 -fPIC"
@@ -1793,7 +1801,7 @@ case $TRUST_ARCH_CC in
     # TRUST_USE_GNU_FOR_EXTP = 1
    	Defines="-D_COMPILE_AVEC_PGCC"
     CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
-    CppFlags=$CppFlags" -std=c++14 -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
+    CppFlags=$CppFlags" -std=$STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
     SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
     F77Flags="-O3 -fPIC -noswitcherror"
     ccFLAGS="-O3 -fPIC -noswitcherror"
@@ -1804,7 +1812,7 @@ case $TRUST_ARCH_CC in
 	# ND: -fp-model=except en plus de precise, fvca_jdd13 OK mais crash dans F5
 	flag_optim="-O3 -fp-model=strict" && [ "$VT_ROOT" != "" ] && flag_optim="-g "$flag_optim # -g pour Itac, traceanalyzer
 	Defines="-D_COMPILE_AVEC_INTEL"
-	CppFlags="$flag_optim -std=c++14 -fPIC -unroll -Wno-unknown-pragmas"
+	CppFlags="$flag_optim -std=$STDCPP -fPIC -unroll -Wno-unknown-pragmas"
 	LIB_INTEL=`dirname $TRUST_F77_BASE`
 	# Recherche du repertoire /lib
 	for lib in lib compiler/lib

@@ -12,7 +12,6 @@ Release notes version 1.9.2_beta : Enhancements, modifications and corrected bug
 07/02/23 (TRUST) Fix          : It was not possible to resume the field k_eps_realisable
 02/02/23 (TRUST) Major Change : Domain and Zone are now merged into a single concept: Domaine. All former keywords remain supported (Sous_Zone, Create_domain_from_sous_zone, etc...), but internally the code now only work with Domaine.
 27/01/23 (TRUST) Portability  : Adastra (CINES) cluster is supported
-27/01/23 (TRUST) Portability  : C++14 compilers are now mandatory so old GNU compilers (<5.0) are not supported anymore
 27/01/23 (TRUST) Portability  : NVidia compilers (nvc++, nvc, nvfortran) now fully supported for GPU offload with OpenMP-target (./configure -cuda -openmp)
 27/01/23 (TRUST) HPC          : VEF GPU kernels optimized with a reduction of host-device copy
 27/01/23 (TRUST) HPC          : OpenBLAS 0.3.21 (vectorized, threaded) is now used for Blas/Lapack library

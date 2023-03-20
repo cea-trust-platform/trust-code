@@ -96,29 +96,31 @@ protected :
 private:
   struct Supported
   {
-    const std::array<Motcle,2> AVAIL_MODELS = { "CATHARE2", "REFPROP10" };
+    const std::array<Motcle,2> AVAIL_MODELS = { { "CATHARE2", "REFPROP10" } };
 
-    const std::array<const char *const,2> EOS_MODELS = { "EOS_Cathare2", "EOS_Refprop10" };
+    const std::array<const char *const,2> EOS_MODELS = { { "EOS_Cathare2", "EOS_Refprop10" } };
 
-    const std::array<Motcle,16> AVAIL_FLUIDS = { "WATERLIQUID", "WATERVAPOR",
-                                                 "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
-                                                 "SODIUMLIQUID", "SODIUMVAPOR",
-                                                 "IAPWSLIQUID", "IAPWSVAPOR",
-                                                 "NITROGENLIQUID", "NITROGENVAPOR",
-                                                 "AIRLIQUID", "AIRVAPOR",
-                                                 "HELIUMLIQUID", "HELIUMVAPOR",
-                                                 "R12LIQUID", "R12VAPOR"
-                                               }; /* Majuscule car Motcle */
+    const std::array<Motcle,16> AVAIL_FLUIDS = { { "WATERLIQUID", "WATERVAPOR",
+        "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
+        "SODIUMLIQUID", "SODIUMVAPOR",
+        "IAPWSLIQUID", "IAPWSVAPOR",
+        "NITROGENLIQUID", "NITROGENVAPOR",
+        "AIRLIQUID", "AIRVAPOR",
+        "HELIUMLIQUID", "HELIUMVAPOR",
+        "R12LIQUID", "R12VAPOR"
+      }
+    }; /* Majuscule car Motcle */
 
-    const std::array<const char *const,16> EOS_FLUIDS = { "WaterLiquid", "WaterVapor",
-                                                          "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
-                                                          "SodiumLiquid", "SodiumVapor",
-                                                          "IAPWSLiquid", "IAPWSVapor",
-                                                          "NitrogenLiquid", "NitrogenVapor",
-                                                          "AirLiquid", "AirVapor",
-                                                          "HeliumLiquid", "HeliumVapor",
-                                                          "R12Liquid", "R12Vapor"
-                                                        };
+    const std::array<const char *const,16> EOS_FLUIDS = { { "WaterLiquid", "WaterVapor",
+        "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
+        "SodiumLiquid", "SodiumVapor",
+        "IAPWSLiquid", "IAPWSVapor",
+        "NitrogenLiquid", "NitrogenVapor",
+        "AirLiquid", "AirVapor",
+        "HeliumLiquid", "HeliumVapor",
+        "R12Liquid", "R12Vapor"
+      }
+    };
   };
 
 public:

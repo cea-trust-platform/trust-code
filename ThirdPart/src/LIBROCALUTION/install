@@ -46,11 +46,11 @@ cd build
 # Gtest
 [ -f /usr/include/gtest ] && BUILD_CLIENTS="-DBUILD_CLIENTS_SAMPLES=ON -DBUILD_CLIENTS_TESTS=ON -DBUILD_CLIENTS_BENCHMARKS=ON"
 
-# Valgrind: Disable avx512 instructions cause valgrind don't support yet
-export CXXFLAGS="-mno-avx512f"
-
 # rocALUTION se construit avec GNU/HP-CRAY/INTEL
 export CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BASE_EXTP
+
+# Valgrind: Disable avx512 instructions cause valgrind don't support yet
+export CXXFLAGS="-mno-avx512f" && [ "`$CXX $CXXFLAGS 2>&1 | grep -i unrecognized`" != "" ] && export CXXFLAGS=""
 
 cmake .. $BUILD_CLIENTS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION -DBUILD_SHARED_LIBS=ON || exit -1
 
