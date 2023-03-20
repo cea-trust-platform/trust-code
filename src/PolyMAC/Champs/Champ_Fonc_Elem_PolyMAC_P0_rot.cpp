@@ -75,9 +75,9 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_3D()
   for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
       {
-        tab_rot(e, 0 + n * D) = tab_grad(nf_tot + D * e + 1, 2 + n * D) - tab_grad(nf_tot + D * e + 2, 1 + n * D); // dUz/dy - dUy/dz
-        tab_rot(e, 1 + n * D) = tab_grad(nf_tot + D * e + 2, 0 + n * D) - tab_grad(nf_tot + D * e + 0, 2 + n * D); // dUx/dz - dUz/dx
-        tab_rot(e, 2 + n * D) = tab_grad(nf_tot + D * e + 0, 1 + n * D) - tab_grad(nf_tot + D * e + 1, 0 + n * D); // dUy/dx - dUx/dy
+        tab_rot(e, N*0 + n) = tab_grad(nf_tot + D * e + 1, 2 + n * D) - tab_grad(nf_tot + D * e + 2, 1 + n * D); // dUz/dy - dUy/dz
+        tab_rot(e, N*1 + n) = tab_grad(nf_tot + D * e + 2, 0 + n * D) - tab_grad(nf_tot + D * e + 0, 2 + n * D); // dUx/dz - dUz/dx
+        tab_rot(e, N*2 + n) = tab_grad(nf_tot + D * e + 0, 1 + n * D) - tab_grad(nf_tot + D * e + 1, 0 + n * D); // dUy/dx - dUx/dy
       }
 
   tab_rot.echange_espace_virtuel();

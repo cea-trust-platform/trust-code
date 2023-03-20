@@ -202,7 +202,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
             for (int e = 0; e < domaine_dis()->nb_elem(); e++)
               for (i = 0; i < D; i++)
                 for (j = 0; j < D; j++)
-                  grad_vit_phases_[n].valeurs()(e, D*i+j) = grad_u->valeurs()(e, N*( D*i+j ) + n ) ;// Les lignes et les colonnes sont inversees quand on passe dans DoubleTab_parts
+                  grad_vit_phases_[n].valeurs()(e, D*i+j) = grad_u->valeurs()(e, N*( D*i+j ) + n ) ;
           }
       }
   if (gradient_P.non_nul())
