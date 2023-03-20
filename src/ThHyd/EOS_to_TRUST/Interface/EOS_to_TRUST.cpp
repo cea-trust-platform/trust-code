@@ -105,6 +105,30 @@ void EOS_to_TRUST::verify_model_fluid(Motcle& model_name, Motcle& fluid_name)
 #endif
 }
 
+MRange EOS_to_TRUST::all_unknowns_range()
+{
+#ifdef HAS_EOS
+  if (tmax_ < -10.)
+    {
+      tmin_ = eos_get_T_min();
+      tmax_ = eos_get_T_max();
+      pmin_ = eos_get_p_min();
+      pmax_ = eos_get_p_max();
+      hmin_ = eos_get_h_min();
+      hmax_ = eos_get_h_max();
+      rhomin_ = eos_get_rho_min();
+      rhomax_ = eos_get_rho_max();
+    }
+
+  return { { "temperature", { tmin_, tmax_}}, { "pression", { pmin_, pmax_}},
+    { "enthalpie", { hmin_, hmax_}}, { "rho", { rhomin_, rhomax_}}
+  };
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
 double EOS_to_TRUST::eos_get_p_min() const
 {
 #ifdef HAS_EOS

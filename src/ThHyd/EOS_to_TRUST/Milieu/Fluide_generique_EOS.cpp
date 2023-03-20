@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,12 @@ Entree& Fluide_generique_EOS::readOn( Entree& is )
   const char *const model = EOStT.supp.EOS_MODELS[ind_model];
   const char *const fld = EOStT.supp.EOS_FLUIDS[ind_fluid];
   EOStT.set_EOS_generique(model,fld);
+
+  tmin_ = EOStT.eos_get_T_min();
+  tmax_ = EOStT.eos_get_T_max();
+  pmin_ = EOStT.eos_get_p_min();
+  pmax_ = EOStT.eos_get_p_max();
+
   return is;
 }
 

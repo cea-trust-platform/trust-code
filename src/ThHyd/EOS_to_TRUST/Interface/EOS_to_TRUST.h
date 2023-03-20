@@ -32,6 +32,7 @@
 #include <vector>
 #include <map>
 
+using MRange = std::map<std::string, std::array<double, 2>>;
 using MSpanD = std::map<std::string, tcb::span<double>>;
 using PairCharArray = std::array<const char* const, 2>;
 using ArrayD = std::array<double,1>;
@@ -151,6 +152,9 @@ class EOS_to_TRUST
                                                           } };
   };
 
+  double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
+  double hmin_ = -123., hmax_ = -123., rhomin_ = -123., rhomax_ = -123.;
+
 public :
 
   EOS_to_TRUST();
@@ -175,6 +179,8 @@ public :
   double eos_get_h_crit() const;
   double eos_get_T_crit() const;
   double eos_get_rho_crit() const;
+
+  MRange all_unknowns_range();
 
   /*
    * ******************* *

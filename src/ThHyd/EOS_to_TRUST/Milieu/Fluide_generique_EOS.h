@@ -24,6 +24,10 @@ class Fluide_generique_EOS : public Fluide_reel_base
   Declare_instanciable( Fluide_generique_EOS ) ;
 public :
   void set_param(Param& param) override;
+  MRange unknown_range() const override
+  {
+    return { { "temperature", { tmin_ - 273.15, tmax_ - 273.15 } }, { "pression", { pmin_, pmax_ } } };
+  }
 
 private:
   void rho_(const SpanD T, const SpanD P, SpanD R, int ncomp = 1, int id = 0) const override
@@ -87,6 +91,7 @@ private:
 
   EOS_to_TRUST_generique EOStT;
   Motcle model_name_, fluid_name_;
+  double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
 };
 
 #endif /* Fluide_generique_EOS_included */
