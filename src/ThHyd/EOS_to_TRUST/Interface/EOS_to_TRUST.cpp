@@ -104,3 +104,147 @@ void EOS_to_TRUST::verify_model_fluid(Motcle& model_name, Motcle& fluid_name)
   throw;
 #endif
 }
+
+double EOS_to_TRUST::eos_get_p_min() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_p_min(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_p_max() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_p_max(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_h_min() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_h_min(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_h_max() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_h_max(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_T_min() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_T_min(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_T_max() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_T_max(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_rho_min() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_rho_min(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_rho_max() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_rho_max(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_p_crit() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_p_crit(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_h_crit() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_h_crit(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_T_crit() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_T_crit(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
+double EOS_to_TRUST::eos_get_rho_crit() const
+{
+#ifdef HAS_EOS
+  double tmp_;
+  fluide->get_rho_crit(tmp_);
+  return tmp_;
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}

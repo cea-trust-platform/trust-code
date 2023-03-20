@@ -159,6 +159,23 @@ public :
   Supported supp;
   void verify_model_fluid(Motcle& model_name, Motcle& fluid_name);
 
+  double eos_get_p_min() const;
+  double eos_get_p_max() const;
+
+  double eos_get_h_min() const;
+  double eos_get_h_max() const;
+
+  double eos_get_T_min() const;
+  double eos_get_T_max() const;
+
+  double eos_get_rho_min() const;
+  double eos_get_rho_max() const;
+
+  double eos_get_p_crit() const;
+  double eos_get_h_crit() const;
+  double eos_get_T_crit() const;
+  double eos_get_rho_crit() const;
+
   /*
    * ******************* *
    * Lois en temperature
