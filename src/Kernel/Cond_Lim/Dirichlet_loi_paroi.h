@@ -37,7 +37,7 @@ public:
   virtual int initialiser(double temps) override;
   virtual void liste_faces_loi_paroi(IntTab&);
   int compatible_avec_eqn(const Equation_base&) const override;
-  virtual int avancer(double temps) override {return 1;}; // Avancer ne fait rien car le champ est modifie dans mettre_a_jour
+  virtual int avancer(double temps) override {return 1;} // Avancer ne fait rien car le champ est modifie dans mettre_a_jour
   void mettre_a_jour(double tps) override;
 
   virtual void associer_correlation(const Correlation& corr) { correlation_loi_paroi_ = corr; }
@@ -54,10 +54,18 @@ public:
   virtual void calculer_coeffs_echange(double temps) override { }
   void verifie_ch_init_nb_comp() const override { }
 
-  virtual double val_imp(int i) const override {return d_(i,0);};
-  virtual double val_imp(int i, int j) const override {return d_(i,j);};
-  virtual double val_imp_au_temps(double temps, int i) const override {Process::exit(que_suis_je() + " : You shouldn't go through val_imp_au_temps but through val_imp ! ") ; return 1.;};
-  virtual double val_imp_au_temps(double temps, int i, int j) const override {Process::exit(que_suis_je() + " : You shouldn't go through val_imp_au_temps but through val_imp ! ") ; return 1.;};
+  virtual double val_imp(int i) const override {return d_(i,0);}
+  virtual double val_imp(int i, int j) const override {return d_(i,j);}
+  virtual double val_imp_au_temps(double temps, int i) const override
+  {
+    Process::exit(que_suis_je() + " : You shouldn't go through val_imp_au_temps but through val_imp ! ");
+    return 1.;
+  }
+  virtual double val_imp_au_temps(double temps, int i, int j) const override
+  {
+    Process::exit(que_suis_je() + " : You shouldn't go through val_imp_au_temps but through val_imp ! ");
+    return 1.;
+  }
 
 protected:
   virtual void me_calculer()=0;
