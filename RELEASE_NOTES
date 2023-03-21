@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+21/03/23 (TRUST) Portability  : TRUST versions are now built with GNU compilers on orcus-intel/orcus-rome to avoid random crashes or slowdown with MUMPS library. 
 10/03/23 (TRUST) Major change : TRUST can be linked to a pre-compiled static library of EOS (./configure -with-eos=<YOUR_PATH_TO_EOS_INSTALL>).
 07/03/23 (TRUST) New feature  : Add MUSIG fields/medium + validation (from SCONE baltik) used with Pb_Multiphase
 07/03/23 (TRUST) New feature  : Add void_drift multiphase models + validation (both in VDF and PolyMAC_P0) 

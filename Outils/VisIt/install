@@ -14,7 +14,7 @@ installation_visit()
       rm -f $package
    fi
    # Ajout d'un fichier pour dire si visit a ete telecharge
-   [ $DOWNLOADED -eq 1 ] && touch $TRUST_ROOT/exec/VisIt/downloaded_version
+   [ $DOWNLOADED = 1 ] && touch $TRUST_ROOT/exec/VisIt/downloaded_version
    # Ajout en debut du script visit d'un appel a check_visit
    # pour faire des verifications et ajouter des messages 
    # pour les utilisateurs:
@@ -69,10 +69,10 @@ then
    [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu19
    [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_1_2
    [ "`grep 'Ubuntu 21'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu21 && version=3_2_1
-   [ "`grep 'Ubuntu 22'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_3_0 # En attente de Ubuntu 22 officielle (see https://github.com/visit-dav/visit/discussions/18019#discussioncomment-3478214)
+   [ "`grep 'Ubuntu 22'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_3_2 # En attente de Ubuntu 22 officielle (see https://github.com/visit-dav/visit/discussions/18019#discussioncomment-3478214)
    [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]          && os=debian9
    [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian10 && version=3_1_3
-   [ "`grep 'Debian GNU/Linux 11' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_3_1
+   [ "`grep 'Debian GNU/Linux 11' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_3_2
    [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
    [ "`grep 'Rocky Linux release 8' /etc/centos-release 2>/dev/null`" != "" ]   && os=centos8
    [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
@@ -83,7 +83,7 @@ then
 
    version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
-   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "$version" != "3_3_1" ] && [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
+   [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "$os" != "" ] && [ ${MPI_ROOT%/mpich} != $MPI_ROOT ] && TRUST_DOWNLOAD_VISIT=1
 else
    # Ancienne procedure, peu a peu obsolete
    build=build.sh
@@ -103,58 +103,6 @@ echo $version $what $version_visit
 ##############################
 # Script visit-install a jour?
 ##############################
-# Pour les versions 3_3_0 et 3_3_1, il faut recompiler visit pour que le plugin med fonctionne correctement.
-# Sur ubuntu 22, plantage aleatoires avec lata et med en ssh. sur debian 11, pas de souci
-if [ $what = visit ] && [ "$version" = "3_3_1" ]  && [ ! -L visit${version_visit#v}.tar.gz ] && [ ! -e visit${version_visit#v}.tar.gz ]
-then
-   DOWNLOADED=0
-   cd $TRUST_TMP
-   echo $ECHO_OPTS "Try to download $HTTPS/$version_visit/visit-install$version...\c"
-   wget_ $HTTPS/$version_visit/visit-install$version 1>/dev/null 2>&1
-   if [ $? = 0 ]
-   then
-      echo "OK"
-      DOWNLOADED=1
-      chmod +x visit-install$version
-   else
-      echo "KO"
-      echo "Fail to download visit-install$version" && exit -1
-   fi
-
-   echo $ECHO_OPTS "Try to download $HTTPS/$version_visit/build_visit$version...\c"
-   wget_ $HTTPS/$version_visit/build_visit$version 1>/dev/null 2>&1
-   if [ $? = 0 ]
-   then
-      echo "OK"
-      DOWNLOADED=1
-      chmod +x build_visit$version
-   else
-      echo "KO"
-      echo "Fail to download build_visit$version" && exit -1
-   fi
-
-   echo $ECHO_OPTS "Try to download $HTTPS/$version_visit/visit${version_visit#v}.tar.gz...\c"
-   wget_ $HTTPS/$version_visit/visit${version_visit#v}.tar.gz 1>/dev/null 2>&1
-   if [ $? = 0 ]
-   then
-      echo "OK"
-      DOWNLOADED=1
-   else
-      echo "KO"
-      echo "Fail to download visit${version_visit#v}.tar.gz" && exit -1
-   fi
-
-   cd -
-   unlink visit_install$version 2>/dev/null
-   ln -s $TRUST_TMP/visit_install$version  visit_install$version
-   cd src
-   unlink build_visit$version 2>/dev/null
-   ln -s $TRUST_TMP/build_visit$version build_visit$version
-   unlink visit${version_visit#v}.tar.gz 2>/dev/null
-   ln -s $TRUST_TMP/visit${version_visit#v}.tar.gz visit${version_visit#v}.tar.gz
-   cd -
-fi
-
 visit_install=visit-install$version
 if [ ! -f $visit_install ]
 then
@@ -334,6 +282,17 @@ then
       else
          rm -f customlauncher.tmp
       fi
+   fi
+   #############################################################################
+   # Hack for med plugins in visit 3.3.* (VisIt's HDF5 older than that in TRUST)
+   #############################################################################
+   if [ "`echo $version | awk '{split($1,a,"_");print (a[1]>=3&&(a[2]>=3))?1:0}'`" = 1 ]
+   then
+      echo "Hack for hdf needed to read med files"
+      version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
+      rm $TRUST_ROOT/exec/VisIt/$version_visit/linux-x86_64/lib/libhdf5.so.9.0.0 $TRUST_ROOT/exec/VisIt/$version_visit/linux-x86_64/lib/libhdf5_hl.so.9.0.0
+      ln -s $TRUST_ROOT/lib/src/LIBMED/hdf5_install/lib/libhdf5.so.103.0.0 $TRUST_ROOT/exec/VisIt/$version_visit/linux-x86_64/lib/libhdf5.so.9.0.0
+      ln -s $TRUST_ROOT/lib/src/LIBMED/hdf5_install/lib/libhdf5_hl.so.100.1.1 $TRUST_ROOT/exec/VisIt/$version_visit/linux-x86_64/lib/libhdf5_hl.so.9.0.0
    fi
    #############
    # Run tests #
