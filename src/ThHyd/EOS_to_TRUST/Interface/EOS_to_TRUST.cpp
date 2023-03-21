@@ -45,7 +45,7 @@ void EOS_to_TRUST::desactivate_handler()
 
 EOS_to_TRUST::~EOS_to_TRUST() { /* delete fluide; */ }
 
-void EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *const property_title, const char *const property_name, bool is_T) const
+int EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *const property_title, const char *const property_name, bool is_T) const
 {
 #ifdef HAS_EOS
   const char *const pp_ = is_T ? "Temperature" : "Pressure";
@@ -54,35 +54,38 @@ void EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *c
   EOS_Field z_fld(property_title,property_name, (int)res.size(), (double*)res.begin());
   ArrOfInt tmp((int)P_ou_T.size());
   EOS_Error_Field ferr(tmp);
-  fluide->compute(P_fld, z_fld, ferr);
+  EOS_Error cr = fluide->compute(P_fld, z_fld, ferr);
+  return (int)cr;
 #else
   Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
 #endif
 }
 
-void EOS_to_TRUST::compute_eos_field(const SpanD P, const SpanD T, SpanD res,const char *const property_title, const char *const property_name) const
+int EOS_to_TRUST::compute_eos_field(const SpanD P, const SpanD T, SpanD res,const char *const property_title, const char *const property_name) const
 {
 #ifdef HAS_EOS
   EOS_Field T_fld("Temperature", "T", (int)T.size(),(double*)T.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
   EOS_Field z_fld(property_title,property_name, (int)res.size(), (double*)res.begin());
   ArrOfInt tmp((int)P.size());
   EOS_Error_Field ferr(tmp);
-  fluide->compute(P_fld, T_fld, z_fld, ferr);
+  EOS_Error cr = fluide->compute(P_fld, T_fld, z_fld, ferr);
+  return (int)cr;
 #else
   Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
 #endif
 }
 
-void EOS_to_TRUST::compute_eos_field_h(const SpanD P, const SpanD H, SpanD res,const char *const property_title, const char *const property_name) const
+int EOS_to_TRUST::compute_eos_field_h(const SpanD P, const SpanD H, SpanD res,const char *const property_title, const char *const property_name) const
 {
 #ifdef HAS_EOS
   EOS_Field H_fld("Enthalpy", "h", (int)H.size(),(double*)H.begin()), P_fld("Pressure", "P", (int)P.size(), (double*)P.begin());
   EOS_Field z_fld(property_title,property_name, (int)res.size(), (double*)res.begin());
   ArrOfInt tmp((int)P.size());
   EOS_Error_Field ferr(tmp);
-  fluide->compute(P_fld, H_fld, z_fld, ferr);
+  EOS_Error cr = fluide->compute(P_fld, H_fld, z_fld, ferr);
+  return (int)cr;
 #else
   Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
