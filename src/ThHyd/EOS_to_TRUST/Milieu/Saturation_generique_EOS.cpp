@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,5 +42,7 @@ Entree& Saturation_generique_EOS::readOn( Entree& is )
   const char *const model = EOStT.supp.EOS_MODELS[ind_model];
   const char *const fld = EOStT.supp.EOS_FLUIDS[ind_fluid];
   EOStT.set_EOS_Sat_generique(model,fld);
+  EOStT.desactivate_handler(false); // throw on error
+
   return is;
 }

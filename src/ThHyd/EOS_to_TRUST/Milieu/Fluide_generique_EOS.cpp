@@ -39,6 +39,7 @@ Entree& Fluide_generique_EOS::readOn( Entree& is )
   const char *const model = EOStT.supp.EOS_MODELS[ind_model];
   const char *const fld = EOStT.supp.EOS_FLUIDS[ind_fluid];
   EOStT.set_EOS_generique(model,fld);
+  EOStT.desactivate_handler(false); // throw on error
 
   if (model_name_ == "CATHARE2")
     {

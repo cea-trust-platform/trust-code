@@ -19,24 +19,23 @@
 
 using namespace NEPTUNE;
 
-EOS_to_TRUST::EOS_to_TRUST()
+void EOS_to_TRUST::desactivate_handler(bool op)
 {
 #ifdef HAS_EOS
-  fluide = nullptr;
-  handler.set_exit_on_error(ok); // to deactivate use EOS_Std_Error_Handler::disable_feature
-  handler.set_throw_on_error(ok);
-  handler.set_dump_on_error(ok);
-#endif
-}
-
-void EOS_to_TRUST::desactivate_handler()
-{
-#ifdef HAS_EOS
-  handler.set_exit_on_error(EOS_Std_Error_Handler::disable_feature); // EOS should never exit()
-  handler.set_throw_on_error(EOS_Std_Error_Handler::disable_feature); // EOS should never throw() an exception
-  handler.set_dump_on_error(EOS_Std_Error_Handler::disable_feature);
-//  handler.set_dump_on_error(ok);
-//  handler.set_dump_stream(cerr);
+  if (op)
+    {
+      handler.set_exit_on_error(EOS_Std_Error_Handler::disable_feature); // EOS should never exit()
+      handler.set_throw_on_error(EOS_Std_Error_Handler::disable_feature); // EOS should never throw() an exception
+      handler.set_dump_on_error(EOS_Std_Error_Handler::disable_feature);
+      // handler.set_dump_on_error(ok);
+      // handler.set_dump_stream(cerr);
+    }
+  else
+    {
+      handler.set_exit_on_error(ok);
+      handler.set_throw_on_error(ok);
+      handler.set_dump_on_error(ok);
+    }
 #else
   Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;

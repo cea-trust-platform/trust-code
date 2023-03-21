@@ -157,9 +157,9 @@ class EOS_to_TRUST
 
 public :
 
-  EOS_to_TRUST();
+  EOS_to_TRUST() = default;
   virtual ~EOS_to_TRUST();
-  void desactivate_handler();
+  void desactivate_handler(bool op = true);
 
   Supported supp;
   void verify_model_fluid(Motcle& model_name, Motcle& fluid_name);
@@ -312,7 +312,7 @@ protected :
 
 #ifdef HAS_EOS
   NEPTUNE::EOS_Std_Error_Handler handler ;
-  NEPTUNE::EOS *fluide;
+  NEPTUNE::EOS *fluide = nullptr;
 #endif
 
   template <typename TYPE>
