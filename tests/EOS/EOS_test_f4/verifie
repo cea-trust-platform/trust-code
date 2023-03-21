@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#if [ "`diff out out.ref`" != "" ]
+#then
+#  echo "   ===> Error ! Test case EOS_test_f4 KO !"
+#  exit -1
+#else
+#  echo "   ===> All OK for test case EOS_test_f4 !"
+#fi

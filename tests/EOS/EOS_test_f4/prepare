@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cp $TRUST_ROOT/tests/EOS/jdd EOS_test_f4.data
+cp $TRUST_ROOT/tests/EOS/__sample__ EOS_test_f4.cpp
+sed -i 's/liquid("__MODEL__", "__FLUID__")/liquid("EOS_Flica4", "WaterLiquid.140-210")/g' EOS_test_f4.cpp
+sed -i 's/steam("__MODEL__", "__FLUID__")/steam("EOS_Flica4", "WaterVapor.140-210")/g' EOS_test_f4.cpp
+
+$TRUST_CC_BASE -std=c++11 -Wall -o EOS_test_f4.x -I$TRUST_EOS_HOME_DIR/include/ -I$TRUST_ROOT/include/ -I$TRUST_ROOT/include/EOS/ EOS_test_f4.cpp $TRUST_EOS_HOME_DIR/lib/libeos.a -lgfortran
+
+./EOS_test_f4.x &>out
+
+if [ $? -eq 0 ]
+then
+  echo OK > is_ok
+else
+  rm -f is_ok
+fi
+
