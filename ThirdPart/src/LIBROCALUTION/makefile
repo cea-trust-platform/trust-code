@@ -1,9 +1,9 @@
-ROCALUTION_LIB=$(TRUST_ROCALUTION)/lib/librocalution.so
+ROCALUTION_INC=${TRUST_ROCALUTION}/include/rocalution_for_kernel.h
 mpi=$(MPI_INCLUDE)/mpi.h
 
 all:$(ROCALUTION_LIB)
 
-$(ROCALUTION_LIB): install makefile $(mpi)
+$(ROCALUTION_INC): install makefile $(mpi)
 	make clean
 	./install
 	
