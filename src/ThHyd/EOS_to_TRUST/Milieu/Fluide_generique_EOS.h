@@ -26,6 +26,9 @@ public :
   void set_param(Param& param) override;
   MRange unknown_range() const override
   {
+    if (tmax_ < -100. )
+      return Fluide_reel_base::unknown_range();
+
     return { { "temperature", { tmin_ - 273.15, tmax_ - 273.15 } }, { "pression", { pmin_, pmax_ } } };
   }
 

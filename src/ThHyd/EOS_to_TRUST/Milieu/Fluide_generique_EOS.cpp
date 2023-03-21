@@ -40,10 +40,13 @@ Entree& Fluide_generique_EOS::readOn( Entree& is )
   const char *const fld = EOStT.supp.EOS_FLUIDS[ind_fluid];
   EOStT.set_EOS_generique(model,fld);
 
-  tmin_ = EOStT.eos_get_T_min();
-  tmax_ = EOStT.eos_get_T_max();
-  pmin_ = EOStT.eos_get_p_min();
-  pmax_ = EOStT.eos_get_p_max();
+  if (model_name_ == "CATHARE2")
+    {
+      tmin_ = EOStT.eos_get_T_min();
+      tmax_ = EOStT.eos_get_T_max();
+      pmin_ = EOStT.eos_get_p_min();
+      pmax_ = EOStT.eos_get_p_max();
+    }
 
   return is;
 }
