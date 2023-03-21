@@ -413,20 +413,20 @@ void envoyer_all_gatherv(const DoubleTab& src, DoubleTab& dest, const IntTab& re
   assert(dest.size_array()==local_somme_vect(recv_size));
   assert(src.size_array()==recv_size[grp.me()]);
 
-  const int nbprocs = grp.nproc();
+  const True_int nbprocs = (True_int)grp.nproc();
 
-  IntTab sz(nbprocs);
-  for (int p=0; p<nbprocs; p++)
-    sz[p] = recv_size[p] * (int)sizeof(double);
+  std::vector<True_int> sz(nbprocs);
+  for (True_int p=0; p<nbprocs; p++)
+    sz[p] = recv_size[p] * (True_int)sizeof(double);
 
-  int sz0 =  src.size() * (int)sizeof(double);
+  True_int sz0 =  src.size() * (True_int)sizeof(double);
 
-  IntTab displs(nbprocs);
+  std::vector<True_int> displs(nbprocs);
   displs[0] = 0;
-  for (int p=1; p<nbprocs; p++)
+  for (True_int p=1; p<nbprocs; p++)
     displs[p] = displs[p-1]+sz[p-1];
 
-  grp.all_gatherv(src.addr(), dest.addr(), sz0 , sz.addr(),displs.addr());
+  grp.all_gatherv(src.addr(), dest.addr(), sz0 , sz.data(),displs.data());
 }
 
 

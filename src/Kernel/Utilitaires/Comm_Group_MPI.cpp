@@ -518,7 +518,7 @@ void Comm_Group_MPI::all_gather(const void *src_buffer, void *dest_buffer, int d
 #endif
 }
 
-void Comm_Group_MPI::all_gatherv(const void *src_buffer, void *dest_buffer, int send_size, const int* recv_size, const int* displs) const
+void Comm_Group_MPI::all_gatherv(const void *src_buffer, void *dest_buffer, int send_size, const True_int* recv_size, const True_int* displs) const
 {
 #ifdef MPI_
   statistiques().begin_count(mpi_allgather_counter_);
