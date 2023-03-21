@@ -29,6 +29,20 @@ EOS_to_TRUST::EOS_to_TRUST()
 #endif
 }
 
+void EOS_to_TRUST::desactivate_handler()
+{
+#ifdef HAS_EOS
+  handler.set_exit_on_error(EOS_Std_Error_Handler::disable_feature); // EOS should never exit()
+  handler.set_throw_on_error(EOS_Std_Error_Handler::disable_feature); // EOS should never throw() an exception
+  handler.set_dump_on_error(EOS_Std_Error_Handler::disable_feature);
+//  handler.set_dump_on_error(ok);
+//  handler.set_dump_stream(cerr);
+#else
+  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
+  throw;
+#endif
+}
+
 EOS_to_TRUST::~EOS_to_TRUST() { /* delete fluide; */ }
 
 void EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *const property_title, const char *const property_name, bool is_T) const

@@ -160,6 +160,8 @@ public :
   EOS_to_TRUST();
   virtual ~EOS_to_TRUST();
 
+  void desactivate_handler();
+
   Supported supp;
   void verify_model_fluid(Motcle& model_name, Motcle& fluid_name);
 
