@@ -16,24 +16,10 @@
 #ifndef Domaine_Cl_VDF_included
 #define Domaine_Cl_VDF_included
 
-
-
-/*! @brief class Domaine_Cl_VDF
- *
- * @sa Domaine_Cl_dis_base
- */
-
-
 #include <Domaine_Cl_dis_base.h>
 
-class Champ_Inc;
 class Domaine_VDF;
-
-/////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS : Domaine_Cl_VDF
-//
-/////////////////////////////////////////////////////////////////////////////
+class Champ_Inc;
 
 namespace TypeAreteBordVDF
 {
@@ -43,10 +29,10 @@ enum type_arete
   PAROI_PAROI = 0,
   FLUIDE_FLUIDE = 1,
   PAROI_FLUIDE = 2,
-  SYM_SYM = 3,
+  NAVIER_NAVIER = 3,
   PERIO_PERIO = 4,
-  PAROI_SYM = 5,
-  FLUIDE_SYM = 6,
+  PAROI_NAVIER = 5,
+  FLUIDE_NAVIER = 6
 };
 } // namespace TypeAreteBordVDF
 
@@ -57,87 +43,59 @@ enum type_arete
   VIDE = -1,
   PERIO_PERIO = 0,
   PERIO_PAROI = 1,
-  PAROI_SYM = 3,
-  FLUIDE_SYM = 4,
+  PAROI_NAVIER = 3,
+  FLUIDE_NAVIER = 4,
   PAROI_PAROI = 5,
   PERIO_FLUIDE = 7,
-  SYM_SYM = 8,
+  NAVIER_NAVIER = 8,
   PAROI_FLUIDE = 14,
   FLUIDE_PAROI = 15,
   FLUIDE_FLUIDE = 16
 };
 } // namespace TypeAreteCoinVDF
 
+/*! @brief class Domaine_Cl_VDF
+ *
+ * @sa Domaine_Cl_dis_base
+ */
 
 class Domaine_Cl_VDF : public Domaine_Cl_dis_base
 {
-
   Declare_instanciable(Domaine_Cl_VDF);
-
 public :
-
-  void associer(const Domaine_VDF& );
-  inline int num_Cl_face(int ) const;
-  inline const Cond_lim& la_cl_de_la_face(int ) const override;
-  inline int type_arete_bord(int ) const;
-  inline const IntVect& type_arete_bord() const;
-  inline const int& type_arete_coin(int ) const;
-  inline const IntVect& type_arete_coin() const;
-  void completer(const Domaine_dis& ) override;
+  void associer(const Domaine_VDF&);
+  void completer(const Domaine_dis&) override;
   void imposer_cond_lim(Champ_Inc&, double) override;
   int nb_faces_sortie_libre() const;
+  int nb_faces_bord() const;
   Domaine_VDF& domaine_VDF();
   const Domaine_VDF& domaine_VDF() const;
-  int nb_faces_bord() const;
+
+  inline int num_Cl_face(int numfa) const { return num_Cl_face_[numfa]; }
+  inline const Cond_lim& la_cl_de_la_face(int numfa) const override { return les_conditions_limites_[num_Cl_face_[numfa]]; }
+  inline int type_arete_bord(int num_arete) const { return type_arete_bord_[num_arete]; }
+  inline const IntVect& type_arete_bord() const { return type_arete_bord_; }
+  inline const int& type_arete_coin(int num_arete) const { return type_arete_coin_[num_arete]; }
+  inline const IntVect& type_arete_coin() const { return type_arete_coin_; }
 
 private:
-
-  IntVect type_arete_bord_;    //  type des aretes bord:
+  //  type des aretes bord:
   //  type = 0 si l'arete separe deux faces de paroi
   //  type = 1 si l'arete separe deux faces "fluide"
-  //  type = 2 si l'arete separe une face de paroi
-  //              et une face "fluide"
-  //  type = 3 si l'arete separe deux faces de symetrie
-  //  type = 5 si l'arete separe une face de symetrie et une face de paroi
-  //  type = 6 si l'arete separe une face de symetrie et une face "fluide"
-  IntVect type_arete_coin_;    //  type des aretes coin:
+  //  type = 2 si l'arete separe une face de paroi et une face "fluide"
+  //  type = 3 si l'arete separe deux faces de navier (symmetrie/paroi frottante)
+  //  type = 3 si l'arete separe deux faces de periodicite
+  //  type = 5 si l'arete separe une face de navier (symmetrie/paroi frottante) et une face de paroi
+  //  type = 6 si l'arete separe une face de navier (symmetrie/paroi frottante) et une face "fluide"
+  IntVect type_arete_bord_;
+
+  //  type des aretes coin:
   //  type = 0 si l'arete contient deux faces de periodicite
   //  type = 1 si l'arete contient une face de periodicite et une face de paroi
-  IntVect num_Cl_face_;         //  pour chaque face de bord numero de la condition
-  //  limite a laquelle elle se rattache
+  IntVect type_arete_coin_;
+
+  //  pour chaque face de bord numero de la condition limite a laquelle elle se rattache
+  IntVect num_Cl_face_;
 };
 
-
-// Fonctions inline
-
-inline int Domaine_Cl_VDF::type_arete_bord(int num_arete) const
-{
-  return type_arete_bord_[num_arete];
-}
-
-inline const IntVect& Domaine_Cl_VDF::type_arete_bord() const
-{
-  return type_arete_bord_;
-}
-
-inline const int& Domaine_Cl_VDF::type_arete_coin(int num_arete) const
-{
-  return type_arete_coin_[num_arete];
-}
-
-inline const IntVect& Domaine_Cl_VDF::type_arete_coin() const
-{
-  return type_arete_coin_;
-}
-
-inline int Domaine_Cl_VDF::num_Cl_face(int numfa) const
-{
-  return num_Cl_face_[numfa];
-}
-
-inline const Cond_lim& Domaine_Cl_VDF::la_cl_de_la_face(int numfa) const
-{
-  return les_conditions_limites_[num_Cl_face_[numfa]];
-}
-
-#endif
+#endif /* Domaine_Cl_VDF_included */

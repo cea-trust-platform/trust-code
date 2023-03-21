@@ -183,7 +183,7 @@ void  Op_Diff_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleTab& inco, Dou
               }
             break;
           }
-        case TypeAreteBordVDF::SYM_SYM: // pas de flux diffusif calcule
+        case TypeAreteBordVDF::NAVIER_NAVIER: // pas de flux diffusif calcule
           break;
         default :
           {
@@ -455,7 +455,7 @@ void Op_Diff_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(Matrice_Morse&
               }
             break;
           }
-        case TypeAreteBordVDF::SYM_SYM: // pas de flux diffusif calcule
+        case TypeAreteBordVDF::NAVIER_NAVIER: // pas de flux diffusif calcule
           break;
         default :
           {
@@ -648,7 +648,7 @@ void Op_Diff_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu) cons
               }
             break;
           }
-        case TypeAreteBordVDF::SYM_SYM: // pas de flux diffusif calcule
+        case TypeAreteBordVDF::NAVIER_NAVIER: // pas de flux diffusif calcule
           break;
         default :
           {

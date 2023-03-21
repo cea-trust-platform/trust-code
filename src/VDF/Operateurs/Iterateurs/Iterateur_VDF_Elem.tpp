@@ -95,7 +95,7 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t
 
       switch(type_cl(la_cl))
         {
-        case symetrie:
+        case navier:
           ajouter_blocs_bords_<_TYPE_::CALC_FLUX_FACES_SYMM, Type_Double>((const Symetrie&) la_cl.valeur(), ndeb, nfin, ncomp, mats, resu, semi_impl);
           break;
         case sortie_libre:

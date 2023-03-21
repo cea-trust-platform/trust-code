@@ -195,7 +195,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_aretes_bords(const DoubleVect& visco_tur
               }
             break;
           }
-        case TypeAreteBordVDF::SYM_SYM:
+        case TypeAreteBordVDF::NAVIER_NAVIER:
           break;
         default :
           {
@@ -449,7 +449,7 @@ void Op_Dift_VDF_Face_Axi_base::ajouter_contribution_aretes_bords(const DoubleVe
               }
             break;
           }
-        case TypeAreteBordVDF::SYM_SYM:
+        case TypeAreteBordVDF::NAVIER_NAVIER:
           break;
         default :
           {
@@ -607,7 +607,7 @@ void Op_Dift_VDF_Face_Axi_base::contribue_au_second_membre(DoubleTab& resu ) con
           }
         case TypeAreteBordVDF::FLUIDE_FLUIDE: /* fall through */
         case TypeAreteBordVDF::PAROI_FLUIDE:
-        case TypeAreteBordVDF::SYM_SYM:
+        case TypeAreteBordVDF::NAVIER_NAVIER:
           break;
         default :
           {

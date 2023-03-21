@@ -79,10 +79,10 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords(const int ncomp, mat
         case TypeAreteBordVDF::PAROI_PAROI:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PAR, Type_Flux_Arete::PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
-        case TypeAreteBordVDF::SYM_SYM:
+        case TypeAreteBordVDF::NAVIER_NAVIER:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_SYMM, Type_Flux_Arete::SYMETRIE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
-        case TypeAreteBordVDF::PAROI_SYM:
+        case TypeAreteBordVDF::PAROI_NAVIER:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR, Type_Flux_Arete::SYMETRIE_PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
@@ -94,7 +94,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords(const int ncomp, mat
         case TypeAreteBordVDF::PERIO_PERIO:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PERIO, Type_Flux_Arete::PERIODICITE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
-        case TypeAreteBordVDF::FLUIDE_SYM:
+        case TypeAreteBordVDF::FLUIDE_NAVIER:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL, Type_Flux_Arete::SYMETRIE_FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         default:
@@ -492,7 +492,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_sortie_libre(const int ncomp,
         case sortie_libre:
           ajouter_blocs_fa7_sortie_libre_<_TYPE_::CALC_FA7_SORTIE_LIB, Type_Flux_Fa7::SORTIE_LIBRE, Type_Double>(num_cl, ncomp, mats, secmem, semi_impl);
           break;
-        case symetrie: /* fall through */
+        case navier: /* fall through */
         case entree_fluide:
         case paroi_fixe:
         case paroi_defilante:

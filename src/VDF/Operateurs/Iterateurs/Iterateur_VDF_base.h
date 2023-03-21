@@ -38,7 +38,7 @@ enum class Type_Operateur { Op_CONV_ELEM , Op_CONV_FACE , Op_DIFF_ELEM , Op_DIFT
 
 enum Type_Cl_VDF
 {
-  symetrie,  // Symetrie
+  navier,  // Symetrie, frottement paroi
   sortie_libre, // Neumann_sortie_libre ou derivees
   entree_fluide, // Dirichlet_entree_fluide
   paroi_fixe, // Dirichlet_paroi_fixe
@@ -120,7 +120,7 @@ inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
 {
   Type_Cl_VDF retour = nouvelle_Cl_VDF;
 
-  if (sub_type(Symetrie, la_cl.valeur())) retour = symetrie;
+  if (sub_type(Navier, la_cl.valeur())) retour = navier;
   else if (sub_type(Neumann_sortie_libre, la_cl.valeur())) retour = sortie_libre;
   else if (sub_type(Dirichlet_entree_fluide, la_cl.valeur())) retour = entree_fluide;
   else if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) retour = paroi_fixe;

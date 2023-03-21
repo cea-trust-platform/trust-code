@@ -175,7 +175,7 @@ void Iterateur_VDF_Elem<_TYPE_>::contribuer_au_second_membre_bords(const int nco
       const int ndeb = frontiere_dis.num_premiere_face(), nfin = ndeb + frontiere_dis.nb_faces();
       switch(type_cl(la_cl))
         {
-        case symetrie :
+        case navier :
           contribuer_au_second_membre_bords_<_TYPE_::CALC_FLUX_FACES_SYMM,Type_Double>((const Symetrie&) la_cl.valeur(),ndeb,nfin,ncomp,resu);
           break;
         case sortie_libre :
