@@ -230,9 +230,11 @@ int EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial_pb_multiphase(const
     {
       for (auto &itr : sats)
         {
-          assert(ncomp * (int )P.size() == (int )itr.second.size());
-          if (itr.first != SAT::LV_SAT && itr.first != SAT::LV_SAT_DP)
-            flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) itr.first][0], EOS_prop_sat[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+          SAT prop_ = itr.first;
+          SpanD span_ = itr.second;
+          assert(ncomp * (int )P.size() == (int )span_.size());
+          if (prop_ != SAT::LV_SAT && prop_ != SAT::LV_SAT_DP)
+            flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) prop_][0], EOS_prop_sat[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
         }
       err_ = (int)fluide->compute(P_fld, flds_out, ferr);
 
@@ -256,7 +258,11 @@ int EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial_pb_multiphase(const
       };
 
       for (auto &itr : sats_loc)
-        flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) itr.first][0], EOS_prop_sat[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+        {
+          SAT prop_ = itr.first;
+          SpanD span_ = itr.second;
+          flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) prop_][0], EOS_prop_sat[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
+        }
 
       err_ = (int)fluide->compute(P_fld, flds_out, ferr);
 
@@ -296,8 +302,10 @@ int EOS_to_TRUST_Sat_generique::eos_get_all_sat_loi_F5(const MSpanD input, MSatS
 
   for (auto &itr : sats)
     {
-      assert(sz == (int )itr.second.size());
-      flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) itr.first][0], EOS_prop_sat[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+      SAT prop_ = itr.first;
+      SpanD span_ = itr.second;
+      assert(sz == (int ) span_.size());
+      flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) prop_][0], EOS_prop_sat[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
     }
 
   return (int)fluide->compute(P_fld, flds_out, ferr);

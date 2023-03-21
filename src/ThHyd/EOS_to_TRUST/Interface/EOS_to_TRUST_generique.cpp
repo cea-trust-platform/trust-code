@@ -314,8 +314,10 @@ int EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, M
   for (auto& itr : prop)
     {
       assert((int )T.size() == ncomp * (int )itr.second.size());
-      if (itr.first != Loi_en_T::BETA)
-        flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) itr.first][0], EOS_prop_en_T[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+      Loi_en_T prop_ = itr.first;
+      SpanD span_ = itr.second;
+      if (prop_ != Loi_en_T::BETA)
+        flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) prop_][0], EOS_prop_en_T[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
       else /* pour beta on recalcule sans appel a beta de eos ... */
         {
           flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) Loi_en_T::RHO][0], EOS_prop_en_T[(int) Loi_en_T::RHO][1], (int) rho.size(), (double*) rho.begin());
@@ -357,14 +359,18 @@ int EOS_to_TRUST_generique::eos_get_all_pb_multiphase_pT(const MSpanD input, MLo
 
   for (auto& itr : bord)
     {
-      assert((int )bT.size() == ncomp * (int )itr.second.size());
-      bflds_out[bi_out++] = EOS_Field(EOS_prop_en_T[(int) itr.first][0], EOS_prop_en_T[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+      Loi_en_T prop_ = itr.first;
+      SpanD span_ = itr.second;
+      assert((int ) bT.size() == ncomp * (int ) span_.size());
+      bflds_out[bi_out++] = EOS_Field(EOS_prop_en_T[(int) prop_][0], EOS_prop_en_T[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
     }
 
   for (auto& itr : inter)
     {
-      assert((int )T.size() == ncomp * (int )itr.second.size());
-      flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) itr.first][0], EOS_prop_en_T[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+      Loi_en_T prop_ = itr.first;
+      SpanD span_ = itr.second;
+      assert((int ) T.size() == ncomp * (int ) span_.size());
+      flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) prop_][0], EOS_prop_en_T[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
     }
 
   int err1_ = eos_get_all_properties_T_( { { "temperature", bT }, { "pressure", bP } }, bflds_out, bferr, ncomp, id); // bords
@@ -391,8 +397,10 @@ int EOS_to_TRUST_generique::eos_get_all_prop_loi_F5(const MSpanD input, MLoiSpan
 
   for (auto &itr : spans)
     {
-      assert(sz == (int ) itr.second.size());
-      flds_out[i_out++] = EOS_Field(EOS_prop_en_h[(int) itr.first][0], EOS_prop_en_h[(int) itr.first][1], (int) itr.second.size(), (double*) itr.second.begin());
+      Loi_en_h prop_ = itr.first;
+      SpanD span_ = itr.second;
+      assert(sz == (int ) span_.size());
+      flds_out[i_out++] = EOS_Field(EOS_prop_en_h[(int) prop_][0], EOS_prop_en_h[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
     }
 
   EOS_Field T_fld("Enthalpy", "h", (int) H.size(), (double*) H.begin()), P_fld("Pressure", "P", (int) P.size(), (double*) P.begin());
