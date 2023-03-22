@@ -126,7 +126,7 @@ void init_cuda()
 #endif
 
 #include <sstream>
-inline std::string toString(const void* adr)
+std::string toString(const void* adr)
 {
   std::stringstream ss;
   ss << adr;
@@ -232,6 +232,10 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
       statistiques().end_count(gpu_copytodevice_counter_, size);
       message = "Update on device array "+arrayName+" ["+toString(tab.addr())+"]";
+    }
+  else if (currentLocation==PartialHostDevice)
+    {
+      Process::exit("Error, can't map on device an array with PartialHostDevice status!");
     }
   else
     {

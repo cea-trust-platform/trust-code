@@ -55,17 +55,57 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
   for (int ibloc = 0; ibloc < nblocs; ibloc++)
     {
       const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(max:max_colonne_addr[0:lsize])
-      for (int i = begin_bloc; i < end_bloc; i++)
+      // Necessaire de faire un test sur lsize le compilateur crayCC OpenMP ne supporte pas la reduction sur tableau avec taille dynamique...
+      if (lsize==1)
         {
-          int k = i * lsize;
-          for (int j = 0; j < lsize; j++)
+          #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(max:max_colonne_addr[0:1])
+          for (int i = begin_bloc; i < end_bloc; i++)
             {
-              const _T_ x = std::fabs(vect_addr[k++]);
-              max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+              int k = i * lsize;
+              for (int j = 0; j < lsize; j++)
+                {
+                  const _T_ x = std::fabs(vect_addr[k++]);
+                  max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                }
             }
         }
-      copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab");
+      else if (lsize==2)
+        {
+          #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(max:max_colonne_addr[0:2])
+          for (int i = begin_bloc; i < end_bloc; i++)
+            {
+              int k = i * lsize;
+              for (int j = 0; j < lsize; j++)
+                {
+                  const _T_ x = std::fabs(vect_addr[k++]);
+                  max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                }
+            }
+        }
+      else if (lsize==3)
+        {
+          #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(max:max_colonne_addr[0:3])
+          for (int i = begin_bloc; i < end_bloc; i++)
+            {
+              int k = i * lsize;
+              for (int j = 0; j < lsize; j++)
+                {
+                  const _T_ x = std::fabs(vect_addr[k++]);
+                  max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                }
+            }
+        }
+      else
+        for (int i = begin_bloc; i < end_bloc; i++)
+          {
+            int k = i * lsize;
+            for (int j = 0; j < lsize; j++)
+              {
+                const _T_ x = std::fabs(vect_addr[k++]);
+                max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+              }
+          }
+      copyFromDevice(max_colonne, "max_colonne in local_max_abs_tab"); // ToDo OpenMP pourquoi necessaire ? Est ce a cause des ecritures put(addr[]) ?
     }
 }
 

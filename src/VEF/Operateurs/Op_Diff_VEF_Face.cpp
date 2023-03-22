@@ -269,7 +269,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int premiere_face_int = domaine_VEF.premiere_face_int();
   int nb_faces = domaine_VEF.nb_faces();
-  int nb_faces_tot = domaine_VEF.nb_faces_tot();
+  //int nb_faces_tot = domaine_VEF.nb_faces_tot();
   int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   DoubleVect n(Objet_U::dimension);
   DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
