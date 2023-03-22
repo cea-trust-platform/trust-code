@@ -8,12 +8,12 @@ endif
 
 all:	$(moduleopt) $(moduledebug) $(trusticoco)
 
-$(moduleopt): Test_ICoCo.sh makefile $(mpi)
+$(moduleopt): Test_ICoCo.sh makefile $(mpi) $(exec_opt)
 	@echo Compiling ICoCo
 	./Test_ICoCo.sh  #1>LOG 2>&1
 	@echo OK
 
-$(moduledebug): Test_ICoCo.sh makefile $(mpi)
+$(moduledebug): Test_ICoCo.sh makefile $(mpi) $(exec_debug)
 	@echo Compiling ICoCo
 	./Test_ICoCo.sh  #1>LOG 2>&1
 	@echo OK

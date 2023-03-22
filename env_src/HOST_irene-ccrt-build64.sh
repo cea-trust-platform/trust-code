@@ -38,6 +38,7 @@ define_modules_config()
       module="intel/20.0.4 mpi/openmpi/4.0.2" # PL: Retour a OpenMPI/4.0.2 sans rien d'autre car "node failure" sur le calcul GAMELAN a 50K coeurs avec les conseils precedents 
       # ND : avec intel/20.0.4, le cas test Cx plante en // dans petsc, je tente avec intel/19.*
       module="intel/19.0.5.281 gnu/7.3.0 mpi/openmpi/4.0.2"
+      [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] && module="intel/20.0.0 mpi/openmpi/4.0.5.3"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
