@@ -70,12 +70,6 @@ void Op_Conv_VDF_base::preparer_calcul()
 {
   Operateur_Conv_base::preparer_calcul(); /* ne fait rien */
   iter->set_convective_op_pb_type(true /* convective op */, sub_type(Pb_Multiphase, equation().probleme()));
-  const DoubleTab& vit_associe = vitesse().valeurs();
-  const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
-  const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
-  fluent_.resize(0, N);
-  const Domaine_VDF& domaine_VDF = iter->domaine();
-  domaine_VDF.domaine().creer_tableau_elements(fluent_);
 }
 
 void Op_Conv_VDF_base::associer_champ_convecte_elem()
@@ -198,8 +192,11 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
   const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-
-
+  if (!fluent_.get_md_vector().non_nul())
+    {
+      fluent_.resize(0, N);
+      domaine_VDF.domaine().creer_tableau_elements(fluent_);
+    }
   fluent_ = 0;
   // Remplissage du tableau fluent
   double psc;
