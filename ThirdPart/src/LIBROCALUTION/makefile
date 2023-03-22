@@ -8,4 +8,4 @@ $(ROCALUTION_INC): install makefile $(mpi)
 	./install
 	
 clean:
-	rm -r -f $(TRUST_ROCALUTION)/*
+	rm -r -f ../../../lib/src/LIBROCALUTION

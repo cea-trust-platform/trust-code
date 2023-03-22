@@ -51,7 +51,7 @@ export CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BA
 
 # Valgrind: Disable avx512 instructions cause valgrind don't support yet
 export CXXFLAGS="-mno-avx512f" && [ "`$CXX $CXXFLAGS 2>&1 | grep -i unrecognized`" != "" ] && export CXXFLAGS=""
-
+export CXXFLAGS=$CXXFLAGS" -fPIC"
 # Shared libraries
 SL=OFF && [ "$HOST" = adastra ] && SL=ON # Probleme au link sur adastra en lib statique
 
