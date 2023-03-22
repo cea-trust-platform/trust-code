@@ -58,7 +58,7 @@ public:
   flux_arete(const DoubleTab&, const DoubleTab*, int, int, int, int, Type_Double& ) const ;
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t_<(Arete_Type == Type_Flux_Arete::NAVIER), void>
-  flux_arete(const DoubleTab&, const DoubleTab*, int, int, int, int, Type_Double& ) const { /* Do nothing */ }
+  flux_arete(const DoubleTab&, const DoubleTab*, int, int, int, int, Type_Double& ) const;
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double> inline
   enable_if_t_< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE  || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>

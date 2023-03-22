@@ -79,23 +79,23 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords(const int ncomp, mat
         case TypeAreteBordVDF::PAROI_PAROI:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PAR, Type_Flux_Arete::PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
-        case TypeAreteBordVDF::NAVIER_NAVIER:
-          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER, Type_Flux_Arete::NAVIER, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
-          break;
-        case TypeAreteBordVDF::PAROI_NAVIER:
-          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER_PAR, Type_Flux_Arete::NAVIER_PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
+        case TypeAreteBordVDF::PAROI_FLUIDE:
+          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL, Type_Flux_Arete::PAROI_FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_FL, Type_Flux_Arete::FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
-        case TypeAreteBordVDF::PAROI_FLUIDE:
-          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PAR_FL, Type_Flux_Arete::PAROI_FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
-          break;
-        case TypeAreteBordVDF::PERIO_PERIO:
-          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PERIO, Type_Flux_Arete::PERIODICITE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
+        case TypeAreteBordVDF::PAROI_NAVIER:
+          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER_PAR, Type_Flux_Arete::NAVIER_PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         case TypeAreteBordVDF::FLUIDE_NAVIER:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER_FL, Type_Flux_Arete::NAVIER_FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
+          break;
+        case TypeAreteBordVDF::NAVIER_NAVIER:
+          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER, Type_Flux_Arete::NAVIER, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
+          break;
+        case TypeAreteBordVDF::PERIO_PERIO:
+          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PERIO, Type_Flux_Arete::PERIODICITE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         default:
           Cerr << "On a rencontre un type d'arete non prevu : [ num arete : " << n_arete << " ], [ type : " << n_type << " ]" << finl;

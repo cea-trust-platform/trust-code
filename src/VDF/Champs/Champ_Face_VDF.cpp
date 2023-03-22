@@ -27,7 +27,7 @@
 #include <Fluide_base.h>
 #include <Periodique.h>
 #include <Option_VDF.h>
-#include <Symetrie.h>
+#include <Navier.h>
 
 // XXX : Elie Saikali : je garde Champ_Face aussi sinon faut changer typer et reprise dans bcp des endroits ...
 Implemente_instanciable(Champ_Face_VDF,"Champ_Face|Champ_Face_VDF",Champ_Face_base);
@@ -1304,7 +1304,7 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
 
   int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
 
-  if (sub_type(Symetrie, cl))
+  if (sub_type(Navier, cl))
     {
       int N = tab_valeurs.line_size();
       int n=comp%N, comploc = (comp-n)/N;
@@ -1347,7 +1347,7 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, c
   const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
   int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
 
-  if (sub_type(Symetrie, cl))
+  if (sub_type(Navier, cl))
     {
       if (comp == ori)
         return 0;
@@ -1374,3 +1374,16 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, i
   Process::exit();
   return 0; // For compilers
 }
+
+double Champ_Face_coeff_frottement_face_bord(const int f, const int n, const Domaine_Cl_VDF& zclo)
+{
+  const Domaine_VDF& domaine_vdf = zclo.domaine_VDF();
+  const Domaine_Cl_dis_base& zcl = zclo;
+  const int face_globale = f + domaine_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
+
+  int face_locale;
+  const Cond_lim_base& cl = (f < domaine_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
+
+  return sub_type(Navier, cl) ? ref_cast(Navier, cl).coefficient_frottement(f,n) : 1.;
+}
+

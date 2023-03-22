@@ -161,6 +161,7 @@ private:
   DoubleTab tau_croises_;    // termes extradiagonaux du tenseur Grad
 };
 
+double Champ_Face_coeff_frottement_face_bord(const int, const int , const Domaine_Cl_VDF& zclo);
 double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const double temp,int face,int comp, const Domaine_Cl_VDF& zclo);
 double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, const Domaine_Cl_VDF& zclo) ;
 double Champ_Face_get_val_imp_face_bord( const double temp,int face,int comp, int comp2, const Domaine_Cl_VDF& zclo) ;
