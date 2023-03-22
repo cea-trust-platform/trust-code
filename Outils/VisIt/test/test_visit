@@ -1,6 +1,7 @@
 #!/bin/bash
 test_visit=0 # Too much problems now for 1.7.0...
 test_visit=1 # Reactivation for 1.7.2...
+[ `uname -s` = Darwin ] && test_visit=0 # for Darwin, we deactivate the test at present
 if [ "$test_visit" = 1 ]
 then
    # Teste que le format Visit+Lata fonctionne

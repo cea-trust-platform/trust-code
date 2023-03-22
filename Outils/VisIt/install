@@ -83,6 +83,7 @@ then
    [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora31 && version=3_2_1
    [ "`grep 'release [7]' /etc/redhat-release 2>/dev/null`" != "" ]             && os=rhel7      # NB: Le binaire rhel7 ne marche pas sur Redhat 8 (xml2cmake error)
    [ "`grep 'release [8]' /etc/redhat-release 2>/dev/null`" != "" ]             && os=centos8    # NB: Le binaire centos8 marche sur Redhat 8
+   [ `uname -s` = Darwin ]                                                      && os=arm64 && version=3_3_1
 
    version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
    # A partir de 1.8.4, on essaie de prendre sur PC+MPICH le binaire precompile avec MPICH:   
@@ -131,6 +132,9 @@ then
    chmod +x $visit_install
    # On ne met en gestion de conf le script d'install que si la version VisIt est dans extp  
    [ "$version" = "$version_extp" ] && MKELEM $visit_install 1>/dev/null 2>&1
+
+   # for mac, the extension is tar.xz
+   [ `uname -s` = Darwin ] && sed -i "s/tar.gz/tar.xz/g" $visit_install
 fi
 
 ##################################
@@ -141,6 +145,7 @@ ARCH=`uname -s | awk '{print tolower($1)}'`
 [ $ARCH = linux ] && ARCH=$ARCH"-"`uname -m`
 
 export package=visit$version.$ARCH.tar.gz
+[ `uname -s` = Darwin ] && export package=visit$version.$ARCH.tar.xz
 if [ $what = visit ] 
 then
    status=0
@@ -188,8 +193,10 @@ then
 	 else
             [ "$os" = "" ] && echo "OS not detected." && exit -1
             ARCH=linux-x86_64-$os
+            [ `uname -s` = Darwin ] && ARCH=darwin-$os
 	 fi
 	 package=visit$version.$ARCH.tar.gz
+    [ `uname -s` = Darwin ] && package=visit$version.$ARCH.tar.xz
 	 rm -f $package
 	 DOWNLOADED=0
 	 for HTTP in $HTTPS
@@ -289,7 +296,7 @@ then
    #############################################################################
    # Hack for med plugins in visit 3.3.* (VisIt's HDF5 older than that in TRUST)
    #############################################################################
-   if [ "`echo $version | awk '{split($1,a,"_");print (a[1]>=3&&(a[2]>=3))?1:0}'`" = 1 ]
+   if [ "`echo $version | awk '{split($1,a,"_");print (a[1]>=3&&(a[2]>=3))?1:0}'`" = 1 ] && [ `uname -s` != Darwin ]
    then
       echo "Hack for hdf needed to read med files"
       version_visit=`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
