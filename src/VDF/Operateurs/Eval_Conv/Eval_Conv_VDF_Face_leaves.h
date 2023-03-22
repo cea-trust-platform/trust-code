@@ -115,7 +115,7 @@ public:
 class Eval_Quick_VDF_Face_Axi : public Eval_Conv_VDF_Face<Eval_Quick_VDF_Face_Axi>, public Eval_Conv_VDF
 {
 public:
-  static constexpr bool IS_AXI = true, IS_QUICK = true, CALC_ARR_PERIO = false, CALC_ARR_SYMM_FL = false;
+  static constexpr bool IS_AXI = true, IS_QUICK = true, CALC_ARR_PERIO = false, CALC_ARR_NAVIER_FL = false;
 
   inline int face_amont_princ(int num_face,int i) const override { return le_dom->face_amont_princ(num_face, i); }
   inline int face_amont_conj(int ,int ,int ) const override;

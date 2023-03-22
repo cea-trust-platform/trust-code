@@ -33,7 +33,7 @@ class Eval_VDF_Face
 public:
   static constexpr bool CALC_FA7_SORTIE_LIB = false, CALC_ARR_FL = true, CALC_ARR_BORD = true, CALC_ARR_COIN_FL = false,
                         CALC_ARR_INT = true, CALC_ARR_MIXTE = true, CALC_ARR_PERIO = true, CALC_ARR_PAR_FL = true, CALC_ARR_PAR = true,
-                        CALC_ARR_SYMM_PAR = true, CALC_ARR_SYMM_FL = true, CALC_ARR_SYMM = false;
+                        CALC_ARR_NAVIER_PAR = true, CALC_ARR_NAVIER_FL = true, CALC_ARR_NAVIER = false;
   inline void associer_inconnue(const Champ_base& );
 
 protected:

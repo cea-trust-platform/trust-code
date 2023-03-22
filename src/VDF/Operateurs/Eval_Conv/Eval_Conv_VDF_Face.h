@@ -24,7 +24,7 @@ class Eval_Conv_VDF_Face : public Eval_VDF_Face
 {
 public:
   static constexpr bool IS_AMONT = false, IS_CENTRE = false, IS_CENTRE4 = false, IS_QUICK = false, IS_AXI = false;
-  static constexpr bool CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR = false, CALC_ARR_SYMM_PAR = false;
+  static constexpr bool CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR = false, CALC_ARR_NAVIER_PAR = false;
 
   /* ****************************************************************************** *
    * YES, we do magic ! Its all about : Substition Failure Is Not An Error (SFINAE) *
@@ -47,11 +47,11 @@ public:
   flux_arete(const DoubleTab&, const DoubleTab*,int, int, int, int, Type_Double& ) const ;
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double>
-  inline enable_if_t_<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
+  inline enable_if_t_<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::NAVIER_PAROI), void>
   flux_arete(const DoubleTab&, const DoubleTab*,int, int, int, int, Type_Double& ) const { /* do nothing */ }
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double>
-  inline enable_if_t_<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
+  inline enable_if_t_<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   flux_arete(const DoubleTab&, const DoubleTab*,int, int, int, int, Type_Double&, Type_Double& ) const;
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t_< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
@@ -75,11 +75,11 @@ public:
   coeffs_arete(const DoubleTab*, int, int, int, int, Type_Double& , Type_Double& ) const;
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double>
-  inline enable_if_t_< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+  inline enable_if_t_< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
   coeffs_arete(const DoubleTab*, int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const;
 
   template<Type_Flux_Arete Arete_Type, typename Type_Double> inline
-  enable_if_t_<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI), void>
+  enable_if_t_<(Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::NAVIER_PAROI), void>
   coeffs_arete(const DoubleTab*, int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const { /* do nothing */ }
 
 private:

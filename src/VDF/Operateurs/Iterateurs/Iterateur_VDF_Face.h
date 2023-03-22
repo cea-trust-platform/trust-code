@@ -69,11 +69,11 @@ private:
   void ajouter_blocs_aretes_bords(const int, matrices_t, DoubleTab&, const tabs_t&) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
+  enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::NAVIER_PAROI, void>
   ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+  enable_if_t_< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE, void>
   ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>

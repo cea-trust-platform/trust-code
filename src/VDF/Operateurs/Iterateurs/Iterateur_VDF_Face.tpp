@@ -80,10 +80,10 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords(const int ncomp, mat
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PAR, Type_Flux_Arete::PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         case TypeAreteBordVDF::NAVIER_NAVIER:
-          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_SYMM, Type_Flux_Arete::SYMETRIE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
+          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER, Type_Flux_Arete::NAVIER, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         case TypeAreteBordVDF::PAROI_NAVIER:
-          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_SYMM_PAR, Type_Flux_Arete::SYMETRIE_PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
+          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER_PAR, Type_Flux_Arete::NAVIER_PAROI, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         case TypeAreteBordVDF::FLUIDE_FLUIDE:
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_FL, Type_Flux_Arete::FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
@@ -95,7 +95,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords(const int ncomp, mat
           ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_PERIO, Type_Flux_Arete::PERIODICITE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         case TypeAreteBordVDF::FLUIDE_NAVIER:
-          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_SYMM_FL, Type_Flux_Arete::SYMETRIE_FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
+          ajouter_blocs_aretes_bords_<_TYPE_::CALC_ARR_NAVIER_FL, Type_Flux_Arete::NAVIER_FLUIDE, Type_Double>(n_arete, ncomp, mats, secmem, semi_impl);
           break;
         default:
           Cerr << "On a rencontre un type d'arete non prevu : [ num arete : " << n_arete << " ], [ type : " << n_type << " ]" << finl;
@@ -105,7 +105,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords(const int ncomp, mat
 }
 
 template <class _TYPE_> template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::SYMETRIE || Arete_Type == Type_Flux_Arete::SYMETRIE_PAROI, void>
+enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::NAVIER_PAROI, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
@@ -143,7 +143,7 @@ Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const
 }
 
 template <class _TYPE_>  template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-enable_if_t_<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::SYMETRIE_FLUIDE, void>
+enable_if_t_<Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE, void>
 Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_aretes_bords_(const int n_arete, const int ncomp, matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   if (should_calc_flux)
