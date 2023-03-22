@@ -129,27 +129,43 @@ class EOS_to_TRUST
 
     const std::array<const char *const, 3> EOS_MODELS = { { "EOS_Cathare2", "EOS_Refprop10", "EOS_FLICA4" } };
 
-    const std::array<Motcle, 18> AVAIL_FLUIDS = { { "WATERLIQUID", "WATERVAPOR",
-                                                  "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
-                                                  "SODIUMLIQUID", "SODIUMVAPOR",
-                                                  "IAPWSLIQUID", "IAPWSVAPOR",
-                                                  "NITROGENLIQUID", "NITROGENVAPOR",
-                                                  "AIRLIQUID", "AIRVAPOR",
-                                                  "HELIUMLIQUID", "HELIUMVAPOR",
-                                                  "R12LIQUID", "R12VAPOR",
-                                                  "WATERLIQUID_F4", "WATERVAPOR_F4"
-                                                } }; /* Majuscule car Motcle */
+    const std::array<Motcle, 26> AVAIL_FLUIDS =
+    {
+      {
+        "WATERLIQUID", "WATERVAPOR",
+        "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
+        "SODIUMLIQUID", "SODIUMVAPOR",
+        "IAPWSLIQUID", "IAPWSVAPOR",
+        "NITROGENLIQUID", "NITROGENVAPOR",
+        "AIRLIQUID", "AIRVAPOR",
+        "HELIUMLIQUID", "HELIUMVAPOR",
+        "R12LIQUID", "R12VAPOR",
+        "WATERLIQUID_F4_10-210", "WATERVAPOR_F4_10-210",
+        "WATERLIQUID_F4_10-210-4500", "WATERVAPOR_F4_10-210-4500",
+        "WATERLIQUID_F4_50-170", "WATERVAPOR_F4_50-170",
+        "WATERLIQUID_F4_140-210", "WATERVAPOR_F4_140-210",
+        "WATERLIQUID_F4", "WATERVAPOR_F4"
+      }
+    }; /* Majuscule car Motcle */
 
-    const std::array<const char *const, 18> EOS_FLUIDS = { { "WaterLiquid", "WaterVapor",
-                                                           "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
-                                                           "SodiumLiquid", "SodiumVapor",
-                                                           "IAPWSLiquid", "IAPWSVapor",
-                                                           "NitrogenLiquid", "NitrogenVapor",
-                                                           "AirLiquid", "AirVapor",
-                                                           "HeliumLiquid", "HeliumVapor",
-                                                           "R12Liquid", "R12Vapor",
-                                                           "WaterLiquid.140-210", "WaterVapor.140-210"
-                                                          } };
+    const std::array<const char *const, 26> EOS_FLUIDS =
+    {
+      {
+        "WaterLiquid", "WaterVapor",
+        "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
+        "SodiumLiquid", "SodiumVapor",
+        "IAPWSLiquid", "IAPWSVapor",
+        "NitrogenLiquid", "NitrogenVapor",
+        "AirLiquid", "AirVapor",
+        "HeliumLiquid", "HeliumVapor",
+        "R12Liquid", "R12Vapor",
+        "WaterLiquid.10-210", "WaterVapor.10-210",
+        "WaterLiquid.10-210-4500", "WaterVapor.10-210-4500",
+        "WaterLiquid.50-170", "WaterVapor.50-170",
+        "WaterLiquid.140-210", "WaterVapor.140-210",
+        "WaterLiquid", "WaterVapor"
+      }
+    };
   };
 
   double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
