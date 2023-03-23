@@ -1,27 +1,21 @@
 # PARALLEL OK #
-system "rm -rf lata; mkdir -p lata"
-dimension 2
+# lance_test 8 ecarts #
+dimension 3
 Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Read_MED {
+Lire_MED {
     domain dom
     file mesh.med
 }
 # END MESH #
 
 # BEGIN PARTITION
-Postraiter_domaine
+Decouper dom
 {
-    fichier mesh.lata
-    format lata
-    domaine dom
-}
-
-Partition dom
-{
-    Partition_tool tranche { tranches 2 1 }
+    partitionneur metis { Nb_parts 4 }
+    nb_parts_tot 4
     Larg_joint 2
     zones_name DOM
 }
@@ -32,7 +26,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-$dis dis
+$dis  dis
 
 Schema_euler_implicite sch
 Read sch
@@ -40,9 +34,9 @@ Read sch
     tinit   0
     dt_max  0.5
     facsec 1e30
-    seuil_statio 1e-6
-    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
+    seuil_statio 1e-8
     # solveur implicite { solveur petsc cholesky { cli { -mat_mumps_icntl_23 10000 } } } #
+    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 10000 } } }
 }
 
 Associate  pb dom
@@ -66,12 +60,15 @@ Read pb
         diffusion  { }
         sources
         {
-            source_qdm champ_fonc_xyz dom 2 (256*(x^2*(x-1)^2*(12*y-6)+y*(y-1)*(2*y-1)*(12*x^2-12*x+2))+(y-1/2)) (-256*(y^2*(y-1)^2*(12*x-6)+x*(x-1)*(2*x-1)*(12*y^2-12*y+2))+(x-1/2))
+            source_qdm champ_fonc_xyz dom 3 -36*pi*pi*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) 0 0
         }
-        initial_conditions { vitesse Champ_Fonc_xyz dom 2 -256*x^2*(x-1)^2*y*(y-1)*(2*y-1) 256*y^2*(y-1)^2*x*(x-1)*(2*x-1) }
+        initial_conditions
+        {
+            vitesse champ_fonc_xyz dom 3 0 0 0
+        }
         boundary_conditions
         {
-            boundary paroi_fixe
+            boundary frontiere_ouverte_vitesse_imposee champ_front_fonc_xyz 3 -2*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*cos(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*sin(2*pi*y)*cos(2*pi*z)
         }
     }
 
@@ -103,10 +100,10 @@ Read pb
                         }
                         nom_source pmp
                     } ,
-                    transformation { methode formule expression 1 (x-1/2)*(y-1/2) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode formule expression 1 -6*pi*sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
-            erreur_P_max reduction_0D { methode max sources_reference { erreur_P } }
+            erreur_P_max reduction_0D { methode l2_norm sources_reference { erreur_P } }
 
             /* aux elems */
             erreur_V transformation
@@ -115,10 +112,10 @@ Read pb
                 sources
                 {
                     Interpolation { localisation elem nom_source v source refChamp { Pb_champ pb vitesse } } ,
-                    transformation { methode vecteur expression 2 -256*x^2*(x-1)^2*y*(y-1)*(2*y-1) 256*y^2*(y-1)^2*x*(x-1)*(2*x-1) nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode vecteur expression 3 -2*cos(2*pi*x)*sin(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*cos(2*pi*y)*sin(2*pi*z) sin(2*pi*x)*sin(2*pi*y)*cos(2*pi*z) nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
-            erreur_V_max reduction_0D { methode max source transformation { methode norme sources_reference { erreur_V } } }
+            erreur_V_max reduction_0D { methode l2_norm source transformation { methode norme sources_reference { erreur_V } } }
         }
         probes
         {

@@ -1,11 +1,8 @@
 #!/bin/bash
 
 tot=`grep "Temps total" $1.TU | awk '{printf("%f ", $NF)}' | awk '{print ($1+$2)}'`
-
-resp=`tail -1 jdd_ERRP.son | awk '{print $2}'`
-nup=`grep "Total number of elements" $1.err | awk '{print $6}'`
-echo $nup $resp $tot > conv_p
-
-resv=`tail -1 jdd_ERRV.son | awk '{print $2}'`
-nuu=`grep "Total number of faces" $1.err | awk '{print $6}'`
-echo $nuu $resv $tot > conv_v
+nu=`awk '/Order of the PETSc matrix/ {N=$7} END {print N}' $1.out`
+resp=`tail -1 $1_ERRP.son | awk '{print $2}'`
+resv=`tail -1 $1_ERRV.son | awk '{print $2}'`
+echo $nu $resp $tot > conv_p
+echo $nu $resv $tot > conv_v
