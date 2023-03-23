@@ -45,6 +45,8 @@ then
       if [ $? != 0 ]
       then
 	 echo "VisIt has blocked on the test and has been killed after $timeout seconds. See `pwd`/visit.log" 
+	 # test // bloque sur qq pc Ub20 (carte graphique?), contournement possible: export HWLOC_COMPONENTS=-pci
+	 # cf https://lists.mpich.org/pipermail/discuss/2020-September/006035.html
 	 exit -1
       elif [ "`cat err 2>/dev/null`" = 0 ] && [ "`grep abnormally visit.log`" = "" ] && [ "`grep -i error visit.log`" = "" ]
       then
