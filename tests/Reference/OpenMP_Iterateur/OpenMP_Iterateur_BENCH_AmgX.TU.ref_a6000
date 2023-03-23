@@ -1,27 +1,27 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       9.69676
+Temps total                       21.7503
 
 Statistiques de resolution du probleme
 
-Temps total                       9.59093
+Temps total                       5.30878
 
 
 Timesteps                         10
-Secondes / pas de temps           0.959086
-Dont solveurs Ax=B                0.24594 25% (1 appel/pas de temps)
-Dont mettre_a_jour                0.0867702 9% (1 appel/pas de temps)
-Dont operateurs convection        0.258288 26% (1 appel/pas de temps)
-Dont operateurs diffusion         0.0512259 5% (1 appel/pas de temps)
-Dont operateurs gradient          0.0597047 6% (2 appels/pas de temps)
-Dont operateurs divergence        0.0351222 3% (2 appels/pas de temps)
-Dont operations postraitement     0.0074642 0% (1 appel/pas de temps)
-Dont calcul dt                    0.0227704 2% (2 appels/pas de temps)
-Dont calcul divers                0.1918 19% (0 appels/pas de temps)
+Secondes / pas de temps           0.530872
+Dont solveurs Ax=B                0.239677 45% (1 appel/pas de temps)
+Dont mettre_a_jour                0.0924415 17% (1 appel/pas de temps)
+Dont operateurs convection        0.057983 10% (1 appel/pas de temps)
+Dont operateurs diffusion         0.0697268 13% (1 appel/pas de temps)
+Dont operateurs gradient          0.0132278 2% (2 appels/pas de temps)
+Dont operateurs divergence        0.0088495 1% (2 appels/pas de temps)
+Dont operations postraitement     0.0137647 2% (1 appel/pas de temps)
+Dont calcul dt                    0.0236301 4% (2 appels/pas de temps)
+Dont calcul divers                0.0115712 2% (0 appels/pas de temps)
 Nb echange_espace_virtuel / pas de temps 11
 Nb solveur / pas de temps         1
-Secondes / solveur                0.24594
-Iterations / solveur              35.8
+Secondes / solveur                0.239677
+Iterations / solveur              31.1
 I/O:
 
 Timesteps = number of time steps
@@ -40,5 +40,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.207962
+Temps total                       0.047038
 
