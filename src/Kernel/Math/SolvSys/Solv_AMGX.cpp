@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -207,6 +207,7 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
   // Calcul du seuil avant resolution pour eviter des soucis:
+  // ToDo OpenMP: comment eviter ce calcul de residu sur CPU a priori et le faire sur le GPU ?
   Vec ResidualPetsc_;
   VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
   MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);

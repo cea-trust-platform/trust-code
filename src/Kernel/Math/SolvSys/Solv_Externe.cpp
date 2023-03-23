@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -68,6 +68,18 @@ void Solv_Externe::construit_renum(const DoubleVect& b)
         }
     }
   renum_.echange_espace_virtuel();
+  // Construction de ix
+  size=b.size_array();
+  int colonne_globale=decalage_local_global_;
+  ix.resize(size);
+  for (int i=0; i<size; i++)
+    if (items_to_keep_[i])
+      {
+        ix[i] = colonne_globale;
+        colonne_globale++;
+      }
+    else
+      ix[i] = -1;
 }
 
 void Solv_Externe::MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M)

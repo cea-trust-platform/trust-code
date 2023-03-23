@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -39,6 +39,7 @@ protected:
   void MorseSymToMorse(const Matrice_Morse_Sym& MS, Matrice_Morse& M);
   IntTab renum_;                // Tableau de renumerotation globale lignes matrice TRUST -> matrice CSR
   ArrOfBit items_to_keep_;      // Faut t'il conserver dans la matrice CSR la ligne item de la matrice TRUST ?
+  ArrOfInt ix;                  // Tableau de travail pour remplissage Vec plus rapide
   int nb_items_to_keep_;        // Nombre local d'items a conserver
   int nb_rows_;                 // Nombre de lignes locales de la matrice TRUST
   int nb_rows_tot_;             // Nombre de lignes globales de la matrice TRUST

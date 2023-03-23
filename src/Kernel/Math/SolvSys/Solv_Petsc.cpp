@@ -1677,22 +1677,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
     }
   start = Statistiques::get_time_now();
   // Assemblage du second membre et de la solution
-  // ToDo OpenMP calculer ix au moment de item_to_keep_
-  int size=secmem.size_array();
-  int colonne_globale=decalage_local_global_;
-  ArrOfInt ix(size);
-  for (int i=0; i<size; i++)
-    if (items_to_keep_[i])
-      {
-        ix[i] = colonne_globale;
-        colonne_globale++;
-      }
-    else
-      ix[i] = -1;
   // ToDo OpenMP: passer a AmgX les pointeurs sur le device de secmem et solution
   bool solutionOnDevice = solution.isDataOnDevice();
   secmem.checkDataOnHost();
   solution.checkDataOnHost();
+  int size=ix.size_array();
   VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
   VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
   VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
@@ -1811,8 +1800,12 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   solution.echange_espace_virtuel();
   fixer_nouvelle_matrice(0);
   if (verbose) Cout << finl << "[Petsc] Time to update solution: \t" << Statistiques::get_time_now() - start << finl;
-  // Calcul du vrai residu sur matrice initiale sur GPU:
-  if (amgx_ || gpu_ || controle_residu_)
+  // Calcul et verification du vrai residu sur matrice:
+  bool check_residual = controle_residu_;
+#ifndef NDEBUG
+  if (amgx_ || gpu_) check_residual = true; // En debug uniquement car verification faite sur CPU ce qui est dommage en prod...
+#endif
+  if (check_residual)
     {
       DoubleVect test(secmem);
       test*=-1;
