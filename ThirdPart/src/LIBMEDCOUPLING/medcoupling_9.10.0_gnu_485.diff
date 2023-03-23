@@ -48,7 +48,7 @@ diff -u InterpolationHelper.txx InterpolationHelper.txx
 +  template<class MyMeshType>
 +  BBTreeStandAlone<3,typename MyMeshType::MyConnType> BuildBBTree(const MyMeshType& srcMesh)
 +  {
-+    std::function<void(double *,typename MyMeshType::MyConnType)> bboxAdjuster;
++    std::function<void(double *,typename MyMeshType::MyConnType)> bboxAdjuster = [](double *,typename MyMeshType::MyConnType){};
 +    return BuildBBTreeWithAdjustment(srcMesh, bboxAdjuster);
 +  }
  }

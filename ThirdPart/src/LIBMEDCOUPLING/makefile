@@ -3,7 +3,7 @@ archive_conf=$(TRUST_ROOT)/externalpackages/SALOME/configuration-9.10.0.tar.gz
 
 all : $(TRUST_MEDCOUPLING_ROOT)/env.sh
 
-$(TRUST_MEDCOUPLING_ROOT)/env.sh : makefile install.sh $(archive_mc) $(archive_conf) $(TRUST_MED_ROOT)/include/med.h medcoupling_9.8.0_mac.diff
+$(TRUST_MEDCOUPLING_ROOT)/env.sh : makefile install.sh $(archive_mc) $(archive_conf) $(TRUST_MED_ROOT)/include/med.h medcoupling_9.8.0_mac.diff medcoupling_9.10.0_gnu_485.diff
 	make clean
 	rm -f $(TRUST_MEDCOUPLING_ROOT)/env.sh
 	./install.sh $(archive_mc) $(archive_conf)
