@@ -68,6 +68,9 @@ private:
   template<typename Type_Double> void fill_coeffs_matrices(const int, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
   template<typename Type_Double> void fill_coeffs_matrices(const int, const double, Type_Double&, Type_Double&, Matrice_Morse*, VectorDeriv&) const;
 
+  // method implementee dans FT (trio) pour TCL model. Dans TRUST, la methode return false ...
+  template <typename Type_Double> bool ajouter_blocs_bords_echange_ext_FT_TCL(const Echange_externe_impose& , const int , const int , const int , const int , const Front_VF& , matrices_t mats, DoubleTab& resu, const tabs_t& semi_impl) const;
+
   // A virer un jour .. voir avec le baltik Rayonnement
   template <typename Type_Double> void contribuer_au_second_membre_bords(const int , DoubleTab& ) const;
   template <typename Type_Double> void contribuer_au_second_membre_interne(const int , DoubleTab& ) const;

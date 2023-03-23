@@ -291,6 +291,11 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
 {
   if (_TYPE_::CALC_FLUX_FACES_ECH_EXT_IMP)
     {
+      // Si la method est faite dans FT, on sort
+      const bool calculated_in_FT = ajouter_blocs_bords_echange_ext_FT_TCL<Type_Double>(cl, ndeb, nfin, num_cl, N, frontiere_dis, mats, resu, semi_impl);
+      if ( calculated_in_FT ) return;
+
+      // Sinon, GO !
       const DoubleTab& donnee = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
 
       Type_Double flux(N), aii(N), ajj(N), aef(N);
@@ -334,25 +339,6 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords_(const Echange_externe_impo
             fill_coeffs_matrices(face, aii, ajj, mat, d_cc); // XXX : Attention Yannick pour d_cc c'est pas tout a fait comme avant ... N et M ...
           }
     }
-}
-
-template<class _TYPE_> template<typename Type_Double>
-inline void Iterateur_VDF_Elem<_TYPE_>::fill_flux_tables_(const int face, const int ncomp, const double coeff, const Type_Double& flux, DoubleTab& resu) const
-{
-  DoubleTab& flux_bords = op_base->flux_bords();
-  const int elem1 = elem(face, 0), elem2 = elem(face, 1);
-  if (elem1 > -1)
-    for (int k = 0; k < ncomp; k++)
-      {
-        resu(elem1, k) += coeff * flux[k];
-        flux_bords(face, k) += coeff * flux[k];
-      }
-  if (elem2 > -1)
-    for (int k = 0; k < ncomp; k++)
-      {
-        resu(elem2, k) -= coeff * flux[k];
-        flux_bords(face, k) -= coeff * flux[k];
-      }
 }
 
 template<class _TYPE_>
@@ -427,5 +413,6 @@ inline void Iterateur_VDF_Elem<_TYPE_>::fill_coeffs_matrices(const int face, Typ
 }
 
 #include <Iterateur_VDF_Elem_bis.tpp>
+#include <Iterateur_VDF_Elem_FT_TCL.tpp> // pour FT ...
 
 #endif /* Iterateur_VDF_Elem_TPP_included */
