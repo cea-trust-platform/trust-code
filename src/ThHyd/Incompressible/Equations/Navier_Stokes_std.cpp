@@ -1196,13 +1196,16 @@ void Navier_Stokes_std::calculer_la_pression_en_pa()
 {
   DoubleTab& Pa=la_pression_en_pa.valeurs();
   DoubleTab& tab_pression=la_pression.valeurs();
-  ConstDoubleTab_parts ppart(tab_pression);
   const Champ_base& rho=milieu().masse_volumique().valeur();
   if (Pa.get_md_vector() == tab_pression.get_md_vector())
     Pa = tab_pression; //Pa et tab_pression ont le meme support
-  else if (Pa.get_md_vector() == ppart[0].get_md_vector())
-    Pa = ppart[0]; //tab_pression a un morceau en plus
-  else abort(); //euh...
+  else
+    {
+      ConstDoubleTab_parts ppart(tab_pression);
+      if (Pa.get_md_vector() == ppart[0].get_md_vector())
+        Pa = ppart[0]; //tab_pression a un morceau en plus
+      else abort(); //euh...
+    }
   // On multiplie par rho si uniforme sinon deja en Pa...
   if (sub_type(Champ_Uniforme,rho))
     Pa *= rho(0,0);

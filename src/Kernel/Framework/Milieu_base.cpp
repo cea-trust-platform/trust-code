@@ -26,6 +26,7 @@
 #include <EChaine.h>
 #include <Param.h>
 #include <Champ.h>
+#include <Device.h>
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
@@ -646,6 +647,12 @@ void Milieu_base::mettre_a_jour_porosite(double temps)
 
 void Milieu_base::update_rho_cp(double temps)
 {
+  // Si l'inconnue est sur le device, on copie les donnees aussi:
+  if ((*(equation_.begin()->second)).inconnue().valeurs().isDataOnDevice())
+    {
+      mapToDevice(rho_cp_elem_.valeurs(), "rho_cp_elem_");
+      mapToDevice(rho_cp_comme_T_.valeurs(), "rho_cp_comme_T_");
+    }
   rho_cp_elem_.changer_temps(temps);
   rho_cp_elem_.valeur().changer_temps(temps);
   DoubleTab& rho_cp=rho_cp_elem_.valeurs();
