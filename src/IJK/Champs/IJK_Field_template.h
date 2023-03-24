@@ -25,6 +25,7 @@
 #include <TRUST_Ref.h>
 #include <TRUSTVect.h>
 
+
 /*! @brief : This class is an IJK_Field_local with parallel informations.
  *
  * Each processor has a sub_box of the global box, and echange_espace_virtuel(n) exchanges n layers of ghost cells,
@@ -61,7 +62,7 @@ public:
 
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
   IJK_Splitting::Localisation get_localisation() const { return localisation_; }
-  void echange_espace_virtuel(int ghost, double Shear_DU=0.);
+  void echange_espace_virtuel(int ghost, double Shear_DU=0., int loc=1);
 
 protected:
   REF(IJK_Splitting) splitting_ref_;
@@ -72,7 +73,7 @@ protected:
                      int pe_imax_, /* processor to recv from */
                      int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                      int isz, int jsz, int ksz, /* size of block data to send/recv */
-  	  	  	  	  	 double offset_i = 0., double jump_i=0.);
+  	  	  	  	  	 int loc = 1, double offset_i = 0., double jump_i=0.);
 };
 
 #include <IJK_Field_template.tpp>

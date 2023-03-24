@@ -19,6 +19,7 @@
 
 Implemente_instanciable_sans_constructeur(Boundary_Conditions,"Boundary_Conditions",Objet_U);
 double IJK_Splitting::shear_x_time_=0.;
+int IJK_Splitting::defilement_=0;
 
 Boundary_Conditions::Boundary_Conditions()
 {
@@ -27,7 +28,8 @@ Boundary_Conditions::Boundary_Conditions()
   vxkmin_ = 0.;
   vxkmax_ = 0.;
   dU_perio_ = 0.;
-
+  t0_shear_=0.;
+  defilement_=0;
 }
 
 // SYNTAXE:
@@ -40,6 +42,8 @@ Entree& Boundary_Conditions::readOn(Entree& is)
   Param param(que_suis_je());
   param.ajouter("vx_kmin", &vxkmin_);
   param.ajouter("dU_perio", &dU_perio_);
+  param.ajouter("t0_shear", &t0_shear_);
+  param.ajouter("defilement", &defilement_);
   param.ajouter("bctype_kmin", &bctype_kmin_, Param::REQUIRED);
   param.dictionnaire("Paroi", Paroi);
   param.dictionnaire("Symetrie", Symetrie);
@@ -51,7 +55,10 @@ Entree& Boundary_Conditions::readOn(Entree& is)
   param.dictionnaire("Symetrie", Symetrie);
   param.dictionnaire("Perio", Perio);
   param.dictionnaire("Mixte_shear", Mixte_shear);
+
   param.lire_avec_accolades(is);
+  IJK_Splitting::shear_x_time_=t0_shear_;
+  IJK_Splitting::defilement_=defilement_;
 
   return is;
 }

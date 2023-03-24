@@ -25,9 +25,8 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                                                              int pe_recv_, /* processor to recv from */
                                                              int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                                                              int isz, int jsz, int ksz, /* size of block data to send/recv */
-															 double offset, double jump_i)  /* decallage a appliquer pour la condition de shear periodique*/
+															 int loc, double offset, double jump_i)  /* decallage a appliquer pour la condition de shear periodique*/
 {
-
 	if (pe_send_ == Process::me() && pe_recv_ == Process::me())
     {
       // Self (periodicity on same processor)
@@ -41,33 +40,46 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         	  _TYPE_ offset_i = (_TYPE_) offset;
         	  _TYPE_ istmp = (_TYPE_)i + offset_i;
 
-              // ifloor et iceil comprised between (0 & isz-1) + is
+              // ifloor et iceil comprised between (0 & isz-1)
         	  int ifloor = (int) floor(istmp);
-              if (ifloor < 0)
-              {
-              	  ifloor = -(-ifloor %isz - isz);
-              }
-              else
-              {
-                  ifloor = ifloor %isz;
-              }
+        	  int iceil = (int) ceil(istmp) ;
 
-              int iceil = (int) ceil(istmp) ;
-              if (iceil < 0)
-              {
-            	  iceil = -(-iceil %isz - isz);
-              }
-              else
-              {
-            	  iceil = iceil %isz;
-              }
+        	  ifloor = (ifloor % (isz) + (isz)) % (isz);
+        	  iceil = (iceil % (isz) + (isz)) % (isz);
+
+
               _TYPE_ weight = (_TYPE_)(istmp - floor(istmp));
               _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor, js + j, ks + k);
               _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + iceil, js + j, ks + k);
 
+
               dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] =
             		  ((_TYPE_)1.- weight) * vmin + weight * vmax + jump;
+
+              if ((loc == 3 or loc==2) && offset < 0. && offset !=0. && j==4 && k==0)
+              {
+            	  std::cout<<"compo= " << loc <<std::endl;
+            	  std::cout<<"offset= " << offset <<std::endl;
+            	  std::cout<<"weight= " << weight <<std::endl;
+            	  std::cout<<"i,j,k= " << i <<" " << j <<" " << k  <<std::endl;
+				std::cout<<"is,js,ks= " << is <<" " << js <<" " << ks  <<std::endl;
+				std::cout<<"isz,jsz,ksz= " << isz <<" " << jsz <<" " << ksz  <<std::endl;
+				std::cout<<"is+1,js+j,ks+k= " << is+i <<" " << js+j <<" " << ks+k  <<std::endl;
+				std::cout<<"iceil= " << iceil <<"ifloor= " << ifloor <<" is+i= " << is + i <<std::endl;
+				std::cout<<" vmin= " << vmin <<" vmax= " << vmax <<std::endl;
+				std::cout<<" v_sans_shear= " << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is+i, js + j, ks + k) <<std::endl;
+				std::cout<<" v_avec_shear= " << dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] <<std::endl;
+
+				std::cout<<"---------------" <<std::endl;
+              }
+
+              //dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + i, js + j, ks + k) + jump;
+
           }
+
+      std::cout<<" " <<std::endl;
+      std::cout<<" " <<std::endl;
+      std::cout<<" " <<std::endl;
        return;
     }
   const int data_size = isz * jsz * ksz;
@@ -88,25 +100,13 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         	  _TYPE_ jump = (_TYPE_) jump_i;
         	  _TYPE_ offset_i = (_TYPE_) offset;
         	  _TYPE_ istmp = (_TYPE_)i + offset_i;
-        	  int ifloor = (int) floor(istmp);
-              if (ifloor < 0)
-              {
-              	  ifloor = -(-ifloor %isz - isz);
-              }
-              else
-              {
-                  ifloor = ifloor %isz;
-              }
 
-              int iceil = (int) ceil(istmp) ;
-              if (iceil < 0)
-              {
-            	  iceil = -(-iceil %isz - isz);
-              }
-              else
-              {
-            	  iceil = iceil %isz;
-              }
+        	  int ifloor = (int) floor(istmp);
+        	  int iceil = (int) ceil(istmp) ;
+
+        	  ifloor = (ifloor % isz + isz) % isz;
+        	  iceil = (iceil % isz + isz) % isz;
+
               _TYPE_ weight = (_TYPE_)(istmp - floor(istmp));
               _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor, js + j, ks + k);
               _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + iceil, js + j, ks + k);
@@ -138,7 +138,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
  *
  */
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost, double jump_i)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_ghost, double jump_i, int loc )
 {
   // jump_i used to impose a jump at the domain z-boundary
   statistiques().begin_count(echange_vect_counter_);
@@ -166,37 +166,47 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-  double Lx =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_I)[0];
-  double DX = Lx/nii ;
-  double Shear_x_time = IJK_Splitting::shear_x_time_;
-  double offset_i = Shear_x_time/DX;
+
+  double offset_i=0.;
+  if (IJK_Splitting::defilement_ = 1)
+  {
+	  double Lx =  splitting.get_coords_of_dof(nii,njj,nkk,IJK_Splitting::FACES_I)[0];
+	  double DX = Lx/nii ;
+	  double Shear_x_time = IJK_Splitting::shear_x_time_;
+	  offset_i = Shear_x_time/DX;
+  }
 
   // send left layer of real cells to right layer of virtual cells
-  exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */
+  exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk, loc); /* size of block data to send */
 
   // send right real cells to left virtual cells
-  exchange_data(pe_imax_, nii - le_ghost, 0, 0, pe_imin_, -le_ghost, 0, 0, le_ghost, njj, nkk);
+  exchange_data(pe_imax_, nii - le_ghost, 0, 0, pe_imin_, -le_ghost, 0, 0, le_ghost, njj, nkk, loc);
 
-  exchange_data(pe_jmin_, -le_ghost, 0, 0, pe_jmax_, -le_ghost, njj, 0, nii + 2 * le_ghost, le_ghost, nkk);
+  exchange_data(pe_jmin_, -le_ghost, 0, 0, pe_jmax_, -le_ghost, njj, 0, nii + 2 * le_ghost, le_ghost, nkk, loc);
 
-  exchange_data(pe_jmax_, -le_ghost, njj - le_ghost, 0, pe_jmin_, -le_ghost, -le_ghost, 0, nii + 2 * le_ghost, le_ghost, nkk);
+  exchange_data(pe_jmax_, -le_ghost, njj - le_ghost, 0, pe_jmin_, -le_ghost, -le_ghost, 0, nii + 2 * le_ghost, le_ghost, nkk, loc);
 
   if (z_index == z_index_min)
   {
-  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, -offset_i, jump_i);
+  exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost, loc, -offset_i, jump_i);
+  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, le_ghost , le_ghost , le_ghost, loc);
+  exchange_data(pe_kmin_, nii, -le_ghost, 0, pe_kmax_, nii, -le_ghost, nkk, le_ghost , le_ghost , le_ghost, loc);
   }
   else
   {
-  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
-  }
+  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, loc);
+}
 
   if (z_index == z_index_max)
   {
-	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, offset_i, -jump_i);
+	  exchange_data(pe_kmax_, 0, 0, nkk- le_ghost , pe_kmin_, 0, 0, -le_ghost, nii , njj , le_ghost, loc, offset_i, -jump_i);
+	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk- le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, le_ghost , le_ghost , le_ghost, loc);
+	  exchange_data(pe_kmax_, nii, -le_ghost, nkk- le_ghost, pe_kmin_, nii, -le_ghost, -le_ghost, le_ghost , le_ghost , le_ghost, loc);
+
   }
   else
   {
-	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
+	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, loc);
   }
 
 

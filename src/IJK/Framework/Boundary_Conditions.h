@@ -33,11 +33,15 @@ public:
   double get_vx_kmin() { return vxkmin_; }
   double get_vx_kmax() { return vxkmax_; }
   double get_dU_perio() { return dU_perio_; }
+  double get_t0_shear() { return t0_shear_; }
+  double get_defilement() { return defilement_; }
 
 protected:
   int bctype_kmin_, bctype_kmax_;
   double vxkmin_, vxkmax_;
   double dU_perio_;
+  double t0_shear_;
+  int defilement_;
 };
 
 #endif /* Boundary_Conditions_included */
