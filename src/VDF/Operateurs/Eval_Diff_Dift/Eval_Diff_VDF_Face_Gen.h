@@ -100,7 +100,10 @@ public:
   inline enable_if_t_< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE, void>
   coeffs_arete(const DoubleTab*, int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const;
 
-  template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t_< (Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
+  template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t_< (Arete_Type == Type_Flux_Arete::NAVIER), void>
+  coeffs_arete(const DoubleTab*, int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const;
+
+  template<Type_Flux_Arete Arete_Type, typename Type_Double> inline enable_if_t_< (Arete_Type == Type_Flux_Arete::COIN_FLUIDE), void>
   coeffs_arete(const DoubleTab*, int, int, int, int, Type_Double& , Type_Double& , Type_Double& ) const { /* Do nothing */ }
 
 private:
