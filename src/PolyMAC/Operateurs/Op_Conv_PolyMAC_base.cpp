@@ -61,6 +61,7 @@ int Op_Conv_PolyMAC_base::impr(Sortie& os) const
   DoubleVect bilan(nb_comp);
   DoubleTab xgr;
   if (impr_mom) xgr = le_dom_poly_->calculer_xgr();
+  if (nb_comp == 0) return 1;
   int k,face;
   int nb_front_Cl=le_dom_poly_->nb_front_Cl();
   DoubleTrav flux_bords2( 5, nb_front_Cl , nb_comp) ;
@@ -96,7 +97,7 @@ int Op_Conv_PolyMAC_base::impr(Sortie& os) const
     }
   mp_sum_for_each_item(flux_bords2);
 
-  if (je_suis_maitre() && nb_comp > 0)
+  if (je_suis_maitre())
     {
       //SFichier Flux;
       if (!Flux.is_open()) ouvrir_fichier(Flux,"",1);
@@ -132,7 +133,7 @@ int Op_Conv_PolyMAC_base::impr(Sortie& os) const
       if (impr_mom) Flux_moment << finl;
     }
   const LIST(Nom)& Liste_bords_a_imprimer = le_dom_poly_->domaine().bords_a_imprimer();
-  if (!Liste_bords_a_imprimer.est_vide() && nb_comp > 0)
+  if (!Liste_bords_a_imprimer.est_vide())
     {
       EcrFicPartage Flux_face;
       ouvrir_fichier_partage(Flux_face,"",impr_bord);
