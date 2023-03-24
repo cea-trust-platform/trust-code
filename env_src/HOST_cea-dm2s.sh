@@ -21,7 +21,7 @@ define_modules_config()
       # Mettre dans cet ordre, pour que nvcc soit detecte avant:
       echo "export PATH=\$PATH:$PATH_COMPILER" >> $env
    fi
-   echo "module load texlive/20220321 || exit -1" >> $env
+   #echo "module load texlive/20220321 || exit -1" >> $env
    . $env
 }
 
