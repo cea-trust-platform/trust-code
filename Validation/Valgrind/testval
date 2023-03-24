@@ -104,6 +104,7 @@ export rep_dev=$TRUST_TMP/atelier
 export USE_MPIRUN=1
 
 [ "$cas" = "Reference/nul" ] && rm -r -f $rep_dev 1>/dev/null 2>&1 # On fait le menage
+rm -r -f $rep_dev 1>/dev/null 2>&1 # on fait le menage dans tous les cas
 mkdir -p $rep_dev
 cd $rep_dev
 export new=$rep_dev/exec${OPT}/TRUST${COMM}${OPT}

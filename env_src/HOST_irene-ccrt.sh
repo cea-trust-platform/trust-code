@@ -28,7 +28,18 @@ define_modules_config()
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       cuda_version=10.2.89
-      module="gnu/7.3.0 mpi/openmpi/2.0.4 cuda/$cuda_version"
+      module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/$cuda_version"
+   elif [ "$TRUST_INT64" = 1 ]
+   then
+      # module="intel/19.0.5.281 mpi/intelmpi/2019.0.5.281" # Desactive car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI 
+      # module="intel/19.0.5.281 mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # openmpi/io/collective_buffering recommendation CCRT pour IO paralleles
+      # module="intel/20.0.4 feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5 feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # Recommendations CCRT debut 2021 (bcp de coeurs)
+      # sw="feature/hcoll/multicast/disable" # Pour supprimer un warning aleatoire au demarrage de GAMELAN (ne gene pas ensuite)
+      # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
+      module="intel/20.0.4 mpi/openmpi/4.0.2" # PL: Retour a OpenMPI/4.0.2 sans rien d'autre car "node failure" sur le calcul GAMELAN a 50K coeurs avec les conseils precedents 
+      # ND : avec intel/20.0.4, le cas test Cx plante en // dans petsc, je tente avec intel/19.*
+      module="intel/19.0.5.281 gnu/7.3.0 mpi/openmpi/4.0.2"
+      [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] && module="intel/20.0.0 mpi/openmpi/4.0.5.3"
    else
       # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
       intel="intel/18.0.3.222 gnu/7.3.0" 
@@ -37,6 +48,7 @@ define_modules_config()
       #mpi="mpi/openmpi/2.0.4 $romio_hints"  # 1.8.3 (car crash intelmpi sur grands nbrs de procs)
       mpi="$romio_hints mpi/openmpi/2.0.4" # suite maintenance 1.8.5b charger openmpi en dernier
       module="$intel $mpi"
+      [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] && module="intel/20.0.0 mpi/openmpi/4.0.5.3"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
