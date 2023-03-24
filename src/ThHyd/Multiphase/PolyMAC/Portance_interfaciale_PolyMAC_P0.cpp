@@ -37,14 +37,14 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
-                        &grad_v = equation().probleme().get_champ("gradient_vitesse").valeurs(),
-                         &vort  = equation().probleme().get_champ("vorticite").valeurs(),
+                        &grad_v = equation().probleme().get_champ("gradient_vitesse").passe(),
+                         &vort  = equation().probleme().get_champ("vorticite").passe(),
                           *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL,
                            *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
   int e, f, b, c, d, d2, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
-                                     cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = domaine.nb_faces();
+                                     cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot();
   DoubleTrav vr_l(N,D), scal_ur(N), scal_u(N), pvit_l(N, D), vort_l( D==2 ? 1 :D), grad_l(D,D), scal_grad(D); // Requis pour corrections vort et u_l-u-g
   double fac_e, fac_f, vl_norm;
   const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, correlation_.valeur());
@@ -55,8 +55,8 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
   out.Cl.resize(N, N);
 
   // Et pour les methodes span de la classe Interface pour choper la tension de surface
-  const int nbelem_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
-  DoubleTrav Sigma_tab(nbelem_tot,nb_max_sat);
+  const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+  DoubleTrav Sigma_tab(ne_tot,nb_max_sat);
 
   // remplir les tabs ...
   for (k = 0; k < N; k++)
@@ -68,25 +68,25 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
             // XXX XXX XXX
             // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
-            // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
+            // Aussi, on passe le Span le nbelem pour le champ de pression et pas ne_tot ....
             assert(press.line_size() == 1);
             assert(temp.line_size() == N);
-            VectorD sigma_(nbelem_tot);
+            VectorD sigma_(ne_tot);
             SpanD sigma__(sigma_);
             z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N, ind_trav);
-            for (i = 0 ; i<nbelem_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
+            for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
           }
         else if (milc.has_interface(k, l))
           {
             Interface_base& sat = milc.get_interface(k,l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            for (i = 0 ; i<nbelem_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+            for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
           }
       }
 
 
   /* elements */
-  for (e = 0; e < nbelem_tot; e++)
+  for (e = 0; e < ne_tot; e++)
     {
       /* arguments de coeff */
       for (n=0; n<N; n++)
@@ -111,7 +111,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
       correlation_pi.coefficient(in, out);
 
       fac_e = beta_*pe(e) * ve(e);
-      i = domaine.nb_faces_tot() + D * e;
+      i = nf_tot + D * e;
 
       // Experimentation sur la portance : on enleve la partie parallele a la vitesse du liquide
       vl_norm = 0;
@@ -226,7 +226,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
           for (d = 0 ; d<D ; d++)
             for (k = 0 ; k<N ; k++)
               for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
-                pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit(domaine.nb_faces_tot()+D*e+d, k) ;
+                pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit(nf_tot+D*e+d, k) ;
           scal_u = 0;
           for (k = 0 ; k<N ; k++)
             for (d = 0 ; d<D ; d++)
