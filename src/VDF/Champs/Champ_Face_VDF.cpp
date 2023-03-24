@@ -1300,10 +1300,6 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
   const DoubleVect& porosite = zclo.equation().milieu().porosite_face();
   int ori = domaine_vdf.orientation()(face_globale);
 
-  const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
-
-  int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
-
   if (sub_type(Navier, cl))
     {
       int N = tab_valeurs.line_size();
@@ -1322,7 +1318,11 @@ double Champ_Face_get_val_imp_face_bord_sym(const DoubleTab& tab_valeurs, const 
                  / (porosite[elem_faces(elem, comploc)] + porosite[elem_faces(elem, comp2)]);
         }
     }
-  else if (sub_type(Dirichlet_entree_fluide, cl))
+
+  const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
+  int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
+
+  if (sub_type(Dirichlet_entree_fluide, cl))
     return vals(face_de_vals, comp);
   else if (sub_type(Dirichlet_paroi_fixe, cl))
     return 0;
@@ -1344,8 +1344,6 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, c
 
   const Cond_lim_base& cl = (face < domaine_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
   int ori = domaine_vdf.orientation()(face_globale);
-  const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
-  int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
 
   if (sub_type(Navier, cl))
     {
@@ -1358,7 +1356,11 @@ double Champ_Face_get_val_imp_face_bord(const double temp, int face, int comp, c
           return 1e9;
         }
     }
-  else if (sub_type(Dirichlet_entree_fluide, cl))
+
+  const DoubleTab& vals = cl.champ_front()->valeurs_au_temps(temp);
+  int face_de_vals = vals.dimension(0) == 1 ? 0 : face_locale;
+
+  if (sub_type(Dirichlet_entree_fluide, cl))
     return vals(face_de_vals, comp);
   else if (sub_type(Dirichlet_paroi_fixe, cl))
     return 0;
