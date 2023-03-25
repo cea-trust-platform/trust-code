@@ -267,6 +267,25 @@ then
    #fi
 fi
 echo>>$COMPILE
+
+#####
+# EOS
+#####
+if [ $TRUST_USE_EOS = 1 ]
+then
+  LEOS=$TRUST_EOS_HOME_DIR/lib/libeos.a
+  if [ -f $LEOS ]
+  then
+    echo "LIBEOS:OK"
+  else
+    echo "LIBEOS:KO !!!"
+    echo ""
+    echo "You specified to use the EOS library in your TRUST configuration. However, we can not find the static library (libeos.a) in the path $TRUST_EOS_HOME_DIR/lib !!"
+    echo "Either verify your EOS installation or re-configure TRUST without the option -with-eos=$TRUST_EOS_HOME_DIR ... " 
+    echo "BUILD_EXEC=KO" && exit -1 
+  fi
+fi
+
 if [ $monodir = 0 ]
 then
    #######################
