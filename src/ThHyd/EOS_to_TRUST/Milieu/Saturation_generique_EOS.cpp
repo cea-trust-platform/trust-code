@@ -15,33 +15,28 @@
 
 #include <Saturation_generique_EOS.h>
 
-Implemente_instanciable( Saturation_generique_EOS, "Saturation_generique_EOS", Saturation_base);
+Implemente_instanciable(Saturation_generique_EOS, "Saturation_generique_EOS", Saturation_base);
 
-Sortie& Saturation_generique_EOS::printOn( Sortie& os ) const { return os; }
+Sortie& Saturation_generique_EOS::printOn(Sortie& os) const { return os; }
 
-Entree& Saturation_generique_EOS::readOn( Entree& is )
+Entree& Saturation_generique_EOS::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("model",&model_name_,Param::REQUIRED);
-  param.ajouter("fluid",&fluid_name_,Param::REQUIRED);
+  param.ajouter("model", &model_name_, Param::REQUIRED);
+  param.ajouter("fluid", &fluid_name_, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
-  EOStT.verify_model_fluid(model_name_,fluid_name_);
+  EOStT.verify_model_fluid(model_name_, fluid_name_);
 
-  int ind_model = -1, ind_fluid = -1;
+  const int ind_model = EOStT.get_model_index(model_name_);
+  const int ind_fluid = EOStT.get_fluid_index(model_name_, fluid_name_);
 
-  for (int i = 0; i < (int) EOStT.supp.AVAIL_MODELS.size(); i++)
-    if (EOStT.supp.AVAIL_MODELS[i] == model_name_) ind_model = i;
-
-  for (int i = 0; i < (int) EOStT.supp.AVAIL_FLUIDS.size(); i++)
-    if (EOStT.supp.AVAIL_FLUIDS[i] == fluid_name_) ind_fluid = i;
-
-  assert (ind_model > -1 && ind_model < (int)EOStT.supp.AVAIL_MODELS.size());
-  assert (ind_fluid > -1 && ind_fluid < (int)EOStT.supp.AVAIL_FLUIDS.size());
+  assert(ind_model > -1 && ind_fluid > -1);
 
   // Lets start playing :-)
-  const char *const model = EOStT.supp.EOS_MODELS[ind_model];
-  const char *const fld = EOStT.supp.EOS_FLUIDS[ind_fluid];
-  EOStT.set_EOS_Sat_generique(model,fld);
+  const char *const model = EOStT.get_eos_model_name(ind_model);
+  const char *const fld = EOStT.get_eos_fluid_name(model_name_, ind_fluid);
+
+  EOStT.set_EOS_Sat_generique(model, fld);
   EOStT.desactivate_handler(false); // throw on error
 
   return is;

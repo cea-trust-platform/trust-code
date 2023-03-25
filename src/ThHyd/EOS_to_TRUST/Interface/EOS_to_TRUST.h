@@ -16,6 +16,7 @@
 #ifndef EOS_to_TRUST_included
 #define EOS_to_TRUST_included
 
+#include <EOS_to_TRUST_tools.h>
 #include <eos++.h>
 
 #ifdef HAS_EOS
@@ -27,158 +28,31 @@
 #pragma GCC diagnostic pop
 #endif
 
-#include <Motcle.h>
-#include <span.hpp>
-#include <vector>
-#include <map>
-
-using MRange = std::map<std::string, std::array<double, 2>>;
-using MSpanD = std::map<std::string, tcb::span<double>>;
-using PairCharArray = std::array<const char* const, 2>;
-using ArrayD = std::array<double,1>;
-using VectorD = std::vector<double>;
-using SpanD = tcb::span<double>;
-
 namespace NEPTUNE { class EOS; }
 
-// XXX : Elie Saikali : ATTENTION A L'ORDRE SINON RIEN VA MARCHER
-enum class Loi_en_T
-{
-  RHO, RHO_DP, RHO_DT,
-  H, H_DP, H_DT,
-  CP, CP_DP, CP_DT,
-  MU, MU_DP, MU_DT,
-  LAMBDA, LAMBDA_DP, LAMBDA_DT,
-  SIGMA, SIGMA_DP, SIGMA_DT,
-  BETA /* pour l'incompressible si besoin */
-};
-
-static constexpr std::array<PairCharArray, 18> EOS_prop_en_T =
-{
-  {
-    { "rho", "rho" }, { "drhodp", "d_rho_d_p_T" }, { "drhodT", "d_rho_d_T_p" },
-    { "enthalpie", "h" }, { "dhdp", "d_h_d_p_T" }, { "dhdT", "d_h_d_T_p" },
-    { "cp", "cp" }, { "dcpdp", "d_cp_d_p_T" }, { "dcpdT", "d_cp_d_T_p" },
-    { "mu", "mu" }, { "dmudp", "d_mu_d_p_T" }, { "dmudT", "d_mu_d_T_p" },
-    { "lambda", "lambda" }, { "dlambdadp", "d_lambda_d_p_T" }, { "dlambdadT", "d_lambda_d_T_p" },
-    { "sigma", "sigma" }, { "dsigmadp", "d_sigma_d_p_T" }, { "dsigmadT", "d_sigma_d_T_p" }
-  }
-};
-
-enum class Loi_en_h
-{
-  RHO, RHO_DP, RHO_DH,
-  T, T_DP, T_DH,
-  CP, CP_DP, CP_DH,
-  MU, MU_DP, MU_DH,
-  LAMBDA, LAMBDA_DP, LAMBDA_DH,
-  SIGMA, SIGMA_DP, SIGMA_DH
-};
-
-static constexpr std::array<PairCharArray, 18> EOS_prop_en_h =
-{
-  {
-    { "rho", "rho" }, { "drhodp", "d_rho_d_p_h" }, { "drhodh", "d_rho_d_h_p" },
-    { "temperature", "T" }, { "dTdp", "d_T_d_p_h" }, { "dTdh", "d_T_d_h_p" },
-    { "cp", "cp" }, { "dcpdp", "d_cp_d_p_h" }, { "dcpdh", "d_cp_d_h_p" },
-    { "mu", "mu" }, { "dmudp", "d_mu_d_p_h" }, { "dmudh", "d_mu_d_h_p" },
-    { "lambda", "lambda" }, { "dlambdadp", "d_lambda_d_p_h" }, { "dlambdadh", "d_lambda_d_h_p" },
-    { "sigma", "sigma" }, { "dsigmadp", "d_sigma_d_p_h" }, { "dsigmadh", "d_sigma_d_h_p" }
-  }
-};
-
-enum class SAT
-{
-  T_SAT, T_SAT_DP,
-  P_SAT, P_SAT_DT,
-  HL_SAT, HL_SAT_DP,
-  HV_SAT, HV_SAT_DP,
-  RHOL_SAT, RHOL_SAT_DP,
-  RHOV_SAT, RHOV_SAT_DP,
-  CPL_SAT, CPL_SAT_DP,
-  CPV_SAT, CPV_SAT_DP,
-  SIGMA /* pour coco seulement */,
-  LV_SAT, LV_SAT_DP /* juste dans l'enum mais pas dans prop directe */
-};
-
-static constexpr std::array<PairCharArray, 17> EOS_prop_sat =
-{
-  {
-    { "tsat", "T_sat" }, { "dtsatdp", "d_T_sat_d_p" },
-    { "psat", "P_sat" }, { "dpsatdt", "d_P_sat_d_T" },
-    { "hlsat", "h_l_sat" }, { "dhlsatdp", "d_h_l_sat_d_p" },
-    { "hvsat", "h_v_sat" }, { "dhvsatdp", "d_h_v_sat_d_p" },
-    { "rholsat", "rho_l_sat" }, { "drholsatdp", "d_rho_l_sat_d_p" },
-    { "rhovsat", "rho_v_sat" }, { "drhovsatdp", "d_rho_v_sat_d_p" },
-    { "cplsat", "cp_l_sat" }, { "dcplsatdp", "d_cp_l_sat_d_p" },
-    { "cpvsat", "cp_v_sat" }, {  "dcpvsatdp", "d_cp_v_sat_d_p" },
-    { "sigma", "sigma" }
-  }
-};
-
-using MLoiSpanD_h = std::map<Loi_en_h, tcb::span<double>>;
-using MLoiSpanD = std::map<Loi_en_T, tcb::span<double>>;
-using MSatSpanD = std::map<SAT, tcb::span<double>>;
-
+/*! @brief classe EOS_to_TRUST
+ *
+ *  Interface commune pour TRUST et ses baltiks qui permet appeler les methodes de la lib EOS
+ *  Methods disponibles en temperature et enthalpie, egalement pour la saturation
+ *
+ *  On supporte 851 Fluids !!!
+ *
+ *  @sa EOS_Supported_Models_Fluids
+ *
+ */
 class EOS_to_TRUST
 {
-  // Struct interne privee
-  struct Supported
-  {
-    const std::array<Motcle, 3> AVAIL_MODELS = { { "CATHARE2", "REFPROP10", "FLICA4" } };
-
-    const std::array<const char *const, 3> EOS_MODELS = { { "EOS_Cathare2", "EOS_Refprop10", "EOS_FLICA4" } };
-
-    const std::array<Motcle, 26> AVAIL_FLUIDS =
-    {
-      {
-        "WATERLIQUID", "WATERVAPOR",
-        "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
-        "SODIUMLIQUID", "SODIUMVAPOR",
-        "IAPWSLIQUID", "IAPWSVAPOR",
-        "NITROGENLIQUID", "NITROGENVAPOR",
-        "AIRLIQUID", "AIRVAPOR",
-        "HELIUMLIQUID", "HELIUMVAPOR",
-        "R12LIQUID", "R12VAPOR",
-        "WATERLIQUID_F4_10-210", "WATERVAPOR_F4_10-210",
-        "WATERLIQUID_F4_10-210-4500", "WATERVAPOR_F4_10-210-4500",
-        "WATERLIQUID_F4_50-170", "WATERVAPOR_F4_50-170",
-        "WATERLIQUID_F4_140-210", "WATERVAPOR_F4_140-210",
-        "WATERLIQUID_F4", "WATERVAPOR_F4"
-      }
-    }; /* Majuscule car Motcle */
-
-    const std::array<const char *const, 26> EOS_FLUIDS =
-    {
-      {
-        "WaterLiquid", "WaterVapor",
-        "ARGONINCONDENSABLE", "NITROGENINCONDENSABLE",
-        "SodiumLiquid", "SodiumVapor",
-        "IAPWSLiquid", "IAPWSVapor",
-        "NitrogenLiquid", "NitrogenVapor",
-        "AirLiquid", "AirVapor",
-        "HeliumLiquid", "HeliumVapor",
-        "R12Liquid", "R12Vapor",
-        "WaterLiquid.10-210", "WaterVapor.10-210",
-        "WaterLiquid.10-210-4500", "WaterVapor.10-210-4500",
-        "WaterLiquid.50-170", "WaterVapor.50-170",
-        "WaterLiquid.140-210", "WaterVapor.140-210",
-        "WaterLiquid", "WaterVapor"
-      }
-    };
-  };
-
-  double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
-  double hmin_ = -123., hmax_ = -123., rhomin_ = -123., rhomax_ = -123.;
-
 public :
-
   EOS_to_TRUST() = default;
-  virtual ~EOS_to_TRUST();
-  void desactivate_handler(bool op = true);
+  virtual ~EOS_to_TRUST() { /* delete fluide; */ }
 
-  Supported supp;
-  void verify_model_fluid(Motcle& model_name, Motcle& fluid_name);
+  void desactivate_handler(bool op = true);
+  void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name);
+
+  int get_model_index(const Motcle& model_name);
+  int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name);
+  const char* get_eos_model_name(const int ind);
+  const char* get_eos_fluid_name(const Motcle& model_name, const int ind);
 
   double eos_get_p_min() const;
   double eos_get_p_max() const;
@@ -322,14 +196,17 @@ public :
   virtual inline int eos_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
 
 protected :
-  int compute_eos_field(const SpanD P, SpanD res, const char *const pt, const char *const pn, bool is_T = false) const;
-  int compute_eos_field(const SpanD P, const SpanD T, SpanD res, const char *const pt, const char *const pn) const;
-  int compute_eos_field_h(const SpanD P, const SpanD H, SpanD res, const char *const pt, const char *const pn) const;
 
 #ifdef HAS_EOS
   NEPTUNE::EOS_Std_Error_Handler handler ;
   NEPTUNE::EOS *fluide = nullptr;
 #endif
+
+  EOS_Supported_Models_Fluids supp_;
+
+  int compute_eos_field(const SpanD P, SpanD res, const char *const pt, const char *const pn, bool is_T = false) const;
+  int compute_eos_field(const SpanD P, const SpanD T, SpanD res, const char *const pt, const char *const pn) const;
+  int compute_eos_field_h(const SpanD P, const SpanD H, SpanD res, const char *const pt, const char *const pn) const;
 
   template <typename TYPE>
   TYPE not_implemented(const char * nom_funct) const
@@ -337,20 +214,10 @@ protected :
     cerr << "EOS_to_TRUST::" << nom_funct << " should be implemented in a derived class !" << endl;
     throw;
   }
+
+private:
+  double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
+  double hmin_ = -123., hmax_ = -123., rhomin_ = -123., rhomax_ = -123.;
 };
-
-// convert Temp span to kelvin ...
-inline SpanD Tk_(const SpanD& T)
-{
-  for (auto& itr : T) itr += 273.15;
-  return T;
-}
-
-// convert Temp span to Celsius ...
-inline SpanD Tc_(const SpanD& T)
-{
-  for (auto& itr : T) itr -= 273.15;
-  return T;
-}
 
 #endif /* EOS_to_TRUST_included */

@@ -18,6 +18,16 @@
 
 #include <EOS_to_TRUST.h>
 
+/*! @brief classe EOS_to_TRUST_generique
+ *
+ *  Interface commune pour TRUST et ses baltiks qui permet appeler les methodes de la lib EOS
+ *  Methods disponibles pour les fluids en temperature et enthalpie
+ *
+ *  On supporte 851 Fluids !!!
+ *
+ *  @sa EOS_to_TRUST EOS_Supported_Models_Fluids
+ *
+ */
 class EOS_to_TRUST_generique : public EOS_to_TRUST
 {
 public :

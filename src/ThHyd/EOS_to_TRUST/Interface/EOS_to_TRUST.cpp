@@ -19,6 +19,105 @@
 
 using namespace NEPTUNE;
 
+int EOS_to_TRUST::get_model_index(const Motcle& model_name)
+{
+  int ind_model = -1;
+  for (int i = 0; i < (int) supp_.AVAIL_MODELS.size(); i++)
+    if (supp_.AVAIL_MODELS[i] == model_name) ind_model = i;
+
+  return ind_model;
+}
+
+int EOS_to_TRUST::get_fluid_index(const Motcle& model_name, const Motcle& fluid_name)
+{
+  int ind_fluid = -1;
+  if (model_name == "CATHARE2")
+    {
+      for (int i = 0; i < (int) supp_.AVAIL_FLUIDS_C2.size(); i++)
+        if (supp_.AVAIL_FLUIDS_C2[i] == fluid_name) ind_fluid = i;
+    }
+  else if (model_name == "FLICA4")
+    {
+      for (int i = 0; i < (int) supp_.AVAIL_FLUIDS_F4.size(); i++)
+        if (supp_.AVAIL_FLUIDS_F4[i] == fluid_name) ind_fluid = i;
+    }
+  else if (model_name == "REFPROP10")
+    {
+      for (int i = 0; i < (int) supp_.AVAIL_FLUIDS_REFP10.size(); i++)
+        if (supp_.AVAIL_FLUIDS_REFP10[i] == fluid_name) ind_fluid = i;
+    }
+  return ind_fluid;
+}
+
+const char* EOS_to_TRUST::get_eos_model_name(const int ind)
+{
+  return supp_.EOS_MODELS[ind];
+}
+
+const char* EOS_to_TRUST::get_eos_fluid_name(const Motcle& model_name, const int ind)
+{
+  if (model_name == "CATHARE2") return supp_.EOS_FLUIDS_C2[ind];
+  else if (model_name == "FLICA4") return supp_.EOS_FLUIDS_F4[ind];
+  else if (model_name == "REFPROP10") return supp_.EOS_FLUIDS_REFP10[ind];
+  else return "NOT_A_FLUID";
+}
+
+void EOS_to_TRUST::verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name)
+{
+  if (!(std::find(supp_.AVAIL_MODELS.begin(), supp_.AVAIL_MODELS.end(), model_name) != supp_.AVAIL_MODELS.end()))
+    {
+      Cerr << "You define the : < " << model_name << " model which is not yet tested !" << finl;
+      Cerr << "Please use one of the available models or contact the TRUST team." << finl;
+      Cerr << finl;
+      Cerr << "Available Models : " << finl;
+      for (const auto &itr : supp_.AVAIL_MODELS) Cerr << itr << finl;
+
+      Process::exit();
+    }
+
+  if (model_name == "CATHARE2")
+    {
+      if (!(std::find(supp_.AVAIL_FLUIDS_C2.begin(), supp_.AVAIL_FLUIDS_C2.end(), fluid_name) != supp_.AVAIL_FLUIDS_C2.end()))
+        {
+          Cerr << "You define the : < " << fluid_name << " fluid which is not available !" << finl;
+          Cerr << "Please use one of the available fluids or contact the TRUST team." << finl;
+          Cerr << finl;
+          Cerr << "Available Fluids : " << finl;
+          for (const auto &itr : supp_.AVAIL_FLUIDS_C2) Cerr << itr << finl;
+
+          Process::exit();
+        }
+    }
+  else if (model_name == "FLICA4")
+    {
+      if (!(std::find(supp_.AVAIL_FLUIDS_F4.begin(), supp_.AVAIL_FLUIDS_F4.end(), fluid_name) != supp_.AVAIL_FLUIDS_F4.end()))
+        {
+          Cerr << "You define the : < " << fluid_name << " fluid which is not available !" << finl;
+          Cerr << "Please use one of the available fluids or contact the TRUST team." << finl;
+          Cerr << finl;
+          Cerr << "Available Fluids : " << finl;
+          for (const auto &itr : supp_.AVAIL_FLUIDS_F4) Cerr << itr << finl;
+
+          Process::exit();
+        }
+    }
+  else if (model_name == "REFPROP10")
+    {
+      if (!(std::find(supp_.AVAIL_FLUIDS_REFP10.begin(), supp_.AVAIL_FLUIDS_REFP10.end(), fluid_name) != supp_.AVAIL_FLUIDS_REFP10.end()))
+        {
+          Cerr << "You define the : < " << fluid_name << " fluid which is not available !" << finl;
+          Cerr << "Please use one of the available fluids or contact the TRUST team." << finl;
+          Cerr << finl;
+          Cerr << "Available Fluids : " << finl;
+          for (const auto &itr : supp_.AVAIL_FLUIDS_REFP10) Cerr << itr << finl;
+
+          Process::exit();
+        }
+    }
+  else
+    Process::exit("What happened ?? Seems the method EOS_to_TRUST::verify_model_fluid is not up to date ! call the 911 !! ");
+}
+
 void EOS_to_TRUST::desactivate_handler(bool op)
 {
 #ifdef HAS_EOS
@@ -41,8 +140,6 @@ void EOS_to_TRUST::desactivate_handler(bool op)
   throw;
 #endif
 }
-
-EOS_to_TRUST::~EOS_to_TRUST() { /* delete fluide; */ }
 
 int EOS_to_TRUST::compute_eos_field(const SpanD P_ou_T, SpanD res,const char *const property_title, const char *const property_name, bool is_T) const
 {
@@ -85,36 +182,6 @@ int EOS_to_TRUST::compute_eos_field_h(const SpanD P, const SpanD H, SpanD res,co
   EOS_Error_Field ferr(tmp);
   EOS_Error cr = fluide->compute(P_fld, H_fld, z_fld, ferr);
   return (int)cr;
-#else
-  Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
-  throw;
-#endif
-}
-
-void EOS_to_TRUST::verify_model_fluid(Motcle& model_name, Motcle& fluid_name)
-{
-#ifdef HAS_EOS
-  if (!(std::find(supp.AVAIL_MODELS.begin(), supp.AVAIL_MODELS.end(), model_name) != supp.AVAIL_MODELS.end()))
-    {
-      Cerr << "You define the : < " << model_name << " model which is not yet tested !" << finl;
-      Cerr << "Please use one of the available models or contact the TRUST team." << finl;
-      Cerr << finl;
-      Cerr <<"Available Models : " << finl;
-      for (const auto& itr : supp.AVAIL_MODELS) Cerr << itr << finl;
-
-      Process::exit();
-    }
-
-  if(!(std::find(supp.AVAIL_FLUIDS.begin(), supp.AVAIL_FLUIDS.end(), fluid_name) != supp.AVAIL_FLUIDS.end()))
-    {
-      Cerr << "You define the : < " << fluid_name << " fluid which is not yet tested !" << finl;
-      Cerr << "Please use one of the available fluids or contact the TRUST team." << finl;
-      Cerr << finl;
-      Cerr <<"Available Fluids : " << finl;
-      for (const auto& itr : supp.AVAIL_FLUIDS) Cerr << itr << finl;
-
-      Process::exit();
-    }
 #else
   Cerr << "EOS_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
   throw;
