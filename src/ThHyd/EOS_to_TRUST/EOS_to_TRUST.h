@@ -216,8 +216,11 @@ protected :
   }
 
 private:
+
+#ifdef HAS_EOS
   double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
   double hmin_ = -123., hmax_ = -123., rhomin_ = -123., rhomax_ = -123.;
+#endif
 };
 
 #endif /* EOS_to_TRUST_included */
