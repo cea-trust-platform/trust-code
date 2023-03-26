@@ -22,7 +22,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Turbulence\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
-	-I$(TRUST_ROOT)/src/ThHyd/EOS_to_TRUST\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces/EOS_to_TRUST\
 
 
 Lib = $(TRUST_LIB)/libmultiphase_sources
