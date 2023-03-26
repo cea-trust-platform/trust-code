@@ -248,58 +248,59 @@ if [ "$1" != "-disable-optionals" ] && [ "$1" != "-for_appli_salome" ] && [ "$1"
 then
 echo "----------------------------------------------------------------------------------------------------------------------------"
 echo "Usage: `basename $0` "
-echo "[-help]                           Print help of the different configure options."
-echo "[-disable-optionals]              Disable all optionals librairies and tools."
-echo "[-disable-tools]                  Disable all tools to build only a binary."
-echo "[-add_search=<dir>]               Add a directory to the defaults path to search a tool."
-echo "[-c++=<prog>]                     Force the use of a specified C++ compiler."
-echo "[-cc=<prog>]                      Force the use of a specified C compiler."
-echo "[-fc=<prog>]                      Force the use of a specified Fortran compiler."
-echo "[-cxxflags=<flags>]               Add C++ compiler options."
-echo "[-cflags=<flags>]                 Add C compiler options."
-echo "[-fflags=<flags>]                 Add Fortran compiler options."
-echo "[-native]                         Add compiler optimizations relative to native architecture. Warning: binary is not portable and segfault are possible..."
-echo "[-force_provided_mpich]           Use the provided MPICH `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version (default, except on cluster/batch system)."
-echo "[-force_latest_mpich]             Download and use the MPICH `awk -F= '/^latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version."
-echo "[-force_provided_openmpi]         Use the provided OpenMPI `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
-echo "[-force_latest_openmpi]           Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
-echo "[-force_system_mpi]               Use the system-provided MPI library."
-echo "[-force_even_unsupported]         Force the configure even the compiler/OS is not supported."
-echo "[-cuda[=path to nvcc|=download]]  Activate the CUDA support into several libraries for NVidia GPU computing (experimental)"
-echo "[-openmp]                         Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)"
-echo "[-rocalution=0|path to rocALUTION]Disable or specify extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library"
-echo "[-disable-petsc]                  Disable PETSc library installation."
-echo "[-disable-petsc-optionals]        Disable some PETSc optionals for Cathare (visualization features, HDF5 support,...)"
-echo "[-enable-petsc-debug]             Enable PETSc library debug only with \$exec_debug of TRUST."
-echo "[-with-eos=<path_to_eos>]         Compiles TRUST and links with an external static EOS library"
-#echo "[-with-med=dir]                   Force Using external MED library"
-#echo "[-with-hdf=dir]                   Force Using external HDF library"
-#echo "[-with-medcoupling=dir]           Force Using external MEDCoupling library"
-echo "[-with-64-bit-indices]            Build with 64 bits integer indices"
-echo "[-disable-metis]                  Disable metis library installation."
-echo "[-disable-mpi]                    Disable MPI library detection/installation and build a non-parallel version of the application."
-echo "[-disable-mpi4py]                 Disable mpi4py installation."
-echo "[-disable-jupyter]                Disable jupyter installation."
-echo "[-disable-ccache]                 Disable ccache detection/installation."
-echo "[-disable-valgrind]               Disable valgrind installation and build."
-echo "[-disable-gnuplot]                Disable gnuplot installation and build."
-echo "[-disable-doxygen]                Disable doxygen installation and build. HTML documentation cannot be build if doxygen disabled."
-echo "[-disable-tcl_tk]                 Disable Tcl/Tk detection/installation."
-echo "[-disable-vc]                     Disable VC installation, might be necessary for intel compilers with lower version than 17"
-echo "[-disable-gmsh]                   Disable Gmsh installation and build."
-echo "[-disable-plot2d]                 Disable PLOT2D installation and build."
-echo "[-disable-mpiio]                  Disable MPI-IO mode for writing of .xyz binary output file."
-echo "[-disable-check_sources]          No check sources before compiling."
-echo "[-disable-checks]                 Disable checks for external packages, sources, disk space and speed."
-echo "[-without-host_file]              Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
-echo "[-without-doc]                    Do not build the documentation."
-echo "[-without-pdflatex]               Do not build the pdf documentation."
-echo "[-with-doxygen-doc]               Enable the build of HTML documentation of TRUST sources."
-echo "[-without-visit]                  Do not install VisIt."
-echo "[-download-visit]                 Download a version of VisIt rather trying to build a version."
-#echo "[-download-salome]                Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
-echo "[-for_appli_salome]               Force the configuration for TRUST application in Salome platform."
-echo "[-clean]                          Clean the packages installed by configure after a make clean."
+echo "[-help]                             Print help of the different configure options."
+echo "[-disable-optionals]                Disable all optionals librairies and tools."
+echo "[-disable-tools]                    Disable all tools to build only a binary."
+echo "[-add_search=<dir>]                 Add a directory to the defaults path to search a tool."
+echo "[-c++=<prog>]                       Force the use of a specified C++ compiler."
+echo "[-cc=<prog>]                        Force the use of a specified C compiler."
+echo "[-fc=<prog>]                        Force the use of a specified Fortran compiler."
+echo "[-cxxflags=<flags>]                 Add C++ compiler options."
+echo "[-cflags=<flags>]                   Add C compiler options."
+echo "[-fflags=<flags>]                   Add Fortran compiler options."
+echo "[-native]                           Add compiler optimizations relative to native architecture. Warning: binary is not portable and segfault are possible..."
+echo "[-force_provided_mpich]             Use the provided MPICH `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version (default, except on cluster/batch system)."
+echo "[-force_latest_mpich]               Download and use the MPICH `awk -F= '/^latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_mpich` version."
+echo "[-force_provided_openmpi]           Use the provided OpenMPI `awk -F= '/default_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
+echo "[-force_latest_openmpi]             Download and use the OpenMPI `awk -F= '/latest_version=/ {print $2}' ThirdPart/src/LIBMPI/Installer_openmpi` version."
+echo "[-force_system_mpi]                 Use the system-provided MPI library."
+echo "[-force_even_unsupported]           Force the configure even the compiler/OS is not supported."
+echo "[-cuda[=path to nvcc|=download]]    Activate the CUDA support into several libraries for NVidia GPU computing (experimental)"
+echo "[-openmp]                           Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)"
+echo "[-rocalution=0|path to rocALUTION]  Disable or specify extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library"
+echo "[-disable-petsc]                    Disable PETSc library installation."
+echo "[-disable-petsc-optionals]          Disable some PETSc optionals for Cathare (visualization features, HDF5 support,...)"
+echo "[-enable-petsc-debug]               Enable PETSc library debug only with \$exec_debug of TRUST."
+echo "[-with-eos=<path_to_eos>]           Compiles TRUST and links with an external static EOS library"
+echo "[-with-coolprop=<path_to_coolprop>] Compiles TRUST and links with an external static CoolProp library"
+#echo "[-with-med=dir]                     Force Using external MED library"
+#echo "[-with-hdf=dir]                     Force Using external HDF library"
+#echo "[-with-medcoupling=dir]             Force Using external MEDCoupling library"
+echo "[-with-64-bit-indices]              Build with 64 bits integer indices"
+echo "[-disable-metis]                    Disable metis library installation."
+echo "[-disable-mpi]                      Disable MPI library detection/installation and build a non-parallel version of the application."
+echo "[-disable-mpi4py]                   Disable mpi4py installation."
+echo "[-disable-jupyter]                  Disable jupyter installation."
+echo "[-disable-ccache]                   Disable ccache detection/installation."
+echo "[-disable-valgrind]                 Disable valgrind installation and build."
+echo "[-disable-gnuplot]                  Disable gnuplot installation and build."
+echo "[-disable-doxygen]                  Disable doxygen installation and build. HTML documentation cannot be build if doxygen disabled."
+echo "[-disable-tcl_tk]                   Disable Tcl/Tk detection/installation."
+echo "[-disable-vc]                       Disable VC installation, might be necessary for intel compilers with lower version than 17"
+echo "[-disable-gmsh]                     Disable Gmsh installation and build."
+echo "[-disable-plot2d]                   Disable PLOT2D installation and build."
+echo "[-disable-mpiio]                    Disable MPI-IO mode for writing of .xyz binary output file."
+echo "[-disable-check_sources]            No check sources before compiling."
+echo "[-disable-checks]                   Disable checks for external packages, sources, disk space and speed."
+echo "[-without-host_file]                Do not load the environnement variables specified in an env_src/HOST_`hostname | awk -F. '{print $1}'`.sh file."
+echo "[-without-doc]                      Do not build the documentation."
+echo "[-without-pdflatex]                 Do not build the pdf documentation."
+echo "[-with-doxygen-doc]                 Enable the build of HTML documentation of TRUST sources."
+echo "[-without-visit]                    Do not install VisIt."
+echo "[-download-visit]                   Download a version of VisIt rather trying to build a version."
+#echo "[-download-salome]                  Download the Salome `awk -F= '/version_salome=/ {print $2}' env_src/configurer_env` version in the TRUST environment."
+echo "[-for_appli_salome]                 Force the configuration for TRUST application in Salome platform."
+echo "[-clean]                            Clean the packages installed by configure after a make clean."
 echo "----------------------------------------------------------------------------------------------------------------------------"
 fi
 CC=""
@@ -350,6 +351,7 @@ export TRUST_INT64=0
 export TRUST_USE_CUDA=0
 export TRUST_USE_AMGX=0
 export TRUST_USE_EOS=0
+export TRUST_USE_COOLPROP=0
 export TRUST_ROCALUTION=1
 export TRUST_USE_OPENMP=0
 export TRUST_USE_AVX=1
@@ -367,6 +369,7 @@ unset TRUST_USE_EXTERNAL_HDF
 unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
 unset EOS_HOME
+unset COOLPROP_HOME
 
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
@@ -476,6 +479,11 @@ do
       # Proper include files for EOS are managed by script bin/cree_include
       export TRUST_USE_EOS=1
       export EOS_HOME=${1#-with-eos=}
+   elif [ "${1#-with-coolprop}" != "$1" ]
+   then
+      # Proper include files for CoolProp are managed by script bin/cree_include
+      export TRUST_USE_COOLPROP=1
+      export COOLPROP_HOME=${1#-with-coolprop=}
    elif [ "${1#-rocalution}" != "$1" ]
    then
       export TRUST_ROCALUTION=${1#-rocalution=}
@@ -679,6 +687,15 @@ then
 else
     echo "export TRUST_USE_EOS=0" >> $var
     echo "unset EOS_HOME" >> $var
+fi
+
+if [ "$COOLPROP_HOME" != "" ]
+then
+    echo "export TRUST_USE_COOLPROP=1" >> $var
+    echo "export TRUST_COOLPROP_HOME_DIR=$COOLPROP_HOME" >> $var
+else
+    echo "export TRUST_USE_COOLPROP=0" >> $var
+    echo "unset COOLPROP_HOME" >> $var
 fi
 
 # IF HDF5 tools are not installed, detect h5dump version mismatch

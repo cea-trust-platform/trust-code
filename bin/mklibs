@@ -160,7 +160,6 @@ done
 ####
 VC="" && [ "$TRUST_DISABLE_VC" != 1 ] && VC="-L\$(TRUST_ROOT)/lib/src/LIBVC/lib -lVc"
 
-
 #####
 # EOS
 #####
@@ -170,13 +169,20 @@ else
   EOS=""
 fi
 
+##########
+# CoolProp
+##########
+if [ $TRUST_USE_COOLPROP = 1 ] ; then
+  COOLPROP="\$(TRUST_COOLPROP_HOME_DIR)/build/libCoolProp.a"
+else
+  COOLPROP=""
+fi
+
 # Cela m'a fait transpirer: si -lm alors -L/usr/lib/x86_64-linux-gnu ajoute et conflit entre MPI systeme et MPI livre si mix nvc++/g++:
 # Si TRUST_CC_BAXE_EXTP GNU et le code avec NVidia il faut donner le chemin des libs GNU (libX11, libm, libpthread, etc...)
 [ "`basename $TRUST_CC_BASE`" = nvc++ ] && SYSLIBS=" -L/usr/lib/x86_64-linux-gnu "$SYSLIBS
 #SYSLIBS=$SYSLIBS" $lz-lm -ldl"
 SYSLIBS=$SYSLIBS" $lz -ldl"
-
-
 
 #################################################
 # Construction des fichiers $TRUST_ENV/make.lib?
@@ -211,11 +217,12 @@ do
    # NB: 1.5.6: MED est place APRES PETSC car seg fault sinon avec -lz si place avant la librairie lcudart !
    echo $ECHO_OPTS "-L\$(TRUST_LIB) -lmfft -lmfft_c\\"            >> $fic
    echo $ECHO_OPTS "-lskit $METIS -L\$(TRUST_LATAFILTER)/lib -llatafilter\\"   >> $fic
-   echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"   >> $fic
+   echo $ECHO_OPTS "-L\$(TRUST_ICOCOAPI)/lib -licocoapi\\"      >> $fic
    [ "$PETSC" != "" ] && echo $ECHO_OPTS "$PETSC \\"            >> $fic
-   [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"            >> $fic
-   [ "$VC" != "" ] && echo $ECHO_OPTS "$VC \\"                           >> $fic
-   [ "$EOS" != "" ] && echo $ECHO_OPTS "$EOS \\"                               >> $fic
+   [ "$LAPACK" != "" ] && echo $ECHO_OPTS "$LAPACK \\"          >> $fic
+   [ "$VC" != "" ] && echo $ECHO_OPTS "$VC \\"                  >> $fic
+   [ "$EOS" != "" ] && echo $ECHO_OPTS "$EOS \\"                >> $fic
+   [ "$COOLPROP" != "" ] && echo $ECHO_OPTS "$COOLPROP \\"      >> $fic
    [ "`ls ${TRUST_ROCALUTION}/lib/librocalution.* 2>/dev/null`" != "" ] && echo $ECHO_OPTS "-L\$(TRUST_ROCALUTION)/lib -lrocalution \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib -losqp \\" >> $fic
    [ -f ${TRUST_OSQP_ROOT}/lib64/libosqp.a ] && echo $ECHO_OPTS "-L\$(TRUST_OSQP_ROOT)/lib64 -losqp \\" >> $fic

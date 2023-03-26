@@ -8,7 +8,8 @@ cd $TRUST_ROOT
 INC=$TRUST_ROOT/include && [ ! -d $INC ] && mkdir $INC 2>/dev/null
 cd $INC
 mkdir -p $INC/backward
-mkdir -p $INC/EOS
+# includes for external libs eos and coolprop
+mkdir -p $INC/EOS $INC/CoolProp
 
 # Ajout des fichiers deprecated by TRUST 1.9.0:
 for file in ArrOfDouble.h ArrOfInt.h DoubleVect.h IntVect.h DoubleTab.h IntTab.h DoubleTrav.h IntTrav.h DoubleList.h IntList.h DoubleLists.h IntLists.h Champ_Tabule_Morceaux.h ConstDoubleTab_parts.h
@@ -44,6 +45,20 @@ else
     echo "TRUST not configured with EOS. Cleaning include/EOS ..."
     rm -rf EOS/*
     echo "#undef HAS_EOS" > EOS/eos++.h
+fi
+
+# CoolProp includes in CoolProp if 
+if [ "$TRUST_COOLPROP_HOME_DIR" != "" ]
+then
+    ln -nsf $TRUST_COOLPROP_HOME_DIR/include/* CoolProp/.
+    ln -nsf $TRUST_COOLPROP_HOME_DIR/externals/fmtlib/fmt CoolProp/.
+    echo "#define HAS_COOLPROP" > CoolProp/coolprop++.h
+    echo "TRUST configured with the CoolProp library found in $TRUST_COOLPROP_HOME_DIR"
+    echo "CoolProp header files added in $TRUST_ROOT/include/CoolProp !"
+else
+    echo "TRUST not configured with CoolProp. Cleaning include/CoolProp ..."
+    rm -rf CoolProp/*
+    echo "#undef HAS_COOLPROP" > CoolProp/coolprop++.h
 fi
 
 # Ouverture de $INC

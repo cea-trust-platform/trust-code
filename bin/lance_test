@@ -988,6 +988,14 @@ then
 	    liste_skipped=$liste_skipped" $i"
 	    i=""	
 	fi
+
+	# Discard CoolProp test cases if CoolProp library is not linked with TRUST
+	if [ ${test_case#CoolProp_} != $test_case ] && [ $TRUST_USE_COOLPROP != "1" ] # Cas test CoolProp
+	then
+	    echo "Test $i skipped (TRUST compiled without CoolProp)"
+	    liste_skipped=$liste_skipped" $i"
+	    i=""	
+	fi
 	
   if [ -f $REP/skipped ]
 	then
