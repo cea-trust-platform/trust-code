@@ -46,10 +46,14 @@ public:
       }
 
     tab_diffusivite_turbulente.echange_espace_virtuel();
+    tab_diff_turb_first_update_ = false;
   }
 
   const DoubleTab& get_diffusivite_turbulente_multiphase() const
   {
+    if (tab_diff_turb_first_update_)
+      const_cast<Eval_Dift_Multiphase_VDF&>(*this).update_diffusivite_turbulente();
+
     return tab_diffusivite_turbulente;
   }
 
@@ -66,7 +70,7 @@ public:
 protected:
   REF(Correlation) corr_; //attention REF + DERIV => 2 valeur() deso
   REF(DoubleTab) nu_t_;
-  bool need_alpha_rho_ = true;
+  bool need_alpha_rho_ = true, tab_diff_turb_first_update_ = true;
 };
 
 #endif /* Eval_Dift_Multiphase_VDF_included */
