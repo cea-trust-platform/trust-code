@@ -24,7 +24,6 @@ instancie_src_*.cpp
 src/**/CMakeLists.txt
 
 # XDATA stuff
-
 Outils/TRIOXDATA/IHMTRIO.sh
 Outils/TRIOXDATA/TRIOU/TRIOU_SRC/src/
 Outils/TRIOXDATA/TRIOU/dist/
@@ -97,3 +96,11 @@ ThirdPart/src/LIBROCALUTION/rocALUTION/
 Outils/valgrind/configure.help
 Outils/valgrind/valgrind-3.18.1/
 
+# VisIt installed version
+Outils/VisIt/src/*.tar.gz
+Outils/VisIt/src/*.tgz
+Outils/VisIt/src/*.tar.xz
+Outils/VisIt/src/*.zip
+Outils/VisIt/src/*.bz2
+Outils/VisIt/src/build_visit*
+Outils/VisIt/0
