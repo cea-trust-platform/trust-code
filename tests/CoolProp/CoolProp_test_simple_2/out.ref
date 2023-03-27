@@ -1,0 +1,22 @@
+======================================================================================
+Test simple call to CoolProp to compute properties/derivatives with fluid : Water
+======================================================================================
+
+density: 996.557
+d(density)/dP: 4.43092e-12
+d(density)/dT: -0.273859
+
+enthalpy: 112655
+d(enthalpy)/dP: 0.000920729
+d(enthalpy)/dT: 4180.64
+
+internal_energy: 112553
+d(internal_energy)/dP: -8.26805e-05
+d(internal_energy)/dT: 4180.61
+
+isobaric_heat_capacity: inf
+d(isobaric_heat_capacity)/dP: inf
+d(isobaric_heat_capacity)/dT: inf
+
+Viscosity: 0.000853742
+Thermal conductivity: 0.6095

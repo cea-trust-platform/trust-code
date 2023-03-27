@@ -1,0 +1,29 @@
+=================================================================================================================
+Test simple calls to CoolProp using the low level interface with two phases (liquid/vapor) and fluid : Water
+=================================================================================================================
+
+Liquid phase properties at P = 100000 Pa and T = 300
+Density: 996.556
+Partial derivative of density with respect to pressure: 4.48964e-07
+Partial derivative of density with respect to temperature: -0.273857
+Enthalpy: 112654
+d Enthalpy P: 0.00092073
+d Enthalpy T: 4180.64
+Mu: 0.000853743
+Lambda: 0.609499
+Beta: 0.000274804
+Cp: 4180.64
+
+Vapor phase properties at P = 100000
+temperature: 372.756
+Density: 0.590344
+Partial derivative of density with respect to pressure: 6.00057e-06
+Partial derivative of density with respect to temperature: -0.001714
+Enthalpy: 2.67495e+06
+d Enthalpy P: -0.139335
+d Enthalpy T: 2078.45
+Mu: 1.22185e-05
+Lambda: 0.0245317
+Beta: 0.00290339
+Cp: 2078.45
+

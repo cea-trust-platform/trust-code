@@ -1,0 +1,24 @@
+==================================================================================================================================
+Test simple calls to CoolProp using the low level interface with imposed phases for fluid and output special values: Water
+==================================================================================================================================
+
+Impose phase CoolProp::iphase_gas 
+P max: 1e+09
+P min: 611.655
+P critical: 2.2064e+07
+
+T max: 2000
+T min: 273.16
+T critical: 647.096
+T reducing: 647.096
+
+Impose phase CoolProp::iphase_liquid 
+P max: 1e+09
+P min: 611.655
+P critical: 2.2064e+07
+
+T max: 2000
+T min: 273.16
+T critical: 647.096
+T reducing: 647.096
+

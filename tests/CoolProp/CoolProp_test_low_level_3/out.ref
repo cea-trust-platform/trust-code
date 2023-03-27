@@ -1,0 +1,52 @@
+==========================================================================================================
+Test simple calls to CoolProp using the low level interface with imposed phases for fluid : Water
+==========================================================================================================
+
+Impose phase CoolProp::iphase_gas 
+rho': 0.597657 kg/m^3
+rho': 33.175 mol/m^3
+h': 2.67553e+06 J/kg
+h': 48200.4 J/mol
+s': 7354.43 J/kg/K
+s': 132.492 J/mol/K
+
+Impose phase CoolProp::iphase_liquid 
+rho': 958.368 kg/m^3
+rho': 53197.5 mol/m^3
+h': 419056 J/kg
+h': 7549.41 J/mol
+s': 1306.92 J/kg/K
+s': 23.5445 J/mol/K
+
+Impose phase CoolProp::iphase_supercritical_liquid 
+rho': 958.368 kg/m^3
+rho': 53197.5 mol/m^3
+h': 419056 J/kg
+h': 7549.41 J/mol
+s': 1306.92 J/kg/K
+s': 23.5445 J/mol/K
+
+Impose phase CoolProp::iphase_supercritical_gas 
+rho': 0.597657 kg/m^3
+rho': 33.175 mol/m^3
+h': 2.67553e+06 J/kg
+h': 48200.4 J/mol
+s': 7354.43 J/kg/K
+s': 132.492 J/mol/K
+
+Impose phase CoolProp::iphase_supercritical 
+rho': 0.597657 kg/m^3
+rho': 33.175 mol/m^3
+h': 2.67553e+06 J/kg
+h': 48200.4 J/mol
+s': 7354.43 J/kg/K
+s': 132.492 J/mol/K
+
+Impose phase CoolProp::iphase_not_imposed 
+rho': 958.368 kg/m^3
+rho': 53197.5 mol/m^3
+h': 419056 J/kg
+h': 7549.41 J/mol
+s': 1306.92 J/kg/K
+s': 23.5445 J/mol/K
+

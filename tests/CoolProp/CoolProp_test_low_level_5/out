@@ -1,0 +1,21 @@
+==========================================================================================================
+Test simple calls to CoolProp using the low level interface with std vectors for fluid : Water
+==========================================================================================================
+
+value(commons): 0.001169 minutes 
+value(commons): 0.07014 seconds 
+
+value(user-specified): 0.00232522 minutes 
+value(user-specified): 0.139513 seconds 
+
+value(My loop / molar): 0.00117868 minutes 
+value(My loop / molar): 0.070721 seconds 
+
+value(My loop / mass): 0.00121227 minutes 
+value(My loop / mass): 0.072736 seconds 
+
+value(My loop / mass): 0.0063949 minutes 
+value(My loop / mass): 0.383694 seconds 
+
+value(My loop coolprop / mass): 0.00943518 minutes 
+value(My loop coolprop / mass): 0.566111 seconds 
