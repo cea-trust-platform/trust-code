@@ -180,7 +180,6 @@ void QDM_Multiphase::mettre_a_jour(double temps)
   for (n = 0; n < N; n++)
     if (grad_vit_phases_[n].non_nul())
       {
-        grad_vit_phases_[n].mettre_a_jour(temps);
         if (is_poly)
           {
             DoubleTab_parts psrc(grad_u->valeurs()), pdst(grad_vit_phases_[n].valeurs());
@@ -204,6 +203,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
                 for (j = 0; j < D; j++)
                   grad_vit_phases_[n].valeurs()(e, D*i+j) = grad_u->valeurs()(e, N*( D*i+j ) + n ) ;
           }
+        grad_vit_phases_[n].mettre_a_jour(temps);
       }
   if (gradient_P.non_nul())
     {

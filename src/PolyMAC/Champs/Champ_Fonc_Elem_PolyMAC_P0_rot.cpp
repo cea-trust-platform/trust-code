@@ -48,7 +48,7 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_2D()
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab& tab_rot = valeurs();
   const grad_Champ_Face_PolyMAC_P0& grad = ref_cast(grad_Champ_Face_PolyMAC_P0, eq.get_champ("gradient_vitesse"));
-  const DoubleTab& tab_grad = grad.valeurs();
+  const DoubleTab& tab_grad = grad.passe();
 
   for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
@@ -70,7 +70,7 @@ void Champ_Fonc_Elem_PolyMAC_P0_rot::me_calculer_3D()
   const Navier_Stokes_std& eq = ref_cast(Navier_Stokes_std, vit.equation());
   DoubleTab& tab_rot = valeurs();
   const grad_Champ_Face_PolyMAC_P0& grad = ref_cast(grad_Champ_Face_PolyMAC_P0, eq.get_champ("gradient_vitesse"));
-  const DoubleTab& tab_grad = grad.valeurs();
+  const DoubleTab& tab_grad = grad.passe();
 
   for (n = 0; n < N; n++)
     for (e = 0; e < ne; e++)
