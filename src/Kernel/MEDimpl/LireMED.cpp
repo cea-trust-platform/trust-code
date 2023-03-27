@@ -99,82 +99,57 @@ void verifier_modifier_type_elem(Nom& type_elem,const IntTab& les_elems,const Do
 
 void recuperer_info_des_joints(Noms& noms_des_joints, const Nom& nom_fic, const Nom& nom_dom, ArrsOfInt& corres_joint,  ArrOfInt& tab_pe_voisin)
 {
-#ifdef MED_
-  Cerr<<"reading of the joint informations "<<finl;
-  int njoint=-1;
-  med_idt fid=MEDfileOpen(nom_fic,MED_ACC_RDONLY);
-  njoint=MEDnSubdomainJoint(fid,nom_dom);
+#ifdef MEDCOUPLING_
+  using namespace MEDCoupling;
+
+  Cerr << "  Reading joint informations ... "<<finl;
+  MCAuto<MEDFileJoints> jnts(MEDFileJoints::New(nom_fic.getChar(), nom_dom.getChar()));
+  int njoint = jnts->getNumberOfJoints();
   corres_joint.dimensionner(njoint);
   noms_des_joints.dimensionner(njoint);
   tab_pe_voisin.resize_array(njoint);
 
   for (int j=0; j<njoint; j++)
     {
-      med_int num_dom;
+      // Reading joint meta-infos
+      const MEDFileJoint *jnt = jnts->getJointAtPos(j);
+      std::string jnam = jnt->getJointName(), desc = jnt->getDescription();
 
-      Char_ptr maa_dist;
-      dimensionne_char_ptr_taille(maa_dist,MED_NAME_SIZE);
-      Char_ptr name_of_joint(maa_dist);
-      Char_ptr desc;
-      dimensionne_char_ptr_taille(desc,MED_COMMENT_SIZE);
-      med_int nstep;
-      med_int nocstpn;
-      MEDsubdomainJointInfo(fid, nom_dom, j+1, name_of_joint, desc,
-                            &num_dom, maa_dist, &nstep,&nocstpn);
-      Cerr<<" ici "<<name_of_joint<<" "<<(int)num_dom<< " "<<desc<<" "<<maa_dist<<finl;
-      tab_pe_voisin[j]=num_dom;
-      noms_des_joints[j]=name_of_joint;
-      // Lecture de la correspondance sommet/sommet
-      med_entity_type typ_ent_local;
-      med_geometry_type typ_geo_local;
-      med_entity_type typ_ent_distant;
-      med_geometry_type typ_geo_distant;
+      int num_dom = jnt->getDomainNumber();
+      Cerr << "  Joint '" << jnam << "' - dom number: " << num_dom << " - '" << desc << "'" << finl;
+      tab_pe_voisin[j] = num_dom;
+      noms_des_joints[j] = jnam;
 
-      //       med_int corres=1; // faut il faire une boucle
-      //       nb=MEDjointTypeCorres (fid, nom_dom, name_of_joint, corres,
-      //                             &typ_ent_local,   &typ_geo_local,
-      //                             &typ_ent_distant, &typ_geo_distant);
-      //       Cerr<<MED_NODE<<finl;
-      //       Cerr<< nb<<" LA " <<typ_ent_local<<" "<<typ_geo_local;
-      //       Cerr<<" LA " <<typ_ent_distant<<" "<<typ_geo_distant<<finl;
+      // Multi-steps joints not supported
+      int nsteps = jnt->getNumberOfSteps();
+      if (nsteps > 1) Process::exit("LireMED/ScatterMED: Multi-step joints not supported!!");
 
-
-      typ_geo_local=MED_NONE;
-      typ_geo_distant=typ_geo_local;
-      typ_ent_local=MED_NODE;
-      typ_ent_distant=typ_ent_local;
-      med_int nc;
-      MEDsubdomainCorrespondenceSize(fid, nom_dom, name_of_joint,MED_NO_DT,MED_NO_IT,typ_ent_local,typ_geo_local,typ_ent_distant, typ_geo_distant,&nc);
+      // Reading vertex/vertex connection
+      const MEDFileJointOneStep* jnt1 = jnt->getStepAtPos(0);
+      int nc = jnt1->getNumberOfCorrespondences();
+      if (nc <= 0) Process::exit("LireMED/ScatterMED: joint with no correspondance!!");
       Cerr<<(int)nc <<" connecting vertices " <<finl;
-      // lecture de la correspondance
-      ArrOfInt& corres_joint_j =corres_joint[j];
-      corres_joint_j.resize_array(nc);
-      if (nc > 0)
-        {
-          med_int* cortab;
 
-          cortab=new med_int[nc*2];
-          med_int ret =MEDsubdomainCorrespondenceRd(fid,nom_dom,name_of_joint,MED_NO_DT,MED_NO_IT, typ_ent_local,typ_geo_local,typ_ent_distant,typ_geo_distant,cortab) ;
-          if (ret<0)
-            {
-              Cerr<<"Error when reading the corresponding informations on the vertices"<<finl;
-              Process::exit();
-            }
-          for (int s=0; s<nc; s++)
-            {
-              corres_joint_j[s]=cortab[2*s]-1; // -1 pour la numerotation C
-            }
-          // Cerr<<" sommets du joint "<<corres_joint_j<<finl;
-          delete [] cortab;
-        }
-      else
+      ArrOfInt& corres_joint_j = corres_joint[j];
+      corres_joint_j.resize_array(nc);
+
+      for (int c=0; c < nc; c++) // lol C++
         {
-          Cerr<<" not vertex contained in the joint will leads to trouble" <<finl;
-          Process::exit();
+          const MEDFileJointCorrespondence * corr = jnt1->getCorrespondenceAtPos(c);
+          if (!corr->getIsNodal())
+            {
+              Cerr << "  Skipping joint - it is not nodal!" << finl;
+              continue;
+            }
+          const DataArrayIdType *da = corr->getCorrespondence();
+          // TODO check this here
+          if (da->getNumberOfTuples() != 1)
+            Process::exit("WOOOPS ?");
+          const mcIdType *daP = da->begin();
+          corres_joint_j[c] = daP[1];
         }
     }
-  MEDfileClose(fid);
-  Cerr<<"End of the reading of the joint informations "<<finl;
+  Cerr << "  Done reading joint informations ... "<<finl;
 #endif
 }
 
