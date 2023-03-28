@@ -2,7 +2,7 @@
 #include "EOS/API/EOS_Fields.hxx"
 #include "EOS/API/EOS_Error_Field.hxx"
 #include "EOS/API/EOS_Std_Error_Handler.hxx"
-#include "EOS_to_TRUST_tools.h"
+#include "TPPI_tools.h"
 
 using namespace NEPTUNE; 
 

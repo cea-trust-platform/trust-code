@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef EOS_to_TRUST_tools_included
-#define EOS_to_TRUST_tools_included
+#ifndef TPPI_tools_included
+#define TPPI_tools_included
 
 #include <Motcle.h>
 #include <span.hpp>
@@ -755,4 +755,4 @@ struct EOS_Supported_Models_Fluids
   };
 };
 
-#endif /* EOS_to_TRUST_tools_included */
+#endif /* TPPI_tools_included */

@@ -1,8 +1,8 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/include/EOS\
 	-I$(TRUST_ROOT)/include/CoolProp\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
-	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces\
 
 
-Lib = $(TRUST_LIB)/libcoolprop2trust
+Lib = $(TRUST_LIB)/libtppi
