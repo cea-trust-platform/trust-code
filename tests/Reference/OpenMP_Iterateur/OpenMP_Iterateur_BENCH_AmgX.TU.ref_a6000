@@ -1,26 +1,26 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       21.8455
+Temps total                       17.6133
 
 Statistiques de resolution du probleme
 
-Temps total                       4.34303
+Temps total                       3.99026
 
 
 Timesteps                         10
-Secondes / pas de temps           0.434296
-Dont solveurs Ax=B                0.222753 51% (1 appel/pas de temps)
-Dont mettre_a_jour                0.0128962 2% (1 appel/pas de temps)
-Dont operateurs convection        0.059051 13% (1 appel/pas de temps)
-Dont operateurs diffusion         0.0808886 18% (1 appel/pas de temps)
-Dont operateurs gradient          0.0117021 2% (2 appels/pas de temps)
-Dont operateurs divergence        0.0107364 2% (2 appels/pas de temps)
-Dont operations postraitement     0.0143642 3% (1 appel/pas de temps)
-Dont calcul dt                    0.0125428 2% (2 appels/pas de temps)
-Dont calcul divers                0.00936 2% (0 appels/pas de temps)
+Secondes / pas de temps           0.399018
+Dont solveurs Ax=B                0.25888 64% (1 appel/pas de temps)
+Dont mettre_a_jour                0.0120142 3% (1 appel/pas de temps)
+Dont operateurs convection        0.0588846 14% (1 appel/pas de temps)
+Dont operateurs diffusion         0.0153364 3% (1 appel/pas de temps)
+Dont operateurs gradient          0.0127922 3% (2 appels/pas de temps)
+Dont operateurs divergence        0.0087713 2% (2 appels/pas de temps)
+Dont operations postraitement     0.0144127 3% (1 appel/pas de temps)
+Dont calcul dt                    0.0071972 1% (2 appels/pas de temps)
+Dont calcul divers                0.010728 2% (0 appels/pas de temps)
 Nb echange_espace_virtuel / pas de temps 10
 Nb solveur / pas de temps         1
-Secondes / solveur                0.222753
+Secondes / solveur                0.25888
 Iterations / solveur              31.1
 I/O:
 
@@ -40,5 +40,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.128432
+Temps total                       0.127055
 

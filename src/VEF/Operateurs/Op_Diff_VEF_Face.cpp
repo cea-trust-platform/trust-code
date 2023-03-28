@@ -265,162 +265,84 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                                              const Domaine_VEF& domaine_VEF,
                                              int nb_comp) const
 {
-  const IntTab& elemfaces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int premiere_face_int = domaine_VEF.premiere_face_int();
-  int nb_faces = domaine_VEF.nb_faces();
-  //int nb_faces_tot = domaine_VEF.nb_faces_tot();
-  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
-  DoubleVect n(Objet_U::dimension);
-  DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
+  assert(nb_comp==dimension);
 
   // On dimensionne et initialise le tableau des bilans de flux:
   tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nb_comp);
   tab_flux_bords=0.;
 
-  assert(nb_comp>1);
-  int nb_bords=domaine_VEF.nb_front_Cl();
-
-  // copyPartialFromDevice(resu, 0, premiere_face_int * nb_comp, "resu real on boundary");
-  // copyPartialFromDevice(resu, nb_faces * nb_comp, nb_faces_tot * nb_comp, "resu virtual");
-  // copyPartialFromDevice(inconnue, 0, premiere_face_int * nb_comp, "inconnue real on boundary");
-  // copyPartialFromDevice(inconnue, nb_faces * nb_comp, nb_faces_tot * nb_comp, "inconnue virtual");
-  // ToDo OpenMP ecarts sur le cas 2Cubes Pourquoi ? Tester avec un copyFromDevice(inconnue); Est ce que les faces virtuelles sont touchees ?
-  start_timer();
-  for (int n_bord0=0; n_bord0<nb_bords; n_bord0++)
+  // Construction du tableau grad_ si necessaire
+  if(!grad_.get_md_vector().non_nul())
     {
-      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord0);
-      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      // const IntTab& elemfaces = domaine_VEF.elem_faces();
-      int num1 = 0;
-      int num2 = le_bord.nb_faces_tot();
-      int nb_faces_bord_reel = le_bord.nb_faces();
-      int j = 0;
+      grad_.resize(0, Objet_U::dimension, Objet_U::dimension);
+      domaine_VEF.domaine().creer_tableau_elements(grad_);
+    }
+  Champ_P1NC::calcul_gradient(inconnue,grad_,domaine_Cl_VEF);
 
-      if (sub_type(Periodique,la_cl.valeur()))
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          for (int ind_face=num1; ind_face<nb_faces_bord_reel; ind_face++)
-            {
-              int fac_asso = la_cl_perio.face_associee(ind_face);
-              fac_asso = le_bord.num_face(fac_asso);
-              int num_face = le_bord.num_face(ind_face);
-              for (int kk=0; kk<2; kk++)
-                {
-                  int elem = face_voisins(num_face, kk);
-                  for (int i0=0; i0<nb_faces_elem; i0++)
-                    {
-                      if ( ( (j= elemfaces(elem,i0)) > num_face ) && (j != fac_asso ) )
-                        {
-                          double valA = viscA(num_face,j,elem,nu(elem));
-                          for (int nc=0; nc<nb_comp; nc++)
-                            {
-                              resu(num_face,nc)+=valA*inconnue(j,nc);
-                              resu(num_face,nc)-=valA*inconnue(num_face,nc);
-                              if(j<nb_faces) // face reelle
-                                {
-                                  ////ATENTION DIFF NUM_face avec ma version
-                                  resu(j,nc)+=0.5*valA*inconnue(num_face,nc);
-                                  resu(j,nc)-=0.5*valA*inconnue(j,nc);
-                                }
-                            }
-                        }
-                    }
-                }
+  /* ToDo OpenMP : factoriser avec Op_Dift_VEF_Face.cpp dans une classe template
+  if (le_modele_turbulence.valeur().utiliser_loi_paroi())
+   {
+      Champ_P1NC::calcul_duidxj_paroi(grad_,nu,nu_turb,tau_tan_,domaine_Cl_VEF);
+      grad_.echange_espace_virtuel(); // gradient_elem a jour sur les elements virtuels
+  }
+  DoubleTab Re;
+  Re.resize(0, Objet_U::dimension, Objet_U::dimension);
+  domaine_VEF.domaine().creer_tableau_elements(Re);
+  Re = 0.;
+  if (le_modele_turbulence.valeur().calcul_tenseur_Re(nu_turb, grad_, Re))
+  {
+      Cerr << "On utilise une diffusion turbulente non linaire dans NS" << finl;
+      for (int elem=0; elem<nb_elem; elem++)
+          for (int i=0; i<nbr_comp; i++)
+              for (int j=0; j<nbr_comp; j++)
+                  Re(elem,i,j) *= nu_turb[elem];
+  }
+  else
+  {
+      for (int elem=0; elem<nb_elem; elem++)
+          for (int i=0; i<nbr_comp; i++)
+              for (int j=0; j<nbr_comp; j++)
+                  Re(elem,i,j) = nu_turb[elem]*(grad_(elem,i,j) + grad_(elem,j,i));
+  }
+  Re.echange_espace_virtuel();
+  */
 
-            }
-        }// fin if periodique
-      else
-        {
-          for (int ind_face=num1; ind_face<num2; ind_face++)
-            {
-              int num_face = le_bord.num_face(ind_face);
-              int elem=face_voisins(num_face,0);
-
-              // Boucle sur les faces :
-              for (int i=0; i<nb_faces_elem; i++)
-                if (( (j= elemfaces(elem,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
-                  {
-                    double valA = viscA(num_face,j,elem,nu(elem));
-                    for (int nc=0; nc<nb_comp; nc++)
-                      {
-                        double flux=valA*(inconnue(j,nc)-inconnue(num_face,nc));
-                        if (ind_face<nb_faces_bord_reel)
-                          {
-                            resu(num_face,nc)+=flux;
-                            tab_flux_bords(num_face,nc)+=flux;
-                          }
-                        if(j<nb_faces) // face reelle
-                          resu(j,nc)-=flux;
-                      }
-                  }
-            }
-        }
-    }//Fin for n_bord
-  end_timer(0, "Boundary condition on resu in Op_Diff_VEF_Face::ajouter_cas_vectoriel");
-// copyPartialToDevice(resu, 0, premiere_face_int * nb_comp, "resu reel on boundary");
-// copyPartialToDevice(resu, nb_faces * nb_comp, nb_faces_tot * nb_comp, "resu virtual");
-
-  const DoubleTab& face_normales=domaine_VEF.face_normales();
-  const DoubleVect& inverse_volumes=domaine_VEF.inverse_volumes();
-
-  // On traite les faces internes
+  int nb_faces = domaine_VEF.nb_faces();
+  int nb_faces_bord = domaine_VEF.premiere_face_int();
   const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
-  const int * elem_faces_addr = mapToDevice(domaine_VEF.elem_faces());
-  const double * inverse_volumes_addr = mapToDevice(inverse_volumes);
-  const double * face_normales_addr = mapToDevice(face_normales);
+  const double * face_normales_addr = mapToDevice(domaine_VEF.face_normales());
   const double * nu_addr = mapToDevice(nu, "nu");
-  const double * inconnue_addr = mapToDevice(inconnue, "inconnue");
+  const double * grad_addr = mapToDevice(grad_, "grad");
   double * resu_addr = computeOnTheDevice(resu, "resu");
+  double * tab_flux_bords_addr = computeOnTheDevice(tab_flux_bords, "tab_flux_bords");
   start_timer();
   #pragma omp target teams distribute parallel for if (computeOnDevice)
-  for (int num_face=premiere_face_int; num_face<nb_faces; num_face++)
+  for (int num_face=0; num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)
         {
           int elem = face_voisins_addr[2*num_face+k];
-          int j=0;
-          for (int i0=0; i0<nb_faces_elem; i0++)
+          if (elem>=0)
             {
-              if ( (j= elem_faces_addr[nb_faces_elem*elem+i0]) > num_face )
-                {
-                  int contrib=1;
-                  if(j>=nb_faces) // C'est une face virtuelle
-                    {
-                      int el1 = face_voisins_addr[j*2];
-                      int el2 = face_voisins_addr[j*2+1];
-                      if((el1==-1)||(el2==-1))
-                        contrib=0;
-                    }
-                  if(contrib)
-                    {
-                      double pscal = 0;
-                      for (int dim=0; dim<dimension; dim++)
-                        pscal += face_normales_addr[num_face*dimension+dim]*face_normales_addr[j*dimension+dim];
-                      int signe = (face_voisins_addr[num_face*2] == face_voisins_addr[j*2]) || (face_voisins_addr[num_face*2+1] == face_voisins_addr[j*2+1]) ? -1 : 1;
-                      double valA = signe*(pscal*nu_addr[elem])*inverse_volumes_addr[elem];
-                      for (int nc=0; nc<nb_comp; nc++)
-                        {
-                          #pragma omp atomic
-                          resu_addr[num_face*nb_comp+nc]+=valA*inconnue_addr[j*nb_comp+nc];
-                          #pragma omp atomic
-                          resu_addr[num_face*nb_comp+nc]-=valA*inconnue_addr[num_face*nb_comp+nc];
-                          if(j<nb_faces) // On traite les faces reelles
-                            {
-                              #pragma omp atomic
-                              resu_addr[j*nb_comp+nc]+=valA*inconnue_addr[num_face*nb_comp+nc];
-                              #pragma omp atomic
-                              resu_addr[j*nb_comp+nc]-=valA*inconnue_addr[j*nb_comp+nc];
-                            }
-                        }
-                    }
-                }
+              int ori = 1 - 2 * k;
+              for (int i = 0; i < nb_comp; i++)
+                for (int j = 0; j < nb_comp; j++)
+                  {
+                    double flux = ori * face_normales_addr[num_face * nb_comp + j]
+                                  * (nu_addr[elem] * grad_addr[elem * nb_comp * nb_comp + i * nb_comp + j] /* + Re(elem, i, j) */ );
+                    #pragma omp atomic
+                    resu_addr[num_face * nb_comp + i] -= flux;
+                    if (num_face < nb_faces_bord)
+                      #pragma omp atomic
+                      tab_flux_bords_addr[num_face * nb_comp + i] -= flux;
+                  }
             }
-        }
-    }// Fin faces internes
+        } // Fin de la boucle sur les 2 elements comnuns a la face
+    } // Fin de la boucle sur les faces
   end_timer(1, "Face loop in Op_Diff_VEF_Face::ajouter");
 
   // Update flux_bords on symmetry:
+  const int nb_bords=domaine_VEF.nb_front_Cl();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);

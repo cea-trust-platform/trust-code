@@ -434,10 +434,12 @@ void Op_VEF_Face::modifier_flux( const Operateur_base& op) const
       if (sub_type(Champ_Uniforme,rho))
         {
           double coef = rho(0,0);
-          int nb_faces_bord=le_dom_vef.nb_faces_bord();
+          int nb_faces_bord = le_dom_vef.nb_faces_bord();
+          double* flux_bords_addr = computeOnTheDevice(flux_bords_);
+          #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
           for (int face=0; face<nb_faces_bord; face++)
             for(int k=0; k<nb_compo; k++)
-              flux_bords_(face,k) *= coef;
+              flux_bords_addr[face*nb_compo+k] *= coef;
         }
     }
 

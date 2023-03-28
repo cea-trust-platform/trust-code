@@ -1,8 +1,10 @@
 ####################
 # Recherche des Copy from device
-if [ "$TRUST_USE_OPENMP" = 1 ] && [ ! -f PAR_$1.dt_ev ]
+if [ "$TRUST_USE_OPENMP" = 1 ]
 then
-   TRUST_CLOCK_ON=1 trust $1 2>&1 | tee $1.out_err | awk '/Copy from device/ && /detected/ && ($(NF-4)>1000) {n+=1;print $0} END {print n/10" copyFromDevice per time step !"}'
+   NP="" && [ ${1#PAR} != $1 ] && NP=2
+   TRUST_CLOCK_ON=1 trust $1 $NP 1>$1.out_err 2>&1 
+   awk '/Copy from device/ && /detected/ && ($(NF-4)>1000) {n+=1} END {print n/10" copyFromDevice per time step ! See "FILENAME}' $1.out_err
 fi
 
 #####################################
@@ -20,4 +22,4 @@ do
    eval $msg 1>verifie.log 2>&1
    message $? 0
 done
-exit $err
+exit $err 

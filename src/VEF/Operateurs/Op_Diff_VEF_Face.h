@@ -83,6 +83,7 @@ protected :
 
 
   REF(Champ_base) diffusivite_;
+  mutable DoubleTab grad_;  // grad
 
   //DoubleVect porosite_face;
 };

@@ -260,14 +260,15 @@ void Op_Diff_VEF_base::remplir_nu(DoubleTab& nu) const
       nu.resize(0, diffu.line_size());
       domaine_VEF.domaine().creer_tableau_elements(nu, Array_base::NOCOPY_NOINIT);
     }
-  if (! diffu.get_md_vector().non_nul())
+  if (!diffu.get_md_vector().non_nul())
     {
       // diffusvite uniforme
       const int n = nu.dimension_tot(0);
       const int nb_comp = nu.line_size();
       // Tableaux vus comme uni-dimenionnels:
-      const DoubleVect& arr_diffu = diffu;
-      DoubleVect& arr_nu = nu;
+      const double* arr_diffu = mapToDevice(diffu);
+      double* arr_nu = computeOnTheDevice(nu);
+      #pragma omp target teams distribute parallel for if (computeOnDevice)
       for (int i = 0; i < n; i++)
         for (int j = 0; j < nb_comp; j++)
           arr_nu[i*nb_comp + j] = arr_diffu[j];
