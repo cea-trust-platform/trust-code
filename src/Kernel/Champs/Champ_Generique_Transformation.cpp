@@ -365,6 +365,8 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                 }
               else if ( directive == "champ_uniforme" )
                 sources_location.add( "elem" );
+              else if ( directive == "champ_don" )
+                sources_location.add( "elem" );
               else
                 {
                   Cerr<<"Error in Champ_Generique_Transformation::completer"<<finl;
