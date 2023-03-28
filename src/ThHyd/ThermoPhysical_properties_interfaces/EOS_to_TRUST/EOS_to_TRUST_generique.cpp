@@ -34,7 +34,7 @@ void EOS_to_TRUST_generique::set_EOS_generique(const char *const model_name, con
 #endif
 }
 
-int EOS_to_TRUST_generique::eos_get_single_property_T_(Loi_en_T enum_prop, const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_single_property_T_(Loi_en_T enum_prop, const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
@@ -53,7 +53,7 @@ int EOS_to_TRUST_generique::eos_get_single_property_T_(Loi_en_T enum_prop, const
 #endif
 }
 
-int EOS_to_TRUST_generique::eos_get_single_property_h_(Loi_en_h enum_prop, const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_single_property_h_(Loi_en_h enum_prop, const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )H.size() == (int )P.size() && (int )H.size() == (int )R.size());
@@ -69,188 +69,188 @@ int EOS_to_TRUST_generique::eos_get_single_property_h_(Loi_en_h enum_prop, const
 #endif
 }
 
-int EOS_to_TRUST_generique::eos_get_rho_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_rho_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::RHO, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::RHO, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_rho_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_rho_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::RHO, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::RHO, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_rho_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_rho_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::RHO_DP, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::RHO_DP, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_rho_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_rho_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::RHO_DP, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::RHO_DP, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_rho_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_rho_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::RHO_DT, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::RHO_DT, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_rho_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_rho_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::RHO_DH, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::RHO_DH, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_h_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_h_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::H, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::H, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_T_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_T_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::T, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::T, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_h_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_h_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::H_DP, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::H_DP, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_T_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_T_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::T_DP, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::T_DP, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_h_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_h_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::H_DT, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::H_DT, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_T_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_T_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::T_DH, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::T_DH, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_cp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_cp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::CP, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::CP, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_cp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_cp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::CP, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::CP, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_cp_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_cp_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::CP_DP, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::CP_DP, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_cp_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_cp_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::CP_DP, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::CP_DP, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_cp_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_cp_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::CP_DT, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::CP_DT, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_cp_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_cp_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::CP_DH, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::CP_DH, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_mu_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_mu_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::MU, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::MU, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_mu_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_mu_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::MU, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::MU, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_mu_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_mu_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::MU_DP, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::MU_DP, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_mu_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_mu_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::MU_DP, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::MU_DP, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_mu_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_mu_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::MU_DT, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::MU_DT, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_mu_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_mu_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::MU_DH, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::MU_DH, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_lambda_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_lambda_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::LAMBDA, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::LAMBDA, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_lambda_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_lambda_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::LAMBDA, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::LAMBDA, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_lambda_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_lambda_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::LAMBDA_DP, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::LAMBDA_DP, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_lambda_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_lambda_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::LAMBDA_DP, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::LAMBDA_DP, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_lambda_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_lambda_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::LAMBDA_DT, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::LAMBDA_DT, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_lambda_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_lambda_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::LAMBDA_DH, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::LAMBDA_DH, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::SIGMA, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::SIGMA, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::SIGMA, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::SIGMA, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_sigma_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_sigma_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::SIGMA_DP, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::SIGMA_DP, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_sigma_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_sigma_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::SIGMA_DP, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::SIGMA_DP, P, H, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_sigma_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_sigma_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_T_(Loi_en_T::SIGMA_DT, P, T, R, ncomp, id);
+  return tppi_get_single_property_T_(Loi_en_T::SIGMA_DT, P, T, R, ncomp, id);
 }
 
-int EOS_to_TRUST_generique::eos_get_sigma_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_sigma_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
-  return eos_get_single_property_h_(Loi_en_h::SIGMA_DH, P, H, R, ncomp, id);
+  return tppi_get_single_property_h_(Loi_en_h::SIGMA_DH, P, H, R, ncomp, id);
 }
 
 // si incompressible et en T ...
-int EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )R.size() && (int )T.size() == ncomp * (int )P.size());
@@ -271,7 +271,7 @@ int EOS_to_TRUST_generique::eos_get_beta_pT(const SpanD P, const SpanD T, SpanD 
 
 // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
 #ifdef HAS_EOS
-int EOS_to_TRUST_generique::eos_get_all_properties_T_(const MSpanD input , EOS_Fields& flds_out, EOS_Error_Field& ferr, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_all_properties_T_(const MSpanD input , EOS_Fields& flds_out, EOS_Error_Field& ferr, int ncomp, int id) const
 {
   const SpanD T = input.at("temperature"), P = input.at("pressure");
   if (ncomp == 1)
@@ -291,7 +291,7 @@ int EOS_to_TRUST_generique::eos_get_all_properties_T_(const MSpanD input , EOS_F
 }
 #endif
 
-int EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )prop.size() == 4 && (int )input.size() == 2);
@@ -325,7 +325,7 @@ int EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, M
         }
     }
 
-  int err_ = eos_get_all_properties_T_(input, flds_out, ferr, ncomp, id);
+  int err_ = tppi_get_all_properties_T_(input, flds_out, ferr, ncomp, id);
 
   /* beta */
   for (int i = 0; i < (int) B.size(); i++) B[i] = drho_dt[i] / rho[i];
@@ -339,7 +339,7 @@ int EOS_to_TRUST_generique::eos_get_CPMLB_pb_multiphase_pT(const MSpanD input, M
 #endif
 }
 
-int EOS_to_TRUST_generique::eos_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp, int id) const
+int EOS_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert( (int )input.size() == 4 && (int )inter.size() == 6 && (int )bord.size() == 2);
@@ -373,8 +373,8 @@ int EOS_to_TRUST_generique::eos_get_all_pb_multiphase_pT(const MSpanD input, MLo
       flds_out[i_out++] = EOS_Field(EOS_prop_en_T[(int) prop_][0], EOS_prop_en_T[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
     }
 
-  int err1_ = eos_get_all_properties_T_( { { "temperature", bT }, { "pressure", bP } }, bflds_out, bferr, ncomp, id); // bords
-  int err2_ = eos_get_all_properties_T_( { { "temperature", T }, { "pressure", P } }, flds_out, ferr, ncomp, id); // interne
+  int err1_ = tppi_get_all_properties_T_( { { "temperature", bT }, { "pressure", bP } }, bflds_out, bferr, ncomp, id); // bords
+  int err2_ = tppi_get_all_properties_T_( { { "temperature", T }, { "pressure", P } }, flds_out, ferr, ncomp, id); // interne
 
   // XXX : ATTENTION : need to put back T in C
   Tc_(T), Tc_(bT);
@@ -385,7 +385,7 @@ int EOS_to_TRUST_generique::eos_get_all_pb_multiphase_pT(const MSpanD input, MLo
 #endif
 }
 
-int EOS_to_TRUST_generique::eos_get_all_prop_loi_F5(const MSpanD input, MLoiSpanD_h spans, int ncomp, int id, bool is_liq) const
+int EOS_to_TRUST_generique::tppi_get_all_prop_loi_F5(const MSpanD input, MLoiSpanD_h spans, int ncomp, int id, bool is_liq) const
 {
 #ifdef HAS_EOS
   assert(ncomp == 1);

@@ -38,10 +38,10 @@ Entree& Fluide_generique_EOS::readOn(Entree& is)
 
   if (model_name_ == "CATHARE2")
     {
-      tmin_ = EOStT.eos_get_T_min();
-      tmax_ = EOStT.eos_get_T_max();
-      pmin_ = EOStT.eos_get_p_min();
-      pmax_ = EOStT.eos_get_p_max();
+      tmin_ = EOStT.tppi_get_T_min();
+      tmax_ = EOStT.tppi_get_T_max();
+      pmin_ = EOStT.tppi_get_p_min();
+      pmax_ = EOStT.tppi_get_p_max();
     }
 
   return is;

@@ -193,14 +193,14 @@ MRange EOS_to_TRUST::all_unknowns_range()
 #ifdef HAS_EOS
   if (tmax_ < -10.)
     {
-      tmin_ = eos_get_T_min();
-      tmax_ = eos_get_T_max();
-      pmin_ = eos_get_p_min();
-      pmax_ = eos_get_p_max();
-      hmin_ = eos_get_h_min();
-      hmax_ = eos_get_h_max();
-      rhomin_ = eos_get_rho_min();
-      rhomax_ = eos_get_rho_max();
+      tmin_ = tppi_get_T_min();
+      tmax_ = tppi_get_T_max();
+      pmin_ = tppi_get_p_min();
+      pmax_ = tppi_get_p_max();
+      hmin_ = tppi_get_h_min();
+      hmax_ = tppi_get_h_max();
+      rhomin_ = tppi_get_rho_min();
+      rhomax_ = tppi_get_rho_max();
     }
 
   return { { "temperature", { tmin_, tmax_}}, { "pression", { pmin_, pmax_}},
@@ -212,7 +212,7 @@ MRange EOS_to_TRUST::all_unknowns_range()
 #endif
 }
 
-double EOS_to_TRUST::eos_get_p_min() const
+double EOS_to_TRUST::tppi_get_p_min() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -224,7 +224,7 @@ double EOS_to_TRUST::eos_get_p_min() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_p_max() const
+double EOS_to_TRUST::tppi_get_p_max() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -236,7 +236,7 @@ double EOS_to_TRUST::eos_get_p_max() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_h_min() const
+double EOS_to_TRUST::tppi_get_h_min() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -248,7 +248,7 @@ double EOS_to_TRUST::eos_get_h_min() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_h_max() const
+double EOS_to_TRUST::tppi_get_h_max() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -260,7 +260,7 @@ double EOS_to_TRUST::eos_get_h_max() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_T_min() const
+double EOS_to_TRUST::tppi_get_T_min() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -272,7 +272,7 @@ double EOS_to_TRUST::eos_get_T_min() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_T_max() const
+double EOS_to_TRUST::tppi_get_T_max() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -284,7 +284,7 @@ double EOS_to_TRUST::eos_get_T_max() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_rho_min() const
+double EOS_to_TRUST::tppi_get_rho_min() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -296,7 +296,7 @@ double EOS_to_TRUST::eos_get_rho_min() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_rho_max() const
+double EOS_to_TRUST::tppi_get_rho_max() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -308,7 +308,7 @@ double EOS_to_TRUST::eos_get_rho_max() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_p_crit() const
+double EOS_to_TRUST::tppi_get_p_crit() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -320,7 +320,7 @@ double EOS_to_TRUST::eos_get_p_crit() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_h_crit() const
+double EOS_to_TRUST::tppi_get_h_crit() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -332,7 +332,7 @@ double EOS_to_TRUST::eos_get_h_crit() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_T_crit() const
+double EOS_to_TRUST::tppi_get_T_crit() const
 {
 #ifdef HAS_EOS
   double tmp_;
@@ -344,7 +344,7 @@ double EOS_to_TRUST::eos_get_T_crit() const
 #endif
 }
 
-double EOS_to_TRUST::eos_get_rho_crit() const
+double EOS_to_TRUST::tppi_get_rho_crit() const
 {
 #ifdef HAS_EOS
   double tmp_;

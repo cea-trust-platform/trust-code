@@ -34,43 +34,43 @@ public :
   void set_EOS_Sat_generique(const char *const model_name, const char *const fluid_name);
 
   // appels simples
-  int eos_get_T_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_T_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_T_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_T_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_p_sat_T(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_p_sat_d_T_T(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_p_sat_T(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_p_sat_d_T_T(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_lvap_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_lvap_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_lvap_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_lvap_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_h_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_h_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
-  int eos_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int eos_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
   // pour les gens qui cherchent sigma de l'objet saturation
-  int eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
-  int eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
 
   // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase et F5 (pour le moment !)
-  int eos_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int id = 0) const override;
-  int eos_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int id = 0) const override;
+  int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int id = 0) const override;
+  int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int id = 0) const override;
 
 private:
-  int eos_get_single_sat_p_(SAT , const SpanD , SpanD , int ncomp = 1, int id = 0) const;
+  int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int ncomp = 1, int id = 0) const;
 };
 
 #endif /* EOS_to_TRUST_Sat_generique_included */

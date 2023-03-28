@@ -33,7 +33,7 @@ void EOS_to_TRUST_Sat_generique::set_EOS_Sat_generique(const char *const model_n
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_single_sat_p_(SAT enum_prop, const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_single_sat_p_(SAT enum_prop, const SpanD P, SpanD res, int ncomp, int ind) const
 {
 #ifdef HAS_EOS
   assert (ncomp * (int)P.size() == (int)res.size());
@@ -54,77 +54,77 @@ int EOS_to_TRUST_Sat_generique::eos_get_single_sat_p_(SAT enum_prop, const SpanD
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_T_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_T_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::T_SAT, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::T_SAT, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_T_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_T_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::T_SAT_DP, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::T_SAT_DP, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_h_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_h_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::HL_SAT, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::HL_SAT, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::HL_SAT_DP, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::HL_SAT_DP, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::HV_SAT, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::HV_SAT, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::HV_SAT_DP, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::HV_SAT_DP, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::RHOL_SAT, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::RHOL_SAT, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::RHOL_SAT_DP, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::RHOL_SAT_DP, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::RHOV_SAT, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::RHOV_SAT, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::RHOV_SAT_DP, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::RHOV_SAT_DP, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::CPL_SAT, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::CPL_SAT, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::CPL_SAT_DP, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::CPL_SAT_DP, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::CPV_SAT, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::CPV_SAT, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
-  return eos_get_single_sat_p_(SAT::CPV_SAT_DP, P, res, ncomp, ind);
+  return tppi_get_single_sat_p_(SAT::CPV_SAT_DP, P, res, ncomp, ind);
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_p_sat_T(const SpanD T, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_p_sat_T(const SpanD T, SpanD res, int ncomp, int ind) const
 {
 #ifdef HAS_EOS
   assert ((int)T.size() == (int)res.size());
@@ -135,10 +135,10 @@ int EOS_to_TRUST_Sat_generique::eos_get_p_sat_T(const SpanD T, SpanD res, int nc
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_p_sat_d_T_T(const SpanD T, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_p_sat_d_T_T(const SpanD T, SpanD res, int ncomp, int ind) const
 {
 #ifdef HAS_EOS
-  Process::exit("EOS_to_TRUST_Sat_generique::eos_get_p_sat_d_T_T not coded ! Call the 911 !");
+  Process::exit("EOS_to_TRUST_Sat_generique::tppi_get_p_sat_d_T_T not coded ! Call the 911 !");
   return 1;
 #else
   Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
@@ -146,13 +146,13 @@ int EOS_to_TRUST_Sat_generique::eos_get_p_sat_d_T_T(const SpanD T, SpanD res, in
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_lvap_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_lvap_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
 #ifdef HAS_EOS
   VectorD arr1_((int)P.size()), arr2_((int)P.size());
   int err1_, err2_;
-  err1_ = eos_get_h_v_sat_p(P,SpanD(arr1_),1,0);
-  err2_ = eos_get_h_l_sat_p(P,SpanD(arr2_),1,0);
+  err1_ = tppi_get_h_v_sat_p(P,SpanD(arr1_),1,0);
+  err2_ = tppi_get_h_l_sat_p(P,SpanD(arr2_),1,0);
   for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = arr1_[i] - arr2_[i];
   return std::max(err1_,err2_);
 #else
@@ -161,13 +161,13 @@ int EOS_to_TRUST_Sat_generique::eos_get_lvap_p(const SpanD P, SpanD res, int nco
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_lvap_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+int EOS_to_TRUST_Sat_generique::tppi_get_lvap_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
 #ifdef HAS_EOS
   VectorD arr1_((int)P.size()), arr2_((int)P.size());
   int err1_, err2_;
-  err1_ = eos_get_h_v_sat_d_p_p(P,SpanD(arr1_),1,0);
-  err2_ = eos_get_h_l_sat_d_p_p(P,SpanD(arr2_),1,0);
+  err1_ = tppi_get_h_v_sat_d_p_p(P,SpanD(arr1_),1,0);
+  err2_ = tppi_get_h_l_sat_d_p_p(P,SpanD(arr2_),1,0);
   for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = arr1_[i] - arr2_[i];
   return std::max(err1_,err2_);
 #else
@@ -176,7 +176,7 @@ int EOS_to_TRUST_Sat_generique::eos_get_lvap_d_p_p(const SpanD P, SpanD res, int
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_Sat_generique::tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
@@ -197,7 +197,7 @@ int EOS_to_TRUST_Sat_generique::eos_get_sigma_pT(const SpanD P, const SpanD T, S
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
+int EOS_to_TRUST_Sat_generique::tppi_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
@@ -211,7 +211,7 @@ int EOS_to_TRUST_Sat_generique::eos_get_sigma_ph(const SpanD P, const SpanD H, S
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int id) const
+int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert((int )sats.size() == 8);
@@ -288,7 +288,7 @@ int EOS_to_TRUST_Sat_generique::eos_get_all_flux_interfacial_pb_multiphase(const
 #endif
 }
 
-int EOS_to_TRUST_Sat_generique::eos_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
+int EOS_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
 {
 #ifdef HAS_EOS
   assert(ncomp == 1);
