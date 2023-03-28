@@ -187,15 +187,28 @@ inline const double& TRUSTArray<double>::operator[](int i) const
 template <typename _TYPE_>
 inline _TYPE_* TRUSTArray<_TYPE_>::addr()
 {
+  checkDataOnHost();
   return data_;
 }
 
 template <typename _TYPE_>
 inline const _TYPE_* TRUSTArray<_TYPE_>::addr() const
 {
+  checkDataOnHost();
   return data_;
 }
 
+template <typename _TYPE_>
+inline _TYPE_* TRUSTArray<_TYPE_>::addrForDevice()
+{
+  return data_;
+}
+
+template <typename _TYPE_>
+inline const _TYPE_* TRUSTArray<_TYPE_>::addrForDevice() const
+{
+  return data_;
+}
 //  Renvoie la taille du tableau (nombre d'elements declares a la construction ou a resize_array()).
 //    C'est le nombre d'elements accessibles a operator[]
 template <typename _TYPE_>

@@ -161,15 +161,15 @@ inline int envoyer_all_to_all(const TRUSTArray<_TYPE_>& src, TRUSTArray<_TYPE_>&
   const Comm_Group& grp = PE_Groups::current_group();
   assert(src.size_array() == grp.nproc());
   assert(dest.size_array() == grp.nproc());
-  if (src.addr() == dest.addr())
+  if (src.addrForDevice() == dest.addrForDevice())
     {
       TRUSTArray<_TYPE_> tmp;
       tmp.resize_array(grp.nproc(), Array_base::NOCOPY_NOINIT);
-      grp.all_to_all(src.addr(), tmp.addr(), sizeof(_TYPE_));
+      grp.all_to_all(src.addrForDevice(), tmp.addrForDevice(), sizeof(_TYPE_));
       dest.inject_array(tmp);
     }
   else
-    grp.all_to_all(src.addr(), dest.addr(), sizeof(_TYPE_));
+    grp.all_to_all(src.addrForDevice(), dest.addrForDevice(), sizeof(_TYPE_));
   return 1;
 }
 

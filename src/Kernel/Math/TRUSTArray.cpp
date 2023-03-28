@@ -82,16 +82,19 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& so
   if (nb_elements > 0)
     {
       _TYPE_ * addr_dest = data_ + first_element_dest;
-      const _TYPE_ * addr_source = source.addr() + first_element_source;
-#ifdef _OPENMP
       bool kernelOnDevice = isKernelOnDevice(*this, source, "TRUSTArray<_TYPE_>::inject_array");
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
-      for (int i = 0; i < nb_elements; i++)
-        addr_dest[i] = addr_source[i];
-#else
-      // PL: On utilise le memcpy car c'est VRAIMENT plus rapide (10% +vite sur RNR_G20)
-      memcpy(addr_dest , addr_source, nb_elements * sizeof(_TYPE_));
-#endif
+      const _TYPE_ * addr_source = (kernelOnDevice ? mapToDevice(source) : source.addr()) + first_element_source;
+      if (kernelOnDevice)
+        {
+          #pragma omp target teams distribute parallel for if (computeOnDevice)
+          for (int i = 0; i < nb_elements; i++)
+            addr_dest[i] = addr_source[i];
+        }
+      else
+        {
+          // PL: On utilise le memcpy car c'est VRAIMENT plus rapide (10% +vite sur RNR_G20)
+          memcpy(addr_dest, addr_source, nb_elements * sizeof(_TYPE_));
+        }
     }
   return *this;
 }
@@ -184,7 +187,7 @@ template <typename _TYPE_>
 TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)
 {
   if (std::is_same<_TYPE_,int>::value) throw;
-  const _TYPE_ i_dy = 1. / dy;
+  const _TYPE_ i_dy = 1 / dy;
   _TYPE_ * data = data_;
 #ifdef _OPENMP
   bool kernelOnDevice = isKernelOnDevice(*this,"TRUSTArray<_TYPE_>::operator/= (const _TYPE_ dy)");

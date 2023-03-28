@@ -330,7 +330,7 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
   assert(dest.dimension(0) == grp.nproc());
   assert(src.size_array() == dest.size_array());
 
-  if (dest.addr() == src.addr())
+  if (dest.addrForDevice() == src.addrForDevice())
     {
       DoubleTab tmp(src);
       envoyer_all_to_all(src, tmp);
@@ -339,7 +339,7 @@ void envoyer_all_to_all(const DoubleTab& src, DoubleTab& dest)
   else
     {
       const int sz = src.size() / grp.nproc() * (int)sizeof(double);
-      grp.all_to_all(src.addr(), dest.addr(), sz);
+      grp.all_to_all(src.addrForDevice(), dest.addrForDevice(), sz);
     }
 }
 template <typename T>

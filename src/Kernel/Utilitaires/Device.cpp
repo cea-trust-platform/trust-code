@@ -41,7 +41,8 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
     }
   return devID;
 }
-
+static double clock_start;
+static char* clock_on = NULL;
 #ifdef _OPENMP
 #include <omp.h>
 static bool init_openmp_ = false;
@@ -170,7 +171,7 @@ template <typename _TYPE_>
 void allocateOnDevice(const TRUSTArray<_TYPE_>& tab)
 {
 #ifdef _OPENMP
-  const _TYPE_* tab_addr = tab.addr();
+  const _TYPE_* tab_addr = tab.addrForDevice();
   clock_start = Statistiques::get_time_now();
   #pragma omp target enter data if (Objet_U::computeOnDevice) map(alloc:tab_addr[0:tab.size_array()])
   if (clock_on)
@@ -178,7 +179,7 @@ void allocateOnDevice(const TRUSTArray<_TYPE_>& tab)
       std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
       double ms = 1000 * (Statistiques::get_time_now() - clock_start);
       int size = sizeof(_TYPE_) * tab.size_array();
-      printf("%s %7.3f ms [Data]   Allocate an array on device [%9s] %6ld Bytes\n", clock.c_str(), ms, toString(tab.addr()).c_str(), long(size));
+      printf("%s %7.3f ms [Data]   Allocate an array on device [%9s] %6ld Bytes\n", clock.c_str(), ms, toString(tab_addr).c_str(), long(size));
     }
   tab.set_dataLocation(Device);
 #endif
@@ -210,7 +211,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
   DataLocation currentLocation = tab.get_dataLocation();
   tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
 #endif
-  _TYPE_* tab_addr = tab.addr(); // Car addr() contient un mecanisme de verification
+  _TYPE_* tab_addr = tab.addrForDevice();
 #ifdef _OPENMP
   std::string message;
   int size=0;
@@ -225,7 +226,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       #pragma omp target enter data if (Objet_U::computeOnDevice) map(alloc:tab_addr[0:tab.size_array()])
       #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
       statistiques().end_count(gpu_copytodevice_counter_, size);
-      message = "Copy to device array "+arrayName+" ["+toString(tab.addr())+"]";
+      message = "Copy to device array "+arrayName+" ["+toString(tab_addr)+"]";
     }
   else if (currentLocation==Host)
     {
@@ -233,7 +234,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       statistiques().begin_count(gpu_copytodevice_counter_);
       #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[0:tab.size_array()])
       statistiques().end_count(gpu_copytodevice_counter_, size);
-      message = "Update on device array "+arrayName+" ["+toString(tab.addr())+"]";
+      message = "Update on device array "+arrayName+" ["+toString(tab_addr)+"]";
     }
   else if (currentLocation==PartialHostDevice)
     {
@@ -243,7 +244,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
     {
       if (arrayName!="??")
         {
-          message = "No change on device array "+arrayName+" ["+toString(tab.addr())+"]";
+          message = "No change on device array "+arrayName+" ["+toString(tab_addr)+"]";
           size = 0;
         }
     }
@@ -266,7 +267,7 @@ template <typename _TYPE_>
 void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
 {
 #ifdef _OPENMP
-  _TYPE_* tab_addr = tab.addr();
+  _TYPE_* tab_addr = tab.addrForDevice();
   if (tab.get_dataLocation()==Device)
     {
       int size = sizeof(_TYPE_) * tab.size_array();
@@ -275,14 +276,14 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
       #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[0:tab.size_array()])
       statistiques().end_count(gpu_copyfromdevice_counter_, size);
       std::string message;
-      message = "Copy from device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      message = "Copy from device of array "+arrayName+" ["+toString(tab_addr)+"]";
       end_timer(1, message, size);
       if (clock_on) printf("\n");
       tab.set_dataLocation(HostDevice);
     }
   else
     {
-      Cerr << "Warning, copyFromeDevice() whereas the array was not on the device." << finl;
+      //Cerr << "Warning, copyFromeDevice() whereas the array was not on the device." << finl;
       //Process::exit();
     }
 #endif
@@ -308,13 +309,13 @@ void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::strin
   if (tab.get_dataLocation()==Device || tab.get_dataLocation()==PartialHostDevice)
     {
       int size = sizeof(_TYPE_) * (fin-deb);
-      _TYPE_* tab_addr = tab.addr();
+      _TYPE_* tab_addr = tab.addrForDevice();
       start_timer(size);
       statistiques().begin_count(gpu_copyfromdevice_counter_, size);
       #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[deb:fin-deb])
       statistiques().end_count(gpu_copyfromdevice_counter_, size);
       std::string message;
-      message = "Partial update from device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      message = "Partial update from device of array "+arrayName+" ["+toString(tab_addr)+"]";
       end_timer(1, message, size);
       tab.set_dataLocation(PartialHostDevice);
     }
@@ -329,13 +330,13 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
   if (tab.get_dataLocation()==PartialHostDevice)
     {
       int size = sizeof(_TYPE_) * (fin-deb);
-      _TYPE_* tab_addr = tab.addr();
+      _TYPE_* tab_addr = tab.addrForDevice();
       start_timer(size);
       statistiques().begin_count(gpu_copytodevice_counter_, size);
       #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin-deb])
       statistiques().end_count(gpu_copytodevice_counter_, size);
       std::string message;
-      message = "Partial update to device of array "+arrayName+" ["+toString(tab.addr())+"]";
+      message = "Partial update to device of array "+arrayName+" ["+toString(tab_addr)+"]";
       end_timer(1, message, size);
       tab.set_dataLocation(Device);
     }
@@ -350,13 +351,13 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
     {
       // ToDo OpenMP par de recopie car si le tableau est const il n'a ete modifie sur le host
       //int size = sizeof(_TYPE_) * (fin-deb);
-      //_TYPE_* tab_addr = tab.addr();
+      //_TYPE_* tab_addr = addrForDevice();
       //start_timer(size);
       //statistiques().begin_count(gpu_copytodevice_counter_, size);
       //#pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin-deb])
       //statistiques().end_count(gpu_copytodevice_counter_, size);
       //std::string message;
-      //message = "Partial update to device of const array "+arrayName+" ["+toString(tab.addr())+"]";
+      //message = "Partial update to device of const array "+arrayName+" ["+toString(tab_addr)+"]";
       //end_timer(1, message, size);
       tab.set_dataLocation(Device);
     }

@@ -18,10 +18,7 @@
 
 #include <Array_base.h>
 
-static double clock_start;
-static char* clock_on=NULL;
 extern bool self_test();
-
 extern void init_openmp();
 extern void init_cuda();
 extern std::string toString(const void* adr);

@@ -50,9 +50,9 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
     }
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
-
-  _TYPE_ *resu_base = resu.addr();
-  const _TYPE_ *x_base = vx.addr();
+  bool kernelOnDevice = resu.isKernelOnDevice(vx, "operator_vect_vect_generic(x,y");
+  _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
+  const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (int nblocs_left=nblocs_left_size; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -60,10 +60,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
-#ifdef _OPENMP
-      bool kernelOnDevice = resu.isKernelOnDevice(vx, "operator_vect_vect_generic(x,y");
       #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
-#endif
       for (int count = 0; count < end_bloc - begin_bloc ; count++)
         {
           const _TYPE_& x = x_ptr[count];
@@ -140,17 +137,15 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  _TYPE_ *resu_base = resu.addr();
+  bool kernelOnDevice = resu.isKernelOnDevice("operator_vect_single_generic(x,y)");
+  _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
-#ifdef _OPENMP
-      bool kernelOnDevice = resu.isKernelOnDevice("operator_vect_single_generic(x,y)");
       #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
-#endif
       for (int count=0; count < end_bloc - begin_bloc; count++)
         {
           _TYPE_ &p_resu = resu_ptr[count];
@@ -254,17 +249,15 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return sum;
 
-  const _TYPE_ *x_base = vx.addr();
+  bool kernelOnDevice = vx.isKernelOnDevice("local_operations_vect_bis_generic(x)");
+  const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       const _TYPE_ *x_ptr = x_base + begin_bloc;
-#ifdef _OPENMP
-      bool kernelOnDevice = vx.isKernelOnDevice("local_operations_vect_bis_generic(x)");
       #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(+:sum)
-#endif
       for (int count=0; count < end_bloc - begin_bloc; count++)
         {
           const _TYPE_ x = x_ptr[count];

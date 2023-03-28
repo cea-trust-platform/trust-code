@@ -97,7 +97,7 @@ bool self_test()
         const double *a_addr = mapToDevice(a, "a"); // up-to-date
 
         DoubleTab b(N);
-        double *b_addr = b.addr();
+        double *b_addr = b.addrForDevice();
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
@@ -127,7 +127,7 @@ bool self_test()
         const double *a_addr = mapToDevice(a, "a"); // update
 
         DoubleTab b(N);
-        double *b_addr = b.addr();
+        double *b_addr = b.addrForDevice();
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
@@ -155,7 +155,7 @@ bool self_test()
         const double *a_addr = mapToDevice(a, "a"); // up-to-date
 
         DoubleTab b(N);
-        double *b_addr = b.addr();
+        double *b_addr = b.addrForDevice();
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
@@ -306,7 +306,7 @@ bool self_test()
         assert(b.get_dataLocation() == HostOnly);
         mapToDevice(b, "b"); // copy ToDo cela devrait etre un update
       }
-      // Constructeur par copie DoubleTrab
+      // Constructeur par copie DoubleTab
       {
         DoubleTab a(N);
         a=-1;
@@ -321,6 +321,16 @@ bool self_test()
 #endif
         assert(const_b[0] == 1);
         assert(const_b[b.size()-1] == 1);
+      }
+      // ref_array
+      {
+        DoubleTab a(N);
+        a=1;
+        mapToDevice(a); // Sur le device
+        assert(a.get_dataLocation()==HostDevice);
+        DoubleTab b;
+        b.ref_array(a);
+        assert(b.get_dataLocation()==HostDevice); // b doit etre sur le device
       }
       // ToDo:Comment gerer les DoubleTab_Parts ? Pas facile donc pour le moment
       // le constructeur par copie fait un copyFromDevice du DoubleTab...

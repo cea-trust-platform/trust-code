@@ -22,7 +22,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
                         IS_ADD = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::ADD), IS_MAX = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::MAX);
 
   assert(line_size > 0);
-  _TYPE_ *data = vect.addr();
+  _TYPE_ *data = vect.addrForDevice();
   const int *items_to_process = list.get_data().addr();
   int idx = 0; // Index in list.get_data()
   const ArrOfInt& index = list.get_index();
@@ -46,7 +46,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
           assert(premier_item_bloc >= 0 && bloc_size > 0 && (premier_item_bloc + bloc_size) * line_size <= vect.size_array());
           _TYPE_ *vectptr = data + premier_item_bloc * line_size;
           const int n = line_size * bloc_size;
-          assert(bufptr + n - buffer.addr() <= buffer.size_array());
+          assert(bufptr + n - buffer.addrForDevice() <= buffer.size_array());
           for (int j = 0; j < n; j++)
             {
               if (IS_READ) *(bufptr++) = *(vectptr++);

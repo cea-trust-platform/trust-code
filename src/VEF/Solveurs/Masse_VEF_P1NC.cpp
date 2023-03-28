@@ -73,14 +73,12 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
       exit();
     }
   // On traite les faces standard qui ne portent pas de conditions aux limites
-  const double * porosite_face_addr = mapToDevice(porosite_face);
-  const double * volumes_entrelaces_addr = mapToDevice(volumes_entrelaces);
-  double * sm_addr = sm.addr();
-#ifdef _OPENMP
-  start_timer();
   bool kernelOnDevice = sm.isKernelOnDevice("Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
+  const double * porosite_face_addr = kernelOnDevice ? mapToDevice(porosite_face) : porosite_face.addr();
+  const double * volumes_entrelaces_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces) : volumes_entrelaces.addr();
+  double * sm_addr = kernelOnDevice ? computeOnTheDevice(sm) : sm.addr();
+  start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
-#endif
   for (int face=num_std; face<nfa; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
@@ -147,18 +145,14 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
             }
     }
   copyPartialToDevice(sm, 0, domaine_VEF.premiere_face_int() * nbcomp, "sm on boundary");  // On traite les faces internes non standard
-  const double * volumes_entrelaces_Cl_addr = mapToDevice(volumes_entrelaces_Cl);
-#ifdef _OPENMP
-  start_timer();
   kernelOnDevice = sm.isKernelOnDevice("Face loop (non-std) in Masse_VEF_P1NC::appliquer_impl");
+  const double * volumes_entrelaces_Cl_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces_Cl) : volumes_entrelaces_Cl.addr();
+  start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
-#endif
   for (int face=num_int; face<num_std; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_Cl_addr[face]*porosite_face_addr[face]);
-#ifdef _OPENMP
   end_timer(kernelOnDevice, "Face loop (non-std) in Masse_VEF_P1NC::appliquer_impl");
-#endif
   //sm.echange_espace_virtuel();
   //Debog::verifier("Masse_VEF_P1NC::appliquer, sm=",sm);
   return sm;

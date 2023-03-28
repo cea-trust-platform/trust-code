@@ -137,9 +137,12 @@ public:
   inline _TYPE_& operator()(int i) { return operator[](i); }
   inline const _TYPE_& operator()(int i) const { return operator[](i); }
 
-  // Ces methodes renvoient un pointeur vers le premier element du tableau.
+  // Ces methodes renvoient un pointeur vers le premier element du tableau pour une utilisation sur le host
   inline _TYPE_ * addr();
   inline const _TYPE_ * addr() const;
+  // Les memes methodes pour une utilisation sur le device
+  inline _TYPE_ * addrForDevice();
+  inline const _TYPE_ * addrForDevice() const;
 
   // Renvoie le nombre d'elements du tableau (et non la taille allouee)
   inline int size_array() const;
@@ -278,7 +281,7 @@ private:
   inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const
   {
     if (tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=NULL)
-      Cout << "[clock]              [" << (flag ? "Kernel] " : "Host]   ") << kernel_name << " with a loop on array [" << toString(tab.addr()).c_str() << "] of " << tab.size_array() << " elements" << finl;
+      Cout << "[clock]              [" << (flag ? "Kernel] " : "Host]   ") << kernel_name << " with a loop on array [" << toString(tab.addrForDevice()).c_str() << "] of " << tab.size_array() << " elements" << finl;
   }
   // Fonctions isKernelOnDevice pour lancement conditionnel de kernels sur le device:
   // -Si les tableaux passes en parametre sont sur a jour sur le device
