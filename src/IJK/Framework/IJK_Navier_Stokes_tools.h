@@ -70,6 +70,7 @@ void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Fi
                          const int step, const int k_layer, double dt_tot);
 
 void force_zero_on_walls(IJK_Field_double& vz);
+void from_labo_to_shear_frame(IJK_Field_double& pressure_rhs, double sens);
 void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost);
 //void allocate_cell_vector(FixedVector<IJK_Field_double, 3> & v, const IJK_Splitting & s, int ghost);
 template<int N>

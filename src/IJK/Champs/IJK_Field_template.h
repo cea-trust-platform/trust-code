@@ -62,7 +62,8 @@ public:
 
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
   IJK_Splitting::Localisation get_localisation() const { return localisation_; }
-  void echange_espace_virtuel(int ghost, double Shear_DU=0., int loc=1);
+  void echange_espace_virtuel(int ghost, double Shear_DU=0.);
+  void change_to_sheared_reference_frame(double sens, int loc, int time=1);
 
 protected:
   REF(IJK_Splitting) splitting_ref_;
@@ -73,7 +74,7 @@ protected:
                      int pe_imax_, /* processor to recv from */
                      int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                      int isz, int jsz, int ksz, /* size of block data to send/recv */
-  	  	  	  	  	 int loc = 1, double offset_i = 0., double jump_i=0.);
+  	  	  	  	  	 double offset_i = 0., double jump_i=0.);
 };
 
 #include <IJK_Field_template.tpp>

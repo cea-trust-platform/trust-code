@@ -210,6 +210,7 @@ void force_zero_on_walls(IJK_Field_double& vz)
     }
 }
 
+
 void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost)
 {
   v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
@@ -556,13 +557,21 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+
+  // transformer pressure_rhs pour rendre le probleme triperiodique
+  // on resoud ensuite p(x*,y*,z*)
   double divergence_before = 0.;
   if (check_divergence)
     {
       divergence_before = norme_ijk(pressure_rhs);
     }
+
+//  IJK_Splitting::defilement_ = 0;
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
   // pressure gradient requires the "left" value in all directions:
+  // transformation inverse pour que la pression satisfasse la condition de cisaillement.
+  // p(x*,y*,z*)-->p(x,y,z)
+//  IJK_Splitting::defilement_ = 1;
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
   add_gradient_times_constant(pressure, -dt, vx, vy, vz);
   if (check_divergence)
@@ -607,8 +616,12 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
     {
       divergence_before = norme_ijk(pressure_rhs);
     }
+  //IJK_Splitting::defilement_ = 0;
+
   poisson_solver.set_rho(rho);
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
+  //IJK_Splitting::defilement_ = 1;
+
   // pressure gradient requires the "left" value in all directions:
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
   add_gradient_times_constant_over_rho(pressure, rho, -dt, vx, vy, vz);
@@ -648,9 +661,14 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
       divergence_before = norme_ijk(pressure_rhs);
     }
   poisson_solver.set_inv_rho(inv_rho); // Attention, on met l'inverse de rho.
+//  IJK_Splitting::defilement_ = 0;
+  //pressure_rhs.change_to_sheared_reference_frame(-1, 0);
   // Fait aussi : compute_faces_coefficients_from_inv_rho
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
   // pressure gradient requires the "left" value in all directions:
+//  IJK_Splitting::defilement_ = 1;
+//  pressure.change_to_sheared_reference_frame(1, 0);
+//  pressure_rhs.change_to_sheared_reference_frame(1, 0);
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
   add_gradient_times_constant_times_inv_rho(pressure, inv_rho, -dt, vx, vy, vz);
   if (check_divergence)
