@@ -50,6 +50,20 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, 
 }
 
 template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& inco, const DoubleTab& val_b, const int face, const Dirichlet_loi_paroi& la_cl, const int num1, Type_Double& flux) const
+{
+  const double dist = Dist_norm_bord(face);
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = flux.size_array();
+
+  for (int k = 0; k < ncomp; k++)
+    {
+      const double T_imp = la_cl.val_imp(face-num1,k);
+      const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
+      flux[k] = (i != -1) ? (T_imp-inco(i,k))*surface(face)*porosite(face)*nu_1(i,ori)/dist : (inco(j,k)-T_imp)*surface(face)*porosite(face)*nu_1(j,ori)/dist;
+    }
+}
+
+template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::flux_face(const DoubleTab& , const DoubleTab& val_b, const int face, const Neumann_paroi& la_cl, const int num1, Type_Double& flux) const
 {
   const int i = elem_(face,0), ncomp = flux.size_array();
@@ -203,6 +217,20 @@ inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const int face, const
 
 template <typename DERIVED_T> template <typename Type_Double>
 inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const int face, const int, const Scalaire_impose_paroi& la_cl, Type_Double& aii, Type_Double& ajj) const
+{
+  assert (aii.size_array() == ajj.size_array());
+  const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();
+  const double dist = Dist_norm_bord(face);
+  for (int k = 0; k < ncomp; k++)
+    {
+      const int ori = DERIVED_T::IS_ANISO ? orientation(face) : k;
+      aii[k] = (i != -1) ? porosite(face)*nu_1(i,ori)*surface(face) / dist : 0.;
+      ajj[k] = (i != -1) ? 0. : porosite(face)*nu_1(j,ori)*surface(face) / dist;
+    }
+}
+
+template <typename DERIVED_T> template <typename Type_Double>
+inline void Eval_Diff_VDF_Elem_Gen<DERIVED_T>::coeffs_face(const int face, const int, const Dirichlet_loi_paroi& la_cl, Type_Double& aii, Type_Double& ajj) const
 {
   assert (aii.size_array() == ajj.size_array());
   const int i = elem_(face,0), j = elem_(face,1), ncomp = aii.size_array();

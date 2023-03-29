@@ -133,16 +133,14 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::flux_arete(const DoubleTab& inco, const Doubl
   //         |
 
   // fac3 est la face interne et fac1 et fac2 sont au bord Navier
-
-  const int elem1 = elem_(fac3,0), elem2 = elem_(fac3,1), ncomp = flux.size_array(), ori = orientation(fac3);
+  // XXX : WARNING : nu/nu_turb deja dans coeff
+  const int ncomp = flux.size_array();
   const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), dist = dist_norm_bord(fac1);
   for (int k = 0; k < ncomp; k++)
     {
-      const int ind = DERIVED_T::IS_ANISO ? ori : k;
-      const double visc_lam = nu_lam_mean_2pts(elem1, elem2, ind), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1, elem2, ind) : 0.0;
-      const double coeff = 0.5 * (Champ_Face_coeff_frottement_face_bord(fac1, k, la_zcl.valeur()) + Champ_Face_coeff_frottement_face_bord(fac2, k, la_zcl.valeur()));
-      const double tau = -signe * coeff * inco(fac3, k) / dist, tau_tr = 0.;
-      flux[k] = ((tau + tau_tr) * (visc_lam + visc_turb)) * surf * poros;
+      const double coeff = 0.25 * (Champ_Face_coeff_frottement_face_bord(fac1, k, la_zcl.valeur()) + Champ_Face_coeff_frottement_face_bord(fac2, k, la_zcl.valeur()));
+      const double tau = - signe * coeff * inco(fac3, k) / dist, tau_tr = 0.;
+      flux[k] = (tau + tau_tr) * surf * poros;
     }
 }
 

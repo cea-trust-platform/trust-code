@@ -1386,6 +1386,6 @@ double Champ_Face_coeff_frottement_face_bord(const int f, const int n, const Dom
   int face_locale;
   const Cond_lim_base& cl = (f < domaine_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
 
-  return sub_type(Navier, cl) ? ref_cast(Navier, cl).coefficient_frottement(f,n) : 1.;
+  return sub_type(Navier, cl) ? ref_cast(Navier, cl).coefficient_frottement(face_locale,n) : 0.;
 }
 

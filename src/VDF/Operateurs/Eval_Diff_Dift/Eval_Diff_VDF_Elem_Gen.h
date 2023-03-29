@@ -68,6 +68,7 @@ public:
   // To overload
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Dirichlet_entree_fluide&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Scalaire_impose_paroi&, const int, Type_Double& ) const;
+  template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Dirichlet_loi_paroi&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Neumann_paroi&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Periodique&, const int, Type_Double& ) const;
   template <typename Type_Double> inline void flux_face(const DoubleTab&, const DoubleTab&, const int, const Echange_global_impose&, const int, Type_Double& ) const;
@@ -85,6 +86,7 @@ public:
   // To overload
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Dirichlet_entree_fluide&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Scalaire_impose_paroi&, Type_Double&, Type_Double& ) const;
+  template <typename Type_Double> inline void coeffs_face(const int, const int, const Dirichlet_loi_paroi&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Periodique&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Echange_global_impose&, Type_Double&, Type_Double& ) const;
   template <typename Type_Double> inline void coeffs_face(const int, const int, const Dirichlet_paroi_fixe&, Type_Double&, Type_Double& ) const;
