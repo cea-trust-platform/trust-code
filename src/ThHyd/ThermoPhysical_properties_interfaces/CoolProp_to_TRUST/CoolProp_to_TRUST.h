@@ -25,16 +25,19 @@
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #pragma GCC diagnostic ignored "-Wshadow"
 #include <AbstractState.h>
+#include <CoolPropTools.h>
 #include <CoolPropLib.h>
 #include <CoolProp.h>
 #pragma GCC diagnostic pop
 #endif
 
+namespace CoolProp { class AbstractState; }
+
 class CoolProp_to_TRUST : public TPPI
 {
 public :
   ~CoolProp_to_TRUST() override;
-  void desactivate_handler(bool op = true) override { throw; }
+  void desactivate_handler(bool op = true) override { /* Do nothing */ }
   void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) override { throw; }
 
   int get_model_index(const Motcle& model_name) override { throw; }
@@ -42,22 +45,22 @@ public :
   const char* get_eos_model_name(const int ind) override { throw; }
   const char* get_eos_fluid_name(const Motcle& model_name, const int ind) override { throw; }
 
-  double tppi_get_p_min() const override final { throw; }
-  double tppi_get_p_max() const override final { throw; }
+  double tppi_get_p_min() const override final;
+  double tppi_get_p_max() const override final;
 
-  double tppi_get_h_min() const override final { throw; }
-  double tppi_get_h_max() const override final { throw; }
+  double tppi_get_h_min() const override final;
+  double tppi_get_h_max() const override final;
 
-  double tppi_get_T_min() const override final { throw; }
-  double tppi_get_T_max() const override final { throw; }
+  double tppi_get_T_min() const override final;
+  double tppi_get_T_max() const override final;
 
-  double tppi_get_rho_min() const override final { throw; }
-  double tppi_get_rho_max() const override final { throw; }
+  double tppi_get_rho_min() const override final;
+  double tppi_get_rho_max() const override final;
 
-  double tppi_get_p_crit() const override final { throw; }
-  double tppi_get_h_crit() const override final { throw; }
-  double tppi_get_T_crit() const override final { throw; }
-  double tppi_get_rho_crit() const override final { throw; }
+  double tppi_get_p_crit() const override final;
+  double tppi_get_h_crit() const override final;
+  double tppi_get_T_crit() const override final;
+  double tppi_get_rho_crit() const override final;
 
 protected:
 

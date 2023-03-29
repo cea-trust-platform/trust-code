@@ -21,3 +21,142 @@ CoolProp_to_TRUST::~CoolProp_to_TRUST()
   if (fluide) delete fluide;
 #endif
 }
+
+double CoolProp_to_TRUST::tppi_get_p_min() const
+{
+#ifdef HAS_COOLPROP
+  return fluide->p_triple();
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_p_max() const
+{
+#ifdef HAS_COOLPROP
+  return fluide->pmax();
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_h_min() const
+{
+#ifdef HAS_COOLPROP
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " is not implemented ... Call 911 for help ! " << finl;
+  throw;
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_h_max() const
+{
+#ifdef HAS_COOLPROP
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " is not implemented ... Call 911 for help ! " << finl;
+  throw;
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_T_min() const
+{
+#ifdef HAS_COOLPROP
+  return fluide->Tmin();
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_T_max() const
+{
+#ifdef HAS_COOLPROP
+  return fluide->Tmax();
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_rho_min() const
+{
+#ifdef HAS_COOLPROP
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " is not implemented ... Call 911 for help ! " << finl;
+  throw;
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_rho_max() const
+{
+#ifdef HAS_COOLPROP
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " is not implemented ... Call 911 for help ! " << finl;
+  throw;
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_p_crit() const
+{
+#ifdef HAS_COOLPROP
+  return fluide->p_critical();
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_h_crit() const
+{
+#ifdef HAS_COOLPROP
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " is not implemented ... Call 911 for help ! " << finl;
+  throw;
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_T_crit() const
+{
+#ifdef HAS_COOLPROP
+  return fluide->T_critical();
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+double CoolProp_to_TRUST::tppi_get_rho_crit() const
+{
+#ifdef HAS_COOLPROP
+  return fluide->rhomass_critical();
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
