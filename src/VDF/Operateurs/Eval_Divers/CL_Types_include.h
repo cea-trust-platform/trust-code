@@ -24,6 +24,7 @@
 #include <Echange_global_impose.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_loi_paroi.h>
 #include <Neumann_paroi.h>
 #include <Periodique.h>
 #include <Symetrie.h>

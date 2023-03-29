@@ -44,6 +44,7 @@ enum Type_Cl_VDF
   paroi_fixe, // Dirichlet_paroi_fixe
   paroi_defilante, // Dirichlet_paroi_defilante
   paroi_scalaire_impose, // Scalaire_impose_paroi ou derivees
+  paroi_dirichlet_loi_paroi, // Dirichlet_loi_paroi pour turbulence
   paroi_adiabatique, // Neumann_paroi_adiabatique ou derivees
   paroi, // Neumann_paroi
   echange_externe_impose, // Echange_externe_impose
@@ -126,6 +127,7 @@ inline Type_Cl_VDF Iterateur_VDF_base::type_cl(const Cond_lim& la_cl) const
   else if (sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) retour = paroi_fixe;
   else if (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())) retour = paroi_defilante;
   else if (sub_type(Scalaire_impose_paroi, la_cl.valeur())) retour = paroi_scalaire_impose;
+  else if (sub_type(Dirichlet_loi_paroi, la_cl.valeur())) retour = paroi_dirichlet_loi_paroi;
   else if (sub_type(Neumann_paroi_adiabatique, la_cl.valeur())) retour = paroi_adiabatique;
   else if (sub_type(Neumann_paroi, la_cl.valeur())) retour = paroi;
   else if (sub_type(Echange_externe_impose, la_cl.valeur())) retour = echange_externe_impose;

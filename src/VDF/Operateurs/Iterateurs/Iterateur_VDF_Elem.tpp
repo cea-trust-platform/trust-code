@@ -113,6 +113,9 @@ void Iterateur_VDF_Elem<_TYPE_>::ajouter_blocs_bords(const int ncomp, matrices_t
         case paroi_scalaire_impose:
           ajouter_blocs_bords_<_TYPE_::CALC_FLUX_FACES_SCAL_IMPOSEE, Type_Double>((const Scalaire_impose_paroi&) la_cl.valeur(), ndeb, nfin, ncomp, mats, resu, semi_impl);
           break;
+        case paroi_dirichlet_loi_paroi:
+          ajouter_blocs_bords_<_TYPE_::CALC_FLUX_FACES_SCAL_IMPOSEE, Type_Double>((const Dirichlet_loi_paroi&) la_cl.valeur(), ndeb, nfin, ncomp, mats, resu, semi_impl);
+          break;
         case paroi:
           ajouter_blocs_bords_<_TYPE_::CALC_FLUX_FACES_PAR, Type_Double>((const Neumann_paroi&) la_cl.valeur(), ndeb, nfin, ncomp, mats, resu, semi_impl);
           break;
