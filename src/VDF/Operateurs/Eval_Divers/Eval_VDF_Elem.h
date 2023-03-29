@@ -34,7 +34,7 @@ public:
   // To overload if needed ... see Eval_XXX in leaves files
   static constexpr bool CALC_FLUX_FACES_ECH_EXT_IMP = true, CALC_FLUX_FACES_ECH_GLOB_IMP = true, CALC_FLUX_FACES_ENTREE_FL  = true,
                         CALC_FLUX_FACES_PAR = true, CALC_FLUX_FACES_PAR_ADIAB = false, CALC_FLUX_FACES_PAR_DEFIL = false, CALC_FLUX_FACES_PAR_FIXE = true,
-                        CALC_FLUX_FACES_SORTIE_LIB = false, CALC_FLUX_FACES_SYMM = false, CALC_FLUX_FACES_PERIO = true;
+                        CALC_FLUX_FACES_SORTIE_LIB = false, CALC_FLUX_FACES_SYMM = false, CALC_FLUX_FACES_PERIO = true, CALC_FLUX_FACES_SCAL_IMPOSEE = true;
 
   template <typename BC_TYPE, typename Type_Double>
   inline void coeffs_face_bloc_vitesse(const DoubleTab&, const DoubleTab&, int , const BC_TYPE&, int , Type_Double& ) const { /* Do nothing */ }
