@@ -62,7 +62,7 @@ int Champ_Parametrique::newParameter() const
       index_++;
       // ToDo ameliorer message avec les caracteristiques du champ
       Cerr << "================================================" << finl;
-      Cerr << "[Parameter] Updating to: " << champ().valeur() << finl;
+      Cerr << "[Parameter] Updating to: " << champ().valeur() << (champ()->instationnaire() ? " provisoire instationnaire " : " provisoire stationnaire ") << finl;
       Cerr << "================================================" << finl;
       return index_;
     }

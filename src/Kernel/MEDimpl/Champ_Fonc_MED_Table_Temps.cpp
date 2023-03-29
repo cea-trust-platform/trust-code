@@ -46,6 +46,7 @@ void Champ_Fonc_MED_Table_Temps::set_param(Param& param)
 Entree& Champ_Fonc_MED_Table_Temps::readOn(Entree& is)
 {
   Champ_Fonc_MED::readOn( is );
+  set_instationnaire();
   if (!table_lue_)
     {
       Cerr << "A table must be read using table_temps or table_temps_lue !" << finl;

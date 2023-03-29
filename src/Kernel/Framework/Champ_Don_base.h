@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,8 @@ public:
   Champ_base& affecter_compo(const Champ_base&, int) override;
 
   virtual int initialiser(const double temps);
-
+  virtual void set_instationnaire() { instationnaire_ = true; }
+  virtual bool instationnaire() const { return instationnaire_; }
   /*! @brief Renvoie le nombre de degre de liberte par composante: le nombre de noeuds.
    *
    */
@@ -61,6 +62,8 @@ public:
 
 protected :
   DoubleTab valeurs_;
+private:
+  bool instationnaire_ = false; // Par defaut champ stationnaire
 };
 
 inline void erreur_champ_(const char *nom_methode)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,6 +26,7 @@ Sortie& Champ_Fonc_MED_Tabule::printOn(Sortie& os) const
 Entree& Champ_Fonc_MED_Tabule::readOn(Entree& is)
 {
   Champ_Fonc_MED::readOn(is);
+  set_instationnaire();
   return is;
 }
 

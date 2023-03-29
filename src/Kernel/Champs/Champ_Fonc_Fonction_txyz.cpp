@@ -46,5 +46,6 @@ Entree& Champ_Fonc_Fonction_txyz::readOn(Entree& is)
       Cerr << "We know treating only the scalar fields " << finl;
       Process::exit();
     }
+  set_instationnaire();
   return is;
 }
