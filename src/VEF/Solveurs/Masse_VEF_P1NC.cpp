@@ -82,9 +82,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
   for (int face=num_std; face<nfa; face++)
     for (int comp=0; comp<nbcomp; comp++)
       sm_addr[face*nbcomp+comp] /= (volumes_entrelaces_addr[face]*porosite_face_addr[face]);
-#ifdef _OPENMP
   end_timer(kernelOnDevice, "Face loop (std) in Masse_VEF_P1NC::appliquer_impl");
-#endif
   // On traite les faces non standard
   // les faces des bord sont des faces non standard susceptibles de porter des C.L
   // les faces internes non standard ne portent pas de C.L

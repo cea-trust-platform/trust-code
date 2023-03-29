@@ -291,8 +291,8 @@ private:
     bool flag = tab.isDataOnDevice();
     if (!flag)
       checkDataOnHost(tab);
-    else
-      tab.set_dataLocation(Device); // non const array will be computed on device
+    //else
+    //  tab.set_dataLocation(Device); // non const array will be computed on device
     printKernel(flag, tab, kernel_name);
     return flag;
   }

@@ -112,76 +112,7 @@ inline _TYPE_ neutral_value()
 }
 
 template <typename _TYPE_,typename _TYPE_RETURN_, TYPE_OPERATION_VECT _TYPE_OP_ >
-inline _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
-{
-  vx.checkDataOnHost();
-  static constexpr bool IS_IMAX = (_TYPE_OP_ == TYPE_OPERATION_VECT::IMAX_), IS_IMIN = (_TYPE_OP_ == TYPE_OPERATION_VECT::IMIN_), IS_MAX = (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_),
-                        IS_MIN = (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_), IS_MAX_ABS = (_TYPE_OP_ == TYPE_OPERATION_VECT::MAX_ABS_), IS_MIN_ABS = (_TYPE_OP_ == TYPE_OPERATION_VECT::MIN_ABS_);
-
-  _TYPE_ min_max_val = neutral_value<_TYPE_,_TYPE_OP_>(); // _TYPE_ et pas _TYPE_RETURN_ desole ...
-  _TYPE_RETURN_ i_min_max = -1 ; // seulement pour IMAX_ et IMIN_
-
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_>& master_vect = vx;
-  const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
-  assert(vx.line_size() == line_size);
-  assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
-  assert(vx.get_md_vector() == md);
-  // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
-
-  const _TYPE_ *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      int count = end_bloc - begin_bloc;
-      for (; count; count--)
-        {
-          const _TYPE_ x = *x_ptr;
-          if ((IS_IMAX && x > min_max_val) || (IS_IMIN && x < min_max_val))
-            {
-              i_min_max = (_TYPE_RETURN_)(x_ptr - x_base);
-              min_max_val = x;
-            }
-
-          if ((IS_MAX && x > min_max_val) || (IS_MIN && x < min_max_val)) min_max_val = x;
-
-          if (IS_MAX_ABS || IS_MIN_ABS)
-            {
-              _TYPE_ xx;
-              xx = std::is_same<_TYPE_, int>::value ? (_TYPE_)std::abs(x) : (_TYPE_)std::fabs(x);
-              if ((IS_MAX_ABS && xx > min_max_val) || (IS_MIN_ABS && xx < min_max_val)) min_max_val = xx;
-            }
-
-          x_ptr++;
-        }
-    }
-  return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
-}
+extern _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt);
 
 template <typename _TYPE_>
 inline int local_imax_vect(const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_REAL_ITEMS)
@@ -228,7 +159,6 @@ inline _TYPE_ mp_max_vect_(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = VEC
 template<typename _TYPE_>
 inline _TYPE_ mp_max_vect(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = VECT_REAL_ITEMS)
 {
-  x.checkDataOnHost();
   _TYPE_ s = local_max_vect(x, opt);
   s = Process::mp_max(s);
   return s;
@@ -243,7 +173,6 @@ inline _TYPE_ mp_min_vect_(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = VEC
 template<typename _TYPE_>
 inline _TYPE_ mp_min_vect(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = VECT_REAL_ITEMS)
 {
-  x.checkDataOnHost();
   _TYPE_ s = local_min_vect(x, opt);
   s = Process::mp_min(s);
   return s;
@@ -290,7 +219,6 @@ inline _TYPE_ mp_max_abs_vect_(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt =
 template<typename _TYPE_>
 inline _TYPE_ mp_max_abs_vect(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = VECT_REAL_ITEMS)
 {
-  x.checkDataOnHost();
   _TYPE_ s = local_max_abs_vect(x, opt);
   s = Process::mp_max(s);
   return s;
@@ -305,7 +233,6 @@ inline _TYPE_ mp_min_abs_vect_(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt =
 template<typename _TYPE_>
 inline _TYPE_ mp_min_abs_vect(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = VECT_REAL_ITEMS)
 {
-  x.checkDataOnHost();
   _TYPE_ s = local_min_abs_vect(x, opt);
   s = Process::mp_min(s);
   return s;
@@ -573,71 +500,8 @@ enum class TYPE_OPERATION_VECT_SPEC { ADD_ , CARRE_ };
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ >
 inline void ajoute_operation_speciale_generic(TRUSTVect<int>& resu, int alpha, const TRUSTVect<int>& vx, Mp_vect_options opt) = delete; // forbidden ... ajoute si besoin
 
-// ToDo OpenMP offload in .cpp
 template <TYPE_OPERATION_VECT_SPEC _TYPE_OP_ ,typename _TYPE_>
-inline void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt)
-{
-  resu.checkDataOnHost();
-  vx.checkDataOnHost();
-  static constexpr bool IS_ADD = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::ADD_), IS_CARRE = (_TYPE_OP_ == TYPE_OPERATION_VECT_SPEC::CARRE_);
-
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_>& master_vect = resu;
-  const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
-  assert(vx.line_size() == line_size);
-  assert(vx.size_totale() == vect_size_tot); // this test is necessary if md is null
-  assert(vx.get_md_vector() == md);
-  // Determine blocs of data to process, depending on " opt"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return;
-
-  _TYPE_ *resu_base = resu.addr();
-  const _TYPE_ *x_base = vx.addr();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      _TYPE_ *resu_ptr = resu_base + begin_bloc;
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      int count = end_bloc - begin_bloc;
-      for (; count; count--)
-        {
-          const _TYPE_ x = *x_ptr;
-          _TYPE_& p_resu = *(resu_ptr++);
-
-          if (IS_ADD) p_resu += alpha * x;
-          if (IS_CARRE) p_resu += alpha * x * x;
-
-          x_ptr++;
-        }
-    }
-  // In debug mode, put invalid values where data has not been computed
-#ifndef NDEBUG
-  invalidate_data(resu, opt);
-#endif
-  return;
-}
+extern void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt);
 
 template <typename _TYPE_>
 inline void ajoute_alpha_v(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, Mp_vect_options opt = VECT_REAL_ITEMS)

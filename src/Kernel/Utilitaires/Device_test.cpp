@@ -289,7 +289,7 @@ bool self_test()
         a(1)=2;
         mapToDevice(a, "a");
         assert(est_egal(mp_norme_vect(a),sqrt(Process::nproc()*5)));
-        assert(a.get_dataLocation() == Device); // Operation faite sur le device
+        assert(a.get_dataLocation() == HostDevice); // Operation faite sur le device
       }
       // DoubleTrav
       {
@@ -321,6 +321,31 @@ bool self_test()
 #endif
         assert(const_b[0] == 1);
         assert(const_b[b.size()-1] == 1);
+      }
+      // max/min methods
+      {
+        DoubleTab a(3);
+        a(0)=1;
+        a(1)=3;
+        a(2)=-10;
+        mapToDevice(a);
+        // Change sur le host pour test:
+        a.addrForDevice()[0]=0;
+        a.addrForDevice()[1]=0;
+        a.addrForDevice()[2]=0;
+        a.set_dataLocation(Device);
+        assert(local_max_vect(a)==3);
+        assert(local_min_vect(a)==-10);
+        assert(local_max_abs_vect(a)==10);
+        assert(local_min_abs_vect(a)==1);
+        //assert(local_imax_vect(a)==1);
+        //assert(local_imin_vect(a)==2);
+        assert(a.isDataOnDevice());
+        // On teste sur host les deux methodes imin,imax non portees sur GPU:
+        copyFromDevice(a);
+        assert(a.get_dataLocation()==HostDevice);
+        assert(local_imax_vect(a)==1);
+        assert(local_imin_vect(a)==2);
       }
       // ref_array
       {

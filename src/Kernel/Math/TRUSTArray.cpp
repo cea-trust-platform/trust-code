@@ -20,6 +20,7 @@
 template <typename _TYPE_>
 Sortie&  TRUSTArray<_TYPE_>::printOn(Sortie& os) const
 {
+  this->checkDataOnHost();
   int sz = size_array();
   os << sz << finl;
   if (sz > 0)

@@ -50,8 +50,6 @@ template<typename _TYPE_> template<typename _T_, typename _SCALAR_TYPE_>
 enable_if_t_<std::is_convertible<_SCALAR_TYPE_, _T_>::value , void>
 inline TRUSTVect<_TYPE_>::ajoute(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt)
 {
-  this->checkDataOnHost();
-  y.checkDataOnHost();
   ajoute_alpha_v(*this, alpha, y, opt);
   if (opt == VECT_ALL_ITEMS) echange_espace_virtuel();
 }
@@ -278,7 +276,6 @@ inline void TRUSTVect<_TYPE_>::echange_espace_virtuel()
 template<typename _TYPE_>
 inline void TRUSTVect<_TYPE_>::ecrit(Sortie& os) const
 {
-  this->checkDataOnHost();
   TRUSTArray<_TYPE_>::printOn(os);
   os << (int)-1 << finl; // le marqueur -1 indique que c'est le nouveau format "ecrit", sans structure parallele
 }

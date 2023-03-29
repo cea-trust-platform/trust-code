@@ -72,3 +72,37 @@ void assert_invalide_items_non_calcules(DoubleVect& v, double valeur)
   remplir_items_non_calcules(v, valeur);
 #endif
 }
+
+template <typename _TYPE_>
+void remplir_items_non_calcules_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur)
+{
+  if (v.get_md_vector().non_nul())
+    {
+      const ArrOfInt& blocs = v.get_md_vector().valeur().get_items_to_compute();
+      const int sz = blocs.size_array() / 2, line_size = v.line_size();
+      int j = 0;
+      // Ne pas passer par operator[], sinon plantage si la valeur actuelle est invalide
+      bool kernelOnDevice = v.isKernelOnDevice("remplir_items_non_calcules_(x)");
+      _TYPE_ *ptr = kernelOnDevice ? computeOnTheDevice(v) : v.addr();
+      for (int i = 0; i < sz; i++)
+        {
+          // remplir les elements jusqu'au debut du bloc:
+          const int j_fin = blocs[i*2] * line_size;
+          assert(j >= 0 && j_fin <= v.size_array());
+          #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+          for (int k=j; k < j_fin; k++)
+            ptr[k] = valeur;
+          // Sauter a la fin du bloc
+          j = blocs[i*2+1] * line_size;
+        }
+      // Remplir les elements entre la fin du dernier bloc et la fin du vecteur
+      const int j_fin = v.size_array();
+      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      for (int k=j; k < j_fin; k++)
+        ptr[k] = valeur;
+    }
+}
+// Explicit instanciation
+template void remplir_items_non_calcules_<double>(TRUSTVect<double>& v, double valeur);
+template void remplir_items_non_calcules_<int>(TRUSTVect<int>& v, int valeur);
+template void remplir_items_non_calcules_<float>(TRUSTVect<float>& v, float valeur);
