@@ -206,13 +206,19 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
-  // Calcul du seuil avant resolution pour eviter des soucis:
-  // ToDo OpenMP: comment eviter ce calcul de residu sur CPU a priori et le faire sur le GPU ?
-  Vec ResidualPetsc_;
-  VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
-  MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
-  VecNorm(ResidualPetsc_, NORM_2, &residu(0));
-  VecDestroy(&ResidualPetsc_);
+  // Calcul du residu avant resolution pour eviter des soucis:
+  double normx; // ToDo OpenMP faire sur GPU dans Solv_Petsc ?
+  VecNorm(SolutionPetsc_, NORM_2, &normx);
+  if (normx==0)
+    VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));  // ||Ax-b|| = ||b||
+  else
+    {
+      Vec ResidualPetsc_;
+      VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
+      MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
+      VecNorm(ResidualPetsc_, NORM_2, &residu(0));
+      VecDestroy(&ResidualPetsc_);
+    }
   if (residu(0)==0) return 0;
   else if (residu(0) < seuil_)
     {

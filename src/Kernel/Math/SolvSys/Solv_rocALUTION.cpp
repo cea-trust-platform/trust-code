@@ -538,11 +538,11 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
   long N = pm.GetGlobalNrow();
   int size=b.size_array();
-  if (b_.size_array()==0)
+  if (rhs_host.size_array()==0)
     {
       // Allocation initiale
-      x_.resize(size);
-      b_.resize(size);
+      sol_host.resize(size);
+      rhs_host.resize(size);
       sol.SetParallelManager(pm);
       rhs.SetParallelManager(pm);
       e.SetParallelManager(pm);
@@ -552,27 +552,33 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     }
   int row=0;
   int row_ghost=nb_rows_;
+  double * x_addr = x.addr();
+  const double * b_addr = b.addr();
+  double * sol_host_addr = sol_host.addr();
+  double * rhs_host_addr = rhs_host.addr();
+  //const unsigned int * items_to_keep_addr = items_to_keep_;
+  // ToDo OpenMP faire directement sur device:
   for (int i=0; i<size; i++)
     {
       if (items_to_keep_[i])
         {
-          x_(row) = x(i);
-          b_(row) = b(i);
+          sol_host_addr[row] = x_addr[i];
+          rhs_host_addr[row] = b_addr[i];
           row++;
         }
       else
         {
-          x_(row_ghost) = x(i);
-          b_(row_ghost) = b(i);
+          sol_host_addr[row_ghost] = x_addr[i];
+          rhs_host_addr[row_ghost] = b_addr[i];
           row_ghost++;
         }
     }
 
-  sol.GetInterior().CopyFromData(x_.addr());
-  rhs.GetInterior().CopyFromData(b_.addr());
+  sol.GetInterior().CopyFromData(sol_host.addr());
+  rhs.GetInterior().CopyFromData(rhs_host.addr());
   // ToDo pour eviter une copie (mais bizarre ne marche pas):
-  //sol.SetDataPtr(reinterpret_cast<double **>(&x_), "x", size);
-  //rhs.SetDataPtr(reinterpret_cast<double **>(&b_), "b", size);
+  //sol.SetDataPtr(reinterpret_cast<double **>(&sol_host), "x", size);
+  //rhs.SetDataPtr(reinterpret_cast<double **>(&rhs_host), "b", size);
 
   bool provisoire = false;
   if (provisoire)
@@ -658,12 +664,12 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
   // Recupere la solution
   sol.MoveToHost();
-  sol.GetInterior().CopyToData(x_.addr());
+  sol.GetInterior().CopyToData(sol_host.addr());
   row = 0;
   for (int i=0; i<size; i++)
     if (items_to_keep_[i])
       {
-        x(i) = x_(row);
+        x_addr[i] = sol_host_addr[row];
         row++;
       }
   x.echange_espace_virtuel();
