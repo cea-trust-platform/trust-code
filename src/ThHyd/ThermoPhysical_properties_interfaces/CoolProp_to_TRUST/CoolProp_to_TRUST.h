@@ -38,12 +38,12 @@ class CoolProp_to_TRUST : public TPPI
 public :
   ~CoolProp_to_TRUST() override;
   void desactivate_handler(bool op = true) override { /* Do nothing */ }
-  void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) override { throw; }
+  void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) override;
 
-  int get_model_index(const Motcle& model_name) override { throw; }
-  int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name) override { throw; }
-  const char* get_eos_model_name(const int ind) override { throw; }
-  const char* get_eos_fluid_name(const Motcle& model_name, const int ind) override { throw; }
+  int get_model_index(const Motcle& model_name) override;
+  int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name) override;
+  const char* get_tppi_model_name(const int ind) override;
+  const char* get_tppi_fluid_name(const Motcle& model_name, const int ind) override;
 
   double tppi_get_p_min() const override final;
   double tppi_get_p_max() const override final;
@@ -67,6 +67,8 @@ protected:
 #ifdef HAS_COOLPROP
   CoolProp::AbstractState * fluide = nullptr;
 #endif
+
+  CoolProp_Supported_Models_Fluids supp_;
 
 };
 

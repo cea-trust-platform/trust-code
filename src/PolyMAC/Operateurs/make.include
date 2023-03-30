@@ -1,5 +1,6 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/include/EOS\
+	-I$(TRUST_ROOT)/include/CoolProp\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
@@ -38,6 +39,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Turbulence\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces/EOS_to_TRUST\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces/CoolProp_to_TRUST\
 	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces\
 	-I$(TRUST_ROOT)/src/ThSol\
 	

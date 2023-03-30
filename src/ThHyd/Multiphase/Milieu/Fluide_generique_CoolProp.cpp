@@ -13,31 +13,40 @@
 *
 *****************************************************************************/
 
-#include <Saturation_generique_EOS.h>
+#include <Fluide_generique_CoolProp.h>
 
-Implemente_instanciable(Saturation_generique_EOS, "Saturation_generique_EOS", Saturation_base);
+Implemente_instanciable(Fluide_generique_CoolProp, "Fluide_generique_CoolProp", Fluide_reel_base);
 
-Sortie& Saturation_generique_EOS::printOn(Sortie& os) const { return os; }
+Sortie& Fluide_generique_CoolProp::printOn(Sortie& os) const { return os; }
 
-Entree& Saturation_generique_EOS::readOn(Entree& is)
+Entree& Fluide_generique_CoolProp::readOn(Entree& is)
 {
-  Param param(que_suis_je());
-  param.ajouter("model", &model_name_, Param::REQUIRED);
-  param.ajouter("fluid", &fluid_name_, Param::REQUIRED);
-  param.lire_avec_accolades_depuis(is);
-  EOStT.verify_model_fluid(model_name_, fluid_name_);
+  Fluide_reel_base::readOn(is);
+  CoolProptT.verify_model_fluid(model_name_, fluid_name_);
 
-  const int ind_model = EOStT.get_model_index(model_name_);
-  const int ind_fluid = EOStT.get_fluid_index(model_name_, fluid_name_);
+  const int ind_model = CoolProptT.get_model_index(model_name_);
+  const int ind_fluid = CoolProptT.get_fluid_index(model_name_, fluid_name_);
 
   assert(ind_model > -1 && ind_fluid > -1);
 
   // Lets start playing :-)
-  const char *const model = EOStT.get_tppi_model_name(ind_model);
-  const char *const fld = EOStT.get_tppi_fluid_name(model_name_, ind_fluid);
+  const char *const model = CoolProptT.get_tppi_model_name(ind_model);
+  const char *const fld = CoolProptT.get_tppi_fluid_name(model_name_, ind_fluid);
 
-  EOStT.set_EOS_Sat_generique(model, fld);
-  EOStT.desactivate_handler(false); // throw on error
+  CoolProptT.set_CoolProp_generique(model, fld);
+//  CoolProptT.desactivate_handler(false); // throw on error
+
+  tmin_ = CoolProptT.tppi_get_T_min();
+  tmax_ = CoolProptT.tppi_get_T_max();
+  pmin_ = CoolProptT.tppi_get_p_min();
+  pmax_ = CoolProptT.tppi_get_p_max();
 
   return is;
+}
+
+void Fluide_generique_CoolProp::set_param(Param& param)
+{
+  Fluide_reel_base::set_param(param); // T_ref_ et P_ref_ ?? sais pas si utile ...
+  param.ajouter("model", &model_name_, Param::REQUIRED);
+  param.ajouter("fluid", &fluid_name_, Param::REQUIRED);
 }

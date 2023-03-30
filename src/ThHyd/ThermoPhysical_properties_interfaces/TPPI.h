@@ -35,8 +35,8 @@ public:
 
   virtual int get_model_index(const Motcle& model_name) = 0;
   virtual int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name) = 0;
-  virtual const char* get_eos_model_name(const int ind) = 0;
-  virtual const char* get_eos_fluid_name(const Motcle& model_name, const int ind) = 0;
+  virtual const char* get_tppi_model_name(const int ind) = 0;
+  virtual const char* get_tppi_fluid_name(const Motcle& model_name, const int ind) = 0;
 
   virtual double tppi_get_p_min() const = 0;
   virtual double tppi_get_p_max() const = 0;

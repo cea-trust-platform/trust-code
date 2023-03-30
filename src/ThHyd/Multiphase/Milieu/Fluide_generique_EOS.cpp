@@ -30,8 +30,8 @@ Entree& Fluide_generique_EOS::readOn(Entree& is)
   assert(ind_model > -1 && ind_fluid > -1);
 
   // Lets start playing :-)
-  const char *const model = EOStT.get_eos_model_name(ind_model);
-  const char *const fld = EOStT.get_eos_fluid_name(model_name_, ind_fluid);
+  const char *const model = EOStT.get_tppi_model_name(ind_model);
+  const char *const fld = EOStT.get_tppi_fluid_name(model_name_, ind_fluid);
 
   EOStT.set_EOS_generique(model, fld);
   EOStT.desactivate_handler(false); // throw on error

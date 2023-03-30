@@ -49,12 +49,12 @@ int EOS_to_TRUST::get_fluid_index(const Motcle& model_name, const Motcle& fluid_
   return ind_fluid;
 }
 
-const char* EOS_to_TRUST::get_eos_model_name(const int ind)
+const char* EOS_to_TRUST::get_tppi_model_name(const int ind)
 {
   return supp_.EOS_MODELS[ind];
 }
 
-const char* EOS_to_TRUST::get_eos_fluid_name(const Motcle& model_name, const int ind)
+const char* EOS_to_TRUST::get_tppi_fluid_name(const Motcle& model_name, const int ind)
 {
   if (model_name == "CATHARE2") return supp_.EOS_FLUIDS_C2[ind];
   else if (model_name == "FLICA4") return supp_.EOS_FLUIDS_F4[ind];
