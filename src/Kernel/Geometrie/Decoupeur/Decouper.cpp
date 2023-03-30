@@ -321,7 +321,7 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
   if (reorder==0 && nb_parties>128)
     {
       Cerr << "Performance tip: You could add \"reorder 1\" option to have less distance between communicating processes on the network." << finl;
-      Cerr << "Add also \"Ecrire_lata filename\" to post-process the partition numeration and see the difference." << finl;
+      Cerr << "Add also \"Ecrire_lata filename.lata\" to post-process the partition numeration and see the difference." << finl;
     }
 }
 

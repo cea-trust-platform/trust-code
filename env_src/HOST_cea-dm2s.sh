@@ -10,10 +10,10 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    echo "module purge" >> $env
    # PL: on revient a C++11 donc pas de chargement de module gcc par defaut
-   if [ "$TRUST_USE_CUDA" = 1 ] # || [ "`gcc -v 2>&1 | grep 4.8`" != "" ] # Bye-bye C++ 11 sur Centos7:
-   then
-      echo "module load gcccore/.8.3.0 gcc/8.3.0 || exit -1" >> $env
-   fi
+   #if [ "$TRUST_USE_CUDA" = 1 ] # || [ "`gcc -v 2>&1 | grep 4.8`" != "" ] # Bye-bye C++ 11 sur Centos7:
+   #then
+   #   echo "module load gcccore/.8.3.0 gcc/8.3.0 || exit -1" >> $env
+   #fi
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
       # Surtout ne pas charger le module (car Cuda, MPI,...), uniquement PATH vers les compilateurs

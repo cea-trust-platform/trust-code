@@ -2434,13 +2434,10 @@ do
       echo "  See $check_xdata_log"
       log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
       workdir=`ssh $machine -n 'echo $WORKDIR'`
-      #scp $log@$machine:~/$WORKBASE$machine/TRUST/Outils/TRIOXDATA/check_xdata.log $check_xdata_log
       if  [ "${machine:0:2}" = "is" ]
       then
-         #scp $log@$machine:$workdir/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
          scp $log@$machine:$workdir/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
          scp_error=$?
-         #[ $scp_error != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log && scp_error=$?
       else
          scp $log@$machine:~/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
          scp_error=$?
