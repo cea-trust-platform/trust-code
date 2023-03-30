@@ -54,6 +54,7 @@ protected:
   Elem_geom type_elem_;          ///< Highest dimension element type
   Nom type_face_;                ///< Boundary element type
   Noms noms_bords_;              ///< Names of the boundaries
+  Noms exclude_grps_;            ///< Names of the (face) groups to skip when reading the file
 #ifdef MEDCOUPLING_
   MEDCoupling::MEDCouplingAxisType axis_type_  = MEDCoupling::MEDCouplingAxisType::AX_CART ;
   MEDCoupling::MCAuto<MEDCoupling::MEDCouplingUMesh> mcumesh_;

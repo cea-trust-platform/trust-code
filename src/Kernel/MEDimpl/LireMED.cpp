@@ -258,6 +258,8 @@ Entree& LireMED::interpreter_(Entree& is)
 
       param.ajouter("mesh|maillage", &nom_mesh_);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
 
+      param.ajouter("exclude_groups|exclure_groupes", &exclude_grps_); // XD_ADD_P listchaine List of face groups to skip in the MED file.
+
       EChaine is2(s);
       param.lire_avec_accolades(is2);
       convertAllToPoly_ = (convpoly != 0);
@@ -688,7 +690,12 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
       int zeid = 0;
       for (const auto& gnam: grp_names)
         {
-          noms_bords_.add(gnam.c_str());
+          if (exclude_grps_.search(Nom(gnam)) != -1)
+            {
+              Cerr << "    group '" << gnam << "' is skipped, as requested." << finl;
+              continue;
+            }
+          noms_bords_[zeid] = gnam;
           MCAuto<DataArrayIdType> ids(mfumesh_->getGroupArr(-1, gnam, false));
           int nb_faces = (int) ids->getNbOfElems();
           Cerr << "group_name=" << gnam << " with " << nb_faces << " faces" << finl;
@@ -954,7 +961,7 @@ void LireMED::lire_geom(bool subDom)
     write_sub_dom_datasets();
 
   // Detect boundary meshes:
-  // TODO Fixme Adrien : check skin / discard groups
+  // TODO Fixme Adrien : check skin
   ArrOfInt familles;
   IntVect indices_bords;
   IntTab all_faces_bords;
