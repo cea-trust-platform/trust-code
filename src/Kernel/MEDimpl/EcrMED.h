@@ -63,7 +63,14 @@ public :
   void ecrire_champ(const Nom& type, const Nom& nom_cha1,const DoubleTab& val,const Noms& unite,const Nom& type_elem,double time,const Champ_Inc_base& le_champ);
 
 protected:
-  void creer_all_faces_bord(Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles);
+  // TO BE DELETED IN 1.9.3
+  //
+  void creer_all_faces_bord_OLD(Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles);
+  void fill_faces_and_boundaries_OLD(const REF(Domaine_dis_base)& domaine_dis_base);
+  //
+  //
+
+  void get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const;
   void fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_base);
 
   bool major_mode_ = false;   ///< False by default. If true, the MED file will be written in the major mode of the release version (3.0 for example if current MED version is 3.2)

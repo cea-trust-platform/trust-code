@@ -588,7 +588,8 @@ ArrOfDouble Champ_Fonc_MED::lire_temps_champ(const std::string& fileName, const 
   return temps_sauv;
 }
 
-MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName, const std::string& meshName, const std::string& fieldName, const int iteration, const int order)
+MCAuto<MEDCouplingField> Champ_Fonc_MED::lire_champ(const std::string& fileName, const std::string& meshName,
+                                                    const std::string& fieldName, const int iteration, const int order)
 {
   // Flag pour lecture plus rapide du field sans lecture du mesh si le maillage MED est deja disponible:
   bool fast = meshName == domaine().le_nom() && domaine().get_mc_mesh() != nullptr;

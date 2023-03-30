@@ -670,7 +670,7 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
   familles.resize_array(nfaces);
   for (int i = 0; i < nfaces; i++)
     {
-      int index = connIndex[i] + 1;
+      int index = connIndex[i] + 1;  // +1 to skip MEDCoupling type
       int nb_som = connIndex[i + 1] - index;
       for (int j = 0; j < nb_som; j++)
         all_faces_bords(i, j) = conn[index + j] ;
@@ -686,7 +686,7 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
       auto grp_names = mfumesh_->getGroupsOnSpecifiedLev(-1);
       int ngrp = (int)grp_names.size();
       noms_bords_.resize(ngrp);
-      indices_bords.resize(ngrp);  // will become a iota: [0,1,2,3,4,...]
+      indices_bords.resize(ngrp);
       int zeid = 0;
       for (const auto& gnam: grp_names)
         {
@@ -698,9 +698,9 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
           noms_bords_[zeid] = gnam;
           MCAuto<DataArrayIdType> ids(mfumesh_->getGroupArr(-1, gnam, false));
           int nb_faces = (int) ids->getNbOfElems();
-          Cerr << "group_name=" << gnam << " with " << nb_faces << " faces" << finl;
-          for(const auto& id: *ids)  familles[id] = zeid;
-          indices_bords[zeid] = zeid;
+          Cerr << "    group_name=" << gnam << " with " << nb_faces << " faces" << finl;
+          for(const auto& id: *ids)  familles[id] = zeid+1; //
+          indices_bords[zeid] = zeid+1;
           zeid++;
         }
     }
@@ -794,17 +794,21 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
         }
     }
 
-  // Order "noms_bords_" so that they come by increasing family number:
-  std::map<int, Nom> mp;  // will take advantage from the fact that C++ map are key-ordered
-  int i = 0;
-  for(const auto& ib: indices_bords)
-    mp[ib] = noms_bords_[i++];
-  i = 0;
-  for(const auto &kv: mp)
+  if (!new_mode)
     {
-      noms_bords_[i] = kv.second;
-      indices_bords[i] = kv.first;
-      i++;
+      // Order "noms_bords_" so that they come by increasing family number:
+      std::map<int, Nom> mp;  // will take advantage from the fact that C++ map are key-ordered
+      int i = 0;
+      for(const auto& ib: indices_bords)
+        mp[ib] = noms_bords_[i++];
+      i = 0;
+
+      for(const auto &kv: mp)
+        {
+          noms_bords_[i] = kv.second;
+          indices_bords[i] = kv.first;
+          i++;
+        }
     }
 
   if (noms_bords_.size()==0)

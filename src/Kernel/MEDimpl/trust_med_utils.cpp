@@ -370,7 +370,7 @@ INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& t
 
 /*! @brief Passage de la connectivite TRUST a MED si toMED=true de MED a trio si toMED=false
  */
-void conn_trust_to_med(IntTab& les_elems,Nom& type_elem,bool toMED)
+void conn_trust_to_med(IntTab& les_elems, const Nom& type_elem, bool toMED)
 {
   int nele=les_elems.dimension(0);
   // cas face_bord vide
@@ -444,7 +444,7 @@ void conn_trust_to_med(IntTab& les_elems,Nom& type_elem,bool toMED)
       {
         int nb_som_max=les_elems.dimension(1);
         filter.resize_array(nb_som_max);
-        for (int i=0; i<nb_som_max; i++) filter[i]=i;
+        std::iota(filter.addr(), filter.addr()+nb_som_max, 0);
         break ;
       }
     default:

@@ -35,10 +35,10 @@ class Faces : public Objet_U
 
 public:
 
-/*! @brief enum Type_Face Les differents types geometriques de faces.
- *
- * @sa Faces
- */
+  /*! @brief enum Type_Face Les differents types geometriques de faces.
+   *
+   * @sa Faces
+   */
   enum Type_Face
   {
     vide_0D,
