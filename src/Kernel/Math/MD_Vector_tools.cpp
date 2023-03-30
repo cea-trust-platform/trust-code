@@ -182,7 +182,6 @@ inline void call_echange_espace_virtuel(TRUSTVect<_TYPE_>& v, MD_Vector_tools::O
 {
   if (v.get_md_vector().non_nul())
     {
-      if (Process::nproc()>1) v.checkDataOnHost(); // ToDo : avant de faire un MPI il faut que les donnees soit sur le host
       statistiques().begin_count(echange_vect_counter_);
       echange_espace_virtuel1_(v.get_md_vector(), v, opt);
       statistiques().end_count(echange_vect_counter_);

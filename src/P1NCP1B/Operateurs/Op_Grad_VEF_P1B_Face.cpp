@@ -681,13 +681,12 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   if (flux_bords_.size_array()==0) flux_bords_.resize(domaine_VEF.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
 
-  int nse=domaine_VEF.domaine().nb_som_elem();
+  //int nse=domaine_VEF.domaine().nb_som_elem();
   int nb_faces_bord=domaine_VEF.premiere_face_int();
   int nps=domaine_VEF.numero_premier_sommet();
-  int npa=domaine_VEF.numero_premiere_arete();
   const IntTab& sommets = domaine_VEF.face_sommets();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
-  const IntTab& som_elem=le_dom_vef->domaine().les_elems();
+  //const IntTab& som_elem=le_dom_vef->domaine().les_elems();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,equation());
   const Champ_P1_isoP1Bulle& la_pression_P1B = ref_cast(Champ_P1_isoP1Bulle,eqn_hydr.pression_pa().valeur());
@@ -696,7 +695,6 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
   const DoubleVect& pression_P1B = la_pression_P1B.champ_filtre();
 
   double coeff_P1 = 1./dimension;
-  double coeff_Pa = 1./dimension;
   bool alphaE = domaine_VEF.get_alphaE();
   bool alphaS = domaine_VEF.get_alphaS();
   int nb_som_par_face = sommets.dimension(1);
@@ -726,6 +724,8 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
       /*
       if (domaine_VEF.get_alphaA()*0!=0)
         {
+          int npa=domaine_VEF.numero_premiere_arete();
+          double coeff_Pa = 1./dimension;
           double pres_arete = 0.;
           const IntTab& elem_aretes=le_dom_vef->domaine().elem_aretes();
           const IntTab& aretes_som=le_dom_vef->domaine().aretes_som();

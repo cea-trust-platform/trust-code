@@ -95,51 +95,7 @@ inline void mincol1_to_vect_items(const int line_size, const ArrOfInt& voisins, 
 }
 
 template<typename _TYPE_, VECT_BLOCS_TYPE _ITEM_TYPE_>
-inline void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, const ArrOfInt& nb_items_par_voisin, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers)
-{
-  static constexpr bool IS_READ = (_ITEM_TYPE_ == VECT_BLOCS_TYPE::READ), IS_WRITE = (_ITEM_TYPE_ == VECT_BLOCS_TYPE::WRITE), IS_ADD = (_ITEM_TYPE_ == VECT_BLOCS_TYPE::ADD);
-
-  assert(line_size > 0);
-  _TYPE_ *data = vect.addr();
-  const int *items_to_process = list.get_data().addr();
-  int idx = 0; // Index in list.get_data()
-  const ArrOfInt& index = list.get_index();
-  const int nb_voisins = list.get_nb_lists();
-  for (int i_voisin = 0; i_voisin < nb_voisins; i_voisin++)
-    {
-      // Indice dans list.get_data() de la fin de la liste d'items/blocs pour ce voisin:
-      const int idx_end_of_list = index[i_voisin + 1];
-      // Nombre d'elements de tableau a envoyer/recevoir de ce voisin
-      const int nb_elems = nb_items_par_voisin[i_voisin] * line_size;
-      TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template < _TYPE_ >(voisins[i_voisin], nb_elems);
-      _TYPE_ *bufptr = buffer.addr();
-      assert(idx_end_of_list <= list.get_data().size_array());
-      while (idx < idx_end_of_list)
-        {
-          // Indice de l'item geometrique a copier (ou du premier item du bloc)
-          int premier_item_bloc = items_to_process[idx++];
-          // For blocs, the array contains begin_bloc, end_bloc, begin_bloc, end_bloc...
-          const int dernier_item_bloc = items_to_process[idx++];
-          const int bloc_size = dernier_item_bloc - premier_item_bloc;
-          // Adresse des elements a copier dans le vecteur
-          assert(premier_item_bloc >= 0 && bloc_size > 0 && (premier_item_bloc + bloc_size) * line_size <= vect.size_array());
-          _TYPE_ *vectptr = data + premier_item_bloc * line_size;
-          const int n = line_size * bloc_size;
-          assert(bufptr + n - buffer.addr() <= buffer.size_array());
-          for (int j = 0; j < n; j++)
-            {
-              if (IS_READ) *(bufptr++) = *(vectptr++);
-              else if (IS_WRITE) *(vectptr++) = *(bufptr++);
-              else if (IS_ADD) *(vectptr++) += *(bufptr++);
-              else
-                {
-                  Cerr << "Unknown VECT_BLOCS_TYPE enum !" << finl;
-                  throw;
-                }
-            }
-        }
-    }
-}
+extern void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, const ArrOfInt& nb_items_par_voisin, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers);
 
 template<typename _TYPE_>
 inline void read_from_vect_blocs(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, const ArrOfInt& nb_items_par_voisin, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers)
