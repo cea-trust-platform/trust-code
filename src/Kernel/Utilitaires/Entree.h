@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <cstdio> // Pour EOF sur GNU >= 4.4
 #include <arch.h> // pour LIBLATAFILTER int64
+#include <cstdint>// Pour INT32_MAX sur GNU >= 13
 
 using std::istream;
 using std::ios;

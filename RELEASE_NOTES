@@ -1,3 +1,5 @@
+XX/XX/23 (TRUST) Portability  : Fedora 38 is supported with: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
+XX/XX/23 (TRUST) Portability  : GNU compilers 13.0.1 are supported
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
