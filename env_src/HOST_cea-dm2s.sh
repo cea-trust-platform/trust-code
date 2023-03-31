@@ -7,7 +7,7 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
-   echo "source /etc/profile" >> $env
+   echo "source /etc/profile.d/modules.sh" >> $env
    echo "module purge" >> $env
    # PL: on revient a C++11 donc pas de chargement de module gcc par defaut
    #if [ "$TRUST_USE_CUDA" = 1 ] # || [ "`gcc -v 2>&1 | grep 4.8`" != "" ] # Bye-bye C++ 11 sur Centos7:
