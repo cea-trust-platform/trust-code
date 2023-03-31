@@ -762,29 +762,29 @@ struct EOS_Supported_Models_Fluids
 struct CoolProp_Supported_Models_Fluids
 {
   // TODO : FIXME
-  const std::array<Motcle, 2> AVAIL_MODELS = { { "HEOS", "BICUBIC_HEOS" } };
+  const std::array<Motcle, 3> AVAIL_MODELS = { { "HEOS", "BICUBIC_HEOS", "REFPROP" } };
 
-  const std::array<const char*, 3> COOLPROP_MODELS = { { "HEOS", "BICUBIC&HEOS" } };
+  const std::array<const char*, 3> COOLPROP_MODELS = { { "HEOS", "BICUBIC&HEOS", "REFPROP" } };
 
-  const std::array<Motcle, 17> AVAIL_FLUIDS =
+  const std::array<Motcle, 18> AVAIL_FLUIDS =
   {
     {
       "AIR", "AMMONIA", "CARBON DIOXIDE", "CARBON MONOXIDE",
       "DEUTERIUM", "ETHANE", "ETHANOL", "HELIUM",
       "HYDROGEN", "ISOBUTANE", "METHANE", "NEON",
       "NITROGEN", "OXYGEN", "PROPANE", "PROPYLENE",
-      "WATER"
+      "WATER", "R12"
     }
   }; /* Majuscule car Motcle */
 
-  const std::array<const char*, 17> COOLPROP_FLUIDS =
+  const std::array<const char*, 18> COOLPROP_FLUIDS =
   {
     {
       "Air", "Ammonia", "Carbon dioxide", "Carbon monoxide",
       "Deuterium", "Ethane", "Ethanol", "Helium",
       "Hydrogen", "Isobutane", "Methane", "Neon",
       "Nitrogen", "Oxygen", "Propane", "Propylene",
-      "Water"
+      "Water", "R12"
     }
   };
 };

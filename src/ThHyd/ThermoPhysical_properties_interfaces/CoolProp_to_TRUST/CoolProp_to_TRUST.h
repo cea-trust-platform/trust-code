@@ -37,7 +37,8 @@ namespace CoolProp { class AbstractState; }
 class CoolProp_to_TRUST : public TPPI
 {
 public :
-  ~CoolProp_to_TRUST() override;
+  ~CoolProp_to_TRUST() override = default;
+
   void desactivate_handler(bool op = true) override { /* Do nothing */ }
   void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) override;
 
@@ -66,7 +67,7 @@ public :
 protected:
 
 #ifdef HAS_COOLPROP
-  CoolProp::AbstractState * fluide = nullptr;
+  shared_ptr<CoolProp::AbstractState> fluide = nullptr;
 #endif
 
   CoolProp_Supported_Models_Fluids supp_;

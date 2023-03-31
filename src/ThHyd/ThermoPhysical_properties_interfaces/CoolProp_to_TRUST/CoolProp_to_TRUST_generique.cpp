@@ -19,11 +19,12 @@ using namespace CoolProp;
 
 // iterator index !
 #define i_it std::distance(TT.begin(), &val)
+#define bi_it std::distance(bTT.begin(), &bval)
 
 void CoolProp_to_TRUST_generique::set_CoolProp_generique(const char *const model_name, const char *const fluid_name)
 {
 #ifdef HAS_COOLPROP
-  fluide = AbstractState::factory(std::string(model_name), std::string(fluid_name));
+  fluide = std::shared_ptr<AbstractState>(AbstractState::factory(std::string(model_name), std::string(fluid_name)));
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
@@ -332,20 +333,123 @@ int CoolProp_to_TRUST_generique::tppi_get_beta_pT(const SpanD P, const SpanD T, 
 }
 
 // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
-int CoolProp_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD, MLoiSpanD, int ncomp, int ind) const
+int CoolProp_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
-  throw;
+  assert((int )prop.size() == 4 && (int )input.size() == 2);
+  const SpanD T = input.at("temperature"), P = input.at("pressure");
+  assert((int )T.size() == ncomp * (int )P.size());
+
+  Tk_(T); // XXX : ATTENTION : need Kelvin
+  SpanD cp = prop.at(Loi_en_T::CP), mu = prop.at(Loi_en_T::MU), lamb = prop.at(Loi_en_T::LAMBDA), bet = prop.at(Loi_en_T::BETA);
+
+#ifndef NDEBUG
+  for (auto& itr : prop) assert((int )T.size() == ncomp * (int )itr.second.size());
+#endif
+
+  const int sz = (int ) cp.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::PT_INPUTS, P[i], T[i]);  // SI units
+        cp[i] = fluide->cpmass();
+        mu[i] = fluide->viscosity();
+        lamb[i] = fluide->conductivity();
+        bet[i] = fluide->isobaric_expansion_coefficient();
+      }
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD TT(temp_);
+      for (auto& val : TT) val = T[i_it * ncomp + ind];
+
+      for (int i = 0; i < sz; i++)
+        {
+          fluide->update(CoolProp::PT_INPUTS, P[i], TT[i]);  // SI units
+          cp[i] = fluide->cpmass();
+          mu[i] = fluide->viscosity();
+          lamb[i] = fluide->conductivity();
+          bet[i] = fluide->isobaric_expansion_coefficient();
+        }
+    }
+
+  // XXX : ATTENTION : need to put back T in C
+  Tc_(T);
+
+  return 0; // FIXME : on suppose que tout OK
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
 #endif
 }
 
-int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD, MLoiSpanD, MLoiSpanD, int ncomp, int ind) const
+int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
-  throw;
+  assert( (int )input.size() == 4 && (int )inter.size() == 6 && (int )bord.size() == 2);
+  const SpanD T = input.at("temperature"), P = input.at("pressure"), bT = input.at("bord_temperature"), bP = input.at("bord_pressure");
+  assert ((int )bT.size() == ncomp * (int )bP.size() && (int )T.size() == ncomp * (int )P.size());
+
+  // XXX : ATTENTION : need Kelvin
+  Tk_(T), Tk_(bT);
+
+  SpanD rho = inter.at(Loi_en_T::RHO), drhodp = inter.at(Loi_en_T::RHO_DP), drhodT = inter.at(Loi_en_T::RHO_DT),
+        h = inter.at(Loi_en_T::H), dhdp = inter.at(Loi_en_T::H_DP), dhdT = inter.at(Loi_en_T::H_DT),
+        brho = bord.at(Loi_en_T::RHO), bh = bord.at(Loi_en_T::H);
+
+#ifndef NDEBUG
+  for (auto& itr : inter) assert((int )T.size() == ncomp * (int )itr.second.size());
+  for (auto& itr : bord) assert((int )bT.size() == ncomp * (int )itr.second.size());
+#endif
+
+  const int sz = (int ) rho.size(), bsz = (int ) brho.size();
+  if (ncomp == 1)
+    {
+      for (int i = 0; i < sz; i++)
+        {
+          fluide->update(CoolProp::PT_INPUTS, P[i], T[i]);  // SI units
+          rho[i] = fluide->rhomass();
+          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iT);
+          drhodT[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iT, CoolProp::iP);
+          h[i] = fluide->hmass();
+          dhdp[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iP, CoolProp::iT);
+          dhdT[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iT, CoolProp::iP);
+        }
+      for (int i = 0; i < bsz; i++)
+        {
+          fluide->update(CoolProp::PT_INPUTS, bP[i], bT[i]);  // SI units
+          brho[i] = fluide->rhomass();
+          bh[i] = fluide->hmass();
+        }
+    }
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size()), btemp_((int)bP.size());
+      SpanD TT(temp_), bTT(btemp_);
+      for (auto& val : TT) val = T[i_it * ncomp + ind];
+      for (auto& bval : bTT) bval = bT[bi_it * ncomp + ind];
+
+      for (int i = 0; i < sz; i++)
+        {
+          fluide->update(CoolProp::PT_INPUTS, P[i], TT[i]);  // SI units
+          rho[i] = fluide->rhomass();
+          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iT);
+          drhodT[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iT, CoolProp::iP);
+          h[i] = fluide->hmass();
+          dhdp[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iP, CoolProp::iT);
+          dhdT[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iT, CoolProp::iP);
+        }
+      for (int i = 0; i < bsz; i++)
+        {
+          fluide->update(CoolProp::PT_INPUTS, bP[i], bTT[i]);  // SI units
+          brho[i] = fluide->rhomass();
+          bh[i] = fluide->hmass();
+        }
+    }
+
+  // XXX : ATTENTION : need to put back T in C
+  Tc_(T), Tc_(bT);
+  return 0; // FIXME : on suppose que tout OK
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;

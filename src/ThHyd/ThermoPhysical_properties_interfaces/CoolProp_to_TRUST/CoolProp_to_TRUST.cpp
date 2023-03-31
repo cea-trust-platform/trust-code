@@ -15,13 +15,6 @@
 
 #include <CoolProp_to_TRUST.h>
 
-CoolProp_to_TRUST::~CoolProp_to_TRUST()
-{
-#ifdef HAS_COOLPROP
-  if (fluide) delete fluide;
-#endif
-}
-
 int CoolProp_to_TRUST::get_model_index(const Motcle& model_name)
 {
   int ind_model = -1;
@@ -199,17 +192,3 @@ double CoolProp_to_TRUST::tppi_get_rho_crit() const
   throw;
 #endif
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
