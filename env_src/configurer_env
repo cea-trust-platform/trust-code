@@ -1527,6 +1527,14 @@ if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "$TRUST_DISABLE_MPI4PY" != 1 ]
 then
    pkgs="mpi4py "$pkgs
 fi
+
+# if TRUST is configured with CoolProp, we install also its python package !
+if [ "$TRUST_USE_COOLPROP" != 0 ]
+then
+   echo "Installing coolprop python's package ..."
+   pip install coolprop
+fi
+
 # ld from conda does not recognize openmpi configuration on TGCC and Fed36 and orcus-intel
 rm_compiler_compat=0 && [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ] && rm_compiler_compat=1
 [ "${HOST#orcus}" != $HOST ] && rm_compiler_compat=1  # on orcus, we should remove it
