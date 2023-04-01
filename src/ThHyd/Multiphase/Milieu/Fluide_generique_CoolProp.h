@@ -93,7 +93,7 @@ private:
   }
 
   CoolProp_to_TRUST_generique CoolProptT;
-  Motcle model_name_, fluid_name_;
+  Motcle model_name_, fluid_name_, phase_;
   double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
 };
 

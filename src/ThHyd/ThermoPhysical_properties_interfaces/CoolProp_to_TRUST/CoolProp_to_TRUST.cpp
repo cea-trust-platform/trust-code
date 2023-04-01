@@ -68,6 +68,32 @@ void CoolProp_to_TRUST::verify_model_fluid(const Motcle& model_name, const Motcl
     }
 }
 
+void CoolProp_to_TRUST::verify_phase(const Motcle& phase_name)
+{
+  if (phase_name == "LIQUID" || phase_name == "LIQUIDE") return;
+  if (phase_name == "VAPOR" || phase_name == "VAPEUR") return;
+
+  Cerr << "Error in CoolProp_to_TRUST::" << __func__ << " !! The phase " << phase_name << " is not a recognized word !" <<  finl;
+  Cerr << "Please specify a phase of the following : liquid|liquide or vapor|vapeur ! Otherise dont specify any phase CoolProp will guess it !" <<  finl;
+  Process::exit();
+}
+
+void CoolProp_to_TRUST::set_phase(const Motcle& phase_name)
+{
+#ifdef HAS_COOLPROP
+  assert(fluide != nullptr);
+  if (phase_name == "LIQUID" || phase_name == "LIQUIDE")
+    fluide->specify_phase(CoolProp::iphase_liquid);
+  else if (phase_name == "VAPOR" || phase_name == "VAPEUR")
+    fluide->specify_phase(CoolProp::iphase_gas);
+  else
+    verify_phase(phase_name);
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
 double CoolProp_to_TRUST::tppi_get_p_min() const
 {
 #ifdef HAS_COOLPROP
