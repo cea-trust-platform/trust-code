@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cp $TRUST_ROOT/tests/EOS/jdd CoolProp_test_low_level_6.data
+
+$TRUST_CC_BASE -std=c++2a -o CoolProp_test_low_level_6.x -I$TRUST_ROOT/include/ -I$TRUST_ROOT/include/CoolProp/ CoolProp_test_low_level_6.cpp $TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a -ldl
+
+./CoolProp_test_low_level_6.x &>out
+
+if [ "`diff out out.ref`" != "" ]
+then
+  rm -f is_ok
+else
+  echo OK > is_ok
+fi

@@ -1,0 +1,74 @@
+===============================================================================================
+Test simple calls to saturation CoolProp using the low level interface for fluid : Water
+===============================================================================================
+
+Impose phase CoolProp::iphase_gas 
+
+pl sat: 3536.81
+pv sat: 3536.81
+pldT sat: 207.903
+pvdT sat: 207.903
+
+Tl sat: 373.124
+Tv sat: 373.124
+Tldp sat: 0.000276504
+Tvdp sat: 0.000276504
+
+hl sat: 419058
+hv sat: 2.67553e+06
+hldp sat: 0.436318
+hvdp sat: 0.436318
+
+rhol sat: 958.367
+rhov sat: 0.597657
+rholdp sat: 5.51673e-06
+rhovdp sat: 5.51673e-06
+
+cpl sat: 4215.64
+cpv sat: 2079.94
+cpldp sat: 0.00112033
+cpvdp sat: 0.00112033
+
+lambdal sat: 0.677201
+lambdav sat: 0.0245677
+
+mul sat: 0.000281658
+muv sat: 1.22313e-05
+
+Sigma: 0.0589256
+
+Impose phase CoolProp::iphase_liquid 
+
+pl sat: 3536.81
+pv sat: 3536.81
+pldT sat: 207.903
+pvdT sat: 207.903
+
+Tl sat: 373.124
+Tv sat: 373.124
+Tldp sat: 0.000276504
+Tvdp sat: 0.000276504
+
+hl sat: 419058
+hv sat: 2.67553e+06
+hldp sat: 1.16639
+hvdp sat: 1.16639
+
+rhol sat: 958.367
+rhov sat: 0.597657
+rholdp sat: -0.000198402
+rhovdp sat: -0.000198402
+
+cpl sat: 4215.64
+cpv sat: 2079.94
+cpldp sat: 0.000317333
+cpvdp sat: 0.000317333
+
+lambdal sat: 0.677201
+lambdav sat: 0.0245677
+
+mul sat: 0.000281658
+muv sat: 1.22313e-05
+
+Sigma: 0.0589256
+
