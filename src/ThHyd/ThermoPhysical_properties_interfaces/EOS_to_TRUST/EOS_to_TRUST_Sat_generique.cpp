@@ -275,7 +275,7 @@ int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(cons
           dPHvs__[i * ncomp + id] = dPHvs_[i];
           dPHls__[i * ncomp + id] = dPHls_[i];
           Lvap__[i * ncomp + id] = Hvs_[i] - Hls_[i];
-          dPLvap__[i] = dPHvs_[i] - dPHls_[i];
+          dPLvap__[i * ncomp + id] = dPHvs_[i] - dPHls_[i];
         }
     }
 

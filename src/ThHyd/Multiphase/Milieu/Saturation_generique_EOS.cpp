@@ -22,8 +22,8 @@ Sortie& Saturation_generique_EOS::printOn(Sortie& os) const { return os; }
 Entree& Saturation_generique_EOS::readOn(Entree& is)
 {
   Param param(que_suis_je());
-  param.ajouter("model", &model_name_, Param::REQUIRED);
-  param.ajouter("fluid", &fluid_name_, Param::REQUIRED);
+  param.ajouter("model|modele", &model_name_, Param::REQUIRED);
+  param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
   EOStT.verify_model_fluid(model_name_, fluid_name_);
 
