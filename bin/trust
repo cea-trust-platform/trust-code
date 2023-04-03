@@ -695,7 +695,9 @@ fi
 if [ "$xcheck" = 1 ]
 then
    $TRUST_ROOT/bin/VerifData $NOM".data"
-   exit $?
+   ret=$?
+   [ $ret != 0 ] && echo "Error!" || echo "All OK!"
+   exit $ret
 fi
 
 ##########################
