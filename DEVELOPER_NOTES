@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.2_beta : Changes since version 1.9.1 :
 -------------------------------------------------------------
+03/04/23 (TRUST) Minor change : A customized list of tests can be used for non-regression or validation: make check_optim TESTLIST="path_to_the_list" or make validation TESTLIST="path_to_the_list"
 10/03/23 (TRUST) Major change : TRUST can be linked to a pre-compiled static library of EOS (./configure -with-eos=<YOUR_PATH_TO_EOS_INSTALL>). 
 10/03/23 (TRUST) MPI          : MPI_Gather/MPI_Allgatheri/MPI_Allgatherv wrapped functions added to TRUST
 07/02/23 (TRUST) Major change : TRUST_Ref is a template class now. No need for macros to declare/implement. Used always with the REF macro.
