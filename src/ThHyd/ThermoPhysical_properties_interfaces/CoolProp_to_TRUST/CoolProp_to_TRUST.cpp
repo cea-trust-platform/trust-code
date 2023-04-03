@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <CoolProp_to_TRUST.h>
+#include <cstdlib>
 
 int CoolProp_to_TRUST::get_model_index(const Motcle& model_name)
 {
@@ -66,6 +67,8 @@ void CoolProp_to_TRUST::verify_model_fluid(const Motcle& model_name, const Motcl
 
       Process::exit();
     }
+
+  if (model_name == "REFPROP") set_path_refprop();
 }
 
 void CoolProp_to_TRUST::verify_phase(const Motcle& phase_name)
@@ -76,6 +79,29 @@ void CoolProp_to_TRUST::verify_phase(const Motcle& phase_name)
   Cerr << "Error in CoolProp_to_TRUST::" << __func__ << " !! The phase " << phase_name << " is not a recognized word !" <<  finl;
   Cerr << "Please specify a phase of the following : liquid|liquide or vapor|vapeur ! Otherise dont specify any phase CoolProp will guess it !" <<  finl;
   Process::exit();
+}
+
+void CoolProp_to_TRUST::set_path_refprop()
+{
+#ifdef HAS_COOLPROP
+  const char *use_refprop = std::getenv("TRUST_USE_REFPROP");
+
+  if (use_refprop != nullptr && std::string(use_refprop) == "1")
+    {
+      const char * refprop_dir = std::getenv("TRUST_REFPROP_HOME_DIR");
+      assert (refprop_dir != nullptr);
+      CoolProp::set_config_string(configuration_keys::ALTERNATIVE_REFPROP_PATH, std::string(refprop_dir));
+    }
+  else
+    {
+      Cerr << "You want to use the RefProp model but no path is provided towards the RefProp install !" << finl;
+      Cerr << "Check your TRUST configuration !" << finl;
+      Process::exit();
+    }
+#else
+  Cerr << "CoolProp_to_TRUST::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
 }
 
 void CoolProp_to_TRUST::set_phase(const Motcle& phase_name)

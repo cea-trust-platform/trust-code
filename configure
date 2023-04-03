@@ -293,10 +293,11 @@ echo "   [-cuda[=path to nvcc|=download]]    Activate the CUDA support into seve
 echo "   [-openmp]                           Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)."
 
 echo " "
-echo -e "\033[1m\033[4mLinking with etxernal Thermo-Physical Properties libraries\033[0m"
+echo -e "\033[1m\033[4mLinking with external Thermo-Physical Properties libraries\033[0m"
 echo " "
 echo "   [-with-eos=<path_to_eos>]           Compiles TRUST and links with an external static EOS library."
 echo "   [-with-coolprop=<path_to_coolprop>] Compiles TRUST and links with an external static CoolProp library. The python CoolProp package will be also installed."
+echo "   [-with-refprop=<path_to_refprop>]   Path towards your local RefProp library installation (dynamic library will be opened via the CoolProp interface if requested)."
 
 echo " "
 echo -e "\033[1m\033[4mOptions to enable/disable libraries/tools\033[0m"
@@ -389,6 +390,7 @@ export TRUST_USE_CUDA=0
 export TRUST_USE_AMGX=0
 export TRUST_USE_EOS=0
 export TRUST_USE_COOLPROP=0
+export TRUST_USE_REFPROP=0
 export TRUST_ROCALUTION=1
 export TRUST_USE_OPENMP=0
 export TRUST_USE_AVX=1
@@ -407,6 +409,7 @@ unset TRUST_USE_EXTERNAL_MED
 unset TRUST_USE_EXTERNAL_MEDCOUPLING
 unset EOS_HOME
 unset COOLPROP_HOME
+unset REFPROP_HOME
 
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"
@@ -522,6 +525,10 @@ do
       # Proper include files for CoolProp are managed by script bin/cree_include
       export TRUST_USE_COOLPROP=1
       export COOLPROP_HOME=${1#-with-coolprop=}
+   elif [ "${1#-with-refprop}" != "$1" ]
+   then
+      export TRUST_USE_REFPROP=1
+      export REFPROP_HOME=${1#-with-refprop=}
    elif [ "${1#-rocalution}" != "$1" ]
    then
       export TRUST_ROCALUTION=${1#-rocalution=}
@@ -734,6 +741,15 @@ then
 else
     echo "export TRUST_USE_COOLPROP=0" >> $var
     echo "unset COOLPROP_HOME" >> $var
+fi
+
+if [ "$REFPROP_HOME" != "" ]
+then
+    echo "export TRUST_USE_REFPROP=1" >> $var
+    echo "export TRUST_REFPROP_HOME_DIR=$REFPROP_HOME" >> $var
+else
+    echo "export TRUST_USE_REFPROP=0" >> $var
+    echo "unset REFPROP_HOME" >> $var
 fi
 
 # IF HDF5 tools are not installed, detect h5dump version mismatch

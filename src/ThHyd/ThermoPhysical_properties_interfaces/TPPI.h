@@ -34,6 +34,7 @@ public:
   virtual void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) = 0;
   virtual void verify_phase(const Motcle& ) { /* Do nothing */}
   virtual void set_phase(const Motcle& ) { /* Do nothing */}
+  virtual void set_path_refprop() { return not_implemented<void>(__func__); }
 
   virtual int get_model_index(const Motcle& model_name) = 0;
   virtual int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name) = 0;

@@ -25,6 +25,9 @@
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #pragma GCC diagnostic ignored "-Wpedantic"
 #pragma GCC diagnostic ignored "-Wshadow"
+#define SWIG
+#include <Configuration.h>
+#undef SWIG
 #include <AbstractState.h>
 #include <CoolPropTools.h>
 #include <CoolPropLib.h>
@@ -43,6 +46,7 @@ public :
   void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) override;
   void verify_phase(const Motcle& ) override;
   void set_phase(const Motcle& ) override;
+  void set_path_refprop() override;
 
   int get_model_index(const Motcle& model_name) override;
   int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name) override;
