@@ -1,8 +1,8 @@
-XX/XX/23 (TRUST) Portability  : Fedora 38 is supported with: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
-XX/XX/23 (TRUST) Portability  : GNU compilers 13.0.1 are supported
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+03/04/23 (TRUST) Portability  : Fedora 38 is supported with: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
+03/04/23 (TRUST) Portability  : GNU compilers 13.0.1 are supported
 21/03/23 (TRUST) Portability  : VisIt works now on Ubuntu 22
 21/03/23 (TRUST) Portability  : TRUST versions are now built with GNU compilers on orcus-intel/orcus-rome to avoid random crashes or slowdown with MUMPS library. 
 10/03/23 (TRUST) Major change : TRUST can be linked to a pre-compiled static library of EOS (./configure -with-eos=<YOUR_PATH_TO_EOS_INSTALL>).
