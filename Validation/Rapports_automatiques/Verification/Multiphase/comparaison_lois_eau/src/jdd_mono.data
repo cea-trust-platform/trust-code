@@ -1,36 +1,31 @@
 # PARALLEL OK #
-system "rm -rf lata; mkdir -p lata"
-dimension 3
+dimension 2
 Domaine dom
 
 # BEGIN MESH #
-mailler  dom
+mailler dom
 {
     pave carre
     {
-        origine  0.0  0.0 0.0
-        nombre_de_noeuds  2 1001 2
-        longueurs 1 1 1
+        origine  0.0  0.0
+        nombre_de_noeuds  100 100
+        longueurs 1 1
     }
     {
-        bord  bas       Y = 0.0    0.0 <= X <= 1.0 0. <= Z <= 1.
-        bord  haut      Y = 1  0.0 <= X <= 1.0 0. <= Z <= 1.
-        bord  boundary  X = 0.0    0.0 <= Y <= 1  0. <= Z <= 1.
-        bord  boundary  X = 1.0    0.0 <= Y <= 1  0. <= Z <= 1.
-        bord  boundary  Z = 0.0   0. <= X <= 1.  0.0 <= Y <= 1
-        bord  boundary  Z = 1.0    0. <= X <= 1. 0.0 <= Y <= 1
+        bord  bas       Y = 0.0    0.0 <= X <= 1.0
+        bord  haut      Y = 1.0    0.0 <= X <= 1.0
+        bord  gauche    X = 0.0    0.0 <= Y <= 1.0
+        bord  droite    X = 1.0    0.0 <= Y <= 1.0
     }
 }
-polyedriser dom
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-        /* Choose Nb_parts so to have ~ 25000 cells per processor */
-        Partition_tool metis { nb_parts 4 }
-        Larg_joint 2
-        zones_name DOM
+  Partition_tool metis { nb_parts 4 }
+  Larg_joint 2
+  zones_name DOM
 }
 End
 END PARTITION #
@@ -46,33 +41,28 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    tmax 3
-    dt_max 1e-4
-    seuil_statio -1
-    nb_pas_dt_max 100
-    dt_impr 1e-10
-    max_iter_implicite 1
+	nb_pas_dt_max 30
+    seuil_statio 1e-3
     solveur ice
     {
-        criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 }
-        iter_min 5
+        criteres_convergence { alpha 1e-5 }
         solveur petsc cli { }
         seuil_convergence_implicite 1e30
     }
 }
+pb_multiphase pb
 
 
-Pb_Multiphase pb
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
-    Milieu_composite
-    {
-        $fluids
-    }
+		Milieu_composite
+		{
+			$fluids
+		}
 
     QDM_Multiphase
     {
@@ -81,14 +71,15 @@ Read pb
         diffusion  { negligeable }
         initial_conditions
         {
-            vitesse  Champ_Fonc_xyz dom 3 0 0 1
-            pression Champ_Fonc_xyz dom 1 15.5e6
+            vitesse  Champ_fonc_xyz dom 2 1 0
+            pression Champ_Fonc_xyz dom 1 100000.0
         }
         boundary_conditions
         {
-            boundary symetrie
-            bas  frontiere_ouverte_vitesse_imposee_sortie champ_front_fonc_t 3 0 0 1
-            haut frontiere_ouverte_pression_imposee champ_front_uniforme 1 15.5e6
+            haut symetrie
+            bas symetrie
+            gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
+            droite frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
         }
     }
     Masse_Multiphase
@@ -97,35 +88,43 @@ Read pb
         convection { amont }
         boundary_conditions
         {
-            boundary paroi
-            bas  frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-            haut frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            haut paroi
+            bas paroi
+            gauche frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
+            droite frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
         }
     }
     Energie_Multiphase
     {
         diffusion { negligeable }
         convection { amont }
-        initial_conditions { temperature Champ_Uniforme 1 343 }
+        initial_conditions { temperature Champ_fonc_xyz dom 1 60.7930097752451 }
         boundary_conditions
         {
-            boundary paroi_adiabatique
-            bas    frontiere_ouverte T_ext Champ_Front_Uniforme 1 343
-            haut   frontiere_ouverte T_ext Champ_Front_Uniforme 1 343
+            haut paroi_adiabatique
+            bas paroi_adiabatique
+            gauche frontiere_ouverte T_ext Champ_Front_uniforme 1 10.7930097752451
+            droite frontiere_ouverte T_ext Champ_Front_uniforme 1 60.7930097752451
         }
-        sources
-        {
-            travail_pression ,
-            puissance_thermique champ_uniforme 1 2000.0
-        }
+        sources { travail_pression }
     }
     Post_processing
     {
-        Format Lata
-        fichier lata/jdd
-        fields dt_post 1e-2
+        probes
         {
+             rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
+               v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
+               p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
+            eint grav energie_interne periode 1e8 segment 1000 0 0.5 1 0.5
+        }
+        Format lml
+        fields dt_post 1e+2
+        {
+            alpha elem
+            vitesse elem
             pression elem
+            temperature elem
+            energie_interne elem
         }
     }
 }
