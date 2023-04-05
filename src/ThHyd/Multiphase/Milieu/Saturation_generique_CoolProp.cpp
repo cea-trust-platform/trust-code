@@ -27,19 +27,10 @@ Entree& Saturation_generique_CoolProp::readOn(Entree& is)
   param.ajouter("phase", &phase_, Param::OPTIONAL); // optional : liquid or vapor. PI : specify the phase it is really useful (better perf for coolprop) !
 
   param.lire_avec_accolades_depuis(is);
-  CoolProptT.verify_model_fluid(model_name_, fluid_name_);
+  if (model_name_ == "REFPROP") CoolProptT.set_path_refprop();
   if (phase_ != "??") CoolProptT.verify_phase(phase_);
 
-  const int ind_model = CoolProptT.get_model_index(model_name_);
-  const int ind_fluid = CoolProptT.get_fluid_index(model_name_, fluid_name_);
-
-  assert(ind_model > -1 && ind_fluid > -1);
-
-  // Lets start playing :-)
-  const char *const model = CoolProptT.get_tppi_model_name(ind_model);
-  const char *const fld = CoolProptT.get_tppi_fluid_name(model_name_, ind_fluid);
-
-  CoolProptT.set_CoolProp_Sat_generique(model, fld);
+  CoolProptT.set_CoolProp_Sat_generique(model_name_, fluid_name_);
   if (phase_ != "??") CoolProptT.set_phase(phase_);
 //  CoolProptT.desactivate_handler(false); // throw on error
 

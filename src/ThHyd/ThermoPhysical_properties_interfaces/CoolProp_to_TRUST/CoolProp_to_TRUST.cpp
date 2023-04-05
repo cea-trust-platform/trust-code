@@ -16,61 +16,6 @@
 #include <CoolProp_to_TRUST.h>
 #include <cstdlib>
 
-int CoolProp_to_TRUST::get_model_index(const Motcle& model_name)
-{
-  int ind_model = -1;
-  for (int i = 0; i < (int) supp_.AVAIL_MODELS.size(); i++)
-    if (supp_.AVAIL_MODELS[i] == model_name) ind_model = i;
-
-  return ind_model;
-}
-
-int CoolProp_to_TRUST::get_fluid_index(const Motcle& , const Motcle& fluid_name)
-{
-  int ind_fluid = -1;
-  for (int i = 0; i < (int) supp_.AVAIL_FLUIDS.size(); i++)
-    if (supp_.AVAIL_FLUIDS[i] == fluid_name) ind_fluid = i;
-
-  return ind_fluid;
-}
-
-const char* CoolProp_to_TRUST::get_tppi_model_name(const int ind)
-{
-  return supp_.COOLPROP_MODELS[ind];
-}
-
-const char* CoolProp_to_TRUST::get_tppi_fluid_name(const Motcle& model_name, const int ind)
-{
-  return supp_.COOLPROP_FLUIDS[ind];
-}
-
-void CoolProp_to_TRUST::verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name)
-{
-  if (!(std::find(supp_.AVAIL_MODELS.begin(), supp_.AVAIL_MODELS.end(), model_name) != supp_.AVAIL_MODELS.end()))
-    {
-      Cerr << "You define the : < " << model_name << " model which is not yet tested !" << finl;
-      Cerr << "Please use one of the available models or contact the TRUST team." << finl;
-      Cerr << finl;
-      Cerr << "Available Models : " << finl;
-      for (const auto &itr : supp_.AVAIL_MODELS) Cerr << itr << finl;
-
-      Process::exit();
-    }
-
-  if (!(std::find(supp_.AVAIL_FLUIDS.begin(), supp_.AVAIL_FLUIDS.end(), fluid_name) != supp_.AVAIL_FLUIDS.end()))
-    {
-      Cerr << "You define the : < " << fluid_name << " fluid which is not available !" << finl;
-      Cerr << "Please use one of the available fluids or contact the TRUST team." << finl;
-      Cerr << finl;
-      Cerr << "Available Fluids : " << finl;
-      for (const auto &itr : supp_.AVAIL_FLUIDS) Cerr << itr << finl;
-
-      Process::exit();
-    }
-
-  if (model_name == "REFPROP") set_path_refprop();
-}
-
 void CoolProp_to_TRUST::verify_phase(const Motcle& phase_name)
 {
   if (phase_name == "LIQUID" || phase_name == "LIQUIDE") return;

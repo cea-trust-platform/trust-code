@@ -755,38 +755,4 @@ struct EOS_Supported_Models_Fluids
   };
 };
 
-/*! @brief struct CoolProp_Supported_Models_Fluids
- *
- *
- */
-struct CoolProp_Supported_Models_Fluids
-{
-  // TODO : FIXME
-  const std::array<Motcle, 3> AVAIL_MODELS = { { "HEOS", "BICUBIC_HEOS", "REFPROP" } };
-
-  const std::array<const char*, 3> COOLPROP_MODELS = { { "HEOS", "BICUBIC&HEOS", "REFPROP" } };
-
-  const std::array<Motcle, 18> AVAIL_FLUIDS =
-  {
-    {
-      "AIR", "AMMONIA", "CARBON DIOXIDE", "CARBON MONOXIDE",
-      "DEUTERIUM", "ETHANE", "ETHANOL", "HELIUM",
-      "HYDROGEN", "ISOBUTANE", "METHANE", "NEON",
-      "NITROGEN", "OXYGEN", "PROPANE", "PROPYLENE",
-      "WATER", "R12"
-    }
-  }; /* Majuscule car Motcle */
-
-  const std::array<const char*, 18> COOLPROP_FLUIDS =
-  {
-    {
-      "Air", "Ammonia", "Carbon dioxide", "Carbon monoxide",
-      "Deuterium", "Ethane", "Ethanol", "Helium",
-      "Hydrogen", "Isobutane", "Methane", "Neon",
-      "Nitrogen", "Oxygen", "Propane", "Propylene",
-      "Water", "R12"
-    }
-  };
-};
-
 #endif /* TPPI_tools_included */
