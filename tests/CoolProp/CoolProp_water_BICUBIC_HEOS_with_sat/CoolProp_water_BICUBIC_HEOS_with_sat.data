@@ -61,9 +61,9 @@ Read pb
 {
 		Milieu_composite
 		{
-			liquide_eau Fluide_generique_coolprop { model BICUBIC_heos  fluid Water phase liquid } 
-			gaz_eau Fluide_generique_coolprop { model BICUBIC_heos  fluid Water }
-			saturation_eau saturation_generique_coolprop { model BICUBIC_heos fluid Water phase liquid }
+			liquide_eau Fluide_generique_coolprop { model BICUBIC&heos  fluid Water phase liquid } 
+			gaz_eau Fluide_generique_coolprop { model BICUBIC&heos  fluid Water }
+			saturation_eau saturation_generique_coolprop { model BICUBIC&heos fluid Water phase liquid }
 		}
 
     correlations

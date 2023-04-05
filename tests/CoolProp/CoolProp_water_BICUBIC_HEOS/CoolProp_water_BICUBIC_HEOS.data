@@ -61,7 +61,7 @@ Read pb
 {
 		Milieu_composite
 		{
-			liquide_eau Fluide_generique_coolprop { model BICUBIC_heos  fluid water  }
+			liquide_eau Fluide_generique_coolprop { model BICUBIC&heos  fluid water  }
 		}
 
     QDM_Multiphase
