@@ -1,0 +1,8 @@
+#!/bin/bash
+
+
+$TRUST_CC_BASE -std=c++2a -Wall -o CoolProp_test_low_level_8.x -I$TRUST_ROOT/include/ -I$TRUST_ROOT/include/EOS/ -I$TRUST_ROOT/include/CoolProp/ CoolProp_test_low_level_8.cpp $TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a $TRUST_EOS_HOME_DIR/lib/libeos.a -ldl -lgfortran
+
+./CoolProp_test_low_level_8.x
+
+rm -rf CoolProp_test_low_level_8.x

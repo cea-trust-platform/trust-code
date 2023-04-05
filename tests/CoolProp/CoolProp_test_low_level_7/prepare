@@ -1,0 +1,7 @@
+#!/bin/bash
+
+$TRUST_CC_BASE -std=c++2a -o CoolProp_test_low_level_7.x -I$TRUST_ROOT/include/ -I$TRUST_ROOT/include/CoolProp/ CoolProp_test_low_level_7.cpp $TRUST_COOLPROP_HOME_DIR/build/libCoolProp.a -ldl
+
+./CoolProp_test_low_level_7.x
+
+rm -rf CoolProp_test_low_level_7.x
