@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -74,8 +74,11 @@ int exec_cmd_and_get_output(const char* cmd, std::string& result)
 /*
  * Custom error handler printing out in the journal the backtrace of the exception.
  */
+static bool crit_err_hdlr_done = false;
 void crit_err_hdlr(True_int sig_num, siginfo_t * info, void * ucontext)
 {
+  if (crit_err_hdlr_done) return;
+  crit_err_hdlr_done = true;
   std::cerr << "Error handler triggered!! See Journal - process ID: " << Process::me() << std::endl;
   Process::Journal() << "signal " << (int)sig_num
                      << " (" << strsignal(sig_num) << "), address is "
