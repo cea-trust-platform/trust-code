@@ -54,14 +54,19 @@ public :
   int tppi_get_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
   int tppi_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
   int tppi_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
   // pour les gens qui cherchent sigma de l'objet saturation
-  int tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int ind = 0) const override;
 
   // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase et F5 (pour le moment !)
-  int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int id = 0) const override;
+  int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
+  int tppi_get_all_sat_loi_F5_2(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const;
+  int tppi_get_all_sat_loi_F5_3(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const;
 };
 
 #endif /* CoolProp_to_TRUST_Sat_generique_included */

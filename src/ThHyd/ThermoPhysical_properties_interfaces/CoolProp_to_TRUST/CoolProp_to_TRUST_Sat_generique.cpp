@@ -490,6 +490,38 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_l_sat_p(const SpanD P, SpanD re
 #endif
 }
 
+int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_COOLPROP
+  assert (ncomp * (int)P.size() == (int)res.size());
+  const int sz = (int )res.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+        res[i] = fluide->first_saturation_deriv(CoolProp::iCpmass, CoolProp::iP);
+      }
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+
+      for (int i = 0; i < sz; i++)
+        {
+          fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+          RR[i] = fluide->first_saturation_deriv(CoolProp::iCpmass, CoolProp::iP);
+        }
+
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
 int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
@@ -511,6 +543,38 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_v_sat_p(const SpanD P, SpanD re
         {
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
           RR[i] = fluide->saturated_vapor_keyed_output(CoolProp::iCpmass);
+        }
+
+      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+    }
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
+{
+#ifdef HAS_COOLPROP
+  assert (ncomp * (int)P.size() == (int)res.size());
+  const int sz = (int )res.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
+        res[i] = fluide->saturated_liquid_keyed_output(CoolProp::iCpmass);
+      }
+  else /* attention stride */
+    {
+      VectorD temp_((int)P.size());
+      SpanD RR(temp_);
+      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
+
+      for (int i = 0; i < sz; i++)
+        {
+          fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
+          RR[i] = fluide->saturated_liquid_keyed_output(CoolProp::iCpmass);
         }
 
       for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
@@ -614,6 +678,112 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
 
   // XXX : ATTENTION : need to put back T in C
   Tc_(Ts__);
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
+{
+#ifdef HAS_COOLPROP
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression");
+
+#ifndef NDEBUG
+  for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
+#endif
+
+  SpanD Ts_ = sats.at(SAT::T_SAT), dPTs_ = sats.at(SAT::T_SAT_DP),
+        Hvs_ = sats.at(SAT::HV_SAT), Hls_ = sats.at(SAT::HL_SAT),
+        dPHvs_ = sats.at(SAT::HV_SAT_DP), dPHls_ = sats.at(SAT::HL_SAT_DP),
+        Rvs_ = sats.at(SAT::RHOV_SAT), Rls_ = sats.at(SAT::RHOL_SAT),
+        dPRvs_ = sats.at(SAT::RHOV_SAT_DP), dPRls_ = sats.at(SAT::RHOL_SAT_DP),
+        Cpvs_ = sats.at(SAT::CPV_SAT), Cpls_ = sats.at(SAT::CPL_SAT),
+        dPCpvs_ = sats.at(SAT::CPV_SAT_DP), dPCpls_ = sats.at(SAT::CPL_SAT_DP);
+
+  const int sz = (int) P.size();
+
+  for (int i = 0; i < sz; i++)
+    {
+      fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+      Hls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
+      dPHls_[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
+      Rls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iDmass);
+      dPRls_[i] = fluide->first_saturation_deriv(CoolProp::iDmass, CoolProp::iP);
+      Cpls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iCpmass);
+      dPCpls_[i] = fluide->first_saturation_deriv(CoolProp::iCpmass, CoolProp::iP);
+
+      fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
+      Ts_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iT); /* FIXME : j'utilise vapor (normalement pareil) */
+      dPTs_[i] = fluide->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
+      Hvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
+      dPHvs_[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
+      Rvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iDmass);
+      dPRvs_[i] = fluide->first_saturation_deriv(CoolProp::iDmass, CoolProp::iP);
+      Cpvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iCpmass);
+      dPCpvs_[i] = fluide->first_saturation_deriv(CoolProp::iCpmass, CoolProp::iP);
+    }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5_2(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
+{
+#ifdef HAS_COOLPROP
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression");
+
+#ifndef NDEBUG
+  for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
+#endif
+
+  SpanD Hvs_ = sats.at(SAT::HV_SAT),  Rvs_ = sats.at(SAT::RHOV_SAT);
+
+  const int sz = (int) P.size();
+
+  for (int i = 0; i < sz; i++)
+    {
+      fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
+      Hvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
+      Rvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iDmass);
+    }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5_3(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
+{
+#ifdef HAS_COOLPROP
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression");
+
+#ifndef NDEBUG
+  for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
+#endif
+
+  SpanD Hvs_ = sats.at(SAT::HV_SAT),  Hls_ = sats.at(SAT::HL_SAT);
+
+  const int sz = (int) P.size();
+
+  for (int i = 0; i < sz; i++)
+    {
+      fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+      Hls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
+
+      fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
+      Hvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
+    }
 
   return 0; // FIXME : on suppose que tout OK
 #else

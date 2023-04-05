@@ -301,6 +301,374 @@ int CoolProp_to_TRUST_generique::tppi_get_lambda_pT(const SpanD P, const SpanD T
 #endif
 }
 
+int CoolProp_to_TRUST_generique::tppi_get_rho_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->rhomass();
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_rho_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iHmass);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_rho_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iHmass, CoolProp::iP);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_T_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->T();
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_T_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iP, CoolProp::iHmass);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_T_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iHmass, CoolProp::iP);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_cp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->cpmass();
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_cp_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iP, CoolProp::iHmass);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_cp_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iHmass, CoolProp::iP);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_mu_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->viscosity();
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_mu_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_mu_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iHmass, CoolProp::iP);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_lambda_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->conductivity();
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_lambda_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_lambda_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iHmass, CoolProp::iP);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->surface_tension();
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_sigma_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::isurface_tension, CoolProp::iP, CoolProp::iHmass);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+int CoolProp_to_TRUST_generique::tppi_get_sigma_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
+{
+#ifdef HAS_COOLPROP
+  assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
+  const int sz = (int )R.size();
+  if (ncomp == 1)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        R[i] = fluide->first_partial_deriv(CoolProp::isurface_tension, CoolProp::iHmass, CoolProp::iP);
+      }
+  else /* attention stride */
+    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
 // appel simple si besoin : cas incompressible
 int CoolProp_to_TRUST_generique::tppi_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
 {
@@ -449,6 +817,195 @@ int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD inpu
 
   // XXX : ATTENTION : need to put back T in C
   Tc_(T), Tc_(bT);
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+// methods particuliers par application pour gagner en performance : utilise dans F5 (pour le moment !)
+int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
+{
+#ifdef HAS_COOLPROP
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
+  // TODO FIXME
+
+#ifndef NDEBUG
+  for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
+#endif
+  const int sz = (int) H.size();
+
+  if (is_liq)
+    {
+      SpanD rho = inter.at(Loi_en_h::RHO), drhodp = inter.at(Loi_en_h::RHO_DP), drhodh = inter.at(Loi_en_h::RHO_DH),
+            cp = inter.at(Loi_en_h::CP), cpdp = inter.at(Loi_en_h::CP_DP), cpdh = inter.at( Loi_en_h::CP_DH),
+            T = inter.at(Loi_en_h::T), dTdp = inter.at(Loi_en_h::T_DP), dTdh = inter.at(Loi_en_h::T_DH),
+            MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP), dMUdh = inter.at(Loi_en_h::MU_DH),
+            L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP), dLdh = inter.at(Loi_en_h::LAMBDA_DH);
+
+      for (int i = 0; i < sz; i++)
+        {
+          fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+
+          rho[i] = fluide->rhomass();
+          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iHmass);
+          drhodh[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iHmass, CoolProp::iP);
+
+          cp[i] = fluide->cpmass();
+          cpdp[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iP, CoolProp::iHmass);
+          cpdh[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iHmass, CoolProp::iP);
+
+          T[i] = fluide->T();
+          dTdp[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iP, CoolProp::iHmass);
+          dTdh[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iHmass, CoolProp::iP);
+
+          MU[i] = fluide->viscosity();
+          dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
+          dMUdh[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iHmass, CoolProp::iP);
+
+          L[i] = fluide->conductivity();
+          dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
+          dLdh[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iHmass, CoolProp::iP);
+        }
+    }
+  else
+    {
+      SpanD rho = inter.at(Loi_en_h::RHO), drhodp = inter.at(Loi_en_h::RHO_DP), drhodh = inter.at(Loi_en_h::RHO_DH),
+            cp = inter.at(Loi_en_h::CP), cpdp = inter.at(Loi_en_h::CP_DP), cpdh = inter.at( Loi_en_h::CP_DH),
+            T = inter.at(Loi_en_h::T), dTdp = inter.at(Loi_en_h::T_DP), dTdh = inter.at(Loi_en_h::T_DH),
+            MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP), dMUdh = inter.at(Loi_en_h::MU_DH),
+            L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP), dLdh = inter.at(Loi_en_h::LAMBDA_DH),
+            sigma = inter.at(Loi_en_h::SIGMA), dsigma_dp =  inter.at(Loi_en_h::SIGMA_DP);
+
+      for (int i = 0; i < sz; i++)
+        {
+          fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+
+          rho[i] = fluide->rhomass();
+          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iHmass);
+          drhodh[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iHmass, CoolProp::iP);
+
+          cp[i] = fluide->cpmass();
+          cpdp[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iP, CoolProp::iHmass);
+          cpdh[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iHmass, CoolProp::iP);
+
+          T[i] = fluide->T();
+          dTdp[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iP, CoolProp::iHmass);
+          dTdh[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iHmass, CoolProp::iP);
+
+          MU[i] = fluide->viscosity();
+          dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
+          dMUdh[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iHmass, CoolProp::iP);
+
+          L[i] = fluide->conductivity();
+          dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
+          dLdh[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iHmass, CoolProp::iP);
+
+          sigma[i] = fluide->surface_tension();
+          dsigma_dp[i] = fluide->first_partial_deriv(CoolProp::isurface_tension, CoolProp::iP, CoolProp::iHmass);
+        }
+    }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5_2(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
+{
+#ifdef HAS_COOLPROP
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
+  // TODO FIXME
+
+#ifndef NDEBUG
+  for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
+#endif
+  const int sz = (int) H.size();
+
+  SpanD MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP),
+        L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP);
+
+  for (int i = 0; i < sz; i++)
+    {
+      fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+
+      MU[i] = fluide->viscosity();
+      dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
+
+      L[i] = fluide->conductivity();
+      dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
+    }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5_3(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
+{
+#ifdef HAS_COOLPROP
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
+  // TODO FIXME
+
+#ifndef NDEBUG
+  for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
+#endif
+  const int sz = (int) H.size();
+
+
+  SpanD cp = inter.at(Loi_en_h::CP),  MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP), dMUdh = inter.at(Loi_en_h::MU_DH) ;
+
+  for (int i = 0; i < sz; i++)
+    {
+      fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+
+      cp[i] = fluide->cpmass();
+
+      MU[i] = fluide->viscosity();
+      dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
+      dMUdh[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iHmass, CoolProp::iP);
+    }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
+int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5_4(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
+{
+#ifdef HAS_COOLPROP
+  assert(ncomp == 1);
+  const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
+  // TODO FIXME
+
+#ifndef NDEBUG
+  for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
+#endif
+  const int sz = (int) H.size();
+
+  SpanD  L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP), dLdh = inter.at(Loi_en_h::LAMBDA_DH);
+
+  for (int i = 0; i < sz; i++)
+    {
+      fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+
+      L[i] = fluide->conductivity();
+      dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
+      dLdh[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iHmass, CoolProp::iP);
+    }
+
+
+
   return 0; // FIXME : on suppose que tout OK
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
