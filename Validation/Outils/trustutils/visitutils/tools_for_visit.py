@@ -28,30 +28,30 @@ def visitTmpFile_(justFile=False):
 
     return os.path.join(BUILD_DIRECTORY, file)
 
-def setFrame(self, time=-1):
+def setFrame(self, iteration=-1):
     """
 
     To set frame in visit
 
     Parameters
     ---------
-    time: int
-        If time = -1, the last frame chosen, else it select the frame in visit.
+    iteration: int
+        If iteration = -1, the last frame chosen, else it select the frame in visit.
 
     Returns
     -------
 
     """
-    self.time = str(time)
+    self.iteration = str(iteration)
     with open(visitTmpFile_(), "a") as f:
         if numero == -1:  # last frame
             f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
         else:
-            f.write("SetTimeSliderState(" + str(time) + ")\n")
+            f.write("SetTimeSliderState(" + str(iteration) + ")\n")
     f.close()
 
 
-def saveFile(file, field, name, time, active=False):
+def saveFile(file, field, name, iteration, active=False):
     """
 
     Save files for testing non-regression.
@@ -64,8 +64,8 @@ def saveFile(file, field, name, time, active=False):
         The field we want to plot.  
     name : str
         The name of the field.  
-    time : int
-        number of the time frame 
+    iteration : int
+        number of the time frame or iteration
 
     Returns
     -------
@@ -86,7 +86,7 @@ def saveFile(file, field, name, time, active=False):
             FileAccumulator.WriteToFile("used_files", mode="a")
         else:
             field, loc, dom = FileAccumulator.ParseDirectName(name)
-            FileAccumulator.AppendVisuComplex(file, dom, field, loc, time)
+            FileAccumulator.AppendVisuComplex(file, dom, field, loc, iteration)
             FileAccumulator.WriteToFile("used_files", mode="a")
 
         os.chdir(origin)
@@ -112,7 +112,7 @@ def showMesh(fichier, mesh="dom"):
     field.plot()
 
 
-def showField(fichier, field, name, mesh="dom", plotmesh=True, title="", time=-1, size=10, max=None, min=None):
+def showField(fichier, field, name, mesh="dom", plotmesh=True, title="", iteration=-1, size=10, max=None, min=None):
     """
     Methods to plot a field from a .lata file.
 
@@ -130,8 +130,8 @@ def showField(fichier, field, name, mesh="dom", plotmesh=True, title="", time=-1
         display the mesh (default=True)  
     title : str 
         title of the plot. 
-    time : int
-        number of the time frame (default=-1)  
+    iteration : int
+        number of the time frame or iteration (default=-1)  
     size : int
         Size of the image.  
     max : float
@@ -144,7 +144,7 @@ def showField(fichier, field, name, mesh="dom", plotmesh=True, title="", time=-1
     -------
         a Visit plot 
     """
-    field = Show(fichier, field, name, mesh=mesh, plotmesh=plotmesh, title=title, time=time, size=size, max=max, min=min)
+    field = Show(fichier, field, name, mesh=mesh, plotmesh=plotmesh, title=title, iteration=iteration, size=size, max=max, min=min)
     field.plot()
 
 
@@ -154,7 +154,7 @@ class Show(object):
     """
 
     def __init__(
-        self, fichier="", field="", name="", nX=1, nY=1, mesh="dom", plotmesh=True, time=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
+        self, fichier="", field="", name="", nX=1, nY=1, mesh="dom", plotmesh=True, iteration=-1, empty=False, size=10, title="", subtitle="", max=None, min=None, active=True, visitLog=False, verbose=0, show=True,
     ):
         """
         Constructeur
@@ -171,8 +171,8 @@ class Show(object):
             The name of the mesh (default="dom")   
         plotmesh : bool
             If true plot the mesh asociate with .lata file (default=True) 
-        time : int
-            Time frame of the plot. 
+        iteration : int
+            Time frame or iteration of the plot. 
         empty : bool
             If True returns a empty plot (default=False) 
         size : int
@@ -233,7 +233,7 @@ class Show(object):
         #
         self.flag = False
         # Temps
-        self.time = time
+        self.iteration = iteration
         # Photo vide(if true)
         self.empty = empty
         # size image
@@ -387,8 +387,8 @@ class Show(object):
                 f.write("dbs = ('" + fichier + "') \n")
                 f.write("ActivateDatabase(dbs) \n")
             if not mesh is None and plotmesh and not field == "Mesh" and not field == "Histogram":
-                f.write(self._genAddPlot("'Mesh'", "'" + mesh + "'", self.time))
-            f.write(self._genAddPlot("'" + field + "'", "'" + name + "'", self.time))
+                f.write(self._genAddPlot("'Mesh'", "'" + mesh + "'", self.iteration))
+            f.write(self._genAddPlot("'" + field + "'", "'" + name + "'", self.iteration))
             f.write("DrawPlots() \n")
             # Boucle if pour roter le plot 3d de 30 degre ,selon l'axe x et y (2 rotations).
             if not min is None:
@@ -403,7 +403,7 @@ class Show(object):
                 f.write("SetPlotOptions(p)\n")
         f.close()
         
-        saveFile(fichier, field, name, self.time, active=True)
+        saveFile(fichier, field, name, self.iteration, active=True)
 
     def visitCommand(self, string):
         """ 
@@ -427,7 +427,7 @@ class Show(object):
         origin = os.getcwd()
         os.chdir(BUILD_DIRECTORY)
 
-        FileAccumulator.AppendFromInstructionVisit(string, self.time)
+        FileAccumulator.AppendFromInstructionVisit(string, self.iteration)
         os.chdir(origin)
 
     def _dumpLogTail(self):
@@ -455,7 +455,7 @@ class Show(object):
             f.write("annotation=GetAnnotationAttributes()\nannotation.SetUserInfoFlag(0)\nSetAnnotationAttributes(annotation)\n")
             # f.write("ResizeWindow(1,160,156) \n")
             f.write("s = SaveWindowAttributes() \n")
-            f.write("s.fileName = '" + self.fichier + name + str(self.time) + "_' \n")
+            f.write("s.fileName = '" + self.fichier + name + str(self.iteration) + "_' \n")
             f.write("s.format = s.PNG \n")
             f.write("s.progressive = 1 \n")
             f.write("SetSaveWindowAttributes(s) \n")
@@ -465,7 +465,7 @@ class Show(object):
         os.chdir(BUILD_DIRECTORY)
         outp = subprocess.run("visit -nowin -cli -s %s 1>> visit.log 2>&1" % visitTmpFile_(justFile=True), shell=True)
 
-        pattern = os.path.join(os.getcwd(), self.fichier.split("./")[-1] + name + str(self.time) + "_\d\d\d\d.png")
+        pattern = os.path.join(os.getcwd(), self.fichier.split("./")[-1] + name + str(self.iteration) + "_\d\d\d\d.png")
         error = 0
         for top, dirs, files in os.walk(os.getcwd()):
             for file in files:
@@ -521,7 +521,7 @@ class Show(object):
         name = self.name.replace("/", "_")
         name = name.replace("(", "_")
         name = name.replace(")", "_")
-        fName = self.fichier + name + str(self.time)  # +"_0000.png"
+        fName = self.fichier + name + str(self.iteration)  # +"_0000.png"
         from glob import glob
 
         listFiles = glob(os.path.join(BUILD_DIRECTORY, fName + "*.png"))
@@ -572,7 +572,7 @@ class Show(object):
         self.visitCommand('SetPlotOptions(MeshAtts)')
 
     def add(
-        self, fichier, field, name, xIndice=0, yIndice=0, time=-1, mesh="dom", title="", plotmesh=True, max=None, min=None,
+        self, fichier, field, name, xIndice=0, yIndice=0, iteration=-1, mesh="dom", title="", plotmesh=True, max=None, min=None,
     ):
         """
 
@@ -594,8 +594,8 @@ class Show(object):
             The name of the mesh (default="dom") 
         plotmesh : bool
             If true plot the mesh asociate with .lata file.  
-        time : int
-            Time of the plot. 
+        iteration : int
+            Time frame or iteration of the plot. 
         size : int
             Size of the image.  
         max : float
@@ -615,7 +615,7 @@ class Show(object):
         self.fichier = fichier
         self.field = field
         self.name = name
-        self.time = time
+        self.iteration = iteration
         self.mesh = mesh
         self.plotmesh = plotmesh
         self.subtitle = title
@@ -657,27 +657,27 @@ class Show(object):
         
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'Mesh'", "'%s'" % mesh, self.time))
+            f.write(self._genAddPlot("'Mesh'", "'%s'" % mesh, self.iteration))
             f.write("DrawPlots() \n")
         f.close()
 
-    def pas(self, time=0):
+    def pas(self, iteration=0):
         """
 
         Increase the time step.
 
         Parameters
         ---------
-        time: int
-            choice of the time frame
+        iteration: int
+            choice of the time frame or iteration
 
         Returns
         -------
         
         """
-        self.time = str(time)
+        self.iteration = str(iteration)
         with open(visitTmpFile_(), "a") as f:
-            f.write("SetTimeSliderState(" + str(time) + ")\n")
+            f.write("SetTimeSliderState(" + str(iteration) + ")\n")
         f.close()
 
     def slice(self, origin=[0, 0, 0], normal=[1, 0, 0], var=None, all=0, type_op="slice"):
@@ -745,7 +745,7 @@ class Show(object):
     def pasSuivant(self):
         """
 
-        Adavnce one time step.
+        Advance one time step or iteration.
 
         Parameters
         --------- 
@@ -754,7 +754,7 @@ class Show(object):
         -------
         
         """
-        self.time = str(int(self.time) + 1)
+        self.iteration = str(int(self.iteration) + 1)
         with open(visitTmpFile_(), "a") as f:
             f.write("TimeSliderNextState()\n")
         f.close()
@@ -777,7 +777,7 @@ class Show(object):
         -------
         
         """
-        self.time = str(int(self.time) + 1)
+        self.iteration = str(int(self.iteration) + 1)
         with open(visitTmpFile_(), "a") as f:
             f.write('QueryOverTime("Pick")\n')
         f.close()
@@ -1076,7 +1076,7 @@ class Show(object):
             self.mesh = atribut
             flag = 1
         if nom == "mesh":
-            self.time = atribut
+            self.iteration = atribut
             flag = 1
         if nom == "fichier":
             self.fichier = atribut
@@ -1185,7 +1185,7 @@ class export_lata_base:
         res = [int(r) - 1 for r in res]
         return res
 
-    def addPlot(self, field, name, time):
+    def addPlot(self, field, name, iteration):
         """
 
         Add a new field to the plot.
@@ -1196,8 +1196,8 @@ class export_lata_base:
             The field we want to plot.  
         name : str
             The name of the field.  
-        time : int
-            number of the time frame 
+        iteration : int
+            number of the time frame  or iteration
 
         Returns
         -------
@@ -1205,11 +1205,11 @@ class export_lata_base:
         
         """
         with open(visitTmpFile_(), "a") as f:
-            f.write(self._genAddPlot("'%s'" % field, "'%s'" % name, time))
+            f.write(self._genAddPlot("'%s'" % field, "'%s'" % name, iteration))
             f.write("DrawPlots() \n")
         f.close()
         
-        saveFile(self.fichier, field, name, time, active=True)
+        saveFile(self.fichier, field, name, iteration, active=True)
 
     def _genAddPlot(self, arg1, arg2, arg3):
         s = "try:\n"
@@ -1226,15 +1226,15 @@ class export_lata_base:
 
         return s
 
-    def setFrame(self, time=-1):
+    def setFrame(self, iteration=-1):
         """
 
         To set frame in visit
 
         Parameters
         ---------
-        time: int
-            If time = -1, the last frame chosen, else it select the frame in visit
+        iteration: int
+            If iteration = -1, the last frame chosen, else it select the frame in visit
 
         Returns
         -------
@@ -1242,10 +1242,10 @@ class export_lata_base:
         """
 
         with open(visitTmpFile_(), "a") as f:
-            if time == -1:  # last frame
+            if iteration == -1:  # last frame
                 f.write("SetTimeSliderState(TimeSliderGetNStates()-1)\n")
             else:
-                f.write("SetTimeSliderState(" + str(time) + ")\n")
+                f.write("SetTimeSliderState(" + str(iteration) + ")\n")
         f.close()
 
     def lineout(self, a, b):
@@ -1325,7 +1325,7 @@ class export_lata_base:
                 f.write("SetActiveWindow(2) \n")
             f.close()
 
-    def maximun(self, name="Max", time=-1):
+    def maximun(self, name="Max", iteration=-1):
         """
 
         Extract Max of data from a .lata file
@@ -1334,14 +1334,14 @@ class export_lata_base:
         --------- 
         name : str
             It tells if we should return the max or the min. 
-        time : int
-            Momment we calcule the max/min.. 
+        iteration : int
+            Moment we calcule the max/min.. 
 
         Returns
         -------
         None
         """
-        self.setFrame(time=-1)
+        self.setFrame(iteration=-1)
         with open(visitTmpFile_(), "a") as f:
             f.write('Query("Max", use_actual_data=1) \n')
             f.write('f=open("' + name + self.saveFile + '","w") \n')
@@ -1352,7 +1352,7 @@ class export_lata_base:
             f.write("""sys.exit()""")
         self.run()
 
-    def minimun(self, name="Min", time=-1):
+    def minimun(self, name="Min", iteration=-1):
         """
 
         Extract Max of data from a .lata file
@@ -1361,14 +1361,14 @@ class export_lata_base:
         ---------
         name : str
             It tells if we should return the max or the min. 
-        time : int
+        iteration : int
             Moment we calcule the max/min.. 
 
         Returns
         -------
         None
         """
-        self.setFrame(time=-1)
+        self.setFrame(iteration=-1)
         with open(visitTmpFile_(), "a") as f:
             f.write('Query("Min", use_actual_data=1) \n')
             f.write('f=open("' + name + self.saveFile + '","w") \n')

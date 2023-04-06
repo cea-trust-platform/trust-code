@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+06/04/23 (TRUST) Minor change : Use iteration instead of time when calling visit from trustutils in validation sheets
 04/04/23 (TRUST) Major change : TRUST can be linked to a pre-compiled static library of CoolProp (./configure -with-coolprop=<YOUR_PATH_TO_COOLPROP_INSTALL>).
 03/04/23 (TRUST) Portability  : Fedora 38 is supported with: sudo dnf install patch g++ gfortran libX11-devel mesa-libGLU-devel texlive-scheme-full
 03/04/23 (TRUST) Portability  : GNU compilers 13.0.1 are supported
