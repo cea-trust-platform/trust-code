@@ -32,9 +32,10 @@ public:
 
   double get_vx_kmin() { return vxkmin_; }
   double get_vx_kmax() { return vxkmax_; }
-  double get_dU_perio() { return dU_perio_; }
+  double get_dU_perio(int fluctuations=0) { if (!fluctuations){return dU_perio_;}else{return 0.;}}
   double get_t0_shear() { return t0_shear_; }
-  double get_defilement() { return defilement_; }
+  int get_defilement() { return defilement_; }
+  int get_resolution_u_prime_() { return resolution_u_prime_; }
 
 protected:
   int bctype_kmin_, bctype_kmax_;
@@ -42,6 +43,7 @@ protected:
   double dU_perio_;
   double t0_shear_;
   int defilement_;
+  int resolution_u_prime_;
 };
 
 #endif /* Boundary_Conditions_included */

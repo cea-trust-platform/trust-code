@@ -17,7 +17,7 @@
 #include <Matrice_Morse_Sym.h>
 
 void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs)
+                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting)
 {
   if (pe == Process::me())
     {
@@ -25,14 +25,38 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
       const int ni = renum_.dimension(2) - 2;
       const int nj = renum_.dimension(1) - 2;
       const int nk = renum_.dimension(0) - 2;
+      const int nksplit = splitting.get_nb_elem_local(DIRECTION_K);
 
       for (int k = kmin; k < kmax; k++)
         for (int j = jmin; j < jmax; j++)
           for (int i = imin; i < imax; i++)
             {
-              int ii = (i + ni) % ni;
+        	  int ii ;
+        	  if (kmin == -1 && kmax == 0){
+        	  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
+        	  const int njsplit = splitting.get_nb_elem_local(DIRECTION_J);
+			  double Lx =  splitting.get_coords_of_dof(nisplit,njsplit,nksplit,IJK_Splitting::FACES_I)[0];
+			  double DX = Lx/nisplit ;
+			  double Shear_x_time = IJK_Splitting::shear_x_time_;
+			  int offset_i = (int) round(Shear_x_time/DX);
+               ii = ((i + ni + offset_i) % ni + ni) % ni;
+        	  }
+        	  else if (kmin==nksplit && kmax == nksplit+1){
+			  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
+			  const int njsplit = splitting.get_nb_elem_local(DIRECTION_J);
+			  double Lx =  splitting.get_coords_of_dof(nisplit,njsplit,nksplit,IJK_Splitting::FACES_I)[0];
+			  double DX = Lx/nisplit ;
+			  double Shear_x_time = IJK_Splitting::shear_x_time_;
+			  int offset_i = (int) round(Shear_x_time/DX);
+			  ii = ((i + ni - offset_i) % ni + ni) % ni;
+        	  }
+        	  else
+        	  {
+        	   ii = (i + ni ) % ni;
+        	  }
               int jj = (j + nj) % nj;
               int kk = (k + nk) % nk;
+
               renum(i, j, k) = renum(ii, jj, kk);
             }
 
@@ -55,7 +79,7 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
 }
 
 void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& items_to_send)
+                                      int imax, int jmax, int kmax, ArrOfInt& items_to_send, IJK_Splitting splitting)
 {
   if (pe == Process::me())
     return;

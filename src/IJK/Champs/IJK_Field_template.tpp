@@ -25,65 +25,89 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                                                              int pe_recv_, /* processor to recv from */
                                                              int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                                                              int isz, int jsz, int ksz, /* size of block data to send/recv */
-															 double offset, double jump_i)  /* decallage a appliquer pour la condition de shear periodique*/
+															 double offset, double jump_i, int nb_ghost)  /* decallage a appliquer pour la condition de shear periodique*/
 {
+
 	//jump_i = 0.;
 	if (pe_send_ == Process::me() && pe_recv_ == Process::me())
     {
       // Self (periodicity on same processor)
       _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
+//    	 for (int j = -nb_ghost; j < jsz-nb_ghost; j++)
+//    	   for (int i = -nb_ghost; i < isz-nb_ghost; i++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++)
           {
-
         	  _TYPE_ jump = (_TYPE_) jump_i;
-        	  _TYPE_ offset_i = (_TYPE_) offset;
-        	  _TYPE_ istmp = (_TYPE_)i + offset_i;
 
-        	  int ifloorm2 = (int) floor(istmp) - 2;
-        	  int ifloorm1 = (int) floor(istmp) - 1;
-        	  int ifloor0 = (int) floor(istmp);
-        	  int ifloorp1 = (int) floor(istmp) + 1;
-        	  int ifloorp2 = (int) floor(istmp) + 2;
-//        	  int iceil = (int) ceil(istmp) ;
-        	  _TYPE_ x[5] = {(_TYPE_)ifloorm2, (_TYPE_)ifloorm1, (_TYPE_)ifloor0, (_TYPE_)ifloorp1, (_TYPE_)ifloorp2};
+			  // taille du domaine physique
+			  int real_size_i = isz - 2*nb_ghost; // --> ni
+			  int real_size_j = jsz - 2*nb_ghost; // --> nj
 
-        	  ifloorm2 = (ifloorm2 % isz + isz) % isz;
-        	  ifloorm1 = (ifloorm1 % isz + isz) % isz;
-        	  ifloor0 = (ifloor0 % isz + isz) % isz;
-        	  ifloorp1 = (ifloorp1 % isz + isz) % isz;
-        	  ifloorp2 = (ifloorp2 % isz + isz) % isz;
+        	  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
+              int real_send_i = i + is ;
+        	  int real_send_j = j + js ;
+        	  int real_send_k = k + ks ;
 
-//        	  iceil = (iceil % isz + isz) % isz;
+        	  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
+        	  int real_send_i_sauv = i + is ;
+        	  int real_send_j_sauv = j + js ;
+        	  int real_send_k_sauv = k + ks ;
 
-//              _TYPE_ weight = (_TYPE_)(istmp - floor(istmp));
-//              _TYPE_ vmin = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor, js + j, ks + k);
-//              _TYPE_ vmax = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + iceil, js + j, ks + k);
+        	  // retourne un indice du domaine reel (valeur comprise entre 0 et real_size -1).
 
+        	  if (offset !=0.)
+        	  {
+              real_send_i = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
+              real_send_i_sauv = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
+        	  real_send_i = (real_send_i % real_size_i + real_size_i) % real_size_i;
+        	  }
 
-
-              _TYPE_ y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloorm2, js + j, ks + k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloorm1, js + j, ks + k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloor0, js + j, ks + k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloorp1, js + j, ks + k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(is + ifloorp2, js + j, ks + k)};
+        	  // indices dans lespace du tableau echange (envoi)
+        	  int send_i = real_send_i + 0 ;
+        	  int send_j = real_send_j + 0 ;
+        	  int send_k = real_send_k + 0 ;
 
 
-              _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
-              _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
-              _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
-              _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
-              _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+        	  // indices dans lespace du tableau echange (recoi)
+        	  int recevd_i = i + ir;
+        	  int recevd_j = j + jr;
+        	  int recevd_k = k + kr;
+        	  if (recevd_i == 11 and recevd_j == 0 and recevd_k == 1)
+        	  {
+        		  std::cout << "real_size_i = " << real_size_i<< std::endl;
+        		  std::cout << "real_size_j = " << real_size_j<< std::endl;
+        		  std::cout << "nb_ghost = " << nb_ghost<< std::endl;
+        		  std::cout << "real_send_i_sauv " << real_send_i_sauv << " " << real_send_j_sauv << " " << real_send_k_sauv << std::endl;
+        		  std::cout << "envoi " << send_i << " " << send_j << " " << send_k << "dans " << recevd_i << " " << recevd_j << " " << recevd_k <<  std::endl;
+        		  std::cout << "valeur envoyee" << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k) <<  std::endl;
+        	  }
 
-			 // Evaluate the interpolation polynomial at istmp
 
-              dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] =
-            		  a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-            		  							 + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-            		  							 + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
-            		  							 + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
-            		  							 + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3])) + jump;
+//        	  _TYPE_ x[5] = {(_TYPE_)real_send_i_sauv-2, (_TYPE_)real_send_i_sauv-1, (_TYPE_)real_send_i_sauv, (_TYPE_)real_send_i_sauv+1, (_TYPE_)real_send_i_sauv+2};
+//        	  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
+//
+//              _TYPE_ y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i-2, send_j, send_k),
+//            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i-1, send_j, send_k),
+//            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k),
+//            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i+1, send_j, send_k),
+//            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i+2, send_j, send_k)};
+
+
+//              _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+//              _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+//              _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+//              _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+//              _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+
+              dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k)] =
+            		 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k) + jump;
+//            		  	  	  	  	  	  	  	   a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+//            		  							 + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+//            		  							 + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+//            		  							 + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+//            		  							 + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3])) + jump;
 
 //              if ((loc == 3 or loc==2) && offset < 0. && offset !=0. && j==4 && k==0)
 //              {
@@ -106,9 +130,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
           }
 
-//      std::cout<<" " <<std::endl;
-//      std::cout<<" " <<std::endl;
-//      std::cout<<" " <<std::endl;
        return;
     }
   const int data_size = isz * jsz * ksz;
@@ -241,44 +262,65 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 	  double DX = Lx/nii ;
 	  double Shear_x_time = IJK_Splitting::shear_x_time_;
 	  offset_i = Shear_x_time/DX;
+	  std::cout << offset_i << std::endl;
   }
+
 
   // send left layer of real cells to right layer of virtual cells
-  exchange_data(pe_imin_, 0, 0, 0, pe_imax_, nii, 0, 0, le_ghost, njj, nkk); /* size of block data to send */
-
+  std::cout << "left to right x= " << std::endl;
+  std::cout << std::endl;
+  exchange_data(pe_imin_, 0, -le_ghost, -le_ghost, pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost); /* size of block data to send */
+  std::cout << "right to left x= " << std::endl;
+  std::cout << std::endl;
   // send right real cells to left virtual cells
-  exchange_data(pe_imax_, nii - le_ghost, 0, 0, pe_imin_, -le_ghost, 0, 0, le_ghost, njj, nkk);
-
-  exchange_data(pe_jmin_, -le_ghost, 0, 0, pe_jmax_, -le_ghost, njj, 0, nii + 2 * le_ghost, le_ghost, nkk);
-
-  exchange_data(pe_jmax_, -le_ghost, njj - le_ghost, 0, pe_jmin_, -le_ghost, -le_ghost, 0, nii + 2 * le_ghost, le_ghost, nkk);
-
-  if (z_index == z_index_min)
+  exchange_data(pe_imax_, nii - le_ghost, -le_ghost, -le_ghost, pe_imin_, -le_ghost, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost);
+  std::cout << "left to right z= " << std::endl;
+  std::cout << std::endl;
+  // sens des echanges important ? D'abord echanger sur le bord perio_shear, puis sur les bords perio
+  if (z_index != z_index_min)
   {
+	  exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost);
   // modification des blocs echanges dans le cas de condition de shear periodique pour ne prendre d'abord que l espace reel
   // on envoit ensuite les deux blocs fantomes --> je pense que ca ne change rien et que le code ne se sert pas des donnees a cet endroit
-  exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost, -offset_i, jump_i);
-  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, le_ghost , le_ghost , le_ghost);
-  exchange_data(pe_kmin_, nii, -le_ghost, 0, pe_kmax_, nii, -le_ghost, nkk, le_ghost , le_ghost , le_ghost);
+
+  //exchange_data(pe_kmin_, -le_ghost, -le_ghost, 1, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, -offset_i, jump_i, le_ghost);
+//  exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost, -offset_i, jump_i);
+//  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, le_ghost , le_ghost , le_ghost);
+//  exchange_data(pe_kmin_, nii, -le_ghost, 0, pe_kmax_, nii, -le_ghost, nkk, le_ghost , le_ghost , le_ghost);
   }
   else
   {
-  exchange_data(pe_kmin_, -le_ghost, -le_ghost, 0, pe_kmax_, -le_ghost, -le_ghost, nkk, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
-}
+	  exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii, njj, le_ghost, -offset_i, jump_i, 0);
 
-  if (z_index == z_index_max)
+  }
+  std::cout << "right to left z= " << std::endl;
+  std::cout << std::endl;
+  if (z_index != z_index_max)
   {
+	  exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost);
+
 	  // modification des blocs echanges dans le cas de condition de shear periodique pour ne prendre d'abord que l espace reel
 	  // on envoit ensuite les deux blocs fantomes --> je pense que ca ne change rien et que le code ne se sert pas des donnees a cet endroit
-	  exchange_data(pe_kmax_, 0, 0, nkk- le_ghost , pe_kmin_, 0, 0, -le_ghost, nii , njj , le_ghost, offset_i, -jump_i);
-	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk- le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, le_ghost , le_ghost , le_ghost);
-	  exchange_data(pe_kmax_, nii, -le_ghost, nkk- le_ghost, pe_kmin_, nii, -le_ghost, -le_ghost, le_ghost , le_ghost , le_ghost);
+	//  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost-1, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost, offset_i, -jump_i, le_ghost);
+	  //	  exchange_data(pe_kmax_, 0, 0, nkk- le_ghost , pe_kmin_, 0, 0, -le_ghost, nii , njj , le_ghost, offset_i, -jump_i);
+//	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk- le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, le_ghost , le_ghost , le_ghost);
+//	  exchange_data(pe_kmax_, nii, -le_ghost, nkk- le_ghost, pe_kmin_, nii, -le_ghost, -le_ghost, le_ghost , le_ghost , le_ghost);
 
   }
   else
   {
-	  exchange_data(pe_kmax_, -le_ghost, -le_ghost, nkk - le_ghost, pe_kmin_, -le_ghost, -le_ghost, -le_ghost, nii + 2 * le_ghost, njj + 2 * le_ghost, le_ghost);
-  }
+	  exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost, offset_i, -jump_i, 0);
+
+	    }
+
+  std::cout << "left to right y= " << std::endl;
+  std::cout << std::endl;
+  exchange_data(pe_jmin_, 0, 0, -le_ghost, pe_jmax_, 0, njj, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
+  std::cout << "right to left y= " << std::endl;
+  std::cout << std::endl;
+  exchange_data(pe_jmax_, 0, njj - le_ghost, -le_ghost, pe_jmin_, 0, -le_ghost, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
+
+
 
 
 

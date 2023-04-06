@@ -50,23 +50,30 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     const int pe_jmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_J);
     const int pe_kmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_K);
 
+    // ne prend pas en compte le cisaillement !!
+    // faire ici comme pour echange espace virtuel
+
     int pe = pe_kmin;
     if (pe >= 0)
       {
         pe_voisins[npe] = pe;
-        if (pe != pe_kmax)
-          {
-            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe]);
-            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe]);
-          }
-        else
+//        if (pe != pe_kmax)
+//          {
+//        	// echange des indices du vecteur solution pour kmin
+//            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe]);
+//            // echange des indices du vecteur solution pour kmax
+//            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe]);
+//            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe]);
+//
+//          }
+//        else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
-            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe]);
-            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe]);
-            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe]);
-            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe]);
+            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting);
+            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe], splitting);
           }
         npe++;
       }
@@ -77,17 +84,17 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         pe_voisins[npe] = pe;
         if (pe != pe_jmax)
           {
-            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe]);
-            add_dist_bloc(pe, 0,0,0, ni,1,nk, items_to_send[npe]);
+            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, ni,1,nk, items_to_send[npe], splitting);
           }
         else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
-            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe]);
-            add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe]);
-            add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk, items_to_send[npe]);
-            add_dist_bloc(pe, 0,0,0, ni,1,nk, items_to_send[npe]);
+            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe], splitting);
+            add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk, items_to_send[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, ni,1,nk, items_to_send[npe], splitting);
           }
         npe++;
       }
@@ -98,17 +105,17 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         pe_voisins[npe] = pe;
         if (pe != pe_imax)
           {
-            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe]);
-            add_dist_bloc(pe, 0,0,0, 1,nj,nk, items_to_send[npe]);
+            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, 1,nj,nk, items_to_send[npe], splitting);
           }
         else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
-            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe]);
-            add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe]);
-            add_dist_bloc(pe, ni-1,0,0, ni,nj,nk, items_to_send[npe]);
-            add_dist_bloc(pe, 0,0,0, 1,nj,nk, items_to_send[npe]);
+            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe], splitting);
+            add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, ni-1,0,0, ni,nj,nk, items_to_send[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, 1,nj,nk, items_to_send[npe], splitting);
           }
         npe++;
       }
@@ -117,8 +124,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_imin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe]);
-        add_dist_bloc(pe, ni-1,0,0, ni,nj,nk, items_to_send[npe]);
+        add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe], splitting);
+        add_dist_bloc(pe, ni-1,0,0, ni,nj,nk, items_to_send[npe], splitting);
         npe++;
       }
 
@@ -126,8 +133,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_jmin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe]);
-        add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk, items_to_send[npe]);
+        add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe], splitting);
+        add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk, items_to_send[npe], splitting);
         npe++;
       }
 
@@ -135,8 +142,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_kmin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe]);
-        add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe]);
+        add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
+        add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting);
         npe++;
       }
 

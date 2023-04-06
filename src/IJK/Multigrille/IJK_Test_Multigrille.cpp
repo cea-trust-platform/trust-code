@@ -34,9 +34,11 @@ Entree& IJK_Test_Multigrille::interpreter(Entree& is)
 {
   IJK_Splitting split;
 
+
   Param param(que_suis_je());
   Nom ijk_splitting_name;
   Nom name_of_dom_;
+
   param.ajouter("ijk_splitting", &ijk_splitting_name, Param::REQUIRED);
   param.ajouter("multigrid_solver", &poisson_solver_, Param::REQUIRED);
   param.ajouter("fichier_reprise_rhs", &fichier_reprise_rhs_);
@@ -46,7 +48,14 @@ Entree& IJK_Test_Multigrille::interpreter(Entree& is)
   param.ajouter("expression_rho", &expression_rho_);
   param.ajouter("expression_rhs", &expression_rhs_);
   param.ajouter("name_of_dom", &name_of_dom_);
+  param.ajouter("defil", &defil_);
+  param.ajouter("Shear", &shear_);
+  param.ajouter("Change_ref", &change_ref_);
   param.lire_avec_accolades(is);
+
+
+  IJK_Splitting::defilement_ = defil_;
+  IJK_Splitting::shear_x_time_ = shear_;
 
   // Recuperation des donnees de maillage
   split = ref_cast(IJK_Splitting, Interprete_bloc::objet_global(ijk_splitting_name));
@@ -96,6 +105,9 @@ Entree& IJK_Test_Multigrille::interpreter(Entree& is)
   statistiques().end_count(count1);
 
   statistiques().begin_count(count2);
+  if(change_ref_)
+	  rhs_.change_to_sheared_reference_frame(1, 0);
+
   poisson_solver_.resoudre_systeme_IJK(rhs_, resu_);
   statistiques().end_count(count2);
 

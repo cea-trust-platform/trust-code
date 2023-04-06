@@ -56,9 +56,9 @@ protected:
   }
 
   void add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                     int imax, int jmax, int kmax, ArrOfInt& virt_blocs);
+                     int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting);
   void add_dist_bloc(int pe, int imin, int jmin, int kmin,
-                     int imax, int jmax, int kmax, ArrOfInt& items_to_send);
+                     int imax, int jmax, int kmax, ArrOfInt& items_to_send, IJK_Splitting splitting);
 
   Matrice_Bloc mat_;
 
