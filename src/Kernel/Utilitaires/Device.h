@@ -17,6 +17,9 @@
 #define Device_included
 
 #include <Array_base.h>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 extern bool self_test();
 extern void init_openmp();
@@ -26,7 +29,21 @@ extern void start_timer(int size=-1);
 extern void end_timer(int onDevice, const std::string& str, int size=-1);
 
 template <typename _TYPE_>
-extern void allocateOnDevice(const TRUSTArray<_TYPE_>& tab);
+extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
+
+template <typename _TYPE_>
+inline const _TYPE_* allocateOnDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
+{
+  return allocateOnDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), arrayName);
+}
+template <typename _TYPE_>
+void allocateOnDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
+{
+  allocateOnDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), arrayName);
+}
+
+template <typename _TYPE_>
+extern void deleteOnDevice(TRUSTArray<_TYPE_>& tab);
 
 template <typename _TYPE_>
 extern const _TYPE_* mapToDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
@@ -47,15 +64,15 @@ template <typename _TYPE_>
 extern void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
 
 template <typename _TYPE_>
-extern void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
-
-template <typename _TYPE_>
 void copyPartialFromDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
 {
   copyPartialFromDevice(const_cast<TRUSTArray<_TYPE_>&>(tab), deb, fin, arrayName);
 }
 
 template <typename _TYPE_>
-void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
+extern void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
+
+template <typename _TYPE_>
+extern void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
 
 #endif

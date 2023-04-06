@@ -127,7 +127,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
         }
       div_addr[elem]+=pscf;
     }
-  end_timer(1, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
   assert_invalide_items_non_calcules(div);
   return div;
 }
@@ -409,7 +409,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
               div_addr[som] += signe * coeff_som * psc;
             }
         }
-      end_timer(1, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
+      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
     }
   // ToDo OpenMP ajout CL copyPartial (pas facile car div au sommet)
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();

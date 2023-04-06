@@ -142,7 +142,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
               gradient_elem_addr[(elem2 * nb_comp + icomp) * dimension + i] -= grad;
           }
     }
-  end_timer(1, "Face loop in Champ_P1NC::calculer_gradientP1NC");
+  end_timer(Objet_U::computeOnDevice, "Face loop in Champ_P1NC::calculer_gradientP1NC");
   // ToDo merge in one region the 2 loops
   const double * inverse_volumes_addr = mapToDevice(domaine_VEF.inverse_volumes());
   start_timer();
@@ -152,7 +152,7 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
     for (int icomp=0; icomp<nb_comp; icomp++)
       for (int i=0; i<dimension; i++)
         gradient_elem_addr[(elem*nb_comp+icomp)*dimension+i] *= inverse_volumes_addr[elem];
-  end_timer(1, "Elem loop in Champ_P1NC::calculer_gradientP1NC");
+  end_timer(Objet_U::computeOnDevice, "Elem loop in Champ_P1NC::calculer_gradientP1NC");
 }
 
 void Champ_P1NC::gradient(DoubleTab& gradient_elem) const

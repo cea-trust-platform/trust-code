@@ -239,7 +239,7 @@ bool self_test()
         assert(const_b[b.size() - 1] == 1);
       }
       {
-        // ToDo: Copies de tableau:
+        // Copies de tableau:
         DoubleTab a(10);
         a=1;
         mapToDevice(a, "a"); // a sur le device
@@ -351,12 +351,50 @@ bool self_test()
       {
         DoubleTab a(N);
         a=1;
-        mapToDevice(a); // Sur le device
+        mapToDevice(a, "a"); // Sur le device
         assert(a.get_dataLocation()==HostDevice);
         DoubleTab b;
         b.ref_array(a);
         assert(b.get_dataLocation()==HostDevice); // b doit etre sur le device
       }
+      // Routine omp_target_is_present pour existence d'une adresse sur le device
+      // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
+      double * ptr_host;
+      {
+        DoubleTab a(N);
+        a=1;
+        {
+          DoubleTab b;
+          b.ref_array(a);
+          mapToDevice(b, "b"); // Sur le device
+          assert(a.addrForDevice()==b.addrForDevice());
+          assert(b.get_dataLocation() == HostDevice);
+          assert(a.get_dataLocation() == HostDevice); // a est considere sur le device egalement
+        }
+        assert(a.get_dataLocation() == HostDevice);
+        ptr_host = a.addrForDevice();
+        assert(omp_target_is_present(ptr_host, omp_get_default_device())==1); // Verifie que le tableau possede une zone memoire sur le device
+        a.resize(2*N);
+        a=2;
+        {
+          DoubleTab b;
+          b.ref_array(a);
+          mapToDevice(b, "b"); // Sur le device
+        }
+      }
+      assert(omp_target_is_present(ptr_host, omp_get_default_device())==0); // Verifie que le tableau ne possede plus une zone memoire sur le device
+      // ref_data utilise dans Schema_Comm_Vecteurs, Matrice, GCP, etc...
+      {
+        double a[10];
+        ArrOfDouble b;
+        b.ref_data(&a[0], N);
+        computeOnTheDevice(b, "ref_data");
+        assert(b.get_dataLocation()==Device);
+        ptr_host = b.addrForDevice();
+        assert(omp_target_is_present(ptr_host, omp_get_default_device())==1); // Verifie que le tableau possede une zone memoire sur le device
+      }
+      assert(omp_target_is_present(ptr_host, omp_get_default_device())==0); // Verifie que le tableau ne possede plus une zone memoire sur le device
+      if (Process::me()==0) std::cerr << ptr_host << std::endl;
       // ToDo:Comment gerer les DoubleTab_Parts ? Pas facile donc pour le moment
       // le constructeur par copie fait un copyFromDevice du DoubleTab...
       /*

@@ -339,7 +339,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
             }
         } // Fin de la boucle sur les 2 elements comnuns a la face
     } // Fin de la boucle sur les faces
-  end_timer(1, "Face loop in Op_Diff_VEF_Face::ajouter");
+  end_timer(Objet_U::computeOnDevice, "Face loop in Op_Diff_VEF_Face::ajouter");
 
   // Update flux_bords on symmetry:
   const int nb_bords=domaine_VEF.nb_front_Cl();

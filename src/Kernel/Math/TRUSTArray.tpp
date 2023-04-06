@@ -433,16 +433,15 @@ inline int TRUSTArray<_TYPE_>::detach_array()
       // Le tableau est de type "normal". Si la zone de memoire n'est plus utilisee par personne, on la detruit.
       if ((p_->suppr_one_ref()) == 0)
         {
-#ifdef _OPENMP
-          if (get_dataLocation()!=HostOnly)
-            {
-              #pragma omp target exit data if (computeOnDevice) map(delete:data_[0:size_array_])
-            }
-#endif
+          deleteOnDevice(*this);
           delete p_;
           retour = 1;
         }
       p_ = 0;
+    }
+  else
+    {
+      deleteOnDevice(*this);
     }
   data_ = 0;
   size_array_ = 0;

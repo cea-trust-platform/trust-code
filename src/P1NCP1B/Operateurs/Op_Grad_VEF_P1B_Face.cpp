@@ -346,7 +346,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
             }
         }
     }
-  end_timer(1, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::
@@ -415,7 +415,7 @@ ajouter_som(const DoubleTab& pre,
             }
         }
     }
-  end_timer(1, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
+  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
 
   copyPartialFromDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -742,7 +742,7 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
       for (int i=0; i<dimension; i++)
         flux_bords_addr[face*dimension+i] = pres_tot * face_normales_addr[face*dimension+i];
     }
-  end_timer(1, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+  end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
 }
 
 int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
