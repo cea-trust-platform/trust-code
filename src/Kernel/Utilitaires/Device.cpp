@@ -142,7 +142,7 @@ void start_timer(int size)
 }
 void end_timer(int onDevice, const std::string& str, int size) // Return in [ms]
 {
-  if (size==-1 && onDevice) statistiques().end_count(gpu_kernel_counter_); // ToDo cancel if not onDevice
+  if (size==-1) statistiques().end_count(gpu_kernel_counter_,0,onDevice);
   if (clock_on!=NULL) // Affichage
     {
       std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
@@ -173,8 +173,10 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
-      // ToDo OpenMP que ce n'est pas deja alloue ?
       clock_start = Statistiques::get_time_now();
+      //if (isAllocatedOnDevice(tab_addr)) printf("Provisoire %s [%s]\n", arrayName.c_str(), toString(tab_addr).c_str());
+      //assert(!isAllocatedOnDevice(tab_addr));
+      if (isAllocatedOnDevice(tab)) deleteOnDevice(tab); // ToDo OpenMP ne desalouer que si taille differente
       #pragma omp target enter data map(alloc:tab_addr[0:tab.size_array()])
       if (clock_on)
         {
@@ -193,18 +195,20 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
 template <typename _TYPE_>
 void deleteOnDevice(TRUSTArray<_TYPE_>& tab)
 {
-  _TYPE_* tab_addr = tab.addrForDevice();
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
-      _TYPE_ * data_ = tab.addrForDevice();
-      if (init_openmp_ && data_ && omp_target_is_present(data_, omp_get_default_device()))
+      _TYPE_ * tab_addr = tab.addrForDevice();
+      if (init_openmp_ && tab_addr && isAllocatedOnDevice(tab))
         {
-          std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
+          std::string clock;
+          if (PE_Groups::get_nb_groups()>0 && Process::nproc()>1) clock = "[clock]#"+std::to_string(Process::me());
+          else
+            clock = "[clock]  ";
           int size = sizeof(_TYPE_) * tab.size_array();
           if (getenv ("TRUST_CLOCK_ON")!=NULL)
-            cout << clock << "            [Kernel] Delete on device array [" << toString(data_).c_str() << "] of " << size << " Bytes" << endl << flush;
-          #pragma omp target exit data map(delete:data_[0:tab.size_array()])
+            cout << clock << "            [Kernel] Delete on device array [" << toString(tab_addr).c_str() << "] of " << size << " Bytes" << endl << flush;
+          #pragma omp target exit data map(delete:tab_addr[0:tab.size_array()])
           tab.set_dataLocation(HostOnly);
         }
     }
@@ -247,7 +251,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
           //Argh le bug trouve: si plusieurs appels de copy (DoubleTrav?), l'update ne se fait pas car tableau deja alloue
           //donc on alloue puis on update pour etre certain de la copie:
           size = sizeof(_TYPE_) * tab.size_array();
-          assert(omp_target_is_present(tab_addr, omp_get_default_device())==0); // Verifie que la zone n'est pas deja allouee
+          assert(!isAllocatedOnDevice(tab)); // Verifie que la zone n'est pas deja allouee
           statistiques().begin_count(gpu_copytodevice_counter_);
           #pragma omp target enter data map(alloc:tab_addr[0:tab.size_array()])
           #pragma omp target update to(tab_addr[0:tab.size_array()])
@@ -257,7 +261,8 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       else if (currentLocation==Host)
         {
           size = sizeof(_TYPE_) * tab.size_array();
-          assert(omp_target_is_present(tab_addr, omp_get_default_device())==1); // Verifie que la zone est deja allouee
+          //if (!isAllocatedOnDevice(tab)) printf("Provisoire %s [%s]\n", arrayName.c_str(), toString(tab_addr).c_str());
+          assert(isAllocatedOnDevice(tab));
           statistiques().begin_count(gpu_copytodevice_counter_);
           #pragma omp target update to(tab_addr[0:tab.size_array()])
           statistiques().end_count(gpu_copytodevice_counter_, size);
@@ -271,7 +276,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
         {
           if (arrayName!="??")
             {
-              message = "No change on device array "+arrayName+" ["+toString(tab_addr)+"]";
+              //message = "No change on device array "+arrayName+" ["+toString(tab_addr)+"]";
               size = 0;
             }
         }
@@ -302,6 +307,7 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
       if (tab.get_dataLocation()==Device)
         {
           int size = sizeof(_TYPE_) * tab.size_array();
+          assert(isAllocatedOnDevice(tab));
           start_timer(size);
           statistiques().begin_count(gpu_copyfromdevice_counter_, size);
           #pragma omp target update from(tab_addr[0:tab.size_array()])
@@ -397,7 +403,7 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
           //std::string message;
           //message = "Partial update to device of const array "+arrayName+" ["+toString(tab_addr)+"]";
           //end_timer(Objet_U::computeOnDevice, message, size);
-          tab.set_dataLocation(Device);
+          const_cast<TRUSTArray<_TYPE_>&>(tab).set_dataLocation(Device);
         }
     }
 #endif

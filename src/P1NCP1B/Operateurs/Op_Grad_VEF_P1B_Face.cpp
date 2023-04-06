@@ -295,12 +295,11 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   // Si pas de support P1, on impose Neumann sur P0
   if (domaine_VEF.get_alphaS()==0)
     {
-      copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
-      start_timer();
       const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
       const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
       int nb_bords =les_cl.size();
-
+      copyPartialFromDevice(grad, 0, domaine_VEF.premiere_face_int() * dimension, "grad on boundary");
+      start_timer();
       for (int n_bord=0; n_bord<nb_bords; n_bord++)
         {
           const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);

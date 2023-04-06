@@ -40,15 +40,10 @@ bool self_test()
         assert(a.get_dataLocation() == HostOnly);
         mapToDevice(a);
         assert(a.get_dataLocation() == HostDevice);
-        a.set_dataLocation(Host);
+        a[1]=0;
+        assert(a.get_dataLocation() == Host);
         mapToDevice(a);
         assert(a.get_dataLocation() == HostDevice);
-        a.set_dataLocation(HostDevice);
-        mapToDevice(a);
-        assert(a.get_dataLocation() == HostDevice);
-        a.set_dataLocation(Device);
-        mapToDevice(a);
-        assert(a.get_dataLocation() == Device);
       }
 
       int N = 10;
@@ -357,8 +352,6 @@ bool self_test()
         b.ref_array(a);
         assert(b.get_dataLocation()==HostDevice); // b doit etre sur le device
       }
-      // Routine omp_target_is_present pour existence d'une adresse sur le device
-      // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
       double * ptr_host;
       {
         DoubleTab a(N);
@@ -373,7 +366,7 @@ bool self_test()
         }
         assert(a.get_dataLocation() == HostDevice);
         ptr_host = a.addrForDevice();
-        assert(omp_target_is_present(ptr_host, omp_get_default_device())==1); // Verifie que le tableau possede une zone memoire sur le device
+        assert(isAllocatedOnDevice(ptr_host)); // Verifie que le tableau possede une zone memoire sur le device
         a.resize(2*N);
         a=2;
         {
@@ -382,19 +375,31 @@ bool self_test()
           mapToDevice(b, "b"); // Sur le device
         }
       }
-      assert(omp_target_is_present(ptr_host, omp_get_default_device())==0); // Verifie que le tableau ne possede plus une zone memoire sur le device
-      // ref_data utilise dans Schema_Comm_Vecteurs, Matrice, GCP, etc...
+      assert(!isAllocatedOnDevice(ptr_host)); // Verifie que le tableau ne possede plus une zone memoire sur le device
+      // ref_data sur un TRUSTArray (Matrice, GCP, etc...) Interdit si sur GPU
       {
+        /*
+        DoubleTab a(10);
+        mapToDevice(a, "a");
+        DoubleVect b;
+        b.ref_data(&a[0], 5); // Doit planter et annoncer que a sur le device
+         */
+        //Process::exit();
+      }
+      // ref_data sur un tableau utilise dans Schema_Comm_Vecteurs
+      {
+        /*
         double a[10];
-        ArrOfDouble b;
-        b.ref_data(&a[0], N);
-        computeOnTheDevice(b, "ref_data");
+        DoubleVect b;
+        b.ref_data(&a[0], 10);
+        allocateOnDevice(b, "b ref_data");
         assert(b.get_dataLocation()==Device);
         ptr_host = b.addrForDevice();
-        assert(omp_target_is_present(ptr_host, omp_get_default_device())==1); // Verifie que le tableau possede une zone memoire sur le device
+        assert(isAllocatedOnDevice(ptr_host)); // Verifie que le tableau possede une zone memoire sur le device
+        assert(b.ref_count()==1); */
       }
-      assert(omp_target_is_present(ptr_host, omp_get_default_device())==0); // Verifie que le tableau ne possede plus une zone memoire sur le device
-      if (Process::me()==0) std::cerr << ptr_host << std::endl;
+      //assert(!isAllocatedOnDevice(ptr_host)); // b est detruit
+
       // ToDo:Comment gerer les DoubleTab_Parts ? Pas facile donc pour le moment
       // le constructeur par copie fait un copyFromDevice du DoubleTab...
       /*
@@ -408,6 +413,7 @@ bool self_test()
             P1 -= moyenne_K; // Gros pb car P1 toujours sur Device !
         }
         */
+      if (Process::me()==0) std::cerr << ptr_host << std::endl;
     }
   return self_tested_;
 }

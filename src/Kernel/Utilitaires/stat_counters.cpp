@@ -227,11 +227,12 @@ inline void write_stat_file(const Nom& msg, const Stat_Results& stat, const Stat
   if (stat.max_time!=0)
     {
       stat_file << "Dont " << msg << " ";
-      if (pas_de_temps.max_count>0)
-        stat_file << stat.max_time/pas_de_temps.max_count;
-      else
-        stat_file << stat.max_time;
-      stat_file << " " << (int)(stat.max_time/pas_de_temps.max_time*100) << "%";
+      double t = pas_de_temps.max_count>0 ? stat.max_time/pas_de_temps.max_count : stat.max_time;
+      //stat_file << t;
+      //stat_file << " " << (int)(stat.max_time/pas_de_temps.max_time*100) << "%";
+      char output[100];
+      snprintf(output, 100, "%8.6f %2d%%", t, (int)(stat.max_time/pas_de_temps.max_time*100));
+      stat_file << output;
       if (pas_de_temps.max_count>0)
         {
           double n = stat.max_count/pas_de_temps.max_count;
@@ -249,6 +250,20 @@ inline void write_stat_file(const Nom& msg, const Stat_Results& stat, SFichier& 
       stat_file << stat.max_time;
       stat_file << "\n";
     }
+}
+
+inline void write_gpu_stat_file(const Nom& msg, const Stat_Results& stat, const Stat_Results& pas_de_temps, SFichier& stat_file)
+{
+  char pourcent[100] = "";
+  snprintf(pourcent, 100, " %4.1f%%", 100*stat.max_time/pas_de_temps.max_time);
+  char calls[100] = "";
+  snprintf(calls, 100, " %4.1f calls", stat.avg_count/pas_de_temps.max_count);
+  char t[1000] = "";
+  snprintf(t, 100, " %8.6f s", stat.max_time/pas_de_temps.max_count);
+  char bw[100] = "";
+  if (stat.avg_quantity>0)
+    snprintf(bw, 100, " %4.1f GB/s", stat.avg_quantity/1024/1024/1024/stat.max_time);
+  stat_file << msg << t << pourcent << calls << bw << "\n";
 }
 
 void print_statistics_analyse(const char * message, int mode_append)
@@ -530,6 +545,13 @@ void print_statistics_analyse(const char * message, int mode_append)
               /* stat_file << "Debit           [Mo/s] : "
                         << (int) (total_quantity / (1024 * 1024)
                                   / sauvegarde.max_time) << "\n"; */
+            }
+          if (gpu_copytodevice.max_count > 0)
+            {
+              stat_file << "GPU statistics per time step (experimental):" << finl;
+              write_gpu_stat_file("Copy H2D:", gpu_copytodevice, pas_de_temps, stat_file);
+              write_gpu_stat_file("Copy D2H:", gpu_copyfromdevice, pas_de_temps, stat_file);
+              write_gpu_stat_file("Kernels :", gpu_kernel, pas_de_temps, stat_file);
             }
           stat_file << "I/O:" << finl;
           if (debit_seq>0) stat_file << "Debit write seq [Mo/s] : " << debit_seq << "\n";

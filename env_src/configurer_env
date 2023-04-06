@@ -2020,7 +2020,7 @@ then
      if [ "$TRUST_USE_CUDA" = 1 ]
      then
         # A partir de HPC SDK 21.3 et necessite compute_capability 70 !
-        openmp_target="-target=gpu $march"
+        openmp_target="-target=gpu $march" # ToDo OpenMP -gpu=cc86 pour a5000/a6000, detecter nvidia-smi ou autre et pour cluster mettre dans HOST.sh. Gain limite: 1% sur petra ?
         # Sur cluster pour compiler sur la frontale (pas de carte):
         # https://forums.developer.nvidia.com/t/compile-error-for-openmp-code-with-target-offloading-in-nvhpc-20-11/164188
         [ "$BATCH_SYSTEM_DETECTED" = 1 ] && openmp_target=$openmp_target" -gpu=cc70,cc80" # cc80 pour topaze (A100)

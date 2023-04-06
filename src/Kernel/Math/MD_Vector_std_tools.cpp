@@ -34,19 +34,25 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
       TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template < _TYPE_ >(voisins[i_voisin], nb_elems);
       _TYPE_ *vect_addr;
       _TYPE_ *buffer_addr;
-      bool kernelOnDevice = vect.isKernelOnDevice("vect.echange_espace_virtuel() 1)vect_items_generic");
+      // ToDo OpenMP : essayer de ne pas faire apparaitre de #pragma et faire des appels dans Device.cpp
+      bool kernelOnDevice = vect.isKernelOnDevice();
       if (kernelOnDevice)
         {
           if (IS_READ)
             {
               const TRUSTArray<_TYPE_>& const_vect = vect;
               vect_addr = const_cast<_TYPE_ *>(mapToDevice(const_vect, "vect"));
-              buffer_addr = allocateOnDevice(buffer, "buffer for packing");
+              //buffer_addr = allocateOnDevice(buffer, "buffer for packing");
+              buffer_addr = buffer.addr();
+              #pragma omp target enter data map(alloc:buffer_addr[0:buffer.size_array()])
             }
           else
             {
-              const TRUSTArray<_TYPE_>& const_buffer = buffer;
-              buffer_addr = const_cast<_TYPE_ *>(mapToDevice(const_buffer, "buffer for unpacking"));
+              //const TRUSTArray<_TYPE_>& const_buffer = buffer;
+              //buffer_addr = const_cast<_TYPE_ *>(mapToDevice(const_buffer, "buffer for unpacking"));
+              buffer_addr = buffer.addr();
+              #pragma omp target enter data map(alloc:buffer_addr[0:buffer.size_array()])
+              #pragma omp target update to(buffer_addr[0:buffer.size_array()])
               vect_addr = computeOnTheDevice(vect, "vect");
             }
         }
@@ -57,6 +63,8 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
         }
       const int * items_to_process_addr = kernelOnDevice ? mapToDevice(list.get_data(), "items_to_process") : list.get_data().addr();
       assert(idx_end_of_list <= list.get_data().size_array());
+      // ToDo OpenMP collapse(2) possible car n constant
+      start_timer();
       #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
       for (int item=idx; item<idx_end_of_list; item++)
         {
@@ -88,8 +96,17 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
                 }
             }
         }
-      idx += idx_end_of_list;
-      if (IS_READ) copyFromDevice(buffer, "buffer");
+      end_timer(kernelOnDevice, "echange_espace_virtuel() vect_items_generic");
+      if (kernelOnDevice)
+        {
+          if (IS_READ)
+            {
+              //copyFromDevice(buffer, "buffer");
+              #pragma omp target update from(buffer_addr[0:buffer.size_array()])
+            }
+          #pragma omp target exit data map(delete:buffer_addr[0:buffer.size_array()])
+        }
+      idx = idx_end_of_list;
     }
 }
 template void vect_items_generic<double, VECT_ITEMS_TYPE::READ>(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, TRUSTArray<double>& vect, Schema_Comm_Vecteurs& buffers);
@@ -123,19 +140,24 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
       TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template < _TYPE_ >(voisins[i_voisin], nb_elems);
       _TYPE_ *vect_addr;
       _TYPE_ *buffer_addr;
-      bool kernelOnDevice = vect.isKernelOnDevice("vect.echange_espace_virtuel() 2)vect_blocs_generic()");
+      bool kernelOnDevice = vect.isKernelOnDevice();
       if (kernelOnDevice)
         {
           if (IS_READ)
             {
               const TRUSTArray<_TYPE_>& const_vect = vect;
               vect_addr = const_cast<_TYPE_ *>(mapToDevice(const_vect, "vect"));
-              buffer_addr = allocateOnDevice(buffer, "buffer for packing on device");
+              //buffer_addr = allocateOnDevice(buffer, "buffer for packing on device");
+              buffer_addr = buffer.addr();
+              #pragma omp target enter data map(alloc:buffer_addr[0:buffer.size_array()])
             }
           else
             {
-              const TRUSTArray<_TYPE_>& const_buffer = buffer;
-              buffer_addr = const_cast<_TYPE_ *>(mapToDevice(const_buffer, "buffer for unpacking on device)"));
+              //const TRUSTArray<_TYPE_>& const_buffer = buffer;
+              //buffer_addr = const_cast<_TYPE_ *>(mapToDevice(const_buffer, "buffer for unpacking on device)"));
+              buffer_addr = buffer.addr();
+              #pragma omp target enter data map(alloc:buffer_addr[0:buffer.size_array()])
+              #pragma omp target update to(buffer_addr[0:buffer.size_array()])
               vect_addr = computeOnTheDevice(vect, "vect");
             }
         }
@@ -146,7 +168,6 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
         }
       const int * items_to_process_addr = kernelOnDevice ? mapToDevice(list.get_data(), "items_to_process") : list.get_data().addr();
       assert(idx_end_of_list <= list.get_data().size_array());
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
       for (int item=idx; item<idx_end_of_list; item+=2)
         {
           // Indice de l'item geometrique a copier (ou du premier item du bloc)
@@ -159,9 +180,15 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
           assert(premier_item_bloc >= 0 && bloc_size > 0 && (premier_item_bloc + bloc_size) * line_size <= vect.size_array());
 #endif
           const int n = line_size * bloc_size;
+          // ToDo OpenMP voir si cette boucle sur ii_base en dessous peut etre evitee sinon ecrire l'algo non OpenMP egalement:
+          int ii_base = 0;
+          for (int i = idx; i < item; i += 2)
+            ii_base += items_to_process_addr[i+1] - items_to_process_addr[i];
+          start_timer();
+          #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
           for (int j = 0; j < n; j++)
             {
-              int ii = (item-idx)/2 * n + j; // ToDo OpenMP check /2 et reecrire boucles
+              int ii = ii_base * line_size + j;
               int jj = premier_item_bloc * line_size + j;
               if (IS_READ) buffer_addr[ii] = vect_addr[jj];
               else if (IS_WRITE) vect_addr[jj] = buffer_addr[ii];
@@ -172,9 +199,18 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
                   throw;
                 }
             }
+          end_timer(kernelOnDevice, "echange_espace_virtuel() vect_blocs_generic");
         }
-      idx += idx_end_of_list;
-      if (IS_READ) copyFromDevice(buffer, "buffer");
+      if (kernelOnDevice)
+        {
+          if (IS_READ)
+            {
+              //copyFromDevice(buffer, "buffer");
+              #pragma omp target update from(buffer_addr[0:buffer.size_array()])
+            }
+          #pragma omp target exit data map(delete:buffer_addr[0:buffer.size_array()])
+        }
+      idx = idx_end_of_list;
     }
 }
 template void vect_blocs_generic<double, VECT_BLOCS_TYPE::READ>(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, const ArrOfInt& nb_items_par_voisin, TRUSTArray<double>& vect, Schema_Comm_Vecteurs& buffers);

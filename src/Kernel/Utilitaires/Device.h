@@ -43,6 +43,30 @@ void allocateOnDevice(const TRUSTArray<_TYPE_>& tab, std::string arrayName="??")
 }
 
 template <typename _TYPE_>
+bool isAllocatedOnDevice(_TYPE_* tab_addr)
+{
+  // Routine omp_target_is_present pour existence d'une adresse sur le device
+  // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
+#ifdef _OPENMP
+  assert(omp_get_default_device()==0); // omp_target_is_present buggee ? Renvoie 0 sur le device 1 meme si alloue...
+  return omp_target_is_present(tab_addr, omp_get_default_device())==1;
+#else
+  return false;
+#endif
+}
+
+template <typename _TYPE_>
+bool isAllocatedOnDevice(TRUSTArray<_TYPE_>& tab)
+{
+#ifdef _OPENMP
+  if (omp_get_default_device()==0)
+    return isAllocatedOnDevice(tab.addrForDevice());
+  else
+#endif
+    return tab.get_dataLocation()!=HostOnly;
+}
+
+template <typename _TYPE_>
 extern void deleteOnDevice(TRUSTArray<_TYPE_>& tab);
 
 template <typename _TYPE_>

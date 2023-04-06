@@ -138,7 +138,9 @@ help()
    echo "-vtune                        : Run vtune tool (profiling). Best profiler tool."
    echo "-perf                         : Run perf tool (profiling)."
    echo "-trace                        : Run traceanalyzer tool (MPI profiling)."
-   [ "`nsys --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-nsys                         : Run Nsight tool (GPU profiling)."
+   [ "`nsys --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-nsys                         : Run Nsight system tool (GPU profiling)."
+   [ "`ncu --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-ncu                         : Run Nsight compute tool (GPU Kernel profiling)."
+   [ "`compute-sanitizer --version 1>/dev/null 2>&1;echo $?`" = 0 ] && echo "-cs memcheck|racecheck|initcheck|synccheck : Run compute sanitizer tool (GPU debugging)."
    echo "-create_sub_file              : Create a submission file only."
    echo "-prod                         : Create a submission file and submit the job on the main production class with exclusive resource."
    echo "-bigmem                       : Create a submission file and submit the job on the big memory production class."
@@ -450,6 +452,12 @@ do
    elif [ "$1" = "-nsys" ]
    then
       NSYS=1
+   elif [ "$1" = "-ncu" ]
+   then
+      NCU=1
+   elif [ "$1" = "-cs" ]
+   then
+      CS=1;shift;CS_OPTION=$1
    elif [ "$1" = "-gdb" ]
    then
       gdb=gdb.sh && mpirun_options="-gdb"
@@ -840,6 +848,13 @@ then
    export NVCOMPILER_ACC_TIME=1 # Tres utile pour sortie bilan des copies sur device
    #export NVCOMPILER_ACC_NOTIFY=3
    exec="nsys profile --force-overwrite true -o $NOM.qdrep $binary"
+elif [ "$NCU" = 1 ]
+then
+   rm -f $NOM.qdrep.ncu-rep
+   exec="ncu -o $NOM.qdrep.ncu-rep $binary"
+elif [ "$CS" = 1 ]
+then
+   exec="compute-sanitizer --tool $CS_OPTION $binary"
 elif [ "$VT_PCTRACE" != "" ]
 then
    exec="-trace $binary"
@@ -1301,6 +1316,10 @@ then
    #else
    #   echo "Sorry, can't run nsight-sys GUI for GPU profiling..."
    #fi
+elif [ "$NCU" = 1 ]
+then
+   # Marche pas encore:
+   [ -f $NOM.qdrep.ncu-rep ] && $CUDA_ROOT/*/bin/ncu-ui $NOM.qdrep.ncu-rep
 fi
 exit $err
 

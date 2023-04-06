@@ -195,10 +195,10 @@ public:
   inline virtual void resize_tab(int n, Array_base::Resize_Options opt = COPY_INIT);
 
   // Host/Device methods:
-  inline DataLocation get_dataLocation() { return p_==NULL ? dataLocation_ : p_->get_dataLocation(); }
-  inline DataLocation get_dataLocation() const { return p_==NULL ? dataLocation_ : p_->get_dataLocation(); }
-  inline void set_dataLocation(DataLocation flag) { if (p_!=NULL) p_->set_dataLocation(flag); else dataLocation_=flag; }
-  inline void set_dataLocation(DataLocation flag) const { if (p_!=NULL) p_->set_dataLocation(flag); else abort(); }
+  inline DataLocation get_dataLocation() { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
+  inline DataLocation get_dataLocation() const { return p_==NULL ? HostOnly : p_->get_dataLocation(); }
+  inline void set_dataLocation(DataLocation flag) { if (p_!=NULL) p_->set_dataLocation(flag); }
+  inline void set_dataLocation(DataLocation flag) const { if (p_!=NULL) p_->set_dataLocation(flag); }
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
   inline bool isDataOnDevice() const { return isDataOnDevice(*this); }
@@ -242,10 +242,8 @@ private:
   // Drapeau indiquant si l'allocation memoire a lieu avec un new classique ou dans le pool de memoire temporaire de Trio
   Storage storage_type_;
 
-  // DataLocation pour le cas ref_data (p_ = NULL)
-  DataLocation dataLocation_ = HostOnly;
   // Methodes de verification que le tableau est a jour sur le host:
-  // ToDo:Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?
+  // ToDo OpenMP :Appels couteux (car non inlines?) depuis operator()[int] mais comment faire mieux ?
   inline void checkDataOnHost(const TRUSTArray& tab) const
   {
 #ifdef _OPENMP

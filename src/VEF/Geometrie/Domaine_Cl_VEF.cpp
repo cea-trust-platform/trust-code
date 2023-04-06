@@ -382,7 +382,6 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
   DoubleTab& ch_tab = ch->valeurs(temps);
   copyPartialFromDevice(ch_tab, 0, domaine_VEF().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
   start_timer();
-
   if (sub_type(Champ_P0_VEF,ch.valeur()))
     {
       ;

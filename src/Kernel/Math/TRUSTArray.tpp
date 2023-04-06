@@ -88,7 +88,7 @@ inline void TRUSTArray<_TYPE_>::ref_data(_TYPE_* ptr, int size)
 {
   assert(ptr != 0 || size == 0);
   assert(size >= 0);
-  detach_array();
+  detach_array(); // ToDo OpenMP revenir en arriere sur TRUSTArray.h
   data_ = ptr;
   size_array_ = size;
   memory_size_ = size; // Pour passer les tests si on resize a la meme taille
@@ -217,7 +217,7 @@ inline int TRUSTArray<_TYPE_>::size_array() const
   return size_array_;
 }
 
-//  Retourne le nombre de references des donnees du tableau si le tableau est "normal", -1 s'il est "detache" ou "ref_data"
+//  Retourne le nombre de references des donnees du tableau si le tableau est "normal", -1 s'il est "detache"
 // Retour: int
 //    Signification: ref_count_
 template <typename _TYPE_>
@@ -433,15 +433,11 @@ inline int TRUSTArray<_TYPE_>::detach_array()
       // Le tableau est de type "normal". Si la zone de memoire n'est plus utilisee par personne, on la detruit.
       if ((p_->suppr_one_ref()) == 0)
         {
-          deleteOnDevice(*this);
+          if (p_->get_dataLocation()!=HostOnly) deleteOnDevice(*this);
           delete p_;
           retour = 1;
         }
       p_ = 0;
-    }
-  else
-    {
-      deleteOnDevice(*this);
     }
   data_ = 0;
   size_array_ = 0;

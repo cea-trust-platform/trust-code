@@ -17,7 +17,7 @@
 #include <Matrice_Morse.h>
 #include <ctime>
 #include <communications.h>
-#include <Statistiques.h>
+#include <stat_counters.h>
 
 Implemente_instanciable_sans_constructeur(Solv_AMGX,"Solv_AMGX",Solv_Petsc);
 // printOn
@@ -69,9 +69,10 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize)
   double start = Statistiques::get_time_now();
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
   Cout << "[AmgX] Time to create CSR pointers: " << Statistiques::get_time_now() - start << finl;
-  start = Statistiques::get_time_now();
+  statistiques().begin_count(gpu_copytodevice_counter_);
   SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
-  Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << Statistiques::get_time_now() - start << finl; // Attention balise lue par fiche de validation
+  statistiques().end_count(gpu_copytodevice_counter_);
+  Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << statistiques().last_time(gpu_copytodevice_counter_) << finl; // Attention balise lue par fiche de validation
 }
 
 // Fonction de conversion Petsc ->CSR
@@ -129,9 +130,10 @@ PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
 void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
 {
   // La matrice CSR de PETSc a ete mise a jour dans check_stencil
-  double start = Statistiques::get_time_now();
+  statistiques().begin_count(gpu_copytodevice_counter_);
   SolveurAmgX_.updateA(nRowsLocal, nNz, values);  // ToDo erreur valgrind au premier appel de updateA...
-  Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << Statistiques::get_time_now() - start << finl; // Attention balise lue par fiche de validation
+  statistiques().end_count(gpu_copytodevice_counter_);
+  Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << statistiques().last_time(gpu_copytodevice_counter_) << finl; // Attention balise lue par fiche de validation
 }
 
 // Check and return true if new stencil
@@ -231,9 +233,11 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
       //Process::exit();
     }
 
-  double start = Statistiques::get_time_now();
+  // ToDo OpenMP ici dans le solve AmgXWrapper il y'a aussi de la copie qui est compte donc dans gpu_kernel_counter_
+  statistiques().begin_count(gpu_kernel_counter_);
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
-  Cout << "[AmgX] Time to solve system on GPU: " << Statistiques::get_time_now() - start << finl;
+  statistiques().end_count(gpu_kernel_counter_);
+  Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_kernel_counter_) << finl;
   return nbiter(residu);
 }
 
