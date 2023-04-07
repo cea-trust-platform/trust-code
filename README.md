@@ -18,66 +18,83 @@ BSD3 license
 
 ### **First method**
 
-    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.1
-    $> cd TRUST-1.9.1
-    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.1.tar
-    $> tar xf externalpackages-1.9.1.tar
-    $> ./configure -help # To see the possible configure options.
-    $> ./configure $OPTIONS  # At the end of configure, file env/machine.env will be created. You can then edit it and some others (env/make.linux*) to change some default values.
-    $> make
+```bash
+git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.1
+cd TRUST-1.9.1
+wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.1.tar
+tar xf externalpackages-1.9.1.tar
+./configure -help # To see the possible configure options.
+./configure $OPTIONS  # At the end of configure, file env/machine.env will be created. You can then edit it and some others (env/make.linux*) to change some default values.
+make
+```
 
 **Warning:** Check carefully the MPI version you want to use for parallel computing before installing the code, especially onto a HPC cluster.
 
 Run the following command, mpicxx should be found into the bin directory of the MPI version you plan to use:
 
-    $> type mpicxx
+```bash
+type mpicxx
+```
 
 ### **Second method**
 
-    $> wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.1/TRUST-1.9.1.tar.gz
-    $> tar xzf TRUST-1.9.1.tar.gz
-    $> cd TRUST-1.9.1
-    $> ./configure $OPTIONS
-    $> make
+```bash
+wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.1/TRUST-1.9.1.tar.gz
+tar xzf TRUST-1.9.1.tar.gz
+cd TRUST-1.9.1
+./configure $OPTIONS
+make
+```
 
 # **How to install TRUST development version  ?**
 **for developers and those interested in new features only.**
 
 **Warning: "next" branch may not compile or some tests fail if important developments merged**
 
-    $> git clone https://github.com/cea-trust-platform/trust-code.git TRUST-next
-    $> cd TRUST-next
-    $> git checkout next
-    $> wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-next.tar
-    $> tar xf externalpackages-next.tar
-    $> ./configure $OPTIONS 
-    $> make
+```bash
+git clone https://github.com/cea-trust-platform/trust-code.git TRUST-next
+cd TRUST-next
+git checkout next
+wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-next.tar
+tar xf externalpackages-next.tar
+./configure $OPTIONS 
+make
+```
 
 # **How to start ?**
 
 To initialize TRUST:
 
-	$> source ./env_TRUST.sh
+```bash
+source ./env_TRUST.sh
+```
 
 To build a binary with a single directory build:
 
-	$> make       # Create optimized and debug binaries and tools
-	$> make optim # Create an optimized binary
-	$> make debug # Create a debug binary
-	$> make prof  # Create a profiled binary
+```bash
+make       # Create optimized and debug binaries and tools
+make optim # Create an optimized binary
+make debug # Create a debug binary
+make prof  # Create a profiled binary
+```
 
 To check:
 
-	$> make check
+```bash
+make check
+```
 
 To clean (will delete all .o and .a of TRUST sources, inside directories or MonoDir_... directories)
 
-	$> make clean
+```bash
+make clean
+```
 
 To clean also the third party libraries:
 
-	$> ./configure -clean
-
+```bash
+./configure -clean
+```
 
 # **Quick directories description**
 
