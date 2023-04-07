@@ -108,7 +108,7 @@ void Saturation_base::dP_Hvs(const SpanD P, SpanD res, int ncomp, int ind) const
 
 void Saturation_base::get_sigma(const SpanD T, const SpanD P, SpanD sig, int ncomp, int ind) const
 {
-  assert(ncomp * (int )P.size() == (int )sig.size());
+  assert((int )P.size() == (int )sig.size());
   sigma_(T, P, sig, ncomp, ind);
 }
 

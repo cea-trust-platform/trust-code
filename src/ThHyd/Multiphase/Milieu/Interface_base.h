@@ -19,6 +19,7 @@
 #include <span.hpp>
 #include <Param.h>
 
+using VectorD = std::vector<double>;
 using ArrayD = std::array<double,1>;
 using SpanD = tcb::span<double>;
 

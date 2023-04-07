@@ -591,25 +591,10 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_sigma_pT(const SpanD P, const Span
 #ifdef HAS_COOLPROP
   assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )res.size());
   const int sz = (int )res.size();
-  if (ncomp == 1)
-    for (int i = 0; i < sz; i++)
-      {
-        fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-        res[i] = fluide->surface_tension();
-      }
-  else /* attention stride */
+  for (int i = 0; i < sz; i++)
     {
-      VectorD temp_((int)P.size());
-      SpanD RR(temp_);
-      for (auto& val : RR) val = res[i_it2 * ncomp + ind];
-
-      for (int i = 0; i < sz; i++)
-        {
-          fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-          RR[i] = fluide->surface_tension();
-        }
-
-      for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
+      fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+      res[i] = fluide->surface_tension();
     }
   return 0; // FIXME : on suppose que tout OK
 #else
