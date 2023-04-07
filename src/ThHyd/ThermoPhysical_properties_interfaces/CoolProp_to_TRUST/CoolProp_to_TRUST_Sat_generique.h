@@ -67,6 +67,11 @@ public :
   int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
   int tppi_get_all_sat_loi_F5_2(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const;
   int tppi_get_all_sat_loi_F5_3(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const;
+
+private:
+  int FD_derivative_p(SAT , const SpanD , SpanD , bool is_liq = true) const;
+  int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int ncomp = 1, int id = 0, bool is_liq = true) const;
+  int tppi_get_single_sat_p__(SAT , const SpanD , SpanD , bool is_liq = true) const;
 };
 
 #endif /* CoolProp_to_TRUST_Sat_generique_included */
