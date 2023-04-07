@@ -21,6 +21,8 @@
 #include <vector>
 #include <map>
 
+static constexpr double EPS = 1.e-6;
+
 using MRange = std::map<std::string, std::array<double, 2>>;
 using MSpanD = std::map<std::string, tcb::span<double>>;
 using PairCharArray = std::array<const char*, 2>;
@@ -73,7 +75,8 @@ enum class Loi_en_h
   CP, CP_DP, CP_DH,
   MU, MU_DP, MU_DH,
   LAMBDA, LAMBDA_DP, LAMBDA_DH,
-  SIGMA, SIGMA_DP, SIGMA_DH
+  SIGMA, SIGMA_DP, SIGMA_DH,
+  BETA /* pour l'incompressible si besoin */
 };
 
 static constexpr std::array<PairCharArray, 18> EOS_prop_en_h =

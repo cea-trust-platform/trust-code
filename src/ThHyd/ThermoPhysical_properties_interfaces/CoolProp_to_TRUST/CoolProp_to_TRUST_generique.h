@@ -46,8 +46,20 @@ public :
   int tppi_get_h_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
 
   int tppi_get_cp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_cp_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_cp_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+
   int tppi_get_mu_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_mu_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_mu_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+
   int tppi_get_lambda_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_lambda_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_lambda_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+
+  int tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_sigma_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
+  int tppi_get_sigma_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
 
   // appel simple si besoin : cas incompressible
   int tppi_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
@@ -86,11 +98,23 @@ public :
   int tppi_get_sigma_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
   int tppi_get_sigma_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
 
+  // appel simple si besoin : cas incompressible
+  int tppi_get_beta_ph(const SpanD P, const SpanD H, SpanD R, int ncomp = 1, int id = 0) const override;
+
   // methods particuliers par application pour gagner en performance : utilise dans F5 (pour le moment !)
   int tppi_get_all_prop_loi_F5(const MSpanD , MLoiSpanD_h  , int ncomp = 1, int id = 0, bool is_liq = true) const override;
   int tppi_get_all_prop_loi_F5_2(const MSpanD , MLoiSpanD_h  , int ncomp = 1, int id = 0, bool is_liq = true) const; // FIXME
   int tppi_get_all_prop_loi_F5_3(const MSpanD , MLoiSpanD_h  , int ncomp = 1, int id = 0, bool is_liq = true) const; // FIXME
   int tppi_get_all_prop_loi_F5_4(const MSpanD , MLoiSpanD_h  , int ncomp = 1, int id = 0, bool is_liq = true) const; // FIXME
+
+private:
+  int FD_derivative_pT(Loi_en_T , const SpanD , const SpanD , SpanD , bool wrt_p = true) const;
+  int tppi_get_single_property_T_(Loi_en_T , const SpanD , const SpanD , SpanD , int ncomp = 1, int id = 0) const;
+  int tppi_get_single_property_T__(Loi_en_T , const SpanD , const SpanD , SpanD) const;
+
+  int FD_derivative_ph(Loi_en_h , const SpanD , const SpanD , SpanD , bool wrt_p = true) const;
+  int tppi_get_single_property_h_(Loi_en_h , const SpanD , const SpanD , SpanD , int ncomp = 1, int id = 0) const;
+  int tppi_get_single_property_h__(Loi_en_h , const SpanD , const SpanD , SpanD) const;
 };
 
 #endif /* CoolProp_to_TRUST_generique_included */
