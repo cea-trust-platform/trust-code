@@ -38,8 +38,8 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_T_sat_p(const SpanD P, SpanD res, 
   if (ncomp == 1)
     for (int i = 0; i < sz; i++)
       {
-        fluide->update(CoolProp::PQ_INPUTS,  P[i], 1 /* FIXME : 1 is vapor ? OK like that ? */);  // SI units
-        res[i] = fluide->saturated_vapor_keyed_output(CoolProp::iT); /* FIXME : j'utilise vapor (normalement pareil) */
+        fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+        res[i] = fluide->T();
       }
   else /* attention stride */
     {
@@ -49,8 +49,8 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_T_sat_p(const SpanD P, SpanD res, 
 
       for (int i = 0; i < sz; i++)
         {
-          fluide->update(CoolProp::PQ_INPUTS,  P[i], 1 /* FIXME : 1 is vapor ? OK like that ? */);  // SI units
-          RR[i] = fluide->saturated_vapor_keyed_output(CoolProp::iT); /* FIXME : j'utilise vapor (normalement pareil) */
+          fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+          RR[i] = fluide->T();
         }
 
       for (auto& val : RR) res[i_it2 * ncomp + ind] = val;
@@ -265,8 +265,9 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_lvap_p(const SpanD P, SpanD res, i
     for (int i = 0; i < sz; i++)
       {
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-        const double hv_ = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
-        const double hl_ = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
+        const double hv_ = fluide->hmass();
+        fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+        const double hl_ = fluide->hmass();
         res[i] = hv_ - hl_;
       }
   else /* attention stride */
@@ -278,8 +279,9 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_lvap_p(const SpanD P, SpanD res, i
       for (int i = 0; i < sz; i++)
         {
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-          const double hv_ = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
-          const double hl_ = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
+          const double hv_ = fluide->hmass();
+          fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+          const double hl_ = fluide->hmass();
           RR[i] = hv_ - hl_;
         }
 
@@ -620,13 +622,13 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
     for (int i = 0; i < sz; i++)
       {
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
-        Hls__[i] = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
+        Hls__[i] = fluide->hmass();
+        Ts__[i] = fluide->T();
+        dPTs__[i] = fluide->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
         dPHls__[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
 
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-        Ts__[i] = fluide->saturated_vapor_keyed_output(CoolProp::iT); /* FIXME : j'utilise vapor (normalement pareil) */
-        dPTs__[i] = fluide->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
-        Hvs__[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
+        Hvs__[i] = fluide->hmass();
         dPHvs__[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
 
         Lvap__[i] = Hvs__[i] - Hls__[i];
@@ -640,13 +642,13 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
       for (int i = 0; i < sz; i++)
         {
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
-          Hls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
+          Hls_[i] = fluide->hmass();
+          Ts_[i] = fluide->T();
+          dPTs_[i] = fluide->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
           dPHls_[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
 
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-          Ts_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iT); /* FIXME : j'utilise vapor (normalement pareil) */
-          dPTs_[i] = fluide->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
-          Hvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
+          Hvs_[i] = fluide->hmass();
           dPHvs_[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
 
 
