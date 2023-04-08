@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Saturation_base.h>
-#include <EOS_to_TRUST.h>
+#include <TPPI_tools.h>
 
 Implemente_base(Saturation_base, "Saturation_base", Interface_base);
 // XD saturation_base objet_u saturation_base -1 fluide-gas interface with phase change (used in pb_multiphase)

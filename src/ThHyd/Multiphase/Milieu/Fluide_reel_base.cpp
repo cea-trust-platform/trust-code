@@ -19,8 +19,8 @@
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
-#include <EOS_to_TRUST.h>
 #include <Domaine_VF.h>
+#include <TPPI_tools.h>
 #include <EChaine.h>
 #include <cfloat>
 #include <cmath>
