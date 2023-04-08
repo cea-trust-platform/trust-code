@@ -22,7 +22,7 @@ using namespace NEPTUNE ;
 #define bi_it std::distance(bTT.begin(), &bval)
 #define i_itR std::distance(R.begin(), &val)
 
-void EOS_to_TRUST_generique::set_EOS_generique(const char *const model_name, const char *const fluid_name)
+void EOS_to_TRUST_generique::set_fluide_generique(const char *const model_name, const char *const fluid_name)
 {
 #ifdef HAS_EOS
   fluide = new NEPTUNE::EOS(model_name, fluid_name);

@@ -13,26 +13,30 @@
 *
 *****************************************************************************/
 
+#include <CoolProp_to_TRUST_generique.h>
 #include <Fluide_generique_CoolProp.h>
 
-Implemente_instanciable(Fluide_generique_CoolProp, "Fluide_generique_CoolProp", Fluide_reel_base);
+Implemente_instanciable(Fluide_generique_CoolProp, "Fluide_generique_CoolProp", Fluide_generique_TPPI_base);
 
 Sortie& Fluide_generique_CoolProp::printOn(Sortie& os) const { return os; }
 
 Entree& Fluide_generique_CoolProp::readOn(Entree& is)
 {
-  Fluide_reel_base::readOn(is);
-  if (model_name_ == "REFPROP") CoolProptT.set_path_refprop();
-  if (phase_ != "??") CoolProptT.verify_phase(phase_);
+  Fluide_generique_TPPI_base::readOn(is);
 
-  CoolProptT.set_CoolProp_generique(model_name_, fluid_name_);
-  if (phase_ != "??") CoolProptT.set_phase(phase_);
+  TPPI_ = std::make_shared<CoolProp_to_TRUST_generique>();
+
+  if (model_name_ == "REFPROP") TPPI_->set_path_refprop();
+  if (phase_ != "??") TPPI_->verify_phase(phase_);
+
+  TPPI_->set_fluide_generique(model_name_, fluid_name_);
+  if (phase_ != "??") TPPI_->set_phase(phase_);
 //  CoolProptT.desactivate_handler(false); // throw on error
 
-  tmin_ = CoolProptT.tppi_get_T_min();
-  tmax_ = CoolProptT.tppi_get_T_max();
-  pmin_ = CoolProptT.tppi_get_p_min();
-  pmax_ = CoolProptT.tppi_get_p_max();
+  tmin_ = TPPI_->tppi_get_T_min();
+  tmax_ = TPPI_->tppi_get_T_max();
+  pmin_ = TPPI_->tppi_get_p_min();
+  pmax_ = TPPI_->tppi_get_p_max();
 
   return is;
 }

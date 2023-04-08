@@ -29,7 +29,7 @@
 class CoolProp_to_TRUST_Sat_generique : public CoolProp_to_TRUST
 {
 public :
-  void set_CoolProp_Sat_generique(const char *const model_name, const char *const fluid_name);
+  void set_saturation_generique(const char *const model_name, const char *const fluid_name) override;
 
   // appels simples
   int tppi_get_T_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;

@@ -16,85 +16,13 @@
 #ifndef Fluide_generique_EOS_included
 #define Fluide_generique_EOS_included
 
-#include <EOS_to_TRUST_generique.h>
-#include <Fluide_reel_base.h>
+#include <Fluide_generique_TPPI_base.h>
 
-class Fluide_generique_EOS : public Fluide_reel_base
+class Fluide_generique_EOS : public Fluide_generique_TPPI_base
 {
   Declare_instanciable( Fluide_generique_EOS ) ;
 public :
   void set_param(Param& param) override;
-  MRange unknown_range() const override
-  {
-    if (tmax_ < -100. )
-      return Fluide_reel_base::unknown_range();
-
-    return { { "temperature", { tmin_ - 273.15, tmax_ - 273.15 } }, { "pression", { pmin_, pmax_ } } };
-  }
-
-private:
-  void rho_(const SpanD T, const SpanD P, SpanD R, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_rho_pT(P, Tk_(T), R, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void dP_rho_(const SpanD T, const SpanD P, SpanD dP_R, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_rho_dp_pT(P, Tk_(T), dP_R, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void dT_rho_(const SpanD T, const SpanD P, SpanD dT_R, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_rho_dT_pT(P, Tk_(T), dT_R, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void h_(const SpanD T, const SpanD P, SpanD H, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_h_pT(P, Tk_(T), H, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void dP_h_(const SpanD T, const SpanD P, SpanD dP_H, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_h_dp_pT(P, Tk_(T), dP_H, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void dT_h_(const SpanD T, const SpanD P, SpanD dT_H, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_h_dT_pT(P, Tk_(T), dT_H, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void cp_(const SpanD T, const SpanD P, SpanD CP, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_cp_pT(P, Tk_(T), CP, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void beta_(const SpanD T, const SpanD P, SpanD B, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_beta_pT(P, Tk_(T), B, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void mu_(const SpanD T, const SpanD P, SpanD M, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_mu_pT(P, Tk_(T), M, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void lambda_(const SpanD T, const SpanD P, SpanD L, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_lambda_pT(P, Tk_(T), L, ncomp, id);
-    Tc_(T); /* put back T in C */
-  }
-  void compute_CPMLB_pb_multiphase_(const MSpanD input, MLoiSpanD prop, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_CPMLB_pb_multiphase_pT(input, prop, ncomp, id);
-  }
-  void compute_all_pb_multiphase_(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp = 1, int id = 0) const override
-  {
-    EOStT.tppi_get_all_pb_multiphase_pT(input,inter, bord, ncomp, id);
-  }
-
-  EOS_to_TRUST_generique EOStT;
-  Motcle model_name_, fluid_name_;
-  double tmin_ = -123., tmax_ = -123., pmin_ = -123., pmax_ = -123.;
 };
 
 #endif /* Fluide_generique_EOS_included */

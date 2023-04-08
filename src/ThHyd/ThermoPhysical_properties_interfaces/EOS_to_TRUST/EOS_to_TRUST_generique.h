@@ -31,7 +31,7 @@
 class EOS_to_TRUST_generique : public EOS_to_TRUST
 {
 public :
-  void set_EOS_generique(const char *const model_name, const char *const fluid_name);
+  void set_fluide_generique(const char *const model_name, const char *const fluid_name) override;
 
   /*
    * ******************* *

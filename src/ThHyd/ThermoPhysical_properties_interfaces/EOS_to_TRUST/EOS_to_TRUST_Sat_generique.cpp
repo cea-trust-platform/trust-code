@@ -21,7 +21,7 @@ using namespace NEPTUNE ;
 #define i_it std::distance(TT.begin(), &val)
 #define i_it2 std::distance(RR.begin(), &val)
 
-void EOS_to_TRUST_Sat_generique::set_EOS_Sat_generique(const char *const model_name, const char *const fluid_name)
+void EOS_to_TRUST_Sat_generique::set_saturation_generique(const char *const model_name, const char *const fluid_name)
 {
 #ifdef HAS_EOS
   fluide = new NEPTUNE::EOS(model_name, fluid_name);

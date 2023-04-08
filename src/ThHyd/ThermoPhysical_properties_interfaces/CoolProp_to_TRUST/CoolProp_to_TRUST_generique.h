@@ -29,7 +29,7 @@
 class CoolProp_to_TRUST_generique : public CoolProp_to_TRUST
 {
 public :
-  void set_CoolProp_generique(const char *const model_name, const char *const fluid_name);
+  void set_fluide_generique(const char *const model_name, const char *const fluid_name) override;
 
   /*
    * ******************* *

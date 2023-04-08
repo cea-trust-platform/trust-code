@@ -20,7 +20,7 @@ using namespace CoolProp;
 // iterator index !
 #define i_it2 std::distance(RR.begin(), &val)
 
-void CoolProp_to_TRUST_Sat_generique::set_CoolProp_Sat_generique(const char *const model_name, const char *const fluid_name)
+void CoolProp_to_TRUST_Sat_generique::set_saturation_generique(const char *const model_name, const char *const fluid_name)
 {
 #ifdef HAS_COOLPROP
   fluide = std::shared_ptr<AbstractState>(AbstractState::factory(std::string(model_name), std::string(fluid_name)));

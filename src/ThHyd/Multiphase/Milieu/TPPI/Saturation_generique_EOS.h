@@ -16,50 +16,11 @@
 #ifndef Saturation_generique_EOS_included
 #define Saturation_generique_EOS_included
 
-#include <EOS_to_TRUST_Sat_generique.h>
-#include <Saturation_base.h>
+#include <Saturation_generique_TPPI_base.h>
 
-class Saturation_generique_EOS : public Saturation_base
+class Saturation_generique_EOS : public Saturation_generique_TPPI_base
 {
   Declare_instanciable( Saturation_generique_EOS ) ;
-private:
-  void Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
-  {
-    EOStT.tppi_get_T_sat_p(P, res, ncomp, ind);
-    Tc_(res); // return res en kelvin => on corrige
-  }
-  void dP_Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.tppi_get_T_sat_d_p_p(P, res, ncomp, ind); }
-  void Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override
-  {
-    EOStT.tppi_get_p_sat_T(Tk_(T), res, ncomp, ind);
-    Tc_(T); /* put back T in C */
-  }
-  void dT_Psat_(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override
-  {
-    EOStT.tppi_get_p_sat_d_T_T(Tk_(T), res, ncomp, ind);
-    Tc_(T); /* put back T in C */
-  }
-
-  void Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.tppi_get_lvap_p(P, res, ncomp, ind); }
-  void dP_Lvap_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.tppi_get_lvap_d_p_p(P, res, ncomp, ind); }
-  void Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.tppi_get_h_l_sat_p(P, res, ncomp, ind); }
-  void dP_Hls_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.tppi_get_h_l_sat_d_p_p(P, res, ncomp, ind); }
-  void Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.tppi_get_h_v_sat_p(P, res, ncomp, ind); }
-  void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { EOStT.tppi_get_h_v_sat_d_p_p(P, res, ncomp, ind); }
-
-  void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
-  {
-    EOStT.tppi_get_sigma_pT(P, Tk_(T), res, ncomp, ind);
-    Tc_(T); /* put back T in C */
-  }
-
-  void compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int ind = 0) const override
-  {
-    EOStT.tppi_get_all_flux_interfacial_pb_multiphase(P, sats, ncomp, ind);
-  }
-
-  EOS_to_TRUST_Sat_generique EOStT;
-  Motcle model_name_, fluid_name_;
 };
 
 #endif /* Saturation_generique_EOS_included */

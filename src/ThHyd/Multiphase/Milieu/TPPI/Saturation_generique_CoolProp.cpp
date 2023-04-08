@@ -13,9 +13,10 @@
 *
 *****************************************************************************/
 
+#include <CoolProp_to_TRUST_Sat_generique.h>
 #include <Saturation_generique_CoolProp.h>
 
-Implemente_instanciable(Saturation_generique_CoolProp, "Saturation_generique_CoolProp", Saturation_base);
+Implemente_instanciable(Saturation_generique_CoolProp, "Saturation_generique_CoolProp", Saturation_generique_TPPI_base);
 
 Sortie& Saturation_generique_CoolProp::printOn(Sortie& os) const { return os; }
 
@@ -25,13 +26,15 @@ Entree& Saturation_generique_CoolProp::readOn(Entree& is)
   param.ajouter("model|modele", &model_name_, Param::REQUIRED);
   param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
   param.ajouter("phase", &phase_, Param::OPTIONAL); // optional : liquid or vapor. PI : specify the phase it is really useful (better perf for coolprop) !
-
   param.lire_avec_accolades_depuis(is);
-  if (model_name_ == "REFPROP") CoolProptT.set_path_refprop();
-  if (phase_ != "??") CoolProptT.verify_phase(phase_);
 
-  CoolProptT.set_CoolProp_Sat_generique(model_name_, fluid_name_);
-  if (phase_ != "??") CoolProptT.set_phase(phase_);
+  TPPI_ = std::make_shared<CoolProp_to_TRUST_Sat_generique>();
+
+  if (model_name_ == "REFPROP") TPPI_->set_path_refprop();
+  if (phase_ != "??") TPPI_->verify_phase(phase_);
+
+  TPPI_->set_saturation_generique(model_name_, fluid_name_);
+  if (phase_ != "??") TPPI_->set_phase(phase_);
 //  CoolProptT.desactivate_handler(false); // throw on error
 
   return is;

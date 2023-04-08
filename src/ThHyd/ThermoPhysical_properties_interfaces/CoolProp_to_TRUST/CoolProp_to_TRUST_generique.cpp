@@ -21,7 +21,7 @@ using namespace CoolProp;
 #define i_it std::distance(TT.begin(), &val)
 #define bi_it std::distance(bTT.begin(), &bval)
 
-void CoolProp_to_TRUST_generique::set_CoolProp_generique(const char *const model_name, const char *const fluid_name)
+void CoolProp_to_TRUST_generique::set_fluide_generique(const char *const model_name, const char *const fluid_name)
 {
 #ifdef HAS_COOLPROP
   fluide = std::shared_ptr<AbstractState>(AbstractState::factory(std::string(model_name), std::string(fluid_name)));

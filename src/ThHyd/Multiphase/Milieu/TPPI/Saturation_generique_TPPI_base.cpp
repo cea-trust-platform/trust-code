@@ -13,62 +13,18 @@
 *
 *****************************************************************************/
 
-#ifndef CoolProp_to_TRUST_included
-#define CoolProp_to_TRUST_included
+#include <Saturation_generique_TPPI_base.h>
+#include <Param.h>
 
-#include <coolprop++.h>
-#include <TPPI.h>
+Implemente_base(Saturation_generique_TPPI_base, "Saturation_generique_TPPI_base", Saturation_base);
 
-#ifdef HAS_COOLPROP
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wignored-qualifiers"
-#pragma GCC diagnostic ignored "-Wsuggest-override"
-#pragma GCC diagnostic ignored "-Wpedantic"
-#pragma GCC diagnostic ignored "-Wshadow"
-#define SWIG
-#include <Configuration.h>
-#undef SWIG
-#include <AbstractState.h>
-#include <CoolPropTools.h>
-#include <CoolPropLib.h>
-#include <CoolProp.h>
-#pragma GCC diagnostic pop
-#endif
+Sortie& Saturation_generique_TPPI_base::printOn(Sortie& os) const { return os; }
 
-namespace CoolProp { class AbstractState; }
-
-class CoolProp_to_TRUST : public TPPI
+Entree& Saturation_generique_TPPI_base::readOn(Entree& is)
 {
-public :
-  ~CoolProp_to_TRUST() override = default;
-
-  void verify_phase(const Motcle& ) override;
-  void set_phase(const Motcle& ) override;
-  void set_path_refprop() override;
-
-  double tppi_get_p_min() const override final;
-  double tppi_get_p_max() const override final;
-
-  double tppi_get_h_min() const override final;
-  double tppi_get_h_max() const override final;
-
-  double tppi_get_T_min() const override final;
-  double tppi_get_T_max() const override final;
-
-  double tppi_get_rho_min() const override final;
-  double tppi_get_rho_max() const override final;
-
-  double tppi_get_p_crit() const override final;
-  double tppi_get_h_crit() const override final;
-  double tppi_get_T_crit() const override final;
-  double tppi_get_rho_crit() const override final;
-
-protected:
-
-#ifdef HAS_COOLPROP
-  shared_ptr<CoolProp::AbstractState> fluide = nullptr;
-#endif
-
-};
-
-#endif /* CoolProp_to_TRUST_included */
+  Param param(que_suis_je());
+  param.ajouter("model|modele", &model_name_, Param::REQUIRED);
+  param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
+  param.lire_avec_accolades_depuis(is);
+  return is;
+}
