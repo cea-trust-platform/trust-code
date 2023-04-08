@@ -56,7 +56,7 @@ enum class Loi_en_T
   BETA /* pour l'incompressible si besoin */
 };
 
-static constexpr std::array<PairCharArray, 18> EOS_prop_en_T =
+static constexpr std::array<PairCharArray, 19> EOS_prop_en_T =
 {
   {
     { "rho", "rho" }, { "drhodp", "d_rho_d_p_T" }, { "drhodT", "d_rho_d_T_p" },
@@ -64,7 +64,8 @@ static constexpr std::array<PairCharArray, 18> EOS_prop_en_T =
     { "cp", "cp" }, { "dcpdp", "d_cp_d_p_T" }, { "dcpdT", "d_cp_d_T_p" },
     { "mu", "mu" }, { "dmudp", "d_mu_d_p_T" }, { "dmudT", "d_mu_d_T_p" },
     { "lambda", "lambda" }, { "dlambdadp", "d_lambda_d_p_T" }, { "dlambdadT", "d_lambda_d_T_p" },
-    { "sigma", "sigma" }, { "dsigmadp", "d_sigma_d_p_T" }, { "dsigmadT", "d_sigma_d_T_p" }
+    { "sigma", "sigma" }, { "dsigmadp", "d_sigma_d_p_T" }, { "dsigmadT", "d_sigma_d_T_p" },
+    { "beta", "beta" }
   }
 };
 
@@ -79,7 +80,7 @@ enum class Loi_en_h
   BETA /* pour l'incompressible si besoin */
 };
 
-static constexpr std::array<PairCharArray, 18> EOS_prop_en_h =
+static constexpr std::array<PairCharArray, 19> EOS_prop_en_h =
 {
   {
     { "rho", "rho" }, { "drhodp", "d_rho_d_p_h" }, { "drhodh", "d_rho_d_h_p" },
@@ -87,7 +88,8 @@ static constexpr std::array<PairCharArray, 18> EOS_prop_en_h =
     { "cp", "cp" }, { "dcpdp", "d_cp_d_p_h" }, { "dcpdh", "d_cp_d_h_p" },
     { "mu", "mu" }, { "dmudp", "d_mu_d_p_h" }, { "dmudh", "d_mu_d_h_p" },
     { "lambda", "lambda" }, { "dlambdadp", "d_lambda_d_p_h" }, { "dlambdadh", "d_lambda_d_h_p" },
-    { "sigma", "sigma" }, { "dsigmadp", "d_sigma_d_p_h" }, { "dsigmadh", "d_sigma_d_h_p" }
+    { "sigma", "sigma" }, { "dsigmadp", "d_sigma_d_p_h" }, { "dsigmadh", "d_sigma_d_h_p" },
+    { "beta", "beta" }
   }
 };
 

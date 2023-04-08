@@ -53,19 +53,6 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p_(SAT enum_prop, const
             minus_ = fluide->p();
             res[i] = (plus_ - minus_) / ( 2 * EPS * P_ou_T[i]);
           }
-
-      return 0; // FIXME : on suppose que tout OK
-    }
-
-  if (enum_prop == SAT::SIGMA)
-    {
-      const int sz = (int )res.size();
-      assert((int )P_ou_T.size() == sz);
-      for (int i = 0; i < sz; i++)
-        {
-          fluide->update(CoolProp::PQ_INPUTS,  P_ou_T[i], 0);  // SI units
-          res[i] = fluide->surface_tension();
-        }
       return 0; // FIXME : on suppose que tout OK
     }
 
@@ -90,10 +77,8 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p__(SAT enum_prop, cons
 {
 #ifdef HAS_COOLPROP
   // derivees qui manquent ...
-  if (enum_prop == SAT::T_SAT_DP || enum_prop == SAT::LV_SAT_DP ||
-      enum_prop == SAT::RHOL_SAT_DP || enum_prop == SAT::RHOV_SAT_DP ||
-      enum_prop == SAT::CPL_SAT_DP || enum_prop == SAT::CPV_SAT_DP ||
-      enum_prop == SAT::HL_SAT_DP || enum_prop == SAT::HV_SAT_DP)
+  if (enum_prop == SAT::T_SAT_DP || enum_prop == SAT::LV_SAT_DP || enum_prop == SAT::RHOL_SAT_DP || enum_prop == SAT::RHOV_SAT_DP ||
+      enum_prop == SAT::CPL_SAT_DP || enum_prop == SAT::CPV_SAT_DP || enum_prop == SAT::HL_SAT_DP || enum_prop == SAT::HV_SAT_DP)
     return FD_derivative_p(enum_prop, P, res, is_liq);
 
   const int sz = (int )res.size();
@@ -117,6 +102,7 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p__(SAT enum_prop, cons
       if (enum_prop == SAT::HL_SAT || enum_prop == SAT::HV_SAT) res[i] = fluide->hmass();
       if (enum_prop == SAT::RHOL_SAT || enum_prop == SAT::RHOV_SAT) res[i] = fluide->rhomass();
       if (enum_prop == SAT::CPL_SAT || enum_prop == SAT::CPV_SAT) res[i] = fluide->cpmass();
+      if (enum_prop == SAT::SIGMA) res[i] = fluide->surface_tension();
     }
   return 0; // FIXME : on suppose que tout OK
 #else
@@ -178,101 +164,6 @@ int CoolProp_to_TRUST_Sat_generique::FD_derivative_p(SAT enum_prop, const SpanD 
   Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
 #endif
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_T_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::T_SAT, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_T_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::T_SAT_DP, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_p_sat_T(const SpanD T, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::P_SAT, T, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_p_sat_d_T_T(const SpanD T, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::P_SAT_DT, T, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_h_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::HL_SAT, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::HL_SAT_DP, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::HV_SAT, P, res, ncomp, ind, false /* vapor */);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::HV_SAT_DP, P, res, ncomp, ind, false /* vapor */);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_lvap_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::LV_SAT, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_lvap_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::LV_SAT_DP, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::RHOL_SAT, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::RHOL_SAT_DP, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::RHOV_SAT, P, res, ncomp, ind, false /* vapor */);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::RHOV_SAT_DP, P, res, ncomp, ind, false /* vapor */);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::CPL_SAT, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::CPL_SAT_DP, P, res, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::CPV_SAT, P, res, ncomp, ind, false /* vapor */);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::CPV_SAT_DP, P, res, ncomp, ind, false /* vapor */);
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD res, int ncomp, int ind) const
-{
-  return tppi_get_single_sat_p_(SAT::SIGMA, P, res, 1, 0);
 }
 
 int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const

@@ -33,33 +33,11 @@ class EOS_to_TRUST_Sat_generique : public EOS_to_TRUST
 public :
   void set_saturation_generique(const char *const model_name, const char *const fluid_name) override;
 
-  // appels simples
-  int tppi_get_T_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_T_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-
   int tppi_get_p_sat_T(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
   int tppi_get_p_sat_d_T_T(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const override;
 
   int tppi_get_lvap_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
   int tppi_get_lvap_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-
-  int tppi_get_h_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_h_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-
-  int tppi_get_h_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_h_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-
-  int tppi_get_rho_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_rho_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-
-  int tppi_get_rho_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_rho_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-
-  int tppi_get_cp_l_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_cp_l_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-
-  int tppi_get_cp_v_sat_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_cp_v_sat_d_p_p(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override;
 
   // pour les gens qui cherchent sigma de l'objet saturation
   int tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp = 1, int id = 0) const override;
@@ -70,7 +48,7 @@ public :
   int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int id = 0) const override;
 
 private:
-  int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int ncomp = 1, int id = 0) const;
+  int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int , int , bool is_liq = true) const override;
 };
 
 #endif /* EOS_to_TRUST_Sat_generique_included */

@@ -55,10 +55,10 @@ int CoolProp_to_TRUST_generique::tppi_get_single_property_T__(Loi_en_T enum_prop
   const int sz = (int )R.size();
   // derivees qui manquent ...
   if (enum_prop == Loi_en_T::MU_DP || enum_prop == Loi_en_T::LAMBDA_DP || enum_prop == Loi_en_T::SIGMA_DP)
-    return FD_derivative_pT(enum_prop,P, T, R);
+    return FD_derivative_pT__(enum_prop,P, T, R);
 
   if (enum_prop == Loi_en_T::MU_DT || enum_prop == Loi_en_T::LAMBDA_DT || enum_prop == Loi_en_T::SIGMA_DT)
-    return FD_derivative_pT(enum_prop,P, T, R, false /* wrt T */);
+    return FD_derivative_pT__(enum_prop,P, T, R, false /* wrt T */);
 
   for (int i = 0; i < sz; i++)
     {
@@ -88,7 +88,7 @@ int CoolProp_to_TRUST_generique::tppi_get_single_property_T__(Loi_en_T enum_prop
 #endif
 }
 
-int CoolProp_to_TRUST_generique::FD_derivative_pT(Loi_en_T enum_prop, const SpanD P, const SpanD T, SpanD R, bool wrt_p) const
+int CoolProp_to_TRUST_generique::FD_derivative_pT__(Loi_en_T enum_prop, const SpanD P, const SpanD T, SpanD R, bool wrt_p) const
 {
 #ifdef HAS_COOLPROP
   const int sz = (int )R.size();
@@ -123,7 +123,12 @@ int CoolProp_to_TRUST_generique::tppi_get_single_property_h_(Loi_en_h enum_prop,
   assert((int )H.size() == ncomp * (int )P.size() && (int )H.size() == ncomp * (int )R.size());
   if (ncomp == 1) return tppi_get_single_property_h__(enum_prop, P, H, R);
   else /* attention stride */
-    Process::exit("No stride allowed for the moment for enthalpie calls ... use temperature or call 911 !");
+    {
+      VectorD temp_((int)P.size());
+      SpanD TT(temp_);
+      for (auto& val : TT) val = H[i_it * ncomp + ind];
+      return tppi_get_single_property_h__(enum_prop, P, TT, R);
+    }
   return 0; // FIXME : on suppose que tout OK
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
@@ -137,10 +142,10 @@ int CoolProp_to_TRUST_generique::tppi_get_single_property_h__(Loi_en_h enum_prop
   const int sz = (int )R.size();
   // derivees qui manquent ...
   if (enum_prop == Loi_en_h::MU_DP || enum_prop == Loi_en_h::LAMBDA_DP || enum_prop == Loi_en_h::SIGMA_DP)
-    return FD_derivative_ph(enum_prop,P, H, R);
+    return FD_derivative_ph__(enum_prop,P, H, R);
 
   if (enum_prop == Loi_en_h::MU_DH || enum_prop == Loi_en_h::LAMBDA_DH || enum_prop == Loi_en_h::SIGMA_DH)
-    return FD_derivative_ph(enum_prop,P, H, R, false /* wrt H */);
+    return FD_derivative_ph__(enum_prop,P, H, R, false /* wrt H */);
 
   for (int i = 0; i < sz; i++)
     {
@@ -170,7 +175,7 @@ int CoolProp_to_TRUST_generique::tppi_get_single_property_h__(Loi_en_h enum_prop
 #endif
 }
 
-int CoolProp_to_TRUST_generique::FD_derivative_ph(Loi_en_h enum_prop, const SpanD P, const SpanD H, SpanD R, bool wrt_p) const
+int CoolProp_to_TRUST_generique::FD_derivative_ph__(Loi_en_h enum_prop, const SpanD P, const SpanD H, SpanD R, bool wrt_p) const
 {
 #ifdef HAS_COOLPROP
   const int sz = (int )R.size();
@@ -197,208 +202,6 @@ int CoolProp_to_TRUST_generique::FD_derivative_ph(Loi_en_h enum_prop, const Span
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
 #endif
-}
-
-/*
- * ******************* *
- * Lois en temperature
- * ******************* *
- */
-int CoolProp_to_TRUST_generique::tppi_get_rho_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::RHO, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_rho_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::RHO_DP, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_rho_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::RHO_DT, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_h_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::H, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_h_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::H_DP, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_h_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::H_DT, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_cp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::CP, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_cp_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::CP_DP, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_cp_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::CP_DT, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_mu_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::MU, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_mu_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::MU_DP, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_mu_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::MU_DT, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_lambda_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::LAMBDA, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_lambda_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::LAMBDA_DP, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_lambda_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::LAMBDA_DT, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::SIGMA, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_sigma_dp_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::SIGMA_DP, P, T, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_sigma_dT_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::SIGMA_DT, P, T, R, ncomp, ind);
-}
-
-// appel simple si besoin : cas incompressible
-int CoolProp_to_TRUST_generique::tppi_get_beta_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_T_(Loi_en_T::BETA, P, T, R, ncomp, ind);
-}
-
-/*
- * ***************** *
- * Lois en enthalpie
- * ***************** *
- */
-int CoolProp_to_TRUST_generique::tppi_get_rho_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::RHO, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_rho_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::RHO_DP, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_rho_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::RHO_DH, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_T_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::T, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_T_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::T_DP, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_T_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::T_DH, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_cp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::CP, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_cp_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::CP_DP, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_cp_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::CP_DH, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_mu_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::MU, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_mu_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::MU_DP, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_mu_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::MU_DH, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_lambda_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::LAMBDA, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_lambda_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::LAMBDA_DP, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_lambda_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::LAMBDA_DH, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_sigma_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::SIGMA, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_sigma_dp_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::SIGMA_DP, P, H, R, ncomp, ind);
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_sigma_dh_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind ) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::SIGMA_DH, P, H, R, ncomp, ind);
-}
-
-// appel simple si besoin : cas incompressible
-int CoolProp_to_TRUST_generique::tppi_get_beta_ph(const SpanD P, const SpanD H, SpanD R, int ncomp, int ind) const
-{
-  return tppi_get_single_property_h_(Loi_en_h::BETA, P, H, R, ncomp, ind);
 }
 
 // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
