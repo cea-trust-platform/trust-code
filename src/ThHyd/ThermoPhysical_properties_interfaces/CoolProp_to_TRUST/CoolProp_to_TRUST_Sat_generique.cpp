@@ -338,7 +338,7 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input,
   bool has_liq_DP = false, has_vap_DP = false;
   for (auto &itr : sats)
     {
-      if (itr.first == SAT::T_SAT_DP || itr.first == SAT::HL_SAT_DP || itr.first == SAT::RHOL_SAT_DP || itr.first == SAT::CPL_SAT_DP) has_liq_DP = true;
+      if (itr.first == SAT::T_SAT_DP || itr.first == SAT::HL_SAT_DP || itr.first == SAT::RHOL_SAT_DP || itr.first == SAT::CPL_SAT_DP || itr.first == SAT::SIGMA_DP) has_liq_DP = true;
       break;
     }
 
@@ -351,7 +351,7 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input,
   if (has_liq_DP)
     for (int i = 0; i < sz; i++)
       {
-        double plus_T_ = EPS, plus_h_ = EPS, plus_rho_ = EPS, plus_cp_ = EPS;
+        double plus_T_ = EPS, plus_h_ = EPS, plus_rho_ = EPS, plus_cp_ = EPS, plus_sigma_ = EPS;
         fluide->update(CoolProp::PQ_INPUTS, P[i] * (1. + EPS), 0);
         for (auto &itr : sats)
           {
@@ -361,9 +361,10 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input,
             if (prop_ == SAT::HL_SAT_DP) plus_h_ = fluide->hmass();
             if (prop_ == SAT::RHOL_SAT_DP) plus_rho_ = fluide->rhomass();
             if (prop_ == SAT::CPL_SAT_DP) plus_cp_ = fluide->cpmass();
+            if (prop_ == SAT::SIGMA_DP) plus_sigma_ = fluide->surface_tension();
           }
 
-        double minus_T_ = EPS, minus_h_ = EPS, minus_rho_ = EPS, minus_cp_ = EPS;
+        double minus_T_ = EPS, minus_h_ = EPS, minus_rho_ = EPS, minus_cp_ = EPS, minus_sigma_ = EPS;
         fluide->update(CoolProp::PQ_INPUTS,  P[i] * (1. - EPS), 0);
         for (auto &itr : sats)
           {
@@ -373,6 +374,7 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input,
             if (prop_ == SAT::HL_SAT_DP) minus_h_ = fluide->hmass();
             if (prop_ == SAT::RHOL_SAT_DP) minus_rho_ = fluide->rhomass();
             if (prop_ == SAT::CPL_SAT_DP) minus_cp_ = fluide->cpmass();
+            if (prop_ == SAT::SIGMA_DP) minus_sigma_ = fluide->surface_tension();
           }
         for (auto &itr : sats)
           {
@@ -383,7 +385,7 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input,
             if (prop_ == SAT::HL_SAT_DP) span_[i] = (plus_h_ - minus_h_) / ( 2 * EPS * P[i]);
             if (prop_ == SAT::RHOL_SAT_DP) span_[i] = (plus_rho_ - minus_rho_) / ( 2 * EPS * P[i]);
             if (prop_ == SAT::CPL_SAT_DP) span_[i] = (plus_cp_ - minus_cp_) / ( 2 * EPS * P[i]);
-
+            if (prop_ == SAT::SIGMA_DP) span_[i] = (plus_sigma_ - minus_sigma_) / ( 2 * EPS * P[i]);
           }
       }
 

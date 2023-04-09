@@ -103,11 +103,12 @@ enum class SAT
   RHOV_SAT, RHOV_SAT_DP,
   CPL_SAT, CPL_SAT_DP,
   CPV_SAT, CPV_SAT_DP,
-  SIGMA /* pour coco seulement */,
-  LV_SAT, LV_SAT_DP /* juste dans l'enum mais pas dans prop directe */
+  SIGMA, SIGMA_DP, /* pour coco seulement */
+  /* juste dans l'enum mais pas dans prop directe */
+  LV_SAT, LV_SAT_DP
 };
 
-static constexpr std::array<PairCharArray, 17> EOS_prop_sat =
+static constexpr std::array<PairCharArray, 18> EOS_prop_sat =
 {
   {
     { "tsat", "T_sat" }, { "dtsatdp", "d_T_sat_d_p" },
@@ -118,7 +119,7 @@ static constexpr std::array<PairCharArray, 17> EOS_prop_sat =
     { "rhovsat", "rho_v_sat" }, { "drhovsatdp", "d_rho_v_sat_d_p" },
     { "cplsat", "cp_l_sat" }, { "dcplsatdp", "d_cp_l_sat_d_p" },
     { "cpvsat", "cp_v_sat" }, {  "dcpvsatdp", "d_cp_v_sat_d_p" },
-    { "sigma", "sigma" }
+    { "sigma", "sigma" }, { "dsigmadp", "d_sigma_d_p_h" } /* on utilise h la */
   }
 };
 
