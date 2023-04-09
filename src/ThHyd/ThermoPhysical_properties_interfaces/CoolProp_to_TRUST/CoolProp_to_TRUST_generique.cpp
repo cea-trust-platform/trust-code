@@ -316,189 +316,150 @@ int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD inpu
 #endif
 }
 
+int CoolProp_to_TRUST_generique::tppi_get_all_properties_h__(const MSpanD input, MLoiSpanD_h prop) const
+{
+#ifdef HAS_COOLPROP
+  const SpanD P = input.at("pression"), H = input.at("enthalpie");
+  const int sz = (int ) P.size();
+
+  bool has_prop = false;
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_h::RHO || itr.first == Loi_en_h::RHO_DP || itr.first == Loi_en_h::RHO_DH ||
+          itr.first == Loi_en_h::T || itr.first == Loi_en_h::T_DP || itr.first == Loi_en_h::T_DH ||
+          itr.first == Loi_en_h::CP || itr.first == Loi_en_h::CP_DP || itr.first == Loi_en_h::CP_DH ||
+          itr.first == Loi_en_h::MU || itr.first == Loi_en_h::LAMBDA || itr.first == Loi_en_h::BETA || itr.first == Loi_en_h::SIGMA)
+        has_prop = true;
+      break;
+    }
+
+  if (has_prop)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == Loi_en_h::RHO) span_[i] = fluide->rhomass();
+            if (prop_ == Loi_en_h::RHO_DP) span_[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iHmass);
+            if (prop_ == Loi_en_h::RHO_DH) span_[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iHmass, CoolProp::iP);
+            if (prop_ == Loi_en_h::T) span_[i] = fluide->T();
+            if (prop_ == Loi_en_h::T_DP) span_[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iP, CoolProp::iHmass);
+            if (prop_ == Loi_en_h::T_DH) span_[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iHmass, CoolProp::iP);
+            if (prop_ == Loi_en_h::CP) span_[i] = fluide->cpmass();
+            if (prop_ == Loi_en_h::CP_DP) span_[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iP, CoolProp::iHmass);
+            if (prop_ == Loi_en_h::CP_DH) span_[i] = fluide->first_partial_deriv(CoolProp::iCpmass,  CoolProp::iHmass, CoolProp::iP);
+            if (prop_ == Loi_en_h::MU) span_[i] = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA) span_[i] = fluide->conductivity();
+            if (prop_ == Loi_en_h::BETA) span_[i] = fluide->isobaric_expansion_coefficient();
+            if (prop_ == Loi_en_h::SIGMA) span_[i] = fluide->surface_tension();
+          }
+      }
+
+  // derivees qui manquent ...
+  bool has_DP = false, has_DH = false;
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_h::MU_DP || itr.first == Loi_en_h::LAMBDA_DP || itr.first == Loi_en_h::SIGMA_DP) has_DP = true;
+      break;
+    }
+
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_h::MU_DH || itr.first == Loi_en_h::LAMBDA_DH || itr.first == Loi_en_h::SIGMA_DH) has_DH = true;
+      break;
+    }
+
+  if (has_DP)
+    for (int i = 0; i < sz; i++)
+      {
+        double plus_mu_ = EPS, plus_lambda_ = EPS, plus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i] * (1. + EPS));
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ ==  Loi_en_h::MU_DP) plus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DP)  plus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DP) plus_sigma_ = fluide->surface_tension();
+          }
+
+        double minus_mu_ = EPS, minus_lambda_ = EPS, minus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i] * (1. - EPS));
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ ==  Loi_en_h::MU_DP) minus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DP)  minus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DP) minus_sigma_ = fluide->surface_tension();
+          }
+
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ ==  Loi_en_h::MU_DP) span_[i] = (plus_mu_ - minus_mu_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_h::LAMBDA_DP)  span_[i] = (plus_lambda_ - minus_lambda_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_h::SIGMA_DP) span_[i] = (plus_sigma_ - minus_sigma_) / ( 2 * EPS * P[i]);
+          }
+      }
+
+  if (has_DH)
+    for (int i = 0; i < sz; i++)
+      {
+        double plus_mu_ = EPS, plus_lambda_ = EPS, plus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i] * (1. + EPS), P[i]);
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ ==  Loi_en_h::MU_DH) plus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DH)  plus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DH) plus_sigma_ = fluide->surface_tension();
+          }
+
+        double minus_mu_ = EPS, minus_lambda_ = EPS, minus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i] * (1. - EPS), P[i]);
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ ==  Loi_en_h::MU_DH) minus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DH)  minus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DH) minus_sigma_ = fluide->surface_tension();
+          }
+
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ ==  Loi_en_h::MU_DH) span_[i] = (plus_mu_ - minus_mu_) / ( 2 * EPS * H[i]);
+            if (prop_ == Loi_en_h::LAMBDA_DH)  span_[i] = (plus_lambda_ - minus_lambda_) / ( 2 * EPS * H[i]);
+            if (prop_ == Loi_en_h::SIGMA_DH) span_[i] = (plus_sigma_ - minus_sigma_) / ( 2 * EPS * H[i]);
+          }
+      }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
 // methods particuliers par application pour gagner en performance : utilise dans F5 (pour le moment !)
 int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
 {
 #ifdef HAS_COOLPROP
-  assert(ncomp == 1);
   const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
-  // TODO FIXME
 
 #ifndef NDEBUG
-  for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
-#endif
-  const int sz = (int) H.size();
-
-  if (is_liq)
-    {
-      SpanD rho = inter.at(Loi_en_h::RHO), drhodp = inter.at(Loi_en_h::RHO_DP), drhodh = inter.at(Loi_en_h::RHO_DH),
-            cp = inter.at(Loi_en_h::CP), cpdp = inter.at(Loi_en_h::CP_DP), cpdh = inter.at( Loi_en_h::CP_DH),
-            T = inter.at(Loi_en_h::T), dTdp = inter.at(Loi_en_h::T_DP), dTdh = inter.at(Loi_en_h::T_DH),
-            MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP), dMUdh = inter.at(Loi_en_h::MU_DH),
-            L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP), dLdh = inter.at(Loi_en_h::LAMBDA_DH);
-
-      for (int i = 0; i < sz; i++)
-        {
-          fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
-
-          rho[i] = fluide->rhomass();
-          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iHmass);
-          drhodh[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iHmass, CoolProp::iP);
-
-          cp[i] = fluide->cpmass();
-          cpdp[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iP, CoolProp::iHmass);
-          cpdh[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iHmass, CoolProp::iP);
-
-          T[i] = fluide->T();
-          dTdp[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iP, CoolProp::iHmass);
-          dTdh[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iHmass, CoolProp::iP);
-
-          MU[i] = fluide->viscosity();
-          dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
-          dMUdh[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iHmass, CoolProp::iP);
-
-          L[i] = fluide->conductivity();
-          dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
-          dLdh[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iHmass, CoolProp::iP);
-        }
-    }
-  else
-    {
-      SpanD rho = inter.at(Loi_en_h::RHO), drhodp = inter.at(Loi_en_h::RHO_DP), drhodh = inter.at(Loi_en_h::RHO_DH),
-            cp = inter.at(Loi_en_h::CP), cpdp = inter.at(Loi_en_h::CP_DP), cpdh = inter.at( Loi_en_h::CP_DH),
-            T = inter.at(Loi_en_h::T), dTdp = inter.at(Loi_en_h::T_DP), dTdh = inter.at(Loi_en_h::T_DH),
-            MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP), dMUdh = inter.at(Loi_en_h::MU_DH),
-            L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP), dLdh = inter.at(Loi_en_h::LAMBDA_DH),
-            sigma = inter.at(Loi_en_h::SIGMA), dsigma_dp =  inter.at(Loi_en_h::SIGMA_DP);
-
-      for (int i = 0; i < sz; i++)
-        {
-          fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
-
-          rho[i] = fluide->rhomass();
-          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iHmass);
-          drhodh[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iHmass, CoolProp::iP);
-
-          cp[i] = fluide->cpmass();
-          cpdp[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iP, CoolProp::iHmass);
-          cpdh[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iHmass, CoolProp::iP);
-
-          T[i] = fluide->T();
-          dTdp[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iP, CoolProp::iHmass);
-          dTdh[i] = fluide->first_partial_deriv(CoolProp::iT, CoolProp::iHmass, CoolProp::iP);
-
-          MU[i] = fluide->viscosity();
-          dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
-          dMUdh[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iHmass, CoolProp::iP);
-
-          L[i] = fluide->conductivity();
-          dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
-          dLdh[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iHmass, CoolProp::iP);
-
-          sigma[i] = fluide->surface_tension();
-          dsigma_dp[i] = fluide->first_partial_deriv(CoolProp::isurface_tension, CoolProp::iP, CoolProp::iHmass);
-        }
-    }
-
-  return 0; // FIXME : on suppose que tout OK
-#else
-  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
-  throw;
-#endif
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5_2(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
-{
-#ifdef HAS_COOLPROP
   assert(ncomp == 1);
-  const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
-  // TODO FIXME
-
-#ifndef NDEBUG
   for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
 #endif
-  const int sz = (int) H.size();
 
-  SpanD MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP),
-        L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP);
-
-  for (int i = 0; i < sz; i++)
-    {
-      fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
-
-      MU[i] = fluide->viscosity();
-      dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
-
-      L[i] = fluide->conductivity();
-      dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
-    }
-
-  return 0; // FIXME : on suppose que tout OK
-#else
-  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
-  throw;
-#endif
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5_3(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
-{
-#ifdef HAS_COOLPROP
-  assert(ncomp == 1);
-  const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
-  // TODO FIXME
-
-#ifndef NDEBUG
-  for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
-#endif
-  const int sz = (int) H.size();
-
-
-  SpanD cp = inter.at(Loi_en_h::CP),  MU = inter.at(Loi_en_h::MU), dMUdp = inter.at(Loi_en_h::MU_DP), dMUdh = inter.at(Loi_en_h::MU_DH) ;
-
-  for (int i = 0; i < sz; i++)
-    {
-      fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
-
-      cp[i] = fluide->cpmass();
-
-      MU[i] = fluide->viscosity();
-      dMUdp[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iP, CoolProp::iHmass);
-      dMUdh[i] = fluide->first_partial_deriv(CoolProp::iviscosity, CoolProp::iHmass, CoolProp::iP);
-    }
-
-  return 0; // FIXME : on suppose que tout OK
-#else
-  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
-  throw;
-#endif
-}
-
-int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5_4(const MSpanD input, MLoiSpanD_h  inter, int ncomp, int ind, bool is_liq) const
-{
-#ifdef HAS_COOLPROP
-  assert(ncomp == 1);
-  const SpanD P = input.at("pression"), H = is_liq ? input.at("H_L") : input.at("H_V");
-  // TODO FIXME
-
-#ifndef NDEBUG
-  for (auto &itr : inter) assert((int )H.size() == ncomp * (int )itr.second.size());
-#endif
-  const int sz = (int) H.size();
-
-  SpanD  L = inter.at(Loi_en_h::LAMBDA), dLdp = inter.at(Loi_en_h::LAMBDA_DP), dLdh = inter.at(Loi_en_h::LAMBDA_DH);
-
-  for (int i = 0; i < sz; i++)
-    {
-      fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
-
-      L[i] = fluide->conductivity();
-      dLdp[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iP, CoolProp::iHmass);
-      dLdh[i] = fluide->first_partial_deriv(CoolProp::iconductivity, CoolProp::iHmass, CoolProp::iP);
-    }
-
-
-
-  return 0; // FIXME : on suppose que tout OK
+  MSpanD input_ = { {"pression", P }, { "enthalpie", H} };
+  return tppi_get_all_properties_h__(input_, inter);
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;

@@ -44,8 +44,6 @@ public :
   // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase et F5 (pour le moment !)
   int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
   int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
-  int tppi_get_all_sat_loi_F5_2(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const;
-  int tppi_get_all_sat_loi_F5_3(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const;
 
 private:
   int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int , int , bool is_liq = true) const override;

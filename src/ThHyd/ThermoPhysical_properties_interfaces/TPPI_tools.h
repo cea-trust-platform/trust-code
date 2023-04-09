@@ -123,6 +123,7 @@ static constexpr std::array<PairCharArray, 17> EOS_prop_sat =
 };
 
 using MLoiSpanD_h = std::map<Loi_en_h, tcb::span<double>>;
+using MLoiSpanD_T = std::map<Loi_en_T, tcb::span<double>>;
 using MLoiSpanD = std::map<Loi_en_T, tcb::span<double>>;
 using MSatSpanD = std::map<SAT, tcb::span<double>>;
 

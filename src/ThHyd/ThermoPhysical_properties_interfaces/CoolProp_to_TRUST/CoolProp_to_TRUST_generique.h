@@ -36,9 +36,6 @@ public:
 
   // methods particuliers par application pour gagner en performance : utilise dans F5 (pour le moment !)
   int tppi_get_all_prop_loi_F5(const MSpanD, MLoiSpanD_h, int ncomp = 1, int id = 0, bool is_liq = true) const override;
-  int tppi_get_all_prop_loi_F5_2(const MSpanD, MLoiSpanD_h, int ncomp = 1, int id = 0, bool is_liq = true) const; // FIXME
-  int tppi_get_all_prop_loi_F5_3(const MSpanD, MLoiSpanD_h, int ncomp = 1, int id = 0, bool is_liq = true) const; // FIXME
-  int tppi_get_all_prop_loi_F5_4(const MSpanD, MLoiSpanD_h, int ncomp = 1, int id = 0, bool is_liq = true) const; // FIXME
 
 private:
   int tppi_get_single_property_T_(Loi_en_T, const SpanD, const SpanD, SpanD, int, int) const override;
@@ -48,6 +45,7 @@ private:
 
   int tppi_get_single_property_h_(Loi_en_h, const SpanD, const SpanD, SpanD, int, int) const override;
   int tppi_get_single_property_h__(Loi_en_h, const SpanD, const SpanD, SpanD) const;
+  int tppi_get_all_properties_h__(const MSpanD input, MLoiSpanD_h prop) const;
   int FD_derivative_ph__(Loi_en_h, const SpanD, const SpanD, SpanD, bool wrt_p = true) const;
 };
 

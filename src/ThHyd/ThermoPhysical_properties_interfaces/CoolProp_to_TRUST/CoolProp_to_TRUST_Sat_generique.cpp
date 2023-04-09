@@ -280,101 +280,148 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
 int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
 {
 #ifdef HAS_COOLPROP
-  assert(ncomp == 1);
   const SpanD P = input.at("pression");
-
-#ifndef NDEBUG
-  for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
-#endif
-
-  SpanD Ts_ = sats.at(SAT::T_SAT), dPTs_ = sats.at(SAT::T_SAT_DP),
-        Hvs_ = sats.at(SAT::HV_SAT), Hls_ = sats.at(SAT::HL_SAT),
-        dPHvs_ = sats.at(SAT::HV_SAT_DP), dPHls_ = sats.at(SAT::HL_SAT_DP),
-        Rvs_ = sats.at(SAT::RHOV_SAT), Rls_ = sats.at(SAT::RHOL_SAT),
-        dPRvs_ = sats.at(SAT::RHOV_SAT_DP), dPRls_ = sats.at(SAT::RHOL_SAT_DP),
-        Cpvs_ = sats.at(SAT::CPV_SAT), Cpls_ = sats.at(SAT::CPL_SAT),
-        dPCpvs_ = sats.at(SAT::CPV_SAT_DP), dPCpls_ = sats.at(SAT::CPL_SAT_DP);
-
   const int sz = (int) P.size();
 
-  for (int i = 0; i < sz; i++)
-    {
-      fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
-      Hls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
-      dPHls_[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
-      Rls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iDmass);
-      dPRls_[i] = fluide->first_saturation_deriv(CoolProp::iDmass, CoolProp::iP);
-      Cpls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iCpmass);
-      dPCpls_[i] = fluide->first_saturation_deriv(CoolProp::iCpmass, CoolProp::iP);
-
-      fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-      Ts_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iT); /* FIXME : j'utilise vapor (normalement pareil) */
-      dPTs_[i] = fluide->first_saturation_deriv(CoolProp::iT, CoolProp::iP);
-      Hvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
-      dPHvs_[i] = fluide->first_saturation_deriv(CoolProp::iHmass, CoolProp::iP);
-      Rvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iDmass);
-      dPRvs_[i] = fluide->first_saturation_deriv(CoolProp::iDmass, CoolProp::iP);
-      Cpvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iCpmass);
-      dPCpvs_[i] = fluide->first_saturation_deriv(CoolProp::iCpmass, CoolProp::iP);
-    }
-
-  return 0; // FIXME : on suppose que tout OK
-#else
-  Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
-  throw;
-#endif
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5_2(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
-{
-#ifdef HAS_COOLPROP
-  assert(ncomp == 1);
-  const SpanD P = input.at("pression");
-
 #ifndef NDEBUG
-  for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
-#endif
-
-  SpanD Hvs_ = sats.at(SAT::HV_SAT),  Rvs_ = sats.at(SAT::RHOV_SAT);
-
-  const int sz = (int) P.size();
-
-  for (int i = 0; i < sz; i++)
-    {
-      fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-      Hvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
-      Rvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iDmass);
-    }
-
-  return 0; // FIXME : on suppose que tout OK
-#else
-  Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
-  throw;
-#endif
-}
-
-int CoolProp_to_TRUST_Sat_generique::tppi_get_all_sat_loi_F5_3(const MSpanD input, MSatSpanD sats, int ncomp, int id) const
-{
-#ifdef HAS_COOLPROP
   assert(ncomp == 1);
-  const SpanD P = input.at("pression");
-
-#ifndef NDEBUG
-  for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
+  for (auto &itr : sats) assert(ncomp * sz == (int )itr.second.size());
 #endif
 
-  SpanD Hvs_ = sats.at(SAT::HV_SAT),  Hls_ = sats.at(SAT::HL_SAT);
-
-  const int sz = (int) P.size();
-
-  for (int i = 0; i < sz; i++)
+  bool has_liq_prop = false, has_vap_prop = false;
+  for (auto &itr : sats)
     {
-      fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
-      Hls_[i] = fluide->saturated_liquid_keyed_output(CoolProp::iHmass);
-
-      fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
-      Hvs_[i] = fluide->saturated_vapor_keyed_output(CoolProp::iHmass);
+      if (itr.first == SAT::T_SAT || itr.first == SAT::SIGMA || itr.first == SAT::HL_SAT || itr.first == SAT::RHOL_SAT || itr.first == SAT::CPL_SAT) has_liq_prop = true;
+      break;
     }
+
+  for (auto &itr : sats)
+    {
+      if (itr.first == SAT::HV_SAT || itr.first == SAT::RHOV_SAT || itr.first == SAT::CPV_SAT) has_vap_prop = true;
+      break;
+    }
+
+  if (has_liq_prop)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == SAT::T_SAT) span_[i] = fluide->T();
+            if (prop_ == SAT::SIGMA) span_[i] = fluide->surface_tension();
+
+            if (prop_ == SAT::HL_SAT) span_[i] = fluide->hmass();
+            if (prop_ == SAT::RHOL_SAT) span_[i] = fluide->rhomass();
+            if (prop_ == SAT::CPL_SAT) span_[i] = fluide->cpmass();
+          }
+      }
+
+  if (has_vap_prop)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == SAT::HV_SAT) span_[i] = fluide->hmass();
+            if (prop_ == SAT::RHOV_SAT) span_[i] = fluide->rhomass();
+            if (prop_ == SAT::CPV_SAT) span_[i] = fluide->cpmass();
+          }
+      }
+
+  // derivees qui manquent ...
+  bool has_liq_DP = false, has_vap_DP = false;
+  for (auto &itr : sats)
+    {
+      if (itr.first == SAT::T_SAT_DP || itr.first == SAT::HL_SAT_DP || itr.first == SAT::RHOL_SAT_DP || itr.first == SAT::CPL_SAT_DP) has_liq_DP = true;
+      break;
+    }
+
+  for (auto &itr : sats)
+    {
+      if (itr.first == SAT::HV_SAT_DP || itr.first == SAT::RHOV_SAT_DP || itr.first == SAT::CPV_SAT_DP ) has_vap_DP = true;
+      break;
+    }
+
+  if (has_liq_DP)
+    for (int i = 0; i < sz; i++)
+      {
+        double plus_T_ = EPS, plus_h_ = EPS, plus_rho_ = EPS, plus_cp_ = EPS;
+        fluide->update(CoolProp::PQ_INPUTS, P[i] * (1. + EPS), 0);
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+
+            if (prop_ == SAT::T_SAT_DP) plus_T_ = fluide->T();
+            if (prop_ == SAT::HL_SAT_DP) plus_h_ = fluide->hmass();
+            if (prop_ == SAT::RHOL_SAT_DP) plus_rho_ = fluide->rhomass();
+            if (prop_ == SAT::CPL_SAT_DP) plus_cp_ = fluide->cpmass();
+          }
+
+        double minus_T_ = EPS, minus_h_ = EPS, minus_rho_ = EPS, minus_cp_ = EPS;
+        fluide->update(CoolProp::PQ_INPUTS,  P[i] * (1. - EPS), 0);
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+
+            if (prop_ == SAT::T_SAT_DP) minus_T_ = fluide->T();
+            if (prop_ == SAT::HL_SAT_DP) minus_h_ = fluide->hmass();
+            if (prop_ == SAT::RHOL_SAT_DP) minus_rho_ = fluide->rhomass();
+            if (prop_ == SAT::CPL_SAT_DP) minus_cp_ = fluide->cpmass();
+          }
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == SAT::T_SAT_DP) span_[i] = (plus_T_ - minus_T_) / ( 2 * EPS * P[i]);
+            if (prop_ == SAT::HL_SAT_DP) span_[i] = (plus_h_ - minus_h_) / ( 2 * EPS * P[i]);
+            if (prop_ == SAT::RHOL_SAT_DP) span_[i] = (plus_rho_ - minus_rho_) / ( 2 * EPS * P[i]);
+            if (prop_ == SAT::CPL_SAT_DP) span_[i] = (plus_cp_ - minus_cp_) / ( 2 * EPS * P[i]);
+
+          }
+      }
+
+  if (has_vap_DP)
+    for (int i = 0; i < sz; i++)
+      {
+        double plus_h_ = EPS, plus_rho_ = EPS, plus_cp_ = EPS;
+        fluide->update(CoolProp::PQ_INPUTS, P[i] * (1. + EPS), 1);
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+
+            if (prop_ == SAT::HV_SAT_DP) plus_h_ = fluide->hmass();
+            if (prop_ == SAT::RHOV_SAT_DP) plus_rho_ = fluide->rhomass();
+            if (prop_ == SAT::CPV_SAT_DP) plus_cp_ = fluide->cpmass();
+          }
+
+        double minus_h_ = EPS, minus_rho_ = EPS, minus_cp_ = EPS;
+        fluide->update(CoolProp::PQ_INPUTS,  P[i] * (1. - EPS), 1);
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+
+            if (prop_ == SAT::HV_SAT_DP) minus_h_ = fluide->hmass();
+            if (prop_ == SAT::RHOV_SAT_DP) minus_rho_ = fluide->rhomass();
+            if (prop_ == SAT::CPV_SAT_DP) minus_cp_ = fluide->cpmass();
+          }
+        for (auto &itr : sats)
+          {
+            SAT prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == SAT::HV_SAT_DP) span_[i] = (plus_h_ - minus_h_) / ( 2 * EPS * P[i]);
+            if (prop_ == SAT::RHOV_SAT_DP) span_[i] = (plus_rho_ - minus_rho_) / ( 2 * EPS * P[i]);
+            if (prop_ == SAT::CPV_SAT_DP) span_[i] = (plus_cp_ - minus_cp_) / ( 2 * EPS * P[i]);
+
+          }
+      }
 
   return 0; // FIXME : on suppose que tout OK
 #else
