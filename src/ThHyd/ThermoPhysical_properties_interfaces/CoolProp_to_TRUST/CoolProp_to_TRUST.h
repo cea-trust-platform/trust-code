@@ -37,6 +37,11 @@
 
 namespace CoolProp { class AbstractState; }
 
+/*! @brief classe CoolProp_to_TRUST
+ *
+ *  Interface commune pour TRUST et ses baltiks qui permet appeler les methodes de la lib CoolProp
+ *  Methods disponibles en temperature et enthalpie, egalement pour la saturation
+ */
 class CoolProp_to_TRUST : public TPPI
 {
 public :

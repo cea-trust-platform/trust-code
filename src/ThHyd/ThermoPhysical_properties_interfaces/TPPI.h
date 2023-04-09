@@ -34,16 +34,9 @@ public:
   virtual void set_saturation_generique(const char *const , const char *const ) { return not_implemented<void>(__func__); }
   virtual void set_phase(const Motcle& ) { return not_implemented<void>(__func__); }
   virtual void set_path_refprop() { return not_implemented<void>(__func__); }
-
-  virtual int get_model_index(const Motcle& model_name) { return not_implemented<int>(__func__); }
-  virtual int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name) { return not_implemented<int>(__func__); }
-  virtual const char* get_tppi_model_name(const int ind) { return not_implemented<const char*>(__func__); }
-  virtual const char* get_tppi_fluid_name(const Motcle& model_name, const int ind) { return not_implemented<const char*>(__func__); }
+  virtual void verify_phase(const Motcle& ) { return not_implemented<void>(__func__); }
 
   virtual void desactivate_handler(bool op = true) { return not_implemented<void>(__func__); }
-
-  virtual void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) { return not_implemented<void>(__func__); }
-  virtual void verify_phase(const Motcle& ) { return not_implemented<void>(__func__); }
 
   virtual double tppi_get_p_min() const = 0;
   virtual double tppi_get_p_max() const = 0;

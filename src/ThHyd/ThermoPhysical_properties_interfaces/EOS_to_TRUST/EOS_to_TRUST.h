@@ -34,11 +34,6 @@ namespace NEPTUNE { class EOS; }
  *
  *  Interface commune pour TRUST et ses baltiks qui permet appeler les methodes de la lib EOS
  *  Methods disponibles en temperature et enthalpie, egalement pour la saturation
- *
- *  On supporte 851 Fluids !!!
- *
- *  @sa EOS_Supported_Models_Fluids
- *
  */
 class EOS_to_TRUST : public TPPI
 {
@@ -46,12 +41,6 @@ public :
   ~EOS_to_TRUST() override { /* delete fluide; */ }
 
   void desactivate_handler(bool op = true) override;
-  void verify_model_fluid(const Motcle& model_name, const Motcle& fluid_name) override;
-
-  int get_model_index(const Motcle& model_name) override;
-  int get_fluid_index(const Motcle& model_name, const Motcle& fluid_name) override;
-  const char* get_tppi_model_name(const int ind) override;
-  const char* get_tppi_fluid_name(const Motcle& model_name, const int ind) override;
 
   double tppi_get_p_min() const override final;
   double tppi_get_p_max() const override final;
@@ -78,8 +67,6 @@ protected :
   NEPTUNE::EOS_Std_Error_Handler handler ;
   NEPTUNE::EOS *fluide = nullptr;
 #endif
-
-  EOS_Supported_Models_Fluids supp_;
 
   int compute_eos_field(const SpanD P, SpanD res, const char *const pt, const char *const pn, bool is_T = false) const;
   int compute_eos_field(const SpanD P, const SpanD T, SpanD res, const char *const pt, const char *const pn) const;

@@ -16,7 +16,5 @@
 #include <Fluide_generique_TPPI_base.h>
 
 Implemente_base(Fluide_generique_TPPI_base, "Fluide_generique_TPPI_base", Fluide_reel_base);
-
 Sortie& Fluide_generique_TPPI_base::printOn(Sortie& os) const { return os; }
-
 Entree& Fluide_generique_TPPI_base::readOn(Entree& is) { return Fluide_reel_base::readOn(is); }

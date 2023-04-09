@@ -23,8 +23,7 @@
  *  Interface commune pour TRUST et ses baltiks qui permet appeler les methodes de la lib CoolProp
  *  Methods disponibles pour la saturation en temperature
  *
- *  @sa CoolProp_to_TRUST CoolProp_Supported_Models_Fluids
- *
+ *  @sa CoolProp_to_TRUST
  */
 class CoolProp_to_TRUST_Sat_generique : public CoolProp_to_TRUST
 {

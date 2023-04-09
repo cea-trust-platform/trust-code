@@ -14,17 +14,7 @@
 *****************************************************************************/
 
 #include <Saturation_generique_TPPI_base.h>
-#include <Param.h>
 
 Implemente_base(Saturation_generique_TPPI_base, "Saturation_generique_TPPI_base", Saturation_base);
-
 Sortie& Saturation_generique_TPPI_base::printOn(Sortie& os) const { return os; }
-
-Entree& Saturation_generique_TPPI_base::readOn(Entree& is)
-{
-  Param param(que_suis_je());
-  param.ajouter("model|modele", &model_name_, Param::REQUIRED);
-  param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
-  param.lire_avec_accolades_depuis(is);
-  return is;
-}
+Entree& Saturation_generique_TPPI_base::readOn(Entree& is) { return Saturation_base::readOn(is); }

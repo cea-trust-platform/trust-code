@@ -21,6 +21,10 @@
 class Saturation_generique_CoolProp : public Saturation_generique_TPPI_base
 {
   Declare_instanciable( Saturation_generique_CoolProp ) ;
+public :
+  void set_param(Param& param) override;
+
+protected:
   Motcle phase_;
 };
 

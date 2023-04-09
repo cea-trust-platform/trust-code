@@ -22,11 +22,7 @@ Sortie& Saturation_generique_CoolProp::printOn(Sortie& os) const { return os; }
 
 Entree& Saturation_generique_CoolProp::readOn(Entree& is)
 {
-  Param param(que_suis_je());
-  param.ajouter("model|modele", &model_name_, Param::REQUIRED);
-  param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
-  param.ajouter("phase", &phase_, Param::OPTIONAL); // optional : liquid or vapor. PI : specify the phase it is really useful (better perf for coolprop) !
-  param.lire_avec_accolades_depuis(is);
+  Saturation_generique_TPPI_base::readOn(is);
 
   TPPI_ = std::make_shared<CoolProp_to_TRUST_Sat_generique>();
 
@@ -38,4 +34,12 @@ Entree& Saturation_generique_CoolProp::readOn(Entree& is)
 //  CoolProptT.desactivate_handler(false); // throw on error
 
   return is;
+}
+
+void Saturation_generique_CoolProp::set_param(Param& param)
+{
+  Saturation_base::set_param(param); // T_ref_ et P_ref_ ?? sais pas si utile ...
+  param.ajouter("model|modele", &model_name_, Param::REQUIRED);
+  param.ajouter("fluid|fluide", &fluid_name_, Param::REQUIRED);
+  param.ajouter("phase", &phase_, Param::OPTIONAL); // optional : liquid or vapor. PI : specify the phase it is really useful (better perf for coolprop) !
 }

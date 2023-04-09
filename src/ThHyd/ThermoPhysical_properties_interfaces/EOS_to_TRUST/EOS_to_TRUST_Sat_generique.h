@@ -23,10 +23,7 @@
  *  Interface commune pour TRUST et ses baltiks qui permet appeler les methodes de la lib EOS
  *  Methods disponibles pour la saturation en temperature et enthalpie
  *
- *  On supporte 851 Fluids !!!
- *
- *  @sa EOS_to_TRUST EOS_Supported_Models_Fluids
- *
+ *  @sa EOS_to_TRUST
  */
 class EOS_to_TRUST_Sat_generique : public EOS_to_TRUST
 {

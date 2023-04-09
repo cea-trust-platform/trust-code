@@ -24,7 +24,6 @@
  *  Methods disponibles pour les fluids en temperature et enthalpie
  *
  *  @sa CoolProp_to_TRUST CoolProp_Supported_Models_Fluids
- *
  */
 class CoolProp_to_TRUST_generique: public CoolProp_to_TRUST
 {

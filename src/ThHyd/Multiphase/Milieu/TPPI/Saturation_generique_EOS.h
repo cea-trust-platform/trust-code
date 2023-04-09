@@ -21,6 +21,8 @@
 class Saturation_generique_EOS : public Saturation_generique_TPPI_base
 {
   Declare_instanciable( Saturation_generique_EOS ) ;
+public :
+  void set_param(Param& param) override;
 };
 
 #endif /* Saturation_generique_EOS_included */
