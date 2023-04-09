@@ -43,6 +43,7 @@ public:
 private:
   int tppi_get_single_property_T_(Loi_en_T, const SpanD, const SpanD, SpanD, int, int) const override;
   int tppi_get_single_property_T__(Loi_en_T, const SpanD, const SpanD, SpanD) const;
+  int tppi_get_all_properties_T__(const MSpanD input, MLoiSpanD prop) const;
   int FD_derivative_pT__(Loi_en_T, const SpanD, const SpanD, SpanD, bool wrt_p = true) const;
 
   int tppi_get_single_property_h_(Loi_en_h, const SpanD, const SpanD, SpanD, int, int) const override;

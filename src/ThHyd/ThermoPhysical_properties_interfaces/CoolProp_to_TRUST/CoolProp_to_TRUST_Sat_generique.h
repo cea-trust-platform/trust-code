@@ -49,8 +49,8 @@ public :
 
 private:
   int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int , int , bool is_liq = true) const override;
-  int FD_derivative_p(SAT , const SpanD , SpanD , bool is_liq = true) const;
   int tppi_get_single_sat_p__(SAT , const SpanD , SpanD , bool is_liq = true) const;
+  int FD_derivative_p(SAT , const SpanD , SpanD , bool is_liq = true) const;
 };
 
 #endif /* CoolProp_to_TRUST_Sat_generique_included */

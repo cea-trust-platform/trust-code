@@ -204,49 +204,67 @@ int CoolProp_to_TRUST_generique::FD_derivative_ph__(Loi_en_h enum_prop, const Sp
 #endif
 }
 
+int CoolProp_to_TRUST_generique::tppi_get_all_properties_T__(const MSpanD input, MLoiSpanD prop) const
+{
+#ifdef HAS_COOLPROP
+  const SpanD T = input.at("temperature"), P = input.at("pressure");
+  const int sz = (int ) P.size();
+  for (int i = 0; i < sz; i++)
+    {
+      fluide->update(CoolProp::PT_INPUTS, P[i], T[i]);  // SI units
+      for (auto &itr : prop)
+        {
+          Loi_en_T prop_ = itr.first;
+          SpanD span_ = itr.second;
+
+          if (prop_ == Loi_en_T::RHO) span_[i] = fluide->rhomass();
+          else if (prop_ == Loi_en_T::RHO_DP) span_[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iT);
+          else if (prop_ == Loi_en_T::RHO_DT) span_[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iT, CoolProp::iP);
+          else if (prop_ == Loi_en_T::H) span_[i] = fluide->hmass();
+          else if (prop_ == Loi_en_T::H_DP) span_[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iP, CoolProp::iT);
+          else if (prop_ == Loi_en_T::H_DT) span_[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iT, CoolProp::iP);
+          else if (prop_ == Loi_en_T::CP) span_[i] = fluide->cpmass();
+          else if (prop_ == Loi_en_T::CP_DP) span_[i] = fluide->first_partial_deriv(CoolProp::iCpmass, CoolProp::iP, CoolProp::iT);
+          else if (prop_ == Loi_en_T::CP_DT) span_[i] = fluide->first_partial_deriv(CoolProp::iCpmass,  CoolProp::iT, CoolProp::iP);
+          else if (prop_ == Loi_en_T::MU) span_[i] = fluide->viscosity();
+          else if (prop_ == Loi_en_T::LAMBDA) span_[i] = fluide->conductivity();
+          else if (prop_ == Loi_en_T::BETA) span_[i] = fluide->isobaric_expansion_coefficient();
+          else if (prop_ == Loi_en_T::SIGMA) span_[i] = fluide->surface_tension();
+          else Process::exit("Derivative requested is not coded !");
+        }
+    }
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
 // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
 int CoolProp_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
-  assert((int )prop.size() == 4 && (int )input.size() == 2);
   const SpanD T = input.at("temperature"), P = input.at("pressure");
-  assert((int )T.size() == ncomp * (int )P.size());
-
-  Tk_(T); // XXX : ATTENTION : need Kelvin
-  SpanD cp = prop.at(Loi_en_T::CP), mu = prop.at(Loi_en_T::MU), lamb = prop.at(Loi_en_T::LAMBDA), bet = prop.at(Loi_en_T::BETA);
 
 #ifndef NDEBUG
+  assert((int )prop.size() == 4 && (int )input.size() == 2);
+  assert((int )T.size() == ncomp * (int )P.size());
   for (auto& itr : prop) assert((int )T.size() == ncomp * (int )itr.second.size());
 #endif
 
-  const int sz = (int ) cp.size();
-  if (ncomp == 1)
-    for (int i = 0; i < sz; i++)
-      {
-        fluide->update(CoolProp::PT_INPUTS, P[i], T[i]);  // SI units
-        cp[i] = fluide->cpmass();
-        mu[i] = fluide->viscosity();
-        lamb[i] = fluide->conductivity();
-        bet[i] = fluide->isobaric_expansion_coefficient();
-      }
+  Tk_(T); // XXX : ATTENTION : need Kelvin
+
+  if (ncomp == 1) tppi_get_all_properties_T__(input,prop);
   else /* attention stride */
     {
       VectorD temp_((int)P.size());
       SpanD TT(temp_);
       for (auto& val : TT) val = T[i_it * ncomp + ind];
-
-      for (int i = 0; i < sz; i++)
-        {
-          fluide->update(CoolProp::PT_INPUTS, P[i], TT[i]);  // SI units
-          cp[i] = fluide->cpmass();
-          mu[i] = fluide->viscosity();
-          lamb[i] = fluide->conductivity();
-          bet[i] = fluide->isobaric_expansion_coefficient();
-        }
+      MSpanD input_ = { { "temperature", TT }, { "pressure", P }};
+      tppi_get_all_properties_T__(input_,prop);
     }
 
-  // XXX : ATTENTION : need to put back T in C
-  Tc_(T);
+  Tc_(T); // XXX : ATTENTION : need to put back T in C
 
   return 0; // FIXME : on suppose que tout OK
 #else
@@ -258,41 +276,23 @@ int CoolProp_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD in
 int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
-  assert( (int )input.size() == 4 && (int )inter.size() == 6 && (int )bord.size() == 2);
   const SpanD T = input.at("temperature"), P = input.at("pressure"), bT = input.at("bord_temperature"), bP = input.at("bord_pressure");
-  assert ((int )bT.size() == ncomp * (int )bP.size() && (int )T.size() == ncomp * (int )P.size());
-
-  // XXX : ATTENTION : need Kelvin
-  Tk_(T), Tk_(bT);
-
-  SpanD rho = inter.at(Loi_en_T::RHO), drhodp = inter.at(Loi_en_T::RHO_DP), drhodT = inter.at(Loi_en_T::RHO_DT),
-        h = inter.at(Loi_en_T::H), dhdp = inter.at(Loi_en_T::H_DP), dhdT = inter.at(Loi_en_T::H_DT),
-        brho = bord.at(Loi_en_T::RHO), bh = bord.at(Loi_en_T::H);
 
 #ifndef NDEBUG
+  assert( (int )input.size() == 4 && (int )inter.size() == 6 && (int )bord.size() == 2);
+  assert ((int )bT.size() == ncomp * (int )bP.size() && (int )T.size() == ncomp * (int )P.size());
   for (auto& itr : inter) assert((int )T.size() == ncomp * (int )itr.second.size());
   for (auto& itr : bord) assert((int )bT.size() == ncomp * (int )itr.second.size());
 #endif
 
-  const int sz = (int ) rho.size(), bsz = (int ) brho.size();
+  Tk_(T), Tk_(bT); // XXX : ATTENTION : need Kelvin
+
   if (ncomp == 1)
     {
-      for (int i = 0; i < sz; i++)
-        {
-          fluide->update(CoolProp::PT_INPUTS, P[i], T[i]);  // SI units
-          rho[i] = fluide->rhomass();
-          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iT);
-          drhodT[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iT, CoolProp::iP);
-          h[i] = fluide->hmass();
-          dhdp[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iP, CoolProp::iT);
-          dhdT[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iT, CoolProp::iP);
-        }
-      for (int i = 0; i < bsz; i++)
-        {
-          fluide->update(CoolProp::PT_INPUTS, bP[i], bT[i]);  // SI units
-          brho[i] = fluide->rhomass();
-          bh[i] = fluide->hmass();
-        }
+      MSpanD input_int_ = { { "temperature", T }, { "pressure", P }};
+      MSpanD input_bord_ = { { "temperature", bT }, { "pressure", bP }};
+      tppi_get_all_properties_T__(input_int_,inter);
+      tppi_get_all_properties_T__(input_bord_,bord);
     }
   else /* attention stride */
     {
@@ -301,26 +301,14 @@ int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD inpu
       for (auto& val : TT) val = T[i_it * ncomp + ind];
       for (auto& bval : bTT) bval = bT[bi_it * ncomp + ind];
 
-      for (int i = 0; i < sz; i++)
-        {
-          fluide->update(CoolProp::PT_INPUTS, P[i], TT[i]);  // SI units
-          rho[i] = fluide->rhomass();
-          drhodp[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iP, CoolProp::iT);
-          drhodT[i] = fluide->first_partial_deriv(CoolProp::iDmass, CoolProp::iT, CoolProp::iP);
-          h[i] = fluide->hmass();
-          dhdp[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iP, CoolProp::iT);
-          dhdT[i] = fluide->first_partial_deriv(CoolProp::iHmass, CoolProp::iT, CoolProp::iP);
-        }
-      for (int i = 0; i < bsz; i++)
-        {
-          fluide->update(CoolProp::PT_INPUTS, bP[i], bTT[i]);  // SI units
-          brho[i] = fluide->rhomass();
-          bh[i] = fluide->hmass();
-        }
+      MSpanD input_int_ = { { "temperature", TT }, { "pressure", P }};
+      MSpanD input_bord_ = { { "temperature", bTT }, { "pressure", bP }};
+      tppi_get_all_properties_T__(input_int_,inter);
+      tppi_get_all_properties_T__(input_bord_,bord);
     }
 
-  // XXX : ATTENTION : need to put back T in C
-  Tc_(T), Tc_(bT);
+  Tc_(T), Tc_(bT); // XXX : ATTENTION : need to put back T in C
+
   return 0; // FIXME : on suppose que tout OK
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
