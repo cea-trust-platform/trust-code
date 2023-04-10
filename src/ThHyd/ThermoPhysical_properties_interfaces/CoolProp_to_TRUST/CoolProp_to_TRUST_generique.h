@@ -46,6 +46,7 @@ private:
   int tppi_get_single_property_h_(Loi_en_h, const SpanD, const SpanD, SpanD, int, int) const override;
   int tppi_get_single_property_h__(Loi_en_h, const SpanD, const SpanD, SpanD) const;
   int tppi_get_all_properties_h__(const MSpanD input, MLoiSpanD_h prop) const;
+  int tppi_get_all_properties_h_IF97__(const MSpanD input, MLoiSpanD_h prop) const;
   int FD_derivative_ph__(Loi_en_h, const SpanD, const SpanD, SpanD, bool wrt_p = true) const;
 };
 

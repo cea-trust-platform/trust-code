@@ -20,9 +20,10 @@ void CoolProp_to_TRUST::verify_phase(const Motcle& phase_name)
 {
   if (phase_name == "LIQUID" || phase_name == "LIQUIDE") return;
   if (phase_name == "VAPOR" || phase_name == "VAPEUR") return;
+  if (phase_name == "UNKNOWN" || phase_name == "NOT_SET") return;
 
   Cerr << "Error in CoolProp_to_TRUST::" << __func__ << " !! The phase " << phase_name << " is not a recognized word !" <<  finl;
-  Cerr << "Please specify a phase of the following : liquid|liquide or vapor|vapeur ! Otherise dont specify any phase CoolProp will guess it !" <<  finl;
+  Cerr << "Please specify a phase of the following : liquid|liquide / vapor|vapeur / unknown / not_set ! Otherise dont specify any phase CoolProp will guess it !" <<  finl;
   Process::exit();
 }
 
@@ -57,6 +58,10 @@ void CoolProp_to_TRUST::set_phase(const Motcle& phase_name)
     fluide->specify_phase(CoolProp::iphase_liquid);
   else if (phase_name == "VAPOR" || phase_name == "VAPEUR")
     fluide->specify_phase(CoolProp::iphase_gas);
+  else if (phase_name == "UNKNOWN")
+    fluide->specify_phase(CoolProp::iphase_unknown);
+  else if (phase_name == "NOT_SET")
+    fluide->specify_phase(CoolProp::iphase_not_imposed);
   else
     verify_phase(phase_name);
 #else

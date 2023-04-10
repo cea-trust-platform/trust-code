@@ -316,6 +316,149 @@ int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD inpu
 #endif
 }
 
+int CoolProp_to_TRUST_generique::tppi_get_all_properties_h_IF97__(const MSpanD input, MLoiSpanD_h prop) const
+{
+#ifdef HAS_COOLPROP
+  const SpanD P = input.at("pression"), H = input.at("enthalpie");
+  const int sz = (int ) P.size();
+
+  bool has_prop = false;
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_h::RHO || itr.first == Loi_en_h::T || itr.first == Loi_en_h::CP||
+          itr.first == Loi_en_h::MU || itr.first == Loi_en_h::LAMBDA || itr.first == Loi_en_h::BETA || itr.first == Loi_en_h::SIGMA)
+        has_prop = true;
+      break;
+    }
+
+  if (has_prop)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i]);  // SI units
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == Loi_en_h::RHO) span_[i] = fluide->rhomass();
+            if (prop_ == Loi_en_h::T) span_[i] = fluide->T();
+            if (prop_ == Loi_en_h::CP) span_[i] = fluide->cpmass();
+            if (prop_ == Loi_en_h::MU) span_[i] = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA) span_[i] = fluide->conductivity();
+            if (prop_ == Loi_en_h::BETA) span_[i] = fluide->isobaric_expansion_coefficient();
+            if (prop_ == Loi_en_h::SIGMA) span_[i] = fluide->surface_tension();
+          }
+      }
+
+  // derivees qui manquent ...
+  bool has_DP = false, has_DH = false;
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_h::RHO_DP || itr.first == Loi_en_h::T_DP || itr.first == Loi_en_h::CP_DP ||
+          itr.first == Loi_en_h::MU_DP || itr.first == Loi_en_h::LAMBDA_DP || itr.first == Loi_en_h::SIGMA_DP) has_DP = true;
+      break;
+    }
+
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_h::RHO_DH || itr.first == Loi_en_h::T_DH || itr.first == Loi_en_h::CP_DH ||
+          itr.first == Loi_en_h::MU_DH || itr.first == Loi_en_h::LAMBDA_DH || itr.first == Loi_en_h::SIGMA_DH) has_DH = true;
+      break;
+    }
+
+  if (has_DP)
+    for (int i = 0; i < sz; i++)
+      {
+        double plus_rho_ = EPS, plus_T_ = EPS, plus_cp_ = EPS, plus_mu_ = EPS, plus_lambda_ = EPS, plus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i] * (1. + EPS));
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ == Loi_en_h::RHO_DP) plus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_h::T_DP) plus_T_ = fluide->T();
+            if (prop_ == Loi_en_h::CP_DP) plus_cp_ = fluide->cpmass();
+            if (prop_ == Loi_en_h::MU_DP) plus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DP) plus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DP) plus_sigma_ = fluide->surface_tension();
+          }
+
+        double minus_rho_ = EPS, minus_T_ = EPS, minus_cp_ = EPS, minus_mu_ = EPS, minus_lambda_ = EPS, minus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i], P[i] * (1. - EPS));
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ == Loi_en_h::RHO_DP) minus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_h::T_DP) minus_T_ = fluide->T();
+            if (prop_ == Loi_en_h::CP_DP) minus_cp_ = fluide->cpmass();
+            if (prop_ == Loi_en_h::MU_DP) minus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DP) minus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DP) minus_sigma_ = fluide->surface_tension();
+          }
+
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == Loi_en_h::RHO_DP) span_[i] = (plus_rho_ - minus_rho_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_h::T_DP)  span_[i] = (plus_T_ - minus_T_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_h::CP_DP) span_[i] = (plus_cp_ - minus_cp_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_h::MU_DP) span_[i] = (plus_mu_ - minus_mu_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_h::LAMBDA_DP) span_[i] = (plus_lambda_ - minus_lambda_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_h::SIGMA_DP) span_[i] = (plus_sigma_ - minus_sigma_) / ( 2 * EPS * P[i]);
+          }
+      }
+
+  if (has_DH)
+    for (int i = 0; i < sz; i++)
+      {
+        double plus_rho_ = EPS, plus_T_ = EPS, plus_cp_ = EPS, plus_mu_ = EPS, plus_lambda_ = EPS, plus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i] * (1. + EPS), P[i]);
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ == Loi_en_h::RHO_DH) plus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_h::T_DH) plus_T_ = fluide->T();
+            if (prop_ == Loi_en_h::CP_DH) plus_cp_ = fluide->cpmass();
+            if (prop_ == Loi_en_h::MU_DH) plus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DH) plus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DH) plus_sigma_ = fluide->surface_tension();
+          }
+
+        double minus_rho_ = EPS, minus_T_ = EPS, minus_cp_ = EPS, minus_mu_ = EPS, minus_lambda_ = EPS, minus_sigma_ = EPS;
+        fluide->update(CoolProp::HmassP_INPUTS, H[i] * (1. - EPS), P[i]);
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            if (prop_ == Loi_en_h::RHO_DH) minus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_h::T_DH) minus_T_ = fluide->T();
+            if (prop_ == Loi_en_h::CP_DH) minus_cp_ = fluide->cpmass();
+            if (prop_ == Loi_en_h::MU_DH) minus_mu_ = fluide->viscosity();
+            if (prop_ == Loi_en_h::LAMBDA_DH) minus_lambda_ = fluide->conductivity();
+            if (prop_ == Loi_en_h::SIGMA_DH) minus_sigma_ = fluide->surface_tension();
+          }
+
+        for (auto &itr : prop)
+          {
+            Loi_en_h prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == Loi_en_h::RHO_DH) span_[i] = (plus_rho_ - minus_rho_) / ( 2 * EPS * H[i]);
+            if (prop_ == Loi_en_h::T_DH)  span_[i] = (plus_T_ - minus_T_) / ( 2 * EPS * H[i]);
+            if (prop_ == Loi_en_h::CP_DH) span_[i] = (plus_cp_ - minus_cp_) / ( 2 * EPS * H[i]);
+            if (prop_ == Loi_en_h::MU_DH) span_[i] = (plus_mu_ - minus_mu_) / ( 2 * EPS * H[i]);
+            if (prop_ == Loi_en_h::LAMBDA_DH) span_[i] = (plus_lambda_ - minus_lambda_) / ( 2 * EPS * H[i]);
+            if (prop_ == Loi_en_h::SIGMA_DH) span_[i] = (plus_sigma_ - minus_sigma_) / ( 2 * EPS * H[i]);
+          }
+      }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
 int CoolProp_to_TRUST_generique::tppi_get_all_properties_h__(const MSpanD input, MLoiSpanD_h prop) const
 {
 #ifdef HAS_COOLPROP
@@ -459,7 +602,11 @@ int CoolProp_to_TRUST_generique::tppi_get_all_prop_loi_F5(const MSpanD input, ML
 #endif
 
   MSpanD input_ = { {"pression", P }, { "enthalpie", H} };
-  return tppi_get_all_properties_h__(input_, inter);
+
+  if (fluide->backend_name() == "IF97Backend")
+    return tppi_get_all_properties_h_IF97__(input_, inter);
+  else
+    return tppi_get_all_properties_h__(input_, inter);
 #else
   Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
