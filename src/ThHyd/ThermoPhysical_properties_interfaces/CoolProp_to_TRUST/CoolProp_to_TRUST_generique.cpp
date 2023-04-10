@@ -248,19 +248,20 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_T_IF97__(const MSpanD i
 
   bool has_prop = false;
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_T::RHO || itr.first == Loi_en_T::H || itr.first == Loi_en_T::CP||
-          itr.first == Loi_en_T::MU || itr.first == Loi_en_T::LAMBDA || itr.first == Loi_en_T::BETA || itr.first == Loi_en_T::SIGMA)
+    if (itr.first == Loi_en_T::RHO || itr.first == Loi_en_T::H || itr.first == Loi_en_T::CP||
+        itr.first == Loi_en_T::MU || itr.first == Loi_en_T::LAMBDA || itr.first == Loi_en_T::BETA || itr.first == Loi_en_T::SIGMA)
+      {
         has_prop = true;
-      break;
-    }
+        break;
+      }
 
   bool has_beta = false;
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_T::BETA) has_beta = true;
-      break;
-    }
+    if (itr.first == Loi_en_T::BETA)
+      {
+        has_beta = true;
+        break;
+      }
 
   if (has_prop)
     for (int i = 0; i < sz; i++)
@@ -296,11 +297,12 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_T_IF97__(const MSpanD i
   // derivees qui manquent ...
   bool has_DP_DH = false;
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_T::RHO_DP || itr.first == Loi_en_T::H_DP || itr.first == Loi_en_T::CP_DP ||
-          itr.first == Loi_en_T::RHO_DT || itr.first == Loi_en_T::H_DT || itr.first == Loi_en_T::CP_DT) has_DP_DH = true;
-      break;
-    }
+    if (itr.first == Loi_en_T::RHO_DP || itr.first == Loi_en_T::H_DP || itr.first == Loi_en_T::CP_DP ||
+        itr.first == Loi_en_T::RHO_DT || itr.first == Loi_en_T::H_DT || itr.first == Loi_en_T::CP_DT)
+      {
+        has_DP_DH = true;
+        break;
+      }
 
   if (has_DP_DH)
     for (int i = 0; i < sz; i++)
@@ -477,12 +479,12 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_h_IF97__(const MSpanD i
 
   bool has_prop = false;
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_h::RHO || itr.first == Loi_en_h::T || itr.first == Loi_en_h::CP||
-          itr.first == Loi_en_h::MU || itr.first == Loi_en_h::LAMBDA || itr.first == Loi_en_h::BETA || itr.first == Loi_en_h::SIGMA)
+    if (itr.first == Loi_en_h::RHO || itr.first == Loi_en_h::T || itr.first == Loi_en_h::CP||
+        itr.first == Loi_en_h::MU || itr.first == Loi_en_h::LAMBDA || itr.first == Loi_en_h::BETA || itr.first == Loi_en_h::SIGMA)
+      {
         has_prop = true;
-      break;
-    }
+        break;
+      }
 
   if (has_prop)
     for (int i = 0; i < sz; i++)
@@ -506,18 +508,20 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_h_IF97__(const MSpanD i
   // derivees qui manquent ...
   bool has_DP = false, has_DH = false;
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_h::RHO_DP || itr.first == Loi_en_h::T_DP || itr.first == Loi_en_h::CP_DP ||
-          itr.first == Loi_en_h::MU_DP || itr.first == Loi_en_h::LAMBDA_DP || itr.first == Loi_en_h::SIGMA_DP) has_DP = true;
-      break;
-    }
+    if (itr.first == Loi_en_h::RHO_DP || itr.first == Loi_en_h::T_DP || itr.first == Loi_en_h::CP_DP ||
+        itr.first == Loi_en_h::MU_DP || itr.first == Loi_en_h::LAMBDA_DP || itr.first == Loi_en_h::SIGMA_DP)
+      {
+        has_DP = true;
+        break;
+      }
 
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_h::RHO_DH || itr.first == Loi_en_h::T_DH || itr.first == Loi_en_h::CP_DH ||
-          itr.first == Loi_en_h::MU_DH || itr.first == Loi_en_h::LAMBDA_DH || itr.first == Loi_en_h::SIGMA_DH) has_DH = true;
-      break;
-    }
+    if (itr.first == Loi_en_h::RHO_DH || itr.first == Loi_en_h::T_DH || itr.first == Loi_en_h::CP_DH ||
+        itr.first == Loi_en_h::MU_DH || itr.first == Loi_en_h::LAMBDA_DH || itr.first == Loi_en_h::SIGMA_DH)
+      {
+        has_DH = true;
+        break;
+      }
 
   if (has_DP)
     for (int i = 0; i < sz; i++)
@@ -620,14 +624,14 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_h__(const MSpanD input,
 
   bool has_prop = false;
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_h::RHO || itr.first == Loi_en_h::RHO_DP || itr.first == Loi_en_h::RHO_DH ||
-          itr.first == Loi_en_h::T || itr.first == Loi_en_h::T_DP || itr.first == Loi_en_h::T_DH ||
-          itr.first == Loi_en_h::CP || itr.first == Loi_en_h::CP_DP || itr.first == Loi_en_h::CP_DH ||
-          itr.first == Loi_en_h::MU || itr.first == Loi_en_h::LAMBDA || itr.first == Loi_en_h::BETA || itr.first == Loi_en_h::SIGMA)
+    if (itr.first == Loi_en_h::RHO || itr.first == Loi_en_h::RHO_DP || itr.first == Loi_en_h::RHO_DH ||
+        itr.first == Loi_en_h::T || itr.first == Loi_en_h::T_DP || itr.first == Loi_en_h::T_DH ||
+        itr.first == Loi_en_h::CP || itr.first == Loi_en_h::CP_DP || itr.first == Loi_en_h::CP_DH ||
+        itr.first == Loi_en_h::MU || itr.first == Loi_en_h::LAMBDA || itr.first == Loi_en_h::BETA || itr.first == Loi_en_h::SIGMA)
+      {
         has_prop = true;
-      break;
-    }
+        break;
+      }
 
   if (has_prop)
     for (int i = 0; i < sz; i++)
@@ -657,16 +661,18 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_h__(const MSpanD input,
   // derivees qui manquent ...
   bool has_DP = false, has_DH = false;
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_h::MU_DP || itr.first == Loi_en_h::LAMBDA_DP || itr.first == Loi_en_h::SIGMA_DP) has_DP = true;
-      break;
-    }
+    if (itr.first == Loi_en_h::MU_DP || itr.first == Loi_en_h::LAMBDA_DP || itr.first == Loi_en_h::SIGMA_DP)
+      {
+        has_DP = true;
+        break;
+      }
 
   for (auto &itr : prop)
-    {
-      if (itr.first == Loi_en_h::MU_DH || itr.first == Loi_en_h::LAMBDA_DH || itr.first == Loi_en_h::SIGMA_DH) has_DH = true;
-      break;
-    }
+    if (itr.first == Loi_en_h::MU_DH || itr.first == Loi_en_h::LAMBDA_DH || itr.first == Loi_en_h::SIGMA_DH)
+      {
+        has_DH = true;
+        break;
+      }
 
   if (has_DP)
     for (int i = 0; i < sz; i++)

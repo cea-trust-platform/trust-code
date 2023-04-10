@@ -97,7 +97,7 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p__(SAT enum_prop, cons
 
   for (int i = 0; i < sz; i++)
     {
-      is_liq ? fluide->update(CoolProp::PQ_INPUTS,  P[i], 0) : fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
+      fluide->update(CoolProp::PQ_INPUTS,  P[i], is_liq ? 0 : 1);  // SI units
       if (enum_prop == SAT::T_SAT) res[i] = fluide->T();
       if (enum_prop == SAT::HL_SAT || enum_prop == SAT::HV_SAT) res[i] = fluide->hmass();
       if (enum_prop == SAT::RHOL_SAT || enum_prop == SAT::RHOV_SAT) res[i] = fluide->rhomass();
