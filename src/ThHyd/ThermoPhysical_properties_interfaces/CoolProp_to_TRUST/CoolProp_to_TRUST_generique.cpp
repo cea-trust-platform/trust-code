@@ -240,6 +240,141 @@ int CoolProp_to_TRUST_generique::tppi_get_all_properties_T__(const MSpanD input,
 #endif
 }
 
+int CoolProp_to_TRUST_generique::tppi_get_all_properties_T_IF97__(const MSpanD input, MLoiSpanD prop) const
+{
+#ifdef HAS_COOLPROP
+  const SpanD T = input.at("temperature"), P = input.at("pressure");
+  const int sz = (int ) P.size();
+
+  bool has_prop = false;
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_T::RHO || itr.first == Loi_en_T::H || itr.first == Loi_en_T::CP||
+          itr.first == Loi_en_T::MU || itr.first == Loi_en_T::LAMBDA || itr.first == Loi_en_T::BETA || itr.first == Loi_en_T::SIGMA)
+        has_prop = true;
+      break;
+    }
+
+  bool has_beta = false;
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_T::BETA) has_beta = true;
+      break;
+    }
+
+  if (has_prop)
+    for (int i = 0; i < sz; i++)
+      {
+        fluide->update(CoolProp::PT_INPUTS, P[i], T[i]);  // SI units
+        for (auto &itr : prop)
+          {
+            Loi_en_T prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == Loi_en_T::RHO) span_[i] = fluide->rhomass();
+            if (prop_ == Loi_en_T::H) span_[i] = fluide->hmass();
+            if (prop_ == Loi_en_T::CP) span_[i] = fluide->cpmass();
+            if (prop_ == Loi_en_T::MU) span_[i] = fluide->viscosity();
+            if (prop_ == Loi_en_T::LAMBDA) span_[i] = fluide->conductivity();
+            if (prop_ == Loi_en_T::SIGMA) span_[i] = fluide->surface_tension();
+
+            // XXX : Elie Saikali : Attention, pas possible d'appeler beta directement car implementee en derivee dans coolprop ... on fait a la main !
+//            if (prop_ == Loi_en_T::BETA) span_[i] = fluide->isobaric_expansion_coefficient();
+            if (prop_ == Loi_en_T::BETA && has_beta)
+              {
+                const double rho_ = fluide->rhomass();
+                fluide->update(CoolProp::PT_INPUTS, P[i], T[i] * (1. + EPS));
+                const double plus_rho_ = fluide->rhomass();
+                fluide->update(CoolProp::PT_INPUTS, P[i], T[i] * (1. - EPS));
+                const double minus_rho_ = fluide->rhomass();
+                const double drho_dt_ = (plus_rho_ - minus_rho_) / ( 2 * EPS * T[i]);
+                span_[i] = drho_dt_ / rho_;
+              }
+          }
+      }
+
+  // derivees qui manquent ...
+  bool has_DP_DH = false;
+  for (auto &itr : prop)
+    {
+      if (itr.first == Loi_en_T::RHO_DP || itr.first == Loi_en_T::H_DP || itr.first == Loi_en_T::CP_DP ||
+          itr.first == Loi_en_T::RHO_DT || itr.first == Loi_en_T::H_DT || itr.first == Loi_en_T::CP_DT) has_DP_DH = true;
+      break;
+    }
+
+  if (has_DP_DH)
+    for (int i = 0; i < sz; i++)
+      {
+        // en P
+        double plus_rho_ = EPS, plus_H_ = EPS, plus_cp_ = EPS;
+        fluide->update(CoolProp::PT_INPUTS, P[i] * (1. + EPS), T[i]);
+        for (auto &itr : prop)
+          {
+            Loi_en_T prop_ = itr.first;
+            if (prop_ == Loi_en_T::RHO_DP) plus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_T::H_DP) plus_H_ = fluide->hmass();
+            if (prop_ == Loi_en_T::CP_DP) plus_cp_ = fluide->cpmass();
+          }
+
+        double minus_rho_ = EPS, minus_H_ = EPS, minus_cp_ = EPS;
+        fluide->update(CoolProp::PT_INPUTS, P[i] * (1. - EPS), T[i]);
+        for (auto &itr : prop)
+          {
+            Loi_en_T prop_ = itr.first;
+            if (prop_ == Loi_en_T::RHO_DP) minus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_T::H_DP) minus_H_ = fluide->hmass();
+            if (prop_ == Loi_en_T::CP_DP) minus_cp_ = fluide->cpmass();
+          }
+
+        for (auto &itr : prop)
+          {
+            Loi_en_T prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == Loi_en_T::RHO_DP) span_[i] = (plus_rho_ - minus_rho_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_T::H_DP)  span_[i] = (plus_H_ - minus_H_) / ( 2 * EPS * P[i]);
+            if (prop_ == Loi_en_T::CP_DP) span_[i] = (plus_cp_ - minus_cp_) / ( 2 * EPS * P[i]);
+          }
+
+        // en T
+        plus_rho_ = EPS, plus_H_ = EPS, plus_cp_ = EPS;
+        fluide->update(CoolProp::PT_INPUTS, P[i], T[i] * (1. + EPS));
+        for (auto &itr : prop)
+          {
+            Loi_en_T prop_ = itr.first;
+            if (prop_ == Loi_en_T::RHO_DT) plus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_T::H_DT) plus_H_ = fluide->hmass();
+            if (prop_ == Loi_en_T::CP_DT) plus_cp_ = fluide->cpmass();
+          }
+
+        minus_rho_ = EPS, minus_H_ = EPS, minus_cp_ = EPS;
+        fluide->update(CoolProp::PT_INPUTS, P[i], T[i] * (1. - EPS));
+        for (auto &itr : prop)
+          {
+            Loi_en_T prop_ = itr.first;
+            if (prop_ == Loi_en_T::RHO_DT) minus_rho_ = fluide->rhomass();
+            if (prop_ == Loi_en_T::H_DT) minus_H_ = fluide->hmass();
+            if (prop_ == Loi_en_T::CP_DT) minus_cp_ = fluide->cpmass();
+          }
+
+        for (auto &itr : prop)
+          {
+            Loi_en_T prop_ = itr.first;
+            SpanD span_ = itr.second;
+
+            if (prop_ == Loi_en_T::RHO_DT) span_[i] = (plus_rho_ - minus_rho_) / ( 2 * EPS * T[i]);
+            if (prop_ == Loi_en_T::H_DT)  span_[i] = (plus_H_ - minus_H_) / ( 2 * EPS * T[i]);
+            if (prop_ == Loi_en_T::CP_DT) span_[i] = (plus_cp_ - minus_cp_) / ( 2 * EPS * T[i]);
+          }
+      }
+
+  return 0; // FIXME : on suppose que tout OK
+#else
+  Cerr << "CoolProp_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
+  throw;
+#endif
+}
+
 // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
 int CoolProp_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp, int ind) const
 {
@@ -254,14 +389,16 @@ int CoolProp_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_pT(const MSpanD in
 
   Tk_(T); // XXX : ATTENTION : need Kelvin
 
-  if (ncomp == 1) tppi_get_all_properties_T__(input,prop);
+  if (ncomp == 1)
+    (fluide->backend_name() == "IF97Backend") ? tppi_get_all_properties_T_IF97__(input,prop) : tppi_get_all_properties_T__(input,prop);
   else /* attention stride */
     {
       VectorD temp_((int)P.size());
       SpanD TT(temp_);
       for (auto& val : TT) val = T[i_it * ncomp + ind];
       MSpanD input_ = { { "temperature", TT }, { "pressure", P }};
-      tppi_get_all_properties_T__(input_,prop);
+
+      (fluide->backend_name() == "IF97Backend") ? tppi_get_all_properties_T_IF97__(input_,prop) : tppi_get_all_properties_T__(input_,prop);
     }
 
   Tc_(T); // XXX : ATTENTION : need to put back T in C
@@ -291,8 +428,16 @@ int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD inpu
     {
       MSpanD input_int_ = { { "temperature", T }, { "pressure", P }};
       MSpanD input_bord_ = { { "temperature", bT }, { "pressure", bP }};
-      tppi_get_all_properties_T__(input_int_,inter);
-      tppi_get_all_properties_T__(input_bord_,bord);
+      if ((fluide->backend_name() == "IF97Backend"))
+        {
+          tppi_get_all_properties_T_IF97__(input_int_,inter);
+          tppi_get_all_properties_T_IF97__(input_bord_,bord);
+        }
+      else
+        {
+          tppi_get_all_properties_T__(input_int_,inter);
+          tppi_get_all_properties_T__(input_bord_,bord);
+        }
     }
   else /* attention stride */
     {
@@ -303,8 +448,16 @@ int CoolProp_to_TRUST_generique::tppi_get_all_pb_multiphase_pT(const MSpanD inpu
 
       MSpanD input_int_ = { { "temperature", TT }, { "pressure", P }};
       MSpanD input_bord_ = { { "temperature", bTT }, { "pressure", bP }};
-      tppi_get_all_properties_T__(input_int_,inter);
-      tppi_get_all_properties_T__(input_bord_,bord);
+      if ((fluide->backend_name() == "IF97Backend"))
+        {
+          tppi_get_all_properties_T_IF97__(input_int_,inter);
+          tppi_get_all_properties_T_IF97__(input_bord_,bord);
+        }
+      else
+        {
+          tppi_get_all_properties_T__(input_int_,inter);
+          tppi_get_all_properties_T__(input_bord_,bord);
+        }
     }
 
   Tc_(T), Tc_(bT); // XXX : ATTENTION : need to put back T in C
