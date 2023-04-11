@@ -78,6 +78,7 @@ Probleme_base::~Probleme_base()
 // B.Math. 21/09/2004: quelques initialisations, ca fait pas de mal...
 Probleme_base::Probleme_base() : osauv_hdf_(0), reprise_effectuee_(0), reprise_version_(155), restart_file(0), coupled_(0)
 {
+  resuming_in_progress_=0;
 }
 
 /*! @brief Surcharge Objet_U::printOn(Sortie&) Ecriture d'un probleme sur un flot de sortie.
@@ -1246,6 +1247,16 @@ int Probleme_base::postraiter(int force)
       les_postraitements.traiter_postraitement();
     }
   statistiques().end_count(postraitement_counter_);
+
+  //Start specific postraitements for mobile domain (like ALE)
+  if(!resuming_in_progress_)  //no projection during the iteration of resumption of computation
+    {
+      double temps = le_schema_en_temps->temps_courant();
+      le_domaine_dis->domaine().update_after_post(temps);
+    }
+  resuming_in_progress_=0; //reset to false in order to make the following projections
+  // end specific postraitements for mobile domain (like ALE)
+
   return 1;
 }
 
@@ -1440,6 +1451,7 @@ void Probleme_base::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
 #endif
             }
           reprise_effectuee_ = 1;
+          resuming_in_progress_=1;
         }
       ////////////////////////////////////////////////
       // Lecture des options de sauvegarde d'un calcul

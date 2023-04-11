@@ -212,6 +212,8 @@ public:
   virtual void initialiser (double temps, Domaine_dis&, Probleme_base&) {}
   virtual void set_dt(double& dt_) {}
   virtual void mettre_a_jour(double temps, Domaine_dis&, Probleme_base&) {}
+  virtual void update_after_post(double temps) {}
+
 
   ///
   /// Domaines frontieres

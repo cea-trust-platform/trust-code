@@ -211,6 +211,7 @@ protected :
   mutable Sortie_Brute* osauv_hdf_;
 
   int reprise_effectuee_, reprise_version_, restart_file, coupled_; // Flag to indicate it is a part of a coupled problem
+  int resuming_in_progress_; //true variable only during the time step during which a resumption of computation is carried out
   Nom nom_fich, format_sauv;
 
   static long int file_size;        // Espace disque pris par les sauvegarde XYZ

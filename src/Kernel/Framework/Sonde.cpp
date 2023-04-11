@@ -1228,13 +1228,15 @@ void Sonde::mettre_a_jour(double un_temps, double tinit)
       ma_source.valeur().mettre_a_jour(un_temps);
 
       // Si le maillage est deformable il faut reconstruire les sondes
-      if (mon_post->probleme().domaine().deformable())
+
+      /*if (mon_post->probleme().domaine().deformable()) //A.P Very expensive. Temporary fix. It will be necessary to make an option
+      	  	  	  	  	  	  	  	  	  	  	  	  	 //which leaves the hand to the user as for the update. To do.
         {
           // Fait desormais dans ::initialiser:
           //if (les_positions_sondes_initiales_.dimension(0) > 0)
           //    les_positions_sondes_ = les_positions_sondes_initiales_;
           initialiser();
-        }
+        }*/
       nb_bip=nb;
       reprise=1;
       postraiter();
