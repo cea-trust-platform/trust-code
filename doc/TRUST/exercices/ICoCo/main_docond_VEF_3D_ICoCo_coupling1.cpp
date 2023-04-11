@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
                 clock_t clock_before_resolution = clock();
                 ok = T->solveTimeStep();
                 clock_t clock_after_resolution = clock();
-                cout << compti << " TEMPS DE RESOLUTION DU PB (s) :  " << (clock_after_resolution - clock_before_resolution) * 1.e-6 << endl;
+                cout << compti << " TEMPS DE RESOLUTION DU PB (s) :  " << ((double)(clock_after_resolution - clock_before_resolution)) * 1.e-6 << endl;
 
                 synchronize_bool(ok, sync_and);
                 if (!ok) // The resolution failed, try with a new time interval.
