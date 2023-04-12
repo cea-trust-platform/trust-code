@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
 
   double P1 = 1e5, P2 = 2e5, T1 = 300, T2 = 400;
 
-  CoolProp::AbstractState* water = CoolProp::AbstractState::factory("HEOS", fluid);
+  shared_ptr<CoolProp::AbstractState> water(CoolProp::AbstractState::factory("HEOS", fluid));
 
   // Set point 1
   water->update(CoolProp::PT_INPUTS, P1, T1);
@@ -82,9 +82,6 @@ int main(int argc, char const *argv[])
   std::cout << "beta = " << beta2 << std::endl;
   std::cout << "cp = " << cp2 << std::endl;
   std::cout << std::endl;
-
-  // delete fluid
-  delete water;
 
   return 1;
 }

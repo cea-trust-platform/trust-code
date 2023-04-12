@@ -7,10 +7,10 @@
 #include "CoolPropLib.h"
 #include "CoolProp.h"
 #include <iostream>
+#include <span.hpp>
 #include <string>
 #include <time.h>
 #include <array>
-#include <span.hpp>
 
 #include "EOS/API/EOS.hxx"
 #include "EOS/API/EOS_Fields.hxx"
@@ -433,7 +433,7 @@ int main(int argc, char const *argv[])
       CoolProp::set_config_string(configuration_keys::ALTERNATIVE_REFPROP_PATH, std::string(refprop_dir));
     }
 
-  CoolProp::AbstractState * fluide_cool = CoolProp::AbstractState::factory("REFPROP", "Water");
+  shared_ptr<CoolProp::AbstractState> fluide_cool(CoolProp::AbstractState::factory("REFPROP", "Water"));
 
   EOS_Std_Error_Handler handler;
   handler.set_exit_on_error(EOS_Std_Error_Handler::disable_feature);
@@ -488,6 +488,5 @@ int main(int argc, char const *argv[])
     test_sats_p("Water_liquid", P, T, fluide_eos, fluide_cool);
   }
 
-  delete fluide_cool;
   return 1;
 }

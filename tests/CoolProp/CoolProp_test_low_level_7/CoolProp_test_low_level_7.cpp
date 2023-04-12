@@ -6,11 +6,11 @@
 #include "AbstractState.h"
 #include "CoolPropLib.h"
 #include "CoolProp.h"
+#include <span.hpp>
 #include <iostream>
 #include <string>
 #include <time.h>
 #include <array>
-#include <span.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -33,7 +33,7 @@ int main(int argc, char const *argv[])
         std::cout << "==================================================================================================================================" << std::endl;
         std::cout << std::endl;
 
-        CoolProp::AbstractState *Water = CoolProp::AbstractState::factory(itr_bk, itr_fl);
+        shared_ptr<CoolProp::AbstractState> Water(CoolProp::AbstractState::factory(itr_bk, itr_fl));
 
         Water->specify_phase(CoolProp::iphase_gas);
         Water->update(CoolProp::PT_INPUTS, 101325, 373.124);  // SI units
@@ -175,8 +175,6 @@ int main(int argc, char const *argv[])
         std::cout << "beta = " << beta2 << std::endl;
         std::cout << "cp = " << cp2 << std::endl;
         std::cout << std::endl;
-
-        delete Water;
       }
   return 1;
 }

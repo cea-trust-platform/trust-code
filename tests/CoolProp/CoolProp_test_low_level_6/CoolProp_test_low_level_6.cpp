@@ -3,10 +3,10 @@
 #include "CoolPropLib.h"
 #include "CoolProp.h"
 #include <iostream>
+#include <span.hpp>
 #include <string>
 #include <time.h>
 #include <array>
-#include <span.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -18,7 +18,7 @@ int main(int argc, char const *argv[])
   std::cout << "===============================================================================================" << std::endl;
   std::cout << std::endl;
 
-  CoolProp::AbstractState *Water = CoolProp::AbstractState::factory(backend, fluid);
+  shared_ptr<CoolProp::AbstractState> Water(CoolProp::AbstractState::factory(backend, fluid));
 
   Water->specify_phase(CoolProp::iphase_gas);
   std::cout << "Impose phase CoolProp::iphase_gas " << std::endl;
@@ -110,8 +110,6 @@ int main(int argc, char const *argv[])
   std::cout << std::endl;
   std::cout << "Sigma: " << Water->surface_tension() << std::endl;
   std::cout << std::endl;
-
-  delete Water;
 
   return 1;
 }

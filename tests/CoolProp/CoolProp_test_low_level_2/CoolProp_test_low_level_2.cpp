@@ -18,8 +18,8 @@ int main(int argc, char const *argv[])
   double P = 1e5; // Pa
   double T = 300.0; // K
 
-  CoolProp::AbstractState* liquid = CoolProp::AbstractState::factory(backend, fluid);
-  CoolProp::AbstractState* vapor = CoolProp::AbstractState::factory(backend, fluid);
+  shared_ptr<CoolProp::AbstractState> liquid(CoolProp::AbstractState::factory(backend, fluid));
+  shared_ptr<CoolProp::AbstractState> vapor(CoolProp::AbstractState::factory(backend, fluid));
 
   // Set the inputs
   liquid->update(CoolProp::PT_INPUTS, P, T);
@@ -78,9 +78,6 @@ int main(int argc, char const *argv[])
   std::cout << "Beta: " << beta_vap << std::endl;
   std::cout << "Cp: " << cp_vap << std::endl;
   std::cout << std::endl;
-
-  delete liquid;
-  delete vapor;
 
   return 1;
 }

@@ -3,10 +3,10 @@
 #include "CoolPropLib.h"
 #include "CoolProp.h"
 #include <iostream>
+#include <span.hpp>
 #include <string>
 #include <time.h>
 #include <array>
-#include <span>
 
 int main(int argc, char const *argv[])
 {
@@ -72,7 +72,7 @@ int main(int argc, char const *argv[])
 
   // user loop
   {
-    CoolProp::AbstractState *Water = CoolProp::AbstractState::factory(backend, fluid);
+    shared_ptr<CoolProp::AbstractState> Water(CoolProp::AbstractState::factory(backend, fluid));
     std::vector<double> T(length), p(length), rhomolar(length), hmolar(length), smolar(length);
     std::span<double> T_(T), p_(p), rho_(rhomolar), h_(hmolar), s_(smolar);
 
@@ -92,14 +92,13 @@ int main(int argc, char const *argv[])
 
     std::cout << format("value(My loop / molar): %g minutes \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC / 60);
     std::cout << format("value(My loop / molar): %g seconds \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
-    delete Water;
   }
 
   std::cout << std::endl;
 
   // user loop
   {
-    CoolProp::AbstractState *Water = CoolProp::AbstractState::factory(backend, fluid);
+    shared_ptr<CoolProp::AbstractState> Water(CoolProp::AbstractState::factory(backend, fluid));
     std::vector<double> T(length), p(length), rho(length), h(length), s(length);
     std::span<double> T_(T), p_(p), rho_(rho), h_(h), s_(s);
 
@@ -119,7 +118,6 @@ int main(int argc, char const *argv[])
 
     std::cout << format("value(My loop / mass): %g minutes \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC / 60);
     std::cout << format("value(My loop / mass): %g seconds \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
-    delete Water;
   }
 
   std::cout << std::endl;
@@ -130,7 +128,7 @@ int main(int argc, char const *argv[])
     std::vector<double> input4 = linspace(300.0, 390.0, length);
 
     //          CoolProp::AbstractState *Water = CoolProp::AbstractState::factory("HEOS", fluid);
-    CoolProp::AbstractState *Water = CoolProp::AbstractState::factory("BICUBIC&HEOS", fluid);
+    shared_ptr<CoolProp::AbstractState> Water(CoolProp::AbstractState::factory("BICUBIC&HEOS", fluid));
     std::vector<double> T(length), dTP(length), dTH(length),
         rho(length), drhoP(length), drhoH(length),
         mu(length), dmuP(length), dmuH(length),
@@ -192,7 +190,6 @@ int main(int argc, char const *argv[])
 
     std::cout << format("value(My loop coolprop / mass): %g minutes \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC / 60);
     std::cout << format("value(My loop coolprop / mass): %g seconds \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
-    delete Water;
   }
 
   std::cout << std::endl;
@@ -218,7 +215,7 @@ int main(int argc, char const *argv[])
     std::cout << format("value(1 output): %g seconds \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
     std::cout << std::endl;
 
-    CoolProp::AbstractState *Water = CoolProp::AbstractState::factory("HEOS", fluid);
+    shared_ptr<CoolProp::AbstractState> Water(CoolProp::AbstractState::factory("HEOS", fluid));
     t1 = clock();
 
     for (int i = 0; i < length; i++)
@@ -247,8 +244,7 @@ int main(int argc, char const *argv[])
     std::cout << format("value(1 output): %g seconds \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
     std::cout << std::endl;
 
-    delete Water;
-    CoolProp::AbstractState *Water2 = CoolProp::AbstractState::factory("BICUBIC&HEOS", fluid);
+    shared_ptr<CoolProp::AbstractState> Water2(CoolProp::AbstractState::factory("BICUBIC&HEOS", fluid));
     t1 = clock();
 
     for (int i = 0; i < length; i++)
@@ -261,7 +257,6 @@ int main(int argc, char const *argv[])
 
     std::cout << format("value(My loop 1 output / mass): %g minutes \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC / 60);
     std::cout << format("value(My loop 1 output / mass): %g seconds \n", ((double) (t2 - t1)) / CLOCKS_PER_SEC);
-    delete Water2;
   }
 
   return 1;

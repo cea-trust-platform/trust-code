@@ -14,7 +14,7 @@ int main(int argc, char const *argv[])
   std::cout << "==========================================================================================================" << std::endl;
   std::cout << std::endl;
 
-  CoolProp::AbstractState *Water = CoolProp::AbstractState::factory(backend, fluid);
+  shared_ptr<CoolProp::AbstractState> Water(CoolProp::AbstractState::factory(backend, fluid));
 
   Water->specify_phase(CoolProp::iphase_gas);
   Water->update(CoolProp::PT_INPUTS, 101325, 373.124);  // SI units
@@ -83,8 +83,6 @@ int main(int argc, char const *argv[])
   std::cout << std::endl;
 
   Water->unspecify_phase();
-
-  delete Water;
 
   return 1;
 }
