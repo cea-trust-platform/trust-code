@@ -8,14 +8,14 @@ mailler dom
     pave carre
     {
         origine  0.0  0.0
-        nombre_de_noeuds  100 100
-        longueurs 1 1
+        nombre_de_noeuds  100 10
+        longueurs 1 0.1
     }
     {
         bord  bas       Y = 0.0    0.0 <= X <= 1.0
-        bord  haut      Y = 1.0    0.0 <= X <= 1.0
-        bord  gauche    X = 0.0    0.0 <= Y <= 1.0
-        bord  droite    X = 1.0    0.0 <= Y <= 1.0
+        bord  haut      Y = 0.1    0.0 <= X <= 1.0
+        bord  gauche    X = 0.0    0.0 <= Y <= 0.1
+        bord  droite    X = 1.0    0.0 <= Y <= 0.1
     }
 }
 # END MESH #
@@ -41,8 +41,9 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-	nb_pas_dt_max 30
-    seuil_statio 1e-3
+	nb_pas_dt_max 100
+    seuil_statio -1
+    dt_impr 1e-10
     solveur ice
     {
         criteres_convergence { alpha 1e-5 }
@@ -68,7 +69,7 @@ Read pb
     {
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
         convection { amont }
-        diffusion  { negligeable }
+        diffusion  { }
         initial_conditions
         {
             vitesse  Champ_fonc_xyz dom 2 1 0
@@ -78,7 +79,7 @@ Read pb
         {
             haut symetrie
             bas symetrie
-            gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
+            gauche frontiere_ouverte_pression_imposee champ_front_uniforme 1 100100.0
             droite frontiere_ouverte_pression_imposee champ_front_uniforme 1 100000.0
         }
     }
@@ -96,15 +97,15 @@ Read pb
     }
     Energie_Multiphase
     {
-        diffusion { negligeable }
+        diffusion { }
         convection { amont }
-        initial_conditions { temperature Champ_fonc_xyz dom 1 60.7930097752451 }
+        initial_conditions { temperature Champ_fonc_xyz dom 1 60 }
         boundary_conditions
         {
-            haut paroi_adiabatique
+            haut paroi_temperature_imposee Champ_Front_uniforme 1 10
             bas paroi_adiabatique
-            gauche frontiere_ouverte T_ext Champ_Front_uniforme 1 10.7930097752451
-            droite frontiere_ouverte T_ext Champ_Front_uniforme 1 60.7930097752451
+            gauche frontiere_ouverte T_ext Champ_Front_uniforme 1 60
+            droite frontiere_ouverte T_ext Champ_Front_uniforme 1 60
         }
         sources { travail_pression }
     }
@@ -112,13 +113,13 @@ Read pb
     {
         probes
         {
-             rho grav masse_volumique periode 1e8 segment 1000 0 0.5 1 0.5
-               v grav         vitesse periode 1e8 segment 1000 0 0.5 1 0.5
-               p grav        pression periode 1e8 segment 1000 0 0.5 1 0.5
-            eint grav energie_interne periode 1e8 segment 1000 0 0.5 1 0.5
+             rho grav masse_volumique periode 1e8 segment 1000 0.5 0 0.5 0.1
+               v grav         vitesse periode 1e8 segment 1000 0.5 0 0.5 0.1
+               p grav        pression periode 1e8 segment 1000 0.5 0 0.5 0.1
+            eint grav energie_interne periode 1e8 segment 1000 0.5 0 0.5 0.1
         }
         Format lml
-        fields dt_post 1e+2
+        fields dt_post 0
         {
             alpha elem
             vitesse elem
