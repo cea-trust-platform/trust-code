@@ -37,8 +37,6 @@ class Interprete_geometrique_base : public Interprete
   Declare_base(Interprete_geometrique_base);
 
 public :
-
-  virtual Entree& interpreter_(Entree& is)=0;
   Entree& interpreter(Entree& is) override;
   void associer_domaine(Nom& nom_dom);
   void associer_domaine(Entree& is);
@@ -49,6 +47,8 @@ public :
   void mettre_a_jour_sous_domaine(Domaine& domaine, int& elem, int num_premier_elem, int nb_elem) const;
 
 protected :
+  virtual Entree& interpreter_(Entree& is)=0;
+
   LIST(REF(Domaine)) domains_; // List of reference to domains
 };
 
