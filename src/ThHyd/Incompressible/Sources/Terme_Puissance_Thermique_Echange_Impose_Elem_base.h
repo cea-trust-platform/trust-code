@@ -35,6 +35,7 @@ public:
   void associer_pb(const Probleme_base& ) override { };
   void mettre_a_jour(double ) override;
   void pid_process();
+  int initialiser(double temps) override;
 
 protected:
   REF(Domaine_VF) le_dom;

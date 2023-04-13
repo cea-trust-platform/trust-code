@@ -14,6 +14,7 @@
  *****************************************************************************/
 
 #include <Terme_Puissance_Thermique_Echange_Impose_Elem_base.h>
+#include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
@@ -133,4 +134,15 @@ void Terme_Puissance_Thermique_Echange_Impose_Elem_base::ajouter_blocs(matrices_
         if (mat)
           (*mat)(N * e + n, N * e + n) += volumes(e) * himp(!c_h * e, n);
       }
+}
+
+int Terme_Puissance_Thermique_Echange_Impose_Elem_base::initialiser(double temps)
+{
+  Nom nom_Himp = himp_->le_nom() != "??" ? himp_->le_nom() : "Himp";
+  equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(), nom_Himp, "", himp_.valeur(), equation().probleme());
+  Nom nom_Text = Text_->le_nom() != "??" ? Text_->le_nom() : "Text";
+  equation().discretisation().nommer_completer_champ_physique(equation().domaine_dis(), nom_Text, "", Text_.valeur(), equation().probleme());
+  himp_->initialiser(temps);
+  Text_->initialiser(temps);
+  return Source_base::initialiser(temps);
 }
