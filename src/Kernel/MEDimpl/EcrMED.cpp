@@ -513,11 +513,14 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
 #endif
 
   // Faces and group of faces representing boundaries:
-  constexpr bool OLD_MODE = true;
-  if (OLD_MODE)
-    fill_faces_and_boundaries_OLD(domaine_dis_base);
-  else
+  char *grp_mode = getenv("TRUST_MED_WITH_GRP");
+  int new_mode = 0;  // 0: family only, 1: groups only
+  if (grp_mode) new_mode = atoi(grp_mode);
+
+  if (new_mode)
     fill_faces_and_boundaries(domaine_dis_base);
+  else
+    fill_faces_and_boundaries_OLD(domaine_dis_base);
 
   // Write:
   int option = (append ? 1 : 2); /* 2: reset file. 1: append, 0: overwrite objects */

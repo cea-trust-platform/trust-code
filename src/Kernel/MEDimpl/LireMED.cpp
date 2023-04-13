@@ -679,7 +679,12 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
   /////
   ///// [ABN] All this to be clean very soon, after 1.9.3
   /////
-  constexpr bool new_mode = false;
+  char *grp_mode = getenv("TRUST_MED_WITH_GRP");
+  int new_mode = 0;  // 0: family only, 1: groups only, 2: groups and fam with comparison
+  if (grp_mode) new_mode = atoi(grp_mode);
+  Noms noms_bords2;
+  ArrOfInt familles2;
+  IntVect indices_bords2;
   if (new_mode)
     {
       Cerr << "Reading groups at level -1:" << finl;
@@ -703,8 +708,14 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
           indices_bords[zeid] = zeid+1;
           zeid++;
         }
+      if (new_mode > 1)
+        {
+          noms_bords2 = noms_bords_;
+          familles2 = familles;
+          indices_bords2 = indices_bords;
+        }
     }
-  else // Old mode
+  if (new_mode == 0 || new_mode == 2) // Old mode
     {
       // Pour debug, affichage d'infos sur les groupes
       bool provisoire = true;
@@ -794,7 +805,7 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
         }
     }
 
-  if (!new_mode)
+  if (new_mode == 0 || new_mode == 2)
     {
       // Order "noms_bords_" so that they come by increasing family number:
       std::map<int, Nom> mp;  // will take advantage from the fact that C++ map are key-ordered
@@ -808,6 +819,40 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
           noms_bords_[i] = kv.second;
           indices_bords[i] = kv.first;
           i++;
+        }
+    }
+
+  if (new_mode > 1)
+    {
+      Cerr << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << finl;
+      Cerr << "Performing comparison of the two methods!!" << finl;
+      Cerr << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << finl;
+      Cerr << "noms_bords_" << finl;
+      for (const auto &n: noms_bords_) Cerr << "  " << n << finl;
+      Cerr << "noms_bords2" << finl;
+      for (const auto &n: noms_bords2) Cerr << "  " << n << finl;
+
+      Cerr << "indices_bords" << finl;
+      for (const auto &n: indices_bords) Cerr << "  " << n << finl;
+      Cerr << "indices_bords2" << finl;
+      for (const auto &n: indices_bords2) Cerr << "  " << n << finl;
+
+      // Comparison
+      std::map<int, Nom> mp1, mp2;
+      mp1[0] = Nom("NO_FAM");
+      mp2[0] = Nom("NO_FAM");
+      for (int kk=0; kk < noms_bords_.size(); kk++)
+        mp1[indices_bords[kk]] == noms_bords_[kk];
+      for (int kk=0; kk < noms_bords2.size(); kk++)
+        mp2[indices_bords2[kk]] == noms_bords2[kk];
+      for(int kk=0; kk< familles2.size_array(); kk++)
+        {
+          const Nom n1 = mp1.at(familles[kk]);
+          const Nom n2 = mp2.at(familles2[kk]);
+          if (n1 != n2)
+            {
+              Cerr << "   For face " << kk << " name mismatch " << n1 << " vs " << n2 << finl;
+            }
         }
     }
 
