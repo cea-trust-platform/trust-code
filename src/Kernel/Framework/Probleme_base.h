@@ -152,6 +152,7 @@ public:
 
   // interface Problem
   void initialize() override { initialize_impl(*this); }
+  const bool& is_probleme_base_initialized() const { return is_probleme_initialized_impl(); }
   void terminate() override { terminate_impl(*this); }
 
   // interface UnsteadyProblem

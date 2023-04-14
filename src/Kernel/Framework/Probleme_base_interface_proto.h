@@ -32,6 +32,7 @@ public:
   bool isStationary_impl(const Probleme_base& pb) const;
   bool iterateTimeStep_impl(Probleme_base& pb, bool& converged);
   bool updateGivenFields_impl(Probleme_base& pb);
+  const bool& is_probleme_initialized_impl() const { return initialized; }
 
   void initialize_impl(Probleme_base& pb);
   void terminate_impl(Probleme_base& pb);
