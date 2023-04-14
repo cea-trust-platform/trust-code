@@ -48,7 +48,8 @@ define_modules_config()
       #mpi="mpi/openmpi/2.0.4 $romio_hints"  # 1.8.3 (car crash intelmpi sur grands nbrs de procs)
       mpi="$romio_hints mpi/openmpi/2.0.4" # suite maintenance 1.8.5b charger openmpi en dernier
       module="$intel $mpi"
-      [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] && module="intel/20.0.0 mpi/openmpi/4.0.5.3"
+      # passage a redhat 8.4, compilateurs anciens n'existent plus
+      module="intel/20.0.0 mpi/openmpi/4.0.5.3"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."

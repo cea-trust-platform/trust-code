@@ -855,7 +855,7 @@ then
    INSTALL_OK=1
 
    # list of packages already-installed/to-install in conda, we ignore mpi4py since installed with pip
-   $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py > conda_list.check
+   $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py | grep -v coolprop > conda_list.check
    if [ "$system" = "Linux" ] && [ $model = "x86_64" ] #&& [ -f $TRUST_ROOT/exec/conda_list.ref ]
    then
       # Strict check of conda packages

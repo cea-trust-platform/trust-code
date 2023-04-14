@@ -37,6 +37,7 @@ define_modules_config()
          #module="gnu/11.2.0 mpi/openmpi/4.1.4 nvhpc/22.2" # Pb c'est Cuda 11.6...
       else
          module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/10.2.89" # Ok, it works
+         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.6" # Ok, it works
       fi
    else
       # module="intel/19.0.5.281 mpi/intelmpi/2019.0.5.281" # Desactive car performances meilleures sur grands nombre de procs avec OpenMPI vs IntelMPI 
@@ -45,7 +46,8 @@ define_modules_config()
       # sw="feature/hcoll/multicast/disable" # Pour supprimer un warning aleatoire au demarrage de GAMELAN (ne gene pas ensuite)
       # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
       module="intel/20.0.4 gnu/7.3.0 mpi/openmpi/4.0.2" # PL: Retour a OpenMPI/4.0.2 sans rien d'autre car "node failure" sur le calcul GAMELAN a 50K coeurs avec les conseils precedents 
-      [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] && module="intel/20.0.0 mpi/openmpi/4.0.5.3"
+      # passage a redhat 8.4, openmpi 4.0.2 n'existe plus, remplace par 4.0.5
+      module="intel/20.0.0 mpi/openmpi/4.0.5"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
