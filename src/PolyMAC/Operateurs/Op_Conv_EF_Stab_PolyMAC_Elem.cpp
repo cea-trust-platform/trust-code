@@ -54,7 +54,7 @@ Entree& Op_Conv_Centre_PolyMAC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab
 Entree& Op_Conv_EF_Stab_PolyMAC_Elem::readOn( Entree& is )
 {
   Op_Conv_PolyMAC_base::readOn( is );
-  if (que_suis_je() == "Op_Conv_EF_Stab_PolyMAC_Elem_PolyMAC") //on n'est pas dans Op_Conv_Amont/Centre
+  if (que_suis_je().debute_par("Op_Conv_EF_Stab")) //on n'est pas dans Op_Conv_Amont/Centre
     {
       Param param(que_suis_je());
       param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
