@@ -58,6 +58,7 @@ LecFicDiffuse_JDD::LecFicDiffuse_JDD(const char* name,
     }
 }
 
+
 /*! @brief Ouverture du fichier.
  *
  * Cette methode doit etre appelee par tous les processeurs du groupe.
@@ -68,7 +69,6 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
                               IOS_OPEN_MODE mode)
 {
   int ok = 0;
-
   if(Process::je_suis_maitre())
     {
 
@@ -106,6 +106,10 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
             {
               // Cerr<<" on passe les commentaires"<<finl;
               file_>>motlu;
+              int jol = file_.jumpOfLines();
+              for(int jump=0; jump<jol; jump++)
+                prov <<"\n";
+
               while (motlu!="#")
                 {
                   if (file_.eof())
@@ -119,7 +123,9 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
                       break;
                     }
                   file_ >> motlu;
-
+                  jol = file_.jumpOfLines();
+                  for(int jump=0; jump<jol; jump++)
+                    prov <<"\n";
                 }
             }
 
@@ -131,6 +137,9 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
               while (ouvrante!=0)
                 {
                   file_ >>motlu;
+                  int jol = file_.jumpOfLines();
+                  for(int jump=0; jump<jol; jump++)
+                    prov <<"\n";
 
                   if (file_.eof())
                     {
@@ -170,7 +179,14 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
           */
           else
             {
-              prov<<motlu<<" ";
+              prov<<motlu;
+              int jol = file_.jumpOfLines();
+              if(jol==0)
+                prov << " ";
+              else
+                for(int jump=0; jump<jol; jump++)
+                  prov <<"\n";
+
               if( apply_verif )
                 verifie(motlu);
             }

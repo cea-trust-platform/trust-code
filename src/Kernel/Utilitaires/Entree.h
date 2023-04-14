@@ -83,6 +83,7 @@ public:
   virtual int get(char *buf, int bufsize);
 
   virtual int eof();
+  virtual int jumpOfLines();
   virtual int fail();
   virtual int good();
   virtual ~Entree();

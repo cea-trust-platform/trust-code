@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -86,7 +86,9 @@ Entree& Lire_Fichier::interpreter(Entree& is)
   else
     {
       Cerr << "Lire_Fichier: interpreting file " << nom1 << finl;
+      // Not counting lines inside this file
       LecFicDiffuse_JDD data_file(nom1);
+      data_file.track_lines(false);
       data_file.set_check_types(1);
       // On cree un nouvel interprete. A la fin de la lecture
       // les objets seront detruits.

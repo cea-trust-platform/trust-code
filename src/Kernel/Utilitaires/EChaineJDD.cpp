@@ -13,35 +13,44 @@
 *
 *****************************************************************************/
 
-#ifndef LecFicDiffuse_JDD_included
-#define LecFicDiffuse_JDD_included
-
-#include <Lec_Diffuse_base.h>
 #include <EChaineJDD.h>
 
-class Objet_U;
+int EChaineJDD::file_cur_line_ = 1;
 
-/*! @brief Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante : Le fichier a lire est physiquement localise sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
- *
- *     et chaque item lu dans ce fichier est diffuse a tous les autres processus du groupe tous.
- *     Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
- *
- */
-
-class LecFicDiffuse_JDD : public Lec_Diffuse_base
+EChaineJDD::EChaineJDD() :
+  Entree(), istrstream_(0), track_lines_(true)
 {
-  Declare_instanciable_sans_constructeur(LecFicDiffuse_JDD);
-  // le maitre lit le fichier et propage l'information
-public:
-  LecFicDiffuse_JDD();
-  LecFicDiffuse_JDD(const char* name, IOS_OPEN_MODE mode=ios::in, bool apply_verification=true);
-  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in ) override;
-  Entree& get_entree_master() override;
-  void track_lines(bool b) { chaine_.set_track_lines(b); }
+  set_check_types(1);
+}
 
-protected:
-  EChaineJDD chaine_;
-  ///! whether obsolete keywords should be checked or not. True by default.
-  bool apply_verif;
-};
-#endif
+EChaineJDD::EChaineJDD(const char* str) :
+  Entree(),  istrstream_(0), track_lines_(true)
+{
+  set_check_types(1);
+  init(str);
+}
+
+EChaineJDD::~EChaineJDD()  { }
+
+void EChaineJDD::init(const char *str)
+{
+  if (istrstream_)
+    delete istrstream_;
+  istrstream_ = new istringstream(str);  // a copy of str is taken
+  set_istream(istrstream_);
+}
+
+Entree& EChaineJDD::operator>>(int& ob) { return operator_template<int>(ob); }
+Entree& EChaineJDD::operator>>(double& ob) { return operator_template<double>(ob); }
+
+int EChaineJDD::get(char *ob, int bufsize)
+{
+  if(track_lines_)
+    {
+      int jol = jumpOfLines();
+      for(int jump=0; jump<jol; jump++)
+        file_cur_line_++;
+    }
+  int ret = Entree::get(ob,bufsize);
+  return ret;
+}

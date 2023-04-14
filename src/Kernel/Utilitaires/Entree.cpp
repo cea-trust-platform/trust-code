@@ -250,6 +250,24 @@ int Entree::get(long * ob, int n) { return get_template<long>(ob,n); }
 
 Entree& Entree::operator >>(Objet_U& ob) { return ob.readOn(*this); }
 
+int Entree::jumpOfLines()
+{
+  if(istream_)
+    {
+      int jol = 0;
+      char tmp=(char)istream_->peek();
+      while(isspace(tmp))  //tmp=='\n')
+        {
+          if(tmp=='\n')
+            jol++;
+          istream_->get(tmp);
+          tmp=(char)istream_->peek();
+        }
+      return jol;
+    }
+  return -1;
+}
+
 int Entree::eof()
 {
   if(istream_)

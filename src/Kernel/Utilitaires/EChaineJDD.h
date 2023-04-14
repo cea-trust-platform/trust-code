@@ -13,35 +13,57 @@
 *
 *****************************************************************************/
 
-#ifndef LecFicDiffuse_JDD_included
-#define LecFicDiffuse_JDD_included
+#ifndef EChaineJDD_included
+#define EChaineJDD_included
 
-#include <Lec_Diffuse_base.h>
-#include <EChaineJDD.h>
+#include <Entree.h>
+#include <sstream>
+using std::istringstream;
 
-class Objet_U;
-
-/*! @brief Cette classe implemente les operateurs et les methodes virtuelles de la classe EFichier de la facon suivante : Le fichier a lire est physiquement localise sur le disque de la machine hebergeant la tache maitre de l'application Trio-U (le processus de rang 0 dans le groupe "tous")
- *
- *     et chaque item lu dans ce fichier est diffuse a tous les autres processus du groupe tous.
- *     Il en est de meme pour les methodes d'inspection de l'etat d'un fichier.
- *
+/*! @brief
+ * Same as EChaine except here the input string comes from a datafile.
+ * Keeps a track of the lines that have been read in the datafile so far,
+ * so in case of a TRUST crash, we can get the line in the datafile where the error occured
  */
-
-class LecFicDiffuse_JDD : public Lec_Diffuse_base
+class EChaineJDD : public Entree
 {
-  Declare_instanciable_sans_constructeur(LecFicDiffuse_JDD);
-  // le maitre lit le fichier et propage l'information
 public:
-  LecFicDiffuse_JDD();
-  LecFicDiffuse_JDD(const char* name, IOS_OPEN_MODE mode=ios::in, bool apply_verification=true);
-  int ouvrir(const char* name, IOS_OPEN_MODE mode=ios::in ) override;
-  Entree& get_entree_master() override;
-  void track_lines(bool b) { chaine_.set_track_lines(b); }
+
+  EChaineJDD();
+  EChaineJDD(const char* str);
+  ~EChaineJDD() override;
+  void init(const char *str);
+
+  using Entree::operator>>;
+  using Entree::get;
+  Entree& operator>>(int& ob) override;
+  Entree& operator>>(double& ob) override;
+  int get(char *ob, int bufsize) override;
+
+  void set_track_lines(bool b) { track_lines_ = b ;}
+
+  static int file_cur_line_;
 
 protected:
-  EChaineJDD chaine_;
-  ///! whether obsolete keywords should be checked or not. True by default.
-  bool apply_verif;
+  istringstream* istrstream_;
+  bool track_lines_;
+
+  template <typename _TYPE_>
+  Entree& operator_template(_TYPE_& ob);
 };
+
+
+template <typename _TYPE_>
+Entree& EChaineJDD::operator_template(_TYPE_& ob)
+{
+  assert(istrstream_!=0);
+  char buffer[100];
+  int ok = get(buffer, 100); // get of this class
+  if (ok)
+    convert_to(buffer, ob);
+  return *this;
+}
+
 #endif
+
+
