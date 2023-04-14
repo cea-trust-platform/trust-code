@@ -53,12 +53,14 @@ void Source::typer_direct(const Nom& typ)
 void Source::typer(const Nom& typ, const Equation_base& eqn)
 {
   Nom type= eqn.discretisation().get_name_of_type_for(que_suis_je(),typ,eqn);
-
   if (eqn.que_suis_je() == "Transport_Marqueur_FT")
     type = typ;
+  if(eqn.que_suis_je() == "Navier_Stokes_standard_sensibility" && typ=="boussinesq_temperature")
+    type ="boussinesq_temperature_sensibility_VEFPreP1B_P1NC";
+
 
   Cerr << type << finl;
-  //  Cout << "Dans source.cpp type source = " << type << finl;
+  //Cout << "Dans source.cpp type source = " << type << finl;
   DERIV(Source_base)::typer(type);
 }
 

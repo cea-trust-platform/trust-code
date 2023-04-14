@@ -28,6 +28,12 @@ Sortie& Operateur_Conv::printOn(Sortie& os) const
 Entree& Operateur_Conv::readOn(Entree& is)
 {
   Operateur::lire(is);
+  if ((mon_equation->le_nom() ==  "pb_sensibiliteNavier_Stokes_standard_sensibility")  && (valeur().que_suis_je()!="Op_Conv_sensibility_VEF_P1NC"))
+    {
+      Cerr<<" You should use the sensibility convection operator within Navier_Stokes_standard_sensibility equation "<<finl;
+      Cerr<<" Exemple:  convection { sensibility { amont } }  "<<finl;
+      exit();
+    }
   return is;
 }
 

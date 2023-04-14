@@ -54,6 +54,9 @@ DoubleTab& Terme_Boussinesq_VEF_Face::ajouter(DoubleTab& resu) const
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
   const DoubleVect& g = gravite().valeurs();
+  ArrOfDouble T0 = getScalaire0();
+  if(equation_scalaire().que_suis_je()=="Convection_Diffusion_Temperature_sensibility")
+    T0=0.;
 
   int nb_dim = param.line_size(), nbcomp = resu.line_size();
   // Verifie la validite de T0:
