@@ -408,7 +408,7 @@ void LireMED::retrieve_MC_objects()
 
   axis_type_ = mfumesh_->getAxisType();
   // Some checks:
-  std::vector<int> nel = mfumesh_->getNonEmptyLevels();
+  std::vector<True_int> nel = mfumesh_->getNonEmptyLevels();
   assert(nel[0] == 0);
   // Get the volume mesh:
   mcumesh_ = mfumesh_->getMeshAtLevel(nel[0]); // ToDo can not make it const because of ArrOfInt
@@ -1014,7 +1014,7 @@ void LireMED::lire_geom(bool subDom)
   ArrOfInt familles;
   IntVect indices_bords;
   IntTab all_faces_bords;
-  std::vector<int> nel = mfumesh_->getNonEmptyLevels();
+  std::vector<True_int> nel = mfumesh_->getNonEmptyLevels();
   if (nel.size() > 1)
     {
       assert(nel[1] == -1);

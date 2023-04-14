@@ -188,7 +188,7 @@ void read_med_field_names(const Nom& nom_fic, Noms& noms_chps, ArrOfDouble& temp
 #if defined(MEDCOUPLING_) && defined(MED_)
   using namespace std;
   using namespace MEDCoupling;
-  using MCTimeLabel = pair< pair<int,int>, double>;
+  using MCTimeLabel = pair< pair<True_int,True_int>, double>;
   const string fnam(nom_fic.getString());
 
   vector<string> nams(GetAllFieldNames(fnam));
