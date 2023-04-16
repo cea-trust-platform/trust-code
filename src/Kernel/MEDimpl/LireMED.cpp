@@ -842,9 +842,9 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
       mp1[0] = Nom("NO_FAM");
       mp2[0] = Nom("NO_FAM");
       for (int kk=0; kk < noms_bords_.size(); kk++)
-        mp1[indices_bords[kk]] == noms_bords_[kk];
+        mp1[indices_bords[kk]] = noms_bords_[kk];
       for (int kk=0; kk < noms_bords2.size(); kk++)
-        mp2[indices_bords2[kk]] == noms_bords2[kk];
+        mp2[indices_bords2[kk]] = noms_bords2[kk];
       for(int kk=0; kk< familles2.size_array(); kk++)
         {
           const Nom n1 = mp1.at(familles[kk]);
