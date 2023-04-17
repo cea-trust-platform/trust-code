@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,31 +13,34 @@
 *
 *****************************************************************************/
 
-// ICoCo file common to several codes
-// ICoCoTrioField.h
-// version 1.2 10/05/2010
-
 #ifndef Convert_ICoCoTrioField_included
 #define Convert_ICoCoTrioField_included
 
-#include <ICoCoTrioField.h>
+#include <ICoCoMEDDoubleField.hxx>
 #include <TRUSTTabs_forward.h>
+#include <Domaine_dis_base.h>
+#include <ICoCoTrioField.h>
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
 #endif
 
-
 class Champ_Generique_base;
+class Champ_base;
+class Domaine_VF;
 class Domaine;
+
 void affecte_double_avec_doubletab(double** p, const ArrOfDouble& trio);
 void affecte_int_avec_inttab(int** p, const ArrOfInt& trio);
-#include <ICoCoMEDDoubleField.hxx>
+
+void build_triofield(const Champ_Generique_base&, ICoCo::TrioField& );
+void build_triofield(const Champ_base&, const Domaine_dis_base& , ICoCo::TrioField& );
+void build_triomesh(const Domaine_dis_base& , ICoCo::TrioField& , int, int);
+
 #ifndef NO_MEDFIELD
 ICoCo::MEDDoubleField build_medfield(ICoCo::TrioField&);
 ICoCo::MEDDoubleField build_medfield(const Champ_Generique_base&);
 #endif
-void build_triofield(const Champ_Generique_base&, ICoCo::TrioField& );
 
-#endif
+#endif /* Convert_ICoCoTrioField_included */

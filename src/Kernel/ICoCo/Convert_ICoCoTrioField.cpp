@@ -37,13 +37,40 @@ void affecte_int_avec_inttab(int** p, const ArrOfInt& trio)
 
 void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
 {
-  const Domaine_VF& zvf = ref_cast(Domaine_VF, ch.get_ref_domaine_dis_base());
-  const Domaine& dom = zvf.domaine();
+  build_triomesh(ch.get_ref_domaine_dis_base(), afield, ch.get_localisation() == NODE, ch.get_localisation() == FACE);
 
-  afield.clear();
   afield.setName(ch.le_nom().getString());
-  afield._type = ch.get_localisation() == NODE;
   afield._time1 = afield._time2 = ch.get_time(), afield._itnumber = 0;
+
+  /* copie des valeurs du champ */
+  afield._has_field_ownership = true;
+  Champ espace_stockage;
+  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
+  const DoubleTab& vals = champ_ecriture.valeurs();
+  afield._nb_field_components = vals.nb_dim() > 1 ? vals.dimension(1) : 1;
+  affecte_double_avec_doubletab(&afield._field, vals);
+}
+
+void build_triofield(const Champ_base& ch, const Domaine_dis_base& dom_dis, ICoCo::TrioField& afield)
+{
+  build_triomesh(dom_dis, afield, 0, 0); // XXX seulement elem...
+
+  afield.setName(ch.le_nom().getString());
+  afield._time1 = afield._time2 = 0.0, afield._itnumber = 0;
+
+  /* copie des valeurs du champ */
+  afield._has_field_ownership = true;
+  const DoubleTab& vals = ch.valeurs();
+  afield._nb_field_components = vals.nb_dim() > 1 ? vals.dimension(1) : 1;
+  affecte_double_avec_doubletab(&afield._field, vals);
+}
+
+void build_triomesh(const Domaine_dis_base& dom_dis, ICoCo::TrioField& afield, int type, int loc_faces)
+{
+  const Domaine_VF& zvf = ref_cast(Domaine_VF, dom_dis);
+  const Domaine& dom = dom_dis.domaine();
+  afield.clear();
+  afield._type = type;
 
   /* tableau des sommets : copie de celui du domaine */
   const DoubleTab& coord = dom.les_sommets();
@@ -52,7 +79,7 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
   affecte_double_avec_doubletab(&afield._coords, coord);
 
   /* dimension des elements du domaine */
-  Motcle type_elem_ = zvf.domaine().type_elem()->que_suis_je();
+  Motcle type_elem_ = dom_dis.domaine().type_elem()->que_suis_je();
   Motcle type_elem(type_elem_);
   type_elem.prefix("_AXI");
   if (type_elem != Motcle(type_elem_))
@@ -75,12 +102,11 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
     }
 
   /* elements : ceux du domaine si le champ est aux sommets/elements, les faces si le champ est aux faces */
-  int loc_faces = ch.get_localisation() == FACE;
   if (loc_faces) afield._mesh_dim--;
-  afield._nb_elems = loc_faces ? zvf.nb_faces() : zvf.domaine().nb_elem();
+  afield._nb_elems = loc_faces ? zvf.nb_faces() : dom_dis.domaine().nb_elem();
   if (loc_faces || type_elem != "POLYEDRE") //maillage de faces -> connectivity = face_sommets
     {
-      const IntTab& conn = loc_faces ? zvf.face_sommets() : zvf.domaine().les_elems();
+      const IntTab& conn = loc_faces ? dom_dis.face_sommets() : dom_dis.domaine().les_elems();
       //le seul moyen qu'on a d'eviter que des polygones soient pris pour des quadrilateres est d'avoir un tableau de connectivite de largeur > 4...
       afield._nodes_per_elem = std::max(conn.dimension(1), type_elem == "POLYGONE" || type_elem == "POLYGONE_3D"  || type_elem == "POLYEDRE"  ? (int) 5 : 0);
       afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
@@ -101,14 +127,6 @@ void build_triofield(const Champ_Generique_base& ch, ICoCo::TrioField& afield)
           for ( ; p < afield._connectivity + (e + 1) * afield._nodes_per_elem; p++) *p = -1;
         }
     }
-
-  /* copie des valeurs du champ */
-  afield._has_field_ownership = true;
-  Champ espace_stockage;
-  const Champ_base& champ_ecriture = ch.get_champ(espace_stockage);
-  const DoubleTab& vals = champ_ecriture.valeurs();
-  afield._nb_field_components = vals.nb_dim() > 1 ? vals.dimension(1) : 1;
-  affecte_double_avec_doubletab(&afield._field, vals);
 }
 
 #ifndef NO_MEDFIELD
