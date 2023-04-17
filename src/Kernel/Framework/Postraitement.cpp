@@ -263,19 +263,22 @@ Entree& Postraitement::readOn(Entree& s )
   Postraitement_base::readOn(s);
 
   if (Motcle(format)=="MED") format="med";
-  if (Motcle(format)=="MEDFILE") format="medfile";
+  if (Motcle(format)=="MEDFILE")
+    {
+      Cerr<<"The postprocessing format 'medfile' is not supported since TRUST v1.9.2! Switch to 'med'."<<finl;
+      exit();
+    }
   if (Motcle(format)=="MED_MAJOR") format="med_major";
   if ((Motcle(format)!="LML")
       && (Motcle(format)!="MESHTV")
       && (Motcle(format)!="MED")
-      && (Motcle(format)!="MEDFILE")
       && (Motcle(format)!="MED_MAJOR")
       && (Motcle(format)!="LATA")
       && (Motcle(format)!="LATA_V2")
       && (Motcle(format)!="XYZ"))
     {
       Cerr<<"The postprocessing format " << format << " is not recognized"<<finl;
-      Cerr<<"The recognized formats are lml, meshtv, med, medfile, med_major, xyz, lata and lata_V2"<<finl;
+      Cerr<<"The recognized formats are lml, meshtv, med, med_major, xyz, lata and lata_V2"<<finl;
       exit();
     }
   if (Motcle(format)=="LATA_V2") format="lata";

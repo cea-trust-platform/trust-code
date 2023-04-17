@@ -69,7 +69,6 @@
  Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz Champ_Fonc_Fonction_txyz.h
  Champ_Fonc_Fonction_txyz_Morceaux Champ_Fonc_Fonction_txyz_Morceaux Champ_Fonc_Fonction_txyz_Morceaux.h
  Champ_Fonc_MED Champ_Fonc_MED Champ_Fonc_MED.h
- Champ_Fonc_MEDfile Champ_Fonc_MEDfile Champ_Fonc_MED.h
  Champ_Fonc_MED_Table_Temps Champ_Fonc_MED_Table_Temps Champ_Fonc_MED_Table_Temps.h
  Champ_Fonc_MED_Tabule Champ_Fonc_MED_Tabule Champ_Fonc_MED_Tabule.h
  Champ_Fonc_Morceaux Champ_Fonc_Morceaux Champ_Fonc_Morceaux.h
@@ -314,7 +313,6 @@
  Ecrire_Fichier Ecrire_Fichier Ecrire_Fichier.h
  Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte.h
  Ecrire_MED EcrMED EcrMED.h
- Ecrire_MEDfile EcrMEDfile EcrMEDfile.h
  EcritureLectureSpecial EcritureLectureSpecial EcritureLectureSpecial.h
  EDO_Pression_th EDO_Pression_th EDO_Pression_th.h
  EDO_Pression_th_base EDO_Pression_th_base EDO_Pression_th_base.h
@@ -407,7 +405,6 @@
  Format_Post_Lata Format_Post_Lata Format_Post_Lata.h
  Format_Post_Lml Format_Post_Lml Format_Post_Lml.h
  Format_Post_Med Format_Post_Med Format_Post_Med.h
- Format_Post_Medfile Format_Post_Medfile Format_Post_Medfile.h
  Format_Post_Med_major Format_Post_Med_major Format_Post_Med_major.h
  Format_Post_XYZ Format_Post_XYZ Format_Post_XYZ.h
  Frontiere Frontiere Frontiere.h
@@ -521,7 +518,6 @@
  Lire_Fichier|Read_file Lire_Fichier Lire_Fichier.h
  Lire_Ideas Lire_Ideas Lire_Ideas.h
  Lire_MED LireMED LireMED.h
- Lire_MEDfile LireMEDfile LireMEDfile.h
  Lire_Tgrid Lire_Tgrid Lire_Tgrid.h
  Lire|Read Lire Lire.h
  Liste_bloc Liste_bloc Liste_bloc.h

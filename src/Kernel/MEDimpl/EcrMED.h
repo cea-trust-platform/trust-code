@@ -38,7 +38,7 @@ class Domaine;
 /*! @brief Classe EcrMED Ecrit un fichier MED.
  *
  *     Structure du jeu de donnee (en dimension 2) :
- *     EcrMED dom medfile
+ *     Ecrire_MED dom medfile.med
  */
 class EcrMED : public Interprete
 {
