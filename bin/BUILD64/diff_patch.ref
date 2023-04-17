@@ -1,9 +1,9 @@
 diff -r bin/BUILD64/patch/Outils/lata_tools/src/trust_commun/LataDB.cpp ./Outils/lata_tools/src/trust_commun/LataDB.cpp
-468c468
+480c480
 <       if ((type_ != LataDBDataType::INT64) &&  (type_ != LataDBDataType::INT32))
 ---
 >       if (type_ != LataDBDataType::INT32)
-672d671
+684d683
 <     case LataDBDataType::INT64:
 diff -r bin/BUILD64/patch/ThirdPart/src/LIBMFFT/mfftov.f ./ThirdPart/src/LIBMFFT/mfftov.f
 19c19

@@ -314,9 +314,21 @@ public:
       }
     else
       {
+        if ( !name || name[0]=='\0' || strcmp(name, "??")==0 )
+        {
+          Journal(verb_level_data_bloc) << "[ERROR] LataDataFile: empty data file name" << endl;
+          throw(LataDBError(LataDBError::READ_ERROR));
+        }
         stream_ = &fstream_;
-        fname_ = prefix;;
-        fname_ += name;
+        if (name[0]!='/')
+          {
+            fname_ = prefix;
+            fname_ += name;
+          }
+        else
+          {
+            fname_ = name;
+          }
         Journal(verb_level_data_bloc) << "LataDB: opening data file " << fname_ << endl;
         if (msb_ == LataDBDataType::ASCII)
           {
