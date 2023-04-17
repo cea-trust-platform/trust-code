@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        mon_main.cpp
-// Directory:   $BASIC_ROOT/src/TRUST_modif
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <mon_main.h>
 #include <LecFicDiffuse_JDD.h>
@@ -26,14 +20,17 @@
 #include <Comm_Group_MPI.h>
 #include <PE_Groups.h>
 #include <Journal.h>
-#include <stdio.h>
+#include <cstdio>
 #include <Statistiques.h>
 #include <communications.h>
 #include <petsc_for_kernel.h>
 #include <stat_counters.h>
 #include <info_atelier.h>
-#include <unistd.h> // chdir pour PGI et AIX
+#include <unistd.h> // Pour chdir for other compiler
+#include <Device.h>
+#ifndef __CYGWIN__
 #include <catch_and_trace.h>
+#endif
 #include <Debog.h>
 
 // Initialisation des compteurs, dans stat_counters.cpp
@@ -99,7 +96,9 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   if (error_handlers)
     {
       Cerr << "Enabling error handlers catching SIGFPE and SIGABORT and giving a trace of where the fault happened." << finl;
+#ifndef __CYGWIN__
       install_handlers();
+#endif
     }
 #else
   // MPI_Init pour les machines ou Petsc n'est pas
@@ -116,7 +115,6 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
     }
 #endif
 #endif
-
   return 1;
 }
 
@@ -134,7 +132,7 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 }
 
 #ifdef PETSC_HAVE_CUDA
-#include <cuda.h>
+//#include <cuda.h>
 #include <cuda_runtime.h>
 void init_cuda()
 {
@@ -186,6 +184,10 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   init_cuda();
 #endif /* MPIX_CUDA_AWARE_SUPPORT */
 #endif
+  // Variable pour desactiver le calcul sur GPU et ainsi facilement comparer avec le meme binaire
+  // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
+  Objet_U::computeOnDevice = getenv("TRUST_DISABLE_DEVICE") == NULL ? true : false;
+
   Nom arguments_info="";
   int must_mpi_initialize = 1;
   if (with_petsc != 0)
@@ -236,6 +238,10 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
+
+#ifdef _OPENMP
+  init_openmp();
+#endif
 }
 
 void mon_main::finalize()
@@ -306,7 +312,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
       {
         filename += "_";
         char s[20];
-        sprintf(s, "%05d", (True_int)Process::me());
+        snprintf(s, 20, "%05d", (True_int)Process::me());
         filename += s;
       }
     filename += ".log";
@@ -315,8 +321,14 @@ void mon_main::dowork(const Nom& nom_du_cas)
       verbose_level_ = 0;
 
     // Si un journal unique n'est pas active, alors desactive les journaux logs au dela d'un certain nombre de rangs MPI:
-    if (!journal_shared_ && !journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
-      verbose_level_ = 0;
+    // Dans le cas ou l'option "-journal" est specifiee
+    if (verbose_level_ < 0)
+      {
+        if (!journal_shared_ && !journal_master_ && Process::force_single_file(Process::nproc(), nom_du_cas+".log"))
+          verbose_level_ = 0;
+        else
+          verbose_level_ = 1;
+      }
 
     init_journal_file(verbose_level_, journal_shared_,filename, 0 /* append=0 */);
     if(journal_shared_) Process::Journal() << "\n[Proc " << Process::me() << "] : ";

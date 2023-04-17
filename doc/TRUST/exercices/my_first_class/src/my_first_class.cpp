@@ -23,7 +23,7 @@
 #include <Param.h>
 #include <Domaine.h>
 #include <Probleme_base.h>
-#include <Zone_VF.h>
+#include <Domaine_VF.h>
 #include <Equation_base.h>
 #include <SFichier.h>
 
@@ -78,14 +78,13 @@ Entree& my_first_class::interpreter_(Entree& is)
   // Loop on the boundaries to print
   // the name of the boundaries and
   // the number of faces:
-  const Zone& zone = dom.zone(0);
-  for (int i=0; i<zone.nb_bords(); i++)
+  for (int i=0; i<dom.nb_bords(); i++)
     {
-      Cerr << "- The boundary named " << zone.bord(i).le_nom() << " has " << zone.bord(i).nb_faces() << " faces." << finl;
+      Cerr << "- The boundary named " << dom.bord(i).le_nom() << " has " << dom.bord(i).nb_faces() << " faces." << finl;
     }
 
-  // We need to use the control volumes (located in the discretized zone Zone_VF):
-  // The discretized zone is only available from the problem:
+  // We need to use the control volumes (located in the discretized domaine Domaine_VF):
+  // The discretized domain is only available from the problem:
   Probleme_base& problem=ref_cast(Probleme_base, objet(problem_name));
   Cerr << "- The problem name is " << problem.le_nom() << "." <<finl;
 
@@ -93,13 +92,13 @@ Entree& my_first_class::interpreter_(Entree& is)
   for (int i=0; i<problem.nombre_d_equations(); i++)
     Cerr<<"- The equation number " << i << " is of type " << problem.equation(i).le_type() << "." << finl;
 
-  const Zone_VF& zone_vf=ref_cast(Zone_VF,problem.equation(0).zone_dis().valeur());
-  const DoubleVect& control_volumes=zone_vf.volumes_entrelaces();
+  const Domaine_VF& dom_vf=ref_cast(Domaine_VF,problem.domaine_dis().valeur());
+  const DoubleVect& control_volumes=dom_vf.volumes_entrelaces();
   Cerr << "- Control volume array size: " << control_volumes.size() << finl;
 
   // Sum the control volumes:
   double sum=0;
-  for (int face=0; face<zone_vf.nb_faces(); face++)
+  for (int face=0; face<dom_vf.nb_faces(); face++)
     sum+=control_volumes(face);
   Cerr<<"- Control volume sum = "<< sum << finl;
 

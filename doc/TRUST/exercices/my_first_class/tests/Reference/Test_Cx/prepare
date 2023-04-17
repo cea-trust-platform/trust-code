@@ -1,0 +1,8 @@
+
+cat $TRUST_ROOT/tests/Reference/Cx/Cx.data > Test_Cx_tmp.data
+sed -i "s/Discretize pb ma_discretisation/Discretize pb ma_discretisation my_first_class { domaine dom problem pb option 1 } end/g" Test_Cx_tmp.data
+
+diff Test_Cx_tmp.data Test_Cx.data || exit -1
+
+gunzip -c $TRUST_ROOT/tests/Reference/Cx/cylindre.geom.gz > cylindre.geom
+

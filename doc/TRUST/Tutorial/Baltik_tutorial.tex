@@ -383,8 +383,8 @@ You can see that you have now:
 \begin{block}{Add sources to your Baltik}
 \begin{itemize}
 \item Copy the following TRUST .cpp file into your baltik project:\\
-\texttt{\$ mkdir -p src/TRUST\_modif} \\
-\texttt{\$ cp \$TRUST\_ROOT/src/MAIN/mon\_main.cpp src/TRUST\_modif/}
+\texttt{\$ mkdir -p src/Trust\_fixes} \\
+\texttt{\$ cp \$TRUST\_ROOT/src/MAIN/mon\_main.cpp src/Trust\_fixes/}
 \end{itemize}
 
 \end{block}
@@ -1199,7 +1199,7 @@ where "type" can be (cf 'doc\_TRAD\_2' file): 'int', 'floattant', 'chaine', 'rie
 
 \begin{block}{}
 \begin{itemize}
-\item Edit the "\$project\_directory/src/TRUST\_modif/mon\_main.cpp" file of your baltik project using text editor or Eclipse.
+\item Edit the "\$project\_directory/src/Trust\_fixes/mon\_main.cpp" file of your baltik project using text editor or Eclipse.
 \item Add these lines after "Process::imprimer\_ram\_totale(1);" :\\
 \textit{std::cout <\textcompwordmark{}< "Hello World to cout." <\textcompwordmark{}< std::endl;\\
 std::cerr <\textcompwordmark{}< "Hello World to cerr." <\textcompwordmark{}< std::endl;\\
@@ -1430,7 +1430,7 @@ So the final content will be the value calculated on the last processor which wi
 \item You get debog*.log and DEBOG files.
 \item If a value of an array differs between the two calculations and the difference is greater than 1.e-6 then "ERROR" message appears in the log files else we will get "OK" (cf debog.log).\\
 
-\item Add a debog instruction in your file mon\_main.cpp located in \$project\_directory/TRUST\_modif, after the "Hello world" prints put:\\
+\item Add a debog instruction in your file mon\_main.cpp located in \$project\_directory/Trust\_fixes, after the "Hello world" prints put:\\
 \texttt{double var = 2.5;}\\
 \texttt{Debog::verifier("- Debog test message",var);}
 
