@@ -51,7 +51,7 @@ void Champ_Fonc_MED::set_param(Param& param)
 {
   param.ajouter_flag("use_existing_domain", &use_existing_domain_); // XD_ADD_P flag whether to optimize the field loading by indicating that the field is supported by the same mesh that was initially loaded as the domain
   param.ajouter_flag("last_time", &last_time_only_);                // XD_ADD_P flag to use the last time of the MED file instead of the specified time. Mutually exclusive with 'time' parameter.
-  param.ajouter("decoup", &nom_decoup_, Param::OPTIONAL);           // XD_ADD_P chaine specify a partition file (only functional with Champ_Fonc_MEDFile ...)
+  param.ajouter("decoup", &nom_decoup_, Param::OPTIONAL);           // XD_ADD_P chaine specify a partition file.
   param.ajouter("domain", &nom_dom_, Param::REQUIRED);              // XD_ADD_P chaine Name of the domain supporting the field. This is the name of the mesh in the MED file, and if this mesh was also used to create the TRUST domain, loading can be optimized with option 'use_existing_domain'.
   param.ajouter("file", &nom_fichier_med_, Param::REQUIRED);        // XD_ADD_P chaine Name of the .med file.
   param.ajouter("field", &nom_champ_, Param::REQUIRED);             // XD_ADD_P chaine Name of field to load.
@@ -62,7 +62,7 @@ void Champ_Fonc_MED::set_param(Param& param)
 void Champ_Fonc_MED::readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_decoup_lu)
 {
   Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!! WARNING: you're using the old syntax for one of the keyword 'Champ_Fonc_MED*'" << finl;
+  Cerr << "!!!!!!! WARNING: you're using the old syntax for one of the keyword 'Champ_Fonc_MED'" << finl;
   Cerr << "!!!!!!! It will be deprecated in version 1.9.3. Please update your dataset with the following syntax:" << finl;
   Cerr << "    Champ_Fonc_MED {" << finl;
   Cerr << "        domain dom" << finl;

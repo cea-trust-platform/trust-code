@@ -18,5 +18,5 @@ Mailler dom
         Bord Wall    	Z = 1.   0.  <= X <= 5.0  0.  <= Y <= 1.0
     }
 }
-Ecrire_MED dom mesh.med
+Write_MED dom mesh.med
 

@@ -22,7 +22,7 @@ Lire_Med {
    domaine dom 
    file rectangle_a1.med 
    } /* Read an old 3 format */
-Ecrire_med dom new_rectangle_a1.med /* Convert to new format */
+Write_MED dom new_rectangle_a1.med /* Convert to new format */
 Read_file dom_ssz.geo ;
 Reordonner dom
 Lire_MED { 

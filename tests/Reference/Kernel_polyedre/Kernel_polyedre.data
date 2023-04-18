@@ -7,7 +7,7 @@ Lire_MED {
     file polyedre_med30.med
     mesh mesh
 }
-Ecrire_med dom polyedre2.med
+Write_MED dom polyedre2.med
 
 # Read a second med file #
 Lire_MED {
@@ -16,7 +16,7 @@ Lire_MED {
     mesh FluidMesh_1
 }
 Ecrire_fichier dom dom.geom
-Ecrire_med dom toto.med
+Write_MED dom toto.med
 domaine dom2
 Lire_MED {
     domain dom2

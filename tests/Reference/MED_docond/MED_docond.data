@@ -50,7 +50,7 @@ Mailler tmp
         Bord Droit2  X = 1.0  0.  <= Y <= 0.3
     }
 }
-Ecrire_MED tmp solide.med
+Write_MED tmp solide.med
 Lire_MED { 
    domain dom_solide 
    file solide.med 

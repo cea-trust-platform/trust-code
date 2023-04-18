@@ -6,7 +6,7 @@ Domaine dom
 Read_file dom obstacle_vef.geom
 # END MESH #
 # BEGIN PARTITION
-ecrire_med  dom obst.med
+Write_MED  dom obst.med
 
 system "echo 'on essaye medsplitter --ndomains=2 --input-file=obst.med --meshname=dom --output-file=obst --create-boundary-faces --empty-groups --family-splitting'"
 system "medsplitter --ndomains=2 --input-file=obst.med --meshname=dom --output-file=obst --create-boundary-faces --empty-groups --family-splitting"

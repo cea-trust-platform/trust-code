@@ -26,15 +26,15 @@ dimension 2
 
     ecrire_fichier rectangle rectangle.geom
 
-    ecrire_med rectangle rectangle.med
+    Write_MED rectangle rectangle.med
 
     Read_file triangle rectangle.geom
     trianguler_h triangle
-    ecrire_med triangle triangle.med
+    Write_MED triangle triangle.med
 
     Read_file quadrangle rectangle.geom
     Transformer quadrangle x*(1+y) y
-    ecrire_med quadrangle quadrangle.med
+    Write_MED quadrangle quadrangle.med
 
 # on recree le fichier lml reference ?  #
 

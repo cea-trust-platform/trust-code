@@ -312,7 +312,6 @@
  Ecrire_Champ_MED Ecrire_Champ_MED Ecrire_Champ_MED.h
  Ecrire_Fichier Ecrire_Fichier Ecrire_Fichier.h
  Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte Ecrire_Fichier_Formatte.h
- Ecrire_MED EcrMED EcrMED.h
  EcritureLectureSpecial EcritureLectureSpecial EcritureLectureSpecial.h
  EDO_Pression_th EDO_Pression_th EDO_Pression_th.h
  EDO_Pression_th_base EDO_Pression_th_base EDO_Pression_th_base.h
@@ -1210,5 +1209,6 @@
  Vitesse_relative_derive_constante Vitesse_derive_constante Vitesse_derive_constante.h
  Vitesse_relative_derive_Forces Vitesse_derive_Forces Vitesse_derive_Forces.h
  Vitesse_relative_derive_Ishii Vitesse_derive_Ishii Vitesse_derive_Ishii.h
+ Write_MED|ecrire_med EcrMED EcrMED.h
  Y_plus_Champ_Face Y_plus_Champ_Face Y_plus_Champ_Face.h
  Y_plus_Champ_P1NC Y_plus_Champ_P1NC Y_plus_Champ_P1NC.h

@@ -115,7 +115,7 @@ void verifie(const Nom& type)
       nouvelle_syntaxe[i++] = "1.4.9, il devient Frontiere_Ouverte_Rayo_transp";
       nouvelle_syntaxe[i++] = "1.5.";
       nouvelle_syntaxe[i++] = "1.5, il devient Lire_MED";
-      nouvelle_syntaxe[i++] = "1.5, il devient Ecrire_MED";
+      nouvelle_syntaxe[i++] = "1.5, il devient Ecrire_MED, puis Write_MED a v1.9.2";
       nouvelle_syntaxe[i++] = "1.5, il devient Canal";
       nouvelle_syntaxe[i++] = "1.5, il suffit de mettre Prandtl";
       nouvelle_syntaxe[i++] = "1.5.1, il est a remplacer par generic";
@@ -176,7 +176,7 @@ void verifie(const Nom& type)
       nouvelle_syntaxe[i++] = "1.8.4, you should use Convection_Diffusion_Espece_Multi_Turbulent_QC";
       nouvelle_syntaxe[i++] = "1.8.4, you should use Pb_Thermohydraulique_Especes_Turbulent_QC";
       nouvelle_syntaxe[i++] = "1.9.2, you should use Read_MED";
-      nouvelle_syntaxe[i++] = "1.9.2, you should use Ecrire_MED";
+      nouvelle_syntaxe[i++] = "1.9.2, you should use Write_MED";
       nouvelle_syntaxe[i++] = "1.9.2, you should use Champ_Fonc_MED";
       assert(i==n);
       Cerr << "The keyword " << motcle_obsolete[rang] << " is now obsolete," << finl;

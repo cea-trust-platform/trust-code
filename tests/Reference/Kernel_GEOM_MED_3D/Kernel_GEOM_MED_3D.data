@@ -31,15 +31,15 @@ dimension 3
 
     ecrire_fichier hexaedre hexaedre.geom
 
-    ecrire_med hexaedre hexaedre.med
+    Write_MED hexaedre hexaedre.med
 
     Read_file tetra hexaedre.geom
     Tetraedriser_homogene tetra
-    ecrire_med tetra tetra.med
+    Write_MED tetra tetra.med
 
     Read_file hexaedre_vef hexaedre.geom
     Transformer hexaedre_vef x*(1+y) y z
-    ecrire_med hexaedre_vef hexaedre_vef.med
+    Write_MED hexaedre_vef hexaedre_vef.med
 
 # on recree le fichier lml reference ? #
     postraiter_domaine { domaine hexaedre fichier new_reference.lml format lml }

@@ -40,7 +40,7 @@ using MEDCoupling::GetAllFieldIterations;
 using MEDCoupling::MEDFileMesh;
 #endif
 
-Implemente_instanciable(EcrMED,"Ecrire_MED",Interprete);
+Implemente_instanciable(EcrMED,"Write_MED|ecrire_med",Interprete);
 
 // Anonymous namespace for local functions:
 namespace
@@ -90,12 +90,12 @@ void EcrMED::set_file_name_and_dom(const Nom& file_name, const Domaine& dom)
   dom_ = dom;
 }
 
-// XD writemed interprete ecrire_med -1 Write a domain to MED format into a file.
+// XD Ecrire_MED interprete Write_MED -1 Write a domain to MED format into a file.
 // XD attr nom_dom ref_domaine nom_dom 0 Name of domain.
 // XD attr file chaine file 0 Name of file.
 Entree& EcrMED::interpreter(Entree& is)
 {
-  Cerr<<"syntax : EcrMED [ append ] nom_dom nom_fic "<<finl;
+  Cerr<<"syntax : Write_MED [ append ] nom_dom nom_fic "<<finl;
   bool append=false;
   Nom nom_dom;
   is >> nom_dom ;

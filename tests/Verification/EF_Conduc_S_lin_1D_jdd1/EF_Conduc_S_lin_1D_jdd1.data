@@ -10,7 +10,7 @@ Pb_conduction pb
 Domaine dom
 # BEGIN MESH #
 Read_file dom dom2_mod.geom
-ecrire_med dom dom.med
+Write_MED dom dom.med
 domaine dom2
 Lire_MED {
     domain dom2

@@ -11,7 +11,7 @@ Lire_MED {
 
 Ecrire_fichier_formatte dom dom.geom
 Postraiter_domaine { fichier lecture_1 domaine dom format lml }
-Ecrire_med dom toto.med
+Write_MED dom toto.med
 Lire_MED {
     domain dom2
     file toto.med
