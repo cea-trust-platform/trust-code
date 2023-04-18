@@ -16,7 +16,7 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="gcc/8.3.1 openmpi/4.0.5-cuda cuda/11.2" # Fonctionne sur gpu_p13 et gpu_p4
+      module="gcc/8.3.1 cuda/11.2 openmpi/4.0.5-cuda" # Fonctionne sur gpu_p13 et gpu_p4
       #module=$module" opa-psm2/11.2.204nccl_patched-cuda" # Patch pour corriger un plantage lors des IO (sondes/xyz)
    else
       # avec intel/intelmpi 19.0.2, les calculs bloquent
