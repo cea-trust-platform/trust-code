@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+19/04/23 (TRUST) Validation   : Add a new jupyter notebook to compare mono/multi-phase simulations with EOS and CoolProp.
 14/04/23 (TRUST) New Feature  : option "decoup" is now available for Champ_Fonc_MED and allows the parallel loading of big MED fields.
 14/04/23 (TRUST) Change       : Lire_MEDFile/Read_MEDFile and Champ_Fonc_MEDFile are not supported anymore.
 06/04/23 (TRUST) Minor change : Use iteration instead of time when calling visit from trustutils in validation sheets
