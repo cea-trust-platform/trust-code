@@ -2212,3 +2212,19 @@ void Domaine::init_renum_perio()
     renum[i] = i;
   set_renum_som_perio(renum);
 }
+
+void Domaine::prepare_rmp_with(Domaine& other_domain)
+{
+  if (get_mc_mesh() == nullptr) build_mc_mesh();
+  if (other_domain.get_mc_mesh() == nullptr) other_domain.build_mc_mesh();
+
+  Cerr << "Domaine_dis_base : building remapper between local mesh ( " << le_nom() << " ) with " << mc_mesh_->getNumberOfCells() << " cells, distant mesh ( " << other_domain.le_nom() << " ) with " << other_domain.get_mc_mesh()->getNumberOfCells() << " cells" << finl;
+  rmps[&other_domain].prepare(other_domain.get_mc_mesh(), get_mc_mesh(), "P0P0");
+  Cerr << "remapper prepared with " << rmps.at(&other_domain).getNumberOfColsOfMatrix() << " columns in matrix, with max value = " << rmps.at(&other_domain).getMaxValueInCrudeMatrix() << finl;
+}
+
+MEDCoupling::MEDCouplingRemapper* Domaine::get_remapper(Domaine& other_domain)
+{
+  if (!rmps.count(&other_domain)) prepare_rmp_with(other_domain);
+  return &rmps.at(&other_domain);
+}

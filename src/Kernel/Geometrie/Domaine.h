@@ -34,7 +34,10 @@
 
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
+#include <MEDCouplingFieldTemplate.hxx>
 #include <MEDCouplingUMesh.hxx>
+#include <MEDCouplingRemapper.hxx>
+using MEDCoupling::MEDCouplingRemapper;
 using MEDCoupling::MEDCouplingUMesh;
 using MEDCoupling::MCAuto;
 #endif
@@ -291,6 +294,8 @@ public:
   inline const MEDCouplingUMesh* get_mc_mesh() const         {   return mc_mesh_;   };
   inline const MEDCouplingUMesh* get_mc_face_mesh() const    {   return mc_face_mesh_;   };
   inline void set_mc_mesh(MCAuto<MEDCouplingUMesh> m) const  {   mc_mesh_ = m;   };
+  // remapper with other domains
+  MEDCouplingRemapper* get_remapper(Domaine&);
 #endif
   void build_mc_mesh() const;
   void build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const;
@@ -361,11 +366,13 @@ protected:
   mutable MCAuto<MEDCouplingUMesh> mc_mesh_;
   ///! MEDCoupling version of the face domain:
   mutable MCAuto<MEDCouplingUMesh> mc_face_mesh_;
+  std::map<const Domaine*, MEDCoupling::MEDCouplingRemapper> rmps;
 #endif
 
   void duplique_faces_internes();
 
 private:
+  void prepare_rmp_with(Domaine& );
   // Volume total du domaine (somme sur tous les processeurs)
   double volume_total_;
   // Cached infos to accelerate Domaine::chercher_elements():
