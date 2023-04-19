@@ -101,7 +101,7 @@ void Champ_Input_Proto::read(Entree& is)
   // Retrouver le probleme et s'inscrire dans sa liste
   mon_pb=ref_cast(Probleme_base,Interprete::objet(nom_pb));
 
-  ma_sous_domaine.reset();
+  mon_sous_domaine.reset();
   if (nom_sous_domaine!="??")
     {
       if (!sous_domaine_ok)
@@ -110,7 +110,7 @@ void Champ_Input_Proto::read(Entree& is)
           Cerr << "The sous_domaines are not managed by this field" << finl;
           Process::exit();
         }
-      ma_sous_domaine=mon_pb->domaine().ss_domaine(nom_sous_domaine);
+      mon_sous_domaine=mon_pb->domaine().ss_domaine(nom_sous_domaine);
     }
 }
 

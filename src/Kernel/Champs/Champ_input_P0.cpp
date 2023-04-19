@@ -52,9 +52,9 @@ Entree& Champ_input_P0::readOn(Entree& is)
           valeurs_(ele,c)=initial_value_[c];
     }
 
-  if (ma_sous_domaine.non_nul())
+  if (mon_sous_domaine.non_nul())
     {
-      const Sous_Domaine& ssz=ma_sous_domaine.valeur();
+      const Sous_Domaine& ssz=mon_sous_domaine.valeur();
       nb_elems_reels_loc_ = mon_pb->domaine().les_elems().dimension(0);
       for (int i = 0; i < ssz.nb_elem_tot(); i++)
         nb_elems_reels_sous_domaine_ += (ssz[i] < nb_elems_reels_loc_);
@@ -107,7 +107,7 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
 
   /* connectivites */
   const Domaine_VF& zvf = domaine_vf();
-  afield._nb_elems = ma_sous_domaine.non_nul() ? nb_elems_reels_sous_domaine_ : zvf.nb_elem();
+  afield._nb_elems = mon_sous_domaine.non_nul() ? nb_elems_reels_sous_domaine_ : zvf.nb_elem();
   Motcle type_elem = zvf.domaine().type_elem()->que_suis_je();
   if (type_elem != "POLYEDRE") //cas simple -> il suffit de copier les_elems
     {
@@ -118,7 +118,7 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
       for (int i = 0; i < afield._nb_elems; i++)
         for (int j = 0; j < afield._nodes_per_elem; j++)
           {
-            const int e = ma_sous_domaine.non_nul() ? ma_sous_domaine.valeur()[i] : i; //numero de l'element
+            const int e = mon_sous_domaine.non_nul() ? mon_sous_domaine.valeur()[i] : i; //numero de l'element
             afield._connectivity[afield._nodes_per_elem * i + j] = j < conn.dimension(1) ? conn(e, j) : -1;
           }
     }
@@ -126,10 +126,10 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
     {
       afield._nodes_per_elem = zvf.elem_faces().dimension(1) * (zvf.face_sommets().dimension(1) + 1); //un -1 apres chaque face
       int *p = afield._connectivity = new int[afield._nb_elems * afield._nodes_per_elem];
-      for (int i = 0, j, k, e, f, s; i < (ma_sous_domaine.non_nul() ? ma_sous_domaine.valeur().nb_elem_tot() : zvf.nb_elem()); i++)
+      for (int i = 0, j, k, e, f, s; i < (mon_sous_domaine.non_nul() ? mon_sous_domaine.valeur().nb_elem_tot() : zvf.nb_elem()); i++)
         {
-          if (ma_sous_domaine.non_nul() && ma_sous_domaine.valeur()[i] >= zvf.nb_elem()) continue; //element non reel du sous-domaine -> on saute
-          e = ma_sous_domaine.non_nul() ? ma_sous_domaine.valeur()[i] : i; //numero de l'element
+          if (mon_sous_domaine.non_nul() && mon_sous_domaine.valeur()[i] >= zvf.nb_elem()) continue; //element non reel du sous-domaine -> on saute
+          e = mon_sous_domaine.non_nul() ? mon_sous_domaine.valeur()[i] : i; //numero de l'element
           int *pf = p + afield._nodes_per_elem; //fin de la ligne
           /* insertion de la connectivite de chaque face, suivie d'un -1 */
           for (j = 0; j < zvf.elem_faces().dimension(1) && (f = zvf.elem_faces(e, j)) >= 0; j++, *p = -1, p++)
@@ -145,9 +145,9 @@ void Champ_input_P0::getTemplate(TrioField& afield) const
  */
 void Champ_input_P0::setValue(const TrioField& afield)
 {
-  if (ma_sous_domaine.non_nul())
+  if (mon_sous_domaine.non_nul())
     {
-      const Sous_Domaine& ssz=ma_sous_domaine.valeur();
+      const Sous_Domaine& ssz=mon_sous_domaine.valeur();
       if (afield._nb_elems != nb_elems_reels_sous_domaine_)
         throw WrongArgument(mon_pb->le_nom().getChar(),"setInputField","afield","should have the same _nb_elems as returned by getInputFieldTemplate");
       assert(valeurs_.dimension(1)==nb_compo_);

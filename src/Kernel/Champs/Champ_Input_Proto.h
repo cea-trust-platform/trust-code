@@ -61,7 +61,7 @@ protected:
 
   REF(Probleme_base) mon_pb;
   bool sous_domaine_ok; // This fields knows how to deal with a sous_domaine
-  REF(Sous_Domaine) ma_sous_domaine;
+  REF(Sous_Domaine) mon_sous_domaine;
   ArrOfDouble initial_value_;
 };
 
