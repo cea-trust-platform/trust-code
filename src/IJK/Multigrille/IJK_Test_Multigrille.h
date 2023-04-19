@@ -41,9 +41,6 @@ public:
   int timestep_reprise_rhs_= -2;
   Nom expression_rho_;
   Nom expression_rhs_;
-  int defil_;
-  int change_ref_;
-  double shear_;
 };
 
 #endif

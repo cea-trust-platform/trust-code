@@ -50,23 +50,14 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     const int pe_jmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_J);
     const int pe_kmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_K);
 
-    // ne prend pas en compte le cisaillement !!
-    // faire ici comme pour echange espace virtuel
+    // duCluzeau
+    // Ici, on doit permuter les indices du vecteur solution de pression pour rendre compte des
+    // conditions de periodicites (ou de shear-periodicité)
 
     int pe = pe_kmin;
     if (pe >= 0)
       {
         pe_voisins[npe] = pe;
-//        if (pe != pe_kmax)
-//          {
-//        	// echange des indices du vecteur solution pour kmin
-//            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe]);
-//            // echange des indices du vecteur solution pour kmax
-//            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe]);
-//            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe]);
-//
-//          }
-//        else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:

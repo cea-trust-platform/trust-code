@@ -34,8 +34,7 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
         	  int ii ;
         	  if (kmin == -1 && kmax == 0){
         	  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
-        	  const int njsplit = splitting.get_nb_elem_local(DIRECTION_J);
-			  double Lx =  splitting.get_coords_of_dof(nisplit,njsplit,nksplit,IJK_Splitting::FACES_I)[0];
+			  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
 			  double DX = Lx/nisplit ;
 			  double Shear_x_time = IJK_Splitting::shear_x_time_;
 			  int offset_i = (int) round(Shear_x_time/DX);
@@ -43,8 +42,7 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
         	  }
         	  else if (kmin==nksplit && kmax == nksplit+1){
 			  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
-			  const int njsplit = splitting.get_nb_elem_local(DIRECTION_J);
-			  double Lx =  splitting.get_coords_of_dof(nisplit,njsplit,nksplit,IJK_Splitting::FACES_I)[0];
+			  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
 			  double DX = Lx/nisplit ;
 			  double Shear_x_time = IJK_Splitting::shear_x_time_;
 			  int offset_i = (int) round(Shear_x_time/DX);
