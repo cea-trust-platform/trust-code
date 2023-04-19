@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -71,7 +71,7 @@ public:
 
 private:
 
-  REF(Domaine_PolyMAC_old) la_domaine_polymac;
+  REF(Domaine_PolyMAC_old) le_dom_polymac;
   REF(Domaine_Cl_PolyMAC_old) la_zcl_polymac;
 
   DoubleTab xp;
@@ -128,12 +128,12 @@ inline const int& Op_Grad_PolyMAC_old_Face::face_voisins_(int i, int j) const
 
 inline Domaine_PolyMAC_old& Op_Grad_PolyMAC_old_Face::domaine_PolyMAC_old()
 {
-  return la_domaine_polymac.valeur();
+  return le_dom_polymac.valeur();
 }
 
 inline const Domaine_PolyMAC_old& Op_Grad_PolyMAC_old_Face::domaine_PolyMAC_old() const
 {
-  return la_domaine_polymac.valeur();
+  return le_dom_polymac.valeur();
 }
 
 inline Domaine_Cl_PolyMAC_old& Op_Grad_PolyMAC_old_Face::domaine_Cl_PolyMAC_old()
@@ -148,7 +148,7 @@ inline const Domaine_Cl_PolyMAC_old& Op_Grad_PolyMAC_old_Face::domaine_Cl_PolyMA
 
 inline double Op_Grad_PolyMAC_old_Face::dist_norm_bord(int num_face) const
 {
-  return la_domaine_polymac->dist_norm_bord(num_face);
+  return le_dom_polymac->dist_norm_bord(num_face);
 }
 
 #endif

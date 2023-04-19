@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -70,13 +70,13 @@ void Terme_Source_Decroissance_Radioactive_P0_PolyMAC_old::associer_domaines(con
                                                                              const Domaine_Cl_dis& domaine_Cl_dis)
 {
   Cerr << " Terme_Source_Decroissance_Radioactive_P0_PolyMAC_old::associer_domaines " << finl ;
-  la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
 }
 
 DoubleTab& Terme_Source_Decroissance_Radioactive_P0_PolyMAC_old::ajouter(DoubleTab& resu)  const
 {
-  int nb_elem = la_domaine_PolyMAC_old.valeur().nb_elem();
-  const Domaine_VF& domaine = la_domaine_PolyMAC_old.valeur();
+  int nb_elem = le_dom_PolyMAC_old.valeur().nb_elem();
+  const Domaine_VF& domaine = le_dom_PolyMAC_old.valeur();
   const DoubleVect& ve = domaine.volumes();
   const DoubleTab& c = equation().inconnue().valeurs();
 
@@ -96,8 +96,8 @@ DoubleTab& Terme_Source_Decroissance_Radioactive_P0_PolyMAC_old::calculer(Double
 
 void Terme_Source_Decroissance_Radioactive_P0_PolyMAC_old::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  int nb_elem = la_domaine_PolyMAC_old.valeur().nb_elem();
-  const Domaine_VF& domaine = la_domaine_PolyMAC_old.valeur();
+  int nb_elem = le_dom_PolyMAC_old.valeur().nb_elem();
+  const Domaine_VF& domaine = le_dom_PolyMAC_old.valeur();
   const DoubleVect& ve = domaine.volumes();
 
   for (int e = 0, k = 0; e < nb_elem; e++)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,7 +65,7 @@ Entree& Champ_P0_PolyMAC_old::readOn(Entree& s)
 // Postcondition:
 const Domaine_dis_base& Champ_P0_PolyMAC_old::domaine_dis_base() const
 {
-  return la_domaine_VF.valeur();
+  return le_dom_VF.valeur();
 }
 // Description:
 //
@@ -82,7 +82,7 @@ const Domaine_dis_base& Champ_P0_PolyMAC_old::domaine_dis_base() const
 // Postcondition:
 void Champ_P0_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
 {
-  la_domaine_VF=ref_cast(Domaine_VF, z_dis);
+  le_dom_VF=ref_cast(Domaine_VF, z_dis);
 }
 
 // Description:
@@ -92,7 +92,7 @@ void Champ_P0_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base& z_d
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
-// Retour: la_domaine_PolyMAC_old_P0.valeur()
+// Retour: le_dom_PolyMAC_old_P0.valeur()
 //    Signification:
 //    Contraintes:
 // Exception:
@@ -100,7 +100,7 @@ void Champ_P0_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base& z_d
 // Postcondition:
 const Domaine_PolyMAC_old& Champ_P0_PolyMAC_old::domaine_PolyMAC_old() const
 {
-  return ref_cast(Domaine_PolyMAC_old, la_domaine_VF.valeur());
+  return ref_cast(Domaine_PolyMAC_old, le_dom_VF.valeur());
 }
 
 int Champ_P0_PolyMAC_old::imprime(Sortie& os, int ncomp) const
@@ -139,7 +139,7 @@ int Champ_P0_PolyMAC_old::fixer_nb_valeurs_nodales(int n)
 
 Champ_base& Champ_P0_PolyMAC_old::affecter_(const Champ_base& ch)
 {
-  const Domaine_PolyMAC_old& domaine = ref_cast(Domaine_PolyMAC_old,la_domaine_VF.valeur());
+  const Domaine_PolyMAC_old& domaine = ref_cast(Domaine_PolyMAC_old,le_dom_VF.valeur());
   DoubleTab_parts part(valeurs());
   for (int i = 0; i < part.size(); i++) ch.valeur_aux(i ? domaine.xv() : domaine.xp(), part[i]);
   valeurs().echange_espace_virtuel();
@@ -149,7 +149,7 @@ Champ_base& Champ_P0_PolyMAC_old::affecter_(const Champ_base& ch)
 //utilitaires pour CL
 void Champ_P0_PolyMAC_old::init_cl() const
 {
-  const Domaine_PolyMAC_old& domaine = ref_cast(Domaine_PolyMAC_old,la_domaine_VF.valeur());
+  const Domaine_PolyMAC_old& domaine = ref_cast(Domaine_PolyMAC_old,le_dom_VF.valeur());
   const Conds_lim& cls = mon_dom_cl_dis->les_conditions_limites();
   int i, f, n;
 

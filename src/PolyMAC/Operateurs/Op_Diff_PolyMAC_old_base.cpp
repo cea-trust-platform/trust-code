@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ Entree& Op_Diff_PolyMAC_old_base::readOn(Entree& s )
 double Op_Diff_PolyMAC_old_base::calculer_dt_stab() const
 {
   update_nu();
-  const Domaine& ma_domaine=la_domaine_poly_->domaine();
+  const Domaine& ma_domaine=le_dom_poly_->domaine();
   double dt_stab = DMAXFLOAT;
 
   const int nb_elem =  ma_domaine.nb_elem();
@@ -81,11 +81,11 @@ double Op_Diff_PolyMAC_old_base::calculer_dt_stab() const
       // Detect if a heat flux is imposed on a boundary through Paroi_echange_externe_impose keyword
       double h_imp_max = -1, h_imp_temp=-2;
 
-      const Domaine_Cl_PolyMAC_old& la_domaine_cl_poly = la_zcl_poly_.valeur();
-      for(int i=0; i<la_domaine_cl_poly.nb_cond_lim(); i++)
+      const Domaine_Cl_PolyMAC_old& le_dom_cl_poly = la_zcl_poly_.valeur();
+      for(int i=0; i<le_dom_cl_poly.nb_cond_lim(); i++)
         {
           // loop on boundaries
-          const Cond_lim_base& la_cl = la_domaine_cl_poly.les_conditions_limites(i).valeur();
+          const Cond_lim_base& la_cl = le_dom_cl_poly.les_conditions_limites(i).valeur();
 
           if (sub_type(Echange_externe_impose,la_cl))
             {
@@ -104,11 +104,11 @@ double Op_Diff_PolyMAC_old_base::calculer_dt_stab() const
 
       if(alpha_max != 0.0 && nb_elem != 0)
         {
-          double min_delta_h_carre = la_domaine_poly_->carre_pas_du_maillage();
+          double min_delta_h_carre = le_dom_poly_->carre_pas_du_maillage();
           if(h_imp_max>0.0)  //a heat flux is imposed on a boundary condition
             {
               // get the thermal conductivity
-              const Equation_base& mon_eqn = la_domaine_cl_poly.equation();
+              const Equation_base& mon_eqn = le_dom_cl_poly.equation();
               const Milieu_base& mon_milieu = mon_eqn.milieu();
               const DoubleVect& tab_lambda = mon_milieu.conductivite().valeurs();
               double max_conductivity = local_max_vect(tab_lambda);
@@ -136,7 +136,7 @@ double Op_Diff_PolyMAC_old_base::calculer_dt_stab() const
       // assert(valeurs_rho.size_array()== ma_domaine.les_elems().dimension_tot(0));
       // Champ_P0_PolyMAC_old : champ aux elems et aux faces
       // Champ de masse volumique variable.
-      const IntTab& e_f = la_domaine_poly_->elem_faces();
+      const IntTab& e_f = le_dom_poly_->elem_faces();
       //Cerr << e_f << finl;
       for (int elem = 0; elem < nb_elem; elem++)
         {
@@ -151,9 +151,9 @@ double Op_Diff_PolyMAC_old_base::calculer_dt_stab() const
               for (int f=0; f<deux_dim; f++)
                 {
                   int face = e_f(elem, f);
-                  const double d = la_domaine_poly_->volumes(elem) / la_domaine_poly_->surface(face);
+                  const double d = le_dom_poly_->volumes(elem) / le_dom_poly_->surface(face);
                   h += 0.5/(d*d); // On multiplie par 0.5 car face comptee 2 fois
-                  //Cerr << elem << " " << face << " " << la_domaine_poly_->surface(face) << finl;
+                  //Cerr << elem << " " << face << " " << le_dom_poly_->surface(face) << finl;
                 }
               // Voir Op_Diff_VDF_Elem_base::calculer_dt_stab():
               dt = 0.5 * rho / ((diffu + DMINFLOAT)*h);
@@ -161,7 +161,7 @@ double Op_Diff_PolyMAC_old_base::calculer_dt_stab() const
             }
           else
             {
-              dt = la_domaine_poly_->carre_pas_maille(elem) * rho / (deux_dim * (diffu + DMINFLOAT));
+              dt = le_dom_poly_->carre_pas_maille(elem) * rho / (deux_dim * (diffu + DMINFLOAT));
               //Cerr << "NC  " << dt << finl;
             }
           if (dt < dt_stab)
@@ -177,14 +177,14 @@ void Op_Diff_PolyMAC_old_base::completer()
 {
   Operateur_base::completer();
   nu_.resize(0, equation().que_suis_je() == "Transport_K_Eps" ? 2 : diffusivite().valeurs().line_size());
-  la_domaine_poly_.valeur().domaine().creer_tableau_elements(nu_);
-  la_domaine_poly_.valeur().creer_tableau_faces(nu_fac_);
+  le_dom_poly_.valeur().domaine().creer_tableau_elements(nu_);
+  le_dom_poly_.valeur().creer_tableau_faces(nu_fac_);
   nu_a_jour_ = 0;
 }
 
 int Op_Diff_PolyMAC_old_base::impr(Sortie& os) const
 {
-  const Domaine& ma_domaine=la_domaine_poly_->domaine();
+  const Domaine& ma_domaine=le_dom_poly_->domaine();
   const int impr_mom=ma_domaine.moments_a_imprimer();
   const int impr_sum=(ma_domaine.bords_a_imprimer_sum().est_vide() ? 0:1);
   const int impr_bord=(ma_domaine.bords_a_imprimer().est_vide() ? 0:1);
@@ -192,19 +192,19 @@ int Op_Diff_PolyMAC_old_base::impr(Sortie& os) const
   DoubleTab& tab_flux_bords= flux_bords();
   int nb_comp = tab_flux_bords.nb_dim() > 1 ? tab_flux_bords.dimension(1) : 0;
   DoubleVect bilan(nb_comp);
-  const int nb_faces = la_domaine_poly_->nb_faces_tot();
+  const int nb_faces = le_dom_poly_->nb_faces_tot();
   DoubleTab xgr(nb_faces,dimension);
   xgr=0.;
   if (impr_mom)
     {
-      const DoubleTab& xgrav = la_domaine_poly_->xv();
+      const DoubleTab& xgrav = le_dom_poly_->xv();
       const ArrOfDouble& c_grav=ma_domaine.cg_moments();
       for (int num_face=0; num_face <nb_faces; num_face++)
         for (int i=0; i<dimension; i++)
           xgr(num_face,i)=xgrav(num_face,i)-c_grav[i];
     }
   int k,face;
-  int nb_front_Cl=la_domaine_poly_->nb_front_Cl();
+  int nb_front_Cl=le_dom_poly_->nb_front_Cl();
   DoubleTrav flux_bords2( 5, nb_front_Cl , nb_comp) ;
   flux_bords2=0;
   for (int num_cl=0; num_cl<nb_front_Cl; num_cl++)
@@ -273,7 +273,7 @@ int Op_Diff_PolyMAC_old_base::impr(Sortie& os) const
       if (impr_sum) Flux_sum << finl;
       if (impr_mom) Flux_moment << finl;
     }
-  const LIST(Nom)& Liste_Bords_a_imprimer = la_domaine_poly_->domaine().bords_a_imprimer();
+  const LIST(Nom)& Liste_Bords_a_imprimer = le_dom_poly_->domaine().bords_a_imprimer();
   if (!Liste_Bords_a_imprimer.est_vide() && nb_comp > 0)
     {
       EcrFicPartage Flux_face;
@@ -296,9 +296,9 @@ int Op_Diff_PolyMAC_old_base::impr(Sortie& os) const
               for (face=ndeb; face<nfin; face++)
                 {
                   if (dimension == 2)
-                    Flux_face << "# Face a x= " << la_domaine_poly_->xv(face,0) << " y= " << la_domaine_poly_->xv(face,1) << " : ";
+                    Flux_face << "# Face a x= " << le_dom_poly_->xv(face,0) << " y= " << le_dom_poly_->xv(face,1) << " : ";
                   else if (dimension == 3)
-                    Flux_face << "# Face a x= " << la_domaine_poly_->xv(face,0) << " y= " << la_domaine_poly_->xv(face,1) << " z= " << la_domaine_poly_->xv(face,2) << " : ";
+                    Flux_face << "# Face a x= " << le_dom_poly_->xv(face,0) << " y= " << le_dom_poly_->xv(face,1) << " z= " << le_dom_poly_->xv(face,2) << " : ";
                   for(k=0; k<nb_comp; k++)
                     Flux_face << tab_flux_bords(face, k) << " ";
                   Flux_face << finl;
@@ -317,7 +317,7 @@ void Op_Diff_PolyMAC_old_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base
 */
 void Op_Diff_PolyMAC_old_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
-  la_domaine_poly_ = ref_cast(Domaine_PolyMAC_old,domaine_dis.valeur());
+  le_dom_poly_ = ref_cast(Domaine_PolyMAC_old,domaine_dis.valeur());
   la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_old,zcl.valeur());
 }
 
@@ -346,7 +346,7 @@ const Champ_base& Op_Diff_PolyMAC_old_base::diffusivite() const
 void Op_Diff_PolyMAC_old_base::update_nu() const
 {
   if (nu_a_jour_) return; //on a deja fait le travail
-  const Domaine_PolyMAC_old& domaine = la_domaine_poly_.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_poly_.valeur();
   const Conds_lim& cls = la_zcl_poly_->les_conditions_limites();
   int i, j, f;
 

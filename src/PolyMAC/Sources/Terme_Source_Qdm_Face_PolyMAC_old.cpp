@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,15 +67,15 @@ void Terme_Source_Qdm_Face_PolyMAC_old::associer_pb(const Probleme_base& )
 void Terme_Source_Qdm_Face_PolyMAC_old::associer_domaines(const Domaine_dis& domaine_dis,
                                                           const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
-  la_domaine_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
+  le_dom_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
 }
 
 
 DoubleTab& Terme_Source_Qdm_Face_PolyMAC_old::ajouter(DoubleTab& resu) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
-  const Domaine_Cl_PolyMAC_old& domaine_Cl_PolyMAC_old = la_domaine_Cl_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
+  const Domaine_Cl_PolyMAC_old& domaine_Cl_PolyMAC_old = le_dom_Cl_PolyMAC_old.valeur();
 
   /* 1. faces de bord -> on ne contribue qu'aux faces de Neumann */
   for (int n_bord=0; n_bord<domaine_PolyMAC_old.nb_front_Cl(); n_bord++)

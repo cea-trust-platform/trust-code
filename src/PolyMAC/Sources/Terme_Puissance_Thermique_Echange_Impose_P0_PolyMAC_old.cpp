@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,12 +57,12 @@ Entree& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_old::readOn(Entree& 
 
 void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_old::mettre_a_jour(double temps)
 {
-  const Domaine_VF& domaine = la_domaine_PolyMAC_old.valeur();
+  const Domaine_VF& domaine = le_dom_PolyMAC_old.valeur();
   const DoubleVect& volumes = domaine.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
-  int nb_elem = la_domaine_PolyMAC_old.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
+  int nb_elem = le_dom_PolyMAC_old.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
 
   bilan().resize(N), bilan() = 0;
 
@@ -86,19 +86,19 @@ void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_old::mettre_a_jour(doub
 void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_old::associer_domaines(const Domaine_dis& domaine_dis,
                                                                                 const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
-  la_domaine_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
+  le_dom_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
 }
 
 
 DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_old::ajouter(DoubleTab& resu )  const
 {
-  const Domaine_VF&     domaine               = la_domaine_PolyMAC_old.valeur();
+  const Domaine_VF&     domaine               = le_dom_PolyMAC_old.valeur();
   const DoubleVect& volumes = domaine.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
   const DoubleTab& Text = Text_.valeur().valeurs();
   const DoubleTab& T = equation().inconnue().valeurs();
-  int nb_elem=la_domaine_PolyMAC_old.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
+  int nb_elem=le_dom_PolyMAC_old.valeur().nb_elem(), c_h = himp.dimension(0) == 1, c_T = Text.dimension(0) == 1, n, N = T.line_size();
 
   for (int e = 0; e < nb_elem; e++)
     for (n = 0; n < N; n++)
@@ -114,10 +114,10 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_old::calculer(Dou
 }
 void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_old::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Domaine_VF&     domaine               = la_domaine_PolyMAC_old.valeur();
+  const Domaine_VF&     domaine               = le_dom_PolyMAC_old.valeur();
   const DoubleVect& volumes = domaine.volumes();
   const DoubleTab& himp = himp_.valeur().valeurs();
-  int nb_elem=la_domaine_PolyMAC_old.valeur().nb_elem(), c_h = himp.dimension(0) == 1, n, N = himp.line_size();
+  int nb_elem=le_dom_PolyMAC_old.valeur().nb_elem(), c_h = himp.dimension(0) == 1, n, N = himp.line_size();
 
   for (int e = 0, i = 0; e < nb_elem; e++)
     for (n = 0; n < N; n++, i++)

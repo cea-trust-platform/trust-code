@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ void Op_Div_PolyMAC_old::associer(const Domaine_dis& domaine_dis,
 {
   const Domaine_PolyMAC_old& zPolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
   const Domaine_Cl_PolyMAC_old& zclPolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
-  la_domaine_PolyMAC_old = zPolyMAC_old;
+  le_dom_PolyMAC_old = zPolyMAC_old;
   la_zcl_PolyMAC_old = zclPolyMAC_old;
 }
 
@@ -72,7 +72,7 @@ DoubleTab& Op_Div_PolyMAC_old::ajouter(const DoubleTab& vit, DoubleTab& div) con
 
 
   Debog::verifier("vit in div",vit);
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const DoubleVect& surface=domaine_PolyMAC_old.face_surfaces();
   const IntTab& face_voisins = domaine_PolyMAC_old.face_voisins();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
@@ -125,7 +125,7 @@ DoubleTab& Op_Div_PolyMAC_old::ajouter(const DoubleTab& vit, DoubleTab& div) con
 }
 void Op_Div_PolyMAC_old::contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const DoubleVect& surface=domaine_PolyMAC_old.face_surfaces();
   const IntTab& face_voisins = domaine_PolyMAC_old.face_voisins();
   const DoubleVect& porosite_surf = equation().milieu().porosite_face();
@@ -151,7 +151,7 @@ void Op_Div_PolyMAC_old::contribuer_a_avec(const DoubleTab&,Matrice_Morse& matri
 void Op_Div_PolyMAC_old::dimensionner(Matrice_Morse& matrice) const
 {
 
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   int nb_faces=domaine_PolyMAC_old.nb_faces();
   int nb_faces_tot=domaine_PolyMAC_old.nb_faces_tot();
   int nb_elem_tot=domaine_PolyMAC_old.nb_elem_tot();
@@ -189,7 +189,7 @@ DoubleTab& Op_Div_PolyMAC_old::calculer(const DoubleTab& vit, DoubleTab& div) co
 int Op_Div_PolyMAC_old::impr(Sortie& os) const
 {
 
-  const int impr_bord=(la_domaine_PolyMAC_old->domaine().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_PolyMAC_old->domaine().bords_a_imprimer().est_vide() ? 0:1);
   //SFichier Flux_div;
   if (!Flux_div.is_open()) ouvrir_fichier(Flux_div,"",je_suis_maitre());
   EcrFicPartage Flux_face;
@@ -203,7 +203,7 @@ int Op_Div_PolyMAC_old::impr(Sortie& os) const
   DoubleVect flux_bord(nb_compo);
   DoubleVect bilan(nb_compo);
   bilan = 0;
-  for (int num_cl=0; num_cl<la_domaine_PolyMAC_old->nb_front_Cl(); num_cl++)
+  for (int num_cl=0; num_cl<le_dom_PolyMAC_old->nb_front_Cl(); num_cl++)
     {
       flux_bord=0;
       const Cond_lim& la_cl = la_zcl_PolyMAC_old->les_conditions_limites(num_cl);
@@ -236,22 +236,22 @@ int Op_Div_PolyMAC_old::impr(Sortie& os) const
       Flux_div << finl;
     }
 
-  for (int num_cl=0; num_cl<la_domaine_PolyMAC_old->nb_front_Cl(); num_cl++)
+  for (int num_cl=0; num_cl<le_dom_PolyMAC_old->nb_front_Cl(); num_cl++)
     {
       const Frontiere_dis_base& la_fr = la_zcl_PolyMAC_old->les_conditions_limites(num_cl).frontiere_dis();
       const Cond_lim& la_cl = la_zcl_PolyMAC_old->les_conditions_limites(num_cl);
       const Front_VF& frontiere_dis = ref_cast(Front_VF,la_cl.frontiere_dis());
       int ndeb = frontiere_dis.num_premiere_face();
       int nfin = ndeb + frontiere_dis.nb_faces();
-      if (la_domaine_PolyMAC_old->domaine().bords_a_imprimer().contient(la_fr.le_nom()))
+      if (le_dom_PolyMAC_old->domaine().bords_a_imprimer().contient(la_fr.le_nom()))
         {
           Flux_face << "# Flux par face sur " << la_fr.le_nom() << " au temps " << temps << " : " << finl;
           for (int face=ndeb; face<nfin; face++)
             {
               if (dimension==2)
-                Flux_face << "# Face a x= " << la_domaine_PolyMAC_old->xv(face,0) << " y= " << la_domaine_PolyMAC_old->xv(face,1) << " flux=" ;
+                Flux_face << "# Face a x= " << le_dom_PolyMAC_old->xv(face,0) << " y= " << le_dom_PolyMAC_old->xv(face,1) << " flux=" ;
               else if (dimension==3)
-                Flux_face << "# Face a x= " << la_domaine_PolyMAC_old->xv(face,0) << " y= " << la_domaine_PolyMAC_old->xv(face,1) << " z= " << la_domaine_PolyMAC_old->xv(face,2) << " flux=" ;
+                Flux_face << "# Face a x= " << le_dom_PolyMAC_old->xv(face,0) << " y= " << le_dom_PolyMAC_old->xv(face,1) << " z= " << le_dom_PolyMAC_old->xv(face,2) << " flux=" ;
               for(int k=0; k<nb_compo; k++)
                 Flux_face << " " << flux_bords_(face, k);
               Flux_face << finl;
@@ -266,7 +266,7 @@ int Op_Div_PolyMAC_old::impr(Sortie& os) const
 
 void Op_Div_PolyMAC_old::volumique(DoubleTab& div) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const DoubleVect& vol = domaine_PolyMAC_old.volumes();
   int nb_elem=domaine_PolyMAC_old.domaine().nb_elem_tot();
   int num_elem;

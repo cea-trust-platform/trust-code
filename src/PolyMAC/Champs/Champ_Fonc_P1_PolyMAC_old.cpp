@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,7 +59,7 @@ Entree& Champ_Fonc_P1_PolyMAC_old::readOn(Entree& s)
 // Postcondition:
 const Domaine_dis_base& Champ_Fonc_P1_PolyMAC_old::domaine_dis_base() const
 {
-  return la_domaine_VF.valeur();
+  return le_dom_VF.valeur();
 }
 // Description:
 //
@@ -76,7 +76,7 @@ const Domaine_dis_base& Champ_Fonc_P1_PolyMAC_old::domaine_dis_base() const
 // Postcondition:
 void Champ_Fonc_P1_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
 {
-  la_domaine_VF=ref_cast(Domaine_VF, z_dis);
+  le_dom_VF=ref_cast(Domaine_VF, z_dis);
 }
 
 // Description:
@@ -86,7 +86,7 @@ void Champ_Fonc_P1_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base
 //    Valeurs par defaut:
 //    Contraintes:
 //    Acces: entree/sortie
-// Retour: la_domaine_PolyMAC_old_P1.valeur()
+// Retour: le_dom_PolyMAC_old_P1.valeur()
 //    Signification:
 //    Contraintes:
 // Exception:
@@ -94,7 +94,7 @@ void Champ_Fonc_P1_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base
 // Postcondition:
 const Domaine_PolyMAC_old& Champ_Fonc_P1_PolyMAC_old::domaine_PolyMAC_old() const
 {
-  return ref_cast(Domaine_PolyMAC_old, la_domaine_VF.valeur());
+  return ref_cast(Domaine_PolyMAC_old, le_dom_VF.valeur());
 }
 
 void Champ_Fonc_P1_PolyMAC_old::mettre_a_jour(double t)

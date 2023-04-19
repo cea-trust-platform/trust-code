@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -58,7 +58,7 @@
     DoubleTab& ajouter_faces_internes(DoubleTab& ,int ) const;                \
     DoubleTab& ajouter_faces_bords(DoubleTab& ) const;                        \
     DoubleTab& ajouter_faces_bords(DoubleTab& ,int ) const;                \
-    inline const int& faces_doubles(int num_face) const { return la_domaine->faces_doubles()[num_face];}; \
+    inline const int& faces_doubles(int num_face) const { return le_dom->faces_doubles()[num_face];}; \
                                                                         \
     int nb_faces;                                                        \
     int premiere_face_interne;                                                \
@@ -76,8 +76,8 @@
   {}                                                                        \
                                                                         \
   inline void It_Sou_PolyMAC_old_Face(_TYPE_)::completer_(){                        \
-    nb_faces=la_domaine->nb_faces();                                        \
-    premiere_face_interne=la_domaine->premiere_face_int();                        \
+    nb_faces=le_dom->nb_faces();                                        \
+    premiere_face_interne=le_dom->premiere_face_int();                        \
   }                                                                        \
                                                                         \
   inline Evaluateur_Source_PolyMAC_old& It_Sou_PolyMAC_old_Face(_TYPE_)::evaluateur()        \
@@ -106,7 +106,7 @@
                                                                         \
     DoubleVect& bilan = so_base->bilan();                                \
     bilan=0;                                                                \
-    int nb_faces_tot = la_domaine.valeur().nb_faces_tot();                \
+    int nb_faces_tot = le_dom.valeur().nb_faces_tot();                \
     coef.resize(nb_faces_tot,Array_base::NOCOPY_NOINIT);                \
     coef=1;                                                                \
     if (equation_divisee_par_rho())                                        \
@@ -118,8 +118,8 @@
         else                                                                \
           {                                                                \
             const DoubleTab& val_rho = rho.valeurs();                \
-            const IntTab& face_vois = la_domaine.valeur().face_voisins();        \
-            const DoubleVect& volumes = la_domaine.valeur().volumes();        \
+            const IntTab& face_vois = le_dom.valeur().face_voisins();        \
+            const DoubleVect& volumes = le_dom.valeur().volumes();        \
             coef = 0.;                                                        \
             for (int fac=0; fac<nb_faces_tot; fac++)                        \
               {                                                                \
@@ -157,7 +157,7 @@
     int num_cl;                                                                \
     int num_face;                                                        \
     DoubleVect& bilan = so_base->bilan();                                \
-    for (num_cl =0; num_cl<la_domaine->nb_front_Cl(); num_cl++)                \
+    for (num_cl =0; num_cl<le_dom->nb_front_Cl(); num_cl++)                \
       {                                                                        \
         const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);        \
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis()); \
@@ -184,7 +184,7 @@
     int num_face;                                                        \
     DoubleVect source(ncomp);                                                \
     DoubleVect& bilan = so_base->bilan();                                \
-    for (num_cl =0; num_cl<la_domaine->nb_front_Cl(); num_cl++)                \
+    for (num_cl =0; num_cl<le_dom->nb_front_Cl(); num_cl++)                \
       {                                                                        \
         const Cond_lim& la_cl = la_zcl->les_conditions_limites(num_cl);        \
         const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis()); \

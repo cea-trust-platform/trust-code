@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -57,7 +57,7 @@ public:
 
 protected:
 
-  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;   //!< associe la_Domaine_PolyMAC_old et la_Domaine_Cl_PolyMAC_old
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;   //!< associe le_dom_PolyMAC_old et le_dom_Cl_PolyMAC_old
 
   //! Appele pour chaque face par ajouter()
   /**
@@ -92,8 +92,8 @@ protected:
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
   //! Domaine dans laquelle s'applique la perte de charge
-  REF(Domaine_PolyMAC_old) la_Domaine_PolyMAC_old;
-  REF(Domaine_Cl_PolyMAC_old) la_Domaine_Cl_PolyMAC_old;
+  REF(Domaine_PolyMAC_old) le_dom_PolyMAC_old;
+  REF(Domaine_Cl_PolyMAC_old) le_dom_Cl_PolyMAC_old;
 
   // Cas d'une sous-domaine
   bool sous_domaine; //!< Le terme est-il limite a une sous-domaine ?

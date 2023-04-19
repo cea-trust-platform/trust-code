@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -72,7 +72,7 @@ int Assembleur_P_PolyMAC_old::assembler_rho_variable(Matrice& la_matrice, const 
       Cerr << "La masse volumique n'est pas aux sommets dans Assembleur_P_PolyMAC_old::assembler_rho_variable." << finl;
       Process::exit();
     }
-  const DoubleVect& volumes_som=ref_cast(Domaine_PolyMAC_old, la_domaine_PolyMAC_old.valeur()).volumes_sommets_thilde();
+  const DoubleVect& volumes_som=ref_cast(Domaine_PolyMAC_old, le_dom_PolyMAC_old.valeur()).volumes_sommets_thilde();
   const DoubleVect& masse_volumique=rho.valeurs();
   DoubleVect quantitee_som(volumes_som);
   int size=quantitee_som.size_array();
@@ -93,7 +93,7 @@ int  Assembleur_P_PolyMAC_old::assembler_mat(Matrice& la_matrice,const DoubleVec
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
-  const Domaine_PolyMAC_old& domaine = ref_cast(Domaine_PolyMAC_old, la_domaine_PolyMAC_old.valeur());
+  const Domaine_PolyMAC_old& domaine = ref_cast(Domaine_PolyMAC_old, le_dom_PolyMAC_old.valeur());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = mon_equation->milieu().porosite_face(), &pe = mon_equation->milieu().porosite_elem(), &ve = domaine.volumes();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, mon_equation->inconnue().valeur());
@@ -106,8 +106,8 @@ int  Assembleur_P_PolyMAC_old::assembler_mat(Matrice& la_matrice,const DoubleVec
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
-  for (int n_bord=0; n_bord<la_domaine_PolyMAC_old->nb_front_Cl(); n_bord++)
-    if (sub_type(Neumann_sortie_libre, la_domaine_Cl_PolyMAC_old->les_conditions_limites(n_bord).valeur()) )
+  for (int n_bord=0; n_bord<le_dom_PolyMAC_old->nb_front_Cl(); n_bord++)
+    if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC_old->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
 
   /* 1. stencils de la matrice en pression et de rec : seulement au premier passage */
@@ -242,16 +242,16 @@ int Assembleur_P_PolyMAC_old::modifier_secmem(DoubleTab& secmem)
 {
   Debog::verifier("secmem dans modifier secmem",secmem);
 
-  const Domaine_PolyMAC_old& la_domaine = la_domaine_PolyMAC_old.valeur();
-  const Domaine_Cl_PolyMAC_old& la_domaine_cl = la_domaine_Cl_PolyMAC_old.valeur();
-  int nb_cond_lim = la_domaine_cl.nb_cond_lim();
-  const IntTab& face_voisins = la_domaine.face_voisins();
+  const Domaine_PolyMAC_old& le_dom = le_dom_PolyMAC_old.valeur();
+  const Domaine_Cl_PolyMAC_old& le_dom_cl = le_dom_Cl_PolyMAC_old.valeur();
+  int nb_cond_lim = le_dom_cl.nb_cond_lim();
+  const IntTab& face_voisins = le_dom.face_voisins();
 
   // Modification du second membre :
   int i;
   for (i=0; i<nb_cond_lim; i++)
     {
-      const Cond_lim_base& la_cl_base = la_domaine_cl.les_conditions_limites(i).valeur();
+      const Cond_lim_base& la_cl_base = le_dom_cl.les_conditions_limites(i).valeur();
       const Front_VF& la_front_dis = ref_cast(Front_VF,la_cl_base.frontiere_dis());
       int ndeb = la_front_dis.num_premiere_face();
       int nfin = ndeb + la_front_dis.nb_faces();
@@ -289,7 +289,7 @@ int Assembleur_P_PolyMAC_old::modifier_secmem(DoubleTab& secmem)
                   //for num_face
                   double Stt = 0.;
                   for (int k=0; k<dimension; k++)
-                    Stt -= Gpt(k) * la_domaine.face_normales(num_face, k);
+                    Stt -= Gpt(k) * le_dom.face_normales(num_face, k);
                   secmem(face_voisins(num_face,0)) += Stt;
                 }
             }
@@ -309,7 +309,7 @@ int Assembleur_P_PolyMAC_old::modifier_secmem(DoubleTab& secmem)
                   double Stt = 0.;
                   for (int k=0; k<dimension; k++)
                     Stt -= Gpt(num_face - ndeb, k) *
-                           la_domaine.face_normales(num_face, k);
+                           le_dom.face_normales(num_face, k);
                   secmem(face_voisins(num_face,0)) += Stt;
                 }
             }
@@ -332,22 +332,22 @@ int Assembleur_P_PolyMAC_old::modifier_solution(DoubleTab& pression)
 
 const Domaine_dis_base& Assembleur_P_PolyMAC_old::domaine_dis_base() const
 {
-  return la_domaine_PolyMAC_old.valeur();
+  return le_dom_PolyMAC_old.valeur();
 }
 
 const Domaine_Cl_dis_base& Assembleur_P_PolyMAC_old::domaine_Cl_dis_base() const
 {
-  return la_domaine_Cl_PolyMAC_old.valeur();
+  return le_dom_Cl_PolyMAC_old.valeur();
 }
 
-void Assembleur_P_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base& la_domaine_dis)
+void Assembleur_P_PolyMAC_old::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis)
 {
-  la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old,la_domaine_dis);
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old,le_dom_dis);
 }
 
-void Assembleur_P_PolyMAC_old::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& la_domaine_Cl_dis)
+void Assembleur_P_PolyMAC_old::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis)
 {
-  la_domaine_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, la_domaine_Cl_dis);
+  le_dom_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, le_dom_Cl_dis);
 }
 
 void Assembleur_P_PolyMAC_old::completer(const Equation_base& Eqn)

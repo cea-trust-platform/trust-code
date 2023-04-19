@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -64,9 +64,9 @@ Entree& Domaine_Cl_PolyMAC_old::readOn(Entree& is )
 
 // Description:
 // etape de discretisation : dimensionnement des tableaux
-void Domaine_Cl_PolyMAC_old::associer(const Domaine_PolyMAC_old& la_domaine_PolyMAC_old)
+void Domaine_Cl_PolyMAC_old::associer(const Domaine_PolyMAC_old& le_dom_PolyMAC_old)
 {
-  //  int nb_elem_Cl  = la_domaine_PolyMAC_old.nb_elem_Cl();
+  //  int nb_elem_Cl  = le_dom_PolyMAC_old.nb_elem_Cl();
 }
 
 // Description:
@@ -76,8 +76,8 @@ void Domaine_Cl_PolyMAC_old::completer(const Domaine_dis& une_domaine_dis)
   modif_perio_fait_ =0;
   if (sub_type(Domaine_PolyMAC_old,une_domaine_dis.valeur()))
     {
-      const Domaine_PolyMAC_old& la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, une_domaine_dis.valeur());
-      remplir_type_elem_Cl(la_domaine_PolyMAC_old);
+      const Domaine_PolyMAC_old& le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, une_domaine_dis.valeur());
+      remplir_type_elem_Cl(le_dom_PolyMAC_old);
     }
   else
     {
@@ -87,7 +87,7 @@ void Domaine_Cl_PolyMAC_old::completer(const Domaine_dis& une_domaine_dis)
 }
 // Description:
 // appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
-void Domaine_Cl_PolyMAC_old::remplir_type_elem_Cl(const Domaine_PolyMAC_old& la_domaine_PolyMAC_old)
+void Domaine_Cl_PolyMAC_old::remplir_type_elem_Cl(const Domaine_PolyMAC_old& le_dom_PolyMAC_old)
 {
 }
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,7 +59,7 @@ Entree& Perte_Charge_PolyMAC_old::readOn(Entree& s )
 
 DoubleTab& Perte_Charge_PolyMAC_old::ajouter(DoubleTab& resu) const
 {
-  const Domaine_PolyMAC_old& domaine = la_Domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old.valeur();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = la_vitesse->valeurs();
@@ -103,7 +103,7 @@ DoubleTab& Perte_Charge_PolyMAC_old::ajouter(DoubleTab& resu) const
 // Description: copie de ajouter sauf la derniere ligne
 void Perte_Charge_PolyMAC_old::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Domaine_PolyMAC_old& domaine = la_Domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old.valeur();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   const Champ_Don& nu = le_fluide->viscosite_cinematique(), &dh = diam_hydr;
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = inco;
@@ -184,6 +184,6 @@ void Perte_Charge_PolyMAC_old::associer_pb(const Probleme_base& pb)
 void Perte_Charge_PolyMAC_old::associer_domaines(const Domaine_dis& domaine_dis,
                                                  const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  la_Domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
-  la_Domaine_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
+  le_dom_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
 }

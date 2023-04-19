@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,7 +38,7 @@ Evaluateur_Source_PolyMAC_old_Face::Evaluateur_Source_PolyMAC_old_Face(const Eva
 
 void Evaluateur_Source_PolyMAC_old_Face::completer()
 {
-  orientation.ref(la_domaine->orientation());
-  volumes_entrelaces.ref(la_domaine->volumes_entrelaces());
+  orientation.ref(le_dom->orientation());
+  volumes_entrelaces.ref(le_dom->volumes_entrelaces());
   porosite_surf.ref(la_zcl->equation().milieu().porosite_face());
 }

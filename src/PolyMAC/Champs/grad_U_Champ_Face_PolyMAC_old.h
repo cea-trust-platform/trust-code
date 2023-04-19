@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ public:
 
 protected:
 
-  REF(Domaine_Cl_PolyMAC_old) la_domaine_Cl_PolyMAC_old;
+  REF(Domaine_Cl_PolyMAC_old) le_dom_Cl_PolyMAC_old;
   REF(Champ_Face_PolyMAC_old) vitesse_;
 };
 
@@ -60,9 +60,9 @@ inline void grad_U_Champ_Face_PolyMAC_old::mettre_a_jour(double tps)
   Champ_Fonc_base::mettre_a_jour(tps);
 }
 
-inline void grad_U_Champ_Face_PolyMAC_old::associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& la_domaine_Cl_dis_base)
+inline void grad_U_Champ_Face_PolyMAC_old::associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_domaine_Cl_PolyMAC_old  = (const Domaine_Cl_PolyMAC_old&) la_domaine_Cl_dis_base;
+  le_dom_Cl_PolyMAC_old  = (const Domaine_Cl_PolyMAC_old&) le_dom_Cl_dis_base;
 }
 
 

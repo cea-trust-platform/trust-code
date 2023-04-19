@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -65,9 +65,9 @@ Entree& Masse_PolyMAC_old_Face::readOn(Entree& s)
 DoubleTab& Masse_PolyMAC_old_Face::appliquer_impl(DoubleTab& sm) const
 {
   //hors faces de bord, on ne fait rien et on passe secmem a corriger_derivee_* (car PolyMAC_old a une matrice de masse)
-  assert(la_domaine_PolyMAC_old.non_nul());
-  assert(la_domaine_Cl_PolyMAC_old.non_nul());
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  assert(le_dom_PolyMAC_old.non_nul());
+  assert(le_dom_Cl_PolyMAC_old.non_nul());
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   ch.init_cl();
 
@@ -90,14 +90,14 @@ DoubleTab& Masse_PolyMAC_old_Face::appliquer_impl(DoubleTab& sm) const
 }
 
 //
-void Masse_PolyMAC_old_Face::associer_domaine_dis_base(const Domaine_dis_base& la_domaine_dis_base)
+void Masse_PolyMAC_old_Face::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, la_domaine_dis_base);
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, le_dom_dis_base);
 }
 
-void Masse_PolyMAC_old_Face::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& la_domaine_Cl_dis_base)
+void Masse_PolyMAC_old_Face::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_domaine_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, la_domaine_Cl_dis_base);
+  le_dom_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, le_dom_Cl_dis_base);
 }
 
 void Masse_PolyMAC_old_Face::completer()
@@ -117,7 +117,7 @@ void Masse_PolyMAC_old_Face::completer()
 
 void Masse_PolyMAC_old_Face::dimensionner(Matrice_Morse& matrix) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_PolyMAC_old;
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old;
   const IntTab& e_f = domaine.elem_faces();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   int i, j, k, e, a, f, fb, nf_tot = domaine.nb_faces_tot(), na_tot = dimension < 3 ? domaine.domaine().nb_som_tot() : domaine.domaine().nb_aretes_tot();
@@ -144,9 +144,9 @@ void Masse_PolyMAC_old_Face::dimensionner(Matrice_Morse& matrix) const
 
 DoubleTab& Masse_PolyMAC_old_Face::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_PolyMAC_old;
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old;
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
-  const Conds_lim& cls = la_domaine_Cl_PolyMAC_old->les_conditions_limites();
+  const Conds_lim& cls = le_dom_Cl_PolyMAC_old->les_conditions_limites();
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   const DoubleTab& nf = domaine.face_normales();
   const DoubleVect& fs = domaine.face_surfaces(), &pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
@@ -180,7 +180,7 @@ DoubleTab& Masse_PolyMAC_old_Face::ajouter_masse(double dt, DoubleTab& secmem, c
 
 Matrice_Base& Masse_PolyMAC_old_Face::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_PolyMAC_old;
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old;
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();

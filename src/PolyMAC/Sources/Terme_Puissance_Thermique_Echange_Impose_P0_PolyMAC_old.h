@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -59,8 +59,8 @@ public:
 
 protected:
 
-  REF(Domaine_PolyMAC_old) la_domaine_PolyMAC_old;
-  REF(Domaine_Cl_PolyMAC_old) la_domaine_Cl_PolyMAC_old;
+  REF(Domaine_PolyMAC_old) le_dom_PolyMAC_old;
+  REF(Domaine_Cl_PolyMAC_old) le_dom_Cl_PolyMAC_old;
   Champ_Don himp_,Text_;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 

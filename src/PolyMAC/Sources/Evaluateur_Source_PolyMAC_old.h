@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,18 +41,18 @@ public:
   virtual void calculer_terme_source(int , DoubleVect&  ) const =0;
 
 protected:
-  REF(Domaine_PolyMAC_old) la_domaine;
+  REF(Domaine_PolyMAC_old) le_dom;
   REF(Domaine_Cl_PolyMAC_old) la_zcl;
 };
 
 inline Evaluateur_Source_PolyMAC_old::Evaluateur_Source_PolyMAC_old() {}
 
 inline Evaluateur_Source_PolyMAC_old::Evaluateur_Source_PolyMAC_old(const Evaluateur_Source_PolyMAC_old& eval)
-  : la_domaine(eval.la_domaine),la_zcl(eval.la_zcl) {}
+  : le_dom(eval.le_dom),la_zcl(eval.la_zcl) {}
 
 inline void Evaluateur_Source_PolyMAC_old::associer_domaines(const Domaine_dis_base& domaine_vdf, const Domaine_Cl_dis_base& domaine_cl_vdf)
 {
-  la_domaine = ref_cast(Domaine_PolyMAC_old, domaine_vdf);
+  le_dom = ref_cast(Domaine_PolyMAC_old, domaine_vdf);
   la_zcl = ref_cast(Domaine_Cl_PolyMAC_old, domaine_cl_vdf);
   completer();
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -66,7 +66,7 @@ void Op_Grad_PolyMAC_old_Face::associer(const Domaine_dis& domaine_dis,
 {
   const Domaine_PolyMAC_old& zpolymac = ref_cast(Domaine_PolyMAC_old, domaine_dis.valeur());
   const Domaine_Cl_PolyMAC_old& zclpolymac = ref_cast(Domaine_Cl_PolyMAC_old, domaine_Cl_dis.valeur());
-  la_domaine_polymac = zpolymac;
+  le_dom_polymac = zpolymac;
   la_zcl_polymac = zclpolymac;
 
   porosite_surf.ref(equation().milieu().porosite_face());
@@ -77,7 +77,7 @@ void Op_Grad_PolyMAC_old_Face::associer(const Domaine_dis& domaine_dis,
 
 void Op_Grad_PolyMAC_old_Face::dimensionner(Matrice_Morse& mat) const
 {
-  const Domaine_PolyMAC_old& zpolymac = la_domaine_polymac.valeur();
+  const Domaine_PolyMAC_old& zpolymac = le_dom_polymac.valeur();
   IntTab stencil(0, 2);
   stencil.set_smart_resize(1);
   for (int f = 0; f < zpolymac.nb_faces(); f++)
@@ -90,7 +90,7 @@ void Op_Grad_PolyMAC_old_Face::dimensionner(Matrice_Morse& mat) const
 DoubleTab& Op_Grad_PolyMAC_old_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
   assert_espace_virtuel_vect(inco);
-  const Domaine_PolyMAC_old& zpolymac = la_domaine_polymac.valeur();
+  const Domaine_PolyMAC_old& zpolymac = le_dom_polymac.valeur();
   const Domaine_Cl_PolyMAC_old& zclpolymac = la_zcl_polymac.valeur();
   const DoubleVect& face_surfaces = zpolymac.face_surfaces();
 
@@ -156,7 +156,7 @@ DoubleTab& Op_Grad_PolyMAC_old_Face::calculer(const DoubleTab& inco, DoubleTab& 
 void Op_Grad_PolyMAC_old_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& la_matrice) const
 {
   assert_espace_virtuel_vect(inco);
-  const Domaine_PolyMAC_old& zpolymac = la_domaine_polymac.valeur();
+  const Domaine_PolyMAC_old& zpolymac = le_dom_polymac.valeur();
   const Domaine_Cl_PolyMAC_old& zclpolymac = la_zcl_polymac.valeur();
   const DoubleVect& face_surfaces = zpolymac.face_surfaces();
 
@@ -212,11 +212,11 @@ void Op_Grad_PolyMAC_old_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_
 int Op_Grad_PolyMAC_old_Face::impr(Sortie& os) const
 {
   return 0;
-  const int impr_mom=la_domaine_polymac->domaine().moments_a_imprimer();
-  const int impr_sum=(la_domaine_polymac->domaine().bords_a_imprimer_sum().est_vide() ? 0:1);
-  const int impr_bord=(la_domaine_polymac->domaine().bords_a_imprimer().est_vide() ? 0:1);
+  const int impr_mom=le_dom_polymac->domaine().moments_a_imprimer();
+  const int impr_sum=(le_dom_polymac->domaine().bords_a_imprimer_sum().est_vide() ? 0:1);
+  const int impr_bord=(le_dom_polymac->domaine().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
-  const Domaine_PolyMAC_old& zpolymac = la_domaine_polymac.valeur();
+  const Domaine_PolyMAC_old& zpolymac = le_dom_polymac.valeur();
   const Domaine_Cl_PolyMAC_old& zclpolymac = la_zcl_polymac.valeur();
   const DoubleVect& face_surfaces = zpolymac.face_surfaces();
   const Equation_base& eqn = equation();

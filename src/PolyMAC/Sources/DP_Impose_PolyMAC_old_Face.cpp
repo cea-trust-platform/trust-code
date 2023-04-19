@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ void DP_Impose_PolyMAC_old_Face::remplir_num_faces(Entree& s)
 
 DoubleTab& DP_Impose_PolyMAC_old_Face::ajouter(DoubleTab& resu) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine_PolyMAC_old.face_surfaces();
   const DoubleTab& vit = equation().inconnue().valeurs();
 
@@ -114,7 +114,7 @@ DoubleTab& DP_Impose_PolyMAC_old_Face::ajouter(DoubleTab& resu) const
 
 void DP_Impose_PolyMAC_old_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& mat) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine_PolyMAC_old.face_surfaces();
 
   //valeurs du champ de DP

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ DoubleTab& Source_Generique_Face_PolyMAC_old::ajouter(DoubleTab& resu) const
 {
   Champ espace_stockage;
   const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
-  const Domaine_PolyMAC_old& domaine = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old.valeur();
   const Domaine_Cl_PolyMAC_old& domaine_Cl_PolyMAC_old = la_zcl_PolyMAC_old.valeur();
   const DoubleVect& pf = equation().milieu().porosite_face();
   const DoubleVect& fs = domaine.face_surfaces();
@@ -95,7 +95,7 @@ DoubleTab& Source_Generique_Face_PolyMAC_old::ajouter(DoubleTab& resu) const
 void Source_Generique_Face_PolyMAC_old::associer_domaines(const Domaine_dis& domaine_dis,
                                                           const Domaine_Cl_dis& zcl_dis)
 {
-  la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old,domaine_dis.valeur());
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old,domaine_dis.valeur());
   la_zcl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old,zcl_dis.valeur());
 }
 

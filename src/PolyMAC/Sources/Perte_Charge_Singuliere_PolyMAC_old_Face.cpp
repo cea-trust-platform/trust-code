@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,7 +85,7 @@ void Perte_Charge_Singuliere_PolyMAC_old_Face::remplir_num_faces(Entree& s)
 
 DoubleTab& Perte_Charge_Singuliere_PolyMAC_old_Face::ajouter(DoubleTab& resu) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   //const DoubleVect& volumes_entrelaces = domaine_PolyMAC_old.volumes_entrelaces();
   const DoubleVect& p_f = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
@@ -108,7 +108,7 @@ DoubleTab& Perte_Charge_Singuliere_PolyMAC_old_Face::calculer(DoubleTab& resu) c
 
 void Perte_Charge_Singuliere_PolyMAC_old_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const DoubleVect& p_f = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();
 

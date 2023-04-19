@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -67,11 +67,11 @@ int Champ_Fonc_Face_PolyMAC_old::fixer_nb_valeurs_nodales(int n)
   // pour recuperer la domaine discrete...
 
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
-  const Domaine_VF& la_domaine_vf = ref_cast(Domaine_VF,self.domaine_dis_base());
+  const Domaine_VF& le_dom_vf = ref_cast(Domaine_VF,self.domaine_dis_base());
 
-  assert(n == la_domaine_vf.nb_faces());
+  assert(n == le_dom_vf.nb_faces());
 
-  const MD_Vector& md = la_domaine_vf.md_vector_faces();
+  const MD_Vector& md = le_dom_vf.md_vector_faces();
   // Probleme: nb_comp vaut 2 mais on ne veut qu'une dimension !!!
   // HACK :
   int old_nb_compo = nb_compo_;

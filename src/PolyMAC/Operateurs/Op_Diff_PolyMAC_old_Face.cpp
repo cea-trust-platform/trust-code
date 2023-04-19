@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ Entree& Op_Diff_PolyMAC_old_Face::readOn( Entree& is )
 void Op_Diff_PolyMAC_old_Face::completer()
 {
   Op_Diff_PolyMAC_old_base::completer();
-  const Domaine_PolyMAC_old& domaine = la_domaine_poly_.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_old_Face : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
@@ -71,7 +71,7 @@ void Op_Diff_PolyMAC_old_Face::completer()
 
 void Op_Diff_PolyMAC_old_Face::dimensionner(Matrice_Morse& mat) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_poly_.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   const IntTab& e_f = domaine.elem_faces();
   int i, j, k, a, e, f, fb, nf_tot = domaine.nb_faces_tot(), na_tot = dimension < 3 ? domaine.domaine().nb_som_tot() : domaine.domaine().nb_aretes_tot(), idx;
@@ -101,7 +101,7 @@ void Op_Diff_PolyMAC_old_Face::dimensionner(Matrice_Morse& mat) const
 // renvoie resu
 inline DoubleTab& Op_Diff_PolyMAC_old_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_poly_.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_poly_.valeur();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
@@ -139,7 +139,7 @@ inline DoubleTab& Op_Diff_PolyMAC_old_Face::ajouter(const DoubleTab& inco, Doubl
 
 inline void Op_Diff_PolyMAC_old_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_poly_.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_poly_.valeur();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const Champ_Face_PolyMAC_old& ch = ref_cast(Champ_Face_PolyMAC_old, equation().inconnue().valeur());
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();

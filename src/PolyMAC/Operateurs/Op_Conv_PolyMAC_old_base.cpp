@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -233,7 +233,7 @@ void Op_Conv_PolyMAC_old_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base
 
 void Op_Conv_PolyMAC_old_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
-  la_domaine_poly_ = ref_cast(Domaine_PolyMAC_old,domaine_dis.valeur());
+  le_dom_poly_ = ref_cast(Domaine_PolyMAC_old,domaine_dis.valeur());
   la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_old,zcl.valeur());
 
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,14 +53,14 @@ Entree& Masse_PolyMAC_old_Elem::readOn(Entree& s)
 }
 
 
-void Masse_PolyMAC_old_Elem::associer_domaine_dis_base(const Domaine_dis_base& la_domaine_dis_base)
+void Masse_PolyMAC_old_Elem::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
 {
-  la_domaine_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, la_domaine_dis_base);
+  le_dom_PolyMAC_old = ref_cast(Domaine_PolyMAC_old, le_dom_dis_base);
 }
 
-void Masse_PolyMAC_old_Elem::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& la_domaine_Cl_dis_base)
+void Masse_PolyMAC_old_Elem::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  la_domaine_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, la_domaine_Cl_dis_base);
+  le_dom_Cl_PolyMAC_old = ref_cast(Domaine_Cl_PolyMAC_old, le_dom_Cl_dis_base);
 }
 
 void Masse_PolyMAC_old_Elem::completer()
@@ -81,7 +81,7 @@ void Masse_PolyMAC_old_Elem::completer()
 //ne touche que la partie "elements"
 DoubleTab& Masse_PolyMAC_old_Elem::appliquer_impl(DoubleTab& sm) const
 {
-  const Domaine_PolyMAC_old& domaine_PolyMAC_old = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine_PolyMAC_old = le_dom_PolyMAC_old.valeur();
   const DoubleVect& volumes = domaine_PolyMAC_old.volumes();
   const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
@@ -119,7 +119,7 @@ DoubleTab& Masse_PolyMAC_old_Elem::appliquer_impl(DoubleTab& sm) const
 //Masse_PolyMAC_old_Elem est responsable des parties de la matrice n'impliquant pas la diffusion
 void Masse_PolyMAC_old_Elem::dimensionner(Matrice_Morse& matrix) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old.valeur();
   const Champ_P0_PolyMAC_old& ch = ref_cast(Champ_P0_PolyMAC_old, equation().inconnue().valeur());
   int e, f, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), n, N = ch.valeurs().line_size();
   const bool only_ne = (matrix.nb_lignes() == ne_tot);
@@ -141,9 +141,9 @@ void Masse_PolyMAC_old_Elem::dimensionner(Matrice_Morse& matrix) const
 
 DoubleTab& Masse_PolyMAC_old_Elem::ajouter_masse(double dt, DoubleTab& secmem, const DoubleTab& inco, int penalisation) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old.valeur();
   const Champ_P0_PolyMAC_old& ch = ref_cast(Champ_P0_PolyMAC_old, equation().inconnue().valeur());
-  const Conds_lim& cls = la_domaine_Cl_PolyMAC_old->les_conditions_limites();
+  const Conds_lim& cls = le_dom_Cl_PolyMAC_old->les_conditions_limites();
   const DoubleVect& ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces();
   int e, f, ne_tot = domaine.nb_elem_tot(), n, N = inco.line_size();
   DoubleVect coef(equation().milieu().porosite_elem());
@@ -170,7 +170,7 @@ DoubleTab& Masse_PolyMAC_old_Elem::ajouter_masse(double dt, DoubleTab& secmem, c
 
 Matrice_Base& Masse_PolyMAC_old_Elem::ajouter_masse(double dt, Matrice_Base& matrice, int penalisation) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_PolyMAC_old.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_PolyMAC_old.valeur();
   const Champ_P0_PolyMAC_old& ch = ref_cast(Champ_P0_PolyMAC_old, equation().inconnue().valeur());
   const DoubleVect& ve = domaine.volumes(), &pe = equation().milieu().porosite_elem();
   int e, f, ne_tot = domaine.nb_elem_tot(), n, N = ch.valeurs().line_size();

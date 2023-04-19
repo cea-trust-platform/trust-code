@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -48,6 +48,6 @@ Entree& Iterateur_Source_PolyMAC_old_base::readOn(Entree& s )
 void Iterateur_Source_PolyMAC_old_base::associer_domaines(const Domaine_PolyMAC_old& domaine_vdf,
                                                           const Domaine_Cl_PolyMAC_old& domaine_cl_vdf)
 {
-  la_domaine = domaine_vdf;
+  le_dom = domaine_vdf;
   la_zcl = domaine_cl_vdf;
 }

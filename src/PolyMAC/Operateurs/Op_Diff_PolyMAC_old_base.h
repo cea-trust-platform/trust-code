@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -88,7 +88,7 @@ public:
   mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
 
 protected:
-  REF(Domaine_PolyMAC_old) la_domaine_poly_;
+  REF(Domaine_PolyMAC_old) le_dom_poly_;
   REF(Domaine_Cl_PolyMAC_old) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
   mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
@@ -104,7 +104,7 @@ protected:
 /* diffusivite a l'interieur d'un element e : nu_ef(i, n) : diffusivite de la composante n entre le centre de l'element et celui de la face i */
 inline void Op_Diff_PolyMAC_old_base::remplir_nu_ef(int e, DoubleTab& nu_ef) const
 {
-  const Domaine_PolyMAC_old& domaine = la_domaine_poly_.valeur();
+  const Domaine_PolyMAC_old& domaine = le_dom_poly_.valeur();
   const IntTab& e_f = domaine.elem_faces();
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
   int i, j, k, f, n, N = nu_ef.dimension(1), N_nu = nu_.line_size();

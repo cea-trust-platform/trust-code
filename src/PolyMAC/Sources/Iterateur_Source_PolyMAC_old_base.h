@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -50,7 +50,7 @@ public:
 
 protected:
 
-  REF(Domaine_PolyMAC_old) la_domaine;
+  REF(Domaine_PolyMAC_old) le_dom;
   REF(Domaine_Cl_PolyMAC_old) la_zcl;
   REF(Source_base) so_base;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,6 +35,6 @@ Evaluateur_Source_PolyMAC_old_Elem::Evaluateur_Source_PolyMAC_old_Elem(const Eva
 void Evaluateur_Source_PolyMAC_old_Elem::completer()
 {
   Cerr << "Evaluateur_Source_PolyMAC_old_Elem::completer()" << finl;
-  volumes.ref(la_domaine->volumes());
+  volumes.ref(le_dom->volumes());
   porosite_vol.ref(la_zcl->equation().milieu().porosite_elem());
 }
