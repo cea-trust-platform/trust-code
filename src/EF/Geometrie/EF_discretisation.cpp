@@ -571,9 +571,8 @@ void EF_discretisation::critere_Q(const Domaine_dis& z,const Domaine_Cl_dis& zcl
 
 void EF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
-
-#ifdef dependance
   Cerr << "Discretisation de y_plus" << finl;
+#ifdef dependance
   const Champ_P1_EF& vit = ref_cast(Champ_P1_EF,ch_vitesse.valeur());
   const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
   const Domaine_Cl_EF& domaine_cl_EF=ref_cast(Domaine_Cl_EF, zcl.valeur());
@@ -582,6 +581,16 @@ void EF_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,co
   ch_yp.associer_domaine_dis_base(domaine_EF);
   ch_yp.associer_domaine_Cl_dis_base(domaine_cl_EF);
   ch_yp.associer_champ(vit);
+  ch_yp.nommer("Y_plus");
+  ch_yp.fixer_nb_comp(1);
+  ch_yp.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
+  ch_yp.fixer_unite("adimensionnel");
+  ch_yp.changer_temps(ch_vitesse.temps());
+#else
+  const Domaine_EF& domaine_EF=ref_cast(Domaine_EF, z.valeur());
+  ch.typer("Champ_Fonc_P0_EF");
+  Champ_Fonc_P0_EF& ch_yp=ref_cast(Champ_Fonc_P0_EF,ch.valeur());
+  ch_yp.associer_domaine_dis_base(domaine_EF);
   ch_yp.nommer("Y_plus");
   ch_yp.fixer_nb_comp(1);
   ch_yp.fixer_nb_valeurs_nodales(domaine_EF.nb_elem());
