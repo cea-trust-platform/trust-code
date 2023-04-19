@@ -309,7 +309,7 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
           int size = sizeof(_TYPE_) * tab.size_array();
           assert(isAllocatedOnDevice(tab));
           start_timer(size);
-          statistiques().begin_count(gpu_copyfromdevice_counter_, size);
+          statistiques().begin_count(gpu_copyfromdevice_counter_);
           #pragma omp target update from(tab_addr[0:tab.size_array()])
           statistiques().end_count(gpu_copyfromdevice_counter_, size);
           std::string message;
@@ -349,7 +349,7 @@ void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::strin
           int size = sizeof(_TYPE_) * (fin-deb);
           _TYPE_* tab_addr = tab.addrForDevice();
           start_timer(size);
-          statistiques().begin_count(gpu_copyfromdevice_counter_, size);
+          statistiques().begin_count(gpu_copyfromdevice_counter_);
           #pragma omp target update from(tab_addr[deb:fin-deb])
           statistiques().end_count(gpu_copyfromdevice_counter_, size);
           std::string message;
@@ -373,7 +373,7 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
           int size = sizeof(_TYPE_) * (fin-deb);
           _TYPE_* tab_addr = tab.addrForDevice();
           start_timer(size);
-          statistiques().begin_count(gpu_copytodevice_counter_, size);
+          statistiques().begin_count(gpu_copytodevice_counter_);
           #pragma omp target update to(tab_addr[deb:fin-deb])
           statistiques().end_count(gpu_copytodevice_counter_, size);
           std::string message;
@@ -397,7 +397,7 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
           //int size = sizeof(_TYPE_) * (fin-deb);
           //_TYPE_* tab_addr = addrForDevice();
           //start_timer(size);
-          //statistiques().begin_count(gpu_copytodevice_counter_, size);
+          //statistiques().begin_count(gpu_copytodevice_counter_);
           //#pragma omp target update to(tab_addr[deb:fin-deb])
           //statistiques().end_count(gpu_copytodevice_counter_, size);
           //std::string message;

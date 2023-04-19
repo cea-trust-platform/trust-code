@@ -1,27 +1,31 @@
 Statistiques d'initialisation du calcul
 
-Temps total                       17.0259
+Temps total                       17.8094
 
 Statistiques de resolution du probleme
 
-Temps total                       3.17671
+Temps total                       3.20053
 
 
 Timesteps                         10
-Secondes / pas de temps           0.317664
-Dont solveurs Ax=B                0.201626 63% (1 appel/pas de temps)
-Dont mettre_a_jour                0.0057948 1% (1 appel/pas de temps)
-Dont operateurs convection        0.0568259 17% (1 appel/pas de temps)
-Dont operateurs diffusion         0.012877 4% (1 appel/pas de temps)
-Dont operateurs gradient          0.0121725 3% (2 appels/pas de temps)
-Dont operateurs divergence        0.005272 1% (2 appels/pas de temps)
-Dont operations postraitement     0.0048237 1% (1 appel/pas de temps)
-Dont calcul dt                    0.0069601 2% (2 appels/pas de temps)
-Dont calcul divers                0.0113113 3% (0 appels/pas de temps)
+Secondes / pas de temps           0.320046
+Dont solveurs Ax=B                0.203522 63% (1 appel/pas de temps)
+Dont mettre_a_jour                0.005679  1% (1 appel/pas de temps)
+Dont operateurs convection        0.057071 17% (1 appel/pas de temps)
+Dont operateurs diffusion         0.012878  4% (1 appel/pas de temps)
+Dont operateurs gradient          0.011983  3% (2 appels/pas de temps)
+Dont operateurs divergence        0.005256  1% (2 appels/pas de temps)
+Dont operations postraitement     0.004401  1% (1 appel/pas de temps)
+Dont calcul dt                    0.006953  2% (2 appels/pas de temps)
+Dont calcul divers                0.012302  3% (0 appels/pas de temps)
 Nb echange_espace_virtuel / pas de temps 10
 Nb solveur / pas de temps         1
-Secondes / solveur                0.201626
+Secondes / solveur                0.203522
 Iterations / solveur              31.1
+GPU statistics per time step (experimental):
+Copy H2D: 0.005692 s  1.8% 19.0 calls 10.2 GB/s
+Copy D2H: 0.008150 s  2.5% 21.0 calls  9.1 GB/s
+Kernels : 0.281804 s 88.1% 20.9 calls
 I/O:
 
 Timesteps = number of time steps
@@ -40,5 +44,5 @@ Communications > 30%    => too many processors or network too slow
 
 Statistiques de post resolution
 
-Temps total                       0.111928
+Temps total                       0.120502
 
