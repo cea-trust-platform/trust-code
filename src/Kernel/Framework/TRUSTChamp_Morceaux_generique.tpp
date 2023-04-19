@@ -214,7 +214,7 @@ template<Champ_Morceaux_Type _TYPE_>
 void TRUSTChamp_Morceaux_generique<_TYPE_>::interprete_get_domaine(const Nom& nom)
 {
   static constexpr bool IS_FONC_TXYZ = (_TYPE_ == Champ_Morceaux_Type::FONC_TXYZ);
-  if (IS_FONC_TXYZ)
+  if (IS_FONC_TXYZ || read_pb_instead_of_domain)
     {
       ref_pb = ref_cast(Probleme_base, Interprete::objet(nom));
       mon_domaine = ref_pb->domaine();

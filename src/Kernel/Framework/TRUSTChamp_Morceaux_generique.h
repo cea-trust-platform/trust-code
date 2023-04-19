@@ -67,7 +67,7 @@ protected:
   VECT(Parser_U) parser; /* vecteur de tous les parsers */
   Nom nom_champ_parametre_; /* nom du champ dont les fonctions ont parametres */
   IntTab parser_idx; /* parser_idx(i, j) : parser a appeller pour calculer la composante j du champ a la maille i */
-
+  bool read_pb_instead_of_domain = false;
   void interprete_get_domaine(const Nom& nom);
 
   void creer_tabs(const int);
