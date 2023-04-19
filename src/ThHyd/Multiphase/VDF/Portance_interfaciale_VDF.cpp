@@ -77,7 +77,10 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
             // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
             assert(press.line_size() == 1);
             assert(temp.line_size() == N);
-            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), Sigma_tab.get_span_tot(), nb_max_sat, ind_trav);
+            VectorD sigma_(nbelem_tot);
+            SpanD sigma__(sigma_);
+            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N, ind_trav);
+            for (i = 0 ; i<nbelem_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
           }
         else if (milc.has_interface(k, l))
           {

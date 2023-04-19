@@ -95,7 +95,10 @@ void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
             // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
             assert(press.line_size() == 1);
             assert(temp.line_size() == N);
-            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), Sigma_tab.get_span_tot(), nb_max_sat, ind_trav);
+            VectorD sigma_(ne_tot);
+            SpanD sigma__(sigma_);
+            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N, ind_trav);
+            for (int i = 0 ; i<ne_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
           }
         else if (milc.has_interface(k, l))
           {
