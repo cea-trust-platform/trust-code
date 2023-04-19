@@ -173,7 +173,7 @@ To initialize TRUST environment:
 \begin{itemize}
 \item On CEA Saclay PCs, TRUST version is available with:\\
 %\vspace{0.2cm}
-\textbf{source  /home/trust\_trio-public/env\_TRUST-1.9.0.sh}
+\textbf{source  /home/trust\_trio-public/env\_TRUST-1.9.2.sh}
 %\vspace{0.5cm}
 \item On your own computer, download and install the latest version of TRUST in your local folder \$MyPathToTRUSTversion (unless this was already performed), then run on your terminal:\\
 %\vspace{0.2cm}
@@ -187,7 +187,7 @@ To initialize TRUST environment:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Text editor configuration}
+\frametitle{Text Editor configuration}
 \begin{block}{}
 Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) can be configured to highlight TRUST keywords when editing data files.
 
@@ -254,15 +254,15 @@ Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) c
 \begin{block}{}
 
 \begin{itemize}
-\item First, you must already have initialized TRUST environment.
+\item First, load TRUST environment.
 \vspace{0.2cm}
 
-\item Open a terminal and run the commands to create a directory for your studies: \\
+\item Open a terminal and create a directory for this tutorial: \\
 \textbf{mkdir -p \; Formation\_TRUST/yourname}\\
 \textbf{cd \; Formation\_TRUST/yourname}
 \vspace{0.2cm}
 
-\item \label{method_copy} Copy the test case from the TRUST database to your working directory with the command:\\
+\item \label{method_copy} Copy a test case from TRUST's database with:\\
 \textbf{trust -copy\index{trust -copy} Obstacle}\\
 \textbf{cd Obstacle}
 \vspace{0.2cm}
@@ -271,11 +271,11 @@ Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) c
 \textbf{trust -help\index{trust -help}}\\
 \vspace{0.2cm}
 
-\item Ask for help on the options of TRUST executable:\\
+\item Ask for help on the options of TRUST's executable:\\
 \textbf{trust Obstacle -help\_trust\index{trust -help\_trust}}\\
 \vspace{0.2cm}
 
-\item Run the test case with the command:\\
+\item Run the test case with:\\
 \textbf{trust Obstacle}\\
 
 \end{itemize}
@@ -292,7 +292,7 @@ Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) c
 \item Edit the data file Obstacle.data and set the time step to 0.004s:\\
 \textbf{nedit Obstacle.data \&}\\
 
-\item Replace the keyword "\textbf{format lml}" with "\textbf{format lata\index{format lata}}" inside the block, just before the keyword \textbf{fields} in order to use the post-processing tool VisIt during and/or after the calculation.
+\item Replace the keyword "\textbf{format lml}" with "\textbf{format lata\index{format lata}}" inside the post-processing block in order to use VisIt post-processing tool during and/or at the end of calculation.
 \end{itemize}
 
 \end{block}
@@ -305,17 +305,17 @@ Several editors (\textbf{vim}, \textbf{emacs}, \textbf{nedit}, \textbf{gedit}) c
 
 \begin{itemize}
 
-\item Launch the "PLOT2D" tool with: \\
+\item Launch the "trust -evol" tool with: \\
 \textbf{trust -evol\index{trust -evol} Obstacle \&} \\
 This tool allows to launch calculation and visualize results
 
-\item To run the calculation, click on the button "Start computation!" at the lower left corner of the window.
+\item To run the calculation, click on the button "Start computation!".
 
 \item Visualization:
     \begin{itemize}
     \item [$\circ$] Select "PRESSION(X=0.13,Y=0.105)" in the left list  and click on "Plot" to draw the evolution of the pressure at the probe location.
     \item [$\circ$] Check the velocity profile behind the square cylinder by plotting "VITESSE\_X(X=0.14,Y=0.115)" and "VITESSE\_Y(X=0.14,Y=0.115)".
-    \item [$\circ$] Visualize the equation residuals on the same plot, select "$ Ri = max \left| \frac{dV}{dt} \right|$" and "$residu = max \left| Ri \right|$" using the button "Plot on same" or select the two graphs with "Ctrl" button and "plot".
+    \item [$\circ$] Visualize the equation residuals on the same plot, select "$ Ri = max \left| \frac{dV}{dt} \right|$" and "$residu = max \left| Ri \right|$" using the button "Plot on same" or select the two graphs with "Ctrl" button then "plot".
     \end{itemize}
 
 %\item Check the convergence monitoring: plot 0 in the first menu to open the convergence menu, then open the 4 following plots:
@@ -345,8 +345,8 @@ This tool allows to launch calculation and visualize results
 \begin{itemize}
 \item To quit this tool, close the GUI.
 
-\item Once the calculation is finished, visualize the results with the graphical tool VisIt directly: \textbf{visit\index{visit} \&} \\
-or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and click on "Visualisation" on the right menu.
+\item Once the calculation is finished, visualize the results with VisIt: \textbf{visit\index{visit} \&} \\
+or using "trust -evol" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and click on "Visualisation" on the right menu.
 
     \begin{itemize}
     \item [$\circ$] First, we are going to configure VisIt: {\footnotesize{In the menu File $\rightarrow$ Open file, select Off instead of Smart for File grouping option. For the Filter, specify *.lata to list only the lata files (results). Then save your choices, in the menu Options $\rightarrow$ Save Settings.}}
@@ -525,7 +525,7 @@ or using "PLOT2D" tool: \textbf{trust -evol\index{trust -evol} Obstacle \&} and 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: 1st method}
+\frametitle{Parallel calculation}
 \begin{block}{}
 
 The goal of this exercise is to introduce parallelism in the data file of the previous exercise.
@@ -547,7 +547,7 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: 1st method}
+\frametitle{Parallel calculation}
 \begin{block}{}
 
 \begin{itemize}
@@ -570,7 +570,7 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
-\frametitle{Parallel calculation: 1st method}
+\frametitle{Parallel calculation}
 \begin{block}{}
 
 \begin{itemize}
@@ -579,8 +579,8 @@ The goal of this exercise is to introduce parallelism in the data file of the pr
 
 \item Uncomment the \textbf{Scatter} keyword which will read the partitioned mesh. 
 
-\item Visualize partitioning with:\\
-\textbf{trust -mesh\index{trust -mesh} PAR\_Obstacle}
+%\item Visualize partitioning with:\\
+%\textbf{trust -mesh\index{trust -mesh} PAR\_Obstacle}
 
 \item Now, run a parallel calculation with TRUST:\\
 \textbf{trust PAR\_Obstacle 2}
@@ -601,105 +601,105 @@ also visualize a field only on a selected part (block) with the menu Control $\r
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Parallel calculation: 2nd method} \label{exo_para_2}
-\begin{block}{}
-
-\begin{itemize}
-
-\item The existing tool \textbf{trust -partition\index{trust -partition}} is useful on the data files \underline{which have} the marks MAILLAGE/MESH, DECOUPAGE/PARTITION and LECTURE/SCATTER. If you run the following commands: \\
-\vspace{0.2cm}
-
-\item First we will create a new working directory with our data files:\\
-\textbf{cd Formation\_TRUST/yourname/Obstacle} \\
-\textbf{mkdir PARA2} \\
-\textbf{cd PARA2} \\
-\textbf{cp ../Obstacle.data exemple.data}\\
-\textbf{cp ../Obstacle.geo .}\\
-\vspace{0.2cm}
-
-\item Then we run the command:\\
-\textbf{trust -partition\index{trust -partition} exemple 3}\\
-\textbf{ls}
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Parallel calculation: 2nd method}
-\begin{block}{}
-
-\begin{itemize}
-\item It creates:
-    \begin{itemize} 
-    \item [$\circ$] a \underline{SEQ\_exemple.data} file which is a copy of the sequential data file exemple.data,
-    \item [$\circ$] a \underline{DEC\_exemple.data} file which is the first data file to be run. It is immediately run by the command line \textbf{trust -partition} to create a partition (with 3 sub zones here), located in the ***.Zones files. \\
-    \textbf{ls *.Zones}\\
-    Note that the TRUST code stops reading this file at the keyword "End" just before the "\# END PARTITION \#" block.
-    \item [$\circ$] a \underline{PAR\_exemple.data} file which is the data file for the parallel calculation. It uses the ***.Zones files to read the mesh through the line "Scatter DOM.Zones dom". Note that the meshing and cut of the mesh are commented here.
-    \end{itemize}
-
-\item Then you have to run the calculation by the usual command completed by the number of processors needed:\\
-\textbf{trust PAR\_exemple 3}
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Parallel calculation: 2nd method}
-\begin{block}{Useful information:}
-
-\begin{itemize}
-\item Be careful when you want to modify your data file! You have two possibilities:
-    \begin{itemize} 
-    \item [$\circ$] you want to modify your mesh,
-    \item [$\circ$] you want to modify the calculation parameters.
-    \end{itemize}
-
-\item For the first one, you can modify:
-    \begin{itemize} 
-    \item [$\circ$] the file exemple.data and run \textbf{trust -partition}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new zones. Then it will run the new DEC\_exemple.data file which gives your new ***.Zones files \underline{or},
-    \item [$\circ$] the meshing part of file DEC\_exemple.data and run it with:\\
-    \textbf{trust DEC\_exemple.data} \\
-    \end{itemize}
-Then run the parallel calculation normally, on the new ***.Zones files.\\
-\textbf{trust PAR\_exemple 3}
-
-\end{itemize}
-
-\end{block}
-\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Parallel calculation: 2nd method}
-\begin{block}{}
-
-\begin{itemize}
-\item For the second possibility, you can modify:
-    \begin{itemize}
-    \item [$\circ$] the file exemple.data and run \textbf{trust -partition}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new ones. Then it will run the new DEC\_exemple.data file. \underline{Note that in that} \underline{case, you don't need to re-create the mesh so you can use the second point} \underline{below:}
-    \item [$\circ$] modify the PAR\_exemple.data file \underline{without} running \textbf{trust -partition}.
-    \end{itemize}
-Then run the PAR\_exemple.data file with:\\
-\textbf{trust PAR\_exemple 3}
-
-\item \underline{Notice that if after a certain time, you want to reopen an old case} and understand what you did in it without any doubts, you can create two files manually:
-    \begin{itemize} 
-    \item [$\circ$] one "BuildMeshes.data" file only for the mesh and the cut of the mesh, and
-    \item [$\circ$] one "calculation.data" file for the parallel calculation.
-    \end{itemize}
-You will run it like:\\
-\textbf{trust BuildMeshes}\\
-\textbf{trust calculation nb\_procs}\\
-\end{itemize}
-
-\end{block}
-\end{frame}
+%\begin{frame}
+%\frametitle{Parallel calculation: 2nd method} \label{exo_para_2}
+%\begin{block}{}
+%
+%\begin{itemize}
+%
+%\item The existing tool \textbf{trust -partition\index{trust -partition}} is useful on the data files \underline{which have} the marks MAILLAGE/MESH, DECOUPAGE/PARTITION and LECTURE/SCATTER. If you run the following commands: \\
+%\vspace{0.2cm}
+%
+%\item First we will create a new working directory with our data files:\\
+%\textbf{cd Formation\_TRUST/yourname/Obstacle} \\
+%\textbf{mkdir PARA2} \\
+%\textbf{cd PARA2} \\
+%\textbf{cp ../Obstacle.data exemple.data}\\
+%\textbf{cp ../Obstacle.geo .}\\
+%\vspace{0.2cm}
+%
+%\item Then we run the command:\\
+%\textbf{trust -partition\index{trust -partition} exemple 3}\\
+%\textbf{ls}
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Parallel calculation: 2nd method}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item It creates:
+%    \begin{itemize} 
+%    \item [$\circ$] a \underline{SEQ\_exemple.data} file which is a copy of the sequential data file exemple.data,
+%    \item [$\circ$] a \underline{DEC\_exemple.data} file which is the first data file to be run. It is immediately run by the command line \textbf{trust -partition} to create a partition (with 3 sub zones here), located in the ***.Zones files. \\
+%    \textbf{ls *.Zones}\\
+%    Note that the TRUST code stops reading this file at the keyword "End" just before the "\# END PARTITION \#" block.
+%    \item [$\circ$] a \underline{PAR\_exemple.data} file which is the data file for the parallel calculation. It uses the ***.Zones files to read the mesh through the line "Scatter DOM.Zones dom". Note that the meshing and cut of the mesh are commented here.
+%    \end{itemize}
+%
+%\item Then you have to run the calculation by the usual command completed by the number of processors needed:\\
+%\textbf{trust PAR\_exemple 3}
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Parallel calculation: 2nd method}
+%\begin{block}{Useful information:}
+%
+%\begin{itemize}
+%\item Be careful when you want to modify your data file! You have two possibilities:
+%    \begin{itemize} 
+%    \item [$\circ$] you want to modify your mesh,
+%    \item [$\circ$] you want to modify the calculation parameters.
+%    \end{itemize}
+%
+%\item For the first one, you can modify:
+%    \begin{itemize} 
+%    \item [$\circ$] the file exemple.data and run \textbf{trust -partition}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new zones. Then it will run the new DEC\_exemple.data file which gives your new ***.Zones files \underline{or},
+%    \item [$\circ$] the meshing part of file DEC\_exemple.data and run it with:\\
+%    \textbf{trust DEC\_exemple.data} \\
+%    \end{itemize}
+%Then run the parallel calculation normally, on the new ***.Zones files.\\
+%\textbf{trust PAR\_exemple 3}
+%
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{frame}
+%\frametitle{Parallel calculation: 2nd method}
+%\begin{block}{}
+%
+%\begin{itemize}
+%\item For the second possibility, you can modify:
+%    \begin{itemize}
+%    \item [$\circ$] the file exemple.data and run \textbf{trust -partition}. But it will \underline{erase} the DEC\_exemple.data, SEQ\_exemple.data and PAR\_exemple.data files and create new ones. Then it will run the new DEC\_exemple.data file. \underline{Note that in that} \underline{case, you don't need to re-create the mesh so you can use the second point} \underline{below:}
+%    \item [$\circ$] modify the PAR\_exemple.data file \underline{without} running \textbf{trust -partition}.
+%    \end{itemize}
+%Then run the PAR\_exemple.data file with:\\
+%\textbf{trust PAR\_exemple 3}
+%
+%\item \underline{Notice that if after a certain time, you want to reopen an old case} and understand what you did in it without any doubts, you can create two files manually:
+%    \begin{itemize} 
+%    \item [$\circ$] one "BuildMeshes.data" file only for the mesh and the cut of the mesh, and
+%    \item [$\circ$] one "calculation.data" file for the parallel calculation.
+%    \end{itemize}
+%You will run it like:\\
+%\textbf{trust BuildMeshes}\\
+%\textbf{trust calculation nb\_procs}\\
+%\end{itemize}
+%
+%\end{block}
+%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -863,8 +863,8 @@ First block (Cavite1): 4 11 $\rightarrow$ 13 41 \\
 Second block (Cavite2): 8 4 $\rightarrow$ 29 13 \\ 
 Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
-\item Check your new mesh with:\\
-\textbf{trust -mesh\index{trust -mesh} docond } \\
+%\item Check your new mesh with:\\
+%\textbf{trust -mesh\index{trust -mesh} docond } \\
 
 \item Change \textbf{"format lml\index{format lml}"} to \textbf{"format lata\index{format lata}"} into the two problems definition
 \item Click on "Save" and close the window.
@@ -894,8 +894,8 @@ Third block (Cavite3): 8 8  $\rightarrow$ 29 29 \\
 
 \item Close the Plot2D tool.
 
-\item Check the meshes with: \\
-\textbf{trust -mesh\index{trust -mesh} docond}
+%\item Check the meshes with: \\
+%\textbf{trust -mesh\index{trust -mesh} docond}
 
 \item Run the calculation with:\\
 \textbf{trust docond }
@@ -1467,8 +1467,8 @@ If you want to run it and generate the pdf report, see "Validation form" exercis
 \textbf{triocfd BuildMeshes} \\
 Notice that we use \textbf{"triocfd"} command lines, but it is also possible to use \textbf{"trust"} command because both scripts will use the variable \$exec which is the path to the TrioCFD executable.
 
-\item You can visualize the partitioned meshes with (MODEL=RANS or LES): \\
-\textbf{triocfd -mesh\index{triocfd -mesh} PeriodicBoxMODEL}
+%\item You can visualize the partitioned meshes with (MODEL=RANS or LES): \\
+%\textbf{triocfd -mesh\index{triocfd -mesh} PeriodicBoxMODEL}
 
 \item Then, set the max number of time steps in the time scheme using \textbf{nb\_pas\_dt\_max\index{nb\_pas\_dt\_max}} to 100 in the files PeriodicBoxRANS and PeriodicBoxLES and run a 2-cores parallel calculation, to initialize the turbulent flow in the box: \\
 \textbf{triocfd PeriodicBoxRANS 2} \\
@@ -1689,7 +1689,7 @@ Outlet: $P_0=0$
     \end{itemize}
 \item Define the boundary wall, using the keyword \textbf{"RegroupeBord\index{RegroupeBord}"}.
 \item You could also use facteurs and symx, symy keywords to define a refined mesh near the walls. 
-\item Check the mesh with: \textbf{trust -mesh\index{trust -mesh} diagonale} and correct the mesh errors if necessary.
+%\item Check the mesh with: \textbf{trust -mesh\index{trust -mesh} diagonale} and correct the mesh errors if necessary.
 \end{itemize}
 
 \end{block}
@@ -2937,8 +2937,8 @@ which allows to export the generated mesh on MED format.
 
  \item You should have now \texttt{Mesh\_1.med}  generated in your folder
 
- \item Visualize the generated mesh to check that changes made:\\
- \texttt{\$ trust -mesh Coupled\_pb}\\
+ %\item Visualize the generated mesh to check that changes made:\\
+ %\texttt{\$ trust -mesh Coupled\_pb}\\
  You should see that the box is smaller in the \texttt{z} direction, the cylinder is thicker, and the mesh is finer.
 
  \item You can now run the calculation on the new mesh:\\

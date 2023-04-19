@@ -187,7 +187,7 @@ list_save="$project_src ${project_configuration_file}"
 # echo $has_subproject $*
 list_save_subp=""
 [ $has_subproject -eq 1 ] && [ -e ${project_archives_dependencies} ] && list_save_subp="$project_archives_dependencies "
-
+[ -f $project_archives/C3_LIB.tar.gz ] && list_save_subp="$list_save_subp $project_archives/C3_LIB.tar.gz" && echo "list_save_subp updated $list_save_subp"
 export list_save; # echo "iiiiiiii" $list_save 
 #;xterm ; exit
 

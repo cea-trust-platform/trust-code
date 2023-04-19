@@ -51,7 +51,7 @@ define_modules_config()
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
-   echo "module purge 1>/dev/null" >> $env
+   echo "module purge 1>/dev/null 2>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
    [ "$sw" != "" ] && echo "module sw $sw 1>/dev/null" >> $env
    . $env

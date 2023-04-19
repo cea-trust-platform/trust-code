@@ -28,6 +28,12 @@ check_components()
       if [ -d $TRUST_ROOT/../Composants/$Composant ]
       then
          cd $TRUST_ROOT/../Composants/$Composant
+         if [[ "$Composant" == "module3D" ]]
+         then
+           # module3D is a symlink, we use cd -P to go to the directory and remove C3_LIB.tar.gz to regenerate it
+           cd -P $TRUST_ROOT/../Composants/$Composant
+           rm -f archives/C3_LIB.tar.gz
+         fi
          rm -rf build/portability
 	 rm -f $Composant*.log
 	 Composant_log=$REP_NUIT"/baltik_"$Composant"_"$HOST"_"${*#*/}".log"
@@ -274,7 +280,7 @@ check_components()
 	       elif [ "$Composant" = mathys ]
 	       then
 	          machines=`liste_machines "\-MATHYS"`
-               elif [ "$Composant" = cathare3D ]
+               elif [ "$Composant" = module3D ]
                then
                   machines=`liste_machines "\-C3D"`
                elif [ "$Composant" = TRUST_NK ]
@@ -419,7 +425,7 @@ check_components()
                            WORKBETA=""
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.1
-                           [ "$Composant" == "cathare3D" ] && trustversion=1.9.1
+                           [ "$Composant" == "module3D" ] && trustversion=1.9.1
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
 		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
@@ -587,10 +593,10 @@ VOBS="TRUST Composants"
 #ComposantsLns="Test_Baltik basic equation_convection_diffusion ICoCo"
 ComposantsLns="Test_Baltik equation_convection_diffusion ICoCo" # Front_tracking_IJK" # Front_tracking_IJK is now in triocfd
 #ComposantsGit="triocfd Front_tracking_IJK polymac triomc mathys mpcube genepi3 pxp flica5"
-ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK cathare3D"
+ComposantsOfficial="triocfd mpcube genepi3 flica5 TRUST_NK module3D"
 # 14/10/2020 : je retire mathys et triomc sur decision RPL
 #export ComposantsBeta="triomc mathys sides scorpio pemfc"
-export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 cathare3D"
+export ComposantsBeta="sides scorpio sympy_to_TRUST pemfc flica5 module3D"
 ComposantsGit=$ComposantsOfficial" "$ComposantsBeta
 ComposantsGit=`echo $ComposantsGit | xargs -n1 | sort -u | xargs`
 export Composants=$ComposantsLns" "$ComposantsGit
@@ -952,7 +958,7 @@ fi
       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
       echo " git push origin TMA in `pwd`"
-      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "Front_tracking_IJK" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "cathare3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
+      if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "Front_tracking_IJK" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "module3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
       then
          #if [[ "$Composant" == "triocfd" ]]
          #then
@@ -1018,15 +1024,15 @@ fi
          cat tmp.log
          rm tmp.log 1>/dev/null 2>&1
          cd -
-      elif [[ "$Composant" == "cathare3D" ]]
+      elif [[ "$Composant" == "module3D" ]]
       then
          git remote update
          git checkout .
-         git checkout Issue0081_portage192
+         git checkout Issue5138_portage192
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 KO \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5138_portage192 KO \" $TRUST_MAIL
          else
             [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 OK \" $TRUST_MAIL
          fi
@@ -3525,7 +3531,7 @@ do
    echo " "
    other_dest=""
    [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "triocfd" ] && echo $triocfd_PROJECT_LEADER`
-   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "cathare3D" ] && echo $cathare3D_PROJECT_LEADER`
+   [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "module3D" ] && echo $module3D_PROJECT_LEADER`
    [ "$other_dest" = "" ] && other_dest=`[ "$Composant" = "flica5" ] && echo $flica5_PROJECT_LEADER`
    if [ $validation_composant = 1 ]
    then

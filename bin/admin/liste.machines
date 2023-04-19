@@ -13,15 +13,14 @@ linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 					-semi_opt 								# Fed
 linux	rsync_ssh	tache	is241762-clang.intra.cea.fr			-TrioCFD -GENEPI3 -C3D                				-clang -force_provided_openmpi -without-pdflatex -without-visit 					# Fedora 34	Bat 451 LMSF titania 
 linux	rsync_ssh	cible	is234634-clang.intra.cea.fr	-all 		-TrioCFD -FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex -without-visit 								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
-linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-cuda=download -without-pdflatex
+linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-cuda=download -without-pdflatex -without-visit 
 linux   rsync_ssh   tache   is240831-cuda.intra.cea.fr       -all                                -cuda=/volatile/cuda-11.1/bin/nvcc  -without-pdflatex               # Ubuntu 18 PC inconnu RTX5000 
 linux	rsync_ssh	tache	is246139-gpu.intra.cea.fr	-all		-TrioCFD				-cuda  -openmp -force_system_mpi	-disable-vc -disable-mpi4py				# Ubuntu 20	Bat 451 LGLS bureau Luc L.
 linux	rsync_ssh    	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
-linux	git_ssh  	tache	desactive_irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
-linux	rsync_ssh  	tache	desactive_irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
-linux	rsync_ssh  	tache	irene-next-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
+linux	git_ssh  	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
+linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
-linux	rsync_ssh 	tache	irene-next-amd-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-visit  									# RedHat 8.4	CEA CCRT
+linux	rsync_ssh 	tache	irene-amd-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-visit  									# RedHat 8.4	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited 		-TrioCFD -IJK-FT				-cuda 		-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	topaze-build64.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc -disable-plot2d -build_64_bit 									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		-TrioCFD -IJK-FT 				-cuda  	-openmp -without-doc -disable-plot2d -without-visit -disable-mpi4py   									# RedHat 8.3	CEA CCRT
@@ -32,12 +31,12 @@ linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD -IJK-FT  			-cuda  	
 linux	rsync_ssh	tache	orcus-intel.intra.cea.fr	-limited	-TrioCFD -IJK-FT -STT -PEMFC -FLICA5    				 -disable-plot2d 		-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd.intra.cea.fr		-limited	-TrioCFD -IJK-FT -FLICA5   					 -without-visit -disable-plot2d 	-benchmark 								# CentOS 7.6	CEA Saclay
 linux	rsync_ssh	tache	orcus-amd-build64.intra.cea.fr		-limited	-TrioCFD -IJK-FT   				-build_64_bit -without-doc -without-visit -disable-plot2d		 								# CentOS 7.6	CEA Saclay
-linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-benchmark 		-without-doc -disable-plot2d 	 				# Redhat 8.5	CEA Cad
+linux	rsync_ssh	tache	mezel.intra.cea.fr	-limited	    				-benchmark 		-without-doc -disable-plot2d -without-visit  	 				# Redhat 8.5	CEA Cad
 linux	rsync_ssh	tache	pegasi2.intra.cea.fr	  	-TrioCFD -IJK-FT  				 		     -force_provided_mpich -without-pdflatex			# CentOS 7.9 serveur rackable pour validation TrioCFD titania
 linux	rsync_ssh	tache	desactive_pegasi3.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -IJK-FT 	 		     -force_provided_mpich -without-pdflatex  			# Redhat 8.2 serveur rackable titania
 linux	rsync_ssh	tache	pegasi5.intra.cea.fr				-TrioCFD -IJK-FT -SIDES -SCORPIO -TRUST_NK -FLICA5 -C3D 								-prof -force_provided_mpich -without-pdflatex 								# CentOS 7.9	pilote dm2s titania 
 linux   rsync_ssh	non	pegasi5-intel-build64.intra.cea.fr 	-all		-TrioCFD -IJK-FT   			-build_64_bit -disable-plot2d -without-visit -without-pdflatex -force_system_mpi  						# CentOS 7.9 
-linux	rsync_ssh	tache	pegasi6-coolprop.intra.cea.fr		-all 		-GENEPI3 -TrioCFD -IJK-FT 						-force_latest_openmpi -coolprop 						# Ubuntu 20 pilote titania 
+linux	rsync_ssh	tache	pegasi6-coolprop.intra.cea.fr		-all 		-GENEPI3 -TrioCFD -IJK-FT 						-force_latest_openmpi -coolprop -without-visit  						# Ubuntu 20 pilote titania 
 linux	rsync_ssh	cible	is246145.intra.cea.fr		-all	-TrioCFD -TRUST_NK -GENEPI3 -FLICA5 -C3D   						-semi_opt -force_provided_mpich -without-pdflatex   					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is246145-wopetsc.intra.cea.fr		-all	-TrioCFD -IJK-FT -TRUST_NK -GENEPI3 -FLICA5 -C3D  					-disable-petsc -force_provided_mpich -without-pdflatex					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is154727.intra.cea.fr		-all								-check-valgrind	-force_provided_mpich -without-pdflatex								# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation

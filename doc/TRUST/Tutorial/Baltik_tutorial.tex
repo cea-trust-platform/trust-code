@@ -1027,7 +1027,7 @@ domain's named " <\textcompwordmark{}< ??? <\textcompwordmark{}< {\bf{finl}};
 
 \item Edit the "my\_first\_class.cpp" file and add into the "interpreter\_()" method a loop on the boundaries.
 
-Look for help inside the "Domaine", "Zone", "Bord", "Frontiere" classes in the HTML documentation to access to the:
+Look for help inside the "Domaine", "Bord", "Frontiere" classes in the HTML documentation to access to the:
     \begin{itemize}
     \item [$\circ$] Number of boundaries (\textbf{nb\_bords()} method)
     \item [$\circ$] Boundaries (\textbf{bord(int)} method)
@@ -1053,7 +1053,7 @@ Print these information with something like:
 \frametitle{Modify your cpp class (Part 2)}
 \begin{block}{Compute the sum of the control volumes of a domain discretized in VEF}
 \begin{itemize}
-\item Information about control volumes is in the "Zone\_VF" class (a "Zone\_dis" discretized zone) which can't be accessed 
+\item Information about control volumes is in the "Domaine\_VF" class (a "Domaine\_dis" discretized domain) which can't be accessed 
 from the domain, but only from the problem. 
 
 So, you need to read another parameter in your data file:\\
@@ -1069,10 +1069,9 @@ So, you need to read another parameter in your data file:\\
 
 \item Remember the "equation" or "problem" UML diagram of the presentation's slides.
 
-\item Look for help inside the "Zone\_VF", "Probleme\_base" and "Equation\_base" into the HTML documentation to access to the:
+\item Look for help inside the "Domaine\_VF", "Probleme\_base" and "Domaine\_dis\_base" into the HTML documentation to access to the:
     \begin{itemize}
-    \item [$\circ$] equation (\textbf{equation(int)} method)
-    \item [$\circ$] discretized zone (\textbf{zone\_dis()} method)
+    \item [$\circ$] discretized domain (\textbf{domaine\_dis()} method)
     \item [$\circ$] control volumes (\textbf{volumes\_entrelaces()} method)
     \end{itemize}
 \end{itemize}
@@ -1086,7 +1085,7 @@ So, you need to read another parameter in your data file:\\
 \begin{block}{}
 
 \begin{itemize}
-\item You will need to cast the discretized zone returned by the \textbf{zone\_dis()} method into a "Zone\_VF" object.
+\item You will need to cast the discretized domain returned by the \textbf{domaine\_dis()} method into a "Domaine\_VF" object.
 
 \item Print the size of the control volumes array with something like:
 \begin{center}
@@ -1097,8 +1096,8 @@ So, you need to read another parameter in your data file:\\
 \end{minipage}}
 \end{center}
 
-Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Zone\_VF::volumes\_entrelaces()} method.
-\item If you look at the "Problem" UML diagram of the presentation's slides, you will notice a better path to access to the discretized zone. \\
+Where control\_volumes is a \textbf{DoubleVect} returned by the \textbf{Domaine\_VF::volumes\_entrelaces()} method.
+\item If you look at the "Problem" UML diagram of the presentation's slides, you will notice a better path to access to the discretized domain. \\
  What is this path ?
 \item Now, compute and print the sum of the control volumes with a "for" loop.
 

@@ -52,7 +52,7 @@ change_droits()
      find . -type d | xargs chmod +x  1>/dev/null 2>&1
      # changer les droits sur les dossiers car c'est la qu'il y a probleme
      #find . -type d -exec chmod 755 {} \;
-     find . -type d -not -path "./*/genepi3*" -not -path "./*/flica5*" -not -path "./*/cathare*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/sympy_to_TRUST*" -not -path "./*/scorpio*" -not -path "./*/sides*" -not -path "./*/TRUST_NK*" -exec chmod 755 {} \;
+     find . -type d -not -path "./*/genepi3*" -not -path "./*/flica5*" -not -path "./*/module*" -not -path "./*/mpcube*" -not -path "./*/mathys*" -not -path "./*/triomc*"  -not -path "./*/pemfc*" -not -path "./*/sympy_to_TRUST*" -not -path "./*/scorpio*" -not -path "./*/sides*" -not -path "./*/TRUST_NK*" -exec chmod 755 {} \;
      ( [ "`id | grep triocfd_w 2>/dev/null`" != "" ]  && cd $TRUST_ROOT/ && chmod g+s . && find . -group den | xargs chgrp -R triocfd_w .)
   fi
 }
@@ -331,7 +331,7 @@ option_configure=" -disable-ccache"
 # Cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda " | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -cuda"
 # TRUST with OpenMP
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-openmp" | grep ^$HOST"\."`" != "" ] 	&& option_configure=$option_configure" -openmp"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-openmp" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -openmp"
 # without PETSc 
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-petsc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-petsc"
 # PETSc debug
@@ -344,7 +344,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_latest_openmpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_latest_openmpi"
 # MPICH
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_provided_mpich" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_provided_mpich"
-[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_latest_mpich" | grep ^$HOST"\."`" != "" ]           && option_configure=$option_configure" -force_latest_mpich"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_latest_mpich" | grep ^$HOST"\."`" != "" ]           	&& option_configure=$option_configure" -force_latest_mpich"
 # OpenMPI ancien sur la machine ou l'on construit le binaire sinon ne trouve pas un fichier en local
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\get_binary" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -force_old_openmpi"
 # Compilation minimale avec -disable
@@ -384,6 +384,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-mpi4py" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -disable-mpi4py"
 # system mpi, for cuda
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_system_mpi" | grep ^$HOST"\."`" != "" ] 		&& option_configure=$option_configure" -force_system_mpi"
+# coolprop
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -with-coolprop=/volatile/projet/trust_trio/CoolProp"
 
 ########################
 # Lancement du configure
