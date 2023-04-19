@@ -482,7 +482,7 @@ void Domaine_Poly_base::discretiser()
       volumes_entrelaces_dir_(f, i) = std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
   volumes_entrelaces_.echange_espace_virtuel(), volumes_entrelaces_dir_.echange_espace_virtuel();
 
-  // calculer_h_carre();
+  //calculer_h_carre();
   /* ordre canonique dans elem_faces_ */
   std::map<std::array<double, 3>, int> xv_fsa;
   for (int e = 0, i, j, f; e < nb_elem_tot(); e++)
