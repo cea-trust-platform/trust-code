@@ -44,6 +44,8 @@ public:
   void set_noms_champs_postraitables();
   const Motcles& get_noms_champs_postraitables() const { return noms_champs_postraitables_; }
   bool update_positions=true;
+  void set_update_positions(bool update_positions);
+  bool get_update_positions();
 
 private:
   // Mecanisme de cache pour les sondes:

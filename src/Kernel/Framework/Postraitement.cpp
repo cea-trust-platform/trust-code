@@ -297,7 +297,6 @@ Entree& Postraitement::readOn(Entree& s )
   // lu le bloc statistiques ET le bloc sondes)
 
   les_sondes_.completer();
-  les_sondes_mobiles_.completer();
 
   //On type l objet Format_Post
   Nom type_format = "Format_Post_";
@@ -377,8 +376,9 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
   if (mot=="Sondes_mobiles|Mobile_probes")
     {
       Cerr << "Reading of mobile probes" << finl;
-      les_sondes_mobiles_.associer_post(*this);
-      s >>  les_sondes_mobiles_;
+      les_sondes_.associer_post(*this);
+      s >>  les_sondes_;
+      les_sondes_.set_update_positions(true);
       sondes_demande_ = 1;
       return 1;
     }
@@ -775,13 +775,11 @@ int Postraitement::reprendre(Entree& is)
 void Postraitement::completer()
 {
   les_sondes_.init_bords();
-  les_sondes_mobiles_.init_bords();
 }
 
 void Postraitement::completer_sondes()
 {
   les_sondes_.completer();
-  les_sondes_mobiles_.completer();
 }
 
 /*! @brief Lit le nom des champs a postraiter sur un flot d'entree.
@@ -1530,7 +1528,6 @@ int Postraitement::traiter_tableaux()
 int Postraitement::postraiter_sondes()
 {
   les_sondes_.postraiter();
-  les_sondes_mobiles_.postraiter();
   les_sondes_int_.postraiter(mon_probleme->schema_temps().temps_courant());
   return 1;
 }
@@ -1545,7 +1542,6 @@ int Postraitement::traiter_sondes()
   double temps=mon_probleme->schema_temps().temps_courant();
   double tinit=temps-mon_probleme->schema_temps().temps_calcul();
   les_sondes_.mettre_a_jour(temps,tinit);
-  les_sondes_mobiles_.mettre_a_jour(temps,tinit);
   return 1;
 }
 

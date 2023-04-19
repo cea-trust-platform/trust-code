@@ -195,3 +195,19 @@ void Sondes::associer_post(const Postraitement& post)
 {
   mon_post = post;
 }
+
+/*! @brief Modifie le parametrage des sondes mobiles
+ *
+ */
+void Sondes::set_update_positions(bool update_positions_)
+{
+  update_positions=update_positions_;
+}
+
+/*! @brief Renvoie le parametrage des sondes mobiles
+ *
+ */
+bool Sondes::get_update_positions()
+{
+  return update_positions;
+}
