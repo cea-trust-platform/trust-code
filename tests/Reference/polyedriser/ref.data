@@ -24,7 +24,7 @@ Mailler dom
     }
 }
 END MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file mesh.med
 }

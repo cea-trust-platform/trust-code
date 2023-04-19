@@ -4,7 +4,7 @@ domaine dom
 # BEGIN MESH #
 # Lecture du maillage genere par salome voir cas Lire_unv #
 # test de ecrire_champ_med #
-Lire_MED {
+Read_MED {
     domain dom
     file ess.med
 }

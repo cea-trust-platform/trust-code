@@ -4,7 +4,7 @@ dimension 2
 Pb_hydraulique pb
 Domaine dom
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file maillage_moins_simple_grp.med
 }

@@ -13,7 +13,7 @@ Domaine dom
 EcritureLectureSpecial 0
 
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file ../MESHES_TAYLOR_COUETTE/res_domain_mesh_80_exact.med
 }

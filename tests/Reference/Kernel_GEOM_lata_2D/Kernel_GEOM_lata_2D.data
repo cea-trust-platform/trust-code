@@ -50,15 +50,15 @@ dimension 2
 Domaine rectangle
 Domaine triangle
 Domaine quadrangle
-Lire_MED {
+Read_MED {
     domain rectangle
     file rectangle.med
 }
-Lire_MED {
+Read_MED {
     domain triangle
     file triangle.med
 }
-Lire_MED {
+Read_MED {
     domain quadrangle
     file quadrangle.med
 }

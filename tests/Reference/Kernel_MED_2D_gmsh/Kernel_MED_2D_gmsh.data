@@ -2,7 +2,7 @@
 dimension 2
 # PARALLEL NOT #
 domaine dom
-Lire_MED {
+Read_MED {
     domain dom
     file 2D.med
 }
@@ -13,7 +13,7 @@ analyse_angle dom 36
 
 dimension 3
 domaine dom3d
-Lire_MED {
+Read_MED {
     domain dom3d
     file 2D.med
 }

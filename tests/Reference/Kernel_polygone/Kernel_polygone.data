@@ -4,7 +4,7 @@ dimension 2
 domaine dom2
 # BEGIN MESH #
 domaine dom
-Lire_MED {
+Read_MED {
     domain dom
     file maillage_simple_grp.med
 }
@@ -12,7 +12,7 @@ Lire_MED {
 Ecrire_fichier_formatte dom dom.geom
 Postraiter_domaine { fichier lecture_1 domaine dom format lml }
 Write_MED dom toto.med
-Lire_MED {
+Read_MED {
     domain dom2
     file toto.med
     no_family_names_from_group_names

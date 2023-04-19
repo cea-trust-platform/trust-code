@@ -11,7 +11,7 @@ system "gmsh -2 -order 1 -clscale 1. -format med forme.geo||echo .gmshrc old ?"
 # Read the MED mesh by TRUST #
 dimension 2
 domaine dom
-Lire_MED {
+Read_MED {
     domain dom
     file forme.med
 }

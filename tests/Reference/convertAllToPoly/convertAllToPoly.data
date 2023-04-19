@@ -3,7 +3,7 @@ dimension 3
 Pb_hydraulique pb
 domaine dom
  
-Lire_MED {
+Read_MED {
     domain dom
     file Mesh_1_hexa.med
     convertAllToPoly

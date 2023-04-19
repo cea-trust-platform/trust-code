@@ -25,7 +25,7 @@ Lire_Med {
 Write_MED dom new_rectangle_a1.med /* Convert to new format */
 Read_file dom_ssz.geo ;
 Reordonner dom
-Lire_MED { 
+Read_MED { 
    domain dom2 
    file new_rectangle_a1.med 
 }

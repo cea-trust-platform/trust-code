@@ -2,7 +2,7 @@
 dimension 3
 domaine dom
 # Read/write polyedre mesh #
-Lire_MED {
+Read_MED {
     domain dom
     file polyedre_med30.med
     mesh mesh
@@ -10,7 +10,7 @@ Lire_MED {
 Write_MED dom polyedre2.med
 
 # Read a second med file #
-Lire_MED {
+Read_MED {
     domain dom
     file NC_hexaedrons_fluidmesh_polyhedra.med
     mesh FluidMesh_1
@@ -18,7 +18,7 @@ Lire_MED {
 Ecrire_fichier dom dom.geom
 Write_MED dom toto.med
 domaine dom2
-Lire_MED {
+Read_MED {
     domain dom2
     file toto.med
     mesh dom

@@ -2,7 +2,7 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file mesh_gmsh.med
 }

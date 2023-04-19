@@ -14,7 +14,7 @@ Domaine dom
 system "mkdir -p results"
 
 # DEBUT MAILLAGE #
-Lire_MED {
+Read_MED {
     domain dom
     file res_domain_mesh_40_cyl_mesh_250fact12.med
 }

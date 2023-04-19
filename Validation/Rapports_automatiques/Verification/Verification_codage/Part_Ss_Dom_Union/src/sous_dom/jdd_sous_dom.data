@@ -7,7 +7,7 @@ Domaine domaine_glob
 Domaine domaine1
 Domaine domaine2
 
-Lire_MED {
+Read_MED {
     domain domaine_glob
     file domaine_glob.med
 }

@@ -30,7 +30,7 @@ end */
 
 Bidim_Axi
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file rectangle.med
 }

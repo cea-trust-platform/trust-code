@@ -12,7 +12,7 @@ Domaine dom
 Read_file dom dom2_mod.geom
 Write_MED dom dom.med
 domaine dom2
-Lire_MED {
+Read_MED {
     domain dom2
     file dom.med
 }

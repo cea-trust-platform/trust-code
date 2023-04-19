@@ -8,7 +8,7 @@ DOMaine DOM
 Pb_conduction pb
 
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain DOM
     file Mesh_1.med
 }

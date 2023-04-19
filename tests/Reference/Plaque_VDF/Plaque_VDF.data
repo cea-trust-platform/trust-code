@@ -5,7 +5,7 @@ Domaine F4MESH
 
 /* Le maillage contient une plaque de frontieres wall1_dup et wall1 */
 # DEBUT MAILLAGE #
-Lire_MED {
+Read_MED {
     domain F4MESH
     file fluid_mesh_wall.med
 }

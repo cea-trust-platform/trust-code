@@ -4,7 +4,7 @@ pb_multiphase pbt
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { domain dom file canal.med }
+Read_MED { domain dom file canal.med }
 # END MESH #
 
 # BEGIN PARTITION

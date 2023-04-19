@@ -7,7 +7,7 @@ Pb_conduction pb2
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file mesh_tri_1.med
 }

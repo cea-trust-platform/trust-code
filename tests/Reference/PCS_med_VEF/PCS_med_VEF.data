@@ -4,13 +4,13 @@ dimension 3
 Domaine dom
 
 Domaine interf
-Lire_MED { 
+Read_MED { 
    domain interf 
    file Ksing.med 
 }
 
 # BEGIN MESH #
-Lire_MED { 
+Read_MED { 
    domain dom 
    file MeshCFD.med 
 }

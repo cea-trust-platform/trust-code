@@ -14,7 +14,7 @@ Domaine dom
 EcritureLectureSpecial 0
 
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file ../MESHES_CYLINDER/res_domain_mesh_160_exact.med
 }

@@ -6,7 +6,7 @@ Domaine dom
 
 # DEBUT MAILLAGE #
 
-Lire_MED {
+Read_MED {
     domain dom
     file fuel_geom1.med
 }

@@ -2,7 +2,7 @@
 # PARALLEL NOT #
 dimension 2
 domaine dom
-Lire_MED {
+Read_MED {
     domain dom
     file logo_trust.med
     convertAllToPoly

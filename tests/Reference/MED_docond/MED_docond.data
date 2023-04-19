@@ -23,7 +23,7 @@ Domaine dom_fluide
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED { domaine dom file ./MESH/geom.med }
+Read_MED { domaine dom file ./MESH/geom.med }
 Mailler tmp
 {
     Pave Cavite1
@@ -51,7 +51,7 @@ Mailler tmp
     }
 }
 Write_MED tmp solide.med
-Lire_MED { 
+Read_MED { 
    domain dom_solide 
    file solide.med 
 }

@@ -5,7 +5,7 @@ pb_Multiphase pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file channel.med
 }

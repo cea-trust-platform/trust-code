@@ -5,7 +5,7 @@ domaine dom
 # Lecture du maillage genere par salome voir cas Lire_unv #
 # Kernel_med_shorty #
 # test de ecrire_champ_med #
-Lire_MED {
+Read_MED {
     domain dom
     file ess.med
 }

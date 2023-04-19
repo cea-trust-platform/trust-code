@@ -4,7 +4,7 @@ dimension 3
 domaine dom
 
 # BEGIN MESH #
-Lire_MED {
+Read_MED {
     domain dom
     file cylindre_perio_fine_3.med
 }

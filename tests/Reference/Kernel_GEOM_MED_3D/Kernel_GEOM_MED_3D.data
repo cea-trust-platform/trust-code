@@ -54,15 +54,15 @@ dimension 3
 Domaine hexaedre
 Domaine tetra
 Domaine hexaedre_vef
-Lire_MED {
+Read_MED {
     domain hexaedre
     file hexaedre.med
 }
-Lire_MED {
+Read_MED {
     domain tetra
     file tetra.med
 }
-Lire_MED {
+Read_MED {
     domain hexaedre_vef
     file hexaedre_vef.med
 }
@@ -78,7 +78,7 @@ postraiter_domaine {
 }
 
 Domaine FluidVolMesh
-Lire_MED {
+Read_MED {
     domain FluidVolMesh
     file mesh_with_several_groups_on_a_family.med
 }

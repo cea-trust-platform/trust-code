@@ -2,7 +2,7 @@ Dimension 3
 Pb_hydraulique pb
 
 Domaine dom
-Lire_MED {
+Read_MED {
     domain dom
     file cube.med
 }
