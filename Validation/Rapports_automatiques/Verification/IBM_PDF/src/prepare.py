@@ -35,10 +35,10 @@ def writeAddAndPartition(baseName, jdd):
     """    
     with open(baseName+"/"+baseName+".data", "w") as f:
         f.write(jdd)
-    # In the below, we must use ';' to ignore return value of trust -partition (it returns the numb of procs ...)
-    run.executeCommand(f"cd {baseName} && trust -partition {baseName}.data; cd ..") 
     os.chdir(run.BUILD_DIRECTORY)
-    run.addCase(baseName, "PAR_"+baseName+".data",4)
+    cas = run.addCase(baseName, baseName+".data",4)
+    cas.partition()
+
 
 ##
 ## TAYLOR COUETTE
@@ -62,9 +62,10 @@ for meth in ["dir", "hybrid", "multi_dir"]:
 ## POISEUILLE ALIGN
 ##
 baseName = "poiseuille_pdf_align"
-run.executeCommand(f"cd {baseName} && trust -partition {baseName}.data; cd ..") 
 os.chdir(run.BUILD_DIRECTORY)
-run.addCase(baseName, "PAR_"+baseName+".data",4)
+cas = run.addCase(baseName, baseName+".data",4)
+cas.partition()
+
 
 ##
 ## POISEUILLE TILT

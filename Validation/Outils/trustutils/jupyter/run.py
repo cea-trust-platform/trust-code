@@ -139,6 +139,7 @@ class TRUSTCase(object):
         self.nbProcs_ = nbProcs
         self.last_run_ok_ = -255  # exit status of the last run of the case
         self.last_run_err_ = ""  # error message returned when last running the case
+        self.partitionned = False 
         if record:
             self._ListCases.append(self)
 
@@ -366,6 +367,29 @@ class TRUSTCase(object):
         os.chmod(scriptFl, 0o755)
         return scriptFl, fullL
 
+    def partition(self, verbose=False):
+        ok = True
+        path = os.getcwd()
+        os.chdir(self._fullDir())
+        opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
+        if "-not_run" in opt:
+            return
+
+        err_file = self.name_ + "_partition.err"
+        out_file = self.name_ + "_partition.out"
+        cmd = "trust -partition %s %s 2>%s 1>%s" % (self.name_, str(self.nbProcs_), err_file, out_file)
+        output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
+        if verbose:
+            print(cmd)
+        if output.returncode != 0:
+            ok = False
+            err = getLastLines_(err_file)
+
+        self.partitionned = True
+        os.chdir(path)
+
+        return ok
+
     def runCase(self, verbose=False):
         """ 
         Move to the case directory and execute the current test case:
@@ -386,16 +410,18 @@ class TRUSTCase(object):
         self._preRun(verbose)
 
         ### Run Case ###
-        err_file = self.name_ + ".err"
-        out_file = self.name_ + ".out"
-        cmd = "trust %s %s 2>%s 1>%s" % (self.name_, str(self.nbProcs_), err_file, out_file)
+        dataFileName = self.name_
+        if self.partitionned : dataFileName = "PAR_" + self.name_
+        err_file = dataFileName + ".err"
+        out_file = dataFileName + ".out"
+        cmd = "trust %s %s 2>%s 1>%s" % (dataFileName, str(self.nbProcs_), err_file, out_file)
         output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
         if verbose:
             print(cmd)
             print(output.stdout)
         if output.returncode != 0:
             ok = False
-            err = getLastLines_(self.name_ + ".err")
+            err = getLastLines_(dataFileName + ".err")
 
         ### Run post_run ###
         if ok:
@@ -478,6 +504,7 @@ class TRUSTSuite(object):
             return True
         except subprocess.CalledProcessError:
             return False
+
 
     def runCases(self, verbose=False, preventConcurrent=False):
         """ Launch all cases for the current suite.
