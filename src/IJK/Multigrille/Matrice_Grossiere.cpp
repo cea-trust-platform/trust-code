@@ -17,7 +17,7 @@
 #include <Matrice_Morse_Sym.h>
 
 void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting)
+                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting, double offset)
 {
   if (pe == Process::me())
     {
@@ -25,28 +25,18 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
       const int ni = renum_.dimension(2) - 2;
       const int nj = renum_.dimension(1) - 2;
       const int nk = renum_.dimension(0) - 2;
-      const int nksplit = splitting.get_nb_elem_local(DIRECTION_K);
-
       for (int k = kmin; k < kmax; k++)
         for (int j = jmin; j < jmax; j++)
           for (int i = imin; i < imax; i++)
             {
         	  int ii ;
-        	  if (kmin == -1 && kmax == 0){
+        	  if (offset !=0. && IJK_Splitting::defilement_==1){
         	  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
 			  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
 			  double DX = Lx/nisplit ;
-			  double Shear_x_time = IJK_Splitting::shear_x_time_;
+			  double Shear_x_time = IJK_Splitting::shear_x_time_ * offset;
 			  int offset_i = (int) round(Shear_x_time/DX);
                ii = ((i + ni + offset_i) % ni + ni) % ni;
-        	  }
-        	  else if (kmin==nksplit && kmax == nksplit+1){
-			  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
-			  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
-			  double DX = Lx/nisplit ;
-			  double Shear_x_time = IJK_Splitting::shear_x_time_;
-			  int offset_i = (int) round(Shear_x_time/DX);
-			  ii = ((i + ni - offset_i) % ni + ni) % ni;
         	  }
         	  else
         	  {
@@ -61,6 +51,7 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
     }
   else
     {
+	  // cas ou la frontiere nest pas des deux cotes sur le meme proc...
       virt_blocs.set_smart_resize(1);
       virt_blocs.append_array(count);
 
@@ -68,8 +59,11 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
         for (int j = jmin; j < jmax; j++)
           for (int i = imin; i < imax; i++)
             {
-              int index = count++;
-              renum(i,j,k) = index;
+			  {
+			    int index = count++;
+			    renum(i,j,k) = index;
+			  }
+
             }
 
       virt_blocs.append_array(count); // end of virtual bloc of data
@@ -77,17 +71,32 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
 }
 
 void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& items_to_send, IJK_Splitting splitting)
+                                      int imax, int jmax, int kmax, ArrOfInt& items_to_send, IJK_Splitting splitting, double offset)
 {
   if (pe == Process::me())
     return;
 
   items_to_send.set_smart_resize(1);
+  const int ni = renum_.dimension(2) - 2;
+
   for (int k = kmin; k < kmax; k++)
     for (int j = jmin; j < jmax; j++)
       for (int i = imin; i < imax; i++)
         {
-          int index = renum(i,j,k);
+    	  int ii ;
+    	  if (offset !=0. && IJK_Splitting::defilement_==1){
+		  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
+		  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+		  double DX = Lx/nisplit ;
+		  double Shear_x_time = IJK_Splitting::shear_x_time_ * offset;
+		  int offset_i = (int) round(Shear_x_time/DX);
+			 ii = ((i + offset_i) % ni + ni) % ni;
+		  }
+    	  else
+    	  {
+    		ii = i;
+    	  }
+          int index = renum(ii,j,k);
           assert(index >= 0);
           items_to_send.append_array(index);
         }

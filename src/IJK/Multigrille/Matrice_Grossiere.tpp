@@ -36,6 +36,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         for (i = 0; i < ni; i++)
           renum(i,j,k) = count++;
 
+    // initialisation du tableau d'indice
+
     ArrOfInt pe_voisins(6);
     pe_voisins.set_smart_resize(1);
     VECT(ArrOfInt) items_to_send(6);
@@ -49,22 +51,63 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     const int pe_imax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_I);
     const int pe_jmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_J);
     const int pe_kmax = splitting.get_neighbour_processor(1 /* right */, DIRECTION_K);
+    int z_index = splitting.get_local_slice_index(2);
+    int z_index_min = 0;
+    int z_index_max = splitting.get_nprocessor_per_direction(2) - 1;
 
     // duCluzeau
     // Ici, on doit permuter les indices du vecteur solution de pression pour rendre compte des
     // conditions de periodicites (ou de shear-periodicité)
 
     int pe = pe_kmin;
-    if (pe >= 0)
+    if (pe >= 0) // si voisin du bas existe
       {
         pe_voisins[npe] = pe;
+        if (pe != pe_kmax) // On a au moins 3 proc sur z
           {
-            // un processeur voisin a gauche et a droite  (par periodicite)
-            // attention a l'ordre des blocs:
+        	// add_virt_bloc --> stock l'emplacement des indices de l'espace fantome de count à count+ni*nj dans blocs_to_recv
             add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting);
-            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
-            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting);
+
+            // add_dist_bloc --> stock lespace reel en 0 dans items_to_send[0] pour lespace virtuel en nk du proc k-1
+            // pour les conditions de shear-periodicité, besoin d'un changement si c est le premier proc en z pour prendre en compte l'offset
+            if( z_index == z_index_min)
+            {
+            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe], splitting, -1.);
+            }
+            else
+            {
             add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe], splitting);
+            }
+          }
+        else
+          {
+            // le meme processeur voisin a gauche et a droite  (par periodicite), soit 1 soit 2 proc sur z
+            // attention a l'ordre des blocs:
+
+        	// si un seul proc sur k --> assure la shear periodicite
+        	// sinon, stock l'emplacement des indices de l'espace fantome en -1 , puis en nk+1, sans modif
+            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting, 1.);
+            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting, -1.);
+
+            // si un seul proc sur k --> add_dist_bloc ne fait rien, si 2 procs voisins des deux cotes :
+            // stock l'espace reel en 0 et en nk-1 --> offset suivant la position du proc en z=0 ou z=zmax.
+            if( z_index == z_index_max)
+            {
+            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting, 1.);
+            }
+            else
+            {
+            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting);
+            }
+            if( z_index == z_index_min)
+            {
+            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe], splitting, -1.);
+            }
+            else
+            {
+            add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe], splitting);
+            }
+
           }
         npe++;
       }
@@ -134,7 +177,16 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
       {
         pe_voisins[npe] = pe;
         add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
+        // autre test pour le proc pe_kmax, bloc stocke pour assurer la shear periodicite.
+        if( z_index == z_index_max)
+        {
+        add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting, 1.);
+        }
+        else
+        {
         add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting);
+        }
+
         npe++;
       }
 

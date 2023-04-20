@@ -52,8 +52,8 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
 			  // retourne un indice du domaine reel (valeur comprise entre 0 et real_size -1).
         	  send_i = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
-              //real_send_i_sauv = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
-              //send_i = (send_i % real_size_i + real_size_i) % real_size_i;
+
+        	  //4-th order interpolation
 
         	  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
         	  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
@@ -87,18 +87,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         	  int recevd_j = j + jr;
         	  int recevd_k = k + kr;
 
-//        	  if (recevd_i == 11 and recevd_j == 0 and recevd_k == 1)
-//        	  {
-//        		  std::cout << "real_size_i = " << real_size_i<< std::endl;
-//        		  std::cout << "real_size_j = " << real_size_j<< std::endl;
-//        		  std::cout << "nb_ghost = " << nb_ghost<< std::endl;
-//        		  std::cout << "real_send_i_sauv " << real_send_i_sauv << " " << real_send_j_sauv << " " << real_send_k_sauv << std::endl;
-//        		  std::cout << "envoi " << send_i << " " << send_j << " " << send_k << "dans " << recevd_i << " " << recevd_j << " " << recevd_k <<  std::endl;
-//        		  std::cout << "valeur envoyee" << IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k) <<  std::endl;
-//        	  }
-
-
-
 
               dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k)] = buf;
 
@@ -119,27 +107,23 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
-          for (int i = 0; i < isz; i++)
+          for (int i = 0; i < isz; i++, buf++)
           {
 
         	  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
               int send_i = i + is ;
         	  int send_j = j + js ;
         	  int send_k = k + ks ;
-
-        	  *buf = (_TYPE_) jump_i;
         	  if (offset !=0.)
         	  {
 
         		  // taille du domaine physique
         		  int real_size_i = isz - 2*nb_ghost; // --> ni
-    			  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
-    			  //int real_send_i_sauv = i + is ;
 
     			  // retourne un indice du domaine reel (valeur comprise entre 0 et real_size -1).
             	  send_i = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
-                  //real_send_i_sauv = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
-                  //send_i = (send_i % real_size_i + real_size_i) % real_size_i;
+
+            	  //4-th order interpolation
 
             	  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
             	  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
@@ -157,15 +141,15 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
               _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
               _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
 
-              *buf+=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+              *buf=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
                           		  							 + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
                           		  							 + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
                           		  							 + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
-                          		  							 + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+                          		  							 + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]))+ (_TYPE_) jump_i;
         	  }
         	  else
         	  {
-        	  *buf += IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k);
+        	  *buf= IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k)+(_TYPE_) jump_i;
         	  }
 
 
@@ -213,8 +197,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   int pe_jmin_ = splitting.get_neighbour_processor(0, 1);
   int pe_jmax_ = splitting.get_neighbour_processor(1, 1);
 
-  // if pe_kmin_ = -1 >> boundary z=0
-  // if pe_kmax = -1 >> boundary z=Lz
   int pe_kmin_ = splitting.get_neighbour_processor(0, 2);
   int pe_kmax_ = splitting.get_neighbour_processor(1, 2);
   int z_index = splitting.get_local_slice_index(2);
@@ -225,8 +207,9 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
 
-  // calcul du decallage offset_i
+  // calcul du decallage offset_i dans le cas de conditions de cisaillement periodique
   // correspond au nombre de maille en x qui separe deux elements periodique sur le bord zmin, zmax
+
   double offset_i=0.;
   if (IJK_Splitting::defilement_ == 1)
   {
@@ -241,9 +224,11 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   exchange_data(pe_imin_, 0, -le_ghost, -le_ghost, pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost); /* size of block data to send */
   // send right real cells to left virtual cells
   exchange_data(pe_imax_, nii - le_ghost, -le_ghost, -le_ghost, pe_imin_, -le_ghost, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost);
+
+  exchange_data(pe_jmin_, 0, 0, -le_ghost, pe_jmax_, 0, njj, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
+
+  exchange_data(pe_jmax_, 0, njj - le_ghost, -le_ghost, pe_jmin_, 0, -le_ghost, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
   // duCluzeau
-  // je pense que le sens des echanges est important.
-  // Il n'y a pas de superposition des blocs
   // changement pour faire en sorte que lechange sur z ne se fasse que sur le domaine reel (pour condition de cisaillement periodique)
   // sur x, echange d'un bloc [ghost, njj + 2*ghost, nkk+ 2*ghost]
   // sur z, echange d'un bloc [nii, njj, ghost]
@@ -265,10 +250,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   {
 	  exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost, offset_i, -jump_i, 0);
 	    }
-
-  exchange_data(pe_jmin_, 0, 0, -le_ghost, pe_jmax_, 0, njj, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
-
-  exchange_data(pe_jmax_, 0, njj - le_ghost, -le_ghost, pe_jmin_, 0, -le_ghost, -le_ghost, nii , le_ghost, nkk + 2 * le_ghost);
 
 
   statistiques().end_count(echange_vect_counter_);
