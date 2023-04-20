@@ -139,7 +139,7 @@ class TRUSTCase(object):
         self.nbProcs_ = nbProcs
         self.last_run_ok_ = -255  # exit status of the last run of the case
         self.last_run_err_ = ""  # error message returned when last running the case
-        self.partitionned = False 
+        self.partitioned = False 
         if record:
             self._ListCases.append(self)
 
@@ -368,6 +368,14 @@ class TRUSTCase(object):
         return scriptFl, fullL
 
     def partition(self, verbose=False):
+        """ 
+        Apply partitioning of specified test case with trust -partition
+
+        Parameters
+        ---------
+        verbose: bool
+        
+        """
         ok = True
         path = os.getcwd()
         os.chdir(self._fullDir())
@@ -385,7 +393,7 @@ class TRUSTCase(object):
             ok = False
             err = getLastLines_(err_file)
 
-        self.partitionned = True
+        self.partitioned = True
         os.chdir(path)
 
         return ok
@@ -411,7 +419,7 @@ class TRUSTCase(object):
 
         ### Run Case ###
         dataFileName = self.name_
-        if self.partitionned : dataFileName = "PAR_" + self.name_
+        if self.partitioned : dataFileName = "PAR_" + self.name_
         err_file = dataFileName + ".err"
         out_file = dataFileName + ".out"
         cmd = "trust %s %s 2>%s 1>%s" % (dataFileName, str(self.nbProcs_), err_file, out_file)
