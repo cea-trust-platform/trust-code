@@ -25,7 +25,9 @@
 #include <MEDLoader.hxx>
 #include <MEDCouplingField.hxx>
 #include <MEDCouplingFieldDouble.hxx>
+#ifdef MPI_
 #include <ParaMEDFileMesh.hxx>
+#endif
 #pragma GCC diagnostic ignored "-Wreorder"
 #include <MEDFileField.hxx>
 #include <communications.h>
@@ -444,9 +446,9 @@ void Champ_Fonc_MED::lire(double t, int given_it)
           distrib.insert(distrib.begin(), filter.addr(), filter.addr() + filter.size_array());
           MCAuto<MEDFileField1TS> fieldFile = MEDCoupling::ParaMEDFileField1TS::ParaNew(Comm_Group_MPI::get_trio_u_world(), MPI_INFO_NULL, fileName, fieldName, meshName, distrib, field_type, iteration, order);
           MEDCoupling::DataArrayDouble *field_values = fieldFile->getUndergroundDataArray();
-#endif
           std::copy(field_values->begin(),field_values->end(),
                     le_champ().valeurs().addr());
+#endif
         }
       else
         {
