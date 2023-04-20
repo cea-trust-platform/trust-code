@@ -1030,6 +1030,10 @@ bool Matrice_Morse::has_same_morse_matrix_structure(const Matrice_Morse& A) cons
   for (int i=0; i<nrow; i++)
     if (tab1_(i)!=A.tab1_(i))
       return false;
+  int ncoeff = tab2_.size_array();
+  for (int i=0; i<ncoeff; i++)
+    if (tab2_(i)!=A.tab2_(i))
+      return false;
   return true;
 }
 
