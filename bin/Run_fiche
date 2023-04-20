@@ -70,8 +70,6 @@ then
 elif [ "$TRUST_DISABLE_JUPYTER" = 1 ]
 then
   echo "WARNING! You have disabled the build of jupyter when you configured TRUST. contact TRUST support team." | tee Run.log
-else
-  rm -f Run.log
 fi
 
 options=""
@@ -317,10 +315,17 @@ then
           echo "Converting Jupyter notebook into PDF: build/rapport.pdf"
           echo "  >  jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $pdf $opt_jy $prm"
           echo "----------------------------------------------------------------------"
-          jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" $opt_jy $prm
-          err=$?
-          [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
-          exit $err
+          jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" $opt_jy $prm 2>& 1| tee -a Run.log
+   				error=${PIPESTATUS[0]}
+   				if [ "$error" != 0 ]
+   					then
+      			echo "Error, see Run.log"
+      			exit -1
+					else
+						rm -f Run.log
+          	[ "$xpdf" = "-xpdf" ] && show_pdf $pdf
+          	exit 
+   				fi
       elif $parallel; then
           curr_dir=`pwd`  
           pdf=$(basename $pdf)
