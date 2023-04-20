@@ -80,6 +80,7 @@ void instancie_src_ThHyd_Multiphase();
 void instancie_src_ThHyd_Multiphase_Correlations();
 void instancie_src_ThHyd_Multiphase_Equations();
 void instancie_src_ThHyd_Multiphase_Milieu();
+void instancie_src_ThHyd_Multiphase_Milieu_TPPI();
 void instancie_src_ThHyd_Multiphase_Operateurs();
 void instancie_src_ThHyd_Multiphase_PolyMAC();
 void instancie_src_ThHyd_Multiphase_Schemas_Temps();

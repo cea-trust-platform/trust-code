@@ -19,6 +19,7 @@
 #include <Champ_front_var_instationnaire.h>
 #include <Static_Int_Lists.h>
 #include <Elem_poly_base.h>
+#include <Domaine_Poly_tools.h>
 #include <Elem_poly.h>
 #include <TRUSTLists.h>
 #include <Periodique.h>
@@ -241,48 +242,6 @@ inline const ArrOfInt& Domaine_Poly_base::ind_faces_virt_non_std() const
   return ind_faces_virt_non_std_;
 }
 
-/* produit matricel et transposee de DoubleTab */
-static inline DoubleTab prod(DoubleTab a, DoubleTab b)
-{
-  int i, j, k, m = a.dimension(0), n = a.dimension(1), p = b.dimension(1);
-  assert(n == b.dimension(0));
-  DoubleTab r(m, p);
-  for (i = 0; i < m; i++)
-    for (j = 0; j < n; j++)
-      for (k = 0; k < p; k++) r(i, k) += a(i, j) * b(j, k);
-  return r;
-}
-static inline DoubleTab transp(DoubleTab a)
-{
-  int i, j, m = a.dimension(0), n = a.dimension(1);
-  DoubleTab r(n, m);
-  for (i = 0; i < m; i++)
-    for (j = 0; j < n; j++) r(j, i) = a(i, j);
-  return r;
-}
-
-/* minimise ||M.x - b||_2, met le noyau de M dans P et retourne le residu */
-static inline double kersol(const DoubleTab& M, DoubleTab& b, double eps, DoubleTab *P, DoubleTab& x, DoubleTab& S)
-{
-  int i, nk, m = M.dimension(0), n = M.dimension(1), k = std::min(m, n), l = std::max(m, n), w = 5 * l, info, iP, jP;
-  double res2 = 0;
-  char a = 'A';
-  //lapack en mode Fortran -> on decompose en fait Mt!!
-  DoubleTab A = M, U(m, m), Vt(n, n), W(w), iS(n, m);
-  S.resize(k);
-  F77NAME(dgesvd)(&a, &a, &n, &m, A.addr(), &n, S.addr(), Vt.addr(), &n, U.addr(), &m, W.addr(), &w, &info);
-  for (i = 0, nk = n; i < k && S(i) > eps * S(0); i++) nk--;
-  if (P) P->resize(n, nk);
-  for (i = 0, jP = -1; i < n; i++)
-    if (i < k && S(i) > eps * S(0)) iS(i, i) = 1 / S(i); //terme diagonal de iS
-    else if (P)
-      for (iP = 0, jP++; iP < n; iP++) (*P)(iP, jP) = Vt(i, iP); //colonne de V -> colonne de P
-  x = prod(transp(Vt), prod(iS, prod(transp(U), b)));
-  DoubleTab res = prod(M, x);
-  for (i = 0; i < m; i++) res2 += std::pow(res(i, 0) - b(i, 0), 2);
-  return sqrt(res2);
-}
-
 /* equivalent du dist_norm_bord du VDF */
 inline double Domaine_Poly_base::dist_norm_bord(int f) const
 {
@@ -333,8 +292,4 @@ inline double Domaine_Poly_base::nu_dot(const DoubleTab* nu, int e, int n, const
   return resu;
 }
 
-/* compaction d'un tableau qui avait set_smart_resize = 1 */
-#define CRIMP(a) a.nb_dim() > 2 ? a.resize(a.dimension(0) + 1, a.dimension(1), a.dimension(2)) : a.nb_dim() > 1 ? a.resize(a.dimension(0) + 1, a.dimension(1)) : a.resize(a.dimension(0) + 1), \
-        a.set_smart_resize(0), \
-        a.nb_dim() > 2 ? a.resize(a.dimension(0) - 1, a.dimension(1), a.dimension(2)) : a.nb_dim() > 1 ? a.resize(a.dimension(0) - 1, a.dimension(1)) : a.resize(a.dimension(0) - 1)
 #endif
