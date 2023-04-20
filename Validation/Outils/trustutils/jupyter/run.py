@@ -89,18 +89,18 @@ def _runCommand(cmd, verbose):
     if it fails.
     """
     # Run by redirecting stderr to stdout
-    complProc = subprocess.run(cmd, shell=True, executable="/bin/bash", stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    if verbose or complProc.returncode != 0:
+    complProc = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
+    if verbose:
         print(cmd)
-        print(complProc.stdout.decode('utf-8'))
+        print(complProc.stdout)
     # Throw if return code non-zero:
-    if complProc.returncode:
+    if complProc.returncode != 0 and complProc.stdout:
         # Display message through a custom exception so that jupyter-nbconvert also shows it properly in the console:
         msg = "\nExecution of following command failed!!\n"
         msg += "  " + cmd
         msg += "\nwith return code %d\n" % complProc.returncode
         msg += "and with following output:\n\n"
-        msg += complProc.stdout.decode('utf-8')
+        msg += (complProc.stdout if complProc.stdout else "")
         raise RuntimeError(msg)
 
 ######## End PRIVATE STUFF #########
@@ -946,10 +946,8 @@ def executeCommand(cmd, verbose=False, nonRegression=False):
     ----------
 
     cmd: command to execute
-        Name of the exec script
     verbose: bool
     nonRegression: bool
-        by default executeScript is inactive when option -not_run is applied (for non regression test)
     """
     opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
     # Very specific to the validation process. Sometimes we want the core
