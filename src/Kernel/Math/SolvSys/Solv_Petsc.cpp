@@ -39,6 +39,7 @@
 #include <TRUSTTrav.h>
 #include <MD_Vector_composite.h>
 #include <vector>
+#include <functional>
 
 Implemente_instanciable_sans_constructeur_ni_destructeur(Solv_Petsc,"Solv_Petsc",Solv_Externe);
 
@@ -916,7 +917,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
       int pc_supported_on_gpu_by_petsc=0;
       int pc_supported_on_gpu_by_amgx=0;
-      Motcles les_precond(13);
+      Motcles les_precond(14);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
@@ -931,6 +932,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[10] = "C-AMG";    // Classical AMG
         les_precond[11] = "SA-AMG";   // Aggregated AMG
         les_precond[12] = "GS";   // Gauss-Seidel
+        les_precond[13] = "PCSHELL"; // user defined preconditionner
       }
 
       if (pc!="")
@@ -964,7 +966,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               }
             case 1:
               {
-//Cout << "See http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node33.html" << finl;
+                //Cout << "See http://www.ncsa.uiuc.edu/UserInfo/Resources/Software/Math/HYPRE/docs-1.6.0/HYPRE_usr_manual/node33.html" << finl;
                 //Cout << "to have some advices on the incomplete LU factorisation level: ILU(level)" << finl;
                 // On n'attaque pas le ILU de Petsc qui n'est pas parallele
                 // On prend celui de Hypre (Euclid=PILU(k)) en passant par les commandes en ligne
@@ -1210,6 +1212,38 @@ void Solv_Petsc::create_solver(Entree& entree)
                 check_not_defined(level);
                 check_not_defined(epsilon);
                 check_not_defined(ordering);
+                break;
+              }
+            case 13:
+              {
+
+                PCSetType(PreconditionneurPetsc_, PCSHELL);
+
+                PetscNew(&pc_user);
+                pc_user->pc_shell_ptr = new PCShell();
+
+                auto PCShellUserApply =  [](PC pc_apply, Vec x, Vec y)
+                {
+                  PCstruct *shell;
+
+                  PCShellGetContext(pc_apply,(void**) &shell);
+                  PCShell *ptr=shell->pc_shell_ptr;
+                  return ptr->computePC(pc_apply,x,y);
+                };
+
+                auto PCShellUserDestroy =  [](PC pc_apply)
+                {
+                  PCstruct *shell;
+
+                  PCShellGetContext(pc_apply,(void**) &shell);
+                  PCShell *ptr=shell->pc_shell_ptr;
+                  return ptr->destroyPC(pc_apply);
+                };
+
+                PCShellSetContext(PreconditionneurPetsc_, &pc_user);
+                PCShellSetApply(PreconditionneurPetsc_, PCShellUserApply);
+                PCShellSetDestroy(PreconditionneurPetsc_, PCShellUserDestroy);
+
                 break;
               }
             default:
@@ -1619,6 +1653,12 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         Create_objects(matrice_morse, secmem.line_size());
       else
         Update_matrix(MatricePetsc_, matrice_morse);
+      if (type_pc_ == "shell")
+        {
+          PCShell *ptr=pc_user->pc_shell_ptr;
+          ptr->setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
+        }
+
       /* reglage de BlockSize avec le line_size() du second membre */
       if (limpr() == 1)
         {

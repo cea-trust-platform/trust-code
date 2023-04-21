@@ -26,6 +26,7 @@
 #include <petscdm.h>
 #include <TRUSTTab.h>
 #endif
+#include <PCShell.h>
 
 class Matrice_Morse_Sym;
 class Matrice_Morse;
@@ -33,6 +34,7 @@ class Matrice_Morse;
 
 enum solveur_direct_ { no, mumps, superlu_dist, petsc, umfpack, pastix, cholmod, cli };
 extern bool gmres_right_unpreconditionned;
+
 
 class Solv_Petsc : public Solv_Externe
 {
@@ -123,6 +125,7 @@ protected :
   Vec SolutionPetsc_;		// Globale solution
   KSP SolveurPetsc_;
   PC PreconditionneurPetsc_;
+  PCstruct *pc_user;   /* user-defined preconditioner context */
   DM dm_;                       //description de champs PETSC
   int preconditionnement_non_symetrique_; // Drapeau sur la symetrie de la matrice de preconditionnement
   int nb_it_max_;		// Maximal number of iterations
