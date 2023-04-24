@@ -20,19 +20,26 @@
 #include <Probleme_base.h>
 
 #ifdef MEDCOUPLING_
+#include <MEDCouplingFieldDouble.hxx>
 #include <MEDCouplingRemapper.hxx>
 #endif
 
 class Champ_Fonc_Interp : public Champ_Fonc_P0_base
 {
   Declare_instanciable(Champ_Fonc_Interp);
+
 public:
   int initialiser(double ) override;
   void mettre_a_jour(double) override;
 
 protected:
+  void init_fields();
+  void update_fields();
   REF(Probleme_base) pb_loc_, pb_dist_;
   bool is_initialized_ = false;
+  MEDCoupling::NatureOfField nature_;
+  MEDCoupling::MCAuto<MEDCoupling::MEDCouplingFieldDouble> local_field_, distant_field_;
+  MEDCoupling::MCAuto<MEDCoupling::DataArrayDouble> local_array_, distant_array_;
 };
 
 #endif /* Champ_Fonc_Interp_included */

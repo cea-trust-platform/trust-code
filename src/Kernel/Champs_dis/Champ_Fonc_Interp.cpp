@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Interp.h>
+#include <TRUSTTab_parts.h>
 #include <Param.h>
 
 Implemente_instanciable(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
@@ -22,18 +23,30 @@ Sortie& Champ_Fonc_Interp::printOn(Sortie& os) const { return Champ_Fonc_P0_base
 
 Entree& Champ_Fonc_Interp::readOn(Entree& is)
 {
+  using namespace MEDCoupling;
+
   Param param(que_suis_je());
-  Nom nom_pb_loc, nom_pb_dist;
+  Nom nom_pb_loc, nom_pb_dist, nat;
   param.ajouter("nom_champ", &nom_, Param::REQUIRED);
   param.ajouter("pb_loc", &nom_pb_loc, Param::REQUIRED);
   param.ajouter("pb_dist", &nom_pb_dist, Param::REQUIRED);
+  param.ajouter("nature", &nat, Param::REQUIRED);
   param.lire_avec_accolades_depuis(is);
 
   pb_loc_ = ref_cast(Probleme_base,Interprete::objet(nom_pb_loc));
   pb_dist_ = ref_cast(Probleme_base,Interprete::objet(nom_pb_dist));
+
+  if (nat == "IntensiveMaximum") nature_ = IntensiveMaximum;
+  else if (nat == "IntensiveConservation") nature_ = IntensiveConservation;
+  else if (nat == "ExtensiveMaximum") nature_ = ExtensiveMaximum;
+  else if (nat == "ExtensiveConservation") nature_ = ExtensiveConservation;
+  else
+    {
+      Cerr << "Champ_Front_Interp : wrong NatureOfField read : " << nat << finl;
+      Process::exit();
+    }
   return is;
 }
-
 
 int Champ_Fonc_Interp::initialiser(double temps)
 {
@@ -45,30 +58,45 @@ int Champ_Fonc_Interp::initialiser(double temps)
   return ok;
 }
 
+void Champ_Fonc_Interp::init_fields()
+{
+  using namespace MEDCoupling;
+  Domaine& local_dom = pb_loc_->domaine_dis().domaine(), &distant_dom = pb_dist_->domaine_dis().domaine();
+
+  local_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
+  local_array_ = DataArrayDouble::New();
+  local_field_->setMesh(local_dom.get_mc_mesh());
+  local_field_->setNature(nature_);
+
+  distant_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
+  distant_array_ = DataArrayDouble::New();
+  distant_field_->setMesh(distant_dom.get_mc_mesh());
+  distant_field_->setNature(nature_);
+}
+
+void Champ_Fonc_Interp::update_fields()
+{
+  using namespace MEDCoupling;
+
+  const DoubleTab& distant_values = pb_dist_->get_champ(le_nom()).valeurs();
+  ConstDoubleTab_parts local_parts(valeurs()), distant_parts(distant_values);
+
+  if (local_field_ == nullptr) init_fields();
+  local_array_->useExternalArrayWithRWAccess(valeurs().addr(), local_parts[0].dimension(0), nb_compo_);
+  local_field_->setArray(local_array_);
+
+  distant_array_->useArray(distant_values.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, distant_parts[0].dimension(0), nb_compo_);
+  distant_field_->setArray(distant_array_);
+}
+
 void Champ_Fonc_Interp::mettre_a_jour(double t)
 {
   Champ_Fonc_P0_base::mettre_a_jour(t);
   if (!is_initialized_) return;
 
-  MEDCoupling::MEDCouplingRemapper *rmp = pb_loc_->domaine_dis().domaine().get_remapper(pb_dist_->domaine_dis().domaine());
-  const std::vector<std::map<int, double>>& mat_rmp = rmp->getCrudeMatrix();
+  Domaine& local_dom = pb_loc_->domaine_dis().domaine(), &distant_dom = pb_dist_->domaine_dis().domaine();
+  MEDCouplingRemapper *rmp = local_dom.get_remapper(distant_dom);
 
-  if (false) rmp->PrintMatrix(mat_rmp);
-
-  valeurs() = 0.0;
-  const DoubleTab& distant_values = pb_dist_->get_champ(le_nom()).valeurs();
-
-  /* codage du transfert en IntensiveMaximum */
-  for (int e = 0; e < (int)mat_rmp.size(); e++)
-    {
-      double s = 0.0;
-      for (const auto& i_coef: mat_rmp[e])
-        {
-          s += i_coef.second;
-          for (int n = 0; n < nb_compo_; n++)
-            valeurs()(e, n) += i_coef.second * distant_values(i_coef.first, n);
-        }
-      for (int n = 0; n < nb_compo_; n++)
-        valeurs()(e, n) /= s;
-    }
+  update_fields();
+  rmp->transfer(distant_field_, local_field_, 1e30);
 }

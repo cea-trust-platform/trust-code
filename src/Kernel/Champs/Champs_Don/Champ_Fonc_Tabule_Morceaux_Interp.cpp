@@ -43,7 +43,7 @@ int Champ_Fonc_Tabule_Morceaux_Interp::initialiser(const double tps)
   for (int i = 0; i < (int)v_pb_ch.size(); i++)
     {
       // XXX : j'ai mis nb_comp = 1 en dur
-      Nom ch_int = Nom("{ pb_loc ") + ref_pb->le_nom() + " pb_dist " + Nom(v_pb_ch[i][0]) + " nom_champ " + Nom(v_pb_ch[i][1]) + " }";
+      Nom ch_int = Nom("{ pb_loc ") + ref_pb->le_nom() + " pb_dist " + Nom(v_pb_ch[i][0]) + " nom_champ " + Nom(v_pb_ch[i][1]) + " nature IntensiveMaximum }";
       EChaine ech(ch_int);
       ech >> ch_param_interp[i];
     }
