@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,74 +25,75 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                                                              int pe_recv_, /* processor to recv from */
                                                              int ir, int jr, int kr, /* ijk coordinates of first data to recv */
                                                              int isz, int jsz, int ksz, /* size of block data to send/recv */
-															 double offset, double jump_i, int nb_ghost)  /* decallage a appliquer pour la condition de shear periodique*/
+                                                             double offset, double jump_i, int nb_ghost)  /* decallage a appliquer pour la condition de shear periodique*/
 {
 
-	if (pe_send_ == Process::me() && pe_recv_ == Process::me())
+  if (pe_send_ == Process::me() && pe_recv_ == Process::me())
     {
       // Self (periodicity on same processor)
       _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++)
-          {
+            {
 
-        	  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
+              // indices dans lespace complet (indice entre -ghost et real_size + ghost)
               int send_i = i + is ;
-        	  int send_j = j + js ;
-        	  int send_k = k + ks ;
+              int send_j = j + js ;
+              int send_k = k + ks ;
 
-        	  _TYPE_ buf = (_TYPE_) jump_i;
-        	  if (offset !=0.)
-        	  {
-    		  // taille du domaine physique
-    		  int real_size_i = isz - 2*nb_ghost; // --> ni
-			  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
-			  //int real_send_i_sauv = i + is ;
+              _TYPE_ buf = (_TYPE_) jump_i;
+              if (offset !=0.)
+                {
+                  // taille du domaine physique
+                  int real_size_i = isz - 2*nb_ghost; // --> ni
+                  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
+                  //int real_send_i_sauv = i + is ;
 
-			  // retourne un indice du domaine reel (valeur comprise entre 0 et real_size -1).
-        	  send_i = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
+                  // retourne un indice du domaine reel (valeur comprise entre 0 et real_size -1).
+                  send_i = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
 
-        	  //4-th order interpolation
+                  //4-th order interpolation
 
-        	  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
-        	  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
+                  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
+                  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
 
-              _TYPE_ y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-            		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)};
+                  _TYPE_ y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)
+                                };
 
 
-              _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
-              _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
-              _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
-              _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
-              _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+                  _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+                  _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+                  _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+                  _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+                  _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
 
-              buf+=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-                          		  							 + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-                          		  							 + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
-                          		  							 + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
-                          		  							 + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
-        	  }
-        	  else
-        	  {
-        	  buf+=IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k);
-        	  }
+                  buf+=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                       + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                       + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+                       + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+                       + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+                }
+              else
+                {
+                  buf+=IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k);
+                }
 
-        	  // indices dans lespace du tableau echange (recoi)
-        	  int recevd_i = i + ir;
-        	  int recevd_j = j + jr;
-        	  int recevd_k = k + kr;
+              // indices dans lespace du tableau echange (recoi)
+              int recevd_i = i + ir;
+              int recevd_j = j + jr;
+              int recevd_k = k + kr;
 
 
               dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k)] = buf;
 
-          }
+            }
 
-       return;
+      return;
     }
   const int data_size = isz * jsz * ksz;
   const int type_size = sizeof(_TYPE_);
@@ -108,52 +109,53 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++, buf++)
-          {
+            {
 
-        	  // indices dans lespace complet (indice entre -ghost et real_size + ghost)
+              // indices dans lespace complet (indice entre -ghost et real_size + ghost)
               int send_i = i + is ;
-        	  int send_j = j + js ;
-        	  int send_k = k + ks ;
-        	  if (offset !=0.)
-        	  {
+              int send_j = j + js ;
+              int send_k = k + ks ;
+              if (offset !=0.)
+                {
 
-        		  // taille du domaine physique
-        		  int real_size_i = isz - 2*nb_ghost; // --> ni
+                  // taille du domaine physique
+                  int real_size_i = isz - 2*nb_ghost; // --> ni
 
-    			  // retourne un indice du domaine reel (valeur comprise entre 0 et real_size -1).
-            	  send_i = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
+                  // retourne un indice du domaine reel (valeur comprise entre 0 et real_size -1).
+                  send_i = (int) round((double) i + (double) is +  offset) ; // de -ghost a isz+ghost
 
-            	  //4-th order interpolation
+                  //4-th order interpolation
 
-            	  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
-            	  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
+                  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
+                  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
 
                   _TYPE_ y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-                		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-                		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-                		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-                		         IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)};
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+                                 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)
+                                };
 
 
-              _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
-              _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
-              _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
-              _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
-              _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+                  _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+                  _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+                  _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+                  _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+                  _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
 
-              *buf=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-                          		  							 + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-                          		  							 + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
-                          		  							 + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
-                          		  							 + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]))+ (_TYPE_) jump_i;
-        	  }
-        	  else
-        	  {
-        	  *buf= IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k)+(_TYPE_) jump_i;
-        	  }
+                  *buf=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                       + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                       + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+                       + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+                       + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]))+ (_TYPE_) jump_i;
+                }
+              else
+                {
+                  *buf= IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(send_i, send_j, send_k)+(_TYPE_) jump_i;
+                }
 
 
-    }
+            }
     }
   if (pe_recv_ >= 0)
     recv_buffer = new _TYPE_[data_size];
@@ -212,12 +214,12 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   double offset_i=0.;
   if (IJK_Splitting::defilement_ == 1)
-  {
-	  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
-	  double DX = Lx/nii ;
-	  double Shear_x_time = IJK_Splitting::shear_x_time_;
-	  offset_i = Shear_x_time/DX;
-  }
+    {
+      double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+      double DX = Lx/nii ;
+      double Shear_x_time = IJK_Splitting::shear_x_time_;
+      offset_i = Shear_x_time/DX;
+    }
 
 
   // send left layer of real cells to right layer of virtual cells
@@ -234,22 +236,22 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   // sur z, echange d'un bloc [nii, njj, ghost]
   // sur y, echange d'un bloc [nii, ghost, nkk+ 2*ghost]
   if (z_index != z_index_min)
-  {
-	  exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost);
-  }
+    {
+      exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost);
+    }
   else
-  {
-	  exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii, njj, le_ghost, -offset_i, jump_i, 0);
-  }
+    {
+      exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii, njj, le_ghost, -offset_i, jump_i, 0);
+    }
 
   if (z_index != z_index_max)
-  {
-	  exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost);
-  }
+    {
+      exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost);
+    }
   else
-  {
-	  exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost, offset_i, -jump_i, 0);
-	    }
+    {
+      exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost, offset_i, -jump_i, 0);
+    }
 
 
   statistiques().end_count(echange_vect_counter_);
@@ -262,92 +264,93 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::change_to_sheared_reference_frame(double sens, int loc, int time)
 {
-	  // loc=0 pour prendre la valeur aux elements ; loc = 1,2,3 pour prendre aux faces I,J,K
-	  // time = 1 par defaut (decallage total) ; =0 pour avoir le decallage sur un seul pas de temps
-	  // sens = 1. --> du referentiel du labo ver le referentiel cisaille
-	  // sens = -1.--> du referentiel cisaille vers le referentiel labo
-	  const IJK_Splitting& splitting = splitting_ref_.valeur();
-	  const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
-	  const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
-	  const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-	  _TYPE_ARRAY_ tmptab = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data();
-	  double Lz =  splitting.get_grid_geometry().get_domain_length(2);
-	  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
-	  double DX = Lx/ni ;
+  // loc=0 pour prendre la valeur aux elements ; loc = 1,2,3 pour prendre aux faces I,J,K
+  // time = 1 par defaut (decallage total) ; =0 pour avoir le decallage sur un seul pas de temps
+  // sens = 1. --> du referentiel du labo ver le referentiel cisaille
+  // sens = -1.--> du referentiel cisaille vers le referentiel labo
+  const IJK_Splitting& splitting = splitting_ref_.valeur();
+  const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
+  const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
+  const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
+  _TYPE_ARRAY_ tmptab = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data();
+  double Lz =  splitting.get_grid_geometry().get_domain_length(2);
+  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+  double DX = Lx/ni ;
 
-	  for (int k = 0 ; k < nk; k++)
-		{
-		  for (int j = 0 ; j < nj; j++)
-			{
-			  for (int i = 0 ; i < ni; i++)
-				{
-				  Vecteur3 xyz;
-				  if (loc==0)
-				  xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
-				  else if (loc==1)
-				  xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
-				  else if (loc==2)
-				  xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
-				  else // (loc==3)
-				  xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
+  for (int k = 0 ; k < nk; k++)
+    {
+      for (int j = 0 ; j < nj; j++)
+        {
+          for (int i = 0 ; i < ni; i++)
+            {
+              Vecteur3 xyz;
+              if (loc==0)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
+              else if (loc==1)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              else if (loc==2)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
+              else // (loc==3)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
 
-				  double x_deplacement;
-				  if (time==0)
-				   x_deplacement = -sens*IJK_Splitting::shear_x_DT_*(xyz[2]-Lz/2.)/Lz;
-				  else //(time==1)
-				   x_deplacement = -sens*IJK_Splitting::shear_x_time_*(xyz[2]-Lz/2.)/Lz;
-				  double istmp = i+x_deplacement/DX;
+              double x_deplacement;
+              if (time==0)
+                x_deplacement = -sens*IJK_Splitting::shear_x_DT_*(xyz[2]-Lz/2.)/Lz;
+              else //(time==1)
+                x_deplacement = -sens*IJK_Splitting::shear_x_time_*(xyz[2]-Lz/2.)/Lz;
+              double istmp = i+x_deplacement/DX;
 
-	        	  int ifloorm2 = (int) floor(istmp) - 2;
-	        	  int ifloorm1 = (int) floor(istmp) - 1;
-	        	  int ifloor0 = (int) floor(istmp);
-	        	  int ifloorp1 = (int) floor(istmp) + 1;
-	        	  int ifloorp2 = (int) floor(istmp) + 2;
+              int ifloorm2 = (int) floor(istmp) - 2;
+              int ifloorm1 = (int) floor(istmp) - 1;
+              int ifloor0 = (int) floor(istmp);
+              int ifloorp1 = (int) floor(istmp) + 1;
+              int ifloorp2 = (int) floor(istmp) + 2;
 
-	        	  int x[5] = {ifloorm2, ifloorm1, ifloor0, ifloorp1, ifloorp2};
+              int x[5] = {ifloorm2, ifloorm1, ifloor0, ifloorp1, ifloorp2};
 
-	        	  ifloorm2 = (ifloorm2 % ni + ni) % ni;
-	        	  ifloorm1 = (ifloorm1 % ni + ni) % ni;
-	        	  ifloor0 = (ifloor0 % ni + ni) % ni;
-	        	  ifloorp1 = (ifloorp1 % ni + ni) % ni;
-	        	  ifloorp2 = (ifloorp2 % ni + ni) % ni;
+              ifloorm2 = (ifloorm2 % ni + ni) % ni;
+              ifloorm1 = (ifloorm1 % ni + ni) % ni;
+              ifloor0 = (ifloor0 % ni + ni) % ni;
+              ifloorp1 = (ifloorp1 % ni + ni) % ni;
+              ifloorp2 = (ifloorp2 % ni + ni) % ni;
 
-	              double y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorm2, j, k),
-	            		  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorm1, j, k),
-						  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloor0, j, k),
-						  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorp1, j, k),
-						  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorp2, j, k)};
+              double y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorm2, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorm1, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloor0, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorp1, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorp2, j, k)
+                            };
 
 
-	              double a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
-	              double a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
-	              double a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
-	              double a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
-	              double a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+              double a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+              double a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+              double a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+              double a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+              double a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
 
-				 // Evaluate the interpolation polynomial at istmp
+              // Evaluate the interpolation polynomial at istmp
 
-	              tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)) = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-	            		  							 + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-	            		  							 + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
-	            		  							 + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
-	            		  							 + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+              tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)) = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                                                                                             + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                                                                                             + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+                                                                                             + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+                                                                                             + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
 
-				}
-			}
-		}
+            }
+        }
+    }
 
-	  for (int k = 0 ; k < nk; k++)
-		{
-		  for (int j = 0 ; j < nj; j++)
-			{
-			  for (int i = 0 ; i < ni; i++)
-				{
-				  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k)=tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k));
-				}
-			}
-		}
-	  //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::echange_espace_virtuel(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost());
+  for (int k = 0 ; k < nk; k++)
+    {
+      for (int j = 0 ; j < nj; j++)
+        {
+          for (int i = 0 ; i < ni; i++)
+            {
+              IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k)=tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k));
+            }
+        }
+    }
+  //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::echange_espace_virtuel(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost());
 }
 
 

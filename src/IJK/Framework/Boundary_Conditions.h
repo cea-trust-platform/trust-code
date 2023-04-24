@@ -32,7 +32,7 @@ public:
 
   double get_vx_kmin() { return vxkmin_; }
   double get_vx_kmax() { return vxkmax_; }
-  double get_dU_perio(int fluctuations=0) { if (!fluctuations){return dU_perio_;}else{return 0.;}}
+  double get_dU_perio(int fluctuations=0) { if (!fluctuations) {return dU_perio_;} else {return 0.;}}
   double get_t0_shear() { return t0_shear_; }
   int get_defilement() { return defilement_; }
   int get_resolution_u_prime_() { return resolution_u_prime_; }

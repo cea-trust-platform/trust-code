@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,19 +29,20 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
         for (int j = jmin; j < jmax; j++)
           for (int i = imin; i < imax; i++)
             {
-        	  int ii ;
-        	  if (offset !=0. && IJK_Splitting::defilement_==1){
-        	  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
-			  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
-			  double DX = Lx/nisplit ;
-			  double Shear_x_time = IJK_Splitting::shear_x_time_ * offset;
-			  int offset_i = (int) round(Shear_x_time/DX);
-               ii = ((i + ni + offset_i) % ni + ni) % ni;
-        	  }
-        	  else
-        	  {
-        	   ii = (i + ni ) % ni;
-        	  }
+              int ii ;
+              if (offset !=0. && IJK_Splitting::defilement_==1)
+                {
+                  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
+                  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+                  double DX = Lx/nisplit ;
+                  double Shear_x_time = IJK_Splitting::shear_x_time_ * offset;
+                  int offset_i = (int) round(Shear_x_time/DX);
+                  ii = ((i + ni + offset_i) % ni + ni) % ni;
+                }
+              else
+                {
+                  ii = (i + ni ) % ni;
+                }
               int jj = (j + nj) % nj;
               int kk = (k + nk) % nk;
 
@@ -51,7 +52,7 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
     }
   else
     {
-	  // cas ou la frontiere nest pas des deux cotes sur le meme proc...
+      // cas ou la frontiere nest pas des deux cotes sur le meme proc...
       virt_blocs.set_smart_resize(1);
       virt_blocs.append_array(count);
 
@@ -59,10 +60,10 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
         for (int j = jmin; j < jmax; j++)
           for (int i = imin; i < imax; i++)
             {
-			  {
-			    int index = count++;
-			    renum(i,j,k) = index;
-			  }
+              {
+                int index = count++;
+                renum(i,j,k) = index;
+              }
 
             }
 
@@ -83,19 +84,20 @@ void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
     for (int j = jmin; j < jmax; j++)
       for (int i = imin; i < imax; i++)
         {
-    	  int ii ;
-    	  if (offset !=0. && IJK_Splitting::defilement_==1){
-		  const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
-		  double Lx =  splitting.get_grid_geometry().get_domain_length(0);
-		  double DX = Lx/nisplit ;
-		  double Shear_x_time = IJK_Splitting::shear_x_time_ * offset;
-		  int offset_i = (int) round(Shear_x_time/DX);
-			 ii = ((i + offset_i) % ni + ni) % ni;
-		  }
-    	  else
-    	  {
-    		ii = i;
-    	  }
+          int ii ;
+          if (offset !=0. && IJK_Splitting::defilement_==1)
+            {
+              const int nisplit = splitting.get_nb_elem_local(DIRECTION_I);
+              double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+              double DX = Lx/nisplit ;
+              double Shear_x_time = IJK_Splitting::shear_x_time_ * offset;
+              int offset_i = (int) round(Shear_x_time/DX);
+              ii = ((i + offset_i) % ni + ni) % ni;
+            }
+          else
+            {
+              ii = i;
+            }
           int index = renum(ii,j,k);
           assert(index >= 0);
           items_to_send.append_array(index);
