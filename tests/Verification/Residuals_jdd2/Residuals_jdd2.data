@@ -1,4 +1,4 @@
-# Test de su post-traitement des residus des inconnus #
+# Test de post-traitement des residus des inconnus en norme L2 #
 # PARALLEL OK 8 #
 dimension 2
 
@@ -42,14 +42,16 @@ VEFPreP1B dis
 Scheme_euler_explicit sch
 Read sch
 {
-    nb_pas_dt_max 1
     tinit 0
+	nb_pas_dt_max 1
     tmax 1.
     dt_min 1.e-8
     dt_max 0.01
     dt_impr 0.000001
     dt_sauv 100
     seuil_statio 1.e-8
+    residuals { norm l2 }
+
 }
 
 Associate pb dom

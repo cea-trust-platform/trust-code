@@ -1,4 +1,4 @@
-# Test du post-traitement des residus des inconnus #
+# Test du post-traitement des residus des inconnus en norme max  #
 # PARALLEL OK 8 #
 dimension 2
 
@@ -41,14 +41,15 @@ VDF dis
 Scheme_euler_explicit sch
 Read sch
 {
-    nb_pas_dt_max 1
     tinit 0
+	nb_pas_dt_max 1
     tmax 1.
     dt_min 1.e-8
     dt_max 0.01
     dt_impr 0.000001
     dt_sauv 100
     seuil_statio 1.e-8
+    # Nothing is mentionned for residuals, so norm max by default #
 }
 
 Associate pb dom
@@ -139,7 +140,7 @@ Read pb
             coefficient_diffusion 	elem
 
             temperature_residu		elem
-            concentration_residu 		elem
+            concentration_residu 	elem
             vitesse_residu          	elem
             temperature_residu_max
         }
