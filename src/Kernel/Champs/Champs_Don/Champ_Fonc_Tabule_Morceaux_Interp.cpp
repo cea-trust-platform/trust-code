@@ -21,10 +21,7 @@
 #include <EChaine.h>
 
 Implemente_instanciable(Champ_Fonc_Tabule_Morceaux_Interp, "Champ_Fonc_Tabule_Morceaux_Interp", Champ_Fonc_Tabule_Morceaux);
-// XD Champ_Fonc_Tabule_Morceaux_Interp champ_don_base Champ_Tabule_Morceaux 0 Field defined by tabulated data in each sub-domaine. It makes possible the definition of a field which is a function of other fields.
-// XD   attr domain_name ref_domaine domain_name 0 Name of the domain.
-// XD   attr nb_comp int nb_comp 0 Number of field components.
-// XD   attr data bloc_lecture data 0 { Defaut val_def sous_domaine_1 val_1 ... sous_domaine_i val_i } By default, the value val_def is assigned to the field. It takes the sous_domaine_i identifier Sous_Domaine (sub_area) type object function, val_i. Sous_Domaine (sub_area) type objects must have been previously defined if the operator wishes to use a champ_fonc_tabule_morceaux type object.
+// XD Champ_Fonc_Tabule_Morceaux_Interp Champ_Fonc_Tabule_Morceaux Champ_Fonc_Tabule_Morceaux_Interp 0 Field defined by tabulated data in each sub-domaine. It makes possible the definition of a field which is a function of other fields. Here we use MEDCoupling to interpolate fields between the two domains.
 
 Sortie& Champ_Fonc_Tabule_Morceaux_Interp::printOn(Sortie& os) const { return Champ_Fonc_Tabule_Morceaux::printOn(os); }
 Entree& Champ_Fonc_Tabule_Morceaux_Interp::readOn(Entree& is)

@@ -18,11 +18,17 @@
 #include <Param.h>
 
 Implemente_instanciable(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
+// XD Champ_Fonc_Interp champ_don_base Champ_Fonc_Interp 0 Field that is interpolated from a distant domain via MEDCoupling (remapper).
+// XD  attr nom_champ chaine nom_champ 0 Name of the field (for example: temperature).
+// XD  attr pb_loc chaine pb_loc 0 Name of the local problem.
+// XD  attr pb_dist chaine pb_dist 0 Name of the distant problem.
+// XD  attr nature chaine nature 0 Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
 
 Sortie& Champ_Fonc_Interp::printOn(Sortie& os) const { return Champ_Fonc_P0_base::printOn(os); }
 
 Entree& Champ_Fonc_Interp::readOn(Entree& is)
 {
+#ifdef MEDCOUPLING_
   using namespace MEDCoupling;
 
   Param param(que_suis_je());
@@ -46,6 +52,10 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
       Process::exit();
     }
   return is;
+#else
+  Cerr << "Champ_Fonc_Interp::readOn should not be called since it requires a TRUST version compiled with MEDCoupling !" << finl;
+  throw;
+#endif
 }
 
 int Champ_Fonc_Interp::initialiser(double temps)
@@ -60,6 +70,7 @@ int Champ_Fonc_Interp::initialiser(double temps)
 
 void Champ_Fonc_Interp::init_fields()
 {
+#ifdef MEDCOUPLING_
   using namespace MEDCoupling;
   Domaine& local_dom = pb_loc_->domaine_dis().domaine(), &distant_dom = pb_dist_->domaine_dis().domaine();
 
@@ -72,10 +83,12 @@ void Champ_Fonc_Interp::init_fields()
   distant_array_ = DataArrayDouble::New();
   distant_field_->setMesh(distant_dom.get_mc_mesh());
   distant_field_->setNature(nature_);
+#endif
 }
 
 void Champ_Fonc_Interp::update_fields()
 {
+#ifdef MEDCOUPLING_
   using namespace MEDCoupling;
 
   const DoubleTab& distant_values = pb_dist_->get_champ(le_nom()).valeurs();
@@ -87,10 +100,12 @@ void Champ_Fonc_Interp::update_fields()
 
   distant_array_->useArray(distant_values.addr(), false, MEDCoupling::DeallocType::CPP_DEALLOC, distant_parts[0].dimension(0), nb_compo_);
   distant_field_->setArray(distant_array_);
+#endif
 }
 
 void Champ_Fonc_Interp::mettre_a_jour(double t)
 {
+#ifdef MEDCOUPLING_
   Champ_Fonc_P0_base::mettre_a_jour(t);
   if (!is_initialized_) return;
 
@@ -99,4 +114,5 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
 
   update_fields();
   rmp->transfer(distant_field_, local_field_, 1e30);
+#endif
 }
