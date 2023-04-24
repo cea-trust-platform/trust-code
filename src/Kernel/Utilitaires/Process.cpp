@@ -226,7 +226,7 @@ bool Process::mp_and(bool b)
  */
 void Process::exit(int i)
 {
-  Nom message="============================================\nTRUST has caused an error and will stop.\nUnexpected error during TRUST calculation.";
+  Nom message="=========================================\nTRUST has caused an error and will stop.\nUnexpected error during TRUST calculation.";
   std::string jddLine = "\nError triggered at line " + std::to_string(EChaineJDD::file_cur_line_) + " in " + Objet_U::nom_du_cas().getString() + ".data";
   message+=jddLine;
   exit(message,i);

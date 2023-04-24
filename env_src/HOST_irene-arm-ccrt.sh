@@ -29,7 +29,7 @@ define_modules_config()
    module="gnu/11.1.0 mpi/openmpi/4.0.5 swig/4.0.2" # Mis en premier car le plus robuste
    #
    echo "# Module $module detected and loaded on $HOST."
-   echo "module purge 1>/dev/null" >> $env
+   echo "module purge 1>/dev/null  2>/dev/null" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
    [ "$sw" != "" ] && echo "module sw $sw 1>/dev/null" >> $env
    . $env
