@@ -400,7 +400,6 @@ export TRUST_WITHOUT_DOC=0
 export TRUST_WITHOUT_PDFLATEX=0
 export TRUST_WITHOUT_VISIT=0
 export TRUST_DOWNLOAD_VISIT=0
-export TRUST_DOWNLOAD_SALOME=0
 export TRUST_WITHOUT_HOST=0
 export TRUST_ENABLE_DOC_DOXYGEN=0
 unset CUDA_NVCC
@@ -580,10 +579,6 @@ do
    then
       export TRUST_DOWNLOAD_VISIT=1
 
-   elif [ "${1#-download-salome}" != "$1" ]
-   then
-      export TRUST_DOWNLOAD_SALOME=1
-
    elif [ "${1#-clean}" != "$1" ]
    then
       make clean 2>/dev/null
@@ -698,7 +693,6 @@ echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDF
 echo "TRUST_ENABLE_DOC_DOXYGEN=$TRUST_ENABLE_DOC_DOXYGEN && export TRUST_ENABLE_DOC_DOXYGEN      # Disable/enable the build of HTML doc" >> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
-echo "TRUST_DOWNLOAD_SALOME=$TRUST_DOWNLOAD_SALOME && export TRUST_DOWNLOAD_SALOME # Download Salome" 		>> $var
 
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]
 then

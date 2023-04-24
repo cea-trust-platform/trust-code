@@ -1607,55 +1607,6 @@ then
    make_ $TRUST_ROOT/Outils/astyle astyle $TRUST_ROOT/exec/astyle.log
 fi
 
-########################
-# Installation de Salome
-########################
-version_salome=9.9.0
-if [ $TRUST_DOWNLOAD_SALOME = 1 ]
-then
-   package=SALOME-$version_salome
-   echo $ECHO_OPTS "Trying to install $package...\c"
-   if [ -d $TRUST_ROOT/Outils/Salome/$package ]
-   then
-      err=0
-   else
-      cd $TRUST_TMP #$TRUST_ROOT/Outils/Salome
-      $TRUST_ROOT/bin/KSH/wget_ ftp://ftp.cea.fr/pub/salome/targz/SALOME-"$version_salome"/SALOME-"$version_salome".tar.gz 1>$package.log 2>&1
-      err=$?
-      if [ $err != 0 ]
-      then
-         # We try to download SALOME from salome-platform.org
-         $TRUST_ROOT/bin/KSH/wget_ http://files.salome-platform.org/Salome/Salome$version_salome/SALOME-$version_salome.tar.gz  1>$package.log 2>&1
-         err=$?
-      fi
-      [ $err != 0 ] && echo "SALOME download failed, see $TRUST_TMP/$package.log"  && exit -1
-      cd $TRUST_ROOT/Outils/Salome
-      tar xzf $TRUST_TMP/SALOME-"$version_salome".tar.gz
-      err=$?
-      cd $TRUST_ROOT/env
-   fi
-   if [ $err = 0 ]
-   then
-      echo "OK"
-      echo "ADD_PATH \$TRUST_ROOT/Outils/Salome/SALOME-$version_salome/" >> $env
-   else
-      echo "KO (See `pwd`/$package.log)"
-      echo "Contact TRUST support."
-      [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
-      exit -1
-   fi
-#else
-#   # Try to detect last Salome version
-#   X=`echo $version_salome | awk -F. '{print $1}'`
-#   SALOME_BIN_ROOT=`ls -rt /export/home/salome/V$X"_"*/APPLI/runAppli 2>/dev/null | tail -1`
-#   if [ "$SALOME_BIN_ROOT" != "" ]
-#   then
-#      SALOME_BIN_ROOT=`dirname $SALOME_BIN_ROOT`
-#      echo "Salome $version_salome detected under $SALOME_BIN_ROOT and added to the TRUST environment."
-#      echo "ADD_PATH $SALOME_BIN_ROOT" >> $env
-#   fi
-fi
-
 # Shares libs possibles ?
 SHARE_LIBS=1
 # Detect an software configuration management tool -> means a developer version

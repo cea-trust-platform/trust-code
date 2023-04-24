@@ -16,7 +16,7 @@
 #include <Deactivate_SIGINT_Catch.h>
 
 Implemente_instanciable(Deactivate_SIGINT_Catch,"Deactivate_SIGINT_Catch",Interprete);
-// XD Deactivate_SIGINT_Catch interprete Deactivate_SIGINT_Catch -1 Flag to disable the detection of the signal SIGINT.
+// X_D Deactivate_SIGINT_Catch interprete Deactivate_SIGINT_Catch -1 Flag to disable the detection of the signal SIGINT.
 
 Sortie& Deactivate_SIGINT_Catch::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
