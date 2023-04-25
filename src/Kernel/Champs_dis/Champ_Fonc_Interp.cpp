@@ -18,11 +18,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Champ_Fonc_Interp, "Champ_Fonc_Interp", Champ_Fonc_P0_base);
-// XD Champ_Fonc_Interp champ_don_base Champ_Fonc_Interp 0 Field that is interpolated from a distant domain via MEDCoupling (remapper).
-// XD  attr nom_champ chaine nom_champ 0 Name of the field (for example: temperature).
-// XD  attr pb_loc chaine pb_loc 0 Name of the local problem.
-// XD  attr pb_dist chaine pb_dist 0 Name of the distant problem.
-// XD  attr nature chaine nature 0 Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
+// XD Champ_Fonc_Interp champ_don_base Champ_Fonc_Interp 1 Field that is interpolated from a distant domain via MEDCoupling (remapper).
 
 Sortie& Champ_Fonc_Interp::printOn(Sortie& os) const { return Champ_Fonc_P0_base::printOn(os); }
 
@@ -33,10 +29,10 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
 
   Param param(que_suis_je());
   Nom nom_pb_loc, nom_pb_dist, nat;
-  param.ajouter("nom_champ", &nom_, Param::REQUIRED);
-  param.ajouter("pb_loc", &nom_pb_loc, Param::REQUIRED);
-  param.ajouter("pb_dist", &nom_pb_dist, Param::REQUIRED);
-  param.ajouter("nature", &nat, Param::REQUIRED);
+  param.ajouter("nom_champ", &nom_, Param::REQUIRED); // XD_ADD_P chaine Name of the field (for example: temperature).
+  param.ajouter("pb_loc", &nom_pb_loc, Param::REQUIRED); // XD_ADD_P chaine Name of the local problem.
+  param.ajouter("pb_dist", &nom_pb_dist, Param::REQUIRED); // XD_ADD_P chaine Name of the distant problem.
+  param.ajouter("nature", &nat, Param::REQUIRED); // XD_ADD_P chaine Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
   param.lire_avec_accolades_depuis(is);
 
   pb_loc_ = ref_cast(Probleme_base,Interprete::objet(nom_pb_loc));
