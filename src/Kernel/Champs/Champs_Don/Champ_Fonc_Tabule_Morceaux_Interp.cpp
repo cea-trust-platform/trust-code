@@ -36,10 +36,8 @@ int Champ_Fonc_Tabule_Morceaux_Interp::initialiser(const double tps)
   std::vector<std::array<std::string, 2>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
 
   ch_param_interp.resize(v_pb_ch.size());
-//  for (auto &&pb_ch : v_pb_ch) /* (probleme, champ) -> champs_interp */
   for (int i = 0; i < (int)v_pb_ch.size(); i++)
     {
-      // XXX : j'ai mis nb_comp = 1 en dur
       Nom ch_int = Nom("{ pb_loc ") + ref_pb->le_nom() + " pb_dist " + Nom(v_pb_ch[i][0]) + " nom_champ " + Nom(v_pb_ch[i][1]) + " nature IntensiveMaximum }";
       EChaine ech(ch_int);
       ech >> ch_param_interp[i];
