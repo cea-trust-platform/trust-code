@@ -15,7 +15,7 @@ then
     org=`pwd`;
     [ ! -d $ref ] && echo "The directory $ref does not exist under the directory `pwd`" && exit 1
     cd $ref
-    rep=`find . -type d -name $REP -print  -or -type l  -name $REP -print`
+    rep=`find -L . -type d -name $REP -print  -or -type l  -name $REP -print`
     # Fiabilisation de copie_cas_test
     [ "`echo $rep | wc -w`" -gt 1 ] && echo "Error, several test cases found: "$rep && exit 1
     [ "$rep" = "" ] && echo "The test case $REP does not exist under directories of $ref" && exit 1
