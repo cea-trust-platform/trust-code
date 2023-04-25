@@ -13,50 +13,31 @@
 *
 *****************************************************************************/
 
-#ifndef PCShell_included
-#define PCShell_included
+#ifndef PCShell_base_included
+#define PCShell_base_included
 
-#include <PCShell_base.h>
-#include <TRUST_Deriv.h>
-
-/*! @brief class PCShell Un PCShell represente n'importe qu'elle classe
- *
- *   derivee de la classe PCShell_base
- *
- *
- * @sa Jacobi PCShell_base
- */
-class PCShell : public DERIV(PCShell_base)
-{
-  Declare_instanciable(PCShell);
-public:
+#include <Objet_U.h>
+#include <petsc_for_kernel.h>
 #ifdef PETSCKSP_H
-
-  inline PetscErrorCode setUpPC(PC, Mat, Vec);
-  inline PetscErrorCode computePC(PC, Vec, Vec);
-  inline PetscErrorCode destroyPC(PC);
-#endif
-};
-
-#ifdef PETSCKSP_H
-
-inline PetscErrorCode PCShell::setUpPC(PC pc, Mat pmat, Vec x)
-{
-  PCShell_base& p = valeur();
-  return p.setUpPC_(pc, pmat, x);
-}
-
-inline PetscErrorCode PCShell::computePC(PC pc, Vec x, Vec y)
-{
-  PCShell_base& p = valeur();
-  return p.computePC_(pc, x, y);
-}
-
-inline PetscErrorCode PCShell::destroyPC(PC pc)
-{
-  PCShell_base& p = valeur();
-  return p.destroyPC_(pc);
-}
+#include <petscksp.h>
 #endif
 
-#endif /* PCShell_included */
+/* Define context for user-provided preconditioner */
+class PCShell_base : public Objet_U
+{
+  Declare_base(PCShell_base);
+
+public :
+#ifdef PETSCKSP_H
+
+  virtual PetscErrorCode setUpPC_(PC, Mat, Vec) = 0;
+  virtual PetscErrorCode computePC_(PC, Vec, Vec) = 0;
+  virtual PetscErrorCode destroyPC_(PC) = 0;
+#endif
+
+protected :
+
+} ;
+
+
+#endif /* PCShell_base_included */

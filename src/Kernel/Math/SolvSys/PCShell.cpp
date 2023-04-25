@@ -14,36 +14,15 @@
 *****************************************************************************/
 
 #include <PCShell.h>
-#include <iostream>
 
-#ifdef PETSCKSP_H
-PetscErrorCode PCShell::setUpPC(PC pc, Mat pmat, Vec x)
+Implemente_instanciable(PCShell,"PCShell",DERIV(PCShell_base));
+
+Sortie& PCShell::printOn(Sortie& s ) const
 {
-  Vec diag;
-
-  VecDuplicate(x, &diag);
-  MatGetDiagonal(pmat, diag);
-  VecReciprocal(diag);
-
-  diag_ = diag;
-//  VecView(diag, PETSC_VIEWER_STDOUT_WORLD);
-  return 0;
+  return DERIV(PCShell_base)::printOn(s);
 }
 
-PetscErrorCode PCShell::computePC(PC pc, Vec x, Vec y)
+Entree& PCShell::readOn(Entree& is )
 {
-  std::cout << "ici " << std::endl;
-  VecView(diag_, PETSC_VIEWER_STDOUT_WORLD);
-  VecPointwiseMult(y, x, diag_);
-  return 0;
+  return DERIV(PCShell_base)::readOn(is);
 }
-
-PetscErrorCode PCShell::destroyPC(PC pc)
-{
-  VecDestroy(&diag_);
-  return 0;
-}
-
-
-#endif
-

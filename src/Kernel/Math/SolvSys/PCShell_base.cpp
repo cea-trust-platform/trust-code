@@ -13,50 +13,18 @@
 *
 *****************************************************************************/
 
-#ifndef PCShell_included
-#define PCShell_included
-
 #include <PCShell_base.h>
-#include <TRUST_Deriv.h>
+#include <Motcle.h>
 
-/*! @brief class PCShell Un PCShell represente n'importe qu'elle classe
- *
- *   derivee de la classe PCShell_base
- *
- *
- * @sa Jacobi PCShell_base
- */
-class PCShell : public DERIV(PCShell_base)
+Implemente_base(PCShell_base,"PCShell_base",Objet_U);
+
+Sortie& PCShell_base::printOn(Sortie& s ) const
 {
-  Declare_instanciable(PCShell);
-public:
-#ifdef PETSCKSP_H
-
-  inline PetscErrorCode setUpPC(PC, Mat, Vec);
-  inline PetscErrorCode computePC(PC, Vec, Vec);
-  inline PetscErrorCode destroyPC(PC);
-#endif
-};
-
-#ifdef PETSCKSP_H
-
-inline PetscErrorCode PCShell::setUpPC(PC pc, Mat pmat, Vec x)
-{
-  PCShell_base& p = valeur();
-  return p.setUpPC_(pc, pmat, x);
+  return s  << que_suis_je();
 }
 
-inline PetscErrorCode PCShell::computePC(PC pc, Vec x, Vec y)
+Entree& PCShell_base::readOn(Entree& is )
 {
-  PCShell_base& p = valeur();
-  return p.computePC_(pc, x, y);
+  return is;
 }
 
-inline PetscErrorCode PCShell::destroyPC(PC pc)
-{
-  PCShell_base& p = valeur();
-  return p.destroyPC_(pc);
-}
-#endif
-
-#endif /* PCShell_included */

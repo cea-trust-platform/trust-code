@@ -13,50 +13,46 @@
 *
 *****************************************************************************/
 
-#ifndef PCShell_included
-#define PCShell_included
+#ifndef PCShell_Jacobi_included
+#define PCShell_Jacobi_included
 
 #include <PCShell_base.h>
-#include <TRUST_Deriv.h>
-
-/*! @brief class PCShell Un PCShell represente n'importe qu'elle classe
- *
- *   derivee de la classe PCShell_base
- *
- *
- * @sa Jacobi PCShell_base
- */
-class PCShell : public DERIV(PCShell_base)
-{
-  Declare_instanciable(PCShell);
-public:
+#include <petsc_for_kernel.h>
 #ifdef PETSCKSP_H
-
-  inline PetscErrorCode setUpPC(PC, Mat, Vec);
-  inline PetscErrorCode computePC(PC, Vec, Vec);
-  inline PetscErrorCode destroyPC(PC);
-#endif
-};
-
-#ifdef PETSCKSP_H
-
-inline PetscErrorCode PCShell::setUpPC(PC pc, Mat pmat, Vec x)
-{
-  PCShell_base& p = valeur();
-  return p.setUpPC_(pc, pmat, x);
-}
-
-inline PetscErrorCode PCShell::computePC(PC pc, Vec x, Vec y)
-{
-  PCShell_base& p = valeur();
-  return p.computePC_(pc, x, y);
-}
-
-inline PetscErrorCode PCShell::destroyPC(PC pc)
-{
-  PCShell_base& p = valeur();
-  return p.destroyPC_(pc);
-}
+#include <petscksp.h>
 #endif
 
-#endif /* PCShell_included */
+/* Reproduction of the Jacobi preconditioner as example for pcshell */
+class PCShell_Jacobi : public PCShell_base
+{
+  Declare_instanciable_sans_constructeur_ni_destructeur(PCShell_Jacobi);
+
+public :
+#ifdef PETSCKSP_H
+  PCShell_Jacobi(): diag_(0)
+  {}
+
+  virtual ~PCShell_Jacobi()
+  {
+    VecDestroy(&diag_);
+  }
+
+  Vec get_diag() const
+  {
+    return diag_;
+  }
+
+  PetscErrorCode setUpPC_(PC, Mat, Vec) override;
+  PetscErrorCode computePC_(PC, Vec, Vec) override;
+  PetscErrorCode destroyPC_(PC) override;
+#endif
+
+protected :
+
+#ifdef PETSCKSP_H
+  Vec diag_;
+#endif
+} ;
+
+
+#endif /* PCShell_Jacobi_included */

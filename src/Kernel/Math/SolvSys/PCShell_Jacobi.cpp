@@ -13,50 +13,46 @@
 *
 *****************************************************************************/
 
-#ifndef PCShell_included
-#define PCShell_included
+#include <PCShell_Jacobi.h>
 
-#include <PCShell_base.h>
-#include <TRUST_Deriv.h>
+Implemente_instanciable_sans_constructeur_ni_destructeur(PCShell_Jacobi,"PC_Jacobi",PCShell_base);
 
-/*! @brief class PCShell Un PCShell represente n'importe qu'elle classe
- *
- *   derivee de la classe PCShell_base
- *
- *
- * @sa Jacobi PCShell_base
- */
-class PCShell : public DERIV(PCShell_base)
+Sortie& PCShell_Jacobi::printOn(Sortie& s ) const
 {
-  Declare_instanciable(PCShell);
-public:
-#ifdef PETSCKSP_H
+  return PCShell_base::printOn(s);
+}
 
-  inline PetscErrorCode setUpPC(PC, Mat, Vec);
-  inline PetscErrorCode computePC(PC, Vec, Vec);
-  inline PetscErrorCode destroyPC(PC);
-#endif
-};
+Entree& PCShell_Jacobi::readOn(Entree& is )
+{
+  return is;
+}
 
 #ifdef PETSCKSP_H
-
-inline PetscErrorCode PCShell::setUpPC(PC pc, Mat pmat, Vec x)
+PetscErrorCode PCShell_Jacobi::setUpPC_(PC pc, Mat pmat, Vec x)
 {
-  PCShell_base& p = valeur();
-  return p.setUpPC_(pc, pmat, x);
+  Vec diag;
+
+  VecDuplicate(x, &diag);
+  MatGetDiagonal(pmat, diag);
+  VecReciprocal(diag);
+
+  diag_ = diag;
+//  VecView(diag, PETSC_VIEWER_STDOUT_WORLD);
+  return 0;
 }
 
-inline PetscErrorCode PCShell::computePC(PC pc, Vec x, Vec y)
+PetscErrorCode PCShell_Jacobi::computePC_(PC pc, Vec x, Vec y)
 {
-  PCShell_base& p = valeur();
-  return p.computePC_(pc, x, y);
+  VecPointwiseMult(y, x, diag_);
+  return 0;
 }
 
-inline PetscErrorCode PCShell::destroyPC(PC pc)
+PetscErrorCode PCShell_Jacobi::destroyPC_(PC pc)
 {
-  PCShell_base& p = valeur();
-  return p.destroyPC_(pc);
+  VecDestroy(&diag_);
+  return 0;
 }
+
+
 #endif
 
-#endif /* PCShell_included */

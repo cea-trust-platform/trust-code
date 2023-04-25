@@ -35,6 +35,12 @@ class Matrice_Morse;
 enum solveur_direct_ { no, mumps, superlu_dist, petsc, umfpack, pastix, cholmod, cli };
 extern bool gmres_right_unpreconditionned;
 
+/* Struct to associate Petsc preconditionner to user-provided preconditioner */
+typedef struct
+{
+  PCShell pc_shell;
+} PCstruct;
+
 
 class Solv_Petsc : public Solv_Externe
 {
@@ -69,6 +75,10 @@ public :
   {
     return gpu_;
   };
+  inline PCstruct& get_precond_user()
+  {
+    return pc_user_;
+  }
   inline bool amgx() const
   {
     return amgx_;
@@ -125,7 +135,7 @@ protected :
   Vec SolutionPetsc_;		// Globale solution
   KSP SolveurPetsc_;
   PC PreconditionneurPetsc_;
-  PCstruct *pc_user;   /* user-defined preconditioner context */
+  PCstruct pc_user_;   /* user-defined preconditioner context */
   DM dm_;                       //description de champs PETSC
   int preconditionnement_non_symetrique_; // Drapeau sur la symetrie de la matrice de preconditionnement
   int nb_it_max_;		// Maximal number of iterations

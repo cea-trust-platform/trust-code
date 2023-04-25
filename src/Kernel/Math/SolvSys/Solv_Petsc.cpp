@@ -482,7 +482,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   if (motlu==accolade_ouverte)
     {
       // Temporaire essayer de faire converger les noms de parametres des differentes solveurs (GCP, GMRES,...)
-      Motcles les_parametres_solveur(30);
+      Motcles les_parametres_solveur(31);
       {
         les_parametres_solveur[0] = "impr";
         les_parametres_solveur[1] = "seuil"; // Seuil absolu (atol)
@@ -514,6 +514,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[27] = "reuse_precond";
         les_parametres_solveur[28] = "reduce_ram";
         les_parametres_solveur[29] = "reorder_matrix";
+        les_parametres_solveur[30] = "pcshell"; // user defined preconditionner
       }
       option_double omega("omega",amgx_ ? 0.9 : 1.5);
       option_int    level("level",1);
@@ -643,6 +644,15 @@ void Solv_Petsc::create_solver(Entree& entree)
                       }
                     is >> motlu;
                   }
+                break;
+              }
+            case 30:
+              {
+                pc="pcshell";
+                PCShell& pcs = pc_user_.pc_shell;
+                is >> motlu;
+                pcs.typer(motlu);
+                is >> pcs.valeur();
                 break;
               }
             case 3:
@@ -1218,30 +1228,28 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
 
                 PCSetType(PreconditionneurPetsc_, PCSHELL);
-
-                PetscNew(&pc_user);
-                pc_user->pc_shell_ptr = new PCShell();
+                //PetscNew(&pc_user_);
 
                 auto PCShellUserApply =  [](PC pc_apply, Vec x, Vec y)
                 {
-                  PCstruct *shell;
+                  PCstruct *pcstruct;
 
-                  PCShellGetContext(pc_apply,(void**) &shell);
-                  PCShell *ptr=shell->pc_shell_ptr;
-                  return ptr->computePC(pc_apply,x,y);
+                  PCShellGetContext(pc_apply,(void**) &pcstruct);
+                  PCShell& pcs=pcstruct->pc_shell;
+                  return pcs.computePC(pc_apply,x,y);
                 };
 
                 auto PCShellUserDestroy =  [](PC pc_apply)
                 {
-                  PCstruct *shell;
+                  PCstruct *pcstruct;
 
-                  PCShellGetContext(pc_apply,(void**) &shell);
-                  PCShell *ptr=shell->pc_shell_ptr;
-                  return ptr->destroyPC(pc_apply);
+                  PCShellGetContext(pc_apply,(void**) &pcstruct);
+                  PCShell& pcs=pcstruct->pc_shell;
+                  return pcs.destroyPC(pc_apply);
                 };
 
-                PCShellSetContext(PreconditionneurPetsc_, &pc_user);
                 PCShellSetApply(PreconditionneurPetsc_, PCShellUserApply);
+                PCShellSetContext(PreconditionneurPetsc_, &pc_user_);
                 PCShellSetDestroy(PreconditionneurPetsc_, PCShellUserDestroy);
 
                 break;
@@ -1655,8 +1663,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         Update_matrix(MatricePetsc_, matrice_morse);
       if (type_pc_ == "shell")
         {
-          PCShell *ptr=pc_user->pc_shell_ptr;
-          ptr->setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
+          PCstruct *pcstruct;
+
+          PCShellGetContext(PreconditionneurPetsc_,(void**) &pcstruct);
+          PCShell& pcs=pcstruct->pc_shell;
+          pcs.setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
         }
 
       /* reglage de BlockSize avec le line_size() du second membre */

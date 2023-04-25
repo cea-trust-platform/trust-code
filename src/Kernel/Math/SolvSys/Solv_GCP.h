@@ -29,6 +29,7 @@ public :
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect&) override;
   int resoudre_systeme(const Matrice_Base&, const DoubleVect&, DoubleVect& , int) override;
   inline const Precond& get_precond() const;
+  inline Precond& get_precond();
   inline void set_precond(const Precond&);
   void reinit() override;
   int supporte_matrice_morse_sym() override
@@ -96,5 +97,11 @@ inline const Precond& Solv_GCP::get_precond() const
 {
   return le_precond_;
 }
+
+inline Precond& Solv_GCP::get_precond()
+{
+  return le_precond_;
+}
+
 
 #endif
