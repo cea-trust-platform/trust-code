@@ -2,6 +2,7 @@
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
 25/04/23 (TRUST) New feature  : Two new fields (that use MEDCoupling) can be used to couple problems defined on overlapping domains with different meshes: Champ_fonc_interp & Champ_fonc_tabule_morceaux_interp.
+24/04/23 (TRUST) New option   : In case of a code crash, an exit message is displayed containing the line number in the datafile triggering the error.
 19/04/23 (TRUST) Validation   : Add a new jupyter notebook to compare mono/multi-phase simulations with EOS and CoolProp.
 14/04/23 (TRUST) New Feature  : option "decoup" is now available for Champ_Fonc_MED and allows the parallel loading of big MED fields.
 14/04/23 (TRUST) Change       : Lire_MEDFile/Read_MEDFile and Champ_Fonc_MEDFile are not supported anymore.
