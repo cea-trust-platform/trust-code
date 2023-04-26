@@ -1782,7 +1782,8 @@ Composant="triocfd"
   [ -f $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES ] && $TRUST_Awk '/Release notes/ {i++} (i==1) {print $0}' $TRUST_ROOT/../Composants/$Composant/share/RELEASE_NOTES | tail -n +3 | head -n -1 >> $MESSAGES_NUIT
 #done
 echo $ECHO_OPTS "---------------------------------------------------------------------------------" >> $MESSAGES_NUIT
-echo $ECHO_OPTS "TRUST/TrioCFD WEB site:    http://triocfd.cea.fr" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TRUST WEB site:    https://cea-trust-platform.github.io" >> $MESSAGES_NUIT
+echo $ECHO_OPTS "TrioCFD WEB site:    https://triocfd.cea.fr" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TRUST's distribution site:   https://github.com/cea-trust-platform/trust-code" >> $MESSAGES_NUIT
 #echo $ECHO_OPTS "TRUST<=1.8.3 distribution site:   http://sourceforge.net/projects/trust-platform" >> $MESSAGES_NUIT
 echo $ECHO_OPTS "TrioCFD's distribution site: https://github.com/cea-trust-platform/TrioCFD-code" >> $MESSAGES_NUIT
@@ -4182,7 +4183,7 @@ if [ "`date '+%u'`" = 1 ] || [ $livraison = 1 ] || [ $accord_beta = 1 ]
 then
    ALL_DEVELOPERS_TRUST_MAIL="trio_u_dev@saxifrage.saclay.cea.fr"
    echo " " >> $MESSAGES_NUIT
-   echo "TRUST support team: $TRUST_MAIL  Web: http://triocfd.cea.fr" >> $MESSAGES_NUIT
+   echo "TRUST support team: $TRUST_MAIL  Web: https://triocfd.cea.fr" >> $MESSAGES_NUIT
    echo " " >> $MESSAGES_NUIT
    echo "To unsubscribe from this list, send an e-mail to $TRUST_MAIL " >> $MESSAGES_NUIT
 else
@@ -4246,7 +4247,7 @@ Table of contents
 7. Version portability with several compilers
 
 TRUST support team: $TRUST_MAIL
-Website: http://triocfd.cea.fr
+Website: https://cea-trust-platform.github.io
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
@@ -4344,7 +4345,7 @@ Table of contents
 3. $Composant Release notes
 
 TRUST/TrioCFD support team: $TRUST_MAIL
-Website: http://triocfd.cea.fr
+Website: https://triocfd.cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
       echo "
@@ -4425,7 +4426,7 @@ source /gpfswork/rech/fej/ugz82dj/env_TrioCFD-$new-gpu.sh
 #1. How to run preinstalled version?
 #2. $Composant Release notes
 #
-#TRUST/TrioMC support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
+#TRUST/TrioMC support team: $TRUST_MAIL  Web: https://triocfd.cea.fr
 #MATHYS support team: mathys@cea.fr
 #
 #To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON
@@ -4442,7 +4443,7 @@ New TrioMC version released v"$new"
 1. How to run preinstalled version?
 2. $Composant Release notes
 
-TRUST/TrioMC support team: $TRUST_MAIL  Web: http://triocfd.cea.fr
+TRUST/TrioMC support team: $TRUST_MAIL  Web: https://triocfd.cea.fr
 MATHYS support team: mathys@cea.fr
 
 To unsubscribe from this list, send an e-mail to $TRUST_MAIL " > $MESSAGES_LIVRAISON

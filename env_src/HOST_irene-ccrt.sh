@@ -41,6 +41,7 @@ define_modules_config()
       # module="intel/19.0.5.281 gnu/7.3.0 mpi/openmpi/4.0.2"
       # passage a redhat 8: openmpi 4.0.5 fait une erreur de segmentation lors de l'appel a PetscFinalize(). 4.1.4 ne le fait pas
       module="intel/20.0.0 mpi/openmpi/4.1.4"
+      module="gnu/11 mpi/openmpi/4.1.4"
    else
       # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
       #intel="intel/18.0.3.222 gnu/7.3.0" 
@@ -51,11 +52,13 @@ define_modules_config()
       #module="$intel $mpi"
       # passage a redhat 8.4, anciens modules n'existent plus
       module="$romio_hints intel/20.0.0 mpi/openmpi/4.1.4"
+      module="$romio_hints gnu/11 mpi/openmpi/4.1.4"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null 2>/dev/null" >> $env
    echo "module load $module 1>/dev/null 2>/dev/null || exit -1" >> $env
+   echo "ml unload --force --no-auto cuda" >> $env
    . $env
 }
 

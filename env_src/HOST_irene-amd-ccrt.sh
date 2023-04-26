@@ -48,6 +48,8 @@ define_modules_config()
       module="intel/20.0.4 gnu/7.3.0 mpi/openmpi/4.0.2" # PL: Retour a OpenMPI/4.0.2 sans rien d'autre car "node failure" sur le calcul GAMELAN a 50K coeurs avec les conseils precedents 
       # passage a redhat 8.4, openmpi 4.0.2 n'existe plus, remplace par 4.0.5
       module="intel/20.0.0 mpi/openmpi/4.0.5"
+      # test de gnu
+      module="gnu/11  mpi/openmpi/4.0.5"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
@@ -112,6 +114,7 @@ define_soumission_batch()
    mpirun="ccc_mprun $binding -n \$BRIDGE_MSUB_NPROC"
    sub=CCC
    espacedir="work,scratch"
-   project="dendm2s" && [ "$gpu" = 1 ] && [ "`id | grep gen13364`" != "" ] && project="gen13364" # 10000h sur gen13364
+   project="dendm2s" # meme pour gpu, je reste sur dendm2s car plus d'heure sur gen13364?
+   #[ "$gpu" = 1 ] && [ "`id | grep gen13364`" != "" ] && project="gen13364" # 10000h sur gen13364
    [ "$project" = "" ] && project=`PYTHONPATH=/usr/lib64/python2.7/site-packages ccc_myproject 2>/dev/null | $TRUST_Awk '/project/ {print $4;exit}'` # Add project
 }
