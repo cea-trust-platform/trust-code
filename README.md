@@ -1,10 +1,10 @@
 ![TRUST](bin/HTML/logo_trust.gif)
 
-**TRUST** is a thermohydraulic software package for **CFD** simulations. It was originally designed for **incompressible** single-phase and **Low Mach Number** flows, but now also allows simulating real **compressible multi-phase** flows. TRUST is also being progressively ported to support **GPU** acceleration (NVidia/AMD). 
+**TRUST** is a thermalhydraulic software package for **CFD** simulations. It was originally designed for **incompressible** single-phase and **Low Mach Number** flows, but now also allows simulating real **compressible multi-phase** flows. TRUST is also being progressively ported to support **GPU** acceleration (NVidia/AMD).
 
 This software is **OpenSource ([BSD license](https://github.com/cea-trust-platform/trust-code/blob/master/License.txt))**. 
 
-
+You can visit **[TRUST website](https://cea-trust-platform.github.io/)**
 
 # **How to install TRUST-1.9.1 version ?**
 

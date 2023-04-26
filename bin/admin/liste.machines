@@ -1,7 +1,6 @@
 arch	maj		recup	hostname		Update	lance_test	baltiks						Tasks		Options	
 linux	rsync_ssh	tache	altair-valgrind.intra.cea.fr    -limited  	-FLICA5 		 		    -ctest_valgrind 	-force_provided_mpich -without-pdflatex -without-visit 			# CentOS 7.9 serveur rackable pour TRUST titania
 linux	rsync_ssh	tache	is244274-valgrind.intra.cea.fr	-limited 		  				    -ctest_valgrind 	-force-provided-mpich 			# Fedora 32 titania 	Bat 451	LGLS bureau Gilles
-linux	rsync_ssh	tache	uruk_desactive.intra.cea.fr	  	-all  	-TrioCFD -IJK-FT		   		      			# Ubuntu 20 serveur rackable pour validation TrioCFD titania
 linux	rsync_ssh	tache	pegasi6-mv-install.intra.cea.fr		-all		  	 	-force_provided_mpich  -move-install -disable-valgrind	 -remote_install_TRUST_kernel_only 							# Ubuntu 20	rack triocfd
 linux	rsync_ssh	cible	is245198.intra.cea.fr		-all 		-TRUST -TrioCFD -IJK-FT -GENEPI3 -STT -PEMFC -FLICA5 -C3D  				-force_provided_mpich 		# Ubuntu 20 titania TMA TRUST
 linux	rsync_ssh	tache	is246344.intra.cea.fr		-all 		-TRUST -TrioCFD 			  				-force_provided_mpich 		# Ubuntu 20 titania TMA TRUST
@@ -17,10 +16,9 @@ linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-cuda=downloa
 linux   rsync_ssh   tache   is240831-cuda.intra.cea.fr       -all                                -cuda=/volatile/cuda-11.1/bin/nvcc  -without-pdflatex               # Ubuntu 18 PC inconnu RTX5000 
 linux	rsync_ssh	tache	is246139-gpu.intra.cea.fr	-all		-TrioCFD				-cuda  -openmp -force_system_mpi	-disable-vc -disable-mpi4py				# Ubuntu 20	Bat 451 LGLS bureau Luc L.
 linux	rsync_ssh    	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
-linux	git_ssh  	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d 						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
-linux	rsync_ssh 	tache	irene-amd-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-visit  									# RedHat 8.4	CEA CCRT
+linux	rsync_ssh 	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-visit  									# RedHat 8.4	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited 		-TrioCFD -IJK-FT				-cuda 		-without-doc -disable-plot2d 									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	topaze-build64.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc -disable-plot2d -build_64_bit 									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		-TrioCFD -IJK-FT 				-cuda  	-openmp -without-doc -disable-plot2d -without-visit -disable-mpi4py   									# RedHat 8.3	CEA CCRT
