@@ -65,7 +65,9 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
       else for (is >> nom; nom != "}"; is >> nom)
           {
             is >> nom_ch;
-            std::array<std::string, 2> pb_ch = { nom.getString(), nom_ch.getString() };
+            Nom nat = "";
+            if (is_interp_) is >> nat;
+            std::array<std::string, 3> pb_ch = { nom.getString(), nom_ch.getString(), nat.getString() };
             s_pb_ch.insert(pb_ch), m_pb_ch.back().push_back(pb_ch); //ajout aux listes pour ce morceau et globale
           }
 
@@ -110,7 +112,7 @@ Entree& Champ_Fonc_Tabule_Morceaux::readOn(Entree& is)
 int Champ_Fonc_Tabule_Morceaux::initialiser(const double tps)
 {
   /* remplissage de ch_param (pointeurs vers les champs) et des i_ch (champs utilises par chaque morceau) */
-  std::vector<std::array<std::string, 2>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
+  std::vector<std::array<std::string, 3>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
   for (auto &&pb_ch : v_pb_ch) /* (probleme, champ) -> pointeurs */
     ch_param.push_back(&ref_cast(Probleme_base, Interprete::objet(Nom(pb_ch[0]))).get_champ(Nom(pb_ch[1])));
   for (int i = 0; i < (int) m_pb_ch.size(); i++)

@@ -28,6 +28,7 @@ Implemente_instanciable(Champ_Fonc_Tabule_Morceaux_Interp, "Champ_Fonc_Tabule_Mo
 Sortie& Champ_Fonc_Tabule_Morceaux_Interp::printOn(Sortie& os) const { return Champ_Fonc_Tabule_Morceaux::printOn(os); }
 Entree& Champ_Fonc_Tabule_Morceaux_Interp::readOn(Entree& is)
 {
+  is_interp_ = true;
   read_pb_instead_of_domain = true;
   return Champ_Fonc_Tabule_Morceaux::readOn(is);
 }
@@ -35,12 +36,12 @@ Entree& Champ_Fonc_Tabule_Morceaux_Interp::readOn(Entree& is)
 int Champ_Fonc_Tabule_Morceaux_Interp::initialiser(const double tps)
 {
   /* remplissage de ch_param_interp (champ_fonc_interp) et des i_ch (champs utilises par chaque morceau) */
-  std::vector<std::array<std::string, 2>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
+  std::vector<std::array<std::string, 3>> v_pb_ch(s_pb_ch.begin(), s_pb_ch.end()); //set -> vector
 
   ch_param_interp.resize(v_pb_ch.size());
   for (int i = 0; i < (int)v_pb_ch.size(); i++)
     {
-      Nom ch_int = Nom("{ pb_loc ") + ref_pb->le_nom() + " pb_dist " + Nom(v_pb_ch[i][0]) + " nom_champ " + Nom(v_pb_ch[i][1]) + " nature IntensiveMaximum }";
+      Nom ch_int = Nom("{ pb_loc ") + ref_pb->le_nom() + " pb_dist " + Nom(v_pb_ch[i][0]) + " nom_champ " + Nom(v_pb_ch[i][1]) + " nature " + Nom(v_pb_ch[i][2]) + " }";
       EChaine ech(ch_int);
       ech >> ch_param_interp[i];
     }
@@ -63,9 +64,8 @@ void Champ_Fonc_Tabule_Morceaux_Interp::mettre_a_jour(double time)
 
   DoubleTab& tab = valeurs(), vide;
   std::vector<const DoubleTab* > pval; /* valeurs des parametres */
-  std::vector<DoubleTrav> tval; /* tableaux temporaires */
   std::vector<bool> is_multi; /* true si le champ correspondant est multi_composantes */
-  pval.reserve(ch_param_interp.size()), tval.reserve(ch_param_interp.size()), is_multi.reserve(ch_param_interp.size());
+  pval.reserve(ch_param_interp.size()), is_multi.reserve(ch_param_interp.size());
   for (auto &&pch : ch_param_interp)
     {
       pch.mettre_a_jour(time);
