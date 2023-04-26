@@ -71,7 +71,6 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
   int ok = 0;
   if(Process::je_suis_maitre())
     {
-
       Cout <<"Reading data file "<<finl;
       int fin_lu=0;
       Motcle fin("fin|end");
@@ -82,11 +81,14 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
           Cerr << "File " << name << " does not exist (LecFicDiffuse_JDD)" << finl;
           Process::exit();
         }
+
       SChaine prov;
       Nom motlu;
+      Nom comments="";
       file_>>motlu;
       int nb_accolade=0;
       int nb_accolade_sa=-1;
+      int line=1;
       while (1)
         {
           if (file_.eof())
@@ -105,65 +107,73 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
           if (motlu=="#")
             {
               // Cerr<<" on passe les commentaires"<<finl;
-              file_>>motlu;
+              comments += "[" + std::string(name) + "] : Comments bloc starts at line " + std::to_string(line)+ " ";
               int jol = file_.jumpOfLines();
               for(int jump=0; jump<jol; jump++)
                 prov <<"\n";
-
+              line+=jol;
+              file_>>motlu;
               while (motlu!="#")
                 {
                   if (file_.eof())
                     {
-                      Cerr<<"Problem while reading some # "<<finl;
-                      Cerr<<" # not closed "<<finl;
+                      Cerr << comments;
+                      Nom msg = "\nProblem while reading some # \n # not closed.\n";
                       if (fin_lu)
-                        Cerr<<" Keyword Fin is may be already readen."<<finl;
-                      else
-                        Process::exit();
-                      break;
+                        msg+="Keyword Fin is maybe already read.\n";
+                      msg+= "============================================\nExiting TRUST.";
+                      Process::exit(msg);
                     }
-                  file_ >> motlu;
                   jol = file_.jumpOfLines();
                   for(int jump=0; jump<jol; jump++)
                     prov <<"\n";
+                  line += jol;
+                  file_ >> motlu;
                 }
+              comments += "and ends at line " + std::to_string(line)+"\n";
+              jol = file_.jumpOfLines();
+              for(int jump=0; jump<jol; jump++)
+                prov <<"\n";
+              line += jol;
+
             }
 
           else if (motlu=="/*")
             {
               // Cerr<<" on passe le bloc de commentaires"<<finl;
-
               int ouvrante=1;
+              comments += "[" + std::string(name) + "] : Comments bloc starts at line " + std::to_string(line) + " ";
               while (ouvrante!=0)
                 {
-                  file_ >>motlu;
                   int jol = file_.jumpOfLines();
                   for(int jump=0; jump<jol; jump++)
                     prov <<"\n";
-
+                  line+=jol;
+                  file_ >>motlu;
                   if (file_.eof())
                     {
-                      Cerr<<"Problem while reading some /* "<<finl;
-                      Cerr<<" not closed "<<finl;
+                      Cerr << comments;
+                      Nom msg = "\nProblem while reading some /* \n not closed.\n";
                       if (fin_lu)
-                        Cerr<<" Keword Fin is may be already readen."<<finl;
-                      else
-                        Process::exit();
-                      break;
-
+                        msg+="Keyword Fin is maybe already read.\n";
+                      msg+= "============================================\nExiting TRUST.";
+                      Process::exit(msg);
                     }
                   if (motlu=="/*") ouvrante++;
                   if (motlu=="*/") ouvrante--;
-
-
                 }
-
+              comments += "and ends at line " + std::to_string(line)+"\n";
+              int jol = file_.jumpOfLines();
+              for(int jump=0; jump<jol; jump++)
+                prov <<"\n";
+              line+=jol;
             }
 
           else if ((motlu.find("}")!=-1 && motlu != "}") || (motlu.find("{")!=-1 && motlu != "{") )
             {
-              Cout << "Error while reading '" << motlu << "' from datafile. Check for missing space character" << finl;
-              Process::exit();
+              Nom msg = "Error while reading '" + motlu.getString() + "' from datafile " + name + " at line " + std::to_string(line) + ".\nCheck for missing space character.\n";
+              msg+= "============================================\nExiting TRUST.";
+              Process::exit(msg);
             }
 
           /* GF ne pas reactiver ce morceau de code car cela
@@ -186,11 +196,12 @@ int LecFicDiffuse_JDD::ouvrir(const char* name,
               else
                 for(int jump=0; jump<jol; jump++)
                   prov <<"\n";
-
+              line+=jol;
               if( apply_verif )
                 verifie(motlu);
             }
           file_>>motlu;
+
         }
       if (fin_lu!=0)
         nb_accolade=nb_accolade_sa;
