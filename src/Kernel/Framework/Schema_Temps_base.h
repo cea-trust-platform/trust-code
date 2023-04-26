@@ -241,6 +241,8 @@ public :
   inline int& set_lu() { return lu_; }
   inline const double& residu() const { return residu_ ; }
   inline double& residu() { return residu_ ; }
+  inline const Nom& norm_residu() const { return norm_residu_ ; }
+
   inline int& schema_impr() { return schema_impr_ ; }
   inline const int& schema_impr() const { return schema_impr_ ; }
 

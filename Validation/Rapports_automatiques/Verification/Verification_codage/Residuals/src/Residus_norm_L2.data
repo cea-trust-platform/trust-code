@@ -1,4 +1,4 @@
-# Test de post-traitement des residus des inconnus en norme L2 #
+# Test du post-traitement des residus des inconnus en norme max  #
 # PARALLEL OK 8 #
 dimension 2
 
@@ -21,7 +21,6 @@ Mailler dom
         Bord Droit  X = 0.01	0. <= Y <= 0.01
     }
 }
-trianguler_H dom
 # END MESH #
 # BEGIN PARTITION
 Partition dom
@@ -37,21 +36,19 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VEFPreP1B dis
+VDF dis
 
 Scheme_euler_explicit sch
 Read sch
 {
-    nb_pas_dt_max 1
     tinit 0
-    tmax 1.
+    tmax 0.5
     dt_min 1.e-8
     dt_max 0.01
     dt_impr 0.000001
     dt_sauv 100
     seuil_statio 1.e-8
     residuals { norm l2 }
-
 }
 
 Associate pb dom
@@ -129,12 +126,22 @@ Read pb
     }
     Post_processing
     {
-        format lata
+        definition_champs
+        {
+            temperature_residu_max reduction_0D { methode max source refChamp { pb_champ pb temperature_residu } }
+        }
+        format lata 
         fields dt_post 0.1
         {
-            vitesse_residu elem
-            temperature_residu elem
-            concentration_residu elem
+            temperature		elem
+            concentration 		elem
+            diffusivite_thermique	elem
+            coefficient_diffusion 	elem
+
+            temperature_residu		elem
+            concentration_residu 	elem
+            vitesse_residu          	elem
+            temperature_residu_max
         }
     }
 }

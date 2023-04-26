@@ -2198,7 +2198,8 @@ void Equation_base::imprime_residu(SFichier& fic)
   int size = residu_.size_array();
   for (int i=0; i<size; i++)
     {
-      fic << residu_(i) << "\t ";
+      Nom tab = schema_temps().norm_residu() == "max" ? "\t " : "\t\t ";
+      fic << residu_(i) << tab;
       int nb_unknowns = inconnue().valeurs().dimension_tot(0);
       double residual_limit = ( nb_unknowns == 0 ? DMAXFLOAT : DMAXFLOAT/nb_unknowns);
       if (residu_(i)>residual_limit)
@@ -2233,7 +2234,10 @@ Nom Equation_base::expression_residu()
     }
   for (int i=0; i<size; i++)
     {
-      tmp+="Ri=max";
+      Nom norm = schema_temps().norm_residu();
+      tmp+="Ri=";
+      tmp+=norm;
+      if(norm != "max") tmp+="-norm";
       tmp+=ajout;
       tmp+="|d";
       // Comment nommer de facon claire ET concise
@@ -2279,22 +2283,12 @@ void Equation_base::set_residuals(const DoubleTab& residual)
 {
   if(field_residu_.non_nul())
     {
-      DoubleTrav residual_abs(residual);
-      const int n = residual_abs.dimension_tot(0);
-      int size = get_residu().size_array();
-      if(size == 1)
-        for(int i=0; i< n; i++)
-          residual_abs(i) = std::fabs(residual(i));
-      else
-        for(int j=0; j<size; j++)
-          for(int i=0; i< n; i++)
-            residual_abs(i,j) = std::fabs(residual(i,j));
       DoubleTab& tab = field_residu_.valeur().valeurs();
-      if (tab.dimension_tot(0) == residual_abs.dimension_tot(0))
-        tab = residual_abs;
+      if (tab.dimension_tot(0) == residual.dimension_tot(0))
+        tab = residual;
       else
         {
-          DoubleTab_parts parts(residual_abs);
+          ConstDoubleTab_parts parts(residual);
           if (parts[0].dimension_tot(0) == tab.dimension_tot(0))
             tab = parts[0];
         }
