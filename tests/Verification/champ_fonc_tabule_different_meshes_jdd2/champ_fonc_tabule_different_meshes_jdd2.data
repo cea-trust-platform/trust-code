@@ -104,7 +104,7 @@ Read pbt1
     {
         rho      champ_uniforme 1 2000.0
         cp       champ_uniforme 1 3075.0
-        lambda   champ_fonc_tabule_morceaux_interp pbt1 1 { up { pbt2 temperature } { 3 0 500 1000 0.1 1 10 } down { pbt2 temperature } { 3 0 500 1000 0.1 1 10 } } #
+        lambda   champ_fonc_tabule_morceaux_interp pbt1 1 { up { pbt2 temperature IntensiveMaximum } { 3 0 500 1000 0.1 1 10 } down { pbt2 temperature IntensiveMaximum } { 3 0 500 1000 0.1 1 10 } } #
         lambda   champ_uniforme 1 0.5 #
     }
 
