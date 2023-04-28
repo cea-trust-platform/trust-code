@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#include <Faces_Interne.h>
+#include <Bord_Interne.h>
 
-Implemente_instanciable(Faces_Interne, "Faces_Interne", Frontiere);
-Sortie& Faces_Interne::printOn(Sortie& s) const { return Frontiere::printOn(s); }
-Entree& Faces_Interne::readOn(Entree& s) { return Frontiere::readOn(s); }
+Implemente_instanciable(Bord_Interne, "Bord_Interne", Frontiere);
+Sortie& Bord_Interne::printOn(Sortie& s) const { return Frontiere::printOn(s); }
+Entree& Bord_Interne::readOn(Entree& s) { return Frontiere::readOn(s); }

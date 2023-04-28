@@ -140,7 +140,7 @@ void EcrMED::creer_all_faces_bord_OLD(Noms& type_face,IntTabs& all_faces_bord, N
   familles.dimensionner(nb_type_face);
 
 
-  int nb_faces_bord=dom.nb_faces_bord()+dom.nb_faces_raccord()+dom.nb_faces_int()+dom.nb_faces_joint();
+  int nb_faces_bord=dom.nb_faces_bord()+dom.nb_faces_raccord()+dom.nb_faces_bords_int()+dom.nb_faces_joint();
   int nb_bords=dom.nb_front_Cl()+dom.nb_joints();
   if (nb_bords==0)
     {

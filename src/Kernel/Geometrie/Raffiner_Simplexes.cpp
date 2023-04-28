@@ -856,13 +856,13 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
   }
 
   {
-    const Faces_Internes& boundaries_src  = src.faces_int();
-    Faces_Internes&        boundaries_dest = dest.faces_int();
+    const Bords_Internes& boundaries_src  = src.bords_int();
+    Bords_Internes&        boundaries_dest = dest.bords_int();
     boundaries_dest.vide();
     const int nb_boundaries = boundaries_src.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
       {
-        boundaries_dest.add(Faces_Interne());
+        boundaries_dest.add(Bord_Interne());
         const Type_Face& face_type = boundaries_src[boundary].faces().type_face();
         build_frontier(boundaries_src[boundary],
                        face_type,

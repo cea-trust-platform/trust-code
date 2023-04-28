@@ -13,36 +13,36 @@
 *
 *****************************************************************************/
 
-#ifndef Faces_Internes_included
-#define Faces_Internes_included
+#ifndef Bords_Internes_included
+#define Bords_Internes_included
 
-#include <Faces_Interne.h>
 #include <TRUST_List.h>
+#include <Bord_Interne.h>
 
-/*! @brief Class Faces_Internes Cette classe represente une liste d'objets de type Faces_Interne
+/*! @brief Class Bords_Internes Cette classe represente une liste d'objets de type Bords_Interne
  *
- * @sa Faces_Interne
+ * @sa Bords_Interne
  */
-class Faces_Internes : public LIST(Faces_Interne)
+class Bords_Internes : public LIST(Bord_Interne)
 {
-  Declare_instanciable(Faces_Internes);
+  Declare_instanciable(Bords_Internes);
 
 public :
 
   void associer_domaine(const Domaine&);
   int nb_faces() const;
-  inline int nb_faces_internes() const;
+  inline int nb_bords_internes() const;
   //JY 26/08/97
   int nb_faces(Type_Face type) const;
 };
 
-/*! @brief Renvoie le nombre d'objet Face_Interne stockes dans la liste.
+/*! @brief Renvoie le nombre d'objet Bord_Interne stockes dans la liste.
  *
- * @return (int) le nombre d'objet Face_Interne stockes dans la liste
+ * @return (int) le nombre d'objet Bord_Interne stockes dans la liste
  */
-inline int Faces_Internes::nb_faces_internes() const
+inline int Bords_Internes::nb_bords_internes() const
 {
   return size();
 }
 
-#endif /* Faces_Internes_included */
+#endif /* Bords_Internes_included */

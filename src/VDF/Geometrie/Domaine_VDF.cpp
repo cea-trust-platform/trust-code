@@ -354,7 +354,7 @@ static inline int face_vois(const Domaine_VDF& zvdf, const Domaine& domaine, int
   int elem=zvdf.face_voisins(face,i);
   if(elem==-1)
     {
-      face=domaine.face_interne_conjuguee(face);
+      face=domaine.face_bords_interne_conjuguee(face);
       if(face!=-1)
         {
           elem=zvdf.face_voisins(face,i);

@@ -432,7 +432,7 @@ Entree& Pave::readOn(Entree& is)
             break;
           case 2:      // Plaques
             {
-              Faces_Interne& faces=mes_faces_int_.add(Faces_Interne());
+              Bord_Interne& faces=mes_bords_int_.add(Bord_Interne());
               lire_front(is , faces );
             }
             break;

@@ -858,7 +858,7 @@ void Tetraedriser_homogene_fin::trianguler(Domaine& domaine) const
         }
 
       Cerr << "Splitting of the internal faces" << finl;
-      for (auto &itr : domaine.faces_int())
+      for (auto &itr : domaine.bords_int())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::triangle_3D);

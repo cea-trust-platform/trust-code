@@ -368,11 +368,11 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
   int i_fr = domaine.nb_bords()+domaine.nb_raccords();
   ArrOfInt elements_voisins;
 
-  for(const auto& itr: domaine.faces_int())
+  for(const auto& itr: domaine.bords_int())
     {
       const Frontiere& frontiere = itr;
       Frontiere& front_partie =
-        domaine_partie.faces_int().add(Faces_Interne());
+        domaine_partie.bords_int().add(Bord_Interne());
       front_partie.nommer(frontiere.le_nom());
       front_partie.associer_domaine(domaine_partie);
       front_partie.faces().typer(frontiere.faces().type_face());

@@ -17,7 +17,6 @@
 #define Domaine_included
 
 #include <Interprete_geometrique_base.h>
-#include <Faces_Internes.h>
 #include <Sous_Domaine.h>
 #include <TRUSTArrays.h>
 #include <TRUST_Deriv.h>
@@ -33,6 +32,8 @@
 #include <Noms.h>
 
 #include <medcoupling++.h>
+
+#include <Bords_Internes.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingFieldTemplate.hxx>
 #include <MEDCouplingUMesh.hxx>
@@ -55,9 +56,9 @@ class Probleme_base;
  *     de meme type. Les differents types d'elements sont des objets de
  *     classes derivees de Elem_geom_base.
  *     Une domaine est constitue  de noeuds, d'elements, de bords, de bords periodiques,
- *     de joints, de raccords et de face internes.
+ *     de joints, de raccords et de bords internes.
  *
- * @sa Domaine Sous_Domaine Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Faces_Interne
+ * @sa Domaine Sous_Domaine Frontiere Elem_geom Elem_geom_base, Bord Bord_perio Joint Raccord Bords_Interne
  */
 class Domaine : public Objet_U
 {
@@ -121,19 +122,19 @@ public:
   int nb_faces_raccord() const ;
   int nb_faces_raccord(int ) const ;
   int nb_faces_raccord(Type_Face type) const ;
-  int nb_faces_int() const ;
-  int nb_faces_int(int ) const ;
-  int nb_faces_int(Type_Face type) const ;
+  int nb_faces_bords_int() const ;
+  int nb_faces_bords_int(int ) const ;
+  int nb_faces_bords_int(Type_Face type) const ;
   inline int nb_faces_frontiere() const ;
   inline int nb_faces_frontiere(Type_Face type) const ;
 
-  inline const Faces_Interne& faces_interne(int) const;
-  inline Faces_Interne& faces_interne(int);
-  inline const Faces_Internes& faces_int() const;
-  inline Faces_Internes& faces_int();
-  inline const Faces_Interne& faces_interne(const Nom&) const;
-  inline Faces_Interne& faces_interne(const Nom&);
-  int face_interne_conjuguee(int) const;
+  inline const Bord_Interne& bords_interne(int) const;
+  inline Bord_Interne& bords_interne(int);
+  inline const Bords_Internes& bords_int() const;
+  inline Bords_Internes& bords_int();
+  inline const Bord_Interne& bords_interne(const Nom&) const;
+  inline Bord_Interne& bords_interne(const Nom&);
+  int face_bords_interne_conjuguee(int) const;
 
   inline const Bords& faces_bord() const;
   inline Bords& faces_bord();
@@ -329,11 +330,11 @@ protected:
   IntTab aretes_som_;
   // Pour chaque element, indices de ses aretes dans Aretes_som (voir Elem_geom_base::get_tab_aretes_sommets_locaux())
   IntTab elem_aretes_;
-  // Bords, raccords et faces_internes forment les "faces_frontiere" sur lesquelles
+  // Bords, raccords et Bords_internes forment les "faces_frontiere" sur lesquelles
   //  sont definies les conditions aux limites.
   Bords mes_faces_bord_;
   Raccords mes_faces_raccord_;
-  Faces_Internes mes_faces_int_;
+  Bords_Internes mes_bords_int_;
   // Les faces de joint sont les faces communes avec les autres processeurs (bords
   //  du domaine locale a ce processeur qui se raccordent a un processeur voisin)
   Joints mes_faces_joint_;
@@ -371,7 +372,7 @@ protected:
   std::map<const Domaine*, MEDCoupling::MEDCouplingRemapper> rmps;
 #endif
 
-  void duplique_faces_internes();
+  void duplique_bords_internes();
 
 private:
   void prepare_rmp_with(Domaine& );
@@ -483,14 +484,14 @@ inline int Domaine::nb_raccords() const {  return mes_faces_raccord_.nb_raccords
  *
  * @return (int) le nombre de frontieres internes du domaine
  */
-inline int Domaine::nb_frontieres_internes() const {  return mes_faces_int_.nb_faces_internes(); }
+inline int Domaine::nb_frontieres_internes() const {  return mes_bords_int_.nb_bords_internes(); }
 
 /*! @brief Renvoie le nombre de faces frontiere du domaine.
  *
  * C'est la somme des nombres de  bords, de raccords et de faces internes
  *
  */
-inline int Domaine::nb_faces_frontiere() const { return nb_faces_bord() + nb_faces_raccord() + nb_faces_int(); }
+inline int Domaine::nb_faces_frontiere() const { return nb_faces_bord() + nb_faces_raccord() + nb_faces_bords_int(); }
 
 /*! @brief Renvoie le nombre de bords + le nombre de raccords
  *
@@ -560,19 +561,19 @@ inline const Raccord& Domaine::raccord(const Nom& nom) const {   return mes_face
  */
 inline Raccord& Domaine::raccord(const Nom& nom) {  return mes_faces_raccord_(nom); }
 
-/*! @brief Renvoie les faces_internes dont le nom est specifie (version const)
+/*! @brief Renvoie les bords_internes dont le nom est specifie (version const)
  *
- * @param (Nom& nom) le nom des faces internes a renvoyer
- * @return (Faces_Interne&) les faces_internes dont le nom est specifie
+ * @param (Nom& nom) le nom des bords internes a renvoyer
+ * @return (Bords_Interne&) les bords_internes dont le nom est specifie
  */
-inline const Faces_Interne& Domaine::faces_interne(const Nom& nom) const {   return mes_faces_int_(nom); }
+inline const Bord_Interne& Domaine::bords_interne(const Nom& nom) const {   return mes_bords_int_(nom); }
 
-/*! @brief Renvoie les faces_internes dont le nom est specifie
+/*! @brief Renvoie les bords_internes dont le nom est specifie
  *
- * @param (Nom& nom) le nom des faces internes a renvoyer
- * @return (Faces_Interne&) les faces_internes dont le nom est specifie
+ * @param (Nom& nom) le nom des bords internes a renvoyer
+ * @return (Bords_Interne&) les bords_internes dont le nom est specifie
  */
-inline Faces_Interne& Domaine::faces_interne(const Nom& nom) {   return mes_faces_int_(nom); }
+inline Bord_Interne& Domaine::bords_interne(const Nom& nom) {   return mes_bords_int_(nom); }
 
 /*! @brief Renvoie le i-ieme bord du domaine (version const)
  *
@@ -593,7 +594,7 @@ inline const Frontiere& Domaine::frontiere(int i) const
   i-=fin;
   fin=nb_frontieres_internes();
   if(i<fin)
-    return mes_faces_int_(i);
+    return mes_bords_int_(i);
   assert(0);
   exit();
   return frontiere(i);
@@ -611,7 +612,7 @@ inline Frontiere& Domaine::frontiere(int i)
   i-=fin;
   fin=nb_frontieres_internes();
   if(i<fin)
-    return mes_faces_int_(i);
+    return mes_bords_int_(i);
   assert(0);
   exit();
   return frontiere(i);
@@ -678,19 +679,19 @@ inline const Raccord& Domaine::raccord(int i) const { return mes_faces_raccord_(
  */
 inline Raccord& Domaine::raccord(int i) {  return mes_faces_raccord_(i); }
 
-/*! @brief Renvoie les i-ieme faces internes du domaine (version const)
+/*! @brief Renvoie les i-ieme bords internes du domaine (version const)
  *
- * @param (int i) l'indice des faces internes renvoyer
- * @return (Faces_Internes&) les i-ieme faces internes du domaine
+ * @param (int i) l'indice des bords internes renvoyer
+ * @return (Bords_Internes&) les i-ieme bords internes du domaine
  */
-inline const Faces_Interne& Domaine::faces_interne(int i) const {  return mes_faces_int_(i); }
+inline const Bord_Interne& Domaine::bords_interne(int i) const {  return mes_bords_int_(i); }
 
-/*! @brief Renvoie les i-ieme faces internes du domaine
+/*! @brief Renvoie les i-ieme bords internes du domaine
  *
- * @param (int i) l'indice des faces internes a renvoyer
- * @return (Facesr_Internes&) les i-ieme faces internes du domaine
+ * @param (int i) l'indice des bords internes a renvoyer
+ * @return (Bords_Internes&) les i-ieme bords internes du domaine
  */
-inline Faces_Interne& Domaine::faces_interne(int i) {   return mes_faces_int_(i); }
+inline Bord_Interne& Domaine::bords_interne(int i) {   return mes_bords_int_(i); }
 
 /*! @brief Renvoie la liste des bords du domaine.
  * (version const)
@@ -731,18 +732,18 @@ inline const Raccords& Domaine::faces_raccord() const { return mes_faces_raccord
  */
 inline Raccords& Domaine::faces_raccord() { return mes_faces_raccord_; }
 
-/*! @brief Renvoie la liste des faces internes du domaine.
+/*! @brief Renvoie la liste des bords internes du domaine.
  * (version const)
  *
- * @return (Faces_Internes&) la liste des faces internes du domaine
+ * @return (Bords_Internes&) la liste des bords internes du domaine
  */
-inline const Faces_Internes& Domaine::faces_int() const { return mes_faces_int_; }
+inline const Bords_Internes& Domaine::bords_int() const { return mes_bords_int_; }
 
 /*! @brief Renvoie la liste des faces internes du domaine.
  *
- * @return (Faces_Internes&) la liste des faces internes du domaine
+ * @return (Bords_Internes&) la liste des faces internes du domaine
  */
-inline Faces_Internes& Domaine::faces_int() { return mes_faces_int_; }
+inline Bords_Internes& Domaine::bords_int() { return mes_bords_int_; }
 
 /*! @brief Reordonne les elements suivant la convention employe par Trio-U.
  */
@@ -760,7 +761,7 @@ inline int Domaine::nb_faces_frontiere(Type_Face type) const
 {
   return
     nb_faces_bord(type) +
-    nb_faces_int(type) +
+    nb_faces_bords_int(type) +
     nb_faces_raccord(type);
 }
 

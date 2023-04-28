@@ -231,7 +231,7 @@ void Trianguler_fin::trianguler(Domaine& dom) const
         }
 
       Cerr << "Splitting of the internal faces" << finl;
-      for (auto &itr : dom.faces_int())
+      for (auto &itr : dom.bords_int())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::segment_2D);

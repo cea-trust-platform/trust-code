@@ -160,7 +160,7 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
 
   // Faces de bord "internes"
   {
-    Faces_Internes& faces_int = domaine.faces_int();
+    Bords_Internes& faces_int = domaine.bords_int();
     const int n = faces_int.size();
     for (int i = 0; i < n; i++)
       {

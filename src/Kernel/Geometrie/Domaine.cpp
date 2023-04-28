@@ -99,7 +99,7 @@ Sortie& Domaine::printOn(Sortie& s) const
   s << mes_faces_bord_;
   s << mes_faces_joint_;
   s << mes_faces_raccord_;
-  s << mes_faces_int_;
+  s << mes_bords_int_;
   s << "}" << finl;
   //
 
@@ -226,8 +226,8 @@ void Domaine::read_former_domaine(Entree& s)
   s >> mes_faces_joint_;
   mes_faces_raccord_.vide();
   s >> mes_faces_raccord_;
-  mes_faces_int_.vide();
-  s >> mes_faces_int_;
+  mes_bords_int_.vide();
+  s >> mes_bords_int_;
 }
 
 /*! @brief associate the read objects to the domaine and check that the reading objects are coherent
@@ -249,7 +249,7 @@ void Domaine::check_domaine()
   mes_faces_bord_.associer_domaine(*this);
   mes_faces_joint_.associer_domaine(*this);
   mes_faces_raccord_.associer_domaine(*this);
-  mes_faces_int_.associer_domaine(*this);
+  mes_bords_int_.associer_domaine(*this);
   elem_.associer_domaine(*this);
   fixer_premieres_faces_frontiere();
 
@@ -260,7 +260,7 @@ void Domaine::check_domaine()
   // On doit avoir le meme nombre de frontieres et les memes noms sur tous les procs
   check_frontiere(mes_faces_bord_, "(Bord)");
   check_frontiere(mes_faces_raccord_, "(Raccord)");
-  check_frontiere(mes_faces_int_, "(Face_Interne)");
+  check_frontiere(mes_bords_int_, "(Face_Interne)");
 }
 
 Entree& Domaine::lire_bords_a_imprimer(Entree& is)
@@ -487,9 +487,9 @@ int Domaine::nb_faces_raccord() const
  *
  * @return (int) le nombre de face internes du domaine
  */
-int Domaine::nb_faces_int() const
+int Domaine::nb_faces_bords_int() const
 {
-  return mes_faces_int_.nb_faces();
+  return mes_bords_int_.nb_faces();
 }
 
 /*! @brief Renvoie le nombre de sommets du domaine.
@@ -547,9 +547,9 @@ int Domaine::nb_faces_raccord(int i) const
  * @param (int i) le numero de la liste de faces internes dont on veut connaitre le nombre de faces
  * @return (int i) le nombre de faces de la i-ieme liste de faces internes
  */
-int Domaine::nb_faces_int(int i) const
+int Domaine::nb_faces_bords_int(int i) const
 {
-  return mes_faces_int_(i).nb_faces();
+  return mes_bords_int_(i).nb_faces();
 }
 
 /*! @brief Renumerotation des noeuds: Le noeud de numero k devient le noeud de numero Les_Nums[k]
@@ -572,7 +572,7 @@ void Domaine::renum(const IntVect& Les_Nums)
   for (int i = 0; i < nb_raccords(); i++)
     mes_faces_raccord_(i)->renum(Les_Nums);
   for (int i = 0; i < nb_frontieres_internes(); i++)
-    mes_faces_int_(i).renum(Les_Nums);
+    mes_bords_int_(i).renum(Les_Nums);
 }
 
 /*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints Le noeud de numero k devient le noeud de numero Les_Nums[k]
@@ -600,15 +600,15 @@ void Domaine::renum_joint_common_items(const IntVect& Les_Nums, const int elem_o
  * @return (int) -1 si la face specifiee n'est pas une face interne le numero de la face dupliquee sinon
  * @throws erreur TRUST (face non trouvee)
  */
-int Domaine::face_interne_conjuguee(int face) const
+int Domaine::face_bords_interne_conjuguee(int face) const
 {
   if ((face) >= nb_faces_frontiere())
     return -1;
-  int compteur = nb_faces_frontiere() - nb_faces_int();
+  int compteur = nb_faces_frontiere() - nb_faces_bords_int();
   if ((face) < compteur)
     return -1;
 
-  for (const auto& itr : mes_faces_int_)
+  for (const auto& itr : mes_bords_int_)
     {
       const Faces& les_faces = itr.faces();
       int nbf = les_faces.nb_faces();
@@ -663,7 +663,7 @@ void Domaine::correct_type_of_borders_after_merge()
 
   {
     // Les Faces Internes :
-    auto& list = mes_faces_int_.get_stl_list();
+    auto& list = mes_bords_int_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
@@ -791,7 +791,7 @@ int Domaine::comprimer()
 
   {
     // Les Faces Internes :
-    auto& list = mes_faces_int_.get_stl_list();
+    auto& list = mes_bords_int_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
@@ -866,8 +866,8 @@ void Domaine::merge_wo_vertices_with(Domaine& dom2)
   dom2.faces_raccord().associer_domaine(*this);
   faces_raccord().add(dom2.faces_raccord());
 
-  dom2.faces_int().associer_domaine(*this);
-  faces_int().add(dom2.faces_int());
+  dom2.bords_int().associer_domaine(*this);
+  bords_int().add(dom2.bords_int());
 
   correct_type_of_borders_after_merge();
   comprimer();
@@ -930,7 +930,7 @@ void Domaine::ecrire_noms_bords(Sortie& os) const
     os << itr->le_nom() << finl;
 
   // Les Faces Internes :
-  for (const auto &itr : mes_faces_int_)
+  for (const auto &itr : mes_bords_int_)
     os << itr.le_nom() << finl;
 }
 
@@ -974,9 +974,9 @@ int Domaine::nb_faces_raccord(Type_Face type) const
  * @param (Type_Face type) un type de face
  * @return (int) le nombre de faces interieures du type specifie
  */
-int Domaine::nb_faces_int(Type_Face type) const
+int Domaine::nb_faces_bords_int(Type_Face type) const
 {
-  return mes_faces_int_.nb_faces(type);
+  return mes_bords_int_.nb_faces(type);
 }
 
 /*! @brief Renvoie le rang de l'element contenant le point dont les coordonnees sont specifiees.
@@ -1047,7 +1047,7 @@ int Domaine::rang_frontiere(const Nom& un_nom) const
       ++i;
     }
 
-  for (const auto &itr : mes_faces_int_)
+  for (const auto &itr : mes_bords_int_)
     {
       if (itr.le_nom() == un_nom)
         return i;

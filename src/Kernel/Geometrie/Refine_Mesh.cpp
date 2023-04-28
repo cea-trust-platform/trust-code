@@ -506,7 +506,7 @@ void Refine_Mesh::build_new_internal_frontier_faces_2D(IntTabs& new_nodes_of_int
   new_cells_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
 
   int internal_frontier = 0;
-  for (const auto& itr : domaine().faces_int())
+  for (const auto& itr : domaine().bords_int())
     {
       IntTab& nodes = new_nodes_of_internal_frontier_faces[internal_frontier];
       IntTab& cells = new_cells_of_internal_frontier_faces[internal_frontier];
@@ -523,7 +523,7 @@ void Refine_Mesh::build_new_internal_frontier_faces_3D(IntTabs& new_nodes_of_int
   new_cells_of_internal_frontier_faces.dimensionner(nb_internal_frontier);
 
   int internal_frontier = 0;
-  for (const auto& itr : domaine().faces_int())
+  for (const auto& itr : domaine().bords_int())
     {
       IntTab& nodes = new_nodes_of_internal_frontier_faces[internal_frontier];
       IntTab& cells = new_cells_of_internal_frontier_faces[internal_frontier];
@@ -687,7 +687,7 @@ void Refine_Mesh::update_connector_faces(const Type_Face& face_type, const IntTa
 void Refine_Mesh::update_internal_frontier_faces(const Type_Face& face_type, const IntTabs& new_nodes_of_internal_frontier_faces, const IntTabs& new_cells_of_internal_frontier_faces)
 {
   int internal_frontier = 0;
-  for (auto &itr : domaine().faces_int())
+  for (auto &itr : domaine().bords_int())
     {
       Faces& faces = itr.faces();
       faces.typer(face_type);

@@ -327,7 +327,7 @@ void Remove_elem::remove_elem_(Domaine& dom)
       {
         // Les Faces internes
         Cerr << "Regeneration of internal faces" << finl;
-        for (auto &itr : dom.faces_int())
+        for (auto &itr : dom.bords_int())
           {
             Faces& les_faces = itr.faces();
             if (dimension == 2)

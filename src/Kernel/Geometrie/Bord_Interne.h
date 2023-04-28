@@ -13,53 +13,23 @@
 *
 *****************************************************************************/
 
-#include <Faces_Internes.h>
+#ifndef Bord_Interne_included
+#define Bord_Interne_included
 
-Implemente_instanciable(Faces_Internes, "Faces_Internes", LIST(Faces_Interne));
+#include <Frontiere.h>
 
-Sortie& Faces_Internes::printOn(Sortie& os) const { return LIST(Faces_Interne)::printOn(os); }
-
-Entree& Faces_Internes::readOn(Entree& is) { return LIST(Faces_Interne)::readOn(is); }
-
-/*! @brief Associe un domaine a tous les objets Faces_Interne de la liste.
+/*! @brief Classe Bord_Interne La classe sert a representer un ensemble de faces qui sont internes
  *
- * @param (Domaine& un_domaine) le domaine a associer aux Faces_Interne de la liste
+ *     d'un point de vue geometrique mais qui sont traitees comme des faces
+ *     frontieres par les operateurs.
+ *     On se sert des Faces_Internes pour representer des plaques a l'interieur
+ *     d'un domaine fluide par exemple
+ *
+ * @sa Frontiere Domaine
  */
-void Faces_Internes::associer_domaine(const Domaine& un_domaine)
+class Bord_Interne : public Frontiere
 {
-  for (auto& itr : *this) itr.associer_domaine(un_domaine);
-}
+  Declare_instanciable(Bord_Interne);
+};
 
-/*! @brief Renvoie le nombre total de faces contenues dans la liste des Faces_Interne, i.
- *
- * e. la somme de toutes
- *     les faces de tous les objet Faces_Interne contenu dans
- *     la liste.
- *
- * @return (int) le nombre total de faces contenues dans la liste des Faces_Interne
- */
-int Faces_Internes::nb_faces() const
-{
-  int nombre = 0;
-  for (const auto &itr : *this) nombre += itr.nb_faces();
-
-  return nombre;
-}
-
-/*! @brief Renvoie le nombre total de faces de type specifie contenues dans la liste des Faces_Interne
- *
- *     i.e. la somme de toutes les faces de type specifie
- *     de tous les objet Faces_Interne contenu dans
- *     la liste.
- *
- * @param (Type_Face type) le type des faces a compter
- * @return (int) le nombre total de faces contenues dans la liste des Faces_Interne
- */
-int Faces_Internes::nb_faces(Type_Face type) const
-{
-  int nombre = 0;
-  for (const auto &itr : *this)
-    if (type == itr.faces().type_face()) nombre += itr.nb_faces();
-
-  return nombre;
-}
+#endif /* Bord_Interne_included */

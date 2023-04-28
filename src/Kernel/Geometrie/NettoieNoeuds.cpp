@@ -156,7 +156,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
               }
         }
       // Les Faces Internes :
-      for (auto &itr : dom.faces_int())
+      for (auto &itr : dom.bords_int())
         {
           Frontiere& front = itr;
           Faces& faces = front.faces();

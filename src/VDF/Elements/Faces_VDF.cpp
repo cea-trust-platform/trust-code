@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -94,7 +94,7 @@ void Faces_VDF::reordonner(IntVect& tab_orientation)
 
   int nb_faces_bord=madomaine.nb_faces_bord();
   int nb_faces_raccord=madomaine.nb_faces_raccord();
-  int nb_faces_int=madomaine.nb_faces_int();
+  int nb_faces_int=madomaine.nb_faces_bords_int();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);
@@ -128,7 +128,7 @@ void Faces_VDF::reordonner_pour_debog(IntVect& tab_orientation)
 
   int nb_faces_bord=madomaine.nb_faces_bord();
   int nb_faces_raccord=madomaine.nb_faces_raccord();
-  int nb_faces_int=madomaine.nb_faces_int();
+  int nb_faces_int=madomaine.nb_faces_bords_int();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);

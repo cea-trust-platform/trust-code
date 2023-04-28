@@ -224,7 +224,7 @@ void Domaine_VF::discretiser()
     for(; i<derniere; i++)
       {
         int j=i-decal;
-        les_bords_[i].associer_frontiere(ledomaine.faces_interne(j));
+        les_bords_[i].associer_frontiere(ledomaine.bords_interne(j));
         les_bords_[i].associer_Domaine_dis(*this);
       }
   }
