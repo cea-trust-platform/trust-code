@@ -147,4 +147,11 @@ void Tetraedriser::trianguler(Domaine& domaine) const
       les_faces.typer(Faces::triangle_3D);
       decoupe(les_faces);
     }
+
+  for (auto &itr : domaine.groupes_internes())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(les_faces);
+    }
 }

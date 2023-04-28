@@ -875,6 +875,27 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
                        boundaries_dest[boundary]);
       }
   }
+
+  {
+    const Groupes_internes& boundaries_src  = src.groupes_internes();
+    Groupes_internes&        boundaries_dest = dest.groupes_internes();
+    boundaries_dest.vide();
+    const int nb_boundaries = boundaries_src.size();
+    for (int boundary=0; boundary<nb_boundaries; ++boundary)
+      {
+        boundaries_dest.add(Groupe_interne());
+        const Type_Face& face_type = boundaries_src[boundary].faces().type_face();
+        build_frontier(boundaries_src[boundary],
+                       face_type,
+                       nodes_of_cells_src,
+                       cells_of_nodes_src,
+                       edges_of_cells_src,
+                       faces_pattern,
+                       face_refinement_pattern,
+                       dest,
+                       boundaries_dest[boundary]);
+      }
+  }
   //marq_front_nodes=0;
   {
     const Joints& boundaries_src  = src.faces_joint();

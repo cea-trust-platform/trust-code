@@ -196,7 +196,7 @@ void Domaine_VDF::reordonner(Faces& les_faces)
                                      nb_faces_Y_, nb_faces_Z_);
 
   Joints&      joints     = domaine().faces_joint();
-  reordonner_vdf(domaine().nb_faces_frontiere(),
+  reordonner_vdf(domaine().nb_faces_specifiques(),
                  les_faces_vdf, elem_faces_, orientation_, joints);
 }
 

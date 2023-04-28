@@ -13,23 +13,36 @@
 *
 *****************************************************************************/
 
-#ifndef Bord_Interne_included
-#define Bord_Interne_included
+#ifndef Groupes_internes_included
+#define Groupes_internes_included
 
-#include <Frontiere.h>
+#include <TRUST_List.h>
+#include <Groupe_interne.h>
 
-/*! @brief Classe Bord_Interne La classe sert a representer un ensemble de faces qui sont internes
+/*! @brief Class Groupes_internes Cette classe represente une liste d'objets de type Groupe_interne
  *
- *     d'un point de vue geometrique mais qui sont traitees comme des faces
- *     frontieres par les operateurs.
- *     On se sert des Bords_Internes pour representer des plaques a l'interieur
- *     d'un domaine fluide par exemple
- *
- * @sa Frontiere Domaine
+ * @sa Groupes_interne
  */
-class Bord_Interne : public Frontiere
+class Groupes_internes : public LIST(Groupe_interne)
 {
-  Declare_instanciable(Bord_Interne);
+  Declare_instanciable(Groupes_internes);
+
+public :
+
+  void associer_domaine(const Domaine&);
+  int nb_faces() const;
+  inline int nb_groupes_internes() const;
+  //JY 26/08/97
+  int nb_faces(Type_Face type) const;
 };
 
-#endif /* Bord_Interne_included */
+/*! @brief Renvoie le nombre d'objet Groupe_interne stockes dans la liste.
+ *
+ * @return (int) le nombre d'objet Groupe_interne stockes dans la liste
+ */
+inline int Groupes_internes::nb_groupes_internes() const
+{
+  return size();
+}
+
+#endif /* Groupes_internes_included */

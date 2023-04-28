@@ -155,7 +155,7 @@ void NettoieNoeuds::nettoie(Domaine& dom)
                   faces_sommets(i, j) = som;
               }
         }
-      // Les Faces Internes :
+      // Les Bords Internes :
       for (auto &itr : dom.bords_int())
         {
           Frontiere& front = itr;
@@ -172,6 +172,19 @@ void NettoieNoeuds::nettoie(Domaine& dom)
       for (auto &itr : dom.faces_raccord())
         {
           Frontiere& front = itr.valeur();
+          Faces& faces = front.faces();
+          IntTab& faces_sommets = faces.les_sommets();
+          IntTab old_faces_sommets(faces.les_sommets());
+          int nb_faces = faces_sommets.dimension(0);
+          int nb_som_face = faces_sommets.dimension(1);
+          for (int i = 0; i < nb_faces; i++)
+            for (int j = 0; j < nb_som_face; j++)
+              faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
+        }
+      // Les Groupes Internes :
+      for (auto &itr : dom.groupes_internes())
+        {
+          Frontiere& front = itr;
           Faces& faces = front.faces();
           IntTab& faces_sommets = faces.les_sommets();
           IntTab old_faces_sommets(faces.les_sommets());

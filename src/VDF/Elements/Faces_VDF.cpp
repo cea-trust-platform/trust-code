@@ -42,8 +42,8 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
   orientation_.ref(tab_orientation);
   nx=ny=nz=0;
 
-  const Domaine& madomaine=domaine();
-  const Domaine& dom=madomaine;
+  const Domaine& mondomaine=domaine();
+  const Domaine& dom=mondomaine;
   double dx=0, dy=0, dz=1.e30;
 
   for(int face=0; face<nb_faces_tot(); face++)
@@ -89,16 +89,18 @@ void Faces_VDF::calculer_orientation(IntVect& tab_orientation,
 
 void Faces_VDF::reordonner(IntVect& tab_orientation)
 {
-  const Domaine& madomaine=domaine();
+  const Domaine& mondomaine=domaine();
   int face, derniere, courante, ori;
 
-  int nb_faces_bord=madomaine.nb_faces_bord();
-  int nb_faces_raccord=madomaine.nb_faces_raccord();
-  int nb_faces_int=madomaine.nb_faces_bords_int();
+  int nb_faces_bord=mondomaine.nb_faces_bord();
+  int nb_faces_raccord=mondomaine.nb_faces_raccord();
+  int nb_faces_bords_int=mondomaine.nb_faces_bords_int();
+  int nb_faces_int=mondomaine.nb_groupes_internes();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);
   derniere=(nb_faces_bord+nb_faces_raccord);
+  derniere+=nb_faces_bords_int;
   derniere+=nb_faces_int;
   courante=derniere;
   derniere=nb_faces();
@@ -123,16 +125,18 @@ void Faces_VDF::reordonner(IntVect& tab_orientation)
 
 void Faces_VDF::reordonner_pour_debog(IntVect& tab_orientation)
 {
-  const Domaine& madomaine=domaine();
+  const Domaine& mondomaine=domaine();
   int face, derniere;
 
-  int nb_faces_bord=madomaine.nb_faces_bord();
-  int nb_faces_raccord=madomaine.nb_faces_raccord();
-  int nb_faces_int=madomaine.nb_faces_bords_int();
+  int nb_faces_bord=mondomaine.nb_faces_bord();
+  int nb_faces_raccord=mondomaine.nb_faces_raccord();
+  int nb_faces_bords_int=mondomaine.nb_faces_bords_int();
+  int nb_faces_int=mondomaine.nb_groupes_internes();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);
   derniere=(nb_faces_bord+nb_faces_raccord);
+  derniere+=nb_faces_bords_int;
   derniere+=nb_faces_int;
 
   derniere=nb_faces();

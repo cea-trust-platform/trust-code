@@ -228,6 +228,13 @@ void Polyedriser::polyedriser(Domaine& domaine) const
       les_faces.typer(Faces::polygone_3D);
       reorder_vertices(les_faces, coords);
     }
+
+  for (auto &itr : domaine.groupes_internes())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::polygone_3D);
+      reorder_vertices(les_faces, coords);
+    }
   return;
 }
 

@@ -174,5 +174,12 @@ void Tetraedriser_par_prisme::trianguler(Domaine& domaine) const
       les_faces.typer(Faces::triangle_3D);
       decoupe(domaine, les_faces);
     }
+
+  for (auto &itr : domaine.groupes_internes())
+    {
+      Faces& les_faces = itr.faces();
+      les_faces.typer(Faces::triangle_3D);
+      decoupe(domaine, les_faces);
+    }
 }
 

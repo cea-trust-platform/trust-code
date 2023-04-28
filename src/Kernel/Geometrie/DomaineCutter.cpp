@@ -362,7 +362,7 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
                                                     const int partie,
                                                     Domaine& domaine_partie) const
 {
-  // Rappel : les faces internes sont des "frontieres" a l'interieur du domaine
+  // Rappel : les bords internes sont des "frontieres" a l'interieur du domaine
   // (par exemple une plaque d'epaisseur nulle dans l'ecoulement)
   const Domaine& domaine = ref_domaine_.valeur();
   int i_fr = domaine.nb_bords()+domaine.nb_raccords();

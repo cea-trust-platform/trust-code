@@ -205,7 +205,7 @@ void Domaine_VF::discretiser()
   }
   {
     int i=0, derniere=ledomaine.nb_bords();
-    les_bords_.dimensionner(domaine().nb_front_Cl());
+    les_bords_.dimensionner(domaine().nb_front_Cl()+domaine().nb_groupes_int());
     for(; i<derniere; i++)
       {
         les_bords_[i].associer_frontiere(ledomaine.bord(i));
@@ -225,6 +225,14 @@ void Domaine_VF::discretiser()
       {
         int j=i-decal;
         les_bords_[i].associer_frontiere(ledomaine.bords_interne(j));
+        les_bords_[i].associer_Domaine_dis(*this);
+      }
+    decal=derniere;
+    derniere+=domaine().nb_groupes_int();
+    for(; i<derniere; i++)
+      {
+        int j=i-decal;
+        les_bords_[i].associer_frontiere(ledomaine.groupe_interne(j));
         les_bords_[i].associer_Domaine_dis(*this);
       }
   }

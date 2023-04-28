@@ -117,7 +117,7 @@ void Domaine_VEF::reordonner(Faces& les_faces)
   //   le tableau Domaine_Cl_VEF::type_elem_Cl_).
   // Un element est non standard s'il est voisin d'une face frontiere.
   {
-    const int nb_faces_front = domaine().nb_faces_frontiere();
+    const int nb_faces_front = domaine().nb_faces_specifiques();
     domaine().creer_tableau_elements(rang_elem_non_std_, ArrOfInt::NOCOPY_NOINIT);
     rang_elem_non_std_ = -1;
     // D'abord on marque les elements non standards avec rang_elem_non_std_[i] = 0
@@ -144,7 +144,7 @@ void Domaine_VEF::reordonner(Faces& les_faces)
   ArrOfInt sort_key(nbr_faces);
   {
     nb_faces_std_ =0;
-    const int nb_faces_front = domaine().nb_faces_frontiere();
+    const int nb_faces_front = domaine().nb_faces_specifiques();
     // Attention : face_voisins_ n'est pas encore initialise, il
     // faut passer par les_faces.voisins() :
     const IntTab& facevoisins = les_faces.voisins();

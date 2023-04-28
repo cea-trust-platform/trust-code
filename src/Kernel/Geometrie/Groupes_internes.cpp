@@ -13,23 +13,53 @@
 *
 *****************************************************************************/
 
-#ifndef Bord_Interne_included
-#define Bord_Interne_included
+#include <Groupes_internes.h>
 
-#include <Frontiere.h>
+Implemente_instanciable(Groupes_internes, "Groupes_internes", LIST(Groupe_interne));
 
-/*! @brief Classe Bord_Interne La classe sert a representer un ensemble de faces qui sont internes
+Sortie& Groupes_internes::printOn(Sortie& os) const { return LIST(Groupe_interne)::printOn(os); }
+
+Entree& Groupes_internes::readOn(Entree& is) { return LIST(Groupe_interne)::readOn(is); }
+
+/*! @brief Associe un domaine a tous les objets Groupe_interne de la liste.
  *
- *     d'un point de vue geometrique mais qui sont traitees comme des faces
- *     frontieres par les operateurs.
- *     On se sert des Bords_Internes pour representer des plaques a l'interieur
- *     d'un domaine fluide par exemple
- *
- * @sa Frontiere Domaine
+ * @param (Domaine& un_domaine) le domaine a associer aux Groupe_interne de la liste
  */
-class Bord_Interne : public Frontiere
+void Groupes_internes::associer_domaine(const Domaine& un_domaine)
 {
-  Declare_instanciable(Bord_Interne);
-};
+  for (auto& itr : *this) itr.associer_domaine(un_domaine);
+}
 
-#endif /* Bord_Interne_included */
+/*! @brief Renvoie le nombre total de faces contenues dans la liste des Groupe_interne, i.
+ *
+ * e. la somme de toutes
+ *     les faces de tous les objet Faces_interne contenu dans
+ *     la liste.
+ *
+ * @return (int) le nombre total de faces contenues dans la liste des Groupe_interne
+ */
+int Groupes_internes::nb_faces() const
+{
+  int nombre = 0;
+  for (const auto &itr : *this) nombre += itr.nb_faces();
+
+  return nombre;
+}
+
+/*! @brief Renvoie le nombre total de faces de type specifie contenues dans la liste des Groupe_interne
+ *
+ *     i.e. la somme de toutes les faces de type specifie
+ *     de tous les objet Groupe_interne contenu dans
+ *     la liste.
+ *
+ * @param (Type_Face type) le type des faces a compter
+ * @return (int) le nombre total de faces contenues dans la liste des Groupe_interne
+ */
+int Groupes_internes::nb_faces(Type_Face type) const
+{
+  int nombre = 0;
+  for (const auto &itr : *this)
+    if (type == itr.faces().type_face()) nombre += itr.nb_faces();
+
+  return nombre;
+}

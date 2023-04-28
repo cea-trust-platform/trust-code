@@ -50,7 +50,7 @@ namespace
  */
 const Frontiere& mes_faces_fr(const Domaine& domaine, int i)
 {
-  int nb_std = domaine.nb_front_Cl();
+  int nb_std = domaine.nb_front_Cl() + domaine.nb_groupes_int();
   return i<nb_std ? domaine.frontiere(i) : domaine.joint(i-nb_std);
 }
 
@@ -141,7 +141,7 @@ void EcrMED::creer_all_faces_bord_OLD(Noms& type_face,IntTabs& all_faces_bord, N
 
 
   int nb_faces_bord=dom.nb_faces_bord()+dom.nb_faces_raccord()+dom.nb_faces_bords_int()+dom.nb_faces_joint();
-  int nb_bords=dom.nb_front_Cl()+dom.nb_joints();
+  int nb_bords=dom.nb_front_Cl()+dom.nb_groupes_int()+dom.nb_joints();
   if (nb_bords==0)
     {
       // on n'a pas les bords
@@ -193,6 +193,11 @@ void EcrMED::creer_all_faces_bord_OLD(Noms& type_face,IntTabs& all_faces_bord, N
           noms_bords[i]="type_raccord_";
           noms_bords[i]+=::mes_faces_fr(dom,i).le_nom();
         }
+      else if (sub_type(Groupe_interne,::mes_faces_fr(dom,i)))
+        {
+          noms_bords[i]="groupes_internes_";
+          noms_bords[i]+=::mes_faces_fr(dom,i).le_nom();
+        }
       else
         noms_bords[i]=::mes_faces_fr(dom,i).le_nom();
       const IntTab& les_sommets_des_faces=::mes_faces_fr(dom,i).les_sommets_des_faces();
@@ -237,18 +242,23 @@ void EcrMED::creer_all_faces_bord_OLD(Noms& type_face,IntTabs& all_faces_bord, N
 void EcrMED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const
 {
   const Domaine& dom = dom_.valeur();
-  int nb_bords = dom.nb_front_Cl(), nb_jnts = dom.nb_joints();
+  int nb_bords = dom.nb_front_Cl(), nb_jnts = dom.nb_joints(), nb_faces_int = dom.nb_groupes_int();
 
-  noms_bords_and_jnts.dimensionner(nb_bords+nb_jnts);
-  sz_bords_and_jnts.resize_array(nb_bords+nb_jnts);
+  noms_bords_and_jnts.dimensionner(nb_bords+nb_jnts+nb_faces_int);
+  sz_bords_and_jnts.resize_array(nb_bords+nb_jnts+nb_faces_int);
 
   // Get border names and nb of faces:
-  for(int i=0; i<nb_bords; i++)
+  for(int i=0; i<nb_bords + nb_faces_int; i++)
     {
       const Frontiere& front = dom.frontiere(i);
       if (sub_type(Raccord_base,front))
         {
           noms_bords_and_jnts[i] = "type_raccord_";
+          noms_bords_and_jnts[i] += front.le_nom();
+        }
+      else if (sub_type(Groupe_interne,front))
+        {
+          noms_bords_and_jnts[i] = "groupes_internes_";
           noms_bords_and_jnts[i] += front.le_nom();
         }
       else
@@ -356,7 +366,7 @@ void EcrMED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_
   std::vector<const DataArrayIdType *> grps;
   std::vector<MCAuto<DataArrayIdType>> grps_mem;  // just for memory management -> will ensure proper array deletion when destroyed
 
-  int face_idx = 0, start, end, nb_bords = dom_->nb_front_Cl();
+  int face_idx = 0, start, end, nb_bords = dom_->nb_front_Cl() + dom_->nb_groupes_int();
   for (int b=0; b < nb_bords; b++, face_idx=end)  // not joints
     {
       MCAuto<DataArrayIdType> g(DataArrayIdType::New());
@@ -490,8 +500,8 @@ void EcrMED::fill_faces_and_boundaries_OLD(const REF(Domaine_dis_base)& domaine_
       grps[0] = noms_bords[i].getString();
       mfumesh_->setGroupsOnFamily(noms_bords[i].getString(), grps);
     }
-  // Faces internes:
-  std::string name = "faces_internes";
+  // Groupes internes:
+  std::string name = "groupes_internes";
   mfumesh_->addFamily(name, 0);
   std::vector<std::string> grps(1);
   grps[0] = name;

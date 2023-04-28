@@ -13,23 +13,19 @@
 *
 *****************************************************************************/
 
-#ifndef Bord_Interne_included
-#define Bord_Interne_included
+#ifndef Groupe_interne_included
+#define Groupe_interne_included
 
 #include <Frontiere.h>
 
-/*! @brief Classe Bord_Interne La classe sert a representer un ensemble de faces qui sont internes
+/*! @brief Classe Groupe_interne La classe sert a representer un ensemble de faces interne
  *
- *     d'un point de vue geometrique mais qui sont traitees comme des faces
- *     frontieres par les operateurs.
- *     On se sert des Bords_Internes pour representer des plaques a l'interieur
- *     d'un domaine fluide par exemple
  *
  * @sa Frontiere Domaine
  */
-class Bord_Interne : public Frontiere
+class Groupe_interne : public Frontiere
 {
-  Declare_instanciable(Bord_Interne);
+  Declare_instanciable(Groupe_interne);
 };
 
-#endif /* Bord_Interne_included */
+#endif /* Groupe_interne_included */

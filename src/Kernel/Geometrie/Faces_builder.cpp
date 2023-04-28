@@ -158,7 +158,7 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
       }
   }
 
-  // Faces de bord "internes"
+  // Faces de "bord internes"
   {
     Bords_Internes& faces_int = domaine.bords_int();
     const int n = faces_int.size();
@@ -181,6 +181,21 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
         Cerr << "Faces_builder::creer_faces_reeles not coded for the internal faces of boundary" << finl;
         Process::exit();
         // A faire selon l'ancienne version de domaine2... et a tester !
+      }
+  }
+
+  // Groupes internes
+  {
+    Groupes_internes& groupes_int = domaine.groupes_internes();
+    const int n = groupes_int.size();
+    for (int i = 0; i < n; i++)
+      {
+        Frontiere& frontiere = groupes_int[i];
+        creer_faces_frontiere(2, /* deux elements voisin par face */
+                              frontiere,
+                              faces_sommets,
+                              faces_voisins,
+                              elem_faces);
       }
   }
 
@@ -222,7 +237,7 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
     {
       Cerr << "Error in Faces_builder::creer_faces_reeles:\n"
            << " number of faces does not match predicted number of faces.\n"
-           << " (problem with faces_internes ?)" << finl;
+           << " (problem with faces_bords_internes ?)" << finl;
       Process::exit();
     }
 

@@ -391,14 +391,15 @@ Entree& Pave::readOn(Entree& is)
         Cerr << "We expected a { before reading the boundaries" << finl;
         exit();
       }
-    Motcles les_mots(6);
+    Motcles les_mots(7);
     {
       les_mots[0]="Bord";
       les_mots[1]="Raccord";
       les_mots[2]="Internes";
       les_mots[3]="Trou";
       les_mots[4]="Joint";
-      les_mots[5]="}";
+      les_mots[5]="Faces_interne";
+      les_mots[6]="}";
     }
     while(motlu != "}")
       {
@@ -436,6 +437,12 @@ Entree& Pave::readOn(Entree& is)
               lire_front(is , faces );
             }
             break;
+          case 5:      // Plaques
+            {
+              Groupe_interne& faces=mes_groupes_internes_.add(Groupe_interne());
+              lire_front(is , faces );
+            }
+            break;
           case 3:      // Trous
             break;
           case 4:      // Joint
@@ -444,7 +451,7 @@ Entree& Pave::readOn(Entree& is)
               lire_front(is , newjoint );
             }
             break;
-          case 5:      // Fin
+          case 6:      // Fin
             break;
           default:
             Cerr << motlu << "  is not understood " << finl;

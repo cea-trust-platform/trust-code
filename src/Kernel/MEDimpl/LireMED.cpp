@@ -259,6 +259,7 @@ Entree& LireMED::interpreter_(Entree& is)
       param.ajouter("mesh|maillage", &nom_mesh_);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
 
       param.ajouter("exclude_groups|exclure_groupes", &exclude_grps_); // XD_ADD_P listchaine List of face groups to skip in the MED file.
+      param.ajouter("include_internal_face_groups|inclure_groupes_faces_internes", &internal_face_grps_); // XD_ADD_P listchaine List of face groups to read and register in the MED file.
 
       EChaine is2(s);
       param.lire_avec_accolades(is2);
@@ -876,6 +877,8 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
   ArrOfInt nb_face_per_bord(nbord);
   Bords& faces_bord=dom.faces_bord();
   faces_bord.vide();
+  Groupes_internes& goupes_internes=dom.groupes_internes();
+  goupes_internes.vide();
   Raccords& faces_raccord=dom.faces_raccord();
   faces_raccord.vide();
   Joints& faces_joint=dom.faces_joint();
@@ -890,14 +893,19 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
       int indice_bord=indices_bords[ib];
       if (noms_bords_[ib]=="elems") continue;
       Bord bordprov_;
+      Groupe_interne facesintprov;
       Raccord raccprov;
       Joint jointprov;
-      bool israccord=false, isjoint=false;
+      bool israccord=false, isjoint=false, isfacesint=false;
       if (noms_bords_[ib].debute_par("type_raccord_"))
         {
           israccord=true;
           noms_bords_[ib].suffix("type_raccord_");
           raccprov.typer("Raccord_local_homogene");
+        }
+      if (internal_face_grps_.search(noms_bords_[ib]) != -1)
+        {
+          isfacesint=true;
         }
 
       int numero_joint=noms_des_joints.search(noms_bords_[ib]);
@@ -907,7 +915,7 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
           isjoint=true;
         }
       // on recupere la frontiere  .... que ce soit un Bord,Raccord,ou Joint
-      Frontiere& bordprov = (isjoint?jointprov:(israccord?ref_cast(Frontiere,raccprov.valeur()):ref_cast(Frontiere,bordprov_)));
+      Frontiere& bordprov = (isjoint?jointprov:(israccord?ref_cast(Frontiere,raccprov.valeur()):(isfacesint?ref_cast(Frontiere,facesintprov):ref_cast(Frontiere,bordprov_))));
 
       bordprov.nommer(noms_bords_[ib]);
       bordprov.typer_faces(type_face_);
@@ -957,6 +965,8 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
             }
           else if (israccord)
             faces_raccord.add(raccprov);
+          else if (isfacesint)
+            goupes_internes.add(facesintprov);
           else
             faces_bord.add(bordprov_);
         }
@@ -964,8 +974,9 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
   faces_bord.associer_domaine(dom);
   faces_raccord.associer_domaine(dom);
   faces_joint.associer_domaine(dom);
+  goupes_internes.associer_domaine(dom);
   dom.fixer_premieres_faces_frontiere();
-  int nbfr=dom.nb_front_Cl();
+  int nbfr=dom.nb_front_Cl() + dom.nb_groupes_int();
   for (int fr=0; fr<nbfr; fr++)
     {
       dom.frontiere(fr).faces().associer_domaine(dom);
@@ -1051,7 +1062,7 @@ void LireMED::lire_geom(bool subDom)
 
   if (nproc()==1)
     {
-      Cerr <<  "   Lire_MED called in sequential => applying NettoiNoeuds" << finl;
+      Cerr <<  "   Lire_MED called in sequential => applying NettoieNoeuds" << finl;
       NettoieNoeuds::nettoie(dom);
     }
 

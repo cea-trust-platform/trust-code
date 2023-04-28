@@ -857,8 +857,16 @@ void Tetraedriser_homogene_fin::trianguler(Domaine& domaine) const
           decoupe(domaine, les_faces, new_soms_old_elems, fait_sommet, nface, fait_sommet_arete, narete);
         }
 
-      Cerr << "Splitting of the internal faces" << finl;
+      Cerr << "Splitting of the internal boundary faces" << finl;
       for (auto &itr : domaine.bords_int())
+        {
+          Faces& les_faces = itr.faces();
+          les_faces.typer(Faces::triangle_3D);
+          decoupe(domaine, les_faces, new_soms_old_elems, fait_sommet, nface, fait_sommet_arete, narete);
+        }
+
+      Cerr << "Splitting of the internal faces" << finl;
+      for (auto &itr : domaine.groupes_internes())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::triangle_3D);

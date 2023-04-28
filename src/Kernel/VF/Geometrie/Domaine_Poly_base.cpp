@@ -140,7 +140,7 @@ void Domaine_Poly_base::reordonner(Faces& les_faces)
   {
     const Domaine& dom = domaine();
     const int nb_elements = nb_elem();
-    const int nb_faces_front = domaine().nb_faces_frontiere();
+    const int nb_faces_front = domaine().nb_faces_specifiques();
     dom.creer_tableau_elements(rang_elem_non_std_);
     //    rang_elem_non_std_.resize(nb_elements);
     //    Scatter::creer_tableau_distribue(dom, Joint::ELEMENT, rang_elem_non_std_);
@@ -180,7 +180,7 @@ void Domaine_Poly_base::reordonner(Faces& les_faces)
   ArrOfInt sort_key(nbfaces);
   {
     nb_faces_std_ =0;
-    const int nb_faces_front = domaine().nb_faces_frontiere();
+    const int nb_faces_front = domaine().nb_faces_specifiques();
     // Attention : face_voisins_ n'est pas encore initialise, il
     // faut passer par les_faces.voisins() :
     const IntTab& facevoisins = les_faces.voisins();

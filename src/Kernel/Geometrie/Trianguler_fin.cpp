@@ -230,8 +230,36 @@ void Trianguler_fin::trianguler(Domaine& dom) const
           sommetsfaces.ref(nouveaux);
         }
 
-      Cerr << "Splitting of the internal faces" << finl;
+      Cerr << "Splitting of the internal boundary faces" << finl;
       for (auto &itr : dom.bords_int())
+        {
+          Faces& les_faces = itr.faces();
+          les_faces.typer(Faces::segment_2D);
+          IntTab& sommetsfaces = les_faces.les_sommets();
+          int nb_faces = sommetsfaces.dimension(0);
+          IntTab nouveaux(2 * nb_faces, 2);
+          les_faces.voisins().resize(2 * nb_faces, 2);
+          les_faces.voisins() = -1;
+
+          for (int i = 0; i < nb_faces; i++)
+            {
+              int i0 = sommetsfaces(i, 0);
+              int i1 = sommetsfaces(i, 1);
+              int i01 = -1;
+              for (int ii = 0; ii < nbs + oldsz + j; ii++)
+                if (fait_sommet_arete(ii, 0) == i0 && fait_sommet_arete(ii, 1) == i1)
+                  i01 = nbs + oldsz + ii;
+              assert(i01 >= 0);
+              nouveaux(2 * i, 0) = i0;
+              nouveaux(2 * i, 1) = i01;
+              nouveaux(2 * i + 1, 0) = i01;
+              nouveaux(2 * i + 1, 1) = i1;
+            }
+          sommetsfaces.ref(nouveaux);
+        }
+
+      Cerr << "Splitting of the internal faces" << finl;
+      for (auto &itr : dom.groupes_internes())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::segment_2D);
