@@ -19,6 +19,16 @@ else
 fi
 cd rocALUTION
 
+# Detection ROCM par variable ou repertoire
+if [ "$ROCM_PATH" = "" ] && [ -d /opt/rocm ]
+then
+   # ToDo: reporter dans le configure de TRUST:
+   export ROCM_PATH=/opt/rocm
+   export PATH=$ROCM_PATH/bin:$PATH
+   export LD_LIBRARY_PATH=$ROCM_PATH/lib:$LD_LIBRARY_PATH
+   # https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
+   [ "`rocminfo 2>&1 | grep gfx1032`" != "" ] && export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)
+fi   
 # Hack pour eviter que rocALUTION ne telecharge un zip si pas de ROCM (Voir fichier cmake/Dependencies.cmake)
 if [ "$ROCM_PATH" = "" ]
 then

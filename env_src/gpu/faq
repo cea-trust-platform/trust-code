@@ -10,3 +10,11 @@ impossible de reproduire avec le cas AMG poisson en parallele...
 Le probleme sur orcus est certainement lie a cela avec un driver Cuda trop anciens sur les noeuds par rapport au Cuda utilise.
 
 Une bonne mesure est donc d'empecher: nvcc>nvidia-smi
+
+
+# Crash AmgX (en mutiNode uniquement?) si les coefficients de la matrice change au cours du temps...
+Contourne dans TRUST 1.9.2_beta en refaisant la matrice...
+
+Caught amgx exception: Result of allocation of required temporary storage is NULL. Try pinning the memory to reduce storage requirements.
+amgx::DistributedManagerBase<amgx::TemplateConfig<(AMGX_MemorySpace)1, (AMGX_VecPrecision)0, (AMGX_MatPrecision)0, (AMGX_IndPrecision)2> >::getDevicePointerForData(void*, unsigned long, int*)+0x13f
+amgx::DistributedManager<amgx::TemplateConfig<(AMGX_MemorySpace)1, (AMGX_VecPrecision)0, (AMGX_MatPrecision)0, (AMGX_IndPrecision)2> >::replaceMatrixCoefficientsNoCons(int, int, double const*, double const*)+0xb5
