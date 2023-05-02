@@ -57,21 +57,21 @@ void init_openmp()
   if (var!=NULL && std::string(var)=="DISABLED")
     return;
   init_openmp_ = true;
-  bool round_robin=false;
-  int devID;
-  int nDevs = omp_get_num_devices();
-  int rank = Process::me();
-  int nRanks = Process::nproc();
-  if (round_robin)
-    devID = rank % nDevs;
-  else
-    devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
-  if (Process::je_suis_maitre())
-    {
-      Cerr << "Initializing OpenMP offload on devices..."  << finl;
-      Cerr << "Detecting " << nDevs << " devices." << finl;
-    }
-  cerr << "[OpenMP] Assigning rank " << rank << " to device " << devID << endl;
+  MPI_Comm localWorld;
+  MPI_Comm_split_type(MPI_COMM_WORLD, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL, &localWorld);
+  int rank; // Local rank
+  MPI_Comm_rank(localWorld, &rank);
+  int nRanks; // Local number of ranks
+  MPI_Comm_size(localWorld, &nRanks);
+  // Node name:
+  int     len;
+  char    name[MPI_MAX_PROCESSOR_NAME];
+  MPI_Get_processor_name(name, &len);
+  std::string nodeName = name;
+  int nDevs = omp_get_num_devices(); // Local number of devices
+  int devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
+  Cerr << "Initializing OpenMP offload on devices..."  << finl;
+  cerr << "[OpenMP] Assigning local rank " << rank << " (global rank " << Process::me() << ") of node " << nodeName.c_str() << " to its device " << devID << "/" << nDevs-1 << endl;
   omp_set_default_device(devID);
   // Dummy target region, so as not to measure startup time later:
   #pragma omp target
