@@ -69,3 +69,4 @@ linux   rsync_ssh	non	is232973.intra.cea.fr 		-all		-TrioCFD -IJK-FT -GENEPI3 -S
 linux   rsync_ssh	non	is232973-gui.intra.cea.fr 		-all		-TrioCFD -IJK-FT -GENEPI3 -TRUST_NK       -gui   	 		-remote_install_TRUST_with_source -force_provided_mpich -without-pdflatex  								# Ubuntu 20.04	Bat 451	LMSF	Bureau TMA titania TRUST
 linux   rsync_ssh	cible	petra.intra.cea.fr 		-all		-TrioCFD   	 		 -cuda=download -openmp -without-pdflatex  								# Ubuntu 20.04 serveur rackable titania
 linux   rsync_ssh	tache	is246524.intra.cea.fr 		-all		-TrioCFD   	 		   								# Ubuntu 20.04 titania
+linux   rsync_ssh	tache	is210376-tmpnoexe.intra.cea.fr 		-all	   	 		   								# Fedora 34 titania tmp no exec

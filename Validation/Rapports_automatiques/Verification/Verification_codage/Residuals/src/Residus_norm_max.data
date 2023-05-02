@@ -130,7 +130,7 @@ Read pb
         {
             temperature_residu_max reduction_0D { methode max source refChamp { pb_champ pb temperature_residu } }
         }
-        format lata fichier Residuals_jdd1
+        format lata
         fields dt_post 0.1
         {
             temperature		elem
