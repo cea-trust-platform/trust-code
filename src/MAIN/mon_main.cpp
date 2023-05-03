@@ -51,6 +51,12 @@ mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, bo
   change_disable_stop(disable_stop);
 }
 
+// Catching exception signal only in debug mode: 
+#ifndef NDEBUG
+bool error_handlers = true; 
+#else
+bool error_handlers = false;
+#endif
 static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_mpi_)
 {
 #ifdef PETSCKSP_H
@@ -86,12 +92,8 @@ static int init_petsc(True_int argc, char **argv, int with_mpi,int& trio_began_m
   // et de "masquer" les messages d'erreur TRUST:
   PetscPopSignalHandler();
 
-  bool error_handlers = false;
   char* theValue = getenv("TRUST_ENABLE_ERROR_HANDLERS");
   if (theValue != NULL) error_handlers = true;
-#ifndef NDEBUG
-  error_handlers = true;
-#endif
   if (error_handlers)
     {
       Cerr << "Enabling error handlers catching SIGFPE and SIGABORT and giving a trace of where the fault happened." << finl;
