@@ -17,7 +17,6 @@
 #include <SolveurSys.h>
 #include <Motcle.h>
 #include <Param.h>
-#include <Debog.h>
 
 Implemente_instanciable(SolveurSys,"SolveurSys",DERIV(SolveurSys_base));
 
@@ -51,8 +50,6 @@ int SolveurSys::resoudre_systeme(const Matrice_Base& matrice,
   // Cas de solveurs emboites: n'afficher que le temps du solveur "exterieur"
   // temporaire : test issu du baltik IJK_FT en commentaire car sinon erreur dans .TU avec PETSC (solveurs Ax=B => 0%)
   //if (nested_solver == 0)
-  Debog::verifier("SolveurSys::resoudre_systeme solution avant", solution);
-  Debog::verifier("SolveurSys::resoudre_systeme secmem avant", secmem);
   statistiques().begin_count(solv_sys_counter_);
   nested_solver++;
   int nb_iter = valeur().resoudre_systeme(matrice,secmem,solution);
@@ -62,7 +59,6 @@ int SolveurSys::resoudre_systeme(const Matrice_Base& matrice,
   //if (nested_solver == 0)
   //  {
   statistiques().end_count(solv_sys_counter_, nb_iter);
-  Debog::verifier("SolveurSys::resoudre_systeme solution apres", solution);
 
   // Si limpr vaut -1, on n'imprime pas
   if (valeur().limpr()>=0)

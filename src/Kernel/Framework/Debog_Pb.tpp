@@ -413,10 +413,6 @@ Debog_Pb::verifier(const char *const msg, _TYPE_ x, _TYPE_ *ref_value)
         }
 
       err = mp_sum(err);
-      if (err)
-        {
-
-        }
       if (Process::je_suis_maitre())
         {
           const char *ok = (err > 0.) ? " ERROR       " : " OK           ";
