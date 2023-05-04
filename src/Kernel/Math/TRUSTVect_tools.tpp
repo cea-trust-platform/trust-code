@@ -48,7 +48,7 @@ inline int operator!=(const TRUSTVect<_TYPE_>& x, const TRUSTVect<_TYPE_>& y)
 template <typename _TYPE_>
 inline void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
 {
-  _TYPE_ invalid = (std::is_same<_TYPE_,int>::value) ? INT_MAX : -987654.321 ;
+  _TYPE_ invalid = (std::is_same<_TYPE_,int>::value) ? INT_MAX : (std::is_same<_TYPE_,float>::value) ? -987654.321f : -987654.321 ;
 
   const MD_Vector& md = resu.get_md_vector();
   const int line_size = resu.line_size();

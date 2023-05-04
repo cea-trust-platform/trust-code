@@ -606,11 +606,11 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   // ToDo OpenMP : les compteurs ne doivent tourner que si rocALUTION a le support GPU active...
   // La variable gpu (private) doit se baser sur le rocALUTION.hpp, sur disable_accelerator, sur compueteOnDeice...
   bool gpu = computeOnDevice;
-  if (gpu) statistiques().begin_count(gpu_copytodevice_counter_, 3 * sizeof(double) * nb_rows_);
+  if (gpu) statistiques().begin_count(gpu_copytodevice_counter_);
   sol.MoveToAccelerator();
   rhs.MoveToAccelerator();
   e.MoveToAccelerator();
-  if (gpu) statistiques().end_count(gpu_copytodevice_counter_);
+  if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * sizeof(double) * nb_rows_);
   Cout << "[rocALUTION] Time to move vectors on device: " << (rocalution_time() - tick) / 1e6 << finl;
   if (write_system_) write_vectors(rhs, sol);
   sol.Info();
@@ -674,9 +674,9 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   double res_final = ls->GetCurrentResidual();
 
   // Recupere la solution
-  if (gpu) statistiques().begin_count(gpu_copyfromdevice_counter_, sizeof(double) * nb_rows_);
+  if (gpu) statistiques().begin_count(gpu_copyfromdevice_counter_);
   sol.MoveToHost();
-  if (gpu) statistiques().end_count(gpu_copyfromdevice_counter_);
+  if (gpu) statistiques().end_count(gpu_copyfromdevice_counter_,sizeof(double) * nb_rows_);
   sol.GetInterior().CopyToData(sol_host.addr());
   row = 0;
   for (int i=0; i<size; i++)
@@ -901,9 +901,9 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   assert(mat.Check());
 #endif
   tick = rocalution_time();
-  if (Objet_U::computeOnDevice) statistiques().begin_count(gpu_copytodevice_counter_, sizeof(int)*(N+nnz)+sizeof(double)*nnz);
+  if (Objet_U::computeOnDevice) statistiques().begin_count(gpu_copytodevice_counter_);
   mat.MoveToAccelerator(); // Important: move mat to device so after ls is built on device (best for performance)
-  if (Objet_U::computeOnDevice) statistiques().end_count(gpu_copytodevice_counter_);
+  if (Objet_U::computeOnDevice) statistiques().end_count(gpu_copytodevice_counter_, (int)(sizeof(int)*(N+nnz)+sizeof(double)*nnz));
   Cout << "[rocALUTION] Time to copy matrix on device: " << (rocalution_time() - tick) / 1e6 << finl;
 
   tick = rocalution_time();

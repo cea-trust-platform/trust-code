@@ -71,7 +71,7 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize)
   Cout << "[AmgX] Time to create CSR pointers: " << Statistiques::get_time_now() - start << finl;
   statistiques().begin_count(gpu_copytodevice_counter_);
   SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
-  statistiques().end_count(gpu_copytodevice_counter_);
+  statistiques().end_count(gpu_copytodevice_counter_, (int)(sizeof(int) * (nRowsLocal + nNz) + sizeof(double) * nNz));
   Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << statistiques().last_time(gpu_copytodevice_counter_) << finl; // Attention balise lue par fiche de validation
 }
 
@@ -132,7 +132,7 @@ void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
   // La matrice CSR de PETSc a ete mise a jour dans check_stencil
   statistiques().begin_count(gpu_copytodevice_counter_);
   SolveurAmgX_.updateA(nRowsLocal, nNz, values);  // ToDo erreur valgrind au premier appel de updateA...
-  statistiques().end_count(gpu_copytodevice_counter_);
+  statistiques().end_count(gpu_copytodevice_counter_, sizeof(double)*nNz);
   Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << statistiques().last_time(gpu_copytodevice_counter_) << finl; // Attention balise lue par fiche de validation
 }
 
