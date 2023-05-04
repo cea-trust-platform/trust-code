@@ -1420,8 +1420,8 @@ Goals:
 {\small{
 \textbf{mkdir -p Formation\_TRUST/yourname/PeriodicBox} \\
 \textbf{cd Formation\_TRUST/yourname/PeriodicBox} \\
-\textbf{cp \$project\_directory/Turbulence/share/Validation/Rapports\_automatiques/} \\
-\hspace{4cm} \textbf{RANS/PeriodicBox/src/* \; .} \\
+\textbf{cp \$project\_directory/share/Validation/Rapports\_automatiques/} \\
+\hspace{4cm} \textbf{Turbulence/RANS/PeriodicBox/src/* \; .} \\
 }}
 
 This directory corresponds to an automated validation form. 
@@ -2982,8 +2982,8 @@ which allows to export the generated mesh on MED format.
 \textbf{cd \, Formation\_TRUST/yourname/gmsh}
 \item Load TrioCFD environment as described on page \pageref{init_triocfd}.
 \item Then copy file.geo as follows:
-\textbf{dir=\$project\_directory/validation/share/Validation/Rapports\_automatiques/Validant} \\
-\textbf{cp \, \$dir/pas\_fini/Drag/src/shape.geo \, file.geo} \\
+\textbf{dir=\$project\_directory/share/Validation/Rapports\_automatiques/Turbulence} \\
+\textbf{cp \, \$dir/LES/Drag/src/shape.geo \, file.geo} \\
 \textbf{nedit file.geo \& } \\
 \textbf{gmsh file.geo \&} }}\\
 \end{itemize}
@@ -3320,17 +3320,14 @@ Here is an example of a Jupyter cell for displaying a table.
 \begin{block}{}
 
 \begin{itemize}
-\item Now we are going to modify the "prepare" script in "src" directory in order to add a fourth test case: "debit4"
+\item Now we are going to add a fourth test case: "debit4"
     \begin{itemize}
     \item [$\circ$] "debit4" corresponds to "std" test case with zero initial velocity and imposed flow rate to $2 m^3/s$ on "periox" boundary.
-    \item [$\circ$] Add a line in the "prepare" file using the "sed" command to create the new data file like the other ones:\\
-    \textbf{nedit src/prepare \& }
+    \item [$\circ$] Add the test case using "substitute" and "addCase"
     \end{itemize}
 
-\item We are going to update the validation form.
+\item We are going to rerun the validation form.
     \begin{itemize}
-    \item [$\circ$] Modify your validation form to run this new test case in addition to the previous test cases
-
     \item [$\circ$] Re-build the whole validation form by clicking on the icone corresponding to the \"restart of the Jupyter kernel and run of the whole notebook\":
 
     \item [$\circ$] build the pdf report using: \\
