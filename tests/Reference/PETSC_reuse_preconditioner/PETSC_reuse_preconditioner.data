@@ -1,3 +1,4 @@
+# PARALLEL OK #
 dimension 3
 Pb_Hydraulique pb
 Domaine coarse_dom
@@ -8,7 +9,7 @@ Mailler coarse_dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds  2 2 2
+        Nombre_de_Noeuds 3 3 3
         /* Nombre_de_Noeuds 31 31 10 */ /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
         Longueurs 10 10 3
     }
@@ -49,19 +50,13 @@ Schema_euler_implicite sch
 Read sch
 {
     tinit 0.
-    tmax 2.
-    dt_min 1.e-7
-    dt_max 1.e-1
-    dt_impr 0.0000001
-    dt_sauv 0.5
-    seuil_statio 1.e-8
-    facsec 1.
     nb_pas_dt_max 10
     facsec 50
     facsec_max 300
-    max_iter_implicite 50
-    Solveur Implicite { solveur petsc gmres { precond block_jacobi_ilu { } impr seuil 1.e-9 save_matrix_mtx_format } }
-    impr_extremums 1 # To check the range of unknowns #
+    # Reuse preconditioner to reduce precondionner cost by increasing the solver stuff (more iterations) #
+    # Possible interest with Newton methods with a criteria to rebuild preconditioner when necessary: here on nb_it of linear part #
+    # Aster code is using GMRES/MUMPS BLR single-precision precond and rebuild last one when Newton iterations increases: very efficient according to the team #
+    Solveur Implicite { solveur petsc gmres { precond lu { } impr rtol 1.e-7 reuse_preconditioner_nb_it_max 3 } }
 }
 
 Associate pb dom
@@ -69,7 +64,6 @@ Associate pb sch
 Discretize pb dis
 Read pb
 {
-
     fluide_incompressible {
         mu Champ_Uniforme       1 2.21799454e-04
         rho Champ_Uniforme      1 943.112976
@@ -77,12 +71,10 @@ Read pb
         Cp Champ_Uniforme       1 4238.62106
         beta_th Champ_Uniforme  1 8.6e-4
     }
-
-
     Navier_Stokes_Standard
     {
-        solveur_pression petsc gcp { precond ssor { omega 1.6 } seuil 1.e-5 impr save_matrix_mtx_format }
-        convection { muscl3 { } }
+        solveur_pression petsc cholesky { }
+        convection { muscl }
         diffusion  {  }
         initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }
         boundary_conditions {
@@ -93,6 +85,5 @@ Read pb
     }
     Postraitement { format lml champs dt_post 10000 { pression elem } }
 }
-EcritureLectureSpecial 0
 Solve pb
 End

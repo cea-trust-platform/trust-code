@@ -171,6 +171,9 @@ protected :
   bool reduce_ram_ = false;
   bool verbose = false; // Timing
   bool reorder_matrix_ = false;
+  // Reuse preconditioner (for Inexact Newton):
+  int nb_it_previous_=-1;  // Previous number of iterations
+  int reuse_preconditioner_nb_it_max_=-1; // Upper limit of iterations to reuse preconditioner
 #ifdef PETSCKSP_H
   IS rowperm = NULL, colperm = NULL;
 #endif

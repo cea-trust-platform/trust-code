@@ -165,8 +165,8 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[0] = "CLI";
     les_solveurs[1] = "GCP";
     les_solveurs[2] = "GMRES";
-    les_solveurs[3] = "CHOLESKY";
-    les_solveurs[4] = "CHOLESKY_OUT_OF_CORE";
+    les_solveurs[3] = "CHOLESKY|MUMPS";
+    les_solveurs[4] = "CHOLESKY_OUT_OF_CORE|MUMPS_OUT_OF_CORE";
     les_solveurs[5] = "BICGSTAB";
     les_solveurs[6] = "IBICGSTAB";
     les_solveurs[7] = "CHOLESKY_SUPERLU";
@@ -178,7 +178,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[13] = "CHOLESKY_PASTIX";
     les_solveurs[14] = "CLI_VERBOSE";
     les_solveurs[15] = "CLI_QUIET";
-    les_solveurs[16] = "CHOLESKY_MUMPS_BLR";
+    les_solveurs[16] = "CHOLESKY_MUMPS_BLR|MUMPS_BLR";
     les_solveurs[17] = "CHOLESKY_CHOLMOD";
     les_solveurs[18] = "PIPECG2";
     les_solveurs[19] = "FGMRES";
@@ -511,7 +511,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_parametres_solveur[24] = "allow_realloc";
         les_parametres_solveur[25] = "clean_matrix";
         les_parametres_solveur[26] = "save_matrix_mtx_format";
-        les_parametres_solveur[27] = "reuse_precond";
+        les_parametres_solveur[27] = "reuse_preconditioner_nb_it_max";
         les_parametres_solveur[28] = "reduce_ram";
         les_parametres_solveur[29] = "reorder_matrix";
         les_parametres_solveur[30] = "pcshell"; // user defined preconditionner
@@ -901,6 +901,7 @@ void Solv_Petsc::create_solver(Entree& entree)
               break;
             case 27:
               set_reuse_preconditioner(true);
+              is >> reuse_preconditioner_nb_it_max_;
               break;
             case 28:
               reduce_ram_ = true;
@@ -927,7 +928,7 @@ void Solv_Petsc::create_solver(Entree& entree)
 
       int pc_supported_on_gpu_by_petsc=0;
       int pc_supported_on_gpu_by_amgx=0;
-      Motcles les_precond(14);
+      Motcles les_precond(15);
       {
         les_precond[0] = "NULL";               // Pas de preconditionnement
         les_precond[1] = "ILU";                // Incomplete LU
@@ -943,6 +944,7 @@ void Solv_Petsc::create_solver(Entree& entree)
         les_precond[11] = "SA-AMG";   // Aggregated AMG
         les_precond[12] = "GS";   // Gauss-Seidel
         les_precond[13] = "PCSHELL"; // user defined preconditionner
+        les_precond[14] = "LU|MUMPS";   // MUMPS LU
       }
 
       if (pc!="")
@@ -1112,6 +1114,19 @@ void Solv_Petsc::create_solver(Entree& entree)
                       }
 
                   }
+                PCSetType(PreconditionneurPetsc_, PCBJACOBI);
+                check_not_defined(omega);
+                check_not_defined(epsilon);
+                break;
+              }
+            case 14:
+              {
+                //preconditionnement_non_symetrique_ = 1;
+                add_option("sub_pc_type", "lu");
+                add_option("sub_pc_factor_mat_solver_type","mumps");
+                if(limpr()) add_option("mat_mumps_icntl_4","3");
+                if (ordering.value()!="")
+                  add_option("sub_pc_factor_mat_ordering_type",ordering.value());
                 PCSetType(PreconditionneurPetsc_, PCBJACOBI);
                 check_not_defined(omega);
                 check_not_defined(epsilon);
@@ -1767,6 +1782,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   //DoubleTrav residu(size_residu); // bad_alloc sur gros cas, curie pourquoi ?
   ArrOfDouble residu(size_residu);
   int nbiter = solve(residu);
+  nb_it_previous_ = nbiter;
   if (limpr()>-1)
     {
       double residu_relatif=(residu[0]>0?residu[nbiter]/residu[0]:residu[nbiter]);
@@ -1851,16 +1867,22 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
   if (enable_ksp_view())
     KSPView(SolveurPetsc_, PETSC_VIEWER_STDOUT_WORLD);
   // Keep precond ?
-  PetscBool flg;
-  PetscOptionsHasName(PETSC_NULL,option_prefix_,"-ksp_reuse_preconditioner",&flg);
-  if (flg) set_reuse_preconditioner(true);
   if (nouvelle_matrice_)
     {
-      KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
+      set_reuse_preconditioner(false); // Par defaut, precond est refait
+      PetscBool flg;
+      PetscOptionsHasName(PETSC_NULL,option_prefix_,"-ksp_reuse_preconditioner",&flg);
+      if (flg)
+        set_reuse_preconditioner(true);
+      else if (reuse_preconditioner_nb_it_max_>0)
+        {
+          bool reuse_precond = (nb_it_previous_ <= reuse_preconditioner_nb_it_max_);
+          if (!reuse_precond) Cout << "Matrix preconditioner is recomputed cause previous iterations number>" << reuse_preconditioner_nb_it_max_ << "..." << finl;
+          set_reuse_preconditioner(reuse_precond ? true : false);
+        }
       if (reuse_preconditioner()) Cout << "Matrix has changed but reusing previous preconditioner..." << finl;
+      KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
     }
-  else
-    KSPSetReusePreconditioner(SolveurPetsc_, PETSC_TRUE);
   // Solve
   KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
   // Analyse de la convergence par Petsc
