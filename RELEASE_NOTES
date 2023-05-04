@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
+09/05/23 (TRUST) New feature  : New keyword Sondes_mobiles|Mobile_probles (as Sondes|Probes) useful for ALE simulations. This will update the positions of the probes in the mesh.
 09/05/23 (TRUST) New feature  : Nature of interpolation can be choosed for each field with Champ_fonc_tabule_morceaux_interp, see champ_fonc_tabule_different_meshes validation sheet.
 03/05/23 (TRUST) Output       : MED post-processing format not allowed if nbproc > 5120. Prefer lata format in parallel computation.
 25/04/23 (TRUST) Keyword      : New syntax for setting residuals computation: residuals { [norm L2|max] [relative 0|1|2] }. norm (L2 norm or max norm by default). if relative (default 0), normalize with the first residuals (old seuil_statio_relatif_deconseille keyword). See validation form named "Residuals". If relative set to 2, residual will be computed as R/(max-min).
