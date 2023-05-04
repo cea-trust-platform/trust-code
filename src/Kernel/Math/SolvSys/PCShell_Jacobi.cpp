@@ -30,14 +30,11 @@ Entree& PCShell_Jacobi::readOn(Entree& is )
 #ifdef PETSCKSP_H
 PetscErrorCode PCShell_Jacobi::setUpPC_(PC pc, Mat pmat, Vec x)
 {
-  Vec diag;
 
-  VecDuplicate(x, &diag);
-  MatGetDiagonal(pmat, diag);
-  VecReciprocal(diag);
-
-  diag_ = diag;
-//  VecView(diag, PETSC_VIEWER_STDOUT_WORLD);
+  if (diag_==NULL)
+    VecDuplicate(x, &diag_);
+  MatGetDiagonal(pmat, diag_);
+  VecReciprocal(diag_);
   return 0;
 }
 

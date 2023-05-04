@@ -1663,10 +1663,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         Update_matrix(MatricePetsc_, matrice_morse);
       if (type_pc_ == "shell")
         {
-          PCstruct *pcstruct;
-
-          PCShellGetContext(PreconditionneurPetsc_,(void**) &pcstruct);
-          PCShell& pcs=pcstruct->pc_shell;
+          PCShell& pcs=pc_user_.pc_shell;
           pcs.setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
         }
 

@@ -34,7 +34,8 @@ public :
 
   virtual ~PCShell_Jacobi()
   {
-    VecDestroy(&diag_);
+    if (diag_!= NULL)
+      VecDestroy(&diag_);
   }
 
   Vec get_diag() const
