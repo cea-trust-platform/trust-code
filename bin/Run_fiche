@@ -316,16 +316,16 @@ then
           echo "  >  jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $pdf $opt_jy $prm"
           echo "----------------------------------------------------------------------"
           jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" $opt_jy $prm 2>& 1| tee -a Run.log
-   				error=${PIPESTATUS[0]}
-   				if [ "$error" != 0 ]
-   					then
-      			echo "Error, see Run.log"
-      			exit -1
-					else
-						rm -f Run.log
-          	[ "$xpdf" = "-xpdf" ] && show_pdf $pdf
-          	exit 
-   				fi
+          error=${PIPESTATUS[0]}
+          if [ "$error" != 0 ]
+          then
+             echo "Error, see Run.log"
+             exit -1
+          else
+             rm -f Run.log
+             [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
+             exit
+          fi
       elif $parallel; then
           curr_dir=`pwd`  
           pdf=$(basename $pdf)

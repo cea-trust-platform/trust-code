@@ -39,8 +39,8 @@ void usage()
   Cerr << "TRUST_EXECUTABLE [CASE[.data]] [options]\n";
   Cerr << " CASE is the basename of the trust data file (must have .data extension)\n";
   Cerr << "   If no CASE given, the current directory name is used\n";
-  Cerr << " -help_trust => print options\n";
-  Cerr << " -mpi => run in parallel with MPI (must run with mpirun)\n";
+  Cerr << " -help_trust         => print options\n";
+  Cerr << " -mpi                => run in parallel with MPI (must run with mpirun)\n";
   Cerr << " -check_enabled=0|1  => enables or disables runtime checking of parallel messages\n";
   Cerr << " -debugscript=SCRIPT => execute \"SCRIPT n\" after parallel initialisation, n=processor rank\n";
   Cerr << " -petsc=0            => disable call to PetscInitialize\n";

@@ -51,9 +51,9 @@ mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, bo
   change_disable_stop(disable_stop);
 }
 
-// Catching exception signal only in debug mode: 
+// Catching exception signal only in debug mode:
 #ifndef NDEBUG
-bool error_handlers = true; 
+bool error_handlers = true;
 #else
 bool error_handlers = false;
 #endif
