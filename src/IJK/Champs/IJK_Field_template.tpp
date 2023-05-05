@@ -216,6 +216,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
   if (IJK_Splitting::defilement_ == 1)
     {
       double Lx =  splitting.get_grid_geometry().get_domain_length(0);
+      IJK_Splitting::Lx_for_shear_perio = Lx;
       double DX = Lx/nii ;
       double Shear_x_time = IJK_Splitting::shear_x_time_;
       offset_i = Shear_x_time/DX;

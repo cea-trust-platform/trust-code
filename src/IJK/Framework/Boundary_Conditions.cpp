@@ -20,6 +20,7 @@
 Implemente_instanciable_sans_constructeur(Boundary_Conditions,"Boundary_Conditions",Objet_U);
 double IJK_Splitting::shear_x_time_=0.;
 double IJK_Splitting::shear_x_DT_=0.;
+double IJK_Splitting::Lx_for_shear_perio=0.;
 int IJK_Splitting::defilement_=0;
 
 Boundary_Conditions::Boundary_Conditions()
