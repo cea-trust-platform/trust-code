@@ -23,6 +23,7 @@
 #include <sstream>
 #include <comm_incl.h>
 #include <stat_counters.h>
+#include <Comm_Group_MPI.h>
 
 // Voir AmgXWrapper (src/init.cpp)
 int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
@@ -57,8 +58,14 @@ void init_openmp()
   if (var!=NULL && std::string(var)=="DISABLED")
     return;
   init_openmp_ = true;
+#ifdef MPI_
   MPI_Comm localWorld;
-  MPI_Comm_split_type(MPI_COMM_WORLD, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL, &localWorld);
+  MPI_Comm globalWorld;
+  if (sub_type(Comm_Group_MPI,PE_Groups::current_group()))
+    globalWorld = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
+  else
+    globalWorld = MPI_COMM_WORLD;
+  MPI_Comm_split_type(globalWorld, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL, &localWorld);
   int rank; // Local rank
   MPI_Comm_rank(localWorld, &rank);
   int nRanks; // Local number of ranks
@@ -73,6 +80,7 @@ void init_openmp()
   Cerr << "Initializing OpenMP offload on devices..."  << finl;
   cerr << "[OpenMP] Assigning local rank " << rank << " (global rank " << Process::me() << ") of node " << nodeName.c_str() << " to its device " << devID << "/" << nDevs-1 << endl;
   omp_set_default_device(devID);
+#endif
   // Dummy target region, so as not to measure startup time later:
   #pragma omp target
   { ; }

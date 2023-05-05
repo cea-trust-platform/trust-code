@@ -486,7 +486,11 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   b.checkDataOnHost();
   x.checkDataOnHost();
 #ifdef MPI_
-  MPI_Comm comm = MPI_COMM_WORLD;
+  MPI_Comm comm;
+  if (sub_type(Comm_Group_MPI,PE_Groups::current_group()))
+    comm = ref_cast(Comm_Group_MPI,PE_Groups::current_group()).get_mpi_comm();
+  else
+    comm = MPI_COMM_WORLD;
   pm.SetMPICommunicator(&comm);
 #endif
   if (nouvelle_matrice())
