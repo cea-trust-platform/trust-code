@@ -338,7 +338,7 @@ void Schema_Temps_base::set_param(Param& param)
 
   // XD  residuals interprete nul 1 To specify how the residuals will be computed.
   // XD attr norm chaine(into=["L2","max"]) norm 1 allows to choose the norm we want to use (max norm by default). Possible to specify L2-norm.
-  // XD attr relative chaine(into=["0","1"]) relative 1 This is the old keyword seuil_statio_relatif_deconseille. If it is set to 1, it will normalize the residuals with the residuals of the first 5 timesteps (default is 0).
+  // XD attr relative chaine(into=["0","1","2"]) relative 1 This is the old keyword seuil_statio_relatif_deconseille. If it is set to 1, it will normalize the residuals with the residuals of the first 5 timesteps (default is 0). if set to 2, residual will be computed as R/(max-min).
 }
 /*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le schema en temps sur un flot de sortie.
  *
