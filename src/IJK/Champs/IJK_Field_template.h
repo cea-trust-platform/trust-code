@@ -64,6 +64,8 @@ public:
   IJK_Splitting::Localisation get_localisation() const { return localisation_; }
   void echange_espace_virtuel(int ghost, double Shear_DU=0.);
   void change_to_sheared_reference_frame(double sens, int loc, int time=1);
+  void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
+
 
 protected:
   REF(IJK_Splitting) splitting_ref_;

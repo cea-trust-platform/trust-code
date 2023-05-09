@@ -371,6 +371,111 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::change_to_sheared_reference_frame
   //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::echange_espace_virtuel(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost());
 }
 
+// change_to_sheared_reference_frame : advecte le champ par le cisaillement moyen with 4th order interpolation
+// hypothese de Fourier : phi_new(x,y,z)=phi(x-tSz, y, z)
+// avec t le temps et S le cisaillement.
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir)
+{
+
+  IJK_Splitting splitting_ns = input_field.get_splitting();
+  double Lx =  splitting_ns.get_grid_geometry().get_domain_length(0);
+  double Lz =  splitting_ns.get_grid_geometry().get_domain_length(2);
+  const IJK_Splitting& splitting_ft_ = splitting_ref_.valeur();
+  const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
+  const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
+  const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
+  _TYPE_ARRAY_ tmptab = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data();
+  double DX = Lx/ni;
+  int ni_ref = input_field.ni();
+  for (int i = 0; i < ni; i++ )
+    {
+      for (int j = 0; j < nj; j++ )
+        {
+          for (int k = 0; k < nk; k++ )
+            {
+              Vecteur3 xyz = splitting_ft_.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              if (dir==0)
+                xyz = splitting_ft_.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              else if (dir==1)
+                xyz = splitting_ft_.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
+              else if (dir==2)
+                xyz = splitting_ft_.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
+              else
+                xyz = splitting_ft_.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
+              double x_deplacement = 0.;
+
+              if (xyz[2]<=0)
+                {
+                  x_deplacement = IJK_Splitting::shear_x_time_;
+                }
+              else if (xyz[2]>=Lz)
+                {
+                  x_deplacement = -IJK_Splitting::shear_x_time_;
+                }
+
+              double istmp = i+x_deplacement/DX;
+
+              int ifloorm2 = (int) round(istmp) - 2;
+              int ifloorm1 = (int) round(istmp) - 1;
+              int ifloor0 = (int) round(istmp);
+              int ifloorp1 = (int) round(istmp) + 1;
+              int ifloorp2 = (int) round(istmp) + 2;
+
+              int x[5] = {ifloorm2, ifloorm1, ifloor0, ifloorp1, ifloorp2};
+
+              ifloorm2 = (ifloorm2 % ni_ref + ni_ref) % ni_ref;
+              ifloorm1 = (ifloorm1 % ni_ref + ni_ref) % ni_ref;
+              ifloor0 = (ifloor0 % ni_ref + ni_ref) % ni_ref;
+              ifloorp1 = (ifloorp1 % ni_ref + ni_ref) % ni_ref;
+              ifloorp2 = (ifloorp2 % ni_ref + ni_ref) % ni_ref;
+
+              double y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorm2, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorm1, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloor0, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorp1, j, k),
+                             IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(ifloorp2, j, k)
+                            };
+
+
+              double a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+              double a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+              double a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+              double a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+              double a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+
+              // Evaluate the interpolation polynomial at istmp
+
+              tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)) = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                                                                                             + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                                                                                             + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+                                                                                             + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+                                                                                             + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+
+              if (xyz[2]<0)
+                {
+                  tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)) -= DU_perio;
+                }
+              else if (xyz[2]>Lz)
+                {
+                  tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)) +=DU_perio;
+                }
+
+            }
+        }
+    }
+
+  for (int k = 0 ; k < nk; k++)
+    {
+      for (int j = 0 ; j < nj; j++)
+        {
+          for (int i = 0 ; i < ni; i++)
+            {
+              IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k)=tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k));
+            }
+        }
+    }
+}
 
 
 // Initializes the field and allocates memory

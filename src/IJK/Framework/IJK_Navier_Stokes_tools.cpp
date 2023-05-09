@@ -1166,6 +1166,96 @@ void calculer_rho_v(const IJK_Field_double& rho,
     }
 }
 
+void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_double& output, double DU_perio, int dir)
+{
+  IJK_Field_double velocity_ft_tmp=output;
+  IJK_Splitting splitting_ns = input.get_splitting();
+  IJK_Splitting splitting_ft = output.get_splitting();
+  double Lx =  splitting_ns.get_grid_geometry().get_domain_length(0);
+  double Lz =  splitting_ns.get_grid_geometry().get_domain_length(2);
+  int ni = input.ni();
+  double DX = Lx/ni ;
+  for (int i = 0; i < output.ni(); i++ )
+    {
+      for (int j = 0; j < output.nj(); j++ )
+        {
+          for (int k = 0; k < output.nk(); k++ )
+            {
+              Vecteur3 xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              if (dir==0)
+                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              else if (dir==1)
+                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
+              else if (dir==2)
+                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
+              else
+                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
+
+              double x_deplacement = 0.;
+
+              if (xyz[2]<0)
+                {
+                  x_deplacement = IJK_Splitting::shear_x_time_;
+                }
+              else if (xyz[2]>Lz)
+                {
+                  x_deplacement = -IJK_Splitting::shear_x_time_;
+                }
+
+              double istmp = i+x_deplacement/DX;
+
+              int ifloorm2 = (int) round(istmp) - 2;
+              int ifloorm1 = (int) round(istmp) - 1;
+              int ifloor0 = (int) round(istmp);
+              int ifloorp1 = (int) round(istmp) + 1;
+              int ifloorp2 = (int) round(istmp) + 2;
+
+              int x[5] = {ifloorm2, ifloorm1, ifloor0, ifloorp1, ifloorp2};
+
+              ifloorm2 = (ifloorm2 % ni + ni) % ni;
+              ifloorm1 = (ifloorm1 % ni + ni) % ni;
+              ifloor0 = (ifloor0 % ni + ni) % ni;
+              ifloorp1 = (ifloorp1 % ni + ni) % ni;
+              ifloorp2 = (ifloorp2 % ni + ni) % ni;
+
+              double y[5] = {output(ifloorm2, j, k),
+                             output(ifloorm1, j, k),
+                             output(ifloor0, j, k),
+                             output(ifloorp1, j, k),
+                             output(ifloorp2, j, k)
+                            };
+
+
+              double a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+              double a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+              double a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+              double a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+              double a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+
+              // Evaluate the interpolation polynomial at istmp
+
+              velocity_ft_tmp(i, j, k) = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                                         + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                                         + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+                                         + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+                                         + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+
+              if (xyz[2]<0)
+                {
+                  velocity_ft_tmp(i, j, k) -=DU_perio;
+                }
+              else if (xyz[2]>Lz)
+                {
+                  velocity_ft_tmp(i, j, k) +=DU_perio;
+                }
+
+            }
+        }
+    }
+  output=velocity_ft_tmp;
+  return;
+}
+
 // On utilise la moyenne harmonique au lieu de la moyenne arithmetique.
 void calculer_rho_harmonic_v(const IJK_Field_double& rho,
                              const FixedVector<IJK_Field_double, 3>& v,

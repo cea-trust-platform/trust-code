@@ -100,6 +100,8 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_a
 void calculer_rho_v(const IJK_Field_double& rho,
                     const FixedVector<IJK_Field_double, 3>& v,
                     FixedVector<IJK_Field_double, 3>& rho_v);
+void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_double& output, double DU_perio, int dir);
+
 void calculer_rho_harmonic_v(const IJK_Field_double& rho,
                              const FixedVector<IJK_Field_double, 3>& v,
                              FixedVector<IJK_Field_double, 3>& rho_v);
