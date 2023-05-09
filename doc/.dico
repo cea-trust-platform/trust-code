@@ -847,6 +847,9 @@
  Pb_Thermohydraulique_Scalaires_Passifs Pb_Thermohydraulique_Scalaires_Passifs Problemes_Scalaires_Passifs.h
  Pb_Thermohydraulique_WC Pb_Thermohydraulique_WC Pb_Thermohydraulique_WC.h
  Pb_WC_base Pb_WC_base Pb_WC_base.h
+ PCShell PCShell PCShell.h
+ PCShell_base PCShell_base PCShell_base.h
+ PC_Jacobi PCShell_Jacobi PCShell_Jacobi.h
  PDF_model PDF_model PDF_model.h
  Periodique Periodique Periodique.h
  Perte_Charge_Anisotrope_Face_PolyMAC|Perte_Charge_Anisotrope_Face_PolyMAC_P0 Perte_Charge_Anisotrope_PolyMAC_Face Perte_Charge_Anisotrope_PolyMAC_Face.h
