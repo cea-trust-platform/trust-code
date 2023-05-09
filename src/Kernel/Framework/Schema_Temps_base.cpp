@@ -987,7 +987,7 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
     }
   equation.set_residuals(tab_critere);
   // On calcule le residu_initial_equation sur les 5 premiers pas de temps
-  if (seuil_statio_relatif_deconseille_)
+  if (seuil_statio_relatif_deconseille_ == 1)
     {
       DoubleVect& residu_initial_equation = equation.residu_initial();
       if (nb_pas_dt()<6)
@@ -1001,6 +1001,12 @@ void Schema_Temps_base::update_critere_statio(const DoubleTab& tab_critere, Equa
       for (int i=0; i<size; i++)
         if (residu_initial_equation(i)>0)
           residu_equation(i) /= residu_initial_equation(i);
+    }
+  else if (seuil_statio_relatif_deconseille_ == 2)
+    {
+      const double max_var = mp_max_abs_vect(equation.inconnue().futur());
+      const double min_var = mp_min_abs_vect(equation.inconnue().futur());
+      residu_equation /= max_var - min_var + 1e-2;
     }
   if (!equation.disable_equation_residual())
     {
