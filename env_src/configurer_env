@@ -278,10 +278,15 @@ xxx()
 	   then
 	      ok=0 # We don't take ccache/g++ version for the moment (eg:Fedora 18)
 	   else
-          # Ajout du test du support obligatoire de C++11 a partir de TRUST 1.7.9
-          [ "$STDCPP" = c++11 ] && echo $ECHO_OPTS "#include <iostream>\n#include <vector>\nint main() {std::vector<int> v = {0,1};for (auto i : v) std::cout << i << ' ';return 0;}" > main.cpp;$f -std=c++11 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
-          # Ajout du test du support obligatoire de C++14
-          [ "$STDCPP" = c++14 ] && echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 #&& nedit $log
+	      # Ajout du test du support obligatoire de C++11 a partir de TRUST 1.7.9
+	      if [ "$STDCPP" = c++11 ]
+	      then
+	         echo $ECHO_OPTS "#include <iostream>\n#include <vector>\nint main() {std::vector<int> v = {0,1};for (auto i : v) std::cout << i << ' ';return 0;}" > main.cpp;$f -std=c++11 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0
+	      # Ajout du test du support obligatoire de C++14
+	      elif [ "$STDCPP" = c++14 ]
+	      then
+	         echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 #&& nedit $log
+	      fi   
 	   fi;;
 	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
 	   then
@@ -696,7 +701,7 @@ fi
 # Quelle norme C++ ?
 #######################
 STDCPP=c++14
-STDCPP=c++11
+STDCPP=c++11 && [ "$TRUST_USE_CUDA" = 1 ] && STDCPP=c++14
 
 #######################
 # Quelle architecture ?
