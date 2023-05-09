@@ -1,0 +1,27 @@
+diff --git a/adm/cmake/FindPYTHON.cmake b/adm/cmake/FindPYTHON.cmake
+index d9f643f..fd0020a 100644
+--- a/adm/cmake/FindPYTHON.cmake
++++ b/adm/cmake/FindPYTHON.cmake
+@@ -116,7 +116,7 @@ ENDIF(PYTHON_STATUS)
+ 
+ IF(PYTHON_STATUS)
+   EXECUTE_PROCESS(
+-    COMMAND ${PYTHON_EXECUTABLE} -c "import sys; sys.stdout.write(sys.version[:3])"
++    COMMAND ${PYTHON_EXECUTABLE} -c "import sys;sys.stdout.write('.'.join(sys.version.split('.')[0:2]))"
+     OUTPUT_VARIABLE PYTHON_VERSION
+     )
+ ENDIF(PYTHON_STATUS)
+diff --git a/src/XDATAGUI/xpythongui.py b/src/XDATAGUI/xpythongui.py
+index 4c3f7ab..274ab48 100644
+--- a/src/XDATAGUI/xpythongui.py
++++ b/src/XDATAGUI/xpythongui.py
+@@ -92,7 +92,8 @@ class XPythonGui(object):
+             dir = getenv("%s_ROOT_DIR"%(name))
+             import sys
+             if dir:
+-                dir = "%s/lib/python%s/site-packages/salome"%(dir,sys.version[:3])
++                ver = sys.version.split('.')
++                dir = "%s/lib/python%s.%s/site-packages/salome"%(dir,ver[0], ver[1])
+                 if dir not in sys.path:
+                     message("insertion of", dir, "in sys.path")
+                     sys.path.insert(0, dir)

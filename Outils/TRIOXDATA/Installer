@@ -25,8 +25,8 @@ else
       mv configuration-9.10.0  CONFIGURATION_SRC
       cd XDATA_SRC
       ## Patching
-      #echo Patching XDATA ...
-      #patch -p1 < ../../xdata.patch
+      echo Patching XDATA ...
+      patch -p1 < ../../xdata_python.patch || exit -1
       cd ../..
      [ "$2" = "" ] && ( cd XTriou; make clean)   
  fi
@@ -42,7 +42,7 @@ cmake ../$1_SRC -DCMAKE_INSTALL_PREFIX=`pwd`/../dist -DCMAKE_BUILD_TYPE=Release 
 make install || exit -1
 cd ../..
 touch $1
-version=`python -c "from sys import version;print('python'+version[0:3])"`
+version=`python -c "from sys import version;print('python'+'.'.join(version.split('.')[0:2]))"`
 if [ $1 = "XDATA" ]; then
    echo export PYTHONPATH=`pwd`/$1/dist/lib/$version/site-packages/xdata/:\${PYTHONPATH} > XDATA.sh
    echo export PATH=\${PATH}:`pwd`/$1/dist/bin >> XDATA.sh
