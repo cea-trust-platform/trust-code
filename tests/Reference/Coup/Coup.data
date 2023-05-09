@@ -122,6 +122,11 @@ Read pb1
         {
             sonde_temp1 temperature periode 0.01 segment 5 0. 0.5 0.5 0.5
         }
+        # Check that Mobile_probes still recognized even if it has no sens in this case since fixed domain (non-deformable) #
+        Mobile_Probes
+        {
+            sonde_temp1_mobile temperature periode 0.01 segment 5 0. 0.5 0.5 0.5
+        }
         fields dt_post 1.
         {
             temperature elem
@@ -158,6 +163,11 @@ Read pb2
         Probes
         {
             sonde_temp2 temperature periode 0.01 segment 5 0.51 0.5 0.99 0.5
+        }
+        # Check that Mobile_probes still recognized even if it has no sens in this case since fixed domain (non-deformable) #
+        Mobile_Probes
+        {
+            sonde_temp2_mobile temperature periode 0.01 segment 5 0.51 0.5 0.99 0.5
         }
         fields dt_post 1. {
             temperature elem
