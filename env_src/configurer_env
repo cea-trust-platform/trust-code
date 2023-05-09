@@ -1373,7 +1373,8 @@ else
 	       mpi_detecte=0 # On n'a pas trouve l'include
 	    else
 	       # On recherche maintenant MPI_ROOT en se basant MPI_ROOT/lib
-	       MPI_LIBS=`$mpiCC -show 2>/dev/null | awk '{for(i=1;i<=NF;i++) if (gsub("-L","",$i)) print $i}' | sort -u`
+	       # ND : j'ajoute sed 's@"@@g' pour retirer les "" car sinon Cmake.env pas bon si intel 2021
+	       MPI_LIBS=`$mpiCC -show 2>/dev/null | awk '{for(i=1;i<=NF;i++) if (gsub("-L","",$i)) print $i}' | sort -u | sed 's@"@@g'`
 	       for MPI_LIB in $MPI_LIBS
 	       do
 	          [ -d $MPI_LIB ] && [ "`ls $MPI_LIB/libmpi*.* 2>/dev/null`" != "" ] && break # On trouve le repertoire de la librairie MPI
