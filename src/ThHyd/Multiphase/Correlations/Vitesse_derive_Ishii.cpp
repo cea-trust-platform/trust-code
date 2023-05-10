@@ -41,7 +41,7 @@ void Vitesse_derive_Ishii::evaluate_C0_vg0(const input_t& input) const
   else         ind_trav = (n_g*(N-1)-(n_g-1)*(n_g)/2) + (n_l-n_g-1);
 
   /* distribution parameter */
-  C0 = Cinf + (1.0 - Cinf) * std::sqrt(input.rho(n_g) / input.rho(n_l)) * (1.0 - sb_ * exp(-zeta * input.alpha(n_g)));
+  C0 = ( Cinf + (1.0 - Cinf) * std::sqrt(input.rho(n_g) / input.rho(n_l)) ) * (1.0 - sb_ * exp(-zeta * input.alpha(n_g)));
 
   /* drift velocity */
   double dv = std::sqrt(2.0) * pow((input.rho(n_l) - input.rho(n_g)) * norm_g * input.sigma(ind_trav) / input.rho(n_l) / input.rho(n_l), 0.25) * pow(1.0 - input.alpha(n_g), theta);
