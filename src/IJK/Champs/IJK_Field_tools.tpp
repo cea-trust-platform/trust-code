@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,6 +28,32 @@ double norme_ijk(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& residu)
   const int nk = residu.nk();
   double somme = 0.;
   for (int k = 0; k < nk; k++)
+    {
+      double partial1 = 0.;
+      for (int j = 0; j < nj; j++)
+        {
+          double partial2 = 0.;
+          for (int i = 0; i < ni; i++)
+            {
+              double x = residu(i, j, k);
+              partial2 += x * x;
+            }
+          partial1 += partial2;
+        }
+      somme += partial1;
+    }
+  somme = Process::mp_sum(somme);
+  return sqrt(somme);
+}
+
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+double norme_ijk_moins_bord(const IJK_Field_template<_TYPE_, _TYPE_ARRAY_>& residu)
+{
+  const int ni = residu.ni();
+  const int nj = residu.nj();
+  const int nk = residu.nk();
+  double somme = 0.;
+  for (int k = 1; k < nk-1; k++)
     {
       double partial1 = 0.;
       for (int j = 0; j < nj; j++)

@@ -131,7 +131,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
 #ifdef DUMP_LATA_ALL_LEVELS
       copy_x_for_post.data() = x.data();
 #endif
-      norme_residu_final = norme_ijk(residu);
+      norme_residu_final = norme_ijk_moins_bord(residu);
       if (impr_)
         Cout << "level=" << grid_level << " residu(pre)=" << norme_residu_final << finl;
 
@@ -236,7 +236,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
           }
 #endif
 
-          norme_residu_final = norme_ijk(residu);
+          norme_residu_final = norme_ijk_moins_bord(residu);
           if (impr_)
             Cout << "level=" << grid_level << " residu=" << norme_residu_final << finl;
           // use threshold criteria only if pure multigrid (not gcp with mg preconditionning)
@@ -263,7 +263,7 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
       // dump_x_b_residue_in_file(x,b,residu, grid_level, global_count_dump_in_file, Nom("apres jacobi-residu"));
 #endif
 
-      norme_residu_final = norme_ijk(residu);
+      norme_residu_final = norme_ijk_moins_bord(residu);
       if (impr_)
         Cout << finl << "level=" << grid_level << " residu=" << norme_residu_final
              << " (coarse solver)" << finl;
