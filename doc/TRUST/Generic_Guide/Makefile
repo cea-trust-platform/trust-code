@@ -15,7 +15,7 @@ else
 	$(MAKE) clean
 	pdflatex -interaction=nonstopmode -jobname=Generic_Guide '\begingroup\lccode`~=`_ \lowercase{\endgroup\let~}_ \catcode`_=12 \def \TRUSTV {$(TRUST_VERSION)} \input{Generic_Guide}'
 	pdflatex -interaction=nonstopmode -jobname=Generic_Guide '\begingroup\lccode`~=`_ \lowercase{\endgroup\let~}_ \catcode`_=12 \def \TRUSTV {$(TRUST_VERSION)} \input{Generic_Guide}'
-	mv $(FILE).pdf ../TRUST_$(FILE).pdf
+	mv $(FILE).pdf TRUST_$(FILE).pdf
 	$(MAKE) clean_build
 endif
 
@@ -23,5 +23,5 @@ clean_build:
 	@echo "Removing compilation files"
 	@rm -f *.log *.aux *.toc *.out LOG
 clean:  clean_build
-	@rm -f ../TRUST_$(FILE).pdf
+	@rm -f TRUST_$(FILE).pdf
 .PHONY: clean clean_build
