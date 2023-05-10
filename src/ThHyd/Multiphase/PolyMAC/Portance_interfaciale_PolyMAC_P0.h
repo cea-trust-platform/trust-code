@@ -23,6 +23,7 @@ class Portance_interfaciale_PolyMAC_P0: public Source_Portance_interfaciale_base
   Declare_instanciable(Portance_interfaciale_PolyMAC_P0);
 public:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void mettre_a_jour(double temps) override ;
 };
 
 #endif /* Portance_interfaciale_PolyMAC_P0_included */

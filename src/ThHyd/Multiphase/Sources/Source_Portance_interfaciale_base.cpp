@@ -16,6 +16,7 @@
 #include <Source_Portance_interfaciale_base.h>
 #include <Portance_interfaciale_base.h>
 #include <Pb_Multiphase.h>
+#include <Discret_Thyd.h>
 
 Implemente_base(Source_Portance_interfaciale_base, "Source_Portance_interfaciale_base", Sources_Multiphase_base);
 
@@ -25,6 +26,7 @@ Entree& Source_Portance_interfaciale_base::readOn(Entree& is)
 {
   Param param(que_suis_je());
   param.ajouter("beta", &beta_);
+  param.ajouter("g", &g_);
   param.lire_avec_accolades_depuis(is);
 
   Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
@@ -42,4 +44,42 @@ Entree& Source_Portance_interfaciale_base::readOn(Entree& is)
   pbm->creer_champ("vorticite"); // Besoin de vorticite
 
   return is;
+}
+
+void Source_Portance_interfaciale_base::creer_champ(const Motcle& motlu)
+{
+  if (motlu == "wobble")
+    if (wobble.est_nul())
+      {
+        Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+        int N = pb.nb_phases();
+        const Discret_Thyd& dis=ref_cast(Discret_Thyd,pb.discretisation());
+        Noms noms(N), unites(N);
+        noms[0] = "wobble";
+        unites[0] = "none";
+        Motcle typeChamp = "champ_elem" ;
+        const Domaine_dis& z = ref_cast(Domaine_dis, pb.domaine_dis());
+        dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, wobble);
+        champs_compris_.ajoute_champ(wobble);
+      }
+  if (motlu == "C_lift")
+    if (C_lift.est_nul())
+      {
+        Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
+        int N = pb.nb_phases();
+        const Discret_Thyd& dis=ref_cast(Discret_Thyd,pb.discretisation());
+        Noms noms(N), unites(N);
+        noms[0] = "C_lift";
+        unites[0] = "none";
+        Motcle typeChamp = "champ_elem" ;
+        const Domaine_dis& z = ref_cast(Domaine_dis, pb.domaine_dis());
+        dis.discretiser_champ(typeChamp, z.valeur(), scalaire, noms , unites, N, 0, C_lift);
+        champs_compris_.ajoute_champ(C_lift);
+      }
+}
+
+void Source_Portance_interfaciale_base::completer()
+{
+  if (wobble.non_nul() && !equation().probleme().has_champ("diametre_bulles")) Process::exit(que_suis_je() + " : there must be a bubble diameter field for there to be a wobble number !!") ;
+  if (wobble.non_nul() && !equation().probleme().has_champ("k")) Process::exit(que_suis_je() + " : there must be a turbulent kinetic energy field for there to be a wobble number !!") ;
 }
