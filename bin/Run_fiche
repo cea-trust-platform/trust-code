@@ -320,12 +320,11 @@ then
           if [ "$error" != 0 ]
           then
              echo "Error, see Run.log"
-             exit -1
           else
              rm -f Run.log
              [ "$xpdf" = "-xpdf" ] && show_pdf $pdf
-             exit
           fi
+          exit $error
       elif $parallel; then
           curr_dir=`pwd`  
           pdf=$(basename $pdf)
