@@ -28,15 +28,21 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   using namespace MEDCoupling;
 
   Param param(que_suis_je());
-  Nom nom_pb_loc, nom_pb_dist, nat;
+  Nom nom_pb_loc, nom_pb_dist, nom_dom_loc, nom_dom_dist, nat;
   param.ajouter("nom_champ", &nom_, Param::REQUIRED); // XD_ADD_P chaine Name of the field (for example: temperature).
   param.ajouter("pb_loc", &nom_pb_loc, Param::REQUIRED); // XD_ADD_P chaine Name of the local problem.
   param.ajouter("pb_dist", &nom_pb_dist, Param::REQUIRED); // XD_ADD_P chaine Name of the distant problem.
+  param.ajouter("dom_loc", &nom_dom_loc); // XD_ADD_P chaine Name of the local domain.
+  param.ajouter("dom_dist", &nom_dom_dist); // XD_ADD_P chaine Name of the distant domain.
   param.ajouter("nature", &nat, Param::REQUIRED); // XD_ADD_P chaine Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
   param.lire_avec_accolades_depuis(is);
 
-  pb_loc_ = ref_cast(Probleme_base,Interprete::objet(nom_pb_loc));
-  pb_dist_ = ref_cast(Probleme_base,Interprete::objet(nom_pb_dist));
+  pb_loc_ = ref_cast(Probleme_base, Interprete::objet(nom_pb_loc));
+  pb_dist_ = ref_cast(Probleme_base, Interprete::objet(nom_pb_dist));
+  if (nom_dom_loc == "??") dom_loc_ = pb_loc_->domaine();
+  else dom_loc_ = ref_cast(Domaine, Interprete::objet(nom_dom_loc));
+  if (nom_dom_dist == "??") dom_dist_ = pb_dist_->domaine();
+  else dom_dist_ = ref_cast(Domaine, Interprete::objet(nom_dom_dist));
 
   if (nat == "IntensiveMaximum") nature_ = IntensiveMaximum;
   else if (nat == "IntensiveConservation") nature_ = IntensiveConservation;
@@ -59,7 +65,7 @@ int Champ_Fonc_Interp::initialiser(double temps)
   const int ok = Champ_Fonc_P0_base::initialiser(temps);
   nb_compo_ = pb_dist_->get_champ(le_nom()).valeurs().line_size();
   valeurs_.resize(0, nb_compo_);
-  pb_loc_->domaine().creer_tableau_elements(valeurs_);
+  dom_loc_->creer_tableau_elements(valeurs_);
   is_initialized_ = true;
   return ok;
 }
@@ -68,16 +74,15 @@ void Champ_Fonc_Interp::init_fields()
 {
 #ifdef MEDCOUPLING_
   using namespace MEDCoupling;
-  Domaine& local_dom = pb_loc_->domaine_dis().domaine(), &distant_dom = pb_dist_->domaine_dis().domaine();
 
   local_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
   local_array_ = DataArrayDouble::New();
-  local_field_->setMesh(local_dom.get_mc_mesh());
+  local_field_->setMesh(dom_loc_->get_mc_mesh());
   local_field_->setNature(nature_);
 
   distant_field_ = MEDCouplingFieldDouble::New(ON_CELLS, ONE_TIME);
   distant_array_ = DataArrayDouble::New();
-  distant_field_->setMesh(distant_dom.get_mc_mesh());
+  distant_field_->setMesh(dom_dist_->get_mc_mesh());
   distant_field_->setNature(nature_);
 #endif
 }
@@ -105,8 +110,7 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
   Champ_Fonc_P0_base::mettre_a_jour(t);
   if (!is_initialized_) return;
 
-  Domaine& local_dom = pb_loc_->domaine_dis().domaine(), &distant_dom = pb_dist_->domaine_dis().domaine();
-  MEDCouplingRemapper *rmp = local_dom.get_remapper(distant_dom);
+  MEDCouplingRemapper *rmp = dom_loc_->get_remapper(dom_dist_.valeur());
 
   update_fields();
   rmp->transfer(distant_field_, local_field_, 1e30);

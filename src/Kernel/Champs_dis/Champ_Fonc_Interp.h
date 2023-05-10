@@ -35,6 +35,7 @@ protected:
   void init_fields();
   void update_fields();
   REF(Probleme_base) pb_loc_, pb_dist_;
+  REF(Domaine) dom_loc_, dom_dist_;
   bool is_initialized_ = false;
 
 #ifdef MEDCOUPLING_
