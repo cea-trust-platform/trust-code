@@ -700,6 +700,7 @@ echo "TRUST_WITHOUT_PDFLATEX=$TRUST_WITHOUT_PDFLATEX && export TRUST_WITHOUT_PDF
 echo "TRUST_ENABLE_DOC_DOXYGEN=$TRUST_ENABLE_DOC_DOXYGEN && export TRUST_ENABLE_DOC_DOXYGEN      # Disable/enable the build of HTML doc" >> $var
 echo "TRUST_WITHOUT_VISIT=$TRUST_WITHOUT_VISIT && export TRUST_WITHOUT_VISIT	# Disable/enable VisIt" 	>> $var
 echo "TRUST_DOWNLOAD_VISIT=$TRUST_DOWNLOAD_VISIT && export TRUST_DOWNLOAD_VISIT 	# Download or build VisIt" >> $var
+echo "TRUST_WITHOUT_CONDA=$TRUST_WITHOUT_CONDA && export TRUST_WITHOUT_CONDA    	# `[ $TRUST_WITHOUT_CONDA = 1 ] && echo 'Installing without conda - The auto-detected Python will be used and is sym-linked in exec/python/bin' || echo 'conda enabled by default'`" >> $var
 
 if [ "$TRUST_USE_EXTERNAL_MEDCOUPLING" != "" ]
 then
