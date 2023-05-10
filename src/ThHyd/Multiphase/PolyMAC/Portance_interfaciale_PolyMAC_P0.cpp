@@ -39,7 +39,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                         &grad_v = equation().probleme().get_champ("gradient_vitesse").passe(),
                          &vort  = equation().probleme().get_champ("vorticite").passe(),
-                          *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL,
+                          *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : NULL,
                            *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
@@ -73,7 +73,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
             assert(temp.line_size() == N);
             VectorD sigma_(ne_tot);
             SpanD sigma__(sigma_);
-            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N, ind_trav);
+            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N*(N-1)/2, ind_trav);
             for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
           }
         else if (milc.has_interface(k, l))

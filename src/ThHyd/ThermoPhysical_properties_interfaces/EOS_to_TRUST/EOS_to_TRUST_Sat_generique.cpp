@@ -104,17 +104,18 @@ int EOS_to_TRUST_Sat_generique::tppi_get_lvap_d_p_p(const SpanD P, SpanD res, in
 int EOS_to_TRUST_Sat_generique::tppi_get_sigma_pT(const SpanD P, const SpanD T, SpanD R, int ncomp, int id) const
 {
 #ifdef HAS_EOS
-  assert((int )T.size() == ncomp * (int )P.size() && (int )T.size() == ncomp * (int )R.size());
-  if (ncomp == 1) return compute_eos_field(P, T, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
+  int Nph = 0;
+  while ( Nph*(Nph-1)/2 != ncomp ) Nph += 1 ;
+  assert((int )R.size() == ncomp * (int )P.size() && (int )T.size() == Nph * (int )P.size());
+  VectorD tsat_((int)P.size());
+  SpanD TS(tsat_);
+  int errsat = tppi_get_single_sat_p_(SAT::T_SAT,   P,  TS,  ncomp,  id );
+  if (ncomp == 1) return errsat + compute_eos_field(P, TS, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
   else /* attention stride */
     {
-      VectorD temp_((int)P.size());
-      SpanD TT(temp_);
       int err_;
-      for (auto& val : TT) val = T[i_it * ncomp + id];
-      err_ = compute_eos_field(P, TT, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
-      for (auto& val : TT) T[i_it * ncomp + id] = val;
-      return err_;
+      err_ = compute_eos_field(P, TS, R, EOS_prop_sat[(int)SAT::SIGMA][0], EOS_prop_sat[(int)SAT::SIGMA][1]);
+      return errsat + err_;
     }
 #else
   Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;

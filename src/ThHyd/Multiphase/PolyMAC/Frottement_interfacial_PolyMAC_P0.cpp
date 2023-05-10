@@ -82,7 +82,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
             assert(temp.line_size() == N);
             VectorD sigma_(ne_tot);
             SpanD sigma__(sigma_);
-            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N, ind_trav);
+            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N*(N-1)/2, ind_trav);
             for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
           }
         else if (milc.has_interface(k, l))
