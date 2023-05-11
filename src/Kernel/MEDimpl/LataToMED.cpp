@@ -246,8 +246,6 @@ Entree& latatoother::interpreter(Entree& is)
             double t_init = 0.;
             post.preparer_post(dom_trio.le_nom(),est_le_premier_post,reprise,t_init);
             post.ecrire_domaine(dom_trio, est_le_premier_post);
-            //meddrive.ecrire_domaine(nom_fic,dom_trio,dom_trio.le_nom(),mode);
-
 
             filter.release_geometry(dom);
           }
