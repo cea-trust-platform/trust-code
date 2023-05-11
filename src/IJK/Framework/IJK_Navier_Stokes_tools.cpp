@@ -1174,33 +1174,67 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
   double Lx =  splitting_ns.get_grid_geometry().get_domain_length(0);
   double Lz =  splitting_ns.get_grid_geometry().get_domain_length(2);
   int ni = input.ni();
+  int nk = input.nk();
+  double DZ = Lz/nk;
   double DX = Lx/ni ;
   for (int i = 0; i < output.ni(); i++ )
     {
       for (int j = 0; j < output.nj(); j++ )
         {
+//          bool frontiere = false;
           for (int k = 0; k < output.nk(); k++ )
             {
               Vecteur3 xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              double limitbasse = 0.;
+              double limithaute = 0.;
               if (dir==0)
-                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+                {
+                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+                  limitbasse = 0.;
+                  limithaute = Lz;
+                }
               else if (dir==1)
-                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
+                {
+                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
+                  limitbasse = 0.;
+                  limithaute = Lz;
+                }
               else if (dir==2)
-                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
+                {
+                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
+                  limitbasse = -DZ/2;
+                  limithaute = Lz-DZ/2;
+                }
               else
-                xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
+                {
+                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
+                  limitbasse = 0.;
+                  limithaute = Lz;
+                }
 
               double x_deplacement = 0.;
 
-              if (xyz[2]<0)
+
+              if (xyz[2]<limitbasse)
                 {
+//            	  if (frontiere==false)
+//            		  frontiere=true;
                   x_deplacement = IJK_Splitting::shear_x_time_;
                 }
-              else if (xyz[2]>Lz)
+              else if (xyz[2]>limithaute)
                 {
                   x_deplacement = -IJK_Splitting::shear_x_time_;
                 }
+
+//              if(dir==2 && i == 10 && j==10)
+//                {
+//                  std::cout << "k= " << k<< std::endl;
+//                  std::cout << "xyz[2]= " << xyz[2] << std::endl;
+//                  std::cout << "limitbasse= " << limitbasse << std::endl;
+//                  std::cout << "limithaute= " << limithaute << std::endl;
+//                  std::cout << "x_deplacement= " << x_deplacement << std::endl;
+//
+//                }
 
               double istmp = i+x_deplacement/DX;
 

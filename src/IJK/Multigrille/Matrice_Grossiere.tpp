@@ -70,7 +70,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 
             // add_dist_bloc --> stock lespace reel en 0 dans items_to_send[0] pour lespace virtuel en nk du proc k-1
             // pour les conditions de shear-periodicité, besoin d'un changement si c est le premier proc en z pour prendre en compte l'offset
-            if( z_index == z_index_min)
+            if( z_index == z_index_min && IJK_Splitting::defilement_==1)
               {
                 add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe], splitting, -1.);
               }
@@ -86,12 +86,20 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 
             // si un seul proc sur k --> assure la shear periodicite
             // sinon, stock l'emplacement des indices de l'espace fantome en -1 , puis en nk+1, sans modif
-            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting, 1.);
-            add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting, -1.);
+            if(IJK_Splitting::defilement_==1)
+              {
+                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting, 1.);
+                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting, -1.);
+              }
+            else
+              {
+                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting);
+                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
+              }
 
             // si un seul proc sur k --> add_dist_bloc ne fait rien, si 2 procs voisins des deux cotes :
             // stock l'espace reel en 0 et en nk-1 --> offset suivant la position du proc en z=0 ou z=zmax.
-            if( z_index == z_index_max)
+            if( z_index == z_index_max && IJK_Splitting::defilement_==1)
               {
                 add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting, 1.);
               }
@@ -99,7 +107,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
               {
                 add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting);
               }
-            if( z_index == z_index_min)
+            if( z_index == z_index_min && IJK_Splitting::defilement_==1)
               {
                 add_dist_bloc(pe, 0,0,0, ni,nj,1, items_to_send[npe], splitting, -1.);
               }
@@ -178,7 +186,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         pe_voisins[npe] = pe;
         add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
         // autre test pour le proc pe_kmax, bloc stocke pour assurer la shear periodicite.
-        if( z_index == z_index_max)
+        if( z_index == z_index_max && IJK_Splitting::defilement_==1)
           {
             add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk, items_to_send[npe], splitting, 1.);
           }

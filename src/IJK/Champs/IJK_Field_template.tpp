@@ -271,7 +271,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
     }
 
-
   statistiques().end_count(echange_vect_counter_);
 }
 
@@ -353,6 +352,63 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::change_to_sheared_reference_frame
                                                                                              + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
                                                                                              + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
                                                                                              + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+
+            }
+        }
+    }
+
+  for (int k = 0 ; k < nk; k++)
+    {
+      for (int j = 0 ; j < nj; j++)
+        {
+          for (int i = 0 ; i < ni; i++)
+            {
+              IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k)=tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k));
+            }
+        }
+    }
+  //IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::echange_espace_virtuel(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost());
+}
+
+
+// change_to_sheared_reference_frame : advecte le champ par le cisaillement moyen with 4th order interpolation
+// hypothese de Fourier : phi_new(x,y,z)=phi(x-tSz, y, z)
+// avec t le temps et S le cisaillement.
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::change_to_u_prime_to_u(double sens, int loc, double jump_i)
+{
+  // loc=0 pour prendre la valeur aux elements ; loc = 1,2,3 pour prendre aux faces I,J,K
+  // time = 1 par defaut (decallage total) ; =0 pour avoir le decallage sur un seul pas de temps
+  // sens = 1. --> du referentiel du labo ver le referentiel cisaille
+  // sens = -1.--> du referentiel cisaille vers le referentiel labo
+  const IJK_Splitting& splitting = splitting_ref_.valeur();
+  const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
+  const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
+  const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
+  _TYPE_ARRAY_ tmptab = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data();
+  double Lz =  splitting.get_grid_geometry().get_domain_length(2);
+
+
+  for (int k = 0 ; k < nk; k++)
+    {
+      for (int j = 0 ; j < nj; j++)
+        {
+          for (int i = 0 ; i < ni; i++)
+            {
+              Vecteur3 xyz;
+              if (loc==0)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
+              else if (loc==1)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              else if (loc==2)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
+              else // (loc==3)
+                xyz = splitting.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
+
+              double x_deplacement = sens*jump_i/Lz*(xyz[2]-Lz/2.);
+
+              tmptab(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(i, j, k)) =
+                IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k) + x_deplacement;
 
             }
         }
