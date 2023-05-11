@@ -475,7 +475,7 @@ class TRUSTSuite(object):
     """
     def __init__(self, runPrepare=True):
         self.cases_ = []
-
+        os.chdir(ORIGIN_DIRECTORY)
         self.copySrc()
         if runPrepare:
             executeScript("prepare")
