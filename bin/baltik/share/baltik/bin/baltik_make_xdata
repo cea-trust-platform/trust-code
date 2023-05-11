@@ -38,4 +38,4 @@ cd ./Generic_Guide
 sed -i "s/TRUST_Reference_Manual/`echo $project_name`_Reference_Manual/" Generic_Guide.tex
 make || exit -1
 cd $project_directory/share/doc_auto
-mv $project_directory/build/TRUST_Generic_Guide.pdf .
+mv $project_directory/build/Generic_Guide/TRUST_Generic_Guide.pdf .
