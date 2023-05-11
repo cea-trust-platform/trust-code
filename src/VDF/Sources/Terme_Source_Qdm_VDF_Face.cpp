@@ -141,7 +141,19 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
     }
   else // le champ source n'est plus uniforme
     {
-      const DoubleTab& s = la_source->valeurs();
+      const DoubleTab *s_tmp = nullptr;
+      DoubleTab eval;
+      if (la_source->que_suis_je().contient("_som_"))
+        {
+          // Need to interpolate
+          const int N = resu.dimension(1), D = dimension;
+          eval.resize(resu.dimension(0), N * D);
+          la_source->valeur_aux(domaine_VDF.xp(), eval);
+          s_tmp = &eval;
+        }
+      else
+        s_tmp = &(la_source->valeurs());
+      const DoubleTab& s = *s_tmp;
 
       // Boucle sur les conditions limites pour traiter les faces de bord : pour chaque Condition Limite on regarde son type
       // Si face de Dirichlet ou de Symetrie on ne fait rien
