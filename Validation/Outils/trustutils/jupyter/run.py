@@ -136,10 +136,10 @@ class TRUSTCase(object):
         self.id_ = TRUSTCase._UNIQ_ID_START  # Unique ID
         self.dir_ = os.path.normpath(directory)
         self.name_ = datasetName.split(".data")[0]  # always w/o the trailing .data
+        self.dataFileName_ = self.name_ #Change in case of parallel case
         self.nbProcs_ = nbProcs
         self.last_run_ok_ = -255  # exit status of the last run of the case
         self.last_run_err_ = ""  # error message returned when last running the case
-        self.partitioned = False 
         if record:
             self._ListCases.append(self)
 
@@ -393,7 +393,7 @@ class TRUSTCase(object):
             ok = False
             err = getLastLines_(err_file)
 
-        self.partitioned = True
+        self.dataFileName_ = "PAR_"+self.name_
         os.chdir(path)
 
         return ok
@@ -418,18 +418,16 @@ class TRUSTCase(object):
         self._preRun(verbose)
 
         ### Run Case ###
-        dataFileName = self.name_
-        if self.partitioned : dataFileName = "PAR_" + self.name_
-        err_file = dataFileName + ".err"
-        out_file = dataFileName + ".out"
-        cmd = "trust %s %s 2>%s 1>%s" % (dataFileName, str(self.nbProcs_), err_file, out_file)
+        err_file = self.dataFileName_ + ".err"
+        out_file = self.dataFileName_ + ".out"
+        cmd = "trust %s %s 2>%s 1>%s" % (self.dataFileName_, str(self.nbProcs_), err_file, out_file)
         output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
         if verbose:
             print(cmd)
             print(output.stdout)
         if output.returncode != 0:
             ok = False
-            err = getLastLines_(dataFileName + ".err")
+            err = getLastLines_(self.dataFileName_ + ".err")
 
         ### Run post_run ###
         if ok:
@@ -451,10 +449,10 @@ class TRUSTCase(object):
         if not opt is None and "-not_run" in opt:
             cmd = '.'
         else:
-            cmd = os.environ["TRUST_ROOT"] + "/Validation/Outils/Genere_courbe/scripts/extract_perf " + self.name_
+            cmd = os.environ["TRUST_ROOT"] + "/Validation/Outils/Genere_courbe/scripts/extract_perf " + self.dataFileName_
             _runCommand(cmd, False)
 
-        f = open(self.name_ + ".perf", "r")
+        f = open(self.dataFileName_ + ".perf", "r")
         row = f.readlines()[0].replace("\n", "").split(" ")[1:]
         f.close()
 
@@ -469,7 +467,7 @@ class TRUSTCase(object):
         os.chdir(ORIGIN_DIRECTORY)
         
         ## Save the file
-        saveFileAccumulator(self.dir_ + "/" + self.name_ + ".perf")
+        saveFileAccumulator(self.dir_ + "/" + self.dataFileName_ + ".perf")
 
 
 class TRUSTSuite(object):
