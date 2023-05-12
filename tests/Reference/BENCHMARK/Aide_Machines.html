@@ -8,9 +8,10 @@
 <a href=TRUST.html>TRUST</a> | <a HREF=mailto:trust@cea.fr>Assistance</a>
 <PRE>
 <HR><h1>Performances TRUST: Occupation memoire</h1><HR>
-Occupation memoire cas cpu_3D (125000 mailles, LES thermohydraulique 3D):
+Occupation memoire cas cpu_3D (125000 mailles, thermohydraulique 3D):
 -------------------------------------------------------------------------
-v1.8.0 : 191Mo (Linux) -> Laminaire thermohydraulique 3D
+v1.9.2 : 171Mo (Linux) -> 1430 octets/maille
+v1.8.0 : 191Mo (Linux)
 v1.7.7 : 158Mo (Linux)
 v1.6.6 : 159Mo (Linux)
 v1.6.2 : 130Mo (Linux)
@@ -45,15 +46,16 @@ Linux x86_64    1*P400/11.0/2Go	 	 0.6/0.02/32   		64.4s	is242981.intra.cea.fr  
 Comparaison temps calcul (donne par la balise clock: Total execution) sur test cpu_3D (125000 mailles):			
 -------------------------------------------------------------------------------------------------------
 Arch  Model  PhysicalCores@frequency	 RAM:Cache  	Processor Model CPU	Machine			(Compiler version) 	SpeedUp(n=2) 	TestCase version Passmark
-Linux x86_64 	1*16@3.2-5.2Ghz		    :30Mo	Xeon i9-12900K	0.9s	?			(g++ 11.2.1)				cpu_3D   v1.8.5	 4210
-Linux x86_64 	 1*8@2.6-5.0Ghz  	    :24Mo	Xeon i9-11950H  1.2s	?			(g++ 11.2.1)				cpu_3D   v1.8.5	 3254
+Linux x86_64 	1*16@3.2-5.2Ghz		    :30Mo	Core i9-12900K	0.9s	?			(g++ 11.2.1)				cpu_3D   v1.8.5	 4210
+Linux x86_64	1*16@2.4-4.8Ghz		    :25Mo	Core i7-12850HX 1.2s    pc portable		(g++ 12.0.1)			1.71	cpu_3D   v1.9.2	 3716
+Linux x86_64 	 1*8@2.6-5.0Ghz  	    :24Mo	Core i9-11950H  1.2s	?			(g++ 11.2.1)				cpu_3D   v1.8.5	 3254
 Linux x86_64	1*32@3.6-4.5Ghz		    :128Mo	Ryzen 5975WX    1.3s    is157091.intra.cea.fr	(g++ 11.0.1)			1.77	cpu_3D	 v1.9.2  3337
 Darwin          1*10@3.2Ghz                      	M1 Max		1.4s	mac portable							cpu_3D	 v1.9.1	 3851
-Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Xeon i7-9700 	1.5s	is242981.intra.cea.fr	(g++ 10.0.1)			1.62	cpu_3D	 v1.8.1  2774
+Linux x86_64	 1*8@3.0-4.7Ghz		32Go:12Mo	Core i7-9700 	1.5s	is242981.intra.cea.fr	(g++ 10.0.1)			1.62	cpu_3D	 v1.8.1  2774
 Linux x86_64	2*64@1.5-3.5Ghz        256Go:32Mo	AMD Epyc 7763   1.7s    topaze.ccc.cea.fr	(g++ 11.1.0, OpenMPI 4.0.5)	1.58	cpu_3D	 v1.8.3  2576
-Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.6s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.8.5  2442      # Gain 10% avec 1.8.5
-Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Xeon i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9  2442
-Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Xeon i5-9400F	1.9s	pc fixe	(wsl2)		(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2  2461
+Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Core i5-8400H	1.6s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.8.5  2442      # Gain 10% avec 1.8.5
+Linux x86_64	 1*4@2.5-4.2Ghz		16Go:8Mo	Core i5-8400H	1.8s	is241032.intra.cea.fr	(g++ 9.0.1)			1.52	cpu_3D	 v1.7.9  2442
+Linux x86_64	 1*6@2.9-4.1Ghz		 8Go:9Mo	Core i5-9400F	1.9s	pc fixe	(wsl2)		(g++ 9.3.0)			1.52	cpu_3D	 v1.8.2  2461
 Linux x86_64	2*32@2.5-3.3Ghz				AMD Epyc 7502	1.9s	irene-amd-ccrt.ccc.cea.fr (icpc 19.0.5, IntelMPI 2018)  1.38    cpu_3D	 v1.8.0  1843
 Linux x86_64    2*16@2.9-?.?Ghz             :22Mo       Xeon Gold 6226R ?.?s    petra.intra.cea.fr      (g++ 9.4.0)                             cpu_3D   v1.9.1  ???
 Linux x86_64	2*24@2.3-3.2Ghz             :16Mo	AMD Epyc 7352   2.0s	orcus-amd.intra.cea.fr 	(icpc 19.0.3, IntelMPI 2019)	1.57	cpu_3D	 v1.8.3  1932
