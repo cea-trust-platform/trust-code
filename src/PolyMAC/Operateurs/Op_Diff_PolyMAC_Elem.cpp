@@ -276,7 +276,7 @@ void Op_Diff_PolyMAC_Elem::ajouter_blocs_ext(int aux_only, matrices_t matrices, 
           if (!aux_only)
             for (n = 0; n < N[0]; n++) secmem(e, n) += flux(n);
           if (!aux_only && f < domaine[0].get().premiere_face_int())
-            for (n = 0; n < N[0]; n++) flux_bords_(f, n) = -flux(n); //flux aux bords
+            for (n = 0; n < N[0]; n++) flux_bords_(f, n) = flux(n); //flux aux bords
         }
 
       if (semi || !mat[0]) continue;
