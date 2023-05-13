@@ -15,6 +15,7 @@
 
 #include <Champ_Generique_Reduction_0D.h>
 #include <Discretisation_base.h>
+#include <TRUSTTab_parts.h>
 #include <communications.h>
 #include <Probleme_base.h>
 #include <Synonyme_info.h>
@@ -216,7 +217,8 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
   if (nb_dim==2)
     nb_dim= source.valeurs().dimension(1);
 
-  const DoubleTab& valeurs_source = source.valeurs();
+  ConstDoubleTab_parts valeurs_source_parts(source.valeurs()); // pour ignorer les variables auxiliaires
+  const DoubleTab& valeurs_source = valeurs_source_parts[0];   // de PolyMAC (sinon : min, moyenne FAUX)
   DoubleTab&  espace_valeurs = espace_stockage->valeurs();
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   DoubleVect val_extraites(nb_comp);
