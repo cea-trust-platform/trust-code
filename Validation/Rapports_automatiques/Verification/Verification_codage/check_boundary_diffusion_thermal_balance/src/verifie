@@ -1,0 +1,16 @@
+#!/bin/bash
+jdd=`pwd`;jdd=`basename $jdd`
+python verifie_balances_and_probes.py $jdd
+if [ -f balances_ko ]
+then
+    echo "diffusion_chaleur.out verification is not ok"
+    exit -1
+fi
+if [ -f probes_ko ]
+then
+    echo "probes verification is not ok"
+    exit -1
+fi
+
+echo "verification is ok"
+exit 0
