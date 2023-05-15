@@ -86,6 +86,8 @@ echo "Applying patch for // loading of fields ..."
 (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_para.patch)
 echo "Applying patch for write40 ..."
 (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/write40.patch)
+echo "Applying patch for colinearizeEdges and DEC ctors ..."
+(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_colin.patch)
 
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`
