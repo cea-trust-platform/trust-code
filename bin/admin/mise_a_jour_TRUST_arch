@@ -388,6 +388,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-coolprop" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -with-coolprop=/volatile/projet/trust_trio/CoolProp"
 # eos
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-eos" | grep ^$HOST"\."`" != "" ] 				&& option_configure=$option_configure" -with-eos=/volatile/projet/trust_trio/EOS_code/install"
+# no conda
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-conda" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-conda"
 
 ########################
 # Lancement du configure

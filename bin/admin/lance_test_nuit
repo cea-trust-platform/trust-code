@@ -88,10 +88,6 @@ check_components()
 	          make_option="make check_all_optim"
 	       fi
 	    fi
-            if [[ "$Composant" == "triocfd" ]]
-            then
-                 git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
-            fi
             # Fait desormais via un post_configure dans Test_Baltik:
 	    #[ "$Composant" = Test_Baltik ] && echo "We call ./Configure_Tests for Test_Baltik from `pwd`" && ./Configure_Tests
 	    $TRUST_ROOT/bin/baltik/bin/baltik_build_configure -execute &&
@@ -155,7 +151,8 @@ check_components()
                if [ "`grep 'Pb not uptodate' tmp.log`" != "" ]
                then
                   cat tmp.log
-                  cat tmp.log | mail_ -s\"[lance_test_nuit] Create_Light_archive.sh KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
+                  # ND: 15/05/2023 je desactive le mail de la creation de l'archive light suite decision RPL d'abandonner l'archive light
+                  #cat tmp.log | mail_ -s\"[lance_test_nuit] Create_Light_archive.sh KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
                   echo "  KO"
 	          VERIF_LIGHT_OK=0
                else
@@ -960,17 +957,12 @@ fi
       echo " git push origin TMA in `pwd`"
       if [[ "$Composant" != "triocfd" && "$Composant" != "flica5" && "$Composant" != "Front_tracking_IJK" && "$Composant" != "mpcube" && "$Composant" != "TRUST_NK" && "$Composant" != "module3D" && "$Composant" != "sides" && "$Composant" != "scorpio" && "$Composant" != "sympy_to_TRUST" && "$Composant" != "pemfc" ]]
       then
-         #if [[ "$Composant" == "triocfd" ]]
-         #then
-         #    git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
-         #fi
          git push --tags origin Livraison:triou/TMA 1>tmp.log 2>&1
          cat tmp.log
          [ "`grep 'Everything up-to-date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant git push origin TMA\" $TRUST_MAIL 
          rm tmp.log 1>/dev/null 2>&1
       elif [[ "$Composant" == "triocfd" ]]
       then
-         #git checkout -- Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
          git remote update origin
          git checkout .
          git pull 1>tmp.log 2>&1
@@ -4020,7 +4012,6 @@ then
 	       #else
 	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
 	       fi
-	       git checkout -- Multiphase/Front_tracking_discontinu/tests/Reference/Validation/ftd_gravite_jdd1/ftd_gravite_jdd1.data
 	       # Update the version in README.md file (displayed on github)
 	       sed -i "s/$old/$new/g" README.md
 	    fi
