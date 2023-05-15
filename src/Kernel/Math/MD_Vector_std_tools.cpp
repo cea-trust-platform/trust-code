@@ -54,7 +54,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
               //const TRUSTArray<_TYPE_>& const_buffer = buffer;
               //buffer_addr = const_cast<_TYPE_ *>(mapToDevice(const_buffer, "buffer for unpacking"));
               buffer_addr = buffer.addr();
-              int size = sizeof(_TYPE_) * buffer.size_array();
+              int size = (int)sizeof(_TYPE_) * buffer.size_array();
               statistiques().begin_count(gpu_copytodevice_counter_);
               #pragma omp target enter data map(alloc:buffer_addr[0:buffer.size_array()])
               #pragma omp target update to(buffer_addr[0:buffer.size_array()])
@@ -108,7 +108,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
           if (IS_READ)
             {
               //copyFromDevice(buffer, "buffer");
-              int size = sizeof(_TYPE_) * buffer.size_array();
+              int size = (int)sizeof(_TYPE_) * buffer.size_array();
               statistiques().begin_count(gpu_copyfromdevice_counter_);
               #pragma omp target update from(buffer_addr[0:buffer.size_array()])
               statistiques().end_count(gpu_copyfromdevice_counter_, size);
@@ -165,7 +165,7 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
               //const TRUSTArray<_TYPE_>& const_buffer = buffer;
               //buffer_addr = const_cast<_TYPE_ *>(mapToDevice(const_buffer, "buffer for unpacking on device)"));
               buffer_addr = buffer.addr();
-              int size = sizeof(_TYPE_) * buffer.size_array();
+              int size = (int)sizeof(_TYPE_) * buffer.size_array();
               statistiques().begin_count(gpu_copytodevice_counter_);
               #pragma omp target enter data map(alloc:buffer_addr[0:buffer.size_array()])
               #pragma omp target update to(buffer_addr[0:buffer.size_array()])
@@ -216,7 +216,7 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
           if (IS_READ)
             {
               //copyFromDevice(buffer, "buffer");
-              int size = sizeof(_TYPE_) * buffer.size_array();
+              int size = (int)sizeof(_TYPE_) * buffer.size_array();
               statistiques().begin_count(gpu_copyfromdevice_counter_);
               #pragma omp target update from(buffer_addr[0:buffer.size_array()])
               statistiques().end_count(gpu_copyfromdevice_counter_, size);

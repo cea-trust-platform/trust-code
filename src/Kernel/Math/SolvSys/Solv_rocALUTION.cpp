@@ -614,7 +614,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   sol.MoveToAccelerator();
   rhs.MoveToAccelerator();
   e.MoveToAccelerator();
-  if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * sizeof(double) * nb_rows_);
+  if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * (int)sizeof(double) * nb_rows_);
   Cout << "[rocALUTION] Time to move vectors on device: " << (rocalution_time() - tick) / 1e6 << finl;
   if (write_system_) write_vectors(rhs, sol);
   sol.Info();
@@ -680,7 +680,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   // Recupere la solution
   if (gpu) statistiques().begin_count(gpu_copyfromdevice_counter_);
   sol.MoveToHost();
-  if (gpu) statistiques().end_count(gpu_copyfromdevice_counter_,sizeof(double) * nb_rows_);
+  if (gpu) statistiques().end_count(gpu_copyfromdevice_counter_, (int)sizeof(double) * nb_rows_);
   sol.GetInterior().CopyToData(sol_host.addr());
   row = 0;
   for (int i=0; i<size; i++)
