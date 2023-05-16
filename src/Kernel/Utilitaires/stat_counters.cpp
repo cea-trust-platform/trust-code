@@ -231,7 +231,7 @@ inline void write_stat_file(const Nom& msg, const Stat_Results& stat, const Stat
       //stat_file << t;
       //stat_file << " " << (int)(stat.max_time/pas_de_temps.max_time*100) << "%";
       char output[100];
-      snprintf(output, 100, "%8.6f %2d%%", t, (int)(stat.max_time/pas_de_temps.max_time*100));
+      snprintf(output, 100, "%8.6f %2ld%%", t, (long)(stat.max_time/pas_de_temps.max_time*100));
       stat_file << output;
       if (pas_de_temps.max_count>0)
         {

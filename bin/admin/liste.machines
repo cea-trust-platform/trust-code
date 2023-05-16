@@ -57,7 +57,6 @@ linux	rsync_ssh	tache	is244274-build64.intra.cea.fr			 							-build_64_bit -for
 linux	rsync_ssh	tache	is244274.intra.cea.fr			 	-TRUST_NK  				-Check_decoupage 		 -force-provided-mpich 							# Fedora 32 titania 	Bat 451	LGLS bureau Gilles
 linux   rsync_ssh	tache	is223288.intra.cea.fr 			     	-FLICA5 -C3D 				-Semi_opt_gcov -force_provided_mpich 								# Fedora 30	Bat 451	LGLS	titania Bureau Adrien Bruneton
 linux   rsync_ssh	non	is212958-intel.intra.cea.fr 	-all		-TrioCFD -C3D -IJK-FT -FLICA5   					     		-disable-plot2d -without-visit -force_system_mpi  						# CentOS 7.9	Bat 451	LMSF	Bureau Michel (machine pilote titania)
-linux	rsync_ssh	tache	desactive_is240282-intel.intra.cea.fr		-all 		-TRUST   				-disable-plot2d -without-visit -force_system_mpi -disable-mpi4py  		# Ubuntu 20 titania Antonin intel
 linux   rsync_ssh	non	is225934.intra.cea.fr 		-all		-TrioCFD -IJK-FT -SIDES -SCORPIO -TRUST_NK -FLICA5 -C3D -MPCube -GENEPI3 -STT -PEMFC    # Ubuntu 22 Bat 451 LMSF Bureau Michel (machine pilote titania)
 linux   rsync_ssh	non	is224668.intra.cea.fr 		-all		-TrioCFD -IJK-FT -GENEPI3  				-g 		-force_provided_mpich -without-pdflatex  								# Ubuntu 18.04	Bat 451	LMSF	Bureau Michel (machine pilote titania)
 linux   rsync_ssh	non	is213122.intra.cea.fr 		-all		-TrioCFD -IJK-FT -STT -PEMFC -GENEPI3     	 		-force_provided_mpich -without-pdflatex  								# Ubuntu 20.04	Bat 451	LMSF	Bureau Michel (machine pilote titania)
