@@ -27,6 +27,8 @@
  Bidim_Axi Bidim_Axi Bidim_Axi.h
  Bord Bord Bord.h
  Bords Bords Bords.h
+ Bords_Internes Bords_Internes Bords_Internes.h
+ Bord_Interne Bord_Interne Bord_Interne.h
  Boundary_Conditions Boundary_Conditions Boundary_Conditions.h
  Boundary_Conditions_Thermique Boundary_Conditions_Thermique Boundary_Conditions_Thermique.h
  Boundary_field_inward Boundary_field_inward Boundary_field_inward.h
@@ -366,8 +368,6 @@
  Extruder_en20 Extruder_en20 Extruder_en20.h
  Extruder_en3 Extruder_en3 Extruder_en3.h
  Faces Faces Faces.h
- Faces_Interne Faces_Interne Faces_Interne.h
- Faces_Internes Faces_Internes Faces_Internes.h
  Faces_VDF Faces_VDF Faces_VDF.h
  Field_base Field_base Field_base.h
  Fluide Fluide Fluide.h
@@ -458,6 +458,8 @@
  grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_Multiphase Gravite_Multiphase Gravite_Multiphase.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
+ Groupes_internes Groupes_internes Groupes_internes.h
+ Groupe_interne Groupe_interne Groupe_interne.h
  Hexaedre Hexaedre Hexaedre.h
  Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
  Hexaedre_VEF Hexaedre_VEF Hexaedre_VEF.h
