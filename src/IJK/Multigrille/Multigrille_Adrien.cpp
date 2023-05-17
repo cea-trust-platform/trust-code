@@ -70,7 +70,7 @@ int Multigrille_Adrien::completer(const Equation_base& eq)
 {
   // fait dans readOn si on a lu ijkdis_name
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
-  const char * ijkdis_name = IJK_discretization::get_conventional_name();
+  const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
   const IJK_discretization& ijkdis = ref_cast(IJK_discretization, Interprete_bloc::objet_global(ijkdis_name));
   const IJK_Splitting& split = ijkdis.get_IJK_splitting();
 

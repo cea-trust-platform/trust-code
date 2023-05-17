@@ -87,7 +87,8 @@ Entree& Pbc_MED::readOn(Entree& is )
   axi=0;
 
   //const Probleme_base& pb1=les_problemes[0].valeur();
-  const ArrOfDouble& temps_sauv=ref_cast(Pb_MED,inter.objet_global("pbMED_0")).temps_sauv();
+  Nom name_spe("pbMED_0");
+  const ArrOfDouble& temps_sauv=ref_cast(Pb_MED,inter.objet_global(name_spe)).temps_sauv();
   int nbpasdetemps=temps_sauv.size_array();
   Cerr<<"nbpasdetemps "<<nbpasdetemps<<finl;
   for (int i=0; i<nbpasdetemps; i++)

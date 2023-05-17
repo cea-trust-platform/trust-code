@@ -49,7 +49,8 @@ Entree& Testeur_MEDCoupling::interpreter(Entree& is)
 #else
 
   const Probleme_base& pb = ref_cast(Probleme_base,objet(nom_pb));
-  const Champ_Generique_base& ch=pb.findOutputField(nom_champ);
+  const REF(Champ_Generique_base)& ref_ch=pb.findOutputField(nom_champ);
+  const Champ_Generique_base& ch= ref_ch.valeur();
   ICoCo::MEDDoubleField medfield=build_medfield(ch);
   medfield.getMCField()->writeVTK(nom_du_cas().getString(),false);
 #endif

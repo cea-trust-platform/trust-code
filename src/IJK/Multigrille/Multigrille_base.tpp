@@ -66,7 +66,7 @@ template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_base::convert_from_ijk(const IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& ijk_x, DoubleVect& x)
 {
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
-  const char * ijkdis_name = IJK_discretization::get_conventional_name();
+  const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
   const IJK_discretization& ijkdis = ref_cast(IJK_discretization, Interprete_bloc::objet_global(ijkdis_name));
   ijkdis.get_vdf_to_ijk(IJK_Splitting::ELEM).convert_from_ijk(ijk_x, x);
 }
@@ -76,7 +76,7 @@ template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_base::convert_to_ijk(const DoubleVect& x, IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& ijk_x)
 {
   // fetch the vdf_to_ijk translator (assume there is one unique object, with conventional name)
-  const char * ijkdis_name = IJK_discretization::get_conventional_name();
+  const Nom& ijkdis_name = IJK_discretization::get_conventional_name();
   const IJK_discretization& ijkdis = ref_cast(IJK_discretization, Interprete_bloc::objet_global(ijkdis_name));
   ijkdis.get_vdf_to_ijk(IJK_Splitting::ELEM).convert_to_ijk(x, ijk_x);
 }
