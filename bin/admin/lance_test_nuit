@@ -140,27 +140,6 @@ check_components()
                fi
 	       [ $MODULARITY_BALTIK_OK = 0 ] && COMPOSANT_OK=0
 	    fi
-	    # Verification de Liste_fiche pour Create_light_archive.sh
-	    VERIF_LIGHT_OK=1
-            if [ $* = tuleap/Livraison ] && [ "$Composant" = triocfd ]
-            then
-               echo " "
-               echo "Call to ./share/Distribution/Create_Light_archive.sh"
-	       rm -rf Prov
-	       ./share/Distribution/Create_light_archive.sh 1>tmp.log 2>&1
-               if [ "`grep 'Pb not uptodate' tmp.log`" != "" ]
-               then
-                  cat tmp.log
-                  # ND: 15/05/2023 je desactive le mail de la creation de l'archive light suite decision RPL d'abandonner l'archive light
-                  #cat tmp.log | mail_ -s\"[lance_test_nuit] Create_Light_archive.sh KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TMA_PROJECT_LEADER $TRUST_MAIL
-                  echo "  KO"
-	          VERIF_LIGHT_OK=0
-               else
-                  echo "  OK"
-               fi
-               rm tmp.log 1>/dev/null 2>&1
-	    fi
-	    [ $VERIF_LIGHT_OK = 0 ] && COMPOSANT_OK=0
 	    DOC_PDF_OK=0
 	    if [ $* != tuleap/Kernel ]
 	    then
@@ -4048,19 +4027,6 @@ then
             else
 	       cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
             fi
-	    if [ $Composant = "triocfd" ]
-            then
-	       # Appel du Create_Light_archive.sh
-	       echo "    Call Create_Light_archive.sh"
-	       rm -rf Prov
-	       ./share/Distribution/Create_light_archive.sh
-               if [ $? != 0 ]
-               then
-                  mail_ -s\"[lance_test_nuit] Error with Create_Light_archive.sh v$new for $Composant\" $TRUST_MAIL
-               else
-	          cp -f TrioCFD_light.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant"_light"-$new.tar.gz
-               fi
-	    fi
 	    echo | mail_ -s\"[lance_test_nuit] $Composant v$new is released under $WORKDIR/archives/ARCHIVES_$Composant\" $TRUST_MAIL	 
 	    # Changement de la vue Maintenance
             if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
