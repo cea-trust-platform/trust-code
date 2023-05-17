@@ -132,7 +132,7 @@ void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
   // La matrice CSR de PETSc a ete mise a jour dans check_stencil
   statistiques().begin_count(gpu_copytodevice_counter_);
   SolveurAmgX_.updateA(nRowsLocal, nNz, values);  // ToDo erreur valgrind au premier appel de updateA...
-  statistiques().end_count(gpu_copytodevice_counter_, sizeof(double)*nNz);
+  statistiques().end_count(gpu_copytodevice_counter_, (int)sizeof(double)*nNz);
   Cout << "[AmgX] Time to update matrix (copy+resetup) on GPU: " << statistiques().last_time(gpu_copytodevice_counter_) << finl; // Attention balise lue par fiche de validation
 }
 
