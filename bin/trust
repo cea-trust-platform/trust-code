@@ -1008,7 +1008,7 @@ then
 		[ "$noeuds" != "" ] && echo "#SBATCH -N $noeuds"        >> $sub_file    # Number of nodes
 		[ "$cpus_per_task" != "" ] && echo "#SBATCH -c $cpus_per_task"			>> $sub_file	# Number of cores per task
 		[ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node"		>> $sub_file	# Number of GPUs per node
-                # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:
+    # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:
 		[ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread"		>> $sub_file
 		[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks"	>> $sub_file
 		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
@@ -1151,14 +1151,14 @@ then
       if [ "$mpirun" != "" ]
       then
          if [ "$sub" = "SLURM" ]
-	 then
+         then
             echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
          elif [ "$sub" = "CCC" ]
-	 then
+	       then
             echo "$mpirun $machinefile $exec $NOM \$BRIDGE_MSUB_NPROC $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
-	 else
+	       else
             echo "$mpirun $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
-	 fi
+	       fi
       else
          echo "$TRUST_ROOT/bin/mpirun.sh -np $NB_PROCS $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       fi
@@ -1177,11 +1177,11 @@ then
       case $sub in
         SLURM) echo "sbatch $sub_file";;
       	POE) echo "llsubmit $sub_file";;
-      	LSF) echo "bsub < $sub_file";;
-	CCC) echo "ccc_msub $sub_file";;
-	SGE) echo "qsub $sub_file";;
-	NQS) echo "qsub $sub_file";;
-	PBS) echo "qsub $sub_file";;
+        LSF) echo "bsub < $sub_file";;
+        CCC) echo "ccc_msub $sub_file";;
+        SGE) echo "qsub $sub_file";;
+        NQS) echo "qsub $sub_file";;
+        PBS) echo "qsub $sub_file";;
       esac
       echo "***************************************************"
       exit
@@ -1200,10 +1200,10 @@ then
    	SLURM)	sbatch_interactif;;
    	POE) 	llsubmit -s $sub_file;;
    	LSF) 	cat $sub_file | bsub -I;;
-	CCC) 	ccc_msub_interactif;;
-	SGE) 	qsub -S /bin/bash -sync yes $sub_file;;
-	NQS) 	qsub -I $sub_file;;
-	PBS) 	qsub_interactif;;
+    CCC) 	ccc_msub_interactif;;
+    SGE) 	qsub -S /bin/bash -sync yes $sub_file;;
+    NQS) 	qsub -I $sub_file;;
+    PBS) 	qsub_interactif;;
    esac	
    err=$?   
    if [ "$VALGRIND" = "1" ] || [ "$VALGRIND_STRICT" = "1" ] || [ "$VALGRIND_GDB" = "1" ]
@@ -1232,27 +1232,12 @@ then
    fi
    exit $err
 else
+   # Pas de gestionnaire, example PC:
    [ "$cpus_per_task" != "" ] 	&& [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
-   # Une carte GPU ne peut supporter plusieurs calculs en meme temps via ctest
-   # Marche pas, le GPU pas toujours utilise donc on bloque ctest
-   #if [ "$TRUST_USE_CUDA" = 1 ] && binary=`basename $exec`
-   #then
-   #   while [ "`nvidia-smi 2>/dev/null | grep $binary`" != "" ]
-   #   do
-   #      sleep 1
-   #   done
-   #fi
-   [ "$TRUST_USE_CUDA" = 1 ] && [ "$CTEST" = 1 ] && echo "You can't use ctest with GPU card: not enough memory on it to support all the running tests." && exit -1
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
-      ###############################
-      # Calcul direct en sequentiel #
-      ############################### 
-      run="$gdb $exec $NOM $PETSC_OPTIONS" 
+      run="$gdb $exec $NOM $PETSC_OPTIONS"
    else
-      ##############################
-      # Calcul direct en parallele #
-      ##############################     
       run="$TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS"
    fi
    if [ "$create_sub_file" ]
@@ -1263,20 +1248,23 @@ else
       echo "***************************************************"
       exit
    fi
+   # MPS and Sserver running, submit jobs with Sserver:
+   [ "$TRUST_USE_CUDA" = 1 ] && [ "`ps aux | grep nvidia-cuda-mps-control | grep -v grep`" != "" ] && [ "`ps aux | grep Sserver | grep -v grep`" != "" ] && TRUST_USE_Sjob=1
+   # Use Sserver:
    if [ "$TRUST_USE_Sjob" = "1" ]
-       then
-       # export PATH=$PATH:$TRUST_ROOT/bin/Sjob
-       sub_file=s${NB_PROCS}_$NOM
-       sub_file=`echo $sub_file | sed "s/\//_/g"`
-       echo "#!/bin/bash" > $sub_file
-       echo $run  >> $sub_file
-       chmod +x  $sub_file
-       $TRUST_ROOT/bin/Sjob/Salloc -n $NB_PROCS $PWD/$sub_file
-       err=$?
-       [ $err -eq 0 ] && rm -f $sub_file
+   then
+      # export PATH=$PATH:$TRUST_ROOT/bin/Sjob
+      sub_file=s${NB_PROCS}_$NOM
+      sub_file=`echo $sub_file | sed "s/\//_/g"`
+      echo "#!/bin/bash" > $sub_file
+      echo $run >> $sub_file
+      chmod +x $sub_file
+      $TRUST_ROOT/bin/Sjob/Salloc -n $NB_PROCS $PWD/$sub_file
+      err=$?
+      [ $err -eq 0 ] && rm -f $sub_file
    else
-       eval $run
-       err=$?
+      eval $run
+      err=$?
    fi
 fi
 
