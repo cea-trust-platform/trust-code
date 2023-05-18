@@ -61,8 +61,8 @@ public:
   inline TRUSTArray<_TYPE_>& get_next_area_template(int pe, int array_size);
 
   void end_init();
-  void begin_comm();
-  void exchange();
+  void begin_comm(bool bufferOnDevice=false);
+  void exchange(bool bufferOnDevice=false);
   void end_comm();
 
 protected:
@@ -105,10 +105,11 @@ class Schema_Comm_Vecteurs_Static_Data
 public:
   Schema_Comm_Vecteurs_Static_Data();
   ~Schema_Comm_Vecteurs_Static_Data();
-  void init(int size);
+  void init(int size, bool bufferOnDevice);
 
   char  *buffer_base_;
   int buffer_base_size_;
+  int buffer_base_device_size_;
   int buf_pointers_size_;
   // Pour chaque processeur entre 0 et nproc(), adresse des prochaines donnees a lire/ecrire
   // de ce proc dans le tableau buffer

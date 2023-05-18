@@ -25,8 +25,8 @@ extern bool self_test();
 extern void init_openmp();
 extern void init_cuda();
 extern std::string toString(const void* adr);
-extern void start_timer(int size=-1);
-extern void end_timer(int onDevice, const std::string& str, int size=-1);
+extern void start_timer(int bytes=-1);
+extern void end_timer(int onDevice, const std::string& str, int bytes=-1);
 
 template <typename _TYPE_>
 extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
@@ -99,45 +99,18 @@ extern void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::
 template <typename _TYPE_>
 extern void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
 
-// ToDo: test
+// ToDo OpenMP implemente methods for pointer (used only for the moment in Schema_Comm_Vecteurs for buffer communication with _TYPE_=char):
+/*
 template <typename _TYPE_>
-inline void updatePartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
-{
-#ifdef _OPENMP
-  _TYPE_* tab_addr = tab.addr();
-  if (tab.get_dataLocation()==Device)
-    {
-      int size = sizeof(_TYPE_) * (fin-deb);
-      start_timer(size);
-      statistiques().begin_count(gpu_copyfromdevice_counter_, size);
-      #pragma omp target update if (Objet_U::computeOnDevice) from(tab_addr[deb:fin])
-      statistiques().end_count(gpu_copyfromdevice_counter_, size);
-      std::string message;
-      message = "Partial update from device of array "+arrayName+" ["+toString(tab.addr())+"]";
-      end_timer(message, size);
-      if (clock_on) printf("\n");
-      //tab.set_dataLocation(Host);
-    }
-#endif
-}
+extern _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName="??");
+
 template <typename _TYPE_>
-inline void updatePartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??")
-{
-#ifdef _OPENMP
-  _TYPE_* tab_addr = tab.addr();
-  if (tab.get_dataLocation()==Host)
-    {
-      int size = sizeof(_TYPE_) * (fin-deb);
-      start_timer(size);
-      statistiques().begin_count(gpu_copytodevice_counter_, size);
-      #pragma omp target update if (Objet_U::computeOnDevice) to(tab_addr[deb:fin])
-      statistiques().end_count(gpu_copytodevice_counter_, size);
-      std::string message;
-      message = "Partial update to device of array "+arrayName+" ["+toString(tab.addr())+"]";
-      end_timer(message, size);
-      if (clock_on) printf("\n");
-      tab.set_dataLocation(HostDevice); //ToDo
-    }
-#endif
-}
+extern void deleteOnDevice(_TYPE_* ptr, int size, std::string arrayName="??");
+
+template <typename _TYPE_>
+extern void copyToDevice(_TYPE_* ptr, std::string arrayName="??");
+
+template <typename _TYPE_>
+extern void copyFromDevice(_TYPE_* ptr, std::string arrayName="??");
+*/
 #endif

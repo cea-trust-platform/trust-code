@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,6 +16,8 @@
 #include <Comm_Group.h>
 #include <communications.h>
 #include <PE_Groups.h>
+#include <stat_counters.h>
+#include <sstream>
 
 int Schema_Comm_Vecteurs::buffer_locked_;
 ArrOfDouble Schema_Comm_Vecteurs::tmp_area_double_;
@@ -27,11 +29,12 @@ Schema_Comm_Vecteurs_Static_Data::Schema_Comm_Vecteurs_Static_Data()
 {
   buffer_base_ = 0;
   buffer_base_size_ = 0;
+  buffer_base_device_size_ = 0;
   buf_pointers_ = 0;
   buf_pointers_size_ = 0;
 }
 
-void Schema_Comm_Vecteurs_Static_Data::init(int min_buf_size)
+void Schema_Comm_Vecteurs_Static_Data::init(int min_buf_size, bool bufferOnDevice)
 {
   if (buf_pointers_size_ == 0)
     {
@@ -44,18 +47,59 @@ void Schema_Comm_Vecteurs_Static_Data::init(int min_buf_size)
   // Le buffer global a-t-il une taille suffisante ?
   if (buffer_base_size_ < min_buf_size)
     {
+#ifdef _OPENMP
+      if (buffer_base_device_size_>0)
+        {
+          // ToDo OpenMP deleteOnDevice(buffer_base_, buffer_base_device_size_);
+          // Delete if buffer_base_ already allocated on device:
+          int bytes = sizeof(char) * buffer_base_device_size_;
+          start_timer(bytes);
+          #pragma omp target exit data map(delete:buffer_base_[0:buffer_base_device_size_])
+          end_timer(Objet_U::computeOnDevice, "delete buffer_base_ on device", bytes);
+        }
+#endif
       delete [] buffer_base_;
       buffer_base_ = new char[min_buf_size];
       // GF ajout de la mise a zero pour mpiwrapper valgrind mais est ce util ?
       for (int i = 0; i < min_buf_size; i++)
         buffer_base_[i] = 0;
       buffer_base_size_ = min_buf_size;
-      Process::Journal() << "Schema_Comm_Vecteurs::end_init() reallocating buffer, size= " << buffer_base_size_ << finl;
     }
+#ifdef _OPENMP
+  if (buffer_base_device_size_ < min_buf_size && bufferOnDevice)
+    {
+      if (buffer_base_device_size_>0)
+        {
+          // Delete if buffer_base_ already allocated on device:
+          // ToDo OpenMP deleteOnDevice(buffer_base_, buffer_base_device_size_);
+          int bytes = sizeof(char) * buffer_base_device_size_;
+          start_timer(bytes);
+          #pragma omp target exit data map(delete:buffer_base_[0:buffer_base_device_size_])
+          end_timer(Objet_U::computeOnDevice, "delete buffer_base_ on device", bytes);
+        }
+      // Allocate buffer_base_ on device:
+      // ToDo OpenMP allocateOnDevice(buffer_base_, min_buf_size);
+      int bytes = sizeof(char) * min_buf_size;
+      start_timer(bytes);
+      #pragma omp target enter data map(alloc:buffer_base_[0:min_buf_size])
+      end_timer(Objet_U::computeOnDevice, "allocate buffer_base_ on device", bytes);
+      //Cerr << "Provisoire allocate buffer_base [" << toString(buffer_base_) << "] " << bytes << " Bytes." << finl;
+      buffer_base_device_size_ = min_buf_size;
+    }
+#endif
 }
 
 Schema_Comm_Vecteurs_Static_Data::~Schema_Comm_Vecteurs_Static_Data()
 {
+  /* ToDo OpenMP Fix when using AmgX: Failing in Thread:0
+  call to cuInit returned error 4: Deinitialized
+  #ifdef _OPENMP
+  if (Objet_U::computeOnDevice)
+  {
+    #pragma omp target exit data map(delete:buffer_base_[0:buffer_base_size_])
+  }
+  #endif
+  */
   delete[] buffer_base_;
   delete[] buf_pointers_;
 }
@@ -170,7 +214,7 @@ void Schema_Comm_Vecteurs::end_init()
  *    puis appeler exchange()
  *
  */
-void Schema_Comm_Vecteurs::begin_comm()
+void Schema_Comm_Vecteurs::begin_comm(bool bufferOnDevice)
 {
   assert(status_ == END_INIT);
   // Pas un assert car erreur grave et sans doute rare...
@@ -180,7 +224,7 @@ void Schema_Comm_Vecteurs::begin_comm()
       Process::exit();
     }
   buffer_locked_ = 1;
-  sdata_.init(min_buf_size_);
+  sdata_.init(min_buf_size_, bufferOnDevice);
 
   // Fait pointer les buffers sur le debut des send_buffers
   char *ptr = sdata_.buffer_base_;
@@ -196,8 +240,24 @@ void Schema_Comm_Vecteurs::begin_comm()
   status_ = BEGIN_COMM;
 }
 
-void Schema_Comm_Vecteurs::exchange()
+void Schema_Comm_Vecteurs::exchange(bool bufferOnDevice)
 {
+#ifdef _OPENMP
+  if (bufferOnDevice)
+    {
+      // ToDo OpenMP copyFromDevice(sdata_.buffer_base_, min_buf_size_);
+      int bytes = min_buf_size_;
+      start_timer(bytes);
+      statistiques().begin_count(gpu_copyfromdevice_counter_);
+      #pragma omp target update from(sdata_.buffer_base_[0:min_buf_size_])
+      statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
+      std::stringstream message;
+      message << "Copy from device buffer [" << toString(sdata_.buffer_base_) << "]";
+      end_timer(Objet_U::computeOnDevice, message.str(), bytes);
+      //Process::Journal() << "Provisoire Copy from device buffer_base_ [" << toString(sdata_.buffer_base_) << "] [" << toString(sdata_.buffer_base_+min_buf_size_) << "] " << bytes << " bytes" << finl;
+    }
+#endif
+
   assert(status_ == BEGIN_COMM);
   // Verifie que tous les buffers sont pleins
   assert(check_buffers_full());
@@ -240,6 +300,21 @@ void Schema_Comm_Vecteurs::exchange()
       ptr += recv_buf_sizes_[i];
     }
   status_ = EXCHANGED;
+#ifdef _OPENMP
+  if (bufferOnDevice)
+    {
+      // ToDo OpenMP copyToDevice(sdata_.buffer_base_, min_buf_size_);
+      int bytes = min_buf_size_;
+      start_timer(bytes);
+      statistiques().begin_count(gpu_copytodevice_counter_);
+      #pragma omp target update to(sdata_.buffer_base_[0:min_buf_size_])
+      statistiques().end_count(gpu_copytodevice_counter_, bytes);
+      std::stringstream message;
+      message << "Copy to device buffer [" << toString(sdata_.buffer_base_) << "]";
+      end_timer(Objet_U::computeOnDevice, message.str(), bytes);
+      //Process::Journal() << "Provisoire Copy to device buffer_base_ [" << toString(sdata_.buffer_base_) << "] [" << toString(sdata_.buffer_base_+min_buf_size_) << "] " << bytes << " bytes" << finl;
+    }
+#endif
 }
 
 void Schema_Comm_Vecteurs::end_comm()

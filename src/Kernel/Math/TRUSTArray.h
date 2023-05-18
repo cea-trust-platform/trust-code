@@ -281,7 +281,12 @@ private:
   inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const
   {
     if (tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=NULL)
-      Cout << "[clock]              [" << (flag ? "Kernel] " : "Host]   ") << kernel_name << " with a loop on array [" << toString(tab.addrForDevice()).c_str() << "] of " << tab.size_array() << " elements" << finl;
+      {
+        std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
+        std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name
+                  << " with a loop on array [" << toString(tab.addrForDevice()).c_str() << "] of " << tab.size_array()
+                  << " elements" << std::endl ;
+      }
   }
   // Fonctions isKernelOnDevice pour lancement conditionnel de kernels sur le device:
   // -Si les tableaux passes en parametre sont sur a jour sur le device

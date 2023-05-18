@@ -142,31 +142,31 @@ std::string toString(const void* adr)
 }
 
 // Timers pour OpenMP:
-void start_timer(int size)
+void start_timer(int bytes)
 {
   clock_on = getenv ("TRUST_CLOCK_ON");
   if (clock_on!=NULL) clock_start = Statistiques::get_time_now();
-  if (size==-1) statistiques().begin_count(gpu_kernel_counter_);
+  if (bytes==-1) statistiques().begin_count(gpu_kernel_counter_);
 }
-void end_timer(int onDevice, const std::string& str, int size) // Return in [ms]
+void end_timer(int onDevice, const std::string& str, int bytes) // Return in [ms]
 {
-  if (size==-1) statistiques().end_count(gpu_kernel_counter_,0,onDevice);
+  if (bytes==-1) statistiques().end_count(gpu_kernel_counter_,0,onDevice);
   if (clock_on!=NULL) // Affichage
     {
       std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
       double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-      if (size==-1)
+      if (bytes==-1)
         if (onDevice)
           printf("%s %7.3f ms [Kernel] %15s\n", clock.c_str(), ms, str.c_str());
         else
           printf("%s %7.3f ms [Host]   %15s\n", clock.c_str(), ms, str.c_str());
       else
         {
-          double mo = (double)size / 1024 / 1024;
-          if (ms == 0 || size==0)
+          double mo = (double)bytes / 1024 / 1024;
+          if (ms == 0 || bytes==0)
             printf("%s            [Data]   %15s\n", clock.c_str(), str.c_str());
           else
-            printf("%s %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", clock.c_str(), ms, str.c_str(), long(size), mo/ms);
+            printf("%s %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", clock.c_str(), ms, str.c_str(), long(bytes), mo/ms);
           //printf("%s %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", clock.c_str(), ms, str.c_str(), long(mo), mo/ms);
         }
       fflush(stdout);
@@ -190,8 +190,8 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
         {
           std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
           double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-          int size = sizeof(_TYPE_) * tab.size_array();
-          printf("%s %7.3f ms [Data]   Allocate an array %s on device [%9s] %6ld Bytes\n", clock.c_str(), ms, arrayName.c_str(), toString(tab_addr).c_str(), long(size));
+          int bytes = sizeof(_TYPE_) * tab.size_array();
+          printf("%s %7.3f ms [Data]   Allocate an array %s on device [%9s] %6ld Bytes\n", clock.c_str(), ms, arrayName.c_str(), toString(tab_addr).c_str(), long(bytes));
         }
       tab.set_dataLocation(Device);
     }
@@ -213,9 +213,9 @@ void deleteOnDevice(TRUSTArray<_TYPE_>& tab)
           if (PE_Groups::get_nb_groups()>0 && Process::nproc()>1) clock = "[clock]#"+std::to_string(Process::me());
           else
             clock = "[clock]  ";
-          int size = sizeof(_TYPE_) * tab.size_array();
+          int bytes = sizeof(_TYPE_) * tab.size_array();
           if (getenv ("TRUST_CLOCK_ON")!=NULL)
-            cout << clock << "            [Kernel] Delete on device array [" << toString(tab_addr).c_str() << "] of " << size << " Bytes" << endl << flush;
+            cout << clock << "            [Kernel] Delete on device array [" << toString(tab_addr).c_str() << "] of " << bytes << " Bytes" << endl << flush;
           #pragma omp target exit data map(delete:tab_addr[0:tab.size_array()])
           tab.set_dataLocation(HostOnly);
         }
@@ -251,29 +251,29 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
       DataLocation currentLocation = tab.get_dataLocation();
       tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
       std::string message;
-      int size=0;
-      start_timer(size);
+      int bytes = 0;
+      start_timer(bytes);
       if (currentLocation==HostOnly)
         {
           //#pragma omp target enter data map(to:tab_addr[0:tab.size_array()])
           //Argh le bug trouve: si plusieurs appels de copy (DoubleTrav?), l'update ne se fait pas car tableau deja alloue
           //donc on alloue puis on update pour etre certain de la copie:
-          size = sizeof(_TYPE_) * tab.size_array();
+          bytes = sizeof(_TYPE_) * tab.size_array();
           assert(!isAllocatedOnDevice(tab)); // Verifie que la zone n'est pas deja allouee
           statistiques().begin_count(gpu_copytodevice_counter_);
           #pragma omp target enter data map(alloc:tab_addr[0:tab.size_array()])
           #pragma omp target update to(tab_addr[0:tab.size_array()])
-          statistiques().end_count(gpu_copytodevice_counter_, size);
+          statistiques().end_count(gpu_copytodevice_counter_, bytes);
           message = "Copy to device array "+arrayName+" ["+toString(tab_addr)+"]";
         }
       else if (currentLocation==Host)
         {
-          size = sizeof(_TYPE_) * tab.size_array();
+          bytes = sizeof(_TYPE_) * tab.size_array();
           //if (!isAllocatedOnDevice(tab)) printf("Provisoire %s [%s]\n", arrayName.c_str(), toString(tab_addr).c_str());
           assert(isAllocatedOnDevice(tab));
           statistiques().begin_count(gpu_copytodevice_counter_);
           #pragma omp target update to(tab_addr[0:tab.size_array()])
-          statistiques().end_count(gpu_copytodevice_counter_, size);
+          statistiques().end_count(gpu_copytodevice_counter_, bytes);
           message = "Update on device array "+arrayName+" ["+toString(tab_addr)+"]";
         }
       else if (currentLocation==PartialHostDevice)
@@ -285,10 +285,10 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
           if (arrayName!="??")
             {
               //message = "No change on device array "+arrayName+" ["+toString(tab_addr)+"]";
-              size = 0;
+              bytes = 0;
             }
         }
-      if (message!="") end_timer(Objet_U::computeOnDevice, message, size);
+      if (message!="") end_timer(Objet_U::computeOnDevice, message, bytes);
     }
 #endif
   return tab_addr;
@@ -314,15 +314,15 @@ void copyFromDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
       _TYPE_* tab_addr = tab.addrForDevice();
       if (tab.get_dataLocation()==Device)
         {
-          int size = sizeof(_TYPE_) * tab.size_array();
+          int bytes = sizeof(_TYPE_) * tab.size_array();
           assert(isAllocatedOnDevice(tab));
-          start_timer(size);
+          start_timer(bytes);
           statistiques().begin_count(gpu_copyfromdevice_counter_);
           #pragma omp target update from(tab_addr[0:tab.size_array()])
-          statistiques().end_count(gpu_copyfromdevice_counter_, size);
+          statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
           std::string message;
           message = "Copy from device of array "+arrayName+" ["+toString(tab_addr)+"]";
-          end_timer(Objet_U::computeOnDevice, message, size);
+          end_timer(Objet_U::computeOnDevice, message, bytes);
           if (clock_on) printf("\n");
           tab.set_dataLocation(HostDevice);
         }
@@ -354,15 +354,15 @@ void copyPartialFromDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::strin
     {
       if (tab.get_dataLocation()==Device || tab.get_dataLocation()==PartialHostDevice)
         {
-          int size = sizeof(_TYPE_) * (fin-deb);
+          int bytes = sizeof(_TYPE_) * (fin-deb);
           _TYPE_* tab_addr = tab.addrForDevice();
-          start_timer(size);
+          start_timer(bytes);
           statistiques().begin_count(gpu_copyfromdevice_counter_);
           #pragma omp target update from(tab_addr[deb:fin-deb])
-          statistiques().end_count(gpu_copyfromdevice_counter_, size);
+          statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
           std::string message;
           message = "Partial update from device of array "+arrayName+" ["+toString(tab_addr)+"]";
-          end_timer(Objet_U::computeOnDevice, message, size);
+          end_timer(Objet_U::computeOnDevice, message, bytes);
           tab.set_dataLocation(PartialHostDevice);
         }
     }
@@ -378,15 +378,15 @@ void copyPartialToDevice(TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string 
     {
       if (tab.get_dataLocation()==PartialHostDevice)
         {
-          int size = sizeof(_TYPE_) * (fin-deb);
+          int bytes = sizeof(_TYPE_) * (fin-deb);
           _TYPE_* tab_addr = tab.addrForDevice();
-          start_timer(size);
+          start_timer(bytes);
           statistiques().begin_count(gpu_copytodevice_counter_);
           #pragma omp target update to(tab_addr[deb:fin-deb])
-          statistiques().end_count(gpu_copytodevice_counter_, size);
+          statistiques().end_count(gpu_copytodevice_counter_, bytes);
           std::string message;
           message = "Partial update to device of array "+arrayName+" ["+toString(tab_addr)+"]";
-          end_timer(Objet_U::computeOnDevice, message, size);
+          end_timer(Objet_U::computeOnDevice, message, bytes);
           tab.set_dataLocation(Device);
         }
     }
@@ -402,15 +402,15 @@ void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::s
       if (tab.get_dataLocation()==PartialHostDevice)
         {
           // ToDo OpenMP par de recopie car si le tableau est const il n'a ete modifie sur le host
-          //int size = sizeof(_TYPE_) * (fin-deb);
+          //int bytes = sizeof(_TYPE_) * (fin-deb);
           //_TYPE_* tab_addr = addrForDevice();
-          //start_timer(size);
+          //start_timer(bytes);
           //statistiques().begin_count(gpu_copytodevice_counter_);
           //#pragma omp target update to(tab_addr[deb:fin-deb])
-          //statistiques().end_count(gpu_copytodevice_counter_, size);
+          //statistiques().end_count(gpu_copytodevice_counter_, bytes);
           //std::string message;
           //message = "Partial update to device of const array "+arrayName+" ["+toString(tab_addr)+"]";
-          //end_timer(Objet_U::computeOnDevice, message, size);
+          //end_timer(Objet_U::computeOnDevice, message, bytes);
           const_cast<TRUSTArray<_TYPE_>&>(tab).set_dataLocation(Device);
         }
     }

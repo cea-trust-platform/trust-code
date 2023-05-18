@@ -143,10 +143,11 @@ void echange_espace_virtuel_(const MD_Vector& md, TRUSTVect<_TYPE_>& v, const Ec
       mdv.initialize_comm(opt, comm, v);
       comm.end_init();
     }
-  comm.begin_comm();
-  mdv.prepare_send_data(opt, comm, v);
-  comm.exchange();
-  mdv.process_recv_data(opt, comm, v);
+  bool bufferOnDevice = v.isDataOnDevice() && Objet_U::computeOnDevice;
+  comm.begin_comm(bufferOnDevice);     // buffer allocated on device
+  mdv.prepare_send_data(opt, comm, v); // pack buffer on device (read_from_vect_items)
+  comm.exchange(bufferOnDevice);       // buffer d2h + MPI + buffer h2d
+  mdv.process_recv_data(opt, comm, v); // unpack buffer on device (write_to_vect_items + write_to_vect_blocs)
   comm.end_comm();
 }
 
