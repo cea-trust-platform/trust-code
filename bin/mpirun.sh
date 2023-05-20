@@ -98,7 +98,7 @@ case $Mpirun in
 		      np=$1;shift
 		      exec=$1;shift
 		      option="" && [ $MPI = "OPENMPI" ] && option=-on_error_abort
-		      echo $ECHO_OPTS "break main\nrun $* $option\nbreak Process::exit(int)\necho -> Enter cont to continue: \n" > $gdb_options
+		      echo $ECHO_OPTS "break exit\nbreak main\nrun $* $option\nbreak Process::exit(int)\necho -> Enter cont to continue: \n" > $gdb_options
                       echo "you can add breakpoints or cont in break_points file"
 		      if [ -f break_points ]
 		      then
