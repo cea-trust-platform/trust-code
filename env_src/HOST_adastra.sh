@@ -5,6 +5,9 @@
 define_modules_config()
 {
    env=$TRUST_ROOT/env/machine.env
+   # qstat inexistente sur les dernieres machines du CCRT/TGCC
+   echo "Command qstat created on $HOST"
+   cp $TRUST_ROOT/bin/KSH/qstat_wrapper $TRUST_ROOT/bin/KSH/qstat
    # Initialisation de l environnement module $MODULE_PATH
    echo "source /etc/profile" >> $env
    #
@@ -26,20 +29,34 @@ define_modules_config()
 ##############################
 define_soumission_batch()
 {
-   # ToDo pour adastra:
-   soumission=2
-   [ "$prod" = 1 ] && soumission=1
-   [ "$gpu"  = 1 ] && soumission=1
-   # http://www.idris.fr/eng/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm-eng.html Une seule partition gpu_p13
-   project=""
-   queue=accel
-   #qos=qos_cpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_cpu-dev && cpu=120 
-   cpu=6000
-   [ "`id | grep fej`" != "" ] && project="fej@cpu"
-   ntasks=128 # number of cores max
+   # Documentation adastra: https://dci.dci-gitlab.cines.fr/webextranet/
+   soumission=1
+   if [ "$prod" = 1 ]
+   then
+      qos="" && cpu=86400 # 1 day
+   else
+      qos="" && cpu=1440 # 24 mn
+   fi
+   if [ "$gpu" = 1 ]
+   then
+      # Partition mi250 (4 cartes MI250X par noeud=8 cartes MI100):
+      constraint=MI250
+      ntasks=64 # Node cores
+      cpus_per_task=8 # 1 GPU/MPI (OpenMP choix par default)
+      noeuds=`echo "1+($NB_PROCS-1)/8" | bc`
+      srun_options="--gpus-per-task=1 --ntasks-per-node=8 --threads-per-core=1 --gpu-bind=verbose,closest"
+      #[ $NB_PROCS -gt 8 ] && qos=normal # 2 nodes
+   else
+      # Partition scalaire
+      constraint=genoa
+      ntasks=192 # Node cores
+      noeuds=`echo "1+($NB_PROCS-1)/$ntasks" | bc`
+      srun_options=""
+      #[ $NB_PROCS -gt ??? ] && qos=???
+   fi
+   project="cpa2202"
    node=1 # --exclusive
-   # --threads-per-core=1 important pour les perfs
-   mpirun="srun -n \$SLURM_NTASKS --threads-per-core=1"
+   mpirun="srun -l $srun_options --mpi=cray_shasta --cpu-bind=verbose,cores"
    sub=SLURM
 }
 
