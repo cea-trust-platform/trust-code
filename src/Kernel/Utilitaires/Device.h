@@ -100,17 +100,16 @@ template <typename _TYPE_>
 extern void copyPartialToDevice(const TRUSTArray<_TYPE_>& tab, int deb, int fin, std::string arrayName="??");
 
 // ToDo OpenMP implemente methods for pointer (used only for the moment in Schema_Comm_Vecteurs for buffer communication with _TYPE_=char):
-/*
 template <typename _TYPE_>
 extern _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName="??");
 
 template <typename _TYPE_>
-extern void deleteOnDevice(_TYPE_* ptr, int size, std::string arrayName="??");
+extern void deleteOnDevice(_TYPE_* ptr, int size);
 
 template <typename _TYPE_>
-extern void copyToDevice(_TYPE_* ptr, std::string arrayName="??");
+extern void copyToDevice(_TYPE_* ptr, int size, std::string arrayName="??");
 
 template <typename _TYPE_>
-extern void copyFromDevice(_TYPE_* ptr, std::string arrayName="??");
-*/
+extern void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName="??");
+
 #endif
