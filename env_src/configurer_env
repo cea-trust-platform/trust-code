@@ -286,7 +286,7 @@ xxx()
 	      elif [ "$STDCPP" = c++14 ]
 	      then
 	         echo $ECHO_OPTS "#include <memory>\n#include <iostream>\nauto func(int i) { return [i=std::move(i)](int b){return b+i;}; }\nint main() { int num = func(3)(5);std::cerr<<num<<std::endl;return 0; }" > main.cpp;$f -std=c++14 -o test_exec main.cpp 1>$log 2>&1;./test_exec 1>>$log 2>&1;[ $? != 0 ] && ok=0 #&& nedit $log
-	      fi   
+	      fi
 	   fi;;
 	   TRUST_cc_BASE) if [ "`echo $f | grep /ccache/`" != "" ]
 	   then
@@ -864,7 +864,7 @@ then
        PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==379||v==376?1:0)}'`
        PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
        INSTALL_OK=1
-    
+
        # list of packages already-installed/to-install in conda, we ignore mpi4py since installed with pip
        $TRUST_ROOT/exec/python/bin/conda list | grep -v mpi4py | grep -v coolprop > conda_list.check
        if [ "$system" = "Linux" ] && [ $model = "x86_64" ] #&& [ -f $TRUST_ROOT/exec/conda_list.ref ]
@@ -876,7 +876,7 @@ then
           else
              cat $TRUST_ROOT/externalpackages/Miniconda/conda_list_ref | sed "s?TRUSTR?$TRUST_ROOT?g" | grep -v jupyter > conda_list.ref
           fi
-    
+
           if [ `diff conda_list.ref conda_list.check 1>/dev/null 2>&1; echo $?` != 0 ]
           then
              echo "# The current miniconda install contains some supplementary or missing packages, we clean it..."
@@ -909,11 +909,11 @@ else
    fi
 fi
 
-#if [ "$(uname -a | grep CYGWIN)" != "" ] 
+#if [ "$(uname -a | grep CYGWIN)" != "" ]
 #then
 #  INSTALL_CONDA=0
 #  mkdir -p $TRUST_ROOT/exec
-#  (cd $TRUST_ROOT/exec/; ln -sf $(dirname $(dirname $(which python))) python ) 
+#  (cd $TRUST_ROOT/exec/; ln -sf $(dirname $(dirname $(which python))) python )
 #fi
 
 if [ "$INSTALL_CONDA" = 1 ]
@@ -1561,17 +1561,10 @@ fi
 
 InstallPipPkgs=0
 if [ "$TRUST_WITHOUT_CONDA" != "1" ]; then
-    # ld from conda does not recognize openmpi configuration on TGCC and Fed36 and orcus-intel
-    rm_compiler_compat=0 && [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ] && rm_compiler_compat=1
-    [ "${HOST#orcus}" != $HOST ] && rm_compiler_compat=1  # on orcus, we should remove it
-    if [ "${HOST#irene}" != $HOST ] || [ "${HOST#jean-zay}" != $HOST ] || [ "${HOST_BUILD#jean-zay}" != $HOST_BUILD ] || [ "${HOST#topaze}" != $HOST ] || [ "$rm_compiler_compat" = 1 ]
-    then
-       rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on $HOST ..."
-    fi
-    for pkg in $pkgs
-    do
+   for pkg in $pkgs
+   do
       [ "`$TRUST_ROOT/exec/python/bin/conda list | grep $pkg`" = "" ] && InstallPipPkgs=1
-    done
+   done
 fi
 
 # On desactive en zone (pb de build):
@@ -1581,12 +1574,19 @@ then
    for pkg in $pkgs
    do
      echo "Installing $pkg ..."
-     env MPICH_CC=gcc MPICC=$TRUST_cc $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/pip/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1
+     cmd="env MPICH_CC=gcc OMPI_CC=gcc MPICC=$TRUST_cc $TRUST_ROOT/exec/python/bin/pip install $TRUST_ROOT/externalpackages/pip/$pkg*.gz 1>$TRUST_ROOT/exec/conda_python.log 2>&1"
+     eval $cmd
      if [ $? != 0 ]
      then
-        echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log"
-        echo "Contact TRUST support or run ./configure by adding: -disable-$pkg"
-        exit -1
+        # Retry by removing compiler_compat:
+        rm -rf $TRUST_ROOT/exec/python/compiler_compat && echo "We remove ld from conda on $HOST and retry installing $pkg ..."
+        eval $cmd
+        if [ $? != 0 ]
+        then
+           echo "Error while installing '$pkg' with pip. see $TRUST_ROOT/exec/conda_python.log"
+           echo "Contact TRUST support or run ./configure by adding: -disable-$pkg"
+           exit -1
+        fi
      fi
    done
 fi

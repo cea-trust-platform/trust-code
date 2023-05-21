@@ -33,8 +33,10 @@
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 #include <mpi.h>
-
 #pragma GCC diagnostic pop
-
+// Extensions d'OpenMPI dont Cuda-Aware:
+#if defined(OPEN_MPI) && OPEN_MPI
+#include <mpi-ext.h>
+#endif
 #endif
 #endif

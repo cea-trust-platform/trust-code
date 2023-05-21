@@ -45,10 +45,18 @@ cd $src
 ###############################
 # Lancement de la configuration
 ###############################
-export CXX=$TRUST_CC_BASE
-export CC=$TRUST_cc_BASE
-export F77=$TRUST_F77_BASE
-export FC=$TRUST_F77_BASE
+# Choix du compilateur:
+if [ "$TRUST_CC_BASE_EXTP" != "" ]
+then
+   export CXX=$TRUST_CC_BASE_EXTP
+   export CC=$TRUST_cc_BASE_EXTP
+   export F77=$TRUST_F77_BASE_EXTP
+else
+   export CXX=$TRUST_CC_BASE
+   export CC=$TRUST_cc_BASE
+   export F77=$TRUST_F77_BASE
+fi
+export FC=$F77
 export CXXFLAGS="-fPIC -fno-strict-aliasing"
 export CFLAGS="-fPIC -fno-strict-aliasing"
 export FFLAGS="-fPIC -fno-strict-aliasing"
