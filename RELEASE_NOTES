@@ -5,6 +5,8 @@ Release notes version 1.9.2_beta : Enhancements, modifications and corrected bug
 16/05/23 (TRUST) Fix          : Boundary fluxes (flux_bord_) had the wrong sign in PolyMAC.
 15/05/23 (TRUST) Keyword      : Add "reuse_preconditioner_nb_it_max n" option to PETSc solvers to reuse preconditioner when matrix changes (default no) if nb_it<=n
 15/05/23 (TRUST) Keyword      : Add LU (MUMPS) preconditionner: "petsc solver { precond LU { } ... }". May be useful for Newton methods with a reuse preconditioner strategy
+10/05/23 (TRUST) New feature  : New method 'partition()' in Jupyter validation form Python API. Can be used to partition a case from the notebook. See SampleFormJuptyer.
+10/05/23 (TRUST) New feature  : New tag '# NB_PAS_DT_MAX n #': can be put in datasets of validation forms to force the number of timesteps that will be used when running the NR test case.
 09/05/23 (TRUST) New feature  : New option at configure: -without-conda to (try to) install TRUST without using MiniConda. Use at your own risk!
 09/05/23 (TRUST) New feature  : New keyword Sondes_mobiles|Mobile_probles (as Sondes|Probes) useful for ALE simulations. This will update the positions of the probes in the mesh.
 09/05/23 (TRUST) New feature  : Nature of interpolation can be choosed for each field with Champ_fonc_tabule_morceaux_interp, see champ_fonc_tabule_different_meshes validation sheet.
