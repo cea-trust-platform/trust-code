@@ -13,8 +13,6 @@ define_modules_config()
    #
    # Load modules
    module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric"
-   # Mise a jour du 03/02/23:
-   module="craype-x86-trento craype-network-ofi rocm craype-accel-amd-gfx90a libfabric cce/15.0.0 craype/2.7.19 cray-mpich/8.1.21 cray-libsci/22.11.1.2"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
@@ -33,9 +31,9 @@ define_soumission_batch()
    soumission=1
    if [ "$prod" = 1 ]
    then
-      qos="" && cpu=86400 # 1 day
+      qos="" && cpu=1440 # 1 day
    else
-      qos="" && cpu=1440 # 24 mn
+      qos="" && cpu=30 # 30 mn
    fi
    if [ "$gpu" = 1 ]
    then
@@ -44,7 +42,8 @@ define_soumission_batch()
       ntasks=64 # Node cores
       cpus_per_task=8 # 1 GPU/MPI (OpenMP choix par default)
       noeuds=`echo "1+($NB_PROCS-1)/8" | bc`
-      srun_options="--gpus-per-task=1 --ntasks-per-node=8 --threads-per-core=1 --gpu-bind=verbose,closest"
+      # Important pour les performances ! le -c dans le srun est important il semble que SBATCH -c ne marche pas...
+      srun_options="-c $cpus_per_task --gpus-per-task=1 --ntasks-per-node=8 --threads-per-core=1 --gpu-bind=verbose,closest"
       #[ $NB_PROCS -gt 8 ] && qos=normal # 2 nodes
    else
       # Partition scalaire
