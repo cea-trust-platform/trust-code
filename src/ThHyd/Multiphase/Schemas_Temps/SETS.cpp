@@ -46,7 +46,7 @@ template class std::map<std::string, Matrice_Morse>;
 #endif
 
 Implemente_instanciable_sans_constructeur(SETS, "SETS", Simpler);
-// XD sets simpler sets -1 Stability-Enhancing Two-Step solver which is useful for a multiphase problem. Ref : J. H. MAHAFFY, “A stability-enhancing two-step method for fluid flow calculations,” Journal of Computational Physics, 46, 3, 329 (1982).
+// XD sets simpler sets -1 Stability-Enhancing Two-Step solver which is useful for a multiphase problem. Ref : J. H. MAHAFFY, A stability-enhancing two-step method for fluid flow calculations, Journal of Computational Physics, 46, 3, 329 (1982).
 // XD attr criteres_convergence bloc_criteres_convergence criteres_convergence 1 Set the convergence thresholds for each unknown (i.e: alpha, temperature, velocity and pressure). The default values are respectively 0.01, 0.1, 0.01 and 100
 // XD attr iter_min entier iter_min 1 Number of minimum iterations
 // XD attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Convergence criteria.
@@ -383,7 +383,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
           tabs_t b_p;
           std::vector<std::set<std::pair<std::string, int>>> ordre;
           if (eq_qdm.domaine_dis().valeur().le_nom() == "PolyMAC_P0") ordre.push_back({{ "vitesse", 1 }}); //si PolyMAC_P0: on commence par ve
-          ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanément
+          ordre.push_back({{ "vitesse", 0 }}), ordre.push_back({}); //puis vf, puis toutes les autres inconnues simultanement
           for (auto &&nom : noms)
             if (nom != "vitesse" && nom != "pression") ordre.back().insert({{ nom, 0 }});
           if (!(ok = eliminer(ordre, "pression", mats, sec, A_p, b_p))) break; //si l'elimination echoue, on sort
