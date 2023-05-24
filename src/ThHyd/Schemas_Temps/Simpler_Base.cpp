@@ -198,7 +198,7 @@ Parametre_equation& Simpler_Base::get_and_set_parametre_equation(Equation_base& 
     param_impl.solveur() = param_defaut_.solveur();
 
   // Some checks:
-  if (eqn.probleme().get_coupled())
+  if (eqn.probleme().is_coupled())
     {
       if (param_impl.seuil_convergence_implicite()>0.1*DMAXFLOAT)
         {

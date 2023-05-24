@@ -139,7 +139,7 @@ void Equation_base::completer()
 
   inconnue()->associer_domaine_cl_dis(le_dom_Cl_dis);
 
-  if (mon_probleme.valeur().get_coupled())
+  if (mon_probleme.valeur().is_coupled())
     {
       bool err = false;
       int nb_cl = le_dom_Cl_dis->nb_cond_lim();
@@ -2250,7 +2250,7 @@ Nom Equation_base::expression_residu()
 {
   int size = residu_.size_array();
   Nom tmp(""),ajout("");
-  if (probleme().get_coupled())
+  if (probleme().is_coupled())
     {
       ajout="_";
       ajout+=probleme().le_nom();

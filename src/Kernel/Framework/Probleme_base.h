@@ -19,6 +19,7 @@
 #include <Probleme_base_interface_proto.h>
 #include <Champs_compris_interface.h>
 #include <Sortie_Fichier_base.h>
+#include <Probleme_Couple.h>
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>
@@ -134,8 +135,7 @@ public:
 
   virtual void addInputField(Field_base& f) { addInputField_impl(*this, f); }
   void sauver_xyz(int) const;
-  void set_coupled(int i) { coupled_ = i; }
-  int get_coupled() const { return coupled_; }
+  int is_coupled() const { return (int)pbc_.non_nul(); }
 
   int postraiter(int force = 1) override;
   int limpr() const override;
@@ -181,6 +181,9 @@ public:
   REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
   inline bool milieu_via_associer() { return milieu_via_associer_; }
+  void associer_pb_couple(const Probleme_Couple& pbc) { pbc_ = pbc; }
+  const Probleme_Couple& get_pb_couple() const { return pbc_; }
+  Probleme_Couple& get_pb_couple() { return pbc_; }
 
 protected :
   // ***************************************************************************
@@ -203,13 +206,14 @@ protected :
   REF(Domaine) le_domaine_;
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;
+  REF(Probleme_Couple) pbc_;
 
   virtual void typer_lire_milieu(Entree& is) ;
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
   mutable Sortie_Brute* osauv_hdf_;
 
-  int reprise_effectuee_, reprise_version_, restart_file, coupled_; // Flag to indicate it is a part of a coupled problem
+  int reprise_effectuee_, reprise_version_, restart_file;
   int resuming_in_progress_; //true variable only during the time step during which a resumption of computation is carried out
   Nom nom_fich, format_sauv;
 

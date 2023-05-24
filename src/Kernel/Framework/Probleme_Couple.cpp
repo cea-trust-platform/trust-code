@@ -222,7 +222,7 @@ bool Probleme_Couple::updateGivenFields()
 void Probleme_Couple::ajouter(Probleme_base& pb)
 {
   addProblem(pb);
-  pb.set_coupled(1);
+  pb.associer_pb_couple(*this);
 
   int nb_pb=nb_problemes();
 

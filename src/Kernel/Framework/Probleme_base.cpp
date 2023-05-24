@@ -76,7 +76,7 @@ Probleme_base::~Probleme_base()
 }
 
 // B.Math. 21/09/2004: quelques initialisations, ca fait pas de mal...
-Probleme_base::Probleme_base() : osauv_hdf_(0), reprise_effectuee_(0), reprise_version_(155), restart_file(0), coupled_(0)
+Probleme_base::Probleme_base() : osauv_hdf_(0), reprise_effectuee_(0), reprise_version_(155), restart_file(0)
 {
   resuming_in_progress_=0;
 }

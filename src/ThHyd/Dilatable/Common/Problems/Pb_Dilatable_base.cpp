@@ -47,7 +47,7 @@ void Pb_Dilatable_base::associer_sch_tps_base(const Schema_Temps_base& sch)
       Cerr << "TRUST can't solve a " << que_suis_je() << " with a " << sch.que_suis_je() << " time scheme." << finl;
       Process::exit();
     }
-  if ( sub_type(Schema_Euler_Implicite,sch) && coupled_==1 )
+  if ( sub_type(Schema_Euler_Implicite,sch) && is_coupled() == 1 )
     {
       Cerr << finl;
       Cerr << "Coupled problem with unique Euler implicit time scheme with " << que_suis_je() <<  "fluid are not allowed!" << finl;
