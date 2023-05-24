@@ -250,16 +250,10 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
                                   const Domaine_Cl_EF& le_dom_cl,
                                   Matrice_Morse& la_matrice, DoubleTab& secmem) const
 {
-//  Cerr<<__PRETTY_FUNCTION__<<" ne fait rien "<<finl; return;
-  Cerr<<__PRETTY_FUNCTION__<<" a revoir "<<finl;
-
   // Dimensionnement de la matrice qui devra recevoir les coefficients provenant de
   // la convection, de la diffusion pour le cas des faces.
   // Cette matrice a une structure de matrice morse.
   // Nous commencons par calculer les tailles des tableaux tab1 et tab2.
-
-  int   k, nbvois;
-  //  int nfin = le_dom.nb_faces();
   const Conds_lim& les_cl = le_dom_cl.les_conditions_limites();
 
   const IntVect& tab1=la_matrice.get_tab1();
@@ -274,7 +268,6 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
   int nb_som_face=faces_sommets.dimension(1);
 
   int nb_som=secmem.dimension(0);
-  // Cerr << "nb_comp " << nb_comp << finl;
   for (const auto& itr : les_cl)
     {
       const Cond_lim& la_cl = itr;
@@ -293,15 +286,12 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
                     {
                       int m=som*nb_comp+comp;
                       int idiag = tab1[som*nb_comp+comp]-1;
-                      nbvois = tab1[som*nb_comp+1+comp] - tab1[som*nb_comp+comp];
-                      for (k=0; k < nbvois; k++)
-                        {
-                          coeff[idiag+k]=0;
-                        }
+                      int nbvois = tab1[som*nb_comp+1+comp] - tab1[som*nb_comp+comp];
+                      for (int k=0; k < nbvois; k++)
+                        coeff[idiag+k]=0;
                       la_matrice.coef(m,m)=1;
                       assert(la_matrice.coef(som*nb_comp+comp,som*nb_comp+comp)==1);
                       // pour les voisins
-
 
                       // pour le second membre
                       secmem(som,comp)= la_cl_Dirichlet.val_imp(ind_face,comp);
@@ -322,15 +312,12 @@ void Op_EF_base::modifier_pour_Cl(const Domaine_EF& le_dom,
                   {
                     int m=som*nb_comp+comp;
                     int idiag = tab1[som*nb_comp+comp]-1;
-                    nbvois = tab1[som*nb_comp+1+comp] - tab1[som*nb_comp+comp];
-                    for (k=0; k < nbvois; k++)
-                      {
-                        coeff[idiag+k]=0;
-                      }
+                    int nbvois = tab1[som*nb_comp+1+comp] - tab1[som*nb_comp+comp];
+                    for (int k=0; k < nbvois; k++)
+                      coeff[idiag+k]=0;
                     la_matrice.coef(m,m)=1;
                     assert(la_matrice.coef(som*nb_comp+comp,som*nb_comp+comp)==1);
                     // pour les voisins
-
 
                     // pour le second membre
                     secmem(som,comp)= 0;
