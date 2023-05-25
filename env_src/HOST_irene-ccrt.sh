@@ -40,7 +40,8 @@ define_modules_config()
       # ND : avec intel/20.0.4, le cas test Cx plante en // dans petsc, je tente avec intel/19.*
       # module="intel/19.0.5.281 gnu/7.3.0 mpi/openmpi/4.0.2"
       # passage a redhat 8: openmpi 4.0.5 fait une erreur de segmentation lors de l'appel a PetscFinalize(). 4.1.4 ne le fait pas
-      module="intel/20.0.0 mpi/openmpi/4.1.4"
+      #module="intel/20.0.0 mpi/openmpi/4.1.4"
+      # passage a gnu pour v1.9.2
       module="gnu/11 mpi/openmpi/4.1.4"
    else
       # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
@@ -51,9 +52,11 @@ define_modules_config()
       #mpi="$romio_hints mpi/openmpi/2.0.4" # suite maintenance 1.8.5b charger openmpi en dernier
       #module="$intel $mpi"
       # passage a redhat 8.4, anciens modules n'existent plus
-      module="$romio_hints intel/20.0.0 mpi/openmpi/4.1.4"
+      #module="$romio_hints intel/20.0.0 mpi/openmpi/4.1.4"
+      # passage a gnu pour v1.9.2
       module="$romio_hints gnu/11 mpi/openmpi/4.1.4"
    fi
+   module="python3/3.8.10 swig/4.0.2 $module"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null 2>/dev/null" >> $env

@@ -33,10 +33,10 @@ define_modules_config()
          export TRUST_CC_BASE_EXTP=icpc
          export TRUST_cc_BASE_EXTP=icc
          export TRUST_F77_BASE_EXTP=ifort
-         module="mpi/openmpi/4.0.2 cuda/11.2 nvhpc/21.2 cmake/3.22.2" # Marche au configure mais apres ?
+         module="mpi/openmpi/4.0.2 cuda/11.2 nvhpc/21.2" # Marche au configure mais apres ?
          #module="gnu/11.2.0 mpi/openmpi/4.1.4 nvhpc/22.2" # Pb c'est Cuda 11.6...
       else
-         module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/10.2.89" # Ok, it works
+         #module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/10.2.89" # Ok, it works
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.6" # Ok, it works
       fi
    else
@@ -45,12 +45,14 @@ define_modules_config()
       # module="intel/20.0.4 feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.5 feature/openmpi/net/ib/ucx-nocma mpi/openmpi/4.0.2 feature/openmpi/io/collective_buffering" # Recommendations CCRT debut 2021 (bcp de coeurs)
       # sw="feature/hcoll/multicast/disable" # Pour supprimer un warning aleatoire au demarrage de GAMELAN (ne gene pas ensuite)
       # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
-      module="intel/20.0.4 gnu/7.3.0 mpi/openmpi/4.0.2" # PL: Retour a OpenMPI/4.0.2 sans rien d'autre car "node failure" sur le calcul GAMELAN a 50K coeurs avec les conseils precedents 
+      #module="intel/20.0.4 gnu/7.3.0 mpi/openmpi/4.0.2" # PL: Retour a OpenMPI/4.0.2 sans rien d'autre car "node failure" sur le calcul GAMELAN a 50K coeurs avec les conseils precedents 
       # passage a redhat 8.4, openmpi 4.0.2 n'existe plus, remplace par 4.0.5
-      module="intel/20.0.0 mpi/openmpi/4.0.5"
-      # test de gnu
-      module="gnu/11  mpi/openmpi/4.0.5"
+      #module="intel/20.0.0 mpi/openmpi/4.0.5"
+      # passage a gnu pour v1.9.2
+      module="gnu/11 mpi/openmpi/4.0.5"
    fi
+   # depuis v1.9.2, install sans conda, on prend python+swig+cmake module
+   module="python3/3.8.10 swig/4.0.2 cmake/3.22.2 $module"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null 2>/dev/null" >> $env
