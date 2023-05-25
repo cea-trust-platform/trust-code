@@ -56,7 +56,6 @@ squeue" > $TRUST_ROOT/bin/qstat
 define_soumission_batch()
 {
    soumission=2
-   reservation="centos79"
    [ "$prod" = 1 ] && soumission=1
    [ "$gpu"  = 1 ] && soumission=1
    # sinfo :
