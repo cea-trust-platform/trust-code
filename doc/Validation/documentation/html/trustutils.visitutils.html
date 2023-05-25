@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>trustutils.visitutils &#8212; Reference manual  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,9 +11,6 @@
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     
@@ -60,12 +56,12 @@ Mars 2021 - Stage 6 mois</p>
 This package can be used with jupyter and stats package.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.Show">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">Show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fichier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nX</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nY</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotmesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visitLog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.Show" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">Show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fichier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nX</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nY</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotmesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visitLog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.Show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class Show, which allow to use visit command in a python environment</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.Show.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fichier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xIndice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yIndice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotmesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.Show.add" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fichier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xIndice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yIndice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotmesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.Show.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -77,7 +73,7 @@ This package can be used with jupyter and stats package.</p>
 <li><p><strong>yIndice</strong> (<em>int</em>) – Indice of the y axe.</p></li>
 <li><p><strong>mesh</strong> (<em>str</em>) – The name of the mesh (default=”dom”)</p></li>
 <li><p><strong>plotmesh</strong> (<em>bool</em>) – If true plot the mesh asociate with .lata file.</p></li>
-<li><p><strong>time</strong> (<em>int</em>) – Time of the plot.</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – Time frame or iteration of the plot.</p></li>
 <li><p><strong>size</strong> (<em>int</em>) – Size of the image.</p></li>
 <li><p><strong>max</strong> (<em>float</em>) – Maximun value ploted.</p></li>
 <li><p><strong>min</strong> (<em>float</em>) – Minimum value ploted.</p></li>
@@ -235,11 +231,11 @@ This package can be used with jupyter and stats package.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.Show.pas">
-<span class="sig-name descname"><span class="pre">pas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.Show.pas" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.Show.pas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Increase the time step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>time</strong> (<em>int</em>) – choice of the time frame</p>
+<dd class="field-odd"><p><strong>iteration</strong> (<em>int</em>) – choice of the time frame or iteration</p>
 </dd>
 </dl>
 </dd></dl>
@@ -247,7 +243,7 @@ This package can be used with jupyter and stats package.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.Show.pasSuivant">
 <span class="sig-name descname"><span class="pre">pasSuivant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.Show.pasSuivant" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adavnce one time step.</p>
+<dd><p>Advance one time step or iteration.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -386,14 +382,14 @@ This package can be used with jupyter and stats package.</p>
 <p>Class to export profile or fields from lata files.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.export_lata_base.addPlot">
-<span class="sig-name descname"><span class="pre">addPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.addPlot" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">addPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.addPlot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a new field to the plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>field</strong> (<em>str</em>) – The field we want to plot.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – The name of the field.</p></li>
-<li><p><strong>time</strong> (<em>int</em>) – number of the time frame</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – number of the time frame  or iteration</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -434,13 +430,13 @@ Warning, it has to launch visit and write the result in a file.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.export_lata_base.maximun">
-<span class="sig-name descname"><span class="pre">maximun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Max'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.maximun" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">maximun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Max'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.maximun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract Max of data from a .lata file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – It tells if we should return the max or the min.</p></li>
-<li><p><strong>time</strong> (<em>int</em>) – Momment we calcule the max/min..</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – Moment we calcule the max/min..</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -451,13 +447,13 @@ Warning, it has to launch visit and write the result in a file.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.export_lata_base.minimun">
-<span class="sig-name descname"><span class="pre">minimun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.minimun" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">minimun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.minimun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract Max of data from a .lata file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – It tells if we should return the max or the min.</p></li>
-<li><p><strong>time</strong> (<em>int</em>) – Moment we calcule the max/min..</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – Moment we calcule the max/min..</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -514,11 +510,11 @@ Warning, it has to launch visit and write the result in a file.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.export_lata_base.setFrame">
-<span class="sig-name descname"><span class="pre">setFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.setFrame" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">setFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.export_lata_base.setFrame" title="Permalink to this definition">¶</a></dt>
 <dd><p>To set frame in visit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>time</strong> (<em>int</em>) – If time = -1, the last frame chosen, else it select the frame in visit</p>
+<dd class="field-odd"><p><strong>iteration</strong> (<em>int</em>) – If iteration = -1, the last frame chosen, else it select the frame in visit</p>
 </dd>
 </dl>
 </dd></dl>
@@ -527,7 +523,7 @@ Warning, it has to launch visit and write the result in a file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.saveFile">
-<span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">saveFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.saveFile" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">saveFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.saveFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save files for testing non-regression.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -535,7 +531,7 @@ Warning, it has to launch visit and write the result in a file.</p>
 <li><p><strong>file</strong> (<em>str</em>) – The .lata file we want to plot its mesh with visit.</p></li>
 <li><p><strong>field</strong> (<em>str</em>) – The field we want to plot.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – The name of the field.</p></li>
-<li><p><strong>time</strong> (<em>int</em>) – number of the time frame</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – number of the time frame or iteration</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -546,18 +542,18 @@ Warning, it has to launch visit and write the result in a file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.setFrame">
-<span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">setFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.setFrame" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">setFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.setFrame" title="Permalink to this definition">¶</a></dt>
 <dd><p>To set frame in visit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>time</strong> (<em>int</em>) – If time = -1, the last frame chosen, else it select the frame in visit.</p>
+<dd class="field-odd"><p><strong>iteration</strong> (<em>int</em>) – If iteration = -1, the last frame chosen, else it select the frame in visit.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="trustutils.visitutils.tools_for_visit.showField">
-<span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">showField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fichier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotmesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.showField" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">trustutils.visitutils.tools_for_visit.</span></span><span class="sig-name descname"><span class="pre">showField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fichier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotmesh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.visitutils.tools_for_visit.showField" title="Permalink to this definition">¶</a></dt>
 <dd><p>Methods to plot a field from a .lata file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -568,7 +564,7 @@ Warning, it has to launch visit and write the result in a file.</p>
 <li><p><strong>mesh</strong> (<em>str</em>) – The name of the mesh (default=”dom”)</p></li>
 <li><p><strong>plotmesh</strong> (<em>bool</em>) – display the mesh (default=True)</p></li>
 <li><p><strong>title</strong> (<em>str</em>) – title of the plot.</p></li>
-<li><p><strong>time</strong> (<em>int</em>) – number of the time frame (default=-1)</p></li>
+<li><p><strong>iteration</strong> (<em>int</em>) – number of the time frame or iteration (default=-1)</p></li>
 <li><p><strong>size</strong> (<em>int</em>) – Size of the image.</p></li>
 <li><p><strong>max</strong> (<em>float</em>) – Maximun value ploted.</p></li>
 <li><p><strong>min</strong> (<em>float</em>) – Minimum value ploted.</p></li>
@@ -726,7 +722,7 @@ Warning, it has to launch visit and write the result in a file.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright .
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     </div>
   </body>
 </html>

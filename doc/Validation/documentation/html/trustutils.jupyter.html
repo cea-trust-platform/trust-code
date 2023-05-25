@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>trustutils.jupyter &#8212; Reference manual  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,9 +11,6 @@
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
     
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
     
@@ -60,7 +56,7 @@ Mars 2021 - Stage 6 mois</p>
 This work is based on the files package (a TRUST package that reads the son files).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="trustutils.jupyter.plot.Graph">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.plot.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nX</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nY</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[12,</span> <span class="pre">10]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.plot.Graph" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.plot.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nX</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nY</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[12,</span> <span class="pre">10]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">24</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.plot.Graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Graph is a class to plot .son file</p>
 <dl class="py method">
@@ -403,6 +399,17 @@ validation form (i.e. a directory containing at least a ‘src’ subdirectory).
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTCase.partition">
+<span class="sig-name descname"><span class="pre">partition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTCase.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply partitioning of specified test case with trust -partition</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>verbose</strong> (<em>bool</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTCase.runCase">
 <span class="sig-name descname"><span class="pre">runCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTCase.runCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move to the case directory and execute the current test case:
@@ -470,9 +477,23 @@ WARNING: this is where we expect to be at the root of the validation form.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTSuite.extractNRCases">
+<span class="sig-name descname"><span class="pre">extractNRCases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTSuite.extractNRCases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints out the list of cases in a suitable format for processing by validation and lance_test tools.</p>
+<p>WARNING:
+do not modify this without looking at scripts get_list_cas_nr and get_nb_cas_nr in Validation/Outils/Genere_Courbe/scripts</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTSuite.getCases">
 <span class="sig-name descname"><span class="pre">getCases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTSuite.getCases" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTSuite.printCases">
+<span class="sig-name descname"><span class="pre">printCases</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTSuite.printCases" title="Permalink to this definition">¶</a></dt>
+<dd><p>display testCases</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTSuite.runCases">
@@ -486,6 +507,12 @@ WARNING: this is where we expect to be at the root of the validation form.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="trustutils.jupyter.run.TRUSTSuite.tablePerf">
+<span class="sig-name descname"><span class="pre">tablePerf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.TRUSTSuite.tablePerf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the table of performance</p>
 </dd></dl>
 
 </dd></dl>
@@ -559,17 +586,6 @@ WARNING: this is where we expect to be at the root of the validation form.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="trustutils.jupyter.run.dumpData">
-<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">dumpData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fiche</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_keywords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.dumpData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print out the file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fiche</strong> (<em>str</em>) – Path of the file</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.dumpDataset">
 <span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">dumpDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fiche</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_Trust_user_words</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.dumpDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print out the .data file.</p>
@@ -584,14 +600,25 @@ WARNING: this is where we expect to be at the root of the validation form.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="trustutils.jupyter.run.dumpText">
+<span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">dumpText</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fiche</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_keywords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.dumpText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print out the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fiche</strong> (<em>str</em>) – Path of the file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="trustutils.jupyter.run.executeCommand">
 <span class="sig-prename descclassname"><span class="pre">trustutils.jupyter.run.</span></span><span class="sig-name descname"><span class="pre">executeCommand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonRegression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#trustutils.jupyter.run.executeCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a bash command in the BUILD_DIRECTORY
-:param cmd: Name of the exec script
+:param cmd:
 :type cmd: command to execute
 :param verbose:
 :type verbose: bool
-:param nonRegression: by default executeScript is inactive when option -not_run is applied (for non regression test)
+:param nonRegression:
 :type nonRegression: bool</p>
 </dd></dl>
 
@@ -759,6 +786,7 @@ By default, outputs of the validation forms are not saved.</p>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTCase"><code class="docutils literal notranslate"><span class="pre">TRUSTCase</span></code></a><ul>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTCase.copy"><code class="docutils literal notranslate"><span class="pre">TRUSTCase.copy()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTCase.dumpDataset"><code class="docutils literal notranslate"><span class="pre">TRUSTCase.dumpDataset()</span></code></a></li>
+<li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTCase.partition"><code class="docutils literal notranslate"><span class="pre">TRUSTCase.partition()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTCase.runCase"><code class="docutils literal notranslate"><span class="pre">TRUSTCase.runCase()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTCase.substitute"><code class="docutils literal notranslate"><span class="pre">TRUSTCase.substitute()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTCase.substitute_template"><code class="docutils literal notranslate"><span class="pre">TRUSTCase.substitute_template()</span></code></a></li>
@@ -768,8 +796,11 @@ By default, outputs of the validation forms are not saved.</p>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.addCase"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.addCase()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.copySrc"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.copySrc()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.detectSserver"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.detectSserver()</span></code></a></li>
+<li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.extractNRCases"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.extractNRCases()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.getCases"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.getCases()</span></code></a></li>
+<li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.printCases"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.printCases()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.runCases"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.runCases()</span></code></a></li>
+<li><a class="reference internal" href="#trustutils.jupyter.run.TRUSTSuite.tablePerf"><code class="docutils literal notranslate"><span class="pre">TRUSTSuite.tablePerf()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.TRUST_parameters"><code class="docutils literal notranslate"><span class="pre">TRUST_parameters()</span></code></a></li>
@@ -777,8 +808,8 @@ By default, outputs of the validation forms are not saved.</p>
 <li><a class="reference internal" href="#trustutils.jupyter.run.addCaseFromTemplate"><code class="docutils literal notranslate"><span class="pre">addCaseFromTemplate()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.description"><code class="docutils literal notranslate"><span class="pre">description()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.displayMD"><code class="docutils literal notranslate"><span class="pre">displayMD()</span></code></a></li>
-<li><a class="reference internal" href="#trustutils.jupyter.run.dumpData"><code class="docutils literal notranslate"><span class="pre">dumpData()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.dumpDataset"><code class="docutils literal notranslate"><span class="pre">dumpDataset()</span></code></a></li>
+<li><a class="reference internal" href="#trustutils.jupyter.run.dumpText"><code class="docutils literal notranslate"><span class="pre">dumpText()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.executeCommand"><code class="docutils literal notranslate"><span class="pre">executeCommand()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.executeScript"><code class="docutils literal notranslate"><span class="pre">executeScript()</span></code></a></li>
 <li><a class="reference internal" href="#trustutils.jupyter.run.extractNRCases"><code class="docutils literal notranslate"><span class="pre">extractNRCases()</span></code></a></li>
@@ -854,7 +885,7 @@ By default, outputs of the validation forms are not saved.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright .
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     </div>
   </body>
 </html>
