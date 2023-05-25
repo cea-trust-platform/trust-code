@@ -47,13 +47,13 @@ define_soumission_batch()
       #[ $NB_PROCS -gt 8 ] && qos=normal # 2 nodes
    else
       # Partition scalaire
-      constraint=genoa
+      constraint=GENOA
       ntasks=192 # Node cores
       noeuds=`echo "1+($NB_PROCS-1)/$ntasks" | bc`
       srun_options=""
       #[ $NB_PROCS -gt ??? ] && qos=???
    fi
-   project="cpa2202"
+   [ "`id | grep cpa2202`" != "" ] && project="cpa2202"
    node=1 # --exclusive
    mpirun="srun -l $srun_options --mpi=cray_shasta --cpu-bind=verbose,cores"
    sub=SLURM

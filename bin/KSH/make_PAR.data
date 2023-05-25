@@ -7,7 +7,7 @@ OK_make_par ()
    then
       echo "End."
    else
-      echo "Error."
+      echo "Error. See `pwd`/$DEC_NOM.err and `pwd`/$DEC_NOM.out"
    fi
 }
 SUBSTITUE ()
@@ -81,6 +81,7 @@ done
 trust $DEC_NOM 1>$DEC_NOM.out 2>$DEC_NOM.err
 err=$?
 OK_make_par $err
+[ $err != 0 ] && exit -1
 if [ "`grep -E 'La syntaxe du decoupeur a change apres la v1.5.2|The syntax of the splitter has changed after the v1.5.2.' $DEC_NOM.err`" != "" ]
 then
    echo "Warning: Old syntax (<1.5.2) found for partitioning... Have a look to the $DEC_NOM.err file."

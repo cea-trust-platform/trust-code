@@ -884,7 +884,7 @@ then
                             / petsc / || / petsc_gpu / || / optimal / || / resoudremultiassemblage / || / resoudre / {use_petsc=1;exit}
 	                    END {print use_petsc}'`
 fi
-if [ "$TRUST_USE_CUDA" = 1 ] || [ "$ROCM_PATH" != "" ]
+if [ "$TRUST_USE_CUDA" = 1 ] || [ "$TRUST_USE_ROCM" != "" ]
 then
    gpu=1
 fi
