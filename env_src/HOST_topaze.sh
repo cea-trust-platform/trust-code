@@ -1,19 +1,19 @@
 #!/bin/bash
-###########################################
-#    ______      __          ____         #
-#   / ____/___  / /_  ____ _/ / /_        #
-#  / /   / __ \/ __ \/ __ `/ / __/        #
-# / /___/ /_/ / /_/ / /_/ / / /_          #
-# \____/\____/_.___/\__,_/_/\__/          #
-#                                         #
-#   Hotline: hotline.tgcc@cea.fr          #
-#            +33 17757 4242               #
-#                                         #
-#      Help: $ machine.info               #
-#                                         #
-#  Web site: https://www-tgcc.ccc.cea.fr/ #
-#                                         #
-###########################################
+##########################################
+#          ┌─────────────────┐           #
+#          │▀▛▘              │           #
+#          │ ▌▞▀▖▛▀▖▝▀▖▀▜▘▞▀▖│           #
+#          │ ▌▌ ▌▙▄▘▞▀▌▗▘ ▛▀ │           #
+#          │ ▘▝▀ ▌  ▝▀▘▀▀▘▝▀▘│           #
+#          └─────────────────┘           #
+#  Hotline: hotline.tgcc@cea.fr          #
+#           +33 17757 4242               #
+#                                        #
+#     Help: $ machine.info               #
+#                                        #
+# Web site: https://www-tgcc.ccc.cea.fr/ #
+#                                        #
+##########################################
 
 ##################################
 # Variables for configure script #
@@ -33,14 +33,15 @@ define_modules_config()
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.5 nvhpc/22.1" # Cuda 11.5 donc c-amg ne marchera pas en multi-gpu, tant pis
          echo "export NVHPC_CUDA_HOME=\$CUDA_HOME;unset CUDA_HOME" >> $env # Pour desactiver des warnings a la compilation
       else
-         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
+         #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.2"      
       fi
    else
-      module="gnu/11.1.0 mpi/openmpi/4.0.5"
-      module="intel/20.0.4 mpi/openmpi/4.0.5"
+      #module="intel/20.0.4 mpi/openmpi/4.0.5"
+      # passage a gnu pour v1.9.2
+      module="gnu/11  mpi/openmpi/4.0.5"
    fi
-   module=$module" texlive cmake/3.22.2" # cmake 3.22 important pour AmgX et Nvidia-HPC
+   module="python3/3.8.10 swig/4.0.2 texlive cmake/3.22.2 "$module # cmake 3.22 important pour AmgX et Nvidia-HPC
    #
    # Ajout pour charger l'espace disque a la place de SCRATCHDIR pas encore disponible sur topaze:
    #[ "`id | grep gch0504`" != "" ] && sw=dfldatadir/gch0504
