@@ -4,7 +4,7 @@ This document constitutes the generic guide for \textbf{TRUST software} and its 
 
 You can create new project based on \trust plateform. Theses projects are named \textbf{"BALTIK"} projects.\\
 
-The two currently available modules include a VDF calculation module "Finite Difference Volume" and a VEF calculation module "Finite Element Volume". \\
+The currently available modules include a VDF calculation module "Finite Difference Volume", a VEF calculation module "Finite Element Volume" and a PolyMAC module "series of Marker-and-Cell (MAC) schemes that can handle any type of mesh (non-conform, non-orthogonal, poly-hedral types, ...)". For further details, you can see https://cea-trust-platform.github.io/classes/discretizations/ \\
 
 The VDF and VEF validated modules are designed to process the 2D or 3D flow of Newtonian, incompressible, weakly expandable fluids the density of which is a function of a local temperature and concentration values (Boussinesq approximation).
 
@@ -191,20 +191,20 @@ Here is the structure of \trust platform (cf Figure \ref{TRUST}):
 \section{Short history}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\trust is developed at the CEA/DES/ISAS/DM2S/STMF service.
+\trust is now developed at the CEA/DES/ISAS/DM2S/SGLS service.
 The project starts in 1994 and improved versions were built ever since:
 \begin{itemize}
 \item 1994: start of the project Trio\_U
-\item 01/1997: v1.0 (VDF only)
-\item 06/1998: v1.1 (VEF version)
-\item 04/2000: v1.2 (parallel version)
-\item 07/2001: v1.3 (radiation model)
-\item 11/2002: v1.4 (new LES turbulence models)
-\item 02/2006: v1.5 (VDF/VEF Front Tracking)
-\item 10/2009: v1.6 (data structure revamped)
-\item 06/2015: v1.7 (cut into \trust and \textbf{TrioCFD} + switch to open source)
-\item 11/2019: v1.8 (Turbulence features are moved from \trust to \textbf{TrioCFD} + PolyMAC discretization)
-\item 06/2022: v1.9 (Pb\_Multiphase in \trust + PolyMAC V2 discretization + Pb\_HEM in \textbf{TrioCFD})
+\item 01/1997: v1.0 - VDF only
+\item 06/1998: v1.1 - VEF version
+\item 04/2000: v1.2 - parallel version
+\item 07/2001: v1.3 - radiation model, in TrioCFD since v1.7
+\item 11/2002: v1.4 - new LES turbulence models, in TrioCFD since v1.8
+\item 02/2006: v1.5 - VDF/VEF Front Tracking, in TrioCFD since v1.7
+\item 10/2009: v1.6 - data structure revamped
+\item 06/2015: v1.7 - cut into \trust and \textbf{TrioCFD} + switch to open source
+\item 11/2019: v1.8 - Turbulence features are moved from \trust to \textbf{TrioCFD} + PolyMAC discretization
+\item 06/2022: v1.9 - Pb\_Multiphase in \trust + PolyMAC V2 discretization + Pb\_HEM in \textbf{TrioCFD}
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -222,7 +222,7 @@ Data files are written following some rules as shown below. But their language i
 \begin{itemize}
 \item lines between \textcolor{blue}{\# ... \#} and \textcolor{blue}{/* ... */} are comments,
 \item in that document, words in \textbf{bold} are \trust keywords, you can highlight them in your file editor with the command line (details in section \ref{Run}):\\
-\texttt{> trust -config nedit|vim|emacs}
+\texttt{> trust -config gedit|vim|emacs}
 \item braces "\{ \}" are elements that \trust reads and interprets, so don't forget them and \underline{put space} \underline{before and after them},
 \item elements between bracket "[ ]" are optional.
 \end{itemize}
@@ -269,13 +269,12 @@ Data files uses \underline{blocks}. They may be defined using the braces:\\
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
-        [ {\bf{export}} ] {\textit{ Type identificateur}}
+        {\textit{ Type identificateur}}
     \end{alltt}
     \end{minipage}}
     \end{center}
 
 \begin{itemize}
-\item \textbf{export}: if this keyword is included, \textit{identificateur} (identifier) will have a global range, if not, its range will be applied to the block only (the associated object will be destroyed on exiting the block).
 \item \textit{Type}: must be a type of object recognised by \trust, correspond to the C++ classes. The list of recognised types is given in the file hierarchie.dump.
 \item \textit{identificateur}: the identifier of the object type \textit{Type} created, correspond to an instancy of the C++ class \textit{Type}. \trust exits in error if the identifier has already been used.
 \end{itemize}
@@ -291,8 +290,8 @@ There are several object types. Physical objects, for example:
 More abstract object types also exist:
 
 \begin{itemize}
-\item A \textbf{VDF} or \textbf{VEF} according to the discretization type,
-\item A \textbf{Scheme\_euler\_explicit} to indicate the time scheme type,
+\item A \textbf{VDF}, \textbf{VEF} or \textbf{PolyMAC} according to the discretization type,
+\item A \textbf{Scheme\_euler\_explicit} to indicate the time scheme type, here it's a first-order explicit Euler scheme,
 \item A \textbf{Solveur\_pression} to denote the pressure system solver type,
 \item A \textbf{Uniform\_field} to define, for example, the gravity field.
 \end{itemize}

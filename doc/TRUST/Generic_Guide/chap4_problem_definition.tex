@@ -492,20 +492,17 @@ You can use the following convective scheme, following the recommendations of th
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diffusion}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-For the diffusive scheme, it is the same syntax:
-
+The diffusion term is more or less a Laplacien operator and is thus always discretized by a second order centered difference scheme. So you just need to do this:
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}
     \begin{alltt}
-    {\bf{diffusion}} \{ [\textit{diffusive\_scheme}] \}
+    {\bf{diffusion}} \{ \}
     \end{alltt}
     \end{minipage}}
     \end{center}
 
-You can choose your scheme with the help of the \href{\REFERENCEMANUAL\#blocdiffusion}{\trustref Reference Manual}.\\
 
-\Note that if you don't specify any diffusive scheme, the code automatically uses the standard diffusive scheme of order 2.
-If you don't want diffusion in your problem, you may use:
+\Note If you don't want diffusion in your problem, you may use:
 
     \begin{center}
     \fbox{ \begin{minipage}[c]{0.5\textwidth}

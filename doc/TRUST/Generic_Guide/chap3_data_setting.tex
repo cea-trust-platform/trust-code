@@ -147,7 +147,7 @@ This is useful for parallel calculation (see section \ref{parallel}) if well pla
 \end{figure}
 \end{itemize}
 
-Non standard and hybrid meshing are partially supported thanks to PolyMAC discretization! (cf Figure \ref{hybr})
+Non-standard and hybrid meshing are (partially, since not all physical models in TrioCFD are yet available with this discretization) supported thanks to PolyMAC discretization! (cf Figure \ref{hybr})
 
 \begin{figure}[h!]
 \begin{center}
@@ -207,7 +207,7 @@ Non standard and hybrid meshing are partially supported thanks to PolyMAC discre
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Import a mesh file}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-If your mesh was generated with an external tool like \href{http://www.salome-platform.org}{Salom\'e} (open source software), \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM} (commercial software), \href{http://gmsh.info/}{Gmsh} (open source software, included in \trust package) or \href{http://www-cast3m.cea.fr/}{Cast3M} (CEA software), then you must use one of the following keywords into your data file:
+If your mesh was generated with an external tool like \href{https://www.salome-platform.org}{Salom\'e} (open source software), \href{http://resource.ansys.com/Products/Other+Products/ANSYS+ICEM+CFD}{ICEM} (commercial software), \href{http://gmsh.info/}{Gmsh} (open source software, included in \trust package) or \href{http://www-cast3m.cea.fr/}{Cast3M} (CEA software), then you must use one of the following keywords into your data file:
 
 \begin{itemize}
 \item \href{\REFERENCEMANUAL\#readmed}{\textbf{Read\_MED}} for a MED file from \href{http://www.salome-platform.org}{Salom\'e}, \href{http://gmsh.info/}{Gmsh},... ,
@@ -394,7 +394,7 @@ If you want to learn how to make a mesh with Salom\'e or Gmsh and read it with \
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discretization}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-You have to specify the discretization type which can be \href{\REFERENCEMANUAL\#vdf}{\textbf{VDF}}, \href{\REFERENCEMANUAL\#ef}{\textbf{EF}} or \href{\REFERENCEMANUAL\#vefprep1b}{\textbf{VEFPreP1B}}.\\
+You have to specify the discretization type which can be \href{\REFERENCEMANUAL\#vdf}{\textbf{VDF}}, \href{\REFERENCEMANUAL\#ef}{\textbf{EF}} or \href{\REFERENCEMANUAL\#vefprep1b}{\textbf{VEFPreP1B}} or \href{\REFERENCEMANUAL\#polymac}{\textbf{PolyMAC}}.\\
 
 In \textbf{VDF} discretization, the locations of the unknowns are drawn in the Figure \ref{fig_VDF}.\\
 
@@ -559,10 +559,11 @@ To specify the wanted discretization, you have to add the following block to you
 
 You can add parameters to your discretization with the optional keyword \href{\REFERENCEMANUAL\#read}{\textbf{Read}} (see \href{\REFERENCEMANUAL\#vefprep1b}{\textbf{VEFPreP1B discretization}}).
 
-On the \href{http://triocfd.cea.fr/}{TrioCFD website}, you can find information about:
+On the \href{https://cea-trust-platform.github.io/}{TRUST website} and \href{https://triocfd.cea.fr}{TrioCFD website}, you can find information about:
 \begin{itemize}
-\item \textbf{VDF} discretization in the \href{http://triocfd.cea.fr/Documents/DOCS THESES/these_chatelain_2004.pdf}{PhD thesis of A. Chatelain},
-\item \textbf{VEFPreP1B} discretization (Crouzet-Raviart elements) in the \href{http://triocfd.cea.fr/Documents/DOCS THESES/these_fortin_2006.pdf}{PhD thesis of T. Fortin} and \href{http://triocfd.cea.fr/Documents/DOCS THESES/These_Heib_2003.pdf}{PhD thesis of S. Heib}.
+\item \textbf{VDF} discretization in the \href{https://triocfd.cea.fr/Documents/DOCS THESES/these_chatelain_2004.pdf}{PhD thesis of A. Chatelain},
+\item \textbf{VEFPreP1B} discretization (Crouzet-Raviart elements) in the \href{https://triocfd.cea.fr/Documents/DOCS THESES/these_fortin_2006.pdf}{PhD thesis of T. Fortin} and \href{https://triocfd.cea.fr/Documents/DOCS THESES/These_Heib_2003.pdf}{PhD thesis of S. Heib}.
+\item \textbf{PolyMAC} discretization in the \href{https://cea-trust-platform.github.io/classes/discretizations/}{TRUST website}.
 \end{itemize}
 
 
@@ -614,7 +615,7 @@ And also some available types of implicit schemes:
 
 For other schemes, see \href{\REFERENCEMANUAL\#schematempsbase}{this section} of the Reference Manual.\\
 
-\Note that you can use semi-implicit schemes activating the \textbf{diffusion\_implicite} keyword in your explicit time scheme.
+\Note that you can implicit diffusion term by activating the \textbf{diffusion\_implicite} keyword in your explicit time scheme.
 
 
 
