@@ -24,18 +24,16 @@ class Domaine_PolyMAC;
 
 class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC: public Source_base
 {
-  Declare_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC);
+  Declare_instanciable(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC);
 public:
   int has_interface_blocs() const override { return 1; }
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
-  void mettre_a_jour(double) override { }
-  void associer_pb(const Probleme_base&) override { }
-  void completer() override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void mettre_a_jour(double ) override { };
+  void associer_pb(const Probleme_base& ) override { };
 
 protected:
   std::vector<double> lambda;
-  int nb_groupes = 0;
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
 };

@@ -22,7 +22,7 @@
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_P0P1NC", Source_base);
+Implemente_instanciable(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_P0P1NC", Source_base);
 Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC_P0");
 
 Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC_P0P1NC");
@@ -34,6 +34,7 @@ Sortie& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::printOn(Sortie& s) c
 Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s)
 {
   double lambda_tmp;
+  int nb_groupes;
   s >> nb_groupes;
   Cerr << "Nombre de groupes a lire : " << nb_groupes << finl;
   for (int i = 0; i < nb_groupes; i++)
@@ -43,19 +44,14 @@ Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s)
       lambda.push_back(lambda_tmp);
     }
 
-  return s;
-}
-
-void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::completer()
-{
-  Source_base::completer();
-  const int N = equation().inconnue().valeurs().line_size();
-  if (N != nb_groupes)
+  const int N = equation().inconnue().valeurs().line_size(), ng = (int)lambda.size();
+  if (N != ng)
     {
-      Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << nb_groupes
+      Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << ng
            << " ) and the number of components of the unknown of the equation ( " << N << " )" << finl;
       Process::exit();
     }
+  return s ;
 }
 
 void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
