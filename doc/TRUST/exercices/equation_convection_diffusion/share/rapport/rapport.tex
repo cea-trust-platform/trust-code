@@ -490,13 +490,8 @@ que la classe \texttt{Convection\_Diffusion} possède une référence sur la nouvel
 Le traitement de cette nouvelle référence nécessite les actions suivantes:
 
 \begin{enumerate}
- \item le rajout de la référence \texttt{le\_constituant}. Pour ce faire, il est nécessaire d'implémenter les deux sources ci-dessous. Cette technique, non standard C++, est utilisée dans
+ \item le rajout de la référence \texttt{le\_constituant}. Pour ce faire, il est nécessaire d'inclure le fichier \texttt{TRUST\_Ref.h} et d'ajouter notre attribut en tant que référence  \texttt{REF(Constituant\_Avec\_Vitesse)}. Cette technique, non standard C++, est utilisée dans
  le logiciel \texttt{\textbf{TRUST}} pour éviter aux développeurs de manipuler des pointeurs qui peuvent être source des fuites mémoires. 
- 
-\lstinputlisting[language=C++]{Ref_Constituant_Avec_Vitesse.h}
-
-\lstinputlisting[language=C++]{Ref_Constituant_Avec_Vitesse.cpp}
-
  \item la surcharge des méthodes suivantes \footnote{Seul les fonctionnalités spécifiques de la nouvelle classe \texttt{Convection\_Diffusion} sont décrites.}:
   \begin{itemize}
 \item \texttt{associer\_milieu\_base}: Associate le milieu à l'équation de convection diffusion et plus précisément associer le  nouveau constituant \texttt{Constituant\_Avec\_Vitesse} 
