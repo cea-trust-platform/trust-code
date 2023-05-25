@@ -290,6 +290,7 @@ echo "   -force_system_mpi                 Use the system-provided MPI library."
 echo " "
 echo "   -rocalution=0|path to rocALUTION  Disable or specify extern rocALUTION library for AMD GPU computing (experimental). Default: using provided rocALUTION library."
 echo "   -cuda=path/to/nvcc | =download    Activate the CUDA support into several libraries for NVidia GPU computing (experimental)."
+echo "   -rocm                             Activate the ROCM support into several libraries for AMD GPU computing (experimental)."
 echo "   -openmp                           Enable OpenMP support (and GPU offload if -cuda is also used. In this case NVidia SDK is downloaded if not available)."
 
 echo " "
@@ -389,6 +390,7 @@ export TRUST_DISABLE_CHECK_SRC=0
 export TRUST_DISABLE_CHECKS=0
 export TRUST_INT64=0
 export TRUST_USE_CUDA=0
+export TRUST_USE_ROCM=0
 export TRUST_USE_AMGX=0
 export TRUST_USE_EOS=0
 export TRUST_USE_COOLPROP=0
@@ -517,6 +519,9 @@ do
    then
       export TRUST_USE_CUDA=1
       [ "${1#-cuda=}" != "$1" ] && CUDA_NVCC=${1#-cuda=}
+   elif [ "${1#-rocm}" != "$1" ]
+   then
+      export TRUST_USE_ROCM=1
    elif [ "${1#-with-eos}" != "$1" ]
    then
       # Proper include files for EOS are managed by script bin/cree_include

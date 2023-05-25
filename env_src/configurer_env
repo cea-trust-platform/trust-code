@@ -354,93 +354,6 @@ cherche_include_systeme()
 }
 
 ########################################################
-check_nvidia_cuda()
-{
-   #########################
-   # To active CUDA support:
-   #########################
-   # Fedora: See https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7
-   # -Drivers NVidia installed
-   # -Cuda Compilateur nvcc found or installed
-   # SDK     : CUDA_ROOT=/opt/nvidia/hpc_sdk	$CUDA_ROOT/include
-   ################
-   # Detection nvcc
-   ################
-   # Ajout du nvcc local en priorite si trouve pour coherence avec driver
-   # local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
-   m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";
-   # Verifie si NVIdia SDK que l'on pointe vers une version specifique du Cuda Toolkit integree et non sur /compilers/bin/nvcc:
-   if [ "`echo $CUDA_NVCC | grep Linux_x86_64`" != "" ]
-   then
-      echo "Using NVidia SDK."
-      if [ "`echo $CUDA_NVCC | grep /compilers/`" != "" ]
-      then
-        #echo "Error, you should specify a specific Cuda Toolkit version inside the HPC SDK:"
-        #ls `dirname $CUDA_NVCC`/../../cuda | grep "\."
-        #echo "Add -cuda=X.Y to configure option."
-        #exit -1
-        NVHPC_ROOT=`echo $CUDA_NVCC | sed "1,$ s?/compilers/bin/nvcc??g"`
-        NVCC_VERSION=`ls $NVHPC_ROOT/cuda | grep "\." | tail -1`
-        echo "Warning, using last Cuda version of the NVidia SDK: $NVCC_VERSION"
-        PATH=$NVHPC_ROOT/cuda/$NVCC_VERSION/bin:$PATH
-        e="`cherche_file CUDA_NVCC nvcc`";
-      fi
-   fi
-   ecrit $m"|"$e"|"$env;eval $e
-   # Version que le compilateur fonctionne (typiquement GNU trop recent par rapport a nvcc, build echoue ensuite dans PETSc ou AmgX)
-   CCBIN=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CCBIN=$TRUST_CC_BASE_EXTP
-   check_nvcc="touch test.cu && $CUDA_NVCC -ccbin $CCBIN -c ./test.cu -o test"
-   eval $check_nvcc
-   [ $? != 0 ] && echo "Error: $CUDA_NVCC -ccbin $CCBIN is not working." && exit -1
-   # Verifie la version de nvcc:
-   NVCC_VERSION=`$CUDA_NVCC --version 2>/dev/null | awk -F, '/release/ {gsub("release","",$2);gsub(" ","",$2);print $2}'`
-   echo "Cuda compiler version: $NVCC_VERSION"
-   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge EN MULTI-GPU, OK en MONO-GPU !)
-   # ToDo verifier si on ne peut pas compiler avec Cuda recent et utiliser Cuda ancien au runtime...
-   NVCC_VERSION_SUPPORTED=11.2
-   NVCC_VALIDE=`echo $NVCC_VERSION $NVCC_VERSION_SUPPORTED | awk '{if (1.0*$1<=1.0*$2) print 1}'`
-   if [ "$NVCC_VALIDE" = "" ]
-   then
-      echo "Warning, no valid cuda compiler (nvcc<=$NVCC_VERSION_SUPPORTED) found:"
-      echo "`$CUDA_NVCC --version 2>/dev/null`"
-      echo "Load Cuda module or use ./configure -cuda=download to download Cuda toolkit $NVCC_VERSION_SUPPORTED."
-      #exit -1
-   fi
-   # Verification par rapport au driver CUDA (ToDo: mieux detecter sur cluster: trust -gpu nvidia-smi)
-   NVIDIA_VERSION=`nvidia-smi 2>/dev/null | awk '/CUDA Version/ {print $(NF-1)}'`
-   if [ "$NVIDIA_VERSION" != "" ]
-   then
-      echo "NVidia driver version: $NVIDIA_VERSION"
-      NVCC_VALIDE=`echo $NVCC_VERSION $NVIDIA_VERSION | awk '{if (1.0*$1<=1.0*$2) print 1}'`
-      if [ "$NVCC_VALIDE" = "" ]
-      then
-         echo "The NVidia drivers are too old for your Cuda compiler."
-         echo "You will experience possible error code:222, reason: the provided PTX was compiled with an unsupported toolchain"
-         echo "-> Update NVidia driver or take older Cuda compiler."
-         exit -1
-      fi
-   fi
-   #########################
-   # Detection CUDA run time
-   #########################
-   # On se base sur nvcc pour trouver les librairies
-   # CUDA Toolkit:		NVIDIA HPC SDK:
-   # ROOT/bin/nvcc		ROOT/compilers/bin/nvcc
-   # ROOT/lib64 		ROOT/cuda/lib64
-   ROOT=${CUDA_NVCC%/bin/nvcc}
-   ROOT=${ROOT%/compilers}
-   CUDA_LIB=`ls $ROOT/lib64/libcudart.so.*.* $ROOT/cuda/lib64/libcudart.so.*.* 2>/dev/null | head -1`
-   [ "$CUDA_LIB" = "" ] && echo "Cuda lib libcudart.so not found!" && exit -1
-   CUDA_LIB=`dirname $CUDA_LIB 2>/dev/null`
-   echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
-   CUDA_ROOT=`dirname $CUDA_LIB 2>/dev/null`
-   for CUDA_INC_PATH in $CUDA_ROOT/include $CUDA_ROOT/include/cuda
-   do
-      [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
-   done
-}
-
-########################################################
 print_OS()
 {
    if [ -f /etc/os-release ]
@@ -730,14 +643,6 @@ case $arch in
 	   fi
 	   nvc++ -help 1>/dev/null 2>&1
 	   [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
-	   # Avec Cuda et OpenMP, on compile les extp (librairies, tools) avec GNU si pas defini dans les fichiers HOST.machine
-	   if [ "$TRUST_CC_BASE_EXTP" = "" ]
-	   then
-	      TRUST_CC_BASE_EXTP=g++       && [ -f /usr/bin/cuda-g++ ]      && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
-	      TRUST_cc_BASE_EXTP=gcc       && [ -f /usr/bin/cuda-gcc ]      && TRUST_cc_BASE_EXTP=/usr/bin/cuda-gcc
-	      TRUST_F77_BASE_EXTP=gfortran && [ -f /usr/bin/cuda-gfortran ] && TRUST_F77_BASE_EXTP=/usr/bin/cuda-gfortran
-	   fi
-	   export TRUST_CC_BASE_EXTP TRUST_cc_BASE_EXTP TRUST_F77_BASE_EXTP
 	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
@@ -1072,6 +977,21 @@ if [ "$compiler_found" = 0 ] ; then
   [ -f $TRUST_ROOT/NON_INSTALLED ] && Display_Missing_packages
   exit -1
 fi
+######################################################
+# Compilateur alternatif pour extp (librairies, tools)
+######################################################
+# Si pas deja defini dans les fichiers HOST.machine, avec certains compilateurs, on compile les extp (librairies, tools) avec GNU:
+if [ "$TRUST_CC_BASE_EXTP" = "" ]
+then
+   CC_BASE=`basename $TRUST_CC_BASE`
+   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = crayCC ]
+   then
+      TRUST_CC_BASE_EXTP=g++       && [ -f /usr/bin/cuda-g++ ]      && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
+      TRUST_cc_BASE_EXTP=gcc       && [ -f /usr/bin/cuda-gcc ]      && TRUST_cc_BASE_EXTP=/usr/bin/cuda-gcc
+      TRUST_F77_BASE_EXTP=gfortran && [ -f /usr/bin/cuda-gfortran ] && TRUST_F77_BASE_EXTP=/usr/bin/cuda-gfortran
+   fi
+   export TRUST_CC_BASE_EXTP TRUST_cc_BASE_EXTP TRUST_F77_BASE_EXTP
+fi
 
 # Gestion d'une librairie systeme plus recente que miniconda (ex: libstdc++.so.6.0.29 sur Fedora>=34 pour libstdc++.so.6.0.28 dans conda avec libstdcxx-ng=9.3.0), on vire:
 # Le pb se produit au niveau du test Python de l'import MEDCoupling ou d'un editeur comme gedit: GLIBCXX_X.Y.Z not found
@@ -1079,7 +999,7 @@ stdcpp_conda=`cd $TRUST_ROOT/exec/python/lib 2>/dev/null;ls libstdc++.so.6.0.* 2
 if [ "$stdcpp_conda" != "" ]
 then
     root_gnu=`dirname $TRUST_F77_BASE` && root_gnu=`dirname $root_gnu`
-    libstd_sys=`ls $root_gnu/lib64/libstdc++.so.6.0.?? /usr/lib64/libstdc++.so.6.0.* /usr/lib*/*64-linux-gnu/libstdc++.so.6.0.* 2>/dev/null | head -1`
+    libstd_sys=`ls $root_gnu/lib64/libstdc++.so.6.0.?? /usr/lib64/libstdc++.so.6.0.* /usr/lib*/*64-linux-gnu/libstdc++.so.6.0.* $GCC_PREFIX/*/lib64/libstdc++.so.6.0.?? 2>/dev/null | head -1`
     stdcpp_sys=`echo $libstd_sys | $TRUST_Awk -F/ '{print $NF}' | cut -d'.' -f3-6`
     remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
     if [ $remove_stdcpp_conda -eq 1 ]
@@ -1094,21 +1014,6 @@ then
        done
     fi
 fi
-
-
-######################################################################
-# On va avoir besoin de cmake 2.8 pour Metis et 2.8.10.2 pour VisIt 2.7.0
-# Update to 3.0.1 to fix recursive cmake
-# Update to 4.0 and include in conda
-######################################################################
-#echo "Installing cmake in conda ... "
-#$TRUST_ROOT/exec/python/bin/conda install -c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels cmake -y  1>>$TRUST_ROOT/exec/conda_python.log 2>&1
-## If cmake from conda has not been correctly installed, we exit with an error
-#if [ $? != 0 ]
-#then
-#   echo "Error while installing 'cmake' from Miniconda2 local_channel. see $TRUST_ROOT/exec/conda_python.log" >> $TRUST_ROOT/NON_INSTALLED
-#   Display_Missing_packages && exit -1
-#fi
 
 m="# Path to dtterm command";e="`cherche_file Dtterm $Dtterm`";ecrit $m"|"$e"|"$env;eval $e
 m="# Path to xterm command";e="`cherche_file Xterm xterm rxvt konsole`";ecrit $m"|"$e"|"$env;eval $e
@@ -1141,7 +1046,7 @@ cd $TRUST_ROOT/env
 # Mozilla est desormais supporte mais Konqueror pas encore completement ...
 #echo $ECHO_OPTS "Trying to find and test a browser...\c"
 m="# Path to a browser";e="`cherche_file TRUST_WEBBROWSER google-chrome firefox mozilla-firefox mozilla netscape`";ecrit $m"|"$e"|"$env
-#echo OK
+
 ###############
 # NATIVE BLAS #
 ###############
@@ -1155,12 +1060,6 @@ then
    # MKL: Math Kernel Library d'INTEL detecte (seems to work with Intel or Gnu compilers)
    TRUST_BLAS_LAPACK=`ls $MKLROOT/lib/*64*/libmkl_core.a $MKL_BASE/lib/*64*/libmkl_core.a 2>/dev/null | head -1`
    [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
-elif [ "$CRAY_LIBSCI_PREFIX" != "" ] || [ "$CRAY_LIBSCI_PREFIX_DIR" != "" ]
-then
-   # CRAY blas
-   TRUST_BLAS_LAPACK=`ls $CRAY_LIBSCI_PREFIX/lib/libsci_cray.a $CRAY_LIBSCI_PREFIX_DIR/lib/libsci_cray.a 2>/dev/null | head -1`
-   [ "$TRUST_BLAS_LAPACK" = "" ] && TRUST_BLAS_LAPACK=`find $CRAY_LIBSCI_BASE_DIR -name libsci_cray.a 2>/dev/null | head -1` # Nouveau cray-libsci/22.11.1.2
-   [ "$TRUST_BLAS_LAPACK" != "" ] && TRUST_BLAS_LAPACK=`dirname $TRUST_BLAS_LAPACK`
 fi
 m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && export TRUST_BLAS_LAPACK";ecrit $m"|"$e"|"$env
 
@@ -1172,7 +1071,88 @@ then
    TRUST_USE_AMGX=1
    e="TRUST_USE_AMGX=\"$TRUST_USE_AMGX\" && export TRUST_USE_AMGX" && m="# Use AmgX ?" && ecrit $m"|"$e"|"$env && eval $e
    [ "$TRUST_USE_AMGX" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option to build AmgXWrapper/AmgX." && exit -1
-   check_nvidia_cuda
+   #########################
+   # To active CUDA support:
+   #########################
+   # Fedora: See https://forums.developer.nvidia.com/t/cuda-10-installation-on-fedora-30-with-gcc-9-1-1-20190503/74989/7
+   # -Drivers NVidia installed
+   # -Cuda Compilateur nvcc found or installed
+   # SDK     : CUDA_ROOT=/opt/nvidia/hpc_sdk	$CUDA_ROOT/include
+   ################
+   # Detection nvcc
+   ################
+   # Ajout du nvcc local en priorite si trouve pour coherence avec driver
+   # local_nvcc=`ls /usr/local/*/bin/nvcc 2>/dev/null | tail -1` && [ "$local_nvcc" != "" ] && export PATH=`dirname $local_nvcc`:$PATH
+   m="# Path to CUDA compiler";e="`cherche_file CUDA_NVCC nvcc`";
+   # Verifie si NVIdia SDK que l'on pointe vers une version specifique du Cuda Toolkit integree et non sur /compilers/bin/nvcc:
+   if [ "`echo $CUDA_NVCC | grep Linux_x86_64`" != "" ]
+   then
+      echo "Using NVidia SDK."
+      if [ "`echo $CUDA_NVCC | grep /compilers/`" != "" ]
+      then
+        #echo "Error, you should specify a specific Cuda Toolkit version inside the HPC SDK:"
+        #ls `dirname $CUDA_NVCC`/../../cuda | grep "\."
+        #echo "Add -cuda=X.Y to configure option."
+        #exit -1
+        NVHPC_ROOT=`echo $CUDA_NVCC | sed "1,$ s?/compilers/bin/nvcc??g"`
+        NVCC_VERSION=`ls $NVHPC_ROOT/cuda | grep "\." | tail -1`
+        echo "Warning, using last Cuda version of the NVidia SDK: $NVCC_VERSION"
+        PATH=$NVHPC_ROOT/cuda/$NVCC_VERSION/bin:$PATH
+        e="`cherche_file CUDA_NVCC nvcc`";
+      fi
+   fi
+   ecrit $m"|"$e"|"$env;eval $e
+   # Version que le compilateur fonctionne (typiquement GNU trop recent par rapport a nvcc, build echoue ensuite dans PETSc ou AmgX)
+   CCBIN=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CCBIN=$TRUST_CC_BASE_EXTP
+   check_nvcc="touch test.cu && $CUDA_NVCC -ccbin $CCBIN -c ./test.cu -o test"
+   eval $check_nvcc
+   [ $? != 0 ] && echo "Error: $CUDA_NVCC -ccbin $CCBIN is not working." && exit -1
+   # Verifie la version de nvcc:
+   NVCC_VERSION=`$CUDA_NVCC --version 2>/dev/null | awk -F, '/release/ {gsub("release","",$2);gsub(" ","",$2);print $2}'`
+   echo "Cuda compiler version: $NVCC_VERSION"
+   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge EN MULTI-GPU, OK en MONO-GPU !)
+   # ToDo verifier si on ne peut pas compiler avec Cuda recent et utiliser Cuda ancien au runtime...
+   NVCC_VERSION_SUPPORTED=11.2
+   NVCC_VALIDE=`echo $NVCC_VERSION $NVCC_VERSION_SUPPORTED | awk '{if (1.0*$1<=1.0*$2) print 1}'`
+   if [ "$NVCC_VALIDE" = "" ]
+   then
+      echo "Warning, no valid cuda compiler (nvcc<=$NVCC_VERSION_SUPPORTED) found:"
+      echo "`$CUDA_NVCC --version 2>/dev/null`"
+      echo "Load Cuda module or use ./configure -cuda=download to download Cuda toolkit $NVCC_VERSION_SUPPORTED."
+      #exit -1
+   fi
+   # Verification par rapport au driver CUDA (ToDo: mieux detecter sur cluster: trust -gpu nvidia-smi)
+   NVIDIA_VERSION=`nvidia-smi 2>/dev/null | awk '/CUDA Version/ {print $(NF-1)}'`
+   if [ "$NVIDIA_VERSION" != "" ]
+   then
+      echo "NVidia driver version: $NVIDIA_VERSION"
+      NVCC_VALIDE=`echo $NVCC_VERSION $NVIDIA_VERSION | awk '{if (1.0*$1<=1.0*$2) print 1}'`
+      if [ "$NVCC_VALIDE" = "" ]
+      then
+         echo "The NVidia drivers are too old for your Cuda compiler."
+         echo "You will experience possible error code:222, reason: the provided PTX was compiled with an unsupported toolchain"
+         echo "-> Update NVidia driver or take older Cuda compiler."
+         exit -1
+      fi
+   fi
+   #########################
+   # Detection CUDA run time
+   #########################
+   # On se base sur nvcc pour trouver les librairies
+   # CUDA Toolkit:		NVIDIA HPC SDK:
+   # ROOT/bin/nvcc		ROOT/compilers/bin/nvcc
+   # ROOT/lib64 		ROOT/cuda/lib64
+   ROOT=${CUDA_NVCC%/bin/nvcc}
+   ROOT=${ROOT%/compilers}
+   CUDA_LIB=`ls $ROOT/lib64/libcudart.so.*.* $ROOT/cuda/lib64/libcudart.so.*.* 2>/dev/null | head -1`
+   [ "$CUDA_LIB" = "" ] && echo "Cuda lib libcudart.so not found!" && exit -1
+   CUDA_LIB=`dirname $CUDA_LIB 2>/dev/null`
+   echo "Cuda libraries CUDA_LIB=$CUDA_LIB"
+   CUDA_ROOT=`dirname $CUDA_LIB 2>/dev/null`
+   for CUDA_INC_PATH in $CUDA_ROOT/include $CUDA_ROOT/include/cuda
+   do
+      [ -f $CUDA_INC_PATH/cuda.h ] && export CUDA_INC_PATH && break
+   done
    [ "$CUDA_ROOT" = "" ] && echo "CUDA libraries not found!" && exit -1
    m="# PATH to CUDA";
    e="CUDA_ROOT=\"$CUDA_ROOT\" && export CUDA_ROOT";
@@ -1189,6 +1169,24 @@ then
    echo "ADD_LD_LIBRARY_PATH \$TRUST_ROOT/lib/src/LIBAMGX/AmgX/lib" >> $env
 else
    TRUST_USE_CUDA=0
+fi
+
+########
+# ROCM #
+########
+if [ "$TRUST_USE_ROCM" = 1 ]
+then
+   # Detection de ROCM_PATH
+   [ "$ROCM_PATH" = "" ] && [ -d /opt/rocm ] && ROCM_PATH=/opt/rocm
+   [ "$ROCM_PATH" = "" ] && echo "Error, can't find ROCM environment. Specify ROCM_PATH." && exit -1
+   # Ecriture
+   m="# TRUST will use ROCM ?";e="TRUST_USE_ROCM=\"$TRUST_USE_ROCM\" && export TRUST_USE_ROCM";ecrit $m"|"$e"|"$env
+   m="# PATH to ROCM";e="ROCM_PATH=\"$ROCM_PATH\" && export ROCM_PATH";ecrit $m"|"$e"|"$env;eval $e
+   echo "ADD_PATH \$ROCM_PATH/bin" >> $env
+   echo "ADD_LD_LIBRARY_PATH \$ROCM_PATH/lib" >> $env
+   # Pour la carte du PC AMD:
+   # https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
+   [ "`$ROCM_PATH/bin/rocminfo 2>&1 | grep gfx1032`" != "" ] && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
 fi
 
 #############
@@ -1768,8 +1766,9 @@ case $TRUST_ARCH_CC in
    linux_crayCC) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
     CppFlags="-O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
-    SYSLIBS="-lrt "
+    SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
     F77Flags="-O3 -fPIC"
+    F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f !
     ccFLAGS="-O3 -fPIC"
     ShLibFlag="\$(TRUST_CC) -shared"
 	;;
@@ -1891,14 +1890,14 @@ FC=$TRUST_F77_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && FC=$TRUST_F77_BASE_EXTP
 echo $ECHO_OPTS "Is $FC fortran 90 compliant to compile MUMPS ? \c"
 $FC -c testf90.f 1>testf90.log 2>&1
 # 12/02/10: Ajout test sur la version de gfortran car la compilation de MUMPS fait planter gfortran 4.0.1
-if [ $? = 0 ] && [ "`$TRUST_F77_BASE -v 2>&1 | $TRUST_Awk '/gcc version / {print $3}'`" != "4.0.1" ]
+if [ $? = 0 ] && [ "`$FC -v 2>&1 | $TRUST_Awk '/gcc version / {print $3}'`" != "4.0.1" ]
 then
    TRUST_USE_MUMPS=1
    echo "Yes"
 else
    TRUST_USE_MUMPS=0
    echo "No"
-   echo "Error, check your $TRUST_F77_BASE compiler." && exit -1
+   echo "Error, check your $FC compiler." && exit -1
 fi
 m="# MUMPS will be used ?";e="TRUST_USE_MUMPS=\"$TRUST_USE_MUMPS\" && export TRUST_USE_MUMPS";ecrit $m"|"$e"|"$env
 
@@ -2012,10 +2011,9 @@ then
    # Compilateurs OpenMP ranges du plus teste au moins teste...
    if [ $TRUST_OPENMP_CC = crayCC ]
    then
-      # crayCC est le seul compilateur OpenMP qui compile tout le code...
       [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx64-nvidia-cuda && march=""
       # ToDo detecter le march automatiquement (Adastra arch differente...): Se baser sur rocm-smi et rocm-info
-      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amd-amdhsa   && march="-march=gfx90a" # Device AMD Radeon MI200
+      [ "$TRUST_USE_ROCM" = 1 ] && target=amdgcn-amd-amdhsa   && march="-march=gfx90a" # Device AMD Radeon MI200
       # -fsave-loopmark est une option pour creer un .lst a la compilation mais il faut aussi le retirer pour eviter un crash du compilateur
       openmp_target="-fopenmp-targets=$target -Xopenmp-target=$target $march "
   elif [ $TRUST_OPENMP_CC = nvc++ ]
@@ -2036,7 +2034,7 @@ then
    elif [ $TRUST_OPENMP_CC = clang++ ]
    then
       openmp="-fopenmp"
-      #[ "$ROCM_PATH" != "" ]    && target=amdgcn  && march="-march=gfx90a"
+      #[ "$TRUST_USE_ROCM" = 1 ]    && target=amdgcn  && march="-march=gfx90a"
       if [ "$TRUST_USE_CUDA" = 1 ] # Compilation de clang pour offload OpenMP: See https://gist.github.com/anjohan/9ee746295ea1a00d9ca69415f40fafc9
       then
          target=nvptx64 && march=""
@@ -2050,7 +2048,7 @@ then
       openmp="-fopenmp"
       target=disable # Pas de carte See https://gcc.gnu.org/wiki/Offloading
       [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx-none 	&& march="" # Complique gcc a recompiler: voir https://gist.github.com/matthiasdiener/e318e7ed8815872e9d29feb3b9c8413f
-      [ "$ROCM_PATH" != "" ]    && target=amdgcn-amdhsa	&& march="-march=gfx90a" # Device AMD Radeon MI200
+      [ "$TRUST_USE_ROCM" = 1 ]    && target=amdgcn-amdhsa	&& march="-march=gfx90a" # Device AMD Radeon MI200
       openmp_target="-foffload=$target $march"
    elif [ $TRUST_OPENMP_CC = icpc ]
    then

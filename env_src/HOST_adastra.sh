@@ -12,7 +12,7 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric"
+   module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric gcc-mixed/11.2.0"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
