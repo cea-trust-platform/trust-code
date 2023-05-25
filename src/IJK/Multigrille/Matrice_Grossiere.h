@@ -35,6 +35,43 @@ public:
   {
     return renum_(k+1, j+1, i+1);
   }
+  const int& renum_m2(int i, int j, int k) const
+  {
+    return renum_m2_(k+1, j+1, i+1);
+  }
+  const int& renum_m1(int i, int j, int k) const
+  {
+    return renum_m1_(k+1, j+1, i+1);
+  }
+  const int& renum_p1(int i, int j, int k) const
+  {
+    return renum_p1_(k+1, j+1, i+1);
+  }
+  const int& renum_p2(int i, int j, int k) const
+  {
+    return renum_p2_(k+1, j+1, i+1);
+  }
+
+  const double& ponderation_shear_m2(int i, int j, int k) const
+  {
+    return ponderation_shear_m2_(k+1, j+1, i+1);
+  }
+  const double& ponderation_shear_m1(int i, int j, int k) const
+  {
+    return ponderation_shear_m1_(k+1, j+1, i+1);
+  }
+  const double& ponderation_shear_0(int i, int j, int k) const
+  {
+    return ponderation_shear_0_(k+1, j+1, i+1);
+  }
+  const double& ponderation_shear_p1(int i, int j, int k) const
+  {
+    return ponderation_shear_p1_(k+1, j+1, i+1);
+  }
+  const double& ponderation_shear_p2(int i, int j, int k) const
+  {
+    return ponderation_shear_p2_(k+1, j+1, i+1);
+  }
 
   const Matrice_Base& matrice() const
   {
@@ -54,6 +91,46 @@ protected:
   {
     return renum_(k+1, j+1, i+1);
   }
+  int& renum_m2(int i, int j, int k)
+  {
+    return renum_m2_(k+1, j+1, i+1);
+  }
+  int& renum_m1(int i, int j, int k)
+  {
+    return renum_m1_(k+1, j+1, i+1);
+  }
+  int& renum_p1(int i, int j, int k)
+  {
+    return renum_p1_(k+1, j+1, i+1);
+  }
+  int& renum_p2(int i, int j, int k)
+  {
+    return renum_p2_(k+1, j+1, i+1);
+  }
+
+
+  double& ponderation_shear_m2(int i, int j, int k)
+  {
+    return ponderation_shear_m2_(k+1, j+1, i+1);
+  }
+  double& ponderation_shear_m1(int i, int j, int k)
+  {
+    return ponderation_shear_m1_(k+1, j+1, i+1);
+  }
+  double& ponderation_shear_0(int i, int j, int k)
+  {
+    return ponderation_shear_0_(k+1, j+1, i+1);
+  }
+  double& ponderation_shear_p1(int i, int j, int k)
+  {
+    return ponderation_shear_p1_(k+1, j+1, i+1);
+  }
+  double& ponderation_shear_p2(int i, int j, int k)
+  {
+    return ponderation_shear_p2_(k+1, j+1, i+1);
+  }
+
+
 
   void add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting, double offset = 0.);
@@ -66,6 +143,15 @@ protected:
 
   // renum_(k+1,j+1,i+1) = indice de l'inconnue dans le vecteur inconnue de la matrice
   IntTab renum_;
+  IntTab renum_m2_;
+  IntTab renum_m1_;
+  IntTab renum_p1_;
+  IntTab renum_p2_;
+  DoubleTab ponderation_shear_m2_;
+  DoubleTab ponderation_shear_m1_;
+  DoubleTab ponderation_shear_0_;
+  DoubleTab ponderation_shear_p1_;
+  DoubleTab ponderation_shear_p2_;
 
   IntLists voisins_;
   DoubleLists coeffs_;
