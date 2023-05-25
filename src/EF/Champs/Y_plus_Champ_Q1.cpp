@@ -13,26 +13,34 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_P0_EF_included
-#define Champ_P0_EF_included
-
-#include <Champ_Inc_P0_base.h>
+#include <Y_plus_Champ_Q1.h>
+#include <Champ_Q1_EF.h>
 #include <Domaine_Cl_EF.h>
-#include <Domaine_EF.h>
 
-class Domaine_EF;
+Implemente_instanciable(Y_plus_Champ_Q1, "Y_plus_Champ_Q1", Champ_Fonc_P0_EF);
 
-/*! @brief classe Champ_P0_EF Classe qui represente un champ discret P0 par element
- *  associe a un domaine discretise de type Domaine_EF
- *
- * @sa Champ_Inc_P0_base
- */
-class Champ_P0_EF: public Champ_Inc_P0_base
+Sortie& Y_plus_Champ_Q1::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+
+Entree& Y_plus_Champ_Q1::readOn(Entree& s) { return s; }
+
+void Y_plus_Champ_Q1::associer_champ(const Champ_Q1_EF& un_champ)
 {
-  Declare_instanciable(Champ_P0_EF);
-public:
-  const Domaine_EF& domaine_EF() const;
-  int imprime(Sortie&, int) const override;
-};
+  mon_champ_ = un_champ;
+}
 
-#endif /* Champ_P0_EF_included */
+void Y_plus_Champ_Q1::me_calculer(double tps)
+{
+  mon_champ_->calcul_y_plus(le_dom_Cl_EF.valeur(), valeurs());
+}
+
+const Domaine_Cl_dis_base& Y_plus_Champ_Q1::domaine_Cl_dis_base() const
+{
+  return le_dom_Cl_EF.valeur();
+}
+
+void Y_plus_Champ_Q1::mettre_a_jour(double tps)
+{
+  me_calculer(tps);
+  changer_temps(tps);
+  Champ_Fonc_base::mettre_a_jour(tps);
+}

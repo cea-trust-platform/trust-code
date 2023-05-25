@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,8 @@
 #define Champ_Q1_EF_included
 
 #include <Champ_Inc_Q1_base.h>
+#include <Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
 
 class Domaine_EF;
 
@@ -28,6 +30,7 @@ public:
   int imprime(Sortie&, int) const override;
   void gradient(DoubleTab&);
   void cal_rot_ordre1(DoubleTab&);
+  void calcul_y_plus(const Domaine_Cl_EF&, DoubleTab&);
 };
 
 #endif /* Champ_Q1_EF_included */

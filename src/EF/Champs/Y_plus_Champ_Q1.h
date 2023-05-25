@@ -13,26 +13,40 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_P0_EF_included
-#define Champ_P0_EF_included
+#ifndef Y_plus_Champ_Q1_included
+#define Y_plus_Champ_Q1_included
 
-#include <Champ_Inc_P0_base.h>
-#include <Domaine_Cl_EF.h>
-#include <Domaine_EF.h>
+#include <Domaine_Cl_dis_base.h>
+#include <Champ_Fonc_P0_EF.h>
+#include <Champ_y_plus.h>
+#include <TRUST_Ref.h>
 
-class Domaine_EF;
+class Domaine_Cl_EF;
+class Champ_Q1_EF;
 
-/*! @brief classe Champ_P0_EF Classe qui represente un champ discret P0 par element
- *  associe a un domaine discretise de type Domaine_EF
+/*! @brief classe Y_plus_Champ_Q1
  *
- * @sa Champ_Inc_P0_base
+ * @sa Champ_y_plus Champ_Fonc_P0_EF
  */
-class Champ_P0_EF: public Champ_Inc_P0_base
+class Y_plus_Champ_Q1: public Champ_y_plus, public Champ_Fonc_P0_EF
 {
-  Declare_instanciable(Champ_P0_EF);
+  Declare_instanciable(Y_plus_Champ_Q1);
 public:
-  const Domaine_EF& domaine_EF() const;
-  int imprime(Sortie&, int) const override;
+  void mettre_a_jour(double) override;
+  void associer_champ(const Champ_Q1_EF&);
+  void me_calculer(double) override;
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const;
+
+  inline const Champ_Q1_EF& mon_champ() const { return mon_champ_.valeur(); }
+
+  inline void associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
+  {
+    le_dom_Cl_EF = (const Domaine_Cl_EF&) le_dom_Cl_dis_base;
+  }
+
+protected:
+  REF(Champ_Q1_EF) mon_champ_;
+  REF(Domaine_Cl_EF) le_dom_Cl_EF;
 };
 
-#endif /* Champ_P0_EF_included */
+#endif /* Y_plus_Champ_Q1_included */

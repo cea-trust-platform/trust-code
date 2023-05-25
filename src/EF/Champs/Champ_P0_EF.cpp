@@ -16,6 +16,13 @@
 #include <Champ_P0_EF.h>
 #include <Domaine_EF.h>
 #include <Domaine.h>
+#include <distances_EF.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Equation_base.h>
+#include <Fluide_base.h>
+#include <Champ_Uniforme.h>
+#include <Mod_turb_hyd_base.h>
 
 Implemente_instanciable(Champ_P0_EF,"Champ_P0_EF",Champ_Inc_P0_base);
 
