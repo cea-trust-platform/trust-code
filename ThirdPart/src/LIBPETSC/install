@@ -347,7 +347,7 @@ then
    # Possibilite d'afficher la matrice sous forme graphique uniquement sur PC avec libX11 disponible (-mat_view draw https://petsc.org/main/docs/manualpages/Mat/MatView.html)
    [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ls /usr/lib*/libX11.so 2>/dev/null`" != "" ] && options="--with-x=1" # Car --with-x=1 pose probleme pour Insure
    # Ajout de HDF
-   options=$options" --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install"
+   # options=$options" --with-hdf5-dir=$TRUST_ROOT/lib/src/LIBMED/hdf5_install"
 else
    options="--with-x=0"
 fi
@@ -518,10 +518,7 @@ fi
 ##########
 # Valgrind
 ##########
-package_valgrind=$TRUST_ROOT/exec/valgrind
-# Provisoire (need to add --with-valgrind-include to avoid error valgrind/valgrind.h not found ?)
-#[ -d $package_valgrind ] && with_packages=$with_packages" --with-valgrind-dir=$package_valgrind --with-valgrind-include=$package_valgrind/include"
-[ -d $package_valgrind ] && with_packages=$with_packages" --with-valgrind-include=$package_valgrind/include"
+#package_valgrind=$TRUST_ROOT/exec/valgrind/include && [ -d $package_valgrind ] && with_packages=$with_packages" --with-valgrind-include=$package_valgrind"
 
 ########
 # PYTHON
