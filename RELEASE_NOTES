@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------------------------
-Release notes version 1.9.2_beta : Enhancements, modifications and corrected bugs since version 1.9.1 :
+Release notes version 1.9.2 : Enhancements, modifications and corrected bugs since version 1.9.1 :
 --------------------------------------------------------------------------------------------------
 16/05/23 (TRUST) Fix          : In PolyMAC, auxiliary variables are now ignored reduction_0D fields. see check_boundary_diffusion_thermal_balance validation sheet.
 16/05/23 (TRUST) Fix          : Boundary fluxes (flux_bord_) had the wrong sign in PolyMAC.

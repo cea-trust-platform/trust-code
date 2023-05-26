@@ -6,19 +6,19 @@ This software is **OpenSource ([BSD license](https://github.com/cea-trust-platfo
 
 You can visit **[TRUST website](https://cea-trust-platform.github.io/)**
 
-# **How to install TRUST-1.9.1 version ?**
+# **How to install TRUST-1.9.2 version ?**
 
 ### **First method (git configuration)**
 
 ```bash
 # Check out the sources for TRUST
-git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.1
+git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.2
 # Move to the cloned TRUST folder
-cd TRUST-1.9.1
+cd TRUST-1.9.2
 # Download the required external packages
-wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.1.tar
+wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.2.tar
 # Unzip the downloaded external packages folder
-tar xf externalpackages-1.9.1.tar
+tar xf externalpackages-1.9.2.tar
 # Have a look at the available configuration options
 ./configure -help
 # Execute the configure script with your selected options
@@ -39,11 +39,11 @@ type mpicxx
 
 ```bash
 # Download the sources for TRUST
-wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.1/TRUST-1.9.1.tar.gz
+wget ftp://ftp.cea.fr/pub/TRUST/TRUST/Version1.9.2/TRUST-1.9.2.tar.gz
 # Unzip the downloaded folder
-tar xzf TRUST-1.9.1.tar.gz
+tar xzf TRUST-1.9.2.tar.gz
 # Move to the unziped TRUST folder
-cd TRUST-1.9.1
+cd TRUST-1.9.2
 # Execute the configure script with your selected options
 ./configure $OPTIONS
 ```
