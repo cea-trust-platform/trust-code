@@ -233,11 +233,11 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
       //Process::exit();
     }
 
-  // ToDo OpenMP ici dans le solve AmgXWrapper il y'a aussi de la copie qui est compte donc dans gpu_kernel_counter_
-  statistiques().begin_count(gpu_kernel_counter_);
+  // ToDo OpenMP ici dans le solve AmgXWrapper il y'a aussi de la copie qui est compte donc dans gpu_library_counter_
+  statistiques().begin_count(gpu_library_counter_);
   SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
-  statistiques().end_count(gpu_kernel_counter_);
-  Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_kernel_counter_) << finl;
+  statistiques().end_count(gpu_library_counter_);
+  Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_library_counter_) << finl;
   return nbiter(residu);
 }
 

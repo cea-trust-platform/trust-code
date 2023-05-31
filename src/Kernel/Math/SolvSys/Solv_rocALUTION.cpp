@@ -467,11 +467,11 @@ double residual(const Matrice_Base& a, const DoubleVect& b, const DoubleVect& x)
 }
 double residual_device(const GlobalMatrix<double>& a, const GlobalVector<double>& b, const GlobalVector<double>& x, GlobalVector<double>& e)
 {
-  if (Objet_U::computeOnDevice) statistiques().begin_count(gpu_kernel_counter_);
+  if (Objet_U::computeOnDevice) statistiques().begin_count(gpu_library_counter_);
   a.Apply(x, &e);
   e.ScaleAdd(-1.0, b);
   double norm = e.Norm();
-  if (Objet_U::computeOnDevice) statistiques().end_count(gpu_kernel_counter_);
+  if (Objet_U::computeOnDevice) statistiques().end_count(gpu_library_counter_);
   return norm;
 }
 #endif
@@ -661,9 +661,9 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     }
   // Calcul des residus sur le host la premiere fois (plus sur) puis sur device ensuite (plus rapide)
   double res_initial = first_solve_ ? residual(a, b, x) : residual_device(mat, rhs, sol, e);
-  if (gpu) statistiques().begin_count(gpu_kernel_counter_);
+  if (gpu) statistiques().begin_count(gpu_library_counter_);
   ls->Solve(rhs, &sol);
-  if (gpu) statistiques().end_count(gpu_kernel_counter_);
+  if (gpu) statistiques().end_count(gpu_library_counter_);
   if (ls->GetSolverStatus()==3) Process::exit("Divergence for solver.");
   if (ls->GetSolverStatus()==4)
     {

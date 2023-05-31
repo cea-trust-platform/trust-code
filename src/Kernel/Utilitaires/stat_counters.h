@@ -72,5 +72,6 @@ extern Stat_Counter_Id probleme_combustible_;
 
 extern Stat_Counter_Id gpu_copytodevice_counter_;
 extern Stat_Counter_Id gpu_copyfromdevice_counter_;
+extern Stat_Counter_Id gpu_library_counter_;
 extern Stat_Counter_Id gpu_kernel_counter_;
 

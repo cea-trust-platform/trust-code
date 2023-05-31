@@ -83,6 +83,7 @@ Stat_Counter_Id probleme_combustible_;
 
 Stat_Counter_Id gpu_copytodevice_counter_;
 Stat_Counter_Id gpu_copyfromdevice_counter_;
+Stat_Counter_Id gpu_library_counter_;
 Stat_Counter_Id gpu_kernel_counter_;
 
 // Initialisation des differents compteurs.
@@ -180,9 +181,10 @@ void declare_stat_counters()
   mpi_barrier_counter_   = statistiques().new_counter(2, "MPI_barrier",   "MPI_allreduce", 1);
 
   // GPU
+  gpu_library_counter_        = statistiques().new_counter(2, "GPU_library",       "GPU_library", 0);
+  gpu_kernel_counter_         = statistiques().new_counter(2, "GPU_kernel",        "GPU_kernel", 0);
   gpu_copytodevice_counter_   = statistiques().new_counter(2, "GPU_copyToDevice",  "GPU_copy", 0);
   gpu_copyfromdevice_counter_ = statistiques().new_counter(2, "GPU_copyFromDevice","GPU_copy", 0);
-  gpu_kernel_counter_         = statistiques().new_counter(2, "GPU_kernel",        "GPU_kernel", 0);
 
   // Compte le temps d'ecriture dans EcrireFicPartageXXX (gros volumes de donnees dans fichiers XYZ ou LATA)
   // quantity = nombre d'octets ecrits
@@ -252,10 +254,11 @@ inline void write_stat_file(const Nom& msg, const Stat_Results& stat, SFichier& 
     }
 }
 
-inline void write_gpu_stat_file(const Nom& msg, const Stat_Results& stat, const Stat_Results& pas_de_temps, SFichier& stat_file)
+inline double write_gpu_stat_file(const Nom& msg, const Stat_Results& stat, const Stat_Results& pas_de_temps, SFichier& stat_file)
 {
-  char pourcent[100] = "";
-  snprintf(pourcent, 100, " %4.1f%%", 100*stat.max_time/pas_de_temps.max_time);
+  char p[100] = "";
+  double pourcent = 100*stat.max_time/pas_de_temps.max_time;
+  snprintf(p, 100, " %4.1f%%", pourcent);
   char calls[100] = "";
   snprintf(calls, 100, " %4.1f calls", stat.avg_count/pas_de_temps.max_count);
   char t[1000] = "";
@@ -263,7 +266,8 @@ inline void write_gpu_stat_file(const Nom& msg, const Stat_Results& stat, const 
   char bw[100] = "";
   if (stat.avg_quantity>0)
     snprintf(bw, 100, " %4.1f GB/s", stat.avg_quantity/1024/1024/1024/stat.max_time);
-  stat_file << msg << t << pourcent << calls << bw << "\n";
+  stat_file << msg << t << p << calls << bw << "\n";
+  return pourcent;
 }
 
 void print_statistics_analyse(const char * message, int mode_append)
@@ -303,6 +307,7 @@ void print_statistics_analyse(const char * message, int mode_append)
   Stat_Results IO_seq, IO_par;
   Stat_Results gpu_copytodevice;
   Stat_Results gpu_copyfromdevice;
+  Stat_Results gpu_library;
   Stat_Results gpu_kernel;
 
   // Stop the counters
@@ -363,6 +368,7 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(IO_EcrireFicPartageMPIIO_counter_, IO_par);
       statistiques().get_stats(gpu_copytodevice_counter_, gpu_copytodevice);
       statistiques().get_stats(gpu_copyfromdevice_counter_, gpu_copyfromdevice);
+      statistiques().get_stats(gpu_library_counter_, gpu_library);
       statistiques().get_stats(gpu_kernel_counter_, gpu_kernel);
 
       if (GET_COMM_DETAILS)
@@ -549,9 +555,13 @@ void print_statistics_analyse(const char * message, int mode_append)
           if (gpu_copytodevice.max_count > 0)
             {
               stat_file << "GPU statistics per time step (experimental):" << finl;
-              write_gpu_stat_file("Copy H2D:", gpu_copytodevice, pas_de_temps, stat_file);
-              write_gpu_stat_file("Copy D2H:", gpu_copyfromdevice, pas_de_temps, stat_file);
-              write_gpu_stat_file("Kernels :", gpu_kernel, pas_de_temps, stat_file);
+              double copy=0, gpu=0;
+              gpu+=write_gpu_stat_file("Libraries:", gpu_library, pas_de_temps, stat_file);
+              gpu+=write_gpu_stat_file("Kernels  :", gpu_kernel, pas_de_temps, stat_file);
+              copy+=write_gpu_stat_file("Copy H2D :", gpu_copytodevice, pas_de_temps, stat_file);
+              copy+=write_gpu_stat_file("Copy D2H :", gpu_copyfromdevice, pas_de_temps, stat_file);
+              double cpu = 100-copy-gpu; // ToDo OpenMP manque MPI,IO
+              stat_file << "GPU: " << 0.1*int(10*gpu) << "% Copy H<->D: " << 0.1*int(10*copy) << "% CPU: " << 0.1*int(10*cpu) << "%" << finl;
             }
           stat_file << "I/O:" << finl;
           if (debit_seq>0) stat_file << "Debit write seq [Mo/s] : " << debit_seq << "\n";
