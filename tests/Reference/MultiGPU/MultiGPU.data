@@ -1,4 +1,5 @@
-# This parallel test on 3 MPI ranks is crashing on petra with 2 GPUs #
+# PARALLEL OK #
+# This parallel test on 4 MPI ranks is crashing on petra with 2 GPUs #
 # See https://codev-tuleap.intra.cea.fr/plugins/tracker/?aid=217526 #
 dimension 3
 Pb_Hydraulique pb
@@ -32,7 +33,7 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition coarse_dom
 {
-    Partition_tool Metis { Nb_parts 3 }
+    Partition_tool Metis { Nb_parts 4 }
     Larg_joint 2
     zones_name COARSE_DOM
 }
