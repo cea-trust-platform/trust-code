@@ -432,6 +432,7 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Domaine_Cl_VDF& doma
 DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gij, const Domaine_Cl_VDF& domaine_Cl_VDF) const
 {
   const Champ_Face_VDF& vit = ref_cast(Champ_Face_VDF, mon_equation->inconnue().valeur());
+  const Domaine_Cl_VDF& dclvdf = ref_cast(Domaine_Cl_VDF, vit.domaine_Cl_dis().valeur());
   const Domaine_VDF& domaine_VDF = domaine_vdf();
   const int nb_elem = domaine_VDF.domaine().nb_elem_tot(), N = vitesse.line_size();
   const IntTab& face_voisins = domaine_VDF.face_voisins(), &elem_faces = domaine_VDF.elem_faces(), &Qdm = domaine_VDF.Qdm();
@@ -444,6 +445,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
 
   // On parcourt toutes les aretes qui permettent de calculer les termes croises du_i/dx_j
   // (les termes non-croises sont calcules en bouclant sur les elements)
+
 
   // On commence par les bords
   int ndeb = domaine_VDF.premiere_arete_bord(), nfin = ndeb + domaine_VDF.nb_aretes_bord();
@@ -473,6 +475,26 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
                 gij(element(k), j, i, n) += temp2 * 0.5 * 0.25;
               }
           }
+        else if (n_type == 3) /* NAVIER - NAVIER */
+          {
+            const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+            const int i = orientation(num0), j = orientation(num2);
+
+            const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+            const double coeff_frot = (Champ_Face_coeff_frottement_grad_face_bord(num0, n, dclvdf)+Champ_Face_coeff_frottement_grad_face_bord(num1, n, dclvdf))/2.;
+            const double temp2 = -signe * coeff_frot * vitesse(num2, n);
+
+            element(0) = face_voisins(num2, 0);
+            element(1) = face_voisins(num2, 1);
+
+            for (int k = 0; k < 2; k++)
+              {
+                // 1) 0.25 : on distribue le gradient de vitesse sur les 4 elements qui l'entourent.
+                gij(element(k), i, j, n) += temp1 * 0.25;
+                gij(element(k), j, i, n) += temp2 * 0.25;
+              }
+          }
+        else if (n_type == 5 || n_type == 6) throw;
         else /* les autres aretes bords ... */
           {
             const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
@@ -552,26 +574,53 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
         // XXX : Elie Saikali : j'ajoute ca pour les coins juste si option_vdf active pour le moment ...
 
         if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
-          if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
-            {
-              const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
-              const int i = orientation(num1), j = orientation(num2);
+          {
+            if (n_type == 14 || n_type == 15) // arete de type fluide-paroi ou paroi-fluide
+              {
+                const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
+                const int i = orientation(num1), j = orientation(num2);
 
-              const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
-              const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, N*j+n) + vit.val_imp_face_bord_private(num1, N*j+n)); // vitesse tangentielle
+                const double temp1 = (vitesse(num1, n) - vitesse(num0, n)) / domaine_VDF.dist_face_period(num0, num1, j); // du_i / dx_j
+                const double vit_imp = 0.5 * (vit.val_imp_face_bord_private(num0, N*j+n) + vit.val_imp_face_bord_private(num1, N*j+n)); // vitesse tangentielle
 
-              const double temp2 = -signe * (vitesse(num2, n) - vit_imp) / domaine_VDF.dist_norm_bord(num1);
+                const double temp2 = -signe * (vitesse(num2, n) - vit_imp) / domaine_VDF.dist_norm_bord(num1);
 
-              element(0) = face_voisins(num2, 0);
-              element(1) = face_voisins(num2, 1);
+                element(0) = face_voisins(num2, 0);
+                element(1) = face_voisins(num2, 1);
 
-              for (int k = 0; k < 2; k++)
-                if (element(k) != -1)
-                  {
-                    gij(element(k), i, j, n) += temp1 * 0.25;
-                    gij(element(k), j, i, n) += temp2 * 0.25;
-                  }
-            }
+                for (int k = 0; k < 2; k++)
+                  if (element(k) != -1)
+                    {
+                      gij(element(k), i, j, n) += temp1 * 0.25;
+                      gij(element(k), j, i, n) += temp2 * 0.25;
+                    }
+              }
+            else if (n_type == 3 || n_type == 4 || n_type == 8) // arete de type fluide-navier
+              {
+                const int num0 = Qdm(num_arete, 0),  num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), num3 = Qdm(num_arete, 3);
+                const int f1 = num0 > -1 ? num0 : num1, f2 = num2 > -1 ? num2 : num3;
+                const int i = orientation(f1), j = orientation(f2);
+
+                const double coeff_frot1 = Champ_Face_coeff_frottement_grad_face_bord(f1, n, dclvdf), coeff_frot2 = Champ_Face_coeff_frottement_grad_face_bord(f2, n, dclvdf);
+
+//                int signe = f2 == num3 ? -1 : 1;
+//                const double temp1 = coeff_frot2 * signe * vitesse(f1, n);
+//                const double temp2 = coeff_frot1 * signe * vitesse(f2, n);
+                const double temp1 = coeff_frot2 * (face_voisins(f2, 0)==-1 ? 1:-1)* vitesse(f1, n);
+                const double temp2 = coeff_frot1 * (face_voisins(f1, 0)==-1 ? 1:-1)* vitesse(f2, n);
+
+
+                element(0) = face_voisins(f1, 0);
+                element(1) = face_voisins(f1, 1);
+
+                for (int k = 0; k < 2; k++)
+                  if (element(k) != -1)
+                    {
+                      gij(element(k), i, j, n) += temp1 * 0.25;
+                      gij(element(k), j, i, n) += temp2 * 0.25;
+                    }
+              }
+          }
       }
 
   // On continue avec les aretes mixtes
@@ -641,7 +690,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
         const int n_type = domaine_Cl_VDF.type_arete_coin(num_arete - ndeb);
 
         if (Option_VDF::traitement_gradients && Option_VDF::traitement_coins)
-          if (n_type == 16) // arete de type fluide-fluide
+          if (n_type == 16 ) // arete de type fluide-fluide
             {
               const int num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2);
               const int i = orientation(num1), j = orientation(num2);
@@ -1389,3 +1438,14 @@ double Champ_Face_coeff_frottement_face_bord(const int f, const int n, const Dom
   return sub_type(Navier, cl) ? ref_cast(Navier, cl).coefficient_frottement(face_locale,n) : 0.;
 }
 
+double Champ_Face_coeff_frottement_grad_face_bord(const int f, const int n, const Domaine_Cl_VDF& zclo)
+{
+  const Domaine_VDF& domaine_vdf = zclo.domaine_VDF();
+  const Domaine_Cl_dis_base& zcl = zclo;
+  const int face_globale = f + domaine_vdf.premiere_face_bord(); // Maintenant numero dans le tableau global des faces.
+
+  int face_locale;
+  const Cond_lim_base& cl = (f < domaine_vdf.nb_faces()) ? zcl.condition_limite_de_la_face_reelle(face_globale, face_locale) : zcl.condition_limite_de_la_face_virtuelle(face_globale, face_locale);
+
+  return sub_type(Navier, cl) ? ref_cast(Navier, cl).coefficient_frottement_grad(face_locale,n) : 0.;
+}
