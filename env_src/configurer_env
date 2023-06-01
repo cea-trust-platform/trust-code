@@ -1297,7 +1297,7 @@ else
       then
          MPI_BIN=`dirname $mpiCC` # Variable temporaire utile ensuite
 	 # On a besoin de specifier le compilateur utilise par mpiCC
-	 if [ "`$mpiCC -show | grep openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi`" != "" ] || [ "`$mpiCC -show | grep open-mpi`" != "" ]
+	 if [ "`$mpiCC -show | grep -i openmpi`" != "" ] || [ "`$mpiCC -show | grep bullxmpi`" != "" ] || [ "`$mpiCC -show | grep ompi`" != "" ] || [ "`$mpiCC -show | grep open-mpi`" != "" ]
 	 then
             m="# Compiler for mpiCC"  && e="OMPI_CXX=\"\$TRUST_CC_BASE\"  && export OMPI_CXX" && ecrit $m"|"$e"|"$env;eval $e
             m="# Compiler for mpicc"  && e="OMPI_CC=\"\$TRUST_cc_BASE\"   && export OMPI_CC"  && ecrit $m"|"$e"|"$env;eval $e

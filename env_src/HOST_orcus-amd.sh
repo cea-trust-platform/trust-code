@@ -28,6 +28,7 @@ define_modules_config()
       # La version Intel sur orcus provoque des ennuis divers (performance/plantages) avec MUMPS. Ne pas utiliser! 
       # A priori, on utilise encore Intel au CCRT (mais surement des versions plus a jour, moins buggees), mais la tendance est de petit à petit ne plus utiliser sauf exception
       module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # cf bt#195561
+      module="slurm gcc/11.2.0 openmpi/gcc_11.2.0/4.1.4 texlive/2020" # passage a COS7.9, mpi/openmpi/gcc/9.1.0/3.1.4 plus supporte
    else
       # Compilateur : AOCC (AMD) et librairie MPI : HPC-X (Mellanox)
       module="slurm aocl/aocc/2.1 compilers/aocc/2.1.0 mpi/hpcx/aocc/2.1.0/2.6.0 texlive/2020"
