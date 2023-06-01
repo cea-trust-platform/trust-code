@@ -4183,10 +4183,13 @@ then
    do
       echo "Stable release announcement sent to $dest"
       echo "
-TRUST is a thermohydraulic software package for CFD simulations.
-It was originally designed for incompressible monophasic flows, but an
-increasing effort is made towards simulating real compressible multiphasic flows.
+TRUST is a thermalhydraulic software package for CFD simulations. 
+It was originally designed for incompressible single-phase and Low Mach Number
+flows, but now also allows simulating real compressible multi-phase flows.
+TRUST is also being progressively ported to support GPU acceleration (NVidia/AMD).
 This software is OpenSource (BSD license).
+
+A pre-installed TRUST v1.9.2 version on Ubuntu 20 is available on demand (experimental).
 
 -------------------------------------------------
 New TRUST version released v$new is now available
@@ -4251,6 +4254,9 @@ source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new-int64.sh
 
 # for IDRIS (jean-zay) supercomputer (GPU version):
 source /gpfswork/rech/fej/ugz82dj/env_TRUST-$new-gpu.sh
+
+# for mezel supercomputer:
+source /soft/commun/CODES/TRUST/env_TRUST-$new.sh
 ----------------------------------------------------------------------------------------------------" >> $MESSAGES_LIVRAISON
       echo $ECHO_OPTS "
 --------------------------------------------------------------------------------------------------

@@ -1,4 +1,7 @@
 -------------------------------------------------------------
+Developer notes version 1.9.3_beta : Changes since version 1.9.2 :
+-------------------------------------------------------------
+-------------------------------------------------------------
 Developer notes version 1.9.2 : Changes since version 1.9.1 :
 -------------------------------------------------------------
 15/05/23 (TRUST) Major change : Complete API for GPU programming in TRUST/Baltiks is available now to use together with GPU compatible TRUSTArray classes (see Device.h|cpp&TRUSTArray.h|cpp) for more infos
