@@ -426,6 +426,8 @@ static void add_fields_to_metadata_list(const LataDB& lataDB, const Nom& lata_ge
         continue;
       if (Motcle(lata_field.name_) == "ELEM_FACES")
         continue;
+      if (Motcle(lata_field.name_) == "FACE_VOISINS")
+        continue;
       LataFieldMetaData data;
       data.name_ = lata_field.name_;
       data.geometry_name_ = dest_geom;
@@ -567,9 +569,6 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData>& geoms_data, 
       bool regularizable = (((element_type == Domain::quadri) && (data.dimension_ == 2)) || ((element_type == Domain::hexa) && (data.dimension_ == 3))) && (lata_geom.elem_type_ != "HEXAEDRE_AXI")
                              && (lata_geom.elem_type_ != "RECTANGLE_AXI") && (lata_geom.elem_type_ != "QUADRANGLE") && (lata_geom.elem_type_ != "QUADRANGLE_3D");
       Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says regularizable=" << regularizable << endl;
-      // It is dualizable ?
-      bool dualizable = (regularizable && opt_.regularize) || element_type == Domain::triangle || element_type == Domain::tetra;
-      Journal(filter_info_level) << " metadata: geometry " << lata_geom_name << " element type says dualizable=" << dualizable << endl;
       if (regularizable && ((opt_.regularize_tolerance < 0) || (!opt_.regularize)))
         {
           regularizable = false;
@@ -605,7 +604,7 @@ void LataFilter::get_all_metadata(LataVector<LataGeometryMetaData>& geoms_data, 
         }
 
       // Provide dual mesh
-      if (dualizable && opt_.dual_mesh && have_faces)
+      if (opt_.dual_mesh && have_faces)
         {
           data.internal_name_ = lata_geom_name;
 
@@ -1124,6 +1123,7 @@ void LataDB_apply_input_filter(const LataDB& lata_db, LataDB& filtered_db, const
       components_filter.add("ELEMENTS");
       components_filter.add("FACES");
       components_filter.add("ELEM_FACES");
+      components_filter.add("FACE_VOISINS");
       components_filter.add("JOINTS_SOMMETS");
       components_filter.add("JOINTS_ELEMENTS");
       components_filter.add("JOINTS_FACES");
