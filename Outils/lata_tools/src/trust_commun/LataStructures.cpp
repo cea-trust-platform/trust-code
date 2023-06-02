@@ -287,7 +287,7 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
   trustIdType nbelements = -1;
   trustIdType nbfaces = -1;
 
-  bool domain_has_faces = load_faces && lataDB.field_exists(id.timestep_, id.name_, "FACES");
+  bool domain_has_faces = load_faces && lataDB.field_exists(id.timestep_, id.name_, "FACES") && lataDB.field_exists(id.timestep_, id.name_, "ELEM_FACES");
 
   // Tableau de 3 joints (SOM, ELEM et FACES)
   LataVector<BigTIDTab> joints;
@@ -368,20 +368,48 @@ void DomainUnstructured::fill_domain_from_lataDB(const LataDB& lataDB,
   set_lata_block_offset(LataField_base::SOM, decal_nodes);
   set_lata_block_offset(LataField_base::ELEM, decal_elements);
   if (decal_nodes > 0)
-    {
-      // Nodes are stored with global numbering in the lata file: transform to sub_block numbering :
-      elements_ -= decal_nodes;
-    }
+    for (int i = 0; i < elements_.dimension(0); i++)
+      for (int j = 0; j < elements_.dimension(1); j++)
+        if (elements_(i, j) >= 0)
+          elements_(i, j) -= decal_nodes;
   if (domain_has_faces)
     {
       //cerr << "Domain has faces..." << endl;
       set_lata_block_offset(LataField_base::FACES, decal_faces);
       lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "FACES", "*"), faces_, decal_faces, nbfaces);
       if (decal_nodes > 0)
-        faces_ -= decal_nodes;
+        for (int i = 0; i < faces_.dimension(0); i++)
+          for (int j = 0; j < faces_.dimension(1); j++)
+            if (faces_(i, j) >= 0)
+              faces_(i, j) -= decal_nodes;
       lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "ELEM_FACES", "*"), elem_faces_, decal_elements, nbelements);
       if (decal_faces > 0)
-        elem_faces_ -= decal_faces;
+        for (int i = 0; i < elem_faces_.dimension(0); i++)
+          for (int j = 0; j < elem_faces_.dimension(1); j++)
+            if (elem_faces_(i, j) >= 0)
+              elem_faces_(i, j) -= decal_faces;
+      if (lataDB.field_exists(id.timestep_, id.name_, "FACE_VOISINS")) //TRUST a ecrit face_voisins
+        {
+          lataDB.read_data(lataDB.get_field(id.timestep_, id.name_, "FACE_VOISINS", "*"), face_voisins_, decal_faces, nbfaces);          
+          if (decal_elements > 0)
+            for (int i = 0; i < face_voisins_.dimension(0); i++)
+              for (int j = 0; j < face_voisins_.dimension(1); j++)
+                if (face_voisins_(i, j) >= 0)
+                  face_voisins_(i, j) -= decal_elements;
+        }
+      else  //sinon : construction manuelle
+        {
+          face_voisins_.resize(faces_.dimension(0), 2);
+          for (int f = 0; f < face_voisins_.dimension(0); f++)
+            for (int i = 0; i < 2; i++)
+              face_voisins_(f, i) = -1;
+          for (int e = 0; e < elem_faces_.dimension(0); e++)
+            {
+              trustIdType f;
+              for (int i = 0; i < elem_faces_.dimension(1) && (f = elem_faces_(e, i)) >= 0; i++)
+                face_voisins_(f, face_voisins_(f, 0) >= 0) = e;
+            }
+        }
     }
 
   // *************************

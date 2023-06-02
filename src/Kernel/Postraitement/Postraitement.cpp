@@ -1461,7 +1461,7 @@ void Postraitement::init()
         {
           const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis_pour_faces.valeur());
           const IntTab& faces_sommets = domaine_vf.face_sommets();
-          const int nb_sommets = dom.nb_som();
+          const int nb_sommets = dom.nb_som(), nb_elem = dom.nb_elem();
           const int nb_faces = faces_sommets.dimension(0);
           format_post->ecrire_item_int("FACES", /* Identifiant */
                                        dom.le_nom(),
@@ -1480,6 +1480,14 @@ void Postraitement::init()
                                        elem_faces,
                                        nb_faces);
 
+          const IntTab& face_voisins = domaine_vf.face_voisins();
+          format_post->ecrire_item_int("FACE_VOISINS", /* Identifiant */
+                                       dom.le_nom(),
+                                       dom.le_nom(),
+                                       "FACES", /* localisation */
+                                       "ELEMENTS", /* reference */
+                                       face_voisins,
+                                       nb_elem);
         }
     }
 
@@ -1531,7 +1539,7 @@ int Postraitement::postraiter_champs()
         {
           const Domaine_VF& domaine_vf = ref_cast(Domaine_VF, domaine_dis_pour_faces.valeur());
           const IntTab& faces_sommets = domaine_vf.face_sommets();
-          const int nb_sommets = dom.nb_som();
+          const int nb_sommets = dom.nb_som(), nb_elem = dom.nb_elem();
           const int nb_faces = faces_sommets.dimension(0);
           format_post->ecrire_item_int("FACES", /* Identifiant */
                                        dom.le_nom(),
@@ -1550,6 +1558,14 @@ int Postraitement::postraiter_champs()
                                        elem_faces,
                                        nb_faces);
 
+          const IntTab& face_voisins = domaine_vf.face_voisins();
+          format_post->ecrire_item_int("FACE_VOISINS", /* Identifiant */
+                                       dom.le_nom(),
+                                       dom.le_nom(),
+                                       "FACES", /* localisation */
+                                       "ELEMENTS", /* reference */
+                                       face_voisins,
+                                       nb_elem);
         }
     }
 
