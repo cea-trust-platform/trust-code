@@ -37,7 +37,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
                      &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
-//                        &grad_v = equation().probleme().get_champ("gradient_vitesse").valeurs(),
+//                        &grad_v = equation().probleme().get_champ("gradient_vitesse").valeurs(), ,
                         &vort  = equation().probleme().get_champ("vorticite").valeurs(),
                          * d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : NULL,
                            * k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
@@ -112,7 +112,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
                       in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
                     }
                 for (k = 0; k < N; k++)
-                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
+                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit_elem, pvit, e, f, k, n, nullptr, nullptr);
               }
             for (n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
           }
@@ -123,7 +123,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
                   for (d = 0 ; d<D ; d++)
                     for (d2 = 0 ; d2<D ; d2++)
                       for (c=0 ; c<2  && (e = f_e(f, c)) >= 0; c++)
-                        grad_l(d, d2) += vf_dir(f, c)/vf(f)*grad_v(nf_tot + D*e + d2 , n_l * D + d) ;
+                        grad_l(d, d2) += vf_dir(f, c)/vf(f)*grad_v( e ,  N * ( D*d+d2 ) + n_l ) ;
                   //We replace the n_l components by the one calculated without interpolation to elements
                   scal_grad = 0 ; // scal_grad(d) = grad(u_d).n_f
                   for (d = 0 ; d<D ; d++)
@@ -158,7 +158,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
         for (d = 0 ; d<D ; d++)
           for (k = 0 ; k<N ; k++)
             for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
-              pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit_elem(e, D*k + d) ;
+              pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit_elem(e, N*d+k) ;
         scal_u = 0;
         for (k = 0 ; k<N ; k++)
           for (d = 0 ; d<D ; d++)

@@ -59,7 +59,7 @@ void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   if (is_turb) ref_cast(Viscosite_turbulente_base, (*ref_cast(Operateur_Diff_base, equation().operateur(0).l_op_base()).correlation_viscosite_turbulente()).valeur()).eddy_viscosity(nut); //remplissage par la correlation
 
   // Input-output
-  const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_.valeur());
+  const Dispersion_bulles_base& correlation_db = ref_cast(Dispersion_bulles_base, correlation_->valeur());
   Dispersion_bulles_base::input_t in;
   Dispersion_bulles_base::output_t out;
   in.alpha.resize(N), in.T.resize(N), in.p.resize(N), in.rho.resize(N), in.mu.resize(N), in.sigma.resize(N*(N-1)/2), in.k_turb.resize(N), in.nut.resize(N), in.d_bulles.resize(N), in.nv.resize(N, N);
