@@ -37,7 +37,7 @@ lire sch
 associate  pb sch
 
 
-PolyMAC dis
+PolyMAC_p0p1nc dis
 Discretize pb dis
 
 Read pb

@@ -54,7 +54,7 @@ Read sch
     }
 }
 
-PolyMAC dis
+PolyMAC_P0P1NC dis
 
 associate pbt1 dom
 associate pbt2 dom

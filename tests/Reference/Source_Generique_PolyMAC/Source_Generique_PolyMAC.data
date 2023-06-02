@@ -20,7 +20,7 @@ END SCATTER #
 
 Pb_thermohydraulique pb
 # PolyMAC_P0 dis #
-PolyMAC dis
+PolyMAC_P0P1NC dis
 # VDF dis #
 
 Scheme_euler_implicit sch

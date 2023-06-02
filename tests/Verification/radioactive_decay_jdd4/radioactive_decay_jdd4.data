@@ -58,7 +58,7 @@ lire sch
 }
 associate  pb_fluide sch
 
-PolyMAC  dis
+PolyMAC_P0P1NC  dis
 Discretize pb_fluide dis
 
 Read pb_fluide

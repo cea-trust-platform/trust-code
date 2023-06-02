@@ -1,4 +1,4 @@
-# Champ_fonc_reprise d'un champ vitesse PolyMAC #
+# Champ_fonc_reprise d'un champ vitesse PolyMAC_P0P1NC #
 dimension  2
 domaine    dom_fluide
 
@@ -39,7 +39,7 @@ lire  sch
 associate  pb_fluide  sch
 
 
-PolyMAC  dis
+PolyMAC_P0P1NC  dis
 discretize  pb_fluide  dis
 
 
@@ -78,7 +78,7 @@ read  pb_fluide
             vitesse      elem
         }
     }
-    resume_last_time binaire velocity_PolyMAC.sauv
+    resume_last_time binaire velocity_PolyMAC_P0P1NC.sauv
 }
 
 

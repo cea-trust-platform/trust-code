@@ -20,7 +20,7 @@ Scatter dom.Zones dom
 END SCATTER #
 
 Pb_thermohydraulique pb
-PolyMAC dis
+PolyMAC_P0P1NC dis
 
 Scheme_euler_implicit sch
 Read sch

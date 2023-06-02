@@ -20,7 +20,7 @@ Mailler dom
     }
 }
 
-PolyMAC dis
+PolyMAC_P0P1NC dis
 option_vdf { traitement_coins oui }
 
 Schema_Euler_Implicite sch
