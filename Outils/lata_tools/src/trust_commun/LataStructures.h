@@ -136,6 +136,8 @@ public:
   // For each elements, indexes of the faces (first face at index 0, if present in lata file)
   // Faces ordering in an element is the same as in TRUST
   BigTIDTab elem_faces_;
+  // For each face, indices of its neighbors (-1 if none)
+  BigTIDTab face_voisins_;
 
   int dimension() const override { return (int)nodes_.dimension(1); }
   trustIdType nb_nodes() const override { return nodes_.dimension(0); }

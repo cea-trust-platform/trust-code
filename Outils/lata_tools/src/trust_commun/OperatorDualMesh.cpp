@@ -27,47 +27,70 @@ void build_geometry_(OperatorDualMesh& op, const DomainUnstructured& src, LataDe
       Journal() << "Error in OperatorDualMesh::build_geometry: source domain has no faces data" << endl;
       throw;
     }
-  const int max_nb_som_face = 3; // for tetrahedra
-  if (src.elt_type_ != Domain::triangle && src.elt_type_ != Domain::tetra)
-    {
-      Journal() << "Error in OperatorDualMesh::build_geometry: cannot operate on unstructured mesh with this element type" << endl;
-      throw;
-    }
-  const trustIdType nb_som = src.nodes_.dimension(0);
-  const trustIdType nb_elem = src.elem_faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
-  const int dim = src.dimension();
+  const trustIdType nb_som = src.nodes_.dimension(0), nb_elem = src.elem_faces_.dimension(0), nb_faces = src.faces_.dimension(0); // Not elements_, in case elem_faces_ has no virtual data.
+  const trustIdType dim = src.dimension();
 
   DomainUnstructured& dest = dest_domain.instancie(DomainUnstructured);
   dest.id_ = src.id_;
   dest.id_.name_ += "_dual";
-  dest.elt_type_ = src.elt_type_;
+  dest.elt_type_ = dim < 3 ? Domain::polygone : Domain::polyedre;
 
   dest.nodes_ = src.nodes_;
-  dest.nodes_.resize(nb_som + nb_elem, dim);
+  dest.nodes_.resize(nb_som + nb_elem, int(dim));
   src.compute_cell_center_coordinates(dest.nodes_, nb_som);
 
-  const int nb_faces_elem = (int)src.elem_faces_.dimension(1);
-  const int nb_som_face = (int)src.faces_.dimension(1);
-  const int nb_som_elem = (int)src.elements_.dimension(1);
-  dest.elements_.resize(nb_elem * nb_faces_elem, nb_som_elem);
-  trustIdType index = 0;
-  for (trustIdType i = 0; i < nb_elem; i++)
+  dest.elements_.resize(nb_faces, int(src.faces_.dimension(1)) + 2);
+  dest.elem_faces_.resize(nb_faces, 2 * int(src.faces_.dimension(1)));
+  dest.faces_.resize(0, int(src.faces_.dimension(1)));
+
+  for (trustIdType f = 0, s, e; f < nb_faces; f++)
     {
-      const trustIdType central_node = nb_som + i;
-      for (int j = 0; j < nb_faces_elem; j++)
+      /* dest.elements_ : les sommets de la face + amont/aval */ 
+      if (dim < 3) /* 2D : un sommet de la face -> CG elem amont -> l'autre sommet -> CG elem aval */
         {
-          const trustIdType face = src.elem_faces_(i, j);
-          dest.elements_(index, 0) = central_node;
-          for (int k = 0; k < loop_max(nb_som_face, max_nb_som_face); k++)
-            {
-              dest.elements_(index, k + 1) = src.faces_(face, k);
-              break_loop(k, nb_som_face);
-            }
-          index++;
+          int k = 0;
+          for (int i = 0; i < 2; i++)
+            for (int j = 0; j < 2; j++)
+              if (j ? (s = src.faces_(f, i)) >= 0 : (e = src.face_voisins_(f, i)) >= 0 && e < nb_elem)
+                dest.elements_(f, k) = j ? s : nb_som + e, k++;
+          for (; k < dest.elements_.dimension(1); k++) dest.elements_(f, k) = -1;
         }
+      else
+        {
+          int i;
+          for (i = 0; i < src.faces_.dimension(1) && (s = src.faces_(f, i)) >= 0; i++)
+            dest.elements_(f, i) = s;
+          for (int j = 0; j < 2; j++)
+            if ((e = src.face_voisins_(f, j)) >= 0 && e < nb_elem)
+              dest.elements_(f, i) = nb_som + e, i++;
+          for ( ; i < dest.elements_.dimension(1); i++)
+            dest.elements_(f, i) = -1;
+        }
+      /* dest.elem_faces_ et dest_faces_ : une face par arete et par cote des faces orginales */
+      int j = 0;
+      for (int i = 0; i < 2; i++)
+        if ((e = src.face_voisins_(f, i)) >= 0 && e < nb_elem) /* un voisin reel -> boucles sur les aretes */
+          for (int k = 0; k < src.faces_.dimension(1) && (s = src.faces_(f, k)) >= 0; k++)
+            {
+              trustIdType sb = dim < 3 ? -1 : src.faces_(f, k + 1 < src.faces_.dimension(1) && src.faces_(f, k + 1) >= 0 ? k + 1 : 0);
+              trustIdType l = dest.faces_.dimension(0);
+              dest.faces_.resize(l + 1, int(src.faces_.dimension(1)));
+              dest.elem_faces_(f, j) = l, j++;
+              for (int m = 0; m < src.faces_.dimension(1); m++)
+                dest.faces_(l, m) = m < 1 ? nb_som + e : m < 2 ? s : m < dim ? sb : -1;
+            }
+        else
+        {
+          trustIdType l = dest.faces_.dimension(0);
+          dest.faces_.resize(l + 1, int(src.faces_.dimension(1)));
+          dest.elem_faces_(f, j) = l;
+          j++;
+          for (int k = 0; k < src.faces_.dimension(1); k++) /* sinon -> on insere la face originale */
+            dest.faces_(l, k) = src.faces_(f, k);
+        }
+      for (; j < dest.elem_faces_.dimension(1); j++) dest.elem_faces_(f, j) = -1;
     }
-  const trustIdType nb_elem_virt = src.nb_virt_items(LataField_base::ELEM);
-  dest.set_nb_virt_items(LataField_base::ELEM, nb_elem_virt * nb_faces_elem);
+  dest.set_nb_virt_items(LataField_base::ELEM, src.nb_virt_items(LataField_base::FACES));
 }
 
 // Builds a field on the dual domain from the field on the source domain.
@@ -81,21 +104,7 @@ void build_field_(OperatorDualMesh& op, const DomainUnstructured& src_domain, co
   dest.component_names_ = src.component_names_;
   dest.localisation_ = LataField_base::ELEM;
   dest.nature_ = src.nature_;
-  const trustIdType nb_elem = src_domain.elements_.dimension(0);
-  const int nb_face_elem = (int)src_domain.elem_faces_.dimension(1);
-  const int nb_comp = (int)src.data_.dimension(1);
-  dest.data_.resize(nb_elem * nb_face_elem, nb_comp);
-  trustIdType index = 0;
-  for (trustIdType i = 0; i < nb_elem; i++)
-    {
-      for (int j = 0; j < nb_face_elem; j++)
-        {
-          const trustIdType face = src_domain.elem_faces_(i, j);
-          for (int k = 0; k < nb_comp; k++)
-            dest.data_(index, k) = src.data_(face, k);
-          index++;
-        }
-    }
+  dest.data_ = src.data_;
 }
 
 void build_geometry_(OperatorDualMesh& op, const DomainIJK& src, LataDeriv<Domain>& dest_domain)
