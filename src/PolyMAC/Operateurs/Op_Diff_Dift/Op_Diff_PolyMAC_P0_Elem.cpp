@@ -637,14 +637,11 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             Flux_parietal_base::input_t in;
                             Flux_parietal_base::output_t out;
                             DoubleTrav Tf(N[p]), qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);
-                            in.N = N[p], in.f = f, in.D_h = dh(e), in.D_ch = dh(e), in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda =
-                                &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
-                            if (corr.needs_saturation())
-                              in.Lvap = &Lvap_tab[p](e, 0), in.Sigma = &Sigma_tab[p](e, 0), in.Tsat = &Ts_tab[p](e, 0);
-                            else
-                              in.Lvap = nullptr, in.Sigma = nullptr, in.Tsat = nullptr;
-                            out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc =
-                                                                                                                                                    &d_nuc;
+                            in.N = N[p], in.f = f, in.y = (e == f_e[p](f, 0)) ? domaine[p].get().dist_face_elem0(f,e) : domaine[p].get().dist_face_elem1(f,e), in.D_h = dh(e), in.D_ch = dh(e), 
+                              in.alpha = &alpha(e, 0), in.T = &Tf(0), in.p = press(e), in.v = nv.addr(), in.Tp = Tefs(0, i_efs(i, j, M)), in.lambda = &lambda(e, 0), in.mu = &mu(e, 0), in.rho = &rho(e, 0), in.Cp = &Cp(e, 0);
+                            if (corr.needs_saturation()) in.Lvap = &Lvap_tab[p](e, 0), in.Sigma = &Sigma_tab[p](e, 0), in.Tsat = &Ts_tab[p](e, 0);
+                            else                         in.Lvap = nullptr           , in.Sigma = nullptr            , in.Tsat = nullptr        ;
+                            out.qpk = &qpk, out.dTf_qpk = &dTf_qpk, out.dTp_qpk = &dTp_qpk, out.qpi = &qpi, out.dTp_qpi = &dTp_qpi, out.dTf_qpi = &dTf_qpi, out.nonlinear = &nonlinear, out.d_nuc = &d_nuc;
                             for (d = 0; d < D; d++)
                               for (n = 0; n < N[p]; n++)
                                 nv(n) += std::pow(vit(domaine[p].get().nb_faces_tot() + D * e + d, n), 2);

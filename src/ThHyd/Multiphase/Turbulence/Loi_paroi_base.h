@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,8 +33,21 @@ class Loi_paroi_base : public Correlation_base
 {
   Declare_base(Loi_paroi_base);
 public:
-  virtual void calc_u_tau_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc) = 0;
+  void completer() override;
+  void mettre_a_jour(double temps) override;
+  virtual void calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)=0 ;
+
+  double get_y(int f) const {return valeurs_loi_paroi_.at("y")(f,0);};
+  double get_utau(int f) const { return valeurs_loi_paroi_.at("u_tau")(f,0);};
+  DoubleTab& get_tab(std::string str) {return valeurs_loi_paroi_[str];};
+
 protected:
+
+  double eps_y_p_ = 1.e-4; // Convergence of the y_p determination method
+  double y_p_min_ = 1.e-2; // minimal y_p
+
+  IntTab Faces_a_calculer_;
+  std::map<std::string, DoubleTab> valeurs_loi_paroi_; // contient "y_plus", "u_tau" pour toutes les faces
 };
 
 #endif

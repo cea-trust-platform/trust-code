@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,8 @@ public:
   struct input_t
   {
     int N;                // nombre de phases
-    int f;                //
+    int f;                // face number
+    double y;             // distance between the face and the center of gravity of the cell
     double D_h;           // diametre hyd
     double D_ch;          // diametre hyd chauffant
     double p;             // pression
