@@ -239,4 +239,3 @@ int Format_Post_base::ecrire_item_int(const Nom&   id_item,
        << " method not coded for " << que_suis_je() << finl;
   return 0;
 }
-
