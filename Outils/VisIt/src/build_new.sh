@@ -40,7 +40,7 @@ options=$options" --thirdparty-path $TRUST_TMP" 		# Pour partage par plusieurs i
 options=$options" --system-cmake --alt-cmake-dir $conda" 	# Cmake de Miniconda
 options=$options" --system-qt --alt-qt-dir $conda" 		# Qt5 de Miniconda
 options=$options" --no-sphinx"					# Disable pour eviter l'installation de Python3 et pas mal de modules...
-[ "$vp" = "3.3.1" ] && options=$options" --system-python --alt-python-dir $conda" 	# VisIt ne supporte pas Python3 systeme
+[ "$vp" = "3.3.3" ] && options=$options" --system-python --alt-python-dir $conda" 	# VisIt ne supporte pas Python3 systeme
 if [ "$build_parallel" != "" ]
 then
    export PAR_COMPILER=$TRUST_cc

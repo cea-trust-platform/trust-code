@@ -14,7 +14,7 @@ installation_visit()
       rm -f $package
    fi
    # Ajout d'un fichier pour dire si visit a ete telecharge
-   [ $DOWNLOADED = 1 ] && touch $TRUST_ROOT/exec/VisIt/downloaded_version
+   [ "$DOWNLOADED" = 1 ] && touch $TRUST_ROOT/exec/VisIt/downloaded_version
    # Ajout en debut du script visit d'un appel a check_visit
    # pour faire des verifications et ajouter des messages 
    # pour les utilisateurs:
@@ -62,7 +62,7 @@ if [ "$new" = 1 ]
 then
    # Nouvelle procedure
    build=build_new.sh
-   version=3_1_1
+   version=3_3_3
    version_extp=$version
    export HTTPS="https://github.com/visit-dav/visit/releases/download"
    [ "$MPI_ROOT" != "" ] && parallel="parallel"
@@ -194,6 +194,7 @@ then
             [ "$os" = "" ] && echo "OS not detected." && exit -1
             ARCH=linux-x86_64-$os
             [ `uname -s` = Darwin ] && ARCH=darwin-$os
+            [ "`grep 'release [7]' /etc/redhat-release 2>/dev/null`" != "" ] && ARCH=$ARCH-wmesa
 	 fi
 	 package=visit$version.$ARCH.tar.gz
     [ `uname -s` = Darwin ] && package=visit$version.$ARCH.tar.xz
