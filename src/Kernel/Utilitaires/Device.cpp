@@ -181,6 +181,7 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
+      if (isAllocatedOnDevice(tab)) deleteOnDevice(tab);
       allocateOnDevice(tab_addr, tab.size_array(), " an array "+arrayName);
       tab.set_dataLocation(Device);
     }
@@ -195,7 +196,6 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
   if (Objet_U::computeOnDevice)
     {
       assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
-      if (isAllocatedOnDevice(ptr)) deleteOnDevice(ptr, size); // ToDo OpenMP ne desalouer que si taille differente
       clock_start = Statistiques::get_time_now();
       #pragma omp target enter data map(alloc:ptr[0:size])
       if (clock_on)

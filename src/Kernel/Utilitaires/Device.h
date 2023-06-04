@@ -48,7 +48,8 @@ bool isAllocatedOnDevice(_TYPE_* tab_addr)
   // Routine omp_target_is_present pour existence d'une adresse sur le device
   // https://www.openmp.org/spec-html/5.0/openmpse34.html#openmpsu168.html
 #ifdef _OPENMP
-  assert(omp_get_default_device()==0); // omp_target_is_present buggee ? Renvoie 0 sur le device 1 meme si alloue...
+  // omp_target_is_present buggee ? Renvoie 0 sur le device 1 meme si alloue...
+  if (omp_get_default_device()!=0) Process::exit("Do not use isAllocatedOnDevice(tab_addr) on device other than 0 ! Contact TRUST support.");
   return omp_target_is_present(tab_addr, omp_get_default_device())==1;
 #else
   return false;

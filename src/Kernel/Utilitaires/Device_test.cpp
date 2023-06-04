@@ -376,30 +376,6 @@ bool self_test()
         }
       }
       assert(!isAllocatedOnDevice(ptr_host)); // Verifie que le tableau ne possede plus une zone memoire sur le device
-      // ref_data sur un TRUSTArray (Matrice, GCP, etc...) Interdit si sur GPU
-      {
-        /*
-        DoubleTab a(10);
-        mapToDevice(a, "a");
-        DoubleVect b;
-        b.ref_data(&a[0], 5); // Doit planter et annoncer que a sur le device
-         */
-        //Process::exit();
-      }
-      // ref_data sur un tableau utilise dans Schema_Comm_Vecteurs
-      {
-        /*
-        double a[10];
-        DoubleVect b;
-        b.ref_data(&a[0], 10);
-        allocateOnDevice(b, "b ref_data");
-        assert(b.get_dataLocation()==Device);
-        ptr_host = b.addrForDevice();
-        assert(isAllocatedOnDevice(ptr_host)); // Verifie que le tableau possede une zone memoire sur le device
-        assert(b.ref_count()==1); */
-      }
-      //assert(!isAllocatedOnDevice(ptr_host)); // b est detruit
-
       // ToDo:Comment gerer les DoubleTab_Parts ? Pas facile donc pour le moment
       // le constructeur par copie fait un copyFromDevice du DoubleTab...
       /*

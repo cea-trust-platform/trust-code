@@ -6,19 +6,6 @@ version=$default_version
 # Cas ou l'on force la version la plus recente:
 [ "$TRUST_FORCE_LATEST_OPENMPI" = 1 ] && version=$latest_version
 
-options=""
-# Ajout d'options pour des versions recentes d'OpenMPI:
-# --with-memory-manager=none evite les adress not mapped avec TRUST en share libs: important donc
-options="--with-memory-manager=none --with-hwloc=internal --disable-libompitrace"
-[ -f $TRUST_ROOT/exec/valgrind ] && options=$options" --with-valgrind=$TRUST_ROOT/exec/valgrind"
-[ $version = $latest_version ] && options=$options" --enable-mpi1-compatibility" # HDF5 qui utilise des MPI deprecated...
-
-# On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a 
-# On retire  --disable-shared pour que les cas tests utilisant mpi4py tournent.
-options="--enable-static --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma "$options
-# Ajout CUDA:
-[ "$TRUST_USE_CUDA" = 1 ] && options=$options" --with-cuda=$CUDA_INC_PATH"
-
 # Telechargement du package
 package=openmpi-$version.tar.gz
 if [ ! -f $package ]
@@ -65,11 +52,25 @@ export FCFLAGS="-fPIC -fno-strict-aliasing"
 [ `uname -s` != "Darwin" ] && export LIBS="-ldl"
 # Configuration:
 ./configure --help 2>&1 > ../configure.help
-if [ "`grep f77 ../configure.help`" != "" ]
-then
-   # A partir d'OpenMPI 1.7, mpif77 et mpif90 -> mpifort
-   options=$options" --with-wrapper-ldflags=-lmpi_f77"
-fi
+
+# Ajout d'options pour des versions recentes d'OpenMPI:
+# --with-memory-manager=none evite les adress not mapped avec TRUST en share libs: important donc
+options="--with-memory-manager=none --with-hwloc=internal --disable-libompitrace"
+
+# Valgrind:
+[ -f $TRUST_ROOT/exec/valgrind ] && options=$options" --with-valgrind=$TRUST_ROOT/exec/valgrind"
+[ $version = $latest_version ]   && options=$options" --enable-mpi1-compatibility" # HDF5 qui utilise des MPI deprecated...
+
+# On disable diverses choses pour accelerer la compilation et reduire la taille de la libmpi.a 
+# On retire --disable-shared pour que les cas tests utilisant mpi4py tournent.
+options=$options" --enable-static --disable-mpi-cxx --enable-mca-no-build=maffinity-libnuma"
+
+# Ajout CUDA:
+[ "$TRUST_USE_CUDA" = 1 ] && options=$options" --with-cuda=$CUDA_INC_PATH --disable-mca-dso"
+
+# A partir d'OpenMPI 1.7, mpif77 et mpif90 -> mpifort
+[ "`grep f77 ../configure.help`" != "" ] && options=$options" --with-wrapper-ldflags=-lmpi_f77"
+
 ./configure --prefix=$install $options || exit -1
 
 #############################

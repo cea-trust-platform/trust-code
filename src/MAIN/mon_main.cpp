@@ -139,7 +139,7 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
 #ifdef TRUST_USE_CUDA
-  init_cuda();
+  //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
   // Variable pour desactiver le calcul sur GPU et ainsi facilement comparer avec le meme binaire
   // les performances sur CPU et sur GPU. Utilisee par rocALUTION et les kernels OpenMP:
