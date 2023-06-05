@@ -25,6 +25,8 @@ define_modules_config()
    elif [ "`hostname -A 2>/dev/null | grep 'pegasi2\|altair'`" != "" ]
    then
       # sur pegasi2, tout OK avec gcc 8.3
+      echo "source /etc/profile.d/modules.sh" >> $env
+      echo "module purge" >> $env
       echo "module load gcccore/.8.3.0 gcc/8.3.0 || exit -1" >> $env
       echo "export PATH=/volatile/projet/trust_trio/texlive/2019/bin/x86_64-linux:\$PATH" >> $env
    fi
