@@ -12,40 +12,67 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Perte_Charge_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/9
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 #ifndef Perte_Charge_PolyMAC_Face_included
 #define Perte_Charge_PolyMAC_Face_included
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Terme_Source_Qdm.h>
 #include <Source_base.h>
-#include <TRUST_Ref.h>
+#include <Terme_Source_Qdm.h>
 
-class Domaine_Poly_base;
-class Champ_Inc_base;
-class Probleme_base;
+#include <Domaine_Cl_PolyMAC.h>
 class Fluide_base;
+class Champ_Inc_base;
+#include <TRUST_Ref.h>
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
 
-/*! @brief class Perte_Charge_PolyMAC_Face
- *
- * @sa Source_base
- */
 
-class Perte_Charge_PolyMAC_Face: public Source_base, public Terme_Source_Qdm
+class Probleme_base;
+
+//
+// .DESCRIPTION class Perte_Charge_PolyMAC_Face
+//
+
+//
+// .SECTION voir aussi Source_base
+//
+//
+
+class Perte_Charge_PolyMAC_Face :  public Source_base,
+  public Terme_Source_Qdm
+
+
 {
+
   Declare_base(Perte_Charge_PolyMAC_Face);
 
 public:
-  void associer_pb(const Probleme_base&) override;
-  void mettre_a_jour(double) override;
+
+  DoubleTab& ajouter(DoubleTab& )  const override =0;
+  DoubleTab& calculer(DoubleTab& ) const override =0;
+  void associer_pb(const Probleme_base& ) override;
+  void mettre_a_jour(double ) override;
 
 protected:
 
   REF(Champ_Inc_base) la_vitesse;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { }
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+
+
+
 };
 
 #endif

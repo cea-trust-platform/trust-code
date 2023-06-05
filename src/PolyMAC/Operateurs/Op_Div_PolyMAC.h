@@ -12,26 +12,43 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Op_Div_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     /main/7
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 #ifndef Op_Div_PolyMAC_included
 #define Op_Div_PolyMAC_included
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC.h>
 #include <Operateur_Div.h>
+#include <Domaine_PolyMAC.h>
 #include <TRUST_Ref.h>
+class Domaine_Cl_PolyMAC;
+//
+// .DESCRIPTION class Op_Div_PolyMAC
+//
+//  Cette classe represente l'operateur de divergence
+//  La discretisation est PolyMAC
+//  On calcule la divergence d'un champ_P1NC (la vitesse)
+//
 
-/*! @brief class Op_Div_PolyMAC
- *
- *   Cette classe represente l'operateur de divergence
- *   La discretisation est PolyMAC
- *   On calcule la divergence d'un champ_P1NC (la vitesse)
- *
- *
- *
- * @sa Operateur_Div_base
- */
 
+//
+// .SECTION voir aussi
+// Operateur_Div_base
+//
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Op_Div_PolyMAC
+//
+//////////////////////////////////////////////////////////////////////////////
+class MAtrice_Morse;
 class Op_Div_PolyMAC : public Operateur_Div_base
 {
 
@@ -40,27 +57,20 @@ class Op_Div_PolyMAC : public Operateur_Div_base
 public:
 
   void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
-
-  /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
-  /* contrairement au cas usuel, ces methodes ne peuvent pas etre reimplementees a partir d'ajouter_blocs(),
-     car elles sont souvent appelees avec un tableau inco arbitraire */
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
-
-  virtual int impr(Sortie& os) const override;
+  int impr(Sortie& os) const override;
   void volumique(DoubleTab& ) const override;
+
+  void dimensionner(Matrice_Morse& matrice) const override;
+  void contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const override;
 
 protected:
 
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
+
+  DoubleVect porosite_face;
 };
 
 #endif

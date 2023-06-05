@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,11 +12,19 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Perte_Charge_Directionnelle_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/13
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Perte_Charge_Directionnelle_PolyMAC_Face_included
 #define Perte_Charge_Directionnelle_PolyMAC_Face_included
 
 #include <Perte_Charge_PolyMAC.h>
+#include <Parser_U.h>
 
 
 //!  Perte de charge directionnelle (selon un vecteur unitaire v)
@@ -47,13 +55,16 @@ public:
   }
 
 protected:
-  void set_param(Param& titi) override;
+
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
   void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
                            double t, double norme_u, double dh, double nu, double reynolds,
                            double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const override;
 
   Champ_Don v;//!< Vecteur directeur de la perte de charge.
+private:
+
+  mutable Parser_U lambda; //!< Parser cree et detruit par l'objet.
 };
 
 #endif

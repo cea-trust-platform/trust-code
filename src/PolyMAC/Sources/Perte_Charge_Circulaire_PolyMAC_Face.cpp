@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Perte_Charge_Circulaire_PolyMAC_Face.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/6
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_Circulaire_PolyMAC_Face.h>
 #include <Motcle.h>
@@ -25,9 +32,8 @@
 #include <Matrice_Morse.h>
 #include <Schema_Temps_base.h>
 #include <TRUSTTrav.h>
-#include <Param.h>
 
-Implemente_instanciable(Perte_Charge_Circulaire_PolyMAC_Face,"Perte_Charge_Circulaire_Face_PolyMAC|Perte_Charge_Circulaire_Face_PolyMAC_P0",Perte_Charge_PolyMAC);
+Implemente_instanciable(Perte_Charge_Circulaire_PolyMAC_Face,"Perte_Charge_Circulaire_Face_PolyMAC",Perte_Charge_PolyMAC);
 
 
 Sortie& Perte_Charge_Circulaire_PolyMAC_Face::printOn(Sortie& s ) const
@@ -41,57 +47,134 @@ Sortie& Perte_Charge_Circulaire_PolyMAC_Face::printOn(Sortie& s ) const
 //                                                            //
 ////////////////////////////////////////////////////////////////
 
-
 Entree& Perte_Charge_Circulaire_PolyMAC_Face::readOn(Entree& s )
 {
-  Perte_Charge_PolyMAC::readOn(s);
+  Cerr << "Perte_Charge_Circulaire_PolyMAC_Face::readOn " << finl;
+  sous_domaine=false;
+  int lambda_ortho_ok=0;
+  int lambda_ok=0;
+  // Definition des mots-cles
+  Motcles les_mots(7);
+  les_mots[0] = "lambda";
+  les_mots[1] = "diam_hydr";
+  les_mots[2] = "sous_domaine";
+  les_mots[3] = "direction";
+  les_mots[4] = "lambda_ortho";
+  les_mots[5] = "diam_hydr_ortho";
+  les_mots[6] = "implicite";
+
+  // Lecture et interpretation
+  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
+  s >> motlu;
+  while (motlu != accolade_ouverte)
+    {
+      Cerr << "On attendait une { a la lecture d'un " << que_suis_je() << finl;
+      Cerr << "et non : " << motlu << finl;
+      exit();
+    }
+  s >> motlu;
+  while (motlu != accolade_fermee)
+    {
+      int rang=les_mots.search(motlu);
+      switch(rang)
+        {
+        case 0 :   // lambda
+          {
+            lambda_ok=1;
+            Nom tmp;
+            s >> tmp;
+            Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
+            lambda.setNbVar(3+dimension);
+            lambda.setString(tmp);
+            lambda.addVar("Re_tot");
+            lambda.addVar("Re_long");
+            lambda.addVar("t");
+            lambda.addVar("x");
+            if (dimension>1)
+              lambda.addVar("y");
+            if (dimension>2)
+              lambda.addVar("z");
+            lambda.parseString();
+            Cerr << " Ok" << finl;
+            break;
+          }
+        case 1: // diam_hydr
+          s >> diam_hydr;
+          break;
+        case 5: // diam_hydr_ortho
+          s >> diam_hydr_ortho;
+          break;
+        case 2: // sous_domaine
+          s >> nom_sous_domaine;
+          sous_domaine=true;
+          break;
+        case 3: // direction
+          s >> v;
+          break;
+        case 4:   // lambda_ortho
+          {
+            lambda_ortho_ok=1;
+            Nom tmp;
+            s >> tmp;
+            Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
+            lambda_ortho.setNbVar(3+dimension);
+            lambda_ortho.setString(tmp);
+            lambda_ortho.addVar("Re_tot");
+            lambda_ortho.addVar("Re_ortho");
+            lambda_ortho.addVar("t");
+            lambda_ortho.addVar("x");
+            if (dimension>1)
+              lambda_ortho.addVar("y");
+            if (dimension>2)
+              lambda_ortho.addVar("z");
+            lambda_ortho.parseString();
+            Cerr << " Ok" << finl;
+            break;
+          }
+        case 6:
+          {
+            s>>implicite_;
+            break;
+          }
+        default : // non compris
+          Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un "
+               << que_suis_je() << finl;
+          exit();
+        }
+      s >> motlu;
+    }
+
+  // Verification de la coherence
+  if (lambda_ok==0)
+    {
+      Cerr << "Il faut definir l'expression lamba(Re_long,Re_tot)" << finl;
+      exit();
+    }
+
+  if (lambda_ortho_ok==0)
+    {
+      Cerr << "Il faut definir l'expression lamba_ortho(Re_ortho,Re_tot)" << finl;
+      exit();
+    }
+
+  if  ((!diam_hydr.non_nul())|| (diam_hydr->nb_comp()!=1))
+    {
+      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
+      exit();
+    }
+  if ((!diam_hydr_ortho.non_nul())|| (diam_hydr_ortho->nb_comp()!=1))
+    {
+      Cerr << "Il faut definir le champ diam_hydr_ortho a une composante" << finl;
+      exit();
+    }
   if (v->nb_comp()!=dimension)
     {
       Cerr << "Il faut definir le champ direction a " << dimension << " composantes" << finl;
       exit();
     }
+
+  Cerr << "Fin de Perte_Charge_Circulaire_PolyMAC_Face::readOn" << finl;
   return s;
-}
-
-void Perte_Charge_Circulaire_PolyMAC_Face::set_param(Param& param)
-{
-  Perte_Charge_PolyMAC::set_param(param);
-  param.ajouter_non_std("lambda_ortho",(this),Param::REQUIRED);
-  param.ajouter("diam_hydr_ortho",&diam_hydr_ortho,Param::REQUIRED);
-  param.ajouter("direction",&v,Param::REQUIRED);
-}
-
-int Perte_Charge_Circulaire_PolyMAC_Face::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  if (mot=="lambda")
-    {
-      lambda.addVar("Re_tot");
-      lambda.addVar("Re_long");
-      return Perte_Charge_PolyMAC::lire_motcle_non_standard(mot,is);
-    }
-  else if (mot=="lambda_ortho")
-    {
-      Nom tmp;
-      is >> tmp;
-      Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
-      lambda_ortho.setNbVar(3+dimension);
-      lambda_ortho.setString(tmp);
-      lambda_ortho.addVar("Re_tot");
-      lambda_ortho.addVar("Re_ortho");
-      lambda_ortho.addVar("t");
-      lambda_ortho.addVar("x");
-      if (dimension>1)
-        lambda_ortho.addVar("y");
-      if (dimension>2)
-        lambda_ortho.addVar("z");
-      lambda_ortho.parseString();
-      Cerr << " Ok" << finl;
-      return 1;
-    }
-  else
-    {
-      return Perte_Charge_PolyMAC::lire_motcle_non_standard(mot,is);
-    }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -209,7 +292,7 @@ void  Perte_Charge_Circulaire_PolyMAC_Face::coeffs_perte_charge(const DoubleVect
   const DoubleTab& xv=le_dom_PolyMAC->xv() ;                     // centres de gravite des faces
   const DoubleTab& vit=la_vitesse->valeurs();
   // Sinon segfault a l'initialisation de ssz quand il n'y a pas de sous-domaine !
-  const Sous_domaine_VF& ssz=sous_domaine?le_sous_domaine_dis.valeur():Sous_domaine_VF();
+  const Sous_domaine_VF& ssz=sous_domaine?la_sous_domaine_dis.valeur():Sous_domaine_VF();
   const Domaine_PolyMAC& zvef=le_dom_PolyMAC.valeur();
 
   // Parametres pour perte_charge()
@@ -240,7 +323,7 @@ void  Perte_Charge_Circulaire_PolyMAC_Face::coeffs_perte_charge(const DoubleVect
 
   for (int face=0;face<max_faces;face++) {
 
-  // indice de la face dans le domaine_PolyMAC
+  // indice de la face dans la domaine_PolyMAC
   int la_face=sous_domaine?
   ssz.les_faces()[face] :
   face;

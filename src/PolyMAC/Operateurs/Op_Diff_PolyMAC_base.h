@@ -12,93 +12,121 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Op_Diff_PolyMAC_base.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     /main/13
+//
+//////////////////////////////////////////////////////////////////////////////
+
+
 
 #ifndef Op_Diff_PolyMAC_base_included
 #define Op_Diff_PolyMAC_base_included
 
 #include <Operateur_Diff_base.h>
-#include <Domaine_PolyMAC.h>
+#include <Op_Diff_Turbulent_base.h>
 #include <TRUST_Ref.h>
+#include <Domaine_PolyMAC.h>
 #include <SFichier.h>
-
-class Domaine_Cl_PolyMAC;
 class Champ_Fonc;
+class Domaine_Cl_PolyMAC;
 
-/*! @brief class Op_Diff_PolyMAC_base
- *
- *  Classe de base des operateurs de diffusion PolyMAC
- *
- *
- */
 
-class Op_Diff_PolyMAC_base : public Operateur_Diff_base
+//
+// .DESCRIPTION class Op_Diff_PolyMAC_base
+//
+// Classe de base des operateurs de diffusion PolyMAC
+
+//
+// .SECTION voir aussi
+//
+//
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// CLASS: Op_Diff_PolyMAC_base
+//
+//////////////////////////////////////////////////////////////////////////////
+
+class Op_Diff_PolyMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulent_base
 {
+
+
   Declare_base(Op_Diff_PolyMAC_base);
+
 public:
   void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
 
+  double calculer_dt_stab() const override;
+
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
-
   const Champ_base& diffusivite() const override;
-  void mettre_a_jour(double t) override;
-
-  /* methodes surchargeables dans des classes derivees pour modifier nu avant de calculer les gradients dans update_nu_xwh */
-  virtual int dimension_min_nu() const /* dimension minimale de nu / nu_bord par composante */
+  void mettre_a_jour(double t) override
   {
-    return 1;
-  };
-  virtual void modifier_mu(DoubleTab& ) const { };
-
-  /* versions etendues de dimensionner/ajouter_blocs permettant de traiter les seules variables auxiliaires */
-  virtual void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = {}) const = 0;
-  virtual void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const = 0;
-
-  /* implementations de dimensionner/ajouter_blocs a partir de ces methodes */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override
-  {
-    dimensionner_blocs_ext(0, matrices, semi_impl);
-  }
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override
-  {
-    ajouter_blocs_ext(0, matrices, secmem, semi_impl);
+    Operateur_base::mettre_a_jour(t);
+    nu_a_jour_ = 0;
   }
 
-  /* diffusivite / conductivite. Attension : stockage nu(element, composante[, dim 1[, dim 2]]) */
-  inline const DoubleTab& nu() const /* aux elements */
+  void update_nu() const; //met a jour nu et nu_fac
+  const DoubleTab& get_nu() const
   {
-    if (!nu_a_jour_) update_nu();
     return nu_;
   }
+  const DoubleTab& get_nu_fac() const
+  {
+    return nu_fac_;
+  }
+
+  inline void remplir_nu_ef(int e, DoubleTab& nu_ef) const;
 
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
   int impr(Sortie& os) const override;
+  mutable DoubleTab nu_fac_mod; //facteur multiplicatif "utilisateur" a appliquer a nu_fac
 
 protected:
   REF(Domaine_PolyMAC) le_dom_poly_;
   REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
-
-  double t_last_nu_ = -1e10; //pour detecter quand on doit recalculer nu, les variables auxiliaires
-
-  /* diffusivite aux elems */
-  void update_nu() const; //mise a jour
-  mutable DoubleTab nu_;
-
-  mutable int nu_constant_ = 0 /* Elie : pour valgrind */, nu_a_jour_ = 0; //nu constant / nu a jour / phif a jour
-
-  /* gestion des variables auxiliaires en semi-implicite */
-  void update_aux(double t) const;
-  mutable double t_last_aux_ = -1e10; /* dernier temps auquel on les a calcule */
-  mutable int use_aux_ = 0;               /* les variables auxiliaires sont-elles stockees dans var_aux ? */
-  mutable Matrice_Bloc mat_aux;      /* systeme a resoudre : mat.var_aux = secmem */
-  mutable DoubleTab var_aux;
-  mutable SolveurSys solv_aux; //solveur
-
-  mutable SFichier Flux, Flux_moment, Flux_sum;
+  mutable DoubleTab nu_, nu_fac_; //conductivite aux elements, facteur multiplicatif a appliquer par face
+  mutable int nu_a_jour_; //si on doit mettre a jour nu
+  mutable SFichier Flux, Flux_moment, Flux_sum; // Fichiers .out
 };
+
+
+
+//
+// Fonctions inline de la classe Op_Diff_PolyMAC_base
+//
+/* diffusivite a l'interieur d'un element e : nu_ef(i, n) : diffusivite de la composante n entre le centre de l'element et celui de la face i */
+inline void Op_Diff_PolyMAC_base::remplir_nu_ef(int e, DoubleTab& nu_ef) const
+{
+  const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
+  const IntTab& e_f = domaine.elem_faces();
+  const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
+  int i, j, k, f, n, N = nu_ef.dimension(1), N_nu = nu_.line_size();
+  double fac;
+
+  for (i = 0; i < domaine.m2d(e + 1) - domaine.m2d(e); i++)
+    {
+      f = e_f(e, i);
+      /* diffusivite de chaque composante dans la direction (xf - xe) */
+      if (N_nu == N)
+        for (n = 0; n < N; n++) nu_ef(i, n) = nu_(e, n); //isotrope
+      else if (N_nu == N * dimension)
+        for (n = 0; n < N; n++)
+          for (j = 0, nu_ef(i, n) = 0; j < dimension; j++) //anisotrope diagonal
+            nu_ef(i, n) += nu_.addr()[dimension * (N * e + n) + j] * std::pow(xv(f, j) - xp(e, j), 2);
+      else if (N_nu == N * dimension * dimension)
+        for (n = 0; n < N; n++)
+          for (j = 0, nu_ef(i, n) = 0; j < dimension; j++)
+            for (k = 0; k < dimension; k++)
+              nu_ef(i, n) += nu_.addr()[dimension * (dimension * (N * e + n) + j) + k] * (xv(f, j) - xp(e, j)) * (xv(f, k) - xp(e, k)); //anisotrope complet
+      else abort();
+      for (n = 0, fac = nu_fac_.addr()[f] * (N_nu > N ? 1. / domaine.dot(&xv(f, 0), &xv(f, 0), &xp(e, 0), &xp(e, 0)) : 1); n < N; n++) nu_ef(i, n) *= fac;
+    }
+}
 #endif

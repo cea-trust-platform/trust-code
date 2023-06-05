@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,7 +16,7 @@
 #ifndef Op_Conv_EF_Stab_PolyMAC_P0_Face_included
 #define Op_Conv_EF_Stab_PolyMAC_P0_Face_included
 
-#include <Op_Conv_PolyMAC_base.h>
+#include <Op_Conv_PolyMAC_P0P1NC_base.h>
 #include <Matrice_Morse.h>
 
 /*! @brief : class Op_Conv_EF_Stab_PolyMAC_P0_Face
@@ -27,7 +27,7 @@
  *
  */
 
-class Op_Conv_EF_Stab_PolyMAC_P0_Face : public Op_Conv_PolyMAC_base
+class Op_Conv_EF_Stab_PolyMAC_P0_Face : public Op_Conv_PolyMAC_P0P1NC_base
 {
 
   Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_P0_Face ) ;

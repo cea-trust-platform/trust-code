@@ -1,0 +1,76 @@
+/****************************************************************************
+* Copyright (c) 2023, CEA
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
+
+#include <Source_Generique_Face_PolyMAC_P0P1NC.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Equation_base.h>
+#include <Domaine_Cl_dis.h>
+#include <Milieu_base.h>
+
+Implemente_instanciable(Source_Generique_Face_PolyMAC_P0P1NC, "Source_Generique_Face_PolyMAC_P0P1NC|Source_Generique_Face_PolyMAC_P0", Source_Generique_base);
+
+
+Sortie& Source_Generique_Face_PolyMAC_P0P1NC::printOn(Sortie& os) const
+{
+  return os << que_suis_je() ;
+}
+
+Entree& Source_Generique_Face_PolyMAC_P0P1NC::readOn(Entree& is)
+{
+  Source_Generique_base::readOn(is);
+  return is;
+}
+
+// Methode de calcul de la valeur sur une face encadree par elem1 et elem2 d'un champ uniforme ou non a plusieurs composantes
+inline double valeur(const DoubleTab& valeurs_champ, int elem1, int elem2, const int& compo)
+{
+  if (valeurs_champ.dimension(0)==1)
+    return valeurs_champ(0,compo); // Champ uniforme
+  else
+    {
+      if (elem2<0) elem2 = elem1; // face frontiere
+      if (valeurs_champ.nb_dim()==1)
+        return 0.5*(valeurs_champ(elem1)+valeurs_champ(elem2));
+      else
+        return 0.5*(valeurs_champ(elem1,compo)+valeurs_champ(elem2,compo));
+    }
+}
+
+DoubleTab& Source_Generique_Face_PolyMAC_P0P1NC::ajouter(DoubleTab& resu) const
+{
+  Champ espace_stockage;
+  const Champ_base& la_source = ch_source_->get_champ(espace_stockage); // Aux faces
+  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_PolyMAC_P0P1NC.valeur();
+  const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
+  const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl();
+  for (int f = 0, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); f < domaine.nb_faces(); f++)
+    if (calc_cl || fcl(f, 0) < 2)
+      resu(f) += pf(f) * vf(f) * la_source.valeurs()(f);
+  return resu;
+}
+
+void Source_Generique_Face_PolyMAC_P0P1NC::associer_domaines(const Domaine_dis& domaine_dis,
+                                                             const Domaine_Cl_dis& zcl_dis)
+{
+  le_dom_PolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC_P0P1NC,domaine_dis.valeur());
+  la_zcl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl_dis.valeur());
+}
+
+Nom Source_Generique_Face_PolyMAC_P0P1NC::localisation_source()
+{
+  return "faces";
+}

@@ -20,7 +20,7 @@
 #include <Masse_ajoutee_base.h>
 #include <Option_PolyMAC_P0.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>
@@ -32,7 +32,7 @@
 #include <TRUSTTab.h>
 #include <Piso.h>
 
-Implemente_instanciable(Masse_PolyMAC_P0_Face, "Masse_PolyMAC_P0_Face", Masse_PolyMAC_Face);
+Implemente_instanciable(Masse_PolyMAC_P0_Face, "Masse_PolyMAC_P0_Face", Masse_PolyMAC_P0P1NC_Face);
 
 Sortie& Masse_PolyMAC_P0_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
@@ -103,7 +103,7 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();
   Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
   const Domaine_PolyMAC_P0& domaine = le_dom_PolyMAC_P0;
-  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
+  const Conds_lim& cls = le_dom_Cl_PolyMAC_P0P1NC->les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes(), &fs = domaine.face_surfaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;

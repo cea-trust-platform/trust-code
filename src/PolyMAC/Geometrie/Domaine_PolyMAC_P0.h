@@ -22,7 +22,7 @@
 #include <Matrice_Morse_Sym.h>
 #include <Neumann_homogene.h>
 #include <Static_Int_Lists.h>
-#include <Domaine_PolyMAC.h>
+#include <Domaine_PolyMAC_P0P1NC.h>
 #include <SolveurSys.h>
 #include <TRUSTLists.h>
 #include <Periodique.h>
@@ -77,7 +77,7 @@ class Geometrie;
  */
 
 
-class Domaine_PolyMAC_P0 : public Domaine_PolyMAC
+class Domaine_PolyMAC_P0 : public Domaine_PolyMAC_P0P1NC
 {
 
   Declare_instanciable(Domaine_PolyMAC_P0);

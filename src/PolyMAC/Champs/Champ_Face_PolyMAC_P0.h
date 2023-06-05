@@ -16,7 +16,7 @@
 #ifndef Champ_Face_PolyMAC_P0_included
 #define Champ_Face_PolyMAC_P0_included
 
-#include <Champ_Face_PolyMAC.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <SolveurSys.h>
 
@@ -29,7 +29,7 @@
  *
  */
 
-class Champ_Face_PolyMAC_P0 : public Champ_Face_PolyMAC
+class Champ_Face_PolyMAC_P0 : public Champ_Face_PolyMAC_P0P1NC
 {
   Declare_instanciable(Champ_Face_PolyMAC_P0) ;
 

@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        DP_Impose_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/9
+//
+//////////////////////////////////////////////////////////////////////////////
 
 
 #ifndef DP_Impose_PolyMAC_Face_included
@@ -23,12 +30,15 @@
 class Domaine;
 #include <TRUSTList.h>
 
-/*! @brief class DP_Impose_PolyMAC_Face
- *
- *
- *
- * @sa Perte_Charge_PolyMAC_Face
- */
+//
+// .DESCRIPTION class DP_Impose_PolyMAC_Face
+//
+
+//
+// .SECTION voir aussi Perte_Charge_PolyMAC_Face
+//
+//
+
 class DP_Impose_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
   public DP_Impose
 {
@@ -36,17 +46,15 @@ class DP_Impose_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
   Declare_instanciable(DP_Impose_PolyMAC_Face);
 
 public:
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override ;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
   void remplir_num_faces(Entree& );
   void mettre_a_jour(double temps) override;
 
 protected:
   IntVect sgn;
-  double surf = -123.;//surface totale
+  double surf;//surface totale
 };
 #endif

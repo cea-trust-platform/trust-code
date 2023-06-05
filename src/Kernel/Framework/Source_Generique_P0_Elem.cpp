@@ -21,7 +21,7 @@
 #include <Domaine_VF.h>
 
 Implemente_instanciable(Source_Generique_P0_Elem,"Source_Generique_VDF_P0_VDF",Source_Generique_base);
-Add_synonym(Source_Generique_P0_Elem, "Source_Generique_Elem_PolyMAC");
+Add_synonym(Source_Generique_P0_Elem, "Source_Generique_Elem_PolyMAC_P0P1NC");
 Add_synonym(Source_Generique_P0_Elem, "Source_Generique_Elem_PolyMAC_P0");
 
 Sortie& Source_Generique_P0_Elem::printOn(Sortie& os) const

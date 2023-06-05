@@ -28,7 +28,7 @@ class Conds_lim;
 /*! @brief classe Domaine_dis_base Cette classe est la base de la hierarchie des domaines discretisees.
  *
  *      Un objet Domaine est associe au domaine discretise.
- *      A chaque discretisation spatiale (VDF, VEF, PolyMAC, ...)  de TRUST correspond une classe derivant
+ *      A chaque discretisation spatiale (VDF, VEF, PolyMAC_P0P1NC, ...)  de TRUST correspond une classe derivant
  *      de Domaine_dis_base implementant les outils necessaires a la methode.
  */
 class Domaine_dis_base : public Objet_U

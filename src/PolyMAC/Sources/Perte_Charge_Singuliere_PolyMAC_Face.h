@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,34 +12,48 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Perte_Charge_Singuliere_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/9
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 #ifndef Perte_Charge_Singuliere_PolyMAC_Face_included
 #define Perte_Charge_Singuliere_PolyMAC_Face_included
 
 #include <Perte_Charge_PolyMAC_Face.h>
 #include <Perte_Charge_Singuliere.h>
-#include <TRUSTList.h>
 
 class Domaine;
+#include <TRUSTList.h>
 
-/*! @brief class Perte_Charge_Singuliere_PolyMAC_Face
- *
- * @sa Perte_Charge_PolyMAC_Face
- */
-class Perte_Charge_Singuliere_PolyMAC_Face : public Perte_Charge_PolyMAC_Face, public Perte_Charge_Singuliere
+//
+// .DESCRIPTION class Perte_Charge_Singuliere_PolyMAC_Face
+//
+
+//
+// .SECTION voir aussi Perte_Charge_PolyMAC_Face
+//
+//
+
+class Perte_Charge_Singuliere_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
+  public Perte_Charge_Singuliere
 {
+
   Declare_instanciable(Perte_Charge_Singuliere_PolyMAC_Face);
+
 public:
-  int has_interface_blocs() const override { return 1; }
-  void completer() override;
-  void check_multiphase_compatibility() const override { };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override ;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
   void remplir_num_faces(Entree& );
   void mettre_a_jour(double temps) override;
 
 protected:
   IntVect sgn;
 };
-
-#endif /* Perte_Charge_Singuliere_PolyMAC_Face_included */
+#endif

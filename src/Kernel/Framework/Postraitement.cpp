@@ -1239,8 +1239,8 @@ void Postraitement::init()
                 Cerr<<"The postprocessing to the faces is allowed only in the format lata or med"<<finl;
                 exit();
               }
-            // PL: Ajout automatique du postraitement aux faces pour PolyMAC seul, sinon doit etre specifie par FACES
-            if (Motcle(loc_post) == "FACES" || champ->get_ref_domaine_dis_base().que_suis_je().debute_par("Domaine_PolyMAC"))
+            // PL: Ajout automatique du postraitement aux faces pour PolyMAC_P0P1NC seul, sinon doit etre specifie par FACES
+            if (Motcle(loc_post) == "FACES" || champ->get_ref_domaine_dis_base().que_suis_je().debute_par("Domaine_PolyMAC_P0P1NC"))
               {
                 REF(Domaine_dis_base) ref_domaine_dis = champ->get_ref_domaine_dis_base();
                 if (ref_domaine_dis.non_nul())
@@ -1420,10 +1420,10 @@ void Postraitement::postprocess_field_values()
       Champ espace_stockage;
       const Champ_base& champ_ecriture = champ.get_champ(espace_stockage);
       DoubleTab val_vec;
-      bool isChamp_Face_PolyMAC = (champ_ecriture.que_suis_je().debute_par("Champ_Face_PolyMAC") || champ_ecriture.que_suis_je()=="Champ_Face_PolyMAC_P0");
-      if (isChamp_Face_PolyMAC)
+      bool isChamp_Face_PolyMAC_P0P1NC = (champ_ecriture.que_suis_je().debute_par("Champ_Face_PolyMAC_P0P1NC") || champ_ecriture.que_suis_je()=="Champ_Face_PolyMAC_P0");
+      if (isChamp_Face_PolyMAC_P0P1NC)
         champ_ecriture.valeur_aux_faces(val_vec);
-      const DoubleTab& valeurs_post = isChamp_Face_PolyMAC ? val_vec : champ_ecriture.valeurs();
+      const DoubleTab& valeurs_post = isChamp_Face_PolyMAC_P0P1NC ? val_vec : champ_ecriture.valeurs();
       //Etape de recuperation des informations specifiques au champ a postraiter
 
       Entity loc = champ.get_localisation();

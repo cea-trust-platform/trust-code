@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Op_Conv_EF_Stab_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Conv_EF_Stab_PolyMAC_Face_included
 #define Op_Conv_EF_Stab_PolyMAC_Face_included
@@ -19,13 +26,13 @@
 #include <Op_Conv_PolyMAC_base.h>
 #include <Matrice_Morse.h>
 
-/*! @brief : class Op_Conv_EF_Stab_PolyMAC_Face
- *
- *  <Description of class Op_Conv_EF_Stab_PolyMAC_Face>
- *
- *
- *
- */
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Op_Conv_EF_Stab_PolyMAC_Face
+//
+// <Description of class Op_Conv_EF_Stab_PolyMAC_Face>
+//
+/////////////////////////////////////////////////////////////////////////////
 
 class Op_Conv_EF_Stab_PolyMAC_Face : public Op_Conv_PolyMAC_base
 {
@@ -34,36 +41,19 @@ class Op_Conv_EF_Stab_PolyMAC_Face : public Op_Conv_PolyMAC_base
 
 public :
   void completer() override;
+  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
-  double calculer_dt_stab() const override;
-
-  /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
-  void check_multiphase_compatibility() const override { }; //of course
-  void set_incompressible(const int flag) override
-  {
-    incompressible_ = flag;
-  }
+  void dimensionner(Matrice_Morse& mat) const override;
+  void set_incompressible(const int flag) override;
 
 protected :
-  double alpha = -1e8; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_f, porosite_e; //pour F5
-};
-
-class Op_Conv_Amont_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face
-{
-  Declare_instanciable( Op_Conv_Amont_PolyMAC_Face ) ;
-};
-
-class Op_Conv_Centre_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face
-{
-  Declare_instanciable( Op_Conv_Centre_PolyMAC_Face ) ;
+  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
+  DoubleVect porosite_f;
+  DoubleVect porosite_e;
+private :
+  IntTab equiv; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
 };
 
 #endif /* Op_Conv_EF_Stab_PolyMAC_Face_included */

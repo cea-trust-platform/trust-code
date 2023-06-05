@@ -23,7 +23,7 @@ class Correlation;
 
 /*! @brief Classe Source_Flux_interfacial_base
  *
- *    Cette classe implemente dans PolyMAC un operateur de frottement interfacial
+ *    Cette classe implemente dans PolyMAC_P0P1NC un operateur de frottement interfacial
  *
  *     de la forme F_{kl} = - F_{lk} = - C_{kl} (u_k - u_l)
  *     le calcul de C_{kl} est realise par la hierarchie Coefficient_Flux_interfacial_base

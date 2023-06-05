@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,19 +12,26 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Op_Diff_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Op_Diff_PolyMAC_Face_included
 #define Op_Diff_PolyMAC_Face_included
 
 #include <Op_Diff_PolyMAC_base.h>
 
-/*! @brief : class Op_Diff_PolyMAC_Face
- *
- *  <Description of class Op_Diff_PolyMAC_Face>
- *
- *
- *
- */
+/////////////////////////////////////////////////////////////////////////////
+//
+// .DESCRIPTION : class Op_Diff_PolyMAC_Face
+//
+// <Description of class Op_Diff_PolyMAC_Face>
+//
+/////////////////////////////////////////////////////////////////////////////
 
 class Op_Diff_PolyMAC_Face : public Op_Diff_PolyMAC_base
 {
@@ -33,19 +40,11 @@ class Op_Diff_PolyMAC_Face : public Op_Diff_PolyMAC_base
 
 public :
   void completer() override;
+  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void contribuer_au_second_membre(DoubleTab& ) const override;
   void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  double calculer_dt_stab() const override;
-  void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void check_multiphase_compatibility() const override {}; //ok
-protected :
-  DoubleVect porosite_e;
-  DoubleVect porosite_f;
-
+  void dimensionner(Matrice_Morse& mat) const override;
 };
 
 #endif /* Op_Diff_PolyMAC_Face_included */

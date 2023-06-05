@@ -12,20 +12,26 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Source_Generique_Face_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/5
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 #ifndef Source_Generique_Face_PolyMAC_included
 #define Source_Generique_Face_PolyMAC_included
 
 #include <Source_Generique_base.h>
 #include <TRUST_Ref.h>
-
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
 
-/*! @brief class Source_Generique_Face_PolyMAC
- *
- * @sa Source_Generique_base
- */
+// .DESCRIPTION class Source_Generique_Face_PolyMAC
+// .SECTION voir Source_Generique_base
+//
 class Source_Generique_Face_PolyMAC: public Source_Generique_base
 {
 

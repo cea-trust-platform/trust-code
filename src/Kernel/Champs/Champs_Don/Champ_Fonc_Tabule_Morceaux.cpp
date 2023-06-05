@@ -135,7 +135,7 @@ void Champ_Fonc_Tabule_Morceaux::mettre_a_jour(double time)
   pval.reserve(ch_param.size()), tval.reserve(ch_param.size()), is_multi.reserve(ch_param.size());
   for (auto &&pch : ch_param)
     {
-      ConstDoubleTab_parts part(pch->valeurs()); //pour ignorer les variables aux de PolyMAC
+      ConstDoubleTab_parts part(pch->valeurs()); //pour ignorer les variables aux de PolyMAC_P0P1NC
       if (tab.get_md_vector() == part[0].get_md_vector()) /* on est bien aux elements -> utilisation directe */
         pval.push_back(&pch->valeurs());
       else /* sinon -> calcul des valeurs aux elems et stockage dans un tableau de tval */

@@ -32,9 +32,9 @@
  */
 
 
-#include <PolyMAC_discretisation.h>
+#include <PolyMAC_P0P1NC_discretisation.h>
 
-class PolyMAC_P0_discretisation : public PolyMAC_discretisation
+class PolyMAC_P0_discretisation : public PolyMAC_P0P1NC_discretisation
 {
   Declare_instanciable(PolyMAC_P0_discretisation);
 

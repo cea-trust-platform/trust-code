@@ -15,13 +15,13 @@
 
 #include <Modele_turbulence_scal_base.h>
 #include <Echange_contact_PolyMAC_P0.h>
-#include <Flux_interfacial_PolyMAC.h>
+#include <Flux_interfacial_PolyMAC_P0P1NC.h>
 #include <Op_Diff_PolyMAC_P0_Elem.h>
 #include <Echange_externe_impose.h>
 #include <Champ_Elem_PolyMAC_P0.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Flux_parietal_base.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
 #include <Schema_Temps_base.h>
 #include <Champ_front_calc.h>
 #include <Milieu_composite.h>
@@ -304,7 +304,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
       N.push_back(inco[i].get().line_size()), fcl.push_back(std::ref(ch.fcl()));
     }
   const Domaine_PolyMAC_P0& domaine0 = domaine[0];
-  DoubleTab *pqpi = equation().sources().size() && sub_type(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur()) ? &ref_cast(Flux_interfacial_PolyMAC, equation().sources().dernier().valeur()).qpi() : NULL;
+  DoubleTab *pqpi = equation().sources().size() && sub_type(Flux_interfacial_PolyMAC_P0P1NC, equation().sources().dernier().valeur()) ? &ref_cast(Flux_interfacial_PolyMAC_P0P1NC, equation().sources().dernier().valeur()).qpi() : NULL;
   d_nuc_ = 0; //remise a zero du diametre de nucleation
 
   /* avec phif : flux hors Echange_contact -> mat[0] seulement */

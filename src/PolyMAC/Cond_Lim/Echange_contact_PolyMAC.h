@@ -12,49 +12,57 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Echange_contact_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Cond_Lim
+// Version:     /main/17
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Echange_contact_PolyMAC_included
 #define Echange_contact_PolyMAC_included
 
 #include <Echange_externe_impose.h>
-#include <Op_Diff_PolyMAC_Elem.h>
 #include <TRUSTTabs_forward.h>
-#include <MD_Vector_tools.h>
 #include <TRUST_Ref.h>
+class Champ_Inc;
 
 class Domaine_PolyMAC;
-class Champ_Inc;
 class Front_VF;
 class Faces;
 
-/*! @brief classe : Echange_contact_PolyMAC Outre le champ_front representant la temperature de paroi,
- *
- *   cette classe possede un autre champ_front avec autant de valeurs
- *   temporelles qui represente la temperature dans l'autre probleme.
- *
- */
+//  .DESCRIPTION classe : Echange_contact_PolyMAC
+//  Outre le champ_front representant la temperature de paroi,
+//  cette classe possede un autre champ_front avec autant de valeurs
+//  temporelles qui represente la temperature dans l'autre probleme.
 class Echange_contact_PolyMAC  : public Echange_externe_impose
 {
   Declare_instanciable(Echange_contact_PolyMAC);
 public :
-  void init_op() const;
-  void mettre_a_jour(double temps) override { }; //non utilise
-  void verifie_ch_init_nb_comp() const override { }; //pas de contrainte sur les composantes de chaque cote
+  void completer() override;
+  int initialiser(double temps) override;
+  void calculer_correspondance();
+  void update_coeffs();
+  void update_delta() const;
+  void mettre_a_jour(double ) override;
+  inline Champ_front& T_autre_pb() { return T_autre_pb_; }
+  inline const Champ_front& T_autre_pb() const { return T_autre_pb_; }
+  inline const Nom& nom_autre_pb() const { return nom_autre_pb_; }
 
-  mutable REF(Front_VF) fvf, o_fvf; //frontiere dans l'autre probleme
-  mutable int i_fvf = -1 , i_o_fvf = -1;  //indices de frontiere de chaque cote
-  mutable REF(Op_Diff_PolyMAC_Elem) diff, o_diff; //operateurs de diffusion de chaque cote
-  mutable int o_idx = -1; //indice de l'autre operateur dans le tableau op_ext de Op_Diff_PolyMAC_Elem (a remplir par celui-ci)
+  //item(i, j) : indice du j-ieme item dont on a besoin pour la face i de la frontiere
+  mutable IntTab item;
 
-  /* faces de l'autre cote de la frontiere */
-  void init_f_dist() const; //initialisation de f_dist
-  mutable IntTab f_dist;     //face de l'autre cote de chaque face de la frontiere
-  mutable int f_dist_init_ = 0;
-
-  double invh_paroi = 1e30; //resistance thermique (1 / h) de la paroi
-
+  //coeff(i, j) : coefficient de la face, puis coefficient de item(i, j - 1) (element, puis autres faces) dans la formule du flux a la face
+  //delta(i, j, 0/1) -> idem pour la correction non-lineaire de Le Potier
+  mutable DoubleTab coeff, delta_int, delta;
+  int monolithic; //1 si on resout la thermique en monolithique
 protected :
-  Nom nom_autre_pb_, nom_bord_, nom_champ_; //nom du probleme distant, du bord, du champ
+  int stab_; //1 si on utilise la stabilisation de Le Potier
+  mutable int coeffs_a_jour_, delta_a_jour_; //dernier temps auquel on a mis a jour les coeffs
+  double h_paroi;
+  Champ_front T_autre_pb_;
+  Nom nom_autre_pb_;
 };
 
 #endif

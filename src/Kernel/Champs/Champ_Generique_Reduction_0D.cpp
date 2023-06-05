@@ -204,10 +204,10 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
   Nature_du_champ nature_source = source.nature_du_champ();
   int nb_comp = source.nb_comp();
 
-  // dimension() sur le tableau de valeurs des champs PolyMAC renvoie -1 (plusieurs supports)
+  // dimension() sur le tableau de valeurs des champs PolyMAC_P0P1NC renvoie -1 (plusieurs supports)
   // ToDo: reecrire completement cette methode (horrible, tres mal ecrite) en deportant les methodes min/max/sum/... pour chaque Champ !
-  if (source.que_suis_je()=="Champ_Face_PolyMAC" || source.que_suis_je()=="Champ_Face_PolyMAC_P0")
-    Process::exit("PolyMAC/PolyMAC_P0 face field not supported yet for Reduction_0D");
+  if (source.que_suis_je()=="Champ_Face_PolyMAC_P0P1NC" || source.que_suis_je()=="Champ_Face_PolyMAC_P0")
+    Process::exit("PolyMAC_P0P1NC/PolyMAC_P0 face field not supported yet for Reduction_0D");
 
   Champ_Fonc es_tmp;
   espace_stockage = creer_espace_stockage(nature_source,nb_comp,es_tmp);
@@ -218,7 +218,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
     nb_dim= source.valeurs().dimension(1);
 
   ConstDoubleTab_parts valeurs_source_parts(source.valeurs()); // pour ignorer les variables auxiliaires
-  const DoubleTab& valeurs_source = valeurs_source_parts[0];   // de PolyMAC (sinon : min, moyenne FAUX)
+  const DoubleTab& valeurs_source = valeurs_source_parts[0];   // de PolyMAC_P0P1NC (sinon : min, moyenne FAUX)
   DoubleTab&  espace_valeurs = espace_stockage->valeurs();
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
   DoubleVect val_extraites(nb_comp);

@@ -190,7 +190,7 @@ Entree& latatoother::interpreter(Entree& is)
 
       filter.initialize(opt, lata_db);
 
-      // On met dual_mesh a "false" si on lit un domaine de polyedres PolyMAC (pas encore supporte)
+      // On met dual_mesh a "false" si on lit un domaine de polyedres PolyMAC_P0P1NC (pas encore supporte)
       // et on-reouvre la database:
       Noms geom_names = filter.get_exportable_geometry_names();
       int elt_type = filter.get_geometry(Domain_Id(geom_names[0], 1, -1)).elt_type_;

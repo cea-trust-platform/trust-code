@@ -12,44 +12,51 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Terme_Source_Qdm_Face_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/7
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 #ifndef Terme_Source_Qdm_Face_PolyMAC_included
 #define Terme_Source_Qdm_Face_PolyMAC_included
 
-#include <Terme_Source_Qdm.h>
 #include <Source_base.h>
+#include <Terme_Source_Qdm.h>
+class Probleme_base;
 #include <TRUST_Ref.h>
-
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
-class Probleme_base;
 
-/*! @brief class Terme_Source_Qdm_Face_PolyMAC
- *
- *
- *
- * @sa Source_base
- */
+//
+// .DESCRIPTION class Terme_Source_Qdm_Face_PolyMAC
+//
+
+//
+// .SECTION voir aussi Source_base
+//
+//
+
 class Terme_Source_Qdm_Face_PolyMAC : public Source_base, public Terme_Source_Qdm
 {
 
   Declare_instanciable(Terme_Source_Qdm_Face_PolyMAC);
 
 public:
-  int initialiser(double temps) override;
-  void associer_pb(const Probleme_base& ) override { }
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+
+  void associer_pb(const Probleme_base& ) override;
+  DoubleTab& ajouter(DoubleTab& ) const override;
+  DoubleTab& calculer(DoubleTab& ) const override;
   void mettre_a_jour(double ) override;
-  void check_multiphase_compatibility() const override { }; //ok
 
 protected:
 
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { };
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 
 };
 

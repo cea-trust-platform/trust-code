@@ -12,26 +12,35 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Op_Grad_PolyMAC_Face.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
+// Version:     /main/12
+//
+//////////////////////////////////////////////////////////////////////////////
+
 
 #ifndef Op_Grad_PolyMAC_Face_included
 #define Op_Grad_PolyMAC_Face_included
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC.h>
 #include <Operateur_Grad.h>
+#include <Domaine_PolyMAC.h>
 #include <TRUST_Ref.h>
+class Domaine_Cl_PolyMAC;
 
-class Champ_Face_PolyMAC;
+//
+// .DESCRIPTION class Op_Grad_PolyMAC_Face
+//
+//  Cette classe represente l'operateur de gradient
+//  La discretisation est PolyMAC
+//  On calcule le gradient d'un champ_P0_PolyMAC (la pression)
+//
 
-/*! @brief class Op_Grad_PolyMAC_Face
- *
- *   Cette classe represente l'operateur de gradient
- *   La discretisation est PolyMAC
- *   On calcule le gradient d'un champ_Elem_PolyMAC (la pression)
- *
- *
- * @sa Operateur_Grad_base
- */
+// .SECTION voir aussi
+// Operateur_Grad_base
+//
+
 class Op_Grad_PolyMAC_Face : public Operateur_Grad_base
 {
 
@@ -39,25 +48,107 @@ class Op_Grad_PolyMAC_Face : public Operateur_Grad_base
 
 public:
 
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
-  void completer() override;
-
-  /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
+  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,
+                const Champ_Inc& ) override;
+  void dimensionner(Matrice_Morse& ) const override;
+  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
+  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  void contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const override;
   int impr(Sortie& os) const override;
 
-  void check_multiphase_compatibility() const override { }; //ok
+  inline Domaine_PolyMAC& domaine_PolyMAC();
+  inline const Domaine_PolyMAC& domaine_PolyMAC() const;
+  inline Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC();
+  inline const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC() const;
+  inline int& face_voisins_(int i, int j);
+  inline const int& face_voisins_(int i, int j) const ;
+  inline double volume_entrelaces_(int i) ;
+  inline const double& volume_entrelaces_(int i) const ;
+  inline double porosite_surf_(int i) ;
+  inline const double& porosite_surf_(int i) const ;
+  inline double xp_(int elem, int ori);
+  inline const double& xp_(int elem, int ori) const;
 
 private:
 
-  REF(Domaine_PolyMAC) ref_domaine;
-  REF(Domaine_Cl_PolyMAC) ref_zcl;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC_P0P1NC;
+  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0P1NC;
+
+  DoubleTab xp;
+  DoubleVect volume_entrelaces;
+  IntTab face_voisins;
+
+  inline double dist_norm_bord(int ) const;
+
+protected:
+
+  DoubleVect porosite_surf;
 };
+
+inline double Op_Grad_PolyMAC_Face::xp_(int elem, int ori)
+{
+  return xp(elem,ori);
+}
+
+inline const double& Op_Grad_PolyMAC_Face::xp_(int elem, int ori) const
+{
+  return xp(elem,ori);
+}
+
+inline double Op_Grad_PolyMAC_Face::porosite_surf_(int i)
+{
+  return porosite_surf(i);
+}
+
+inline const double& Op_Grad_PolyMAC_Face::porosite_surf_(int i) const
+{
+  return porosite_surf(i);
+}
+
+inline double Op_Grad_PolyMAC_Face::volume_entrelaces_(int i)
+{
+  return volume_entrelaces(i);
+}
+
+inline const double& Op_Grad_PolyMAC_Face::volume_entrelaces_(int i) const
+{
+  return volume_entrelaces(i);
+}
+
+
+inline int& Op_Grad_PolyMAC_Face::face_voisins_(int i, int j)
+{
+  return face_voisins(i,j);
+}
+
+inline const int& Op_Grad_PolyMAC_Face::face_voisins_(int i, int j) const
+{
+  return face_voisins(i,j);
+}
+
+inline Domaine_PolyMAC& Op_Grad_PolyMAC_Face::domaine_PolyMAC()
+{
+  return le_dom_PolyMAC_P0P1NC.valeur();
+}
+
+inline const Domaine_PolyMAC& Op_Grad_PolyMAC_Face::domaine_PolyMAC() const
+{
+  return le_dom_PolyMAC_P0P1NC.valeur();
+}
+
+inline Domaine_Cl_PolyMAC& Op_Grad_PolyMAC_Face::domaine_Cl_PolyMAC()
+{
+  return la_zcl_PolyMAC_P0P1NC.valeur();
+}
+
+inline const Domaine_Cl_PolyMAC& Op_Grad_PolyMAC_Face::domaine_Cl_PolyMAC() const
+{
+  return la_zcl_PolyMAC_P0P1NC.valeur();
+}
+
+inline double Op_Grad_PolyMAC_Face::dist_norm_bord(int num_face) const
+{
+  return le_dom_PolyMAC_P0P1NC->dist_norm_bord(num_face);
+}
 
 #endif

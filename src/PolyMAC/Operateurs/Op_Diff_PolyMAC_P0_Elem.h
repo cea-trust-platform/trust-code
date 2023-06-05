@@ -35,7 +35,7 @@ class Op_Diff_PolyMAC_P0_Elem : public Op_Diff_PolyMAC_P0_base
 public :
   Op_Diff_PolyMAC_P0_Elem();
   void completer() override;
-  void init_op_ext() const override; //fait plus de travail qu'en PolyMAC: op_ext + som_ext, pe_ext...
+  void init_op_ext() const override; //fait plus de travail qu'en PolyMAC_P0P1NC: op_ext + som_ext, pe_ext...
   // virtual void calculer_flux_bord(const DoubleTab& inco) const { abort(); };
 
   /* interface {dimensionner,ajouter}_blocs */

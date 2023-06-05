@@ -1640,7 +1640,7 @@ static void construire_matrice_implicite(Operateur_base& op,
     }
 }
 
-/* dans PolyMAC, le gradient contribue a la matrice de l'equation de N-S */
+/* dans PolyMAC_P0P1NC, le gradient contribue a la matrice de l'equation de N-S */
 void Navier_Stokes_std::dimensionner_matrice_sans_mem(Matrice_Morse& matrice)
 {
   Equation_base::dimensionner_matrice_sans_mem(matrice);

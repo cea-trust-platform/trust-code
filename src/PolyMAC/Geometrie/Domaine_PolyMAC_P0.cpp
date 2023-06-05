@@ -24,7 +24,7 @@
 #include <Option_PolyMAC_P0.h>
 #include <MD_Vector_tools.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
 #include <TRUSTTab_parts.h>
 #include <Comm_Group_MPI.h>
 #include <Quadrangle_VEF.h>
@@ -63,7 +63,7 @@
 #include <osqp/osqp.h>
 #pragma GCC diagnostic pop
 
-Implemente_instanciable(Domaine_PolyMAC_P0,"Domaine_PolyMAC_P0",Domaine_PolyMAC);
+Implemente_instanciable(Domaine_PolyMAC_P0,"Domaine_PolyMAC_P0",Domaine_PolyMAC_P0P1NC);
 
 //// printOn
 //
@@ -83,7 +83,7 @@ Entree& Domaine_PolyMAC_P0::readOn(Entree& is)
 
 void Domaine_PolyMAC_P0::discretiser()
 {
-  /* on saut le discretiser() de Domaine_PolyMAC pour eviter d'initialiser les variables de PolyMAC_V1 */
+  /* on saut le discretiser() de Domaine_PolyMAC_P0P1NC pour eviter d'initialiser les variables de PolyMAC_P0P1NC_V1 */
   Domaine_Poly_base::discretiser();
 
   //MD_vector pour Champ_Face_PolyMAC_P0 (faces + dimension * champ_p0)

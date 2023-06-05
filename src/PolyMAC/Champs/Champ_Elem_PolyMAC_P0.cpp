@@ -16,14 +16,14 @@
 #include <Champ_Elem_PolyMAC_P0.h>
 #include <Connectivite_som_elem.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
 #include <TRUSTTab_parts.h>
 #include <Equation_base.h>
 #include <Domaine.h>
 #include <array>
 #include <cmath>
 
-Implemente_instanciable(Champ_Elem_PolyMAC_P0,"Champ_Elem_PolyMAC_P0",Champ_Elem_PolyMAC);
+Implemente_instanciable(Champ_Elem_PolyMAC_P0,"Champ_Elem_PolyMAC_P0",Champ_Elem_PolyMAC_P0P1NC);
 
 Sortie& Champ_Elem_PolyMAC_P0::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

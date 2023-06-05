@@ -85,7 +85,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int journal_shared = 0;
   int helptrust = 0;
   int ieee = 1;              // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-  //int ieee = 0;              // PolyMAC ?
+  //int ieee = 0;              // PolyMAC_P0P1NC ?
   bool apply_verification = true;
   int disable_stop = 0;
   Nom data_file;

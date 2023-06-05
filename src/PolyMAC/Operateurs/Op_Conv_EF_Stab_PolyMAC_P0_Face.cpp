@@ -17,7 +17,7 @@
 #include <Pb_Multiphase.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Poly_base.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 
@@ -29,7 +29,7 @@
 #include <cmath>
 #include <Masse_ajoutee_base.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_P0_Face, "Op_Conv_EF_Stab_PolyMAC_P0_Face", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_P0_Face, "Op_Conv_EF_Stab_PolyMAC_P0_Face", Op_Conv_PolyMAC_P0P1NC_base ) ;
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_P0_Face, "Op_Conv_Amont_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face);
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_P0_Face, "Op_Conv_Centre_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face);
 
@@ -37,15 +37,15 @@ Op_Conv_Amont_PolyMAC_P0_Face::Op_Conv_Amont_PolyMAC_P0_Face() { alpha = 1.0; }
 Op_Conv_Centre_PolyMAC_P0_Face::Op_Conv_Centre_PolyMAC_P0_Face() { alpha = 0.0; }
 
 // XD Op_Conv_EF_Stab_PolyMAC_P0_Face interprete Op_Conv_EF_Stab_PolyMAC_P0_Face 1 Class Op_Conv_EF_Stab_PolyMAC_P0_Face
-Sortie& Op_Conv_EF_Stab_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
-Sortie& Op_Conv_Amont_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
-Sortie& Op_Conv_Centre_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
-Entree& Op_Conv_Amont_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Conv_PolyMAC_base::readOn(is); }
-Entree& Op_Conv_Centre_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Conv_PolyMAC_base::readOn(is); }
+Sortie& Op_Conv_EF_Stab_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_P0P1NC_base::printOn(os); }
+Sortie& Op_Conv_Amont_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_P0P1NC_base::printOn(os); }
+Sortie& Op_Conv_Centre_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_P0P1NC_base::printOn(os); }
+Entree& Op_Conv_Amont_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Conv_PolyMAC_P0P1NC_base::readOn(is); }
+Entree& Op_Conv_Centre_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Conv_PolyMAC_P0P1NC_base::readOn(is); }
 
 Entree& Op_Conv_EF_Stab_PolyMAC_P0_Face::readOn( Entree& is )
 {
-  Op_Conv_PolyMAC_base::readOn( is );
+  Op_Conv_PolyMAC_P0P1NC_base::readOn( is );
   Param param(que_suis_je());
   param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
   param.lire_avec_accolades_depuis(is);
@@ -54,7 +54,7 @@ Entree& Op_Conv_EF_Stab_PolyMAC_P0_Face::readOn( Entree& is )
 
 void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
 {
-  Op_Conv_PolyMAC_base::completer();
+  Op_Conv_PolyMAC_P0P1NC_base::completer();
   /* au cas ou... */
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)

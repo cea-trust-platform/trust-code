@@ -465,7 +465,7 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       eq_qdm.pression().futur() = eq_qdm.pression().valeurs();
       ConstDoubleTab_parts ppart(inco["pression"]->valeurs());
       //en multiphase, la pression est deja en Pa
-      /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC), alors on ne copie que la 1ere partie */
+      /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC_P0P1NC), alors on ne copie que la 1ere partie */
       eq_qdm.pression_pa().valeurs() = eq_qdm.pression_pa().valeurs().dimension_tot(0) < inco["pression"]->valeurs().dimension_tot(0) ? ppart[0] : inco["pression"]->valeurs(); //en multiphase, la pression est deja en Pa
       first_call_ = 0;
     }

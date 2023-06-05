@@ -17,7 +17,7 @@
 #define Op_Grad_PolyMAC_P0_Face_included
 
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
 #include <Operateur_Grad.h>
 #include <TRUST_Ref.h>
 #include <cfloat>
@@ -62,7 +62,7 @@ private:
 
   mutable double last_gradp_ = -DBL_MAX; //dernier temps utilise pour interpoler grad p (mis a DBL_MAX si grad p non reinterpole)
   REF(Domaine_PolyMAC_P0) ref_domaine;
-  REF(Domaine_Cl_PolyMAC) ref_zcl;
+  REF(Domaine_Cl_PolyMAC_P0P1NC) ref_zcl;
 };
 
 #endif

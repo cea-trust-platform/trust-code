@@ -12,21 +12,26 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Perte_Charge_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/12
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Perte_Charge_PolyMAC_included
 #define Perte_Charge_PolyMAC_included
 
-#include <Terme_Source_Qdm.h>
 #include <Source_base.h>
-#include <TRUST_Ref.h>
-#include <Parser_U.h>
-
-class Domaine_Cl_PolyMAC;
-class Domaine_Poly_base;
+#include <Terme_Source_Qdm.h>
 class Sous_Domaine;
-class Champ_Inc_base;
 class Fluide_base;
-class Param;
+class Champ_Inc_base;
+#include <TRUST_Ref.h>
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
+
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
 /**
@@ -44,20 +49,16 @@ class Perte_Charge_PolyMAC : public Source_base, public Terme_Source_Qdm
   Declare_base(Perte_Charge_PolyMAC);
 
 public:
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void check_multiphase_compatibility() const override {};
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+  DoubleTab& calculer(DoubleTab& ) const override ;
   void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
   void completer() override;
 
 protected:
-  virtual void set_param(Param& param);
-  int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { };
+
+  void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;   //!< associe le_dom_PolyMAC et le_dom_Cl_PolyMAC
+
   //! Appele pour chaque face par ajouter()
   /**
      Utilise les intermediaires de calcul : u, norme_u, dh_valeur, reynolds
@@ -90,14 +91,15 @@ protected:
   REF(Fluide_base) le_fluide;
   //! Vitesse associee a l'equation resolue
   REF(Champ_Inc_base) la_vitesse;
+  //! Domaine dans laquelle s'applique la perte de charge
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
 
-  // Cas d'un sous-domaine
-  bool sous_domaine=false; //!< Le terme est-il limite a un sous-domaine ?
-  Nom nom_sous_domaine; //!< Nom du sous-domaine, initialise dans readOn()
-  REF(Sous_Domaine) le_sous_domaine; //!< Initialise dans completer()
+  // Cas d'une sous-domaine
+  bool sous_domaine; //!< Le terme est-il limite a une sous-domaine ?
+  Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
+  REF(Sous_Domaine) la_sous_domaine; //!< Initialise dans completer()
   int implicite_;
-
-  mutable Parser_U lambda;
 };
 
 #endif

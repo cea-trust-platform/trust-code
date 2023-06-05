@@ -12,19 +12,29 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Domaine_Cl_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Domaine_Cl_PolyMAC_included
 #define Domaine_Cl_PolyMAC_included
 
 
 
-/*! @brief class Domaine_Cl_PolyMAC Cette classe porte les tableaux qui servent a mettre en oeuvre
- *
- *   les condition aux limites dans la formulation PolyMAC
- *
- *
- * @sa Domaine_Cl_dis_base
- */
+//
+// .DESCRIPTION class Domaine_Cl_PolyMAC
+//  Cette classe porte les tableaux qui servent a mettre en oeuvre
+//  les condition aux limites dans la formulation PolyMAC
+
+//
+// .SECTION voir aussi
+// Domaine_Cl_dis_base
+
+
 #include <Domaine_Cl_dis_base.h>
 #include <Champ_Don.h>
 
@@ -57,9 +67,9 @@ protected:
 
   // Attributs:
 
-  int modif_perio_fait_ = 0;
+  int modif_perio_fait_;
 
-  // Fonctions de creation des membres prives du domaine:
+  // Fonctions de creation des membres prives de la domaine:
 
   void remplir_type_elem_Cl(const Domaine_PolyMAC& );
 };

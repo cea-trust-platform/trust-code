@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,12 +12,19 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Perte_Charge_Isotrope_PolyMAC_Face.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
+// Version:     /main/13
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_Isotrope_PolyMAC_Face.h>
 #include <Motcle.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Perte_Charge_Isotrope_PolyMAC_Face,"Perte_Charge_Isotrope_Face_PolyMAC|Perte_Charge_Isotrope_Face_PolyMAC_P0",Perte_Charge_PolyMAC);
+Implemente_instanciable(Perte_Charge_Isotrope_PolyMAC_Face,"Perte_Charge_Isotrope_Face_PolyMAC",Perte_Charge_PolyMAC);
 
 
 // printOn
@@ -36,7 +43,85 @@ Sortie& Perte_Charge_Isotrope_PolyMAC_Face::printOn(Sortie& s ) const
 
 Entree& Perte_Charge_Isotrope_PolyMAC_Face::readOn(Entree& s )
 {
-  Perte_Charge_PolyMAC::readOn(s);
+  Cerr << "Perte_Charge_Isotrope_PolyMAC_Face::readOn " << finl;
+  sous_domaine=false;
+  int lambda_ok=0;
+
+  // Definition des mots-cles
+  Motcles les_mots(4);
+  les_mots[0] = "lambda";
+  les_mots[1] = "diam_hydr";
+  les_mots[2] = "sous_domaine";
+  les_mots[3] = "implicite";
+
+  // Lecture et interpretation
+  Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
+  s >> motlu;
+  while (motlu != accolade_ouverte)
+    {
+      Cerr << "On attendait une { a la lecture d'un " << que_suis_je() << finl;
+      Cerr << "et non : " << motlu << finl;
+      exit();
+    }
+  s >> motlu;
+  while (motlu != accolade_fermee)
+    {
+      int rang=les_mots.search(motlu);
+      switch(rang)
+        {
+        case 0 :   // lambda
+          {
+            lambda_ok=1;
+            Nom tmp;
+            s >> tmp;
+            Cerr << "Lecture et interpretation de la fonction " << tmp << " ... ";
+            lambda.setNbVar(2+dimension);
+            lambda.setString(tmp);
+            lambda.addVar("Re");
+            lambda.addVar("t");
+            lambda.addVar("x");
+            if (dimension>1)
+              lambda.addVar("y");
+            if (dimension>2)
+              lambda.addVar("z");
+            lambda.parseString();
+            Cerr << " Ok" << finl;
+            break;
+          }
+        case 1: // diam_hydr
+          s >> diam_hydr;
+          break;
+        case 2: // sous_domaine
+          s >> nom_sous_domaine;
+          sous_domaine=true;
+          break;
+        case 3:
+          {
+            s>>implicite_;
+            break;
+          }
+        default : // non compris
+          Cerr << "Mot cle \"" << motlu << "\" non compris lors de la lecture d'un "
+               << que_suis_je() << finl;
+          exit();
+        }
+      s >> motlu;
+    }
+
+  // Verification de la coherence
+  if (lambda_ok==0)
+    {
+      Cerr << "Il faut definir l'expression lamba(Re)" << finl;
+      exit();
+    }
+
+  if (diam_hydr->nb_comp()!=1)
+    {
+      Cerr << "Il faut definir le champ diam_hydr a une composante" << finl;
+      exit();
+    }
+
+  Cerr << "Fin de Perte_Charge_Isotrope_PolyMAC_Face::readOn" << finl;
   return s;
 }
 

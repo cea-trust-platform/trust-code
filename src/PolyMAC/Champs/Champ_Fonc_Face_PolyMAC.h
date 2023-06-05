@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,34 +12,75 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Champ_Fonc_Face_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Champ_Fonc_Face_PolyMAC_included
 #define Champ_Fonc_Face_PolyMAC_included
 
 #include <Champ_Fonc_base.h>
+#include <Domaine_VF.h>
+#include <TRUST_Ref.h>
 
-/*! @brief : class Champ_Fonc_Face_PolyMAC
- *
- */
-class Champ_Fonc_Face_PolyMAC: public Champ_Fonc_base
+/////////////////////////////////////////////////////////////////////////////
+// .NAME        : Champ_Fonc_Face_PolyMAC
+// .HEADER      : Trio_U_Kernel_Fixes Trio_U_Kernel_Fixes/src/Champs_dis
+// .LIBRARY     : libTrio_U_Kernel_Fixes
+// .DESCRIPTION : class Champ_Fonc_Face_PolyMAC
+//
+// <Description of class Champ_Fonc_Face_PolyMAC>
+//
+/////////////////////////////////////////////////////////////////////////////
+
+class Champ_Fonc_Face_PolyMAC : public Champ_Fonc_base
 {
-  Declare_instanciable(Champ_Fonc_Face_PolyMAC);
+
+  Declare_instanciable(Champ_Fonc_Face_PolyMAC) ;
 public:
   void mettre_a_jour(double) override;
+
+protected :
+  virtual       Champ_base& le_champ(void)      ;
+  virtual const Champ_base& le_champ(void) const;
+
+public :
+
+  void    associer_domaine_dis_base(const Domaine_dis_base&) override;
+  const Domaine_dis_base& domaine_dis_base() const override
+  {
+    return ref_domaine_vf_.valeur();
+  } ;
+
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
+
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
+
   DoubleTab& valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const override;
   DoubleVect& valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const override;
-  Champ_base& affecter_(const Champ_base&) override;
-  int fixer_nb_valeurs_nodales(int n) override;
 
+  Champ_base& affecter_(const Champ_base& ) override;
+
+  const Domaine_VF& domaine_vf() const override
+  {
+    return ref_domaine_vf_.valeur();
+  };
+
+
+public :
+  int fixer_nb_valeurs_nodales(int n) override;
 protected:
-  virtual Champ_base& le_champ() { return *this; }
-  virtual const Champ_base& le_champ() const { return *this; }
+  REF(Domaine_VF) ref_domaine_vf_;
+
 };
+
 
 #endif /* Champ_Fonc_Face_PolyMAC_included */

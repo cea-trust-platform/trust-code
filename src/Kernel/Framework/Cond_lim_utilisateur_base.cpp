@@ -261,10 +261,11 @@ void paroi_contact::complement(Nom& ajout)
       Process::exit();
     }
 
-  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_P0())
+  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_P0P1NC() || is_pb_PolyMAC_P0())
     {
       if (is_pb_VDF()) ajout = "paroi_echange_contact_VDF ";
-      else ajout = is_pb_PolyMAC() ? "paroi_echange_contact_PolyMAC " : "paroi_echange_contact_PolyMAC_P0 ";
+      else ajout = is_pb_PolyMAC_P0P1NC() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
+                     is_pb_PolyMAC_P0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
 
       ajout += nom_autre_pb;
       ajout += " ";
@@ -302,14 +303,15 @@ void paroi_contact_rayo::complement(Nom& ajout)
       Process::exit();
     }
 
-  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_P0())
+  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_P0P1NC() || is_pb_PolyMAC_P0())
     {
       if (is_pb_VDF())
         {
           if (rayo == 2) ajout = "Echange_contact_Rayo_transp_VDF ";
           if (rayo == 1) ajout = "Paroi_Echange_contact_rayo_semi_transp_VDF ";
         }
-      else ajout = is_pb_PolyMAC() ? "paroi_echange_contact_PolyMAC " : "paroi_echange_contact_PolyMAC_P0 ";
+      else ajout = is_pb_PolyMAC_P0P1NC() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
+                     is_pb_PolyMAC_P0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
 
       ajout += nom_autre_pb;
       ajout += " ";
@@ -353,6 +355,15 @@ void paroi_contact_fictif::complement(Nom& ajout)
   else if (is_pb_PolyMAC())
     {
       ajout = "paroi_echange_contact_PolyMAC ";
+      ajout += nom_autre_pb;
+      ajout += " ";
+      ajout += nom_autre_bord;
+      ajout += " temperature ";
+      ajout += Nom(conduct_fictif / ep_fictif, "%e");
+    }
+  else if (is_pb_PolyMAC_P0P1NC())
+    {
+      ajout = "paroi_echange_contact_PolyMAC_P0P1NC ";
       ajout += nom_autre_pb;
       ajout += " ";
       ajout += nom_autre_bord;
@@ -409,7 +420,7 @@ void paroi_contact_fictif_rayo::complement(Nom& ajout)
     }
   else
     {
-      Cerr << que_suis_je() << "coded only in non-radiating in VEF/PolyMAC" << finl;
+      Cerr << que_suis_je() << "coded only in non-radiating in VEF/PolyMAC_P0P1NC" << finl;
       Process::exit();
     }
 }

@@ -149,7 +149,7 @@ void Equation_base::completer()
 
           bool raccord_found = false;
 
-          // VDF and polymac
+          // VDF and PolyMAC_P0P1NC
           if (la_cl.que_suis_je().debute_par("Paroi_Echange_contact") || la_cl.que_suis_je().debute_par("Echange_contact_Rayo"))
             raccord_found = true;
 
@@ -1917,7 +1917,7 @@ void Equation_base::reculer(int i)
 
 // methodes pour l'implicite
 
-/* peut utiliser une memoization (discretisations PolyMAC)*/
+/* peut utiliser une memoization (discretisations PolyMAC_P0P1NC)*/
 void Equation_base::dimensionner_matrice(Matrice_Morse& matrice)
 {
   if (matrice_init)

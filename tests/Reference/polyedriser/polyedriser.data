@@ -1,4 +1,4 @@
-# Transforme les hexaedres du maillage TRUST en polyedres pour les rendre compatible avec Polymac #
+# Transforme les hexaedres du maillage TRUST en polyedres pour les rendre compatible avec PlyMAC_P0P1NC #
 # PARALLEL RUNS #
 
 dimension 3
@@ -39,7 +39,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-Polymac dis
+PolyMAC_P0P1NC dis
 
 Schema_euler_implicite sch
 Read sch

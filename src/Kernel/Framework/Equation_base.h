@@ -311,7 +311,7 @@ protected :
   Champs_compris champs_compris_;
   Champs_Fonc list_champ_combi;
 
-  //memoization of the matrix for PolyMAC
+  //memoization of the matrix for PolyMAC_P0P1NC
   mutable Matrice_Morse matrice_stockee;
   mutable int matrice_init;
 

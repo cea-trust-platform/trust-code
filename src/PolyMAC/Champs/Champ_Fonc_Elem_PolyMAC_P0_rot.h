@@ -16,7 +16,7 @@
 #ifndef Champ_Fonc_Elem_PolyMAC_P0_rot_included
 #define Champ_Fonc_Elem_PolyMAC_P0_rot_included
 
-#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC_P0P1NC.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <TRUST_Ref.h>
 
@@ -29,7 +29,7 @@
  *
  */
 
-class Champ_Fonc_Elem_PolyMAC_P0_rot: public Champ_Fonc_Elem_PolyMAC
+class Champ_Fonc_Elem_PolyMAC_P0_rot: public Champ_Fonc_Elem_PolyMAC_P0P1NC
 {
   Declare_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot);
 public:

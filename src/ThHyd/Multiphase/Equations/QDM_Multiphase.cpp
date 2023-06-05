@@ -217,7 +217,7 @@ bool QDM_Multiphase::initTimeStep(double dt)
 {
   Schema_Temps_base& sch=schema_temps();
   ConstDoubleTab_parts ppart(pression()->valeurs());
-  /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC), alors on ne copie que la 1ere partie */
+  /* si pression_pa() est plus petit que pression() (ex. : variables auxiliaires PolyMAC_P0P1NC), alors on ne copie que la 1ere partie */
   const DoubleTab& p_red = pression_pa()->valeurs().dimension_tot(0) < pression()->valeurs().dimension_tot(0) ? ppart[0] : pression()->valeurs();
   for (int i=1; i<=sch.nb_valeurs_futures(); i++)
     {

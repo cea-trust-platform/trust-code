@@ -19,7 +19,7 @@
 #include <Champ_Uniforme.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_Cl_PolyMAC_P0P1NC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>
@@ -34,7 +34,7 @@
 #include <array>
 #include <cmath>
 
-Implemente_instanciable(Champ_Face_PolyMAC_P0,"Champ_Face_PolyMAC_P0",Champ_Face_PolyMAC) ;
+Implemente_instanciable(Champ_Face_PolyMAC_P0,"Champ_Face_PolyMAC_P0",Champ_Face_PolyMAC_P0P1NC) ;
 
 Sortie& Champ_Face_PolyMAC_P0::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
@@ -259,7 +259,7 @@ void Champ_Face_PolyMAC_P0::update_ve2(DoubleTab& val, int incr) const
 DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
   if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face)
-    return Champ_Face_PolyMAC::valeur_aux_elems_(valeurs(), positions, les_polys, val_elem);
+    return Champ_Face_PolyMAC_P0P1NC::valeur_aux_elems_(valeurs(), positions, les_polys, val_elem);
   else
     return valeur_aux_elems_(le_champ().valeurs(), positions, les_polys, val_elem);
 }
@@ -267,7 +267,7 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems(const DoubleTab& positions, c
 DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val_elem) const
 {
   if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face)
-    return Champ_Face_PolyMAC::valeur_aux_elems_(passe(), positions, les_polys, val_elem);
+    return Champ_Face_PolyMAC_P0P1NC::valeur_aux_elems_(passe(), positions, les_polys, val_elem);
   else
     return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
 }
@@ -304,7 +304,7 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,c
 
 DoubleVect& Champ_Face_PolyMAC_P0::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
-  if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face) return Champ_Face_PolyMAC::valeur_aux_elems_compo(positions, polys, val, ncomp);
+  if (valeurs().get_md_vector() != domaine_PolyMAC_P0().mdv_ch_face) return Champ_Face_PolyMAC_P0P1NC::valeur_aux_elems_compo(positions, polys, val, ncomp);
   int nf_tot = domaine_PolyMAC_P0().nb_faces_tot(), D = dimension, N = valeurs().line_size();
   assert(val.size() == polys.size());
 
@@ -320,7 +320,7 @@ DoubleTab& Champ_Face_PolyMAC_P0::trace(const Frontiere_dis_base& fr, DoubleTab&
 {
   assert(distant==0);
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
-  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return Champ_Face_PolyMAC::trace(fr, x, t, distant);
+  if (valeurs().get_md_vector() != domaine.mdv_ch_face) return Champ_Face_PolyMAC_P0P1NC::trace(fr, x, t, distant);
   const bool vectoriel = (le_champ().nb_comp() > 1);
   const int dim = vectoriel ? dimension : 1, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);

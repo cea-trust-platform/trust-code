@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <grad_Champ_Face_PolyMAC_P0.h>
-#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC_P0P1NC.h>
 #include <Frottement_impose_base.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Domaine_Cl_dis.h>
@@ -22,7 +22,7 @@
 #include <Dirichlet.h>
 #include <EChaine.h>
 
-Implemente_instanciable(grad_Champ_Face_PolyMAC_P0, "grad_Champ_Face_PolyMAC_P0", Champ_Fonc_Face_PolyMAC);
+Implemente_instanciable(grad_Champ_Face_PolyMAC_P0, "grad_Champ_Face_PolyMAC_P0", Champ_Fonc_Face_PolyMAC_P0P1NC);
 
 Sortie& grad_Champ_Face_PolyMAC_P0::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

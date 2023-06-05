@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -356,7 +356,7 @@ void Fluide_Weakly_Compressible::remplir_champ_pression_for_EOS()
         {
           if (Pth_tab_.dimension_tot(0) == P_NS_elem_.dimension_tot(0)) // VDF
             for (int i=0 ; i<Pth_tab_.dimension_tot(0) ; i++) Pth_tab_(i,0) = P_NS_elem_(i,0) + Pth_;
-          else // VEF : on verra le jour ou on fait du polyMAC
+          else // VEF : on verra le jour ou on fait du PolyMAC_P0P1NC
             {
               // on a P_NS_elem_ aux elems et Pth_tab_ comme rho, i.e aux faces
               const Domaine_VF& zvf = ref_cast(Domaine_VF, inco_chaleur()->domaine_dis_base());

@@ -1,5 +1,6 @@
+
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2015, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,6 +13,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Domaine_PolyMAC.h
+// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Domaine_PolyMAC_included
 #define Domaine_PolyMAC_included
@@ -22,7 +30,7 @@
 #include <Matrice_Morse_Sym.h>
 #include <Static_Int_Lists.h>
 #include <Neumann_homogene.h>
-#include <Elem_poly.h>
+#include <Elem_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <Periodique.h>
@@ -30,7 +38,7 @@
 #include <Conds_lim.h>
 #include <TRUSTTrav.h>
 #include <Symetrie.h>
-#include <Domaine_Poly_base.h>
+#include <Domaine_VF.h>
 #include <Domaine.h>
 #include <Lapack.h>
 #include <vector>
@@ -38,12 +46,17 @@
 #include <math.h>
 #include <array>
 #include <map>
+#include <Domaine_Poly_tools.h>
+
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 
 class Geometrie;
 
 /*! @brief class Domaine_PolyMAC
  *
- *  	Classe instanciable qui derive de Domaine_Poly_base.
+ *  	Classe instanciable qui derive de Domaine_VF.
  *  	Cette classe contient les informations geometriques que demande
  *  	la methode des Volumes Elements Finis (element de Crouzeix-Raviart)
  *  	La classe porte un certain nombre d'informations concernant les faces
@@ -77,15 +90,28 @@ class Geometrie;
  */
 
 
-class Domaine_PolyMAC : public Domaine_Poly_base
+class Domaine_PolyMAC : public Domaine_VF
 {
 
   Declare_instanciable(Domaine_PolyMAC);
 
 public :
-
+  void typer_elem(Domaine& domaine_geom) override;
   void discretiser() override;
+  void swap(int, int, int);
+  void reordonner(Faces&) override;
+  void modifier_pour_Cl(const Conds_lim& ) override;
 
+  inline const Elem_PolyMAC& type_elem() const;
+  inline int nb_elem_Cl() const;
+  inline int nb_faces_joint() const;
+  inline int nb_faces_std() const;
+  inline int nb_elem_std() const;
+  inline double carre_pas_du_maillage() const;
+  inline double carre_pas_maille(int i) const
+  {
+    return h_carre_(i);
+  };
   inline const DoubleVect& longueur_aretes() const
   {
     return longueur_aretes_;
@@ -94,32 +120,246 @@ public :
   {
     return ta_;
   };
+  inline const IntTab& arete_faces() const
+  {
+    return arete_faces_;
+  };
+  inline IntVect& rang_elem_non_std();
+  inline const IntVect& rang_elem_non_std() const;
+  inline int oriente_normale(int face_opp, int elem2)const;
+  inline const ArrOfInt& ind_faces_virt_non_std() const;
+  void calculer_volumes_entrelaces();
+
+  void calculer_h_carre();
+
+  inline DoubleTab& volumes_entrelaces_dir();
+  inline const DoubleTab& volumes_entrelaces_dir() const;
+  inline double dot (const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+  inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
+
+  inline double dist_norm(int num_face) const override;
+  inline double dist_norm_bord(int num_face) const override;
+  DoubleVect& dist_norm_bord(DoubleVect& , const Nom& nom_bord) const;
+  inline double dist_face_elem0(int num_face,int n0) const override;
+  inline double dist_face_elem1(int num_face,int n1) const override;
+  inline double dist_face_elem0_period(int num_face,int n0,double l) const override;
+  inline double dist_face_elem1_period(int num_face,int n1,double l) const override;
+
+  IntVect cyclic; // cyclic(i) = 1 i le poly i est cyclique
 
   void orthocentrer();
+  void detecter_faces_non_planes() const;
 
   //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
   std::vector<std::map<int, int> > som_arete;
 
-  //pour chaque element, normale * surface duale liee a chacune de ses aretes (orientee comme l'arete)
-  const DoubleTab& surf_elem_arete() const;
+  //quelles structures optionelles on a initialise
+  mutable std::map<std::string, int> is_init;
+  //interpolations d'ordre 1 du vecteur vitesse aux elements
+  void init_ve() const;
+  mutable IntTab vedeb, veji; //reconstruction de ve par (veji, veci)[vedeb(e), vedeb(e + 1)[ (faces)
+  mutable DoubleTab veci;
 
-  //matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
-  void M2(const DoubleTab *nu, int e, DoubleTab& m2) const; //normales aux faces -> tangentes aux faces duales :   (nu x_ef.v)    = m2 (|f|n_ef.v)
-  void W2(const DoubleTab *nu, int e, DoubleTab& w2) const; //tangentes aux faces duales -> normales aux faces :   (nu |f|n_ef.v) = w2 (x_ef.v)
-  void M1(const DoubleTab *nu, int e, DoubleTab& m1) const; //normales aux aretes duales -> tangentes aux aretes : (nu|a|t_a.v)   = m1 (S_ea.v)
-  void W1(const DoubleTab *nu, int e, DoubleTab& w1, DoubleTab& v_e, DoubleTab& v_ea) const; //tangentes aux aretes -> normales aux aretes duales : (nu S_ea.v)    = w1 (|a|t_a.v)
-  //possibilite pour le tenseur nu :
-  //nul -> nu = Id ci-dessous
-  //isotrope -> nu(n_e, N) avec n_e = 1 (tenseur constant) / nb_elem_tot() (tenseur par element), et N un nombre de composantes
-  //anisotrope -> nu(n_e, N, D) (anisotrope diagonal) ou nu(n_e, N, D, D) (anisotrope complet)
-  //la matrice en sortie est de taile (n_f, n_f, N) (pour M2/W2) ou (n_a, n_a, N) (pour M1 / W1)
+  //rotationnel aux faces d'un champ tangent aux aretes
+  void init_rf() const;
+  mutable IntTab rfdeb, rfji; //reconstruction du rotationnel par (rfji, rfci)[rfdeb(f), rfdeb(f + 1)[ (champ aux aretes)
+  mutable DoubleTab rfci;
 
-  //MD_Vectors pour Champ_Elem_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
+  //stabilisation d'une matrice de masse mimetique en un element : dans PolyMAC -> m1 ou m2
+  inline void ajouter_stabilisation(DoubleTab& M, DoubleTab& N) const;
+  inline int W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int *ctr, double *spectre) const;
+
+  //matrice mimetique d'un champ aux faces : (valeur normale aux faces) -> (integrale lineaire sur les lignes brisees)
+  void init_m2() const;
+  mutable IntTab m2d, m2i, m2j, w2i, w2j; //stockage: lignes de M_2^e dans m2i([m2d(e), m2d(e + 1)[), indices/coeffs de ces lignes dans (m2j/m2c)[m2i(i), m2i(i+1)[
+  mutable DoubleTab m2c, w2c;             //          avec le coeff diagonal en premier (facilite Echange_contact_PolyMAC)
+  void init_m2solv() const; //pour resoudre m2.v = s
+  mutable Matrice_Morse_Sym m2mat;
+  mutable SolveurSys m2solv;
+
+  //interpolation aux elements d'ordre 1 d'un champ defini par ses composantes tangentes aux aretes (ex. : la vorticite)
+  inline void init_we() const;
+  void init_we_2d() const;
+  void init_we_3d() const;
+  mutable IntTab wedeb, weji; //reconstruction de we par (weji, weci)[wedeb(e), wedeb(e + 1)[ (sommets en 2D, aretes en 3D)
+  mutable DoubleTab weci;
+
+  //matrice mimetique d'un champ aux aretes : (valeur tangente aux aretes) -> (flux a travers l'union des facettes touchant l'arete)
+  void init_m1() const;
+  void init_m1_2d() const;
+  void init_m1_3d() const;
+  mutable IntTab m1deb, m1ji; //reconstruction de m1 par (m1ji(.,0), m1ci)[m1deb(a), m1deb(a + 1)[ (sommets en 2D, aretes en 3D); m1ji(.,1) contient le numero d'element
+  mutable DoubleTab m1ci;
+
+  //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
 
+  //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem_faces
+  void init_virt_ef_map() const;
+  mutable std::map<std::array<int, 2>, int> virt_ef_map;
+
 private:
-  DoubleVect longueur_aretes_;             //longueur des aretes
-  mutable DoubleTab ta_, surf_elem_arete_; //vecteurs tangents aux aretes, normale * surface duale
+  double h_carre;			 // carre du pas du maillage
+  DoubleVect h_carre_;			// carre du pas d'une maille
+  Elem_PolyMAC type_elem_;                  // type de l'element de discretisation
+  DoubleVect longueur_aretes_; //longueur des aretes
+  int nb_faces_std_;                    // nombre de faces standard
+  int nb_elem_std_;                     // nombre d'elements standard
+  IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
+  // rang_elem_non_std_= rang de l'element dans les tableaux
+  // relatifs aux elements non standards
+
+  ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
+  void remplir_elem_faces() override;
+  Sortie& ecrit(Sortie& os) const;
+  void creer_faces_virtuelles_non_std();
+
+  mutable IntTab arete_faces_; //connectivite face -> aretes
+  mutable DoubleTab ta_;       //vecteurs tangents aux aretes
 };
+
+// Fonctions inline
+
+// Decription:
+// renvoie le type d'element utilise.
+inline const Elem_PolyMAC& Domaine_PolyMAC::type_elem() const
+{
+  return type_elem_;
+}
+
+// Decription:
+// renvoie le tableau des volumes entrelaces par cote.
+inline DoubleTab& Domaine_PolyMAC::volumes_entrelaces_dir()
+{
+  return volumes_entrelaces_dir_;
+}
+
+// Decription:
+// renvoie le tableau des surfaces normales.
+inline const DoubleTab& Domaine_PolyMAC::volumes_entrelaces_dir() const
+{
+  return volumes_entrelaces_dir_;
+}
+
+
+// Decription:
+inline IntVect& Domaine_PolyMAC::rang_elem_non_std()
+{
+  return rang_elem_non_std_;
+}
+
+// Decription:
+inline const IntVect& Domaine_PolyMAC::rang_elem_non_std() const
+{
+  return rang_elem_non_std_;
+}
+
+
+// Decription:
+inline int Domaine_PolyMAC::nb_faces_joint() const
+{
+  return 0;
+  //    return nb_faces_joint_;    A FAIRE
+}
+
+// Decription:
+inline int Domaine_PolyMAC::nb_faces_std() const
+{
+  return nb_faces_std_;
+}
+
+// Decription:
+inline int  Domaine_PolyMAC::nb_elem_std() const
+{
+  return nb_elem_std_;
+}
+
+// Decription:
+inline int Domaine_PolyMAC::nb_elem_Cl() const
+{
+  return nb_elem() - nb_elem_std_;
+}
+
+
+// Decription:
+inline double Domaine_PolyMAC::carre_pas_du_maillage() const
+{
+  return h_carre;
+}
+
+// Decription:
+inline int Domaine_PolyMAC::oriente_normale(int face_opp, int elem2) const
+{
+  if(face_voisins(face_opp,0)==elem2)
+    return 1;
+  else return -1;
+}
+
+
+// Decription:
+// Renvoie le tableau des indices des faces virtuelles non standard
+//inline const ArrsOfInt& Domaine_PolyMAC::faces_virt_non_std() const
+//{
+//  return faces_virt_non_std_;
+//}
+
+// Decription:
+// Renvoie le tableau des indices des faces distantes non standard
+inline const ArrOfInt& Domaine_PolyMAC::ind_faces_virt_non_std() const
+{
+  return ind_faces_virt_non_std_;
+}
+
+/* produit scalaire de deux vecteurs */
+inline double Domaine_PolyMAC::dot(const double *a, const double *b, const double *ma, const double *mb) const
+{
+  double res = 0;
+  for (int i = 0; i < dimension; i++) res += (a[i] - (ma ? ma[i] : 0)) * (b[i] - (mb ? mb[i] : 0));
+  return res;
+}
+
+/* produit vectoriel de deux vecteurs (toujours 3D, meme en 2D) */
+inline std::array<double, 3> Domaine_PolyMAC::cross(int dima, int dimb, const double *a, const double *b, const double *ma, const double *mb) const
+{
+  std::array<double, 3> va = {{ 0, 0, 0 }}, vb = {{ 0, 0, 0 }}, res;
+  for (int i = 0; i < dima; i++) va[i] = a[i] - (ma ? ma[i] : 0);
+  for (int i = 0; i < dimb; i++) vb[i] = b[i] - (mb ? mb[i] : 0);
+  for (int i = 0; i < 3; i++) res[i] = va[(i + 1) % 3] * vb[(i + 2) % 3] - va[(i + 2) % 3] * vb[(i + 1) % 3];
+  return res;
+}
+
+/* equivalent du dist_norm_bord du VDF */
+inline double Domaine_PolyMAC::dist_norm_bord(int f) const
+{
+  assert(face_voisins(f, 1) == -1);
+  return std::fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+}
+
+inline double Domaine_PolyMAC::dist_norm(int f) const
+{
+  return std::fabs(dot(&xp_(face_voisins(f, 0), 0), &face_normales_(f, 0), &xp_(face_voisins(f, 1), 0))) / face_surfaces(f);
+}
+
+inline double Domaine_PolyMAC::dist_face_elem0(int f,int e) const
+{
+  return std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+}
+
+inline double Domaine_PolyMAC::dist_face_elem1(int f,int e) const
+{
+  return std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+}
+
+inline double Domaine_PolyMAC::dist_face_elem0_period(int num_face,int n0,double l) const
+{
+  abort();
+  return 0;
+}
+
+inline double Domaine_PolyMAC::dist_face_elem1_period(int num_face,int n1,double l) const
+{
+  abort();
+  return 0;
+}
 
 #endif

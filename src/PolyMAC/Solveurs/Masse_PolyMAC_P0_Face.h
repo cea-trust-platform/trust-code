@@ -16,12 +16,12 @@
 #ifndef Masse_PolyMAC_P0_Face_included
 #define Masse_PolyMAC_P0_Face_included
 
-#include <Masse_PolyMAC_Face.h>
+#include <Masse_PolyMAC_P0P1NC_Face.h>
 #include <TRUST_Ref.h>
 
 class Domaine_PolyMAC_P0;
 
-class Masse_PolyMAC_P0_Face : public Masse_PolyMAC_Face
+class Masse_PolyMAC_P0_Face : public Masse_PolyMAC_P0P1NC_Face
 {
   Declare_instanciable(Masse_PolyMAC_P0_Face);
 public:

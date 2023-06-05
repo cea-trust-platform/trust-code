@@ -12,6 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+//////////////////////////////////////////////////////////////////////////////
+//
+// File:        Domaine_Cl_PolyMAC.cpp
+// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
+// Version:     1
+//
+//////////////////////////////////////////////////////////////////////////////
 
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
@@ -55,67 +62,89 @@ Entree& Domaine_Cl_PolyMAC::readOn(Entree& is )
 //
 /////////////////////////////////////////////////////////////////////
 
-/*! @brief etape de discretisation : dimensionnement des tableaux
- *
- */
+// Description:
+// etape de discretisation : dimensionnement des tableaux
 void Domaine_Cl_PolyMAC::associer(const Domaine_PolyMAC& le_dom_PolyMAC)
 {
   //  int nb_elem_Cl  = le_dom_PolyMAC.nb_elem_Cl();
 }
 
-/*! @brief remplissage des tableaux
- *
- */
-void Domaine_Cl_PolyMAC::completer(const Domaine_dis& un_domaine_dis)
+// Description:
+// remplissage des tableaux
+void Domaine_Cl_PolyMAC::completer(const Domaine_dis& une_domaine_dis)
 {
-  modif_perio_fait_ = 0;
-  if (sub_type(Domaine_PolyMAC,un_domaine_dis.valeur()))
+  modif_perio_fait_ =0;
+  if (sub_type(Domaine_PolyMAC,une_domaine_dis.valeur()))
     {
-      const Domaine_PolyMAC& le_dom_poly = ref_cast(Domaine_PolyMAC, un_domaine_dis.valeur());
-      remplir_type_elem_Cl(le_dom_poly);
+      const Domaine_PolyMAC& le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, une_domaine_dis.valeur());
+      remplir_type_elem_Cl(le_dom_PolyMAC);
     }
   else
     {
-      cerr << "Domaine_Cl_PolyMAC::completer() prend comme argument un Domaine_PolyMAC\n";
+      cerr << "Domaine_Cl_PolyMAC::completer() prend comme argument une Domaine_PolyMAC\n";
       exit();
     }
 }
-/*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
- *
- */
+// Description:
+// appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
 void Domaine_Cl_PolyMAC::remplir_type_elem_Cl(const Domaine_PolyMAC& le_dom_PolyMAC)
 {
 }
 
-/*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
- *
- */
+// Description:
+// Impose les conditions aux limites a la valeur temporelle "temps" du
+// Champ_Inc
 void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
 
   Champ_Inc_base& ch_base=ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
-  int n, N = ch_tab.line_size();
-  if (sub_type(Champ_Inc_P0_base,ch_base)) { /* do nothing */ }
-  else if(ch_base.nature_du_champ()==scalaire) { /* do nothing */ }
+  if (sub_type(Champ_Inc_P0_base,ch_base))
+    ;
+  else if(ch_base.nature_du_champ()==scalaire)
+    ;
   else if (sub_type(Champ_Face_PolyMAC,ch_base))
     {
       Champ_Face_PolyMAC& ch_face = ref_cast(Champ_Face_PolyMAC, ch_base);
-      const Domaine_VF& mon_dom_VF = ch_face.domaine_vf();
+      const Domaine_VF& ma_domaine_VF = ch_face.domaine_vf();
       int ndeb,nfin, num_face;
 
       for(int i=0; i<nb_cond_lim(); i++)
         {
           const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
-          if (sub_type(Periodique,la_cl)) abort(); //nope
+          if (sub_type(Periodique,la_cl))
+            {
+              if (modif_perio_fait_  == 0)
+                {
+                  // On fait en sorte que le champ ait la meme valeur
+                  // sur deux faces de periodicite qui sont en face l'une de l'autre
+                  const Periodique& la_cl_perio = ref_cast(Periodique,la_cl);
+                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  ndeb = le_bord.num_premiere_face();
+                  nfin = ndeb + le_bord.nb_faces();
+                  int voisine;
+                  double moy;
+                  for (num_face=ndeb; num_face<nfin; num_face++)
+                    {
+                      voisine = la_cl_perio.face_associee(num_face-ndeb) + ndeb;
+                      if ( ch_tab[num_face] != ch_tab[voisine] )
+                        {
+                          moy = 0.5*(ch_tab[num_face] + ch_tab[voisine]);
+                          ch_tab[num_face] = moy;
+                          ch_tab[voisine] = moy;
+                        }
+                    }
+                  // Il ne faut pas le faire a la premiere cl mais une fois toutes les cl faites une fois, cas multi perio avec ci non perio
+                  // init = 1;
+                }
+            }
           else if( sub_type(Symetrie,la_cl) )
             {
               const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++)
-                for (n = 0; n < N; n++)
-                  ch_tab(num_face, n) = 0;
+                ch_tab[num_face] = 0;
             }
           else if ( sub_type(Dirichlet_entree_fluide,la_cl) )
             {
@@ -125,16 +154,15 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               nfin = ndeb + le_bord.nb_faces();
 
               for (num_face=ndeb; num_face<nfin; num_face++)
-                for (n = 0; n < N; n++)
-                  {
-                    // WEC : optimisable (pour chaque face recherche le bon temps !)
-                    // vn
-                    double vn=0;
-                    for (int d=0; d<dimension; d++)
-                      vn+=mon_dom_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
-                    vn/=mon_dom_VF.face_surfaces(num_face);
-                    ch_tab(num_face, n) = vn;
-                  }
+                {
+                  // WEC : optimisable (pour chaque face recherche le bon temps !)
+                  // vn
+                  double vn=0;
+                  for (int d=0; d<dimension; d++)
+                    vn+=ma_domaine_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb,d);
+                  vn/=ma_domaine_VF.face_surfaces(num_face);
+                  ch_tab[num_face] = vn;
+                }
             }
           else if ( sub_type(Dirichlet_paroi_fixe,la_cl) )
             {
@@ -142,8 +170,7 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++)
-                for (n = 0; n < N; n++)
-                  ch_tab(num_face, n) = 0;
+                ch_tab[num_face] = 0;
             }
           else if ( sub_type(Dirichlet_paroi_defilante,la_cl) )
             {
@@ -151,8 +178,7 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
               for (num_face=ndeb; num_face<nfin; num_face++)
-                for (n = 0; n < N; n++)
-                  ch_tab(num_face, n) = 0;
+                ch_tab[num_face] = 0;
             }
         }
       modif_perio_fait_  = 1;
@@ -165,6 +191,10 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
   ch_tab.echange_espace_virtuel();
   Debog::verifier("Domaine_Cl_PolyMAC::imposer_cond_lim ch_tab",ch_tab);
 }
+
+
+
+
 
 int Domaine_Cl_PolyMAC::nb_faces_sortie_libre() const
 {
@@ -186,10 +216,10 @@ int Domaine_Cl_PolyMAC::nb_faces_sortie_libre() const
 
 int Domaine_Cl_PolyMAC::nb_bord_periodicite() const
 {
-  int compteur = 0;
-  for (const auto &itr : les_conditions_limites_)
+  int compteur=0;
+  for(int cl=0; cl<les_conditions_limites_.size(); cl++)
     {
-      if (sub_type(Periodique, itr.valeur()))
+      if (sub_type(Periodique,les_conditions_limites_[cl].valeur()))
         compteur++;
     }
   return compteur;
