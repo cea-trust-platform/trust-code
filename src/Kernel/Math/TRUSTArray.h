@@ -280,7 +280,7 @@ private:
   }
   inline void printKernel(bool flag, const TRUSTArray& tab, std::string kernel_name) const
   {
-    if (tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=NULL)
+    if (kernel_name!="??" && tab.size_array()>100 && getenv ("TRUST_CLOCK_ON")!=NULL)
       {
         std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
         std::cout << clock << "            [" << (flag ? "Kernel] " : "Host]   ") << kernel_name

@@ -24,26 +24,6 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
   static constexpr bool IS_READ = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::READ), IS_WRITE = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::WRITE),
                         IS_ADD = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::ADD), IS_MAX = (_ITEM_TYPE_ == VECT_ITEMS_TYPE::MAX);
 
-  const int * items_to_process_addr;
-  _TYPE_ *vect_addr;
-  _TYPE_ *buffer_addr;
-  bool kernelOnDevice = vect.isKernelOnDevice("vect_items_generic()");
-  if (kernelOnDevice)
-    {
-      items_to_process_addr = mapToDevice(list.get_data(), "items_to_process");
-      if (IS_READ)
-        {
-          const TRUSTArray<_TYPE_>& const_vect = vect;
-          vect_addr = const_cast<_TYPE_ *>(mapToDevice(const_vect, "vect"));
-        }
-      else
-        vect_addr = computeOnTheDevice(vect, "vect");
-    }
-  else
-    {
-      items_to_process_addr = list.get_data().addr();
-      vect_addr = vect.addr();
-    }
   assert(line_size > 0);
   const ArrOfInt& index = list.get_index();
   const int nb_voisins = list.get_nb_lists();
@@ -58,8 +38,27 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
         {
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
           assert(nb_elems == buffer.size_array());
-          buffer_addr = buffer.addrForDevice();
+          _TYPE_ *buffer_addr = buffer.addrForDevice();
           assert(idx_end_of_list <= list.get_data().size_array());
+          const int * items_to_process_addr;
+          _TYPE_ *vect_addr;
+          bool kernelOnDevice = vect.isKernelOnDevice();
+          if (kernelOnDevice)
+            {
+              items_to_process_addr = mapToDevice(list.get_data(), "items_to_process");
+              if (IS_READ)
+                {
+                  const TRUSTArray<_TYPE_>& const_vect = vect;
+                  vect_addr = const_cast<_TYPE_ *>(mapToDevice(const_vect, "vect"));
+                }
+              else
+                vect_addr = computeOnTheDevice(vect, "vect");
+            }
+          else
+            {
+              items_to_process_addr = list.get_data().addr();
+              vect_addr = vect.addr();
+            }
           // ToDo OpenMP collapse(2) possible car n constant ?
           const int bloc_size = 1;
           const int n = line_size * bloc_size;
@@ -119,26 +118,6 @@ template<typename _TYPE_, VECT_BLOCS_TYPE _ITEM_TYPE_>
 void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Static_Int_Lists& list, const ArrOfInt& nb_items_par_voisin, TRUSTArray<_TYPE_>& vect, Schema_Comm_Vecteurs& buffers)
 {
   static constexpr bool IS_READ = (_ITEM_TYPE_ == VECT_BLOCS_TYPE::READ), IS_WRITE = (_ITEM_TYPE_ == VECT_BLOCS_TYPE::WRITE), IS_ADD = (_ITEM_TYPE_ == VECT_BLOCS_TYPE::ADD);
-  const int * items_to_process_addr;
-  _TYPE_ *vect_addr;
-  _TYPE_ *buffer_addr;
-  bool kernelOnDevice = vect.isKernelOnDevice("vect_blocs_generic()");
-  if (kernelOnDevice)
-    {
-      items_to_process_addr = mapToDevice(list.get_data(), "items_to_process");
-      if (IS_READ)
-        {
-          const TRUSTArray<_TYPE_>& const_vect = vect;
-          vect_addr = const_cast<_TYPE_ *>(mapToDevice(const_vect, "vect"));
-        }
-      else
-        vect_addr = computeOnTheDevice(vect, "vect");
-    }
-  else
-    {
-      items_to_process_addr = list.get_data().addr();
-      vect_addr = vect.addr();
-    }
   assert(line_size > 0);
   const ArrOfInt& index = list.get_index();
   const int nb_voisins = list.get_nb_lists();
@@ -153,8 +132,27 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
         {
           TRUSTArray<_TYPE_>& buffer = buffers.get_next_area_template<_TYPE_>(voisins[i_voisin], nb_elems);
           assert(nb_elems == buffer.size_array());
-          buffer_addr = buffer.addrForDevice();
+          _TYPE_ *buffer_addr = buffer.addrForDevice();
           assert(idx_end_of_list <= list.get_data().size_array());
+          const int * items_to_process_addr;
+          _TYPE_ *vect_addr;
+          bool kernelOnDevice = vect.isKernelOnDevice();
+          if (kernelOnDevice)
+            {
+              items_to_process_addr = mapToDevice(list.get_data(), "items_to_process");
+              if (IS_READ)
+                {
+                  const TRUSTArray<_TYPE_>& const_vect = vect;
+                  vect_addr = const_cast<_TYPE_ *>(mapToDevice(const_vect, "vect"));
+                }
+              else
+                vect_addr = computeOnTheDevice(vect, "vect");
+            }
+          else
+            {
+              items_to_process_addr = list.get_data().addr();
+              vect_addr = vect.addr();
+            }
           int ii_base = 0;
           for (int item = idx; item < idx_end_of_list; item += 2)
             {

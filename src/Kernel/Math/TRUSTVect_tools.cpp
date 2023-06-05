@@ -117,9 +117,10 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
     }
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
-  bool kernelOnDevice = resu.isKernelOnDevice(vx, "operator_vect_vect_generic(x,y");
+  bool kernelOnDevice = resu.isKernelOnDevice(vx);
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
+  start_timer();
   for (int nblocs_left=nblocs_left_size; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -146,6 +147,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
           //printf("After resu %p %p %f\n,",(void*)&x, (void*)&p_resu, p_resu);
         }
     }
+  end_timer(kernelOnDevice, "operator_vect_vect_generic(x,y)");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -204,8 +206,9 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  bool kernelOnDevice = resu.isKernelOnDevice("operator_vect_single_generic(x,y)");
+  bool kernelOnDevice = resu.isKernelOnDevice();
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
+  start_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -242,6 +245,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
             }
         }
     }
+  end_timer(kernelOnDevice, "operator_vect_single_generic(x,y)");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);

@@ -1187,6 +1187,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                       {
                         amgx_option+="p:algorithm=CLASSICAL\n";
                         amgx_option+="p:selector=HMIS\n";
+                        //amgx_option+="p:selector=PMIS\n"; // Seems to take less memory !
                         amgx_option+="p:interpolator=D2\n";
                         amgx_option+="p:strength=AHAT\n";
                       }
@@ -1372,8 +1373,8 @@ void Solv_Petsc::create_solver(Entree& entree)
       s << "# determinism_flag=1" << finl; // Plus lent de 15% mais resultat deterministique et repetable (on l'active pour les tests de NR):
       if (Process::nproc()<=4) s << "determinism_flag=1" << finl;
 #ifdef MPIX_CUDA_AWARE_SUPPORT
-      s << "# Enable GPU direct with MPI Cuda-Aware. Yet to prove to be better (30% slower):"
-        s << "# communicator=MPI_DIRECT" << finl;
+      s << "# Enable GPU direct with MPI Cuda-Aware. Yet to prove to be better (30% slower):" << finl;
+      s << "# communicator=MPI_DIRECT" << finl;
 #endif
       Cerr << "Writing the AmgX config file: " << config() << finl;
     }

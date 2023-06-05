@@ -76,6 +76,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   // Si une face porte une condition de Dirichlet on n'en tient pas compte
   // dans le calcul de dt_stab
   copyPartialFromDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
+  start_timer();
   for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -102,21 +103,24 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
       double dt_face = volumes_entrelaces_Cl(num_face)/(fluent[num_face]+DMINFLOAT);
       dt_stab =(dt_face < dt_stab) ? dt_face : dt_stab;
     }
+  end_timer(0, "Boundary face loop for dt_stab");
   copyPartialToDevice(fluent, 0, domaine_VEF.premiere_face_std(), "fluent_ on boundary for dt_stab");
 
   // On traite les faces internes standard
   ndeb = nfin;
   nfin = domaine_VEF.nb_faces();
 
-  bool kernelOnDevice = fluent.isKernelOnDevice("Face loop in Op_Conv_VEF_base::calculer_dt_stab()");
+  bool kernelOnDevice = fluent.isKernelOnDevice();
   const double* fluent_addr = kernelOnDevice ? mapToDevice(fluent) : fluent.addr();
   const double* volumes_entrelaces_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces) : volumes_entrelaces.addr();
+  start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(min:dt_stab)
   for (int num_face=ndeb; num_face<nfin; num_face++)
     {
       double dt_face = volumes_entrelaces_addr[num_face]/(fluent_addr[num_face]+DMINFLOAT);
       dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
     }
+  end_timer(kernelOnDevice, "Face loop in Op_Conv_VEF_base::calculer_dt_stab()");
 
   dt_stab = Process::mp_min(dt_stab);
   // astuce pour contourner le type const de la methode

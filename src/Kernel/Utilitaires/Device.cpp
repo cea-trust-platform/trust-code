@@ -182,7 +182,7 @@ _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName)
   if (Objet_U::computeOnDevice)
     {
       if (isAllocatedOnDevice(tab)) deleteOnDevice(tab);
-      allocateOnDevice(tab_addr, tab.size_array(), " an array "+arrayName);
+      allocateOnDevice(tab_addr, tab.size_array(), "an array "+arrayName);
       tab.set_dataLocation(Device);
     }
 #endif
@@ -340,7 +340,7 @@ void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
       #pragma omp target update from(ptr[0:size])
       statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
       std::stringstream message;
-      message << "Copy from device " << arrayName << " [" << toString(ptr) << "]";
+      message << "Copy from device" << arrayName << " [" << toString(ptr) << "]";
       end_timer(Objet_U::computeOnDevice, message.str(), bytes);
       if (clock_on) printf("\n");
     }

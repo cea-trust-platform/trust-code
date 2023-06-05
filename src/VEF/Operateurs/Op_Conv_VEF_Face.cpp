@@ -1816,6 +1816,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
   int nb_bord = domaine_VEF.nb_front_Cl();
   copyPartialFromDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
   copyPartialFromDevice(vitesse_face, 0, domaine_VEF.premiere_face_int() * dimension, "vitesse_face on boundary");
+  start_timer();
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -1835,6 +1836,7 @@ void Op_Conv_VEF_Face::remplir_fluent(DoubleVect& tab_fluent) const
             }
         }
     }
+  end_timer(0, "Boundary face loop for fluent_");
   copyPartialToDevice(vitesse_face, 0, domaine_VEF.premiere_face_int() * dimension, "vitesse_face on boundary");
   copyPartialToDevice(fluent_, 0, domaine_VEF.premiere_face_int(), "fluent_ on boundary");
 }
