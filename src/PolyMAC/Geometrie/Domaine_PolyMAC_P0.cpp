@@ -248,7 +248,7 @@ void Domaine_PolyMAC_P0::fgrad(int N, int is_p, const Conds_lim& cls, const IntT
                       for (sgn = e == f_e(f = s_f[k = se_f[i][j]], 0) ? 1 : -1, d = 0; d < D; d++) /* essai 2 : gradient non consistant */
                         X(j, d) = surf_fs[k] / vol_es[i] * sgn * nf(f, d) / fs(f);
 
-                  /* flux et equation. Remarque : les CLs complexes des equations scalaires sont gerees directement dans Op_Diff_CoviMAC_Elem */
+                  /* flux et equation. Remarque : les CLs complexes des equations scalaires sont gerees directement dans Op_Diff_PolyMAC_P0_Elem */
                   for (j = 0; j < n_ef; j++)
                     {
                       k = se_f[i][j], f = s_f[k], sgn = e == f_e(f, 0) ? 1 : -1; //face et son indice

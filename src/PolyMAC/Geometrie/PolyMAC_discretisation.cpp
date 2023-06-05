@@ -15,9 +15,7 @@
 
 #include <PolyMAC_discretisation.h>
 #include <Champ_Fonc_Tabule.h>
-//#include <Ch_Fonc_Som_PolyMAC.h>
 #include <Champ_Fonc_Elem_PolyMAC.h>
-
 #include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
 #include <Milieu_base.h>
 #include <Equation_base.h>

@@ -22,7 +22,6 @@
 #include <Champ_Fonc_Elem_PolyMAC_P0_rot.h>
 #include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
 #include <grad_Champ_Face_PolyMAC_P0.h>
-
 #include <Milieu_base.h>
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
@@ -33,10 +32,8 @@
 #include <Motcle.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_Cl_dis.h>
-#include <Synonyme_info.h>
 
-Implemente_instanciable(PolyMAC_P0_discretisation,"PolyMAC_P0|CoviMAC",PolyMAC_discretisation);
-Add_synonym(PolyMAC_P0_discretisation,"PolyMAC_V2");
+Implemente_instanciable(PolyMAC_P0_discretisation,"PolyMAC_P0",PolyMAC_discretisation);
 
 
 Entree& PolyMAC_P0_discretisation::readOn(Entree& s)

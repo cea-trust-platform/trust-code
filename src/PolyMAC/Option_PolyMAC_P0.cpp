@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,13 +14,12 @@
 *****************************************************************************/
 
 #include <Option_PolyMAC_P0.h>
-#include <Synonyme_info.h>
 #include <Motcle.h>
 #include <Param.h>
 
-Implemente_instanciable(Option_PolyMAC_P0,"Option_PolyMAC_P0|Option_CoviMAC",Interprete);
-Add_synonym(Option_PolyMAC_P0,"Option_PolyMAC_V2");
-// XD Option_PolyMAC_P0 interprete Option_Covimac 1 Class of PolyMAC_P0 options.
+Implemente_instanciable(Option_PolyMAC_P0,"Option_PolyMAC_P0",Interprete);
+
+// XD Option_PolyMAC_P0 interprete Option_PolyMAC_P0 1 Class of PolyMAC_P0 options.
 // XD attr interp_ve1 rien interp_ve1 1 Flag to enable a first order velocity face-to-element interpolation (the default value is 0 which means a second order interpolation)
 
 int Option_PolyMAC_P0::interp_ve1 = 0;
