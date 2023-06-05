@@ -42,6 +42,7 @@
 
 
 #include <TRUSTList.h>
+#include <Option_PolyMAC.h>
 
 #include <Array_tools.h>
 #include <Matrix_tools.h>
@@ -1096,9 +1097,13 @@ int Domaine_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int 
   return 1;
 }
 
+void Domaine_PolyMAC::init_m2_new() const
+{
+  Cerr << "use_new_m2 not implemented yet!" << finl;
+  Process::exit();
+}
 
-//matrice mimetique W_2/M_2 : valeurs tangentes aux lignes element-faces <-> valeurs normales aux faces
-void Domaine_PolyMAC::init_m2() const
+void Domaine_PolyMAC::init_m2_osqp() const
 {
   const IntTab& f_e = face_voisins(), &e_f = elem_faces(), &f_s = face_sommets();
   const DoubleVect& fs = face_surfaces(), &ve = volumes();
@@ -1177,6 +1182,13 @@ void Domaine_PolyMAC::init_m2() const
        << Process::mp_min(spectre[1]) << " -> " << Process::mp_max(spectre[2])
        << " / " << Process::mp_max(spectre[3]) << " width : " << mp_somme_vect(nnz) * 1. / mp_somme_vect(nef) << finl;
   is_init["w2"] = 1;
+}
+
+//matrice mimetique W_2/M_2 : valeurs tangentes aux lignes element-faces <-> valeurs normales aux faces
+void Domaine_PolyMAC::init_m2() const
+{
+  if (Option_PolyMAC::USE_NEW_M2) init_m2_new();
+  else init_m2_osqp();
 }
 
 

@@ -213,6 +213,8 @@ private:
   void remplir_elem_faces() override;
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
+  void init_m2_new() const;
+  void init_m2_osqp() const;
 
   mutable IntTab arete_faces_; //connectivite face -> aretes
   mutable DoubleTab ta_;       //vecteurs tangents aux aretes
