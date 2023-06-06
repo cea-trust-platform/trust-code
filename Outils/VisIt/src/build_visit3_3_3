@@ -14485,6 +14485,10 @@ function build_osmesa
     cd $OSMESA_BUILD_DIR || error "Couldn't cd to osmesa build dir."
 
     info "Patching OSMesa"
+    echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    sed -i "s/struct util_hash_table/static struct util_hash_table/" src/gallium/auxiliary/util/u_debug_symbol.c
+    echo "file src/gallium/auxiliary/util/u_debug_symbol.c patched"
+    echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     apply_osmesa_patch
     if [[ $? != 0 ]] ; then
         if [[ $untarred_osmesa == 1 ]] ; then
