@@ -37,10 +37,10 @@ options=$options" --cxx $TRUST_CC_BASE"				# Compilateur C++
 options=$options" --fc $TRUST_F77_BASE" 			# Compilateur Fortran
 options=$options" --makeflags -j$TRUST_NB_PROCS"		# Parallel build
 options=$options" --thirdparty-path $TRUST_TMP" 		# Pour partage par plusieurs installations TRUST des 3rd party
-options=$options" --system-cmake --alt-cmake-dir $conda" 	# Cmake de Miniconda
-options=$options" --system-qt --alt-qt-dir $conda" 		# Qt5 de Miniconda
+#options=$options" --system-cmake --alt-cmake-dir $conda" 	# Cmake de Miniconda
+#options=$options" --system-qt --alt-qt-dir $conda" 		# Qt5 de Miniconda
 options=$options" --no-sphinx"					# Disable pour eviter l'installation de Python3 et pas mal de modules...
-[ "$vp" = "3.3.3" ] && options=$options" --system-python --alt-python-dir $conda" 	# VisIt ne supporte pas Python3 systeme
+#[ "$vp" = "3.3.3" ] && options=$options" --system-python --alt-python-dir $conda" 	# VisIt ne supporte pas Python3 systeme
 if [ "$build_parallel" != "" ]
 then
    export PAR_COMPILER=$TRUST_cc
@@ -91,3 +91,7 @@ else
    rm -f visit$vt*tar.gz 	# Package construit et installe par le build (inutile de le garder) 
    exit 0
 fi
+
+#patch src/mesa-17.3.9/src/gallium/auxiliary/util/u_debug_symbol.c
+#sed -i "s/struct util_hash_table/static struct util_hash_table/" src/mesa-17.3.9/src/gallium/auxiliary/util/u_debug_symbol.c
+
