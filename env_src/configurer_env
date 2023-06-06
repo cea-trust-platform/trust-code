@@ -639,8 +639,11 @@ case $arch in
 	   if [ $? != 0 ]
 	   then
 	      source ../env_src/gpu/install_nvhpc_sdk_toolkit.sh
-	      # Attention, on met NVHPC en dernier car il ne faut pas prendre le nvcc de NVHPC (trop recent) mais du Cuda toolkit (plus ancien)
-	      export PATH=$PATH:$NVHPC/bin # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
+	      # Attention, on met NVHPC en dernier car on prendre de preference le nvcc du CUDA Toolkit:
+	      echo "ADD_PATH_AFTER $NVHPC/bin" >>$env
+	      echo "ADD_LD_LIBRARY_PATH_AFTER $NVHPC/lib" >>$env
+	      export PATH=$PATH:$NVHPC/bin # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/bin
+	      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$NVHPC/lib # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers/lib
 	   fi
 	   nvc++ -help 1>/dev/null 2>&1
 	   [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
@@ -968,8 +971,6 @@ TRUST_VERSION_GNU=`print_GNU_VERSION`
 # Verification que les compilateurs ont ete trouves.
 ####################################################
 compiler_found=1
-# csh plus necessaire pour VisIt
-#[ ! -f /bin/csh ] && [ "$TRUST_WITHOUT_VISIT" != 1 ] && echo "/bin/csh not found. Please install the C shell." && compiler_found=0
 [ "$TRUST_CC_BASE" = "" ] && [ "$STDCPP" = c++14 ] && echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0" && compiler_found=0
 [ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
 [ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
@@ -1765,12 +1766,13 @@ case $TRUST_ARCH_CC in
 	;;
    linux_crayCC) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
-    CppFlags="-O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
-    SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
-    F77Flags="-O3 -fPIC"
-    F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f !
-    ccFLAGS="-O3 -fPIC"
-    ShLibFlag="\$(TRUST_CC) -shared"
+        CppFlags="-O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
+        #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
+        SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
+        F77Flags="-O3 -fPIC"
+        F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f !
+        ccFLAGS="-O3 -fPIC"
+        ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_FCC) TRUST_SUPPORTED=1
         Defines="-D_COMPILE_AVEC_FCC" # Kfast: induces the standard options to exploit the full performance of the A64FX such as SIMDization, software pipelining
@@ -1781,16 +1783,16 @@ case $TRUST_ARCH_CC in
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;
    linux_pgCC|linux_nvc++) TRUST_SUPPORTED=1
-    m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
-    # TRUST_USE_GNU_FOR_EXTP = 1
-   	Defines="-D_COMPILE_AVEC_PGCC"
-    CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
-    CppFlags=$CppFlags" -std=$STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
-    #CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte bcp de choses: ToDo OpenMP
-    SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
-    F77Flags="-O3 -fPIC -noswitcherror"
-    ccFLAGS="-O3 -fPIC -noswitcherror"
-    ShLibFlag="\$(TRUST_CC) -shared"
+        m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
+        Defines="-D_COMPILE_AVEC_PGCC"
+        CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
+        CppFlags=$CppFlags" -std=$STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
+        #CppFlags=$CppFlags" -Minfo=accel -Minfo=mp -Minfo=loop" # Info au build ou NVCOMPILER_ACC_NOTIFY ?
+        #CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte bcp de choses: ToDo OpenMP
+        SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
+        F77Flags="-O3 -fPIC -noswitcherror"
+        ccFLAGS="-O3 -fPIC -noswitcherror"
+        ShLibFlag="\$(TRUST_CC) -shared"
     ;;
    linux_icpc) TRUST_SUPPORTED=1
 	# -fp-model precise (default fast=1) pour avoir memes resultats que GNU

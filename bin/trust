@@ -857,10 +857,16 @@ then
    rm -f $NOM.qdrep
    export NVCOMPILER_ACC_TIME=1 # Tres utile pour sortie bilan des copies sur device
    #export NVCOMPILER_ACC_NOTIFY=3
+   # Detect nsys location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
+   nsys=`ls /opt/nvidia/nsight-systems/*/bin/nsys $CUDA_ROOT/*/bin/nsys $CUDA_ROOT/bin/nsys 2>/dev/null | tail -1`
+   export PATH=`dirname $nsys`:$PATH
    exec="nsys profile --force-overwrite true -o $NOM.qdrep $binary"
 elif [ "$NCU" = 1 ]
 then
    rm -f $NOM.qdrep.ncu-rep
+   # Detect ncu location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
+   ncu=`ls /opt/nvidia/nsight-systems/*/bin/ncu $CUDA_ROOT/*/bin/ncu $CUDA_ROOT/bin/ncu 2>/dev/null | tail -1`
+   export PATH=`dirname $ncu`:$PATH
    exec="ncu -o $NOM.qdrep.ncu-rep $binary"
 elif [ "$CS" = 1 ]
 then
@@ -1306,8 +1312,8 @@ then
 elif [ "$NSYS" = 1 ]
 then
    # Pas clair encore ces differentes versions de Nsys:
-   [ -f $NOM.qdrep ]    && $CUDA_ROOT/*/bin/nsys-ui $NOM.qdrep    # petra
-   [ -f $NOM.nsys-rep ] && $CUDA_ROOT/bin/nsys-ui   $NOM.nsys-rep # a6000
+   [ -f $NOM.qdrep ]    && nsys-ui $NOM.qdrep    # petra
+   [ -f $NOM.nsys-rep ] && nsys-ui $NOM.nsys-rep # a6000
    #nm -D /lib64/libk5crypto.so.3 2>/dev/null | grep 'U EVP_KDF_ctrl' >/dev/null
    #if [[ ${PIPESTATUS[1]} -eq 0 ]]; then
    #   echo "libk5crypto.so.3 requires EVP_KDF_ctrl. Switching to system OpenSSL libraries" >&2
@@ -1318,7 +1324,7 @@ then
 elif [ "$NCU" = 1 ]
 then
    # Marche pas encore:
-   [ -f $NOM.qdrep.ncu-rep ] && $CUDA_ROOT/*/bin/ncu-ui $NOM.qdrep.ncu-rep
+   [ -f $NOM.qdrep.ncu-rep ] && ncu-ui $NOM.qdrep.ncu-rep
 fi
 exit $err
 
