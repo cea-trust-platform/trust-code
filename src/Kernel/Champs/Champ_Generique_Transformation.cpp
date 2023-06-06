@@ -289,7 +289,7 @@ void Champ_Generique_Transformation::completer(const Postraitement_base& post)
                   md = values_source_i.get_md_vector( );
 
                   //composite case, in particular Champ_{P0,Face}_PolyMAC_P0P1NC...
-                  if (zvf_source_i.que_suis_je().debute_par("Domaine_PolyMAC_P0P1NC") && sub_type( MD_Vector_composite, md.valeur( )))
+                  if (get_source(i).get_discretisation().is_polymac_family() && sub_type( MD_Vector_composite, md.valeur( )))
                     {
                       const MD_Vector& md0 = ref_cast(MD_Vector_composite, md.valeur()).get_desc_part(0);
                       if (md0 == zvf_source_i.domaine( ).les_elems().get_md_vector( ))
@@ -518,7 +518,7 @@ const Champ_base& Champ_Generique_Transformation::get_champ(Champ& espace_stocka
   int nb_som_tot = get_ref_domain().nb_som_tot();
   const Motcle directive = get_directive_pour_discr();
   bool champ_normal_faces = 0;
-  if (zvf.que_suis_je().debute_par("Domaine_VDF") || zvf.que_suis_je().debute_par("Domaine_PolyMAC_P0P1NC"))
+  if (get_source(0).get_discretisation().is_vdf() || get_source(0).get_discretisation().is_polymac_family())
     champ_normal_faces = 1;
   if (localisation_ == "elem")
     {
@@ -989,8 +989,7 @@ int Champ_Generique_Transformation::preparer_macro()
 
   if ((nature_ch==scalaire) && (localisation_!="elem"))
     {
-      const Domaine_dis_base& domaine_dis = get_ref_domaine_dis_base();
-      if (domaine_dis.que_suis_je().debute_par("Domaine_VDF"))
+      if (get_source(0).get_discretisation().is_vdf())
         {
           msg = "The nature of the generated storing field will be scalar.\n";
           msg += "In that case the location elem is required since VDF discretization is considered.";

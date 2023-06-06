@@ -206,11 +206,8 @@ void  Chimie::mettre_a_jour(double temps)
             liste_C_[i].valeur().valeurs().echange_espace_virtuel();
           return;
         }
-      int vef=0;
+      const int vef = (int)pb_->discretisation().is_vef();
       Domaine_VF& zvf = ref_cast(Domaine_VF,liste_C_[0].valeur().equation().domaine_dis().valeur());
-      //if (sub_type(Domaine_VEF, zvf))
-      if (zvf.que_suis_je().debute_par("Domaine_VEF"))
-        vef=1;
 
       const IntTab& face_voisins = zvf.face_voisins();
       const ArrOfDouble& volume=zvf.volumes();

@@ -67,20 +67,6 @@ void Cond_lim_utilisateur_base::complement(Nom& ajout)
   Cerr<<"Cond_lim_utilisateur_base::complement(Nom& toto) does nothing"<<finl;
 }
 
-int Cond_lim_utilisateur_base::is_pb(std::string dis)
-{
-  const Discretisation_base& discr=mon_equation->discretisation();
-  Nom nom_discr=discr.que_suis_je();
-  return int(nom_discr == dis);
-}
-
-int Cond_lim_utilisateur_base::is_pb_VEF()
-{
-  Cerr<<"Cond_lim_utilisateur_base::is_pb_VEF not coded" <<finl;
-  Process::exit();
-  return 0;
-}
-
 /*! @brief renvoit 0 si le pb n'est pas rayonnant 1 si il est semi_transp
  *
  *                      2 si il est transparent
@@ -192,7 +178,7 @@ void paroi_adiabatique::complement(Nom& ajout)
   if (rayo == 1)
     {
 
-      if (is_pb_VDF())
+      if (mon_equation->discretisation().is_vdf())
         ajout = "paroi_flux_impose_rayo_semi_transp_VDF champ_front_uniforme 1 0";
       else
         ajout = "paroi_flux_impose_rayo_semi_transp_VEF champ_front_uniforme 1 0";
@@ -209,7 +195,7 @@ void paroi_flux_impose::complement(Nom& ajout)
   int rayo = is_pb_rayo();
   if (rayo == 1)
     {
-      if (is_pb_VDF())
+      if (mon_equation->discretisation().is_vdf())
         ajout = "paroi_flux_impose_rayo_semi_transp_VDF";
       else
         ajout = "paroi_flux_impose_rayo_semi_transp_VEF";
@@ -228,7 +214,7 @@ void cl_timp::complement(Nom& ajout)
     Nrayo = "_rayo_semi_transp";
   if (rayo == 2)
     Nrayo = "_rayo_transp";
-  if (is_pb_VDF())
+  if (mon_equation->discretisation().is_vdf())
     {
       ajout = "paroi_echange_externe_impose";
       if (rayo)
@@ -261,11 +247,11 @@ void paroi_contact::complement(Nom& ajout)
       Process::exit();
     }
 
-  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_P0P1NC() || is_pb_PolyMAC_P0())
+  if (mon_equation->discretisation().is_vdf() || mon_equation->discretisation().is_polymac_family())
     {
-      if (is_pb_VDF()) ajout = "paroi_echange_contact_VDF ";
-      else ajout = is_pb_PolyMAC_P0P1NC() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
-                     is_pb_PolyMAC_P0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
+      if (mon_equation->discretisation().is_vdf()) ajout = "paroi_echange_contact_VDF ";
+      else ajout = mon_equation->discretisation().is_polymac_p0p1nc() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
+                     mon_equation->discretisation().is_polymac_p0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
 
       ajout += nom_autre_pb;
       ajout += " ";
@@ -303,15 +289,15 @@ void paroi_contact_rayo::complement(Nom& ajout)
       Process::exit();
     }
 
-  if (is_pb_VDF() || is_pb_PolyMAC() || is_pb_PolyMAC_P0P1NC() || is_pb_PolyMAC_P0())
+  if (mon_equation->discretisation().is_vdf() || mon_equation->discretisation().is_polymac_family())
     {
-      if (is_pb_VDF())
+      if (mon_equation->discretisation().is_vdf())
         {
           if (rayo == 2) ajout = "Echange_contact_Rayo_transp_VDF ";
           if (rayo == 1) ajout = "Paroi_Echange_contact_rayo_semi_transp_VDF ";
         }
-      else ajout = is_pb_PolyMAC_P0P1NC() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
-                     is_pb_PolyMAC_P0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
+      else ajout = mon_equation->discretisation().is_polymac_p0p1nc() ? "paroi_echange_contact_PolyMAC_P0P1NC " :
+                     mon_equation->discretisation().is_polymac_p0() ? "paroi_echange_contact_PolyMAC_P0 " : "paroi_echange_contact_PolyMAC ";
 
       ajout += nom_autre_pb;
       ajout += " ";
@@ -343,7 +329,7 @@ void paroi_contact_rayo::complement(Nom& ajout)
 void paroi_contact_fictif::complement(Nom& ajout)
 {
   const Nom& nom_mon_pb = mon_equation->probleme().le_nom();
-  if (is_pb_VDF())
+  if (mon_equation->discretisation().is_vdf())
     {
       ajout = "paroi_echange_contact_VDF ";
       ajout += nom_autre_pb;
@@ -352,7 +338,7 @@ void paroi_contact_fictif::complement(Nom& ajout)
       ajout += " temperature ";
       ajout += Nom(conduct_fictif / ep_fictif, "%e");
     }
-  else if (is_pb_PolyMAC())
+  else if (mon_equation->discretisation().is_polymac())
     {
       ajout = "paroi_echange_contact_PolyMAC ";
       ajout += nom_autre_pb;
@@ -361,7 +347,7 @@ void paroi_contact_fictif::complement(Nom& ajout)
       ajout += " temperature ";
       ajout += Nom(conduct_fictif / ep_fictif, "%e");
     }
-  else if (is_pb_PolyMAC_P0P1NC())
+  else if (mon_equation->discretisation().is_polymac_p0p1nc())
     {
       ajout = "paroi_echange_contact_PolyMAC_P0P1NC ";
       ajout += nom_autre_pb;
@@ -370,7 +356,7 @@ void paroi_contact_fictif::complement(Nom& ajout)
       ajout += " temperature ";
       ajout += Nom(conduct_fictif / ep_fictif, "%e");
     }
-  else if (is_pb_PolyMAC_P0())
+  else if (mon_equation->discretisation().is_polymac_p0())
     {
       ajout = "paroi_echange_contact_PolyMAC_P0 ";
       ajout += nom_autre_pb;
@@ -407,7 +393,7 @@ void paroi_contact_fictif_rayo::complement(Nom& ajout)
       else throw;
     }
 
-  if (is_pb_VDF())
+  if (mon_equation->discretisation().is_vdf())
     {
       if (rayo == 2) ajout = "Echange_contact_Rayo_transp_VDF ";
       if (rayo == 1) ajout = "Paroi_Echange_contact_rayo_semi_transp_VDF ";

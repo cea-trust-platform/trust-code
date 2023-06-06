@@ -1240,7 +1240,7 @@ void Postraitement::init()
                 exit();
               }
             // PL: Ajout automatique du postraitement aux faces pour PolyMAC_P0P1NC seul, sinon doit etre specifie par FACES
-            if (Motcle(loc_post) == "FACES" || champ->get_ref_domaine_dis_base().que_suis_je().debute_par("Domaine_PolyMAC_P0P1NC"))
+            if (Motcle(loc_post) == "FACES" || champ->get_discretisation().is_polymac_family())
               {
                 REF(Domaine_dis_base) ref_domaine_dis = champ->get_ref_domaine_dis_base();
                 if (ref_domaine_dis.non_nul())

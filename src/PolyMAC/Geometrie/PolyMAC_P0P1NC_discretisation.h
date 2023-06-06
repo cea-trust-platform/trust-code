@@ -69,6 +69,8 @@ public :
   }
 
   Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn, const REF(Champ_base)& champ_sup ) const override;
+  bool is_polymac_p0p1nc() const override { return true; }
+  bool is_polymac_family() const override { return true; }
 
 private:
   void discretiser_champ_fonc_don(

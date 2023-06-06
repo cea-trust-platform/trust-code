@@ -64,6 +64,7 @@ public :
   void taux_cisaillement(const Domaine_dis&, const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const override;
   void residu(const Domaine_dis& , const Champ_Inc&, Champ_Fonc& ) const override;
   //void pression_residu( const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const;
+  bool is_vef() const override { return true; }
 
 private:
   void discretiser_champ_fonc_don(

@@ -105,6 +105,15 @@ public :
 
   virtual Nom get_name_of_type_for(const Nom& class_operateur, const Nom& type_operteur,const Equation_base& eqn, const REF(Champ_base)& champ_supp =REF(Champ_base)()) const;
 
+  // usefull methods to detect discretization
+  virtual bool is_ef() const { return false; }
+  virtual bool is_vdf() const { return false; }
+  virtual bool is_vef() const { return false; }
+  virtual bool is_polymac() const { return false; }
+  virtual bool is_polymac_p0() const { return false; }
+  virtual bool is_polymac_p0p1nc() const { return false; }
+  virtual bool is_polymac_family() const { return false; }
+
 protected:
   static const Motcle DEMANDE_DESCRIPTION;
   static const Nom NOM_VIDE;

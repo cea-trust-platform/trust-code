@@ -176,7 +176,7 @@ void QDM_Multiphase::mettre_a_jour(double temps)
   if (la_vorticite.non_nul()) la_vorticite.mettre_a_jour(temps);
   if (Taux_cisaillement.non_nul()) Taux_cisaillement.mettre_a_jour(temps);
 
-  const bool is_poly = discretisation().que_suis_je().debute_par("Poly");
+  const bool is_poly = discretisation().is_polymac_family();
   for (n = 0; n < N; n++)
     if (grad_vit_phases_[n].non_nul())
       {

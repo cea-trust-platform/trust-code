@@ -82,7 +82,7 @@ public:
   void y_plus(const Domaine_dis& ,const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc& ) const override;
 //  virtual void t_paroi(const Domaine_dis& z,const Domaine_Cl_dis& zcl, const Equation_base& eqn,Champ_Fonc& ch) const;
   void residu( const Domaine_dis& ,const Champ_Inc& , Champ_Fonc& ) const override;
-
+  bool is_vdf() const override { return true; }
 
 private:
   void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z,

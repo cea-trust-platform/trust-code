@@ -138,11 +138,11 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   int nb_comp = 0;
   int nb_ddl = 0;
 
-  if (domaine_dis_source.que_suis_je().debute_par("Domaine_VDF"))
+  if (source.get_discretisation().is_vdf())
     disc = "VDF";
-  else if (domaine_dis_source.que_suis_je().debute_par("Domaine_VEF"))
+  else if (source.get_discretisation().is_vef())
     disc = "VEF";
-  else if (domaine_dis_source.que_suis_je().debute_par("Domaine_EF"))
+  else if (source.get_discretisation().is_ef())
     disc = "EF";
   else
     {
@@ -336,9 +336,9 @@ void Champ_Generique_Extraction::completer(const Postraitement_base& post)
   //Cas suivant possible en parallele
   else if ((type_face_source==Faces::vide_0D) && (nb_faces==0))
     {
-      if (zvf_source.que_suis_je().debute_par("Domaine_VDF"))
+      if (source.get_discretisation().is_vdf())
         type_elem = "Rectangle";
-      else if (zvf_source.que_suis_je().debute_par("Domaine_VEF"))
+      else if (source.get_discretisation().is_vef())
         type_elem = "Triangle";
       else
         {

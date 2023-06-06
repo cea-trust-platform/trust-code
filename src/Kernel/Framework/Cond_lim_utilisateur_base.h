@@ -45,17 +45,10 @@ public:
 
   Cond_lim& la_cl();
   Cond_lim_utilisateur_base();
-  int is_pb_VDF() { return is_pb("VDF"); }
-  int is_pb_PolyMAC() { return is_pb("PolyMAC"); }
-  int is_pb_PolyMAC_P0P1NC() { return is_pb("PolyMAC_P0P1NC"); }
-  int is_pb_PolyMAC_P0() { return is_pb("PolyMAC_P0"); }
-  int is_pb_VEF();
   int is_pb_rayo();
 
   virtual void ecrire(const Nom&);
 protected :
-  int is_pb(std::string dis);
-
   Cond_lim* la_cl_;
   REF(Equation_base) mon_equation;
   Nom nom_bord_;

@@ -157,7 +157,7 @@ void Masse_Multiphase::completer()
   terme_convectif.valeur().check_multiphase_compatibility();
 
   const Domaine_dis& zdis = domaine_dis();
-  if (zdis.valeur().que_suis_je().debute_par("Domaine_VDF"))
+  if (discretisation().is_vdf())
     {
       // initialiser l'operateur grad SI VDF
       Op_Grad_.associer_eqn(*this);

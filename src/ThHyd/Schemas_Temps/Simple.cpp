@@ -266,7 +266,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
       DoubleTrav resu_temp(current); /* residu en increments */
       if (eqn.has_interface_blocs()) /* si assembler_blocs est disponible */
         {
-          if (eqn.discretisation().que_suis_je().debute_par("PolyMAC"))
+          if (eqn.discretisation().is_polymac_family())
             {
               eqn.assembler_blocs_avec_inertie({{ eqn.inconnue().le_nom().getString(), &matrice }}, resu_temp, { });
               resu = resu_temp;
@@ -355,7 +355,7 @@ bool Simple::iterer_eqn(Equation_base& eqn,const DoubleTab& inut,DoubleTab& curr
         Cout<<eqn.que_suis_je()<<" is converged at the implicit iteration "<<nb_iter<<" ( ||uk-uk-1|| = "<<dudt_norme<<" < implicit threshold "<<seuil_convg<<" )"<<finl;
     }
 
-  if(ok && (eqn.discretisation().que_suis_je().debute_par("PolyMAC") || eqn.probleme().que_suis_je() == "Pb_Multiphase")) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
+  if(ok && (eqn.discretisation().is_polymac_family() || eqn.probleme().que_suis_je() == "Pb_Multiphase")) eqn.probleme().mettre_a_jour(eqn.schema_temps().temps_courant());
   solveur->reinit();
   return (ok && converge==1);
 }
@@ -443,7 +443,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
       for (i = 0; i < eqs.size(); i++)
         {
           eqs[i]->assembler_blocs_avec_inertie(mats[i], residu_parts[i], {});
-          if (!eqs[i]->discretisation().que_suis_je().debute_par("PolyMAC"))
+          if (!eqs[i]->discretisation().is_polymac_family())
             {
               for (j = 0; j < eqs.size(); j++)
                 {
@@ -456,7 +456,7 @@ bool Simple::iterer_eqs(LIST(REF(Equation_base)) eqs, int nb_iter, int& ok)
                 }
             }
         }
-      if (eqs[0]->discretisation().que_suis_je().debute_par("PolyMAC")) Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
+      if (eqs[0]->discretisation().is_polymac_family()) Mglob.ajouter_multvect(inconnues, residus); //pour ne pas resoudre en increments
     }
   else for(i = 0; i < eqs.size(); i++)
       for (j = 0; j < eqs.size(); j++)

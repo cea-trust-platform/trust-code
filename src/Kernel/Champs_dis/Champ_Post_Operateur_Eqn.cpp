@@ -75,8 +75,7 @@ void Champ_Post_Operateur_Eqn::verification_cas_compo() const
       exit();
     }
   // Verifier qu'on n'est pas en VDF
-  const Domaine_dis_base& domaine_dis = ref_eq_.valeur().domaine_dis().valeur();
-  if ((domaine_dis.que_suis_je().debute_par("Domaine_VDF")) && (compo_ != -1 ))
+  if (ref_eq_->discretisation().is_vdf() && (compo_ != -1 ))
     {
       Cerr<<"Error in Champ_Post_Operateur_Eqn::verification_cas_compo()"<<finl;
       Cerr<<"The option compo is not available in case of VDF discretization"<<finl;
