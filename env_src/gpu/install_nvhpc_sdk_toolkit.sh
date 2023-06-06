@@ -2,7 +2,11 @@
 # NVIDIA HPC SDK
 SDK_VERSION=22.9 && CUDA_VERSION=11.7 && installer=nvhpc_2022_229_Linux_x86_64_cuda_$CUDA_VERSION  # 11.7 uniquement
 SDK_VERSION=22.2 && CUDA_VERSION=11.6 && installer=nvhpc_2022_222_Linux_x86_64_cuda_multi # 11.6, 11.2, 11.0, 10.2 
+# Fedora 34:
 SDK_VERSION=22.1 && CUDA_VERSION=11.5 && installer=nvhpc_2022_221_Linux_x86_64_cuda_multi # 11.5, 11.0, 10.2 (nvcc 11.5 OK pour gcc 11.0 de Fedora 34)
+# Fedora 36 car 22.1 ne trouve pas seekg (voir reproducer): Attention, il faut aussi installer un gcc 10. ou 11. avec spack sur F36:
+[ -f /usr/lib64/libstdc++.so.6.0.30 ] && SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi # 12.1, 11.8, 11.0
+
 INSTALL=$TRUST_ROOT/env/gpu/install
 NVHPC=$INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
 if [ ! -f $NVHPC/bin/nvc++ ]

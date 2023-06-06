@@ -51,7 +51,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  bool kernelOnDevice = resu.isKernelOnDevice(vx, "ajoute_operation_speciale_generic(x,alpha,y");
+  bool kernelOnDevice = resu.isKernelOnDevice(vx, "ajoute_operation_speciale_generic(x,alpha,y") && Objet_U::computeOnDevice;
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (; nblocs_left; nblocs_left--)
@@ -61,7 +61,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int count = 0; count < end_bloc - begin_bloc ; count++)
         {
           const _TYPE_ x = x_ptr[count];
@@ -117,7 +117,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
     }
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
-  bool kernelOnDevice = resu.isKernelOnDevice(vx);
+  bool kernelOnDevice = resu.isKernelOnDevice(vx) && Objet_U::computeOnDevice;
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   start_timer();
@@ -128,7 +128,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
       const _TYPE_ *x_ptr = x_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int count = 0; count < end_bloc - begin_bloc ; count++)
         {
           const _TYPE_& x = x_ptr[count];
@@ -206,7 +206,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  bool kernelOnDevice = resu.isKernelOnDevice();
+  bool kernelOnDevice = resu.isKernelOnDevice() && Objet_U::computeOnDevice;
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   start_timer();
   for (; nblocs_left; nblocs_left--)
@@ -215,7 +215,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       _TYPE_ *resu_ptr = resu_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int count=0; count < end_bloc - begin_bloc; count++)
         {
           _TYPE_ &p_resu = resu_ptr[count];
@@ -323,7 +323,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
-  bool kernelOnDevice = vx.isKernelOnDevice("local_extrema_vect_generic(x)");
+  bool kernelOnDevice = vx.isKernelOnDevice("local_extrema_vect_generic(x)") && Objet_U::computeOnDevice;
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (; nblocs_left; nblocs_left--)
     {
@@ -331,32 +331,39 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       const _TYPE_ *x_ptr = x_base + begin_bloc;
+      int size_bloc = end_bloc - begin_bloc;
       if (IS_MAX || IS_MAX_ABS)
-        #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(max:min_max_val)
-        for (int count=0; count < end_bloc - begin_bloc; count++)
-          {
-            const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_)std::abs(x_ptr[count]) : (_TYPE_)std::fabs(x_ptr[count]);
-            if (x > min_max_val) min_max_val = x;
-          }
-      if (IS_MIN || IS_MIN_ABS)
-        #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(min:min_max_val)
-        for (int count=0; count < end_bloc - begin_bloc; count++)
-          {
-            const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_)std::abs(x_ptr[count]) : (_TYPE_)std::fabs(x_ptr[count]);
-            if (x < min_max_val) min_max_val = x;
-          }
-
-      // Pas porte sur device car le compilateur NVidia plante:
+        {
+          #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(max:min_max_val)
+          for (int count = 0; count < size_bloc; count++)
+            {
+              const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_)std::abs(x_ptr[count]) : (_TYPE_)std::fabs(x_ptr[count]);
+              if (x > min_max_val) min_max_val = x;
+            }
+        }
+      else if (IS_MIN || IS_MIN_ABS)
+        {
+          #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(min:min_max_val)
+          for (int count = 0; count < size_bloc; count++)
+            {
+              const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
+                                 x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+              if (x < min_max_val) min_max_val = x;
+            }
+        }
+      // ToDo OpenMP Pas porte sur device car le compilateur NVidia plante:
       if (IS_IMAX || IS_IMIN)
-        for (int count=0; count < end_bloc - begin_bloc; count++)
-          {
-            const _TYPE_ x = x_ptr[count];
-            if ((IS_IMAX && x > min_max_val) || (IS_IMIN && x < min_max_val))
-              {
-                i_min_max = (_TYPE_RETURN_)count;
-                min_max_val = x;
-              }
-          }
+        {
+          for (int count = 0; count < size_bloc; count++)
+            {
+              const _TYPE_ x = x_ptr[count];
+              if ((IS_IMAX && x > min_max_val) || (IS_IMIN && x < min_max_val))
+                {
+                  i_min_max = (_TYPE_RETURN_) count;
+                  min_max_val = x;
+                }
+            }
+        }
       // Compilateur NVidia plante sur cela: "symbol local_min_max_val(20167) is team-private but we are returning false"
       /*
       if (IS_IMAX || IS_IMIN)
@@ -444,7 +451,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return sum;
 
-  bool kernelOnDevice = vx.isKernelOnDevice("local_operations_vect_bis_generic(x)");
+  bool kernelOnDevice = vx.isKernelOnDevice("local_operations_vect_bis_generic(x)") && Objet_U::computeOnDevice;
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (; nblocs_left; nblocs_left--)
     {
@@ -452,7 +459,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       const _TYPE_ *x_ptr = x_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(+:sum)
+      #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(+:sum)
       for (int count=0; count < end_bloc - begin_bloc; count++)
         {
           const _TYPE_ x = x_ptr[count];
