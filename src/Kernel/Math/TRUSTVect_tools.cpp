@@ -334,21 +334,46 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
       int size_bloc = end_bloc - begin_bloc;
       if (IS_MAX || IS_MAX_ABS)
         {
-          #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(max:min_max_val)
-          for (int count = 0; count < size_bloc; count++)
+          if (kernelOnDevice)
             {
-              const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_)std::abs(x_ptr[count]) : (_TYPE_)std::fabs(x_ptr[count]);
-              if (x > min_max_val) min_max_val = x;
+              #pragma omp target teams distribute parallel for reduction(max:min_max_val)
+              for (int count = 0; count < size_bloc; count++)
+                {
+                  const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
+                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+                  if (x > min_max_val) min_max_val = x;
+                }
+            }
+          else
+            {
+              for (int count = 0; count < size_bloc; count++)
+                {
+                  const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
+                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+                  if (x > min_max_val) min_max_val = x;
+                }
             }
         }
       else if (IS_MIN || IS_MIN_ABS)
         {
-          #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(min:min_max_val)
-          for (int count = 0; count < size_bloc; count++)
+          if (kernelOnDevice)
             {
-              const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
-                                 x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
-              if (x < min_max_val) min_max_val = x;
+              #pragma omp target teams distribute parallel for reduction(min:min_max_val)
+              for (int count = 0; count < size_bloc; count++)
+                {
+                  const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
+                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+                  if (x < min_max_val) min_max_val = x;
+                }
+            }
+          else
+            {
+              for (int count = 0; count < size_bloc; count++)
+                {
+                  const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
+                                     x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+                  if (x < min_max_val) min_max_val = x;
+                }
             }
         }
       // ToDo OpenMP Pas porte sur device car le compilateur NVidia plante:
@@ -459,14 +484,24 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
       const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
       assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
       const _TYPE_ *x_ptr = x_base + begin_bloc;
-      #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(+:sum)
-      for (int count=0; count < end_bloc - begin_bloc; count++)
+      if (kernelOnDevice)
         {
-          const _TYPE_ x = x_ptr[count];
-
-          if (IS_CARRE) sum += x * x;
-          if (IS_SOMME) sum += x;
-
+          #pragma omp target teams distribute parallel for reduction(+:sum)
+          for (int count = 0; count < end_bloc - begin_bloc; count++)
+            {
+              const _TYPE_ x = x_ptr[count];
+              if (IS_CARRE) sum += x * x;
+              if (IS_SOMME) sum += x;
+            }
+        }
+      else
+        {
+          for (int count = 0; count < end_bloc - begin_bloc; count++)
+            {
+              const _TYPE_ x = x_ptr[count];
+              if (IS_CARRE) sum += x * x;
+              if (IS_SOMME) sum += x;
+            }
         }
     }
   return sum;

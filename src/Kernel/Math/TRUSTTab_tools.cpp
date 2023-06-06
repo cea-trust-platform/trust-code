@@ -61,40 +61,85 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
       // Necessaire de faire un test sur lsize le compilateur crayCC OpenMP ne supporte pas la reduction sur tableau avec taille dynamique...
       if (lsize==1)
         {
-          #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(max:max_colonne_addr[0:1])
-          for (int i = begin_bloc; i < end_bloc; i++)
+          if (kernelOnDevice)
             {
-              int k = i * lsize;
-              for (int j = 0; j < lsize; j++)
+              #pragma omp target teams distribute parallel for reduction(max:max_colonne_addr[0:1])
+              for (int i = begin_bloc; i < end_bloc; i++)
                 {
-                  const _T_ x = std::fabs(vect_addr[k++]);
-                  max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                  int k = i * lsize;
+                  for (int j = 0; j < lsize; j++)
+                    {
+                      const _T_ x = std::fabs(vect_addr[k++]);
+                      max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                    }
+                }
+            }
+          else
+            {
+              for (int i = begin_bloc; i < end_bloc; i++)
+                {
+                  int k = i * lsize;
+                  for (int j = 0; j < lsize; j++)
+                    {
+                      const _T_ x = std::fabs(vect_addr[k++]);
+                      max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                    }
                 }
             }
         }
       else if (lsize==2)
         {
-          #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(max:max_colonne_addr[0:2])
-          for (int i = begin_bloc; i < end_bloc; i++)
+          if (kernelOnDevice)
             {
-              int k = i * lsize;
-              for (int j = 0; j < lsize; j++)
+              #pragma omp target teams distribute parallel for reduction(max:max_colonne_addr[0:2])
+              for (int i = begin_bloc; i < end_bloc; i++)
                 {
-                  const _T_ x = std::fabs(vect_addr[k++]);
-                  max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                  int k = i * lsize;
+                  for (int j = 0; j < lsize; j++)
+                    {
+                      const _T_ x = std::fabs(vect_addr[k++]);
+                      max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                    }
+                }
+            }
+          else
+            {
+              for (int i = begin_bloc; i < end_bloc; i++)
+                {
+                  int k = i * lsize;
+                  for (int j = 0; j < lsize; j++)
+                    {
+                      const _T_ x = std::fabs(vect_addr[k++]);
+                      max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                    }
                 }
             }
         }
       else if (lsize==3)
         {
-          #pragma omp target teams distribute parallel for if (kernelOnDevice) reduction(max:max_colonne_addr[0:3])
-          for (int i = begin_bloc; i < end_bloc; i++)
+          if (kernelOnDevice)
             {
-              int k = i * lsize;
-              for (int j = 0; j < lsize; j++)
+              #pragma omp target teams distribute parallel for reduction(max:max_colonne_addr[0:3])
+              for (int i = begin_bloc; i < end_bloc; i++)
                 {
-                  const _T_ x = std::fabs(vect_addr[k++]);
-                  max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                  int k = i * lsize;
+                  for (int j = 0; j < lsize; j++)
+                    {
+                      const _T_ x = std::fabs(vect_addr[k++]);
+                      max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                    }
+                }
+            }
+          else
+            {
+              for (int i = begin_bloc; i < end_bloc; i++)
+                {
+                  int k = i * lsize;
+                  for (int j = 0; j < lsize; j++)
+                    {
+                      const _T_ x = std::fabs(vect_addr[k++]);
+                      max_colonne_addr[j] = (x > max_colonne_addr[j]) ? x : max_colonne_addr[j];
+                    }
                 }
             }
         }

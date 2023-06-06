@@ -110,18 +110,29 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   ndeb = nfin;
   nfin = domaine_VEF.nb_faces();
 
-  bool kernelOnDevice = fluent.isKernelOnDevice();
+  bool kernelOnDevice = fluent.isKernelOnDevice() && Objet_U::computeOnDevice;
   const double* fluent_addr = kernelOnDevice ? mapToDevice(fluent) : fluent.addr();
   const double* volumes_entrelaces_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces) : volumes_entrelaces.addr();
+  // ToDo bug nvc++ compiler recent bouh
   start_timer();
-  #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice) reduction(min:dt_stab)
-  for (int num_face=ndeb; num_face<nfin; num_face++)
+  if (kernelOnDevice)
     {
-      double dt_face = volumes_entrelaces_addr[num_face]/(fluent_addr[num_face]+DMINFLOAT);
-      dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
+      #pragma omp target teams distribute parallel for reduction(min:dt_stab)
+      for (int num_face = ndeb; num_face < nfin; num_face++)
+        {
+          double dt_face = volumes_entrelaces_addr[num_face] / (fluent_addr[num_face] + DMINFLOAT);
+          dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
+        }
+    }
+  else
+    {
+      for (int num_face = ndeb; num_face < nfin; num_face++)
+        {
+          double dt_face = volumes_entrelaces_addr[num_face] / (fluent_addr[num_face] + DMINFLOAT);
+          dt_stab = (dt_face < dt_stab) ? dt_face : dt_stab;
+        }
     }
   end_timer(kernelOnDevice, "Face loop in Op_Conv_VEF_base::calculer_dt_stab()");
-
   dt_stab = Process::mp_min(dt_stab);
   // astuce pour contourner le type const de la methode
   Op_Conv_VEF_base& op = ref_cast_non_const(Op_Conv_VEF_base,*this);
