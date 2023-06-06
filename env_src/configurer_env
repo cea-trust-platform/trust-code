@@ -639,7 +639,8 @@ case $arch in
 	   if [ $? != 0 ]
 	   then
 	      source ../env_src/gpu/install_nvhpc_sdk_toolkit.sh
-	      export PATH=$NVHPC/bin:$PATH # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
+	      # Attention, on met NVHPC en dernier car il ne faut pas prendre le nvcc de NVHPC (trop recent) mais du Cuda toolkit (plus ancien)
+	      export PATH=$PATH:$NVHPC/bin # PATH to $INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
 	   fi
 	   nvc++ -help 1>/dev/null 2>&1
 	   [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
