@@ -49,55 +49,55 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
                   int offset2 = (int) round(istmp);
                   int x[5] = {offset2-2, offset2-1, offset2, offset2+1, offset2+2};
 
-				  double a0 = 1. / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
-				  double a1 = 1. / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
-			      double a2 = 1. / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
-				  double a3 = 1. / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
-				  double a4 = 1. / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+                  double a0 = 1. / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+                  double a1 = 1. / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+                  double a2 = 1. / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+                  double a3 = 1. / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+                  double a4 = 1. / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
 
                   ponderation_m2 = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]));
-				  ponderation_m1 = a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]));
-				  ponderation_0 = a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]));
-				  ponderation_p1 = a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]));
-				  ponderation_p2 = a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+                  ponderation_m1 = a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]));
+                  ponderation_0 = a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]));
+                  ponderation_p1 = a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]));
+                  ponderation_p2 = a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
 
-				  ii_m2 = ((i + ni + offset2 - 2) % ni + ni) % ni;
-				  ii_m1 = ((i + ni + offset2 - 1) % ni + ni) % ni;
-				  ii = ((i + ni + offset2) % ni + ni) % ni;
-				  ii_p1 = ((i + ni + offset2 + 1) % ni + ni) % ni;
+                  ii_m2 = ((i + ni + offset2 - 2) % ni + ni) % ni;
+                  ii_m1 = ((i + ni + offset2 - 1) % ni + ni) % ni;
+                  ii = ((i + ni + offset2) % ni + ni) % ni;
+                  ii_p1 = ((i + ni + offset2 + 1) % ni + ni) % ni;
                   ii_p2 = ((i + ni + offset2 + 2) % ni + ni) % ni;
 
                 }
               else
                 {
-            	  ii_m2 = -1;
-            	  ii_m1 = -1;
+                  ii_m2 = -1;
+                  ii_m1 = -1;
                   ii = (i + ni ) % ni;
                   ii_p1 = -1;
                   ii_p2 = -1;
                   ponderation_m2 = -1;
-				  ponderation_m1 = -1;
-				  ponderation_0 = -1;
-				  ponderation_p1 = -1;
-				  ponderation_p2 = -1;
+                  ponderation_m1 = -1;
+                  ponderation_0 = -1;
+                  ponderation_p1 = -1;
+                  ponderation_p2 = -1;
                 }
               int jj = (j + nj) % nj;
               int kk = (k + nk) % nk;
 
               renum(i, j, k) = renum(ii, jj, kk);
               if(ii_m2!=-1)
-              {
-               renum_m2(i, j, k) = renum(ii_m2, jj, kk);
-               renum_m1(i, j, k) = renum(ii_m1, jj, kk);
-               renum_p1(i, j, k) = renum(ii_p1, jj, kk);
-               renum_p2(i, j, k) = renum(ii_p2, jj, kk);
+                {
+                  renum_m2(i, j, k) = renum(ii_m2, jj, kk);
+                  renum_m1(i, j, k) = renum(ii_m1, jj, kk);
+                  renum_p1(i, j, k) = renum(ii_p1, jj, kk);
+                  renum_p2(i, j, k) = renum(ii_p2, jj, kk);
 
-               ponderation_shear_m2(i, j, k) = ponderation_m2;
-               ponderation_shear_m1(i, j, k) = ponderation_m1;
-               ponderation_shear_0(i, j, k) = ponderation_0;
-               ponderation_shear_p1(i, j, k) = ponderation_p1;
-               ponderation_shear_p2(i, j, k) = ponderation_p2;
-              }
+                  ponderation_shear_m2(i, j, k) = ponderation_m2;
+                  ponderation_shear_m1(i, j, k) = ponderation_m1;
+                  ponderation_shear_0(i, j, k) = ponderation_0;
+                  ponderation_shear_p1(i, j, k) = ponderation_p1;
+                  ponderation_shear_p2(i, j, k) = ponderation_p2;
+                }
             }
 
     }
@@ -181,30 +181,30 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
   // coefficient extra diagonal (- surface_face / distance_centres_elements)
   double x = -coeff;
   if (indice_voisin > indice)
-  // matrice symmetrique :: shear boundary reste symmetrique
+    // matrice symmetrique :: shear boundary reste symmetrique
     {
       // Coefficient dans la partie triangulaire superieure, a stocker.
       const int nreels = coeff_diag_.size_array();
       if (indice_voisin < nreels)
         {
           // Element reel
-    	  if (indice_voisin_m2 != -1)
-    	  {
-    		  std::cout << "ici" << std::endl;
-    		  std::cout << "indice_voisin = " << indice_voisin << std::endl;
-    		  std::cout << "indice_voisin_m2 = " << indice_voisin_m2 << std::endl;
-    		  std::cout << "indice_voisin_m1 = " << indice_voisin_m1 << std::endl;
-    		  std::cout << "indice_voisin_p1 = " << indice_voisin_p1 << std::endl;
-    		  std::cout << "indice_voisin_p2 = " << indice_voisin_p2 << std::endl;
-    		  std::cout << "x*ponderation_voisin_0 = " << x*ponderation_voisin_0 << std::endl;
-    		  std::cout << "x*ponderation_voisin_m2 = " << x*ponderation_voisin_m2 << std::endl;
-    		  std::cout << "x*ponderation_voisin_m1 = " << x*ponderation_voisin_m1 << std::endl;
-    		  std::cout << "x*ponderation_voisin_p1 = " << x*ponderation_voisin_p1 << std::endl;
-    		  std::cout << "x*ponderation_voisin_p2 = " << x*ponderation_voisin_p2 << std::endl;
+          if (indice_voisin_m2 != -1)
+            {
+              std::cout << "ici" << std::endl;
+              std::cout << "indice_voisin = " << indice_voisin << std::endl;
+              std::cout << "indice_voisin_m2 = " << indice_voisin_m2 << std::endl;
+              std::cout << "indice_voisin_m1 = " << indice_voisin_m1 << std::endl;
+              std::cout << "indice_voisin_p1 = " << indice_voisin_p1 << std::endl;
+              std::cout << "indice_voisin_p2 = " << indice_voisin_p2 << std::endl;
+              std::cout << "x*ponderation_voisin_0 = " << x*ponderation_voisin_0 << std::endl;
+              std::cout << "x*ponderation_voisin_m2 = " << x*ponderation_voisin_m2 << std::endl;
+              std::cout << "x*ponderation_voisin_m1 = " << x*ponderation_voisin_m1 << std::endl;
+              std::cout << "x*ponderation_voisin_p1 = " << x*ponderation_voisin_p1 << std::endl;
+              std::cout << "x*ponderation_voisin_p2 = " << x*ponderation_voisin_p2 << std::endl;
 
 
-    		  std::cout << "ici" << std::endl;
-    		  // cas shear perio avec potentiellement plusieurs voisins, et interpolation avec somme des ponderation egale a 1
+              std::cout << "ici" << std::endl;
+              // cas shear perio avec potentiellement plusieurs voisins, et interpolation avec somme des ponderation egale a 1
               voisins_[indice].add(indice_voisin);
               voisins_[indice].add(indice_voisin_m2);
               voisins_[indice].add(indice_voisin_m1);
@@ -215,12 +215,12 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
               coeffs_[indice].add(x*ponderation_voisin_m1);
               coeffs_[indice].add(x*ponderation_voisin_p1);
               coeffs_[indice].add(x*ponderation_voisin_p2);
-    	  }
-    	  else
-    	  {
+            }
+          else
+            {
               voisins_[indice].add(indice_voisin);
               coeffs_[indice].add(x);
-    	  }
+            }
 
         }
       else
@@ -228,9 +228,9 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
           // Element virtuel (l'indice dans la sous-matrice est relatif
           //  au debut de l'espace virtuel)
 
-    	  if (indice_voisin_m2 != -1)
-    	  {
-    		  // cas shear perio avec potentiellement plusieurs voisins, avec somme des ponderation egale a 1
+          if (indice_voisin_m2 != -1)
+            {
+              // cas shear perio avec potentiellement plusieurs voisins, avec somme des ponderation egale a 1
               voisins_virt_[indice].add(indice_voisin - nreels);
               voisins_virt_[indice].add(indice_voisin_m2 - nreels);
               voisins_virt_[indice].add(indice_voisin_m1 - nreels);
@@ -241,12 +241,12 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
               coeffs_virt_[indice].add(x*ponderation_voisin_m1);
               coeffs_virt_[indice].add(x*ponderation_voisin_p1);
               coeffs_virt_[indice].add(x*ponderation_voisin_p2);
-    	  }
-    	  else
-    	  {
+            }
+          else
+            {
               voisins_virt_[indice].add(indice_voisin - nreels);
               coeffs_virt_[indice].add(x);
-    	  }
+            }
 
         }
     }
