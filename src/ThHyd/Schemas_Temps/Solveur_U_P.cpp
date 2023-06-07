@@ -57,16 +57,23 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
       Process::exit();
     }
 
+  const bool is_PolyMAC = eqn.discretisation().is_polymac();
   Parametre_implicite& param = get_and_set_parametre_implicite(eqn);
   SolveurSys& le_solveur_ = param.solveur();
 
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
 
   /* MD_Vector (vitesse, pression) */
-  MD_Vector_composite mds;
-  mds.add_part(current.get_md_vector(), current.line_size());
-  mds.add_part(pression.get_md_vector(), pression.line_size());
   MD_Vector md_UP;
+  MD_Vector_composite mds;
+  DoubleTab_parts ppart(pression); //dans PolyMAC, pression contient (p, v) -> on doit ignorer la 2e partie...
+
+  mds.add_part(current.get_md_vector(), current.line_size());
+  if (is_PolyMAC)
+    mds.add_part(ppart[0].get_md_vector(), ppart[0].line_size());
+  else
+    mds.add_part(pression.get_md_vector(), pression.line_size());
+
   md_UP.copy(mds);
 
   DoubleTab Inconnues,residu;
@@ -76,7 +83,8 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
   DoubleTab_parts residu_parts(residu);
   DoubleTab_parts Inconnues_parts(Inconnues);
 
-  Inconnues_parts[0] = current, Inconnues_parts[1] = pression;
+  Inconnues_parts[0] = current;
+  Inconnues_parts[1] = is_PolyMAC ? ppart[0] : pression;
 
   Matrice_Bloc Matrice_global(2,2) ; //matrice M.(du, dp) = (Navier-Stokes, divergence)
 
@@ -107,50 +115,99 @@ void Solveur_U_P::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pre
       residu_parts[0]*=-1;
     }
 
-  /* doit-on fixer P(elem 0) = 0 ? */
-  int has_P_ref=0;
-  const Conds_lim& cls = eqnNS.domaine_Cl_dis().les_conditions_limites();
-  for (auto& itr : cls)
-    if (sub_type(Neumann_sortie_libre,itr.valeur())) has_P_ref=1;
-
-  /* ligne de masse : (div, 0) */
-  Operateur_Div_base& divergence = eqnNS.operateur_divergence().valeur();
-  Matrice_global.get_bloc(1,0).typer("Matrice_Morse");
-  Matrice_Morse& mat_div_v = ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,0).valeur());
-  if (divergence.has_interface_blocs()) /* si interface_blocs : direct */
+  if (is_PolyMAC)
     {
-      Matrice_global.get_bloc(1,1).typer("Matrice_Morse");
-      Matrice_Morse& mat_div_p = ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,1).valeur());
-      divergence.dimensionner_blocs({ { "vitesse", &mat_div_v } , { "pression", &mat_div_p}});
-      divergence.ajouter_blocs({ { "vitesse", &mat_div_v } , { "pression", &mat_div_p}}, residu_parts[1]);
-      if (!has_P_ref && !Process::me()) mat_div_p(0, 0) += 1; //revient a imposer P(0) = 0
-    }
-  else /* sinon : l'operateur remplit mat_div_v, on construit a la main mat_div_p = 0 */
-    {
-      divergence.dimensionner(mat_div_v);
-      divergence.contribuer_a_avec(current, mat_div_v);
+      /* ligne de masse : (div, 0) */
+      Operateur_Div& divergence = eqnNS.operateur_divergence();
+      Matrice_global.get_bloc(1,0).typer("Matrice_Morse");
+      Matrice_Morse& mat_div=ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,0).valeur());
+      divergence.valeur().dimensionner(mat_div);
+      divergence.valeur().contribuer_a_avec( current,mat_div);
       divergence.calculer(current, residu_parts[1]);
+
       Matrice_global.get_bloc(1,1).typer("Matrice_Diagonale");
-      Matrice_Diagonale& mat_div_p = ref_cast(Matrice_Diagonale,Matrice_global.get_bloc(1,1).valeur());
-      mat_div_p.dimensionner(mat_div_v.nb_lignes());
-      if (!has_P_ref && !Process::me()) mat_div_p.coeff(0, 0) += 1; //revient a imposer P(0) = 0
+      Matrice_Diagonale& mat_diag = ref_cast(Matrice_Diagonale,Matrice_global.get_bloc(1,1).valeur());
+      mat_diag.dimensionner(mat_div.nb_lignes());
+
+      /* doit-on fixer P(elem 0) = 0 ? */
+      int has_P_ref=0;
+      const Conds_lim& cls = eqnNS.domaine_Cl_dis().les_conditions_limites();
+      for (int n_bord=0; n_bord < cls.size(); n_bord++)
+        if (sub_type(Neumann_sortie_libre,cls[n_bord].valeur())) has_P_ref=1;
+
+      if (!has_P_ref && !Process::me()) mat_diag.coeff(0, 0) = 1; //revient a imposer P(0) = 0
+
+      //en PolyMAC, on doit ajouter des lignes vides a grad et des colonnes vides a div
+      int n = matrice.get_tab1().size(), i;
+      for (i = mat_grad.get_tab1().size(), mat_grad.get_set_tab1().resize(n); i < n; i++)
+        mat_grad.get_set_tab1()(i) = mat_grad.get_tab1()(i - 1);
+      mat_div.set_nb_columns(n - 1);
+
+      le_solveur_.valeur().reinit();
+      le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
+
+      //Calcul de Uk = U*_k + U'k
+      current  += Inconnues_parts[0];
+      ppart[0] += Inconnues_parts[1];
+      //current.echange_espace_virtuel();
+      Debog::verifier("Solveur_U_P::iterer_NS current",current);
+      eqn.solv_masse().corriger_solution(current, current);    //CoviMAC : mise en coherence de ve avec vf
+      eqnNS.assembleur_pression().modifier_solution(pression);
+
+      if (1)
+        {
+          divergence.calculer(current, secmem);
+          Cerr<<" apresdiv "<<mp_max_abs_vect(secmem)<<finl;;
+        }
     }
-
-  le_solveur_.valeur().reinit();
-  le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
-
-  //Calcul de Uk = U*_k + U'k
-  current  += Inconnues_parts[0];
-  pression += Inconnues_parts[1];
-  //current.echange_espace_virtuel();
-  Debog::verifier("Solveur_U_P::iterer_NS current",current);
-  eqn.solv_masse().corriger_solution(current, current);    //PolyMAC_P0 : mise en coherence de ve avec vf
-  eqnNS.assembleur_pression().modifier_solution(pression);
-
-  if (1)
+  else
     {
-      //  DoubleTrav secmem(current);
-      divergence.calculer(current, secmem);
-      Cerr<<" apresdiv "<<mp_max_abs_vect(secmem)<<finl;;
+
+      /* doit-on fixer P(elem 0) = 0 ? */
+      int has_P_ref=0;
+      const Conds_lim& cls = eqnNS.domaine_Cl_dis().les_conditions_limites();
+      for (int n_bord=0; n_bord < cls.size(); n_bord++)
+        if (sub_type(Neumann_sortie_libre,cls[n_bord].valeur())) has_P_ref=1;
+
+
+      /* ligne de masse : (div, 0) */
+      Operateur_Div_base& divergence = eqnNS.operateur_divergence().valeur();
+      Matrice_global.get_bloc(1,0).typer("Matrice_Morse");
+      Matrice_Morse& mat_div_v = ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,0).valeur());
+      if (divergence.has_interface_blocs()) /* si interface_blocs : direct */
+        {
+          Matrice_global.get_bloc(1,1).typer("Matrice_Morse");
+          Matrice_Morse& mat_div_p = ref_cast(Matrice_Morse, Matrice_global.get_bloc(1,1).valeur());
+          divergence.dimensionner_blocs({ { "vitesse", &mat_div_v } , { "pression", &mat_div_p}});
+          divergence.ajouter_blocs({ { "vitesse", &mat_div_v } , { "pression", &mat_div_p}}, residu_parts[1]);
+          if (!has_P_ref && !Process::me()) mat_div_p(0, 0) += 1; //revient a imposer P(0) = 0
+        }
+      else /* sinon : l'operateur remplit mat_div_v, on construit a la main mat_div_p = 0 */
+        {
+          divergence.dimensionner(mat_div_v);
+          divergence.contribuer_a_avec(current, mat_div_v);
+          divergence.calculer(current, residu_parts[1]);
+          Matrice_global.get_bloc(1,1).typer("Matrice_Diagonale");
+          Matrice_Diagonale& mat_div_p = ref_cast(Matrice_Diagonale,Matrice_global.get_bloc(1,1).valeur());
+          mat_div_p.dimensionner(mat_div_v.nb_lignes());
+          if (!has_P_ref && !Process::me()) mat_div_p.coeff(0, 0) += 1; //revient a imposer P(0) = 0
+        }
+      le_solveur_.valeur().reinit();
+      le_solveur_.valeur().resoudre_systeme(Matrice_global,residu,Inconnues);
+
+      //Calcul de Uk = U*_k + U'k
+      current  += Inconnues_parts[0];
+      pression += Inconnues_parts[1];
+      //current.echange_espace_virtuel();
+      Debog::verifier("Solveur_U_P::iterer_NS current",current);
+      eqn.solv_masse().corriger_solution(current, current);    //CoviMAC : mise en coherence de ve avec vf
+      eqnNS.assembleur_pression().modifier_solution(pression);
+
+      if (1)
+        {
+          //  DoubleTrav secmem(current);
+          divergence.calculer(current, secmem);
+          Cerr<<" apresdiv "<<mp_max_abs_vect(secmem)<<finl;;
+        }
     }
 }
