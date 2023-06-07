@@ -67,7 +67,7 @@ int Perte_Charge_Circulaire_PolyMAC_Face::lire_motcle_non_standard(const Motcle&
     {
       lambda.addVar("Re_tot");
       lambda.addVar("Re_long");
-      Perte_Charge_PolyMAC::lire_motcle_non_standard(mot,is);
+      return Perte_Charge_PolyMAC::lire_motcle_non_standard(mot,is);
     }
   else if (mot=="lambda_ortho")
     {
