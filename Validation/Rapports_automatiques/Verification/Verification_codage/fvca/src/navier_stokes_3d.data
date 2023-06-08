@@ -1,14 +1,10 @@
 # PARALLEL OK #
-# lance_test 8 ecarts #
 dimension 3
 Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Read_MED {
-    domain dom
-    file mesh.med
-}
+Read_MED { domain dom file mesh.med }
 # END MESH #
 
 # BEGIN PARTITION

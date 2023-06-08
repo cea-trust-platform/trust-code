@@ -4,20 +4,10 @@ Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Lire_MED {
-    domain dom
-    file mesh.med
-}
+Lire_MED { domain dom file mesh.med }
 # END MESH #
 
 # BEGIN PARTITION
-Postraiter_domaine
-{
-    fichier mesh.lata
-    format lata
-    domaine dom
-}
-
 Partition dom
 {
     partitionneur metis { Nb_parts 4 }
