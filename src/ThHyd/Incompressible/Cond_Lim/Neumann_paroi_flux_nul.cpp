@@ -21,9 +21,14 @@ Sortie& Neumann_paroi_flux_nul::printOn(Sortie& s) const { return s << que_suis_
 
 Entree& Neumann_paroi_flux_nul::readOn(Entree& s )
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Concentration"), Motcle("Fraction_massique"), Motcle("Transport_Keps"), Motcle("Transport_Keps_V2"), Motcle("Interfacial_area"),
-                                                 Motcle("Transport_Keps_Rea"), Motcle("Transport_V2"), Motcle("Diphasique_moyenne"), Motcle("Fraction_volumique"), Motcle("indetermine"), Motcle("Turbulence")
-                                               };
+  if (app_domains.size() == 0)
+    app_domains = {Motcle("Concentration"), Motcle("Fraction_massique"),
+                   Motcle("Transport_Keps"), Motcle("Transport_Keps_V2"),
+                   Motcle("Interfacial_area"), Motcle("Transport_Keps_Rea"),
+                   Motcle("Transport_V2"), Motcle("Diphasique_moyenne"),
+                   Motcle("Fraction_volumique"), Motcle("indetermine"),
+                   Motcle("Turbulence"), Motcle("Transport_Komega")
+                  };
 
   return Neumann_homogene::readOn(s) ;
 }

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -38,13 +38,14 @@ Entree& Entree_fluide_T_h_imposee::readOn(Entree& s)
   le_champ_Text.typer("Champ_front_uniforme");
   le_champ_hext.typer("Champ_front_uniforme");
   Motcle motlu;
-  Motcles les_motcles(5);
+  Motcles les_motcles(6);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
     les_motcles[2] = "K_Eps_ext";
     les_motcles[3] = "H_ext";
     les_motcles[4] = "Y_ext";
+    les_motcles[5] = "K_Omega_ext";
   }
 
   Motcle accfermee = "}";

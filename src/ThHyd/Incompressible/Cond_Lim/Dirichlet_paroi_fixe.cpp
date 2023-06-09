@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,9 +21,13 @@ Sortie& Dirichlet_paroi_fixe::printOn(Sortie& s) const { return s << que_suis_je
 
 Entree& Dirichlet_paroi_fixe::readOn(Entree& s)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Hydraulique"), Motcle("Thermique"), Motcle("Transport_Keps_V2"), Motcle("Transport_Keps_Bas_Re"),
-                                                 Motcle("Transport_Keps_Rea"), Motcle("Transport_Keps"), Motcle("Turbulence"), Motcle("indetermine")
-                                               };
+  if (app_domains.size() == 0)
+    app_domains = {Motcle("Hydraulique"), Motcle("Thermique"),
+                   Motcle("Transport_Keps_V2"), Motcle("Transport_Keps_Bas_Re"),
+                   Motcle("Transport_Keps_Rea"), Motcle("Transport_Keps"),
+                   Motcle("Turbulence"), Motcle("indetermine"),
+                   Motcle("Transport_Komega")
+                  };
 
   Dirichlet_homogene::readOn(s);
   int nb_comp = Objet_U::dimension;

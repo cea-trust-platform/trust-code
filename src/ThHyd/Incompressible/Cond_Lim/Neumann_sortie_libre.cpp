@@ -13,6 +13,7 @@
 *
 *****************************************************************************/
 
+#include <Motcle.h>
 #include <Neumann_sortie_libre.h>
 #include <Navier_Stokes_std.h>
 #include <Equation_base.h>
@@ -34,13 +35,18 @@ Sortie& Neumann_sortie_libre::printOn(Sortie& s) const { return s << que_suis_je
  */
 Entree& Neumann_sortie_libre::readOn(Entree& s)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Thermique_H"), Motcle("Transport_Keps"), Motcle("Transport_Keps_V2"), Motcle("Transport_Keps_Bas_Re"),
-                                                 Motcle("Transport_Keps_Rea"), Motcle("Concentration"), Motcle("Fraction_massique"), Motcle("Fraction_volumique"),
-                                                 Motcle("Transport_V2"), Motcle("Turbulence"), Motcle("Interfacial_area"), Motcle("indetermine")
-                                               };
+  if (app_domains.size() == 0)
+    app_domains = {Motcle("Thermique"), Motcle("Thermique_H"),
+                   Motcle("Transport_Keps"), Motcle("Transport_Keps_V2"),
+                   Motcle("Transport_Keps_Bas_Re"), Motcle("Transport_Keps_Rea"),
+                   Motcle("Concentration"), Motcle("Fraction_massique"),
+                   Motcle("Fraction_volumique"), Motcle("Transport_V2"),
+                   Motcle("Turbulence"), Motcle("Interfacial_area"),
+                   Motcle("indetermine"), Motcle("Transport_Komega")
+                  };
 
   Motcle motlu;
-  Motcles les_motcles(13);
+  Motcles les_motcles(15);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
@@ -55,7 +61,8 @@ Entree& Neumann_sortie_libre::readOn(Entree& s)
     les_motcles[10] = "tau_ext";
     les_motcles[11] = "omega_ext";
     les_motcles[12] = "k_WIT_ext";
-    les_motcles[12] = "a_i_ext";
+    les_motcles[13] = "a_i_ext";
+    les_motcles[14] = "K_Omega_ext";
   }
   s >> motlu;
   int rang = les_motcles.search(motlu);
@@ -92,7 +99,6 @@ void Neumann_sortie_libre::verifie_ch_init_nb_comp() const
         {
           const Navier_Stokes_std& eq_ns = ref_cast(Navier_Stokes_std, eq);
           eq.verifie_ch_init_nb_comp_cl(eq_ns.pression(), nb_comp, *this);
-
         }
     }
 }

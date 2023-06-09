@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,19 +34,24 @@ Sortie& Sortie_libre_Text_H_ext::printOn(Sortie& s) const { return s << que_suis
  */
 Entree& Sortie_libre_Text_H_ext::readOn(Entree& s)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Transport_Keps"), Motcle("Thermique"), Motcle("Concentration"), Motcle("indetermine") };
+  if (app_domains.size() == 0)
+    app_domains = {Motcle("Transport_Keps"), Motcle("Transport_Komega"),
+                   Motcle("Thermique"), Motcle("Concentration"),
+                   Motcle("indetermine")
+                  };
 
   le_champ_front.typer("Champ_front_uniforme");
   le_champ_Text.typer("Champ_front_uniforme");
   le_champ_hext.typer("Champ_front_uniforme");
   Motcle motlu;
-  Motcles les_motcles(5);
+  Motcles les_motcles(6);
   {
     les_motcles[0] = "T_ext";
     les_motcles[1] = "C_ext";
     les_motcles[2] = "K_Eps_ext";
     les_motcles[3] = "H_ext";
     les_motcles[4] = "Y_ext";
+    les_motcles[5] = "K_Omega_ext";
   }
 
   Motcle accfermee = "}";
