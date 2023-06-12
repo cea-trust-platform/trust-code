@@ -28,8 +28,6 @@ public:
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
                          const Nom& sous_type = NOM_VIDE) const override;
 
-  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const override;
-
   void residu(const Domaine_dis& z, const Champ_Inc& ch_inco, Champ_Fonc& champ) const override;
 
   void y_plus(const Domaine_dis& z, const Domaine_Cl_dis&, const Champ_Inc& vitesse, Champ_Fonc& ch) const override;

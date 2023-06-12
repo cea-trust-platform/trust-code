@@ -851,10 +851,11 @@ void Domaine_VF::init_dist_paroi_globale(const Conds_lim& conds_lim) // Methode 
 
         for (int f=num_face_1_cl ; f < nb_faces_cl+num_face_1_cl ; f++)
           {
-            const int ind = face_voisins(f, 0) > -1 ? face_voisins(f, 0) : face_voisins(f, 1);
-            if ( dist_face_elem0(f, ind) < y_elem_(ind) ) // Prise en compte du cas ou l'element a plusieurs faces de bord
+            const int ind = (face_voisins(f,0)>=0) ? face_voisins(f,0) : face_voisins(f,1) ;
+            const double dist_ef_loc = (face_voisins(f,0)>=0) ? dist_face_elem0(f, face_voisins(f,0)) : dist_face_elem1(f, face_voisins(f,1));
+            if ( dist_ef_loc < y_elem_(ind) ) // Prise en compte du cas ou l'element a plusieurs faces de bord
               {
-                y_elem_(ind) = dist_face_elem0(f, ind) ;
+                y_elem_(ind) = dist_ef_loc ;
                 for (int d = 0 ; d < D ; d++)
                   n_y_elem_(ind, d) = -face_normales(f,  d)/face_surfaces(f);
               }

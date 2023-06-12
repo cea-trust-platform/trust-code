@@ -241,15 +241,6 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(const Motcle& dir
     }
 }
 
-void PolyMAC_P0P1NC_discretisation::distance_paroi_globale(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
-{
-  Cerr << "Discretisation de distance paroi globale" << finl;
-  Noms noms(1), unites(1);
-  noms[0] = Nom("distance_paroi_globale");
-  unites[0] = Nom("m");
-  discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms, unites, 1, 0, ch);
-}
-
 void PolyMAC_P0P1NC_discretisation::y_plus(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de y plus" << finl; // Utilise comme modele distance paroi globale

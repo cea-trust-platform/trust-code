@@ -105,6 +105,9 @@ public:
   inline int numero_premier_sommet() const;
   inline int numero_premiere_arete() const;
 
+  inline double dist_face_elem0(int num_face,int n0) const override;
+  inline double dist_face_elem1(int num_face,int n1) const override;
+
 private:
   double h_carre = 1.e30;                         // carre du pas du maillage
   DoubleVect h_carre_;                        // carre du pas d'une maille
@@ -167,4 +170,13 @@ inline int Domaine_VEF::numero_premiere_arete() const
     return nb_elem_tot() + nb_som_tot();
 }
 
-#endif /* Domaine_VEF_included */
+inline double Domaine_VEF::dist_face_elem0(int f,int e) const
+{
+  return std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+}
+
+inline double Domaine_VEF::dist_face_elem1(int f,int e) const
+{
+  return std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0))) / face_surfaces(f);
+}
+#endif

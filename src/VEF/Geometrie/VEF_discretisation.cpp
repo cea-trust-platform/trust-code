@@ -516,6 +516,15 @@ void VEF_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_di
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
+void VEF_discretisation::distance_paroi_globale(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
+{
+  Cerr << "Discretisation de distance paroi globale" << finl;
+  Noms noms(1), unites(1);
+  noms[0] = Nom("distance_paroi_globale");
+  unites[0] = Nom("m");
+  discretiser_champ(Motcle("champ_elem"), z.valeur(), scalaire, noms , unites, 1, 0, ch);
+}
+
 void VEF_discretisation::vorticite(Domaine_dis& z, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de la vorticite " << finl;

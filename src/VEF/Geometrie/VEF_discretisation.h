@@ -48,6 +48,7 @@ public :
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Don& champ) const override;
   void domaine_Cl_dis(Domaine_dis& z, Domaine_Cl_dis& zcl) const override;
   void distance_paroi(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
+  void distance_paroi_globale(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const override; // Distance paroi definie sur tout le domaine
   void proprietes_physiques_fluide_Ostwald(const Domaine_dis&, Fluide_Ostwald&, const Navier_Stokes_std&, const Champ_Inc&) const override;
 
   void vorticite(Domaine_dis&, const Champ_Inc&, Champ_Fonc&) const;
