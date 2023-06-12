@@ -31,6 +31,7 @@ define_modules_config()
       then
          #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # Champ_P1NC.cpp ne compile pas car nvhpc trop recent
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.5 nvhpc/22.1" # Cuda 11.5 donc c-amg ne marchera pas en multi-gpu, tant pis
+         module="gnu/8.3.0 mpi/openmpi/4.0.5 nvhpc/21.3 cuda/11.2" # Cuda 11.2 mais c-amg ne marche toujours pas en multi-gpu. Pourquoi ?
          echo "export NVHPC_CUDA_HOME=\$CUDA_HOME;unset CUDA_HOME" >> $env # Pour desactiver des warnings a la compilation
       else
          #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
