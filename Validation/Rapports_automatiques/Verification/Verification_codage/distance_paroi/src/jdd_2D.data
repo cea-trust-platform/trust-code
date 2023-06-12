@@ -52,7 +52,7 @@ mailler dom
         Bord Nord_sym 		X = 1   1  <= Y <= 2
     }
 }
-
+$maillage
 # END MESH #
 
 
@@ -72,58 +72,39 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-
-PolyMAC_P0  dis
-option_PolyMAC_P0 {  }
+$schema
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
     dt_start dt_fixe 1e-3
-    nb_pas_dt_max 1
-    solveur ice
+    nb_pas_dt_max 0
+    solveur implicite
     {
-        criteres_convergence { alpha 1e-5 pression 1e8 vitesse 1e8 temperature 1e8 }
-        iter_min 1
         solveur petsc cli { }
-        seuil_convergence_implicite 1e30
     }
 }
 
-pb_Multiphase pb
+Pb_hydraulique pb
 Associate  pb dom
 Associate  pb sch
 Discretize pb dis
 
 Read pb
 {
-    Milieu_composite
-    {
-        liquide_eau Fluide_Incompressible /* 20 degrees */
-        {
-            mu champ_uniforme      1 1.002e-3
-            rho champ_uniforme     1 998.30
-            lambda Champ_Uniforme  1 0.604
-            Cp Champ_Uniforme      1 75.366
-            beta_th Champ_Uniforme 1 0
-        }
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 2
     }
 
-    correlations
+    Navier_Stokes_standard
     {
-    }
-    QDM_Multiphase
-    {
-        evanescence { homogene { alpha_res 1 alpha_res_min 0.5 } }
-        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
-        convection { amont }
-        diffusion  { }
-        initial_conditions
-        {
-            vitesse  Champ_Fonc_xyz dom 2 0 0
-            pression Champ_Fonc_xyz dom 1 1e5
-        }
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion  { negligeable }
+        sources    { }
+        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
         boundary_conditions
         {
             Est       paroi_fixe
@@ -135,41 +116,7 @@ Read pb
             Nord_sym  symetrie
         }
     }
-    Masse_Multiphase
-    {
-        initial_conditions { alpha Champ_Fonc_xyz dom 1 1 }
-        convection { amont }
-        boundary_conditions
-        {
-            Est       paroi
-            Sud       paroi
-            Ouest     paroi
-            Nord      paroi
-            Est_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-            Sud_ext   frontiere_ouverte a_ext Champ_Front_Uniforme 1 1
-            Nord_sym  paroi
-        }
-        sources { }
-    }
-    Energie_Multiphase
-    {
-        diffusion { }
-        convection { amont }
-        initial_conditions { temperature Champ_Uniforme 1 0 }
-        boundary_conditions
-        {
-            Est       paroi_adiabatique
-            Sud       paroi_adiabatique
-            Ouest     paroi_adiabatique
-            Nord      paroi_adiabatique
-            Est_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-            Sud_ext   frontiere_ouverte T_ext Champ_Front_Uniforme 1 0
-            Nord_sym  paroi_adiabatique
-        }
-        sources
-        {
-        }
-    }
+
     Post_processing
     {
         probes
