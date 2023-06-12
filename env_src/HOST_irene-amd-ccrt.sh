@@ -29,12 +29,7 @@ define_modules_config()
    then
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
-         # No tested yet, we use Intel compiler for lib/tools:
-         export TRUST_CC_BASE_EXTP=icpc
-         export TRUST_cc_BASE_EXTP=icc
-         export TRUST_F77_BASE_EXTP=ifort
-         module="mpi/openmpi/4.0.2 cuda/11.2 nvhpc/21.2" # Marche au configure mais apres ?
-         #module="gnu/11.2.0 mpi/openmpi/4.1.4 nvhpc/22.2" # Pb c'est Cuda 11.6...
+         module="gnu/8.3.0 mpi/openmpi/4.0.5 nvhpc/21.3" # TRUST 1.9.2. Cuda 11.2 mais c-amg crash (sur topaze aussi...)
       else
          #module="gnu/8.3.0 mpi/openmpi/4.0.2 cuda/10.2.89" # Ok, it works
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.6" # Ok, it works
