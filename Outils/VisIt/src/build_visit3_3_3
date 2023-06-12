@@ -11330,6 +11330,10 @@ function build_mesagl
     cd $MESAGL_BUILD_DIR || error "Couldn't cd to mesagl build dir."
 
     info "Patching MesaGL"
+    echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    echo "patching src/gallium/auxiliary/util/u_debug_symbol.c"
+    sed -i "s/struct util_hash_table/static struct util_hash_table/" src/gallium/auxiliary/util/u_debug_symbol.c
+    echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     apply_mesagl_patch
     if [[ $? != 0 ]] ; then
         if [[ $untarred_mesagl == 1 ]] ; then
@@ -18209,10 +18213,12 @@ function apply_qt_patch
         fi
     elif [[ ${QT_VERSION} == 5.14.2 ]] ; then
         apply_qt_5142_numeric_limits_patch
+        echo "skipped, patch KO on irene"
         if [[ $? != 0 ]] ; then
             return 1
         fi
         apply_qt_5142_cmath_patch
+        echo "skipped, patch KO on irene"
         if [[ $? != 0 ]] ; then
             return 1
         fi
