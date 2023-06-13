@@ -16,6 +16,7 @@
 #ifndef IJK_Field_template_included
 #define IJK_Field_template_included
 
+
 #include <IJK_Field_local_template.h>
 #include <communications.h>
 #include <IJK_Splitting.h>
@@ -58,15 +59,23 @@ public:
     IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>(),
     localisation_(IJK_Splitting::Localisation::ELEM)
   { }
-  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false);
+  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, bool monofluide=false);
 
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
+
+  const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& get_projection_liquide() const {return projection_liquide_ ;}
+  const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& get_projection_vapeur() const {return projection_vapeur_ ;}
   IJK_Splitting::Localisation get_localisation() const { return localisation_; }
   void echange_espace_virtuel(int ghost, double Shear_DU=0.);
   void change_to_sheared_reference_frame(double sens, int loc, int time=1);
   void change_to_u_prime_to_u(double sens, int loc, double jump_i);
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
-
+  void update_monofluide_to_phase_value();
+  void update_indicatrice(const IJK_Field_double & indic);
+  bool monofluide_variable_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_liquide_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_vapeur_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ ;
 
 protected:
   REF(IJK_Splitting) splitting_ref_;
