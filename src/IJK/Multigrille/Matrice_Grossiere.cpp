@@ -190,20 +190,20 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
           // Element reel
           if (indice_voisin_m2 != -1)
             {
-              std::cout << "ici" << std::endl;
-              std::cout << "indice_voisin = " << indice_voisin << std::endl;
-              std::cout << "indice_voisin_m2 = " << indice_voisin_m2 << std::endl;
-              std::cout << "indice_voisin_m1 = " << indice_voisin_m1 << std::endl;
-              std::cout << "indice_voisin_p1 = " << indice_voisin_p1 << std::endl;
-              std::cout << "indice_voisin_p2 = " << indice_voisin_p2 << std::endl;
-              std::cout << "x*ponderation_voisin_0 = " << x*ponderation_voisin_0 << std::endl;
-              std::cout << "x*ponderation_voisin_m2 = " << x*ponderation_voisin_m2 << std::endl;
-              std::cout << "x*ponderation_voisin_m1 = " << x*ponderation_voisin_m1 << std::endl;
-              std::cout << "x*ponderation_voisin_p1 = " << x*ponderation_voisin_p1 << std::endl;
-              std::cout << "x*ponderation_voisin_p2 = " << x*ponderation_voisin_p2 << std::endl;
+//              std::cout << "ici" << std::endl;
+//              std::cout << "indice_voisin = " << indice_voisin << std::endl;
+//              std::cout << "indice_voisin_m2 = " << indice_voisin_m2 << std::endl;
+//              std::cout << "indice_voisin_m1 = " << indice_voisin_m1 << std::endl;
+//              std::cout << "indice_voisin_p1 = " << indice_voisin_p1 << std::endl;
+//              std::cout << "indice_voisin_p2 = " << indice_voisin_p2 << std::endl;
+//              std::cout << "x*ponderation_voisin_0 = " << x*ponderation_voisin_0 << std::endl;
+//              std::cout << "x*ponderation_voisin_m2 = " << x*ponderation_voisin_m2 << std::endl;
+//              std::cout << "x*ponderation_voisin_m1 = " << x*ponderation_voisin_m1 << std::endl;
+//              std::cout << "x*ponderation_voisin_p1 = " << x*ponderation_voisin_p1 << std::endl;
+//              std::cout << "x*ponderation_voisin_p2 = " << x*ponderation_voisin_p2 << std::endl;
 
 
-              std::cout << "ici" << std::endl;
+//              std::cout << "ici" << std::endl;
               // cas shear perio avec potentiellement plusieurs voisins, et interpolation avec somme des ponderation egale a 1
               voisins_[indice].add(indice_voisin);
               voisins_[indice].add(indice_voisin_m2);

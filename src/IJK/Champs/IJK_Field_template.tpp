@@ -55,6 +55,38 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
                   //4-th order interpolation
 
+
+            	  if (monofluide_variable_)
+            	  {
+            	// interpoler p_l
+                // interpoler p_v
+                // reconstruire la pression monofluide
+				  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
+				  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
+
+				  _TYPE_ y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)
+								};
+
+
+				  _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+				  _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+				  _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+				  _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+				  _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+
+				  buf+=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+					   + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+					   + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+					   + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+					   + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+            	  }
+            	  else
+            	  {
+
                   _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
                   _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
 
@@ -77,6 +109,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                        + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
                        + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
                        + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+            	  }
                 }
               else
                 {
@@ -567,6 +600,9 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_monofluide_to_phase_value(
 //	std::cout << " entree dans update_monofluide " << std::endl;
 // remplissage des variable p_v et p_l avec les valeurs connues; -1.e-5 dans les cases à interpoler
 // Fast Inverse Distance Weighting (IDW) Interpolation
+// cette methode n'est pas bonne. Il faut reconstruire les pression plus proprement, en prenant en compte la loi de Laplace a linterface etc.
+// --> Reprendre les travaux d'Anamissia.
+// Methode codee uniquement pour lexemple et la structure informatique... Voir si ca peut marcher.
 	  if (monofluide_variable_)
 	  {
   const IJK_Splitting& splitting_ = splitting_ref_.valeur();
@@ -577,162 +613,140 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_monofluide_to_phase_value(
   const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
   _TYPE_ beta = 20.;
-  bool option_conserv_p_monofluide = true;
+  bool option_conserv_p_monofluide = false;
+  Vecteur3 xyz_cible(0.,0.,0.) ;
+  int taille_boite_interpol = 6;
 
-// beta est la distance power qui determine a quel point les valeurs les plus proches sont importantes
-// vis-a-vis des valeurs les plus eloignees --> a changer en voyant comment reconstruire au mieux les variables monofluides
-// beta = 20 --> en gros ça copie la valeur la plus proche...
-  for (int k = 0; k < nk; k++)
-    {
-      for (int j = 0; j < nj; j++)
-        {
-          for (int i = 0; i < ni; i++)
-            {
+  for (int kcible = 0; kcible < nk; kcible++)
+	{
+	  for (int jcible = 0; jcible < nj; jcible++)
+		{
+		  for (int icible = 0; icible < ni; icible++)
+			{
+		      _TYPE_ num_l = 0.;
+		      _TYPE_ denum_l = 0.;
+		      _TYPE_ num_v = 0.;
+		      _TYPE_ denum_v = 0.;
+			xyz_cible = splitting_.get_coords_of_dof(icible,jcible,kcible,IJK_Splitting::ELEM);
 
-              if(indicatrice_(i,j,k)==1.)
-                {
-            	  projection_liquide_(i,j,k) = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k) ;
-            	  projection_vapeur_(i,j,k) = 0.;
-                }
-              else if (indicatrice_(i,j,k)==0.)
-                {
-            	  projection_vapeur_(i,j,k) = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(i, j, k) ;
-                  projection_liquide_(i,j,k) = 0.;
-                }
-              else // on ne sinteresse aux valeurs par phase que dans les mailles diphasiques
-                {
-            	  projection_vapeur_(i,j,k) = -1.e5;
-                  projection_liquide_(i,j,k) = -1.e5;
-                }
-            }
-        }
-    }
+			// on parcours ensuite une boite de taille_boite_interpol^3 autour de la cible pour interpoler a partir de ces valeurs les plus proches
+		      for (int kk = kcible-taille_boite_interpol; kk < kcible+taille_boite_interpol; kk++)
+		        {
+		          for (int jj = jcible-taille_boite_interpol; jj < jcible+taille_boite_interpol; jj++)
+		            {
+		              for (int ii = icible-taille_boite_interpol; ii < icible+taille_boite_interpol; ii++)
+		                {
 
-  Vecteur3 xyz_interpolate(0.,0.,0.) ;
-  int icible = 0;
-  int jcible =0;
-  int kcible =0;
+		            	  int itable = ii ;
+		            	  int jtable = jj ;
+		            	  int ktable = kk ;
 
-  bool finish = false;
+		                  if(splitting_.get_grid_geometry().get_periodic_flag(0))
+		                    {
+		            	    itable = (itable % ni + ni) % ni ;
+		                    }
+		                  if(splitting_.get_grid_geometry().get_periodic_flag(1))
+		                    {
+		            	    jtable = (jtable % nj + nj) % nj ;
+		                    }
+		                  if(splitting_.get_grid_geometry().get_periodic_flag(2))
+		                    {
+		            	    ktable = (ktable % nk + nk) % nk ;
+		                    }
 
-  while(finish == false)
-    {
+		                  if (itable<0 || itable>ni || jtable<0 || jtable>nj || ktable<0 || ktable>nk)
+		                  {
+		                	 continue;
+		                  }
 
-      bool cible =false;
-      for (int k = 0; k < nk; k++)
-        {
-          for (int j = 0; j < nj; j++)
-            {
-              for (int i = 0; i < ni; i++)
-                {
-                  if(projection_liquide_(i,j,k) == -1.e5) // on ne sinteresse aux valeurs par phase que dans les mailles diphasiques
-                    {
-                	  xyz_interpolate = splitting_.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
-                      icible = i ;
-                      jcible = j ;
-                      kcible = k ;
-                      cible = true;
-                    }
-                  if (cible)
-                    break;
-                }
-              if (cible)
-                break;
-            }
-          if (cible)
-            break;
-        }
+		            	  Vecteur3 xyz_reel = splitting_.get_coords_of_dof(itable,jtable,ktable,IJK_Splitting::ELEM);
+		                  _TYPE_ dx = (_TYPE_) (xyz_reel[0]-xyz_cible[0]);
+		                  _TYPE_ dy = (_TYPE_) (xyz_reel[1]-xyz_cible[1]);
+		                  _TYPE_ dz = (_TYPE_) (xyz_reel[2]-xyz_cible[2]);
 
-      if (!cible)
-      {
-        finish = true;
-        //std::cout << "on a fini les interpolations --> sortie " << std::endl;
-        return;
-      }
+		                  if(splitting_.get_grid_geometry().get_periodic_flag(0))
+		                    {
+		                      if(dx > Lx / 2.)
+		                        {
+		                          dx = dx - Lx;
+		                        }
+		                      if (dx < - Lx / 2.)
+		                        {
+		                          dx = dx + Lx;
+		                        }
+		                    }
+		                  if(splitting_.get_grid_geometry().get_periodic_flag(1))
+		                    {
+		                      if(dy > Ly / 2.)
+		                        {
+		                          dy = dy - Ly;
+		                        }
+		                      if (dy < - Ly / 2.)
+		                        {
+		                          dy = dy + Ly;
+		                        }
+		                    }
+		                  if(splitting_.get_grid_geometry().get_periodic_flag(2))
+		                    {
+		                      if(dz > Lz / 2.)
+		                        {
+		                          dz = dz - Lz;
+		                        }
+		                      if (dz < - Lz / 2.)
+		                        {
+		                          dz = dz + Lz;
+		                        }
+		                    }
 
 
+		                  if (indicatrice_(itable,jtable,ktable)==1. && dx*dx+dy*dy+dz*dz != 0.)
+		                    {
+		                      num_l += IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(itable, jtable, ktable)/(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
+		                      denum_l += (_TYPE_) 1./(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
+		                    }
+		                  else if (indicatrice_(itable,jtable,ktable)==0. && dx*dx+dy*dy+dz*dz != 0.)
+		                    {
+		                      num_v += IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(itable, jtable, ktable)/(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
+		                      denum_v += (_TYPE_) 1./(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
+		                    }
 
-      _TYPE_ num_l = 0.;
-      _TYPE_ denum_l = 0.;
-      _TYPE_ num_v = 0.;
-      _TYPE_ denum_v = 0.;
-      for (int kk = 0; kk < nk; kk++)
-        {
-          for (int jj = 0; jj < nj; jj++)
-            {
-              for (int ii = 0; ii < ni; ii++)
-                {
-
-                  Vecteur3 xyz_reel = splitting_.get_coords_of_dof(ii,jj,kk,IJK_Splitting::ELEM);
-                  // dx compris entre -Lx et +Lx
-                  // en perio, on veut un resultat entre -Lx/2 et Lx/2
-                  _TYPE_ dx = (_TYPE_) (xyz_reel[0]-xyz_interpolate[0]);
-                  _TYPE_ dy = (_TYPE_) (xyz_reel[1]-xyz_interpolate[1]);
-                  _TYPE_ dz = (_TYPE_) (xyz_reel[2]-xyz_interpolate[2]);
-
-                  if(splitting_.get_grid_geometry().get_periodic_flag(0))
-                    {
-                      if(dx > Lx / 2.)
-                        {
-                          dx = dx - Lx;
-                        }
-                      if (dx < - Lx / 2.)
-                        {
-                          dx = dx + Lx;
-                        }
-                    }
-                  if(splitting_.get_grid_geometry().get_periodic_flag(1))
-                    {
-                      if(dy > Ly / 2.)
-                        {
-                          dy = dy - Ly;
-                        }
-                      if (dy < - Ly / 2.)
-                        {
-                          dy = dy + Ly;
-                        }
-                    }
-                  if(splitting_.get_grid_geometry().get_periodic_flag(2))
-                    {
-                      if(dz > Lz / 2.)
-                        {
-                          dz = dz - Lz;
-                        }
-                      if (dz < - Lz / 2.)
-                        {
-                          dz = dz + Lz;
-                        }
-                    }
-
-                  if (indicatrice_(ii,jj,kk)==1.)
-                    {
-                      num_l += projection_liquide_(ii,jj,kk)/(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
-                      denum_l += (_TYPE_) 1./(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
-                    }
-                  else if (indicatrice_(ii,jj,kk)==0.)
-                    {
-//                	  std::cout << " " << std::endl;
-//                	  std::cout << dx << xyz_reel[0] << xyz_interpolate[0] << std::endl;
-//                	  std::cout << dy << xyz_reel[1] << xyz_interpolate[1] << std::endl;
-//                	  std::cout << dz << xyz_reel[2] << xyz_interpolate[2] << std::endl;
-//                	  std::cout << beta << std::endl;
-//                	  std::cout << std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta) << std::endl;
-//                	  std::cout << projection_vapeur_(ii,jj,kk) << std::endl;
-                      num_v += projection_vapeur_(ii,jj,kk)/(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
-                      denum_v += (_TYPE_) 1./(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
-                    }
-                }
-            }
-        }
-      projection_liquide_(icible,jcible,kcible) = num_l/denum_l ;
-      projection_vapeur_(icible,jcible,kcible) = num_v/denum_v ;
-      if (option_conserv_p_monofluide)
-        {
-          // on interpole la pression vapeur qui est moins variable en proche interface (interpolation plus safe, et on deduit p_l a partir de la valeur monofluide)
-    	  projection_liquide_(icible,jcible,kcible) = (IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(icible,jcible,kcible) - (_TYPE_)(1.-indicatrice_(icible,jcible,kcible))*(_TYPE_)projection_vapeur_(icible,jcible,kcible))/(_TYPE_)indicatrice_(icible,jcible,kcible) ;
-        }
-
-    }
+		                }
+		            }
+		        }
+		      if (indicatrice_(icible,jcible,kcible)==1.)
+		      {
+	      		  projection_liquide_(icible,jcible,kcible) = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(icible, jcible, kcible) ;
+	      		  projection_vapeur_(icible,jcible,kcible) = num_v/denum_v ;
+		      }
+		      else if (indicatrice_(icible,jcible,kcible)==0.)
+		      {
+	      		  projection_liquide_(icible,jcible,kcible) = num_l/denum_l ;
+	      		  projection_vapeur_(icible,jcible,kcible) = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(icible, jcible, kcible) ;
+		      }
+		      else
+		      {
+	      		  projection_liquide_(icible,jcible,kcible) = num_l/denum_l ;
+	      		  projection_vapeur_(icible,jcible,kcible) = num_v/denum_v ;
+		      }
+		      if (option_conserv_p_monofluide)
+		        {
+		          // on interpole la pression vapeur qui est moins variable en proche interface (interpolation plus safe, et on deduit p_l a partir de la valeur monofluide)
+		    	  // on fait l inverse uniquement pour les toutes petites valeur de l indicatrice (<10%), sinon divergence de la valeur p_l
+		    	  _TYPE_ Il = indicatrice_(icible,jcible,kcible);
+		    	  _TYPE_ Iv =(_TYPE_)1. - Il;
+		    	  _TYPE_ P = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(icible,jcible,kcible);
+		    	  if (Il > 0.5)
+		    	  {
+		    	  projection_liquide_(icible,jcible,kcible) = (P - Iv*num_v/denum_v)/Il ;
+		    	  }
+		    	  else
+		    	  {
+		    	  projection_vapeur_(icible,jcible,kcible) = (P - Il*num_l/denum_l)/Iv ;
+		    	  }
+		        }
+			}
+		}
+	}
 	  }
 	  else
 	  {
