@@ -124,11 +124,9 @@ public:
   // L'implementation par defaut dans Operateur_base.cpp ne fait rien
   virtual void preparer_calcul(void);
   int col_width_; // minimal size of a column for .out files (based on cl name length)
-
-  const int& number_unknow_operators() const { return NUMBER_UNKNOW_OPERATORS; }
+  bool has_impr_file() const { return out_ != "??"; }
 
 protected:
-  static int NUMBER_UNKNOW_OPERATORS;
   int decal_temps;
   int nb_ss_pas_de_temps;
   SolveurSys solveur;

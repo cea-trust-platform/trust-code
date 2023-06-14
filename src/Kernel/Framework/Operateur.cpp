@@ -205,8 +205,7 @@ int  Operateur::limpr() const
  */
 void  Operateur::imprimer(Sortie& os) const
 {
-  if(limpr() && l_op_base().number_unknow_operators() < 2 )
-    l_op_base().impr(os);
+  if(limpr()) l_op_base().impr(os);
 }
 
 
@@ -217,7 +216,8 @@ void  Operateur::imprimer(Sortie& os) const
  */
 int Operateur::impr(Sortie& os) const
 {
-  return l_op_base().number_unknow_operators() < 2 ? l_op_base().impr(os) : 1;
+  if (l_op_base().has_impr_file()) return l_op_base().impr(os);
+  return 1;
 }
 
 /*! @brief Calcule et ajoute la contribution de l'operateur au second membre de l'equation.

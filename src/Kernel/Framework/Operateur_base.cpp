@@ -279,18 +279,17 @@ void Operateur_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base&)
   exit();
 }
 
-int Operateur_base::NUMBER_UNKNOW_OPERATORS = 0;
-
 void Operateur_base::set_fichier(const Nom& nom)
 {
+  if (nom == "")
+    {
+      Cerr << "You provided an empty string to name the .out file of operator " << que_suis_je() << " in equation " << equation().que_suis_je() << "." << finl;
+      Cerr << "If you don't want to write a .out file for this operator, don't call set_fichier()" << finl;
+      Process::exit();
+    }
   out_=Objet_U::nom_du_cas();
   out_+="_";
   out_+=equation().probleme().le_nom()+"_"+nom;
-  if (nom=="")
-    {
-      out_+="unknown_operator";
-      NUMBER_UNKNOW_OPERATORS++;
-    }
 }
 
 /*! @brief Ouverture/creation d'un fichier d'impression d'un operateur A surcharger dans les classes derivees.
