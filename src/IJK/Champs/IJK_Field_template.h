@@ -71,7 +71,7 @@ public:
   void change_to_u_prime_to_u(double sens, int loc, double jump_i);
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
   void update_monofluide_to_phase_value();
-  void update_indicatrice(const IJK_Field_double & indic);
+  void update_indicatrice(const IJK_Field_double & indic, const int ft_extension);
   bool monofluide_variable_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_liquide_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_vapeur_ ;

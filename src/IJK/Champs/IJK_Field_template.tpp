@@ -42,6 +42,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
               int send_j = j + js ;
               int send_k = k + ks ;
 
+              int recevd_i = i + ir;
+              int recevd_j = j + jr;
+              int recevd_k = k + kr;
+
               _TYPE_ buf = (_TYPE_) jump_i;
               if (offset !=0.)
                 {
@@ -56,33 +60,78 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                   //4-th order interpolation
 
 
-            	  if (monofluide_variable_)
+            	  if (monofluide_variable_ )
             	  {
             	// interpoler p_l
                 // interpoler p_v
-                // reconstruire la pression monofluide
+                // reconstruire la pression monofluide avec l'indicatrice de la position de reception
+            	// faut-il interpoler I aussi, ou utiliser la valeur exacte recalculee --> si oui comment ?
 				  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
 				  _TYPE_ istmp = (_TYPE_)((double) i + (double) is +  offset);
 
-				  _TYPE_ y[5] = {IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
-								 IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)
-								};
+				  _TYPE_ y_L[5] = {(_TYPE_)projection_liquide_(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_liquide_(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_liquide_(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_liquide_(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_liquide_(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)};
+
+				  _TYPE_ y_V[5] = {(_TYPE_)projection_vapeur_(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_vapeur_(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_vapeur_(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_vapeur_(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+						  (_TYPE_)projection_vapeur_(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)};
 
 
-				  _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
-				  _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
-				  _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
-				  _TYPE_ a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
-				  _TYPE_ a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+//				  _TYPE_ y_I[5] = {(_TYPE_)indicatrice_(((send_i-2) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+//						  (_TYPE_)indicatrice_(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+//						  (_TYPE_)indicatrice_(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+//						  (_TYPE_)indicatrice_(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k),
+//						  (_TYPE_)indicatrice_(((send_i+2) % real_size_i + real_size_i) % real_size_i, send_j, send_k)};
 
-				  buf+=a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-					   + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-					   + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
-					   + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
-					   + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+				  // Il vaudrait mieux utiliser indicatrice_(recevd_i , recevd_j , recevd_k) qui serait calculee exactement
+				  // plutot que d'interpoler l'indicatrice
+
+				  _TYPE_ a0_L = y_L[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+				  _TYPE_ a1_L = y_L[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+				  _TYPE_ a2_L = y_L[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+				  _TYPE_ a3_L = y_L[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+				  _TYPE_ a4_L = y_L[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+
+				  _TYPE_ a0_V = y_V[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+				  _TYPE_ a1_V = y_V[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+				  _TYPE_ a2_V = y_V[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+				  _TYPE_ a3_V = y_V[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+				  _TYPE_ a4_V = y_V[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+
+//				  _TYPE_ a0_I = y_I[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
+//				  _TYPE_ a1_I = y_I[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
+//				  _TYPE_ a2_I = y_I[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
+//				  _TYPE_ a3_I = y_I[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
+//				  _TYPE_ a4_I = y_I[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
+
+				  _TYPE_ buf_V =(a0_V * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+						   + a1_V * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+						   + a2_V * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+						   + a3_V * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+						   + a4_V * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3])));
+
+				  _TYPE_ buf_L =(a0_L * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+						   + a1_L * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+						   + a2_L * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+						   + a3_L * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+						   + a4_L * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3])));
+
+//				  _TYPE_ buf_I =(a0_I * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+//						   + a1_I * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+//						   + a2_I * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
+//						   + a3_I * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+//						   + a4_I * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3])));
+
+				  _TYPE_ buf_I =(_TYPE_)indicatrice_(recevd_i , recevd_j , recevd_k);
+
+				  buf+= buf_V *((_TYPE_)1.-buf_I)
+					  + buf_L * buf_I;
+
             	  }
             	  else
             	  {
@@ -117,9 +166,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                 }
 
               // indices dans lespace du tableau echange (recoi)
-              int recevd_i = i + ir;
-              int recevd_j = j + jr;
-              int recevd_k = k + kr;
+
 
 
               dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k)] = buf;
@@ -570,20 +617,24 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::redistribute_with_shear_domain_ft
 }
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_indicatrice(const IJK_Field_double & indic)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_indicatrice(const IJK_Field_double & indic_ft, const int ft_extension)
 {
+	  // besoin d'indic_ft pour remplir les valeurs exactes de l'indicatrice dans les mailles ghost
+	  // on veut se servir de la valeur exacte pour interpoler au mieux les grandeurs monofluides
 	  if (monofluide_variable_)
 	  {
+	  int ghost = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ghost();
 	  const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
 	  const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
 	  const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-	  for (int k = 0; k < nk; k++)
+
+	  for (int k = -ghost; k < nk+ghost; k++)
 	    {
-	      for (int j = 0; j < nj; j++)
+	      for (int j = -ghost; j < nj+ghost; j++)
 	        {
-	          for (int i = 0; i < ni; i++)
+	          for (int i = -ghost; i < ni+ghost; i++)
 	            {
-	        	  indicatrice_(i,j,k) = indic(i,j,k);
+	        	  indicatrice_(i,j,k) = indic_ft(i+ft_extension,j+ft_extension,k+ft_extension);
 	            }
 	        }
 	    }
