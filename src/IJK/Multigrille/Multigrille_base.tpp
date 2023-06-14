@@ -38,11 +38,14 @@ void Multigrille_base::resoudre_systeme_IJK_template(const IJK_Field_template<_T
 {
   IJK_Field_template<_TYPE_FUNC_,TRUSTArray<_TYPE_FUNC_>>& ijk_b =  get_storage_template<_TYPE_FUNC_>(STORAGE_RHS, 0);
   IJK_Field_template<_TYPE_FUNC_,TRUSTArray<_TYPE_FUNC_>>& ijk_x =  get_storage_template<_TYPE_FUNC_>(STORAGE_X, 0);
+  // initialisation du storage
   ijk_x.shift_k_origin(needed_kshift_for_jacobi(0) - ijk_x.k_shift());
   int i, j, k;
   const int imax = x.ni();
   const int jmax = x.nj();
   const int kmax = x.nk();
+
+  // rempli ijk_b avec rhs
   for (k = 0; k < kmax; k++)
     for (j = 0; j < jmax; j++)
       for (i = 0; i < imax; i++)
@@ -52,12 +55,16 @@ void Multigrille_base::resoudre_systeme_IJK_template(const IJK_Field_template<_T
 
   solve_ijk_in_storage_template<_TYPE_FUNC_>();
 
+
+// solve le resultat ijk_x dans x (vecteur pression)
   for (k = 0; k < kmax; k++)
     for (j = 0; j < jmax; j++)
       for (i = 0; i < imax; i++)
         {
           x(i,j,k) = (_TYPE_)ijk_x(i,j,k);
         }
+
+
 }
 
 

@@ -195,6 +195,7 @@ void Multigrille_base::solve_ijk_in_storage_template<float>()
   IJK_Field_float& ijk_x = get_storage_float(STORAGE_X, 0);
   IJK_Field_float& ijk_residu = get_storage_float(STORAGE_RESIDUE, 0);
 
+
   prepare_secmem(ijk_b);
   ijk_b.echange_espace_virtuel(ijk_b.ghost());
 
@@ -214,7 +215,10 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
   IJK_Field_double& ijk_b = get_storage_double(STORAGE_RHS, 0);
   IJK_Field_double& ijk_x = get_storage_double(STORAGE_X, 0);
   IJK_Field_double& ijk_residu = get_storage_double(STORAGE_RESIDUE, 0);
+  // recupere ijk_b qui contient pressure_rhs
 
+
+  // Substract the average of the ijk_b field to get a zero average field --> pourquoi ?
   prepare_secmem(ijk_b);
   ijk_b.echange_espace_virtuel(ijk_b.ghost());
 
@@ -254,6 +258,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
     }
   else
     {
+	  // mixte solver precision --> cest lui qu'on utilise
       // mixed precision solver
       ijk_x.data() = 0.;
       IJK_Field_float& float_b = get_storage_float(STORAGE_RHS, 0);

@@ -72,6 +72,8 @@ public:
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
   void update_monofluide_to_phase_value();
   void update_indicatrice(const IJK_Field_double & indic, const int ft_extension);
+  _TYPE_ fourth_order_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
+
   bool monofluide_variable_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_liquide_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_vapeur_ ;
