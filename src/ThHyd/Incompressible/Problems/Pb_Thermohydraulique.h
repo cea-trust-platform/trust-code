@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,10 +17,8 @@
 #ifndef Pb_Thermohydraulique_included
 #define Pb_Thermohydraulique_included
 
-#include <Pb_Fluide_base.h>
-#include <Navier_Stokes_std.h>
 #include <Convection_Diffusion_Temperature.h>
-
+#include <Pb_Hydraulique.h>
 
 
 /*! @brief classe Pb_Thermohydraulique Cette classe represente un probleme de thermohydraulique standard:
@@ -36,26 +34,22 @@
  *
  * @sa Pb_Fluide_base Navier_Stokes_std Convection_Diffusion_Temperature
  */
-class Pb_Thermohydraulique : public Pb_Fluide_base
+class Pb_Thermohydraulique: public Pb_Hydraulique
 {
 
   Declare_instanciable(Pb_Thermohydraulique);
 
 public:
 
-  int nombre_d_equations() const override;
-  const Equation_base& equation(int) const override ;
+  int nombre_d_equations() const override { return 2; }
+  const Equation_base& equation(int) const override;
   Equation_base& equation(int) override;
-  void associer_milieu_base(const Milieu_base& ) override;
+  void associer_milieu_base(const Milieu_base&) override;
   int verifier() override;
 
 protected:
-
-  Navier_Stokes_std eq_hydraulique;
   Convection_Diffusion_Temperature eq_thermique;
 
 };
-
-
 
 #endif

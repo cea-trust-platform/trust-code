@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -21,37 +21,8 @@ Implemente_instanciable(Pb_Hydraulique,"Pb_Hydraulique",Pb_Fluide_base);
 // XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
 // XD   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 0 Navier-Stokes equations.
 
-/*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Pb_Hydraulique::printOn(Sortie& os) const
-{
-  return Pb_Fluide_base::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Pb_Fluide_base::readOn(Entree&) Lit le probleme a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Pb_Hydraulique::readOn(Entree& is)
-{
-  return Pb_Fluide_base::readOn(is);
-}
-
-/*! @brief Renvoie le nombre d'equation, Renvoie 1 car il y a seulement 1 equation a un probleme
- *
- *     hydraulique standard: l'equation de Navier Stokes
- *
- * @return (int) le nombre d'equation
- */
-int Pb_Hydraulique::nombre_d_equations() const
-{
-  return 1;
-}
+Sortie& Pb_Hydraulique::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
+Entree& Pb_Hydraulique::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }
 
 /*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0, sort (exit) sinon.
  *
@@ -64,7 +35,7 @@ const Equation_base& Pb_Hydraulique::equation(int i) const
 {
   if (i!=0)
     {
-      Cerr << "\nError in Pb_Hydraulique::equation() : The problem has only one equation !" << finl;
+      Cerr << "Pb_Hydraulique::equation() : Wrong equation number" << i << "!" << finl;
       Process::exit();
     }
   return eq_hydraulique;
@@ -79,7 +50,7 @@ Equation_base& Pb_Hydraulique::equation(int i)
 {
   if (i!=0)
     {
-      Cerr << "\nPb_Hydraulique::equation() : The problem has only one equation !" << finl;
+      Cerr << "Pb_Hydraulique::equation() : Wrong equation number" << i << "!" << finl;
       Process::exit();
     }
   return eq_hydraulique;
@@ -96,7 +67,7 @@ Equation_base& Pb_Hydraulique::equation(int i)
  */
 void Pb_Hydraulique::associer_milieu_base(const Milieu_base& mil)
 {
-  if (sub_type(Fluide_base,mil))
+  if (sub_type(Fluide_base,mil) && ref_cast(Fluide_base, mil).is_incompressible())
     eq_hydraulique.associer_milieu_base(mil);
   else if (sub_type(Fluide_Ostwald,mil))
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,22 +30,21 @@
  *
  * @sa Navier_Stokes_std Pb_Fluide_base Fluide_base
  */
-class Pb_Hydraulique : public Pb_Fluide_base
+class Pb_Hydraulique: public Pb_Fluide_base
 {
   Declare_instanciable(Pb_Hydraulique);
 
-public :
+public:
 
-  int nombre_d_equations() const override;
+  int nombre_d_equations() const override { return 1; }
   const Equation_base& equation(int) const override;
   Equation_base& equation(int) override;
-  void associer_milieu_base(const Milieu_base& ) override;
+  void associer_milieu_base(const Milieu_base&) override;
 
-protected :
+protected:
 
   Navier_Stokes_std eq_hydraulique;
 
 };
-
 
 #endif

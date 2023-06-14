@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,11 +17,8 @@
 #ifndef Pb_Thermohydraulique_Concentration_included
 #define Pb_Thermohydraulique_Concentration_included
 
-#include <Pb_Fluide_base.h>
-#include <Navier_Stokes_std.h>
-#include <Convection_Diffusion_Temperature.h>
 #include <Convection_Diffusion_Concentration.h>
-
+#include <Pb_Thermohydraulique.h>
 
 /*! @brief classe Pb_Thermohydraulique_Concentration Cette classe represente un probleme de thermohydraulique avec
  *
@@ -39,27 +36,23 @@
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Thermohydraulique_Concentration : public Pb_Fluide_base
+class Pb_Thermohydraulique_Concentration: public Pb_Thermohydraulique
 {
 
   Declare_instanciable(Pb_Thermohydraulique_Concentration);
 
 public:
 
-  int nombre_d_equations() const override;
-  const Equation_base& equation(int) const override ;
+  int nombre_d_equations() const override { return 3; }
+  const Equation_base& equation(int) const override;
+  void associer_milieu_base(const Milieu_base&) override;
   Equation_base& equation(int) override;
-  void associer_milieu_base(const Milieu_base& ) override;
   int verifier() override;
 
 protected:
 
-  Navier_Stokes_std eq_hydraulique;
-  Convection_Diffusion_Temperature eq_thermique;
   Convection_Diffusion_Concentration eq_concentration;
 
 };
-
-
 
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #include <Verif_Cl.h>
 #include <Champ_Uniforme.h>
 
-Implemente_instanciable(Pb_Thermohydraulique,"Pb_Thermohydraulique",Pb_Fluide_base);
+Implemente_instanciable(Pb_Thermohydraulique, "Pb_Thermohydraulique", Pb_Hydraulique);
 // XD pb_thermohydraulique Pb_base pb_thermohydraulique -1 Resolution of thermohydraulic problem.
 // XD   attr fluide_incompressible fluide_incompressible fluide_incompressible 1 The fluid medium associated with the problem (only one possibility).
 // XD   attr fluide_ostwald fluide_ostwald fluide_ostwald 1 The fluid medium associated with the problem (only one possibility).
@@ -27,39 +27,8 @@ Implemente_instanciable(Pb_Thermohydraulique,"Pb_Thermohydraulique",Pb_Fluide_ba
 // XD   attr navier_stokes_standard navier_stokes_standard navier_stokes_standard 1 Navier-Stokes equations.
 // XD   attr convection_diffusion_temperature convection_diffusion_temperature convection_diffusion_temperature 1 Energy equation (temperature diffusion convection).
 
-/*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Pb_Thermohydraulique::printOn(Sortie& os) const
-{
-  return Pb_Fluide_base::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Pb_Fluide_base::readOn(Entree&) Lit le probleme a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Pb_Thermohydraulique::readOn(Entree& is)
-{
-  return Pb_Fluide_base::readOn(is);
-}
-
-/*! @brief Renvoie le nombre d'equation, Renvoie 2 car il y a 2 equations a un probleme de
- *
- *     thermo-hydraulique standard:
- *         l'equation de Navier Stokes
- *         l' equation de la thermique de type Convection_Diffusion_Temperature
- *
- * @return (int) le nombre d'equation
- */
-int Pb_Thermohydraulique::nombre_d_equations() const
-{
-  return 2;
-}
+Sortie& Pb_Thermohydraulique::printOn(Sortie& os) const { return Pb_Hydraulique::printOn(os); }
+Entree& Pb_Thermohydraulique::readOn(Entree& is) { return Pb_Hydraulique::readOn(is); }
 
 /*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de la thermique de type
  *
@@ -71,15 +40,8 @@ int Pb_Thermohydraulique::nombre_d_equations() const
  */
 const Equation_base& Pb_Thermohydraulique::equation(int i) const
 {
-  if ( !( i==0 || i==1 ) )
-    {
-      Cerr << "\nError in Pb_Thermohydraulique::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
-  if (i == 0)
-    return eq_hydraulique;
-  else
-    return eq_thermique;
+  if (i == 1) return eq_thermique;
+  return Pb_Hydraulique::equation(i);
 }
 
 /*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_std si i=0 Renvoie l'equation de la thermique de type
@@ -91,15 +53,8 @@ const Equation_base& Pb_Thermohydraulique::equation(int i) const
  */
 Equation_base& Pb_Thermohydraulique::equation(int i)
 {
-  if ( !( i==0 || i==1 ) )
-    {
-      Cerr << "\nError in Pb_Thermohydraulique::equation() : Wrong number of equation !" << finl;
-      Process::exit();
-    }
-  if (i == 0)
-    return eq_hydraulique;
-  else
-    return eq_thermique;
+  if (i == 1) return eq_thermique;
+  return Pb_Hydraulique::equation(i);
 }
 
 /*! @brief Associe le milieu au probleme Le milieu doit etre de type fluide incompressible
@@ -109,23 +64,11 @@ Equation_base& Pb_Thermohydraulique::equation(int i)
  */
 void Pb_Thermohydraulique::associer_milieu_base(const Milieu_base& mil)
 {
+  Pb_Hydraulique::associer_milieu_base(mil);
   if (sub_type(Fluide_base,mil) && ref_cast(Fluide_base, mil).is_incompressible())
-    {
-      eq_hydraulique.associer_milieu_base(mil);
-      eq_thermique.associer_milieu_base(mil);
-    }
+    eq_thermique.associer_milieu_base(mil);
   else if (sub_type(Fluide_Ostwald,mil))
-    {
-      eq_hydraulique.associer_milieu_base(mil);
-      eq_thermique.associer_milieu_base(mil);
-      Cerr << "Fluide non newtonien" << finl;
-    }
-  else
-    {
-      Cerr << "Un milieu de type " << mil.que_suis_je() << " ne peut etre associe a "<< finl;
-      Cerr << "un probleme de type Pb_Thermohydraulique " << finl;
-      exit();
-    }
+    eq_thermique.associer_milieu_base(mil);
 }
 
 /*! @brief Teste la compatibilite des equations de la thermique et de l'hydraulique.
