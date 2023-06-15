@@ -65,8 +65,20 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             	// interpoler p_l
                 // interpoler p_v
                 // reconstruire la pression monofluide avec l'indicatrice de la position de reception
-				  _TYPE_ buf_V = fourth_order_interpolation_for_shear_periodicity(1, send_i, send_j, send_k, istmp, real_size_i);
-				  _TYPE_ buf_L = fourth_order_interpolation_for_shear_periodicity(0, send_i, send_j, send_k, istmp, real_size_i);
+            	   _TYPE_ buf_V ;
+            	   _TYPE_ buf_L ;
+            	   if(order_interpolation_==4)
+            	   {
+					  buf_V = fourth_order_interpolation_for_shear_periodicity(1, send_i, send_j, send_k, istmp, real_size_i);
+					  buf_L = fourth_order_interpolation_for_shear_periodicity(0, send_i, send_j, send_k, istmp, real_size_i);
+            	   }
+            	   else
+            	   {
+ 					  buf_V = second_order_interpolation_for_shear_periodicity(1, send_i, send_j, send_k, istmp, real_size_i);
+ 					  buf_L = second_order_interpolation_for_shear_periodicity(0, send_i, send_j, send_k, istmp, real_size_i);
+
+            	   }
+
 				  _TYPE_ buf_I =(_TYPE_)indicatrice_(recevd_i , recevd_j , recevd_k);
 				  buf+= buf_V *((_TYPE_)1.-buf_I)
 					  + buf_L * buf_I;
@@ -74,7 +86,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             	  else
             	  {
             	// interpolation directe de la variable monofluide
-                  buf+=fourth_order_interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i);
+               	  if(order_interpolation_==4)
+               		  buf+=fourth_order_interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i);
+               	  else
+               		  buf+=second_order_interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i);
 
             	  }
                 }
@@ -129,12 +144,23 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
             	// interpoler p_l
                 // interpoler p_v
                 // reconstruire la pression monofluide avec l'indicatrice de la position de reception a la reception des buffer
-				  *buf = fourth_order_interpolation_for_shear_periodicity(0, send_i, send_j, send_k, istmp, real_size_i)+ (_TYPE_) jump_i;
-				  *buf2 = fourth_order_interpolation_for_shear_periodicity(1, send_i, send_j, send_k, istmp, real_size_i)+ (_TYPE_) jump_i;
+               	   if(order_interpolation_==4)
+               	   {
+					  *buf = fourth_order_interpolation_for_shear_periodicity(0, send_i, send_j, send_k, istmp, real_size_i)+ (_TYPE_) jump_i;
+					  *buf2 = fourth_order_interpolation_for_shear_periodicity(1, send_i, send_j, send_k, istmp, real_size_i)+ (_TYPE_) jump_i;
+               	   }
+               	   else
+               	   {
+ 					  *buf = second_order_interpolation_for_shear_periodicity(0, send_i, send_j, send_k, istmp, real_size_i)+ (_TYPE_) jump_i;
+ 					  *buf2 = second_order_interpolation_for_shear_periodicity(1, send_i, send_j, send_k, istmp, real_size_i)+ (_TYPE_) jump_i;
+               	   }
             	  }
             	  else
             	  {
-                  *buf= fourth_order_interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i) + (_TYPE_) jump_i;
+                  if(order_interpolation_==4)
+                	  *buf= fourth_order_interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i) + (_TYPE_) jump_i;
+                  else
+                	  *buf= second_order_interpolation_for_shear_periodicity(2, send_i, send_j, send_k, istmp, real_size_i) + (_TYPE_) jump_i;
             	  }
 
                 }
@@ -544,6 +570,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::redistribute_with_shear_domain_ft
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::fourth_order_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i)
 {
+	// renvoi la valeur interpolee a l ordre 4 pour la condition de shear-periodicity
+	// phase = 2 --> interpolation de Phi : la variable monofluide entiere
+	// phase = 0 --> interpolation de Phi_l : la variable phasique liquide reconstruite
+	// phase = 1 --> interpolation de Phi_v : la variable phasique vapeur reconstruite
 
 	  _TYPE_ x[5] = {(_TYPE_)send_i-2, (_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1, (_TYPE_)send_i+2};
 	  _TYPE_ y[5] = {(_TYPE_)0., (_TYPE_)0., (_TYPE_)0., (_TYPE_)0., (_TYPE_)0.};
@@ -594,6 +624,51 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::fourth_order_interpolation_for_
 
 }
 
+template<typename _TYPE_, typename _TYPE_ARRAY_>
+_TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::second_order_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i)
+{
+	// renvoi la valeur interpolee a l ordre 2 pour la condition de shear-periodicity
+	// phase = 2 --> interpolation de Phi : la variable monofluide entiere
+	// phase = 0 --> interpolation de Phi_l : la variable phasique liquide reconstruite
+	// phase = 1 --> interpolation de Phi_v : la variable phasique vapeur reconstruite
+
+	  _TYPE_ x[3] = {(_TYPE_)send_i-1, (_TYPE_)send_i, (_TYPE_)send_i+1};
+	  _TYPE_ y[3] = {(_TYPE_)0., (_TYPE_)0., (_TYPE_)0.};
+	  if (phase==0)
+	  {
+	   y[0] = (_TYPE_)projection_liquide_(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	   y[1] = (_TYPE_)projection_liquide_(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	   y[2] = (_TYPE_)projection_liquide_(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	  }
+	  else if (phase==1)
+	  {
+	   y[0] = (_TYPE_)projection_vapeur_(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	   y[1] = (_TYPE_)projection_vapeur_(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	   y[2] = (_TYPE_)projection_vapeur_(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	  }
+	  else if (phase==2)
+	  {
+	   y[0] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i-1) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	   y[1] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	   y[2] = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(((send_i+1) % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+	  }
+	  else
+	  {
+		  std::cout << "ce choix n existe pas" ;
+		  Process::exit();
+
+	  }
+
+	  _TYPE_ a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]));
+	  _TYPE_ a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]));
+	  _TYPE_ a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]));
+
+	  return (a0 * ((istmp - x[1]) * (istmp - x[2]))
+			   + a1 * ((istmp - x[0]) * (istmp - x[2]))
+			   + a2 * ((istmp - x[0]) * (istmp - x[1])));
+
+}
+
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_indicatrice(const IJK_Field_double & indic_ft, const int ft_extension)
@@ -626,6 +701,126 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_indicatrice(const IJK_Fiel
 }
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
+double IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::calculer_distance(Vecteur3 & pos_ijk, const Vecteur3 xyz_cible)
+{
+	// calcule la distance entre deux points !
+	// Prend en compte les eventuelles conditions de periodicite
+	//
+	const IJK_Splitting& splitting_ = splitting_ref_.valeur();
+	Vecteur3 L_xyz((_TYPE_) splitting_.get_grid_geometry().get_domain_length(0),
+				   (_TYPE_) splitting_.get_grid_geometry().get_domain_length(1),
+				   (_TYPE_) splitting_.get_grid_geometry().get_domain_length(2));
+	Vecteur3 n_ijk(IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni(),
+				   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj(),
+				   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk());
+
+
+
+    // voir si on traite le cas ou pas (borne du domaine perio ou pas)
+	for (int dir = 0 ; dir <3 ; dir++)
+	{
+		if(pos_ijk[dir] < 0 && !splitting_.get_grid_geometry().get_periodic_flag(dir))
+			{
+				return 1.e10;
+			}
+
+		if(pos_ijk[dir] >= n_ijk[dir] && !splitting_.get_grid_geometry().get_periodic_flag(dir))
+		{
+				return 1.e10;
+		}
+		// position de la maille en face (ne prend pas en compte le shear)
+		// on ajustera la distance de cette maille, mais on interpole pas les valeurs
+		// on a donc besoin de toutes les positions en i pour faire le tour des donnees necessaires... --> a optimiser
+		pos_ijk[dir] = (double)(((int)pos_ijk[dir] % (int)n_ijk[dir] + (int)n_ijk[dir]) % (int)n_ijk[dir]) ;
+	}
+
+
+    // position de ce voisin dans le domaine calcule reel
+	Vecteur3 xyz_reel = splitting_.get_coords_of_dof((int)pos_ijk[0],(int)pos_ijk[1],(int)pos_ijk[2],IJK_Splitting::ELEM);
+	// Ce voisin a jusqua 3^3 replique de lui-meme pour un calcul triperiodique
+    // on cree un tableau qui contient toutes les 27 distances entre les repliques et la cible
+	// attention a l'ordre des modifs quand on passe en perio_k
+	// --> d'abord ajouter le deplacement lie au cisaillement
+	// --> s assurer de tomber dans lespace reel [0,Lx]
+	// --> Puis ajouter le decallage +- Lx
+	// on retient finalement la plus petite distance entre la position de reference et les 27 possibilite
+
+	Vecteur3 xyz_ghost[3][3][3];
+	double d=1.e10;
+
+	for (int ghosti = 0 ; ghosti <3 ; ghosti++)
+	{
+		for (int ghostj = 0 ; ghostj <3 ; ghostj++)
+		{
+			for (int ghostk = 0 ; ghostk <3 ; ghostk++)
+			{
+
+				// initialisation de la distance avec la distance de la cellulle dans le domaine : xyz_reel[dir]-xyz_cible[dir]
+				xyz_ghost[ghosti][ghostj][ghostk]=xyz_reel;
+				for (int dir = 0 ; dir <3 ; dir++)
+				{
+					xyz_ghost[ghosti][ghostj][ghostk][dir] -= xyz_cible[dir];
+				}
+
+				// modification de cette distance pour toutes les cellules ghost
+				// on continue la boucle quand la cellule ghost est necessairement trop loin (optimisation CPU)
+				// si dy > Ly/2 ou dz > Lz/2 ou dx>Lx/2 --> ce ne sera pas le ghost le plus proche
+				if (ghostj==0)
+				{
+				xyz_ghost[ghosti][ghostj][ghostk][1] -= L_xyz[1];
+				if (std::abs(xyz_ghost[ghosti][ghostj][ghostk][1])>L_xyz[1]/2)
+					continue;
+				}
+				else if (ghostj==2)
+				{
+				xyz_ghost[ghosti][ghostj][ghostk][1] += L_xyz[1];
+				if (std::abs(xyz_ghost[ghosti][ghostj][ghostk][1])>L_xyz[1]/2)
+					continue;
+				}
+				if (ghostk==0)
+				{
+				xyz_ghost[ghosti][ghostj][ghostk][2] -= L_xyz[2];
+				if (std::abs(xyz_ghost[ghosti][ghostj][ghostk][2])>L_xyz[2]/2)
+					continue;
+				xyz_ghost[ghosti][ghostj][ghostk][0] -= IJK_Splitting::shear_x_time_;
+				xyz_ghost[ghosti][ghostj][ghostk][0] =std::fmod(std::fmod(xyz_ghost[ghosti][ghostj][ghostk][0],L_xyz[0])+L_xyz[0],L_xyz[0]);
+				}
+				else if (ghostk==2)
+				{
+				xyz_ghost[ghosti][ghostj][ghostk][2] += L_xyz[2];
+				if (std::abs(xyz_ghost[ghosti][ghostj][ghostk][2])>L_xyz[2]/2)
+					continue;
+				xyz_ghost[ghosti][ghostj][ghostk][0] += IJK_Splitting::shear_x_time_;
+				xyz_ghost[ghosti][ghostj][ghostk][0] =std::fmod(std::fmod(xyz_ghost[ghosti][ghostj][ghostk][0],L_xyz[0])+L_xyz[0],L_xyz[0]);
+				}
+				if (ghosti==0)
+				{
+				xyz_ghost[ghosti][ghostj][ghostk][0] -= L_xyz[0];
+				if (std::abs(xyz_ghost[ghosti][ghostj][ghostk][0])>L_xyz[0]/2)
+					continue;
+				}
+				else if (ghosti==2)
+				{
+				xyz_ghost[ghosti][ghostj][ghostk][0] += L_xyz[0];
+				if (std::abs(xyz_ghost[ghosti][ghostj][ghostk][0])>L_xyz[0]/2)
+					continue;
+				}
+				double d_ghost = std::sqrt(xyz_ghost[ghosti][ghostj][ghostk][0]*xyz_ghost[ghosti][ghostj][ghostk][0]
+									      +xyz_ghost[ghosti][ghostj][ghostk][1]*xyz_ghost[ghosti][ghostj][ghostk][1]
+								          +xyz_ghost[ghosti][ghostj][ghostk][2]*xyz_ghost[ghosti][ghostj][ghostk][2]);
+				if (d_ghost<d)
+				{
+					d=d_ghost;
+				}
+
+			}
+		}
+	}
+
+	return d;
+}
+
+template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_monofluide_to_phase_value()
 {
 //	std::cout << " entree dans update_monofluide " << std::endl;
@@ -636,12 +831,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_monofluide_to_phase_value(
 // Methode codee uniquement pour lexemple et la structure informatique... Voir si ca peut marcher.
 // Pour les espaces virtuels, besoin uniquement sur les bords periodique, pas dans le coeur.
 // Mais peut être utile de le faire partout pour post-traiter les pressions aux interfaces ?
+	  // --> a revoir pour le parallele
 	  if (monofluide_variable_)
 	  {
   const IJK_Splitting& splitting_ = splitting_ref_.valeur();
-  _TYPE_ Lx =  (_TYPE_) splitting_.get_grid_geometry().get_domain_length(0);
-  _TYPE_ Ly =  (_TYPE_) splitting_.get_grid_geometry().get_domain_length(1);
-  _TYPE_ Lz =  (_TYPE_) splitting_.get_grid_geometry().get_domain_length(2);
   const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
   const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
@@ -666,90 +859,36 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_monofluide_to_phase_value(
 		      _TYPE_ denum_v = 0.;
 			xyz_cible = splitting_.get_coords_of_dof(icible,jcible,kcible,IJK_Splitting::ELEM);
 
-			// on parcours ensuite une boite de taille_boite_interpol^3 autour de la cible pour interpoler a partir de ces valeurs les plus proches
+			// on parcours ensuite une boite de taille_boite_interpol^2 * ni autour de la cible pour interpoler a partir de ces valeurs les plus proches
 		      for (int kk = kcible-taille_boite_interpol; kk < kcible+taille_boite_interpol; kk++)
 		        {
 		          for (int jj = jcible-taille_boite_interpol; jj < jcible+taille_boite_interpol; jj++)
 		            {
-		              for (int ii = icible-taille_boite_interpol; ii < icible+taille_boite_interpol; ii++)
+		        	  // on boucle sur tout les i pour pouvoir gerer plus facilement la condition shear-periodique dans calculer_distance ---> a optimiser
+		              for (int ii = icible - (int)(ni/2) +1; ii < icible + (int)(ni/2) +1 ; ii++)
 		                {
+		            	  Vecteur3 pos_ijk(ii,jj,kk) ;
+		            	  double d = calculer_distance(pos_ijk,xyz_cible);
 
-		            	  int itable = ii ;
-		            	  int jtable = jj ;
-		            	  int ktable = kk ;
+		            	  if (d==1.e10)
+		            		  continue;
 
-		                  if(splitting_.get_grid_geometry().get_periodic_flag(0))
+		                  if (indicatrice_((int)pos_ijk[0],(int)pos_ijk[1],(int)pos_ijk[2])==1. && d != 0.)
 		                    {
-		            	    itable = (itable % ni + ni) % ni ;
+		                      num_l += IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()((int)pos_ijk[0],(int)pos_ijk[1],(int)pos_ijk[2])/(_TYPE_) std::pow(d,beta);
+		                      denum_l += (_TYPE_) 1./(_TYPE_) std::pow(d,beta);
 		                    }
-		                  if(splitting_.get_grid_geometry().get_periodic_flag(1))
+		                  else if (indicatrice_((int)pos_ijk[0],(int)pos_ijk[1],(int)pos_ijk[2])==0. && d != 0.)
 		                    {
-		            	    jtable = (jtable % nj + nj) % nj ;
-		                    }
-		                  if(splitting_.get_grid_geometry().get_periodic_flag(2))
-		                    {
-		            	    ktable = (ktable % nk + nk) % nk ;
-		                    }
-
-		                  if (itable<0 || itable>ni || jtable<0 || jtable>nj || ktable<0 || ktable>nk)
-		                  {
-		                	 continue;
-		                  }
-
-		            	  Vecteur3 xyz_reel = splitting_.get_coords_of_dof(itable,jtable,ktable,IJK_Splitting::ELEM);
-		                  _TYPE_ dx = (_TYPE_) (xyz_reel[0]-xyz_cible[0]);
-		                  _TYPE_ dy = (_TYPE_) (xyz_reel[1]-xyz_cible[1]);
-		                  _TYPE_ dz = (_TYPE_) (xyz_reel[2]-xyz_cible[2]);
-
-		                  if(splitting_.get_grid_geometry().get_periodic_flag(0))
-		                    {
-		                      if(dx > Lx / 2.)
-		                        {
-		                          dx = dx - Lx;
-		                        }
-		                      if (dx < - Lx / 2.)
-		                        {
-		                          dx = dx + Lx;
-		                        }
-		                    }
-		                  if(splitting_.get_grid_geometry().get_periodic_flag(1))
-		                    {
-		                      if(dy > Ly / 2.)
-		                        {
-		                          dy = dy - Ly;
-		                        }
-		                      if (dy < - Ly / 2.)
-		                        {
-		                          dy = dy + Ly;
-		                        }
-		                    }
-		                  if(splitting_.get_grid_geometry().get_periodic_flag(2))
-		                    {
-		                      if(dz > Lz / 2.)
-		                        {
-		                          dz = dz - Lz;
-		                        }
-		                      if (dz < - Lz / 2.)
-		                        {
-		                          dz = dz + Lz;
-		                        }
-		                    }
-
-
-		                  if (indicatrice_(itable,jtable,ktable)==1. && dx*dx+dy*dy+dz*dz != 0.)
-		                    {
-		                      num_l += IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(itable, jtable, ktable)/(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
-		                      denum_l += (_TYPE_) 1./(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
-		                    }
-		                  else if (indicatrice_(itable,jtable,ktable)==0. && dx*dx+dy*dy+dz*dz != 0.)
-		                    {
-		                      num_v += IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()(itable, jtable, ktable)/(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
-		                      denum_v += (_TYPE_) 1./(_TYPE_) std::pow(std::sqrt(dx*dx+dy*dy+dz*dz),beta);
+		                      num_v += IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::operator()((int)pos_ijk[0],(int)pos_ijk[1],(int)pos_ijk[2])/(_TYPE_) std::pow(d,beta);
+		                      denum_v += (_TYPE_) 1./(_TYPE_) std::pow(d,beta);
 		                    }
 
 		                }
 		            }
 		        }
+
+
 		      if (indicatrice_(icible,jcible,kcible)==1.)
 		      {
 		    	  if (denum_v==0.)
@@ -850,6 +989,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
   const int ni_local = splitting.get_nb_items_local(loc, 0);
   const int nj_local = splitting.get_nb_items_local(loc, 1);
   const int nk_local = splitting.get_nb_items_local(loc, 2);
+  order_interpolation_ = 2;
   monofluide_variable_ = monofluide;
   IJK_Field_local_template<_TYPE_, _TYPE_ARRAY_>::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
   if (monofluide_variable_)
