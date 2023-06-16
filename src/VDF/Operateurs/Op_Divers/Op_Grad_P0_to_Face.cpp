@@ -19,6 +19,11 @@
 #include <Statistiques.h>
 #include <Domaine_Cl_VDF.h>
 #include <Periodique.h>
+#include <Neumann_paroi.h>
+#include <Neumann_homogene.h>
+#include <Dirichlet.h>
+#include <Dirichlet_homogene.h>
+#include <Echange_impose_base.h>
 
 extern Stat_Counter_Id gradient_counter_;
 
@@ -44,6 +49,7 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
   const Domaine_VDF& zvdf = le_dom_vdf.valeur();
   const Domaine_Cl_VDF& zclvdf = la_zcl_vdf.valeur();
   const DoubleVect& face_surfaces = zvdf.face_surfaces();
+  const DoubleTab& xv = zvdf.xv();
 
   double dist;
   int n0, n1, ori, N = inco.line_size(), k;
@@ -57,31 +63,54 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
         const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
         if (sub_type(Periodique,la_cl.valeur())) // Correction periodicite
-          {
-            for (int num_face = ndeb; num_face < nfin; num_face++)
-              {
-                n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
-                dist = volume_entrelaces(num_face) / face_surfaces(num_face);
-                secmem(num_face, k) -= ((inco(n1, k) - inco(n0, k)))/dist;
-              }
-          }
-        else
-          {
-            for (int num_face = ndeb; num_face < nfin; num_face++)
-              {
-                n0 = face_voisins(num_face,0);
-                if (n0<0) n0 = face_voisins(num_face,1);
+          for (int num_face = ndeb; num_face < nfin; num_face++)
+            {
+              n0 = face_voisins(num_face,0), n1 = face_voisins(num_face,1);
+              dist = volume_entrelaces(num_face) / face_surfaces(num_face);
+              secmem(num_face, k) -= (inco(n1, k) - inco(n0, k))/dist;
+            }
+        else if (sub_type(Dirichlet,la_cl.valeur())) // Cas CL Dirichlet
+          for (int num_face = ndeb, num_face_cl=0; num_face < nfin; num_face++, num_face_cl++)
+            {
+              n0 = face_voisins(num_face,0);
+              if (n0<0) n0 = face_voisins(num_face,1);
+              ori = orientation(num_face);
+              secmem(num_face, k) -= (inco(n0, k) - ref_cast(Dirichlet, la_cl.valeur()).val_imp(num_face_cl, k))/(xp(n0,ori)- xv(num_face,ori));
+            }
+        else if (sub_type(Dirichlet_homogene,la_cl.valeur())) // Cas Dirichlet homogene, i.e. valeur nulle a la paroi
+          for (int num_face = ndeb; num_face < nfin; num_face++)
+            {
+              n0 = face_voisins(num_face,0);
+              if (n0<0) n0 = face_voisins(num_face,1);
+              ori = orientation(num_face);
+              secmem(num_face, k) -= inco(n0, k)/(xp(n0,ori)- xv(num_face,ori));
+            }
+        else if (sub_type(Echange_impose_base,la_cl.valeur())) // Cas Echange_impose_base
+          for (int num_face = ndeb, num_face_cl=0; num_face < nfin; num_face++, num_face_cl++)
+            {
+              n0 = face_voisins(num_face,0);
+              if (n0<0) n0 = face_voisins(num_face,1);
+              if ( face_voisins(num_face,0) >= 0 ) secmem(num_face, k) -= ( inco(n0, k) - ref_cast(Echange_impose_base, la_cl.valeur()).T_ext(num_face_cl, k))*ref_cast(Echange_impose_base, la_cl.valeur()).h_imp_grad(num_face_cl, k); // Si bien oriente
+              else                                 secmem(num_face, k) += ( inco(n0, k) - ref_cast(Echange_impose_base, la_cl.valeur()).T_ext(num_face_cl, k))*ref_cast(Echange_impose_base, la_cl.valeur()).h_imp_grad(num_face_cl, k); // Si oriente a envers
+            }
+        else if (sub_type(Neumann_paroi,la_cl.valeur())) // Cas Neumann_paroi
+          for (int num_face = ndeb, num_face_cl=0; num_face < nfin; num_face++, num_face_cl++)
+            secmem(num_face, k) -= ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k); // Si bien oriente
+        else if  (! sub_type(Neumann_homogene,la_cl.valeur())) // En Neumann homogene, i.e. symetrie, la derivee a la face est nulle => on fait rien
+          for (int num_face = ndeb; num_face < nfin; num_face++)
+            {
+              n0 = face_voisins(num_face,0);
+              if (n0<0) n0 = face_voisins(num_face,1);
 
-                ori = orientation(num_face);
-                int face_opposee = zvdf.elem_faces(n0,ori);
-                if (face_opposee == num_face) face_opposee = zvdf.elem_faces(n0,ori+dimension);
+              ori = orientation(num_face);
+              int face_opposee = zvdf.elem_faces(n0,ori);
+              if (face_opposee == num_face) face_opposee = zvdf.elem_faces(n0,ori+dimension);
 
-                n1 = face_voisins(face_opposee,0);
-                if ((n1<0) || ((n1==n0) && face_voisins(face_opposee,1)>=0)) n1 = face_voisins(face_opposee,1);
+              n1 = face_voisins(face_opposee,0);
+              if ((n1<0) || ((n1==n0) && face_voisins(face_opposee,1)>=0)) n1 = face_voisins(face_opposee,1);
 
-                if (n1!=n0) secmem(num_face, k) -= (inco(n1, k)-inco(n0, k)) / (xp(n1,ori)- xp(n0,ori));
-              }
-          }
+              if (n1!=n0) secmem(num_face, k) -= (inco(n1, k)-inco(n0, k)) / (xp(n1,ori)- xp(n0,ori));
+            }
       }
 
   // Boucle sur les faces internes
