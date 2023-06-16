@@ -414,6 +414,9 @@ unset TRUST_USE_EXTERNAL_MEDCOUPLING
 unset EOS_HOME
 unset COOLPROP_HOME
 unset REFPROP_HOME
+unset TRUST_CC_BASE_EXTP
+unset TRUST_F77_BASE_EXTP
+unset TRUST_cc_BASE_EXTP
 
 var=env/configure.env && rm -f $var
 echo "$0 called with options: $*"

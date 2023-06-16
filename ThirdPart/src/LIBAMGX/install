@@ -28,13 +28,12 @@ then
    if [ "$TRUST_AMGX_COMMIT" != "" ]
    then
       commit=$TRUST_AMGX_COMMIT
-      git clone https://github.com/NVIDIA/AMGX.git $LIB
+      git clone --recursive https://github.com/NVIDIA/AMGX.git $LIB
       cd $LIB && git checkout $commit && cd -
       PACKAGE=$TRUST_ROOT/externalpackages/AmgX/$LIB"_"$commit.tar.gz
       tar cfz $PACKAGE --exclude .git $LIB && echo "Creation du package $PACKAGE"
    else
-      commit=6dba8067ca
-      commit=v2.3.0
+      commit=d2344958f4
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_$commit.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build
@@ -48,9 +47,12 @@ then
    # -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 regle le pb de (cannot find -lcudadevrt -lcudart_static) au configure pour le NVidia SDK
    # -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT  changement de syntax pour cmake 3.18 -> 3.22 ?
    cmake -DCUDAToolkit_ROOT=$CUDA_ROOT -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 $CUDA_NVCC_FLAGS -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
-   # Sur jeanzay, $TRUST_MAKE plante (pas assez de memoire sur frontale?) donc on retente avec make:
-   ($TRUST_MAKE || make) && make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples || exit -1
-   make install && cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   #$TRUST_MAKE || exit -1
+   $TRUST_MAKE install || exit -1 # Important de faire en 1 fois car sur cluster make install recompile a nouveau apres make !!!
+   cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
+   # Install cuSPARSE 11.2 to fix multi-gpu bug for C-AMG if cuda>11.2
+   cusparse=$TRUST_ROOT/externalpackages/AmgX/libcusparse.so.11 && [ -f $cusparse.gz ] && gunzip -c $cusparse.gz > $AMGX_DIR/$LIB/lib/`basename $cusparse`
+   # Clean:
    cd $ROOT && rm -r -f $LIB
 fi
 if [ $LIB = AmgXWrapper ]
@@ -88,7 +90,7 @@ then
       export CC=$TRUST_cc
    fi
    CMAKE_FLAGS=" -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC"
-   export CXXFLAGS=-fPIC && [ "$TRUST_USE_OPENMP" = 1 ] && CXXFLAGS=$CXXFLAGS" -fopenmp"
+   export CXXFLAGS="-fPIC -fopenmp" # AmgX use OpenMP to accelerate some host tasks...
    # Configure and build:
    cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DBUILD_SHARED_LIBS=OFF .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1

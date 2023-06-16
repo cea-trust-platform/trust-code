@@ -7,9 +7,11 @@ mpi=$(MPI_INCLUDE)/mpi.h
 all:$(AMGX_LIB) $(AMGXWRAPPER_LIB)
 
 $(AMGX_LIB): install makefile $(mpi)
+	rm -r -f $(AMGX_DIR)
 	./install $(AMGX_DIR)
 
 $(AMGXWRAPPER_LIB): install makefile $(mpi)
+	rm -r -f $(AMGXWRAPPER_DIR)
 	./install $(AMGXWRAPPER_DIR)
 	
 clean:

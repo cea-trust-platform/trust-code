@@ -1110,17 +1110,15 @@ then
    # Verifie la version de nvcc:
    NVCC_VERSION=`$CUDA_NVCC --version 2>/dev/null | awk -F, '/release/ {gsub("release","",$2);gsub(" ","",$2);print $2}'`
    echo "Cuda compiler version: $NVCC_VERSION"
-   # Cuda 11.3, 11.6, 11.7 testes, ne marchent pas (PAR_gpu_3D diverge EN MULTI-GPU, OK en MONO-GPU !)
-   # ToDo verifier si on ne peut pas compiler avec Cuda recent et utiliser Cuda ancien au runtime...
-   NVCC_VERSION_SUPPORTED=11.2
-   NVCC_VALIDE=`echo $NVCC_VERSION $NVCC_VERSION_SUPPORTED | awk '{if (1.0*$1<=1.0*$2) print 1}'`
-   if [ "$NVCC_VALIDE" = "" ]
-   then
-      echo "Warning, no valid cuda compiler (nvcc<=$NVCC_VERSION_SUPPORTED) found:"
-      echo "`$CUDA_NVCC --version 2>/dev/null`"
-      echo "Load Cuda module or use ./configure -cuda=download to download Cuda toolkit $NVCC_VERSION_SUPPORTED."
-      #exit -1
-   fi
+   #NVCC_VERSION_SUPPORTED=11.2
+   #NVCC_VALIDE=`echo $NVCC_VERSION $NVCC_VERSION_SUPPORTED | awk '{if (1.0*$1<=1.0*$2) print 1}'`
+   #if [ "$NVCC_VALIDE" = "" ]
+   #then
+   #   echo "Warning, no valid cuda compiler (nvcc<=$NVCC_VERSION_SUPPORTED) found:"
+   #   echo "`$CUDA_NVCC --version 2>/dev/null`"
+   #   echo "Load Cuda module or use ./configure -cuda=download to download Cuda toolkit $NVCC_VERSION_SUPPORTED."
+   #   exit -1
+   #fi
    # Verification par rapport au driver CUDA (ToDo: mieux detecter sur cluster: trust -gpu nvidia-smi)
    NVIDIA_VERSION=`nvidia-smi 2>/dev/null | awk '/CUDA Version/ {print $(NF-1)}'`
    if [ "$NVIDIA_VERSION" != "" ]
