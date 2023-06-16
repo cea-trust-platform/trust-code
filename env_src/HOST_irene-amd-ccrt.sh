@@ -82,18 +82,23 @@ define_soumission_batch()
       qos=normal
       [ "$prod" = 1 ] && cpu=86400
    else
-      qos=test
-      cpu=1800
+      qos=test && cpu=1800
+      [ "$gpu" = 1 ] && [ $NB_PROCS -gt 8 ] && qos=normal && cpu=1800
    fi
    # ccc_mpinfo : 
-   #PARTITION    STATUS TOT_CPUS TOT_NODES    MpC  CpN SpN CpS TpC
-   #skylake      up        74256      1547    3750  48   2  24   1
-   #knl          up        38284       563    1411  68   1  68   1
-   #rome         up       269056      2102    1875  128  8  16   1
-   queue=rome
-   [ "$bigmem" = 1 ] && queue=knl && ntasks=68
-   # Partition v100 (4 cartes v100 par noeud): 1 GPU par 10 coeurs alloues donc si moins de 10 coeurs, on fixe a 10:
-   [ "$gpu" = 1 ]    && queue=v100 && ntasks=80 && [ $NB_PROCS -lt 10 ] && cpus_per_task=10
+   #PARTITION    STATUS   TOTAL      DOWN    USED    FREE    TOTAL   DOWN    USED    FREE     MpC    CpN  SpN CpS  TpC GpN GPU Type
+   # rome         up       292736       0  290219    2517    2287       0    2270      17     1781  128   8   16   2   0  
+   # skylake      up        79200       0   62069   17131    1650       0    1333     317     3687   48   2   24   1   0  
+   # a64fx        up         3696      48      48    3600      77       1       1      75      666   48   1   48   1   0  
+   # v100         up         1240       0     930     310      31       0      24       7     4375   40   2   20   2   4  nvidia
+   # v100l-os     up         1080       0    1044      36      30       0      29       1     9861   36   2   18   2   1  nvidia
+   # v100l        up         1080       0    1044      36      30       0      29       1     9861   36   2   18   2   1  nvidia
+   # hybrid       up          960       0      48     912      20       0       1      19     3750   48   2   24   1   1  nvidia
+   # xlarge       up          448       0     239     209       4       0       3       1    26803  112   4   28   1   1  nvidia
+   # v100xl       up          144       0       0     144       2       0       0       2    40277   72   4   18   2   1  nvidia
+   queue=rome && [ "$bigmem" = 1 ] && queue=knl && ntasks=68
+   # Partition v100 (4 cartes v100 par noeud)
+   [ "$gpu" = 1 ] && queue=v100 && ntasks=40 && cpus_per_task=10 # 1 GPU/MPI (OpenMP choix par default)
    if [ "$prod" = 1 ] || [ $NB_PROCS -gt $ntasks ]
    then
       node=1

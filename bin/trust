@@ -1230,6 +1230,7 @@ then
    then
       err=1
    fi
+   ccc_myproject -P $queue 2>/dev/null # Sur CCRT heures de calcul
    exit $err
 else
    # Pas de gestionnaire, example PC:
