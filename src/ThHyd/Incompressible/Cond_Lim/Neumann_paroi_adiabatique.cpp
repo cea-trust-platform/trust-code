@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@ Sortie& Neumann_paroi_adiabatique::printOn(Sortie& s) const { return s << que_su
 
 Entree& Neumann_paroi_adiabatique::readOn(Entree& s)
 {
-  if (app_domains.size() == 0) app_domains = { Motcle("Diphasique_moyenne"), Motcle("Thermique"), Motcle("Thermique_H"), Motcle("indetermine") };
+  if (app_domains.size() == 0) app_domains = { Motcle("Diphasique_moyenne"), Motcle("Thermique"), Motcle("Thermique_H"), Motcle("indetermine"), Motcle("Turbulence") };
 
   return Neumann_homogene::readOn(s);
 }
