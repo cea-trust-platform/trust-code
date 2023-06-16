@@ -70,6 +70,7 @@ void Op_Dift_Multiphase_VDF_Face::completer()
   nu_t_ = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue()->valeurs();
   nu_t_ = 0.;
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE, Eval_Dift_Multiphase_VDF_Face>(nu_t_);
+  ref_cast(Viscosite_turbulente_base, corr_.valeur()).eddy_viscosity(nu_t_); //remplissage par la correlation
 }
 
 void Op_Dift_Multiphase_VDF_Face::mettre_a_jour(double temps)
