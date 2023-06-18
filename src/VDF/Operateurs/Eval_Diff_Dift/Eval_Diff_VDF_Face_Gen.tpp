@@ -111,7 +111,7 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::flux_arete(const DoubleTab& inco, const Doubl
 
           const int ind = DERIVED_T::IS_ANISO ? ori : k;
           const double visc_lam = nu_lam_mean_2pts(elem1,elem2,ind), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1,elem2,ind) : 0.0;
-          const double tau  = (signe*(vit_imp-inco(fac3,k))/dist) - (signe * coeff * inco(fac3, k) / dist), tau_tr = 0.;
+          const double tau  = (signe*(vit_imp-inco(fac3,k))/dist) - (signe * coeff * inco(fac3, k)), tau_tr = 0.;
           flux[k] = ((tau + tau_tr) * (visc_lam + visc_turb)) * surf * poros;
         }
     }
@@ -135,11 +135,11 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::flux_arete(const DoubleTab& inco, const Doubl
   // fac3 est la face interne et fac1 et fac2 sont au bord Navier
   // XXX : WARNING : nu/nu_turb deja dans coeff
   const int ncomp = flux.size_array();
-  const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), dist = dist_norm_bord(fac1);
+  const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2);
   for (int k = 0; k < ncomp; k++)
     {
-      const double coeff = 0.25 * (Champ_Face_coeff_frottement_face_bord(fac1, k, la_zcl.valeur()) + Champ_Face_coeff_frottement_face_bord(fac2, k, la_zcl.valeur()));
-      const double tau = - signe * coeff * inco(fac3, k) / dist, tau_tr = 0.;
+      const double coeff = 0.5 * (Champ_Face_coeff_frottement_face_bord(fac1, k, la_zcl.valeur()) + Champ_Face_coeff_frottement_face_bord(fac2, k, la_zcl.valeur()));
+      const double tau = - signe * coeff * inco(fac3, k), tau_tr = 0.;
       flux[k] = (tau + tau_tr) * surf * poros;
     }
 }
@@ -179,7 +179,7 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::flux_arete(const DoubleTab& inco, const Doubl
       //         |
 
       // fac3 est la face interne et fac1 et fac2 sont au bord
-      const double tau_3 = (signe*(vit_imp-inco(fac3,k))/dist1) -(signe * coeff * inco(fac3, k) / dist1),
+      const double tau_3 = (signe*(vit_imp-inco(fac3,k))/dist1) -(signe * coeff * inco(fac3, k)),
                    tau_12 = (inco(fac2,k)-inco(fac1,k))/dist2, tau_tr_3 = ACTIVATE_TAU_TR ? tau_12 : 0.0, tau_tr_12 = ACTIVATE_TAU_TR ? tau_3 : 0.0;
 
       flux3[k] = ((tau_3 + tau_tr_3) * (visc_lam + visc_turb)) * surf * poros;
@@ -304,7 +304,7 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::coeffs_arete(const DoubleTab*, int fac1, int 
           if (!is_PAROI) // NAVIER_PAROI
             coeff = 0.5 * (Champ_Face_coeff_frottement_face_bord(fac1, k, la_zcl.valeur()) + Champ_Face_coeff_frottement_face_bord(fac2, k, la_zcl.valeur()));
 
-          const double d_tau = signe / dist - (signe * coeff / dist), d_tau_tr = 0.; // On a pas derive ... deja nul dans le flux !
+          const double d_tau = signe / dist - (signe * coeff), d_tau_tr = 0.; // On a pas derive ... deja nul dans le flux !
           const int ind = DERIVED_T::IS_ANISO ? ori : k;
           const double visc_lam = nu_lam_mean_2pts(elem1,elem2,ind), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1,elem2,ind) : 0.;
           aii1_2[k] = ajj1_2[k] = 0.;
@@ -332,7 +332,7 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::coeffs_arete(const DoubleTab*, int fac1, int 
       if (is_NAV_FL)
         coeff = 0.5 * (Champ_Face_coeff_frottement_face_bord(fac1, k, la_zcl.valeur()) + Champ_Face_coeff_frottement_face_bord(fac2, k, la_zcl.valeur()));
 
-      const double d_tau_3 = (signe / dist1) - (signe * coeff / dist1), d_tau_tr_3 = 0., // On derive par rapport a fac3
+      const double d_tau_3 = (signe / dist1) - (signe * coeff), d_tau_tr_3 = 0., // On derive par rapport a fac3
                    d_tau_12 = 1. / dist2, d_tau_tr_12 = 0.; // On derive par rapport a fac1 et fac2
 
       const int ind = DERIVED_T::IS_ANISO ? ori : k;
@@ -350,14 +350,14 @@ Eval_Diff_VDF_Face_Gen<DERIVED_T>::coeffs_arete(const DoubleTab*, int fac1, int 
 {
   assert(aii1_2.size_array() == aii3.size_array() && aii1_2.size_array() == ajj1_2.size_array());
   const int elem1 = elem_(fac3,0), elem2 = elem_(fac3,1), ncomp = aii1_2.size_array(), ori = orientation(fac3);
-  const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), dist1 = dist_norm_bord(fac1), dist2 = dist_face(fac1,fac2,ori), surfporos = surface(fac3)*porosite(fac3);
+  const double surf = surface_(fac1,fac2), poros = porosity_(fac1,fac2), dist2 = dist_face(fac1,fac2,ori), surfporos = surface(fac3)*porosite(fac3);
 
   for (int k = 0; k < ncomp; k++)
     {
       const int ind = DERIVED_T::IS_ANISO ? ori : k;
       const double visc_lam = nu_lam_mean_2pts(elem1, elem2, ind), visc_turb = DERIVED_T::IS_TURB ? nu_mean_2pts(elem1, elem2, ind) : 0.0;
       const double coeff = 0.5 * (Champ_Face_coeff_frottement_face_bord(fac1, k, la_zcl.valeur()) + Champ_Face_coeff_frottement_face_bord(fac2, k, la_zcl.valeur()));
-      const double d_tau_3 = - (signe * coeff / dist1), d_tau_tr_3 = 0., // On derive par rapport a fac3
+      const double d_tau_3 = - (signe * coeff), d_tau_tr_3 = 0., // On derive par rapport a fac3
                    d_tau_12 = 1. / dist2, d_tau_tr_12 = 0.; // On derive par rapport a fac1 et fac2
 
       aii3[k] = ((d_tau_3 + d_tau_tr_3) * (visc_lam + visc_turb)) * surf * poros;
