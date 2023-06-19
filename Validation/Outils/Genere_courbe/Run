@@ -213,6 +213,11 @@ then
      END {print n " calculations are run on a total of "nb_cpus" CPUs/jobs ..."}' cmds`
      echo $nb_tasks
      nb_cmds=`ls cmds*.sh 2>/dev/null | wc -l`
+     BATCH_SYSTEM_DETECTED=0
+     for cmd in sinfo qstat bqueues
+     do
+       [ "`$cmd --help 2>&1 1>/dev/null;echo $?`" = 0 ] && BATCH_SYSTEM_DETECTED=1 && break
+     done
      # On boucle et on execute chaque commande
      cmd_id=0
      for cmd in cmds*.sh 
@@ -242,9 +247,9 @@ then
                  sleep 1
               done
           }
-          if [ $TRUST_WITHOUT_HOST -eq 1 ]; then
-						max_bg_procs $TRUST_NB_PROCS
-					fi
+          if [ $BATCH_SYSTEM_DETECTED -eq 0 ]; then
+            max_bg_procs $TRUST_NB_PROCS
+          fi
           awk -F'"' '{print $2}' $cmd
           bash ./$cmd &
 

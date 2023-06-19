@@ -469,7 +469,7 @@ if  __name__ == '__main__':
     if (atelier):
         out=open('CMakeLists.txt','w')
         out.write('''
-cmake_minimum_required(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
 
 include_directories(.)
 set(ATELIER  ON)
