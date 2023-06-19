@@ -72,6 +72,7 @@ public:
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
   void update_monofluide_to_phase_value();
   void update_indicatrice(const IJK_Field_double & indic, const int ft_extension);
+  void update_I_sigma_kappa(const IJK_Field_double & indic_ft, const IJK_Field_double & courbure_ft, const int ft_extension, const double sigma);
   double calculer_distance(Vecteur3 & pos_ijk, const Vecteur3 xyz_cible);
   _TYPE_ fourth_order_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
   _TYPE_ second_order_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
@@ -82,6 +83,8 @@ public:
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_liquide_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_vapeur_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> sigma_kappa_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ ;
 
 protected:
   REF(IJK_Splitting) splitting_ref_;
