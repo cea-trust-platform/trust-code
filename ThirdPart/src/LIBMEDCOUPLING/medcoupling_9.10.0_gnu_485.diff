@@ -24,31 +24,3 @@ diff -u Interpolation3D1D.txx Interpolation3D1D.txx
  
      // for each target element, get source elements with which to calculate intersection
      // - calculate intersection by calling intersectCells
-diff -u InterpolationHelper.txx InterpolationHelper.txx
---- InterpolationHelper.txx	2022-11-22 12:19:01.000000000 +0100
-+++ InterpolationHelper.txx	2023-03-21 12:54:45.822888302 +0100
-@@ -30,12 +30,6 @@
- namespace INTERP_KERNEL
- {
-   template<class MyMeshType>
--  BBTreeStandAlone<3,typename MyMeshType::MyConnType> BuildBBTree(const MyMeshType& srcMesh)
--  {
--    return BuildBBTreeWithAdjustment(srcMesh,[](double *,typename MyMeshType::MyConnType){});
--  }
--  
--  template<class MyMeshType>
-   BBTreeStandAlone<3,typename MyMeshType::MyConnType> BuildBBTreeWithAdjustment(const MyMeshType& srcMesh, std::function<void(double *,typename MyMeshType::MyConnType)> bboxAdjuster)
-   {
-     using ConnType = typename MyMeshType::MyConnType;
-@@ -55,4 +49,11 @@
-     bboxAdjuster(bboxes.get(),nbElts);
-     return BBTreeStandAlone<3,ConnType>(std::move(bboxes),numSrcElems);
-   }
-+
-+  template<class MyMeshType>
-+  BBTreeStandAlone<3,typename MyMeshType::MyConnType> BuildBBTree(const MyMeshType& srcMesh)
-+  {
-+    std::function<void(double *,typename MyMeshType::MyConnType)> bboxAdjuster = [](double *,typename MyMeshType::MyConnType){};
-+    return BuildBBTreeWithAdjustment(srcMesh, bboxAdjuster);
-+  }
- }

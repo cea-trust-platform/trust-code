@@ -76,18 +76,13 @@ then
    export CXXFLAGS="$CXXFLAGS -I${TRUST_ROOT}/exec/python/include/python3.8"
    export LDFLAGS="$LDFLAGS -Wl,-undefined,dynamic_lookup"
 fi
-# Patch for MacOS
-[ `uname -s` = "Darwin" ] && (cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/medcoup_mac.patch)
 # Patch for GNU 4.8.5
+echo "Applying patch for old compilers (gcc 4.8.5) ..."
 cd ../$src_dir/src/INTERP_KERNEL; patch -p0 < $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/medcoupling_9.10.0_gnu_485.diff || exit -1
 cd - 1>/dev/null 2>&1
-# Other patches
-echo "Applying patch for // loading of fields ..."
-(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_para.patch)
-echo "Applying patch for write40 ..."
-(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/write40.patch)
-echo "Applying patch for colinearizeEdges and DEC ctors ..."
-(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_colin.patch)
+# Patch for conformize3d
+echo "Applying patch for conformize3d ..."
+(cd ../$src_dir; patch -p1 < ${TRUST_ROOT}/ThirdPart/src/LIBMEDCOUPLING/mc_conf3d.patch)
 
 # Better detection of SWIG on Ubuntu 16
 SWIG_EXECUTABLE=`type -p swig`

@@ -1,0 +1,97 @@
+diff --git a/src/INTERP_KERNEL/VectorUtils.hxx b/src/INTERP_KERNEL/VectorUtils.hxx
+index 47be64cd..fb695573 100644
+--- a/src/INTERP_KERNEL/VectorUtils.hxx
++++ b/src/INTERP_KERNEL/VectorUtils.hxx
+@@ -159,6 +159,16 @@ namespace INTERP_KERNEL
+     return epsilonEqual(dot(cros, cros), 0.0, eps);
+   }
+ 
++  /**
++   * Caracteristic vector size (its biggest component, in absolute)
++   */
++  inline double caracteristicDimVector(const double *v)
++  {
++    double ret = 0;
++    for (int i = 0; i < 3; i++)
++      ret = std::max(ret, std::fabs(v[i]));
++    return ret;
++  }
+ 
+   /**
+    * Compares doubles using a relative tolerance
+diff --git a/src/MEDCoupling/MEDCouplingUMesh_intersection.cxx b/src/MEDCoupling/MEDCouplingUMesh_intersection.cxx
+index 16677a3d..4d591558 100644
+--- a/src/MEDCoupling/MEDCouplingUMesh_intersection.cxx
++++ b/src/MEDCoupling/MEDCouplingUMesh_intersection.cxx
+@@ -2339,7 +2339,7 @@ void MEDCouplingUMesh::ReplaceEdgeInFace(const mcIdType * sIdxConn, const mcIdTy
+  * \b WARNING this method only works for 'partition-like' non-conformities. When joining adjacent faces, the set of all small faces must fit exactly into the
+  * neighboring bigger face. No real face intersection is actually computed.
+  *
+- * \param [in] eps the relative error to detect merged edges.
++ * \param [in] eps the absolute (geometric) error to detect merged edges.
+  * \return DataArrayIdType  * - The list of cellIds in \a this that have been subdivided. If empty, nothing changed in \a this (as if it were a const method). The array is a newly allocated array
+  *                           that the user is expected to deal with.
+  *
+@@ -2363,6 +2363,7 @@ DataArrayIdType *MEDCouplingUMesh::conformize3D(double eps)
+   MCAuto<MEDCouplingSkyLineArray> connSla(MEDCouplingSkyLineArray::BuildFromPolyhedronConn(getNodalConnectivity(), getNodalConnectivityIndex()));
+   const double * coo(_coords->begin());
+   MCAuto<DataArrayIdType> ret(DataArrayIdType::New()); ret->alloc(0,1);
++  const double carMeshSz = getCaracteristicDimension();
+ 
+   {
+     /*************************
+@@ -2409,14 +2410,14 @@ DataArrayIdType *MEDCouplingUMesh::conformize3D(double eps)
+         // Keep only candidates whose normal matches the normal of current face
+         for(vector<mcIdType>::const_iterator it2=candidates.begin();it2!=candidates.end();it2++)
+           {
+-            bool col = INTERP_KERNEL::isColinear3D(normalsP + faceIdx*SPACEDIM, normalsP + *(it2)*SPACEDIM, eps);
++            bool col = INTERP_KERNEL::isColinear3D(normalsP + faceIdx*SPACEDIM, normalsP + *(it2)*SPACEDIM, eps/carMeshSz); // using rough relative epsilon
+             if (*it2 != faceIdx && col)
+               cands2.push_back(*it2);
+           }
+         if (!cands2.size())
+           continue;
+ 
+-        // Now rotate, and match barycenters -- this is where we will bring Intersect2DMeshes later
++        // Now rotate, and match barycenters -- this is where we will bring Intersect2DMeshes one day
+         INTERP_KERNEL::TranslationRotationMatrix rotation;
+         INTERP_KERNEL::TranslationRotationMatrix::Rotate3DTriangle(coo+SPACEDIM*(cDesc[cIDesc[faceIdx]+1]),
+                                                                    coo+SPACEDIM*(cDesc[cIDesc[faceIdx]+2]),
+@@ -2579,13 +2580,17 @@ DataArrayIdType *MEDCouplingUMesh::conformize3D(double eps)
+         mcIdType start = cDesc2[cIDesc2[eIdx]+1], end = cDesc2[cIDesc2[eIdx]+2];
+         for (mcIdType i3=0; i3 < 3; i3++)  // TODO: use fillSonCellNodalConnectivity2 or similar?
+           vCurr[i3] = coo[start*SPACEDIM+i3] - coo[end*SPACEDIM+i3];
++        double carSz = INTERP_KERNEL::caracteristicDimVector(vCurr), eps2 = eps*carSz*carSz*carSz;
+         for(vector<mcIdType>::const_iterator it2=candidates.begin();it2!=candidates.end();it2++)
+           {
+             double vOther[3];
+             mcIdType start2 = cDesc2[cIDesc2[*it2]+1], end2 = cDesc2[cIDesc2[*it2]+2];
+             for (mcIdType i3=0; i3 < 3; i3++)
+               vOther[i3] = coo[start2*SPACEDIM+i3] - coo[end2*SPACEDIM+i3];
+-            bool col = INTERP_KERNEL::isColinear3D(vCurr, vOther, eps);
++            // isColinear() expect unit vecotr, and relative (non geometrical) precision.
++            //    relative prec means going from eps -> eps/curSz
++            //    normalizing vCurr and vOther means multiplying by v^4, knowing that inside isColinear3D() the square (^2) of a dot product (^2) is computed
++            bool col = INTERP_KERNEL::isColinear3D(vCurr, vOther, eps2);
+             // Warning: different from faces: we need to keep eIdx in the final list of candidates because we need
+             // to have its nodes inside the sub mesh mPartCand below (needed in OrderPointsAlongLine())
+             if (col)
+@@ -2600,7 +2605,7 @@ DataArrayIdType *MEDCouplingUMesh::conformize3D(double eps)
+         INTERP_KERNEL::TranslationRotationMatrix rotation;
+         INTERP_KERNEL::TranslationRotationMatrix::Rotate3DBipoint(coo+SPACEDIM*startNode, coo+SPACEDIM*endNode, rotation);
+         MCAuto<MEDCouplingUMesh> mPartRef(mDesc2->buildPartOfMySelfSlice(eIdx, eIdx+1,1,false));  // false=zipCoords is called
+-        MCAuto<MEDCouplingUMesh> mPartCand(mDesc2->buildPartOfMySelf(&cands2[0], &cands2[0]+cands2.size(), true)); // true=zipCoords is called
++        MCAuto<MEDCouplingUMesh> mPartCand(mDesc2->buildPartOfMySelf(&cands2[0], &cands2[0]+cands2.size(), true)); // true=zipCoords is NOT called
+         MCAuto<DataArrayIdType> nodeMap(mPartCand->zipCoordsTraducer());
+         mcIdType nbElemsNotM1;
+         {
+@@ -2615,8 +2620,7 @@ DataArrayIdType *MEDCouplingUMesh::conformize3D(double eps)
+         for (mcIdType ii = 0; ii < mPartCand->_coords->getNumberOfTuples(); ii++)
+           rotation.transform_vector(cooPartCand+SPACEDIM*ii);
+ 
+-
+-        // Eliminate all edges for which y or z is not null
++        // Eliminate all edges for which y or z is not null - those are colinear edges which are simply parallels, but not on the same line
+         MCAuto<DataArrayDouble> baryPart = mPartCand->computeCellCenterOfMass();
+         vector<std::size_t> compo; compo.push_back(1);
+         MCAuto<DataArrayDouble> baryPartY = baryPart->keepSelectedComponents(compo);
