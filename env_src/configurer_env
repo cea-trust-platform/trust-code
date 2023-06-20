@@ -1023,7 +1023,7 @@ then
     sys.exit(main())
 "
       $TRUST_Awk -v r="$s" '{gsub(/sys.exit\(main\(\)\)/,r)}1' $jupyter_nb_exe > jupyter-notebook_tmp
-      cat jupyter-notebook_tmp > $jupyter_nb_exe
+      cat jupyter-notebook_tmp | sed "s@$TRUST_ROOT/exec/python/bin/python@/usr/bin/env python@" > $jupyter_nb_exe
       rm -f jupyter-notebook_tmp
    fi
 
