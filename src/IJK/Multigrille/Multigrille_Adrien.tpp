@@ -190,8 +190,6 @@ void Multigrille_Adrien::set_inv_rho_template(const IJK_Field_template<_TYPE_,_T
 // Precondition: ghost cells for secmem must be up to date.
 //  The number of required ghost layers is n_jacobi + (1 if residu is required)
 // Postcondition: ghost cells are not updated
-// jacobi_residu_ est la methode de resolution du solver precision_mixte multigrille qu'on utilise
-// --> ici qu'on doit modifier le seconde membre (secmem) a chaque iteration
 template <typename _TYPE_, typename _TYPE_ARRAY_>
 void Multigrille_Adrien::jacobi_residu_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
                                         const IJK_Field_template<_TYPE_,_TYPE_ARRAY_> *secmem,

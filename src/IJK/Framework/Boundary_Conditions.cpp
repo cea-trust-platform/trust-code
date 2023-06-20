@@ -32,6 +32,7 @@ Boundary_Conditions::Boundary_Conditions()
   dU_perio_ = 0.;
   t0_shear_=0.;
   defilement_=0;
+  interp_monofluide_=0;
   resolution_u_prime_=0;
 }
 
@@ -47,6 +48,7 @@ Entree& Boundary_Conditions::readOn(Entree& is)
   param.ajouter("dU_perio", &dU_perio_);
   param.ajouter("t0_shear", &t0_shear_);
   param.ajouter("defilement", &defilement_);
+  param.ajouter("interp_monofluide", &interp_monofluide_);
   param.ajouter("resolution_u_prime", &resolution_u_prime_);
   param.ajouter("bctype_kmin", &bctype_kmin_, Param::REQUIRED);
   param.dictionnaire("Paroi", Paroi);

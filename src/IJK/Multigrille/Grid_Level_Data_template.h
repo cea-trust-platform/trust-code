@@ -58,8 +58,6 @@ public:
   IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_rho() { return ijk_rho_; }
   const IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_rho() const { return ijk_rho_; }
   IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_x() { return ijk_x_; }
-
-  // retourne le second membre dans lequel est store pressure_rhs
   IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_rhs() { return ijk_rhs_; }
   IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_update_residue() { return ijk_residue_; }
   const IJK_Field_template<_TYPE_,TRUSTArray<_TYPE_>>& get_faces_coefficients() const { return ijk_faces_coefficients_; }

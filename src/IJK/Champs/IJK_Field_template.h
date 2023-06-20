@@ -59,7 +59,7 @@ public:
     IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>(),
     localisation_(IJK_Splitting::Localisation::ELEM)
   { }
-  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, bool monofluide=false);
+  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0.);
 
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
 
@@ -68,23 +68,29 @@ public:
   IJK_Splitting::Localisation get_localisation() const { return localisation_; }
   void echange_espace_virtuel(int ghost, double Shear_DU=0.);
   void change_to_sheared_reference_frame(double sens, int loc, int time=1);
-  void change_to_u_prime_to_u(double sens, int loc, double jump_i);
+  void ajouter_second_membre_shear_perio(IJK_Field_double& resu);
   void redistribute_with_shear_domain_ft(const IJK_Field_double& input_field, double DU_perio, int dir=-1);
-  void update_monofluide_to_phase_value();
-  void update_indicatrice(const IJK_Field_double & indic, const int ft_extension);
-  void update_I_sigma_kappa(const IJK_Field_double & indic_ft, const IJK_Field_double & courbure_ft, const int ft_extension, const double sigma);
-  double calculer_distance(Vecteur3 & pos_ijk, const Vecteur3 xyz_cible);
-  _TYPE_ fourth_order_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
-  _TYPE_ second_order_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
+  void update_I_sigma_kappa(const IJK_Field_double& indic_ft, const IJK_Field_double& courbure_ft, const int ft_extension, const double sigma);
+  void relever_I_sigma_kappa_ns(IJK_Field_double& field_ns);
+  _TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
+//  _TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
+//  _TYPE_ linear_interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
+//  _TYPE_ interpolation_order_zero_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
 
 
-  bool monofluide_variable_ ;
+
+  int monofluide_variable_ ;
   int order_interpolation_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_liquide_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_vapeur_ ;
-  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ ;
-  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> sigma_kappa_ ;
-  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ ;
+//  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ ;
+//  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmin_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmax_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmin_ ;
+  IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmax_ ;
+  double rho_v_;
+  double rho_l_;
 
 protected:
   REF(IJK_Splitting) splitting_ref_;

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,23 +52,23 @@ public:
     return renum_p2_(k+1, j+1, i+1);
   }
 
-  const double& ponderation_shear_m2(int i, int j, int k) const
+  const int& ponderation_shear_m2(int i, int j, int k) const
   {
     return ponderation_shear_m2_(k+1, j+1, i+1);
   }
-  const double& ponderation_shear_m1(int i, int j, int k) const
+  const int& ponderation_shear_m1(int i, int j, int k) const
   {
     return ponderation_shear_m1_(k+1, j+1, i+1);
   }
-  const double& ponderation_shear_0(int i, int j, int k) const
+  const int& ponderation_shear_0(int i, int j, int k) const
   {
     return ponderation_shear_0_(k+1, j+1, i+1);
   }
-  const double& ponderation_shear_p1(int i, int j, int k) const
+  const int& ponderation_shear_p1(int i, int j, int k) const
   {
     return ponderation_shear_p1_(k+1, j+1, i+1);
   }
-  const double& ponderation_shear_p2(int i, int j, int k) const
+  const int& ponderation_shear_p2(int i, int j, int k) const
   {
     return ponderation_shear_p2_(k+1, j+1, i+1);
   }
@@ -80,6 +80,26 @@ public:
   const MD_Vector& md_vector() const
   {
     return md_;
+  }
+  const MD_Vector& md_m1_vector() const
+  {
+    return md_m1_;
+  }
+  const MD_Vector& md_p1_vector() const
+  {
+    return md_p1_;
+  }
+  const MD_Vector& md_pond_m1_vector() const
+  {
+    return md_pond_m1_;
+  }
+  const MD_Vector& md_pond_0_vector() const
+  {
+    return md_pond_0_;
+  }
+  const MD_Vector& md_pond_p1_vector() const
+  {
+    return md_pond_p1_;
   }
 
 protected:
@@ -109,23 +129,23 @@ protected:
   }
 
 
-  double& ponderation_shear_m2(int i, int j, int k)
+  int& ponderation_shear_m2(int i, int j, int k)
   {
     return ponderation_shear_m2_(k+1, j+1, i+1);
   }
-  double& ponderation_shear_m1(int i, int j, int k)
+  int& ponderation_shear_m1(int i, int j, int k)
   {
     return ponderation_shear_m1_(k+1, j+1, i+1);
   }
-  double& ponderation_shear_0(int i, int j, int k)
+  int& ponderation_shear_0(int i, int j, int k)
   {
     return ponderation_shear_0_(k+1, j+1, i+1);
   }
-  double& ponderation_shear_p1(int i, int j, int k)
+  int& ponderation_shear_p1(int i, int j, int k)
   {
     return ponderation_shear_p1_(k+1, j+1, i+1);
   }
-  double& ponderation_shear_p2(int i, int j, int k)
+  int& ponderation_shear_p2(int i, int j, int k)
   {
     return ponderation_shear_p2_(k+1, j+1, i+1);
   }
@@ -133,25 +153,37 @@ protected:
 
 
   void add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                     int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting, double offset = 0.);
+          int imax, int jmax, int kmax, ArrOfInt& virt_blocs_m1, ArrOfInt& virt_blocs, ArrOfInt& virt_blocs_p1,
+		  ArrOfInt& virt_blocs_pond_m1,ArrOfInt& virt_blocs_pond_0,ArrOfInt& virt_blocs_pond_p1,
+		  IJK_Splitting splitting, double offset = 0.);
   void add_dist_bloc(int pe, int imin, int jmin, int kmin,
-                     int imax, int jmax, int kmax, ArrOfInt& items_to_send, IJK_Splitting splitting, double offset = 0.);
+                     int imax, int jmax, int kmax,
+                     ArrOfInt& items_to_send_m1,ArrOfInt& items_to_send,ArrOfInt& items_to_send_p1,
+                     ArrOfInt& items_to_send_ponderation_shear_m1,ArrOfInt& items_to_send_ponderation_shear_0,ArrOfInt& items_to_send_ponderation_shear_p1,
+                     IJK_Splitting splitting, double offset = 0.);
 
   Matrice_Bloc mat_;
 
+  MD_Vector md_p1_;
   MD_Vector md_;
+  MD_Vector md_m1_;
+  MD_Vector md_pond_m1_;
+  MD_Vector md_pond_0_;
+  MD_Vector md_pond_p1_;
 
   // renum_(k+1,j+1,i+1) = indice de l'inconnue dans le vecteur inconnue de la matrice
+
+  int interpolation_order_ = 2;
   IntTab renum_;
   IntTab renum_m2_;
   IntTab renum_m1_;
   IntTab renum_p1_;
   IntTab renum_p2_;
-  DoubleTab ponderation_shear_m2_;
-  DoubleTab ponderation_shear_m1_;
-  DoubleTab ponderation_shear_0_;
-  DoubleTab ponderation_shear_p1_;
-  DoubleTab ponderation_shear_p2_;
+  IntTab ponderation_shear_m2_;
+  IntTab ponderation_shear_m1_;
+  IntTab ponderation_shear_0_;
+  IntTab ponderation_shear_p1_;
+  IntTab ponderation_shear_p2_;
 
   IntLists voisins_;
   DoubleLists coeffs_;

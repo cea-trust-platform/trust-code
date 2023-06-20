@@ -35,6 +35,7 @@ public:
   double get_dU_perio(int fluctuations=0) { if (!fluctuations) {return dU_perio_;} else {return 0.;}}
   double get_t0_shear() { return t0_shear_; }
   int get_defilement() { return defilement_; }
+  int get_correction_interp_monofluide() { return interp_monofluide_; }
   int get_resolution_u_prime_() { return resolution_u_prime_; }
 
 protected:
@@ -43,6 +44,7 @@ protected:
   double dU_perio_;
   double t0_shear_;
   int defilement_;
+  int interp_monofluide_;
   int resolution_u_prime_;
 };
 

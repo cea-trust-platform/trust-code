@@ -36,11 +36,6 @@ public:
                     IJK_Field_double& output_field, int dir=-1, double dU_shear=0)
   {
     redistribute_(input_field, output_field, dU_shear, false);
-    if (dir != -1)
-      {
-        output_field.redistribute_with_shear_domain_ft(input_field, dU_shear,  dir);
-      }
-
   }
   template<class T,int N>
   void redistribute(const FixedVector<T, N>& input_field,

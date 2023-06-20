@@ -451,8 +451,6 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
         }
       // k component:
       bool on_the_wall = false;
-      //bool on_kmin_shear_perio = false;
-
       const int k_min = vz.get_splitting().get_offset_local(DIRECTION_K);
       const int nk_tot = vz.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
       const int offset = vz.get_splitting().get_offset_local(DIRECTION_K);
@@ -461,10 +459,6 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
 
       if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
         on_the_wall = true;
-//      if (k + k_min == 0 && IJK_Splitting::defilement_ == 1)
-//    	on_kmin_shear_perio = true;
-
-
       if (k < vz.nk() && (!on_the_wall))
         {
           const int jmax = vz.nj();
@@ -479,17 +473,8 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
               f = (constant /  delta_z_all[k+offset]) * 2.;
             }
           for (int j = 0; j < jmax; j++)
-          {
             for (int i = 0; i < imax; i++)
-            {
-              // debug projection velocity_z, on evite daller chercher la valeur interpoler pour eviter les valeurs abberantes
-              // attention, degrade sure la solution divergence nulle...
-//              if (on_kmin_shear_perio)
-//				  vz(i,j,k) += (pressure(i,j,k+1) - pressure(i,j,k)) / (rho(i,j,k+1) + rho(i,j,k)) * f;
-//			  else
-				  vz(i,j,k) += (pressure(i,j,k) - pressure(i,j,k-1)) / (rho(i,j,k) + rho(i,j,k-1)) * f;
-            }
-          }
+              vz(i,j,k) += (pressure(i,j,k) - pressure(i,j,k-1)) / (rho(i,j,k) + rho(i,j,k-1)) * f;
         }
     }
 }
@@ -561,6 +546,7 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
+                         IJK_Field_double& pressure_rhs_before_shear,
                          int check_divergence,
                          Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
@@ -571,6 +557,37 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+
+  // terme a ajouter au second membre pour la resolution de la matrice de pression
+  // uniquement dans le cas de condition shear-periodique.
+  // Permet de compenser l interpolation de la pression monofluide
+  if (IJK_Splitting::defilement_ == 1)
+    {
+      for (int k = 0; k < pressure_rhs.nk(); k++)
+        {
+          for (int j = 0; j < pressure_rhs.nj(); j++)
+            {
+              for (int i = 0; i < pressure_rhs.ni(); i++)
+                {
+                  pressure_rhs_before_shear(i,j,k) -= pressure_rhs(i,j,k);
+                }
+            }
+        }
+
+      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+
+      for (int k = 0; k < pressure_rhs.nk(); k++)
+        {
+          for (int j = 0; j < pressure_rhs.nj(); j++)
+            {
+              for (int i = 0; i < pressure_rhs.ni(); i++)
+                {
+                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
+                }
+            }
+        }
+    }
+
   double divergence_before = 0.;
   if (check_divergence)
     {
@@ -607,6 +624,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
+                                  IJK_Field_double& pressure_rhs_before_shear,
                                   int check_divergence,
                                   Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
@@ -617,6 +635,35 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  // terme a ajouter au second membre pour la resolution de la matrice de pression
+  // uniquement dans le cas de condition shear-periodique.
+  // Permet de compenser l interpolation de la pression monofluide
+  if (IJK_Splitting::defilement_ == 1)
+    {
+      for (int k = 0; k < pressure_rhs.nk(); k++)
+        {
+          for (int j = 0; j < pressure_rhs.nj(); j++)
+            {
+              for (int i = 0; i < pressure_rhs.ni(); i++)
+                {
+                  pressure_rhs_before_shear(i,j,k) -= pressure_rhs(i,j,k);
+                }
+            }
+        }
+
+      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+
+      for (int k = 0; k < pressure_rhs.nk(); k++)
+        {
+          for (int j = 0; j < pressure_rhs.nj(); j++)
+            {
+              for (int i = 0; i < pressure_rhs.ni(); i++)
+                {
+                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
+                }
+            }
+        }
+    }
   double divergence_before = 0.;
   if (check_divergence)
     {
@@ -647,6 +694,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
+                                      IJK_Field_double& pressure_rhs_before_shear,
                                       int check_divergence,
                                       Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
@@ -657,6 +705,35 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
   compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  // terme a ajouter au second membre pour la resolution de la matrice de pression
+  // uniquement dans le cas de condition shear-periodique.
+  // Permet de compenser l interpolation de la pression monofluide
+  if (IJK_Splitting::defilement_ == 1)
+    {
+      for (int k = 0; k < pressure_rhs.nk(); k++)
+        {
+          for (int j = 0; j < pressure_rhs.nj(); j++)
+            {
+              for (int i = 0; i < pressure_rhs.ni(); i++)
+                {
+                  pressure_rhs_before_shear(i,j,k) = - pressure_rhs(i,j,k);
+                }
+            }
+        }
+
+      pressure.ajouter_second_membre_shear_perio(pressure_rhs);
+
+      for (int k = 0; k < pressure_rhs.nk(); k++)
+        {
+          for (int j = 0; j < pressure_rhs.nj(); j++)
+            {
+              for (int i = 0; i < pressure_rhs.ni(); i++)
+                {
+                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
+                }
+            }
+        }
+    }
   double divergence_before = 0.;
   if (check_divergence)
     {
