@@ -102,6 +102,8 @@ public :
   void init_cv_ctx(const DoubleTab& secmem, const DoubleVect& norm);
 #endif
 
+  double facsec_diffusion_for_sets() const { return facsec_diffusion_for_sets_;};
+
 protected :
 
   int iter_min_ = 1, iter_max_ = 10; //nombre d'iterations min/max de l'etape non-lineaire

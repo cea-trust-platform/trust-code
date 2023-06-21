@@ -21,6 +21,7 @@
 #include <Pb_Multiphase.h>
 #include <Domaine.h>
 #include <EChaine.h>
+#include <Debog.h>
 #include <SETS.h>
 
 Implemente_instanciable(Pb_Multiphase, "Pb_Multiphase", Pb_Fluide_base);
@@ -334,6 +335,47 @@ void Pb_Multiphase::completer()
     {
       corr.second->completer();
     }
+}
+
+double Pb_Multiphase::calculer_pas_de_temps() const
+{
+  if sub_type(ICE, ref_cast(Schema_Euler_Implicite, le_schema_en_temps.valeur()).solveur().valeur()) return Pb_Fluide_base::calculer_pas_de_temps() ;
+  else if (ref_cast(SETS, ref_cast(Schema_Euler_Implicite, le_schema_en_temps.valeur()).solveur().valeur()).facsec_diffusion_for_sets()<0.) return Pb_Fluide_base::calculer_pas_de_temps() ;
+
+  // Case where we calculate the time step with higher facsec for diffusion
+
+  double dt=schema_temps().pas_temps_max();
+  for(int i=0; i<nombre_d_equations(); i++)
+    {
+      double dt_op;
+
+      int nb_op = equation(i).nombre_d_operateurs();
+      for(int j=0; j<nb_op; j++)
+        {
+          dt_op = equation(i).operateur(j).calculer_pas_de_temps();
+
+          const Operateur_base& op=equation(i).operateur(j).l_op_base();
+
+          if (le_schema_en_temps->limpr())
+            {
+              if (j == 0)
+                {
+                  Cout << " " << finl;
+                  Cout << "Printing of the next provisional time steps for the equation: " << equation(i).que_suis_je() << finl;
+                }
+              if (sub_type(Operateur_Conv_base,op))
+                Cout << "   convective";
+              else if (sub_type(Operateur_Diff_base,op))
+                Cout << "   diffusive";
+              else
+                Cout << "   operator ";
+              Cout<<" time step : "<< dt_op << finl;
+            }
+          if (sub_type(Operateur_Diff_base,op)) dt_op *= ref_cast(SETS, ref_cast(Schema_Euler_Implicite, le_schema_en_temps.valeur()).solveur().valeur()).facsec_diffusion_for_sets();
+          dt=std::min(dt,dt_op);
+        }
+    }
+  return dt;
 }
 
 // Pb_HEM stuffs

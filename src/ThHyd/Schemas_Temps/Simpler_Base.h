@@ -95,6 +95,7 @@ protected :
   double facteur_convg_;
   int no_qdm_;
   int controle_residu_;
+  double facsec_diffusion_for_sets_ = -1.;
 
   virtual Entree& lire(const Motcle&, Entree&)=0;
 };

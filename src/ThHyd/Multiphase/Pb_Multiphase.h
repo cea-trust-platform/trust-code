@@ -65,6 +65,8 @@ public:
   const Nom& nom_phase(int i) const { return noms_phases_[i]; }
   const Noms& noms_phases() const { return noms_phases_; }
 
+  double calculer_pas_de_temps() const override;
+
   QDM_Multiphase eq_qdm;
   Energie_Multiphase eq_energie;
   Masse_Multiphase eq_masse;

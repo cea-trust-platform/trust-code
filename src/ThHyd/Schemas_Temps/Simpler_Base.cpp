@@ -122,6 +122,11 @@ Entree& Simpler_Base::readOn(Entree& is )
             }
           le_solveur_lu_ = Nom(toto.get_str());
         }
+      else if (motlu=="facsec_diffusion_for_sets")
+        {
+          Cerr << motlu << finl;
+          is >> facsec_diffusion_for_sets_;
+        }
       else
         {
           lire(motlu,is);

@@ -313,6 +313,20 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
       mat_pred["vitesse"].ajouter_multvect(current, secmem); //passage increment -> variable pour faire plaisir aux solveurs iteratifs
       solv_qdm.resoudre_systeme(mat_pred["vitesse"], secmem, current);
       semi_impl["vitesse"] = current;
+
+      if (facsec_diffusion_for_sets() > 0)
+        for (auto &&i_eq : eqs)
+          if (i_eq.second != &eq_qdm)
+            {
+              Cerr << "Prediction of " << i_eq.first << finl ;
+              const DoubleTab inut_loc(0) ;
+              iterer_eqn(*i_eq.second, inut_loc, i_eq.second->inconnue().valeurs(), dt, 0, ok);
+              /*
+                            semi_impl[i_eq.first] = (*i_eq.second).inconnue().valeurs();
+                            if (i_eq.second->has_champ_conserve()) semi_impl[i_eq.second->champ_conserve().le_nom().getString()] = i_eq.second->champ_conserve().passe();
+                            if (i_eq.second->has_champ_convecte()) semi_impl[i_eq.second->champ_convecte().le_nom().getString()] = i_eq.second->champ_convecte().passe();
+              */
+            }
     }
   else semi_impl["vitesse"] = eq_qdm.inconnue().passe();
   eqn.solv_masse().corriger_solution(current, current, 0); //pour PolyMAC_P0 : vf -> ve
