@@ -34,21 +34,16 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC_P0  dis
-# VDF  dis #
-option_vdf { P_imposee_aux_faces oui }
-
+$dis  dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    tmax 5
+    tmax 2
     dt_max 0.1
-    solveur implicite
-    {
-        solveur petsc cli { }
-    }
+    facsec 1e30
+    solveur $solver { solveur petsc cholesky { } }
 }
 
 Associate  pb dom

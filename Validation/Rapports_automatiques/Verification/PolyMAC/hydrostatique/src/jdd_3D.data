@@ -1,6 +1,5 @@
 # Hydraulique 2D laminaire avec "trou" dans le maillage #
 # PARALLEL OK #
-# decoupeur ne marche pas #
 dimension 3
 Pb_hydraulique pb
 Domaine dom
@@ -8,14 +7,23 @@ Domaine dom
 # BEGIN MESH #
 Read_MED {
     domain dom
-    file nc.med
+    file mesh.med
 }
 # END MESH #
 
 # BEGIN PARTITION
+/*
+Postraiter_domaine
+{
+    fichier mesh.lata
+    format lata
+    domaine dom
+}
+*/
+
 Partition dom
 {
-    Partition_tool metis { nb_parts 2 }
+    Partition_tool tranche { tranches 2 1 }
     larg_joint 2
     zones_name DOM
 }
@@ -26,20 +34,16 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-PolyMAC_P0P1NC  dis
+$dis  dis
 
 Schema_euler_implicite sch
 Read sch
 {
     tinit 0
-    tmax 5
+    tmax 2
     dt_max 0.1
     facsec 1e30
-    seuil_statio 0
-    solveur implicite
-    {
-        solveur petsc cli { }
-    }
+    solveur $solver { solveur petsc cholesky { } }
 }
 
 Associate  pb dom
@@ -60,16 +64,16 @@ Read pb
         solveur_pression petsc cholesky { }
         convection { negligeable }
         diffusion  { negligeable }
-        sources    { source_qdm champ_uniforme 3 0 -10 0 }
+        sources    { source_qdm champ_uniforme 3 0 0 -10 }
         initial_conditions { vitesse Champ_Uniforme 3 0 0 0 }
         boundary_conditions
         {
-            haut paroi_fixe
-            bas paroi_fixe
-            gauche paroi_fixe
-            droite paroi_fixe
-            devant paroi_fixe
-            derriere paroi_fixe
+            up    frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 1e5
+            down  paroi_fixe
+            left  paroi_fixe
+            right paroi_fixe
+            front paroi_fixe
+            back  paroi_fixe
         }
     }
 
@@ -83,7 +87,7 @@ Read pb
                 sources
                 {
                     refChamp { Pb_champ pb pression nom_source p } ,
-                    transformation { methode formule expression 1 __EXPR__ localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode formule expression 1 1e5/2+10*(1-y) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_P_max reduction_0D { methode max sources_reference { erreur_P } }
@@ -110,14 +114,10 @@ Read pb
             pression elem
             pression_pa elem
             vitesse elem
-            # divergence_u elem #
-            # gradient_pression elem #
         }
     }
     sauvegarde formatte ascci.sauv
 }
-# On doit trouver les resultantes des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positives #
-# On doit trouver le moment des forces de pression et visqueuses exercees par le fluide sur la frontiere Obstacle positifs #
 Solve pb
 lata_to_other lml NOM_DU_CAS NOM_DU_CAS
 End
