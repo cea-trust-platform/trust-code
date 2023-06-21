@@ -1,0 +1,116 @@
+# TEST perte_charge_circulaire #
+# PARALLEL NOT #
+
+
+dimension 2
+domaine dom
+
+# BEGIN MESH #
+Mailler dom {
+    Pave Cavite {
+        Origine 0 0
+        Nombre_de_Noeuds 16 6
+        Longueurs 30. 10.
+    } {
+        Bord Haut Y = 10   0 <= X <= 30
+        Bord Bas Y = 0     0 <= X <= 30
+        Bord Entree X = 0 0 <= Y <= 10
+        Bord Sortie X = 30  0 <= Y <= 10
+    }
+}
+# Trianguler_H dom
+
+Sous_Zone zone1
+Associate zone1 dom
+Read zone1 {
+    Rectangle
+    Origine 0 0
+    Cotes   30 10
+}
+#
+# END MESH #
+
+
+
+
+Pb_hydraulique pb
+associate  pb dom
+
+Schema_euler_implicite sch
+lire sch
+{
+    tmax    1
+    nb_pas_dt_max 3
+    dt_max  1.
+    facsec 10
+    dt_impr 1e-8
+    seuil_statio 5e-2
+    solveur Piso { 
+                    seuil_convergence_solveur 1.e-5
+                    seuil_convergence_implicite 1e30
+                 }
+}
+associate  pb sch
+
+
+PolyMAC dis
+Discretize pb dis
+
+Read pb
+{
+
+   fluide_incompressible {
+        rho     Champ_Uniforme      1 3345.  # Formule : 3980 - 0.93T en °C, mais nous on est en K. On prend rho pour T0 = 957K #
+       Cp      Champ_Uniforme      1 1089.
+       mu      Champ_Uniforme      1 1.25e-2
+       lambda  Champ_Uniforme      1 2.60
+       Beta_th Champ_Uniforme      1 3.01e-4
+   }
+   
+       Navier_Stokes_standard
+    {
+        Solveur_pression Petsc cholesky { } 
+        convection { amont }
+        diffusion { }
+        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+        boundary_conditions
+        {
+            Haut              frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Debit Champ_Front_Uniforme 1 0.32e-2
+            Bas               frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0
+            Entree     symetrie
+            Sortie     paroi_fixe
+        }
+        sources
+        {
+            Perte_Charge_Circulaire
+            {
+                direction       champ_uniforme 2 0 1
+                diam_hydr       champ_uniforme 1 0.039865 
+                diam_hydr_ortho champ_uniforme 1 0.0045
+                lambda (Re_long[2000)*(64./Re_long)+(Re_long>2000)*(0.316*Re_long^(-0.25))
+                lambda_ortho 180/Re_tot*(Re_tot<202.488)+1.92/Re_tot^(0.145)*(Re_tot]202.488)
+            } 
+        }           
+    }
+        Post_processing
+    {
+        Probes
+        {
+            sonde_pression pression periode 0.1 points 1 0.5 0.5
+            sonde_vitesse  vitesse periode 0.1 points 1 0.5 0.5
+        }
+        format lml
+        fields dt_post .1
+        {
+            pression_pa elem
+            pression_pa som
+            vitesse elem
+            vitesse som
+        }
+    }
+
+
+}
+
+Solve pb
+End
