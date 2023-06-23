@@ -2279,9 +2279,10 @@ void Domaine::build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const
   DataArrayIdType * mP;
   mc_face_mesh_->areCellsIncludedIn(faces_tmp,2, mP);
   DAId renum(mP);
+  DAId renum2(mP->invertArrayN2O2O2N(nb_fac));
 #ifndef NDEBUG
   // All cells should be found:
-  DAId outliers = renum->findIdsNotInRange(0, nb_fac);
+  DAId outliers = renum2->findIdsNotInRange(0, nb_fac);
   if (outliers->getNumberOfTuples() != 0)
     Process::exit("Invalid renumbering arrays! Should not happen. Some faces could not be matched between the TRUST face domain and the buildDescendingConnectivity() version.");
 #endif
@@ -2292,7 +2293,7 @@ void Domaine::build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const
   bool check = true;
 #endif
   // Apply the renumbering so that final mc_face_mesh_ has the same face number as in TRUST
-  mc_face_mesh_->renumberCells(renum->begin(), check);
+  mc_face_mesh_->renumberCells(renum2->begin(), check);
 #ifndef NDEBUG
   mc_face_mesh_->checkConsistency();
 #endif
