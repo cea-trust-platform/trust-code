@@ -400,7 +400,7 @@ check_components()
 		           #WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            WORKBETA=""
                            trustversion=""
-                           [ "$Composant" == "flica5" ] && trustversion=1.9.1
+                           [ "$Composant" == "flica5" ] && trustversion=1.9.2
                            [ "$Composant" == "module3D" ] && trustversion=1.9.1
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
@@ -3743,7 +3743,7 @@ fi
 # Si un certain nombre de criteres sont remplis, on propose une release (candidate ou intermediaire)
 # Tous les jours si accord_admin = 1, label_rc=X.Y.Z_rc
 # Le week-end seulement si accord_admin = 0, label_rc=X.Y.Z_beta
-####################################################################################################
+#####################################################################l###############################
 echo " "
 echo "Analysis of $MESSAGES_NUIT file"
 grep "Total:" $MESSAGES_NUIT
