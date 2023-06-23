@@ -555,14 +555,31 @@ void print_statistics_analyse(const char * message, int mode_append)
           if (gpu_copytodevice.max_count > 0)
             {
               stat_file << "GPU statistics per time step (experimental):" << finl;
-              double copy=0, gpu=0;
-              gpu+=write_gpu_stat_file("Libraries:", gpu_library, pas_de_temps, stat_file);
-              gpu+=write_gpu_stat_file("Kernels  :", gpu_kernel, pas_de_temps, stat_file);
-              copy+=write_gpu_stat_file("Copy H2D :", gpu_copytodevice, pas_de_temps, stat_file);
-              copy+=write_gpu_stat_file("Copy D2H :", gpu_copyfromdevice, pas_de_temps, stat_file);
-              double cpu = 100-copy-gpu; // ToDo OpenMP manque MPI,IO
-              stat_file << "GPU: " << 0.1*int(10*gpu) << "% Copy H<->D: " << 0.1*int(10*copy) << "% CPU: " << 0.1*int(10*cpu) << "%" << finl;
+              double ratio_gpu_library = write_gpu_stat_file("Libraries:", gpu_library, pas_de_temps, stat_file);
+              double ratio_gpu_kernel  = write_gpu_stat_file("Kernels  :", gpu_kernel, pas_de_temps, stat_file);
+              double ratio_gpu  = ratio_gpu_library + ratio_gpu_kernel;
+              double ratio_copy = write_gpu_stat_file("Copy H2D :", gpu_copytodevice, pas_de_temps, stat_file);
+              ratio_copy += write_gpu_stat_file("Copy D2H :", gpu_copyfromdevice, pas_de_temps, stat_file);
+              double time_cpu = 100 - ratio_gpu - ratio_copy; // ToDo OpenMP manque MPI,IO
+              stat_file << "GPU: " << 0.1*int(10*ratio_gpu) << "% Copy H<->D: " << 0.1*int(10*ratio_copy) << "% CPU: " << 0.1*int(10*time_cpu) << "%" << finl;
+              if (0.1*int(10*ratio_gpu)<50)
+                {
+                  Cerr << "==============================================================================================" << finl;
+                  Cerr << "[GPU] Warning: Only " << 0.1*int(10*ratio_gpu) << " % of the time calculation is spent on GPU." << finl;
+                  if (ratio_gpu_library==0) Cerr << "[GPU] First add a GPU solver !" << finl;
+                  else
+                    Cerr << "[GPU] Probably some algorithms used are not ported yet on GPU. Contact TRUST team." << finl;
+                  Cerr << "==============================================================================================" << finl;
+                }
             }
+#ifdef _OPENMP
+          else
+            {
+              Cerr << "============================================================================================" << finl;
+              Cerr << "[GPU] Warning: Don't use this binary! Slower for your calculation, not at all ported on GPU." << finl;
+              Cerr << "============================================================================================" << finl;
+            }
+#endif
           stat_file << "I/O:" << finl;
           if (debit_seq>0) stat_file << "Debit write seq [Mo/s] : " << debit_seq << "\n";
           if (debit_par>0) stat_file << "Debit write par [Mo/s] : " << debit_par << "\n";
