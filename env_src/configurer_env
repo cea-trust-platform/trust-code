@@ -701,7 +701,7 @@ fi
 # Quelle norme C++ ?
 #######################
 STDCPP=c++14
-STDCPP=c++11 && [ "$TRUST_USE_CUDA" = 1 ] && STDCPP=c++14
+#STDCPP=c++11 && [ "$TRUST_USE_CUDA" = 1 ] && STDCPP=c++14
 
 #######################
 # Quelle architecture ?

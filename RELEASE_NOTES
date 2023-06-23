@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+19/06/23 (TRUST) Portability  : C++14 compilers are now mandatory so old GNU compilers (<5.0) are not supported anymore
 19/06/23 (TRUST) Tools        : Upgrade to MEDCoupling 9.11.0
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.2 : Enhancements, modifications and corrected bugs since version 1.9.1 :
