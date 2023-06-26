@@ -1,11 +1,9 @@
 # TEST perte_charge_circulaire #
 # PARALLEL NOT #
 
-
 dimension 2
 domaine dom
 
-# BEGIN MESH #
 Mailler dom {
     Pave Cavite {
         Origine 0 0
@@ -18,20 +16,6 @@ Mailler dom {
         Bord Sortie X = 30  0 <= Y <= 10
     }
 }
-# Trianguler_H dom
-
-Sous_Zone zone1
-Associate zone1 dom
-Read zone1 {
-    Rectangle
-    Origine 0 0
-    Cotes   30 10
-}
-#
-# END MESH #
-
-
-
 
 Pb_hydraulique pb
 associate  pb dom
@@ -45,10 +29,10 @@ lire sch
     facsec 10
     dt_impr 1e-8
     seuil_statio 5e-2
-    solveur Piso { 
-                    seuil_convergence_solveur 1.e-5
-                    seuil_convergence_implicite 1e30
-                 }
+    solveur Piso {
+        seuil_convergence_solveur 1.e-5
+        seuil_convergence_implicite 1e30
+    }
 }
 associate  pb sch
 
@@ -59,17 +43,17 @@ Discretize pb dis
 Read pb
 {
 
-   fluide_incompressible {
-        rho     Champ_Uniforme      1 3345.  # Formule : 3980 - 0.93T en °C, mais nous on est en K. On prend rho pour T0 = 957K #
-       Cp      Champ_Uniforme      1 1089.
-       mu      Champ_Uniforme      1 1.25e-2
-       lambda  Champ_Uniforme      1 2.60
-       Beta_th Champ_Uniforme      1 3.01e-4
-   }
-   
-       Navier_Stokes_standard
+    fluide_incompressible {
+        rho     Champ_Uniforme      1 3345.
+        Cp      Champ_Uniforme      1 1089.
+        mu      Champ_Uniforme      1 1.25e-2
+        lambda  Champ_Uniforme      1 2.60
+        Beta_th Champ_Uniforme      1 3.01e-4
+    }
+
+    Navier_Stokes_standard
     {
-        Solveur_pression Petsc cholesky { } 
+        Solveur_pression Petsc cholesky { }
         convection { amont }
         diffusion { }
         initial_conditions { vitesse Champ_Uniforme 2 0 0 }
@@ -85,14 +69,14 @@ Read pb
             Perte_Charge_Circulaire
             {
                 direction       champ_uniforme 2 0 1
-                diam_hydr       champ_uniforme 1 0.039865 
+                diam_hydr       champ_uniforme 1 0.039865
                 diam_hydr_ortho champ_uniforme 1 0.0045
                 lambda (Re_long[2000)*(64./Re_long)+(Re_long>2000)*(0.316*Re_long^(-0.25))
                 lambda_ortho 180/Re_tot*(Re_tot<202.488)+1.92/Re_tot^(0.145)*(Re_tot]202.488)
-            } 
-        }           
+            }
+        }
     }
-        Post_processing
+    Post_processing
     {
         Probes
         {

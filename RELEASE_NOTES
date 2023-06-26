@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+26/06/23 (TRUST) Fix          : Bug fix with lambda keyword in Perte_Charge_Circulaire in PolyMAC discretisation
+26/06/23 (TRUST) Fix          : When using Vorticity in Definition_champ to extract the max value for exemple in a probe, not all times were written in the .son file
 19/06/23 (TRUST) Portability  : C++14 compilers are now mandatory so old GNU compilers (<5.0) are not supported anymore
 19/06/23 (TRUST) Tools        : Upgrade to MEDCoupling 9.11.0
 --------------------------------------------------------------------------------------------------
