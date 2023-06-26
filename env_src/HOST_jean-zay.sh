@@ -24,7 +24,9 @@ define_modules_config()
       # avec intel/intelmpi 19.0.5, impossible de compiler TrioCFD ou autre BALTIK (meme vide)
       #module="intel-compilers/19.0.5 intel-mkl/19.0.5 intel-mpi/19.0.5"
       # avec intel 19.0.5 et openmpi 3.1.4, trust et TrioCFD compilent
-      module="intel-compilers/19.0.5 intel-mkl/19.0.5 openmpi/3.1.4"
+      #module="intel-compilers/19.0.5 intel-mkl/19.0.5 openmpi/3.1.4"
+      # 21/06/2023 : ND : passage a gcc
+      module="gcc/8.5.0 openmpi/4.0.5"
    fi
    #
    echo "# Module $module detected and loaded on $HOST."
