@@ -1474,8 +1474,9 @@ Matrice_Morse& Matrice_Morse::affecte_prod(const Matrice_Morse& a, const Matrice
   int ncol= b.nb_colonnes();                // nb de colonnes de B
   //assert(nrow==ncol);
   // Jloi non?
-  assert(nrow==ncol);
+  assert(a.nb_colonnes()==b.nb_lignes());
   tab1_.resize(nrow+1);
+  m_ = ncol;
   int job = 1 ;                      // on recupere tout (tab1, tab2, coeff de matrice_resu)
   int  nzmax = nb_coeff();                // nb de valeurs maximales de la matrice resultante
   if(nzmax==0)
