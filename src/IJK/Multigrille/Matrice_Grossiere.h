@@ -153,9 +153,9 @@ protected:
 
 
   void add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-          int imax, int jmax, int kmax, ArrOfInt& virt_blocs_m1, ArrOfInt& virt_blocs, ArrOfInt& virt_blocs_p1,
-		  ArrOfInt& virt_blocs_pond_m1,ArrOfInt& virt_blocs_pond_0,ArrOfInt& virt_blocs_pond_p1,
-		  IJK_Splitting splitting, double offset = 0.);
+                     int imax, int jmax, int kmax, ArrOfInt& virt_blocs_m1, ArrOfInt& virt_blocs, ArrOfInt& virt_blocs_p1,
+                     ArrOfInt& virt_blocs_pond_m1,ArrOfInt& virt_blocs_pond_0,ArrOfInt& virt_blocs_pond_p1,
+                     IJK_Splitting splitting, double offset = 0.);
   void add_dist_bloc(int pe, int imin, int jmin, int kmin,
                      int imax, int jmax, int kmax,
                      ArrOfInt& items_to_send_m1,ArrOfInt& items_to_send,ArrOfInt& items_to_send_p1,

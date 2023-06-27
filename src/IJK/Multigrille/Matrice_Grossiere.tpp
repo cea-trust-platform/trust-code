@@ -55,15 +55,15 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     for (k = 0; k < nk; k++)
       for (j = 0; j < nj; j++)
         for (i = 0; i < ni; i++)
-        {
-          int index = count++;
-          renum(i,j,k) = index;
-    	  renum_p1(i,j,k) = -1;
-    	  renum_m1(i,j,k) = -1;
-    	  ponderation_shear_m1(i,j,k) = -1;
-    	  ponderation_shear_0(i,j,k) = -1;
-    	  ponderation_shear_p1(i,j,k) = -1;
-        }
+          {
+            int index = count++;
+            renum(i,j,k) = index;
+            renum_p1(i,j,k) = -1;
+            renum_m1(i,j,k) = -1;
+            ponderation_shear_m1(i,j,k) = -1;
+            ponderation_shear_0(i,j,k) = -1;
+            ponderation_shear_p1(i,j,k) = -1;
+          }
 
 
     // initialisation du tableau d'indice
@@ -113,7 +113,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
           {
             // add_virt_bloc --> stock l'emplacement des indices de l'espace fantome de count à count+ni*nj dans blocs_to_recv
             add_virt_bloc(pe, count, 0,0,-1, ni,nj,0,blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                    blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                          blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
 
             // add_dist_bloc --> stock lespace reel en 0 dans items_to_send[0] pour lespace virtuel en nk du proc k-1
             // pour les conditions de shear-periodicité, besoin d'un changement si c est le premier proc en z pour prendre en compte l'offset
@@ -142,22 +142,22 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
             if(z_index == z_index_max && IJK_Splitting::defilement_==1)
               {
                 add_virt_bloc(pe, count, 0,0,-1, ni,nj,0,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                        blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe],splitting, 1.);
+                              blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe],splitting, 1.);
               }
             else
               {
                 add_virt_bloc(pe, count, 0,0,-1, ni,nj,0,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                        blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                              blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
               }
             if(z_index == z_index_min && IJK_Splitting::defilement_==1)
               {
                 add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                        blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting, -1.);
+                              blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting, -1.);
               }
             else
               {
                 add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                        blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                              blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
               }
 
             // si un seul proc sur k --> add_dist_bloc ne fait rien, si 2 procs voisins des deux cotes :
@@ -202,7 +202,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         if (pe != pe_jmax)
           {
             add_virt_bloc(pe, count, 0,-1,0, ni,0,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                    blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                          blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
             add_dist_bloc(pe, 0,0,0, ni,1,nk,
                           items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
                           items_to_send_ponderation_shear_m1[npe],items_to_send_ponderation_shear_0[npe],items_to_send_ponderation_shear_p1[npe],
@@ -213,9 +213,9 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
             add_virt_bloc(pe, count, 0,-1,0, ni,0,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                    blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                          blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
             add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                    blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                          blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
             add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,
                           items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
                           items_to_send_ponderation_shear_m1[npe],items_to_send_ponderation_shear_0[npe],items_to_send_ponderation_shear_p1[npe],
@@ -235,7 +235,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         if (pe != pe_imax)
           {
             add_virt_bloc(pe, count, -1,0,0, 0,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                    blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                          blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
             add_dist_bloc(pe, 0,0,0, 1,nj,nk,
                           items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
                           items_to_send_ponderation_shear_m1[npe],items_to_send_ponderation_shear_0[npe],items_to_send_ponderation_shear_p1[npe],
@@ -246,9 +246,9 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
             add_virt_bloc(pe, count, -1,0,0, 0,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                    blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                          blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
             add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                    blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                          blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
             add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,
                           items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
                           items_to_send_ponderation_shear_m1[npe],items_to_send_ponderation_shear_0[npe],items_to_send_ponderation_shear_p1[npe],
@@ -265,7 +265,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
       {
         pe_voisins[npe] = pe;
         add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                      blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
         add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,
                       items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
                       items_to_send_ponderation_shear_m1[npe],items_to_send_ponderation_shear_0[npe],items_to_send_ponderation_shear_p1[npe], splitting);
@@ -277,7 +277,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
       {
         pe_voisins[npe] = pe;
         add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                      blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
         add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,
                       items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
                       items_to_send_ponderation_shear_m1[npe],items_to_send_ponderation_shear_0[npe],items_to_send_ponderation_shear_p1[npe], splitting);
@@ -289,7 +289,7 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
       {
         pe_voisins[npe] = pe;
         add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],
-                blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
+                      blocs_to_recv_ponderation_shear_m1[npe],blocs_to_recv_ponderation_shear_0[npe],blocs_to_recv_ponderation_shear_p1[npe], splitting);
         // autre test pour le proc pe_kmax, bloc stocke pour assurer la shear periodicite.
         if( z_index == z_index_max && IJK_Splitting::defilement_==1)
           {
@@ -333,21 +333,21 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
                                  pe_voisins,
                                  items_to_send_ponderation_shear_m1,
                                  items_to_recv_ponderation_shear_m1,
-								 blocs_to_recv_ponderation_shear_m1);
+                                 blocs_to_recv_ponderation_shear_m1);
     md_pond_m1_.copy(md_std_pond_m1);
     MD_Vector_std md_std_pond_0(count /* nb_items_tot */,
                                 ni * nj * nk /* nb_items_reels */,
                                 pe_voisins,
                                 items_to_send_ponderation_shear_0,
                                 items_to_recv_ponderation_shear_0,
-								blocs_to_recv_ponderation_shear_0);
+                                blocs_to_recv_ponderation_shear_0);
     md_pond_0_.copy(md_std_pond_0);
     MD_Vector_std md_std_pond_p1(count /* nb_items_tot */,
                                  ni * nj * nk /* nb_items_reels */,
                                  pe_voisins,
                                  items_to_send_ponderation_shear_p1,
                                  items_to_recv_ponderation_shear_p1,
-								 blocs_to_recv_ponderation_shear_p1);
+                                 blocs_to_recv_ponderation_shear_p1);
     md_pond_p1_.copy(md_std_pond_p1);
   }
 
@@ -355,185 +355,185 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 //  int jcible = 2 ;
 //  if (Process::je_suis_maitre())
 //    {
-//  std::cout << "renum" << std::endl;
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << renum(i,jcible,k) << " ";
-//      }
+//      std::cout << "renum" << std::endl;
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << renum(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //  if (!Process::je_suis_maitre())
 //    {
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << renum(i,jcible,k) << " ";
-//      }
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << renum(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //
 //
 //  if (Process::je_suis_maitre())
 //    {
-//  std::cout << "renum_p1" << std::endl;
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << renum_p1(i,jcible,k) << " ";
-//      }
+//      std::cout << "renum_p1" << std::endl;
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << renum_p1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //  if (!Process::je_suis_maitre())
 //    {
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << renum_p1(i,jcible,k) << " ";
-//      }
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << renum_p1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //
 //
 //  if (Process::je_suis_maitre())
 //    {
-//  std::cout << "renum_m1" << std::endl;
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << renum_m1(i,jcible,k) << " ";
-//      }
+//      std::cout << "renum_m1" << std::endl;
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << renum_m1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //  if (!Process::je_suis_maitre())
 //    {
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << renum_m1(i,jcible,k) << " ";
-//      }
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << renum_m1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //
 //  if (Process::je_suis_maitre())
 //    {
-//  std::cout << "ponderation_shear_m1" << std::endl;
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << ponderation_shear_m1(i,jcible,k) << " ";
-//      }
+//      std::cout << "ponderation_shear_m1" << std::endl;
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << ponderation_shear_m1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //  if (!Process::je_suis_maitre())
 //    {
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << ponderation_shear_m1(i,jcible,k) << " ";
-//      }
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << ponderation_shear_m1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
-//    }
-//  a = Process::mp_sum(a);
-//
-//
-//  if (Process::je_suis_maitre())
-//    {
-//  std::cout << "ponderation_shear_0" << std::endl;
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << ponderation_shear_0(i,jcible,k) << " ";
-//      }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
-//    }
-//  a = Process::mp_sum(a);
-//  if (!Process::je_suis_maitre())
-//    {
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << ponderation_shear_0(i,jcible,k) << " ";
-//      }
-//      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //
 //
 //  if (Process::je_suis_maitre())
 //    {
-//  std::cout << "ponderation_shear_p1" << std::endl;
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << ponderation_shear_p1(i,jcible,k) << " ";
-//      }
+//      std::cout << "ponderation_shear_0" << std::endl;
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << ponderation_shear_0(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 //  a = Process::mp_sum(a);
 //  if (!Process::je_suis_maitre())
 //    {
-//  for (k = -1; k < nk+1; k++)
-//  {
-//      for (i = -1; i < ni+1; i++)
-//      {
-//        std::cout << ponderation_shear_p1(i,jcible,k) << " ";
-//      }
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << ponderation_shear_0(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
 //      std::cout << std::endl;
-//  }
-//  std::cout << std::endl;
-//  std::cout << std::endl;
+//      std::cout << std::endl;
+//    }
+//  a = Process::mp_sum(a);
+//
+//
+//  if (Process::je_suis_maitre())
+//    {
+//      std::cout << "ponderation_shear_p1" << std::endl;
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << ponderation_shear_p1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
+//      std::cout << std::endl;
+//      std::cout << std::endl;
+//    }
+//  a = Process::mp_sum(a);
+//  if (!Process::je_suis_maitre())
+//    {
+//      for (k = -1; k < nk+1; k++)
+//        {
+//          for (i = -1; i < ni+1; i++)
+//            {
+//              std::cout << ponderation_shear_p1(i,jcible,k) << " ";
+//            }
+//          std::cout << std::endl;
+//        }
+//      std::cout << std::endl;
+//      std::cout << std::endl;
 //    }
 
 
@@ -593,7 +593,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     voisins_virt_ = IntLists();
     coeffs_virt_ = DoubleLists();
     // pour voir la matrice lisiblement
-    // carre.imprimer_formatte(Cout);
+//    carre.imprimer_formatte(Cout);
+//    rect.imprimer_formatte(Cout);
   }
 
 }
