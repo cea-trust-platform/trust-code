@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.3_beta : Changes since version 1.9.2 :
 -------------------------------------------------------------
+26/06/23 (TRUST) Change       : Fluxes are not printed into an .out file if the dedicated operator's output file is not set in the code. If a .out is desired, one must apply set_fichier, else no file is written.
 -------------------------------------------------------------
 Developer notes version 1.9.2 : Changes since version 1.9.1 :
 -------------------------------------------------------------
