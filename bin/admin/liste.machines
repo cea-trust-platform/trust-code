@@ -14,10 +14,8 @@ linux	rsync_ssh	cible	is234634-clang.intra.cea.fr	-all 		-TrioCFD -FLICA5   				
 linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdflatex  							# Fedora 36	Bat 451 LGLS bureau TMA TRUST
 linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex  							# Fedora 38 	Bat 454 LMEC GF
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
-linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-gcc8 -cuda=download -without-pdflatex -without-visit 
-linux   rsync_ssh   tache   is240831-cuda.intra.cea.fr       -all                                -cuda=/volatile/cuda-11.1/bin/nvcc  -without-pdflatex               # Ubuntu 18 PC inconnu RTX5000 
-linux	rsync_ssh	tache	is246139-gpu.intra.cea.fr	-all		-TrioCFD				-cuda  -openmp -force_system_mpi	-disable-vc -disable-mpi4py				# Ubuntu 20	Bat 451 LGLS bureau Luc L.
-linux	rsync_ssh    	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
+linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-gcc8 -cuda=download -without-pdflatex -without-visit
+linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d -without-conda  						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-visit -without-conda   									# RedHat 8.4	CEA CCRT
