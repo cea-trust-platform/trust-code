@@ -1,0 +1,55 @@
+#!/bin/bash
+# Script de construction des versions binaires de TRUST
+echo "Usage: $0 [X.Y.Z]"
+echo "   - if X.Y.Z specified, this will create an image of the network version"
+echo "   - otherwise, it will create an image of the current version which includes that script"
+
+
+if [ "$1" != "" ]
+then
+   export VERSION_TRUST=$1
+   source /home/trust_trio-public/env_TRUST-${VERSION_TRUST}.sh
+   [ ! -d $TRUST_ROOT ] && exit -1
+
+   echo "Copie de la version reseau $OS de TRUST $VERSION_TRUST..."
+   cp -r $TRUST_ROOT/.. $TRUST_TMP/TRUST-$VERSION_TRUST || exit -1
+
+   cd $TRUST_TMP/TRUST-$VERSION_TRUST
+   # Certains liens sont casses on les repare en copiant le fichier
+   for link in `find . -type l -exec ls -l {} \; | grep GIT/TRUST | awk '{print $NF}'`
+   do
+     rm -r -f `basename $link` && cp -r $TRUST_ROOT/$link .
+   done
+
+else
+
+   echo "Copie de la version locale"
+   cd ../
+   source env_TRUST.sh
+   trust=`basename $PWD`
+   cp -r ../$trust $TRUST_TMP/TRUST-$TRUST_VERSION
+   cd $TRUST_TMP/TRUST-$TRUST_VERSION
+fi
+
+echo "Suppression objets inutiles..."
+rm -r -f src
+rm -r -f externalpackages
+rm -r -f MonoDir_mpi* doc/html doc/Coverage
+rm -r -f exec/valgrind
+rm -r -f lib/TRUST_mpi*semi_opt*.a lib/TRUST_mpi_opt_pg.a lib/TRUST_mpi_opt_gcov.a lib/TRUST_mpi*kernel*.a
+# menage sur ICoCo pour empecher utilisation sans recompilation
+(cd Outils/ICoCo/ICoCo_src/ ; rm -rf ICoCo ICoCo_opt build env_MEDICoCo.sh full_env_MEDICoCo.sh configure make.lock README.BALTIK Makefile)
+
+# Ajout de chrpath (par securite car existe parfois sous /usr/bin/chrpath)
+[ ! -f exec/utils/bin/chrpath ] && mkdir -p exec/utils/bin && cp -f /usr/bin/chrpath exec/utils/bin/.
+
+# Corrections sur TRUST:
+sed -i "1,$ s?\[ -L ?\[ -f ?g" env_TRUST.sh
+sed -i "1,$ s?OS_changed=1?OS_changed=0?g" env_src/configurer_env # On ne fait pas de check sur l'OS
+
+cd ..
+. /etc/os-release && OS="${NAME}_${VERSION_ID}"
+echo "Creation du package TRUST-$TRUST_VERSION-$OS.tar.gz sous $PWD"
+tar cfz TRUST-$TRUST_VERSION-$OS.tar.gz TRUST-$TRUST_VERSION #&& rm -r -f TRUST-$VERSION_TRUST && ls -lart Livraison/Packages/TRUST-$VERSION_TRUST.tar.gz
+
+
