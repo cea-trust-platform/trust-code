@@ -860,14 +860,26 @@ then
    # Detect nsys location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
    nsys=`ls /opt/nvidia/nsight-systems/*/bin/nsys $CUDA_ROOT/*/bin/nsys $CUDA_ROOT/bin/nsys 2>/dev/null | tail -1`
    export PATH=`dirname $nsys`:$PATH
-   exec="nsys profile --force-overwrite true -o $NOM.qdrep $binary"
+   trace="--trace=cuda" && [ $NB_PROCS -gt 1 ] && trace=$trace",mpi --mpi-impl=`basename $MPI_ROOT`"
+   # Droit elevation disponible:
+   sudo ls 1>/dev/null
+   if [ $? = 0 ] 
+   then
+      sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'
+      # metriques GPU en plus mais necessite d'etre sudo
+      trace=$trace" --gpu-metrics-device all"
+      # nsight="sudo " # Mais attention fichiers ecrits root !
+   else
+      nsight=""
+   fi
+   nsight=$nsight"nsys profile $trace --force-overwrite true -o $NOM.qdrep"
 elif [ "$NCU" = 1 ]
 then
    rm -f $NOM.qdrep.ncu-rep
    # Detect ncu location: Under /opt/nvidia/nsight-systems/ more recent version else under $CUDA_ROOT
    ncu=`ls /opt/nvidia/nsight-systems/*/bin/ncu $CUDA_ROOT/*/bin/ncu $CUDA_ROOT/bin/ncu 2>/dev/null | tail -1`
    export PATH=`dirname $ncu`:$PATH
-   exec="ncu -o $NOM.qdrep.ncu-rep $binary"
+   nsight="ncu --target-processes all -o $NOM.qdrep.ncu-rep"
 elif [ "$CS" = 1 ]
 then
    exec="compute-sanitizer --tool $CS_OPTION $binary"
@@ -1243,9 +1255,9 @@ else
    [ "$cpus_per_task" != "" ] 	&& [ "$HOST" != "jean-zay" ] && echo "Number of core per task option not supported yet on $HOST. Contact TRUST support" && exit -1
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
-      run="$gdb $exec $NOM $PETSC_OPTIONS"
+      run="$nsight $gdb $exec $NOM $PETSC_OPTIONS"
    else
-      run="$TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS"
+      run="$nsight $TRUST_ROOT/bin/mpirun.sh `[ "$gdb" != "" ] && echo -gdb` -np $NB_PROCS $exec $NOM $NB_PROCS $PETSC_OPTIONS"
    fi
    if [ "$create_sub_file" ]
    then
@@ -1258,7 +1270,7 @@ else
    # MPS and Sserver running, submit jobs with Sserver:
    [ "$TRUST_USE_CUDA" = 1 ] && [ "`ps aux | grep nvidia-cuda-mps-control | grep -v grep`" != "" ] && [ "`ps aux | grep Sserver | grep -v grep`" != "" ] && TRUST_USE_Sjob=1
    # Use Sserver:
-   if [ "$TRUST_USE_Sjob" = "1" ]
+   if [ "$TRUST_USE_Sjob" = "1" ] && [ "$nsight" = "" ]
    then
       # export PATH=$PATH:$TRUST_ROOT/bin/Sjob
       sub_file=s${NB_PROCS}_$NOM
