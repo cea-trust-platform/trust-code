@@ -2,6 +2,7 @@
 # CUDA TOOLKIT
 CUDA_VERSION=11.8.0 && installer=cuda_$CUDA_VERSION"_520.61.05_linux.run" # Ne converge pas (c-amg dans PAR_gpu_3D) semble se produire des 11.3,11.6,11.7, par contre sa-amg fonctionne sauf si Cuda plus recent que driver CUDENSE handle...
 CUDA_VERSION=11.2.0 && installer=cuda_$CUDA_VERSION"_460.27.04_linux.run" 
+CUDA_VERSION=11.4.0 && installer=cuda_$CUDA_VERSION"_470.42.01_linux.run" # Necessaire suite a l'update d'AmgX (v2.3.0 ne compile plus avec nvcc 11.2)
 INSTALL=$TRUST_ROOT/env/gpu/install
 CUDA_BIN=$INSTALL/cuda-$CUDA_VERSION/bin
 if [ ! -f $CUDA_BIN/nvcc ]

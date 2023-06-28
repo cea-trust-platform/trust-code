@@ -33,7 +33,8 @@ then
       PACKAGE=$TRUST_ROOT/externalpackages/AmgX/$LIB"_"$commit.tar.gz
       tar cfz $PACKAGE --exclude .git $LIB && echo "Creation du package $PACKAGE"
    else
-      commit=d2344958f4
+      commit=v2.3.0 # Build avec nvcc 11.2
+      commit=d2344958f4 # Echec avec nvcc 11.2
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_$commit.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build

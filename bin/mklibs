@@ -33,7 +33,8 @@ then
       # Cons: Binary size 74Go -> 900Go ! Crash possible sur orcus (Caught amgx exception: Cannot allocate pinned memory) si on utilise la librairie statique AmgX avec -lamgx !
       LINK_CUDA=_static
       LINK_CUDA=""
-      [ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper -lomp"
+      #[ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper -lomp" # -lomp necessaire sur portable mais echec sur petra ?
+      [ "$TRUST_USE_CUDA" = 1 ] && AMGX_ROOT="\$(TRUST_ROOT)/lib/src/LIBAMGX" && PETSC=$PETSC" -L$AMGX_ROOT/AmgX/lib -lamgx`[ "$LINK_CUDA" != _static ] && echo sh` -L$AMGX_ROOT/AmgXWrapper/lib64 -lAmgXWrapper"
       # Le fichier suivant pourrait peut etre permettre de simplifier les choses precedantes:
       # car desormais on l'utilise pour avoir le nombre des librairies BLAS optimisees et des librairies eventuelles CUDA
       petscmachineinfo=$PETSC_ROOT/$TRUST_ARCH$OPT/include/petscmachineinfo.h
