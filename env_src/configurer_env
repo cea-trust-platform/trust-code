@@ -1001,7 +1001,8 @@ stdcpp_conda=`cd $TRUST_ROOT/exec/python/lib 2>/dev/null;ls libstdc++.so.6.0.* 2
 if [ "$stdcpp_conda" != "" ]
 then
     root_gnu=`dirname $TRUST_F77_BASE` && root_gnu=`dirname $root_gnu`
-    libstd_sys=`ls $root_gnu/lib64/libstdc++.so.6.0.?? /usr/lib64/libstdc++.so.6.0.* /usr/lib*/*64-linux-gnu/libstdc++.so.6.0.* $GCC_PREFIX/*/lib64/libstdc++.so.6.0.?? 2>/dev/null | head -1`
+    [ "$GCC_PREFIX" != "" ] && libstd_sys=`$GCC_PREFIX/*/lib64/libstdc++.so.6.0.?? 2>/dev/null`
+    libstd_sys=`ls $root_gnu/lib64/libstdc++.so.6.0.?? /usr/lib64/libstdc++.so.6.0.* /usr/lib*/*64-linux-gnu/libstdc++.so.6.0.* $libstd_sys | head -1`
     stdcpp_sys=`echo $libstd_sys | $TRUST_Awk -F/ '{print $NF}' | cut -d'.' -f3-6`
     remove_stdcpp_conda=0 && [ "$stdcpp_sys" != "" ] && remove_stdcpp_conda=`echo $stdcpp_sys $stdcpp_conda | awk '{ print ($1>$2?1:0) }'`
     if [ $remove_stdcpp_conda -eq 1 ]
