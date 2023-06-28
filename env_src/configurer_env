@@ -1064,7 +1064,7 @@ TRUST_VERSION_GNU=`print_GNU_VERSION`
 compiler_found=1
 # csh plus necessaire pour VisIt
 #[ ! -f /bin/csh ] && [ "$TRUST_WITHOUT_VISIT" != 1 ] && echo "/bin/csh not found. Please install the C shell." && compiler_found=0
-[ "$TRUST_CC_BASE" = "" ] && echo "C++ compiler not found. Please install a C++ compiler." && compiler_found=0
+[ "$TRUST_CC_BASE" = "" ] && [ "$STDCPP" = c++14 ] && echo "Error! No C++14 compiler found. For a GNU compiler, you would need a version>=5.0" && compiler_found=0
 [ "$TRUST_cc_BASE" = "" ] && echo "C compiler not found. Please install a C compiler." && compiler_found=0
 [ "$TRUST_F77_BASE" = "" ] && echo "Fortran compiler not found. Please install a Fortran compiler." && compiler_found=0
 if [ "$compiler_found" = 0 ] ; then
