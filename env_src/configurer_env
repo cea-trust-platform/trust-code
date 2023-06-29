@@ -1787,7 +1787,7 @@ case $TRUST_ARCH_CC in
         m="# TMPDIR ?";e="TMPDIR=\"$TRUST_TMP\" && export TMPDIR";ecrit $m"|"$e"|"$env # Plantage vus avec /tmp par defaut
         Defines="-D_COMPILE_AVEC_PGCC"
         CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
-        CppFlags=$CppFlags" -std=$STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
+        CppFlags=$CppFlags" -std=$STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress1 --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
         #CppFlags=$CppFlags" -Minfo=accel -Minfo=mp -Minfo=loop" # Info au build ou NVCOMPILER_ACC_NOTIFY ?
         #CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte bcp de choses: ToDo OpenMP
         SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
