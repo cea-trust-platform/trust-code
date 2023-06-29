@@ -52,27 +52,6 @@ public:
     return renum_p2_(k+1, j+1, i+1);
   }
 
-  const int& ponderation_shear_m2(int i, int j, int k) const
-  {
-    return ponderation_shear_m2_(k+1, j+1, i+1);
-  }
-  const int& ponderation_shear_m1(int i, int j, int k) const
-  {
-    return ponderation_shear_m1_(k+1, j+1, i+1);
-  }
-  const int& ponderation_shear_0(int i, int j, int k) const
-  {
-    return ponderation_shear_0_(k+1, j+1, i+1);
-  }
-  const int& ponderation_shear_p1(int i, int j, int k) const
-  {
-    return ponderation_shear_p1_(k+1, j+1, i+1);
-  }
-  const int& ponderation_shear_p2(int i, int j, int k) const
-  {
-    return ponderation_shear_p2_(k+1, j+1, i+1);
-  }
-
   const Matrice_Base& matrice() const
   {
     return mat_;
@@ -89,18 +68,7 @@ public:
   {
     return md_p1_;
   }
-  const MD_Vector& md_pond_m1_vector() const
-  {
-    return md_pond_m1_;
-  }
-  const MD_Vector& md_pond_0_vector() const
-  {
-    return md_pond_0_;
-  }
-  const MD_Vector& md_pond_p1_vector() const
-  {
-    return md_pond_p1_;
-  }
+
 
 protected:
   void ajoute_coeff(int i, int j, int k,
@@ -129,37 +97,13 @@ protected:
   }
 
 
-  int& ponderation_shear_m2(int i, int j, int k)
-  {
-    return ponderation_shear_m2_(k+1, j+1, i+1);
-  }
-  int& ponderation_shear_m1(int i, int j, int k)
-  {
-    return ponderation_shear_m1_(k+1, j+1, i+1);
-  }
-  int& ponderation_shear_0(int i, int j, int k)
-  {
-    return ponderation_shear_0_(k+1, j+1, i+1);
-  }
-  int& ponderation_shear_p1(int i, int j, int k)
-  {
-    return ponderation_shear_p1_(k+1, j+1, i+1);
-  }
-  int& ponderation_shear_p2(int i, int j, int k)
-  {
-    return ponderation_shear_p2_(k+1, j+1, i+1);
-  }
-
-
 
   void add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs_m1, ArrOfInt& virt_blocs, ArrOfInt& virt_blocs_p1,
-                     ArrOfInt& virt_blocs_pond_m1,ArrOfInt& virt_blocs_pond_0,ArrOfInt& virt_blocs_pond_p1,
                      IJK_Splitting splitting, double offset = 0.);
   void add_dist_bloc(int pe, int imin, int jmin, int kmin,
                      int imax, int jmax, int kmax,
                      ArrOfInt& items_to_send_m1,ArrOfInt& items_to_send,ArrOfInt& items_to_send_p1,
-                     ArrOfInt& items_to_send_ponderation_shear_m1,ArrOfInt& items_to_send_ponderation_shear_0,ArrOfInt& items_to_send_ponderation_shear_p1,
                      IJK_Splitting splitting, double offset = 0.);
 
   Matrice_Bloc mat_;
@@ -167,9 +111,6 @@ protected:
   MD_Vector md_p1_;
   MD_Vector md_;
   MD_Vector md_m1_;
-  MD_Vector md_pond_m1_;
-  MD_Vector md_pond_0_;
-  MD_Vector md_pond_p1_;
 
   // renum_(k+1,j+1,i+1) = indice de l'inconnue dans le vecteur inconnue de la matrice
 
@@ -179,11 +120,12 @@ protected:
   IntTab renum_m1_;
   IntTab renum_p1_;
   IntTab renum_p2_;
-  IntTab ponderation_shear_m2_;
-  IntTab ponderation_shear_m1_;
-  IntTab ponderation_shear_0_;
-  IntTab ponderation_shear_p1_;
-  IntTab ponderation_shear_p2_;
+
+  double ponderation_shear_m2_scal_;
+  double ponderation_shear_m1_scal_;
+  double ponderation_shear_0_scal_;
+  double ponderation_shear_p1_scal_;
+  double ponderation_shear_p2_scal_;
 
   IntLists voisins_;
   DoubleLists coeffs_;

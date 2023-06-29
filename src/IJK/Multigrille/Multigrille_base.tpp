@@ -301,6 +301,7 @@ void Multigrille_base::coarse_solver(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
   DoubleVect inco;
   DoubleVect secmem;
   const MD_Vector& md = mat.md_vector();
+
   inco.resize(md.valeur().get_nb_items_tot());
   inco.set_md_vector(md);
   secmem = inco;

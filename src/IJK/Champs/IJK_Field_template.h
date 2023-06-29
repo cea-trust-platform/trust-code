@@ -78,7 +78,7 @@ public:
 //  _TYPE_ interpolation_order_zero_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
 
 
-
+  int compteur_ ;
   int monofluide_variable_ ;
   int order_interpolation_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> projection_liquide_ ;
@@ -96,6 +96,7 @@ protected:
   REF(IJK_Splitting) splitting_ref_;
   IJK_Splitting::Localisation localisation_;
 
+  void self_proc_add_data(int le_ghost);
   void exchange_data(int pe_imin_, /* processor to send to */
                      int is, int js, int ks, /* ijk coordinates of first data to send */
                      int pe_imax_, /* processor to recv from */
