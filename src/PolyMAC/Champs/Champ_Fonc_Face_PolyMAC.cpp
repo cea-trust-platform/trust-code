@@ -14,40 +14,16 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_Face_PolyMAC.h>
-#include <Domaine.h>
-#include <Domaine_VF.h>
-#include <Champ_Uniforme.h>
 #include <Domaine_PolyMAC.h>
+#include <Champ_Uniforme.h>
 #include <TRUSTTab.h>
+#include <Domaine.h>
 
-Implemente_instanciable(Champ_Fonc_Face_PolyMAC,"Champ_Fonc_Face_PolyMAC",Champ_Fonc_base) ;
+Implemente_instanciable(Champ_Fonc_Face_PolyMAC,"Champ_Fonc_Face_PolyMAC",Champ_Fonc_base);
 
-Sortie& Champ_Fonc_Face_PolyMAC::printOn(Sortie& os) const
-{
-  os << que_suis_je() << " " << le_nom();
-  return os;
-}
+Sortie& Champ_Fonc_Face_PolyMAC::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_Face_PolyMAC::readOn(Entree& is)
-{
-  return is;
-}
-
-Champ_base& Champ_Fonc_Face_PolyMAC::le_champ(void)
-{
-  return *this;
-}
-
-const Champ_base& Champ_Fonc_Face_PolyMAC::le_champ(void) const
-{
-  return *this;
-}
-
-void Champ_Fonc_Face_PolyMAC::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
-{
-  ref_domaine_vf_=ref_cast(Domaine_VF, z_dis);
-}
-
+Entree& Champ_Fonc_Face_PolyMAC::readOn(Entree& is) { return is; }
 
 int Champ_Fonc_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
@@ -60,7 +36,7 @@ int Champ_Fonc_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
   // pour recuperer la domaine discrete...
 
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
-  const Domaine_VF& le_dom_vf = ref_cast(Domaine_VF,self.domaine_dis_base());
+  const Domaine_VF& le_dom_vf = ref_cast(Domaine_VF, self.domaine_dis_base());
 
   assert(n == le_dom_vf.nb_faces());
 
@@ -78,21 +54,20 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
-  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast( Domaine_PolyMAC,ref_domaine_vf_.valeur());
+  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, le_dom_VF.valeur());
   int nb_faces = domaine_PolyMAC.nb_faces();
   const DoubleVect& surface = domaine_PolyMAC.face_surfaces();
   const DoubleTab& normales = domaine_PolyMAC.face_normales();
 
-
-  if (sub_type(Champ_Uniforme,ch))
+  if (sub_type(Champ_Uniforme, ch))
     {
-      for (int num_face=0; num_face<nb_faces; num_face++)
+      for (int num_face = 0; num_face < nb_faces; num_face++)
         {
-          double vn=0;
-          for (int dir=0; dir<dimension; dir++)
-            vn+=v(0,dir)*normales(num_face,dir);
+          double vn = 0;
+          for (int dir = 0; dir < dimension; dir++)
+            vn += v(0, dir) * normales(num_face, dir);
 
-          vn/=surface(num_face);
+          vn /= surface(num_face);
           val(num_face) = vn;
         }
     }
@@ -100,17 +75,16 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
     {
       //      int ndeb_int = domaine_PolyMAC.premiere_face_int();
       //      const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
-      const DoubleTab& xv=domaine_PolyMAC.xv();
-      DoubleTab eval(val.dimension_tot(0),dimension);
-      ch.valeur_aux(xv,eval);
-      for (int num_face=0; num_face<nb_faces; num_face++)
+      const DoubleTab& xv = domaine_PolyMAC.xv();
+      DoubleTab eval(val.dimension_tot(0), dimension);
+      ch.valeur_aux(xv, eval);
+      for (int num_face = 0; num_face < nb_faces; num_face++)
         {
-          double vn=0;
-          for (int dir=0; dir<dimension; dir++)
-            vn+=eval(num_face,dir)*normales(num_face,dir);
+          double vn = 0;
+          for (int dir = 0; dir < dimension; dir++)
+            vn += eval(num_face, dir) * normales(num_face, dir);
 
-
-          vn/=surface(num_face);
+          vn /= surface(num_face);
           val(num_face) = vn;
         }
     }
@@ -118,13 +92,13 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
     {
       //      int ndeb_int = domaine_PolyMAC.premiere_face_int();
       //      const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
-      const DoubleTab& xv=domaine_PolyMAC.xv();
-      ch.valeur_aux(xv,val);
+      const DoubleTab& xv = domaine_PolyMAC.xv();
+      ch.valeur_aux(xv, val);
     }
-  else abort();
+  else
+    abort();
   return *this;
 }
-
 
 DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {
@@ -138,20 +112,18 @@ double Champ_Fonc_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, 
   //return Champ_implementation_RT0::valeur_a_elem_compo(position,poly,ncomp);
 }
 
-DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
-                                                     const IntVect& les_polys,
-                                                     DoubleTab& val) const
+DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
 {
-  const Champ_base& cha=le_champ();
-  int nb_compo=cha.nb_comp();
+  const Champ_base& cha = le_champ();
+  int nb_compo = cha.nb_comp();
   if (val.nb_dim() == 1)
     {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
+      assert((val.dimension(0) == les_polys.size()) || (val.dimension_tot(0) == les_polys.size()));
       assert(nb_compo == 1);
     }
   else if (val.nb_dim() == 2)
     {
-      assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
+      assert((val.dimension(0) == les_polys.size()) || (val.dimension_tot(0) == les_polys.size()));
       assert(val.dimension(1) == nb_compo);
     }
   else
@@ -161,7 +133,7 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
       Process::exit();
     }
 
-  const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC,domaine_vf());
+  const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC, domaine_vf());
   //  const Domaine& domaine_geom = domaine_VDF.domaine();
   const DoubleTab& normales = domaine_VF.face_normales();
   //  const DoubleVect& surfaces = domaine_VF.face_surfaces();
@@ -171,42 +143,41 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
 
   if (nb_compo == 1)
     {
-      Cerr<<"Champ_Face_implementation::valeur_aux_elems"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
+      Cerr << "Champ_Face_implementation::valeur_aux_elems" << finl;
+      Cerr << "A scalar field cannot be of Champ_Face type." << finl;
       Process::exit();
     }
   else // (nb_compo != 1)
     {
-      ArrOfDouble vale(nb_compo),s(nb_compo);
-      for(int rang_poly=0; rang_poly<les_polys.size(); rang_poly++)
+      ArrOfDouble vale(nb_compo), s(nb_compo);
+      for (int rang_poly = 0; rang_poly < les_polys.size(); rang_poly++)
         {
-          int le_poly=les_polys(rang_poly);
+          int le_poly = les_polys(rang_poly);
           if (le_poly == -1)
-            for(int ncomp=0; ncomp<nb_compo; ncomp++)
-              val(rang_poly,ncomp) = 0;
+            for (int ncomp = 0; ncomp < nb_compo; ncomp++)
+              val(rang_poly, ncomp) = 0;
           else
             {
-              vale=0;
-              s=0;
-              int nb_faces_elem_max=elem_faces.dimension(1);
+              vale = 0;
+              s = 0;
+              int nb_faces_elem_max = elem_faces.dimension(1);
               int nf;
 
-              for (nf=0; nf<nb_faces_elem_max; nf++)
+              for (nf = 0; nf < nb_faces_elem_max; nf++)
                 {
-                  int face=elem_faces(le_poly,nf);
-                  if(face<0)
+                  int face = elem_faces(le_poly, nf);
+                  if (face < 0)
                     break;
-                  for(int ncomp=0; ncomp<nb_compo; ncomp++)
+                  for (int ncomp = 0; ncomp < nb_compo; ncomp++)
                     {
                       //vale(ncomp)+=ch(face)*normales(face,ncomp);
-                      vale[ncomp]+=ch(face)*std::fabs(normales(face,ncomp));
-                      s[ncomp]+=std::fabs(normales(face,ncomp));
+                      vale[ncomp] += ch(face) * std::fabs(normales(face, ncomp));
+                      s[ncomp] += std::fabs(normales(face, ncomp));
                     }
                 }
 
-
-              for(int ncomp=0; ncomp<nb_compo; ncomp++)
-                val(rang_poly,ncomp)=vale[ncomp]/s[ncomp];
+              for (int ncomp = 0; ncomp < nb_compo; ncomp++)
+                val(rang_poly, ncomp) = vale[ncomp] / s[ncomp];
             }
         }
     }
@@ -217,39 +188,33 @@ DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& pos
 {
 
   throw;
-  // return Champ_implementation_RT0::valeur_aux_elems_compo(positions,polys,result,ncomp);
 }
 
 DoubleTab& Champ_Fonc_Face_PolyMAC::remplir_coord_noeuds(DoubleTab& positions) const
 {
 
   throw;
-  // return Champ_implementation_RT0::remplir_coord_noeuds(positions);
 }
 
 int Champ_Fonc_Face_PolyMAC::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
 
   throw;
-  //  return Champ_implementation_RT0::remplir_coord_noeuds_et_polys(positions,polys);
 }
 
 DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
 {
 
   throw;
-  //  return Champ_implementation_RT0::valeur_aux_sommets(domain,result);
 }
 
 DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
 {
 
   throw;
-  //  return Champ_implementation_RT0::valeur_aux_sommets_compo(domain,result,ncomp);
 }
 
 void Champ_Fonc_Face_PolyMAC::mettre_a_jour(double un_temps)
 {
-  return Champ_Fonc_base::mettre_a_jour( un_temps);
+  return Champ_Fonc_base::mettre_a_jour(un_temps);
 }
-

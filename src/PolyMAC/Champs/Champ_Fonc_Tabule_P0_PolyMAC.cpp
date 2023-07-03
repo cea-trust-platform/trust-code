@@ -17,8 +17,7 @@
 #include <Domaine_VF.h>
 #include <Table.h>
 
-Implemente_instanciable(Champ_Fonc_Tabule_P0_PolyMAC,"Champ_Fonc_Tabule_P0_PolyMAC",Champ_Fonc_P0_PolyMAC);
-
+Implemente_instanciable(Champ_Fonc_Tabule_P0_PolyMAC, "Champ_Fonc_Tabule_P0_PolyMAC", Champ_Fonc_P0_PolyMAC);
 
 Sortie& Champ_Fonc_Tabule_P0_PolyMAC::printOn(Sortie& s) const
 {
@@ -27,16 +26,14 @@ Sortie& Champ_Fonc_Tabule_P0_PolyMAC::printOn(Sortie& s) const
 
 Entree& Champ_Fonc_Tabule_P0_PolyMAC::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
 
-void Champ_Fonc_Tabule_P0_PolyMAC::associer_param(const VECT(REF(Champ_base))& les_champs,
-                                                  const Table& une_table)
+void Champ_Fonc_Tabule_P0_PolyMAC::associer_param(const VECT(REF(Champ_base)) &les_champs, const Table& une_table)
 {
   les_ch_param = les_champs;
   la_table = une_table;
 }
-
 
 void Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(double t)
 {
@@ -53,7 +50,8 @@ void Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(double t)
     }
   const DoubleTab& centres_de_gravites = zvf.xp();
   IntVect les_polys(nb_elem_tot);
-  for(int elem = 0; elem < nb_elem_tot; elem++) les_polys(elem) = elem;
+  for (int elem = 0; elem < nb_elem_tot; elem++)
+    les_polys(elem) = elem;
 
   // Estimate the field parameter on cells:
   for (int i = 0; i < nb_param; i++)
@@ -66,7 +64,8 @@ void Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(double t)
         for (int ncomp = 0; ncomp < nbcomp; ncomp++)
           {
             std::vector<double> vals;
-            for (int n = 0; n < nb_param; n++) vals.push_back(val_params_aux_elems[n](num_elem, les_ch_param[n]->valeurs().dimension(1) == 1 ? 0 : ncomp));
+            for (int n = 0; n < nb_param; n++)
+              vals.push_back(val_params_aux_elems[n](num_elem, les_ch_param[n]->valeurs().dimension(1) == 1 ? 0 : ncomp));
             mes_valeurs(num_elem, ncomp) = table.val(vals, ncomp);
           }
     }

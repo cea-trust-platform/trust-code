@@ -16,11 +16,11 @@
 #ifndef Champ_P0_PolyMAC_included
 #define Champ_P0_PolyMAC_included
 
+#include <Op_Diff_PolyMAC_base.h>
 #include <Champ_Inc_P0_base.h>
 #include <Domaine_PolyMAC.h>
 #include <Operateur.h>
-#include <Op_Diff_PolyMAC_base.h>
-#include <TRUST_Ref.h>
+
 class Domaine_VF;
 class Domaine_PolyMAC;
 
@@ -29,12 +29,7 @@ class Domaine_PolyMAC;
 class Champ_P0_PolyMAC : public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_P0_PolyMAC);
-
 public :
-
-  const Domaine_PolyMAC&        domaine_PolyMAC() const;
-  void                         associer_domaine_dis_base(const Domaine_dis_base&) override;
-  const Domaine_dis_base& domaine_dis_base() const override;
   Champ_base& affecter_(const Champ_base& ch) override;
   int                       imprime(Sortie& , int ) const override;
 
@@ -55,12 +50,6 @@ public :
   //              7 -> Dirichlet_homogene
   void init_cl() const;
   mutable IntTab icl; //icl(f, .) = (type de la CL, no de la CL, indice dans la CL)
-
-protected :
-
-  REF(Domaine_VF) le_dom_VF;
-
-
 };
 
 inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const

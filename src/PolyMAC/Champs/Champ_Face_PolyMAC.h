@@ -16,30 +16,21 @@
 #ifndef Champ_Face_PolyMAC_included
 #define Champ_Face_PolyMAC_included
 
-#include <Champ_Inc_base.h>
-#include <Domaine_VF.h>
-#include <TRUST_Ref.h>
+#include <Champ_Face_base.h>
 #include <SolveurSys.h>
 
 // Champ correspondant a une inconnue decrite par ses flux aux faces (type vitesse)
 // Degres de libertes : composante normale aux faces + composante tangentielle aux aretes de la vorticite
-class Champ_Face_PolyMAC : public Champ_Inc_base
+class Champ_Face_PolyMAC: public Champ_Face_base
 {
 
-  Declare_instanciable(Champ_Face_PolyMAC) ;
+  Declare_instanciable(Champ_Face_PolyMAC);
 
-protected :
-  virtual       Champ_base& le_champ(void)      ;
+protected:
+  virtual Champ_base& le_champ(void);
   virtual const Champ_base& le_champ(void) const;
 
-public :
-
-  void    associer_domaine_dis_base(const Domaine_dis_base&) override;
-  const Domaine_dis_base& domaine_dis_base() const override
-  {
-    return ref_domaine_vf_.valeur();
-  } ;
-
+public:
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
@@ -50,16 +41,13 @@ public :
 
   DoubleTab& valeur_aux_faces(DoubleTab& result) const override;
   DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre) const;
-  DoubleVect& calcul_S_barre(const DoubleTab& vitesse,DoubleVect& SMA_barre) const;
-  DoubleTab& trace(const Frontiere_dis_base& , DoubleTab& , double, int distant ) const override;
+  DoubleVect& calcul_S_barre(const DoubleTab& vitesse, DoubleVect& SMA_barre) const;
+  DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
 
-  Champ_base& affecter_(const Champ_base& ) override;
+  DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override { throw; }
+
+  Champ_base& affecter_(const Champ_base&) override;
   int nb_valeurs_nodales() const override;
-
-  const Domaine_VF& domaine_vf() const
-  {
-    return ref_domaine_vf_.valeur();
-  };
 
   int fixer_nb_valeurs_nodales(int n) override;
 
@@ -83,14 +71,10 @@ public :
   mutable DoubleTab vaci, vacf;       // + (vajf, vacf)[vadeb(a, 1), vadeb(a + 1, 1)[ (val_imp aux faces de bord) + (vaja, vaca)[vadeb(., 2)] (val_imp aux aretes)
 
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
-  void interp_ve (const DoubleTab& inco, DoubleTab& val, bool is_vit=true) const;
-  void interp_ve (const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit=true) const;
+  void interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit = true) const;
+  void interp_ve(const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit = true) const;
   void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
 
-
-protected:
-  REF(Domaine_VF) ref_domaine_vf_;
 };
-
 
 #endif /* Champ_Face_PolyMAC_included */

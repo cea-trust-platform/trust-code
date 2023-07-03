@@ -14,16 +14,9 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P0_PolyMAC.h>
-#include <Domaine_VF.h>
 
-Implemente_instanciable(Champ_Fonc_P0_PolyMAC,"Champ_Fonc_P0_PolyMAC",Champ_Fonc_P0_base);
+Implemente_instanciable(Champ_Fonc_P0_PolyMAC, "Champ_Fonc_P0_PolyMAC", Champ_Fonc_P0_base);
 
-Sortie& Champ_Fonc_P0_PolyMAC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Champ_Fonc_P0_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_P0_PolyMAC::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Champ_Fonc_P0_PolyMAC::readOn(Entree& s) { return s; }

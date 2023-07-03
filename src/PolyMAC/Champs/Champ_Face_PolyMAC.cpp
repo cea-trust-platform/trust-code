@@ -16,57 +16,37 @@
 #include <Linear_algebra_tools_impl.h>
 #include <Connectivite_som_elem.h>
 #include <Dirichlet_homogene.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Fonc_reprise.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
+#include <Domaine_PolyMAC.h>
+#include <Domaine_Cl_dis.h>
 #include <TRUSTTab_parts.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
 #include <Matrix_tools.h>
-#include <Domaine_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
+#include <Domaine_VF.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
 #include <EChaine.h>
 #include <Domaine.h>
-#include <Domaine_VF.h>
 #include <array>
 #include <cmath>
 
-Implemente_instanciable(Champ_Face_PolyMAC,"Champ_Face_PolyMAC",Champ_Inc_base) ;
+Implemente_instanciable(Champ_Face_PolyMAC, "Champ_Face_PolyMAC", Champ_Face_base);
 
-Sortie& Champ_Face_PolyMAC::printOn(Sortie& os) const
-{
-  os << que_suis_je() << " " << le_nom();
-  return os;
-}
+Sortie& Champ_Face_PolyMAC::printOn(Sortie& os) const { return os << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Face_PolyMAC::readOn(Entree& is)
-{
-  return is;
-}
+Entree& Champ_Face_PolyMAC::readOn(Entree& is) { return is; }
 
-Champ_base& Champ_Face_PolyMAC::le_champ(void)
-{
-  return *this;
-}
+Champ_base& Champ_Face_PolyMAC::le_champ(void) { return *this; }
 
-const Champ_base& Champ_Face_PolyMAC::le_champ(void) const
-{
-  return *this;
-}
-
-void Champ_Face_PolyMAC::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
-{
-  ref_domaine_vf_=ref_cast(Domaine_VF, z_dis);
-}
-
+const Champ_base& Champ_Face_PolyMAC::le_champ(void) const { return *this; }
 
 int Champ_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
-
   // j'utilise le meme genre de code que dans Champ_Fonc_P0_base
   // sauf que je recupere le nombre de faces au lieu du nombre d'elements
   //
@@ -93,7 +73,7 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
   const DoubleTab& v = ch.valeurs();
   DoubleTab_parts parts(valeurs());
   DoubleTab& val = parts[0]; //partie vitesses
-  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast( Domaine_PolyMAC,ref_domaine_vf_.valeur());
+  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast( Domaine_PolyMAC,le_dom_VF.valeur());
   int nb_faces = domaine_PolyMAC.nb_faces();
   const DoubleVect& surface = domaine_PolyMAC.face_surfaces();
   const DoubleTab& normales = domaine_PolyMAC.face_normales();

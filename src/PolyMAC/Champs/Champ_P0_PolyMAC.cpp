@@ -37,46 +37,6 @@ Entree& Champ_P0_PolyMAC::readOn(Entree& s)
   return s ;
 }
 
-/*! @brief
- *
- * Precondition: Signification:
- * Valeurs par defaut:
- * Contraintes:
- * Acces: entree/sortie
- *
- */
-const Domaine_dis_base& Champ_P0_PolyMAC::domaine_dis_base() const
-{
-  return le_dom_VF.valeur();
-}
-/*! @brief
- *
- * Precondition: Signification:
- * Valeurs par defaut:
- * Contraintes:
- * Acces: entree/sortie
- *
- * @return (z_dis) la domaine discretise
- */
-void Champ_P0_PolyMAC::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
-{
-  le_dom_VF=ref_cast(Domaine_VF, z_dis);
-}
-
-/*! @brief
- *
- * Precondition: Signification:
- * Valeurs par defaut:
- * Contraintes:
- * Acces: entree/sortie
- *
- * @return (le_dom_PolyMAC_P0.valeur())
- */
-const Domaine_PolyMAC& Champ_P0_PolyMAC::domaine_PolyMAC() const
-{
-  return ref_cast(Domaine_PolyMAC, le_dom_VF.valeur());
-}
-
 int Champ_P0_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
   const Domaine_dis_base& domaine_dis = domaine_dis_base();

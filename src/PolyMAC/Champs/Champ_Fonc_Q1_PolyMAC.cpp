@@ -17,57 +17,11 @@
 #include <Domaine_PolyMAC.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Champ_Fonc_Q1_PolyMAC,"Champ_Fonc_Q1_PolyMAC",Champ_Fonc_Q1_base);
+Implemente_instanciable(Champ_Fonc_Q1_PolyMAC, "Champ_Fonc_Q1_PolyMAC", Champ_Fonc_Q1_base);
 
-Sortie& Champ_Fonc_Q1_PolyMAC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Champ_Fonc_Q1_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_Q1_PolyMAC::readOn(Entree& s)
-{
-  return s ;
-}
-
-/*! @brief
- *
- * Precondition: Signification:
- * Valeurs par defaut:
- * Contraintes:
- * Acces: entree/sortie
- *
- */
-const Domaine_dis_base& Champ_Fonc_Q1_PolyMAC::domaine_dis_base() const
-{
-  return le_dom_VF.valeur();
-}
-/*! @brief
- *
- * Precondition: Signification:
- * Valeurs par defaut:
- * Contraintes:
- * Acces: entree/sortie
- *
- * @return (z_dis) la domaine discretise
- */
-void Champ_Fonc_Q1_PolyMAC::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
-{
-  le_dom_VF=ref_cast(Domaine_VF, z_dis);
-}
-
-/*! @brief
- *
- * Precondition: Signification:
- * Valeurs par defaut:
- * Contraintes:
- * Acces: entree/sortie
- *
- * @return (le_dom_PolyMAC_P1.valeur())
- */
-const Domaine_PolyMAC& Champ_Fonc_Q1_PolyMAC::domaine_PolyMAC() const
-{
-  return ref_cast(Domaine_PolyMAC, le_dom_VF.valeur());
-}
+Entree& Champ_Fonc_Q1_PolyMAC::readOn(Entree& s) { return s; }
 
 void Champ_Fonc_Q1_PolyMAC::mettre_a_jour(double t)
 {
@@ -78,21 +32,21 @@ int Champ_Fonc_Q1_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
   const Domaine_dis_base& domaine_dis = domaine_dis_base();
   const Domaine& domaine = domaine_dis.domaine();
-  const DoubleTab& coord=domaine.coord_sommets();
+  const DoubleTab& coord = domaine.coord_sommets();
   const int nb_som = domaine.nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;
-  for (som=0; som<nb_som; som++)
+  for (som = 0; som < nb_som; som++)
     {
-      if (dimension==3)
-        os << coord(som,0) << " " << coord(som,1) << " " << coord(som,2) << " " ;
-      if (dimension==2)
-        os << coord(som,0) << " " << coord(som,1) << " " ;
+      if (dimension == 3)
+        os << coord(som, 0) << " " << coord(som, 1) << " " << coord(som, 2) << " ";
+      if (dimension == 2)
+        os << coord(som, 0) << " " << coord(som, 1) << " ";
       if (nb_compo_ == 1)
         os << val(som) << finl;
       else
-        os << val(som,ncomp) << finl;
+        os << val(som, ncomp) << finl;
     }
   os << finl;
   Cout << "Champ_Fonc_Q1_PolyMAC::imprime FIN >>>>>>>>>> " << finl;

@@ -17,31 +17,12 @@
 #define Champ_Q1_PolyMAC_included
 
 #include <Champ_Inc_Q1_base.h>
-#include <TRUST_Ref.h>
-class Domaine_VF;
 
-class Domaine_PolyMAC;
-
-class Champ_Q1_PolyMAC : public Champ_Inc_Q1_base
+class Champ_Q1_PolyMAC: public Champ_Inc_Q1_base
 {
   Declare_instanciable(Champ_Q1_PolyMAC);
-
-public :
-
-  const Domaine_PolyMAC&        domaine_PolyMAC() const;
-  void                         associer_domaine_dis_base(const Domaine_dis_base&) override;
-  const Domaine_dis_base& domaine_dis_base() const override;
-  int                       imprime(Sortie& , int ) const override;
-
-protected :
-
-  REF(Domaine_VF) le_dom_VF;
-
-
+public:
+  int imprime(Sortie&, int) const override;
 };
 
 #endif
-
-
-
-
