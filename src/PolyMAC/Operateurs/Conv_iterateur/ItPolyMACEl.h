@@ -16,17 +16,12 @@
 #ifndef It_PolyMACEl_H
 #define It_PolyMACEl_H
 
-#include <Config_Template_Version_PolyMAC_Operateur.h>
 #define It_PolyMAC_Elem(_TYPE_) name2(Iterateur_PolyMAC_Elem, _TYPE_)
 
-#ifdef Template_Version_PolyMAC
-#include <T_It_PolyMAC_Elem.h>
+#include <Iterateur_PolyMAC_Elem.h>
 #define declare_It_PolyMAC_Elem(_TYPE_)
 
 #define implemente_It_PolyMAC_Elem(_TYPE_) \
-  typedef T_It_PolyMAC_Elem<_TYPE_> It_PolyMAC_Elem(_TYPE_);
-#else
-#include <MItPolyMACEl.h>
-#endif
+  typedef Iterateur_PolyMAC_Elem<_TYPE_> It_PolyMAC_Elem(_TYPE_);
 
 #endif

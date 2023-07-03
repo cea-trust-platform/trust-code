@@ -28,6 +28,8 @@
 #include <cmath>
 
 Implemente_instanciable_sans_constructeur( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
+Implemente_instanciable( Op_Conv_Amont_PolyMAC_Face, "Op_Conv_Amont_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
+Implemente_instanciable( Op_Conv_Centre_PolyMAC_Face, "Op_Conv_Centre_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
 
 Op_Conv_EF_Stab_PolyMAC_Face::Op_Conv_EF_Stab_PolyMAC_Face()
 {
@@ -37,8 +39,7 @@ Op_Conv_EF_Stab_PolyMAC_Face::Op_Conv_EF_Stab_PolyMAC_Face()
 // XD Op_Conv_EF_Stab_PolyMAC_Face interprete Op_Conv_EF_Stab_PolyMAC_Face 1 Class Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC
 Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn( Sortie& os ) const
 {
-  Op_Conv_PolyMAC_base::printOn( os );
-  return os;
+  return Op_Conv_PolyMAC_base::printOn( os );
 }
 
 Entree& Op_Conv_EF_Stab_PolyMAC_Face::readOn( Entree& is )
@@ -47,6 +48,32 @@ Entree& Op_Conv_EF_Stab_PolyMAC_Face::readOn( Entree& is )
   Param param(que_suis_je());
   param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
   param.lire_avec_accolades_depuis(is);
+  return is;
+}
+
+Sortie& Op_Conv_Amont_PolyMAC_Face::printOn( Sortie& os ) const
+{
+  Op_Conv_PolyMAC_base::printOn( os );
+  return os;
+}
+
+Entree& Op_Conv_Amont_PolyMAC_Face::readOn( Entree& is )
+{
+  Op_Conv_PolyMAC_base::readOn( is );
+  alpha = 1;
+  return is;
+}
+
+Sortie& Op_Conv_Centre_PolyMAC_Face::printOn( Sortie& os ) const
+{
+  Op_Conv_PolyMAC_base::printOn( os );
+  return os;
+}
+
+Entree& Op_Conv_Centre_PolyMAC_Face::readOn( Entree& is )
+{
+  Op_Conv_PolyMAC_base::readOn( is );
+  alpha = 0;
   return is;
 }
 

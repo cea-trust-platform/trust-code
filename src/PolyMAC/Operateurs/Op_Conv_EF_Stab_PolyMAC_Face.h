@@ -41,4 +41,14 @@ private :
   IntTab equiv; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
 };
 
+class Op_Conv_Amont_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face
+{
+  Declare_instanciable( Op_Conv_Amont_PolyMAC_Face ) ;
+};
+
+class Op_Conv_Centre_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face
+{
+  Declare_instanciable( Op_Conv_Centre_PolyMAC_Face ) ;
+};
+
 #endif /* Op_Conv_EF_Stab_PolyMAC_Face_included */
