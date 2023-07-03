@@ -47,27 +47,24 @@ protected:
 
 };
 
-//
-// Fonctions inline de la classe Op_Conv_PolyMAC_iterateur_base
-//
-
-// Description:
-// constructeur
+/*! @brief constructeur
+ *
+ */
 inline Op_Conv_PolyMAC_iterateur_base::Op_Conv_PolyMAC_iterateur_base(const Iterateur_PolyMAC_base& iter_base) :
   iter(iter_base)
 {}
 
-// Description:
-// ajoute la contribution de la convection au second membre resu
-// renvoie resu
+/*! @brief ajoute la contribution de la convection au second membre resu renvoie resu
+ *
+ */
 inline DoubleTab& Op_Conv_PolyMAC_iterateur_base::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
   return iter.ajouter(inco, resu);
 }
 
-//Description:
-//on assemble la matrice.
-
+/*! @brief on assemble la matrice.
+ *
+ */
 inline void Op_Conv_PolyMAC_iterateur_base::contribuer_a_avec(const DoubleTab& inco,
                                                               Matrice_Morse& matrice) const
 {
@@ -80,18 +77,18 @@ inline void Op_Conv_PolyMAC_iterateur_base::contribuer_bloc_vitesse(const Double
   iter.ajouter_contribution_vitesse(inco, matrice);
 }
 
-//Description:
-//on ajoute la contribution du second membre.
-
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 inline void Op_Conv_PolyMAC_iterateur_base::contribuer_au_second_membre(DoubleTab& resu) const
 {
   iter.contribuer_au_second_membre(resu);
 }
 
 
-// Description:
-// calcule la contribution de la convection, la range dans resu
-// renvoie resu
+/*! @brief calcule la contribution de la convection, la range dans resu renvoie resu
+ *
+ */
 inline DoubleTab& Op_Conv_PolyMAC_iterateur_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   return iter.calculer(inco, resu);

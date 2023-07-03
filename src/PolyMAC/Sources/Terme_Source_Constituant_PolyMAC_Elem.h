@@ -23,14 +23,15 @@
 
 declare_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
 
-//.DESCRIPTION class Terme_Source_Constituant_PolyMAC_Elem
-//
-// Cette classe represente un terme source de l'equation de la thermique
-// du type degagement volumique de puissance thermique uniforme sur une domaine
-//
-//.SECTION
-// voir aussi Terme_Source_Constituant, Terme_Source_PolyMAC_base
-
+/*! @brief class Terme_Source_Constituant_PolyMAC_Elem
+ *
+ *  Cette classe represente un terme source de l'equation de la thermique
+ *  du type degagement volumique de puissance thermique uniforme sur une domaine
+ *
+ * .SECTION
+ *  voir aussi Terme_Source_Constituant, Terme_Source_PolyMAC_base
+ *
+ */
 class Terme_Source_Constituant_PolyMAC_Elem : public Terme_Source_Constituant,
   public Terme_Source_PolyMAC_base
 {

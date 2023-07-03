@@ -31,11 +31,12 @@ Entree& Tetra_PolyMAC::readOn(Entree& s )
 {
   return s ;
 }
-// Description:
-// renvoie pour la facette fa7 :
-// pour j=0,j=1 : les numeros locaux des 2 faces qui entourent fa7
-// pour j=2,j=3 : les numeros locaux des sommets du tetraedre qui
-//                appartiennent a fa7
+/*! @brief renvoie pour la facette fa7 : pour j=0,j=1 : les numeros locaux des 2 faces qui entourent fa7
+ *
+ *  pour j=2,j=3 : les numeros locaux des sommets du tetraedre qui
+ *                 appartiennent a fa7
+ *
+ */
 Tetra_PolyMAC::Tetra_PolyMAC()
 {
 }
@@ -226,9 +227,9 @@ void Tetra_PolyMAC::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
     } // fin du switch
 }
 
-// Description:
-// calcule les coord xg du centre d'un element non standard
-// calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+/*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+ *
+ */
 void Tetra_PolyMAC::calcul_xg(DoubleVect& xg,const DoubleTab& x, const int type_elem_Cl,
                               int& idirichlet,int& n1,int& n2,int& n3) const
 {

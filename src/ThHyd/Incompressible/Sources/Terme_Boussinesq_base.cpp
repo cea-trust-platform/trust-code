@@ -24,8 +24,9 @@ Implemente_base(Terme_Boussinesq_base,"Terme_Boussinesq_base",Source_base);
 
 Sortie& Terme_Boussinesq_base::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-// Description:
-// Lit les parametres du terme source a partir d'un flot d'entree.
+/*! @brief Lit les parametres du terme source a partir d'un flot d'entree.
+ *
+ */
 Entree& Terme_Boussinesq_base::readOn(Entree& is )
 {
   Param param(que_suis_je());

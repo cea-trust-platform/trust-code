@@ -165,9 +165,9 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
   return resu;
 }
 
-//Description:
-//on assemble la matrice.
-
+/*! @brief on assemble la matrice.
+ *
+ */
 inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
@@ -210,9 +210,9 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
     }
 }
 
-//Description:
-//on ajoute la contribution du second membre.
-
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_au_second_membre(DoubleTab& resu) const
 {
   abort();

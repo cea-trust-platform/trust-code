@@ -45,8 +45,9 @@ void Op_Conv_Centre_PolyMAC_Elem::associer(const Domaine_dis& domaine_dis,
   eval_conv.associer_inconnue(inco );        // Eval_PolyMAC_Elem::associer_inconnue
 }
 
-// Description:
-// associe le champ de vitesse a l'evaluateur
+/*! @brief associe le champ de vitesse a l'evaluateur
+ *
+ */
 void Op_Conv_Centre_PolyMAC_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vit);
@@ -67,11 +68,9 @@ Champ_base& Op_Conv_Centre_PolyMAC_Elem::vitesse()
   return eval_conv.vitesse();
 }
 
-//
-// Fonctions inline de la classe Op_Conv_Centre_PolyMAC_Elem
-//
-// Description:
-// constructeur
+/*! @brief constructeur
+ *
+ */
 Op_Conv_Centre_PolyMAC_Elem::Op_Conv_Centre_PolyMAC_Elem() :
   Op_Conv_PolyMAC_iterateur_base(It_PolyMAC_Elem(Eval_centre_PolyMAC_Elem)())
 {

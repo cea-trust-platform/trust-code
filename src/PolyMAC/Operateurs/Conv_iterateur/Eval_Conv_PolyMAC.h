@@ -37,11 +37,9 @@ protected:
   DoubleTab dt_vitesse;
 };
 
-//
-//  Fonctions inline de la classe Eval_Conv_PolyMAC
-//
-// Description:
-// constructeur par defaut
+/*! @brief constructeur par defaut
+ *
+ */
 inline Eval_Conv_PolyMAC::Eval_Conv_PolyMAC()
 {}
 

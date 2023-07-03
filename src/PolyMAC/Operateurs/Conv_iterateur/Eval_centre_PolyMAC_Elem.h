@@ -21,16 +21,16 @@
 #include <Domaine_PolyMAC.h>
 #include <Champ_P0_PolyMAC.h>
 
-//
-// .DESCRIPTION class Eval_centre_PolyMAC_Elem
-//
-// Evaluateur PolyMAC pour la convection
-// Le champ convecte est scalaire (Champ_P0_PolyMAC)
-// Schema de convection Centre
-// Rq:Les evaluateurs de flux convectifs calculent en fait le terme
-// convectif qui figure au second membre de l'equation d'evolution
-// c.a.d l'oppose du flux convectif
-
+/*! @brief class Eval_centre_PolyMAC_Elem
+ *
+ *  Evaluateur PolyMAC pour la convection
+ *  Le champ convecte est scalaire (Champ_P0_PolyMAC)
+ *  Schema de convection Centre
+ *  Rq:Les evaluateurs de flux convectifs calculent en fait le terme
+ *  convectif qui figure au second membre de l'equation d'evolution
+ *  c.a.d l'oppose du flux convectif
+ *
+ */
 class Eval_centre_PolyMAC_Elem : public Eval_Conv_PolyMAC, public Eval_PolyMAC_Elem
 {
 

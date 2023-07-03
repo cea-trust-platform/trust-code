@@ -169,8 +169,9 @@ void Hexa_PolyMAC::normale(int num_Face,DoubleTab& Face_normales,
 
 
 
-// Description:
-//
+/*! @brief
+ *
+ */
 void Hexa_PolyMAC::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
                              const ArrOfDouble& vs,const DoubleTab& vsom,
                              const Champ_Inc_base& vitesse,int type_cl) const
@@ -181,10 +182,11 @@ void Hexa_PolyMAC::calcul_vc(const ArrOfInt& Face,ArrOfDouble& vc,
   vc[2] = vs[2]/6;
 }
 
-// Description:
-// calcule les coord xg du centre d'un element non standard
-// calcule aussi idirichlet=nb de faces de Dirichlet de l'element
-// si idirichlet=2, n1 est le numero du sommet confondu avec G
+/*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
+ *
+ *  si idirichlet=2, n1 est le numero du sommet confondu avec G
+ *
+ */
 void Hexa_PolyMAC::calcul_xg(DoubleVect& xg, const DoubleTab& x,
                              const int type_elem_Cl,int& idirichlet,int& n1,int& ,int& ) const
 {

@@ -21,14 +21,14 @@
 #include <TRUST_Ref.h>
 class Domaine_Cl_PolyMAC;
 
-//
-// .DESCRIPTION class Op_Div_PolyMAC
-//
-//  Cette classe represente l'operateur de divergence
-//  La discretisation est PolyMAC
-//  On calcule la divergence d'un champ_P1NC (la vitesse)
-//
-
+/*! @brief class Op_Div_PolyMAC
+ *
+ *   Cette classe represente l'operateur de divergence
+ *   La discretisation est PolyMAC
+ *   On calcule la divergence d'un champ_P1NC (la vitesse)
+ *
+ *
+ */
 class MAtrice_Morse;
 class Op_Div_PolyMAC : public Operateur_Div_base
 {

@@ -300,9 +300,9 @@ void Op_Diff_PolyMAC_Elem::calculer_flux_bord(const DoubleTab& inco) const
   abort();
 }
 
-// Description:
-// ajoute la contribution de la diffusion au second membre resu
-// renvoie resu
+/*! @brief ajoute la contribution de la diffusion au second membre resu renvoie resu
+ *
+ */
 DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
@@ -360,8 +360,9 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
   return resu;
 }
 
-//Description:
-//on assemble la matrice.
+/*! @brief on assemble la matrice.
+ *
+ */
 void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Champ_P0_PolyMAC& ch = ref_cast(Champ_P0_PolyMAC, equation().inconnue().valeur());
@@ -430,8 +431,9 @@ void Op_Diff_PolyMAC_Elem::modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab
   return;
 }
 
-//Description:
-//on ajoute la contribution du second membre.
+/*! @brief on ajoute la contribution du second membre.
+ *
+ */
 void Op_Diff_PolyMAC_Elem::contribuer_au_second_membre(DoubleTab& resu) const
 {
   abort();

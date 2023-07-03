@@ -34,8 +34,9 @@ Tri_PolyMAC::Tri_PolyMAC()
 {
 }
 
-// Description:
-// remplit le tableau face_normales dans la Domaine_PolyMAC
+/*! @brief remplit le tableau face_normales dans la Domaine_PolyMAC
+ *
+ */
 void Tri_PolyMAC::normale(int num_Face,DoubleTab& Face_normales,
                           const  IntTab& Face_sommets,
                           const IntTab& Face_voisins,

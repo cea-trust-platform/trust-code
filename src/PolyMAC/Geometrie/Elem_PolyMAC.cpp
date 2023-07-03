@@ -46,8 +46,9 @@ Entree& Elem_PolyMAC::readOn(Entree& s )
   return s ;
 }
 
-// Description:
-// determination du type
+/*! @brief determination du type
+ *
+ */
 void Elem_PolyMAC::typer(Nom type_elem_geom)
 {
   Cerr << "Elem_PolyMAC::typer()" << finl ;

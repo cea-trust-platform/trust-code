@@ -49,21 +49,17 @@ Entree& Domaine_Cl_PolyMAC::readOn(Entree& is )
 }
 
 
-/////////////////////////////////////////////////////////////////////
-//
-// Implementation des fonctions de la classe Domaine_Cl_PolyMAC
-//
-/////////////////////////////////////////////////////////////////////
-
-// Description:
-// etape de discretisation : dimensionnement des tableaux
+/*! @brief etape de discretisation : dimensionnement des tableaux
+ *
+ */
 void Domaine_Cl_PolyMAC::associer(const Domaine_PolyMAC& le_dom_PolyMAC)
 {
   //  int nb_elem_Cl  = le_dom_PolyMAC.nb_elem_Cl();
 }
 
-// Description:
-// remplissage des tableaux
+/*! @brief remplissage des tableaux
+ *
+ */
 void Domaine_Cl_PolyMAC::completer(const Domaine_dis& une_domaine_dis)
 {
   modif_perio_fait_ =0;
@@ -78,15 +74,16 @@ void Domaine_Cl_PolyMAC::completer(const Domaine_dis& une_domaine_dis)
       exit();
     }
 }
-// Description:
-// appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
+/*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
+ *
+ */
 void Domaine_Cl_PolyMAC::remplir_type_elem_Cl(const Domaine_PolyMAC& le_dom_PolyMAC)
 {
 }
 
-// Description:
-// Impose les conditions aux limites a la valeur temporelle "temps" du
-// Champ_Inc
+/*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
+ *
+ */
 void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
 

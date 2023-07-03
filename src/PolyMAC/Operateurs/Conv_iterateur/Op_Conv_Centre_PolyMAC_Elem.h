@@ -20,18 +20,17 @@
 #include <Eval_centre_PolyMAC_Elem.h>
 #include <Op_PolyMAC_Elem.h>
 
-//
-// .DESCRIPTION class Op_Conv_Centre_PolyMAC_Elem
-//
-//  Cette classe represente l'operateur de convection associe a une equation de
-//  transport d'un scalaire.
-//  La discretisation est PolyMAC
-//  Le champ convecte est scalaire
-//  Le schema de convection est du type Centre
-//  L'iterateur associe est de type Iterateur_PolyMAC_Elem
-//  L'evaluateur associe est de type Eval_centre_PolyMAC_Elem
-
-
+/*! @brief class Op_Conv_Centre_PolyMAC_Elem
+ *
+ *   Cette classe represente l'operateur de convection associe a une equation de
+ *   transport d'un scalaire.
+ *   La discretisation est PolyMAC
+ *   Le champ convecte est scalaire
+ *   Le schema de convection est du type Centre
+ *   L'iterateur associe est de type Iterateur_PolyMAC_Elem
+ *   L'evaluateur associe est de type Eval_centre_PolyMAC_Elem
+ *
+ */
 declare_It_PolyMAC_Elem(Eval_centre_PolyMAC_Elem)
 
 class Op_Conv_Centre_PolyMAC_Elem : public Op_Conv_PolyMAC_iterateur_base, public Op_PolyMAC_Elem
@@ -60,8 +59,9 @@ inline Op_Conv_Centre_PolyMAC_Elem::Op_Conv_Centre_PolyMAC_Elem(const Iterateur_
 {
 }
 
-// Description:
-// on dimensionne notre matrice.
+/*! @brief on dimensionne notre matrice.
+ *
+ */
 inline  void Op_Conv_Centre_PolyMAC_Elem::dimensionner(Matrice_Morse& matrice) const
 {
   Op_PolyMAC_Elem::dimensionner(iter.domaine(), iter.domaine_Cl(), matrice);

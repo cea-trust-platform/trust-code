@@ -29,54 +29,41 @@ Entree& Champ_Fonc_Q1_PolyMAC::readOn(Entree& s)
   return s ;
 }
 
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * Precondition: Signification:
+ * Valeurs par defaut:
+ * Contraintes:
+ * Acces: entree/sortie
+ *
+ */
 const Domaine_dis_base& Champ_Fonc_Q1_PolyMAC::domaine_dis_base() const
 {
   return le_dom_VF.valeur();
 }
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour:  z_dis
-//    Signification: la domaine discretise
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * Precondition: Signification:
+ * Valeurs par defaut:
+ * Contraintes:
+ * Acces: entree/sortie
+ *
+ * @return (z_dis) la domaine discretise
+ */
 void Champ_Fonc_Q1_PolyMAC::associer_domaine_dis_base(const Domaine_dis_base& z_dis)
 {
   le_dom_VF=ref_cast(Domaine_VF, z_dis);
 }
 
-// Description:
-//
-// Precondition:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces: entree/sortie
-// Retour: le_dom_PolyMAC_P1.valeur()
-//    Signification:
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition:
+/*! @brief
+ *
+ * Precondition: Signification:
+ * Valeurs par defaut:
+ * Contraintes:
+ * Acces: entree/sortie
+ *
+ * @return (le_dom_PolyMAC_P1.valeur())
+ */
 const Domaine_PolyMAC& Champ_Fonc_Q1_PolyMAC::domaine_PolyMAC() const
 {
   return ref_cast(Domaine_PolyMAC, le_dom_VF.valeur());

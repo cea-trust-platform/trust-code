@@ -50,15 +50,9 @@ protected:
 
 };
 
-//
-// Fonctions inline de la classe Op_Conv_PolyMAC_base
-//
-
-
-
-// Description:
-// calcule la contribution de la convection, la range dans resu
-// renvoie resu
+/*! @brief calcule la contribution de la convection, la range dans resu renvoie resu
+ *
+ */
 inline DoubleTab& Op_Conv_PolyMAC_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
   resu=0;

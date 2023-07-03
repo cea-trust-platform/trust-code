@@ -19,23 +19,23 @@
 #include <Eval_Conv_PolyMAC.h>
 #include <Eval_PolyMAC_Elem.h>
 
-//
-// .DESCRIPTION class Eval_Amont_PolyMAC_Elem
-//
-// Evaluateur PolyMAC pour la convection
-// Le champ convecte est scalaire (Champ_P0_PolyMAC)
-// Schema de convection Amont
-// Rq:Les evaluateurs de flux convectifs calculent en fait le terme
-// convectif qui figure au second membre de l'equation d'evolution
-// c.a.d l'oppose du flux convectif pour la methode EXPLICITE.
-//
-// Dans le cas de la methode IMPLICITE les evaluateurs calculent la quantite qui figure
-// dans le premier membre de l'equation, nous ne prenons pas par consequent l'oppose en
-// ce qui concerne les termes pour la matrice, par contre pour le second membre nous
-// procedons comme en explicite mais en ne fesant intervenir que les valeurs fournies
-// par les conditions limites.
-//
-
+/*! @brief class Eval_Amont_PolyMAC_Elem
+ *
+ *  Evaluateur PolyMAC pour la convection
+ *  Le champ convecte est scalaire (Champ_P0_PolyMAC)
+ *  Schema de convection Amont
+ *  Rq:Les evaluateurs de flux convectifs calculent en fait le terme
+ *  convectif qui figure au second membre de l'equation d'evolution
+ *  c.a.d l'oppose du flux convectif pour la methode EXPLICITE.
+ *
+ *  Dans le cas de la methode IMPLICITE les evaluateurs calculent la quantite qui figure
+ *  dans le premier membre de l'equation, nous ne prenons pas par consequent l'oppose en
+ *  ce qui concerne les termes pour la matrice, par contre pour le second membre nous
+ *  procedons comme en explicite mais en ne fesant intervenir que les valeurs fournies
+ *  par les conditions limites.
+ *
+ *
+ */
 class Eval_Amont_PolyMAC_Elem : public Eval_Conv_PolyMAC, public Eval_PolyMAC_Elem
 {
 

@@ -81,7 +81,9 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
   return resu;
 }
 
-// Description: copie de ajouter sauf la derniere ligne
+/*! @brief copie de ajouter sauf la derniere ligne
+ *
+ */
 void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
