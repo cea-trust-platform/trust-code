@@ -12,321 +12,52 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Domaine_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
-
-#include <Domaine_PolyMAC.h>
-#include <tuple>
-
-#include <Rectangle.h>
-#include <Hexaedre.h>
-#include <Triangle.h>
-#include <Segment.h>
-#include <Tetraedre.h>
-#include <Quadrangle_VEF.h>
-#include <Hexaedre_VEF.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Tri_PolyMAC.h>
-#include <Segment_PolyMAC.h>
-#include <Tetra_PolyMAC.h>
-#include <Quadri_PolyMAC.h>
-#include <Hexa_PolyMAC.h>
-#include <Domaine.h>
-#include <Scatter.h>
-#include <EFichier.h>
-
-
-#include <TRUSTList.h>
-#include <Option_PolyMAC.h>
-
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <EChaine.h>
-
-
-#include <communications.h>
-#include <Statistiques.h>
-#include <MD_Vector_composite.h>
-
-#include <TRUSTTab_parts.h>
-#include <Lapack.h>
-
-
-
 
 #include <Linear_algebra_tools_impl.h>
-
-#include <TRUSTLists.h>
+#include <MD_Vector_composite.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
+#include <Segment_PolyMAC.h>
+#include <Quadrangle_VEF.h>
+#include <Option_PolyMAC.h>
 #include <Poly_geom_base.h>
-
+#include <Quadri_PolyMAC.h>
+#include <communications.h>
+#include <TRUSTTab_parts.h>
+#include <Tetra_PolyMAC.h>
+#include <Hexaedre_VEF.h>
+#include <Hexa_PolyMAC.h>
+#include <Matrix_tools.h>
+#include <Statistiques.h>
+#include <Tri_PolyMAC.h>
+#include <Array_tools.h>
+#include <TRUSTLists.h>
+#include <Rectangle.h>
+#include <Tetraedre.h>
+#include <TRUSTList.h>
+#include <Hexaedre.h>
+#include <Triangle.h>
+#include <EFichier.h>
+#include <Segment.h>
+#include <Domaine.h>
+#include <Scatter.h>
+#include <EChaine.h>
+#include <Lapack.h>
 #include <unistd.h>
-
-#include <vector>
-
-#include <map>
+#include <numeric>
 #include <cmath>
 #include <cfloat>
-#include <numeric>
-
+#include <tuple>
 #include <cfenv>
-//#pragma GCC diagnostic push
+
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include <osqp/osqp.h>
-//#pragma GCC diagnostic pop
 
-Implemente_instanciable(Domaine_PolyMAC,"Domaine_PolyMAC",Domaine_VF);
+Implemente_instanciable(Domaine_PolyMAC, "Domaine_PolyMAC", Domaine_Poly_base);
 
+Sortie& Domaine_PolyMAC::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 
-//// printOn
-//
-
-Sortie& Domaine_PolyMAC::ecrit(Sortie& os) const
-{
-  Domaine_VF::printOn(os);
-  os << "____ h_carre "<<finl;
-  os << h_carre << finl;
-  os << "____ type_elem_ "<<finl;
-  os << type_elem_ << finl;
-  os << "____ nb_elem_std_ "<<finl;
-  os << nb_elem_std_ << finl;
-  os << "____ volumes_entrelaces_ "<<finl;
-  volumes_entrelaces_.ecrit(os);
-  os << "____ face_normales_ "<<finl;
-  face_normales_.ecrit(os);
-  os << "____ nb_faces_std_ "<<finl;
-  os << nb_faces_std_ << finl;
-  os << "____ rang_elem_non_std_ "<<finl;
-  rang_elem_non_std_.ecrit(os);
-  return os;
-}
-
-//// printOn
-//
-
-Sortie& Domaine_PolyMAC::printOn(Sortie& os) const
-{
-  Domaine_VF::printOn(os);
-
-  os << h_carre << finl;
-  os << type_elem_ << finl;
-  os << nb_elem_std_ << finl;
-  os << volumes_entrelaces_ << finl;
-  os << face_normales_ << finl;
-  os << xp_ << finl;
-  os << xv_ << finl;
-  os << nb_faces_std_ << finl;
-  os << rang_elem_non_std_ << finl;
-  return os;
-}
-
-//// readOn
-//
-
-Entree& Domaine_PolyMAC::readOn(Entree& is)
-{
-  Domaine_VF::readOn(is);
-  is >> h_carre;
-  is >> type_elem_;
-  is >> nb_elem_std_ ;
-  is >> volumes_entrelaces_ ;
-  is >> face_normales_ ;
-  is >> xp_;
-  is >> xv_;
-  is >> nb_faces_std_ ;
-  is >> rang_elem_non_std_ ;
-  return is;
-}
-
-void Domaine_PolyMAC::swap(int fac1, int fac2, int nb_som_faces )
-{
-
-}
-
-/*! @brief Methode appelee par Domaine_VF::discretiser apres la creation des faces reelles.
- *
- *   On reordonne les faces de sorte a placer les faces "non standard"
- *   au debut de la liste des faces. Les faces non standard sont celles
- *   dont les volumes de controles sont modifies par les conditions aux
- *   limites.
- *
- */
-void Domaine_PolyMAC::reordonner(Faces& les_faces)
-{
-  if (Process::je_suis_maitre())
-    Cerr << "Domaine_PolyMAC::reordonner les_faces " << finl;
-
-  // Construction de rang_elem_non_std_ :
-  //  C'est un vecteur indexe par les elements du domaine.
-  //  size() = nb_elem()
-  //  size_tot() = nb_elem_tot()
-  //  Valeurs dans le tableau :
-  //   rang_elem_non_std_[i] = -1 si l'element i est standard,
-  //  sinon
-  //   rang_elem_non_std_[i] = j, ou j est l'indice de l'element dans
-  //   les tableaux indexes par les elements non standards (par exemple
-  //   le tableau Domaine_Cl_PolyMAC::type_elem_Cl_).
-  // Un element est non standard s'il est voisin d'une face frontiere.
-  {
-    const Domaine& dom = domaine();
-    const int nb_elements = nb_elem();
-    const int nb_faces_front = domaine().nb_faces_frontiere();
-    dom.creer_tableau_elements(rang_elem_non_std_);
-    //    rang_elem_non_std_.resize(nb_elements);
-    //    Scatter::creer_tableau_distribue(dom, Joint::ELEMENT, rang_elem_non_std_);
-    rang_elem_non_std_ = -1;
-    int nb_elems_non_std = 0;
-    // D'abord on marque les elements non standards avec rang_elem_non_std_[i] = 0
-    for (int i_face = 0; i_face < nb_faces_front; i_face++)
-      {
-        const int elem = les_faces.voisin(i_face, 0);
-        if (rang_elem_non_std_[elem] < 0)
-          {
-            rang_elem_non_std_[elem] = 0;
-            nb_elems_non_std++;
-          }
-      }
-    nb_elem_std_ = nb_elements - nb_elems_non_std;
-    rang_elem_non_std_.echange_espace_virtuel();
-    int count = 0;
-    const int size_tot = rang_elem_non_std_.size_totale();
-    // On remplace le marqueur "0" par l'indice j.
-    for (int elem = 0; elem < size_tot; elem++)
-      {
-        if (rang_elem_non_std_[elem] == 0)
-          {
-            rang_elem_non_std_[elem] = count;
-            count++;
-          }
-      }
-  }
-
-  // Construction du tableau de renumerotation des faces. Ce tableau,
-  // une fois trie dans l'ordre croissant donne l'ordre des faces dans
-  // le domaine_VF. La cle de tri est construite de sorte a pouvoir retrouver
-  // l'indice de la face a partir de la cle par la formule :
-  //  indice_face = cle % nb_faces
-  const int nbfaces = les_faces.nb_faces();
-  ArrOfInt sort_key(nbfaces);
-  {
-    nb_faces_std_ =0;
-    const int nb_faces_front = domaine().nb_faces_frontiere();
-    // Attention : face_voisins_ n'est pas encore initialise, il
-    // faut passer par les_faces.voisins() :
-    const IntTab& facevoisins = les_faces.voisins();
-    // On place en premier les faces de bord:
-    int i_face;
-    for (i_face = 0; i_face < nbfaces; i_face++)
-      {
-        int key = -1;
-        if (i_face < nb_faces_front)
-          {
-            // Si la face est au bord, elle doit etre placee au debut
-            // (en fait elle ne doit pas etre renumerotee)
-            key = i_face;
-          }
-        else
-          {
-            const int elem0 = facevoisins(i_face, 0);
-            const int elem1 = facevoisins(i_face, 1);
-            // Ces faces ont toujours deux voisins.
-            assert(elem0 >= 0 && elem1 >= 0);
-            if (rang_elem_non_std_[elem0] >= 0 || rang_elem_non_std_[elem1] >= 0)
-              {
-                // Si la face est voisine d'un element non standard, elle
-                // doit etre classee juste apres les faces de bord:
-                key = i_face;
-              }
-            else
-              {
-                // Face standard : a la fin du tableau
-                key = i_face + nbfaces;
-                nb_faces_std_++;
-              }
-          }
-        sort_key[i_face] = key;
-      }
-    sort_key.ordonne_array();
-
-    // On transforme a nouveau la cle en numero de face:
-    for (i_face = 0; i_face < nbfaces; i_face++)
-      {
-        const int key = sort_key[i_face] % nbfaces;
-        sort_key[i_face] = key;
-      }
-  }
-  // On reordonne les faces:
-  {
-    IntTab& faces_sommets = les_faces.les_sommets();
-    IntTab old_tab(faces_sommets);
-    const int nb_som_faces = faces_sommets.dimension(1);
-    for (int i = 0; i < nbfaces; i++)
-      {
-        const int old_i = sort_key[i];
-        for (int j = 0; j < nb_som_faces; j++)
-          faces_sommets(i, j) = old_tab(old_i, j);
-      }
-  }
-
-  {
-    IntTab& faces_voisins = les_faces.voisins();
-    IntTab old_tab(faces_voisins);
-    for (int i = 0; i < nbfaces; i++)
-      {
-        const int old_i = sort_key[i];
-        faces_voisins(i, 0) = old_tab(old_i, 0);
-        faces_voisins(i, 1) = old_tab(old_i, 1);
-      }
-  }
-
-  // Calcul de la table inversee: reverse_index[ancien_numero] = nouveau numero
-  ArrOfInt reverse_index(nbfaces);
-  {
-    for (int i = 0; i < nbfaces; i++)
-      {
-        const int j = sort_key[i];
-        reverse_index[j] = i;
-      }
-  }
-  // Renumerotation de elem_faces:
-  {
-    // Nombre d'indices de faces dans le tableau
-    const int nb_items = elem_faces_.size();
-    ArrOfInt& array = elem_faces_;
-    for (int i = 0; i < nb_items; i++)
-      {
-        const int old = array[i];
-        if (old<0)
-          array[i] = -1;
-        else
-          array[i] = reverse_index[old];
-      }
-  }
-  // Mise a jour des indices des faces de joint:
-  {
-    Joints&      joints    = domaine().faces_joint();
-    const int nbjoints = joints.size();
-    for (int i_joint = 0; i_joint < nbjoints; i_joint++)
-      {
-        Joint&     un_joint         = joints[i_joint];
-        ArrOfInt& indices_faces = un_joint.set_joint_item(Joint::FACE).set_items_communs();
-        const int nbfaces2    = indices_faces.size_array();
-        assert(nbfaces2 == un_joint.nb_faces()); // renum_items_communs rempli ?
-        for (int i = 0; i < nbfaces2; i++)
-          {
-            const int old = indices_faces[i]; // ancien indice local
-            indices_faces[i] = reverse_index[old];
-          }
-        // Les faces de joint ne sont plus consecutives dans le
-        // tableau: num_premiere_face n'a plus ne sens
-        un_joint.fixer_num_premiere_face(-1);
-      }
-  }
-}
+Entree& Domaine_PolyMAC::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 
 void Domaine_PolyMAC::typer_elem(Domaine& domaine_geom)
 {
@@ -652,32 +383,6 @@ void Domaine_PolyMAC::orthocentrer()
   Cerr << 100. * mp_somme_vect(b_e_ortho) / Process::mp_sum(nb_elem()) << "% d'elements orthocentres" << finl;
 }
 
-void Domaine_PolyMAC::detecter_faces_non_planes() const
-{
-  const IntTab& f_e = face_voisins(), &f_s = face_sommets_;
-  const DoubleTab& xs = domaine().coord_sommets(), &nf = face_normales_;
-  const DoubleVect& fs = face_surfaces();
-  int i, j, f, s, rk = Process::me(), np = Process::nproc();
-  double sin2;
-  ArrOfDouble val(np); //sur chaque proc : { cos^2 max, indice de face, indices d'elements }
-  IntTab face(np), elem1(np), elem2(np);
-
-  //sur chaque proc : on cherche l'angle le plus grand entre un sommet et le plan de sa face
-  for (f = 0; f < nb_faces(); f++)
-    for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-      if ((sin2 = std::pow(dot(&xs(s, 0), &nf(f, 0), &xv_(f, 0)) / fs(f), 2) / dot(&xs(s, 0), &xs(s, 0), &xv_(f, 0), &xv_(f, 0))) > val[rk])
-        val[rk] = sin2, face(rk) = f, elem1(rk) = f_e(f, 0), elem2(rk) = f_e(f, 1);
-  envoyer_all_to_all(val, val), envoyer_all_to_all(face, face), envoyer_all_to_all(elem1, elem1), envoyer_all_to_all(elem2, elem2);
-
-  sin2 = 0.0;
-  for (i = j = 0; i < Process::nproc(); i++)
-    if (val[i] > sin2) sin2 = val[i], j = i;
-  double theta = asin(sqrt(sin2)) * 180 / M_PI;
-  Cerr << "Domaine_PolyMAC : angle sommet/face max " << theta << " deg (proc " << j << " , face ";
-  Cerr << face(j) << " , elems " << elem1(j) << " / " << elem2(j) << " )" << finl;
-  if (theta > 1) Cerr << "Domaine_PolyMAC : face non plane detectee! Veuillez reparer votre maillage..." << finl, Process::exit();
-}
-
 void Domaine_PolyMAC::calculer_h_carre()
 {
   // Calcul de h_carre
@@ -898,22 +603,6 @@ void Domaine_PolyMAC::creer_faces_virtuelles_non_std()
         }
     }
 #endif
-}
-
-DoubleVect& Domaine_PolyMAC::dist_norm_bord(DoubleVect& dist, const Nom& nom_bord) const
-{
-  for (int n_bord=0; n_bord<les_bords_.size(); n_bord++)
-    {
-      const Front_VF& fr_vf = front_VF(n_bord);
-      if (fr_vf.le_nom() == nom_bord)
-        {
-          dist.resize(fr_vf.nb_faces());
-          int ndeb = fr_vf.num_premiere_face();
-          for (int face=ndeb; face<ndeb+fr_vf.nb_faces(); face++)
-            dist(face-ndeb) = dist_norm_bord(face);
-        }
-    }
-  return dist;
 }
 
 //stabilisation des matrices m1 et m2 de PolyMAC
@@ -1442,4 +1131,3 @@ void Domaine_PolyMAC::init_virt_ef_map() const
   for (f = nb_faces(); f < nb_faces_tot(); f++) virt_ef_map[ {{ p_f(f, 0), p_f(f, 1) }}] = nb_elem_tot() + f;
   is_init["virt_ef"] = 1;
 }
-

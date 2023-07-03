@@ -67,16 +67,10 @@ class Geometrie;
  *       rang_elem_non_std pour acceder de maniere selective a l'un ou
  *       l'autre des types d'elements
  *
- *
- *
  */
-
-
 class Domaine_Poly_base : public Domaine_VF
 {
-
   Declare_base(Domaine_Poly_base);
-
 public :
   void typer_elem(Domaine& domaine_geom) override;
   void discretiser() override;
@@ -102,7 +96,6 @@ public :
 
   //equivalent de dot(), mais pour le produit (a - ma).nu.(b - mb)
   inline double nu_dot(const DoubleTab* nu, int e, int n, const double *a, const double *b, const double *ma = nullptr, const double *mb = nullptr) const;
-
 
   inline double dist_norm(int num_face) const override;
   inline double dist_norm_bord(int num_face) const override;
@@ -150,23 +143,18 @@ protected:
   mutable DoubleTab vol_elem_som_, pvol_som_;
 };
 
-// Fonctions inline
-
-// Decription:
 // renvoie le type d'element utilise.
 inline const Elem_poly& Domaine_Poly_base::type_elem() const
 {
   return type_elem_;
 }
 
-// Decription:
 // renvoie le tableau des volumes entrelaces par cote.
 inline DoubleTab& Domaine_Poly_base::volumes_entrelaces_dir()
 {
   return volumes_entrelaces_dir_;
 }
 
-// Decription:
 // renvoie le tableau des surfaces normales.
 inline const DoubleTab& Domaine_Poly_base::volumes_entrelaces_dir() const
 {
@@ -174,52 +162,44 @@ inline const DoubleTab& Domaine_Poly_base::volumes_entrelaces_dir() const
 }
 
 
-// Decription:
 inline IntVect& Domaine_Poly_base::rang_elem_non_std()
 {
   return rang_elem_non_std_;
 }
 
-// Decription:
 inline const IntVect& Domaine_Poly_base::rang_elem_non_std() const
 {
   return rang_elem_non_std_;
 }
 
 
-// Decription:
 inline int Domaine_Poly_base::nb_faces_joint() const
 {
   return 0;
   //    return nb_faces_joint_;    A FAIRE
 }
 
-// Decription:
 inline int Domaine_Poly_base::nb_faces_std() const
 {
   return nb_faces_std_;
 }
 
-// Decription:
 inline int  Domaine_Poly_base::nb_elem_std() const
 {
   return nb_elem_std_;
 }
 
-// Decription:
 inline int Domaine_Poly_base::nb_elem_Cl() const
 {
   return nb_elem() - nb_elem_std_;
 }
 
 
-// Decription:
 inline double Domaine_Poly_base::carre_pas_du_maillage() const
 {
   return h_carre;
 }
 
-// Decription:
 inline int Domaine_Poly_base::oriente_normale(int face_opp, int elem2) const
 {
   if(face_voisins(face_opp,0)==elem2)
@@ -235,7 +215,6 @@ inline int Domaine_Poly_base::oriente_normale(int face_opp, int elem2) const
 //  return faces_virt_non_std_;
 //}
 
-// Decription:
 // Renvoie le tableau des indices des faces distantes non standard
 inline const ArrOfInt& Domaine_Poly_base::ind_faces_virt_non_std() const
 {
@@ -292,4 +271,4 @@ inline double Domaine_Poly_base::nu_dot(const DoubleTab* nu, int e, int n, const
   return resu;
 }
 
-#endif
+#endif /* */
