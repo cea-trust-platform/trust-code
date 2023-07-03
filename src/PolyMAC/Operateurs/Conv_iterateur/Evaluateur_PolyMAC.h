@@ -34,37 +34,24 @@ class Domaine_PolyMAC;
  */
 class Evaluateur_PolyMAC
 {
-
 public:
-
-  inline Evaluateur_PolyMAC();
-  inline virtual ~Evaluateur_PolyMAC() {};
+  Evaluateur_PolyMAC() { }
+  virtual ~Evaluateur_PolyMAC() { }
 
   Evaluateur_PolyMAC(const Evaluateur_PolyMAC& );
   virtual void associer_domaines(const Domaine_PolyMAC& , const Domaine_Cl_PolyMAC& );
   virtual void associer_porosite(const DoubleVect&);
 
 protected:
-
   REF(Domaine_PolyMAC) la_domaine;
   REF(Domaine_Cl_PolyMAC) la_zcl;
-  int dimension;
-  int premiere_face_bord;
+  int dimension = -3;
+  int premiere_face_bord = -100;
   IntTab elem_;                       // les 2 elements voisins d'une face
   DoubleVect surface;          // surfaces des faces
   DoubleVect porosite;               // porosites surfaciques
   DoubleVect volume_entrelaces;//
   DoubleTab xv;                // coord des centres des faces
-
-
 };
 
-//
-//   Fonctions inline de Evaluateur_PolyMAC
-//
-
-inline Evaluateur_PolyMAC::Evaluateur_PolyMAC()
-{}
-
-
-#endif
+#endif /* Evaluateur_PolyMAC_included */

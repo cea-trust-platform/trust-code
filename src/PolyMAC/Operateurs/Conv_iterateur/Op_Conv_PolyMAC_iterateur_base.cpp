@@ -14,33 +14,30 @@
 *****************************************************************************/
 
 #include <Op_Conv_PolyMAC_iterateur_base.h>
-
 #include <TRUSTTrav.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 #include <Champ.h>
 #include <Modifier_pour_fluide_dilatable.h>
 
-Implemente_base(Op_Conv_PolyMAC_iterateur_base,"Op_Conv_PolyMAC_iterateur_base",Operateur_Conv_base);
+Implemente_base(Op_Conv_PolyMAC_iterateur_base, "Op_Conv_PolyMAC_iterateur_base", Operateur_Conv_base);
 
-Sortie& Op_Conv_PolyMAC_iterateur_base::printOn(Sortie& s ) const
+Sortie& Op_Conv_PolyMAC_iterateur_base::printOn(Sortie& s) const
 {
-  return s << que_suis_je() ;
+  return s << que_suis_je();
 }
 
-Entree& Op_Conv_PolyMAC_iterateur_base::readOn(Entree& s )
+Entree& Op_Conv_PolyMAC_iterateur_base::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
 
-
-inline void eval_fluent(const double psc,const int num1,const int num2,
-                        DoubleVect& fluent)
+inline void eval_fluent(const double psc, const int num1, const int num2, DoubleVect& fluent)
 {
   if (psc >= 0)
-    fluent[num2]  += psc;
+    fluent[num2] += psc;
   else
-    fluent[num1]  -= psc;
+    fluent[num1] -= psc;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -51,89 +48,88 @@ inline void eval_fluent(const double psc,const int num1,const int num2,
 
 double Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() const
 {
-  const Domaine_PolyMAC& domaine_PolyMAC = iter.domaine();
-  const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter.domaine_Cl();
+  const Domaine_PolyMAC& domaine_PolyMAC = iter->domaine();
+  const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter->domaine_Cl();
   const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
   const DoubleVect& volumes = domaine_PolyMAC.volumes();
   const DoubleVect& face_surfaces = domaine_PolyMAC.face_surfaces();
   const DoubleVect& vit_associe = vitesse().valeurs();
-  const DoubleVect& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
+  const DoubleVect& vit = (vitesse_pour_pas_de_temps_.non_nul() ? vitesse_pour_pas_de_temps_.valeur().valeurs() : vit_associe);
   DoubleTab fluent;
   // fluent est initialise a zero par defaut:
   domaine_PolyMAC.domaine().creer_tableau_elements(fluent);
 
   // Remplissage du tableau fluent
   double psc;
-  int num1,num2,face;
+  int num1, num2, face;
   int elem1;
 
   // On traite les bords
-  for (int n_bord=0; n_bord<domaine_PolyMAC.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_PolyMAC.nb_front_Cl(); n_bord++)
     {
 
       const Cond_lim& la_cl = domaine_Cl_PolyMAC.les_conditions_limites(n_bord);
 
-      if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur())
-           || sub_type(Neumann_sortie_libre,la_cl.valeur())  )
+      if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
 
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
           num1 = le_bord.num_premiere_face();
           num2 = num1 + le_bord.nb_faces();
-          for (face=num1; face<num2; face++)
+          for (face = num1; face < num2; face++)
             {
-              psc = vit[face]*face_surfaces(face);
-              if ( (elem1 = face_voisins(face,0)) != -1)
+              psc = vit[face] * face_surfaces(face);
+              if ((elem1 = face_voisins(face, 0)) != -1)
                 {
                   if (psc < 0)
                     fluent[elem1] -= psc;
                 }
               else // (elem2 != -1)
                 if (psc > 0)
-                  fluent[face_voisins(face,1)] += psc;
+                  fluent[face_voisins(face, 1)] += psc;
             }
         }
     }
 
   // Boucle sur les faces internes pour remplir fluent
-  int domaine_PolyMAC_nb_faces=domaine_PolyMAC.nb_faces();
-  int premiere_face=domaine_PolyMAC.premiere_face_int();
-  for (face=premiere_face; face<domaine_PolyMAC_nb_faces; face++)
+  int domaine_PolyMAC_nb_faces = domaine_PolyMAC.nb_faces();
+  int premiere_face = domaine_PolyMAC.premiere_face_int();
+  for (face = premiere_face; face < domaine_PolyMAC_nb_faces; face++)
     {
-      psc = vit[face]*face_surfaces(face);
-      eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),fluent);
+      psc = vit[face] * face_surfaces(face);
+      eval_fluent(psc, face_voisins(face, 0), face_voisins(face, 1), fluent);
     }
 
   // Calcul du pas de temps de stabilite a partir du tableau fluent
-  if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
-    diviser_par_rho_si_dilatable(fluent,equation().milieu());
+  if (vitesse().le_nom() == "rho_u" && equation().probleme().is_dilatable())
+    diviser_par_rho_si_dilatable(fluent, equation().milieu());
   double dt_stab = 1.e30;
-  int domaine_PolyMAC_nb_elem=domaine_PolyMAC.nb_elem();
+  int domaine_PolyMAC_nb_elem = domaine_PolyMAC.nb_elem();
   // dt_stab = min ( 1 / ( |U|/dx + |V|/dy + |W|/dz ) )
-  for (int num_poly=0; num_poly<domaine_PolyMAC_nb_elem; num_poly++)
+  for (int num_poly = 0; num_poly < domaine_PolyMAC_nb_elem; num_poly++)
     {
-      double dt_elem = volumes(num_poly)/(fluent[num_poly]+DMINFLOAT);
-      if (dt_elem<dt_stab)
+      double dt_elem = volumes(num_poly) / (fluent[num_poly] + DMINFLOAT);
+      if (dt_elem < dt_stab)
         dt_stab = dt_elem;
     }
   dt_stab = Process::mp_min(dt_stab);
 
   // astuce pour contourner le type const de la methode
-  Op_Conv_PolyMAC_iterateur_base& op =ref_cast_non_const(Op_Conv_PolyMAC_iterateur_base, *this);
+  Op_Conv_PolyMAC_iterateur_base& op = ref_cast_non_const(Op_Conv_PolyMAC_iterateur_base, *this);
   op.fixer_dt_stab_conv(dt_stab);
   return dt_stab;
 }
 
 // cf Op_Conv_PolyMAC_iterateur_base::calculer_dt_stab() pour choix de calcul de dt_stab
-void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const
+void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const
 {
-  if (Motcle(option)=="stabilite")
+  if (Motcle(option) == "stabilite")
     {
       DoubleTab& es_valeurs = espace_stockage->valeurs();
       es_valeurs = 1.e30;
 
-      const Domaine_PolyMAC& domaine_PolyMAC = iter.domaine();
-      const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter.domaine_Cl();
+      const Domaine_PolyMAC& domaine_PolyMAC = iter->domaine();
+      const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = iter->domaine_Cl();
       const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
       const DoubleVect& volumes = domaine_PolyMAC.volumes();
       const DoubleVect& face_surfaces = domaine_PolyMAC.face_surfaces();
@@ -144,68 +140,65 @@ void Op_Conv_PolyMAC_iterateur_base::calculer_pour_post(Champ& espace_stockage,c
 
       fluent = 0;
       double psc;
-      int num1,num2,face;
+      int num1, num2, face;
       int elem1;
 
       // On traite les bords
 
-      for (int n_bord=0; n_bord<domaine_PolyMAC.nb_front_Cl(); n_bord++)
+      for (int n_bord = 0; n_bord < domaine_PolyMAC.nb_front_Cl(); n_bord++)
         {
 
           const Cond_lim& la_cl = domaine_Cl_PolyMAC.les_conditions_limites(n_bord);
 
-          if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur())
-               || sub_type(Neumann_sortie_libre,la_cl.valeur())  )
+          if ( sub_type(Dirichlet_entree_fluide,la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
 
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               num1 = le_bord.num_premiere_face();
               num2 = num1 + le_bord.nb_faces();
-              for (face=num1; face<num2; face++)
+              for (face = num1; face < num2; face++)
                 {
-                  psc = vit[face]*face_surfaces(face);
-                  if ( (elem1 = face_voisins(face,0)) != -1)
+                  psc = vit[face] * face_surfaces(face);
+                  if ((elem1 = face_voisins(face, 0)) != -1)
                     {
                       if (psc < 0)
                         fluent[elem1] -= psc;
                     }
                   else // (elem2 != -1)
                     if (psc > 0)
-                      fluent[face_voisins(face,1)] += psc;
+                      fluent[face_voisins(face, 1)] += psc;
                 }
             }
         }
 
-
-
       // Boucle sur les faces internes pour remplir fluent
-      int domaine_PolyMAC_nb_faces=domaine_PolyMAC.nb_faces();
-      for (face=domaine_PolyMAC.premiere_face_int(); face<domaine_PolyMAC_nb_faces; face++)
+      int domaine_PolyMAC_nb_faces = domaine_PolyMAC.nb_faces();
+      for (face = domaine_PolyMAC.premiere_face_int(); face < domaine_PolyMAC_nb_faces; face++)
         {
-          psc = vit[face]*face_surfaces(face);
-          eval_fluent(psc,face_voisins(face,0),face_voisins(face,1),fluent);
+          psc = vit[face] * face_surfaces(face);
+          eval_fluent(psc, face_voisins(face, 0), face_voisins(face, 1), fluent);
         }
       //fluent.echange_espace_virtuel();
-      if (vitesse().le_nom()=="rho_u" && equation().probleme().is_dilatable())
-        diviser_par_rho_si_dilatable(fluent,equation().milieu());
+      if (vitesse().le_nom() == "rho_u" && equation().probleme().is_dilatable())
+        diviser_par_rho_si_dilatable(fluent, equation().milieu());
 
-      int domaine_PolyMAC_nb_elem=domaine_PolyMAC.nb_elem();
-      for (int num_poly=0; num_poly<domaine_PolyMAC_nb_elem; num_poly++)
+      int domaine_PolyMAC_nb_elem = domaine_PolyMAC.nb_elem();
+      for (int num_poly = 0; num_poly < domaine_PolyMAC_nb_elem; num_poly++)
         {
-          es_valeurs(num_poly) = volumes(num_poly)/(fluent[num_poly]+1.e-30);
+          es_valeurs(num_poly) = volumes(num_poly) / (fluent[num_poly] + 1.e-30);
         }
 
       //double dt_min = mp_min_vect(es_valeurs);
       //assert(dt_min==calculer_dt_stab());
     }
   else
-    Operateur_Conv_base::calculer_pour_post(espace_stockage,option,comp);
+    Operateur_Conv_base::calculer_pour_post(espace_stockage, option, comp);
 }
 
 Motcle Op_Conv_PolyMAC_iterateur_base::get_localisation_pour_post(const Nom& option) const
 {
   Motcle loc;
-  if (Motcle(option)=="stabilite")
+  if (Motcle(option) == "stabilite")
     loc = "elem";
   else
     return Operateur_Conv_base::get_localisation_pour_post(option);
@@ -215,14 +208,14 @@ Motcle Op_Conv_PolyMAC_iterateur_base::get_localisation_pour_post(const Nom& opt
 void Op_Conv_PolyMAC_iterateur_base::completer()
 {
   Operateur_base::completer();
-  iter.completer_();
+  iter->completer_();
 }
 void Op_Conv_PolyMAC_iterateur_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  iter.valeur().associer_domaine_cl_dis(zcl);
+  iter->associer_domaine_cl_dis(zcl);
 }
 
 int Op_Conv_PolyMAC_iterateur_base::impr(Sortie& os) const
 {
-  return iter.impr(os);
+  return iter->impr(os);
 }

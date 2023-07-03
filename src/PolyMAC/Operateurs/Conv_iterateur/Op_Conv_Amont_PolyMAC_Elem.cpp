@@ -17,33 +17,29 @@
 #include <Champ_P0_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 
-Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_Elem,"Op_Conv_Amont_PolyMAC_Elem_PolyMAC",Op_Conv_PolyMAC_iterateur_base);
+Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem_PolyMAC", Op_Conv_PolyMAC_iterateur_base);
 
-implemente_It_PolyMAC_Elem(Eval_Amont_PolyMAC_Elem)
-
-Sortie& Op_Conv_Amont_PolyMAC_Elem::printOn(Sortie& s ) const
+Sortie& Op_Conv_Amont_PolyMAC_Elem::printOn(Sortie& s) const
 {
-  return s << que_suis_je() ;
+  return s << que_suis_je();
 }
 
-Entree& Op_Conv_Amont_PolyMAC_Elem::readOn(Entree& s )
+Entree& Op_Conv_Amont_PolyMAC_Elem::readOn(Entree& s)
 {
-  return s ;
+  return s;
 }
 
-void Op_Conv_Amont_PolyMAC_Elem::associer(const Domaine_dis& domaine_dis,
-                                          const Domaine_Cl_dis& domaine_cl_dis,
-                                          const Champ_Inc& ch_transporte)
+void Op_Conv_Amont_PolyMAC_Elem::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
-  const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC,domaine_dis.valeur());
-  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC,domaine_cl_dis.valeur());
-  const Champ_P0_PolyMAC& inco = ref_cast(Champ_P0_PolyMAC,ch_transporte.valeur());
+  const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
+  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
+  const Champ_P0_PolyMAC& inco = ref_cast(Champ_P0_PolyMAC, ch_transporte.valeur());
 
   iter->associer(zvdf, zclvdf, *this);
 
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter.evaluateur();
-  eval_conv.associer_domaines(zvdf, zclvdf );          // Evaluateur_PolyMAC::associer
-  eval_conv.associer_inconnue(inco );        // Eval_PolyMAC_Elem::associer_inconnue
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
+  eval_conv.associer_domaines(zvdf, zclvdf);          // Evaluateur_PolyMAC::associer
+  eval_conv.associer_inconnue(inco);        // Eval_PolyMAC_Elem::associer_inconnue
 }
 
 /*! @brief associe le champ de vitesse a l'evaluateur
@@ -53,26 +49,23 @@ void Op_Conv_Amont_PolyMAC_Elem::associer_vitesse(const Champ_base& ch_vit)
 {
   const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vit);
 
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter.evaluateur();
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
   eval_conv.associer(vit);                // Eval_Conv_PolyMAC::associer
 }
 
 const Champ_base& Op_Conv_Amont_PolyMAC_Elem::vitesse() const
 {
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter.evaluateur();
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
   return eval_conv.vitesse();
 }
 
 Champ_base& Op_Conv_Amont_PolyMAC_Elem::vitesse()
 {
-  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter.evaluateur();
+  Eval_Amont_PolyMAC_Elem& eval_conv = (Eval_Amont_PolyMAC_Elem&) iter->evaluateur();
   return eval_conv.vitesse();
 }
 
-/*! @brief constructeur
- *
- */
 Op_Conv_Amont_PolyMAC_Elem::Op_Conv_Amont_PolyMAC_Elem() :
-  Op_Conv_PolyMAC_iterateur_base(It_PolyMAC_Elem(Eval_Amont_PolyMAC_Elem)())
+  Op_Conv_PolyMAC_iterateur_base(Iterateur_PolyMAC_Elem<Eval_Amont_PolyMAC_Elem>())
 {
 }

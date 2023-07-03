@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef T_It_PolyMAC_Elem_included
-#define T_It_PolyMAC_Elem_included
+#ifndef Iterateur_PolyMAC_Elem_included
+#define Iterateur_PolyMAC_Elem_included
 
 #include <Equation_base.h>
 #include <Milieu_base.h>
@@ -31,21 +31,15 @@
 template <class _TYPE_>
 class Iterateur_PolyMAC_Elem : public Iterateur_PolyMAC_base
 {
-  //Declare_instanciable(Iterateur_PolyMAC_Elem(_TYPE_));
   inline int duplique() const override
   {
     Iterateur_PolyMAC_Elem* xxx = new  Iterateur_PolyMAC_Elem(*this);
-    if(!xxx)
-      {
-        Cerr << "Not enough memory " << finl;
-        exit();
-      }
+    if(!xxx) Process::exit("Not enough memory ");
     return xxx->numero();
-  };
-  inline unsigned taille_memoire() const override
-  {
-    throw;
-  };
+  }
+
+  inline unsigned taille_memoire() const override { throw; }
+
 public:
   inline Iterateur_PolyMAC_Elem() { } ;
   inline Iterateur_PolyMAC_Elem(const Iterateur_PolyMAC_Elem<_TYPE_>& );
@@ -60,6 +54,7 @@ public:
   inline void completer_() override;
   int impr(Sortie& os) const override;
   void modifier_flux() const;
+
 protected:
   _TYPE_ flux_evaluateur;
   DoubleTab& ajouter_bords(const DoubleTab& , DoubleTab& ) const;
@@ -80,12 +75,12 @@ protected:
   IntTab elem;
   mutable SFichier Flux; // Impression .out
 };
-template <class _TYPE_> inline Iterateur_PolyMAC_Elem<_TYPE_>::Iterateur_PolyMAC_Elem(const Iterateur_PolyMAC_Elem<_TYPE_>& iter)
-  :Iterateur_PolyMAC_base(iter),
-   flux_evaluateur(iter.flux_evaluateur)
+
+template <class _TYPE_> inline Iterateur_PolyMAC_Elem<_TYPE_>::Iterateur_PolyMAC_Elem(const Iterateur_PolyMAC_Elem<_TYPE_>& iter) :Iterateur_PolyMAC_base(iter), flux_evaluateur(iter.flux_evaluateur)
 {
   elem.ref(iter.elem);
 }
+
 template <class _TYPE_> inline Evaluateur_PolyMAC& Iterateur_PolyMAC_Elem<_TYPE_>::evaluateur()
 {
   Evaluateur_PolyMAC& eval = (Evaluateur_PolyMAC&) flux_evaluateur;
@@ -97,26 +92,20 @@ template <class _TYPE_> inline const Evaluateur_PolyMAC& Iterateur_PolyMAC_Elem<
   return eval;
 }
 
-//  Implemente_instanciable(Iterateur_PolyMAC_Elem<_TYPE_>,"Iterateur_PolyMAC_Elem",Iterateur_PolyMAC_base);
-/*Sortie& Iterateur_PolyMAC_Elem<_TYPE_>::printOn(Sortie& s ) const {
-    return s << que_suis_je() ;
-  }
-  Entree& Iterateur_PolyMAC_Elem<_TYPE_>::readOn(Entree& s ) {
-    return s ;
-  }
-*/
 template <class _TYPE_> inline void Iterateur_PolyMAC_Elem<_TYPE_>::completer_()
 {
   elem.ref(la_domaine->face_voisins());
 }
+
 template <class _TYPE_>
 const Milieu_base& Iterateur_PolyMAC_Elem<_TYPE_>::milieu() const
 {
   return (la_zcl->equation()).milieu();
 }
+
 template <class _TYPE_>
 DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter(const DoubleTab& donne,
-                                              DoubleTab& resu) const
+                                                   DoubleTab& resu) const
 {
   ((_TYPE_&) flux_evaluateur).mettre_a_jour();
   assert(donne.nb_dim() < 3);
@@ -150,7 +139,7 @@ DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter(const DoubleTab& donne,
   return resu;
 }
 template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bords(const DoubleTab& donnee,
-                                                                             DoubleTab& resu) const
+                                                                                  DoubleTab& resu) const
 {
   int elem1, elem2;
   int ndeb, nfin;
@@ -661,7 +650,7 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::calculer_flux_bord
 }
 
 template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bords(const DoubleTab& donnee,
-                                                                             DoubleTab& resu,int ncomp) const
+                                                                                  DoubleTab& resu,int ncomp) const
 {
   int elem1, elem2;
   int ndeb, nfin;
@@ -946,7 +935,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_bord
 }
 
 template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_interne(const DoubleTab& donnee,
-                                                                               DoubleTab& resu) const
+                                                                                    DoubleTab& resu) const
 {
   const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
   double flux;
@@ -962,7 +951,7 @@ template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_inte
   return resu;
 }
 template <class _TYPE_>  DoubleTab& Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_interne(const DoubleTab& donnee,
-                                                                               DoubleTab& resu,int ncomp) const
+                                                                                    DoubleTab& resu,int ncomp) const
 {
   const Domaine_PolyMAC& domaine_PolyMAC = la_domaine.valeur();
   DoubleVect flux(ncomp);
@@ -2466,4 +2455,4 @@ template <class _TYPE_>  void Iterateur_PolyMAC_Elem<_TYPE_>::ajouter_contributi
     }
 }
 
-#endif
+#endif /* Iterateur_PolyMAC_Elem_included */

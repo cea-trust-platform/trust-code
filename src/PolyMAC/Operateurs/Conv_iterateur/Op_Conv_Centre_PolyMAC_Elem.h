@@ -16,8 +16,9 @@
 #ifndef Op_Conv_Centre_PolyMAC_Elem_included
 #define Op_Conv_Centre_PolyMAC_Elem_included
 
-#include <ItPolyMACEl.h>
+#include <Op_Conv_PolyMAC_iterateur_base.h>
 #include <Eval_centre_PolyMAC_Elem.h>
+#include <Iterateur_PolyMAC_Elem.h>
 #include <Op_PolyMAC_Elem.h>
 
 /*! @brief class Op_Conv_Centre_PolyMAC_Elem
@@ -31,9 +32,8 @@
  *   L'evaluateur associe est de type Eval_centre_PolyMAC_Elem
  *
  */
-declare_It_PolyMAC_Elem(Eval_centre_PolyMAC_Elem)
 
-class Op_Conv_Centre_PolyMAC_Elem : public Op_Conv_PolyMAC_iterateur_base, public Op_PolyMAC_Elem
+class Op_Conv_Centre_PolyMAC_Elem: public Op_Conv_PolyMAC_iterateur_base, public Op_PolyMAC_Elem
 {
 
   Declare_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_Elem);
@@ -41,12 +41,12 @@ class Op_Conv_Centre_PolyMAC_Elem : public Op_Conv_PolyMAC_iterateur_base, publi
 public:
 
   Op_Conv_Centre_PolyMAC_Elem();
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
-  void associer_vitesse(const Champ_base& ) override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer_vitesse(const Champ_base&) override;
   const Champ_base& vitesse() const override;
   Champ_base& vitesse() override;
-  inline void dimensionner(Matrice_Morse& ) const override;
-  inline void dimensionner_bloc_vitesse(Matrice_Morse& ) const override;
+  inline void dimensionner(Matrice_Morse&) const override;
+  inline void dimensionner_bloc_vitesse(Matrice_Morse&) const override;
   inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
 
 protected:
@@ -54,27 +54,27 @@ protected:
 };
 
 // Ce constructeur permet de creer des classes filles (exemple : front_tracking)
-inline Op_Conv_Centre_PolyMAC_Elem::Op_Conv_Centre_PolyMAC_Elem(const Iterateur_PolyMAC_base& it)
-  : Op_Conv_PolyMAC_iterateur_base(it)
+inline Op_Conv_Centre_PolyMAC_Elem::Op_Conv_Centre_PolyMAC_Elem(const Iterateur_PolyMAC_base& it) :
+  Op_Conv_PolyMAC_iterateur_base(it)
 {
 }
 
 /*! @brief on dimensionne notre matrice.
  *
  */
-inline  void Op_Conv_Centre_PolyMAC_Elem::dimensionner(Matrice_Morse& matrice) const
+inline void Op_Conv_Centre_PolyMAC_Elem::dimensionner(Matrice_Morse& matrice) const
 {
-  Op_PolyMAC_Elem::dimensionner(iter.domaine(), iter.domaine_Cl(), matrice);
+  Op_PolyMAC_Elem::dimensionner(iter->domaine(), iter->domaine_Cl(), matrice);
 }
 
-inline  void Op_Conv_Centre_PolyMAC_Elem::dimensionner_bloc_vitesse(Matrice_Morse& matrice) const
+inline void Op_Conv_Centre_PolyMAC_Elem::dimensionner_bloc_vitesse(Matrice_Morse& matrice) const
 {
-  Op_PolyMAC_Elem::dimensionner_bloc_vitesse(iter.domaine(), iter.domaine_Cl(), matrice);
+  Op_PolyMAC_Elem::dimensionner_bloc_vitesse(iter->domaine(), iter->domaine_Cl(), matrice);
 }
 
 inline void Op_Conv_Centre_PolyMAC_Elem::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
 {
-  Op_PolyMAC_Elem::modifier_pour_Cl(iter.domaine(), iter.domaine_Cl(), matrice, secmem);
+  Op_PolyMAC_Elem::modifier_pour_Cl(iter->domaine(), iter->domaine_Cl(), matrice, secmem);
 }
 
 #endif
