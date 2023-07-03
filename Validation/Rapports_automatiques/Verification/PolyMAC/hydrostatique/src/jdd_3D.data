@@ -1,29 +1,16 @@
-# Hydraulique 2D laminaire avec "trou" dans le maillage #
-# PARALLEL OK #
+# PARALLEL OK 2 #
 dimension 3
 Pb_hydraulique pb
 Domaine dom
 
 # BEGIN MESH #
-Read_MED {
-    domain dom
-    file mesh.med
-}
+Read_MED { domain dom file mesh.med }
 # END MESH #
 
 # BEGIN PARTITION
-/*
-Postraiter_domaine
-{
-    fichier mesh.lata
-    format lata
-    domaine dom
-}
-*/
-
 Partition dom
 {
-    Partition_tool tranche { tranches 2 1 }
+    Partition_tool tranche { tranches 2 1 1 }
     larg_joint 2
     zones_name DOM
 }
@@ -41,6 +28,7 @@ Read sch
 {
     tinit 0
     tmax 2
+    seuil_statio -1
     dt_max 0.1
     facsec 1e30
     solveur $solver { solveur petsc cholesky { } }
@@ -87,7 +75,7 @@ Read pb
                 sources
                 {
                     refChamp { Pb_champ pb pression nom_source p } ,
-                    transformation { methode formule expression 1 1e5/2+10*(1-y) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
+                    transformation { methode formule expression 1 1e5/2+10*(1-z) localisation elem nom_source sol source refChamp { Pb_champ pb pression } }
                 }
             }
             erreur_P_max reduction_0D { methode max sources_reference { erreur_P } }
