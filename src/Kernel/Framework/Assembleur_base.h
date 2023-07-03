@@ -61,15 +61,22 @@ public:
   {
     Process::exit(Nom("dimensionner_continuite(...) must be overloaded by ") + que_suis_je());
   }
+
   virtual void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const
   {
     Process::exit(Nom("assembler_continuite(...) must be overloaded by ") + que_suis_je());
-  };
+  }
+
   virtual DoubleTab norme_continuite() const
   {
     Process::exit(Nom("norme_continuite(...) must be overloaded by ") + que_suis_je());
     return DoubleTab();
-  };
+  }
+
+  virtual void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const
+  {
+    Process::exit(Nom("corriger_vitesses(...) must be overloaded by ") + que_suis_je());
+  }
 
 private:
   // Drapeau, indique si le solveur resout un increment de pression ou

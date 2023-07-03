@@ -13,25 +13,21 @@
 *
 *****************************************************************************/
 
-#include <Piso.h>
+#include <Fluide_Dilatable_base.h>
+#include <MD_Vector_composite.h>
+#include <Discretisation_base.h>
+#include <Schema_Temps_base.h>
+#include <MD_Vector_tools.h>
 #include <Source_PDF_base.h>
-
+#include <Assembleur_base.h>
+#include <TRUSTTab_parts.h>
+#include <Probleme_base.h>
+#include <MD_Vector_std.h>
+#include <Matrice_Bloc.h>
+#include <TRUSTTrav.h>
 #include <EChaine.h>
 #include <Debog.h>
-#include <Matrice_Bloc.h>
-#include <Assembleur_base.h>
-
-#include <Schema_Temps_base.h>
-#include <TRUSTTrav.h>
-#include <Fluide_Dilatable_base.h>
-
-#include <Probleme_base.h>
-
-#include <MD_Vector_std.h>
-#include <MD_Vector_composite.h>
-#include <MD_Vector_tools.h>
-#include <TRUSTTab_parts.h>
-#include <Discretisation_base.h>
+#include <Piso.h>
 
 Implemente_instanciable_sans_constructeur(Piso,"Piso",Simpler);
 
@@ -48,27 +44,13 @@ Implicite::Implicite()
   avancement_crank_ = 1;
 }
 
-Sortie& Piso::printOn(Sortie& os ) const
-{
-  return Simpler::printOn(os);
-}
+Sortie& Piso::printOn(Sortie& os ) const { return Simpler::printOn(os); }
 
-Entree& Piso::readOn(Entree& is )
-{
-  Simpler::readOn(is);
-  return is;
-}
+Entree& Piso::readOn(Entree& is ) { return Simpler::readOn(is); }
 
-Sortie& Implicite::printOn(Sortie& os ) const
-{
-  return Piso::printOn(os);
-}
+Sortie& Implicite::printOn(Sortie& os ) const { return Piso::printOn(os); }
 
-Entree& Implicite::readOn(Entree& is )
-{
-  Piso::readOn(is);
-  return is;
-}
+Entree& Implicite::readOn(Entree& is ) { return Piso::readOn(is); }
 
 
 Entree& Piso::lire(const Motcle& motlu,Entree& is)
@@ -132,6 +114,10 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   converge = 1;
   if (nb_ite>1) return;
   Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std,eqn);
+
+  if (eqnNS.discretisation().que_suis_je() == "PolyMAC")
+    return iterer_NS_PolyMAC(eqnNS, current, pression, dt, matrice, ok);
+
   Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
   SolveurSys& le_solveur_ = param_eqn.solveur();
 
@@ -419,6 +405,68 @@ void Piso::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
   current.echange_espace_virtuel();
   // divergence.calculer(current, secmem); Cerr<<" ici DIVU  "<<mp_max_abs_vect(secmem)<<finl;;
   Cout <<"PISO : "<<nb_corrections_max_<<" corrections to perform the projection."<< finl;
+}
+
+//version PolyMAC de la fonction ci-dessus
+void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn, DoubleTab& current, DoubleTab& pression, double dt, Matrice_Morse& matrice, int& ok)
+{
+  Parametre_implicite& param_eqn = get_and_set_parametre_implicite(eqn);
+  SolveurSys& le_solveur_ = param_eqn.solveur();
+
+  Navier_Stokes_std& eqnNS = ref_cast(Navier_Stokes_std, eqn);
+  Operateur_Grad& op_grad = eqnNS.operateur_gradient();
+  Operateur_Div& op_div = eqnNS.operateur_divergence();
+
+  DoubleTrav dv(current), dP(pression); //corrections en vitesse / pression
+
+  /* etape de prediction : current <- v(0) ne verifiant pas div = 0 */
+  DoubleTrav secmem_NS(current), v_new(current);
+  op_grad.ajouter(pression, secmem_NS);
+  secmem_NS *= -1;
+  eqnNS.assembler_avec_inertie(matrice, current, secmem_NS);
+  le_solveur_.valeur().reinit();
+  le_solveur_.resoudre_systeme(matrice, secmem_NS, v_new);
+  v_new.echange_espace_virtuel();
+
+  Matrice& mat_press_orig = eqn.matrice_pression(), mat_press;
+
+  /* etapes de correction : current <- v(i) verifiant div = 0 mais approche pour NS, pression <- p(i) correspondant a v(i) */
+  for (int i = 0; i < 1; i++)
+    {
+      DoubleTrav sol_M(pression), secmem_M(pression);
+      /* resolution en (dt * dp(i), dv(i)) */
+      //second membre : divergence, NS
+      DoubleTab_parts p_sec(secmem_M), p_sol(sol_M), p_v(v_new), p_res(secmem_NS); //p_sec/sol[0] -> elements, p_sec/sol[1] -> faces
+      //bloc superieur : div v(i-1)
+      op_div.ajouter(v_new, p_sec[0]);
+      //bloc inferieur : residu de l'etape de prediction
+      p_sec[1] = 0;      //p_res[0];
+
+      //matrice (sauf si avancement_crank_ == 1) : prise en compte des contributions des sources (et pas des operateurs!)
+      if (avancement_crank_ == 0)
+        {
+          matrice.get_set_coeff() = 0, eqn.sources().contribuer_a_avec(current, matrice);
+          DoubleTrav diag(p_sec[1]);
+          for (int j = 0; j < p_sec[1].dimension(0); j++)
+            diag(j) = dt * matrice(j, j);
+          diag.echange_espace_virtuel();
+          eqn.assembleur_pression().valeur().assembler_mat(mat_press, diag, 1, 1);
+          eqn.solveur_pression().valeur().reinit();
+        }
+
+      //resolution
+      Cerr << "PISO : |sec dp| < " << mp_max_abs_vect(p_sec[0]) << " |sec dv| < " << mp_max_abs_vect(p_sec[1]) << finl;
+      eqn.solveur_pression().resoudre_systeme(avancement_crank_ == 1 ? mat_press_orig.valeur() : mat_press.valeur(), secmem_M, sol_M);
+      //mises a jour : v^(i) = v^(i-1)+dv^(i), p^(i) = p^(i-1) + dp^(i)
+      eqn.assembleur_pression().valeur().corriger_vitesses(sol_M, dv);
+      Cerr << "PISO : |dp| < " << mp_max_abs_vect(p_sol[0]) / dt << " |dv| < " << mp_max_abs_vect(dv);
+      v_new += dv, sol_M /= dt, pression -= sol_M;
+      //
+      p_sec[0] = 0, op_div.ajouter(v_new, p_sec[0]);
+      Cerr << " |div v| < " << mp_max_abs_vect(p_sec[0]) << finl;
+      pression.echange_espace_virtuel();
+    }
+  current = v_new;
 }
 
 void Piso::first_special_treatment(Equation_base& eqn, Navier_Stokes_std& eqnNS, DoubleTab& current, double dt, DoubleTrav& resu)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -98,6 +98,8 @@ protected :
 
   Entree& lire(const Motcle&, Entree&) override;
 
+private:
+  virtual void iterer_NS_PolyMAC(Navier_Stokes_std& eqn,DoubleTab& current,DoubleTab& pression, double dt, Matrice_Morse& matrice, int& ok);
 };
 
 //Description

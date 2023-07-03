@@ -54,7 +54,7 @@ public:
   inline const Equation_base& equation() const                ;
 
   /* corrige les vitesses pour une correction en pression donnee de type (-Cp, Cv) */
-  void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const
+  void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const override
   {
     rec.ajouter_multvect(dP, dv);
     dv.echange_espace_virtuel();
