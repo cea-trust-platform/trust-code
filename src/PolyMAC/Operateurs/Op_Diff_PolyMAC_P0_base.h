@@ -17,7 +17,7 @@
 #define Op_Diff_PolyMAC_P0_base_included
 
 #include <Operateur_Diff_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <TRUST_Ref.h>
 #include <SFichier.h>
@@ -69,7 +69,7 @@ public:
 
 protected:
   REF(Domaine_PolyMAC_P0) le_dom_poly_;
-  REF(Domaine_Cl_PolyMAC_P0P1NC) la_zcl_poly_;
+  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
 
   double t_last_maj_ = -1e10; //pour detecter quand on doit recalculer nu, xh, wh et fgrad

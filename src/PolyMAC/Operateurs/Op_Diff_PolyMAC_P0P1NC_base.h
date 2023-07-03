@@ -21,7 +21,7 @@
 #include <TRUST_Ref.h>
 #include <SFichier.h>
 
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 class Champ_Fonc;
 
 /*! @brief class Op_Diff_PolyMAC_P0P1NC_base
@@ -80,7 +80,7 @@ public:
 
 protected:
   REF(Domaine_PolyMAC_P0P1NC) le_dom_poly_;
-  REF(Domaine_Cl_PolyMAC_P0P1NC) la_zcl_poly_;
+  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) diffusivite_;
 
   double t_last_nu_ = -1e10; //pour detecter quand on doit recalculer nu, les variables auxiliaires

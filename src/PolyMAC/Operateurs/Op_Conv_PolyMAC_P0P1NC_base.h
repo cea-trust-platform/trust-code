@@ -20,7 +20,7 @@
 #include <TRUST_Ref.h>
 #include <SFichier.h>
 
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 class Domaine_Poly_base;
 
 /*! @brief class Op_Conv_PolyMAC_P0P1NC_base
@@ -42,7 +42,7 @@ public:
 
 protected:
   REF(Domaine_Poly_base) le_dom_poly_;
-  REF(Domaine_Cl_PolyMAC_P0P1NC) la_zcl_poly_;
+  REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) vitesse_;
 
   mutable SFichier Flux, Flux_moment, Flux_sum;

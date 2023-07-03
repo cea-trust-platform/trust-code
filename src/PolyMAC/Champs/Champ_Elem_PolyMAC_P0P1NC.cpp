@@ -16,7 +16,7 @@
 #include <Connectivite_som_elem.h>
 #include <Champ_Elem_PolyMAC_P0P1NC.h>
 #include <Champ_Elem_PolyMAC_P0P1NC.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTTab_parts.h>
 #include <MD_Vector_base.h>
 #include <Equation_base.h>

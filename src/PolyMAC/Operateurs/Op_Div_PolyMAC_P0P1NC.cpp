@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Op_Div_PolyMAC_P0P1NC.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
@@ -55,7 +55,7 @@ void Op_Div_PolyMAC_P0P1NC::associer(const Domaine_dis& domaine_dis,
                                      const Champ_Inc&)
 {
   const Domaine_PolyMAC_P0P1NC& zPolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC_P0P1NC, domaine_dis.valeur());
-  const Domaine_Cl_PolyMAC_P0P1NC& zclPolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC_P0P1NC, domaine_Cl_dis.valeur());
+  const Domaine_Cl_PolyMAC& zclPolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
   le_dom_PolyMAC_P0P1NC = zPolyMAC_P0P1NC;
   la_zcl_PolyMAC_P0P1NC = zclPolyMAC_P0P1NC;
 }

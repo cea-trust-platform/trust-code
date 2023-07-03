@@ -21,9 +21,8 @@
 #include <Domaine_Cl_dis_base.h>
 #include <Champ_Don.h>
 
+class Domaine_VF;
 class Champ_Inc;
-class Domaine_PolyMAC;
-class Matrice_Morse;
 
 class Domaine_Cl_PolyMAC : public Domaine_Cl_dis_base
 {
@@ -32,36 +31,20 @@ class Domaine_Cl_PolyMAC : public Domaine_Cl_dis_base
 
 public :
 
-  void associer(const Domaine_PolyMAC& );
+  void associer(const Domaine_VF& ) { }
   void completer(const Domaine_dis& ) override;
-//  void mettre_a_jour(double );
   int initialiser(double temps) override;
   void imposer_cond_lim(Champ_Inc&, double) override;
 
-
-
   int nb_faces_sortie_libre() const;
-  Domaine_PolyMAC& domaine_PolyMAC();
-  const Domaine_PolyMAC& domaine_PolyMAC() const;
+
+  Domaine_VF& domaine_vf();
+  const Domaine_VF& domaine_vf() const;
 
   int nb_bord_periodicite() const;
 protected:
 
-  // Attributs:
-
-  int modif_perio_fait_;
-
-  // Fonctions de creation des membres prives de la domaine:
-
-  void remplir_type_elem_Cl(const Domaine_PolyMAC& );
+  int modif_perio_fait_ = 0;
 };
 
-//
-// Fonctions inline de la classe Domaine_Cl_PolyMAC
-//
-
-
-
-
-
-#endif
+#endif /* Domaine_Cl_PolyMAC_included */

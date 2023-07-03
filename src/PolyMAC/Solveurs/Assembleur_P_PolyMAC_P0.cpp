@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Assembleur_P_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>

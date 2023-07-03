@@ -19,7 +19,7 @@
 #include <Milieu_base.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Poly_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Dirichlet_homogene.h>

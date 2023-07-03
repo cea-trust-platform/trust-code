@@ -16,7 +16,7 @@
 #ifndef Perte_Charge_PolyMAC_P0P1NC_Face_included
 #define Perte_Charge_PolyMAC_P0P1NC_Face_included
 
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Terme_Source_Qdm.h>
 #include <Source_base.h>
 #include <TRUST_Ref.h>

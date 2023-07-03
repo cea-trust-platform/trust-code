@@ -20,7 +20,7 @@
 #include <Solveur_Masse.h>
 #include <TRUST_Ref.h>
 
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC_P0P1NC;
 
 class Masse_PolyMAC_P0P1NC_base : public Solveur_Masse_base
@@ -33,7 +33,7 @@ public:
   void check_multiphase_compatibility() const override { }
 
 protected:
-  REF(Domaine_Cl_PolyMAC_P0P1NC) le_dom_Cl_PolyMAC_P0P1NC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC_P0P1NC;
   REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
 };
 

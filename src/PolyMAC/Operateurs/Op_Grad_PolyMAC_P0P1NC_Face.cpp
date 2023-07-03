@@ -15,7 +15,7 @@
 
 #include <Op_Grad_PolyMAC_P0P1NC_Face.h>
 #include <Champ_Elem_PolyMAC_P0P1NC.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Neumann_sortie_libre.h>
 
@@ -63,7 +63,7 @@ Entree& Op_Grad_PolyMAC_P0P1NC_Face::readOn(Entree& s)
 void Op_Grad_PolyMAC_P0P1NC_Face::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch)
 {
   ref_domaine = ref_cast(Domaine_PolyMAC_P0P1NC, domaine_dis.valeur());
-  ref_zcl = ref_cast(Domaine_Cl_PolyMAC_P0P1NC, domaine_cl_dis.valeur());
+  ref_zcl = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
 }
 
 void Op_Grad_PolyMAC_P0P1NC_Face::completer()

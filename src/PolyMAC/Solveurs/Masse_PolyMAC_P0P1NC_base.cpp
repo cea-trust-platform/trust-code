@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Masse_PolyMAC_P0P1NC_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
 
 Implemente_base(Masse_PolyMAC_P0P1NC_base,"Masse_PolyMAC_P0P1NC_base",Solveur_Masse_base);
@@ -29,7 +29,7 @@ void Masse_PolyMAC_P0P1NC_base::associer_domaine_dis_base(const Domaine_dis_base
 
 void Masse_PolyMAC_P0P1NC_base::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC_P0P1NC, le_dom_Cl_dis_base);
+  le_dom_Cl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC, le_dom_Cl_dis_base);
 }
 
 

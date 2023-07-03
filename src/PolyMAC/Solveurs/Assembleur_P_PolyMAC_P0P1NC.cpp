@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Assembleur_P_PolyMAC_P0P1NC.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
@@ -312,7 +312,7 @@ void Assembleur_P_PolyMAC_P0P1NC::associer_domaine_dis_base(const Domaine_dis_ba
 
 void Assembleur_P_PolyMAC_P0P1NC::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis)
 {
-  le_dom_Cl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC_P0P1NC, le_dom_Cl_dis);
+  le_dom_Cl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC, le_dom_Cl_dis);
 }
 
 void Assembleur_P_PolyMAC_P0P1NC::completer(const Equation_base& Eqn)

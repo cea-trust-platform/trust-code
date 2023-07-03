@@ -20,7 +20,7 @@
 #include <TRUST_Ref.h>
 
 class Convection_Diffusion_std;
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC_P0P1NC;
 
 /*! @brief class Terme_Boussinesq_scalaire_PolyMAC_P0P1NC_Face
@@ -46,7 +46,7 @@ public:
 protected:
 
   REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
-  REF(Domaine_Cl_PolyMAC_P0P1NC) le_dom_Cl_PolyMAC_P0P1NC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC_P0P1NC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 };
 

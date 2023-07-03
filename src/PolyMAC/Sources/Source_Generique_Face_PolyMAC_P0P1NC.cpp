@@ -16,7 +16,7 @@
 #include <Source_Generique_Face_PolyMAC_P0P1NC.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Equation_base.h>
 #include <Domaine_Cl_dis.h>
 #include <Milieu_base.h>
@@ -67,7 +67,7 @@ void Source_Generique_Face_PolyMAC_P0P1NC::associer_domaines(const Domaine_dis& 
                                                              const Domaine_Cl_dis& zcl_dis)
 {
   le_dom_PolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC_P0P1NC,domaine_dis.valeur());
-  la_zcl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl_dis.valeur());
+  la_zcl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC,zcl_dis.valeur());
 }
 
 Nom Source_Generique_Face_PolyMAC_P0P1NC::localisation_source()

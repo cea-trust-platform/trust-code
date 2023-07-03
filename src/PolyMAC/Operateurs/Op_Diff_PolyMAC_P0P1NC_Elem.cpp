@@ -21,7 +21,7 @@
 #include <Schema_Temps_base.h>
 #include <Champ_Elem_PolyMAC_P0P1NC.h>
 #include <Champ_front_calc.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <MD_Vector_base.h>
 #include <communications.h>
 #include <Synonyme_info.h>

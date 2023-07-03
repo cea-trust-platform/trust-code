@@ -26,7 +26,7 @@
 #include <Flux_parietal_base.h>
 #include <Schema_Temps_base.h>
 #include <MD_Vector_tools.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <communications.h>
 #include <TRUSTTab_parts.h>
@@ -193,13 +193,13 @@ int Op_Diff_PolyMAC_P0P1NC_base::impr(Sortie& os) const
 /*
 void Op_Diff_PolyMAC_P0P1NC_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl);
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl);
 }
 */
 void Op_Diff_PolyMAC_P0P1NC_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
   le_dom_poly_ = ref_cast(Domaine_PolyMAC_P0P1NC,domaine_dis.valeur());
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl.valeur());
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl.valeur());
 }
 
 /*! @brief calcule la contribution de la diffusion, la range dans resu renvoie resu

@@ -21,7 +21,7 @@
 #include <TRUSTTrav.h>
 #include <Check_espace_virtuel.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <Milieu_base.h>
@@ -208,13 +208,13 @@ int Op_Diff_PolyMAC_P0_base::impr(Sortie& os) const
 /*
 void Op_Diff_PolyMAC_P0_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl);
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl);
 }
 */
 void Op_Diff_PolyMAC_P0_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
   le_dom_poly_ = ref_cast(Domaine_PolyMAC_P0,domaine_dis.valeur());
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl.valeur());
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl.valeur());
 }
 
 /*! @brief calcule la contribution de la diffusion, la range dans resu renvoie resu

@@ -20,7 +20,7 @@
 #include <Dirichlet_homogene.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
 #include <Pb_Multiphase.h>

@@ -19,7 +19,7 @@
 #include <Source_Generique_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC_P0P1NC;
 
 /*! @brief class Source_Generique_Face_PolyMAC_P0P1NC
@@ -40,7 +40,7 @@ public:
 protected:
 
   REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
-  REF(Domaine_Cl_PolyMAC_P0P1NC) la_zcl_PolyMAC_P0P1NC;
+  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0P1NC;
 };
 
 #endif

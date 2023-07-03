@@ -21,7 +21,7 @@
 #include <Domaine_PolyMAC_P0P1NC.h>
 #include <TRUST_Ref.h>
 
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 
 class Assembleur_P_PolyMAC_P0P1NC : public Assembleur_base
 {
@@ -53,7 +53,7 @@ public:
 protected :
   REF(Equation_base) mon_equation;
   REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
-  REF(Domaine_Cl_PolyMAC_P0P1NC) le_dom_Cl_PolyMAC_P0P1NC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC_P0P1NC;
   int has_P_ref = 0;
   int stencil_done = 0;
   IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)

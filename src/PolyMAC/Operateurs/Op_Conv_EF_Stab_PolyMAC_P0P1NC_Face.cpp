@@ -17,7 +17,7 @@
 #include <Dirichlet_homogene.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Pb_Multiphase.h>
 #include <Domaine_Poly_base.h>
 #include <Matrix_tools.h>

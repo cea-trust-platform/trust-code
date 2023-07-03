@@ -20,7 +20,7 @@
 #include <Source_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC_P0P1NC;
 class Probleme_base;
 

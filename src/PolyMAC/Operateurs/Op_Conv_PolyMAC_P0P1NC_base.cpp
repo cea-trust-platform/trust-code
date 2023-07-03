@@ -16,7 +16,7 @@
 #include <Op_Conv_PolyMAC_P0P1NC_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
@@ -40,13 +40,13 @@ void Op_Conv_PolyMAC_P0P1NC_base::completer()
 
 void Op_Conv_PolyMAC_P0P1NC_base::associer_domaine_cl_dis(const Domaine_Cl_dis_base& zcl)
 {
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl);
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl);
 }
 
 void Op_Conv_PolyMAC_P0P1NC_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
   le_dom_poly_ = ref_cast(Domaine_PolyMAC_P0P1NC,domaine_dis.valeur());
-  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC_P0P1NC,zcl.valeur());
+  la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl.valeur());
 
 }
 int Op_Conv_PolyMAC_P0P1NC_base::impr(Sortie& os) const

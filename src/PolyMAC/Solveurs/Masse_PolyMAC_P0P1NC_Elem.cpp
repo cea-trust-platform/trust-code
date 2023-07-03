@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Masse_PolyMAC_P0P1NC_Elem.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Equation_base.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
 

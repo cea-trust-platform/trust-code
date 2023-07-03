@@ -18,7 +18,7 @@
 
 #include <Champ_Fonc_Face_PolyMAC_P0P1NC.h>
 #include <Champ_Face_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <TRUST_Ref.h>
 
 /*! @brief class grad_Champ_Face_PolyMAC_P0 for the calculation of the gradient This field is a Champ_Fonc_Face_PolyMAC_P0 that calculates the gradient of a velocity field
@@ -48,7 +48,7 @@ public:
   inline void associer_champ(const Champ_Face_PolyMAC_P0& ch) { champ_ = ch; }
   inline void associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
   {
-    le_Dom_Cl_PolyMAC_P0P1NC = static_cast<const Domaine_Cl_PolyMAC_P0P1NC&>(le_dom_Cl_dis_base);
+    le_Dom_Cl_PolyMAC_P0P1NC = static_cast<const Domaine_Cl_PolyMAC&>(le_dom_Cl_dis_base);
   }
 
   // Interpolation du gradient de la vitesse
@@ -60,7 +60,7 @@ public:
   void init_grad();
 
 protected:
-  REF(Domaine_Cl_PolyMAC_P0P1NC) le_Dom_Cl_PolyMAC_P0P1NC;
+  REF(Domaine_Cl_PolyMAC) le_Dom_Cl_PolyMAC_P0P1NC;
   REF(Champ_Face_PolyMAC_P0) champ_;
 
   int is_init = 0;

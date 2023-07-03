@@ -20,7 +20,7 @@
 #include <Masse_ajoutee_base.h>
 #include <Option_PolyMAC_P0.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Pb_Multiphase.h>
 #include <Equation_base.h>

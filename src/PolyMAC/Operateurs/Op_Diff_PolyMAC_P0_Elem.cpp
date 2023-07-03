@@ -21,7 +21,7 @@
 #include <Champ_Elem_PolyMAC_P0.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Flux_parietal_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
 #include <Champ_front_calc.h>
 #include <Milieu_composite.h>

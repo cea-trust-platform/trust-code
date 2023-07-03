@@ -18,7 +18,7 @@
 #include <Domaine_Cl_dis.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
 #include <Domaine_PolyMAC_P0.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Op_Grad_PolyMAC_P0P1NC_Face.h>
 #include <Equation_base.h>

@@ -16,7 +16,7 @@
 #include <Terme_Source_Constituant_PolyMAC_P0P1NC_Elem.h>
 #include <Convection_Diffusion_Concentration.h>
 #include <Discretisation_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Probleme_base.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
 #include <Milieu_base.h>
@@ -36,7 +36,7 @@ Entree& Terme_Source_Constituant_PolyMAC_P0P1NC_Elem::readOn(Entree& s)
 void Terme_Source_Constituant_PolyMAC_P0P1NC_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
   const Domaine_PolyMAC_P0P1NC& zvdf = ref_cast(Domaine_PolyMAC_P0P1NC, domaine_dis.valeur());
-  const Domaine_Cl_PolyMAC_P0P1NC& zclvdf = ref_cast(Domaine_Cl_PolyMAC_P0P1NC, domaine_cl_dis.valeur());
+  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
   iter->associer_domaines(zvdf, zclvdf);
   Eval_Source_C_PolyMAC_P0P1NC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_P0P1NC_Elem&> (iter->evaluateur());
   eval_puis.associer_domaines(zvdf, zclvdf);

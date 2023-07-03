@@ -24,7 +24,7 @@
 #include <Champ_Inc.h>
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_Cl_dis.h>
 #include <Operateur.h>
 #include <Op_Diff_PolyMAC_P0P1NC_base.h>
@@ -473,10 +473,10 @@ void PolyMAC_P0P1NC_discretisation::domaine_Cl_dis(Domaine_dis& z,
   Cerr << "discretisation des conditions limites" << finl;
   assert(z.non_nul());
   Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC=ref_cast(Domaine_PolyMAC_P0P1NC, z.valeur());
-  zcl.typer("Domaine_Cl_PolyMAC_P0P1NC");
+  zcl.typer("Domaine_Cl_PolyMAC");
   assert(zcl.non_nul());
-  Domaine_Cl_PolyMAC_P0P1NC& domaine_cl_PolyMAC_P0P1NC=ref_cast(Domaine_Cl_PolyMAC_P0P1NC, zcl.valeur());
-  domaine_cl_PolyMAC_P0P1NC.associer(domaine_PolyMAC_P0P1NC);
+  Domaine_Cl_PolyMAC& Domaine_Cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  Domaine_Cl_PolyMAC.associer(domaine_PolyMAC_P0P1NC);
   Cerr << "discretisation des conditions limites OK" << finl;
 }
 
@@ -520,11 +520,11 @@ void PolyMAC_P0P1NC_discretisation::grad_T(const Domaine_dis& z,const Domaine_Cl
   Cerr << "Discretisation de gradient_temperature" << finl;
   const Champ_Som_PolyMAC_P0P1NC& temp = ref_cast(Champ_Som_PolyMAC_P0P1NC,ch_temperature.valeur());
   const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC=ref_cast(Domaine_PolyMAC_P0P1NC, z.valeur());
-  const Domaine_Cl_PolyMAC_P0P1NC& domaine_cl_PolyMAC_P0P1NC=ref_cast(Domaine_Cl_PolyMAC_P0P1NC, zcl.valeur());
+  const Domaine_Cl_PolyMAC& Domaine_Cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
   ch.typer("gradient_temperature_Champ_Som_PolyMAC_P0P1NC");
   grad_T_Champ_Som_PolyMAC_P0P1NC& ch_gt=ref_cast(grad_T_Champ_Som_PolyMAC_P0P1NC,ch.valeur());
   ch_gt.associer_domaine_dis_base(domaine_PolyMAC_P0P1NC);
-  ch_gt.associer_domaine_Cl_dis_base(domaine_cl_PolyMAC_P0P1NC);
+  ch_gt.associer_domaine_Cl_dis_base(Domaine_Cl_PolyMAC);
   ch_gt.associer_champ(temp);
   ch_gt.nommer("gradient_temperature");
   ch_gt.fixer_nb_comp(dimension);
@@ -545,11 +545,11 @@ void PolyMAC_P0P1NC_discretisation::h_conv(const Domaine_dis& z,const Domaine_Cl
   Cerr << "Discretisation de h_conv" << finl;
   const Champ_Som_PolyMAC_P0P1NC& temp = ref_cast(Champ_Som_PolyMAC_P0P1NC,ch_temperature.valeur());
   const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC=ref_cast(Domaine_PolyMAC_P0P1NC, z.valeur());
-  const Domaine_Cl_PolyMAC_P0P1NC& domaine_cl_PolyMAC_P0P1NC=ref_cast(Domaine_Cl_PolyMAC_P0P1NC, zcl.valeur());
+  const Domaine_Cl_PolyMAC& Domaine_Cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
   ch.typer("h_conv_Champ_Som_PolyMAC_P0P1NC");
   h_conv_Champ_Som_PolyMAC_P0P1NC& ch_gt=ref_cast(h_conv_Champ_Som_PolyMAC_P0P1NC,ch.valeur());
   ch_gt.associer_domaine_dis_base(domaine_PolyMAC_P0P1NC);
-  ch_gt.associer_domaine_Cl_dis_base(domaine_cl_PolyMAC_P0P1NC);
+  ch_gt.associer_domaine_Cl_dis_base(Domaine_Cl_PolyMAC);
   ch_gt.associer_champ(temp);
   ch_gt.temp_ref()=temp_ref;
   ////ch_gt.nommer("h_conv");

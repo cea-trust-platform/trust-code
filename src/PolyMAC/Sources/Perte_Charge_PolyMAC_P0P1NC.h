@@ -21,7 +21,7 @@
 #include <TRUST_Ref.h>
 #include <Parser_U.h>
 
-class Domaine_Cl_PolyMAC_P0P1NC;
+class Domaine_Cl_PolyMAC;
 class Domaine_Poly_base;
 class Sous_Domaine;
 class Champ_Inc_base;

@@ -17,7 +17,7 @@
 #include <grad_Champ_Face_PolyMAC_P0.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Navier_Stokes_std.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 
 Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot, "Champ_Fonc_Elem_PolyMAC_P0_rot", Champ_Fonc_Elem_PolyMAC_P0P1NC);
 

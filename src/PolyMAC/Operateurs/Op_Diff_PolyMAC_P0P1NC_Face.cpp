@@ -21,7 +21,7 @@
 #include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Schema_Temps_base.h>
 #include <Mod_turb_hyd_base.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <TRUSTTab_parts.h>
 #include <MD_Vector_base.h>

@@ -16,7 +16,7 @@
 #ifndef Op_Div_PolyMAC_P0P1NC_included
 #define Op_Div_PolyMAC_P0P1NC_included
 
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
 #include <Operateur_Div.h>
 #include <TRUST_Ref.h>
@@ -60,7 +60,7 @@ public:
 protected:
 
   REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
-  REF(Domaine_Cl_PolyMAC_P0P1NC) la_zcl_PolyMAC_P0P1NC;
+  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0P1NC;
 };
 
 #endif

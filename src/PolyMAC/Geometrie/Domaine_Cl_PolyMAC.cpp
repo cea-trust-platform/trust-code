@@ -13,113 +13,73 @@
 *
 *****************************************************************************/
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC.h>
-#include <Dirichlet_homogene.h>
-#include <Symetrie.h>
-#include <Periodique.h>
 #include <Dirichlet_entree_fluide_leaves.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Dirichlet_paroi_defilante.h>
-#include <Equation_base.h>
-#include <Champ_Inc_P0_base.h>
 #include <Champ_front_softanalytique.h>
-#include <Probleme_base.h>
+#include <Dirichlet_paroi_defilante.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Discretisation_base.h>
-#include <Matrice_Morse.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
+#include <Dirichlet_homogene.h>
+#include <Champ_Inc_P0_base.h>
+#include <Domaine_PolyMAC.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
+#include <Matrice_Morse.h>
+#include <Periodique.h>
+#include <Symetrie.h>
 #include <Debog.h>
 
+Implemente_instanciable(Domaine_Cl_PolyMAC, "Domaine_Cl_PolyMAC", Domaine_Cl_dis_base);
 
-Implemente_instanciable(Domaine_Cl_PolyMAC,"Domaine_Cl_PolyMAC",Domaine_Cl_dis_base);
-//// printOn
-//
+Sortie& Domaine_Cl_PolyMAC::printOn(Sortie& os) const { return os; }
 
-Sortie& Domaine_Cl_PolyMAC::printOn(Sortie& os ) const
+Entree& Domaine_Cl_PolyMAC::readOn(Entree& is) { return Domaine_Cl_dis_base::readOn(is); }
+
+void Domaine_Cl_PolyMAC::completer(const Domaine_dis& )
 {
-  return os;
+  modif_perio_fait_ = 0;
 }
 
-//// readOn
-//
-
-Entree& Domaine_Cl_PolyMAC::readOn(Entree& is )
-{
-  return Domaine_Cl_dis_base::readOn(is) ;
-}
-
-
-/*! @brief etape de discretisation : dimensionnement des tableaux
- *
- */
-void Domaine_Cl_PolyMAC::associer(const Domaine_PolyMAC& le_dom_PolyMAC)
-{
-  //  int nb_elem_Cl  = le_dom_PolyMAC.nb_elem_Cl();
-}
-
-/*! @brief remplissage des tableaux
- *
- */
-void Domaine_Cl_PolyMAC::completer(const Domaine_dis& une_domaine_dis)
-{
-  modif_perio_fait_ =0;
-  if (sub_type(Domaine_PolyMAC,une_domaine_dis.valeur()))
-    {
-      const Domaine_PolyMAC& le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, une_domaine_dis.valeur());
-      remplir_type_elem_Cl(le_dom_PolyMAC);
-    }
-  else
-    {
-      cerr << "Domaine_Cl_PolyMAC::completer() prend comme argument une Domaine_PolyMAC\n";
-      exit();
-    }
-}
-/*! @brief appele par remplir_volumes_entrelaces_Cl() : remplissage de type_elem_Cl_
- *
- */
-void Domaine_Cl_PolyMAC::remplir_type_elem_Cl(const Domaine_PolyMAC& le_dom_PolyMAC)
-{
-}
-
-/*! @brief Impose les conditions aux limites a la valeur temporelle "temps" du Champ_Inc
- *
- */
 void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
 
-  Champ_Inc_base& ch_base=ch.valeur();
+  Champ_Inc_base& ch_base = ch.valeur();
   DoubleTab& ch_tab = ch_base.valeurs(temps);
-  if (sub_type(Champ_Inc_P0_base,ch_base))
-    ;
-  else if(ch_base.nature_du_champ()==scalaire)
-    ;
-  else if (sub_type(Champ_Face_PolyMAC,ch_base))
-    {
-      Champ_Face_PolyMAC& ch_face = ref_cast(Champ_Face_PolyMAC, ch_base);
-      const Domaine_VF& ma_domaine_VF = ch_face.domaine_vf();
-      int ndeb,nfin, num_face;
+  int n, N = ch_tab.line_size();
 
-      for(int i=0; i<nb_cond_lim(); i++)
+  if (sub_type(Champ_Inc_P0_base, ch_base)) { /* Do nothing */ }
+  else if (ch_base.nature_du_champ() == scalaire) { /* Do nothing */ }
+  else if (sub_type(Champ_Face_PolyMAC_P0P1NC, ch_base) || sub_type(Champ_Face_PolyMAC, ch_base))
+    {
+      Champ_Face_base& ch_face = ref_cast(Champ_Face_base, ch_base);
+      const Domaine_VF& ma_domaine_VF = ch_face.domaine_vf();
+      int ndeb, nfin, num_face;
+
+      for (int i = 0; i < nb_cond_lim(); i++)
         {
           const Cond_lim_base& la_cl = les_conditions_limites(i).valeur();
-          if (sub_type(Periodique,la_cl))
+          if (sub_type(Periodique, la_cl))
             {
-              if (modif_perio_fait_  == 0)
+              if (N > 1) Process::exit("Periodique CLS not yet supported for multiphase pbs.");
+
+              if (modif_perio_fait_ == 0)
                 {
                   // On fait en sorte que le champ ait la meme valeur
                   // sur deux faces de periodicite qui sont en face l'une de l'autre
-                  const Periodique& la_cl_perio = ref_cast(Periodique,la_cl);
-                  const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+                  const Periodique& la_cl_perio = ref_cast(Periodique, la_cl);
+                  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
                   ndeb = le_bord.num_premiere_face();
                   nfin = ndeb + le_bord.nb_faces();
                   int voisine;
                   double moy;
-                  for (num_face=ndeb; num_face<nfin; num_face++)
+                  for (num_face = ndeb; num_face < nfin; num_face++)
                     {
-                      voisine = la_cl_perio.face_associee(num_face-ndeb) + ndeb;
-                      if ( ch_tab[num_face] != ch_tab[voisine] )
+                      voisine = la_cl_perio.face_associee(num_face - ndeb) + ndeb;
+                      if (ch_tab[num_face] != ch_tab[voisine])
                         {
-                          moy = 0.5*(ch_tab[num_face] + ch_tab[voisine]);
+                          moy = 0.5 * (ch_tab[num_face] + ch_tab[voisine]);
                           ch_tab[num_face] = moy;
                           ch_tab[voisine] = moy;
                         }
@@ -128,112 +88,99 @@ void Domaine_Cl_PolyMAC::imposer_cond_lim(Champ_Inc& ch, double temps)
                   // init = 1;
                 }
             }
-          else if( sub_type(Symetrie,la_cl) )
+          else if (sub_type(Symetrie, la_cl))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+              for (num_face = ndeb; num_face < nfin; num_face++)
+                for (n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
-          else if ( sub_type(Dirichlet_entree_fluide,la_cl) )
+          else if (sub_type(Dirichlet_entree_fluide, la_cl))
             {
-              const Dirichlet_entree_fluide& la_cl_diri = ref_cast(Dirichlet_entree_fluide,la_cl);
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Dirichlet_entree_fluide& la_cl_diri = ref_cast(Dirichlet_entree_fluide, la_cl);
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
 
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                {
-                  // WEC : optimisable (pour chaque face recherche le bon temps !)
-                  // vn
-                  double vn=0;
-                  for (int d=0; d<dimension; d++)
-                    vn+=ma_domaine_VF.face_normales(num_face,d)*la_cl_diri.val_imp_au_temps(temps,num_face-ndeb,d);
-                  vn/=ma_domaine_VF.face_surfaces(num_face);
-                  ch_tab[num_face] = vn;
-                }
+              for (num_face = ndeb; num_face < nfin; num_face++)
+                for (n = 0; n < N; n++)
+                  {
+                    // WEC : optimisable (pour chaque face recherche le bon temps !)
+                    // vn
+                    double vn = 0;
+                    for (int d = 0; d < dimension; d++)
+                      vn += ma_domaine_VF.face_normales(num_face, d) * la_cl_diri.val_imp_au_temps(temps,num_face-ndeb, N * d + n);
+                    vn /= ma_domaine_VF.face_surfaces(num_face);
+                    ch_tab(num_face, n) = vn;
+                  }
             }
-          else if ( sub_type(Dirichlet_paroi_fixe,la_cl) )
+          else if (sub_type(Dirichlet_paroi_fixe, la_cl))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+              for (num_face = ndeb; num_face < nfin; num_face++)
+                for (n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
-          else if ( sub_type(Dirichlet_paroi_defilante,la_cl) )
+          else if (sub_type(Dirichlet_paroi_defilante, la_cl))
             {
-              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               ndeb = le_bord.num_premiere_face();
               nfin = ndeb + le_bord.nb_faces();
-              for (num_face=ndeb; num_face<nfin; num_face++)
-                ch_tab[num_face] = 0;
+              for (num_face = ndeb; num_face < nfin; num_face++)
+                for (n = 0; n < N; n++)
+                  ch_tab(num_face, n) = 0;
             }
         }
-      modif_perio_fait_  = 1;
+      modif_perio_fait_ = 1;
     }
   else
     {
-      Cerr << "Le type de Champ_Inc " <<  ch->que_suis_je() << " n'est pas prevu en PolyMAC\n";
-      exit();
+      Cerr << "Le type de Champ_Inc " << ch->que_suis_je() << " n'est pas prevu en PolyMAC family " << finl;
+      Process::exit();
     }
   ch_tab.echange_espace_virtuel();
-  Debog::verifier("Domaine_Cl_PolyMAC::imposer_cond_lim ch_tab",ch_tab);
+  Debog::verifier("Domaine_Cl_PolyMAC::imposer_cond_lim ch_tab", ch_tab);
 }
-
-
-
-
 
 int Domaine_Cl_PolyMAC::nb_faces_sortie_libre() const
 {
-  exit();
-  /*
-  int compteur=0;
-  for(int cl=0; cl<les_conditions_limites_.size(); cl++)
-    {
-      if(sub_type(Neumann_sortie_libre, les_conditions_limites_[cl].valeur()))
-  {
-    const Front_VF& le_bord=ref_cast(Front_VF,les_conditions_limites_[cl]->frontiere_dis());
-    compteur+=le_bord.nb_faces();
-  }
-    }
-  return compteur;
-  */
-  return -1;
+  Process::exit();
+  return -1000000;
 }
 
 int Domaine_Cl_PolyMAC::nb_bord_periodicite() const
 {
-  int compteur=0;
-  for(int cl=0; cl<les_conditions_limites_.size(); cl++)
+  int compteur = 0;
+  for (int cl = 0; cl < les_conditions_limites_.size(); cl++)
     {
-      if (sub_type(Periodique,les_conditions_limites_[cl].valeur()))
+      if (sub_type(Periodique, les_conditions_limites_[cl].valeur()))
         compteur++;
     }
   return compteur;
 }
 
-
 int Domaine_Cl_PolyMAC::initialiser(double temps)
 {
   Domaine_Cl_dis_base::initialiser(temps);
 
-  if (nb_bord_periodicite()>0)
+  if (nb_bord_periodicite() > 0)
     {
-      Cerr<<" La periodicite n'est pas code !!!"<<finl;
-      abort();
+      Cerr << " La periodicite n'est pas code !!!" << finl;
+      Process::exit();
     }
   return 1;
 }
 
-Domaine_PolyMAC& Domaine_Cl_PolyMAC::domaine_PolyMAC()
+Domaine_VF& Domaine_Cl_PolyMAC::domaine_vf()
 {
-  return ref_cast(Domaine_PolyMAC, domaine_dis().valeur());
+  return ref_cast(Domaine_VF, domaine_dis().valeur());
 }
 
-const Domaine_PolyMAC& Domaine_Cl_PolyMAC::domaine_PolyMAC() const
+const Domaine_VF& Domaine_Cl_PolyMAC::domaine_vf() const
 {
-  return ref_cast(Domaine_PolyMAC, domaine_dis().valeur());
+  return ref_cast(Domaine_VF, domaine_dis().valeur());
 }

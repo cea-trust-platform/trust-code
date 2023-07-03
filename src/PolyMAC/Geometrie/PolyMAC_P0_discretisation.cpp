@@ -30,7 +30,7 @@
 #include <Schema_Temps.h>
 #include <Schema_Temps_base.h>
 #include <Motcle.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_Cl_dis.h>
 
 Implemente_instanciable(PolyMAC_P0_discretisation,"PolyMAC_P0",PolyMAC_P0P1NC_discretisation);
@@ -50,7 +50,7 @@ void PolyMAC_P0_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis
 {
   const Champ_Face_PolyMAC_P0&          vit = ref_cast(Champ_Face_PolyMAC_P0,ch_vitesse.valeur());
   const Domaine_PolyMAC_P0&          domaine_poly = ref_cast(Domaine_PolyMAC_P0, z.valeur());
-  const Domaine_Cl_PolyMAC_P0P1NC&    domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC_P0P1NC, zcl.valeur());
+  const Domaine_Cl_PolyMAC&    domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
 
   ch.typer("grad_Champ_Face_PolyMAC_P0");
 

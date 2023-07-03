@@ -17,7 +17,7 @@
 #include <Champ_implementation_P1.h>
 #include <Connectivite_som_elem.h>
 #include <MD_Vector_composite.h>
-#include <Domaine_Cl_PolyMAC_P0P1NC.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <MD_Vector_tools.h>
 #include <Comm_Group_MPI.h>
 #include <communications.h>
