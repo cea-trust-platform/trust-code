@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Source_C_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Eval_Source_C_PolyMAC_Elem_included
 #define Eval_Source_C_PolyMAC_Elem_included
@@ -29,12 +22,6 @@
 #include <Champ_Uniforme.h>
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Source_C_PolyMAC_Elem
-//
-////////////////////////////////////////////////////////////////////////////
 
 class Eval_Source_C_PolyMAC_Elem : public Evaluateur_Source_PolyMAC_Elem
 {
@@ -53,10 +40,6 @@ protected:
   DoubleTab source_constituant;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_Uniforme_PolyMAC_Elem
-//
 
 inline Eval_Source_C_PolyMAC_Elem::Eval_Source_C_PolyMAC_Elem() {}
 

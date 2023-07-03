@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_Face_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Champ_Face_PolyMAC_included
 #define Champ_Face_PolyMAC_included
@@ -28,14 +21,8 @@
 #include <TRUST_Ref.h>
 #include <SolveurSys.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_Face_PolyMAC
-// .DESCRIPTION : class Champ_Face_PolyMAC
-//
 // Champ correspondant a une inconnue decrite par ses flux aux faces (type vitesse)
 // Degres de libertes : composante normale aux faces + composante tangentielle aux aretes de la vorticite
-/////////////////////////////////////////////////////////////////////////////
-
 class Champ_Face_PolyMAC : public Champ_Inc_base
 {
 

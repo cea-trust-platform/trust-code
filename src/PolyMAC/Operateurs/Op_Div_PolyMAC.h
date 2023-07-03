@@ -12,14 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Div_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Op_Div_PolyMAC_included
 #define Op_Div_PolyMAC_included
@@ -28,6 +20,7 @@
 #include <Domaine_PolyMAC.h>
 #include <TRUST_Ref.h>
 class Domaine_Cl_PolyMAC;
+
 //
 // .DESCRIPTION class Op_Div_PolyMAC
 //
@@ -36,18 +29,6 @@ class Domaine_Cl_PolyMAC;
 //  On calcule la divergence d'un champ_P1NC (la vitesse)
 //
 
-
-//
-// .SECTION voir aussi
-// Operateur_Div_base
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Div_PolyMAC
-//
-//////////////////////////////////////////////////////////////////////////////
 class MAtrice_Morse;
 class Op_Div_PolyMAC : public Operateur_Div_base
 {

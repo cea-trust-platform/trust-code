@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Tri_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Tri_PolyMAC_included
 #define Tri_PolyMAC_included

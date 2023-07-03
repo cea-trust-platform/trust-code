@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Masse_PolyMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Masse_PolyMAC_Face.h>
 #include <Domaine_Cl_PolyMAC.h>
@@ -37,30 +30,15 @@
 
 Implemente_instanciable(Masse_PolyMAC_Face,"Masse_PolyMAC_Face",Solveur_Masse_base);
 
-
-//     printOn()
-/////
-
 Sortie& Masse_PolyMAC_Face::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-//// readOn
-//
-
 Entree& Masse_PolyMAC_Face::readOn(Entree& s)
 {
   return s ;
 }
-
-
-///////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Masse_PolyMAC_Face
-//
-//////////////////////////////////////////////////////////////
-
 
 DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 {

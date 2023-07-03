@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        grad_U_Champ_Face_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <grad_U_Champ_Face_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
@@ -26,17 +19,10 @@
 
 Implemente_instanciable(grad_U_Champ_Face_PolyMAC,"grad_U_Champ_Face_PolyMAC",Champ_Fonc_P0_PolyMAC);
 
-
-//     printOn()
-/////
-
 Sortie& grad_U_Champ_Face_PolyMAC::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
-//// readOn
-//
 
 Entree& grad_U_Champ_Face_PolyMAC::readOn(Entree& s)
 {

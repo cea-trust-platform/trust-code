@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Tetra_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Tetra_PolyMAC.h>
 #include <Domaine.h>
@@ -28,9 +21,6 @@
 #include <Milieu_base.h>
 
 Implemente_instanciable_sans_constructeur(Tetra_PolyMAC,"Tetra_PolyMAC",Elem_PolyMAC_base);
-
-// printOn et readOn
-
 
 Sortie& Tetra_PolyMAC::printOn(Sortie& s ) const
 {

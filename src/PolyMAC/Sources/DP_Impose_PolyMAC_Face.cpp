@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        DP_Impose_PolyMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/10
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <DP_Impose_PolyMAC_Face.h>
 #include <Domaine_PolyMAC.h>
@@ -30,16 +23,10 @@
 
 Implemente_instanciable(DP_Impose_PolyMAC_Face,"DP_Impose_Face_PolyMAC",Perte_Charge_PolyMAC_Face);
 
-//// printOn
-//
-
 Sortie& DP_Impose_PolyMAC_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
 {

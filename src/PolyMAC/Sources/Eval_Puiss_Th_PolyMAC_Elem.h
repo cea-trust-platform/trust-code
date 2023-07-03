@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Puiss_Th_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/11
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Eval_Puiss_Th_PolyMAC_Elem_included
 #define Eval_Puiss_Th_PolyMAC_Elem_included
@@ -29,12 +22,6 @@
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
 #include <Equation_base.h>
-
-////////////////////////////////////////////////////////////////////////////
-//
-//  CLASS Eval_Puiss_Th_PolyMAC_Elem
-//
-////////////////////////////////////////////////////////////////////////////
 
 class Eval_Puiss_Th_PolyMAC_Elem: public Evaluateur_Source_PolyMAC_Elem
 {

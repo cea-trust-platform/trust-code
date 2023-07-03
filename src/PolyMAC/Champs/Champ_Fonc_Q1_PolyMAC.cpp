@@ -12,35 +12,20 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_Fonc_Q1_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #include <Champ_Fonc_Q1_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
 #include <Domaine.h>
 
-
 Implemente_instanciable(Champ_Fonc_Q1_PolyMAC,"Champ_Fonc_Q1_PolyMAC",Champ_Fonc_Q1_base);
-
-// printOn
 
 Sortie& Champ_Fonc_Q1_PolyMAC::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-
-// readOn
-
 Entree& Champ_Fonc_Q1_PolyMAC::readOn(Entree& s)
 {
-
   return s ;
 }
 

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Hexa_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Hexa_PolyMAC.h>
 #include <Domaine.h>
@@ -37,7 +30,6 @@ Entree& Hexa_PolyMAC::readOn(Entree& s )
   return s ;
 }
 
-// Description:
 // KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces
 // qui entourent la facette de numero local fa7
 // le numero local de la fa7 est celui du sommet qui la porte
@@ -45,9 +37,7 @@ Hexa_PolyMAC::Hexa_PolyMAC()
 {
 }
 
-// Description:
 // remplit le tableau face_normales dans la Domaine_PolyMAC
-
 void Hexa_PolyMAC::normale(int num_Face,DoubleTab& Face_normales,
                            const  IntTab& Face_sommets,
                            const IntTab& Face_voisins,

@@ -12,20 +12,11 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        PolyMAC_discretisation.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <PolyMAC_discretisation.h>
 #include <Domaine_PolyMAC.h>
 #include <Champ_Fonc_Tabule.h>
-//#include <Ch_Fonc_P1_PolyMAC.h>
 #include <Champ_Fonc_P0_PolyMAC.h>
-
 #include <Champ_Fonc_Tabule_P0_PolyMAC.h>
 #include <Milieu_base.h>
 #include <Equation_base.h>

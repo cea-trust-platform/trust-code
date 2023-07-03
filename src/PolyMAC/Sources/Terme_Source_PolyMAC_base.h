@@ -12,28 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Source_PolyMAC_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/11
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Terme_Source_PolyMAC_base_included
 #define Terme_Source_PolyMAC_base_included
 
-// .DESCRIPTION
-// PolyMAC implementation of Source_base class
-
 #include <Source_base.h>
 #include <Iterateur_Source_PolyMAC.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Terme_Source_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Terme_Source_PolyMAC_base : public Source_base
 {
@@ -52,12 +36,6 @@ protected:
   Iterateur_Source_PolyMAC iter;
 };
 
-//
-//   Fonctions inline de la classe Terme_Source_PolyMAC_base
-//
-
-// Description:
-// constructeur
 inline Terme_Source_PolyMAC_base::Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base) :
   iter(iter_base)
 {}

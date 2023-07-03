@@ -12,15 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Amont_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/15
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef Eval_Amont_PolyMAC_Elem_included
 #define Eval_Amont_PolyMAC_Elem_included
@@ -44,10 +35,6 @@
 // procedons comme en explicite mais en ne fesant intervenir que les valeurs fournies
 // par les conditions limites.
 //
-
-//
-// .SECTION voir aussi Eval_Conv_PolyMAC
-
 
 class Eval_Amont_PolyMAC_Elem : public Eval_Conv_PolyMAC, public Eval_PolyMAC_Elem
 {

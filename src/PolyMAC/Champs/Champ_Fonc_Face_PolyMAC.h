@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_Fonc_Face_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Champ_Fonc_Face_PolyMAC_included
 #define Champ_Fonc_Face_PolyMAC_included
@@ -27,15 +20,6 @@
 #include <Domaine_VF.h>
 #include <TRUST_Ref.h>
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_Fonc_Face_PolyMAC
-// .HEADER      : Trio_U_Kernel_Fixes Trio_U_Kernel_Fixes/src/Champs_dis
-// .LIBRARY     : libTrio_U_Kernel_Fixes
-// .DESCRIPTION : class Champ_Fonc_Face_PolyMAC
-//
-// <Description of class Champ_Fonc_Face_PolyMAC>
-//
-/////////////////////////////////////////////////////////////////////////////
 
 class Champ_Fonc_Face_PolyMAC : public Champ_Fonc_base
 {

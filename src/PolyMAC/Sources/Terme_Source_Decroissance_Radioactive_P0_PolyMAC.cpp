@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Source_Decroissance_Radioactive_P0_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Source_Decroissance_Radioactive_P0_PolyMAC.h>
 #include <Equation_base.h>
@@ -29,16 +22,10 @@
 Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_P0_PolyMAC,"Decroissance_Radioactive_P0_PolyMAC",Source_base);
 Add_synonym(Terme_Source_Decroissance_Radioactive_P0_PolyMAC,"radioactive_decay_P0_PolyMAC");
 
-//// printOn
-//
-
 Sortie& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
-
-//// readOn
-//
 
 Entree& Terme_Source_Decroissance_Radioactive_P0_PolyMAC::readOn(Entree& s )
 {

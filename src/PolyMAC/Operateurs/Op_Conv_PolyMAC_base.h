@@ -12,14 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Conv_PolyMAC_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/14
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Op_Conv_PolyMAC_base_included
 #define Op_Conv_PolyMAC_base_included
@@ -29,22 +21,6 @@
 class Champ_base;
 class Domaine_PolyMAC;
 class Domaine_Cl_PolyMAC;
-//
-// .DESCRIPTION class Op_Conv_PolyMAC_base
-//
-// Classe de base des operateurs de convection VDF
-
-//
-// .SECTION voir aussi
-//
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Conv_PolyMAC_base : public Operateur_Conv_base
 {

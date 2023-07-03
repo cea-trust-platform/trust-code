@@ -12,15 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_centre_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/8
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef Eval_centre_PolyMAC_Elem_included
 #define Eval_centre_PolyMAC_Elem_included
@@ -29,6 +20,7 @@
 #include <Eval_PolyMAC_Elem.h>
 #include <Domaine_PolyMAC.h>
 #include <Champ_P0_PolyMAC.h>
+
 //
 // .DESCRIPTION class Eval_centre_PolyMAC_Elem
 //
@@ -38,10 +30,6 @@
 // Rq:Les evaluateurs de flux convectifs calculent en fait le terme
 // convectif qui figure au second membre de l'equation d'evolution
 // c.a.d l'oppose du flux convectif
-
-//
-// .SECTION voir aussi Eval_Conv_PolyMAC
-
 
 class Eval_centre_PolyMAC_Elem : public Eval_Conv_PolyMAC, public Eval_PolyMAC_Elem
 {

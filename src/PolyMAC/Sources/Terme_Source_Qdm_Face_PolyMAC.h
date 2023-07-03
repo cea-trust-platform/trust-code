@@ -12,14 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Source_Qdm_Face_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Terme_Source_Qdm_Face_PolyMAC_included
 #define Terme_Source_Qdm_Face_PolyMAC_included
@@ -31,14 +23,6 @@ class Probleme_base;
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
 
-//
-// .DESCRIPTION class Terme_Source_Qdm_Face_PolyMAC
-//
-
-//
-// .SECTION voir aussi Source_base
-//
-//
 
 class Terme_Source_Qdm_Face_PolyMAC : public Source_base, public Terme_Source_Qdm
 {

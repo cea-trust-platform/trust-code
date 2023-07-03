@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Perte_Charge_PolyMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_PolyMAC_Face.h>
 #include <Fluide_Incompressible.h>
@@ -30,18 +23,10 @@
 Implemente_base(Perte_Charge_PolyMAC_Face,"Perte_Charge_PolyMAC_Face",Source_base);
 
 
-
-//// printOn
-//
-
 Sortie& Perte_Charge_PolyMAC_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
-
-
-//// readOn
-//
 
 Entree& Perte_Charge_PolyMAC_Face::readOn(Entree& s )
 {
@@ -53,14 +38,6 @@ void Perte_Charge_PolyMAC_Face::mettre_a_jour(double temps)
   ;
 }
 
-
-/////////////////////////////////////////////////////////////////////
-//
-//                    Implementation des fonctions
-//
-//               de la classe Perte_Charge_PolyMAC_Face
-//
-////////////////////////////////////////////////////////////////////
 
 void Perte_Charge_PolyMAC_Face::associer_pb(const Probleme_base& pb)
 {

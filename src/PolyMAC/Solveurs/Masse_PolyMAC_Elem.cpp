@@ -12,18 +12,10 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Masse_PolyMAC_Elem.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     /main/1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Masse_PolyMAC_Elem.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
-
 #include <Champ_P0_PolyMAC.h>
 #include <Equation_base.h>
 #include <Conds_lim.h>
@@ -37,10 +29,6 @@
 #include <Milieu_base.h>
 
 Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem",Solveur_Masse_base);
-
-
-//     printOn()
-/////
 
 Sortie& Masse_PolyMAC_Elem::printOn(Sortie& s) const
 {

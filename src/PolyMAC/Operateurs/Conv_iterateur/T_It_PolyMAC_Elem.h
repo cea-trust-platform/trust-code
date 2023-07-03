@@ -12,15 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        T_It_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/43
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef T_It_PolyMAC_Elem_included
 #define T_It_PolyMAC_Elem_included
@@ -28,7 +19,6 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <Champ_Uniforme.h>
-
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
 #include <Operateur_base.h>
@@ -37,12 +27,6 @@
 #include <EcrFicPartage.h>
 #include <communications.h>
 #include <TRUSTTrav.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS Iterateur_PolyMAC_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
 
 template <class _TYPE_>
 

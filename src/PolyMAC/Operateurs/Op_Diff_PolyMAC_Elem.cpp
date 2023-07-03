@@ -12,18 +12,8 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Diff_PolyMAC_Elem.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Modele_turbulence_scal_base.h>
-
-
-
 #include <Echange_contact_PolyMAC.h>
 #include <Echange_externe_impose.h>
 #include <Op_Diff_PolyMAC_Elem.h>

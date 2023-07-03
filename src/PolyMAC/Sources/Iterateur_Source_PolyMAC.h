@@ -12,23 +12,10 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Iterateur_Source_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/10
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Iterateur_Source_PolyMAC_included
 #define Iterateur_Source_PolyMAC_included
 
-
-//
-// .DESCRIPTION class Iterateur_Source_PolyMAC
-//
-// .SECTION voir aussi
-//
 #include <Iterateur_Source_PolyMAC_base.h>
 #include <ItSouPolyMACFa.h>
 #include <TRUST_Deriv.h>
@@ -48,10 +35,6 @@ public:
   inline void associer(const Source_base& source);
 };
 
-
-//
-//  Fonctions inline de la classe Iterateur_Source_PolyMAC
-//
 
 inline Iterateur_Source_PolyMAC::Iterateur_Source_PolyMAC(const Iterateur_Source_PolyMAC_base& Opb)
 

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Echange_contact_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Cond_Lim
-// Version:     /main/17
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Echange_contact_PolyMAC_included
 #define Echange_contact_PolyMAC_included
@@ -32,7 +25,6 @@ class Domaine_PolyMAC;
 class Front_VF;
 class Faces;
 
-//  .DESCRIPTION classe : Echange_contact_PolyMAC
 //  Outre le champ_front representant la temperature de paroi,
 //  cette classe possede un autre champ_front avec autant de valeurs
 //  temporelles qui represente la temperature dans l'autre probleme.

@@ -12,21 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Grad_PolyMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/32
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Grad_PolyMAC_Face.h>
 #include <Champ_P0_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Neumann_sortie_libre.h>
-
 #include <Dirichlet.h>
-
 #include <Navier_Stokes_std.h>
 #include <Probleme_base.h>
 #include <Schema_Temps_base.h>
@@ -40,26 +31,16 @@
 
 Implemente_instanciable(Op_Grad_PolyMAC_Face,"Op_Grad_PolyMAC_Face",Operateur_Grad_base);
 
-
-//// printOn
-//
-
 Sortie& Op_Grad_PolyMAC_Face::printOn(Sortie& s) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Grad_PolyMAC_Face::readOn(Entree& s)
 {
   return s ;
 }
 
-
-
-// Description:
 void Op_Grad_PolyMAC_Face::associer(const Domaine_dis& domaine_dis,
                                     const Domaine_Cl_dis& domaine_Cl_dis,
                                     const Champ_Inc& )

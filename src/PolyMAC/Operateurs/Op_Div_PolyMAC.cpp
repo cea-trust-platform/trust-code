@@ -12,17 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Div_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/18
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Op_Div_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
-//#include <Les_Cl.h>
 #include <Probleme_base.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
@@ -36,26 +28,16 @@
 
 Implemente_instanciable(Op_Div_PolyMAC,"Op_Div_PolyMAC",Operateur_Div_base);
 
-
-//// printOn
-//
-
 Sortie& Op_Div_PolyMAC::printOn(Sortie& s) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Op_Div_PolyMAC::readOn(Entree& s)
 {
   return s ;
 }
 
-
-
-// Description:
 void Op_Div_PolyMAC::associer(const Domaine_dis& domaine_dis,
                               const Domaine_Cl_dis& domaine_Cl_dis,
                               const Champ_Inc&)

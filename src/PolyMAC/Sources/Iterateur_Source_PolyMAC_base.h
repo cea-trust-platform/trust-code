@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Iterateur_Source_PolyMAC_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/11
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Iterateur_Source_PolyMAC_base_included
 #define Iterateur_Source_PolyMAC_base_included

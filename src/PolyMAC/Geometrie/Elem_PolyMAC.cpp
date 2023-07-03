@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Elem_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Elem_PolyMAC.h>
 #include <Tri_PolyMAC.h>
@@ -27,10 +20,6 @@
 #include <Hexa_PolyMAC.h>
 
 Implemente_instanciable(Elem_PolyMAC,"Elem_PolyMAC",DERIV(Elem_PolyMAC_base));
-
-
-
-// printOn et readOn
 
 Sortie& Elem_PolyMAC::printOn(Sortie& s ) const
 {

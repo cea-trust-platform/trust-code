@@ -12,23 +12,13 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Polyedre_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Polyedre_PolyMAC.h>
 #include <Domaine.h>
 #include <Domaine_PolyMAC.h>
 #include <Linear_algebra_tools_impl.h>
 
-
 Implemente_instanciable(Polyedre_PolyMAC,"Polyedre_PolyMAC",Elem_PolyMAC_base);
-
-// printOn et readOn
 
 
 Sortie& Polyedre_PolyMAC::printOn(Sortie& s ) const

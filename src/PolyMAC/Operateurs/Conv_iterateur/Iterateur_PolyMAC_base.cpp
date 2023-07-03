@@ -12,22 +12,11 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Iterateur_PolyMAC_base.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Iterateur_PolyMAC_base.h>
 
 Implemente_base(Iterateur_PolyMAC_base,"Iterateur_PolyMAC_base",Objet_U);
 Implemente_instanciable(Iterateur_PolyMAC,"Iterateur_PolyMAC",DERIV(Iterateur_PolyMAC_base));
-
-
-//// printOn
-//
 
 Sortie& Iterateur_PolyMAC::printOn(Sortie& s ) const
 {
@@ -39,8 +28,6 @@ Sortie& Iterateur_PolyMAC_base::printOn(Sortie& s ) const
   return s << que_suis_je() ;
 }
 
-
-//// readOn
 void Iterateur_PolyMAC_base::calculer_flux_bord(const DoubleTab& inco) const
 {
   Cerr<<que_suis_je()<<" must implement alculer_flux_bord"<<finl;

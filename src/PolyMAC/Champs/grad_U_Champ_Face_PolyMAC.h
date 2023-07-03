@@ -12,43 +12,28 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        grad_U_Champ_Face_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef grad_U_Champ_Face_PolyMAC_included
 #define grad_U_Champ_Face_PolyMAC_included
-
 
 #include <Champ_Fonc_P0_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <TRUST_Ref.h>
 class Domaine_Cl_PolyMAC;
 
-//
-//.DESCRIPTION  classe grad_U_Champ_Face_PolyMAC
-//
-
-class grad_U_Champ_Face_PolyMAC : public Champ_Fonc_P0_PolyMAC
-
+class grad_U_Champ_Face_PolyMAC: public Champ_Fonc_P0_PolyMAC
 {
-
   Declare_instanciable(grad_U_Champ_Face_PolyMAC);
 
 public:
 
-  inline void mettre_a_jour(double ) override;
-  void associer_champ(const Champ_Face_PolyMAC& );
-  void me_calculer(double );
+  inline void mettre_a_jour(double) override;
+  void associer_champ(const Champ_Face_PolyMAC&);
+  void me_calculer(double);
 
   inline void associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base&);
 
 protected:
-
   REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   REF(Champ_Face_PolyMAC) vitesse_;
 };
@@ -62,8 +47,7 @@ inline void grad_U_Champ_Face_PolyMAC::mettre_a_jour(double tps)
 
 inline void grad_U_Champ_Face_PolyMAC::associer_domaine_Cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
 {
-  le_dom_Cl_PolyMAC  = (const Domaine_Cl_PolyMAC&) le_dom_Cl_dis_base;
+  le_dom_Cl_PolyMAC = (const Domaine_Cl_PolyMAC&) le_dom_Cl_dis_base;
 }
-
 
 #endif

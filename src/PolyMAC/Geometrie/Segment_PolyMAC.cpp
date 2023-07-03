@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Segment_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Segment_PolyMAC.h>
 #include <Domaine.h>
@@ -30,9 +23,6 @@
 #include <Milieu_base.h>
 
 Implemente_instanciable(Segment_PolyMAC,"Segment_PolyMAC",Elem_PolyMAC_base);
-
-// printOn et readOn
-
 
 Sortie& Segment_PolyMAC::printOn(Sortie& s ) const
 {

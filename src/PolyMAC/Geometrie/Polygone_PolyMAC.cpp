@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Polygone_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Polygone_PolyMAC.h>
 #include <Domaine.h>
@@ -37,7 +30,6 @@ Entree& Polygone_PolyMAC::readOn( Entree& is )
   Elem_PolyMAC_base::readOn( is );
   return is;
 }
-// Description:
 // remplit le tableau face_normales dans la Domaine_PolyMAC
 void Polygone_PolyMAC::normale(int num_Face,DoubleTab& Face_normales,
                                const  IntTab& Face_sommets,

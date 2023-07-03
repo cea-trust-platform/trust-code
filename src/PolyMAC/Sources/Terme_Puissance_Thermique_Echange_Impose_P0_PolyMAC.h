@@ -12,14 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_included
 #define Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_included
@@ -32,22 +24,9 @@ class Domaine_PolyMAC;
 
 class Probleme_base;
 
-//
-// .DESCRIPTION class Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC
-//
-
-//
-// .SECTION voir aussi Source_base
-//
-//
-
 class Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC :  public Source_base
-
-
 {
-
   Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC);
-
 public:
 
   DoubleTab& ajouter(DoubleTab& )  const override ;

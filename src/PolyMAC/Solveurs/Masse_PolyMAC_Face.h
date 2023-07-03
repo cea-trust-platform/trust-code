@@ -12,28 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Masse_PolyMAC_Face.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     /main/2
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Masse_PolyMAC_Face_included
 #define Masse_PolyMAC_Face_included
-
 
 #include <Solveur_Masse.h>
 #include <TRUST_Ref.h>
 class Domaine_PolyMAC;
 class Domaine_Cl_PolyMAC;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Masse_PolyMAC_Face
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Masse_PolyMAC_Face : public Solveur_Masse_base
 {

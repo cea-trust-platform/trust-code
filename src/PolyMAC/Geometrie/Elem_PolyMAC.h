@@ -12,20 +12,9 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Elem_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Elem_PolyMAC_included
 #define Elem_PolyMAC_included
-
-//
-// .DESCRIPTION class Elem_PolyMAC
-
 
 #include <Elem_PolyMAC_base.h>
 #include <TRUSTTabs_forward.h>
@@ -33,11 +22,6 @@
 
 class Champ_Inc_base;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Elem_PolyMAC
-//
-//////////////////////////////////////////////////////////////////////////////
 class Elem_PolyMAC: public DERIV(Elem_PolyMAC_base)
 {
   Declare_instanciable(Elem_PolyMAC);

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Conv_PolyMAC_iterateur_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/14
-//
-//////////////////////////////////////////////////////////////////////////////
 
 
 #ifndef Op_Conv_PolyMAC_iterateur_base_included
@@ -26,23 +19,6 @@
 
 #include <Operateur_Conv.h>
 #include <Iterateur_PolyMAC_base.h>
-
-//
-// .DESCRIPTION class Op_Conv_PolyMAC_iterateur_base
-//
-// Classe de base des operateurs de convection PolyMAC
-
-//
-// .SECTION voir aussi
-//
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_PolyMAC_iterateur_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Conv_PolyMAC_iterateur_base : public Operateur_Conv_base
 {

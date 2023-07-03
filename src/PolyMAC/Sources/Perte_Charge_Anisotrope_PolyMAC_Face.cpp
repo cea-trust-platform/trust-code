@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Perte_Charge_Anisotrope_PolyMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_Anisotrope_PolyMAC_Face.h>
 #include <Motcle.h>
@@ -31,12 +24,6 @@ Sortie& Perte_Charge_Anisotrope_PolyMAC_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << finl;
 }
-
-////////////////////////////////////////////////////////////////
-//                                                            //
-//                         readOn                             //
-//                                                            //
-////////////////////////////////////////////////////////////////
 
 Entree& Perte_Charge_Anisotrope_PolyMAC_Face::readOn(Entree& s )
 {

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Tri_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Tri_PolyMAC.h>
 #include <Domaine.h>
@@ -26,9 +19,6 @@
 #include <Champ_P1_PolyMAC.h>
 
 Implemente_instanciable_sans_constructeur(Tri_PolyMAC,"Tri_PolyMAC",Elem_PolyMAC_base);
-
-// printOn et readOn
-
 
 Sortie& Tri_PolyMAC::printOn(Sortie& s ) const
 {

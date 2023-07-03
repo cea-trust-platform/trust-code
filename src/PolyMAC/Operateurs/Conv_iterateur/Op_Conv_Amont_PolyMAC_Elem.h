@@ -12,14 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Conv_Amont_PolyMAC_Elem.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/11
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Op_Conv_Amont_PolyMAC_Elem_included
 #define Op_Conv_Amont_PolyMAC_Elem_included
@@ -39,18 +31,7 @@
 //  L'iterateur associe est de type Iterateur_PolyMAC_Elem
 //  L'evaluateur associe est de type Eval_Amont_PolyMAC_Elem
 
-//
-// .SECTION voir aussi
-//
-//
-
 declare_It_PolyMAC_Elem(Eval_Amont_PolyMAC_Elem)
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Conv_Amont_PolyMAC_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Conv_Amont_PolyMAC_Elem : public Op_Conv_PolyMAC_iterateur_base, public Op_PolyMAC_Elem
 {

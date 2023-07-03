@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Assembleur_P_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     /main/6
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Assembleur_P_PolyMAC_included
 #define Assembleur_P_PolyMAC_included
@@ -28,12 +21,6 @@
 #include <Domaine_PolyMAC.h>
 #include <TRUST_Ref.h>
 class Domaine_Cl_PolyMAC;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS:Assembleur_Pression_PolyMAC
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Assembleur_P_PolyMAC : public Assembleur_base
 {

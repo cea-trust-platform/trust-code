@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Perte_Charge_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/14
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_PolyMAC.h>
 #include <Schema_Temps_base.h>
@@ -35,27 +28,15 @@ Implemente_base_sans_constructeur(Perte_Charge_PolyMAC,"Perte_Charge_PolyMAC",So
 
 Perte_Charge_PolyMAC::Perte_Charge_PolyMAC():implicite_(1) { }
 
-// printOn
-//
-
 Sortie& Perte_Charge_PolyMAC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << endl;
 }
 
-// readOn
-//
-
 Entree& Perte_Charge_PolyMAC::readOn(Entree& s )
 {
   return s;
 }
-
-////////////////////////////////////////////////////////////////
-//                                                            //
-//             Fonction principale : ajouter                  //
-//                                                            //
-////////////////////////////////////////////////////////////////
 
 DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
 {

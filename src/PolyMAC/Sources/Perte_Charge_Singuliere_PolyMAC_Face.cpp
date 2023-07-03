@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Perte_Charge_Singuliere_PolyMAC_Face.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/10
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Perte_Charge_Singuliere_PolyMAC_Face.h>
 #include <Domaine_PolyMAC.h>
@@ -31,16 +24,10 @@
 
 Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC",Perte_Charge_PolyMAC_Face);
 
-//// printOn
-//
-
 Sortie& Perte_Charge_Singuliere_PolyMAC_Face::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
 {
@@ -54,15 +41,6 @@ Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
     }
   return s;
 }
-
-
-/////////////////////////////////////////////////////////////////////
-//
-//                    Implementation des fonctions
-//
-//               de la classe Perte_Charge_Singuliere_PolyMAC_Face
-//
-////////////////////////////////////////////////////////////////////
 
 void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
 {

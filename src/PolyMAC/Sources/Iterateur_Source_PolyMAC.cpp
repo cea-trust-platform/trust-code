@@ -12,29 +12,15 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Iterateur_Source_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/7
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Iterateur_Source_PolyMAC.h>
 
 Implemente_instanciable(Iterateur_Source_PolyMAC,"Iterateur_Source_PolyMAC",DERIV(Iterateur_Source_PolyMAC_base));
 
-//// printOn
-//
-
 Sortie& Iterateur_Source_PolyMAC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-
-//// readOn
-//
 
 Entree& Iterateur_Source_PolyMAC::readOn(Entree& s )
 {

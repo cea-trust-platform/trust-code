@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Eval_Conv_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/4
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Eval_Conv_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
@@ -33,16 +26,12 @@ Champ_Inc_base& Eval_Conv_PolyMAC::vitesse()
   return vitesse_.valeur();
 }
 
-// Description:
-// associe le champ de vitesse transportante
 void Eval_Conv_PolyMAC::associer(const Champ_Face_PolyMAC& vit)
 {
   vitesse_=vit;
   dt_vitesse.ref(vit.valeurs());
 }
 
-// Description:
-// mise a jour du DoubleTab vitesse
 void Eval_Conv_PolyMAC::mettre_a_jour( )
 {
   dt_vitesse.ref(vitesse_->valeurs());

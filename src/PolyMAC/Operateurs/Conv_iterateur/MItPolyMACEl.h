@@ -12,27 +12,12 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        MItPolyMACEl.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/43
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef MItPolyMAC_El_H
 #define MItPolyMAC_El_H
 
 #include <Schema_Temps_base.h>
 #include <EcrFicPartage.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS Iterateur_PolyMAC_Elem
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #define declare_It_PolyMAC_Elem(_TYPE_)                                        \
   class It_PolyMAC_Elem(_TYPE_) : public Iterateur_PolyMAC_base                        \

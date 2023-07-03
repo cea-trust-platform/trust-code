@@ -12,26 +12,11 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Polygone_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Polygone_PolyMAC_included
 #define Polygone_PolyMAC_included
 
 #include <Elem_PolyMAC_base.h>
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// .DESCRIPTION : class Polygone_PolyMAC
-//
-// <Description of class Polygone_PolyMAC>
-//
-/////////////////////////////////////////////////////////////////////////////
 
 class Polygone_PolyMAC : public Elem_PolyMAC_base
 {

@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_P0_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Champ_P0_PolyMAC_included
 #define Champ_P0_PolyMAC_included
@@ -31,14 +24,8 @@
 class Domaine_VF;
 class Domaine_PolyMAC;
 
-/////////////////////////////////////////////////////////////////////////////
-// .NAME        : Champ_P0_PolyMAC
-// .DESCRIPTION : class Champ_P0_PolyMAC
-//
 // Champ correspondant a une inconnue scalaire (type temperature ou pression)
 // Degres de libertes : valeur aux elements + flux aux faces
-/////////////////////////////////////////////////////////////////////////////
-
 class Champ_P0_PolyMAC : public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_P0_PolyMAC);

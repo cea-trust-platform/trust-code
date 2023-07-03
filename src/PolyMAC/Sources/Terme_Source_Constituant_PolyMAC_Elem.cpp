@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Source_Constituant_PolyMAC_Elem.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/20
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Terme_Source_Constituant_PolyMAC_Elem.h>
 #include <Milieu_base.h>
@@ -29,16 +22,10 @@
 Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem,"Source_Constituant_P0_PolyMAC",Terme_Source_PolyMAC_base);
 implemente_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
 
-//// printOn
-//
-
 Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s ) const
 {
   return s << que_suis_je() ;
 }
-
-//// readOn
-//
 
 Entree& Terme_Source_Constituant_PolyMAC_Elem::readOn(Entree& s )
 {

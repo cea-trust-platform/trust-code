@@ -12,28 +12,14 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        MItSouPolyMACFa.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/17
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef MItSouPolyMACFa_H
 #define MItSouPolyMACFa_H
 
 #include <Iterateur_Source_PolyMAC_base.h>
-//#include <Les_Cl.h>
 #include <Domaine_PolyMAC.h>
 #include <Champ_Uniforme.h>
 #include <Milieu_base.h>
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS Iterateur_Source_PolyMAC_Face
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #define declare_It_Sou_PolyMAC_Face(_TYPE_)                                        \
   class It_Sou_PolyMAC_Face(_TYPE_) : public Iterateur_Source_PolyMAC_base        \

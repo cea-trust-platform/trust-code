@@ -12,14 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Perte_Charge_Singuliere_PolyMAC_Face.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Perte_Charge_Singuliere_PolyMAC_Face_included
 #define Perte_Charge_Singuliere_PolyMAC_Face_included
@@ -29,15 +21,6 @@
 
 class Domaine;
 #include <TRUSTList.h>
-
-//
-// .DESCRIPTION class Perte_Charge_Singuliere_PolyMAC_Face
-//
-
-//
-// .SECTION voir aussi Perte_Charge_PolyMAC_Face
-//
-//
 
 class Perte_Charge_Singuliere_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
   public Perte_Charge_Singuliere

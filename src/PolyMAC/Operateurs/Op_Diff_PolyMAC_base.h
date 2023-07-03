@@ -12,15 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Op_Diff_PolyMAC_base.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs
-// Version:     /main/13
-//
-//////////////////////////////////////////////////////////////////////////////
-
-
 
 #ifndef Op_Diff_PolyMAC_base_included
 #define Op_Diff_PolyMAC_base_included
@@ -32,24 +23,6 @@
 #include <SFichier.h>
 class Champ_Fonc;
 class Domaine_Cl_PolyMAC;
-
-
-//
-// .DESCRIPTION class Op_Diff_PolyMAC_base
-//
-// Classe de base des operateurs de diffusion PolyMAC
-
-//
-// .SECTION voir aussi
-//
-//
-
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Diff_PolyMAC_base
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Op_Diff_PolyMAC_base : public Operateur_Diff_base, public Op_Diff_Turbulent_base
 {

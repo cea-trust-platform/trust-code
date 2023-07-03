@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Champ_Fonc_Tabule_P0_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Champs
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Champ_Fonc_Tabule_P0_PolyMAC_included
 #define Champ_Fonc_Tabule_P0_PolyMAC_included
@@ -28,12 +21,6 @@
 #include <TRUST_Ref.h>
 
 class Table;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Champ_Fonc_Tabule_P0_PolyMAC
-//
-//////////////////////////////////////////////////////////////////////////////
 
 class Champ_Fonc_Tabule_P0_PolyMAC : public Champ_Fonc_P0_PolyMAC
 {

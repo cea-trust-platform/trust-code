@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Perte_Charge_PolyMAC_Face.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/9
-//
-//////////////////////////////////////////////////////////////////////////////
 
 
 #ifndef Perte_Charge_PolyMAC_Face_included
@@ -33,18 +26,7 @@ class Champ_Inc_base;
 #include <TRUST_Ref.h>
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
-
-
 class Probleme_base;
-
-//
-// .DESCRIPTION class Perte_Charge_PolyMAC_Face
-//
-
-//
-// .SECTION voir aussi Source_base
-//
-//
 
 class Perte_Charge_PolyMAC_Face :  public Source_base,
   public Terme_Source_Qdm

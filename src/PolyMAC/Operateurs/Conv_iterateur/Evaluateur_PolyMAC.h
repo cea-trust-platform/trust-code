@@ -12,14 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Evaluateur_PolyMAC.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Operateurs/Conv_iterateur
-// Version:     /main/12
-//
-//////////////////////////////////////////////////////////////////////////////
-
 
 #ifndef Evaluateur_PolyMAC_included
 #define Evaluateur_PolyMAC_included
@@ -30,7 +22,6 @@ class Champ_base;
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
 
-//
 // .DESCRIPTION class Evaluateur_PolyMAC
 //
 // Classe de base des evaluateurs PolyMAC. Cette classe n'appartient pas a la
@@ -39,12 +30,6 @@ class Domaine_PolyMAC;
 // reference a un objet de type Domaine_Cl_PolyMAC. Elle porte des tableaux locaux
 // qui sont en fait des references aux tableaux de l'objet de type Domaine_PolyMAC
 // (ces tableaux locaux n'existent pas en memoire).
-
-//
-// .SECTION voir aussi
-//
-//
-
 
 class Evaluateur_PolyMAC
 {

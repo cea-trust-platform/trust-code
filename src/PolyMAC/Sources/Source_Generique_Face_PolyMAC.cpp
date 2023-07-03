@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Source_Generique_Face_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/5
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Source_Generique_Face_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
@@ -29,7 +22,6 @@
 #include <Milieu_base.h>
 
 Implemente_instanciable(Source_Generique_Face_PolyMAC, "Source_Generique_Face_PolyMAC", Source_Generique_base);
-
 
 Sortie& Source_Generique_Face_PolyMAC::printOn(Sortie& os) const
 {

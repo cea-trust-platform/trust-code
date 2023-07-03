@@ -12,13 +12,6 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Terme_Boussinesq_PolyMAC_Face.h
-// Directory:   $TRUST_ROOT/src/PolyMAC/Sources
-// Version:     /main/16
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #ifndef Terme_Boussinesq_PolyMAC_Face_included
 #define Terme_Boussinesq_PolyMAC_Face_included
@@ -29,10 +22,6 @@ class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
 
 class Convection_Diffusion_std;
-//
-// .DESCRIPTION class Terme_Boussinesq_scalaire_PolyMAC_Face
-//
-// Terme Source de Boussinesq pour une dicretisation PolyMAC
 
 class Terme_Boussinesq_PolyMAC_Face : public Terme_Boussinesq_base
 {

@@ -12,20 +12,11 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
-//////////////////////////////////////////////////////////////////////////////
-//
-// File:        Quadri_PolyMAC.cpp
-// Directory:   $TRUST_ROOT/src/PolyMAC/Domaines
-// Version:     1
-//
-//////////////////////////////////////////////////////////////////////////////
 
 #include <Quadri_PolyMAC.h>
 #include <Domaine.h>
 
 Implemente_instanciable_sans_constructeur(Quadri_PolyMAC,"Quadri_PolyMAC",Elem_PolyMAC_base);
-
-// printOn et readOn
 
 Sortie& Quadri_PolyMAC::printOn(Sortie& s ) const
 {
@@ -37,7 +28,6 @@ Entree& Quadri_PolyMAC::readOn(Entree& s )
   return s ;
 }
 
-// Description:
 // KEL_(0,fa7),KEL_(1,fa7) sont  les numeros locaux des 2 faces
 // qui entourent la facette de numero local fa7
 // le numero local de la fa7 est celui du sommet qui la porte
@@ -45,7 +35,6 @@ Quadri_PolyMAC::Quadri_PolyMAC()
 {
 }
 
-// Description:
 // remplit le tableau face_normales dans la Domaine_PolyMAC
 void Quadri_PolyMAC::normale(int num_Face,DoubleTab& Face_normales,
                              const  IntTab& Face_sommets,
