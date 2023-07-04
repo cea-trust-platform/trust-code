@@ -315,7 +315,7 @@ void PolyMAC_discretisation::vorticite(Domaine_dis& z,const Champ_Inc& ch_vitess
   Cerr << "Discretisation de la vorticite " << finl;
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z.valeur());
 
-  if (sub_type(Tri_PolyMAC,domaine_PolyMAC.type_elem().valeur()) || sub_type(Segment_PolyMAC,domaine_PolyMAC.type_elem().valeur()) || sub_type(Tetra_PolyMAC,domaine_PolyMAC.type_elem().valeur()))
+  if (sub_type(Tri_poly,domaine_PolyMAC.type_elem().valeur()) || sub_type(Segment_poly,domaine_PolyMAC.type_elem().valeur()) || sub_type(Tetra_poly,domaine_PolyMAC.type_elem().valeur()))
     {
       ch.typer("Rotationnel_Champ_P1_PolyMAC");
       const Champ_P1_PolyMAC& vit = ref_cast(Champ_P1_PolyMAC,ch_vitesse.valeur());
@@ -336,7 +336,7 @@ void PolyMAC_discretisation::vorticite(Domaine_dis& z,const Champ_Inc& ch_vitess
       ch_W.fixer_unite("s-1");
       ch_W.changer_temps(ch_vitesse.temps());
     }
-  else if (sub_type(Quadri_PolyMAC,domaine_PolyMAC.type_elem().valeur()) || sub_type(Hexa_PolyMAC,domaine_PolyMAC.type_elem().valeur()))
+  else if (sub_type(Quadri_poly,domaine_PolyMAC.type_elem().valeur()) || sub_type(Hexa_poly,domaine_PolyMAC.type_elem().valeur()))
     {
       ch.typer("Rotationnel_Champ_Q1_PolyMAC");
       const Champ_Q1_PolyMAC& vit = ref_cast(Champ_Q1_PolyMAC,ch_vitesse.valeur());

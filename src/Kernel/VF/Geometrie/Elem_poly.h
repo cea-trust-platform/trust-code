@@ -16,7 +16,6 @@
 #ifndef Elem_poly_included
 #define Elem_poly_included
 
-
 #include <TRUSTTabs_forward.h>
 #include <Elem_poly_base.h>
 #include <TRUST_Deriv.h>
@@ -49,4 +48,3 @@ inline void Elem_poly::normale(int num_face, DoubleTab& Face_normales, const Int
 
 
 #endif
-

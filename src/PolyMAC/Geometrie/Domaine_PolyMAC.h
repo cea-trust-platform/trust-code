@@ -22,7 +22,7 @@
 #include <Domaine_Poly_base.h>
 #include <Matrice_Morse_Sym.h>
 #include <Neumann_homogene.h>
-#include <Elem_PolyMAC.h>
+#include <Elem_poly.h>
 #include <SolveurSys.h>
 #include <Periodique.h>
 #include <Dirichlet.h>
@@ -36,7 +36,6 @@ class Domaine_PolyMAC : public Domaine_Poly_base
 {
   Declare_instanciable(Domaine_PolyMAC);
 public :
-  void typer_elem(Domaine& domaine_geom) override;
   void discretiser() override;
   void swap(int, int, int) { }
   void modifier_pour_Cl(const Conds_lim& ) override;

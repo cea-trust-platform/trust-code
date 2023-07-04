@@ -17,19 +17,19 @@
 #include <MD_Vector_composite.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
-#include <Segment_PolyMAC.h>
+#include <Segment_poly.h>
 #include <Quadrangle_VEF.h>
 #include <Option_PolyMAC.h>
 #include <Poly_geom_base.h>
-#include <Quadri_PolyMAC.h>
+#include <Quadri_poly.h>
 #include <communications.h>
 #include <TRUSTTab_parts.h>
-#include <Tetra_PolyMAC.h>
+#include <Tetra_poly.h>
 #include <Hexaedre_VEF.h>
-#include <Hexa_PolyMAC.h>
+#include <Hexa_poly.h>
 #include <Matrix_tools.h>
 #include <Statistiques.h>
-#include <Tri_PolyMAC.h>
+#include <Tri_poly.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <Rectangle.h>
@@ -58,21 +58,6 @@ Implemente_instanciable(Domaine_PolyMAC, "Domaine_PolyMAC", Domaine_Poly_base);
 Sortie& Domaine_PolyMAC::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 
 Entree& Domaine_PolyMAC::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
-
-void Domaine_PolyMAC::typer_elem(Domaine& domaine_geom)
-{
-  const Elem_geom_base& type_elem_geom = domaine_geom.type_elem().valeur();
-
-  if (sub_type(Rectangle,type_elem_geom))
-    {
-      domaine_geom.typer("Quadrangle");
-    }
-  else if (sub_type(Hexaedre,type_elem_geom))
-    domaine_geom.typer("Hexaedre_VEF");
-
-  const Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
-  type_elem_.typer(elem_geom.que_suis_je());
-}
 
 void Domaine_PolyMAC::discretiser()
 {
@@ -108,7 +93,7 @@ void Domaine_PolyMAC::discretiser()
   //l'elemnt de discretisation
 
 
-  if (sub_type(Segment_PolyMAC,type_elem_.valeur()))
+  if (sub_type(Segment_poly,type_elem_.valeur()))
     {
       if (!sub_type(Segment,elem_geom))
         {
@@ -116,7 +101,7 @@ void Domaine_PolyMAC::discretiser()
           exit();
         }
     }
-  else if (sub_type(Tri_PolyMAC,type_elem_.valeur()))
+  else if (sub_type(Tri_poly,type_elem_.valeur()))
     {
       if (!sub_type(Triangle,elem_geom))
         {
@@ -128,7 +113,7 @@ void Domaine_PolyMAC::discretiser()
           exit();
         }
     }
-  else if (sub_type(Tetra_PolyMAC,type_elem_.valeur()))
+  else if (sub_type(Tetra_poly,type_elem_.valeur()))
     {
       if (!sub_type(Tetraedre,elem_geom))
         {
@@ -141,7 +126,7 @@ void Domaine_PolyMAC::discretiser()
         }
     }
 
-  else if (sub_type(Quadri_PolyMAC,type_elem_.valeur()))
+  else if (sub_type(Quadri_poly,type_elem_.valeur()))
     {
 
       if (!sub_type(Quadrangle_VEF,elem_geom))
@@ -150,7 +135,7 @@ void Domaine_PolyMAC::discretiser()
           exit();
         }
     }
-  else if (sub_type(Hexa_PolyMAC,type_elem_.valeur()))
+  else if (sub_type(Hexa_poly,type_elem_.valeur()))
     {
 
       if (!sub_type(Hexaedre_VEF,elem_geom))
@@ -227,7 +212,7 @@ void Domaine_PolyMAC::discretiser()
             for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
             S += s;
           }
-      if (S == 0 && sub_type(Hexa_PolyMAC,type_elem_.valeur()))
+      if (S == 0 && sub_type(Hexa_poly,type_elem_.valeur()))
         {
           Cerr << "===============================" << finl;
           Cerr << "Error in your mesh for PolyMAC!" << finl;
