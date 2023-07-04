@@ -49,7 +49,6 @@ protected:
   bool axi1d_ = false;           ///< Are we in Axi1D
   bool convertAllToPoly_ = false;///< Should the mesh be converted to polygons/polyedrons
   bool isVEFForce_ = false;      ///< Should we force element type to be VEF compatible
-  int isFamilyShort_ = 0;
   int space_dim_ = -1;           ///< Space dimension read in the MED file
   Elem_geom type_elem_;          ///< Highest dimension element type
   Nom type_face_;                ///< Boundary element type

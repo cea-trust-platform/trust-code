@@ -61,51 +61,6 @@ void Champ_Fonc_MED::set_param(Param& param)
   param.ajouter("time", &temps_, Param::OPTIONAL);                  // XD_ADD_P double Timestep to load from the MED file. Mutually exclusive with 'last_time' flag.
 }
 
-void Champ_Fonc_MED::readOn_old_syntax(Entree& is, Nom& chaine_lue, bool& nom_decoup_lu)
-{
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!! WARNING: you're using the old syntax for one of the keyword 'Champ_Fonc_MED'" << finl;
-  Cerr << "!!!!!!! It will be deprecated in version 1.9.3. Please update your dataset with the following syntax:" << finl;
-  Cerr << "    Champ_Fonc_MED {" << finl;
-  Cerr << "        domain dom" << finl;
-  Cerr << "        file the_file.med" << finl;
-  Cerr << "        field field_name" << finl;
-  Cerr << "        use_existing_domain" << finl;
-  Cerr << "        last_time" << finl;
-  Cerr << "        loc som" << finl;
-  Cerr << "    }" << finl;
-  Cerr << "!!!!!!! See documentation for a comprehensive list of possible options." << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-
-  if (chaine_lue=="use_existing_domain")
-    {
-      use_existing_domain_=1;
-      is>>chaine_lue;
-    }
-  if (chaine_lue=="last_time")
-    {
-      last_time_only_=1;
-      is>>chaine_lue;
-    }
-  if (chaine_lue=="decoup")
-    {
-      is>>nom_decoup_;
-      is>>chaine_lue;
-      if (!use_existing_domain_)
-        {
-          Cerr << "Error: you need to use use_existing_domain option with Decoup option." << finl;
-          Process::exit();
-        }
-      nom_decoup_lu = true;
-    }
-  nom_fichier_med_ = chaine_lue;
-  lire_nom_med(nom_dom_,is);
-  lire_nom_med(nom_champ_,is);
-  is >> loc_;
-  is >> temps_;
-
-}
-
 Entree& Champ_Fonc_MED::readOn(Entree& is)
 {
   Nom chaine_lue;
@@ -149,8 +104,11 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
         }
 
     }
-  else  // Old syntax!!
-    readOn_old_syntax(is, chaine_lue, nom_decoup_lu);
+  else  // Old syntax?
+    {
+      Cerr << "ERROR: reading 'Champ_fonc_MED': Expected opening brace '{' - are you using the new syntax?" << finl;
+      Process::exit(-1);
+    }
 
   //
   // Finished interpreting ... processing now:

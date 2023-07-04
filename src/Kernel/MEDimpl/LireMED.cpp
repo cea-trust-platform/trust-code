@@ -181,49 +181,6 @@ Entree& LireMED::readOn(Entree& is)
   return Interprete::readOn(is);
 }
 
-void LireMED::interp_old_syntax(Entree& is, Nom& nom_dom_trio)
-{
-  //Cerr << "Syntax: Lire_MED [ vef|convertAllToPoly  ] [ family_names_from_group_names | short_family_names ] domaine_name mesh_name filename.med" << finl;
-
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-  Cerr << "!!!!!!! WARNING: you're using the old syntax for the keyword 'Lire_MED' / 'Read_MED'" << finl;
-  Cerr << "!!!!!!! It will be deprecated in version 1.9.3. Please update your dataset with the following syntax:" << finl;
-  Cerr << "    Read_MED {" << finl;
-  Cerr << "        domain dom" << finl;
-  Cerr << "        file the_file.med" << finl;
-  Cerr << "        [mesh my_mesh_in_file]" << finl;
-  Cerr << "    }" << finl;
-  Cerr << "!!!!!!! See documentation for a comprehensive list of possible options." << finl;
-  Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-
-  // Warning, in the old syntax, this is set to 0 by default:
-  isFamilyShort_ = 0;
-
-  if (Motcle(nom_dom_trio)=="vef")
-    {
-      isVEFForce_=true;
-      is>>nom_dom_trio;
-    }
-  else if (Motcle(nom_dom_trio)=="convertAllToPoly")
-    {
-      convertAllToPoly_=true;
-      is>>nom_dom_trio;
-    }
-  if (Motcle(nom_dom_trio)=="family_names_from_group_names")
-    {
-      isFamilyShort_ = 2;
-      is>>nom_dom_trio;
-    }
-  else if (Motcle(nom_dom_trio)=="short_family_names")
-    {
-      isFamilyShort_ = 1;
-      is>>nom_dom_trio;
-    }
-
-  lire_nom_med(nom_mesh_,is);
-  is >> nom_fichier_;
-}
-
 Entree& LireMED::interpreter_(Entree& is)
 {
 #ifndef MED_
@@ -244,14 +201,9 @@ Entree& LireMED::interpreter_(Entree& is)
           if (motlu == "}") cnt --;
           s += Nom(" ") + motlu;
         }
-      int nfnfgn = 0;
       Param param(que_suis_je());
       int convpoly = 0;
       param.ajouter_flag("convertAllToPoly", &convpoly);       // XD_ADD_P flag Option to convert mesh with mixed cells into polyhedral/polygonal cells
-
-      // Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
-      // In the new syntax, we implicitely assume that the former option 'family_names_from_group_names' is always set.
-      param.ajouter_flag("no_family_names_from_group_names", &nfnfgn); // XD_ADD_P flag Awful option just to keep naked family names from MED file. Rarely used, to be removed very soon.
 
       param.ajouter("domain|domaine", &nom_dom_trio, Param::REQUIRED); // XD_ADD_P ref_domaine Corresponds to the domain name.
       param.ajouter("file|fichier", &nom_fichier_, Param::REQUIRED);        // XD_ADD_P chaine File (written in the MED format, with extension '.med') containing the mesh
@@ -264,10 +216,12 @@ Entree& LireMED::interpreter_(Entree& is)
       EChaine is2(s);
       param.lire_avec_accolades(is2);
       convertAllToPoly_ = (convpoly != 0);
-      isFamilyShort_ = nfnfgn ? 0 : 2;  // will be 2 most of the time in the new syntax.
     }
-  else // Boooh: old syntax :-(
-    interp_old_syntax(is, nom_dom_trio);
+  else // old syntax ?
+    {
+      Cerr << "ERROR: 'LireMED': expected opening brace '{' - are you using the new syntax?" << finl;
+      Process::exit(-1);
+    }
 
   // Strip _0000 if there, and create proper file name
   Nom nom_fic2(nom_fichier_);
@@ -677,185 +631,29 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
         all_faces_bords(i, j) = conn[index + j] ;
     }
 
-  /////
-  ///// [ABN] All this to be clean very soon, after 1.9.3
-  /////
-  char *grp_mode = getenv("TRUST_MED_WITH_GRP");
-  int new_mode = 0;  // 0: family only, 1: groups only, 2: groups and fam with comparison
-  if (grp_mode) new_mode = atoi(grp_mode);
-  Noms noms_bords2;
-  ArrOfInt familles2;
-  IntVect indices_bords2;
-  if (new_mode)
+  Cerr << "Reading groups at level -1:" << finl;
+  auto grp_names = mfumesh_->getGroupsOnSpecifiedLev(-1);
+  int ngrp = (int)grp_names.size();
+  int ngrp_orig = ngrp;
+  indices_bords.resize(ngrp);
+  int zeid = 0;
+  for (const auto& gnam: grp_names)
     {
-      Cerr << "Reading groups at level -1:" << finl;
-      auto grp_names = mfumesh_->getGroupsOnSpecifiedLev(-1);
-      int ngrp = (int)grp_names.size();
-      noms_bords_.resize(ngrp);
-      indices_bords.resize(ngrp);
-      int zeid = 0;
-      for (const auto& gnam: grp_names)
+      if (exclude_grps_.search(Nom(gnam)) != -1)
         {
-          if (exclude_grps_.search(Nom(gnam)) != -1)
-            {
-              Cerr << "    group '" << gnam << "' is skipped, as requested." << finl;
-              continue;
-            }
-          noms_bords_[zeid] = gnam;
-          MCAuto<DataArrayIdType> ids(mfumesh_->getGroupArr(-1, gnam, false));
-          int nb_faces = (int) ids->getNbOfElems();
-          Cerr << "    group_name=" << gnam << " with " << nb_faces << " faces" << finl;
-          for(const auto& id: *ids)  familles[id] = zeid+1; //
-          indices_bords[zeid] = zeid+1;
-          zeid++;
+          Cerr << "    group '" << gnam << "' is skipped, as requested." << finl;
+          ngrp--;
+          continue;
         }
-      if (new_mode > 1)
-        {
-          noms_bords2 = noms_bords_;
-          familles2 = familles;
-          indices_bords2 = indices_bords;
-        }
+      noms_bords_.add(gnam);
+      MCAuto<DataArrayIdType> ids(mfumesh_->getGroupArr(-1, gnam, false));
+      int nb_faces = (int) ids->getNbOfElems();
+      Cerr << "    group_name=" << gnam << " with " << nb_faces << " faces" << finl;
+      for(const auto& id: *ids)  familles[id] = zeid+1; //
+      indices_bords[zeid] = zeid+1;
+      zeid++;
     }
-  if (new_mode == 0 || new_mode == 2) // Old mode
-    {
-      // Pour debug, affichage d'infos sur les groupes
-      bool provisoire = true;
-      if (provisoire)
-        {
-          Cerr << "Reading groups at level -1:" << finl;
-          std::vector<std::string> groups = mfumesh_->getGroupsOnSpecifiedLev(-1);
-          size_t size = groups.size();
-          for (size_t i=0; i<size; i++)
-            {
-              MCAuto<DataArrayInt> ids(mfumesh_->getGroupArr(-1, groups[i], false));
-              int nb_faces = (int) ids->getNbOfElems();
-              size_t nb_families = mfumesh_->getFamiliesIdsOnGroup(groups[i]).size();
-              Cerr << "group_name=" << groups[i] << " with " << nb_faces << " faces on ";
-              Cerr << nb_families << " families (";
-              for (size_t j=0; j<nb_families; j++)
-                Cerr << mfumesh_->getFamiliesIdsOnGroup(groups[i])[j] << " ";
-              Cerr << ")" << finl;
-            }
-          Cerr << "Reading families at level -1:" << finl;
-          std::vector<std::string> families = mfumesh_->getFamiliesNames();
-          size = families.size();
-          for (size_t i = 0; i < size; i++)
-            {
-              MCAuto<DataArrayInt> ids(mfumesh_->getFamilyArr(-1 /* faces */, families[i], false));
-              int nb_faces = (int) ids->getNbOfElems();
-              size_t nb_groups = mfumesh_->getGroupsOnFamily(families[i]).size();
-              int family_id = mfumesh_->getFamilyId(families[i]);
-              Cerr << "family_name=" << families[i] << " (family id=" << family_id << ") with " << nb_faces << " faces on ";
-              Cerr << nb_groups << " groups (";
-              for (size_t j=0; j<nb_groups; j++)
-                Cerr << mfumesh_->getGroupsOnFamily(families[i])[j] << " ";
-              Cerr << ")" << finl;
-            }
-        }
-      Cerr << "Reading boundaries:" << finl;
-      // Lecture des familles
-      std::vector<std::string> families = mfumesh_->getFamiliesNames();
-      size_t size = families.size();
-      for (size_t i = 0; i < size; i++)
-        {
-          MCAuto<DataArrayInt> ids(mfumesh_->getFamilyArr(-1 /* faces */, families[i], false));
-          const int * idsP = ids->getConstPointer();
-          int nb_faces = (int) ids->getNbOfElems();
-          std::vector<std::string> groups = mfumesh_->getGroupsOnFamily(families[i]);
-          if (nb_faces > 0)
-            {
-              int family_id = mfumesh_->getFamilyId(families[i]);
-              Nom nom_bord="";
-              if (isFamilyShort_ == 0) // Par defaut, boundary name = family name
-                nom_bord = families[i];
-              else if (isFamilyShort_ == 1) // Suppress FAM_*_ from family name
-                {
-                  Nom family_name = families[i];
-                  Nom tmp="FAM_";
-                  tmp+=(Nom)family_id;
-                  tmp+="_";
-                  nom_bord = family_name.suffix(tmp);
-                }
-              else
-                {
-                  // Cherche le nom du groupe
-                  if (groups.size()==1)
-                    nom_bord = groups[0];
-                  else
-                    for (unsigned long k=0; k<groups.size(); k++)
-                      {
-                        size_t nb_families = mfumesh_->getFamiliesIdsOnGroup(groups[k]).size();
-                        if (nb_families==1) nom_bord = groups[k];
-                      }
-                }
-              if (nom_bord!="")
-                {
-                  Cerr << "Detecting a boundary named " << nom_bord << " (family id=" << family_id << ") with "
-                       << nb_faces << " faces." << finl;
-                  noms_bords_.add(nom_bord);
-                  for (int j = 0; j < nb_faces; j++)
-                    {
-                      int face = idsP[j];
-                      familles[face] = family_id;
-                    }
-                  int nb_bords = noms_bords_.size();
-                  indices_bords.resize(nb_bords);
-                  indices_bords[nb_bords - 1] = family_id;
-                }
-            }
-        }
-    }
-
-  if (new_mode == 0 || new_mode == 2)
-    {
-      // Order "noms_bords_" so that they come by increasing family number:
-      std::map<int, Nom> mp;  // will take advantage from the fact that C++ map are key-ordered
-      int i = 0;
-      for(const auto& ib: indices_bords)
-        mp[ib] = noms_bords_[i++];
-      i = 0;
-
-      for(const auto &kv: mp)
-        {
-          noms_bords_[i] = kv.second;
-          indices_bords[i] = kv.first;
-          i++;
-        }
-    }
-
-  if (new_mode > 1)
-    {
-      Cerr << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << finl;
-      Cerr << "Performing comparison of the two methods!!" << finl;
-      Cerr << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" << finl;
-      Cerr << "noms_bords_" << finl;
-      for (const auto &n: noms_bords_) Cerr << "  " << n << finl;
-      Cerr << "noms_bords2" << finl;
-      for (const auto &n: noms_bords2) Cerr << "  " << n << finl;
-
-      Cerr << "indices_bords" << finl;
-      for (const auto &n: indices_bords) Cerr << "  " << n << finl;
-      Cerr << "indices_bords2" << finl;
-      for (const auto &n: indices_bords2) Cerr << "  " << n << finl;
-
-      // Comparison
-      std::map<int, Nom> mp1, mp2;
-      mp1[0] = Nom("NO_FAM");
-      mp2[0] = Nom("NO_FAM");
-      for (int kk=0; kk < noms_bords_.size(); kk++)
-        mp1[indices_bords[kk]] = noms_bords_[kk];
-      for (int kk=0; kk < noms_bords2.size(); kk++)
-        mp2[indices_bords2[kk]] = noms_bords2[kk];
-      for(int kk=0; kk< familles2.size_array(); kk++)
-        {
-          const Nom n1 = mp1.at(familles[kk]);
-          const Nom n2 = mp2.at(familles2[kk]);
-          if (n1 != n2)
-            {
-              Cerr << "   For face " << kk << " name mismatch " << n1 << " vs " << n2 << finl;
-            }
-        }
-    }
+  if (ngrp != ngrp_orig) indices_bords.resize(ngrp);
 
   if (noms_bords_.size()==0)
     {
@@ -1067,12 +865,11 @@ void LireMED::lire_geom(bool subDom)
     }
 
   Scatter::init_sequential_domain(dom);
-  if (isFamilyShort_==2)
-    {
-      // il est possible que l'on ait cree plusieurs bord de meme nom
-      RegroupeBord r;
-      r.rassemble_bords(dom);
-    }
+
+  // We might have created several boundaries with the same name
+  RegroupeBord r;
+  r.rassemble_bords(dom);
+
   Cerr<<"Reading of the MED domain ended."<<finl;
 #endif // MEDCOUPLING_
 #endif // MED_
