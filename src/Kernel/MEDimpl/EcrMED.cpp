@@ -129,120 +129,17 @@ void EcrMED::ecrire_domaine(const Nom& nom_dom,int mode)
 }
 #else
 
-/*! @brief A partir d'un domaine extrait le type de face, la connectivite des faces de bords, le nom des bords et cree les familles
- */
-void EcrMED::creer_all_faces_bord_OLD(Noms& type_face,IntTabs& all_faces_bord, Noms& noms_bords,ArrsOfInt& familles)
-{
-  const Domaine& dom = dom_.valeur();
-  int nb_type_face=dom.type_elem().nb_type_face();
-  type_face.dimensionner(nb_type_face);
-  all_faces_bord.dimensionner(nb_type_face);
-  familles.dimensionner(nb_type_face);
-
-
-  int nb_faces_bord=dom.nb_faces_bord()+dom.nb_faces_raccord()+dom.nb_faces_bords_int()+dom.nb_faces_joint();
-  int nb_bords=dom.nb_front_Cl()+dom.nb_groupes_int()+dom.nb_joints();
-  if (nb_bords==0)
-    {
-      // on n'a pas les bords
-      for (int j=0; j<nb_type_face; j++)
-        all_faces_bord[j].resize(0,0);
-      return;
-    }
-  // on cherche un bord non vide pour recuperer le type de faces
-  int nb_type_trouve=0;
-  for (int ii=0; ii<nb_bords; ii++)
-    {
-      if (::mes_faces_fr(dom,ii).faces().nb_faces()!=0)
-        {
-          Nom type_face_b;
-          type_face_b=::mes_faces_fr(dom,ii).faces().type(::mes_faces_fr(dom,ii).faces().type_face());
-          int existe=0;
-          for (int j=0; j<nb_type_trouve; j++)
-            if (type_face_b==type_face[j])
-              existe=1;
-          if (!existe)
-            {
-              type_face[nb_type_trouve]=type_face_b;
-              nb_type_trouve++;
-            }
-        }
-    }
-  if (nb_type_trouve!=nb_type_face)
-    {
-      Cerr<<"all boundaries type have not been found" <<finl;
-    }
-  //Cerr<<"type_face "<<type_face<<finl;
-
-  int nb_som_face_max=dom.type_elem().nb_som_face(0);
-  for (int j=0; j<nb_type_face; j++)
-    {
-      all_faces_bord[j].resize(nb_faces_bord, nb_som_face_max);
-      all_faces_bord[j]=0;
-      familles[j].resize_array(nb_faces_bord);
-    }
-  noms_bords.dimensionner(nb_bords);
-
-  // enfin on recupere le nom des faces de bord et leur connectivite
-  ArrOfInt cpt(nb_type_face);
-  ArrOfInt nb_som(nb_type_face);
-  for(int i=0; i<nb_bords; i++)
-    {
-      if (sub_type(Raccord_base,::mes_faces_fr(dom,i)))
-        {
-          noms_bords[i]="type_raccord_";
-          noms_bords[i]+=::mes_faces_fr(dom,i).le_nom();
-        }
-      else if (sub_type(Groupe_interne,::mes_faces_fr(dom,i)))
-        {
-          noms_bords[i]="groupes_internes_";
-          noms_bords[i]+=::mes_faces_fr(dom,i).le_nom();
-        }
-      else
-        noms_bords[i]=::mes_faces_fr(dom,i).le_nom();
-      const IntTab& les_sommets_des_faces=::mes_faces_fr(dom,i).les_sommets_des_faces();
-      int nb_fac=les_sommets_des_faces.dimension(0);
-      // on cherche de quel type est le bord
-      int ref=0;
-      if (nb_fac>0)
-        {
-          Nom type_face_b=::mes_faces_fr(dom,i).faces().type(::mes_faces_fr(dom,i).faces().type_face());
-          ref=type_face.search(type_face_b);
-        }
-      for(int j=0; j<nb_fac; j++)
-        {
-          int nb_som_face=les_sommets_des_faces.dimension(1);
-          familles[ref][cpt[ref]]=-(i+1);
-          for(int k=0; k<nb_som_face; k++)
-            all_faces_bord[ref](cpt[ref], k)=les_sommets_des_faces(j, k);
-          cpt[ref]++;
-          nb_som[ref]=nb_som_face;
-        }
-    }
-  for (int j=0; j<nb_type_face; j++)
-    {
-      familles[j].resize_array(cpt[j]);
-      if (nb_type_face>1)
-        {
-          IntTab prov=all_faces_bord[j];
-          int nb_som_face=nb_som[j];
-          int nb_faces=cpt[j];
-          IntTab& all_faces_bord_=all_faces_bord[j];
-          all_faces_bord_.resize(nb_faces,nb_som_face);
-          for (int f=0; f<nb_faces; f++)
-            for (int c=0; c<nb_som_face; c++)
-              all_faces_bord_(f,c)=prov(f,c);
-        }
-    }
-}
-
 /*! @brief For each bord get starting and ending index (by construction in TRUST, face indices at the
  * boundary are grouped)
  */
 void EcrMED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const
 {
   const Domaine& dom = dom_.valeur();
-  int nb_bords = dom.nb_front_Cl(), nb_jnts = dom.nb_joints(), nb_faces_int = dom.nb_groupes_int();
+  int nb_bords = dom.nb_front_Cl(), nb_faces_int = dom.nb_groupes_int();
+
+  // [ABN] TODO handle joints properly - they could be written too
+  int nb_jnts = dom.nb_joints();
+  nb_jnts = 0;
 
   noms_bords_and_jnts.dimensionner(nb_bords+nb_jnts+nb_faces_int);
   sz_bords_and_jnts.resize_array(nb_bords+nb_jnts+nb_faces_int);
@@ -265,12 +162,12 @@ void EcrMED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_j
         noms_bords_and_jnts[i] = front.le_nom();
       sz_bords_and_jnts[i] = front.nb_faces();
     }
-  for(int i=0; i<nb_jnts; i++)
-    {
-      const Joint& jnt = dom.joint(i);
-      noms_bords_and_jnts[nb_bords+i] = jnt.le_nom();
-      sz_bords_and_jnts[nb_bords+i] = jnt.nb_faces();
-    }
+//  for(int i=0; i<nb_jnts; i++)
+//    {
+//      const Joint& jnt = dom.joint(i);
+//      noms_bords_and_jnts[nb_bords+i] = jnt.le_nom();
+//      sz_bords_and_jnts[nb_bords+i] = jnt.nb_faces();
+//    }
 }
 
 void EcrMED::ecrire_domaine(bool append)
@@ -303,7 +200,7 @@ void EcrMED::ecrire_domaine(bool append)
 /*! @brief Fill face and groups in the MEDCoupling object
  *
  * Two cases:
- * - either we want the full face mesh, in which case we garantee that the face numbering will be identical to TRUST in the
+ * - either we want the full face mesh, in which case we guarantee that the face numbering will be identical to TRUST in the
  * final MED file
  * - or, we only write boundary faces. In this case we can still preserve face numbering for all 'classical' borders (i.e. not
  * joints) since by construction TRUST places those faces first, but faces of **joints** are renumbered.
@@ -312,7 +209,7 @@ void EcrMED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_
 {
   // Fill arrays all_faces_bords and noms_bords
   Noms noms_bords_and_jnts;
-  IntTab sz_bords_and_jnts;
+  ArrOfInt sz_bords_and_jnts;
   get_bords_infos(noms_bords_and_jnts, sz_bords_and_jnts);
 
   int nfaces = 0;
@@ -380,132 +277,26 @@ void EcrMED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_
       grps.push_back(g);
     }
 
-  // Joint do not necessary have consecutive face numbers and must be handled separately
-  for (int j=0; j < dom_->nb_joints(); j++)
-    {
-      const Joint& jnt = dom_->joint(j);
-      const ArrOfInt& ric = jnt.joint_item(Joint::FACE).items_communs();
-      assert(ric.size_array() == jnt.nb_faces());
-      MCAuto<DataArrayIdType> g(DataArrayIdType::New());
-      g->alloc(ric.size_array());
-      mcIdType* gP = g->getPointer();
-      if (full_face_mesh) // we can preserve original TRUST numbers
-        for (int k=0; k<jnt.nb_faces(); k++) gP[k] = ric(k);
-      else                // otherwise just take next available ids:
-        for (int k=0; k<jnt.nb_faces(); k++) gP[k] = face_idx++;
-      g->setName(jnt.le_nom().getChar());
-      grps_mem.push_back(g);
-      grps.push_back(g);
-    }
+//  [ABN] TODO handle joints properly - they could be written too.
+//  // Joint do not necessary have consecutive face numbers and must be handled separately
+//  for (int j=0; j < dom_->nb_joints(); j++)
+//    {
+//      const Joint& jnt = dom_->joint(j);
+//      const ArrOfInt& ric = jnt.joint_item(Joint::FACE).items_communs();
+//      assert(ric.size_array() == jnt.nb_faces());
+//      MCAuto<DataArrayIdType> g(DataArrayIdType::New());
+//      g->alloc(ric.size_array());
+//      mcIdType* gP = g->getPointer();
+//      if (full_face_mesh) // we can preserve original TRUST numbers
+//        for (int k=0; k<jnt.nb_faces(); k++) gP[k] = ric(k);
+//      else                // otherwise just take next available ids:
+//        for (int k=0; k<jnt.nb_faces(); k++) gP[k] = face_idx++;
+//      g->setName(jnt.le_nom().getChar());
+//      grps_mem.push_back(g);
+//      grps.push_back(g);
+//    }
   // Save all this:
   mfumesh_->setGroupsAtLevel(-1, grps);
-}
-
-/*! @brief Fill the face mesh of the MEDFileUMesh member  mfumesh_
- */
-void EcrMED::fill_faces_and_boundaries_OLD(const REF(Domaine_dis_base)& domaine_dis_base)
-{
-  int ncells = (int)mcumesh_->getNumberOfCells();
-  ArrsOfInt familles;
-
-  // Remplit le tableau all_faces_bords ainsi que noms_bords et familles
-  IntTabs all_faces_bord;
-  Noms type_face;
-  Noms noms_bords;
-  creer_all_faces_bord_OLD(type_face, all_faces_bord,  noms_bords,familles);
-  // connectivite Trio a MED
-  for (int j=0; j<type_face.size(); j++)
-    conn_trust_to_med(all_faces_bord[j],type_face[j], true);
-
-
-  // Family for the cells:
-  int global_family_id = -1000;
-  MCAuto<DataArrayInt> famArr(DataArrayInt::New());
-  famArr->alloc(ncells);
-  famArr->fillWithValue(global_family_id);
-  mfumesh_->setFamilyFieldArr(0, famArr);
-  // Name the family and check unicity:
-  Nom family_name = noms_bords.search(dom_->le_nom()) != -1 ? "cpy_" : "";
-  family_name += dom_->le_nom();
-  mfumesh_->addFamily(family_name.getString(), global_family_id);
-
-  int nfaces=-1;
-  // If the domain has faces (eg:domain computation), we can create a face mesh (all faces, incl internal ones), else only a boundary mesh
-  if (domaine_dis_base.non_nul() && ref_cast(Domaine_VF, domaine_dis_base.valeur()).elem_faces().size()>0)
-    {
-      // Faces mesh:
-      dom_->build_mc_face_mesh(domaine_dis_base.valeur());
-      const MEDCouplingUMesh *faces_mesh = dom_->get_mc_face_mesh();
-      MCAuto<MEDCouplingUMesh> face_mesh2 = faces_mesh->clone(false); // perform a super light copy, no data array copied
-      face_mesh2->setName(mfumesh_->getName());  // names have to be aligned ...
-      mfumesh_->setMeshAtLevel(-1, face_mesh2, false);
-      nfaces = faces_mesh->getNumberOfCells();
-    }
-  else
-    {
-      // Boundary mesh:
-      MCAuto<MEDCouplingUMesh> boundary_mesh(MEDCouplingUMesh::New(mcumesh_->getName(), mesh_dimension_ - 1));
-      boundary_mesh->setCoords(mcumesh_->getCoords());
-      nfaces = 0;
-      int nb_type_face = familles.size();
-      for (int j = 0; j < nb_type_face; j++)
-        nfaces += familles[j].size_array();
-      boundary_mesh->allocateCells(nfaces);
-      for (int j = 0; j < nb_type_face; j++)
-        {
-          int size = familles[j].size_array();
-          if (size)
-            {
-              // Converting TRUST to MC boundary cell:
-              int boundary_mesh_dimension = -1;
-              INTERP_KERNEL::NormalizedCellType type_boundary_cell = type_geo_trio_to_type_medcoupling(type_face[j],
-                                                                                                       boundary_mesh_dimension);
-              assert(boundary_mesh_dimension == mesh_dimension_ - 1);
-              int nverts = all_faces_bord[j].dimension(1);
-              for (int i = 0; i < size; i++)
-                {
-                  int nvertices = nverts;
-                  for (int k = 0; k < nverts; k++)
-                    if (all_faces_bord[j].addr()[i * nverts + k] < 0)
-                      nvertices--; // Some face type has not a constant number of vertices (eg: Polygon)
-                  boundary_mesh->insertNextCell(type_boundary_cell, nvertices, all_faces_bord[j].addr() + i * nverts);
-                }
-            }
-        }
-      mfumesh_->setMeshAtLevel(-1, boundary_mesh, false);
-    }
-
-  // Family (with possible renum of the boundary cells)
-  MCAuto<DataArrayInt> family_array(DataArrayInt::New());
-  family_array->alloc(nfaces);
-  int nb_type_face = familles.size();
-  int face = 0;
-  for (int j = 0; j < nb_type_face; j++)
-    for (int i = 0; i < familles[j].size_array(); i++)
-      {
-        int family_id = familles[j][i];
-        family_array->setIJ(face, 0, family_id);
-        face++;
-      }
-  // Faces internes (faimily_id=0):
-  for (; face<nfaces; face++)
-    family_array->setIJ(face, 0, 0);
-  mfumesh_->setFamilyFieldArr(-1, family_array);
-  // Naming family on boundaries:
-  for (int i = 0; i < noms_bords.size(); i++)
-    {
-      int family_id = -(i + 1);
-      mfumesh_->addFamily(noms_bords[i].getString(), family_id);
-      std::vector<std::string> grps(1);
-      grps[0] = noms_bords[i].getString();
-      mfumesh_->setGroupsOnFamily(noms_bords[i].getString(), grps);
-    }
-  // Groupes internes:
-  std::string name = "groupes_internes";
-  mfumesh_->addFamily(name, 0);
-  std::vector<std::string> grps(1);
-  grps[0] = name;
-  mfumesh_->setGroupsOnFamily(name, grps);
 }
 
 /*! @brief Ecrit le domaine dom dans le fichier nom_fichier_
@@ -544,14 +335,7 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
 #endif
 
   // Faces and group of faces representing boundaries:
-  char *grp_mode = getenv("TRUST_MED_WITH_GRP");
-  int new_mode = 0;  // 0: family only, 1: groups only
-  if (grp_mode) new_mode = atoi(grp_mode);
-
-  if (new_mode)
-    fill_faces_and_boundaries(domaine_dis_base);
-  else
-    fill_faces_and_boundaries_OLD(domaine_dis_base);
+  fill_faces_and_boundaries(domaine_dis_base);
 
   // Write:
   int option = (append ? 1 : 2); /* 2: reset file. 1: append, 0: overwrite objects */
