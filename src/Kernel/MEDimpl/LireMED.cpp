@@ -584,22 +584,22 @@ void LireMED::write_sub_dom_datasets() const
  *
  * Get the -1 level mesh, and extract boundaries by reading element groups on this mesh.
  */
-void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab& all_faces_bords)
+void LireMED::read_boundaries(ArrOfInt& fac_grp_id, IntTab& all_faces_bords)
 {
   constexpr bool CELL_FROM_BOUNDARY = true;
 
   // Get boundary mesh:
-  MCAuto<MEDCouplingUMesh> boundary_mesh(mfumesh_->getMeshAtLevel(-1)); // ToDo can not make it const because of ArrayOfInt
+  MCAuto<MEDCouplingUMesh> face_mesh(mfumesh_->getMeshAtLevel(-1)); // ToDo can not make it const because of ArrayOfInt
   if (dimension==3 && convertAllToPoly_) // In 2D this will be segments anyway
-    boundary_mesh->convertAllToPoly(); // Conversion maillage frontiere
-  int nfaces = boundary_mesh->getNumberOfCells();
+    face_mesh->convertAllToPoly(); // Conversion maillage frontiere
+  int nfaces = face_mesh->getNumberOfCells();
 
   // Retrieve connectivity - Use ArrOfInt to benefit from assert:
   ArrOfInt conn, connIndex;
-  conn.ref_data(boundary_mesh->getNodalConnectivity()->getPointer(), boundary_mesh->getNodalConnectivity()->getNbOfElems());
-  DataArrayIdType *cI = boundary_mesh->getNodalConnectivityIndex();
+  conn.ref_data(face_mesh->getNodalConnectivity()->getPointer(), face_mesh->getNodalConnectivity()->getNbOfElems());
+  DataArrayIdType *cI = face_mesh->getNodalConnectivityIndex();
   mcIdType * cIP = cI->getPointer();
-  connIndex.ref_data(cIP, boundary_mesh->getNodalConnectivityIndex()->getNbOfElems());
+  connIndex.ref_data(cIP, face_mesh->getNodalConnectivityIndex()->getNbOfElems());
 
   // Read type from the first face, and check unique type
   int typ = conn[connIndex[0]];
@@ -607,7 +607,7 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
   if (type_elem_.nb_type_face() != 1)  // should never happen, all is polygon normally.
     Process::exit("LireMED: unsupported mesh element type! It has more than a single face type (for example a prism can have triangles or quadrangles as boundary faces).");
   // Check unique type
-  auto set_of_typs = boundary_mesh->getAllGeoTypes();
+  auto set_of_typs = face_mesh->getAllGeoTypes();
   if (set_of_typs.size() > 1) // same as a above, should never happen
     Process::exit("LireMED: invalid boundary mesh! More than a single face type.");
 
@@ -622,7 +622,7 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
   Cerr << "Detecting " << nfaces << " faces (" << type_face_ << ")." << finl;
   all_faces_bords.resize(nfaces, max_som_face);
   all_faces_bords = -1;
-  familles.resize_array(nfaces);
+  fac_grp_id.resize_array(nfaces);
   for (int i = 0; i < nfaces; i++)
     {
       int index = connIndex[i] + 1;  // +1 to skip MEDCoupling type
@@ -633,27 +633,29 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
 
   Cerr << "Reading groups at level -1:" << finl;
   auto grp_names = mfumesh_->getGroupsOnSpecifiedLev(-1);
-  int ngrp = (int)grp_names.size();
-  int ngrp_orig = ngrp;
-  indices_bords.resize(ngrp);
   int zeid = 0;
+  std::set<mcIdType> id_check;
   for (const auto& gnam: grp_names)
     {
       if (exclude_grps_.search(Nom(gnam)) != -1)
         {
           Cerr << "    group '" << gnam << "' is skipped, as requested." << finl;
-          ngrp--;
           continue;
         }
       noms_bords_.add(gnam);
       MCAuto<DataArrayIdType> ids(mfumesh_->getGroupArr(-1, gnam, false));
-      int nb_faces = (int) ids->getNbOfElems();
+      long bef = (long)id_check.size(), nb_faces = (long)ids->getNumberOfTuples();
+      id_check.insert(ids->begin(), ids->begin()+nb_faces);
+      if ((long)id_check.size() - bef < nb_faces)
+        {
+          Cerr << "ERROR: group '" << gnam << "' contains faces which are also in one of the previously read groups." << finl;
+          Cerr << "       Fix your mesh, or use the 'exclude_groups' option to prevent reading of this group." << finl;
+          Process::exit(-1);
+        }
       Cerr << "    group_name=" << gnam << " with " << nb_faces << " faces" << finl;
-      for(const auto& id: *ids)  familles[id] = zeid+1; //
-      indices_bords[zeid] = zeid+1;
+      for(const auto& id: *ids)  fac_grp_id[id] = zeid+1;
       zeid++;
     }
-  if (ngrp != ngrp_orig) indices_bords.resize(ngrp);
 
   if (noms_bords_.size()==0)
     {
@@ -665,7 +667,7 @@ void LireMED::read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab
 
 /*! @brief Fills in all the information relative to Joints, Raccords and Frontiere
  */
-void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& familles, const IntTab& all_faces_bords)
+void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_faces_bords)
 {
   Domaine& dom = domaine();
   ArrsOfInt sommets_joints;
@@ -688,7 +690,7 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
   int nfacebord=all_faces_bords.dimension(0);
   for (int ib=nbord-1; ib>-1; ib--)
     {
-      int indice_bord=indices_bords[ib];
+      int indice_bord=ib+1;
       if (noms_bords_[ib]=="elems") continue;
       Bord bordprov_;
       Groupe_interne facesintprov;
@@ -722,7 +724,7 @@ void LireMED::fill_frontieres(const IntVect& indices_bords, const ArrOfInt& fami
       IntTab sommprov(nfacebord,nsomfa);
       for (int j=0; j<nfacebord; j++)
         {
-          if (familles[j]==indice_bord)
+          if (fac_grp_id[j]==indice_bord)
             {
               for (int k=0; k<nsomfa; k++)
                 sommprov(nb_face_this_bord,k)=all_faces_bords(j,k);
@@ -819,15 +821,13 @@ void LireMED::lire_geom(bool subDom)
     write_sub_dom_datasets();
 
   // Detect boundary meshes:
-  // TODO Fixme Adrien : check skin
-  ArrOfInt familles;
-  IntVect indices_bords;
+  ArrOfInt fac_grp_id;
   IntTab all_faces_bords;
   std::vector<True_int> nel = mfumesh_->getNonEmptyLevels();
   if (nel.size() > 1)
     {
       assert(nel[1] == -1);
-      read_boundaries(indices_bords, familles, all_faces_bords);
+      read_boundaries(fac_grp_id, all_faces_bords);
     }
 
   // Converting from MED to TRUST connectivity
@@ -852,7 +852,7 @@ void LireMED::lire_geom(bool subDom)
   dom.type_elem().associer_domaine(dom);
   dom.les_elems() = les_elems2;
 
-  fill_frontieres(indices_bords, familles, all_faces_bords);
+  fill_frontieres(fac_grp_id, all_faces_bords);
 
   //  GF au moins en polyedre il faut reordonner
   if (sub_type(Polyedre,dom.type_elem().valeur()) || type_elem_n == "Rectangle" || type_elem_n == "Hexaedre")

@@ -67,8 +67,8 @@ protected:
   void prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2);
   void finalize_sommets(const DoubleTab& sommets2, DoubleTab& sommets) const;
   void write_sub_dom_datasets() const;
-  void read_boundaries(IntVect& indices_bords, ArrOfInt& familles, IntTab& all_faces_bords);
-  void fill_frontieres(const IntVect& indices_bords, const ArrOfInt& familles, const IntTab& all_faces_bords);
+  void read_boundaries(ArrOfInt& familles, IntTab& all_faces_bords);
+  void fill_frontieres(const ArrOfInt& familles, const IntTab& all_faces_bords);
 
 };
 
