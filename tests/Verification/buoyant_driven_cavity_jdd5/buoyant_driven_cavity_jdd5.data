@@ -1,6 +1,6 @@
 # PARALLEL OK 8 #
 dimension 2
-pb_thermohydraulique pbt
+pb_multiphase pbt
 Domaine dom
 
 # BEGIN MESH #
@@ -28,6 +28,7 @@ Decouper dom
     nb_parts_tot 2
     Larg_joint 2
     Nom_Zones dom
+    ecrire_decoupage dom.txt
 }
 Fin
 END PARTITION #
@@ -36,56 +37,54 @@ END PARTITION #
 Scatter dom.Zones dom
 END SCATTER #
 
-Scheme_euler_implicit sch
-Read sch
+Schema_euler_implicite sch_ice
+Read sch_ice
 {
     tinit 0
 	nb_pas_dt_max 3
-    dt_max 0.1
-    facsec 1e30
-    facsec_max 1e30
+    facsec 1
     seuil_statio 1e-6
     dt_impr 1e-10
-    solveur implicite
+    solveur ice
     {
+        pressure_reduction 1
+        # solveur petsc cli { } #
         solveur petsc cholesky { }
-        # {
-            -pc_type hypre
-            -pc_hypre_type boomeramg
-            -ksp_check_norm_iteration 4
-            -ksp_rtol 1e-10
-            -ksp_monitor
-        } #
         seuil_convergence_implicite 1e30
     }
 }
 
-PolyMAC dis
+VDF dis
 
 associate pbt dom
 
-Associate pbt sch
+Associate pbt sch_ice
 Discretize pbt dis
 
 Read pbt
 {
+	Milieu_composite
+	{
+		liquide_eau fluide_incompressible
+		{
+            mu       champ_uniforme 1 50.0
+            rho      champ_uniforme 1 2000.0
+            cp       champ_uniforme 1 3075.0
+            lambda   champ_uniforme 1 0.5
+            beta_th  champ_uniforme 1 0.0002
+		}
+	}
 
-    fluide_incompressible
+    QDM_Multiphase
     {
-        mu       champ_uniforme 1 50.0
-        rho      champ_uniforme 1 2000.0
-        cp       champ_uniforme 1 3075.0
-        lambda   champ_uniforme 1 0.5
-        beta_th  champ_uniforme 1 0.0002
-        gravite  champ_uniforme 2 0 -9.81
-    }
-
-    navier_stokes_standard
-    {
-        solveur_pression petsc cholesky { }
-        convection  { amont }
-        diffusion   { }
-        initial_conditions  { vitesse champ_uniforme 2 0.0 0.0 }
+        solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        convection { amont }
+        diffusion  { }
+        initial_conditions
+        {
+            vitesse  Champ_Fonc_xyz dom 2 0 0
+            pression Champ_Fonc_xyz dom 1 0
+        }
         boundary_conditions
         {
             bas    paroi_fixe
@@ -95,15 +94,26 @@ Read pbt
         }
         sources
         {
-            boussinesq_temperature { T0  900.0  verif_boussinesq  0 }
+            source_qdm champ_fonc_fonction pbt temperature 2 0 -9.81*(1.0+0.0002*(900-val))
         }
     }
-
-    convection_diffusion_temperature
+    Masse_Multiphase
     {
-        convection  { amont }
-        diffusion   { }
-        initial_conditions  { temperature  champ_uniforme  1  900.0 }
+        initial_conditions { alpha champ_uniforme 1 1 }
+        convection { amont }
+        boundary_conditions
+        {
+            bas    paroi
+            gauche paroi
+            droite paroi
+            haut   paroi
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { }
+        convection { amont }
+        initial_conditions { temperature Champ_Uniforme 1 900 }
         boundary_conditions
         {
             bas     paroi_adiabatique
