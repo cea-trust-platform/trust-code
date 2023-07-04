@@ -81,6 +81,7 @@ Domaine FluidVolMesh
 Read_MED {
     domain FluidVolMesh
     file mesh_with_several_groups_on_a_family.med
+    exclude_groups 2 all Group_Of_All_Faces
 }
 # Fichier .med mal lu par TRUST 1.8.1 #
 discretiser_domaine FluidVolMesh

@@ -1,5 +1,5 @@
 # Printing on the boundaries of the equation Navier_Stokes_standard of the problem pb
 # Volumetric flow rate=Integral(u*ndS) [m3.s-1] if SI units used
-#            Time           Entree             Wall         Symetrie           Sortie            Total
-   2.05790529e-03  -1.33000000e+00   0.00000000e+00   4.65616995e-48   1.33000000e+00   4.41868764e-14
-   1.15437865e-02  -1.33000000e+00   0.00000000e+00  -2.98494363e-49   1.33000000e+00  -3.33066907e-15
+#            Time             Wall         Symetrie           Sortie           Entree            Total
+   2.05790529e-03   0.00000000e+00   4.61340571e-48   1.33000000e+00  -1.33000000e+00   4.39648318e-14
+   1.15437865e-02   0.00000000e+00  -2.88658589e-49   1.33000000e+00  -1.33000000e+00  -3.33066907e-15

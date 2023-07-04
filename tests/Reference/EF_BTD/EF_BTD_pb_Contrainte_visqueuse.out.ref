@@ -1,5 +1,5 @@
 # Printing on the boundaries of the equation Navier_Stokes_standard of the problem pb
 # Friction drag exerted by the fluid=Integral(-mu*grad(u)*ndS) [N] if SI units used
-#            Time           Entree             Wall         Symetrie           Sortie            Total
+#            Time             Wall         Symetrie           Sortie           Entree            Total
    2.05790529e-03   0.00000000e+00   0.00000000e+00   0.00000000e+00   0.00000000e+00   0.00000000e+00
    1.15437865e-02   0.00000000e+00   0.00000000e+00   0.00000000e+00   0.00000000e+00   0.00000000e+00

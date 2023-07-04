@@ -41,7 +41,7 @@ bc6.setName("back")
 mfu = ml.MEDFileUMesh()
 mfu.setMeshAtLevel(0, mesh)
 mfu.setMeshAtLevel(-1, mesh_fac)
-mfu.setGroupsAtLevel(-1, [skin_i, bc1, bc2,bc3,bc4,bc5,bc6])
+mfu.setGroupsAtLevel(-1, [bc1, bc2,bc3,bc4,bc5,bc6])
 mfu.write("mesh.med", 2) # 2 stands for write from scratch
 
 # Add Partitionnement

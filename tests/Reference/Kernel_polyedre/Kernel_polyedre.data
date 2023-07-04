@@ -22,7 +22,6 @@ Read_MED {
     domain dom2
     file toto.med
     mesh dom
-    no_family_names_from_group_names
 }
 Ecrire_fichier dom2 dom2.geom
 discretiser_domaine dom2
