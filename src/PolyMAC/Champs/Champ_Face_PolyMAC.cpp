@@ -130,29 +130,6 @@ double Champ_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, int p
   //return Champ_implementation_RT0::valeur_a_elem_compo(position,poly,ncomp);
 }
 
-//tableaux de correspondance pour les CLs
-void Champ_Face_PolyMAC::init_cl() const
-{
-  const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,domaine_vf());
-  const Conds_lim& cls = domaine_Cl_dis().les_conditions_limites();
-  int i, f, n;
-
-  if (icl.dimension(0)) return;
-  icl.resize(domaine.nb_faces_tot(), 3);
-  for (n = 0; n < cls.size(); n++)
-    {
-      const Front_VF& fvf = ref_cast(Front_VF, cls[n].frontiere_dis());
-      int idx = sub_type(Neumann, cls[n].valeur())
-                + 2 * sub_type(Symetrie, cls[n].valeur())
-                + 3 * sub_type(Dirichlet, cls[n].valeur()) + 3 * sub_type(Neumann_homogene, cls[n].valeur())
-                + 4 * sub_type(Dirichlet_homogene, cls[n].valeur());
-      if (!idx) Cerr << "Champ_Face_PolyMAC : CL non codee rencontree!" << finl, Process::exit();
-      for (i = 0; i < fvf.nb_faces_tot(); i++)
-        f = fvf.num_face(i), icl(f, 0) = idx, icl(f, 1) = n, icl(f, 2) = i;
-    }
-  CRIMP(icl);
-}
-
 //interpolation de l'integrale de v autour d'une arete duale, multipliee par la longueur de l'arete
 void Champ_Face_PolyMAC::init_ra() const
 {
@@ -163,7 +140,7 @@ void Champ_Face_PolyMAC::init_ra() const
   int i, j, k, l, r, e, f, fb, a, idx;
 
   if (radeb.dimension(0)) return;
-  init_cl(), domaine.init_m2(), init_va();
+  init_fcl(), domaine.init_m2(), init_va();
   radeb.resize(1, 2), racf.resize(0, 3);
   radeb.set_smart_resize(1), raji.set_smart_resize(1), rajf.set_smart_resize(1);
   raci.set_smart_resize(1), racf.set_smart_resize(1);
@@ -183,17 +160,17 @@ void Champ_Face_PolyMAC::init_ra() const
           for (j = 0; j < 2 && (e = f_e(f, j)) >= 0; j++)
             for (k = domaine.m2d(e), idx = 0; k < domaine.m2d(e + 1); k++, idx++)
               for (l = domaine.m2i(k); f == e_f(e, idx) && l < domaine.m2i(k + 1); l++)
-                if (icl(fb = e_f(e, domaine.m2j(l)), 0) < 2) rami[fb] += sgn * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * ve(e) * domaine.m2c(l) / fs(f);
-                else if (icl(fb, 0) == 3)
+                if (fcl_(fb = e_f(e, domaine.m2j(l)), 0) < 2) rami[fb] += sgn * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * ve(e) * domaine.m2c(l) / fs(f);
+                else if (fcl_(fb, 0) == 3)
                   for (r = 0; r < dimension; r++)
                     ramf[fb][r] += sgn * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * ve(e) * domaine.m2c(l) / fs(f) * nf(fb, r) / fs(fb);
           //partie "bord" -> avec va si Neumann ou Symetrie, avec val_imp si Dirichlet_homogene
-          if (icl(f, 0) == 1 || icl(f, 0) == 2)
+          if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2)
             {
               for (k = vadeb(a, 0); k < vadeb(a + 1, 0); k++) rami[vaji(k)] += sgn * domaine.dot(&xa(a, 0), &vaci(k, 0), &xv(f, 0));
               for (k = vadeb(a, 1); k < vadeb(a + 1, 1); k++) ramf[vajf(k, 0)][vajf(k, 1)] += sgn * domaine.dot(&xa(a, 0), &vacf(k, 0), &xv(f, 0));
             }
-          else if (icl(f, 0) == 3)
+          else if (fcl_(f, 0) == 3)
             for (k = 0; k < dimension; k++)
               ramf[f][k] += sgn * (xa(a, k) - xv(f, k));
         }
@@ -317,10 +294,10 @@ void Champ_Face_PolyMAC::init_va() const
               for (k = 0; k < dimension; k++) vec[k] = (x[0][k] + x[1][k]) / 2 - xg[k];
               vec = domaine.cross(3, dimension, &nsurf(i, j, 0), &vec[0]);
               //partie vf
-              if (icl(f, 0) < 2)
+              if (fcl_(f, 0) < 2)
                 for (k = 0; k < dimension; k++)
                   vami[f][k] += domaine.dot(x[1], &nf(f, 0), x[0]) / fs(f) * vec[k];
-              else if (icl(f, 0) == 3)
+              else if (fcl_(f, 0) == 3)
                 for (k = 0; k < dimension; k++)
                   for (l = 0; l < dimension; l++)
                     vamf[ {{ f, l }}][l] += domaine.dot(x[1], &nf(f, 0), x[0]) / fs(f) * vec[k] * nf(f, l) / fs(f);
@@ -328,20 +305,20 @@ void Champ_Face_PolyMAC::init_va() const
               if (e >= 0)
                 for (k = domaine.vedeb(e); k < domaine.vedeb(e + 1); k++) //ve
                   {
-                    if (icl(fb = domaine.veji(k), 0) < 2)
+                    if (fcl_(fb = domaine.veji(k), 0) < 2)
                       for (l = 0; l < dimension; l++)
                         vami[fb][l] += (domaine.dot(x[1], &domaine.veci(k, 0), x[0]) - domaine.dot(x[1], &nf(f, 0), x[0]) * domaine.dot(&domaine.veci(k, 0), &nf(f, 0)) / (fs(f) * fs(f))) * vec[l] * pf(fb) / pe(e);
-                    else if (icl(fb, 0) == 3)
+                    else if (fcl_(fb, 0) == 3)
                       for (l = 0; l < dimension; l++)
                         for (m = 0; m < dimension; m++)
                           vamf[ {{ fb, m }}][l] += (domaine.dot(x[1], &domaine.veci(k, 0), x[0]) - domaine.dot(x[1], &nf(f, 0), x[0]) * domaine.dot(&domaine.veci(k, 0), &nf(f, 0)) / (fs(f) * fs(f)))
                     * vec[l] * nf(fb, m) / fs(f) * pf(fb) / pe(e);
                   }
-              else if (icl(f, 0) == 3)
+              else if (fcl_(f, 0) == 3)
                 for (k = 0; k < dimension; k++)
                   for (l = 0; l < dimension; l++) //val_imp
                     vamf[ {{ f, k }}][l] += (x[1][k] - x[0][k] - domaine.dot(x[1], &nf(f, 0), x[0]) * nf(f, k) / (fs(f) * fs(f))) * vec[l];
-              else if (icl(f, 0) == 1 || icl(f, 0) == 2)
+              else if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2)
                 for (k = 0; k < dimension; k++)
                   for (l = 0; l < dimension; l++) //va
                     M(k, l) -= (x[1][l] - x[0][l] - domaine.dot(x[1], &nf(f, 0), x[0]) * nf(f, l) / (fs(f) * fs(f))) * vec[k];
@@ -351,19 +328,19 @@ void Champ_Face_PolyMAC::init_va() const
               else if (e >= 0)
                 for (k = domaine.vedeb(e); k < domaine.vedeb(e + 1); k++) //ve
                   {
-                    if (icl(fb = domaine.veji(k), 0) < 2)
+                    if (fcl_(fb = domaine.veji(k), 0) < 2)
                       for (l = 0; l < dimension; l++)
                         vami[fb][l] += surf(i, j) * domaine.dot(&nsurf(i, j, 0), &domaine.veci(k, 0)) * nsurf(i, j, l) * pf(fb) / pe(e);
-                    else if (icl(fb, 0) == 3)
+                    else if (fcl_(fb, 0) == 3)
                       for (l = 0; l < dimension; l++)
                         for (m = 0; m < dimension; m++)
                           vamf[ {{ fb, m }}][l] += surf(i, j) * domaine.dot(&nsurf(i, j, 0), &domaine.veci(k, 0)) * nsurf(i, j, l) * nf(fb, m) / fs(f) * pf(fb) / pe(e);
                   }
-              else if (icl(f, 0) == 3)
+              else if (fcl_(f, 0) == 3)
                 for (k = 0; k < dimension; k++)
                   for (l = 0; l < dimension; l++) //val_imp
                     vamf[ {{ f, k }}][l] += surf(i, j) * nsurf(i, j, k) * nsurf(i, j, l);
-              else if (icl(f, 0) == 1 || icl(f, 0) == 2)
+              else if (fcl_(f, 0) == 1 || fcl_(f, 0) == 2)
                 for (k = 0; k < dimension; k++)
                   for (l = 0; l < dimension; l++) //va
                     M(k, l) -= surf(i, j) * nsurf(i, j, k) * nsurf(i, j, l);
@@ -404,17 +381,17 @@ void Champ_Face_PolyMAC::interp_ve(const DoubleTab& inco, DoubleTab& val, bool i
   val = 0;
   for (e = 0; e < val.dimension(0); e++)
     for (j = domaine.vedeb(e); j < domaine.vedeb(e + 1); j++)
-      if (icl(f = domaine.veji(j), 0) < 2) //vitesse calculee
+      if (fcl_(f = domaine.veji(j), 0) < 2) //vitesse calculee
         {
           const double coef = is_vit && pf ? (*pf)(f) / (*pe)(e) : 1.0;
           for (r = 0; r < dimension; r++) val(e, r) += domaine.veci(j, r) * inco(f) * coef;
         }
-      else if (icl(f, 0) == 3)
+      else if (fcl_(f, 0) == 3)
         for (k = 0; k < dimension; k++)
           for (r = 0; r < dimension; r++) //Dirichlet
             {
               const double coef = is_vit && pf ? (*pf)(f) / (*pe)(e) : 1.0;
-              val(e, r) += domaine.veci(j, r) * ref_cast(Dirichlet, cls[icl(f, 1)].valeur()).val_imp(icl(f, 2), k) * nf(f, k) / fs(f) * coef;
+              val(e, r) += domaine.veci(j, r) * ref_cast(Dirichlet, cls[fcl_(f, 1)].valeur()).val_imp(fcl_(f, 2), k) * nf(f, k) / fs(f) * coef;
             }
 }
 
@@ -464,16 +441,16 @@ void Champ_Face_PolyMAC::interp_gve(const DoubleTab& inco, DoubleTab& vals) cons
   DoubleTrav gv(domaine.nb_faces_tot(), dimension), cgv, ngv;
   domaine.creer_tableau_faces(cgv), domaine.creer_tableau_faces(ngv);
   for (f = 0; f < domaine.nb_faces_tot(); f++)
-    if (icl(f, 0) != 1) //gve = 0 si Neumann
+    if (fcl_(f, 0) != 1) //gve = 0 si Neumann
       {
         for (i = 0; i < 2; i++)
           if ((e = f_e(f, i)) >= 0)
             for (k = 0; k < dimension; k++) gv(f, k) += (i ? 1 : -1) * fs(f) * ve1(e, k); //element interne -> avec ve1
-          else if (icl(f, 0) == 3)
+          else if (fcl_(f, 0) == 3)
             for (k = 0; k < dimension; k++) //bord de Dirichlet -> avec val_imp
-              gv(f, k) += (i ? 1 : -1) * fs(f) * ref_cast(Dirichlet, cls[icl(f, 1)].valeur()).val_imp(icl(f, 2), k);
+              gv(f, k) += (i ? 1 : -1) * fs(f) * ref_cast(Dirichlet, cls[fcl_(f, 1)].valeur()).val_imp(fcl_(f, 2), k);
         //si Symetrie -> on ne garde que la composante normale a la face
-        if (icl(f, 0) == 2)
+        if (fcl_(f, 0) == 2)
           for (k = 0, scal = domaine.dot(&nf(f, 0), &gv(f, 0)) / fs(f); k < dimension; k++) gv(f, k) = scal * nf(f, k) / fs(f);
       }
 
@@ -531,7 +508,7 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, cons
 
 DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
 {
-  init_cl();
+  init_fcl();
   const Champ_base& cha=le_champ();
   assert(val.size() == polys.size());
 
@@ -620,7 +597,7 @@ DoubleVect& Champ_Face_PolyMAC::calcul_S_barre(const DoubleTab& vitesse, DoubleV
 DoubleTab& Champ_Face_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   assert(distant==0);
-  init_cl();
+  init_fcl();
   const bool vectoriel = (le_champ().nb_comp() > 1);
   const int dim = vectoriel ? dimension : 1;
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);

@@ -68,7 +68,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
 
       /* contributions aux faces de e */
       for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        if (f < domaine.nb_faces() && ch.icl(f, 0) < 2)
+        if (f < domaine.nb_faces() && ch.fcl()(f, 0) < 2)
           {
             double m2vf = 0, contrib;
             for (k = domaine.m2i(domaine.m2d(e) + j); k < domaine.m2i(domaine.m2d(e) + j + 1); k++)
@@ -113,7 +113,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
 
       /* contributions aux faces de e */
       for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
-        if (f < domaine.nb_faces() && ch.icl(f, 0) < 2)
+        if (f < domaine.nb_faces() && ch.fcl()(f, 0) < 2)
           {
             double m2vf = 0, contrib;
             for (k = domaine.m2i(domaine.m2d(e) + j); k < domaine.m2i(domaine.m2d(e) + j + 1); k++)
@@ -122,16 +122,16 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
             if (contrib >= std::min(C_dir, C_iso) * m2vf)
               {
                 for (k = domaine.m2i(domaine.m2d(e) + j); k < domaine.m2i(domaine.m2d(e) + j + 1); k++)
-                  if (ch.icl(fb = e_f(e, domaine.m2j(k)), 0) < 2)
+                  if (ch.fcl()(fb = e_f(e, domaine.m2j(k)), 0) < 2)
                     matrice(f, fb) += C_iso * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * domaine.volumes(e) * domaine.m2c(k) * pf(fb) / pe(e);
                 for (k = domaine.vedeb(e); k < domaine.vedeb(e + 1); k++)
-                  if (ch.icl(fb = domaine.veji(k), 0) < 2)
+                  if (ch.fcl()(fb = domaine.veji(k), 0) < 2)
                     matrice(f, fb) += fs(f) * pf(f) * (C_dir - C_iso) * domaine.dot(&domaine.veci(k, 0), &dir(0)) * pf(fb) / pe(e) * (e == f_e(f, 0) ? 1 : -1) * domaine.dot(&xv(f, 0), &dir(0), &xp(e, 0));
               }
             else
               {
                 for (k = domaine.m2i(domaine.m2d(e) + j); k < domaine.m2i(domaine.m2d(e) + j + 1); k++)
-                  if (ch.icl(fb = e_f(e, domaine.m2j(k)), 0) < 2)
+                  if (ch.fcl()(fb = e_f(e, domaine.m2j(k)), 0) < 2)
                     matrice(f, fb) += std::min(C_dir, C_iso) * pf(f) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * domaine.volumes(e) * domaine.m2c(k) * pf(fb) / pe(e);
               }
           }

@@ -97,7 +97,7 @@ protected:
 
   virtual void init_fcl() const;
   mutable IntTab fcl_;
-  mutable int fcl_init_ = 0;
+  mutable int fcl_init_ = 0; // fcl(f, .) = (type de la CL, no de la CL, indice dans la CL)
 };
 
 #endif /* Champ_Inc_P0_base_included */

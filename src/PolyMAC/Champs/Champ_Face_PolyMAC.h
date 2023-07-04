@@ -51,15 +51,6 @@ public:
 
   int fixer_nb_valeurs_nodales(int n) override;
 
-  //tableaux de correspondance lies aux CLs
-  //types de CL : 0 -> pas de CL
-  //              1 -> Neumann ou Neumann_homogene
-  //              2 -> Symetrie
-  //              3 -> Dirichlet
-  //              4 -> Dirichlet_homogene
-  void init_cl() const;
-  mutable IntTab icl; // icl(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
-
   //integrale de la vitesse sur le bord des aretes duales -> pour calculer la vorticite
   void init_ra() const;
   mutable IntTab radeb, raji, rajf; //reconstruction du rotationnel par (raji, raci)[radeb(a, 0), radeb(a + 1, 0)[ (vitesses aux faces)

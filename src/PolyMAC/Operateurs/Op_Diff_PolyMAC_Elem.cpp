@@ -85,7 +85,7 @@ void Op_Diff_PolyMAC_Elem::completer()
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 1)
     Cerr << "Op_Diff_PolyMAC_Elem : largeur de joint insuffisante (minimum 1)!" << finl, Process::exit();
-  ch.init_cl();
+  ch.fcl();
   int nb_comp = (equation().que_suis_je() == "Transport_K_Eps") ? 2 : ch.valeurs().line_size();
   flux_bords_.resize(domaine.premiere_face_int(), nb_comp);
 
@@ -164,7 +164,7 @@ void Op_Diff_PolyMAC_Elem::update_delta() const
       {
         double n_d[2] = { delta_f_int(f, n, 0), delta_f_int(f, n, 1) };
         //contribution de l'autre probleme par des CL de type Echange_contact
-        for (i = 0; ch.icl(f, 0) == 3 && i < 2; i++) n_d[i] += ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur()).delta_int(ch.icl(f, 2), n, i);
+        for (i = 0; ch.fcl()(f, 0) == 3 && i < 2; i++) n_d[i] += ref_cast(Echange_contact_PolyMAC, cls[ch.fcl()(f, 1)].valeur()).delta_int(ch.fcl()(f, 2), n, i);
         delta_f(f, n) = n_d[1] > 1e-8 ? std::fabs(n_d[0]) / n_d[1] : 0;
       }
   delta_f.echange_espace_virtuel();
@@ -330,25 +330,25 @@ DoubleTab& Op_Diff_PolyMAC_Elem::ajouter(const DoubleTab& inco,  DoubleTab& resu
           for (f = e_f(e, i), j = domaine.w2i(domaine.m2d(e) + i), mfe = 0; j < domaine.w2i(domaine.m2d(e) + i + 1); j++, mfe += mff)
             {
               for (fb = e_f(e, domaine.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * domaine.w2c(j); n < N; n++) mff(n) = fac * nu_ef(domaine.w2j(j), n);
-              for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu(ne_tot + f, n) -= mff(n) * inco(ne_tot + fb, n);
+              for (n = 0; ch.fcl()(f, 0) < 6 && n < N; n++) resu(ne_tot + f, n) -= mff(n) * inco(ne_tot + fb, n);
               for (n = 0; f < domaine.premiere_face_int() && n < N; n++) flux_bords_(f, n) -= mff(n) * inco(ne_tot + fb, n);
               for (n = 0; n < N; n++) resu(e, n) += mff(n) * inco(ne_tot + fb, n);
 
               //correction non lineaire : partie "faces/faces"
-              for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++)
+              for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++)
                 resu(ne_tot + f, n) -= std::max(delta_f(f, n), delta_f(fb, n)) * (inco(ne_tot + f, n) - inco(ne_tot + fb, n));
             }
-          for (n = 0; ch.icl(f, 0) < 6 && n < N; n++) resu(ne_tot + f, n) += mfe(n) * inco(e, n);
+          for (n = 0; ch.fcl()(f, 0) < 6 && n < N; n++) resu(ne_tot + f, n) += mfe(n) * inco(e, n);
           for (n = 0; f < domaine.premiere_face_int() && n < N; n++) flux_bords_(f, n) += mfe(n) * inco(e, n);
 
           //Echange_impose_base
-          if (ch.icl(f, 0) > 0 && ch.icl(f, 0) < 2 && f < domaine.nb_faces())
+          if (ch.fcl()(f, 0) > 0 && ch.fcl()(f, 0) < 2 && f < domaine.nb_faces())
             for (n = 0; n < N; n++)
-              resu(ne_tot + f, n) -= fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n)
-                                     * (inco(ch.icl(f, 0) == 1 ? ne_tot + f : e, n) - ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).T_ext(ch.icl(f, 2), n));
+              resu(ne_tot + f, n) -= fs(f) * ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).h_imp(ch.fcl()(f, 2), n)
+                                     * (inco(ch.fcl()(f, 0) == 1 ? ne_tot + f : e, n) - ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).T_ext(ch.fcl()(f, 2), n));
 
           //correction non lineaire : parties "elements/faces" et "faces/elements"
-          for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
+          for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
             {
               double corr = std::max(delta_e(e, n), delta_f(f, n)) * (inco(e, n) - inco(ne_tot + f, n));
               resu(e, n) -= corr, resu(ne_tot + f, n) += corr;
@@ -389,31 +389,31 @@ void Op_Diff_PolyMAC_Elem::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
           for (f = e_f(e, i), j = domaine.w2i(domaine.m2d(e) + i), mfe = 0; j < domaine.w2i(domaine.m2d(e) + i + 1); j++, mfe += mff)
             {
               for (fb = e_f(e, domaine.w2j(j)), n = 0, fac = fs(f) * fs(fb) / ve(e) * domaine.w2c(j); n < N; n++) mff(n) = fac * nu_ef(domaine.w2j(j), n);
-              for (n = 0; f < domaine.nb_faces() && ch.icl(f, 0) < 6 && ch.icl(fb, 0) < 6 && n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += mff(n);
-              for (n = 0; e < domaine.nb_elem() && ch.icl(fb, 0) < 6 && n < N; n++) matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
+              for (n = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 6 && ch.fcl()(fb, 0) < 6 && n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + fb) + n) += mff(n);
+              for (n = 0; e < domaine.nb_elem() && ch.fcl()(fb, 0) < 6 && n < N; n++) matrice(N * e + n, N * (ne_tot + fb) + n) -= mff(n);
 
               //correction non lineaire : partie "faces/faces"
-              for (n = 0; stab_ && ch.icl(f, 0) < 4 && f < domaine.nb_faces() && n < N; n++)
+              for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && f < domaine.nb_faces() && n < N; n++)
                 for (k = 0, fac = std::max(delta_f(f, n), delta_f(fb, n)); k < 2; k++)
                   matrice(N * (ne_tot + f) + n, N * (ne_tot + (k ? fb : f)) + n) += (k ? -1 : 1) * fac;
             }
-          for (n = 0; f < domaine.nb_faces() && ch.icl(f, 0) < 6 && n < N; n++) matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
+          for (n = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 6 && n < N; n++) matrice(N * (ne_tot + f) + n, N * e + n) -= mfe(n);
 
           //Echange_impose_base
-          if (ch.icl(f, 0) > 0 && ch.icl(f, 0) < 2 && f < domaine.nb_faces())
+          if (ch.fcl()(f, 0) > 0 && ch.fcl()(f, 0) < 2 && f < domaine.nb_faces())
             for (n = 0; n < N; n++)
-              matrice(N * (ne_tot + f) + n, N * (ch.icl(f, 0) == 1 ? ne_tot + f : e) + n) += fs(f) * ref_cast(Echange_impose_base, cls[ch.icl(f, 1)].valeur()).h_imp(ch.icl(f, 2), n);
-          else if (ch.icl(f, 0) == 3 && f < domaine.nb_faces()) //paroi_contact gere en monolithique -> ajout du coeff a la face issu de l'autre cote
+              matrice(N * (ne_tot + f) + n, N * (ch.fcl()(f, 0) == 1 ? ne_tot + f : e) + n) += fs(f) * ref_cast(Echange_impose_base, cls[ch.fcl()(f, 1)].valeur()).h_imp(ch.fcl()(f, 2), n);
+          else if (ch.fcl()(f, 0) == 3 && f < domaine.nb_faces()) //paroi_contact gere en monolithique -> ajout du coeff a la face issu de l'autre cote
             {
-              const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[ch.icl(f, 1)].valeur());
-              for (j = ch.icl(f, 2), n = 0; n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += cl.coeff(j, 0, n); //coeff de la face elle-meme
+              const Echange_contact_PolyMAC& cl = ref_cast(Echange_contact_PolyMAC, cls[ch.fcl()(f, 1)].valeur());
+              for (j = ch.fcl()(f, 2), n = 0; n < N; n++) matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += cl.coeff(j, 0, n); //coeff de la face elle-meme
               for (k = 0; stab_ && k < cl.item.dimension(1) && cl.item(j, k) >= 0; k++)
                 for (n = 0; n < N; n++) //correction non lineaire
                   matrice(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += std::max(delta_f(f, n), cl.delta(j, k, n));
             }
 
           //correction non lineaire : parties "elements/faces" et "faces/elements"
-          for (n = 0; stab_ && ch.icl(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
+          for (n = 0; stab_ && ch.fcl()(f, 0) < 4 && n < N; n++) //non appliquee aux CLs de Dirichlet ou Neumann
             {
               double corr = std::max(delta_e(e, n), delta_f(f, n));
               for (k = 0; k < 2; k++)

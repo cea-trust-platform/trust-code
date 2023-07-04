@@ -92,7 +92,7 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, mon_equation->inconnue().valeur());
   int i, j, k, e, f, fb, n_f, ne = domaine.nb_elem(), ne_tot = domaine.nb_elem_tot(), nf = domaine.nb_faces(), nf_tot = domaine.nb_faces_tot(),
                               na_tot = dimension < 3 ? domaine.domaine().nb_som_tot() : domaine.domaine().nb_aretes_tot(), infoo;
-  domaine.init_m2(), ch.init_cl();
+  domaine.init_m2(), ch.fcl();
 
   DoubleTrav W(e_f.dimension(1), e_f.dimension(1)), W0(e_f.dimension(1), e_f.dimension(1));
   W.set_smart_resize(1), W0.set_smart_resize(1);
@@ -118,8 +118,8 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
                   stencil_M.append_line(ne_tot + f, ne_tot + fb);
                   if (e == f_e(f, 0)) stencil_R.append_line(f, ne_tot + fb);
                 }
-              if (ch.icl(f, 0) != 1 && e < ne) stencil_M.append_line(e, ne_tot + f);
-              if (ch.icl(f, 0) != 1 && f < nf) stencil_M.append_line(ne_tot + f, e);
+              if (ch.fcl()(f, 0) != 1 && e < ne) stencil_M.append_line(e, ne_tot + f);
+              if (ch.fcl()(f, 0) != 1 && f < nf) stencil_M.append_line(ne_tot + f, e);
               if (e == f_e(f, 0)    && f < nf) stencil_R.append_line(f, e);
             }
           if (e < ne) stencil_M.append_line(e, e);
@@ -173,12 +173,12 @@ int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& d
           for (f = e_f(e, i), mef = 0, rfe = 0, j = 0; f < nf && j < n_f; mef += mff, rfe += rff, j++, mff = 0, rff = 0)
             {
               fb = e_f(e, j), mff = fs(f) * fs(fb) * pe(e) * W(i, j) / ve(e), rff = e == f_e(f, 0) ? fs(fb) * pe(e) * W(i, j) / (ve(e) * pf(f)) : 0;
-              if (mff && ch.icl(f, 0) != 1 && ch.icl(fb, 0) != 1) mat(ne_tot + f, ne_tot + fb) += mff;
-              else if (ch.icl(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
+              if (mff && ch.fcl()(f, 0) != 1 && ch.fcl()(fb, 0) != 1) mat(ne_tot + f, ne_tot + fb) += mff;
+              else if (ch.fcl()(f, 0) == 1 && f == fb) mat(ne_tot + f, ne_tot + fb) += 1;
               if (rff) rec(f, ne_tot + fb) += rff;
             }
-          if (ch.icl(f, 0) != 1 && e < ne) mat(e, ne_tot + f) -= mef;
-          if (ch.icl(f, 0) != 1 && f < nf) mat(ne_tot + f, e) -= mef;
+          if (ch.fcl()(f, 0) != 1 && e < ne) mat(e, ne_tot + f) -= mef;
+          if (ch.fcl()(f, 0) != 1 && f < nf) mat(ne_tot + f, e) -= mef;
           if (e == f_e(f, 0) && f < nf) rec(f, e) -= rfe;
         }
       if (e < ne) mat(e, e) += mee;

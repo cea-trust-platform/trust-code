@@ -47,7 +47,7 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
   assert(le_dom_Cl_PolyMAC.non_nul());
   const Domaine_PolyMAC& domaine_PolyMAC = le_dom_PolyMAC.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
-  ch.init_cl();
+  ch.fcl();
 
   assert(sm.nb_dim() <= 2); // sinon on ne fait pas ce qu'il faut
   int nb_faces_tot = domaine_PolyMAC.nb_faces_tot();
@@ -61,7 +61,7 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 
   //mise a zero de la partie vitesse de sm sur les faces a vitesse imposee
   for (int f = 0; f < domaine_PolyMAC.nb_faces(); f++)
-    if (ch.icl(f, 0) > 1)
+    if (ch.fcl()(f, 0) > 1)
       for (int k = 0; k < nc; k++) sm(f, k) = 0;
 
   return sm;
@@ -107,9 +107,9 @@ void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
   //partie vitesses : matrice de masse des vitesses si la face n'est pas a vitesse imposee, diagonale sinon
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = 0, j = domaine.m2d(e); j < domaine.m2d(e + 1); i++, j++)
-      if (ch.icl(f = e_f(e, i), 0) > 1 && f < domaine.nb_faces()) indice.append_line(f, f);
+      if (ch.fcl()(f = e_f(e, i), 0) > 1 && f < domaine.nb_faces()) indice.append_line(f, f);
       else for (k = domaine.m2i(j); f < domaine.nb_faces() && k < domaine.m2i(j + 1); k++)
-          if (ch.icl(fb = e_f(e, domaine.m2j(k)), 0) < 2) indice.append_line(f, fb);
+          if (ch.fcl()(fb = e_f(e, domaine.m2j(k)), 0) < 2) indice.append_line(f, fb);
 
   //partie vorticites : diagonale si pas de diffusion
   if (!only_m2)
@@ -137,21 +137,21 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
 
   //partie vitesses : vitesses imposees par CLs
   for (f = 0; f < domaine.premiere_face_int(); f++)
-    if (ch.icl(f, 0) == 3)
+    if (ch.fcl()(f, 0) == 3)
       for (k = 0, secmem(f) = 0; k < dimension; k++)//valeur imposee par une CL de type Dirichlet
-        secmem(f) += nf(f, k) * ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), k) / fs(f);
-    else if (ch.icl(f, 0) > 1) secmem(f) = 0; //Dirichlet homogene ou Symetrie
+        secmem(f) += nf(f, k) * ref_cast(Dirichlet, cls[ch.fcl()(f, 1)].valeur()).val_imp(ch.fcl()(f, 2), k) / fs(f);
+    else if (ch.fcl()(f, 0) > 1) secmem(f) = 0; //Dirichlet homogene ou Symetrie
 
   //partie vitesses : m2 / dt
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = 0, j = domaine.m2d(e); j < domaine.m2d(e + 1); i++, j++)
-      for (f = e_f(e, i), k = domaine.m2i(j); ch.icl(f, 0) < 2 && f < domaine.nb_faces() && k < domaine.m2i(j + 1); k++)
-        if (ch.icl(fb = e_f(e, domaine.m2j(k)), 0) < 2) //vfb calcule
+      for (f = e_f(e, i), k = domaine.m2i(j); ch.fcl()(f, 0) < 2 && f < domaine.nb_faces() && k < domaine.m2i(j + 1); k++)
+        if (ch.fcl()(fb = e_f(e, domaine.m2j(k)), 0) < 2) //vfb calcule
           secmem(f) += ve(e) * pe(e) * domaine.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f) * inco(fb) / dt;
-        else if (ch.icl(fb, 0) == 3)
+        else if (ch.fcl()(fb, 0) == 3)
           for (l = 0; l < dimension; l++) //vfb impose par Dirichlet
             secmem(f) += ve(e) * pe(e) * domaine.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f)
-                         * ref_cast(Dirichlet, cls[ch.icl(fb, 1)].valeur()).val_imp(ch.icl(fb, 2), l) * nf(fb, l) / (fs(fb) * dt);
+                         * ref_cast(Dirichlet, cls[ch.fcl()(fb, 1)].valeur()).val_imp(ch.fcl()(fb, 2), l) * nf(fb, l) / (fs(fb) * dt);
 
   return secmem;
 }
@@ -172,13 +172,13 @@ Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
 
   //partie vitesses : vitesses imposees par CLs
   for (f = 0; f < domaine.premiere_face_int(); f++)
-    if (ch.icl(f, 0) > 1) mat(f, f) = 1;
+    if (ch.fcl()(f, 0) > 1) mat(f, f) = 1;
 
   //partie vitesses : m2 / dt
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = 0, j = domaine.m2d(e); j < domaine.m2d(e + 1); i++, j++)
-      for (f = e_f(e, i), k = domaine.m2i(j); ch.icl(f, 0) < 2 && f < domaine.nb_faces() && k < domaine.m2i(j + 1); k++)
-        if (ch.icl(fb = e_f(e, domaine.m2j(k)), 0) < 2) //vfb calcule
+      for (f = e_f(e, i), k = domaine.m2i(j); ch.fcl()(f, 0) < 2 && f < domaine.nb_faces() && k < domaine.m2i(j + 1); k++)
+        if (ch.fcl()(fb = e_f(e, domaine.m2j(k)), 0) < 2) //vfb calcule
           mat(f, fb) += ve(e) * pe(e) * domaine.m2c(k) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * coef(f) / dt;
 
   //partie vorticites : diagonale si Op_Diff_negligeable

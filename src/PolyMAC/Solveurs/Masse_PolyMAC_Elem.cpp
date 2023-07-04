@@ -112,7 +112,7 @@ void Masse_PolyMAC_Elem::dimensionner(Matrice_Morse& matrix) const
   int e, f, ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot(), n, N = ch.valeurs().line_size();
   const bool only_ne = (matrix.nb_lignes() == ne_tot);
 
-  domaine.init_m2(), ch.init_cl();
+  domaine.init_m2(), ch.fcl();
   IntTab indice(0,2);
   indice.set_smart_resize(1);
   //partie superieure : diagonale
@@ -120,7 +120,7 @@ void Masse_PolyMAC_Elem::dimensionner(Matrice_Morse& matrix) const
     for (n = 0; n < N; n++) indice.append_line(N * e + n, N * e + n);
   //partie inferieure : diagonale pour les CLs de Dirichlet
   for (f = 0; !only_ne && f < domaine.nb_faces(); f++)
-    if (no_diff_ || ch.icl(f, 0) > 5)
+    if (no_diff_ || ch.fcl()(f, 0) > 5)
       for (n = 0; n < N; n++) indice.append_line(N * (ne_tot + f) + n, N * (ne_tot + f) + n);
 
   tableau_trier_retirer_doublons(indice);
@@ -138,7 +138,7 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
   coef = 1.;
   if (has_coefficient_temporel_) appliquer_coef(coef);
 
-  ch.init_cl();
+  ch.fcl();
   //partie superieure : diagonale
   for (e = 0; e < domaine.nb_elem(); e++)
     for (n = 0; n < N; n++)
@@ -146,12 +146,12 @@ DoubleTab& Masse_PolyMAC_Elem::ajouter_masse(double dt, DoubleTab& secmem, const
 
   //partie inferieure : valeur imposee pour les CLs de Neumann / Dirichlet / Echange_Impose
   for (f = 0; secmem.dimension_tot(0) > ne_tot && f < domaine.nb_faces(); f++)
-    if (ch.icl(f, 0) == 4)
+    if (ch.fcl()(f, 0) == 4)
       for (n = 0; n < N; n++) //Neumann_paroi
-        secmem(N * (ne_tot + f) + n) -= fs(f) * ref_cast(Neumann_paroi, cls[ch.icl(f, 1)].valeur()).flux_impose(ch.icl(f, 2), n);
-    else if (ch.icl(f, 0) == 6)
+        secmem(N * (ne_tot + f) + n) -= fs(f) * ref_cast(Neumann_paroi, cls[ch.fcl()(f, 1)].valeur()).flux_impose(ch.fcl()(f, 2), n);
+    else if (ch.fcl()(f, 0) == 6)
       for (n = 0; n < N; n++) //Dirichlet
-        secmem(N * (ne_tot + f) + n) += ref_cast(Dirichlet, cls[ch.icl(f, 1)].valeur()).val_imp(ch.icl(f, 2), n);
+        secmem(N * (ne_tot + f) + n) += ref_cast(Dirichlet, cls[ch.fcl()(f, 1)].valeur()).val_imp(ch.fcl()(f, 2), n);
 
   return secmem;
 }
@@ -167,14 +167,14 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
   coef = 1.;
   if (has_coefficient_temporel_) appliquer_coef(coef);
 
-  domaine.init_m2(), ch.init_cl();
+  domaine.init_m2(), ch.fcl();
   //partie superieure : diagonale
   for (e = 0; e < domaine.nb_elem(); e++)
     for (n = 0; n < N; n++) mat(N * e + n, N * e + n) += coef(e) * pe(e) * ve(e) / dt; //diagonale
 
   //partie inferieure : 1 pour les flux imposes par CLs aux faces (si diffusion) ou pour toutes les faces (sinon)
   for (f = 0; mat.nb_lignes() > N * ne_tot && f < domaine.nb_faces(); f++)
-    if (ch.icl(f, 0) > 5 || no_diff_)
+    if (ch.fcl()(f, 0) > 5 || no_diff_)
       for (n = 0; n < N; n++) //Dirichlet ou Dirichlet_homogene
         mat(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += 1;
 

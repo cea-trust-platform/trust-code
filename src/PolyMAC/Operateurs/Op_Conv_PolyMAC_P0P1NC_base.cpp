@@ -19,7 +19,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Probleme_base.h>
 #include <EcrFicPartage.h>
-#include <Domaine_PolyMAC_P0P1NC.h>
+#include <Domaine_Poly_base.h>
 #include <Champ.h>
 
 Implemente_base(Op_Conv_PolyMAC_P0P1NC_base,"Op_Conv_PolyMAC_P0P1NC_base",Operateur_Conv_base);
@@ -45,7 +45,7 @@ void Op_Conv_PolyMAC_P0P1NC_base::associer_domaine_cl_dis(const Domaine_Cl_dis_b
 
 void Op_Conv_PolyMAC_P0P1NC_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& zcl,const Champ_Inc& )
 {
-  le_dom_poly_ = ref_cast(Domaine_PolyMAC_P0P1NC,domaine_dis.valeur());
+  le_dom_poly_ = ref_cast(Domaine_Poly_base,domaine_dis.valeur());
   la_zcl_poly_ = ref_cast(Domaine_Cl_PolyMAC,zcl.valeur());
 
 }

@@ -40,9 +40,9 @@ public:
   virtual DoubleVect& get_elem_vector(const int, DoubleVect& ) const;
 
 protected:
-  virtual DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const = 0;
   void init_fcl() const;
-  mutable IntTab fcl_;
+  virtual DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const = 0;
+  mutable IntTab fcl_; // fcl_(f, .) = { type de CL, num de la CL, indice de la face dans la CL }
   mutable int fcl_init_ = 0;
 };
 

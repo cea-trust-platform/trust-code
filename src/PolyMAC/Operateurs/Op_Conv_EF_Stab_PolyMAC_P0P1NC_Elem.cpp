@@ -122,7 +122,7 @@ double Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::calculer_dt_stab() const
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-  const IntTab& f_e = domaine.face_voisins(), &fcl_v = ref_cast(Champ_Face_PolyMAC_P0P1NC, vitesse_.valeur()).fcl();
+  const IntTab& f_e = domaine.face_voisins(), &fcl_v = ref_cast(Champ_Face_base, vitesse_.valeur()).fcl();
   int i, j, e, eb, f, n, N = equation().inconnue().valeurs().line_size();
   const Champ_Inc_base& cc = equation().champ_convecte();
 
@@ -158,7 +158,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_PolyMAC_P0P1NC, vitesse_.valeur()).fcl();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_base, vitesse_.valeur()).fcl();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco->valeur() : equation().champ_convecte();
   const std::string& nom_cc = cc.le_nom().getString();

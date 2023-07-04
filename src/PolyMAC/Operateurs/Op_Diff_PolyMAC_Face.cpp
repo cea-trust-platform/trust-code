@@ -74,7 +74,7 @@ void Op_Diff_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
   //partie vitesses : m2 Rf
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = domaine.m2d(e), idx = 0; i < domaine.m2d(e + 1); i++, idx++)
-      for (f = e_f(e, idx), j = domaine.m2i(i); f < domaine.nb_faces() && ch.icl(f, 0) < 2 && j < domaine.m2i(i + 1); j++)
+      for (f = e_f(e, idx), j = domaine.m2i(i); f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < domaine.m2i(i + 1); j++)
         for (fb = e_f(e, domaine.m2j(j)), k = domaine.rfdeb(fb); k < domaine.rfdeb(fb + 1); k++) stencil.append_line(f, nf_tot + domaine.rfji(k));
 
   //partie vorticites : Ra m2 - m1 / nu
@@ -103,7 +103,7 @@ inline DoubleTab& Op_Diff_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
   //partie vitesses : m2 Rf
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = domaine.m2d(e), idx = 0; i < domaine.m2d(e + 1); i++, idx++)
-      for (f = e_f(e, idx), j = domaine.m2i(i); f < domaine.nb_faces() && ch.icl(f, 0) < 2 && j < domaine.m2i(i + 1); j++)
+      for (f = e_f(e, idx), j = domaine.m2i(i); f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < domaine.m2i(i + 1); j++)
         for (fb = e_f(e, domaine.m2j(j)), k = domaine.rfdeb(fb); k < domaine.rfdeb(fb + 1); k++)
           resu(f) -= domaine.m2c(j) * ve(e) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * pe(e) * domaine.rfci(k) * inco(nf_tot + domaine.rfji(k));
 
@@ -117,7 +117,7 @@ inline DoubleTab& Op_Diff_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab
       //rotationnel : vitesses aux bords
       for (i = ch.radeb(a, 1); i < ch.radeb(a + 1, 1); i++)
         for (k = 0; k < dimension; k++)
-          resu(nf_tot + a) -= ch.racf(i, k) * ref_cast(Dirichlet, cls[ch.icl(ch.rajf(i), 1)].valeur()).val_imp(ch.icl(ch.rajf(i), 2), k);
+          resu(nf_tot + a) -= ch.racf(i, k) * ref_cast(Dirichlet, cls[ch.fcl()(ch.rajf(i), 1)].valeur()).val_imp(ch.fcl()(ch.rajf(i), 2), k);
       // -m1 / nu
       for (i = domaine.m1deb(a); i < domaine.m1deb(a + 1); i++)
         resu(nf_tot + a) += domaine.m1ci(i) / (pe(domaine.m1ji(i, 1)) * nu_(domaine.m1ji(i, 1), 0)) * inco(nf_tot + domaine.m1ji(i, 0));
@@ -140,7 +140,7 @@ inline void Op_Diff_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
   //partie vitesses : m2 Rf
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = domaine.m2d(e), idx = 0; i < domaine.m2d(e + 1); i++, idx++)
-      for (f = e_f(e, idx), j = domaine.m2i(i); f < domaine.nb_faces() && ch.icl(f, 0) < 2 && j < domaine.m2i(i + 1); j++)
+      for (f = e_f(e, idx), j = domaine.m2i(i); f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < domaine.m2i(i + 1); j++)
         for (fb = e_f(e, domaine.m2j(j)), k = domaine.rfdeb(fb); k < domaine.rfdeb(fb + 1); k++)
           matrice(f, nf_tot + domaine.rfji(k)) += domaine.m2c(j) * ve(e) * (e == f_e(f, 0) ? 1 : -1) * (e == f_e(fb, 0) ? 1 : -1) * pe(e) * domaine.rfci(k);
 
@@ -149,7 +149,7 @@ inline void Op_Diff_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matri
     {
       //rotationnel : vitesses internes
       for (i = ch.radeb(a, 0); i < ch.radeb(a + 1, 0); i++)
-        if (ch.icl(f = ch.raji(i), 0) < 2)
+        if (ch.fcl()(f = ch.raji(i), 0) < 2)
           matrice(nf_tot + a, f) += ch.raci(i);
       // -m1 / nu
       for (i = domaine.m1deb(a); i < domaine.m1deb(a + 1); i++)
