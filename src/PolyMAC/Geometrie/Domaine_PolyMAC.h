@@ -28,10 +28,6 @@
 #include <Dirichlet.h>
 #include <Symetrie.h>
 
-#ifndef __clang__
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
-
 class Domaine_PolyMAC : public Domaine_Poly_base
 {
   Declare_instanciable(Domaine_PolyMAC);
@@ -40,24 +36,14 @@ public :
   void swap(int, int, int) { }
   void modifier_pour_Cl(const Conds_lim& ) override;
 
-  inline double carre_pas_maille(int i) const { return h_carre_(i); }
-  inline const DoubleVect& longueur_aretes() const { return longueur_aretes_; }
-  inline const DoubleTab& ta() const { return ta_; }
   inline const IntTab& arete_faces() const { return arete_faces_; }
-
-  void calculer_volumes_entrelaces();
-
+  void calculer_volumes_entrelaces() override;
   void calculer_h_carre();
 
   inline double dot (const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
   inline std::array<double, 3> cross(int dima, int dimb, const double *a, const double *b, const double *ma = NULL, const double *mb = NULL) const;
 
   IntVect cyclic; // cyclic(i) = 1 i le poly i est cyclique
-
-  void orthocentrer();
-
-  //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
-  std::vector<std::map<int, int> > som_arete;
 
   //quelles structures optionelles on a initialise
   mutable std::map<std::string, int> is_init;
@@ -97,15 +83,11 @@ public :
   mutable IntTab m1deb, m1ji; //reconstruction de m1 par (m1ji(.,0), m1ci)[m1deb(a), m1deb(a + 1)[ (sommets en 2D, aretes en 3D); m1ji(.,1) contient le numero d'element
   mutable DoubleTab m1ci;
 
-  //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
-  mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
-
   //std::map permettant de retrouver le couple (proc, item local) associe a un item virtuel pour le mdv_elem_faces
   void init_virt_ef_map() const;
   mutable std::map<std::array<int, 2>, int> virt_ef_map;
 
 private:
-  DoubleVect longueur_aretes_; //longueur des aretes
 
   void remplir_elem_faces() override;
   void creer_faces_virtuelles_non_std();
@@ -113,7 +95,6 @@ private:
   void init_m2_osqp() const;
 
   mutable IntTab arete_faces_; //connectivite face -> aretes
-  mutable DoubleTab ta_;       //vecteurs tangents aux aretes
 };
 
 /* produit scalaire de deux vecteurs */

@@ -16,74 +16,12 @@
 #ifndef Domaine_PolyMAC_P0_included
 #define Domaine_PolyMAC_P0_included
 
-#include <Champ_front_var_instationnaire.h>
-#include <Echange_global_impose.h>
-#include <Neumann_sortie_libre.h>
-#include <Matrice_Morse_Sym.h>
-#include <Neumann_homogene.h>
-#include <Static_Int_Lists.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
-#include <SolveurSys.h>
-#include <TRUSTLists.h>
-#include <Periodique.h>
-#include <TRUSTTrav.h>
-#include <Dirichlet.h>
-#include <Conds_lim.h>
-#include <Symetrie.h>
-#include <Domaine_Poly_base.h>
-#include <Domaine.h>
-#include <Lapack.h>
-#include <math.h>
-#include <vector>
-#include <string>
-#include <array>
-#include <map>
-
-class Geometrie;
-
-/*! @brief class Domaine_PolyMAC_P0
- *
- *  	Classe instanciable qui derive de Domaine_VF.
- *  	Cette classe contient les informations geometriques que demande
- *  	la methode des Volumes Elements Finis (element de Crouzeix-Raviart)
- *  	La classe porte un certain nombre d'informations concernant les faces
- *  	Dans cet ensemble de faces on fait figurer aussi les faces du bord et
- *       des joints. Pour manipuler les faces on distingue 2 categories:
- *            - les faces non standard qui sont sur un joint, un bord ou qui sont
- *              internes tout en appartenant a un element du bord
- *            - les faces standard qui sont les faces internes n'appartenant pas
- *              a un element du bord
- *       Cette distinction correspond au traitement des conditions aux limites:les
- *       faces standard ne "voient pas" les conditions aux limites.
- *       L'ensemble des faces est numerote comme suit:
- *            - les faces qui sont sur un Domaine_joint apparaissent en premier
- *     	       (dans l'ordre du vecteur les_joints)
- *    	     - les faces qui sont sur un Domaine_bord apparaissent ensuite
- * 	       (dans l'ordre du vecteur les_bords)
- *   	     - les faces internes non standard apparaissent ensuite
- *            - les faces internes standard en dernier
- *       Finalement on trouve regroupees en premier toutes les faces non standard
- *       qui vont necessiter un traitement particulier
- *       On distingue deux types d'elements
- *            - les elements non standard : ils ont au moins une face de bord
- *            - les elements standard : ils n'ont pas de face de bord
- *       Les elements standard (resp. les elements non standard) ne sont pas ranges
- *       de maniere consecutive dans l'objet Domaine. On utilise le tableau
- *       rang_elem_non_std pour acceder de maniere selective a l'un ou
- *       l'autre des types d'elements
- *
- *
- *
- */
-
 
 class Domaine_PolyMAC_P0 : public Domaine_PolyMAC_P0P1NC
 {
-
   Declare_instanciable(Domaine_PolyMAC_P0);
-
 public :
-
   void discretiser() override;
 
   //stencil du gradient aux faces fgrad : fsten_eb([fsten_d(f), fsten_d(f + 1)[]) -> elements e, faces de bord ne_tot + f
@@ -112,4 +50,4 @@ private:
   mutable int first_fgrad_ = 1; //pour n'afficher le message "MPFA-O MPFA-O(h) VFSYM" qu'une seule fois par calcul
 };
 
-#endif
+#endif /* Domaine_PolyMAC_P0_included */

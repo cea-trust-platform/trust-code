@@ -16,11 +16,11 @@
 #include <Linear_algebra_tools_impl.h>
 #include <Connectivite_som_elem.h>
 #include <MD_Vector_composite.h>
+#include <Domaine_Poly_base.h>
 #include <MD_Vector_tools.h>
 #include <Comm_Group_MPI.h>
 #include <Quadrangle_VEF.h>
 #include <communications.h>
-#include <Domaine_Poly_base.h>
 #include <Matrice_Morse.h>
 #include <Segment_poly.h>
 #include <Statistiques.h>
@@ -48,16 +48,14 @@
 #include <Lapack.h>
 #include <numeric>
 #include <vector>
+#include <cfloat>
 #include <tuple>
 #include <cmath>
+#include <cfenv>
 #include <set>
 #include <map>
 
 Implemente_base(Domaine_Poly_base,"Domaine_Poly_base",Domaine_VF);
-
-
-//// printOn
-//
 
 Sortie& Domaine_Poly_base::ecrit(Sortie& os) const
 {
@@ -94,9 +92,6 @@ Sortie& Domaine_Poly_base::printOn(Sortie& os) const
   os << rang_elem_non_std_ << finl;
   return os;
 }
-
-//// readOn
-//
 
 Entree& Domaine_Poly_base::readOn(Entree& is)
 {
@@ -474,15 +469,8 @@ void Domaine_Poly_base::discretiser()
 
   detecter_faces_non_planes();
 
-  //volumes_entrelaces_ et volumes_entrelaces_dir : par projection de l'amont/aval sur la normale a la face
-  creer_tableau_faces(volumes_entrelaces_);
-  volumes_entrelaces_dir_.resize(0, 2), creer_tableau_faces(volumes_entrelaces_dir_);
-  for (int f = 0, i, e; f < nb_faces(); f++)
-    for (i = 0; i < 2 && (e = face_voisins_(f, i)) >= 0; volumes_entrelaces_(f) += volumes_entrelaces_dir_(f, i), i++)
-      volumes_entrelaces_dir_(f, i) = std::fabs(dot(&xp_(e, 0), &face_normales_(f, 0), &xv_(f, 0)));
-  volumes_entrelaces_.echange_espace_virtuel(), volumes_entrelaces_dir_.echange_espace_virtuel();
+  calculer_volumes_entrelaces();
 
-  //calculer_h_carre();
   /* ordre canonique dans elem_faces_ */
   std::map<std::array<double, 3>, int> xv_fsa;
   for (int e = 0, i, j, f; e < nb_elem_tot(); e++)
@@ -491,6 +479,8 @@ void Domaine_Poly_base::discretiser()
         xv_fsa[ {{ xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2) }}] = f;
       for (auto &&c_f : xv_fsa) elem_faces_(e, j) = c_f.second, j++;
     }
+
+  //calculer_h_carre();
 }
 
 void Domaine_Poly_base::detecter_faces_non_planes() const
@@ -520,6 +510,137 @@ void Domaine_Poly_base::detecter_faces_non_planes() const
       Cerr << "Domaine_Poly_base : non-planar face detected ! Please fix your mesh or call 911 ..." << finl;
       Process::exit();
     }
+}
+
+void Domaine_Poly_base::discretiser_aretes()
+{
+  //diverses quantites liees aux aretes
+  if (dimension > 2)
+    {
+      domaine().creer_aretes();
+      md_vector_aretes_ = domaine().aretes_som().get_md_vector();
+
+      /* ordre canonique dans aretes_som */
+      IntTab& a_s = domaine().set_aretes_som(), &e_a = domaine().set_elem_aretes();
+      const DoubleTab& xs = domaine().coord_sommets();
+      std::map<std::array<double, 3>, int> xv_fsa;
+      for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
+        {
+          for (i = 0, j = 0, xv_fsa.clear(); i < a_s.dimension(1) && (s = a_s(a, i)) >= 0; i++) xv_fsa[ {{ xs(s, 0), xs(s, 1), xs(s, 2) }}] = s;
+          for (auto &&c_s : xv_fsa) a_s(a, j) = c_s.second, j++;
+        }
+
+      //remplissage de som_aretes
+      som_arete.resize(domaine().nb_som_tot());
+      for (int i = 0; i < a_s.dimension_tot(0); i++)
+        for (int j = 0; j < 2; j++) som_arete[a_s(i, j)][a_s(i, !j)] = i;
+
+      //remplissage de xa (CGs des aretes), de ta_ (vecteur tangent aux aretes) et de longueur_arete_ (longueurs des aretes)
+      xa_.resize(0, 3), ta_.resize(0, 3);
+      creer_tableau_aretes(xa_), creer_tableau_aretes(ta_), creer_tableau_aretes(longueur_aretes_);
+      for (int i = 0, k; i < domaine().nb_aretes_tot(); i++)
+        {
+          int s1 = a_s(i, 0), s2 = a_s(i, 1);
+          longueur_aretes_(i) = sqrt( dot(&xs(s2, 0), &xs(s2, 0), &xs(s1, 0), &xs(s1, 0)));
+          for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
+        }
+
+      /* ordre canonique dans elem_aretes_ */
+      for (int e = 0, i, j, a; e < nb_elem_tot(); e++)
+        {
+          for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
+          for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
+        }
+    }
+
+  //MD_vector pour Champ_Elem_PolyMAC_P0P1NC (elems + faces)
+  MD_Vector_composite mdc_ef;
+  mdc_ef.add_part(domaine().md_vector_elements()), mdc_ef.add_part(md_vector_faces());
+  mdv_elems_faces.copy(mdc_ef);
+
+  //MD_vector pour Champ_Face_PolyMAC_P0P1NC (faces + aretes)
+  MD_Vector_composite mdc_fa;
+  mdc_fa.add_part(md_vector_faces()), mdc_fa.add_part(dimension < 3 ? domaine().md_vector_sommets() : md_vector_aretes());
+  mdv_faces_aretes.copy(mdc_fa);
+}
+
+void Domaine_Poly_base::orthocentrer()
+{
+  const IntTab& f_s = face_sommets(), &e_s = domaine().les_elems(), &e_f = elem_faces();
+  const DoubleTab& xs = domaine().coord_sommets(), &nf = face_normales_;
+  const DoubleVect& fs = face_surfaces();
+  int i, j, e, f, s, np;
+  DoubleTab M(0, dimension + 1), X(dimension + 1, 1), S(0, 1), vp; //pour les systemes lineaires
+  M.set_smart_resize(1), S.set_smart_resize(1), vp.set_smart_resize(1);
+  IntTrav b_f_ortho, b_e_ortho; // b_{f,e}_ortho(f/e) = 1 si la face / l'element est orthocentre
+  creer_tableau_faces(b_f_ortho), domaine().creer_tableau_elements(b_e_ortho);
+
+  /* 1. orthocentrage des faces (en dimension 3) */
+  Cerr << domaine().le_nom() << " : ";
+  if (dimension < 3) b_f_ortho = 1; //les faces (segments) sont deja orthcentrees!
+  else for (f = 0; f < nb_faces_tot(); f++)
+      {
+        //la face est-elle deja orthocentree?
+        double d2min = DBL_MAX, d2max = 0, d2;
+        for (i = 0, np = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++, np++)
+          d2min = std::min(d2min, d2 = dot(&xs(s, 0), &xs(s, 0), &xv_(f, 0), &xv_(f, 0))), d2max = std::max(d2max, d2);
+        if ((b_f_ortho(f) = (d2max / d2min - 1 < 1e-8))) continue;
+
+        //peut-on l'orthocentrer?
+        M.resize(np + 1, 4), S.resize(np + 1, 1);
+        for (i = 0; i < np; i++)
+          for (j = 0, S(i, 0) = 0, M(i, 3) = 1; j < 3; j++)
+            S(i, 0) += 0.5 * std::pow(M(i, j) = xs(f_s(f, i), j) - xv_(f, j), 2);
+        for (j = 0, S(np, 0) = M(np, 3) = 0; j < 3; j++) M(np, j) = nf(f, j) / fs(f);
+        if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //la face n'a pas d'orthocentre
+
+        //contrainte : ne pas diminuer la distance entre xv et chaque arete de plus de 50%
+        double r2min = DBL_MAX;
+        for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
+          {
+            int s2 = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0),
+                a = som_arete[s].at(s2);
+            std::array<double, 3> vec = cross(3, 3, &xv_(f, 0), &ta_(a, 0), &xs(s, 0));
+            r2min = std::min(r2min, dot(&vec[0], &vec[0]));
+          }
+        if (dot(&X(0, 0), &X(0, 0)) > 0.25 * r2min) continue; //on s'eloigne trop du CG
+
+        for (i = 0, b_f_ortho(f) = 1; i < dimension; i++)
+          if (std::fabs(X(i, 0)) > 1e-8) xv_(f, i) += X(i, 0);
+      }
+  Cerr << 100. * mp_somme_vect(b_f_ortho) / Process::mp_sum(nb_faces()) << "% orthocentered faces " << finl;
+
+  /* 2. orthocentrage des elements */
+  Cerr << domaine().le_nom() << " : ";
+  for (e = 0; e < nb_elem_tot(); e++)
+    {
+      //l'element est-il deja orthocentre?
+      double d2min = DBL_MAX, d2max = 0, d2;
+      for (i = 0, np = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++, np++)
+        d2min = std::min(d2min, d2 = dot(&xs(s, 0), &xs(s, 0), &xp_(e, 0), &xp_(e, 0))), d2max = std::max(d2max, d2);
+      if ((b_e_ortho(e) = (d2max / d2min - 1 < 1e-8))) continue;
+
+      //pour qu'on puisse l'orthocentrer, il faut que ses faces le soient
+      for (i = 0, j = 1; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) j = j && b_f_ortho(f);
+      if (!j) continue;
+
+      //existe-il un orthocentre?
+      M.resize(np, dimension + 1), S.resize(np, 1);
+      for (i = 0; i < np; i++)
+        for (j = 0, S(i, 0) = 0, M(i, dimension) = 1; j < dimension; j++)
+          S(i, 0) += 0.5 * std::pow(M(i, j) = xs(e_s(e, i), j) - xp_(e, j), 2);
+      if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //l'element n'a pas d'orthocentre
+
+      //contrainte : ne pas diminuer la distance entre xp et chaque face de plus de 50%
+      double rmin = DBL_MAX;
+      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
+        rmin = std::min(rmin, std::fabs(dot(&xp_(e, 0), &nf(f, 0), &xv_(f, 0)) / fs(f)));
+      if (dot(&X(0, 0), &X(0, 0)) > 0.25 * rmin * rmin) continue; //on s'eloigne trop du CG
+
+      for (i = 0, b_e_ortho(e) = 1; i < dimension; i++)
+        if (std::fabs(X(i, 0)) > 1e-8) xp_(e, i) += X(i, 0);
+    }
+  Cerr << 100. * mp_somme_vect(b_e_ortho) / Process::mp_sum(nb_elem()) << "% d'elements orthocentres" << finl;
 }
 
 void Domaine_Poly_base::calculer_h_carre()

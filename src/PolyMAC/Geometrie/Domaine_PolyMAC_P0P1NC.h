@@ -16,89 +16,16 @@
 #ifndef Domaine_PolyMAC_P0P1NC_included
 #define Domaine_PolyMAC_P0P1NC_included
 
-#include <Champ_front_var_instationnaire.h>
-#include <Echange_global_impose.h>
-#include <Neumann_sortie_libre.h>
-#include <Matrice_Morse_Sym.h>
-#include <Static_Int_Lists.h>
-#include <Neumann_homogene.h>
-#include <Elem_poly.h>
+#include <Domaine_PolyMAC.h>
 #include <TRUSTLists.h>
-#include <SolveurSys.h>
-#include <Periodique.h>
-#include <Dirichlet.h>
 #include <Conds_lim.h>
-#include <TRUSTTrav.h>
-#include <Symetrie.h>
-#include <Domaine_Poly_base.h>
-#include <Domaine.h>
-#include <Lapack.h>
-#include <vector>
-#include <string>
-#include <math.h>
-#include <array>
-#include <map>
 
-class Geometrie;
-
-/*! @brief class Domaine_PolyMAC_P0P1NC
- *
- *  	Classe instanciable qui derive de Domaine_Poly_base.
- *  	Cette classe contient les informations geometriques que demande
- *  	la methode des Volumes Elements Finis (element de Crouzeix-Raviart)
- *  	La classe porte un certain nombre d'informations concernant les faces
- *  	Dans cet ensemble de faces on fait figurer aussi les faces du bord et
- *       des joints. Pour manipuler les faces on distingue 2 categories:
- *            - les faces non standard qui sont sur un joint, un bord ou qui sont
- *              internes tout en appartenant a un element du bord
- *            - les faces standard qui sont les faces internes n'appartenant pas
- *              a un element du bord
- *       Cette distinction correspond au traitement des conditions aux limites:les
- *       faces standard ne "voient pas" les conditions aux limites.
- *       L'ensemble des faces est numerote comme suit:
- *            - les faces qui sont sur un Domaine_joint apparaissent en premier
- *     	       (dans l'ordre du vecteur les_joints)
- *    	     - les faces qui sont sur un Domaine_bord apparaissent ensuite
- * 	       (dans l'ordre du vecteur les_bords)
- *   	     - les faces internes non standard apparaissent ensuite
- *            - les faces internes standard en dernier
- *       Finalement on trouve regroupees en premier toutes les faces non standard
- *       qui vont necessiter un traitement particulier
- *       On distingue deux types d'elements
- *            - les elements non standard : ils ont au moins une face de bord
- *            - les elements standard : ils n'ont pas de face de bord
- *       Les elements standard (resp. les elements non standard) ne sont pas ranges
- *       de maniere consecutive dans l'objet Domaine. On utilise le tableau
- *       rang_elem_non_std pour acceder de maniere selective a l'un ou
- *       l'autre des types d'elements
- *
- *
- *
- */
-
-
-class Domaine_PolyMAC_P0P1NC : public Domaine_Poly_base
+class Domaine_PolyMAC_P0P1NC : public Domaine_PolyMAC
 {
-
   Declare_instanciable(Domaine_PolyMAC_P0P1NC);
-
 public :
-
   void discretiser() override;
-
-  inline const DoubleVect& longueur_aretes() const
-  {
-    return longueur_aretes_;
-  };
-  inline const DoubleTab& ta() const
-  {
-    return ta_;
-  };
-
-  void orthocentrer();
-
-  //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
-  std::vector<std::map<int, int> > som_arete;
+  void calculer_volumes_entrelaces() override;
 
   //pour chaque element, normale * surface duale liee a chacune de ses aretes (orientee comme l'arete)
   const DoubleTab& surf_elem_arete() const;
@@ -114,12 +41,8 @@ public :
   //anisotrope -> nu(n_e, N, D) (anisotrope diagonal) ou nu(n_e, N, D, D) (anisotrope complet)
   //la matrice en sortie est de taile (n_f, n_f, N) (pour M2/W2) ou (n_a, n_a, N) (pour M1 / W1)
 
-  //MD_Vectors pour Champ_Elem_PolyMAC_P0P1NC (elems + faces) et pour Champ_Face_PolyMAC_P0P1NC (faces + aretes)
-  mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
-
 private:
-  DoubleVect longueur_aretes_;             //longueur des aretes
-  mutable DoubleTab ta_, surf_elem_arete_; //vecteurs tangents aux aretes, normale * surface duale
+  mutable DoubleTab surf_elem_arete_; // vecteur normale * surface duale
 };
 
-#endif
+#endif /* Domaine_PolyMAC_P0P1NC_included */

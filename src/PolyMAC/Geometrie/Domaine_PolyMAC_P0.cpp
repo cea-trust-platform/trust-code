@@ -58,28 +58,12 @@
 #include <cfenv>
 #include <set>
 #include <map>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#include <osqp/osqp.h>
-#pragma GCC diagnostic pop
 
-Implemente_instanciable(Domaine_PolyMAC_P0,"Domaine_PolyMAC_P0",Domaine_PolyMAC_P0P1NC);
+Implemente_instanciable(Domaine_PolyMAC_P0, "Domaine_PolyMAC_P0", Domaine_PolyMAC_P0P1NC);
 
-//// printOn
-//
+Sortie& Domaine_PolyMAC_P0::printOn(Sortie& os) const { return Domaine_Poly_base::printOn(os); }
 
-Sortie& Domaine_PolyMAC_P0::printOn(Sortie& os) const
-{
-  return Domaine_Poly_base::printOn(os);
-}
-
-//// readOn
-//
-
-Entree& Domaine_PolyMAC_P0::readOn(Entree& is)
-{
-  return Domaine_Poly_base::readOn(is);
-}
+Entree& Domaine_PolyMAC_P0::readOn(Entree& is) { return Domaine_Poly_base::readOn(is); }
 
 void Domaine_PolyMAC_P0::discretiser()
 {

@@ -50,8 +50,10 @@
 #include <tuple>
 #include <cfenv>
 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #include <osqp/osqp.h>
+#pragma GCC diagnostic pop
 
 Implemente_instanciable(Domaine_PolyMAC, "Domaine_PolyMAC", Domaine_Poly_base);
 
@@ -61,311 +63,9 @@ Entree& Domaine_PolyMAC::readOn(Entree& is) { return Domaine_Poly_base::readOn(i
 
 void Domaine_PolyMAC::discretiser()
 {
-
-  Domaine& domaine_geom=domaine();
-  typer_elem(domaine_geom);
-  Elem_geom_base& elem_geom = domaine_geom.type_elem().valeur();
-  Domaine_VF::discretiser();
-
-  // Correction du tableau facevoisins:
-  //  A l'issue de Domaine_VF::discretiser(), les elements voisins 0 et 1 d'une
-  //  face sont les memes sur tous les processeurs qui possedent la face.
-  //  Si la face est virtuelle et qu'un des deux elements voisins n'est
-  //  pas connu (il n'est pas dans l'epaisseur du joint), l'element voisin
-  //  vaut -1. Cela peut etre un voisin 0 ou un voisin 1.
-  //  On corrige les faces virtuelles pour que, si un element voisin n'est
-  //  pas connu, alors il est voisin1. Le voisin0 est donc toujours valide.
-  {
-    IntTab& face_vois = face_voisins();
-    const int debut = nb_faces();
-    const int fin   = nb_faces_tot();
-    for (int i = debut; i < fin; i++)
-      {
-        if (face_voisins(i, 0) == -1)
-          {
-            face_vois(i, 0) = face_vois(i, 1);
-            face_vois(i, 1) = -1;
-          }
-      }
-  }
-
-  // Verification de la coherence entre l'element geometrique et
-  //l'elemnt de discretisation
-
-
-  if (sub_type(Segment_poly,type_elem_.valeur()))
-    {
-      if (!sub_type(Segment,elem_geom))
-        {
-          Cerr << " Le type de l'element geometrique " << elem_geom.que_suis_je() << " est incorrect" << finl;
-          exit();
-        }
-    }
-  else if (sub_type(Tri_poly,type_elem_.valeur()))
-    {
-      if (!sub_type(Triangle,elem_geom))
-        {
-          Cerr << " Le type de l'element geometrique " <<
-               elem_geom.que_suis_je() << " est incorrect" << finl;
-          Cerr << " Seul le type Triangle est compatible avec la discretisation PolyMAC en dimension 2" << finl;
-          Cerr << " Il faut trianguler le domaine lorsqu'on utilise le mailleur interne" ;
-          Cerr << " en utilisant l'instruction: Trianguler nom_dom" << finl;
-          exit();
-        }
-    }
-  else if (sub_type(Tetra_poly,type_elem_.valeur()))
-    {
-      if (!sub_type(Tetraedre,elem_geom))
-        {
-          Cerr << " Le type de l'element geometrique " <<
-               elem_geom.que_suis_je() << " est incorrect" << finl;
-          Cerr << " Seul le type Tetraedre est compatible avec la discretisation PolyMAC en dimension 3" << finl;
-          Cerr << " Il faut tetraedriser le domaine lorsqu'on utilise le mailleur interne";
-          Cerr << " en utilisant l'instruction: Tetraedriser nom_dom" << finl;
-          exit();
-        }
-    }
-
-  else if (sub_type(Quadri_poly,type_elem_.valeur()))
-    {
-
-      if (!sub_type(Quadrangle_VEF,elem_geom))
-        {
-          Cerr << " Le type de l'element geometrique " << elem_geom.que_suis_je() << " est incorrect" << finl;
-          exit();
-        }
-    }
-  else if (sub_type(Hexa_poly,type_elem_.valeur()))
-    {
-
-      if (!sub_type(Hexaedre_VEF,elem_geom))
-        {
-          Cerr << " Le type de l'element geometrique " << elem_geom.que_suis_je() << " est incorrect" << finl;
-          exit();
-        }
-    }
-
-  int num_face;
-
-
-  // On remplit le tableau face_normales_;
-  //  Attention : le tableau face_voisins n'est pas exactement un
-  //  tableau distribue. Une face n'a pas ses deux voisins dans le
-  //  meme ordre sur tous les processeurs qui possedent la face.
-  //  Donc la normale a la face peut changer de direction d'un
-  //  processeur a l'autre, y compris pour les faces de joint.
-  {
-    const int n = nb_faces();
-    face_normales_.resize(n, dimension);
-    // const Domaine & dom = domaine();
-    //    Scatter::creer_tableau_distribue(dom, Joint::FACE, face_normales_);
-    creer_tableau_faces(face_normales_);
-    const IntTab& face_som = face_sommets();
-    IntTab& face_vois = face_voisins();
-    const IntTab& elem_face = elem_faces();
-    const int n_tot = nb_faces_tot();
-    for (num_face = 0; num_face < n_tot; num_face++)
-      {
-        type_elem_.normale(num_face,
-                           face_normales_,
-                           face_som, face_vois, elem_face, domaine_geom);
-      }
-
-    DoubleTab old(face_normales_);
-    face_normales_.echange_espace_virtuel();
-    for (num_face = 0; num_face < n_tot; num_face++)
-      {
-        int id=1;
-        for (int d=0; d<dimension; d++)
-          if (!est_egal(old(num_face,d),face_normales_(num_face,d)))
-            {
-              id=0;
-              if (!est_egal(old(num_face,d),-face_normales_(num_face,d)))
-                {
-                  Cerr<<"pb in faces_normales" <<finl;
-                  exit();
-                }
-            }
-        if (id==0)
-          {
-            // on a change le sens de la normale, on inverse elem1 elem2
-            std::swap(face_vois(num_face,0),face_vois(num_face,1));
-          }
-      }
-  }
-
-  /* recalcul de xv pour avoir les vrais CG des faces */
-  const DoubleTab& coords = domaine().coord_sommets();
-  for (int face = 0; dimension == 3 && face < nb_faces(); face++)
-    {
-      double xs[3] = { 0, }, S = 0;
-      for (int k = 0; k < face_sommets_.dimension(1); k++)
-        if (face_sommets_(face, k) >= 0)
-          {
-            int s0 = face_sommets_(face, 0), s1 = face_sommets_(face, k),
-                s2 = k + 1 < face_sommets_.dimension(1) && face_sommets_(face, k + 1) >= 0 ? face_sommets_(face, k +1) : s0;
-            double s = 0;
-            for (int r = 0; r < 3; r++)
-              for (int i = 0; i < 2; i++)
-                s += (i ? -1 : 1) * face_normales_(face, r) * (coords(s2, (r + 1 +  i) % 3) - coords(s0, (r + 1 +  i) % 3))
-                     * (coords(s1, (r + 1 + !i) % 3) - coords(s0, (r + 1 + !i) % 3));
-            for (int r = 0; r < 3; r++) xs[r] += s * (coords(s0, r) + coords(s1, r) + coords(s2, r)) / 3;
-            S += s;
-          }
-      if (S == 0 && sub_type(Hexa_poly,type_elem_.valeur()))
-        {
-          Cerr << "===============================" << finl;
-          Cerr << "Error in your mesh for PolyMAC!" << finl;
-          Cerr << "Add this keyword before discretization in your data file to create polyedras:" << finl;
-          Cerr << "Polyedriser " << domaine().le_nom() << finl;
-          Process::exit();
-        }
-      for (int r = 0; r < 3; r++) xv_(face, r) = xs[r] / S;
-    }
-  xv_.echange_espace_virtuel();
-
-  // orthocentrer();
-
-  detecter_faces_non_planes();
-
-  calculer_volumes_entrelaces();
+  Domaine_Poly_base::discretiser();
   calculer_h_carre();
-
-  /* ordre canonique dans elem_faces_ */
-  std::map<std::array<double, 3>, int> xv_fsa;
-  for (int e = 0, i, j, f; e < nb_elem_tot(); e++)
-    {
-      for (i = 0, j = 0, xv_fsa.clear(); i < elem_faces_.dimension(1) && (f = elem_faces_(e, i)) >= 0; i++)
-        xv_fsa[ {{ xv_(f, 0), xv_(f, 1), dimension < 3 ? 0 : xv_(f, 2) }}] = f;
-      for (auto &&c_f : xv_fsa) elem_faces_(e, j) = c_f.second, j++;
-    }
-
-  //diverses quantites liees aux aretes
-  if (dimension > 2)
-    {
-      domaine().creer_aretes();
-      md_vector_aretes_ = domaine().aretes_som().get_md_vector();
-
-      /* ordre canonique dans aretes_som */
-      IntTab& a_s = domaine().set_aretes_som(), &e_a = domaine().set_elem_aretes();
-      const DoubleTab& xs = domaine().coord_sommets();
-      for (int a = 0, i, j, s; a < a_s.dimension_tot(0); a++)
-        {
-          for (i = 0, j = 0, xv_fsa.clear(); i < a_s.dimension(1) && (s = a_s(a, i)) >= 0; i++) xv_fsa[ {{ xs(s, 0), xs(s, 1), xs(s, 2) }}] = s;
-          for (auto &&c_s : xv_fsa) a_s(a, j) = c_s.second, j++;
-        }
-
-      //remplissage de som_aretes
-      som_arete.resize(domaine().nb_som_tot());
-      for (int i = 0; i < a_s.dimension_tot(0); i++)
-        for (int j = 0; j < 2; j++) som_arete[a_s(i, j)][a_s(i, !j)] = i;
-
-      //remplissage de xa (CGs des aretes), de ta_ (vecteur tangent aux aretes) et de longueur_arete_ (longueurs des aretes)
-      xa_.resize(0, 3), ta_.resize(0, 3);
-      creer_tableau_aretes(xa_), creer_tableau_aretes(ta_), creer_tableau_aretes(longueur_aretes_);
-      for (int i = 0, k; i < domaine().nb_aretes_tot(); i++)
-        {
-          int s1 = a_s(i, 0), s2 = a_s(i, 1);
-          longueur_aretes_(i) = sqrt( dot(&xs(s2, 0), &xs(s2, 0), &xs(s1, 0), &xs(s1, 0)));
-          for (k = 0; k < 3; k++) xa_(i, k) = (xs(s1, k) + xs(s2, k)) / 2, ta_(i, k) = (xs(s2, k) - xs(s1, k)) / longueur_aretes_(i);
-        }
-
-      /* ordre canonique dans elem_aretes_ */
-      for (int e = 0, i, j, a; e < nb_elem_tot(); e++)
-        {
-          for (i = 0, j = 0, xv_fsa.clear(); i < e_a.dimension(1) && (a = e_a(e, i)) >= 0; i++) xv_fsa[ {{ xa_(a, 0), xa_(a, 1), xa_(a, 2) }}] = a;
-          for (auto &&c_a : xv_fsa) e_a(e, j) = c_a.second, j++;
-        }
-    }
-
-  //MD_vector pour Champ_P0_PolyMAC (elems + faces)
-  MD_Vector_composite mdc_ef;
-  mdc_ef.add_part(domaine().md_vector_elements()), mdc_ef.add_part(md_vector_faces());
-  mdv_elems_faces.copy(mdc_ef);
-
-  //MD_vector pour Champ_Face_PolyMAC (faces + aretes)
-  MD_Vector_composite mdc_fa;
-  mdc_fa.add_part(md_vector_faces()), mdc_fa.add_part(dimension < 3 ? domaine().md_vector_sommets() : md_vector_aretes());
-  mdv_faces_aretes.copy(mdc_fa);
-}
-
-void Domaine_PolyMAC::orthocentrer()
-{
-  const IntTab& f_s = face_sommets(), &e_s = domaine().les_elems(), &e_f = elem_faces();
-  const DoubleTab& xs = domaine().coord_sommets(), &nf = face_normales_;
-  const DoubleVect& fs = face_surfaces();
-  int i, j, e, f, s, np;
-  DoubleTab M(0, dimension + 1), X(dimension + 1, 1), S(0, 1), vp; //pour les systemes lineaires
-  M.set_smart_resize(1), S.set_smart_resize(1), vp.set_smart_resize(1);
-  IntTrav b_f_ortho, b_e_ortho; // b_{f,e}_ortho(f/e) = 1 si la face / l'element est orthocentre
-  creer_tableau_faces(b_f_ortho), domaine().creer_tableau_elements(b_e_ortho);
-
-  /* 1. orthocentrage des faces (en dimension 3) */
-  Cerr << domaine().le_nom() << " : ";
-  if (dimension < 3) b_f_ortho = 1; //les faces (segments) sont deja orthcentrees!
-  else for (f = 0; f < nb_faces_tot(); f++)
-      {
-        //la face est-elle deja orthocentree?
-        double d2min = DBL_MAX, d2max = 0, d2;
-        for (i = 0, np = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++, np++)
-          d2min = std::min(d2min, d2 = dot(&xs(s, 0), &xs(s, 0), &xv_(f, 0), &xv_(f, 0))), d2max = std::max(d2max, d2);
-        if ((b_f_ortho(f) = (d2max / d2min - 1 < 1e-8))) continue;
-
-        //peut-on l'orthocentrer?
-        M.resize(np + 1, 4), S.resize(np + 1, 1);
-        for (i = 0; i < np; i++)
-          for (j = 0, S(i, 0) = 0, M(i, 3) = 1; j < 3; j++)
-            S(i, 0) += 0.5 * std::pow(M(i, j) = xs(f_s(f, i), j) - xv_(f, j), 2);
-        for (j = 0, S(np, 0) = M(np, 3) = 0; j < 3; j++) M(np, j) = nf(f, j) / fs(f);
-        if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //la face n'a pas d'orthocentre
-
-        //contrainte : ne pas diminuer la distance entre xv et chaque arete de plus de 50%
-        double r2min = DBL_MAX;
-        for (i = 0; i < f_s.dimension(1) && (s = f_s(f, i)) >= 0; i++)
-          {
-            int s2 = f_s(f, i + 1 < f_s.dimension(1) && f_s(f, i + 1) >= 0 ? i + 1 : 0),
-                a = som_arete[s].at(s2);
-            std::array<double, 3> vec = cross(3, 3, &xv_(f, 0), &ta_(a, 0), &xs(s, 0));
-            r2min = std::min(r2min, dot(&vec[0], &vec[0]));
-          }
-        if (dot(&X(0, 0), &X(0, 0)) > 0.25 * r2min) continue; //on s'eloigne trop du CG
-
-        for (i = 0, b_f_ortho(f) = 1; i < dimension; i++)
-          if (std::fabs(X(i, 0)) > 1e-8) xv_(f, i) += X(i, 0);
-      }
-  Cerr << 100. * mp_somme_vect(b_f_ortho) / Process::mp_sum(nb_faces()) << "% de faces orthocentrees" << finl;
-
-  /* 2. orthocentrage des elements */
-  Cerr << domaine().le_nom() << " : ";
-  for (e = 0; e < nb_elem_tot(); e++)
-    {
-      //l'element est-il deja orthocentre?
-      double d2min = DBL_MAX, d2max = 0, d2;
-      for (i = 0, np = 0; i < e_s.dimension(1) && (s = e_s(e, i)) >= 0; i++, np++)
-        d2min = std::min(d2min, d2 = dot(&xs(s, 0), &xs(s, 0), &xp_(e, 0), &xp_(e, 0))), d2max = std::max(d2max, d2);
-      if ((b_e_ortho(e) = (d2max / d2min - 1 < 1e-8))) continue;
-
-      //pour qu'on puisse l'orthocentrer, il faut que ses faces le soient
-      for (i = 0, j = 1; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) j = j && b_f_ortho(f);
-      if (!j) continue;
-
-      //existe-il un orthocentre?
-      M.resize(np, dimension + 1), S.resize(np, 1);
-      for (i = 0; i < np; i++)
-        for (j = 0, S(i, 0) = 0, M(i, dimension) = 1; j < dimension; j++)
-          S(i, 0) += 0.5 * std::pow(M(i, j) = xs(e_s(e, i), j) - xp_(e, j), 2);
-      if (kersol(M, S, 1e-12, NULL, X, vp) > 1e-8) continue; //l'element n'a pas d'orthocentre
-
-      //contrainte : ne pas diminuer la distance entre xp et chaque face de plus de 50%
-      double rmin = DBL_MAX;
-      for (i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++)
-        rmin = std::min(rmin, std::fabs(dot(&xp_(e, 0), &nf(f, 0), &xv_(f, 0)) / fs(f)));
-      if (dot(&X(0, 0), &X(0, 0)) > 0.25 * rmin * rmin) continue; //on s'eloigne trop du CG
-
-      for (i = 0, b_e_ortho(e) = 1; i < dimension; i++)
-        if (std::fabs(X(i, 0)) > 1e-8) xp_(e, i) += X(i, 0);
-    }
-  Cerr << 100. * mp_somme_vect(b_e_ortho) / Process::mp_sum(nb_elem()) << "% d'elements orthocentres" << finl;
+  discretiser_aretes();
 }
 
 void Domaine_PolyMAC::calculer_h_carre()
@@ -377,10 +77,8 @@ void Domaine_PolyMAC::calculer_h_carre()
   Elem_geom_base& elem_geom = domaine().type_elem().valeur();
   int is_polyedre = sub_type(Poly_geom_base, elem_geom) ? 1 : 0;
   const ArrOfInt PolyIndex = is_polyedre ? ref_cast(Poly_geom_base, domaine().type_elem().valeur()).getElemIndex() : ArrOfInt(0);
-
   const DoubleVect& surfaces=face_surfaces();
   const int nbe=nb_elem();
-
   for (int num_elem=0; num_elem<nbe; num_elem++)
     {
       double surf_max = 0;
@@ -399,30 +97,25 @@ void Domaine_PolyMAC::calculer_h_carre()
 
 void Domaine_PolyMAC::calculer_volumes_entrelaces()
 {
-  //  Cerr << "les normales aux faces " << face_normales() << finl;
-  // On calcule les volumes entrelaces;
-  //  volumes_entrelaces_.resize(nb_faces());
-
   creer_tableau_faces(volumes_entrelaces_);
   volumes_entrelaces_dir_.resize(nb_faces(), 2);
   creer_tableau_faces(volumes_entrelaces_dir_);
   const DoubleVect& fs = face_surfaces();
 
   for (int num_face=0; num_face<nb_faces(); num_face++)
-    {
-      for (int dir=0; dir<2; dir++)
-        {
-          int elem = face_voisins_(num_face,dir);
-          if (elem!=-1)
-            {
-              volumes_entrelaces_dir_(num_face, dir) = sqrt(dot(&xp_(elem, 0), &xp_(elem, 0), &xv_(num_face, 0), &xv_(num_face, 0))) * fs[num_face];
-              volumes_entrelaces_[num_face] += volumes_entrelaces_dir_(num_face, dir);
-            }
-        }
-    }
+    for (int dir=0; dir<2; dir++)
+      {
+        int elem = face_voisins_(num_face,dir);
+        if (elem!=-1)
+          {
+            volumes_entrelaces_dir_(num_face, dir) = sqrt(dot(&xp_(elem, 0), &xp_(elem, 0), &xv_(num_face, 0), &xv_(num_face, 0))) * fs[num_face];
+            volumes_entrelaces_[num_face] += volumes_entrelaces_dir_(num_face, dir);
+          }
+      }
   volumes_entrelaces_.echange_espace_virtuel();
   volumes_entrelaces_dir_.echange_espace_virtuel();
 }
+
 void Domaine_PolyMAC::remplir_elem_faces()
 {
   creer_faces_virtuelles_non_std();
@@ -430,21 +123,9 @@ void Domaine_PolyMAC::remplir_elem_faces()
 
 void Domaine_PolyMAC::modifier_pour_Cl(const Conds_lim& conds_lim)
 {
+  Cerr << "Le Domaine_PolyMAC a ete rempli avec succes" << finl;
+  //      calculer_h_carre();
 
-
-  //if (volumes_sommets_thilde_.size()!=nb_som())
-  {
-
-    Cerr << "Le Domaine_PolyMAC a ete rempli avec succes" << finl;
-
-    //      calculer_h_carre();
-    // Calcul des porosites
-
-    // les porosites sommets ne servent pas
-    //calculer_porosites_sommets();
-
-
-  }
   Journal() << "Domaine_PolyMAC::Modifier_pour_Cl" << finl;
   int nb_cond_lim=conds_lim.size();
   int num_cond_lim=0;

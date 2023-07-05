@@ -17,15 +17,15 @@
 #define Domaine_Poly_base_included
 
 #include <Champ_front_var_instationnaire.h>
+#include <Domaine_Poly_tools.h>
 #include <Static_Int_Lists.h>
 #include <Elem_poly_base.h>
-#include <Domaine_Poly_tools.h>
-#include <Elem_poly.h>
 #include <TRUSTLists.h>
 #include <Periodique.h>
+#include <Domaine_VF.h>
 #include <TRUSTTrav.h>
 #include <Conds_lim.h>
-#include <Domaine_VF.h>
+#include <Elem_poly.h>
 #include <Domaine.h>
 #include <Lapack.h>
 #include <math.h>
@@ -74,8 +74,16 @@ class Domaine_Poly_base : public Domaine_VF
 public :
   void typer_elem(Domaine& domaine_geom) override;
   void discretiser() override;
+  virtual void calculer_volumes_entrelaces() { }
+  void discretiser_aretes();
+
+  void orthocentrer();
+
+  inline const DoubleVect& longueur_aretes() const { return longueur_aretes_; }
+  inline const DoubleTab& ta() const { return ta_; }
+
   void reordonner(Faces&) override;
-  void modifier_pour_Cl(const Conds_lim& ) override { };
+  void modifier_pour_Cl(const Conds_lim& ) override { }
 
   inline const Elem_poly& type_elem() const;
   inline int nb_elem_Cl() const;
@@ -122,6 +130,12 @@ public :
   //pour chaque sommet, produit porosite * volume
   const DoubleTab& pvol_som(const DoubleVect& poro) const;
 
+  //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
+  std::vector<std::map<int, int> > som_arete;
+
+  //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
+  mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
+
 protected:
   double h_carre = DMAXFLOAT;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
@@ -133,7 +147,7 @@ protected:
   // relatifs aux elements non standards
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  void remplir_elem_faces() override {};
+  void remplir_elem_faces() override { }
   Sortie& ecrit(Sortie& os) const;
   void creer_faces_virtuelles_non_std();
 
@@ -141,6 +155,10 @@ protected:
   mutable Static_Int_Lists som_elem_;
   mutable IntTab elem_som_d_, elem_arete_d_;
   mutable DoubleTab vol_elem_som_, pvol_som_;
+
+  DoubleVect longueur_aretes_; //longueur des aretes
+  mutable DoubleTab ta_;       //vecteurs tangents aux aretes
+
 };
 
 // renvoie le type d'element utilise.
@@ -271,4 +289,4 @@ inline double Domaine_Poly_base::nu_dot(const DoubleTab* nu, int e, int n, const
   return resu;
 }
 
-#endif /* */
+#endif /* Domaine_Poly_base_included */
