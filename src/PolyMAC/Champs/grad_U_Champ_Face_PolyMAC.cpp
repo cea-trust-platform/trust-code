@@ -17,7 +17,7 @@
 #include <Champ_Face_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
 
-Implemente_instanciable(grad_U_Champ_Face_PolyMAC,"grad_U_Champ_Face_PolyMAC",Champ_Fonc_P0_PolyMAC);
+Implemente_instanciable(grad_U_Champ_Face_PolyMAC,"grad_U_Champ_Face_PolyMAC",Champ_Fonc_Elem_PolyMAC);
 
 Sortie& grad_U_Champ_Face_PolyMAC::printOn(Sortie& s) const
 {

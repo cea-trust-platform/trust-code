@@ -13,29 +13,29 @@
 *
 *****************************************************************************/
 
-#include <Champ_Fonc_Tabule_P0_PolyMAC.h>
+#include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
 #include <Domaine_VF.h>
 #include <Table.h>
 
-Implemente_instanciable(Champ_Fonc_Tabule_P0_PolyMAC, "Champ_Fonc_Tabule_P0_PolyMAC", Champ_Fonc_P0_PolyMAC);
+Implemente_instanciable(Champ_Fonc_Tabule_Elem_PolyMAC, "Champ_Fonc_Tabule_Elem_PolyMAC", Champ_Fonc_Elem_PolyMAC);
 
-Sortie& Champ_Fonc_Tabule_P0_PolyMAC::printOn(Sortie& s) const
+Sortie& Champ_Fonc_Tabule_Elem_PolyMAC::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Champ_Fonc_Tabule_P0_PolyMAC::readOn(Entree& s)
+Entree& Champ_Fonc_Tabule_Elem_PolyMAC::readOn(Entree& s)
 {
   return s;
 }
 
-void Champ_Fonc_Tabule_P0_PolyMAC::associer_param(const VECT(REF(Champ_base)) &les_champs, const Table& une_table)
+void Champ_Fonc_Tabule_Elem_PolyMAC::associer_param(const VECT(REF(Champ_base)) &les_champs, const Table& une_table)
 {
   les_ch_param = les_champs;
   la_table = une_table;
 }
 
-void Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(double t)
+void Champ_Fonc_Tabule_Elem_PolyMAC::mettre_a_jour(double t)
 {
   const Domaine_VF& zvf = le_dom_VF.valeur();
   const Table& table = la_table.valeur();
@@ -78,8 +78,8 @@ void Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(double t)
   Champ_Fonc_base::mettre_a_jour(t);
 }
 
-int Champ_Fonc_Tabule_P0_PolyMAC::initialiser(const double)
+int Champ_Fonc_Tabule_Elem_PolyMAC::initialiser(const double)
 {
-  Champ_Fonc_Tabule_P0_PolyMAC::mettre_a_jour(temps());
+  Champ_Fonc_Tabule_Elem_PolyMAC::mettre_a_jour(temps());
   return 1;
 }

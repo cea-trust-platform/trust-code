@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_P0_PolyMAC_included
-#define Champ_P0_PolyMAC_included
+#ifndef Champ_Elem_PolyMAC_included
+#define Champ_Elem_PolyMAC_included
 
 #include <Op_Diff_PolyMAC_base.h>
 #include <Champ_Inc_P0_base.h>
@@ -26,12 +26,12 @@ class Domaine_PolyMAC;
 
 // Champ correspondant a une inconnue scalaire (type temperature ou pression)
 // Degres de libertes : valeur aux elements + flux aux faces
-class Champ_P0_PolyMAC : public Champ_Inc_P0_base
+class Champ_Elem_PolyMAC: public Champ_Inc_P0_base
 {
-  Declare_instanciable(Champ_P0_PolyMAC);
-public :
+  Declare_instanciable(Champ_Elem_PolyMAC);
+public:
   Champ_base& affecter_(const Champ_base& ch) override;
-  int                       imprime(Sortie& , int ) const override;
+  int imprime(Sortie&, int) const override;
 
   int fixer_nb_valeurs_nodales(int n) override;
 
@@ -41,7 +41,7 @@ public :
 
 };
 
-inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
+inline DoubleTab& Champ_Elem_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
   /* dimensionnement du tableau de destination x si necessaire */
   const DoubleTab& src = valeurs();
@@ -63,4 +63,4 @@ inline DoubleTab& Champ_P0_PolyMAC::trace(const Frontiere_dis_base& fr, DoubleTa
   return x;
 }
 
-#endif
+#endif /* Champ_Elem_PolyMAC_included */

@@ -29,19 +29,19 @@ class Champ_Elem_PolyMAC_P0P1NC : public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_Elem_PolyMAC_P0P1NC);
 public :
-  const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC() const;
-
   Champ_base& affecter_(const Champ_base& ch) override;
   int imprime(Sortie&, int) const override;
 
   int fixer_nb_valeurs_nodales(int n) override; //valeurs aux elements
-  int nb_valeurs_nodales() const override;
-  virtual void init_auxiliary_variables(); //pour demander en plus les inconnues auxiliaires (valeurs aux faces)
-  int reprendre(Entree& fich) override;
 
   /* fonctions reconstruisant de maniere plus precise le champ aux faces */
   DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;
   inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const override;
+
+  const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC() const;
+  int nb_valeurs_nodales() const override;
+  virtual void init_auxiliary_variables(); //pour demander en plus les inconnues auxiliaires (valeurs aux faces)
+  int reprendre(Entree& fich) override;
 };
 
 inline DoubleTab& Champ_Elem_PolyMAC_P0P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const

@@ -16,12 +16,12 @@
 #ifndef grad_U_Champ_Face_PolyMAC_included
 #define grad_U_Champ_Face_PolyMAC_included
 
-#include <Champ_Fonc_P0_PolyMAC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <TRUST_Ref.h>
 class Domaine_Cl_PolyMAC;
 
-class grad_U_Champ_Face_PolyMAC: public Champ_Fonc_P0_PolyMAC
+class grad_U_Champ_Face_PolyMAC: public Champ_Fonc_Elem_PolyMAC
 {
   Declare_instanciable(grad_U_Champ_Face_PolyMAC);
 

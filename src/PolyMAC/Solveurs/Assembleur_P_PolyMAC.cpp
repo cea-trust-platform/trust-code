@@ -27,7 +27,6 @@
 #include <Array_tools.h>
 #include <Debog.h>
 #include <Static_Int_Lists.h>
-#include <Champ_Fonc_Q1_PolyMAC.h>
 #include <Operateur_Grad.h>
 #include <Matrice_Morse_Sym.h>
 #include <Matrix_tools.h>
@@ -58,23 +57,6 @@ int Assembleur_P_PolyMAC::assembler_rho_variable(Matrice& la_matrice, const Cham
 {
   abort();
   return 0;
-  /*
-  // On multiplie par la masse volumique aux sommets
-  if (!sub_type(Champ_Fonc_Q1_PolyMAC, rho))
-    {
-      Cerr << "La masse volumique n'est pas aux sommets dans Assembleur_P_PolyMAC::assembler_rho_variable." << finl;
-      Process::exit();
-    }
-  const DoubleVect& volumes_som=ref_cast(Domaine_PolyMAC, le_dom_PolyMAC.valeur()).volumes_sommets_thilde();
-  const DoubleVect& masse_volumique=rho.valeurs();
-  DoubleVect quantitee_som(volumes_som);
-  int size=quantitee_som.size_array();
-  for (int i=0; i<size; i++)
-    quantitee_som(i)=(volumes_som(i)*masse_volumique(i));
-
-  // On assemble la matrice
-  return assembler_mat(la_matrice,quantitee_som,1,1);
-  */
 }
 
 int  Assembleur_P_PolyMAC::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)

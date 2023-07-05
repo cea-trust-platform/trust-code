@@ -13,44 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Champ_Q1_PolyMAC.h>
-#include <Domaine_PolyMAC.h>
-#include <Domaine.h>
+#ifndef Champ_Fonc_Som_PolyMAC_included
+#define Champ_Fonc_Som_PolyMAC_included
 
-Implemente_instanciable(Champ_Q1_PolyMAC,"Champ_Q1_PolyMAC",Champ_Inc_Q1_base);
+#include <Champ_Fonc_P1_base.h>
 
-Sortie& Champ_Q1_PolyMAC::printOn(Sortie& s) const
+class Champ_Fonc_Som_PolyMAC: public Champ_Fonc_P1_base
 {
-  return s << que_suis_je() << " " << le_nom();
-}
+  Declare_instanciable(Champ_Fonc_Som_PolyMAC);
+public:
+  int imprime(Sortie&, int) const override;
+  void mettre_a_jour(double) override;
+};
 
-Entree& Champ_Q1_PolyMAC::readOn(Entree& s)
-{
-  lire_donnees(s) ;
-  return s ;
-}
-
-int Champ_Q1_PolyMAC::imprime(Sortie& os, int ncomp) const
-{
-  const Domaine_dis_base& domaine_dis = domaine_dis_base();
-  const Domaine& domaine = domaine_dis.domaine();
-  const DoubleTab& coord=domaine.coord_sommets();
-  const int nb_som = domaine.nb_som();
-  const DoubleTab& val = valeurs();
-  int som;
-  os << nb_som << finl;
-  for (som=0; som<nb_som; som++)
-    {
-      if (dimension==3)
-        os << coord(som,0) << " " << coord(som,1) << " " << coord(som,2) << " " ;
-      if (dimension==2)
-        os << coord(som,0) << " " << coord(som,1) << " " ;
-      if (nb_compo_ == 1)
-        os << val(som) << finl;
-      else
-        os << val(som,ncomp) << finl;
-    }
-  os << finl;
-  Cout << "Champ_Q1_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
-  return 1;
-}
+#endif

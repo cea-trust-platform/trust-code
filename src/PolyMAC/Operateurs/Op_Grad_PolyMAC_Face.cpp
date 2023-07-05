@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Op_Grad_PolyMAC_Face.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Neumann_sortie_libre.h>
 #include <Dirichlet.h>
@@ -202,7 +202,7 @@ int Op_Grad_PolyMAC_Face::impr(Sortie& os) const
   const DoubleVect& face_surfaces = zPolyMAC_P0P1NC.face_surfaces();
   const Equation_base& eqn = equation();
   const Navier_Stokes_std& eqn_hydr = ref_cast(Navier_Stokes_std,eqn);
-  const Champ_P0_PolyMAC& la_pression_P0 = ref_cast(Champ_P0_PolyMAC,eqn_hydr.pression_pa().valeur());
+  const Champ_Elem_PolyMAC& la_pression_P0 = ref_cast(Champ_Elem_PolyMAC,eqn_hydr.pression_pa().valeur());
   const DoubleTab& pression_P0 = la_pression_P0.valeurs();
   int elem0;
   int face;

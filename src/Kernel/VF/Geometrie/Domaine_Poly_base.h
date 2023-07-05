@@ -133,7 +133,7 @@ public :
   //som_arete[som1][som2 > som1] -> arete correspondant a (som1, som2)
   std::vector<std::map<int, int> > som_arete;
 
-  //MD_Vectors pour Champ_P0_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
+  //MD_Vectors pour Champ_Elem_PolyMAC (elems + faces) et pour Champ_Face_PolyMAC (faces + aretes)
   mutable MD_Vector mdv_elems_faces, mdv_faces_aretes;
 
 protected:

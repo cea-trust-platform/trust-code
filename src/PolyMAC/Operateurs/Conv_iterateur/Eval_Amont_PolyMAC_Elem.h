@@ -22,7 +22,7 @@
 /*! @brief class Eval_Amont_PolyMAC_Elem
  *
  *  Evaluateur PolyMAC pour la convection
- *  Le champ convecte est scalaire (Champ_P0_PolyMAC)
+ *  Le champ convecte est scalaire (Champ_Elem_PolyMAC)
  *  Schema de convection Amont
  *  Rq:Les evaluateurs de flux convectifs calculent en fait le terme
  *  convectif qui figure au second membre de l'equation d'evolution

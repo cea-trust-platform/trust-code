@@ -13,42 +13,44 @@
 *
 *****************************************************************************/
 
-#include <Champ_Fonc_Q1_PolyMAC.h>
+#include <Champ_Som_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Champ_Fonc_Q1_PolyMAC, "Champ_Fonc_Q1_PolyMAC", Champ_Fonc_Q1_base);
+Implemente_instanciable(Champ_Som_PolyMAC,"Champ_Som_PolyMAC",Champ_Inc_P1_base);
 
-Sortie& Champ_Fonc_Q1_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
-
-Entree& Champ_Fonc_Q1_PolyMAC::readOn(Entree& s) { return s; }
-
-void Champ_Fonc_Q1_PolyMAC::mettre_a_jour(double t)
+Sortie& Champ_Som_PolyMAC::printOn(Sortie& s) const
 {
-  Champ_Fonc_base::mettre_a_jour(t);
+  return s << que_suis_je() << " " << le_nom();
 }
 
-int Champ_Fonc_Q1_PolyMAC::imprime(Sortie& os, int ncomp) const
+Entree& Champ_Som_PolyMAC::readOn(Entree& s)
+{
+  lire_donnees(s) ;
+  return s ;
+}
+
+int Champ_Som_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
   const Domaine_dis_base& domaine_dis = domaine_dis_base();
   const Domaine& domaine = domaine_dis.domaine();
-  const DoubleTab& coord = domaine.coord_sommets();
+  const DoubleTab& coord=domaine.coord_sommets();
   const int nb_som = domaine.nb_som();
   const DoubleTab& val = valeurs();
   int som;
   os << nb_som << finl;
-  for (som = 0; som < nb_som; som++)
+  for (som=0; som<nb_som; som++)
     {
-      if (dimension == 3)
-        os << coord(som, 0) << " " << coord(som, 1) << " " << coord(som, 2) << " ";
-      if (dimension == 2)
-        os << coord(som, 0) << " " << coord(som, 1) << " ";
+      if (dimension==3)
+        os << coord(som,0) << " " << coord(som,1) << " " << coord(som,2) << " " ;
+      if (dimension==2)
+        os << coord(som,0) << " " << coord(som,1) << " " ;
       if (nb_compo_ == 1)
         os << val(som) << finl;
       else
-        os << val(som, ncomp) << finl;
+        os << val(som,ncomp) << finl;
     }
   os << finl;
-  Cout << "Champ_Fonc_Q1_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
+  Cout << "Champ_Som_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
   return 1;
 }

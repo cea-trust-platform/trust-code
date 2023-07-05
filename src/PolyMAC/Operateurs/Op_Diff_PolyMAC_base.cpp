@@ -28,7 +28,7 @@
 #include <Modele_turbulence_scal_base.h>
 #include <Champ_Fonc_P0_base.h>
 #include <Echange_externe_impose.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 
 Implemente_base(Op_Diff_PolyMAC_base,"Op_Diff_PolyMAC_base",Operateur_Diff_base);
 
@@ -114,10 +114,10 @@ double Op_Diff_PolyMAC_base::calculer_dt_stab() const
       const Champ_base&      champ_rho     = get_champ_masse_volumique();
       const DoubleTab&       valeurs_rho   = champ_rho.valeurs();
 
-      assert(sub_type(Champ_P0_PolyMAC, champ_rho));
+      assert(sub_type(Champ_Elem_PolyMAC, champ_rho));
       assert(sub_type(Champ_Fonc_P0_base, champ_diffu));
       // assert(valeurs_rho.size_array()== ma_domaine.les_elems().dimension_tot(0));
-      // Champ_P0_PolyMAC : champ aux elems et aux faces
+      // Champ_Elem_PolyMAC : champ aux elems et aux faces
       // Champ de masse volumique variable.
       const IntTab& e_f = le_dom_poly_->elem_faces();
       //Cerr << e_f << finl;

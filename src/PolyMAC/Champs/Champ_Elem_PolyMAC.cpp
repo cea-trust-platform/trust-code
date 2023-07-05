@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Domaine_Cl_dis.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
@@ -24,20 +24,20 @@
 #include <Schema_Euler_Implicite.h>
 #include <array>
 
-Implemente_instanciable(Champ_P0_PolyMAC,"Champ_P0_PolyMAC",Champ_Inc_P0_base);
+Implemente_instanciable(Champ_Elem_PolyMAC,"Champ_Elem_PolyMAC",Champ_Inc_P0_base);
 
-Sortie& Champ_P0_PolyMAC::printOn(Sortie& s) const
+Sortie& Champ_Elem_PolyMAC::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Champ_P0_PolyMAC::readOn(Entree& s)
+Entree& Champ_Elem_PolyMAC::readOn(Entree& s)
 {
   lire_donnees(s) ;
   return s ;
 }
 
-int Champ_P0_PolyMAC::imprime(Sortie& os, int ncomp) const
+int Champ_Elem_PolyMAC::imprime(Sortie& os, int ncomp) const
 {
   const Domaine_dis_base& domaine_dis = domaine_dis_base();
   const Domaine& domaine = domaine_dis.domaine();
@@ -58,11 +58,11 @@ int Champ_P0_PolyMAC::imprime(Sortie& os, int ncomp) const
         os << val(som,ncomp) << finl;
     }
   os << finl;
-  Cout << "Champ_P0_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
+  Cout << "Champ_Elem_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
   return 1;
 }
 
-int Champ_P0_PolyMAC::fixer_nb_valeurs_nodales(int n)
+int Champ_Elem_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
   if (n == domaine_dis_base().domaine().nb_elem()) //champ sans flux aux faces (ex. aiguilles)
     creer_tableau_distribue(domaine_dis_base().domaine().md_vector_elements());
@@ -71,7 +71,7 @@ int Champ_P0_PolyMAC::fixer_nb_valeurs_nodales(int n)
   return n;
 }
 
-Champ_base& Champ_P0_PolyMAC::affecter_(const Champ_base& ch)
+Champ_base& Champ_Elem_PolyMAC::affecter_(const Champ_base& ch)
 {
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC,le_dom_VF.valeur());
   DoubleTab_parts part(valeurs());
@@ -80,7 +80,7 @@ Champ_base& Champ_P0_PolyMAC::affecter_(const Champ_base& ch)
   return *this;
 }
 
-DoubleTab& Champ_P0_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
+DoubleTab& Champ_Elem_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
 {
   const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC, domaine_dis_base());
   const IntTab& f_e = domaine.face_voisins();

@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC.h>
+#include <Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC.h>
 #include <Fluide_Incompressible.h>
 #include <Probleme_base.h>
 #include <Equation_base.h>
@@ -21,14 +21,14 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC,"Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC",Source_base);
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC,"Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC",Source_base);
 
-Sortie& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::printOn(Sortie& s ) const
+Sortie& Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::printOn(Sortie& s ) const
 {
   return s << que_suis_je();
 }
 
-Entree& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::readOn(Entree& s )
+Entree& Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::readOn(Entree& s )
 {
   Param param(que_suis_je());
   param.ajouter("himp",&himp_,Param::REQUIRED);
@@ -39,7 +39,7 @@ Entree& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::readOn(Entree& s )
   return s ;
 }
 
-void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::mettre_a_jour(double temps)
+void Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::mettre_a_jour(double temps)
 {
   const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
   const DoubleVect& volumes = domaine.volumes();
@@ -63,19 +63,19 @@ void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::mettre_a_jour(double t
 //
 //                    Implementation des fonctions
 //
-//               de la classe Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC
+//               de la classe Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC
 //
 ////////////////////////////////////////////////////////////////////
 
-void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis,
-                                                                            const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis,
+                                                                              const Domaine_Cl_dis& domaine_Cl_dis)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
   le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
 }
 
 
-DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::ajouter(DoubleTab& resu )  const
+DoubleTab& Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::ajouter(DoubleTab& resu )  const
 {
   const Domaine_VF&     domaine               = le_dom_PolyMAC.valeur();
   const DoubleVect& volumes = domaine.volumes();
@@ -90,13 +90,13 @@ DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::ajouter(DoubleTa
 
   return resu;
 }
-DoubleTab& Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::calculer(DoubleTab& resu) const
+DoubleTab& Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::calculer(DoubleTab& resu) const
 {
   resu=0;
   ajouter(resu);
   return resu;
 }
-void Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
+void Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   const Domaine_VF&     domaine               = le_dom_PolyMAC.valeur();
   const DoubleVect& volumes = domaine.volumes();

@@ -13,36 +13,10 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_included
-#define Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC_included
+#include <Champ_Fonc_Elem_PolyMAC.h>
 
-#include <Source_base.h>
-#include <TRUST_Ref.h>
-class Domaine_Cl_PolyMAC;
-class Domaine_PolyMAC;
-#include <Champ_Don.h>
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC, "Champ_Fonc_Elem_PolyMAC", Champ_Fonc_P0_base);
 
-class Probleme_base;
+Sortie& Champ_Fonc_Elem_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-class Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC :  public Source_base
-{
-  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_P0_PolyMAC);
-public:
-
-  DoubleTab& ajouter(DoubleTab& )  const override ;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double ) override;
-
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-
-protected:
-
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
-  Champ_Don himp_,Text_;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-
-};
-
-#endif
+Entree& Champ_Fonc_Elem_PolyMAC::readOn(Entree& s) { return s; }

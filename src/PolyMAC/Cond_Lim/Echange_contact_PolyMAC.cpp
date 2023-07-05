@@ -21,7 +21,7 @@
 #include <Milieu_base.h>
 #include <Domaine_PolyMAC.h>
 #include <Equation_base.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Op_Diff_PolyMAC_Elem.h>
 
 Implemente_instanciable(Echange_contact_PolyMAC,"Paroi_Echange_contact_PolyMAC",Echange_externe_impose);
@@ -147,7 +147,7 @@ void Echange_contact_PolyMAC::update_coeffs()
   const Domaine_PolyMAC& o_domaine = ref_cast(Domaine_PolyMAC, ch.domaine_dis());
   const Equation_base&    o_eqn  = ch.equation();
   const Op_Diff_PolyMAC_Elem& o_op_diff = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base());
-  const Champ_P0_PolyMAC& o_inc  = ref_cast(Champ_P0_PolyMAC, ch.inconnue());
+  const Champ_Elem_PolyMAC& o_inc  = ref_cast(Champ_Elem_PolyMAC, ch.inconnue());
   const Front_VF&         o_fvf  = ref_cast(Front_VF, ch.front_dis());
   const IntTab& e_f = o_domaine.elem_faces();
   const DoubleVect& fs = o_domaine.face_surfaces(), &ve = o_domaine.volumes();

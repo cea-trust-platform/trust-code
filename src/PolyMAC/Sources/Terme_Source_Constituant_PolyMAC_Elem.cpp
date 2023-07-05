@@ -19,7 +19,7 @@
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem,"Source_Constituant_P0_PolyMAC",Terme_Source_PolyMAC_base);
+Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem,"Source_Constituant_Elem_PolyMAC",Terme_Source_PolyMAC_base);
 implemente_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
 
 Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s ) const

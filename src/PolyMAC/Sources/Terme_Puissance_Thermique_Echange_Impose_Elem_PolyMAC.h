@@ -13,42 +13,36 @@
 *
 *****************************************************************************/
 
-#include <Champ_Fonc_P1_PolyMAC.h>
-#include <Domaine_PolyMAC.h>
-#include <Domaine.h>
+#ifndef Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
+#define Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
 
-Implemente_instanciable(Champ_Fonc_P1_PolyMAC, "Champ_Fonc_P1_PolyMAC", Champ_Fonc_P1_base);
+#include <Source_base.h>
+#include <TRUST_Ref.h>
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
+#include <Champ_Don.h>
 
-Sortie& Champ_Fonc_P1_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+class Probleme_base;
 
-Entree& Champ_Fonc_P1_PolyMAC::readOn(Entree& s) {  return s; }
-
-void Champ_Fonc_P1_PolyMAC::mettre_a_jour(double t)
+class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC :  public Source_base
 {
-  Champ_Fonc_base::mettre_a_jour(t);
-}
+  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC);
+public:
 
-int Champ_Fonc_P1_PolyMAC::imprime(Sortie& os, int ncomp) const
-{
-  const Domaine_dis_base& domaine_dis = domaine_dis_base();
-  const Domaine& domaine = domaine_dis.domaine();
-  const DoubleTab& coord = domaine.coord_sommets();
-  const int nb_som = domaine.nb_som();
-  const DoubleTab& val = valeurs();
-  int som;
-  os << nb_som << finl;
-  for (som = 0; som < nb_som; som++)
-    {
-      if (dimension == 3)
-        os << coord(som, 0) << " " << coord(som, 1) << " " << coord(som, 2) << " ";
-      if (dimension == 2)
-        os << coord(som, 0) << " " << coord(som, 1) << " ";
-      if (nb_compo_ == 1)
-        os << val(som) << finl;
-      else
-        os << val(som, ncomp) << finl;
-    }
-  os << finl;
-  Cout << "Champ_Fonc_P1_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
-  return 1;
-}
+  DoubleTab& ajouter(DoubleTab& )  const override ;
+  DoubleTab& calculer(DoubleTab& ) const override ;
+  void associer_pb(const Probleme_base& ) override { };
+  void mettre_a_jour(double ) override;
+
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+
+protected:
+
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  Champ_Don himp_,Text_;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+
+};
+
+#endif

@@ -13,17 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Fonc_P1_PolyMAC_included
-#define Champ_Fonc_P1_PolyMAC_included
+#ifndef Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included
+#define Terme_Source_Decroissance_Radioactive_Elem_PolyMAC_included
 
-#include <Champ_Fonc_P1_base.h>
+#include <Source_base.h>
+#include <vector>
+#include <TRUST_Ref.h>
+class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
 
-class Champ_Fonc_P1_PolyMAC: public Champ_Fonc_P1_base
+class Terme_Source_Decroissance_Radioactive_Elem_PolyMAC :  public Source_base
+
+
 {
-  Declare_instanciable(Champ_Fonc_P1_PolyMAC);
+
+  Declare_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC);
+
 public:
-  int imprime(Sortie&, int) const override;
-  void mettre_a_jour(double) override;
+
+  DoubleTab& ajouter(DoubleTab& )  const override ;
+  DoubleTab& calculer(DoubleTab& ) const override ;
+  void mettre_a_jour(double ) override { };
+  void associer_pb(const Probleme_base& ) override { };
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
+  void completer() override;
+
+protected:
+
+  std::vector<double> lambda;
+  int nb_groupes=0;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+
 };
 
 #endif

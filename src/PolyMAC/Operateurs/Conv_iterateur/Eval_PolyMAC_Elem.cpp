@@ -13,12 +13,12 @@
 *
 *****************************************************************************/
 
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Eval_PolyMAC_Elem.h>
 
 void Eval_PolyMAC_Elem::associer_inconnue(const Champ_base& inco)
 {
-  assert(sub_type(Champ_P0_PolyMAC,inco));
+  assert(sub_type(Champ_Elem_PolyMAC,inco));
   inconnue=inco;
 }
 

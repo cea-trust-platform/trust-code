@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Op_Conv_Amont_PolyMAC_Elem.h>
-#include <Champ_P0_PolyMAC.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_Elem, "Op_Conv_Amont_PolyMAC_Elem_PolyMAC", Op_Conv_PolyMAC_iterateur_base);
@@ -33,7 +33,7 @@ void Op_Conv_Amont_PolyMAC_Elem::associer(const Domaine_dis& domaine_dis, const 
 {
   const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
   const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
-  const Champ_P0_PolyMAC& inco = ref_cast(Champ_P0_PolyMAC, ch_transporte.valeur());
+  const Champ_Elem_PolyMAC& inco = ref_cast(Champ_Elem_PolyMAC, ch_transporte.valeur());
 
   iter->associer(zvdf, zclvdf, *this);
 

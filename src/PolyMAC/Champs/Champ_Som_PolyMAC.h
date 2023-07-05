@@ -13,14 +13,16 @@
 *
 *****************************************************************************/
 
-#ifndef Champ_Fonc_P0_PolyMAC_included
-#define Champ_Fonc_P0_PolyMAC_included
+#ifndef Champ_Som_PolyMAC_included
+#define Champ_Som_PolyMAC_included
 
-#include <Champ_Fonc_P0_base.h>
+#include <Champ_Inc_P1_base.h>
 
-class Champ_Fonc_P0_PolyMAC: public Champ_Fonc_P0_base
+class Champ_Som_PolyMAC: public Champ_Inc_P1_base
 {
-  Declare_instanciable(Champ_Fonc_P0_PolyMAC);
+  Declare_instanciable(Champ_Som_PolyMAC);
+public:
+  int imprime(Sortie&, int) const override;
 };
 
 #endif

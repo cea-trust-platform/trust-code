@@ -13,10 +13,42 @@
 *
 *****************************************************************************/
 
-#include <Champ_Fonc_P0_PolyMAC.h>
+#include <Champ_Fonc_Som_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
+#include <Domaine.h>
 
-Implemente_instanciable(Champ_Fonc_P0_PolyMAC, "Champ_Fonc_P0_PolyMAC", Champ_Fonc_P0_base);
+Implemente_instanciable(Champ_Fonc_Som_PolyMAC, "Champ_Fonc_Som_PolyMAC", Champ_Fonc_P1_base);
 
-Sortie& Champ_Fonc_P0_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+Sortie& Champ_Fonc_Som_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_P0_PolyMAC::readOn(Entree& s) { return s; }
+Entree& Champ_Fonc_Som_PolyMAC::readOn(Entree& s) {  return s; }
+
+void Champ_Fonc_Som_PolyMAC::mettre_a_jour(double t)
+{
+  Champ_Fonc_base::mettre_a_jour(t);
+}
+
+int Champ_Fonc_Som_PolyMAC::imprime(Sortie& os, int ncomp) const
+{
+  const Domaine_dis_base& domaine_dis = domaine_dis_base();
+  const Domaine& domaine = domaine_dis.domaine();
+  const DoubleTab& coord = domaine.coord_sommets();
+  const int nb_som = domaine.nb_som();
+  const DoubleTab& val = valeurs();
+  int som;
+  os << nb_som << finl;
+  for (som = 0; som < nb_som; som++)
+    {
+      if (dimension == 3)
+        os << coord(som, 0) << " " << coord(som, 1) << " " << coord(som, 2) << " ";
+      if (dimension == 2)
+        os << coord(som, 0) << " " << coord(som, 1) << " ";
+      if (nb_compo_ == 1)
+        os << val(som) << finl;
+      else
+        os << val(som, ncomp) << finl;
+    }
+  os << finl;
+  Cout << "Champ_Fonc_Som_PolyMAC::imprime FIN >>>>>>>>>> " << finl;
+  return 1;
+}

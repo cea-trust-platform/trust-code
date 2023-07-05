@@ -13,38 +13,30 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Source_Decroissance_Radioactive_P0_PolyMAC_included
-#define Terme_Source_Decroissance_Radioactive_P0_PolyMAC_included
+#ifndef Champ_Fonc_Tabule_Elem_PolyMAC_included
+#define Champ_Fonc_Tabule_Elem_PolyMAC_included
 
-#include <Source_base.h>
-#include <vector>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <TRUST_Vector.h>
 #include <TRUST_Ref.h>
-class Domaine_Cl_PolyMAC;
-class Domaine_PolyMAC;
 
-class Terme_Source_Decroissance_Radioactive_P0_PolyMAC :  public Source_base
+class Table;
 
-
+class Champ_Fonc_Tabule_Elem_PolyMAC : public Champ_Fonc_Elem_PolyMAC
 {
-
-  Declare_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_P0_PolyMAC);
+  Declare_instanciable(Champ_Fonc_Tabule_Elem_PolyMAC);
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& )  const override ;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void mettre_a_jour(double ) override { };
-  void associer_pb(const Probleme_base& ) override { };
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-  void completer() override;
+  void associer_param(const VECT(REF(Champ_base))&, const Table& );
+  void mettre_a_jour(double ) override;
+  int initialiser(const double temps) override;
 
 protected:
 
-  std::vector<double> lambda;
-  int nb_groupes=0;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-
+  VECT(REF(Champ_base)) les_ch_param;
+  REF(Table) la_table;
 };
+
 
 #endif
