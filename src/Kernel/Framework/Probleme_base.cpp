@@ -960,9 +960,6 @@ void Probleme_base::mettre_a_jour(double temps)
   // Update the post-processing:
   les_postraitements.mettre_a_jour(temps);
 
-  // Update the domain:
-  domaine().mettre_a_jour(temps,domaine_dis(),*this);
-
   for (auto& itr : liste_loi_fermeture_)
     {
       Loi_Fermeture_base& loi=itr.valeur();

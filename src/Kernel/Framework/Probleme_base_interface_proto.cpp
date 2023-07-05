@@ -101,6 +101,9 @@ bool Probleme_base_interface_proto::iterateTimeStep_impl(Probleme_base& pb, bool
   if (!dt_defined)
     throw WrongContext(pb.le_nom().getChar(), "iterateTimeStep", "initTimeStep should have been called");
 
+  // Update the domain
+  pb.domaine().mettre_a_jour(pb.schema_temps().temps_defaut(),pb.domaine_dis(),pb);
+
   Debog::set_nom_pb_actuel(pb.le_nom());
   bool ok = pb.schema_temps().iterateTimeStep(converged);
 
