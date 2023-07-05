@@ -73,7 +73,7 @@ public:
 protected:
   void ajoute_coeff(int i, int j, int k,
                     int i_voisin, int j_voisin, int k_voisin,
-                    const double coeff);
+                    const double coeff, const int shear_perio = 0);
 
   int& renum(int i, int j, int k)
   {
@@ -99,11 +99,11 @@ protected:
 
 
   void add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                     int imax, int jmax, int kmax, ArrOfInt& virt_blocs_m1, ArrOfInt& virt_blocs, ArrOfInt& virt_blocs_p1,
+                     int imax, int jmax, int kmax,ArrOfInt& virt_blocs,
                      IJK_Splitting splitting, double offset = 0.);
   void add_dist_bloc(int pe, int imin, int jmin, int kmin,
                      int imax, int jmax, int kmax,
-                     ArrOfInt& items_to_send_m1,ArrOfInt& items_to_send,ArrOfInt& items_to_send_p1,
+                     ArrOfInt& items_to_send,
                      IJK_Splitting splitting, double offset = 0.);
 
   Matrice_Bloc mat_;

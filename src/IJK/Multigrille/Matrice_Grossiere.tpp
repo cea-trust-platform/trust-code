@@ -58,15 +58,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     ArrOfInt pe_voisins(6);
     pe_voisins.set_smart_resize(1);
     VECT(ArrOfInt) items_to_send(6);
-    VECT(ArrOfInt) items_to_send_m1(6);
-    VECT(ArrOfInt) items_to_send_p1(6);
     VECT(ArrOfInt) items_to_recv(6);
-    VECT(ArrOfInt) items_to_recv_m1(6);
-    VECT(ArrOfInt) items_to_recv_p1(6);
     VECT(ArrOfInt) blocs_to_recv(6);
-    VECT(ArrOfInt) blocs_to_recv_m1(6);
-    VECT(ArrOfInt) blocs_to_recv_p1(6);
-
 
     int npe = 0;
 
@@ -88,75 +81,57 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0) // si voisin du bas existe
       {
         pe_voisins[npe] = pe;
-        if (pe != pe_kmax) // On a au moins 3 proc sur z
+        if (pe != pe_kmax) // On a au moins 3 proc sur z || pekmin || pe || pe_kmax ||
           {
-            // add_virt_bloc --> stock l'emplacement des indices de l'espace fantome de count à count+ni*nj dans blocs_to_recv
-            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0,blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
+            add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting);
 
-            // add_dist_bloc --> stock lespace reel en 0 dans items_to_send[0] pour lespace virtuel en nk du proc k-1
-            // pour les conditions de shear-periodicité, besoin d'un changement si c est le premier proc en z pour prendre en compte l'offset
             if( z_index == z_index_min && IJK_Splitting::defilement_==1)
               {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,
-                              items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
-                              splitting, -1.);
+                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe],splitting, -1.);
               }
             else
               {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,
-                              items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe]
-                              , splitting);
+                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe], splitting);
               }
           }
         else
           {
             // le meme processeur voisin a gauche et a droite  (par periodicite), soit 1 soit 2 proc sur z
-            // attention a l'ordre des blocs:
+            // attention a l'ordre des blocs : bug pour le decoupage a deux procs --> a corriger ici ?
+            // ce dessous ne fonctionne que pour 1 proc sur z ?
 
-            // si un seul proc sur k --> assure la shear periodicite
-            // sinon, stock l'emplacement des indices de l'espace fantome en -1 , puis en nk+1, sans modif
             if(z_index == z_index_max && IJK_Splitting::defilement_==1)
               {
-                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe],splitting, 1.);
+                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe],splitting, 1.);
               }
             else
               {
-                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
+                add_virt_bloc(pe, count, 0,0,-1, ni,nj,0, blocs_to_recv[npe], splitting);
               }
             if(z_index == z_index_min && IJK_Splitting::defilement_==1)
               {
-                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting, -1.);
+                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting, -1.);
               }
             else
               {
-                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
+                add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
               }
 
-            // si un seul proc sur k --> add_dist_bloc ne fait rien, si 2 procs voisins des deux cotes :
-            // stock l'espace reel en 0 et en nk-1 --> offset suivant la position du proc en z=0 ou z=zmax.
             if( z_index == z_index_max && IJK_Splitting::defilement_==1)
               {
-                add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,
-                              items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
-                              splitting, 1.);
+                add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe],splitting, 1.);
               }
             else
               {
-                add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,
-                              items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
-                              splitting);
+                add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe],splitting);
               }
             if( z_index == z_index_min && IJK_Splitting::defilement_==1)
               {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,
-                              items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
-                              splitting, -1.);
+                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe], splitting, -1.);
               }
             else
               {
-                add_dist_bloc(pe, 0,0,0, ni,nj,1,
-                              items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
-                              splitting);
+                add_dist_bloc(pe, 0,0,0, ni,nj,1,items_to_send[npe], splitting);
               }
 
           }
@@ -169,22 +144,19 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         pe_voisins[npe] = pe;
         if (pe != pe_jmax)
           {
-            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-            add_dist_bloc(pe, 0,0,0, ni,1,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
+            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, ni,1,nk,items_to_send[npe],
                           splitting);
           }
         else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
-            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-            add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-            add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
+            add_virt_bloc(pe, count, 0,-1,0, ni,0,nk, blocs_to_recv[npe], splitting);
+            add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,items_to_send[npe],
                           splitting);
-            add_dist_bloc(pe, 0,0,0, ni,1,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
+            add_dist_bloc(pe, 0,0,0, ni,1,nk,items_to_send[npe],
                           splitting);
           }
         npe++;
@@ -196,22 +168,19 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
         pe_voisins[npe] = pe;
         if (pe != pe_imax)
           {
-            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-            add_dist_bloc(pe, 0,0,0, 1,nj,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
+            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, 1,nj,nk,items_to_send[npe],
                           splitting);
           }
         else
           {
             // un processeur voisin a gauche et a droite  (par periodicite)
             // attention a l'ordre des blocs:
-            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-            add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-            add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe],
+            add_virt_bloc(pe, count, -1,0,0, 0,nj,nk, blocs_to_recv[npe], splitting);
+            add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe], splitting);
+            add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,items_to_send[npe],
                           splitting);
-            add_dist_bloc(pe, 0,0,0, 1,nj,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe], splitting);
+            add_dist_bloc(pe, 0,0,0, 1,nj,nk,items_to_send[npe], splitting);
           }
         npe++;
       }
@@ -220,9 +189,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_imin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-        add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,
-                      items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe], splitting);
+        add_virt_bloc(pe, count, ni,0,0, ni+1,nj,nk, blocs_to_recv[npe], splitting);
+        add_dist_bloc(pe, ni-1,0,0, ni,nj,nk,items_to_send[npe], splitting);
         npe++;
       }
 
@@ -230,9 +198,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_jmin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
-        add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,
-                      items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe], splitting);
+        add_virt_bloc(pe, count, 0,nj,0, ni,nj+1,nk, blocs_to_recv[npe], splitting);
+        add_dist_bloc(pe, 0,nj-1,0, ni,nj,nk,items_to_send[npe], splitting);
         npe++;
       }
 
@@ -240,17 +207,15 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     if (pe >= 0 && pe != pe_kmin)
       {
         pe_voisins[npe] = pe;
-        add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1,             blocs_to_recv_m1[npe], blocs_to_recv[npe], blocs_to_recv_p1[npe], splitting);
+        add_virt_bloc(pe, count, 0,0,nk, ni,nj,nk+1, blocs_to_recv[npe], splitting);
         // autre test pour le proc pe_kmax, bloc stocke pour assurer la shear periodicite.
         if( z_index == z_index_max && IJK_Splitting::defilement_==1)
           {
-            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe], splitting, 1.);
+            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe], splitting, 1.);
           }
         else
           {
-            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,
-                          items_to_send_m1[npe],items_to_send[npe],items_to_send_p1[npe], splitting);
+            add_dist_bloc(pe, 0,0,nk-1, ni,nj,nk,items_to_send[npe], splitting);
           }
 
         npe++;
@@ -267,53 +232,53 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
   }
 
 
-  int jcible = 2 ;
-
-  for (int proc=0; proc<Process::nproc(); proc++)
-    {
-      if (proc==Process::me())
-        {
-          std::cout << "renum on the processor " << proc << " : " << std::endl;
-          std::cout << "renum" << std::endl;
-          for (k = -1; k < nk+1; k++)
-            {
-              for (i = -1; i < ni+1; i++)
-                {
-                  std::cout << renum(i,jcible,k) << " ";
-                }
-              std::cout << std::endl;
-            }
-          std::cout << std::endl;
-          std::cout << std::endl;
-          std::cout << "renum_p1" << std::endl;
-          for (k = -1; k < nk+1; k++)
-            {
-              for (i = -1; i < ni+1; i++)
-                {
-                  std::cout << renum_p1(i,jcible,k) << " ";
-                }
-              std::cout << std::endl;
-            }
-          std::cout << std::endl;
-          std::cout << std::endl;
-          std::cout << "renum_m1" << std::endl;
-          for (k = -1; k < nk+1; k++)
-            {
-              for (i = -1; i < ni+1; i++)
-                {
-                  std::cout << renum_m1(i,jcible,k) << " ";
-                }
-              std::cout << std::endl;
-            }
-          std::cout << std::endl;
-          std::cout << std::endl;
-          std::cout << "ponderation_shear_m1_scal_ = "<< ponderation_shear_m1_scal_ << std::endl;
-          std::cout << "ponderation_shear_0_scal_ = "<< ponderation_shear_0_scal_ << std::endl;
-          std::cout << "ponderation_shear_p1_scal_ = "<< ponderation_shear_p1_scal_ << std::endl;
-        }
-
-      Process::barrier();
-    }
+//  int jcible = 2 ;
+//
+//  for (int proc=0; proc<Process::nproc(); proc++)
+//    {
+//      if (proc==Process::me())
+//        {
+//          std::cout << "renum on the processor " << proc << " : " << std::endl;
+//          std::cout << "renum" << std::endl;
+//          for (k = -1; k < nk+1; k++)
+//            {
+//              for (i = -1; i < ni+1; i++)
+//                {
+//                  std::cout << renum(i,jcible,k) << " ";
+//                }
+//              std::cout << std::endl;
+//            }
+//          std::cout << std::endl;
+//          std::cout << std::endl;
+//          std::cout << "renum_p1" << std::endl;
+//          for (k = -1; k < nk+1; k++)
+//            {
+//              for (i = -1; i < ni+1; i++)
+//                {
+//                  std::cout << renum_p1(i,jcible,k) << " ";
+//                }
+//              std::cout << std::endl;
+//            }
+//          std::cout << std::endl;
+//          std::cout << std::endl;
+//          std::cout << "renum_m1" << std::endl;
+//          for (k = -1; k < nk+1; k++)
+//            {
+//              for (i = -1; i < ni+1; i++)
+//                {
+//                  std::cout << renum_m1(i,jcible,k) << " ";
+//                }
+//              std::cout << std::endl;
+//            }
+//          std::cout << std::endl;
+//          std::cout << std::endl;
+//          std::cout << "ponderation_shear_m1_scal_ = "<< ponderation_shear_m1_scal_ << std::endl;
+//          std::cout << "ponderation_shear_0_scal_ = "<< ponderation_shear_0_scal_ << std::endl;
+//          std::cout << "ponderation_shear_p1_scal_ = "<< ponderation_shear_p1_scal_ << std::endl;
+//        }
+//
+//      Process::barrier();
+//    }
 
 
 
@@ -332,12 +297,12 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
           {
             for (i = 0; i < ni; i++)
               {
-                ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2));
+                ajoute_coeff(i,j,k,i,j,k-1,coeffs_face(i,j,k,2), -1);
                 ajoute_coeff(i,j,k,i,j-1,k,coeffs_face(i,j,k,1));
                 ajoute_coeff(i,j,k,i-1,j,k,coeffs_face(i,j,k,0));
                 ajoute_coeff(i,j,k,i+1,j,k,coeffs_face(i+1,j,k,0));
                 ajoute_coeff(i,j,k,i,j+1,k,coeffs_face(i,j+1,k,1));
-                ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2));
+                ajoute_coeff(i,j,k,i,j,k+1,coeffs_face(i,j,k+1,2), 1);
               }
           }
       }

@@ -324,6 +324,9 @@ void Multigrille_base::coarse_solver(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
       for (i = 0; i < ni; i++)
         x(i,j,k) = (_TYPE_)inco[mat.renum(i,j,k)]; //!!!!!!!!!!!!!!!!!! ToDo WARNING: potentiellement conversion de double en float!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+
+  //x.echange_espace_virtuel(x.ghost());
+
 }
 
 template <typename _TYPE_, typename _TYPE_ARRAY_>
@@ -728,6 +731,8 @@ void Multigrille_base::resoudre_systeme_template(const Matrice_Base& a, const Do
   convert_to_ijk(b, ijk_b);
 
   solve_ijk_in_storage_template<_TYPE_>();
+
+  //ijk_x.echange_espace_virtuel(ijk_x.ghost());
 
   convert_from_ijk(ijk_x, x);
 

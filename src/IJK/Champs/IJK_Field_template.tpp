@@ -784,26 +784,16 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
         {
           for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
             {
-              for (int i = 0; i < indicatrice_ghost_zmin_.ni() ; i++)
+              for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
                 {
                   indicatrice_ghost_zmin_(i,j,k)=Process::mp_sum(indicatrice_ghost_zmin_(i,j,k));
                   indicatrice_ghost_zmax_(i,j,k)=Process::mp_sum(indicatrice_ghost_zmax_(i,j,k));
-                }
-            }
-        }
-
-
-      for (int k = 0; k < I_sigma_kappa_ghost_zmin_.nk() ; k++)
-        {
-          for (int j = 0; j < I_sigma_kappa_ghost_zmin_.nj() ; j++)
-            {
-              for (int i = 0; i < I_sigma_kappa_ghost_zmin_.ni() ; i++)
-                {
                   I_sigma_kappa_ghost_zmin_(i,j,k)=Process::mp_sum(I_sigma_kappa_ghost_zmin_(i,j,k));
                   I_sigma_kappa_ghost_zmax_(i,j,k)=Process::mp_sum(I_sigma_kappa_ghost_zmax_(i,j,k));
                 }
             }
         }
+
 
       for (int iproc = 0; iproc < Process::nproc() ; iproc++)
         {
@@ -894,12 +884,16 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
 
   // monofluide_variable_==1 est fait pour la pression
   // permet de gerer linterpolation monofluide de la pression en shear periodicite
-  if (monofluide_variable_==1)
+  // monofluide_variable_==2 est fait pour les proprietes physiques constante par phase (rho, mu, nu etc.)
+  // permet de gerer linterpolation monofluide
+  if (monofluide_variable_==1 || monofluide_variable_==2)
     {
-      indicatrice_ghost_zmin_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-      indicatrice_ghost_zmax_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-      I_sigma_kappa_ghost_zmin_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-      I_sigma_kappa_ghost_zmax_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
+      const int nproc_x = splitting.get_nprocessor_per_direction(0);
+      const int nproc_y = splitting.get_nprocessor_per_direction(1);
+      indicatrice_ghost_zmin_.allocate(ni_local*nproc_x, nj_local*nproc_y, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
+      indicatrice_ghost_zmax_.allocate(ni_local*nproc_x, nj_local*nproc_y, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
+      I_sigma_kappa_ghost_zmin_.allocate(ni_local*nproc_x, nj_local*nproc_y, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
+      I_sigma_kappa_ghost_zmax_.allocate(ni_local*nproc_x, nj_local*nproc_y, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
 //      indicatrice_ghost_zmin_local_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
 //      indicatrice_ghost_zmax_local_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
 //      I_sigma_kappa_ghost_zmin_local_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
@@ -912,15 +906,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
           envoyer_broadcast(I_sigma_kappa_ghost_zmin_, iproc);
           envoyer_broadcast(I_sigma_kappa_ghost_zmax_, iproc);
         }
-      rho_v_ = rov;
-      rho_l_ = rol;
-    }
-  // monofluide_variable_==1 est fait pour les proprietes physiques constante par phase (rho, mu, nu etc.)
-  // permet de gerer linterpolation monofluide
-  if (monofluide_variable_==2)
-    {
-      indicatrice_ghost_zmin_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-      indicatrice_ghost_zmax_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
       rho_v_ = rov;
       rho_l_ = rol;
     }

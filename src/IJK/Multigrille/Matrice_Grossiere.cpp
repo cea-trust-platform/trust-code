@@ -17,7 +17,7 @@
 #include <Matrice_Morse_Sym.h>
 
 void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs_m1, ArrOfInt& virt_blocs, ArrOfInt& virt_blocs_p1,
+                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs,
                                       IJK_Splitting splitting, double offset)
 {
   const int ni = renum_.dimension(2) - 2;
@@ -81,10 +81,6 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
       // cas ou la frontiere nest pas des deux cotes sur le meme proc...
       virt_blocs.set_smart_resize(1);
       virt_blocs.append_array(count);
-      virt_blocs_m1.set_smart_resize(1);
-      virt_blocs_m1.append_array(count);
-      virt_blocs_p1.set_smart_resize(1);
-      virt_blocs_p1.append_array(count);
 
       for (int k = kmin; k < kmax; k++)
         for (int j = jmin; j < jmax; j++)
@@ -128,35 +124,53 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
             }
 
       virt_blocs.append_array(count); // end of virtual bloc of data
-      virt_blocs_m1.append_array(count);
-      virt_blocs_p1.append_array(count);
     }
 }
 
 void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
                                       int imax, int jmax, int kmax,
-                                      ArrOfInt& items_to_send_m1,ArrOfInt& items_to_send,ArrOfInt& items_to_send_p1,
+                                      ArrOfInt& items_to_send,
                                       IJK_Splitting splitting, double offset)
 {
   if (pe == Process::me())
     return;
 
   items_to_send.set_smart_resize(1);
-  items_to_send_m1.set_smart_resize(1);
-  items_to_send_p1.set_smart_resize(1);
-
+  const int ni = renum_.dimension(2) - 2;
   for (int k = kmin; k < kmax; k++)
     for (int j = jmin; j < jmax; j++)
       for (int i = imin; i < imax; i++)
         {
+          if (offset !=0. && IJK_Splitting::defilement_==1)
+            {
+              double DX = splitting.get_grid_geometry().get_constant_delta(0);
+              double istmp = IJK_Splitting::shear_x_time_ * offset/DX;
+              int offset2 = (int) round(istmp);
 
-          int index = renum(i, j, k);
-          assert(index >= 0);
-          items_to_send.append_array(index);
-          assert(index >= 0);
-          items_to_send_m1.append_array(index);
-          assert(index >= 0);
-          items_to_send_p1.append_array(index);
+              int x[3] = {offset2-1, offset2, offset2+1};
+
+              double a0 = 1. / ((x[0] - x[1]) * (x[0] - x[2]) );
+              double a1 = 1. / ((x[1] - x[0]) * (x[1] - x[2]) );
+              double a2 = 1. / ((x[2] - x[0]) * (x[2] - x[1]) );
+
+              ponderation_shear_m1_scal_ = a0 * ((istmp - x[1]) * (istmp - x[2]));
+              ponderation_shear_0_scal_ = a1 * ((istmp - x[0]) * (istmp - x[2]));
+              ponderation_shear_p1_scal_ = a2 * ((istmp - x[0]) * (istmp - x[1]));
+
+              int ii = ((i  + offset2) % ni + ni) % ni;
+              int index = renum(i, j, k) + ii - i;
+              assert(index >= 0);
+              items_to_send.append_array(index);
+
+            }
+          else
+            {
+              int index = renum(i, j, k);
+              assert(index >= 0);
+              items_to_send.append_array(index);
+            }
+
+
         }
 }
 /*! @brief ajoute deux coefficients diagonal/extra-diagonal a la matrice
@@ -164,23 +178,36 @@ void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
  */
 void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
                                      int i_voisin, int j_voisin, int k_voisin,
-                                     const double coeff)
+                                     const double coeff, const int shear_perio)
 {
   const int indice = renum(i, j, k);
   const int indice_voisin = renum(i_voisin, j_voisin, k_voisin);
-  //const int indice_voisin_m2 = renum_m2(i_voisin, j_voisin, k_voisin);
   const int indice_voisin_m1 = renum_m1(i_voisin, j_voisin, k_voisin);
   const int indice_voisin_p1 = renum_p1(i_voisin, j_voisin, k_voisin);
 
-  double pond_0 ;
-  double pond_m1 ;
-  double pond_p1 ;
+  double pond_0 = 0.;
+  double pond_m1 = 0.;
+  double pond_p1 = 0.;
   bool voisin_shear;
   if (indice_voisin_m1!=-1 || indice_voisin_p1!=-1)
     {
-      pond_m1 = ponderation_shear_m1_scal_;
-      pond_0 = ponderation_shear_0_scal_;
-      pond_p1 = ponderation_shear_p1_scal_;
+      if (shear_perio==-1)
+        {
+          pond_m1 = ponderation_shear_p1_scal_ ;
+          pond_0 = ponderation_shear_0_scal_;
+          pond_p1 = ponderation_shear_m1_scal_ ;
+        }
+      else if (shear_perio==1)
+        {
+          pond_m1 = ponderation_shear_m1_scal_;
+          pond_0 = ponderation_shear_0_scal_;
+          pond_p1 = ponderation_shear_p1_scal_;
+        }
+      else
+        {
+          std::cout << "ne doit pas etre la" << std::endl;
+          Process::exit();
+        }
       voisin_shear = true;
     }
   else
@@ -223,10 +250,6 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
               coeffs_virt_[indice].add(x*pond_m1);
               coeffs_virt_[indice].add(x*pond_p1);
             }
-//          else
-//            {
-//              std::cout << "Probleme ?" << std::endl;
-//            }
 
         }
     }
