@@ -17,10 +17,10 @@
 #include <Domaine_PolyMAC_P0.h>
 #include <Champ_Fonc_Tabule.h>
 //#include <Ch_Fonc_Som_PolyMAC_P0.h>
-#include <Champ_Fonc_Elem_PolyMAC_P0P1NC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
 #include <Champ_Fonc_Elem_PolyMAC_P0_TC.h>
 #include <Champ_Fonc_Elem_PolyMAC_P0_rot.h>
-#include <Champ_Fonc_Tabule_Elem_PolyMAC_P0P1NC.h>
+#include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
 #include <grad_Champ_Face_PolyMAC_P0.h>
 #include <Milieu_base.h>
 #include <Equation_base.h>

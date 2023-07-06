@@ -19,7 +19,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Fonc.h>
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC, "Champ_Fonc_Elem_PolyMAC_P0_TC", Champ_Fonc_Elem_PolyMAC_P0P1NC);
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_TC, "Champ_Fonc_Elem_PolyMAC_P0_TC", Champ_Fonc_Elem_PolyMAC);
 
 Sortie& Champ_Fonc_Elem_PolyMAC_P0_TC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 

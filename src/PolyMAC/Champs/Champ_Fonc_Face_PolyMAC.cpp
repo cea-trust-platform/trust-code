@@ -27,14 +27,8 @@ Entree& Champ_Fonc_Face_PolyMAC::readOn(Entree& is) { return is; }
 
 int Champ_Fonc_Face_PolyMAC::fixer_nb_valeurs_nodales(int n)
 {
-
-  // j'utilise le meme genre de code que dans Champ_Fonc_P0_base
-  // sauf que je recupere le nombre de faces au lieu du nombre d'elements
-  //
-  // je suis tout de meme etonne du code utilise dans
-  // Champ_Fonc_P0_base::fixer_nb_valeurs_nodales()
-  // pour recuperer la domaine discrete...
-
+  // j'utilise le meme genre de code que dans Champ_Fonc_P0_base sauf que je recupere le nombre de faces au lieu du nombre d'elements
+  // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer le domaine discrete...
   const Champ_Fonc_base& self = ref_cast(Champ_Fonc_base, *this);
   const Domaine_VF& le_dom_vf = ref_cast(Domaine_VF, self.domaine_dis_base());
 
@@ -54,7 +48,7 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
 {
   const DoubleTab& v = ch.valeurs();
   DoubleTab& val = valeurs();
-  const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, le_dom_VF.valeur());
+  const Domaine_VF& domaine_PolyMAC = ref_cast(Domaine_VF, le_dom_VF.valeur());
   int nb_faces = domaine_PolyMAC.nb_faces();
   const DoubleVect& surface = domaine_PolyMAC.face_surfaces();
   const DoubleTab& normales = domaine_PolyMAC.face_normales();
@@ -73,8 +67,6 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
     }
   else if (nb_compo_ == dimension)
     {
-      //      int ndeb_int = domaine_PolyMAC.premiere_face_int();
-      //      const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
       const DoubleTab& xv = domaine_PolyMAC.xv();
       DoubleTab eval(val.dimension_tot(0), dimension);
       ch.valeur_aux(xv, eval);
@@ -90,8 +82,6 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
     }
   else if (nb_compo_ == 1)
     {
-      //      int ndeb_int = domaine_PolyMAC.premiere_face_int();
-      //      const IntTab& face_voisins = domaine_PolyMAC.face_voisins();
       const DoubleTab& xv = domaine_PolyMAC.xv();
       ch.valeur_aux(xv, val);
     }
@@ -102,14 +92,14 @@ Champ_base& Champ_Fonc_Face_PolyMAC::affecter_(const Champ_base& ch)
 
 DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const
 {
+  Cerr << "Champ_Fonc_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
-  // return Champ_implementation_RT0::valeur_a_elem(position,result,poly);
 }
 
 double Champ_Fonc_Face_PolyMAC::valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const
 {
+  Cerr << "Champ_Fonc_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
-  //return Champ_implementation_RT0::valeur_a_elem_compo(position,poly,ncomp);
 }
 
 DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& val) const
@@ -127,26 +117,16 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
       assert(val.dimension(1) == nb_compo);
     }
   else
-    {
-      Cerr << "Erreur TRUST dans Champ_Face_implementation::valeur_aux_elems()" << finl;
-      Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
-      Process::exit();
-    }
+    Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems() : The DoubleTab val has more than 2 entries !");
 
-  const Domaine_PolyMAC& domaine_VF = ref_cast(Domaine_PolyMAC, domaine_vf());
-  //  const Domaine& domaine_geom = domaine_VDF.domaine();
+  const Domaine_VF& domaine_VF = ref_cast(Domaine_VF, domaine_vf());
   const DoubleTab& normales = domaine_VF.face_normales();
-  //  const DoubleVect& surfaces = domaine_VF.face_surfaces();
   const IntTab& elem_faces = domaine_VF.elem_faces();
 
   const DoubleTab& ch = cha.valeurs();
 
   if (nb_compo == 1)
-    {
-      Cerr << "Champ_Face_implementation::valeur_aux_elems" << finl;
-      Cerr << "A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
+    Process::exit("TRUST error in Champ_Fonc_Face_PolyMAC::valeur_aux_elems : A scalar field cannot be of Champ_Face type !");
   else // (nb_compo != 1)
     {
       ArrOfDouble vale(nb_compo), s(nb_compo);
@@ -161,16 +141,14 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
               vale = 0;
               s = 0;
               int nb_faces_elem_max = elem_faces.dimension(1);
-              int nf;
 
-              for (nf = 0; nf < nb_faces_elem_max; nf++)
+              for (int nf = 0; nf < nb_faces_elem_max; nf++)
                 {
                   int face = elem_faces(le_poly, nf);
                   if (face < 0)
                     break;
                   for (int ncomp = 0; ncomp < nb_compo; ncomp++)
                     {
-                      //vale(ncomp)+=ch(face)*normales(face,ncomp);
                       vale[ncomp] += ch(face) * std::fabs(normales(face, ncomp));
                       s[ncomp] += std::fabs(normales(face, ncomp));
                     }
@@ -186,31 +164,31 @@ DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_elems(const DoubleTab& positions,
 
 DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const
 {
-
+  Cerr << "Champ_Fonc_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
 }
 
 DoubleTab& Champ_Fonc_Face_PolyMAC::remplir_coord_noeuds(DoubleTab& positions) const
 {
-
+  Cerr << "Champ_Fonc_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
 }
 
 int Champ_Fonc_Face_PolyMAC::remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const
 {
-
+  Cerr << "Champ_Fonc_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
 }
 
 DoubleTab& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets(const Domaine& domain, DoubleTab& result) const
 {
-
+  Cerr << "Champ_Fonc_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
 }
 
 DoubleVect& Champ_Fonc_Face_PolyMAC::valeur_aux_sommets_compo(const Domaine& domain, DoubleVect& result, int ncomp) const
 {
-
+  Cerr << "Champ_Fonc_Face_PolyMAC::" <<__func__ << " is not coded !" << finl;
   throw;
 }
 

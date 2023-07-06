@@ -15,8 +15,8 @@
 
 #include <PolyMAC_P0P1NC_discretisation.h>
 #include <Champ_Fonc_Tabule.h>
-#include <Champ_Fonc_Elem_PolyMAC_P0P1NC.h>
-#include <Champ_Fonc_Tabule_Elem_PolyMAC_P0P1NC.h>
+#include <Champ_Fonc_Elem_PolyMAC.h>
+#include <Champ_Fonc_Tabule_Elem_PolyMAC.h>
 #include <Milieu_base.h>
 #include <Equation_base.h>
 #include <Champ_Uniforme.h>
@@ -215,8 +215,8 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(
 
   // Le type de champ de vitesse depend du type d'element :
   int zp1 = false, default_nb_comp = 0, rang = motcles.search(directive);
-  Nom type_elem("Champ_Fonc_Elem_PolyMAC_P0P1NC"), type_som("Champ_Fonc_Som_PolyMAC_P0P1NC"), type_scal = zp1 ? type_som : type_elem,
-                                                                                              type_champ_vitesse(zp1 ? "Champ_Fonc_Arete_PolyMAC_P0P1NC" : "Champ_Fonc_Face_PolyMAC_P0P1NC"), type;
+  Nom type_elem("Champ_Fonc_Elem_PolyMAC"), type_som("Champ_Fonc_Som_PolyMAC"), type_scal = zp1 ? type_som : type_elem,
+                                                                                type_champ_vitesse(zp1 ? "Champ_Fonc_Arete_PolyMAC_P0P1NC" : "Champ_Fonc_Face_PolyMAC"), type;
   switch(rang)
     {
     case 0:
@@ -239,7 +239,7 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(
       default_nb_comp = 1;
       break;
     case 7:
-      type = "Champ_Fonc_Face_PolyMAC_P0P1NC";
+      type = "Champ_Fonc_Face_PolyMAC";
       default_nb_comp = 3;
       break;
     default:
@@ -265,11 +265,11 @@ void PolyMAC_P0P1NC_discretisation::discretiser_champ_fonc_don(
 
   // Calcul du nombre de ddl
   int nb_ddl = 0;
-  if (type == "Champ_Fonc_Elem_PolyMAC_P0P1NC")
+  if (type == "Champ_Fonc_Elem_PolyMAC")
     nb_ddl = z.nb_elem();
-  else if (type == "Champ_Fonc_Face_PolyMAC_P0P1NC")
+  else if (type == "Champ_Fonc_Face_PolyMAC")
     nb_ddl = domaine_PolyMAC_P0P1NC.nb_faces();
-  else if (type == "Champ_Fonc_Som_PolyMAC_P0P1NC")
+  else if (type == "Champ_Fonc_Som_PolyMAC")
     nb_ddl = domaine_PolyMAC_P0P1NC.nb_som();
   else if (type == "Champ_Fonc_Arete_PolyMAC_P0P1NC")
     nb_ddl = domaine_PolyMAC_P0P1NC.domaine().nb_aretes();
@@ -563,9 +563,9 @@ void PolyMAC_P0P1NC_discretisation::h_conv(const Domaine_dis& z,const Domaine_Cl
 void PolyMAC_P0P1NC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))& champs_param) const
 {
   Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
-  lambda_tab_dis.typer("Champ_Fonc_Tabule_Elem_PolyMAC_P0P1NC");
-  Champ_Fonc_Tabule_Elem_PolyMAC_P0P1NC& ch_tab_lambda_dis =
-    ref_cast(Champ_Fonc_Tabule_Elem_PolyMAC_P0P1NC,lambda_tab_dis.valeur());
+  lambda_tab_dis.typer("Champ_Fonc_Tabule_Elem_PolyMAC");
+  Champ_Fonc_Tabule_Elem_PolyMAC& ch_tab_lambda_dis =
+    ref_cast(Champ_Fonc_Tabule_Elem_PolyMAC,lambda_tab_dis.valeur());
   //ch_tab_lambda_dis.nommer(nom_champ);
   ch_tab_lambda_dis.associer_domaine_dis_base(domaine_vdf);
   ch_tab_lambda_dis.associer_param(champs_param, lambda_tab.table());

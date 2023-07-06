@@ -83,10 +83,8 @@ Champ_base& Champ_Face_PolyMAC::affecter_(const Champ_base& ch)
         }
     }
   else if (sub_type(Champ_Fonc_reprise, ch))
-    {
-      for (int num_face=0; num_face<nb_faces; num_face++)
-        val(num_face) = ch.valeurs()[num_face];
-    }
+    for (int f = 0; f < nb_faces; f++)
+      val(f) = ch.valeurs()(f);
   else
     {
       //      int ndeb_int = domaine_PolyMAC.premiere_face_int();
@@ -473,7 +471,7 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems_(const DoubleTab& val_face, cons
     Process::exit("TRUST error in Champ_Face_PolyMAC::valeur_aux_elems_ : A scalar field cannot be of Champ_Face type !");
 
   // seulement si Champ_Face_PolyMAC car interp_ve est besoin de mon_dom_cl_dis ...
-  if (mon_dom_cl_dis.est_nul() && que_suis_je() ==  "Champ_Face_PolyMAC")
+  if (mon_dom_cl_dis.est_nul() && que_suis_je() == "Champ_Face_PolyMAC")
     return val_elem; //on ne peut rien faire tant qu'on ne connait pas les CLs
 
   //on interpole ve sur tous les elements, puis on se restreint a les_polys
@@ -500,11 +498,11 @@ DoubleTab& Champ_Face_PolyMAC::valeur_aux_elems_passe(const DoubleTab& positions
   return valeur_aux_elems_(le_champ().passe(), positions, les_polys, val_elem);
 }
 
-DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& val, int ncomp) const
+DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
   fcl();
   const Champ_base& cha=le_champ();
-  assert(val.size() == polys.size());
+  assert(val.size() == les_polys.size());
 
   // seulement si Champ_Face_PolyMAC car interp_ve est besoin de mon_dom_cl_dis ...
   if (mon_dom_cl_dis.est_nul() && que_suis_je() ==  "Champ_Face_PolyMAC")
@@ -515,7 +513,7 @@ DoubleVect& Champ_Face_PolyMAC::valeur_aux_elems_compo(const DoubleTab& position
   ref_cast(Domaine_VF, domaine_vf()).domaine().creer_tableau_elements(ve);
   interp_ve(cha.valeurs(), ve);
 
-  for (int p = 0; p < polys.size(); p++) val(p) = (polys(p) == -1) ? 0. : ve(polys(p), ncomp);
+  for (int p = 0; p < les_polys.size(); p++) val(p) = (les_polys(p) == -1) ? 0. : ve(les_polys(p), ncomp);
 
   return val;
 }

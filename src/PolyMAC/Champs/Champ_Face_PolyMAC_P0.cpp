@@ -273,23 +273,13 @@ DoubleTab& Champ_Face_PolyMAC_P0::valeur_aux_elems_(const DoubleTab& val_face ,c
   const Domaine_PolyMAC_P0& domaine = domaine_PolyMAC_P0();
   int nb_compo=le_champ().nb_comp(), nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = val_face.line_size();
 
-  // XXX : TODO Check this assert (positions and not val)
   assert((positions.dimension(0) == les_polys.size())||(positions.dimension_tot(0) == les_polys.size()));
-  // assert((val.dimension(0) == les_polys.size())||(val.dimension_tot(0) == les_polys.size()));
 
   if (val_elem.nb_dim() > 2)
-    {
-      Cerr << "Erreur TRUST dans Champ_Face_PolyMAC_P0::valeur_aux_elems()" << finl;
-      Cerr << "Le DoubleTab val a plus de 2 entrees" << finl;
-      Process::exit();
-    }
+    Process::exit("TRUST error in Champ_Face_PolyMAC_P0::valeur_aux_elems_ : The DoubleTab val has more than 2 entries !");
 
   if (nb_compo == 1)
-    {
-      Cerr<<"Champ_Face_PolyMAC_P0::valeur_aux_elems"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
+    Process::exit("TRUST error in Champ_Face_PolyMAC_P0::valeur_aux_elems_ : A scalar field cannot be of Champ_Face type !");
 
   for (int p = 0, e; p < les_polys.size(); p++)
     for (e = les_polys(p), d = 0; e < domaine.nb_elem() && d < D; d++)

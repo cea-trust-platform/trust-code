@@ -35,9 +35,8 @@ int Champ_Fonc_Som_PolyMAC::imprime(Sortie& os, int ncomp) const
   const DoubleTab& coord = domaine.coord_sommets();
   const int nb_som = domaine.nb_som();
   const DoubleTab& val = valeurs();
-  int som;
   os << nb_som << finl;
-  for (som = 0; som < nb_som; som++)
+  for (int som = 0; som < nb_som; som++)
     {
       if (dimension == 3)
         os << coord(som, 0) << " " << coord(som, 1) << " " << coord(som, 2) << " ";

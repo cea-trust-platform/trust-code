@@ -127,11 +127,7 @@ DoubleTab& Champ_Face_PolyMAC_P0P1NC::valeur_aux_faces(DoubleTab& val) const
   int nb_compo=cha.nb_comp(), n, N = cha.valeurs().line_size(), d, D = dimension;
 
   if (nb_compo == 1)
-    {
-      Cerr<<"Champ_Face_PolyMAC_P0P1NC::valeur_aux_faces"<<finl;
-      Cerr <<"A scalar field cannot be of Champ_Face type." << finl;
-      Process::exit();
-    }
+    Process::exit("TRUST error in Champ_Face_PolyMAC_P0P1NC::valeur_aux_faces : A scalar field cannot be of Champ_Face type !");
 
   const Domaine_PolyMAC_P0P1NC& domaine = domaine_PolyMAC_P0P1NC();
   val.resize(domaine.nb_faces(), N * D);
@@ -142,14 +138,9 @@ DoubleTab& Champ_Face_PolyMAC_P0P1NC::valeur_aux_faces(DoubleTab& val) const
   return val;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//Methode qui renvoie SMA_barre aux elements a partir de la vitesse aux faces
-//SMA_barre = Sij*Sij (sommation sur les indices i et j)
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 DoubleTab& Champ_Face_PolyMAC_P0P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
 {
-  assert(distant==0);
+  assert(distant == 0);
   const bool vectoriel = (le_champ().nb_comp() > 1);
   const DoubleTab& val = valeurs(t);
   int n, N = val.line_size(), d, D = dimension, dim = vectoriel ? D : 1;

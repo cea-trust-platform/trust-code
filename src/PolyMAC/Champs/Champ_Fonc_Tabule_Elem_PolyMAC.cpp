@@ -19,15 +19,9 @@
 
 Implemente_instanciable(Champ_Fonc_Tabule_Elem_PolyMAC, "Champ_Fonc_Tabule_Elem_PolyMAC", Champ_Fonc_Elem_PolyMAC);
 
-Sortie& Champ_Fonc_Tabule_Elem_PolyMAC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Champ_Fonc_Tabule_Elem_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Fonc_Tabule_Elem_PolyMAC::readOn(Entree& s)
-{
-  return s;
-}
+Entree& Champ_Fonc_Tabule_Elem_PolyMAC::readOn(Entree& s) { return s; }
 
 void Champ_Fonc_Tabule_Elem_PolyMAC::associer_param(const VECT(REF(Champ_base)) &les_champs, const Table& une_table)
 {

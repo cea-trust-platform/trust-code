@@ -16,7 +16,7 @@
 #ifndef grad_Champ_Face_PolyMAC_P0_included
 #define grad_Champ_Face_PolyMAC_P0_included
 
-#include <Champ_Fonc_Face_PolyMAC_P0P1NC.h>
+#include <Champ_Fonc_Face_PolyMAC.h>
 #include <Champ_Face_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <TRUST_Ref.h>
@@ -35,7 +35,7 @@
  *         We compute the gradient at the faces for all velocity components, then interpolate it to obtain the gradient at the elements
  *
  */
-class grad_Champ_Face_PolyMAC_P0: public Champ_Fonc_Face_PolyMAC_P0P1NC
+class grad_Champ_Face_PolyMAC_P0: public Champ_Fonc_Face_PolyMAC
 {
   Declare_instanciable(grad_Champ_Face_PolyMAC_P0);
 public:

@@ -26,4 +26,4 @@ public:
   void mettre_a_jour(double) override;
 };
 
-#endif
+#endif /* Champ_Fonc_Som_PolyMAC_included */

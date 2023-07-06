@@ -19,7 +19,7 @@
 #include <Navier_Stokes_std.h>
 #include <Domaine_Cl_PolyMAC.h>
 
-Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot, "Champ_Fonc_Elem_PolyMAC_P0_rot", Champ_Fonc_Elem_PolyMAC_P0P1NC);
+Implemente_instanciable(Champ_Fonc_Elem_PolyMAC_P0_rot, "Champ_Fonc_Elem_PolyMAC_P0_rot", Champ_Fonc_Elem_PolyMAC);
 
 Sortie& Champ_Fonc_Elem_PolyMAC_P0_rot::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
