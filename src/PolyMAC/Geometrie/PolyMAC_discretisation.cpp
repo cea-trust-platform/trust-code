@@ -29,19 +29,11 @@
 #include <Domaine_Cl_dis.h>
 #include <grad_U_Champ_Face_PolyMAC.h>
 
-Implemente_instanciable(PolyMAC_discretisation,"PolyMAC",Discret_Thyd);
+Implemente_instanciable(PolyMAC_discretisation, "PolyMAC", Discret_Thyd);
 
+Entree& PolyMAC_discretisation::readOn(Entree& s) { return s; }
 
-
-Entree& PolyMAC_discretisation::readOn(Entree& s)
-{
-  return s ;
-}
-
-Sortie& PolyMAC_discretisation::printOn(Sortie& s) const
-{
-  return s ;
-}
+Sortie& PolyMAC_discretisation::printOn(Sortie& s) const { return s; }
 
 /*! @brief Discretisation d'un champ pour le PolyMAC en fonction d'une directive de discretisation.
  *
@@ -55,12 +47,8 @@ Sortie& PolyMAC_discretisation::printOn(Sortie& s) const
  *  le type de champ cree.
  *
  */
-void PolyMAC_discretisation::discretiser_champ(
-  const Motcle& directive, const Domaine_dis_base& z,
-  Nature_du_champ nature,
-  const Noms& noms, const Noms& unites,
-  int nb_comp, int nb_pas_dt, double temps,
-  Champ_Inc& champ, const Nom& sous_type ) const
+void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, int nb_pas_dt,
+                                               double temps, Champ_Inc& champ, const Nom& sous_type) const
 {
   const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z);
 
@@ -102,43 +90,37 @@ void PolyMAC_discretisation::discretiser_champ(
     Cerr << "PolyMAC_discretisation : " << motcles;
 
   if (sous_type != NOM_VIDE)
-    rang = verifie_sous_type(type,sous_type,directive);
+    rang = verifie_sous_type(type, sous_type, directive);
 
   // Si on n'a pas compris la directive (ou si c'est une demande_description)
   // alors on appelle l'ancetre :
   if (rang < 0)
     {
-      Discret_Thyd::discretiser_champ(directive, z,
-                                      nature, noms, unites,
-                                      nb_comp, nb_pas_dt, temps, champ);
+      Discret_Thyd::discretiser_champ(directive, z, nature, noms, unites, nb_comp, nb_pas_dt, temps, champ);
       return;
     }
 
   // Calcul du nombre de ddl
   int nb_ddl = 0;
-  if (type.debute_par(type_elem)) nb_ddl = z.nb_elem() + domaine_PolyMAC.nb_faces();
-  else if (type.debute_par(type_champ_vitesse)) nb_ddl = domaine_PolyMAC.nb_faces() + (dimension < 3 ? domaine_PolyMAC.nb_som() : domaine_PolyMAC.domaine().nb_aretes());
-  else if (type.debute_par("Champ_Som_PolyMAC")) nb_ddl = domaine_PolyMAC.nb_som();
-  else assert(0);
+  if (type.debute_par(type_elem))
+    nb_ddl = z.nb_elem() + domaine_PolyMAC.nb_faces();
+  else if (type.debute_par(type_champ_vitesse))
+    nb_ddl = domaine_PolyMAC.nb_faces() + (dimension < 3 ? domaine_PolyMAC.nb_som() : domaine_PolyMAC.domaine().nb_aretes());
+  else if (type.debute_par("Champ_Som_PolyMAC"))
+    nb_ddl = domaine_PolyMAC.nb_som();
+  else
+    assert(0);
 
-  // Si c'est un champ multiscalaire, uh !
-  /* if (nature == multi_scalaire) {
-    // Pas encore code
-    Cerr << "Champ multi_scalaire pas code" << finl;
-    assert(0); exit();
-    } else {*/
   if (nb_comp < 0)
     nb_comp = default_nb_comp;
   assert(nb_comp > 0);
-  creer_champ(champ, z, type, noms[0], unites[0], nb_comp, nb_ddl, nb_pas_dt, temps,
-              directive, que_suis_je());
+  creer_champ(champ, z, type, noms[0], unites[0], nb_comp, nb_ddl, nb_pas_dt, temps, directive, que_suis_je());
   if (nature == multi_scalaire)
     {
       champ.valeur().fixer_nature_du_champ(nature);
       champ.valeur().fixer_unites(unites);
       champ.valeur().fixer_noms_compo(noms);
     }
-
 }
 
 /*! @brief Idem que PolyMAC_discretisation::discretiser_champ(.
@@ -146,16 +128,10 @@ void PolyMAC_discretisation::discretiser_champ(
  * .. , Champ_Inc)
  *
  */
-void PolyMAC_discretisation::discretiser_champ(
-  const Motcle& directive, const Domaine_dis_base& z,
-  Nature_du_champ nature,
-  const Noms& noms, const Noms& unites,
-  int nb_comp, double temps,
-  Champ_Fonc& champ) const
+void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
+                                               Champ_Fonc& champ) const
 {
-  discretiser_champ_fonc_don(directive, z,
-                             nature, noms, unites,
-                             nb_comp, temps, champ);
+  discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 /*! @brief Idem que PolyMAC_discretisation::discretiser_champ(.
@@ -163,15 +139,10 @@ void PolyMAC_discretisation::discretiser_champ(
  * .. , Champ_Inc)
  *
  */
-void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z,
-                                               Nature_du_champ nature,
-                                               const Noms& noms, const Noms& unites,
-                                               int nb_comp, double temps,
+void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
                                                Champ_Don& champ) const
 {
-  discretiser_champ_fonc_don(directive, z,
-                             nature, noms, unites,
-                             nb_comp, temps, champ);
+  discretiser_champ_fonc_don(directive, z, nature, noms, unites, nb_comp, temps, champ);
 }
 
 /*! @brief Idem que PolyMAC_discretisation::discretiser_champ(.
@@ -181,21 +152,17 @@ void PolyMAC_discretisation::discretiser_champ(const Motcle& directive, const Do
  *  de l'exterieur ...)
  *
  */
-void PolyMAC_discretisation::discretiser_champ_fonc_don(
-  const Motcle& directive, const Domaine_dis_base& z,
-  Nature_du_champ nature,
-  const Noms& noms, const Noms& unites,
-  int nb_comp, double temps,
-  Objet_U& champ) const
+void PolyMAC_discretisation::discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& noms, const Noms& unites, int nb_comp, double temps,
+                                                        Objet_U& champ) const
 {
   // Deux pointeurs pour acceder facilement au champ_don ou au champ_fonc,
   // suivant le type de l'objet champ.
-  Champ_Fonc * champ_fonc = 0;
-  Champ_Don * champ_don = 0;
+  Champ_Fonc *champ_fonc = 0;
+  Champ_Don *champ_don = 0;
   if (sub_type(Champ_Fonc, champ))
-    champ_fonc = & ref_cast(Champ_Fonc, champ);
+    champ_fonc = &ref_cast(Champ_Fonc, champ);
   else
-    champ_don  = & ref_cast(Champ_Don, champ);
+    champ_don = &ref_cast(Champ_Don, champ);
 
   const Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z);
 
@@ -248,11 +215,9 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(
   if (rang < 0)
     {
       if (champ_fonc)
-        Discret_Thyd::discretiser_champ(directive, z, nature, noms, unites,
-                                        nb_comp, temps, *champ_fonc);
+        Discret_Thyd::discretiser_champ(directive, z, nature, noms, unites, nb_comp, temps, *champ_fonc);
       else
-        Discret_Thyd::discretiser_champ(directive, z, nature, noms, unites,
-                                        nb_comp, temps, *champ_don);
+        Discret_Thyd::discretiser_champ(directive, z, nature, noms, unites, nb_comp, temps, *champ_don);
       return;
     }
 
@@ -271,11 +236,9 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(
   if (nb_comp < 0)
     nb_comp = default_nb_comp;
   if (champ_fonc)
-    creer_champ(*champ_fonc, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps,
-                directive, que_suis_je());
+    creer_champ(*champ_fonc, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps, directive, que_suis_je());
   else
-    creer_champ(*champ_don, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps,
-                directive, que_suis_je());
+    creer_champ(*champ_don, z, type, noms[0], unites[0], nb_comp, nb_ddl, temps, directive, que_suis_je());
   if ((nature == multi_scalaire) && (champ_fonc))
     {
       champ_fonc->valeur().fixer_nature_du_champ(nature);
@@ -284,20 +247,17 @@ void PolyMAC_discretisation::discretiser_champ_fonc_don(
     }
   else if ((nature == multi_scalaire) && (champ_don))
     {
-      Cerr<<"There is no field of type Champ_Don with a multi_scalaire nature."<<finl;
+      Cerr << "There is no field of type Champ_Don with a multi_scalaire nature." << finl;
       exit();
     }
 }
 
-
-
-void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch,
-                                            Domaine_dis& z, Champ_Fonc& ch) const
+void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Discretisation de la distance paroi" << finl;
-  Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z.valeur());
+  Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z.valeur());
   ch.typer("Champ_Fonc_Elem_PolyMAC");
-  Champ_Fonc_Elem_PolyMAC& ch_dist_paroi=ref_cast(Champ_Fonc_Elem_PolyMAC,ch.valeur());
+  Champ_Fonc_Elem_PolyMAC& ch_dist_paroi = ref_cast(Champ_Fonc_Elem_PolyMAC, ch.valeur());
   ch_dist_paroi.associer_domaine_dis_base(domaine_PolyMAC);
   ch_dist_paroi.nommer("distance_paroi");
   ch_dist_paroi.fixer_nb_comp(1);
@@ -306,10 +266,7 @@ void PolyMAC_discretisation::distance_paroi(const Schema_Temps_base& sch,
   ch_dist_paroi.changer_temps(sch.temps_courant());
 }
 
-
-
-void PolyMAC_discretisation::vorticite(Domaine_dis& z,const Champ_Inc& ch_vitesse,
-                                       Champ_Fonc& ch) const
+void PolyMAC_discretisation::vorticite(Domaine_dis& z, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de la vorticite " << finl;
@@ -365,11 +322,8 @@ void PolyMAC_discretisation::vorticite(Domaine_dis& z,const Champ_Inc& ch_vitess
 #endif
 }
 
-void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
-                                                   const Champ_Inc& ch_vitesse,
-                                                   Champ_Fonc& ch) const
+void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
-
 #ifdef dependance
   if (sub_type(Champ_Som_PolyMAC,ch_vitesse.valeur()))
     {
@@ -423,8 +377,6 @@ void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
 #endif
 }
 
-
-
 /*! @brief discretise en PolyMAC le fluide incompressible, donc  K e N
  *
  * Postcondition: la methode ne modifie pas l'objet
@@ -434,10 +386,8 @@ void PolyMAC_discretisation::creer_champ_vorticite(const Schema_Temps_base& sch,
  * @param (Champ_Inc&) ch_vitesse
  * @param (Champ_Inc&) temperature
  */
-void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis& z, Fluide_Ostwald& le_fluide,
-                                                                 const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper ) const
+void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_dis& z, Fluide_Ostwald& le_fluide, const Navier_Stokes_std& eqn_hydr, const Champ_Inc& ch_temper) const
 {
-
 #ifdef dependance
   Cerr << "Discretisation PolyMAC du fluide_Ostwald" << finl;
   const Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z.valeur());
@@ -469,22 +419,19 @@ void PolyMAC_discretisation::proprietes_physiques_fluide_Ostwald(const Domaine_d
 #endif
 }
 
-
-void PolyMAC_discretisation::domaine_Cl_dis(Domaine_dis& z,
-                                            Domaine_Cl_dis& zcl) const
+void PolyMAC_discretisation::domaine_Cl_dis(Domaine_dis& z, Domaine_Cl_dis& zcl) const
 {
   Cerr << "discretisation des conditions limites" << finl;
   assert(z.non_nul());
-  Domaine_PolyMAC& domaine_PolyMAC=ref_cast(Domaine_PolyMAC, z.valeur());
+  Domaine_PolyMAC& domaine_PolyMAC = ref_cast(Domaine_PolyMAC, z.valeur());
   zcl.typer("Domaine_Cl_PolyMAC");
   assert(zcl.non_nul());
-  Domaine_Cl_PolyMAC& domaine_cl_PolyMAC=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  Domaine_Cl_PolyMAC& domaine_cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
   domaine_cl_PolyMAC.associer(domaine_PolyMAC);
   Cerr << "discretisation des conditions limites OK" << finl;
 }
 
-
-void PolyMAC_discretisation::critere_Q(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::critere_Q(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
 #ifdef dependance
   // On passe la zcl, pour qu'il n y ait qu une methode qqsoit la dsicretisation
@@ -504,10 +451,8 @@ void PolyMAC_discretisation::critere_Q(const Domaine_dis& z,const Domaine_Cl_dis
 #endif
 }
 
-
-void PolyMAC_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
+void PolyMAC_discretisation::y_plus(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
-
 #ifdef dependance
   Cerr << "Discretisation de y_plus" << finl;
   const Champ_Som_PolyMAC& vit = ref_cast(Champ_Som_PolyMAC,ch_vitesse.valeur());
@@ -526,7 +471,7 @@ void PolyMAC_discretisation::y_plus(const Domaine_dis& z,const Domaine_Cl_dis& z
 #endif
 }
 
-void PolyMAC_discretisation::grad_T(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_T(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch) const
 {
 #ifdef dependance
   Cerr << "Discretisation de gradient_temperature" << finl;
@@ -546,37 +491,37 @@ void PolyMAC_discretisation::grad_T(const Domaine_dis& z,const Domaine_Cl_dis& z
 #endif
 }
 
-void PolyMAC_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_vitesse,Champ_Fonc& ch) const
+void PolyMAC_discretisation::grad_u(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_vitesse, Champ_Fonc& ch) const
 {
-  const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC,ch_vitesse.valeur());
-  const Domaine_PolyMAC& domaine_poly=ref_cast(Domaine_PolyMAC, z.valeur());
-  const Domaine_Cl_PolyMAC& domaine_cl_poly=ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
+  const Champ_Face_PolyMAC& vit = ref_cast(Champ_Face_PolyMAC, ch_vitesse.valeur());
+  const Domaine_PolyMAC& domaine_poly = ref_cast(Domaine_PolyMAC, z.valeur());
+  const Domaine_Cl_PolyMAC& domaine_cl_poly = ref_cast(Domaine_Cl_PolyMAC, zcl.valeur());
   ch.typer("grad_U_Champ_Face_PolyMAC");
-  grad_U_Champ_Face_PolyMAC& ch_grad_u=ref_cast(grad_U_Champ_Face_PolyMAC,ch.valeur());
+  grad_U_Champ_Face_PolyMAC& ch_grad_u = ref_cast(grad_U_Champ_Face_PolyMAC, ch.valeur());
   ch_grad_u.associer_domaine_dis_base(domaine_poly);
   ch_grad_u.associer_domaine_Cl_dis_base(domaine_cl_poly);
   ch_grad_u.associer_champ(vit);
   ch_grad_u.nommer("gradient_vitesse");
-  ch_grad_u.fixer_nb_comp(dimension*dimension);
+  ch_grad_u.fixer_nb_comp(dimension * dimension);
 
   if (dimension == 2)
     {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(3,"dVdY"); // dv/dy
+      ch_grad_u.fixer_nom_compo(0, "dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(1, "dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(2, "dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(3, "dVdY"); // dv/dy
     }
   else
     {
-      ch_grad_u.fixer_nom_compo(0,"dUdX"); // du/dx
-      ch_grad_u.fixer_nom_compo(1,"dUdY"); // du/dy
-      ch_grad_u.fixer_nom_compo(2,"dUdZ"); // du/dz
-      ch_grad_u.fixer_nom_compo(3,"dVdX"); // dv/dx
-      ch_grad_u.fixer_nom_compo(4,"dVdY"); // dv/dy
-      ch_grad_u.fixer_nom_compo(5,"dVdZ"); // dv/dz
-      ch_grad_u.fixer_nom_compo(6,"dWdX"); // dw/dx
-      ch_grad_u.fixer_nom_compo(7,"dWdY"); // dw/dy
-      ch_grad_u.fixer_nom_compo(8,"dWdZ"); // dw/dz
+      ch_grad_u.fixer_nom_compo(0, "dUdX"); // du/dx
+      ch_grad_u.fixer_nom_compo(1, "dUdY"); // du/dy
+      ch_grad_u.fixer_nom_compo(2, "dUdZ"); // du/dz
+      ch_grad_u.fixer_nom_compo(3, "dVdX"); // dv/dx
+      ch_grad_u.fixer_nom_compo(4, "dVdY"); // dv/dy
+      ch_grad_u.fixer_nom_compo(5, "dVdZ"); // dv/dz
+      ch_grad_u.fixer_nom_compo(6, "dWdX"); // dw/dx
+      ch_grad_u.fixer_nom_compo(7, "dWdY"); // dw/dy
+      ch_grad_u.fixer_nom_compo(8, "dWdZ"); // dw/dz
     }
   ch_grad_u.fixer_nature_du_champ(vectoriel);
   ch_grad_u.fixer_nb_valeurs_nodales(domaine_poly.nb_elem());
@@ -584,7 +529,7 @@ void PolyMAC_discretisation::grad_u(const Domaine_dis& z,const Domaine_Cl_dis& z
   ch_grad_u.changer_temps(ch_vitesse.temps());
 }
 
-void PolyMAC_discretisation::h_conv(const Domaine_dis& z,const Domaine_Cl_dis& zcl,const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
+void PolyMAC_discretisation::h_conv(const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const
 {
 #ifdef dependance
   Cerr << "Discretisation de h_conv" << finl;
@@ -605,92 +550,89 @@ void PolyMAC_discretisation::h_conv(const Domaine_dis& z,const Domaine_Cl_dis& z
   ch_gt.changer_temps(ch_temperature.temps());
 #endif
 }
-void PolyMAC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_vdf,Champ_Fonc_Tabule& lambda_tab,const VECT(REF(Champ_base))& champs_param) const
+void PolyMAC_discretisation::modifier_champ_tabule(const Domaine_dis_base& domaine_poly, Champ_Fonc_Tabule& lambda_tab, const VECT(REF(Champ_base)) &champs_param) const
 {
   Champ_Fonc& lambda_tab_dis = lambda_tab.le_champ_tabule_discretise();
   lambda_tab_dis.typer("Champ_Fonc_Tabule_Elem_PolyMAC");
-  Champ_Fonc_Tabule_Elem_PolyMAC& ch_tab_lambda_dis =
-    ref_cast(Champ_Fonc_Tabule_Elem_PolyMAC,lambda_tab_dis.valeur());
+  Champ_Fonc_Tabule_Elem_PolyMAC& ch_tab_lambda_dis = ref_cast(Champ_Fonc_Tabule_Elem_PolyMAC, lambda_tab_dis.valeur());
   //ch_tab_lambda_dis.nommer(nom_champ);
-  ch_tab_lambda_dis.associer_domaine_dis_base(domaine_vdf);
+  ch_tab_lambda_dis.associer_domaine_dis_base(domaine_poly);
   ch_tab_lambda_dis.associer_param(champs_param, lambda_tab.table());
   ch_tab_lambda_dis.fixer_nb_comp(lambda_tab.nb_comp());
-  ch_tab_lambda_dis.fixer_nb_valeurs_nodales(domaine_vdf.nb_elem());
-// ch_tab_lambda_dis.fixer_unite(unite);
+  ch_tab_lambda_dis.fixer_nb_valeurs_nodales(domaine_poly.nb_elem());
+  // ch_tab_lambda_dis.fixer_unite(unite);
   ch_tab_lambda_dis.changer_temps(champs_param[0].valeur().temps());
 }
 
-Nom  PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur,const Equation_base& eqn,  const REF(Champ_base)& champ_sup) const
+Nom PolyMAC_discretisation::get_name_of_type_for(const Nom& class_operateur, const Nom& type_operateur, const Equation_base& eqn, const REF(Champ_base) &champ_sup) const
 {
   Nom type;
-  if (class_operateur=="Source")
+  if (class_operateur == "Source")
     {
-      type=type_operateur;
+      type = type_operateur;
       Nom champ = (eqn.inconnue()->que_suis_je());
       champ.suffix("Champ");
-      type+=champ;
+      type += champ;
       //type+="_PolyMAC";
       return type;
 
     }
-  else if (class_operateur=="Solveur_Masse")
+  else if (class_operateur == "Solveur_Masse")
     {
-      Nom type_ch=eqn.inconnue()->que_suis_je();
+      Nom type_ch = eqn.inconnue()->que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type_ch = "_Elem";
 
       if (type_ch.debute_par("Champ_Face"))
         type_ch = "_Face";
 
-
-      type="Masse_PolyMAC";
-      type+=type_ch;
-    }
-  else if (class_operateur=="Operateur_Grad")
-    {
-      type="Op_Grad_PolyMAC_Face";
-    }
-  else if (class_operateur=="Operateur_Div")
-    {
-      type="Op_Div_PolyMAC";
-    }
-
-  else if (class_operateur=="Operateur_Diff")
-    {
-      Nom type_ch=eqn.inconnue()->que_suis_je();
-      if (type_ch.debute_par("Champ_Elem"))
-        type_ch = "_Elem";
-
-      if (type_ch.debute_par("Champ_Face"))
-        type_ch = "_Face";
-
-      type="Op_Diff" ;
-      if (type_operateur!="" )
-        {
-          type+="_";
-          type+=type_operateur;
-        }
-      type+="_PolyMAC";
+      type = "Masse_PolyMAC";
       type += type_ch;
     }
-  else if (class_operateur=="Operateur_Conv")
+  else if (class_operateur == "Operateur_Grad")
     {
-      type="Op_Conv_";
-      type+=type_operateur;
-      Nom tiret="_";
-      type+= tiret;
-      type+=que_suis_je();
-      Nom type_ch=eqn.inconnue()->que_suis_je();
+      type = "Op_Grad_PolyMAC_Face";
+    }
+  else if (class_operateur == "Operateur_Div")
+    {
+      type = "Op_Div_PolyMAC";
+    }
+
+  else if (class_operateur == "Operateur_Diff")
+    {
+      Nom type_ch = eqn.inconnue()->que_suis_je();
+      if (type_ch.debute_par("Champ_Elem"))
+        type_ch = "_Elem";
+
+      if (type_ch.debute_par("Champ_Face"))
+        type_ch = "_Face";
+
+      type = "Op_Diff";
+      if (type_operateur != "")
+        {
+          type += "_";
+          type += type_operateur;
+        }
+      type += "_PolyMAC";
+      type += type_ch;
+    }
+  else if (class_operateur == "Operateur_Conv")
+    {
+      type = "Op_Conv_";
+      type += type_operateur;
+      Nom tiret = "_";
+      type += tiret;
+      type += que_suis_je();
+      Nom type_ch = eqn.inconnue()->que_suis_je();
       if (type_ch.debute_par("Champ_Elem"))
         type += "_Elem";
       if (type_ch.debute_par("Champ_Face"))
         type += "_Face";
-      type+= "_PolyMAC";
+      type += "_PolyMAC";
     }
 
   else
-    {
-      return Discret_Thyd::get_name_of_type_for(class_operateur,type_operateur,eqn);
-    }
+    return Discret_Thyd::get_name_of_type_for(class_operateur, type_operateur, eqn);
+
   return type;
 }
