@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ extern "C"
   void F77DECLARE(DPBTRS)(const char* const, const int* const, const int* const, const int* const, const double* const, const int* const, const double* const, const int* const, const int* const);
 
   void F77DECLARE(DGBSV)(int*, int*,int*, int*, double*,int*, int*, double*, int*, int*);
+
 
   void F77DECLARE(DGBTRS)(const char* const, const int* const, const int* const, const int* const, const int* const, const double* const, const int* const, const int* const, const double* const, const int* const, const int* const);
 
@@ -83,6 +84,22 @@ extern "C"
                          );
 
   // FIN MODIF ELI LAUCOIN (26/11/2007)
+
+  // MULTIPLICATION MATRICIELLE C = alpha*op( A )*op( B ) + beta*C
+  void F77DECLARE(DGEMM)(const char*    const, // TRANSA
+                         const char*    const, // TRANSB
+                         const int*     const, // M
+                         const int*     const, // N
+                         const int*     const, // K
+                         const double*  const, // ALPHA
+                         const double*  const, // A
+                         const int*     const, // LDA
+                         const double*  const, // B
+                         const int*     const, // LDB
+                         const double*  const, // BETA
+                         const double*  const, // C
+                         const int*     const  // LDC
+                        );
 
   // MODIF ELI LAUCOIN (19/03/2008) : j'ajoute les routines suivantes pour la resolution LU
   void F77DECLARE(DGETRF)(const int*    const, // M
@@ -319,6 +336,22 @@ extern "C"
                          );
 
   // FIN MODIF ELI LAUCOIN (26/11/2007)
+
+  // MULTIPLICATION MATRICIELLE C = alpha*op( A )*op( B ) + beta*C
+  void F77DECLARE(dgemm)(const char*    const, // TRANSA
+                         const char*    const, // TRANSB
+                         const int*     const, // M
+                         const int*     const, // N
+                         const int*     const, // K
+                         const double*  const, // ALPHA
+                         const double*  const, // A
+                         const int*     const, // LDA
+                         const double*  const, // B
+                         const int*     const, // LDB
+                         const double*  const, // BETA
+                         const double*  const, // C
+                         const int*     const  // LDC
+                        );
 
   // MODIF ELI LAUCOIN (19/03/2008) : j'ajoute les routines suivantes pour la resolution LU
   void F77DECLARE(dgetrf)(const int*    const, // M
@@ -596,6 +629,24 @@ inline void F77NAME(DGESVD)(const char*   const JOBU,
 }
 
 // FIN MODIF ELI LAUCOIN (26/11/2007)
+
+// MULTIPLICATION MATRICIELLE C = alpha*op( A )*op( B ) + beta*C
+inline void F77NAME(DGEMM)(const char*    const TRANSA,
+                           const char*    const TRANSB,
+                           const int*     const M,
+                           const int*     const N,
+                           const int*     const K,
+                           const double*  const ALPHA,
+                           const double*  const A,
+                           const int*     const LDA,
+                           const double*  const B,
+                           const int*     const LDB,
+                           const double*  const BETA,
+                           const double*  const C,
+                           const int*     const LDC)
+{
+  F77NAME(dgemm)(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC);
+}
 
 // MODIF ELI LAUCOIN (19/03/2008) : j'ajoute les routines suivantes pour la resolution LU
 inline void F77NAME(DGETRF)(const int*    const M,
