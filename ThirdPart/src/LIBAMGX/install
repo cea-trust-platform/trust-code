@@ -38,16 +38,21 @@ then
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgX_$commit.tar.gz
    fi
    cd $LIB && mkdir -p build && cd build
-   if [ "$TRUST_CC_BASE_EXTP" != "" ]
+
+   # Compilers
+   CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BASE_EXTP
+   CC=$TRUST_cc_BASE  && [ "$TRUST_cc_BASE_EXTP" != "" ] && CC=$TRUST_cc_BASE_EXTP
+   AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_FLAGS=-std=c++14" # See https://github.com/NVIDIA/AMGX for compilers...
+   if [ $TRUST_USE_OPENMP = 1 ]
    then
-      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE_EXTP -DCMAKE_CXX_FLAGS=-std=c++14 -DCMAKE_C_COMPILER=$TRUST_cc_BASE_EXTP" # See https://github.com/NVIDIA/AMGX for compilers...
+      AMGX_COMPILERS=$AMGX_COMPILERS" -DCMAKE_CXX_FLAGS=-fopenmp -DCMAKE_EXE_LINKER_FLAGS=-lomp"
    else
-      AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$TRUST_CC_BASE -DCMAKE_C_COMPILER=$TRUST_cc_BASE"
+      AMGX_COMPILERS=$AMGX_COMPILERS" -DCMAKE_CXX_FLAGS=-fno-openmp" # Important de specifier car AmgX cherche OpenMP et cela pose des undefined reference omp au link des cas tests AmgXWrapper
    fi
    # ToDo -DCUDA_ARCH="60;70;80" ou --gpu=all
    # -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 regle le pb de (cannot find -lcudadevrt -lcudart_static) au configure pour le NVidia SDK
    # -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT  changement de syntax pour cmake 3.18 -> 3.22 ?
-   cmake -DCUDAToolkit_ROOT=$CUDA_ROOT -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 $CUDA_NVCC_FLAGS -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
+   cmake -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DCUDAToolkit_ROOT=$CUDA_ROOT -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 $CUDA_NVCC_FLAGS -DAMGX_NO_RPATH=1 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB $AMGX_COMPILERS -DCMAKE_CUDA_FLAGS_RELEASE="-DNDEBUG" .. || exit -1
    #$TRUST_MAKE || exit -1
    $TRUST_MAKE install || exit -1 # Important de faire en 1 fois car sur cluster make install recompile a nouveau apres make !!!
    cp -f ../examples/matrix.mtx $AMGX_DIR/$LIB/lib/examples
@@ -90,8 +95,8 @@ then
       export CXX=$TRUST_CC
       export CC=$TRUST_cc
    fi
-   CMAKE_FLAGS=" -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC"
-   export CXXFLAGS="-fPIC -fopenmp" # AmgX use OpenMP to accelerate some host tasks...
+   CMAKE_FLAGS=" -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC"
+   [ $TRUST_USE_OPENMP = 1 ] && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_EXE_LINKER_FLAGS=-lomp"
    # Configure and build:
    cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DBUILD_SHARED_LIBS=OFF .. && $TRUST_MAKE
    [ $? != 0 ] && exit -1

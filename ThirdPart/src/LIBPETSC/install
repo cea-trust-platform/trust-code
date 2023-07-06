@@ -273,7 +273,7 @@ then
    echo "****************************************"
    echo "TRUST_USE_CUDA=$TRUST_USE_CUDA"
    with_gpu="--with-cuda"
-   with_gpu=$with_gpu" --with-cudac=$CUDA_ROOT/bin/nvcc"
+   with_gpu=$with_gpu" --with-cudac=$TRUST_NVCC"
    CUDA_STUBS="" && [ -d $CUDA_ROOT/lib64/stubs ]        && CUDA_STUBS=",-L$CUDA_ROOT/lib64/stubs"        # Necessaire sur irene pas sur jeanzay (fait ch..r)
    for CUDA_LIB_PATH in $CUDA_ROOT/math_libs $CUDA_ROOT/../math_libs $CUDA_ROOT/../../math_libs `echo $CUDA_ROOT | sed "1,$ s?/cuda/?/../math_libs/?g"`
    do
