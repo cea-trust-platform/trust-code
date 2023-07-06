@@ -13,56 +13,22 @@
 *
 *****************************************************************************/
 
-#include <Connectivite_som_elem.h>
 #include <Champ_Elem_PolyMAC_P0P1NC.h>
-#include <Champ_Elem_PolyMAC_P0P1NC.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <TRUSTTab_parts.h>
-#include <MD_Vector_base.h>
-#include <Equation_base.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
+#include <Connectivite_som_elem.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <MD_Vector_base.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine.h>
-#include <array>
 
-Implemente_instanciable(Champ_Elem_PolyMAC_P0P1NC,"Champ_Elem_PolyMAC_P0P1NC",Champ_Inc_P0_base);
+Implemente_instanciable(Champ_Elem_PolyMAC_P0P1NC,"Champ_Elem_PolyMAC_P0P1NC",Champ_Elem_PolyMAC);
 
 Sortie& Champ_Elem_PolyMAC_P0P1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Elem_PolyMAC_P0P1NC::readOn(Entree& s)
-{
-  lire_donnees(s) ;
-  return s ;
-}
+Entree& Champ_Elem_PolyMAC_P0P1NC::readOn(Entree& s) { return Champ_Elem_PolyMAC::readOn(s) ; }
 
 const Domaine_PolyMAC_P0P1NC& Champ_Elem_PolyMAC_P0P1NC::domaine_PolyMAC_P0P1NC() const
 {
   return ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_VF.valeur());
-}
-
-int Champ_Elem_PolyMAC_P0P1NC::imprime(Sortie& os, int ncomp) const
-{
-  const Domaine_dis_base& domaine_dis = domaine_dis_base();
-  const Domaine& domaine = domaine_dis.domaine();
-  const DoubleTab& coord=domaine.coord_sommets();
-  const int nb_som = domaine.nb_som();
-  const DoubleTab& val = valeurs();
-  int som;
-  os << nb_som << finl;
-  for (som=0; som<nb_som; som++)
-    {
-      if (dimension==3)
-        os << coord(som,0) << " " << coord(som,1) << " " << coord(som,2) << " " ;
-      if (dimension==2)
-        os << coord(som,0) << " " << coord(som,1) << " " ;
-      if (nb_compo_ == 1)
-        os << val(som) << finl;
-      else
-        os << val(som,ncomp) << finl;
-    }
-  os << finl;
-  Cout << "Champ_Elem_PolyMAC_P0P1NC::imprime FIN >>>>>>>>>> " << finl;
-  return 1;
 }
 
 int Champ_Elem_PolyMAC_P0P1NC::fixer_nb_valeurs_nodales(int n)
@@ -119,25 +85,4 @@ Champ_base& Champ_Elem_PolyMAC_P0P1NC::affecter_(const Champ_base& ch)
       valeurs().echange_espace_virtuel();
     }
   return *this;
-}
-
-DoubleTab& Champ_Elem_PolyMAC_P0P1NC::valeur_aux_faces(DoubleTab& dst) const
-{
-  const Domaine_PolyMAC_P0P1NC& domaine = domaine_PolyMAC_P0P1NC();
-  const IntTab& f_e = domaine.face_voisins();
-  const DoubleTab& src = valeurs();
-
-  /* vals doit etre pre-dimensionne */
-  int i, e, f, n, N = (src.nb_dim() == 1 ? 1 : src.dimension(1));
-  assert(dst.dimension(0) == domaine.xv().dimension(0) && N == (dst.nb_dim() == 1 ? 1 : dst.dimension(1)));
-
-  if (src.dimension_tot(0) > domaine.nb_elem_tot()) //on a les valeurs aux faces
-    for (f = 0; f < dst.dimension(0); f++)
-      for (n = 0; n < N; n++) dst(f, n) = src(domaine.nb_elem_tot() + f, n);
-  else for (f = 0; f < dst.dimension(0); f++) //on prend (amont + aval) / 2
-      for (i = 0; i < 2 && (e = f_e(f, i)) >= 0; i++)
-        for (n = 0; n < N; n++)
-          dst(f, n) += src(e, n) * (f < domaine.premiere_face_int() ? 1 : 0.5);
-
-  return dst;
 }

@@ -14,27 +14,17 @@
 *****************************************************************************/
 
 #include <Champ_Elem_PolyMAC.h>
-#include <Domaine_Cl_dis.h>
-#include <Dirichlet.h>
-#include <Symetrie.h>
-#include <Dirichlet_homogene.h>
-#include <Neumann_paroi.h>
-#include <Echange_contact_PolyMAC.h>
 #include <TRUSTTab_parts.h>
-#include <Schema_Euler_Implicite.h>
-#include <array>
+#include <Domaine_Cl_dis.h>
 
-Implemente_instanciable(Champ_Elem_PolyMAC,"Champ_Elem_PolyMAC",Champ_Inc_P0_base);
+Implemente_instanciable(Champ_Elem_PolyMAC, "Champ_Elem_PolyMAC", Champ_Inc_P0_base);
 
-Sortie& Champ_Elem_PolyMAC::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Champ_Elem_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
 Entree& Champ_Elem_PolyMAC::readOn(Entree& s)
 {
-  lire_donnees(s) ;
-  return s ;
+  lire_donnees(s);
+  return s;
 }
 
 int Champ_Elem_PolyMAC::imprime(Sortie& os, int ncomp) const
@@ -82,7 +72,7 @@ Champ_base& Champ_Elem_PolyMAC::affecter_(const Champ_base& ch)
 
 DoubleTab& Champ_Elem_PolyMAC::valeur_aux_faces(DoubleTab& dst) const
 {
-  const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC, domaine_dis_base());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, le_dom_VF.valeur());
   const IntTab& f_e = domaine.face_voisins();
   const DoubleTab& src = valeurs();
 

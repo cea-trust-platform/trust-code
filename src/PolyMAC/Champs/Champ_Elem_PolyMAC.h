@@ -18,11 +18,7 @@
 
 #include <Op_Diff_PolyMAC_base.h>
 #include <Champ_Inc_P0_base.h>
-#include <Domaine_PolyMAC.h>
 #include <Operateur.h>
-
-class Domaine_VF;
-class Domaine_PolyMAC;
 
 // Champ correspondant a une inconnue scalaire (type temperature ou pression)
 // Degres de libertes : valeur aux elements + flux aux faces
@@ -46,7 +42,7 @@ inline DoubleTab& Champ_Elem_PolyMAC::trace(const Frontiere_dis_base& fr, Double
   /* dimensionnement du tableau de destination x si necessaire */
   const DoubleTab& src = valeurs();
   const Front_VF& fvf = ref_cast(Front_VF, fr);
-  const Domaine_PolyMAC& domaine = ref_cast(Domaine_PolyMAC, domaine_dis_base());
+  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis_base());
   const IntTab& f_e = domaine.face_voisins();
 
   DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)

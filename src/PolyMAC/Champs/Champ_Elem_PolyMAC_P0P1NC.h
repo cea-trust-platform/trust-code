@@ -17,7 +17,7 @@
 #define Champ_Elem_PolyMAC_P0P1NC_included
 
 #include <Op_Diff_PolyMAC_P0P1NC_base.h>
-#include <Champ_Inc_P0_base.h>
+#include <Champ_Elem_PolyMAC.h>
 #include <Operateur.h>
 
 /*! @brief : class Champ_Elem_PolyMAC_P0P1NC
@@ -25,45 +25,18 @@
  *  Champ correspondant a une inconnue scalaire (type temperature ou pression)
  *  Degres de libertes : valeur aux elements + flux aux faces
  */
-class Champ_Elem_PolyMAC_P0P1NC : public Champ_Inc_P0_base
+class Champ_Elem_PolyMAC_P0P1NC : public Champ_Elem_PolyMAC
 {
   Declare_instanciable(Champ_Elem_PolyMAC_P0P1NC);
 public :
   Champ_base& affecter_(const Champ_base& ch) override;
-  int imprime(Sortie&, int) const override;
 
   int fixer_nb_valeurs_nodales(int n) override; //valeurs aux elements
-
-  /* fonctions reconstruisant de maniere plus precise le champ aux faces */
-  DoubleTab& valeur_aux_faces(DoubleTab& vals) const override;
-  inline DoubleTab& trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const override;
 
   const Domaine_PolyMAC_P0P1NC& domaine_PolyMAC_P0P1NC() const;
   int nb_valeurs_nodales() const override;
   virtual void init_auxiliary_variables(); //pour demander en plus les inconnues auxiliaires (valeurs aux faces)
   int reprendre(Entree& fich) override;
 };
-
-inline DoubleTab& Champ_Elem_PolyMAC_P0P1NC::trace(const Frontiere_dis_base& fr, DoubleTab& x, double t, int distant) const
-{
-  /* dimensionnement du tableau de destination x si necessaire */
-  const DoubleTab& src = valeurs();
-  const Front_VF& fvf = ref_cast(Front_VF, fr);
-  const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis_base());
-  const IntTab& f_e = domaine.face_voisins();
-
-  DoubleTrav dst; //reconstruction du champ aux faces (on ne le remplit que sur le bord concerne)
-  int i, n, e, f, N = src.nb_dim() > 1 ? src.dimension(1): 1, has_faces = src.dimension_tot(0) > domaine.nb_elem_tot();
-  if (!x.dimension(0) && !x.get_md_vector().non_nul()) x.resize(fvf.nb_faces(), N);
-  dst.resize(domaine.nb_faces(), N);
-  for (i = 0; i < fvf.nb_faces(); i++)
-    for (n = 0, f = fvf.num_face(i), e = f_e(f, 0); n < N; n++)
-      dst(f, n) = src(has_faces ? domaine.nb_elem_tot() + f : e, n);
-
-  if (distant) fr.frontiere().trace_face_distant(dst, x);
-  else fr.frontiere().trace_face_local(dst, x);
-
-  return x;
-}
 
 #endif /* Champ_Elem_PolyMAC_P0P1NC_included */

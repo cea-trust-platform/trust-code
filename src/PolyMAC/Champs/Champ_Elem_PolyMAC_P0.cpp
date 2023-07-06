@@ -17,21 +17,12 @@
 #include <Connectivite_som_elem.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <TRUSTTab_parts.h>
-#include <Equation_base.h>
-#include <Domaine.h>
-#include <array>
-#include <cmath>
 
 Implemente_instanciable(Champ_Elem_PolyMAC_P0,"Champ_Elem_PolyMAC_P0",Champ_Elem_PolyMAC_P0P1NC);
 
 Sortie& Champ_Elem_PolyMAC_P0::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Champ_Elem_PolyMAC_P0::readOn(Entree& s)
-{
-  lire_donnees(s) ;
-  return s ;
-}
+Entree& Champ_Elem_PolyMAC_P0::readOn(Entree& s) { return Champ_Elem_PolyMAC_P0P1NC::readOn(s) ; }
 
 const Domaine_PolyMAC_P0& Champ_Elem_PolyMAC_P0::domaine_PolyMAC_P0() const
 {
