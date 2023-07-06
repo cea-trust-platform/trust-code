@@ -12,14 +12,29 @@ OK()
 version=$1
 [ ${#MAKE} = 0 ] && MAKE=make
 [ $TRUST_ARCH != linux ] && echo "ccache installed on Linux only." && exit
-ccache=`ls -rt $TRUST_ROOT/externalpackages/ccache-*.tar.gz | tail -1 2>/dev/null`
+# Installation version recente de ccache sous forme de binaire:
+model=`uname -m`
+ccache=`ls -rt $TRUST_ROOT/externalpackages/ccache/ccache-?.?.?-linux-$model.tar.xz | tail -1 2>/dev/null`
+if [ "$ccache" != "" ] && [ -f /usr/bin/xz ]
+then
+   cd $TRUST_TMP
+   tar -xJf $ccache
+   ccache=`basename $ccache .tar.xz`
+   mkdir -p $TRUST_ROOT/exec/ccache/bin $TRUST_ROOT/exec/ccache/share
+   mv $ccache/ccache $TRUST_ROOT/exec/ccache/bin
+   mv $ccache/ccache.1 $TRUST_ROOT/exec/ccache/share
+   rm -r -f $ccache
+   $TRUST_ROOT/exec/ccache/bin/ccache -v && exit 0
+fi
+# Installation ancienne version de ccache si necessaire:
+ccache=`ls -rt $TRUST_ROOT/externalpackages/ccache/ccache-?.?.?.tar.gz | tail -1 2>/dev/null`
 [ ! -f $ccache ] && exit
 
 if [ "$TRUST_BUILD_IN_TMP" = "1" ]
-    then
-    dir=${TRUST_TMP}/build/ccache
-    mkdir -p $dir
-    cd $dir
+then
+   dir=${TRUST_TMP}/build/ccache
+   mkdir -p $dir
+   cd $dir
 fi
    
 gunzip -c $ccache > tmp.tar

@@ -4,6 +4,7 @@ Developer notes version 1.9.3_beta : Changes since version 1.9.2 :
 18/07/23 (TRUST) Major change : Three PolyMAC versions are now available in TRUST: PolyMAC, PolyMAC_P0P1NC and PolyMAC_P0. The last two are compatible with Pb_Multiphase.
 18/07/23 (TRUST) Major change : Initial PolyMAC version is now hosted in TRUST. It is not useful with Pb_Multiphase but is used in several applications.
 26/06/23 (TRUST) Change       : Fluxes are not printed into an .out file if the dedicated operator's output file is not set in the code. If a .out is desired, one must apply set_fichier, else no file is written.
+XX/XX/23 (TRUST) Tool change  : Update ccache (3.1.4 to 4.8.2) for faster (re)build with Nvidia compilers
 -------------------------------------------------------------
 Developer notes version 1.9.2 : Changes since version 1.9.1 :
 -------------------------------------------------------------
