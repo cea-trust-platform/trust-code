@@ -1,7 +1,7 @@
 name=ccache
 version=3.1.4
 package=$(name)-$(version).tar.gz
-binary=ccache-4.8.2-linux-x86_64.tar.xz
+binary=ccache-4.8.2-$(TRUST_ARCH)-x86_64.tar.gz
 install=$(TRUST_ROOT)/exec/$(name)
 cible=$(install)/bin/$(name)
 all:$(cible)

@@ -11,15 +11,15 @@ OK()
 }
 version=$1
 [ ${#MAKE} = 0 ] && MAKE=make
-[ $TRUST_ARCH != linux ] && echo "ccache installed on Linux only." && exit
+[ $TRUST_ARCH != linux ] && [ $TRUST_ARCH != darwin ] && echo "ccache installed on Linux or Darwin only." && exit
+OS=$TRUST_ARCH && [ $TRUST_ARCH = linux ] && OS=$OS"-"`uname -m`
 # Installation version recente de ccache sous forme de binaire:
-model=`uname -m`
-ccache=`ls -rt $TRUST_ROOT/externalpackages/ccache/ccache-?.?.?-linux-$model.tar.xz | tail -1 2>/dev/null`
-if [ "$ccache" != "" ] && [ -f /usr/bin/xz ]
+ccache=`ls -rt $TRUST_ROOT/externalpackages/ccache/ccache-?.?.?-$OS.tar.gz | tail -1 2>/dev/null`
+if [ "$ccache" != "" ]
 then
    cd $TRUST_TMP
-   tar -xJf $ccache
-   ccache=`basename $ccache .tar.xz`
+   tar xfz $ccache
+   ccache=`basename $ccache .tar.gz`
    mkdir -p $TRUST_ROOT/exec/ccache/bin $TRUST_ROOT/exec/ccache/share
    mv $ccache/ccache $TRUST_ROOT/exec/ccache/bin
    mv $ccache/ccache.1 $TRUST_ROOT/exec/ccache/share
