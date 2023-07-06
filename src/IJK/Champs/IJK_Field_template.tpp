@@ -110,7 +110,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 {
   const IJK_Splitting& splitting = splitting_ref_.valeur();
   int ghost = 2;
-  int last_global_k = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2) - 1;
+  //int last_global_k = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2) - 1;
 
   if (pe_send_ == Process::me() && pe_recv_ == Process::me())
     {
@@ -149,26 +149,56 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                   if (monofluide_variable_==1 )
                     {
 
-                      int indice_interpol=0;
-                      int send_i_Isig = send_i + splitting.get_offset_local(0);
-                      int send_j_Isig = send_j + splitting.get_offset_local(1);
-                      int send_k_Isig = send_k + splitting.get_offset_local(2);
+                      _TYPE_ Igigkappa_maille_recevd ;
+                      int send_i_Isig;
+                      int send_j_Isig;
+                      int send_k_Isig;
+                      int recved_i_Isig;
+                      int recved_j_Isig;
+                      int recved_k_Isig;
+                      int indice_interpol;
+                      // attention ne fonctionne que si le saut de vitesse est positif dans le jdd ?
+                      // a modifier pour avoir un critere clair pour savoir si on est au bord zmin ou zmax
 
-                      if (send_k_Isig<ghost)
+                      // EQUIVALENCE GHOST_MIN_MAX ARRAY AVEC INDICE Z REEL POUR SPLITTING_NS_
+                      // I_sigma_kappa_ghost_zmin_[0] --> -ghost (derniere maille ghost)
+                      // I_sigma_kappa_ghost_zmin_[ghost-1] --> -1 (premiere maille ghost)
+                      // I_sigma_kappa_ghost_zmin_[ghost] --> 0 (premiere maille reelle)
+                      // I_sigma_kappa_ghost_zmin_[2*ghost] --> +ghost (derniere maille reelle)
+
+                      //		I_sigma_kappa_ghost_zmax_[0] --> nk-1-ghost(derniere maille reelle)
+                      //		I_sigma_kappa_ghost_zmax_[ghost] --> nk-1 (premiere maille reelle)
+                      //		I_sigma_kappa_ghost_zmax_[ghost+1] --> nk (premiere maille ghost)
+                      //		I_sigma_kappa_ghost_zmax_[2*ghost] --> nk-1+ghost (derniere maille ghost)
+
+                      //ghost_zmax_ en position receveur : en k = 0 -> premiere maille ghost en [ghost+1] --> recved_k_Isig = k + ghost + 1;
+                      //ghost_zmax_ en position d'envoi : en k = ksz-1 -> premiere maille reel en [ghost] --> send_k_Isig = k - ksz + 1 + ghost ;
+
+                      if (offset <0.)
                         {
-                          // indicatrice_ghost_zmin_ de 0 à 2ghost-1
+                          recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                          recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                          recved_k_Isig = k+ghost+1;
+
+                          send_i_Isig = send_i + splitting.get_offset_local(0);
+                          send_j_Isig = send_j + splitting.get_offset_local(1);
+                          send_k_Isig = send_k + ghost;
+                          Igigkappa_maille_recevd = (_TYPE_) I_sigma_kappa_ghost_zmax_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                           indice_interpol=0;
-                          send_k_Isig = send_k_Isig + ghost ;
                         }
-                      else if(send_k_Isig>last_global_k-ghost)
+                      else
                         {
-                          // indicatrice_ghost_zmax_ de 0 à 2ghost-1   --> recved_k_Isig-(last_global_k-ghost+1) --> 0
-                          // dernier = last_global_k+ghost --> 2ghost-1
-                          send_k_Isig = send_k_Isig-last_global_k + ghost-1;
+                          recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                          recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                          recved_k_Isig = recevd_k + ghost ;
+
+                          send_i_Isig = send_i + splitting.get_offset_local(0);
+                          send_j_Isig = send_j + splitting.get_offset_local(1);
+                          send_k_Isig = k - ksz + 1 + ghost;
+                          Igigkappa_maille_recevd = (_TYPE_) I_sigma_kappa_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                           indice_interpol=1;
                         }
-
-                      buf+=interpolation_for_shear_periodicity(indice_interpol, send_i_Isig, send_j_Isig, send_k_Isig, istmp, real_size_i);
+                      buf+=interpolation_for_shear_periodicity(indice_interpol, send_i_Isig, send_j_Isig, send_k_Isig, istmp, real_size_i)- Igigkappa_maille_recevd;
 
                     }
 
@@ -183,7 +213,26 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
               if (monofluide_variable_==2 && offset !=0.)
                 {
-                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k)]=0.;
+                  int recved_i_Isig;
+                  int recved_j_Isig;
+                  int recved_k_Isig;
+                  _TYPE_ I_recevd;
+                  if (offset <0.)
+                    {
+                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_k_Isig = k+ghost+1;
+                      I_recevd = (_TYPE_) indicatrice_ghost_zmax_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                    }
+                  else
+                    {
+                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_k_Isig = recevd_k + ghost ;
+                      I_recevd = (_TYPE_) indicatrice_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                    }
+
+                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k)]=I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_;
                 }
               else
                 {
@@ -227,31 +276,27 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                   if (monofluide_variable_==1)
                     {
 
-                      int indice_interpol=0;
-                      int send_i_Isig = send_i + splitting.get_offset_local(0);
-                      int send_j_Isig = send_j + splitting.get_offset_local(1);
-                      int send_k_Isig = send_k + splitting.get_offset_local(2);
-
-                      if (send_k_Isig<ghost)
+                      int send_i_Isig;
+                      int send_j_Isig;
+                      int send_k_Isig;
+                      int indice_interpol;
+                      if (offset <0.)
                         {
-                          // indicatrice_ghost_zmin_ de 0 à 2ghost-1
+                          send_i_Isig = send_i + splitting.get_offset_local(0);
+                          send_j_Isig = send_j + splitting.get_offset_local(1);
+                          send_k_Isig = send_k + ghost;
                           indice_interpol=0;
-                          send_k_Isig = send_k_Isig + ghost ;
                         }
-                      else if(send_k_Isig>last_global_k-ghost)
+                      else
                         {
-                          // indicatrice_ghost_zmax_ de 0 à 2ghost-1   --> recved_k_Isig-(last_global_k-ghost+1) --> 0
-                          // dernier = last_global_k+ghost --> 2ghost-1
-                          send_k_Isig = send_k_Isig-last_global_k + ghost-1;
+                          send_i_Isig = send_i + splitting.get_offset_local(0);
+                          send_j_Isig = send_j + splitting.get_offset_local(1);
+                          send_k_Isig = k - ksz + 1 + ghost;
                           indice_interpol=1;
                         }
-
                       *buf+=interpolation_for_shear_periodicity(indice_interpol, send_i_Isig, send_j_Isig, send_k_Isig, istmp, real_size_i);
                     }
-                  else if (monofluide_variable_==2)
-                    {
-                      *buf=(_TYPE_) 0.;
-                    }
+
                 }
               else
                 {
@@ -276,7 +321,63 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
         for (int j = 0; j < jsz; j++)
           for (int i = 0; i < isz; i++, buf++)
             {
-              dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = *buf;
+              int recevd_i = ir + i;
+              int recevd_j = jr + j;
+              int recevd_k = kr + k;
+
+              if (monofluide_variable_==1 && offset !=0.)
+                {
+                  _TYPE_ Igigkappa_maille_recevd ;
+                  int recved_i_Isig;
+                  int recved_j_Isig;
+                  int recved_k_Isig;
+
+
+                  if (offset <0.)
+                    {
+                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_k_Isig = k+ghost+1;
+                      Igigkappa_maille_recevd = (_TYPE_) I_sigma_kappa_ghost_zmax_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                    }
+                  else
+                    {
+                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_k_Isig = recevd_k + ghost ;
+                      Igigkappa_maille_recevd = (_TYPE_) I_sigma_kappa_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                    }
+
+                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = *buf - Igigkappa_maille_recevd;
+                }
+              else if (monofluide_variable_==2 && offset !=0.)
+                {
+                  int recved_i_Isig;
+                  int recved_j_Isig;
+                  int recved_k_Isig;
+                  _TYPE_ I_recevd;
+
+                  if (offset <0.)
+                    {
+                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_k_Isig = k+ghost+1;
+                      I_recevd = (_TYPE_) indicatrice_ghost_zmax_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                    }
+                  else
+                    {
+                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
+                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_k_Isig = recevd_k + ghost ;
+                      I_recevd = (_TYPE_) indicatrice_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
+                    }
+
+                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)]=I_recevd*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd)*(_TYPE_)rho_v_;
+                }
+              else
+                {
+                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = *buf;
+                }
             }
 
     }
@@ -333,8 +434,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
       compteur_=0;
       // send left layer of real cells to right layer of virtual cells
-      if (monofluide_variable_ == 2 && !Process::je_suis_maitre())
-        std::cout << "debut grandeur_l = " << rho_l_ << std::endl;
       exchange_data(pe_imin_, 0, -le_ghost, -le_ghost, pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost); /* size of block data to send */
       // send right real cells to left virtual cells
       exchange_data(pe_imax_, nii - le_ghost, -le_ghost, -le_ghost, pe_imin_, -le_ghost, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost);
@@ -347,36 +446,22 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
       // sur x, echange d'un bloc [ghost, njj + 2*ghost, nkk+ 2*ghost]
       // sur z, echange d'un bloc [nii, njj, ghost]
       // sur y, echange d'un bloc [nii, ghost, nkk+ 2*ghost]
-      compteur_=0;
       if (z_index != z_index_min)
         {
           exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii , njj , le_ghost);
-//          if (monofluide_variable_ == 2 && !Process::je_suis_maitre())
-//        	  std::cout << "z_-_normal " << compteur_ << std::endl;
-          compteur_=0;
-
         }
       else
         {
           exchange_data(pe_kmin_, 0, 0, 0, pe_kmax_, 0, 0, nkk, nii, njj, le_ghost, -offset_i, jump_i, le_ghost);
-          if (monofluide_variable_ == 2 && Process::je_suis_maitre())
-            std::cout << "z - min " << compteur_ << std::endl;
-          compteur_=0;
         }
 
       if (z_index != z_index_max)
         {
           exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost);
-//          if (monofluide_variable_ == 2 && Process::je_suis_maitre())
-//        	  std::cout << "z + normal " << compteur_ << std::endl;
-          compteur_=0;
         }
       else
         {
           exchange_data(pe_kmax_, 0, 0, nkk - le_ghost, pe_kmin_, 0, 0, -le_ghost, nii, njj, le_ghost, offset_i, -jump_i, le_ghost);
-          if (monofluide_variable_ == 2 && !Process::je_suis_maitre())
-            std::cout << "z + max " << compteur_ << std::endl;
-          compteur_=0;
         }
     }
   else
@@ -399,10 +484,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   statistiques().end_count(echange_vect_counter_);
 
-  if (IJK_Splitting::defilement_ == 1)
-    {
-      self_proc_add_data(le_ghost);
-    }
+// if (IJK_Splitting::defilement_ == 1)
+//   {
+//     self_proc_add_data(le_ghost);
+//   }
 
 
 }
@@ -510,8 +595,8 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::change_to_sheared_reference_frame
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio(IJK_Field_double& resu)
 {
-  //if(monofluide_variable_==0)
-  return;
+  if(monofluide_variable_==0)
+    return;
   const IJK_Splitting& splitting = splitting_ref_.valeur();
   const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
   const int ni = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
