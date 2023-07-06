@@ -42,12 +42,8 @@ Entree& Champ_Face_PolyMAC_P0::readOn(Entree& is) { return is; }
 
 int Champ_Face_PolyMAC_P0::fixer_nb_valeurs_nodales(int n)
 {
-  // j'utilise le meme genre de code que dans Champ_Fonc_P0_base
-  // sauf que je recupere le nombre de faces au lieu du nombre d'elements
-  //
-  // je suis tout de meme etonne du code utilise dans
-  // Champ_Fonc_P0_base::fixer_nb_valeurs_nodales()
-  // pour recuperer le domaine discrete...
+  // j'utilise le meme genre de code que dans Champ_Fonc_P0_base sauf que je recupere le nombre de faces au lieu du nombre d'elements
+  // je suis tout de meme etonne du code utilise dans Champ_Fonc_P0_base::fixer_nb_valeurs_nodales() pour recuperer le domaine discrete...
 
   assert(n == domaine_PolyMAC_P0().nb_faces() || n < 0);
 

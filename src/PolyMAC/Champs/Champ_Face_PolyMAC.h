@@ -23,17 +23,12 @@
 // Degres de libertes : composante normale aux faces + composante tangentielle aux aretes de la vorticite
 class Champ_Face_PolyMAC: public Champ_Face_base
 {
-
   Declare_instanciable(Champ_Face_PolyMAC);
-
-protected:
-  virtual Champ_base& le_champ(void);
-  virtual const Champ_base& le_champ(void) const;
-
 public:
   DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& result, int poly) const override;
   double valeur_a_elem_compo(const DoubleVect& position, int poly, int ncomp) const override;
   DoubleTab& valeur_aux_elems(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
+  DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& polys, DoubleTab& result) const override;
   DoubleVect& valeur_aux_elems_compo(const DoubleTab& positions, const IntVect& polys, DoubleVect& result, int ncomp) const override;
 
   DoubleTab& remplir_coord_noeuds(DoubleTab& positions) const override;
@@ -43,8 +38,6 @@ public:
   DoubleVect& calcul_S_barre_sans_contrib_paroi(const DoubleTab& vitesse, DoubleVect& SMA_barre) const;
   DoubleVect& calcul_S_barre(const DoubleTab& vitesse, DoubleVect& SMA_barre) const;
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
-
-  DoubleTab& valeur_aux_elems_passe(const DoubleTab& positions, const IntVect& les_polys, DoubleTab& tab_valeurs) const override { throw; }
 
   Champ_base& affecter_(const Champ_base&) override;
   int nb_valeurs_nodales() const override;
@@ -62,10 +55,15 @@ public:
   mutable DoubleTab vaci, vacf;       // + (vajf, vacf)[vadeb(a, 1), vadeb(a + 1, 1)[ (val_imp aux faces de bord) + (vaja, vaca)[vadeb(., 2)] (val_imp aux aretes)
 
   //interpolations aux elements : vitesse val(e, i) = v_i, gradient vals(e, i, j) = dv_i / dx_j
-  void interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit = true) const;
-  void interp_ve(const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit = true) const;
-  void interp_gve(const DoubleTab& inco, DoubleTab& vals) const;
+  virtual void interp_ve(const DoubleTab& inco, DoubleTab& val, bool is_vit = true) const;
+  virtual void interp_ve(const DoubleTab& inco, const IntVect&, DoubleTab& val, bool is_vit = true) const;
+  virtual void interp_gve(const DoubleTab& inco, DoubleTab& vals) const final;
 
+protected:
+  virtual Champ_base& le_champ() { return *this; }
+  virtual const Champ_base& le_champ() const { return *this; }
+
+  virtual DoubleTab& valeur_aux_elems_(const DoubleTab& val_face ,const DoubleTab& positions, const IntVect& les_polys, DoubleTab& valeurs) const;
 };
 
 #endif /* Champ_Face_PolyMAC_included */
