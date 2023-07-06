@@ -18,12 +18,6 @@
 
 #include <Assembleur_P_PolyMAC_P0P1NC.h>
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS:Assembleur_Pression_PolyMAC_P0
-//
-//////////////////////////////////////////////////////////////////////////////
-
 class Assembleur_P_PolyMAC_P0 : public Assembleur_P_PolyMAC_P0P1NC
 {
   Declare_instanciable(Assembleur_P_PolyMAC_P0);
@@ -35,4 +29,4 @@ public:
   void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override { } //rien a faire
 };
 
-#endif
+#endif /* Assembleur_P_PolyMAC_P0_included */

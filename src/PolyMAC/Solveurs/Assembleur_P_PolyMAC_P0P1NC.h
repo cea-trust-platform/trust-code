@@ -16,52 +16,29 @@
 #ifndef Assembleur_P_PolyMAC_P0P1NC_included
 #define Assembleur_P_PolyMAC_P0P1NC_included
 
-#include <Matrice_Morse_Sym.h>
-#include <Assembleur_base.h>
-#include <Domaine_PolyMAC_P0P1NC.h>
-#include <TRUST_Ref.h>
+#include <Assembleur_P_PolyMAC.h>
 
-class Domaine_Cl_PolyMAC;
-
-class Assembleur_P_PolyMAC_P0P1NC : public Assembleur_base
+class Assembleur_P_PolyMAC_P0P1NC : public Assembleur_P_PolyMAC
 {
   Declare_instanciable(Assembleur_P_PolyMAC_P0P1NC);
-
 public:
-  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
-  const Domaine_dis_base& domaine_dis_base() const override;
-  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const override;
-  int assembler(Matrice&) override;
-  int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
-  int assembler_QC(const DoubleTab&, Matrice&) override;
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
+  int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
+
+  int modifier_secmem(DoubleTab&) override { return 1; }
+  int modifier_solution(DoubleTab&) override;
+
   void dimensionner_continuite(matrices_t matrices, int aux_only = 0) const override;
   void assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only = 0) const override;
   DoubleTab norme_continuite() const override;
-  int modifier_secmem(DoubleTab&) override
-  {
-    return 1;
-  }
-  /* prise en compte des variations de pression aux CLs lors du calcul d'increments de pression.
-     fac est le coefficient tel que p_final - press = fac * sol */
-  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
-  int modifier_solution(DoubleTab&) override;
-  void completer(const Equation_base& ) override;
-  inline const Equation_base& equation() const;
 
-protected :
-  REF(Equation_base) mon_equation;
-  REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC_P0P1NC;
-  int has_P_ref = 0;
-  int stencil_done = 0;
-  IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
+  /* prise en compte des variations de pression aux CLs lors du calcul d'increments de pression.
+   fac est le coefficient tel que p_final - press = fac * sol */
+  void modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& incr) const override;
+
+  void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const override
+  {
+    Process::exit("Assembleur_P_PolyMAC_P0P1NC::corriger_vitesses() should not be used ... ");
+  }
 };
 
-inline const Equation_base& Assembleur_P_PolyMAC_P0P1NC::equation() const
-{
-  return  mon_equation.valeur();
-}
-
-#endif
+#endif /* Assembleur_P_PolyMAC_P0P1NC_included */

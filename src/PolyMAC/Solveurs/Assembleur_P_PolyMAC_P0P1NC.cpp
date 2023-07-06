@@ -13,52 +13,34 @@
 *
 *****************************************************************************/
 
-#include <Assembleur_P_PolyMAC_P0P1NC.h>
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC_P0P1NC.h>
-#include <Neumann_sortie_libre.h>
-#include <Dirichlet.h>
-#include <Champ_Face_PolyMAC_P0P1NC.h>
-#include <TRUSTTab_parts.h>
 #include <Champ_front_instationnaire_base.h>
 #include <Champ_front_var_instationnaire.h>
-#include <Matrice_Bloc_Sym.h>
-#include <Matrice_Diagonale.h>
-#include <Array_tools.h>
-#include <Debog.h>
-#include <Static_Int_Lists.h>
-#include <Operateur_Grad.h>
+#include <Assembleur_P_PolyMAC_P0P1NC.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
+#include <Domaine_PolyMAC_P0P1NC.h>
+#include <Neumann_sortie_libre.h>
+#include <Domaine_Cl_PolyMAC.h>
 #include <Matrice_Morse_Sym.h>
+#include <Matrice_Diagonale.h>
+#include <Static_Int_Lists.h>
+#include <Matrice_Bloc_Sym.h>
+#include <Operateur_Grad.h>
+#include <TRUSTTab_parts.h>
+#include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Statistiques.h>
-
-#include <Pb_Multiphase.h>
+#include <Array_tools.h>
+#include <Dirichlet.h>
+#include <Debog.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 
-Implemente_instanciable(Assembleur_P_PolyMAC_P0P1NC,"Assembleur_P_PolyMAC_P0P1NC",Assembleur_base);
+Implemente_instanciable(Assembleur_P_PolyMAC_P0P1NC, "Assembleur_P_PolyMAC_P0P1NC", Assembleur_P_PolyMAC);
 
-Sortie& Assembleur_P_PolyMAC_P0P1NC::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() << " " << le_nom() ;
-}
+Sortie& Assembleur_P_PolyMAC_P0P1NC::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Assembleur_P_PolyMAC_P0P1NC::readOn(Entree& s )
-{
-  return Assembleur_base::readOn(s);
-}
+Entree& Assembleur_P_PolyMAC_P0P1NC::readOn(Entree& s) { return Assembleur_base::readOn(s); }
 
-int Assembleur_P_PolyMAC_P0P1NC::assembler(Matrice& la_matrice)
-{
-  DoubleVect rien;
-  return assembler_mat(la_matrice,rien,1,1);
-}
-
-int Assembleur_P_PolyMAC_P0P1NC::assembler_rho_variable(Matrice& la_matrice, const Champ_Don_base& rho)
-{
-  abort();
-  return 0;
-}
 
 int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const DoubleVect& diag,int incr_pression,int resoudre_en_u)
 {
@@ -69,7 +51,7 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
-  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC_P0P1NC.valeur());
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur());
   const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
@@ -87,7 +69,7 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
         for (stencil.append_line(e, e), i = 0; i < e_f.dimension(1) && (f = e_f(e, i)) >= 0; i++) /* blocs "elem-elem" et "elem-face" */
           stencil.append_line(e, ne_tot + f); //toutes les faces (sauf bord de Neumann)
       for (e = 0; e < ne_tot; e++)
-        for (domaine.W2(NULL, e, w2), i = 0; i < w2.dimension(1); i++) /* blocs "face-elem" et "face-face" */
+        for (domaine.W2(nullptr, e, w2), i = 0; i < w2.dimension(1); i++) /* blocs "face-elem" et "face-face" */
           if (fcl(f = e_f(e, i), 0) == 1 && f < nf) stencil.append_line(ne_tot + f, ne_tot + f); //Neumann : ligne "dpf = 0"
           else if (f < nf)
             for (stencil.append_line(ne_tot + f, e), j = 0; j < w2.dimension(1); j++) /* sinon : ligne sum w2_{ff'} (pf' - pe) */
@@ -109,7 +91,7 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
   /* 2. coefficients */
   for (e = 0; e < ne_tot; e++)
     {
-      domaine.W2(NULL, e, w2); //calcul de W2
+      domaine.W2(nullptr, e, w2); //calcul de W2
       double m_ee = 0, m_fe, m_ef, coeff; //coefficients (elem, elem), (elem, face) et (face, elem)
       for (i = 0; i < w2.dimension(0); i++, m_ee += m_ef)
         {
@@ -130,8 +112,8 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
 
   //en l'absence de CLs en pression, on ajoute P(0) = 0 sur le process 0
   has_P_ref=0;
-  for (int n_bord=0; n_bord<le_dom_PolyMAC_P0P1NC->nb_front_Cl(); n_bord++)
-    if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC_P0P1NC->les_conditions_limites(n_bord).valeur()) )
+  for (int n_bord=0; n_bord<le_dom_PolyMAC->nb_front_Cl(); n_bord++)
+    if (sub_type(Neumann_sortie_libre, le_dom_Cl_PolyMAC->les_conditions_limites(n_bord).valeur()) )
       has_P_ref=1;
   if (!has_P_ref && !Process::me()) mat(0, 0) *= 2;
 
@@ -140,37 +122,10 @@ int  Assembleur_P_PolyMAC_P0P1NC::assembler_mat(Matrice& la_matrice,const Double
   return 1;
 }
 
-/*! @brief Assemble la matrice de pression pour un fluide quasi compressible laplacein(P) est remplace par div(grad(P)/rho).
- *
- * @param (DoubleTab& tab_rho) mass volumique
- * @return (int) renvoie toujours 1
- * @throws PolyMAC_P0P1NCfets de bord:
- */
-int Assembleur_P_PolyMAC_P0P1NC::assembler_QC(const DoubleTab& tab_rho, Matrice& matrice)
-{
-  Cerr << "Assemblage de la matrice de pression pour Quasi Compressible en cours..." << finl;
-  assembler(matrice);
-  set_resoudre_increment_pression(1);
-  set_resoudre_en_u(0);
-  abort();
-  Matrice_Bloc& matrice_bloc= ref_cast(Matrice_Bloc,matrice.valeur());
-  Matrice_Morse_Sym& la_matrice =ref_cast(Matrice_Morse_Sym,matrice_bloc.get_bloc(0,0).valeur());
-  if ((la_matrice.get_est_definie()!=1)&&(1))
-    {
-      Cerr<<"Pas de pression imposee  --> P(0)=0"<<finl;
-      if (je_suis_maitre())
-        la_matrice(0,0) *= 2;
-      la_matrice.set_est_definie(1);
-    }
-
-  Cerr << "Fin de l'assemblage de la matrice de pression" << finl;
-  return 1;
-}
-
 /* equations sum_k alpha_k = 1, [grad p]_{fe} = [grad p]_{fe'} en Pb_Multiphase */
 void Assembleur_P_PolyMAC_P0P1NC::dimensionner_continuite(matrices_t matrices, int aux_only) const
 {
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_PolyMAC_P0P1NC.valeur();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   int i, j, e, f, fb, n, N = equation().inconnue().valeurs().line_size(), m, M = equation().get_champ("pression").valeurs().line_size(),
                          ne_tot = domaine.nb_elem_tot(), nf_tot = domaine.nb_faces_tot();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur()).fcl(), &e_f = domaine.elem_faces();
@@ -183,7 +138,7 @@ void Assembleur_P_PolyMAC_P0P1NC::dimensionner_continuite(matrices_t matrices, i
       for (n = 0; n < N; n++) sten_a.append_line(e, N * e + n);
   /* equations sur les p_f : continuite du gradient si interne, p = p_f si Neumann, sum_k alpha_k v_k = sum_k alpha_k v_k,imp si Dirichlet */
   for (e = 0; e < domaine.nb_elem_tot(); e++)
-    for (domaine.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+    for (domaine.W2(nullptr, e, w2), i = 0; i < w2.dimension(0); i++)
       if ((f = e_f(e, i)) >= domaine.nb_faces()) continue; //faces virtuelles
       else if (!fcl(f, 0))
         for (sten_p.append_line(!aux_only * ne_tot + f, e), j = 0; j < w2.dimension(1); j++) //face interne
@@ -204,15 +159,15 @@ void Assembleur_P_PolyMAC_P0P1NC::dimensionner_continuite(matrices_t matrices, i
 
 void Assembleur_P_PolyMAC_P0P1NC::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
-  const Domaine_PolyMAC_P0P1NC& domaine = le_dom_PolyMAC_P0P1NC.valeur();
-  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
-  const Conds_lim& cls = le_dom_Cl_PolyMAC_P0P1NC->les_conditions_limites();
-  const DoubleTab *alpha = pbm ? &pbm->eq_masse.inconnue().valeurs() : NULL, &press = equation().probleme().get_champ("pression").valeurs(),
-                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL, &nf = domaine.face_normales();
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
+  const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
+  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
+  const DoubleTab *alpha = pbm ? &pbm->eq_masse.inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
+                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->eq_masse.champ_conserve().passe() : nullptr, &nf = domaine.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur()).fcl(), &e_f = domaine.elem_faces();
   const DoubleVect& ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = domaine.nb_elem_tot(), d, D = dimension;
-  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : NULL, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
+  Matrice_Morse *mat_a = alpha ? matrices.at("alpha") : nullptr, &mat_p = *matrices.at("pression"), &mat_v = *matrices.at("vitesse");
   DoubleTrav w2, fac(N);
   double ar_tot, acc;
   w2.set_smart_resize(1);
@@ -230,7 +185,7 @@ void Assembleur_P_PolyMAC_P0P1NC::assembler_continuite(matrices_t matrices, Doub
 
   /* equations sur les p_f : continuite du gradient si interne, p = p_f si Neumann, sum_k alpha_k v_k = sum_k alpha_k v_k,imp si Dirichlet */
   for (mat_p.get_set_coeff() = 0, mat_v.get_set_coeff() = 0, e = 0; e < ne_tot; e++)
-    for (domaine.W2(NULL, e, w2), i = 0; i < w2.dimension(0); i++)
+    for (domaine.W2(nullptr, e, w2), i = 0; i < w2.dimension(0); i++)
       if ((f = e_f(e, i)) >= domaine.nb_faces()) continue; //faces virtuelles
       else if (!fcl(f, 0)) //face interne
         {
@@ -268,9 +223,9 @@ void Assembleur_P_PolyMAC_P0P1NC::assembler_continuite(matrices_t matrices, Doub
 
 void Assembleur_P_PolyMAC_P0P1NC::modifier_secmem_pour_incr_p(const DoubleTab& press, const double fac, DoubleTab& secmem) const
 {
-  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC_P0P1NC.valeur());
+  const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur());
-  const Conds_lim& cls = le_dom_Cl_PolyMAC_P0P1NC->les_conditions_limites();
+  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& fcl = ch.fcl();
   int f, ne_tot = domaine.nb_elem_tot(), m, M = equation().probleme().get_champ("pression").valeurs().line_size();
   for (f = 0; f < domaine.premiere_face_int(); f++)
@@ -282,9 +237,9 @@ void Assembleur_P_PolyMAC_P0P1NC::modifier_secmem_pour_incr_p(const DoubleTab& p
 /* norme pour assembler_continuite */
 DoubleTab Assembleur_P_PolyMAC_P0P1NC::norme_continuite() const
 {
-  const DoubleVect& pe= equation().milieu().porosite_elem(), &ve = le_dom_PolyMAC_P0P1NC->volumes();
-  DoubleTab norm(le_dom_PolyMAC_P0P1NC->nb_elem());
-  for (int e = 0; e < le_dom_PolyMAC_P0P1NC->nb_elem(); e++) norm(e) = pe(e) * ve(e);
+  const DoubleVect& pe= equation().milieu().porosite_elem(), &ve = le_dom_PolyMAC->volumes();
+  DoubleTab norm(le_dom_PolyMAC->nb_elem());
+  for (int e = 0; e < le_dom_PolyMAC->nb_elem(); e++) norm(e) = pe(e) * ve(e);
   return norm;
 }
 
@@ -293,30 +248,4 @@ int Assembleur_P_PolyMAC_P0P1NC::modifier_solution(DoubleTab& pression)
   Debog::verifier("pression dans modifier solution in",pression);
   if(!has_P_ref) pression -= mp_min_vect(pression);
   return 1;
-}
-
-const Domaine_dis_base& Assembleur_P_PolyMAC_P0P1NC::domaine_dis_base() const
-{
-  return le_dom_PolyMAC_P0P1NC.valeur();
-}
-
-const Domaine_Cl_dis_base& Assembleur_P_PolyMAC_P0P1NC::domaine_Cl_dis_base() const
-{
-  return le_dom_Cl_PolyMAC_P0P1NC.valeur();
-}
-
-void Assembleur_P_PolyMAC_P0P1NC::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis)
-{
-  le_dom_PolyMAC_P0P1NC = ref_cast(Domaine_PolyMAC_P0P1NC,le_dom_dis);
-}
-
-void Assembleur_P_PolyMAC_P0P1NC::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis)
-{
-  le_dom_Cl_PolyMAC_P0P1NC = ref_cast(Domaine_Cl_PolyMAC, le_dom_Cl_dis);
-}
-
-void Assembleur_P_PolyMAC_P0P1NC::completer(const Equation_base& Eqn)
-{
-  mon_equation=Eqn;
-  stencil_done = 0;
 }

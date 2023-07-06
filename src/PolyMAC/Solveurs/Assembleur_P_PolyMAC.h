@@ -20,25 +20,28 @@
 #include <Assembleur_base.h>
 #include <Domaine_PolyMAC.h>
 #include <TRUST_Ref.h>
+
 class Domaine_Cl_PolyMAC;
 
-class Assembleur_P_PolyMAC : public Assembleur_base
+class Assembleur_P_PolyMAC: public Assembleur_base
 {
   Declare_instanciable(Assembleur_P_PolyMAC);
-
 public:
-  void associer_domaine_dis_base(const Domaine_dis_base& ) override         ;
-  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override   ;
-  const Domaine_dis_base& domaine_dis_base() const override                 ;
-  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const override           ;
-  int assembler(Matrice&) override                                 ;
+  void associer_domaine_dis_base(const Domaine_dis_base&) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base&) override;
+  const Domaine_dis_base& domaine_dis_base() const override;
+  const Domaine_Cl_dis_base& domaine_Cl_dis_base() const override;
+
+  int assembler(Matrice&) override;
   int assembler_rho_variable(Matrice&, const Champ_Don_base& rho) override;
-  int assembler_QC(const DoubleTab&, Matrice&) override            ;
-  int assembler_mat(Matrice&,const DoubleVect&,int incr_pression,int resoudre_en_u) override;
-  int modifier_secmem(DoubleTab&) override                         ;
-  int modifier_solution(DoubleTab&) override                       ;
-  void completer(const Equation_base& ) override                      ;
-  inline const Equation_base& equation() const                ;
+  int assembler_QC(const DoubleTab&, Matrice&) override;
+  int assembler_mat(Matrice&, const DoubleVect&, int incr_pression, int resoudre_en_u) override;
+
+  int modifier_secmem(DoubleTab&) override;
+  int modifier_solution(DoubleTab&) override;
+
+  void completer(const Equation_base&) override;
+  inline const Equation_base& equation() const { return mon_equation.valeur(); }
 
   /* corrige les vitesses pour une correction en pression donnee de type (-Cp, Cv) */
   void corriger_vitesses(const DoubleTab& dP, DoubleTab& dv) const override
@@ -47,20 +50,16 @@ public:
     dv.echange_espace_virtuel();
   }
 
-protected :
-  REF(Equation_base) mon_equation                            ;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC                                  ;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC                            ;
-  DoubleTab les_coeff_pression                               ;
-  int has_P_ref;
-  int stencil_done;
-  IntVect tab1, tab2;//tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
+protected:
+  REF(Equation_base) mon_equation;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+
+  DoubleTab les_coeff_pression;
+
+  int has_P_ref = 0, stencil_done = 0;
+  IntVect tab1, tab2; //tableaux tab1 / tab2 de la Matrice_Morse (ne changent pas)
   Matrice_Morse rec; //pour reconstruire les vitesses
 };
 
-inline const Equation_base& Assembleur_P_PolyMAC::equation() const
-{
-  return  mon_equation.valeur();
-}
-
-#endif
+#endif /* Assembleur_P_PolyMAC_included */
