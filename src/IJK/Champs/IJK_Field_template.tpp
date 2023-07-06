@@ -19,86 +19,6 @@
 #include <IJK_communications.h>
 #include <IJK_Splitting.h>
 
-template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::self_proc_add_data(int le_ghost)
-{
-  if (monofluide_variable_!=1 && monofluide_variable_!=2)
-    return;
-
-  const IJK_Splitting& splitting = splitting_ref_.valeur();
-  int last_global_k = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2) - 1;
-  const int nii = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::ni();
-  const int njj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
-  const int nkk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
-  int ir = 0 ;
-  int jr = 0 ;
-  int kr_min = -le_ghost;
-  int kr_max = nkk;
-  _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
-
-  for (int k = 0; k < le_ghost; k++)
-    for (int j = 0; j < njj; j++)
-      for (int i = 0; i < nii; i++)
-        {
-          int recevd_i = ir + i;
-          int recevd_j = jr + j;
-          int recevd_k_min = kr_min + k;
-          int recevd_k_max = kr_max + k;
-
-          int recved_i_Isig = recevd_i + splitting.get_offset_local(0);
-          int recved_j_Isig = recevd_j + splitting.get_offset_local(1);
-          int recved_k_Isig_min = recevd_k_min + splitting.get_offset_local(2);
-          int recved_k_Isig_max = recevd_k_max + splitting.get_offset_local(2);
-
-
-          _TYPE_ I_recevd_min = (_TYPE_) 0.;
-          _TYPE_ I_recevd_max = (_TYPE_) 0.;
-          if (recved_k_Isig_min<le_ghost)
-            {
-              // indicatrice_ghost_zmin_ de 0 à 2ghost-1
-              recved_k_Isig_min = recved_k_Isig_min + le_ghost ;
-              if (monofluide_variable_==1)
-                {
-                  I_recevd_min = (_TYPE_) I_sigma_kappa_ghost_zmin_(recved_i_Isig,recved_j_Isig,recved_k_Isig_min);
-                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k_min)]-=I_recevd_min;
-
-                }
-              else if(monofluide_variable_==2)
-                {
-                  I_recevd_min = (_TYPE_) indicatrice_ghost_zmin_(recved_i_Isig,recved_j_Isig,recved_k_Isig_min);
-                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k_min)]+=I_recevd_min*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd_min)*(_TYPE_)rho_v_;
-                }
-
-            }
-          else if(recved_k_Isig_max>last_global_k-le_ghost)
-            {
-              // indicatrice_ghost_zmax_ de 0 à 2ghost-1   --> recved_k_Isig-(last_global_k-ghost+1) --> 0
-              // dernier = last_global_k+ghost --> 2ghost-1
-              recved_k_Isig_max = recved_k_Isig_max-last_global_k + le_ghost-1;
-              if (monofluide_variable_==1)
-                {
-                  I_recevd_max = (_TYPE_) I_sigma_kappa_ghost_zmax_(recved_i_Isig,recved_j_Isig,recved_k_Isig_max);
-                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k_max)]-=I_recevd_max;
-                }
-              else if(monofluide_variable_==2)
-                {
-                  I_recevd_max = (_TYPE_) indicatrice_ghost_zmax_(recved_i_Isig,recved_j_Isig,recved_k_Isig_max);
-                  dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(recevd_i , recevd_j , recevd_k_max)]+=I_recevd_max*(_TYPE_)rho_l_+((_TYPE_)1.-I_recevd_max)*(_TYPE_)rho_v_;
-                }
-            }
-          else
-            {
-              std::cout << "on est sur un proc central" << std::endl;
-              return;
-            }
-
-        }
-
-
-
-}
-
-
 
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* processor to send to */
@@ -159,20 +79,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                       int indice_interpol;
                       // attention ne fonctionne que si le saut de vitesse est positif dans le jdd ?
                       // a modifier pour avoir un critere clair pour savoir si on est au bord zmin ou zmax
-
-                      // EQUIVALENCE GHOST_MIN_MAX ARRAY AVEC INDICE Z REEL POUR SPLITTING_NS_
-                      // I_sigma_kappa_ghost_zmin_[0] --> -ghost (derniere maille ghost)
-                      // I_sigma_kappa_ghost_zmin_[ghost-1] --> -1 (premiere maille ghost)
-                      // I_sigma_kappa_ghost_zmin_[ghost] --> 0 (premiere maille reelle)
-                      // I_sigma_kappa_ghost_zmin_[2*ghost] --> +ghost (derniere maille reelle)
-
-                      //		I_sigma_kappa_ghost_zmax_[0] --> nk-1-ghost(derniere maille reelle)
-                      //		I_sigma_kappa_ghost_zmax_[ghost] --> nk-1 (premiere maille reelle)
-                      //		I_sigma_kappa_ghost_zmax_[ghost+1] --> nk (premiere maille ghost)
-                      //		I_sigma_kappa_ghost_zmax_[2*ghost] --> nk-1+ghost (derniere maille ghost)
-
-                      //ghost_zmax_ en position receveur : en k = 0 -> premiere maille ghost en [ghost+1] --> recved_k_Isig = k + ghost + 1;
-                      //ghost_zmax_ en position d'envoi : en k = ksz-1 -> premiere maille reel en [ghost] --> send_k_Isig = k - ksz + 1 + ghost ;
 
                       if (offset <0.)
                         {
@@ -244,14 +150,32 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
       return;
     }
   const int data_size = isz * jsz * ksz;
+  const int data_size_other_buf = 1;
   const int type_size = sizeof(_TYPE_);
+  const int double_size = sizeof(double);
+  const int int_size = sizeof(int);
   _TYPE_ *send_buffer = 0;
   _TYPE_ *recv_buffer = 0;
+  int *send_buffer_x = 0;
+  int *recv_buffer_x = 0;
+  int *send_buffer_y = 0;
+  int *recv_buffer_y = 0;
+  double *send_buffer_offset = 0;
+  double *recv_buffer_offset = 0;
 
   if (pe_send_ >= 0)
     {
       send_buffer = new _TYPE_[data_size];
       _TYPE_ *buf = send_buffer;
+      send_buffer_x = new int[data_size_other_buf];
+      int *buf_x = send_buffer_x;
+      send_buffer_y = new int[data_size_other_buf];
+      int *buf_y = send_buffer_y;
+      send_buffer_offset = new double[data_size_other_buf];
+      double *buf_offset = send_buffer_offset;
+      *buf_x=splitting.get_offset_local(0);
+      *buf_y=splitting.get_offset_local(1);
+      *buf_offset=offset;
 
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
@@ -296,7 +220,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                         }
                       *buf+=interpolation_for_shear_periodicity(indice_interpol, send_i_Isig, send_j_Isig, send_k_Isig, istmp, real_size_i);
                     }
-
                 }
               else
                 {
@@ -310,12 +233,23 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
 
   if (pe_recv_ >= 0)
-    recv_buffer = new _TYPE_[data_size];
+    {
+      recv_buffer = new _TYPE_[data_size];
+      recv_buffer_x = new int[data_size_other_buf];
+      recv_buffer_y = new int[data_size_other_buf];
+      recv_buffer_offset = new double[data_size_other_buf];
+    }
   ::envoyer_recevoir(send_buffer, data_size * type_size, pe_send_, recv_buffer, data_size * type_size, pe_recv_);
+  ::envoyer_recevoir(send_buffer_x, data_size_other_buf * int_size, pe_send_, recv_buffer_x, data_size_other_buf * int_size, pe_recv_);
+  ::envoyer_recevoir(send_buffer_y, data_size_other_buf * int_size, pe_send_, recv_buffer_y, data_size_other_buf * int_size, pe_recv_);
+  ::envoyer_recevoir(send_buffer_offset, data_size_other_buf * double_size, pe_send_, recv_buffer_offset, data_size_other_buf * double_size, pe_recv_);
 
   if (pe_recv_ >= 0)
     {
       _TYPE_ *buf = recv_buffer;
+      int *buf_x = recv_buffer_x;
+      int *buf_y = recv_buffer_y;
+      double *buf_offset = recv_buffer_offset;
       _TYPE_ *dest = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::data().addr();
       for (int k = 0; k < ksz; k++)
         for (int j = 0; j < jsz; j++)
@@ -325,7 +259,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
               int recevd_j = jr + j;
               int recevd_k = kr + k;
 
-              if (monofluide_variable_==1 && offset !=0.)
+              if (monofluide_variable_==1 && *buf_offset !=0.)
                 {
                   _TYPE_ Igigkappa_maille_recevd ;
                   int recved_i_Isig;
@@ -333,41 +267,41 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
                   int recved_k_Isig;
 
 
-                  if (offset <0.)
+                  if (*buf_offset <0.)
                     {
-                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
-                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_i_Isig = recevd_i + *buf_x;
+                      recved_j_Isig = recevd_j + *buf_y;
                       recved_k_Isig = k+ghost+1;
                       Igigkappa_maille_recevd = (_TYPE_) I_sigma_kappa_ghost_zmax_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                     }
                   else
                     {
-                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
-                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_i_Isig = recevd_i + *buf_x;
+                      recved_j_Isig = recevd_j + *buf_y;
                       recved_k_Isig = recevd_k + ghost ;
                       Igigkappa_maille_recevd = (_TYPE_) I_sigma_kappa_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                     }
 
                   dest[IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::linear_index(ir + i, jr + j, kr + k)] = *buf - Igigkappa_maille_recevd;
                 }
-              else if (monofluide_variable_==2 && offset !=0.)
+              else if (monofluide_variable_==2 && *buf_offset !=0.)
                 {
                   int recved_i_Isig;
                   int recved_j_Isig;
                   int recved_k_Isig;
                   _TYPE_ I_recevd;
 
-                  if (offset <0.)
+                  if (*buf_offset <0.)
                     {
-                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
-                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_i_Isig = recevd_i + *buf_x;
+                      recved_j_Isig = recevd_j + *buf_y;
                       recved_k_Isig = k+ghost+1;
                       I_recevd = (_TYPE_) indicatrice_ghost_zmax_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                     }
                   else
                     {
-                      recved_i_Isig = recevd_i + splitting.get_offset_local(0);
-                      recved_j_Isig = recevd_j + splitting.get_offset_local(1);
+                      recved_i_Isig = recevd_i + *buf_x;
+                      recved_j_Isig = recevd_j + *buf_y;
                       recved_k_Isig = recevd_k + ghost ;
                       I_recevd = (_TYPE_) indicatrice_ghost_zmin_(recved_i_Isig , recved_j_Isig , recved_k_Isig);
                     }
@@ -384,6 +318,12 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 
   delete[] send_buffer;
   delete[] recv_buffer;
+  delete[] send_buffer_x;
+  delete[] recv_buffer_x;
+  delete[] send_buffer_y;
+  delete[] recv_buffer_y;
+  delete[] send_buffer_offset;
+  delete[] recv_buffer_offset;
 }
 
 /*! @brief Exchange data over "ghost" number of cells.
@@ -484,10 +424,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
 
   statistiques().end_count(echange_vect_counter_);
 
-// if (IJK_Splitting::defilement_ == 1)
-//   {
-//     self_proc_add_data(le_ghost);
-//   }
 
 
 }

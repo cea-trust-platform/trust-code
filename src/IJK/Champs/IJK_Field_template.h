@@ -96,7 +96,6 @@ protected:
   REF(IJK_Splitting) splitting_ref_;
   IJK_Splitting::Localisation localisation_;
 
-  void self_proc_add_data(int le_ghost);
   void exchange_data(int pe_imin_, /* processor to send to */
                      int is, int js, int ks, /* ijk coordinates of first data to send */
                      int pe_imax_, /* processor to recv from */
