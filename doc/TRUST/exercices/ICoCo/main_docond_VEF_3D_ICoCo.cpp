@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
         while (!stop) {
             compti++;
             clock_t clocki = clock();
-            cout << compti << " CLOCK " << (clocki - clock0) * 1.e-6 << endl;
+            cout << compti << " CLOCK " << (double)(clocki - clock0) * 1.e-6 << endl;
 
             ok = false; // Is the time interval successfully solved ?
 

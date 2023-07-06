@@ -219,7 +219,7 @@ class Graph:
     def coordonee(self):
         """ 
         
-        Methode to add a data into the board.
+        Method to add a data into the board.
 
         Parameters
         --------- 
@@ -240,7 +240,7 @@ class Graph:
     def _reset(self):
         """ 
         
-        Methode to reinitialize the plot.
+        Method to reinitialize the plot.
         
         """
         plt.rc("xtick", labelsize=self.label_font_size)  # Font size
@@ -256,7 +256,7 @@ class Graph:
     def add(self, x, y, marker="-", label=None, title=None, xIndice=None, yIndice=None, **kwargs):
         """
         
-        Methode to add a curve to the plot from a point sonde.
+        Method to add a curve to the plot from a point probe.
         
         Parameters
         --------- 
@@ -297,7 +297,7 @@ class Graph:
     def addPlot(self, coordonee, title=""):
         """
         
-        Methode to add a plot/subplot.
+        Method to add a plot/subplot.
         
         Parameters
         --------- 
@@ -329,7 +329,7 @@ class Graph:
     def addPoint(self, data, marker="-", compo=0, label="", func=None, **kwargs):
         """
 
-        Methode to add a curve to the plot from a point sonde.
+        Method to add a curve to the plot from a point probe.
 
         Parameters
         ---------
@@ -382,7 +382,7 @@ class Graph:
     def addSegment(self, data, time=None, marker="-", label="", compo=0, func=None, funcX=None, **kwargs):
         """
 
-        Methode to add a curve to the plot from a segment sonde.
+        Method to add a curve to the plot from a segment of probes.
 
         Parameters
         ---------
@@ -453,7 +453,7 @@ class Graph:
     def addResidu(self, data, marker="-", var="residu=max|Ri|", start=0, end=1000000000000, label="", **kwargs):
         """
         
-        Methode to add a curve to the plot from a dt_ev file.
+        Method to add a curve to the plot from a dt_ev file.
         
         Parameters
         --------- 
@@ -511,7 +511,7 @@ class Graph:
     def visu(self, xmin=None, xmax=None, ymin=None, ymax=None):
         """
         
-        Methode for visualize all the data.
+        Method to visualize all the data.
         
         Parameters
         ---------  
@@ -533,7 +533,7 @@ class Graph:
     def label(self, x_label, y_label, **kwargs):
         """
         
-        Methode to change labels.  
+        Method to change labels.
 
         Parameters
         ---------  
@@ -553,7 +553,7 @@ class Graph:
     def legend(self, **kwargs):
         """
         
-        Methode to change labels.  
+        Method to change labels.
 
         Parameters
         ---------  
@@ -594,7 +594,7 @@ class Table:  # ancien tableau
     def _reset(self):
         """ 
         
-        Methode to reinitialize the board 
+        Method to reinitialize the board.
         
         """
         self.df = pd.DataFrame(columns=self.columns)
@@ -602,7 +602,7 @@ class Table:  # ancien tableau
     def addLigne(self, ligne, name):
         """
         
-        Methode to add a a row to the board. 
+        Method to add a row to the board.
 
         Parameters
         --------- 
@@ -621,7 +621,7 @@ class Table:  # ancien tableau
     def load(self, data, name):
         """ 
         
-        Methode to add a data into the board.
+        Method to add a data into the board.
 
         Parameters
         --------- 
@@ -641,7 +641,7 @@ class Table:  # ancien tableau
     def loadPoint(self, data, name):
         """ 
         
-        Methode to add a data into the board.
+        Method to add a data into the board.
 
         Parameters
         --------- 
@@ -664,7 +664,7 @@ class Table:  # ancien tableau
     def sum(self, name):
         """ 
         
-        Methode to sum data in a column.
+        Method to sum data in a column.
 
         Parameters
         --------- 
