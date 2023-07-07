@@ -14,46 +14,35 @@
 *****************************************************************************/
 
 #include <Terme_Source_Qdm_Face_PolyMAC_P0P1NC.h>
-#include <Champ_Uniforme.h>
-#include <Domaine_Cl_dis.h>
+#include <Op_Grad_PolyMAC_P0P1NC_Face.h>
+#include <Champ_Face_PolyMAC_P0P1NC.h>
 #include <Domaine_PolyMAC_P0P1NC.h>
+#include <Discretisation_base.h>
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Champ_Face_PolyMAC_P0P1NC.h>
-#include <Op_Grad_PolyMAC_P0P1NC_Face.h>
+#include <Champ_Uniforme.h>
+#include <Domaine_Cl_dis.h>
 #include <Equation_base.h>
-#include <Milieu_base.h>
 #include <Pb_Multiphase.h>
-#include <Discretisation_base.h>
+#include <Milieu_base.h>
 
-Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC_P0P1NC,"Source_Qdm_face_PolyMAC_P0P1NC|Source_Qdm_face_PolyMAC_P0",Source_base);
+Implemente_instanciable(Terme_Source_Qdm_Face_PolyMAC_P0P1NC, "Source_Qdm_face_PolyMAC_P0P1NC|Source_Qdm_face_PolyMAC_P0", Terme_Source_Qdm_Face_PolyMAC);
 
-Sortie& Terme_Source_Qdm_Face_PolyMAC_P0P1NC::printOn(Sortie& s ) const { return s << que_suis_je() ; }
+Sortie& Terme_Source_Qdm_Face_PolyMAC_P0P1NC::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-Entree& Terme_Source_Qdm_Face_PolyMAC_P0P1NC::readOn(Entree& s )
-{
-  s >> la_source;
-  if (la_source->nb_comp() != equation().inconnue().valeur().nb_comp())
-    {
-      Cerr << "Erreur a la lecture du terme source de type " << que_suis_je() << finl;
-      Cerr << "le champ source doit avoir " << dimension << " composantes" << finl;
-      exit();
-    }
-  return s ;
-}
-
+Entree& Terme_Source_Qdm_Face_PolyMAC_P0P1NC::readOn(Entree& s) { return Terme_Source_Qdm_Face_PolyMAC::readOn(s); }
 
 void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur());
-  const DoubleTab& vals = la_source->valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
-                   &rho = equation().milieu().masse_volumique().passe(), &nf = domaine.face_normales(),
-                    *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
-  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
+  const DoubleTab& vals = la_source->valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &rho = equation().milieu().masse_volumique().passe(), &nf = domaine.face_normales(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes(), &pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(),
+                    &fs = domaine.face_surfaces();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
-  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot(),
-               n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); //en PolyMAC_P0P1NC V1, on calcule aux CL
+  int e, f, i, cS = (vals.dimension_tot(0) == 1), cR = (rho.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot(), n, N = equation().inconnue().valeurs().line_size(), d,
+               D = dimension, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); //en PolyMAC_P0P1NC V1, on calcule aux CL
 
   /* contributions aux faces (par chaque voisin), aux elems */
   DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
@@ -72,18 +61,20 @@ void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, Do
           {
             if (alp)
               for (a_f = 0, i = 0; i < 2; i++)
-                for (e = f_e(f, i), n = 0; n < N; n++) a_f(n) += vfd(f, i) / vf(f) * (*alp)(e, n);
+                for (e = f_e(f, i), n = 0; n < N; n++)
+                  a_f(n) += vfd(f, i) / vf(f) * (*alp)(e, n);
             for (rho_m = 0, i = 0; i < 2; i++)
-              for (e = f_e(f, i), n = 0; n < N; n++) rho_m(i) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
+              for (e = f_e(f, i), n = 0; n < N; n++)
+                rho_m(i) += (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n);
             for (i = 0; i < 2; i++)
               for (e = f_e(f, i), n = 0; n < N; n++)
                 {
                   double vnf = 0;
-                  for (d = 0; d < D; d++) vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
+                  for (d = 0; d < D; d++)
+                    vnf += nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
                   int strat = (i ? 1 : -1) * (rho_m(i) - rho(!cR * e, n)) * vnf > 0;
-                  double R = alp && strat ? ((*alp)(e, n) < 1e-4 ? 1 : 0) /* min(max(1 - (*alp)(e, n) / 1e-4, 0.), 1.) */ : 0;
+                  double R = alp && strat ? ((*alp)(e, n) < 1e-4 ? 1 : 0) /* min(max(1 - (*alp)(e, n) / 1e-4, 0.), 1.) */: 0;
                   secmem(f, n) += vfd(f, i) * pf(f) * a_f(n) * (R * rho_m(i) + (1 - R) * rho(!cR * e, n)) * vnf;
-                  // Cerr << "f " << f << " i " << i << " n " << n << " a " << (*alp)(e, n) << " r " << rho(!cR * e, n) << " R " << R << finl;
                 }
           }
       }
@@ -98,11 +89,6 @@ void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, Do
       for (d = 0; d < D; d++)
         for (n = 0; n < N; n++)
           secmem(nf_tot + D * e + d, n) += pe(e) * ve(e) * (alp ? rho(!cR * e, n) * (*alp)(e, n) : 1) * vals(!cS * e, N * d + n);
-}
-
-void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::mettre_a_jour(double temps)
-{
-  la_source->mettre_a_jour(temps);
 }
 
 int Terme_Source_Qdm_Face_PolyMAC_P0P1NC::initialiser(double temps)

@@ -13,64 +13,73 @@
 *
 *****************************************************************************/
 
+#include <Convection_Diffusion_Temperature.h>
 #include <Terme_Boussinesq_PolyMAC_Face.h>
 #include <Fluide_Incompressible.h>
-#include <Champ_Uniforme.h>
-#include <Domaine_PolyMAC.h>
-#include <Domaine_Cl_PolyMAC.h>
+#include <Neumann_sortie_libre.h>
 #include <Champ_Face_PolyMAC.h>
-#include <Convection_Diffusion_Temperature.h>
+#include <Domaine_PolyMAC_P0.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Navier_Stokes_std.h>
+#include <Champ_Uniforme.h>
+#include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
+#include <Dirichlet.h>
 
-Implemente_instanciable(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_PolyMAC_Face",Terme_Boussinesq_base);
-Add_synonym(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_temperature_Face_PolyMAC");
-Add_synonym(Terme_Boussinesq_PolyMAC_Face,"Boussinesq_concentration_PolyMAC_Face");
+Implemente_instanciable(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_PolyMAC_Face|Boussinesq_PolyMAC_P0P1NC_Face", Terme_Boussinesq_base);
+Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_PolyMAC_P0_Face");
 
-//// printOn
-Sortie& Terme_Boussinesq_PolyMAC_Face::printOn(Sortie& s ) const
-{
-  return Terme_Boussinesq_base::printOn(s);
-}
+Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_temperature_Face_PolyMAC_P0P1NC");
+Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_temperature_Face_PolyMAC_P0");
+Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_temperature_Face_PolyMAC");
 
-//// readOn
-Entree& Terme_Boussinesq_PolyMAC_Face::readOn(Entree& s )
-{
-  return Terme_Boussinesq_base::readOn(s);
-}
+Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_P0P1NC_Face");
+Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_P0_Face");
+Add_synonym(Terme_Boussinesq_PolyMAC_Face, "Boussinesq_concentration_PolyMAC_Face");
 
-void Terme_Boussinesq_PolyMAC_Face::associer_domaines(const Domaine_dis& domaine_dis,
-                                                      const Domaine_Cl_dis& domaine_Cl_dis)
+Sortie& Terme_Boussinesq_PolyMAC_Face::printOn(Sortie& s) const { return Terme_Boussinesq_base::printOn(s); }
+
+Entree& Terme_Boussinesq_PolyMAC_Face::readOn(Entree& s) { return Terme_Boussinesq_base::readOn(s); }
+
+void Terme_Boussinesq_PolyMAC_Face::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
   le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
 }
 
-DoubleTab& Terme_Boussinesq_PolyMAC_Face::ajouter(DoubleTab& resu) const
+void Terme_Boussinesq_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Domaine_PolyMAC& domaine = le_dom_PolyMAC.valeur();
-  const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const DoubleTab& param = equation_scalaire().inconnue().valeurs();
   const DoubleTab& beta_valeurs = beta().valeur().valeurs();
-  const DoubleVect& grav = gravite().valeurs();
-  const IntTab& f_e = domaine.face_voisins();
-  const DoubleTab& xv = domaine.xv(), &xp = domaine.xp();
-  const DoubleVect& pf = equation().milieu().porosite_face();
-  const DoubleVect& fs = domaine.face_surfaces();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur()).fcl();
+  const DoubleTab& rho = equation().milieu().masse_volumique().passe(), &vfd = domaine.volumes_entrelaces_dir(), &nf = domaine.face_normales(),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
+  const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &ve = domaine.volumes(), &fs = domaine.face_surfaces(), &grav = gravite().valeurs();
 
   DoubleVect g(dimension);
   g = grav;
 
-  int nb_dim = param.line_size();
-
   // Verifie la validite de T0:
   check();
-  int e, i, f, n;
+  int e, i, f, n, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine), nb_dim = param.line_size(), cR = (rho.dimension_tot(0) == 1), d, D = dimension, nf_tot = domaine.nb_faces_tot();
   for (f = 0; f < domaine.nb_faces(); f++)
-    for (i = 0; ch.fcl()(f, 0) < 2 && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
+    for (i = 0; (calc_cl || fcl(f, 0) < 2) && i < 2 && (e = f_e(f, i)) >= 0; i++) //contributions amont/aval
       {
         double coeff = 0;
-        for (n = 0; n < nb_dim; n++) coeff += valeur(beta_valeurs, e, e ,n) * (Scalaire0(n) - valeur(param, e, n));
-        resu(f) += coeff * (i ? -1 : 1) * domaine.dot(&xv(f, 0), g.addr(), &xp(e, 0)) * fs(f) * pf(f);
+        for (n = 0; n < nb_dim; n++)
+          coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e, n) * (Scalaire0(n) - valeur(param, e, n));
+
+        secmem(f) += coeff * domaine.dot(&nf(f, 0), g.addr()) / fs(f) * vfd(f, i) * pf(f);
       }
-  return resu;
+
+  if (sub_type(Domaine_PolyMAC_P0, domaine))
+    for (e = 0; e < domaine.nb_elem_tot(); e++)
+      {
+        double coeff = 0;
+        for (n = 0; n < nb_dim; n++)
+          coeff += (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * valeur(beta_valeurs, e, e, n) * (Scalaire0(n) - valeur(param, e, n));
+        for (d = 0; d < dimension; d++)
+          secmem(nf_tot + D * e + d) += coeff * g(d) * pe(e) * ve(e);
+      }
 }

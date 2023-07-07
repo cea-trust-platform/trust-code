@@ -18,24 +18,28 @@
 
 #include <Source_Generique_base.h>
 #include <TRUST_Ref.h>
+
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
 
 class Source_Generique_Face_PolyMAC: public Source_Generique_base
 {
-
   Declare_instanciable(Source_Generique_Face_PolyMAC);
-
 public:
-
-  DoubleTab& ajouter(DoubleTab& ) const override;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis&) override;
+  DoubleTab& ajouter(DoubleTab&) const override;
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
   Nom localisation_source() override;
 
 protected:
-
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
 };
 
-#endif
+class Source_Generique_Face_PolyMAC_P0P1NC: public Source_Generique_Face_PolyMAC
+{
+  Declare_instanciable(Source_Generique_Face_PolyMAC_P0P1NC);
+public:
+  DoubleTab& ajouter(DoubleTab& ) const override;
+};
+
+#endif /* Source_Generique_Face_PolyMAC_included */

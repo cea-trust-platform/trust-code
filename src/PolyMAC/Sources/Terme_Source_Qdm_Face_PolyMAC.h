@@ -16,32 +16,27 @@
 #ifndef Terme_Source_Qdm_Face_PolyMAC_included
 #define Terme_Source_Qdm_Face_PolyMAC_included
 
-#include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-class Probleme_base;
+#include <Source_base.h>
 #include <TRUST_Ref.h>
+
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
-
+class Probleme_base;
 
 class Terme_Source_Qdm_Face_PolyMAC : public Source_base, public Terme_Source_Qdm
 {
-
   Declare_instanciable(Terme_Source_Qdm_Face_PolyMAC);
-
 public:
-
-  void associer_pb(const Probleme_base& ) override;
+  void associer_pb(const Probleme_base& ) override  { }
   DoubleTab& ajouter(DoubleTab& ) const override;
   DoubleTab& calculer(DoubleTab& ) const override;
   void mettre_a_jour(double ) override;
 
 protected:
-
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-
 };
 
-#endif
+#endif /* Terme_Source_Qdm_Face_PolyMAC_included */

@@ -16,41 +16,17 @@
 #ifndef Terme_Source_Qdm_Face_PolyMAC_P0P1NC_included
 #define Terme_Source_Qdm_Face_PolyMAC_P0P1NC_included
 
-#include <Terme_Source_Qdm.h>
-#include <Source_base.h>
-#include <TRUST_Ref.h>
+#include <Terme_Source_Qdm_Face_PolyMAC.h>
 
-class Domaine_Cl_PolyMAC;
-class Domaine_PolyMAC_P0P1NC;
-class Probleme_base;
-
-/*! @brief class Terme_Source_Qdm_Face_PolyMAC_P0P1NC
- *
- *
- *
- * @sa Source_base
- */
-class Terme_Source_Qdm_Face_PolyMAC_P0P1NC : public Source_base, public Terme_Source_Qdm
+class Terme_Source_Qdm_Face_PolyMAC_P0P1NC : public Terme_Source_Qdm_Face_PolyMAC
 {
-
   Declare_instanciable(Terme_Source_Qdm_Face_PolyMAC_P0P1NC);
-
 public:
   int initialiser(double temps) override;
-  void associer_pb(const Probleme_base& ) override { }
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void mettre_a_jour(double ) override;
-  void check_multiphase_compatibility() const override { }; //ok
-
-protected:
-
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override { };
-
+  void check_multiphase_compatibility() const override { } //ok
 };
 
-#endif
+#endif /* Terme_Source_Qdm_Face_PolyMAC_P0P1NC_included */

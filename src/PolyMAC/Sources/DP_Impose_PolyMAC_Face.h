@@ -13,32 +13,35 @@
 *
 *****************************************************************************/
 
-
 #ifndef DP_Impose_PolyMAC_Face_included
 #define DP_Impose_PolyMAC_Face_included
 
-#include <Perte_Charge_PolyMAC_Face.h>
+#include <Perte_Charge_PolyMAC_P0P1NC_Face.h>
 #include <DP_Impose.h>
-
-class Domaine;
 #include <TRUSTList.h>
 
-class DP_Impose_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
-  public DP_Impose
-{
+class Domaine;
 
+/*! @brief class DP_Impose_PolyMAC_Face
+ *
+ *
+ *
+ * @sa Perte_Charge_PolyMAC_P0P1NC_Face
+ */
+class DP_Impose_PolyMAC_Face: public Perte_Charge_PolyMAC_P0P1NC_Face, public DP_Impose
+{
   Declare_instanciable(DP_Impose_PolyMAC_Face);
 
 public:
-
-  DoubleTab& ajouter(DoubleTab& ) const override;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void remplir_num_faces(Entree& );
   void mettre_a_jour(double temps) override;
 
 protected:
   IntVect sgn;
-  double surf;//surface totale
+  double surf = -123.;//surface totale
 };
+
 #endif

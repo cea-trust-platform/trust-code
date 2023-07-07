@@ -18,25 +18,29 @@
 
 #include <Terme_Boussinesq_base.h>
 #include <TRUST_Ref.h>
+
+class Convection_Diffusion_std;
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
 
-class Convection_Diffusion_std;
-
+/*! @brief class Terme_Boussinesq_scalaire_PolyMAC_P0P1NC_Face
+ *
+ *  Terme Source de Boussinesq pour une dicretisation PolyMAC_P0P1NC
+ *
+ */
 class Terme_Boussinesq_PolyMAC_Face : public Terme_Boussinesq_base
 {
-
   Declare_instanciable(Terme_Boussinesq_PolyMAC_Face);
-
 public:
-
-  DoubleTab& ajouter(DoubleTab& ) const override ;
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  void check_multiphase_compatibility() const override { }
 
 protected:
-
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
 };
 
-#endif
+#endif /* Terme_Boussinesq_PolyMAC_Face_included */

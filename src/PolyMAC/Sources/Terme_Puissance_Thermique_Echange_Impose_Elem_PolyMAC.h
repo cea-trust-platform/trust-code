@@ -16,33 +16,11 @@
 #ifndef Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
 #define Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included
 
-#include <Source_base.h>
-#include <TRUST_Ref.h>
-class Domaine_Cl_PolyMAC;
-class Domaine_PolyMAC;
-#include <Champ_Don.h>
+#include <Terme_Puissance_Thermique_Echange_Impose_Elem_base.h>
 
-class Probleme_base;
-
-class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC :  public Source_base
+class Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC: public Terme_Puissance_Thermique_Echange_Impose_Elem_base
 {
-  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC);
-public:
-
-  DoubleTab& ajouter(DoubleTab& )  const override ;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void associer_pb(const Probleme_base& ) override { };
-  void mettre_a_jour(double ) override;
-
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-
-protected:
-
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
-  Champ_Don himp_,Text_;
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-
+  Declare_instanciable(Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC);
 };
 
-#endif
+#endif /* Terme_Puissance_Thermique_Echange_Impose_Elem_PolyMAC_included */

@@ -14,20 +14,24 @@
 *****************************************************************************/
 
 #include <Terme_Source_Decroissance_Radioactive_Elem_PolyMAC.h>
-#include <Equation_base.h>
-#include <Domaine_Cl_dis.h>
 #include <Domaine_PolyMAC.h>
+#include <Domaine_Cl_dis.h>
+#include <Equation_base.h>
 #include <Synonyme_info.h>
+#include <Probleme_base.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"Decroissance_Radioactive_Elem_PolyMAC",Source_base);
-Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC,"radioactive_decay_Elem_PolyMAC");
+Implemente_instanciable_sans_constructeur(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC|Decroissance_Radioactive_Elem_PolyMAC_P0P1NC", Source_base);
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "Decroissance_Radioactive_Elem_PolyMAC_P0");
 
-Sortie& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::printOn(Sortie& s ) const
-{
-  return s << que_suis_je();
-}
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC_P0P1NC");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC_P0");
+Add_synonym(Terme_Source_Decroissance_Radioactive_Elem_PolyMAC, "radioactive_decay_Elem_PolyMAC");
 
-Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s )
+Sortie& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::printOn(Sortie& s) const { return s << que_suis_je(); }
+
+Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s)
 {
   double lambda_tmp;
   s >> nb_groupes;
@@ -39,7 +43,7 @@ Entree& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::readOn(Entree& s )
       lambda.push_back(lambda_tmp);
     }
 
-  return s ;
+  return s;
 }
 
 void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::completer()
@@ -48,46 +52,55 @@ void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::completer()
   const int N = equation().inconnue().valeurs().line_size();
   if (N != nb_groupes)
     {
-      Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << nb_groupes << " ) and the number of components of the unknown of the equation ( " << N << " )" << finl;
+      Cerr << "Terme_Source_Decroissance_Radioactive_Elem_PolyMAC : inconsistency between the number of radioactive decay constants ( " << nb_groupes
+           << " ) and the number of components of the unknown of the equation ( " << N << " )" << finl;
       Process::exit();
     }
 }
 
-void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis,
-                                                                           const Domaine_Cl_dis& domaine_Cl_dis)
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  Cerr << " Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines " << finl ;
+  Cerr << " Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::associer_domaines " << finl;
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
 }
 
-DoubleTab& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter(DoubleTab& resu)  const
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
 {
-  int nb_elem = le_dom_PolyMAC.valeur().nb_elem();
   const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
-  const DoubleVect& ve = domaine.volumes();
+  const DoubleTab& inco = equation().inconnue().valeurs();
+  const int ne = domaine.nb_elem(), N = inco.line_size();
+  std::string nom_inco = equation().inconnue().le_nom().getString();
+
+  for (auto &&n_m : matrices)
+    if (n_m.first == nom_inco)
+      {
+        Matrice_Morse& mat = *n_m.second, mat2;
+        IntTrav sten(0, 2);
+        sten.set_smart_resize(1);
+        for (int e = 0; e < ne; e++)
+          for (int n = 0; n < N; n++)
+            sten.append_line(N * e + n, N * e + n);
+        tableau_trier_retirer_doublons(sten);
+        Matrix_tools::allocate_morse_matrix(inco.size_totale(), equation().probleme().get_champ(n_m.first.c_str()).valeurs().size_totale(), sten, mat2);
+        mat.nb_colonnes() ? mat += mat2 : mat = mat2;
+      }
+}
+
+void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
+{
+  const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
+  const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
   const DoubleTab& c = equation().inconnue().valeurs();
+  std::string nom_inco = equation().inconnue().le_nom().getString();
+  Matrice_Morse *Mc = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;
+  const int N = c.line_size();
 
-  for (int e = 0; e < nb_elem; e++)
-    for (int l = 0; l < nb_groupes; l++)
-      resu(e, l) -= lambda[l] * c(e, l) * ve(e);
-
-  return resu;
-}
-
-DoubleTab& Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::calculer(DoubleTab& resu) const
-{
-  resu=0;
-  ajouter(resu);
-  return resu;
-}
-
-void Terme_Source_Decroissance_Radioactive_Elem_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  int nb_elem = le_dom_PolyMAC.valeur().nb_elem();
-  const Domaine_VF& domaine = le_dom_PolyMAC.valeur();
-  const DoubleVect& ve = domaine.volumes();
-
-  for (int e = 0, k = 0; e < nb_elem; e++)
-    for (int l = 0; l < nb_groupes; l++, k++)
-      matrice(k, k) += lambda[l] * ve(e);
+  for (int e = 0; e < domaine.nb_elem(); e++)
+    for (int l = 0; l < N; l++)
+      {
+        const double fac = pe(e) * ve(e) * lambda[l];
+        secmem(e, l) -= fac * c(e, l);
+        if (Mc)
+          (*Mc)(N * e + l, N * e + l) += fac;
+      }
 }
