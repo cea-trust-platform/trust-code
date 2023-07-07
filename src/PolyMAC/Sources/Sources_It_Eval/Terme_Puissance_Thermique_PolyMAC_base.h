@@ -16,32 +16,16 @@
 #ifndef Terme_Puissance_Thermique_PolyMAC_base_included
 #define Terme_Puissance_Thermique_PolyMAC_base_included
 
-
 #include <Terme_Puissance_Thermique.h>
 #include <Terme_Source_PolyMAC_base.h>
 
-class Domaine_dis;
-class Domaine_Cl_dis;
-
-class Terme_Puissance_Thermique_PolyMAC_base : public Terme_Puissance_Thermique, public Terme_Source_PolyMAC_base
+class Terme_Puissance_Thermique_PolyMAC_base: public Terme_Puissance_Thermique, public Terme_Source_PolyMAC_base
 {
-
   Declare_base(Terme_Puissance_Thermique_PolyMAC_base);
-
 public:
-
-  inline Terme_Puissance_Thermique_PolyMAC_base(const Iterateur_Source_PolyMAC_base&);
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
+  Terme_Puissance_Thermique_PolyMAC_base(const Iterateur_Source_base& iter_base) : Terme_Puissance_Thermique(), Terme_Source_PolyMAC_base(iter_base) { }
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
   int initialiser(double temps) override;
-
-
-protected:
-
-
 };
 
-inline Terme_Puissance_Thermique_PolyMAC_base::Terme_Puissance_Thermique_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base)
-  : Terme_Puissance_Thermique(), Terme_Source_PolyMAC_base(iter_base)
-{
-}
-#endif
+#endif /* Terme_Puissance_Thermique_PolyMAC_base_included */

@@ -16,47 +16,26 @@
 #ifndef Terme_Source_Constituant_PolyMAC_Elem_included
 #define Terme_Source_Constituant_PolyMAC_Elem_included
 
-#include <Terme_Source_Constituant.h>
 #include <Terme_Source_PolyMAC_base.h>
 #include <Eval_Source_C_PolyMAC_Elem.h>
-#include <ItSouPolyMACEl.h>
-
-declare_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
+#include <Terme_Source_Constituant.h>
+#include <Iterateur_Source_Elem.h>
 
 /*! @brief class Terme_Source_Constituant_PolyMAC_Elem
  *
- *  Cette classe represente un terme source de l'equation de la thermique
- *  du type degagement volumique de puissance thermique uniforme sur une domaine
+ *  Cette classe represente un terme source de l'equation de la thermique du type degagement volumique de puissance thermique uniforme sur un domaine
  *
- * .SECTION
- *  voir aussi Terme_Source_Constituant, Terme_Source_PolyMAC_base
- *
+ * @sa Terme_Source_Constituant, Terme_Source_PolyMAC_base
  */
-class Terme_Source_Constituant_PolyMAC_Elem : public Terme_Source_Constituant,
-  public Terme_Source_PolyMAC_base
+class Terme_Source_Constituant_PolyMAC_Elem: public Terme_Source_Constituant, public Terme_Source_PolyMAC_base
 {
   Declare_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem);
-
 public:
+  Terme_Source_Constituant_PolyMAC_Elem() : Terme_Source_Constituant(), Terme_Source_PolyMAC_base(Iterateur_Source_Elem<Eval_Source_C_PolyMAC_Elem>()) { }
 
-  inline Terme_Source_Constituant_PolyMAC_Elem();
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override
-  {
-    Terme_Source_Constituant::mettre_a_jour(temps);
-  }
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double temps) override { Terme_Source_Constituant::mettre_a_jour(temps); }
 };
 
-
-//
-// Fonctions inline de la classe Terme_Source_Constituant_PolyMAC_Elem
-//
-
-inline Terme_Source_Constituant_PolyMAC_Elem::Terme_Source_Constituant_PolyMAC_Elem()
-  : Terme_Source_Constituant(),Terme_Source_PolyMAC_base(It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)())
-{
-}
-
-
-#endif
+#endif /* Terme_Source_Constituant_PolyMAC_Elem_included */

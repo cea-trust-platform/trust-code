@@ -14,20 +14,20 @@
 *****************************************************************************/
 
 #include <Terme_Source_Constituant_PolyMAC_Elem.h>
-#include <Milieu_base.h>
 #include <Convection_Diffusion_Concentration.h>
 #include <Discretisation_base.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 #include <Probleme_base.h>
+#include <Synonyme_info.h>
+#include <Milieu_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem,"Source_Constituant_Elem_PolyMAC",Terme_Source_PolyMAC_base);
-implemente_It_Sou_PolyMAC_Elem(Eval_Source_C_PolyMAC_Elem)
+Implemente_instanciable_sans_constructeur(Terme_Source_Constituant_PolyMAC_Elem, "Source_Constituant_Elem_PolyMAC|Source_Constituant_Elem_PolyMAC_P0P1NC", Terme_Source_PolyMAC_base);
+Add_synonym(Terme_Source_Constituant_PolyMAC_Elem, "Source_Constituant_Elem_PolyMAC_P0");
 
-Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Terme_Source_Constituant_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-Entree& Terme_Source_Constituant_PolyMAC_Elem::readOn(Entree& s )
+Entree& Terme_Source_Constituant_PolyMAC_Elem::readOn(Entree& s)
 {
   Terme_Source_Constituant::lire_donnees(s);
   set_fichier("Source_Constituant");
@@ -35,26 +35,19 @@ Entree& Terme_Source_Constituant_PolyMAC_Elem::readOn(Entree& s )
   return s;
 }
 
-
-void Terme_Source_Constituant_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis,
-                                                              const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Source_Constituant_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC,domaine_dis.valeur());
-  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC,domaine_cl_dis.valeur());
-
+  const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
+  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
   iter->associer_domaines(zvdf, zclvdf);
-
-  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
-  eval_puis.associer_domaines(zvdf, zclvdf );
+  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter->evaluateur());
+  eval_puis.associer_domaines(zvdf, zclvdf);
 }
-
 
 void Terme_Source_Constituant_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
 {
   const Equation_base& eqn = pb.equation(0);
-  eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(),la_source_constituant.le_nom(),"",la_source_constituant,pb);
-  Eval_Source_C_PolyMAC_Elem& eval_puis = (Eval_Source_C_PolyMAC_Elem&) iter.evaluateur();
+  eqn.discretisation().nommer_completer_champ_physique(eqn.domaine_dis(), la_source_constituant.le_nom(), "", la_source_constituant, pb);
+  Eval_Source_C_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Source_C_PolyMAC_Elem&> (iter->evaluateur());
   eval_puis.associer_champs(la_source_constituant);
 }
-
-

@@ -16,52 +16,38 @@
 #ifndef Eval_Puiss_Th_PolyMAC_Elem_included
 #define Eval_Puiss_Th_PolyMAC_Elem_included
 
-#include <Evaluateur_Source_PolyMAC_Elem.h>
-#include <TRUSTTab.h>
+#include <Evaluateur_Source_Elem.h>
 #include <Champ_Uniforme.h>
+#include <Equation_base.h>
 #include <Champ_Don.h>
 #include <TRUST_Ref.h>
-#include <Equation_base.h>
+#include <TRUSTTab.h>
 
-class Eval_Puiss_Th_PolyMAC_Elem: public Evaluateur_Source_PolyMAC_Elem
+class Eval_Puiss_Th_PolyMAC_Elem: public Evaluateur_Source_Elem
 {
-
 public:
+  void mettre_a_jour() override { }
+  inline void associer_champs(const Champ_Don&);
 
-  void associer_champs(const Champ_Don& );
-  void mettre_a_jour() override;
-  inline double calculer_terme_source(int ) const override;
-  inline void calculer_terme_source(int , DoubleVect& ) const override;
+  template <typename Type_Double>
+  inline void calculer_terme_source(const int, Type_Double&) const;
 
 protected:
-
   REF(Champ_Don) la_puissance;
   DoubleTab puissance;
 };
 
-
-//
-//   Fonctions inline de la classe Eval_Puiss_Th_PolyMAC_Elem
-//
-
-
-inline double Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(int num_elem) const
+inline void Eval_Puiss_Th_PolyMAC_Elem::associer_champs(const Champ_Don& Q)
 {
-  if (sub_type(Champ_Uniforme,la_puissance.valeur().valeur()))
-    return puissance(0,0)*volumes(num_elem)*porosite_vol(num_elem);
-  else
-    {
-      if (puissance.nb_dim()==1)
-        return puissance(num_elem)*volumes(num_elem)*porosite_vol(num_elem);
-      else
-        return puissance(num_elem,0)*volumes(num_elem)*porosite_vol(num_elem);
-    }
+  la_puissance = Q;
+  puissance.ref(Q.valeurs());
 }
 
-inline void Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(int , DoubleVect& ) const
+template <typename Type_Double>
+inline void Eval_Puiss_Th_PolyMAC_Elem::calculer_terme_source(const int e, Type_Double& S) const
 {
-  ;
+  const int k = sub_type(Champ_Uniforme,la_puissance.valeur().valeur()) ? 0 : e, size = S.size_array();
+  for (int i = 0; i < size; i++) S[i] = puissance(k, i) * volumes(e) * porosite_vol(e);
 }
 
-#endif
-
+#endif /* Eval_Puiss_Th_PolyMAC_Elem_included */

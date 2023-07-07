@@ -16,37 +16,22 @@
 #ifndef Terme_Source_PolyMAC_base_included
 #define Terme_Source_PolyMAC_base_included
 
+#include <Iterateur_Source.h>
 #include <Source_base.h>
-#include <Iterateur_Source_PolyMAC.h>
 
 class Terme_Source_PolyMAC_base : public Source_base
 {
-
   Declare_base(Terme_Source_PolyMAC_base);
-
 public:
+  Terme_Source_PolyMAC_base(const Iterateur_Source_base& iter_base) : iter(iter_base) {}
 
-  inline Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base&);
-  inline DoubleTab& ajouter(DoubleTab& ) const override ;
-  inline DoubleTab& calculer(DoubleTab& ) const override ;
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { }; //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override { iter->ajouter(secmem); }
   void completer() override;
 
 protected:
-
-  Iterateur_Source_PolyMAC iter;
+  Iterateur_Source iter;
 };
 
-inline Terme_Source_PolyMAC_base::Terme_Source_PolyMAC_base(const Iterateur_Source_PolyMAC_base& iter_base) :
-  iter(iter_base)
-{}
-
-inline DoubleTab& Terme_Source_PolyMAC_base::ajouter(DoubleTab& resu) const
-{
-  return iter.ajouter(resu);
-}
-
-inline DoubleTab& Terme_Source_PolyMAC_base::calculer(DoubleTab& resu) const
-{
-  return iter.calculer(resu);
-}
-#endif
+#endif /* Terme_Source_PolyMAC_base_included */

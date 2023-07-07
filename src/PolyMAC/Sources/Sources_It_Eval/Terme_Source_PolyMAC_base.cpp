@@ -15,21 +15,14 @@
 
 #include <Terme_Source_PolyMAC_base.h>
 
-Implemente_base(Terme_Source_PolyMAC_base,"Terme_Source_PolyMAC_base",Source_base);
+Implemente_base(Terme_Source_PolyMAC_base, "Terme_Source_PolyMAC_base", Source_base);
 
-Sortie& Terme_Source_PolyMAC_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
-
-Entree& Terme_Source_PolyMAC_base::readOn(Entree& s )
-{
-  return s ;
-}
+Sortie& Terme_Source_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Source_PolyMAC_base::readOn(Entree& s) { return s; }
 
 void Terme_Source_PolyMAC_base::completer()
 {
   Source_base::completer();
-  iter.associer(*this);
-  iter.completer_();
+  iter->associer(*this);
+  iter->completer_();
 }

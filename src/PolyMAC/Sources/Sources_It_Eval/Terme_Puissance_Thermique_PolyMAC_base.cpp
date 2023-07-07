@@ -14,34 +14,31 @@
 *****************************************************************************/
 
 #include <Terme_Puissance_Thermique_PolyMAC_base.h>
-#include <Domaine_PolyMAC.h>
 #include <Champ_val_tot_sur_vol_base.h>
+#include <Domaine_Cl_PolyMAC.h>
+#include <Domaine_PolyMAC.h>
 
-Implemente_base(Terme_Puissance_Thermique_PolyMAC_base,"Terme_Puissance_Thermique_PolyMAC_base",Terme_Source_PolyMAC_base);
+Implemente_base(Terme_Puissance_Thermique_PolyMAC_base, "Terme_Puissance_Thermique_PolyMAC_base", Terme_Source_PolyMAC_base);
 
-Sortie& Terme_Puissance_Thermique_PolyMAC_base::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Terme_Puissance_Thermique_PolyMAC_base::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-Entree& Terme_Puissance_Thermique_PolyMAC_base::readOn(Entree& s )
+Entree& Terme_Puissance_Thermique_PolyMAC_base::readOn(Entree& s)
 {
   const Equation_base& eqn = equation();
-  Terme_Puissance_Thermique::lire_donnees(s,eqn);
+  Terme_Puissance_Thermique::lire_donnees(s, eqn);
   champs_compris_.ajoute_champ(la_puissance);
   Nom name_file("Puissance_Thermique");
   modify_name_file(name_file);
   set_fichier(name_file);
   set_description("Heat power release = Integral(P*dv) [W]");
-  return s ;
+  return s;
 }
 
-void Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(const Domaine_dis& domaine_dis,
-                                                               const Domaine_Cl_dis& domaine_cl_dis)
+void Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC,domaine_dis.valeur());
-  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC,domaine_cl_dis.valeur());
-  iter->associer_domaines(zvdf,zclvdf);
+  const Domaine_PolyMAC& zvdf = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
+  const Domaine_Cl_PolyMAC& zclvdf = ref_cast(Domaine_Cl_PolyMAC, domaine_cl_dis.valeur());
+  iter->associer_domaines(zvdf, zclvdf);
 }
 
 int Terme_Puissance_Thermique_PolyMAC_base::initialiser(double temps)
@@ -50,5 +47,3 @@ int Terme_Puissance_Thermique_PolyMAC_base::initialiser(double temps)
   initialiser_champ_puissance(equation());
   return 1;
 }
-
-

@@ -14,36 +14,26 @@
 *****************************************************************************/
 
 #include <Terme_Puissance_Thermique_PolyMAC_Elem.h>
-#include <Milieu_base.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
+#include <Synonyme_info.h>
+#include <Milieu_base.h>
 
-Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem,"Puissance_Thermique_Elem_PolyMAC",Terme_Puissance_Thermique_PolyMAC_base);
-implemente_It_Sou_PolyMAC_Elem(Eval_Puiss_Th_PolyMAC_Elem)
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC|Puissance_Thermique_Elem_PolyMAC_P0P1NC", Terme_Puissance_Thermique_PolyMAC_base);
+Add_synonym(Terme_Puissance_Thermique_PolyMAC_Elem, "Puissance_Thermique_Elem_PolyMAC_P0");
 
-Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s ) const
+Sortie& Terme_Puissance_Thermique_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_PolyMAC_base::readOn(s); }
+
+void Terme_Puissance_Thermique_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  return s << que_suis_je() ;
+  Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(domaine_dis, domaine_cl_dis);
+  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
+  eval_puis.associer_domaines(domaine_dis.valeur(), domaine_cl_dis.valeur());
 }
-
-Entree& Terme_Puissance_Thermique_PolyMAC_Elem::readOn(Entree& s )
-{
-  Terme_Puissance_Thermique_PolyMAC_base::readOn(s);
-  return s;
-}
-
-
-void Terme_Puissance_Thermique_PolyMAC_Elem::associer_domaines(const Domaine_dis& domaine_dis,
-                                                               const Domaine_Cl_dis& domaine_cl_dis)
-{
-  Terme_Puissance_Thermique_PolyMAC_base::associer_domaines(domaine_dis,domaine_cl_dis);
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = (Eval_Puiss_Th_PolyMAC_Elem&) iter.evaluateur();
-  eval_puis.associer_domaines(domaine_dis.valeur(),domaine_cl_dis.valeur());
-}
-
 
 void Terme_Puissance_Thermique_PolyMAC_Elem::associer_pb(const Probleme_base& pb)
 {
-  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = (Eval_Puiss_Th_PolyMAC_Elem&) iter.evaluateur();
+  Eval_Puiss_Th_PolyMAC_Elem& eval_puis = dynamic_cast<Eval_Puiss_Th_PolyMAC_Elem&> (iter->evaluateur());
   eval_puis.associer_champs(la_puissance);
 }
