@@ -25,7 +25,7 @@ Mailler dom
 }
 
 
-Sous_zone interface
+Sous_domaine interface
 Associate interface dom
 Read interface {
     Rectangle
@@ -48,7 +48,7 @@ END PARTITION #
 
 # BEGIN SCATTER
 Scatter DOM.Zones dom
-Sous_Zone  interface
+Sous_Domaine  interface
 Associate interface dom
 Read interface { Fichier interface.ssz }
 END SCATTER #
