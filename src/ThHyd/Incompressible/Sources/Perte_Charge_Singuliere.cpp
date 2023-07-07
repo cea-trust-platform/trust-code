@@ -198,6 +198,14 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       Cerr << " surface " << nom_surface << finl;
       identifiant_ = nom_surface;
     }
+  else if (method=="Internal_Face_groups")
+    {
+      /* Surface algorithm */
+      algo=2;
+      is >> nom_surface;
+      Cerr << " surface " << nom_surface << finl;
+      identifiant_ = nom_surface;
+    }
   else
     {
       Cerr << "Error in Perte_Charge_Singuliere::lire_surfaces" << finl;
@@ -324,6 +332,16 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
                 }
             }
         }
+    }
+  else if (algo==2)
+    {
+      const Groupe_interne grp_interne = le_domaine.groupe_interne(nom_surface);
+      int nb_faces = grp_interne.nb_faces();
+      Cerr << " Internal Face group " << nom_surface << " with " << nb_faces << " faces" << finl;
+      int numfa = grp_interne.num_premiere_face() ;
+      for (int k=0; k < nb_faces; k++)
+        les_faces[k] = numfa, face_tab(numfa) = 1, numfa++;
+      compteur = nb_faces;
     }
 
   int faces_found=mp_somme_vect(face_tab);
