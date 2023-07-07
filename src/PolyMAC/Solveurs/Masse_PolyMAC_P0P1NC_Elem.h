@@ -17,7 +17,7 @@
 #define Masse_PolyMAC_P0P1NC_Elem_included
 
 #include <Solveur_Masse_Elem_proto.h>
-#include <Masse_PolyMAC_P0P1NC_base.h>
+#include <Masse_PolyMAC_base.h>
 
 class Masse_PolyMAC_P0P1NC_Elem : public Masse_PolyMAC_P0P1NC_base, public Solveur_Masse_Elem_proto
 {

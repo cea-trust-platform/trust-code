@@ -13,32 +13,23 @@
 *
 *****************************************************************************/
 
+#include <Champ_Face_PolyMAC.h>
 #include <Masse_PolyMAC_Face.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Domaine_PolyMAC.h>
+#include <TRUSTTab_parts.h>
+#include <Equation_base.h>
+#include <Probleme_base.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
+#include <Operateur.h>
 #include <Dirichlet.h>
 
-#include <Equation_base.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Champ_Face_PolyMAC.h>
-#include <Operateur.h>
-#include <Op_Diff_negligeable.h>
-#include <Probleme_base.h>
-#include <TRUSTTab_parts.h>
-#include <Schema_Euler_Implicite.h>
+Implemente_instanciable(Masse_PolyMAC_Face, "Masse_PolyMAC_Face", Masse_PolyMAC_base);
 
-Implemente_instanciable(Masse_PolyMAC_Face,"Masse_PolyMAC_Face",Solveur_Masse_base);
+Sortie& Masse_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Sortie& Masse_PolyMAC_Face::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-Entree& Masse_PolyMAC_Face::readOn(Entree& s)
-{
-  return s ;
-}
+Entree& Masse_PolyMAC_Face::readOn(Entree& s) { return s; }
 
 DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
 {
@@ -56,41 +47,16 @@ DoubleTab& Masse_PolyMAC_Face::appliquer_impl(DoubleTab& sm) const
   if (sm.dimension_tot(0) != nb_faces_tot && sm.dimension_tot(0) != nb_faces_tot + nb_aretes_tot)
     {
       Cerr << "Masse_PolyMAC_Face::appliquer :  erreur dans la taille de sm" << finl;
-      exit();
+      Process::exit();
     }
 
   //mise a zero de la partie vitesse de sm sur les faces a vitesse imposee
   for (int f = 0; f < domaine_PolyMAC.nb_faces(); f++)
     if (ch.fcl()(f, 0) > 1)
-      for (int k = 0; k < nc; k++) sm(f, k) = 0;
+      for (int k = 0; k < nc; k++)
+        sm(f, k) = 0;
 
   return sm;
-}
-
-//
-void Masse_PolyMAC_Face::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
-{
-  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, le_dom_dis_base);
-}
-
-void Masse_PolyMAC_Face::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
-{
-  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, le_dom_Cl_dis_base);
-}
-
-void Masse_PolyMAC_Face::completer()
-{
-  if (!sub_type(Schema_Implicite_base, equation().schema_temps()))
-    {
-      Cerr << "===================================================================================" << finl;
-      Cerr << "Error when using " << equation().schema_temps().que_suis_je() << " scheme:" << finl;
-      Cerr << "You can only use implicit schemes with the PolyMAC discretization (for mass solver)." << finl;
-      Process::exit();
-    }
-  no_diff_ = true;
-  for(int i = 0; i < equation().nombre_d_operateurs(); i++)
-    if (sub_type(Operateur_Diff_base, equation().operateur(i).l_op_base()))
-      if (!sub_type(Op_Diff_negligeable, equation().operateur(i).l_op_base())) no_diff_ = false;
 }
 
 void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
@@ -102,14 +68,17 @@ void Masse_PolyMAC_Face::dimensionner(Matrice_Morse& matrix) const
   const bool only_m2 = (matrix.nb_lignes() == nf_tot);
 
   domaine.init_m1(), domaine.init_m2(), ch.init_ra();
-  IntTab indice(0,2);
+  IntTab indice(0, 2);
   indice.set_smart_resize(1);
   //partie vitesses : matrice de masse des vitesses si la face n'est pas a vitesse imposee, diagonale sinon
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (i = 0, j = domaine.m2d(e); j < domaine.m2d(e + 1); i++, j++)
-      if (ch.fcl()(f = e_f(e, i), 0) > 1 && f < domaine.nb_faces()) indice.append_line(f, f);
-      else for (k = domaine.m2i(j); f < domaine.nb_faces() && k < domaine.m2i(j + 1); k++)
-          if (ch.fcl()(fb = e_f(e, domaine.m2j(k)), 0) < 2) indice.append_line(f, fb);
+      if (ch.fcl()(f = e_f(e, i), 0) > 1 && f < domaine.nb_faces())
+        indice.append_line(f, f);
+      else
+        for (k = domaine.m2i(j); f < domaine.nb_faces() && k < domaine.m2i(j + 1); k++)
+          if (ch.fcl()(fb = e_f(e, domaine.m2j(k)), 0) < 2)
+            indice.append_line(f, fb);
 
   //partie vorticites : diagonale si pas de diffusion
   if (!only_m2)
@@ -133,14 +102,16 @@ DoubleTab& Masse_PolyMAC_Face::ajouter_masse(double dt, DoubleTab& secmem, const
   int i, j, k, l, e, f, fb;
 
   if (has_coefficient_temporel_) appliquer_coef(coef);
+
   domaine.init_m1(), domaine.init_m2(), ch.init_ra();
 
   //partie vitesses : vitesses imposees par CLs
   for (f = 0; f < domaine.premiere_face_int(); f++)
     if (ch.fcl()(f, 0) == 3)
-      for (k = 0, secmem(f) = 0; k < dimension; k++)//valeur imposee par une CL de type Dirichlet
+      for (k = 0, secmem(f) = 0; k < dimension; k++) //valeur imposee par une CL de type Dirichlet
         secmem(f) += nf(f, k) * ref_cast(Dirichlet, cls[ch.fcl()(f, 1)].valeur()).val_imp(ch.fcl()(f, 2), k) / fs(f);
-    else if (ch.fcl()(f, 0) > 1) secmem(f) = 0; //Dirichlet homogene ou Symetrie
+    else if (ch.fcl()(f, 0) > 1)
+      secmem(f) = 0; //Dirichlet homogene ou Symetrie
 
   //partie vitesses : m2 / dt
   for (e = 0; e < domaine.nb_elem_tot(); e++)
@@ -168,11 +139,13 @@ Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
   Matrice_Morse& mat = ref_cast(Matrice_Morse, matrice);
 
   if (has_coefficient_temporel_) appliquer_coef(coef);
+
   domaine.init_m1(), domaine.init_m2(), ch.init_ra();
 
   //partie vitesses : vitesses imposees par CLs
   for (f = 0; f < domaine.premiere_face_int(); f++)
-    if (ch.fcl()(f, 0) > 1) mat(f, f) = 1;
+    if (ch.fcl()(f, 0) > 1)
+      mat(f, f) = 1;
 
   //partie vitesses : m2 / dt
   for (e = 0; e < domaine.nb_elem_tot(); e++)
@@ -187,35 +160,4 @@ Matrice_Base& Masse_PolyMAC_Face::ajouter_masse(double dt, Matrice_Base& matrice
       mat(nf_tot + a, nf_tot + a) = 1;
 
   return matrice;
-}
-
-void Masse_PolyMAC_Face::appliquer_coef(DoubleVect& coef) const
-{
-  if (has_coefficient_temporel_)
-    {
-      REF(Champ_base) ref_coeff;
-      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
-
-      DoubleTab values;
-      if (sub_type(Champ_Inc_base,ref_coeff.valeur()))
-        {
-          const Champ_Inc_base& coeff = ref_cast(Champ_Inc_base,ref_coeff.valeur());
-          ConstDoubleTab_parts val_parts(coeff.valeurs());
-          values.ref(val_parts[0]);
-
-        }
-      else if (sub_type(Champ_Fonc_base,ref_coeff.valeur()))
-        {
-          const Champ_Fonc_base& coeff = ref_cast(Champ_Fonc_base,ref_coeff.valeur());
-          values.ref(coeff.valeurs());
-
-        }
-      else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
-        {
-          DoubleTab nodes;
-          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
-          ref_coeff.valeur().valeur_aux(nodes,values);
-        }
-      tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
-    }
 }

@@ -13,28 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Masse_PolyMAC_P0P1NC_base_included
-#define Masse_PolyMAC_P0P1NC_base_included
+#ifndef Masse_PolyMAC_base_included
+#define Masse_PolyMAC_base_included
 
-#include <TRUSTTabs_forward.h>
 #include <Solveur_Masse.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_PolyMAC;
-class Domaine_PolyMAC_P0P1NC;
+class Domaine_PolyMAC;
 
-class Masse_PolyMAC_P0P1NC_base : public Solveur_Masse_base
+class Masse_PolyMAC_base : public Solveur_Masse_base
+{
+  Declare_base(Masse_PolyMAC_base);
+public:
+
+  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
+  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
+  void completer() override;
+  void appliquer_coef(DoubleVect& coef) const;
+
+protected:
+  bool no_diff_ = false;
+  REF(Domaine_PolyMAC) le_dom_PolyMAC;
+  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+};
+
+class Masse_PolyMAC_P0P1NC_base : public Masse_PolyMAC_base
 {
   Declare_base(Masse_PolyMAC_P0P1NC_base);
 public:
   int has_interface_blocs() const override { return 1; }
-  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
   void check_multiphase_compatibility() const override { }
-
-protected:
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC_P0P1NC;
-  REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
+  void completer() override { }
 };
 
-#endif /* Masse_PolyMAC_P0P1NC_base_included */
+#endif /* Masse_PolyMAC_base_included */

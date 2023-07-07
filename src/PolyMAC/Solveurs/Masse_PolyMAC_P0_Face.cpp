@@ -40,7 +40,7 @@ Entree& Masse_PolyMAC_P0_Face::readOn(Entree& s) { return s ; }
 
 void Masse_PolyMAC_P0_Face::completer()
 {
-  Solveur_Masse_Face_proto::associer_masse_proto(*this,le_dom_PolyMAC_P0.valeur());
+  Solveur_Masse_Face_proto::associer_masse_proto(*this,le_dom_PolyMAC.valeur());
   Solveur_Masse_base::completer();
   Equation_base& eq = equation();
   Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, eq.inconnue().valeur());
@@ -53,7 +53,7 @@ DoubleTab& Masse_PolyMAC_P0_Face::appliquer_impl(DoubleTab& sm) const
   Solveur_Masse_Face_proto::appliquer_impl_proto(sm);
 
   //vitesses aux elements
-  const Domaine_PolyMAC_P0& domaine = le_dom_PolyMAC_P0.valeur();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
   int e, nf_tot = domaine.nb_faces_tot(), d, D = dimension, n, N = equation().inconnue().valeurs().line_size();
   const DoubleTab *a_r = sub_type(QDM_Multiphase, equation()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.champ_conserve().passe() : NULL;
   const DoubleVect& pe = equation().milieu().porosite_elem(), &ve = domaine.volumes();
@@ -83,11 +83,11 @@ void Masse_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs_t
   Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
 
   const DoubleTab& inco = equation().inconnue().valeurs();
-  int i, e, nf_tot = le_dom_PolyMAC_P0->nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension;
+  int i, e, nf_tot = le_dom_PolyMAC->nb_faces_tot(), m, n, N = inco.line_size(), d, D = dimension;
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
   const Masse_ajoutee_base *corr = pbm && pbm->has_correlation("masse_ajoutee") ? &ref_cast(Masse_ajoutee_base, pbm->get_correlation("masse_ajoutee").valeur()) : NULL;
 
-  for (e = 0, i = N * nf_tot; e < le_dom_PolyMAC_P0->nb_elem_tot(); e++)
+  for (e = 0, i = N * nf_tot; e < le_dom_PolyMAC->nb_elem_tot(); e++)
     for (d = 0; d < D; d++)
       for (n = 0; n < N; n++, i++) //tous les elems (pour Op_Grad_PolyMAC_P0_Face)
         if (corr)
@@ -102,8 +102,8 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 {
   const DoubleTab& inco = equation().inconnue().valeurs(), &passe = equation().inconnue().passe();
   Matrice_Morse *mat = matrices[equation().inconnue().le_nom().getString()]; //facultatif
-  const Domaine_PolyMAC_P0& domaine = le_dom_PolyMAC_P0;
-  const Conds_lim& cls = le_dom_Cl_PolyMAC_P0P1NC->les_conditions_limites();
+  const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, le_dom_PolyMAC.valeur());
+  const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur()).fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes(), &fs = domaine.face_surfaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
@@ -155,11 +155,6 @@ void Masse_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
           }
     }
   i++;
-}
-
-void Masse_PolyMAC_P0_Face::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
-{
-  le_dom_PolyMAC_P0 = ref_cast(Domaine_PolyMAC_P0, le_dom_dis_base);
 }
 
 //sert a remettre en coherence la partie aux elements avec la partie aux faces

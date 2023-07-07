@@ -15,56 +15,21 @@
 
 #include <Masse_PolyMAC_Elem.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC.h>
 #include <Champ_Elem_PolyMAC.h>
-#include <Equation_base.h>
-#include <Conds_lim.h>
-#include <Neumann_paroi.h>
-#include <Array_tools.h>
-#include <Matrix_tools.h>
-#include <Operateur.h>
-#include <Op_Diff_negligeable.h>
+#include <Domaine_PolyMAC.h>
 #include <TRUSTTab_parts.h>
-#include <Schema_Euler_Implicite.h>
+#include <Equation_base.h>
+#include <Neumann_paroi.h>
+#include <Matrix_tools.h>
+#include <Array_tools.h>
 #include <Milieu_base.h>
+#include <Conds_lim.h>
 
-Implemente_instanciable(Masse_PolyMAC_Elem,"Masse_PolyMAC_Elem",Solveur_Masse_base);
+Implemente_instanciable(Masse_PolyMAC_Elem, "Masse_PolyMAC_Elem", Masse_PolyMAC_base);
 
-Sortie& Masse_PolyMAC_Elem::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
+Sortie& Masse_PolyMAC_Elem::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Entree& Masse_PolyMAC_Elem::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-void Masse_PolyMAC_Elem::associer_domaine_dis_base(const Domaine_dis_base& le_dom_dis_base)
-{
-  le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, le_dom_dis_base);
-}
-
-void Masse_PolyMAC_Elem::associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& le_dom_Cl_dis_base)
-{
-  le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, le_dom_Cl_dis_base);
-}
-
-void Masse_PolyMAC_Elem::completer()
-{
-  if (!sub_type(Schema_Implicite_base, equation().schema_temps()))
-    {
-      Cerr << "===================================================================================" << finl;
-      Cerr << "Error when using " << equation().schema_temps().que_suis_je() << " scheme:" << finl;
-      Cerr << "You can only use implicit schemes with the PolyMAC discretization (for mass solver)." << finl;
-      Process::exit();
-    }
-  no_diff_ = true;
-  for(int i = 0; i < equation().nombre_d_operateurs(); i++)
-    if (sub_type(Operateur_Diff_base, equation().operateur(i).l_op_base()))
-      if (!sub_type(Op_Diff_negligeable, equation().operateur(i).l_op_base())) no_diff_ = false;
-}
+Entree& Masse_PolyMAC_Elem::readOn(Entree& s) { return s; }
 
 //ne touche que la partie "elements"
 DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
@@ -74,7 +39,7 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
   const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
 
   const int nb_elem = domaine_PolyMAC.nb_elem(), nb_dim = sm.nb_dim();
-  if(nb_elem==0)
+  if (nb_elem == 0)
     {
       sm.echange_espace_virtuel();
       return sm;
@@ -82,22 +47,22 @@ DoubleTab& Masse_PolyMAC_Elem::appliquer_impl(DoubleTab& sm) const
 
   if (nb_dim == 2)
     {
-      const int nb_comp = sm.line_size();//sm.dimension_tot(0)/nb_elem;
-      for (int num_elem=0; num_elem<nb_elem; num_elem++)
-        for (int k=0; k<nb_comp; k++)
-          sm(num_elem,k) /= (volumes(num_elem)*porosite_elem(num_elem));
+      const int nb_comp = sm.line_size(); //sm.dimension_tot(0)/nb_elem;
+      for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+        for (int k = 0; k < nb_comp; k++)
+          sm(num_elem, k) /= (volumes(num_elem) * porosite_elem(num_elem));
     }
   else if (sm.nb_dim() == 3)
     {
       const int d1 = sm.dimension(1), d2 = sm.dimension(2);
-      for (int num_elem=0; num_elem<nb_elem; num_elem++)
-        for (int k=0; k<d1; k++)
-          for (int d=0; d<d2; d++)
-            sm(num_elem,k,d) /= (volumes(num_elem)*porosite_elem(num_elem));
+      for (int num_elem = 0; num_elem < nb_elem; num_elem++)
+        for (int k = 0; k < d1; k++)
+          for (int d = 0; d < d2; d++)
+            sm(num_elem, k, d) /= (volumes(num_elem) * porosite_elem(num_elem));
     }
   else
     {
-      Cerr<< "Masse_PolyMAC_Elem::appliquer ne peut pas s'appliquer a un DoubleTab a "<<sm.nb_dim()<<" dimensions"<<endl;
+      Cerr << "Masse_PolyMAC_Elem::appliquer ne peut pas s'appliquer a un DoubleTab a " << sm.nb_dim() << " dimensions" << endl;
       Process::exit();
     }
   sm.echange_espace_virtuel();
@@ -113,15 +78,17 @@ void Masse_PolyMAC_Elem::dimensionner(Matrice_Morse& matrix) const
   const bool only_ne = (matrix.nb_lignes() == ne_tot);
 
   domaine.init_m2(), ch.fcl();
-  IntTab indice(0,2);
+  IntTab indice(0, 2);
   indice.set_smart_resize(1);
   //partie superieure : diagonale
   for (e = 0; e < domaine.nb_elem(); e++)
-    for (n = 0; n < N; n++) indice.append_line(N * e + n, N * e + n);
+    for (n = 0; n < N; n++)
+      indice.append_line(N * e + n, N * e + n);
   //partie inferieure : diagonale pour les CLs de Dirichlet
   for (f = 0; !only_ne && f < domaine.nb_faces(); f++)
     if (no_diff_ || ch.fcl()(f, 0) > 5)
-      for (n = 0; n < N; n++) indice.append_line(N * (ne_tot + f) + n, N * (ne_tot + f) + n);
+      for (n = 0; n < N; n++)
+        indice.append_line(N * (ne_tot + f) + n, N * (ne_tot + f) + n);
 
   tableau_trier_retirer_doublons(indice);
   Matrix_tools::allocate_morse_matrix(N * (ne_tot + !only_ne * nf_tot), N * (ne_tot + !only_ne * nf_tot), indice, matrix);
@@ -170,7 +137,8 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
   domaine.init_m2(), ch.fcl();
   //partie superieure : diagonale
   for (e = 0; e < domaine.nb_elem(); e++)
-    for (n = 0; n < N; n++) mat(N * e + n, N * e + n) += coef(e) * pe(e) * ve(e) / dt; //diagonale
+    for (n = 0; n < N; n++)
+      mat(N * e + n, N * e + n) += coef(e) * pe(e) * ve(e) / dt; //diagonale
 
   //partie inferieure : 1 pour les flux imposes par CLs aux faces (si diffusion) ou pour toutes les faces (sinon)
   for (f = 0; mat.nb_lignes() > N * ne_tot && f < domaine.nb_faces(); f++)
@@ -179,35 +147,4 @@ Matrice_Base& Masse_PolyMAC_Elem::ajouter_masse(double dt, Matrice_Base& matrice
         mat(N * (ne_tot + f) + n, N * (ne_tot + f) + n) += 1;
 
   return matrice;
-}
-
-void Masse_PolyMAC_Elem::appliquer_coef(DoubleVect& coef) const
-{
-  if (has_coefficient_temporel_)
-    {
-      REF(Champ_base) ref_coeff;
-      ref_coeff = equation().get_champ(name_of_coefficient_temporel_);
-
-      DoubleTab values;
-      if (sub_type(Champ_Inc_base,ref_coeff.valeur()))
-        {
-          const Champ_Inc_base& coeff = ref_cast(Champ_Inc_base,ref_coeff.valeur());
-          ConstDoubleTab_parts val_parts(coeff.valeurs());
-          values.ref(val_parts[0]);
-
-        }
-      else if (sub_type(Champ_Fonc_base,ref_coeff.valeur()))
-        {
-          const Champ_Fonc_base& coeff = ref_cast(Champ_Fonc_base,ref_coeff.valeur());
-          values.ref(coeff.valeurs());
-
-        }
-      else if (sub_type(Champ_Don_base,ref_coeff.valeur()))
-        {
-          DoubleTab nodes;
-          equation().inconnue().valeur().remplir_coord_noeuds(nodes);
-          ref_coeff.valeur().valeur_aux(nodes,values);
-        }
-      tab_multiply_any_shape(coef, values, VECT_REAL_ITEMS);
-    }
 }

@@ -25,16 +25,12 @@ class Masse_PolyMAC_P0_Face : public Masse_PolyMAC_P0P1NC_Face
 {
   Declare_instanciable(Masse_PolyMAC_P0_Face);
 public:
-  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
   void completer() override;
 
   DoubleTab& appliquer_impl(DoubleTab& ) const override;
   DoubleTab& corriger_solution(DoubleTab& x, const DoubleTab& y, int incr = 0) const override;
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, double dt, const tabs_t& semi_impl, int resoudre_en_increments) const override;
-
-private:
-  REF(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
 };
 
 #endif /* Masse_PolyMAC_P0_Face_included */

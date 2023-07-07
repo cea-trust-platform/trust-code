@@ -26,7 +26,7 @@ Entree& Masse_PolyMAC_P0P1NC_Elem::readOn(Entree& s) { return s ; }
 
 void Masse_PolyMAC_P0P1NC_Elem::preparer_calcul()
 {
-  associer_masse_proto(*this, le_dom_PolyMAC_P0P1NC.valeur());
+  associer_masse_proto(*this, le_dom_PolyMAC.valeur());
   preparer_calcul_proto();
 }
 

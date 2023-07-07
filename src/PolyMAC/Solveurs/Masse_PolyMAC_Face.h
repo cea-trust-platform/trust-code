@@ -16,39 +16,16 @@
 #ifndef Masse_PolyMAC_Face_included
 #define Masse_PolyMAC_Face_included
 
-#include <Solveur_Masse.h>
-#include <TRUST_Ref.h>
-class Domaine_PolyMAC;
-class Domaine_Cl_PolyMAC;
+#include <Masse_PolyMAC_base.h>
 
-class Masse_PolyMAC_Face : public Solveur_Masse_base
+class Masse_PolyMAC_Face: public Masse_PolyMAC_base
 {
-
   Declare_instanciable(Masse_PolyMAC_Face);
-
 public:
-
-  void associer_domaine_dis_base(const Domaine_dis_base& ) override;
-  void associer_domaine_cl_dis_base(const Domaine_Cl_dis_base& ) override;
-
   void dimensionner(Matrice_Morse& matrix) const override;
   DoubleTab& ajouter_masse(double dt, DoubleTab& x, const DoubleTab& y, int penalisation = 1) const override;
   Matrice_Base& ajouter_masse(double dt, Matrice_Base& matrice, int penalisation = 1) const override;
-
-  DoubleTab& appliquer_impl(DoubleTab& ) const override;
-  void appliquer_coef(DoubleVect& ) const;
-  void completer() override;
-
-private:
-
-  bool no_diff_;
-  REF(Domaine_PolyMAC) le_dom_PolyMAC;
-  REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
+  DoubleTab& appliquer_impl(DoubleTab&) const override;
 };
 
-#endif
-
-
-
-
-
+#endif /* Masse_PolyMAC_Face_included */
