@@ -33,45 +33,45 @@ public:
                   const IJK_Splitting::Localisation loc,
                   const VECT(IntTab) & redistribute_maps);
   void redistribute(const IJK_Field_double& input_field,
-                    IJK_Field_double& output_field, int dir=-1, double dU_shear=0)
+                    IJK_Field_double& output_field)
   {
-    redistribute_(input_field, output_field, dU_shear, false);
+    redistribute_(input_field, output_field, false);
   }
   template<class T,int N>
   void redistribute(const FixedVector<T, N>& input_field,
-                    FixedVector<T, N>& output_field, double dU_shear=0)
+                    FixedVector<T, N>& output_field)
   {
     for (int i = 0; i < N; i++)
-      redistribute_(input_field[i], output_field[i], dU_shear, false);
+      redistribute_(input_field[i], output_field[i], false);
   }
   void redistribute_add(const IJK_Field_double& input_field,
-                        IJK_Field_double& output_field, double dU_shear=0)
+                        IJK_Field_double& output_field)
   {
-    redistribute_(input_field, output_field, dU_shear, true);
+    redistribute_(input_field, output_field, true);
   }
   template<class T,int N>
   void redistribute_add(const FixedVector<T, N>& input_field,
-                        FixedVector<T, N>& output_field, double dU_shear=0)
+                        FixedVector<T, N>& output_field)
   {
     for (int i = 0; i < N; i++)
-      redistribute_(input_field[i], output_field[i], dU_shear, true);
+      redistribute_(input_field[i], output_field[i], true);
   }
   void redistribute(const IJK_Field_float& input_field,
-                    IJK_Field_float& output_field, double dU_shear=0)
+                    IJK_Field_float& output_field)
   {
-    redistribute_(input_field, output_field, dU_shear, false);
+    redistribute_(input_field, output_field, false);
   }
   void redistribute_add(const IJK_Field_float& input_field,
-                        IJK_Field_float& output_field, double dU_shear=0)
+                        IJK_Field_float& output_field)
   {
-    redistribute_(input_field, output_field, dU_shear, true);
+    redistribute_(input_field, output_field, true);
   }
 protected:
   void redistribute_(const IJK_Field_double& input_field,
-                     IJK_Field_double& output_field, double dU_shear,
+                     IJK_Field_double& output_field,
                      bool add);
   void redistribute_(const IJK_Field_float& input_field,
-                     IJK_Field_float& output_field, double dU_shear,
+                     IJK_Field_float& output_field,
                      bool add);
   static void intersect(const int s1, const int n1, int& s2, int& n2, int& s3);
   void compute_send_blocs(const IJK_Splitting& input,

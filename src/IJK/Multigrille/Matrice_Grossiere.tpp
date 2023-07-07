@@ -231,58 +231,6 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
 
   }
 
-
-//  int jcible = 2 ;
-//
-//  for (int proc=0; proc<Process::nproc(); proc++)
-//    {
-//      if (proc==Process::me())
-//        {
-//          std::cout << "renum on the processor " << proc << " : " << std::endl;
-//          std::cout << "renum" << std::endl;
-//          for (k = -1; k < nk+1; k++)
-//            {
-//              for (i = -1; i < ni+1; i++)
-//                {
-//                  std::cout << renum(i,jcible,k) << " ";
-//                }
-//              std::cout << std::endl;
-//            }
-//          std::cout << std::endl;
-//          std::cout << std::endl;
-//          std::cout << "renum_p1" << std::endl;
-//          for (k = -1; k < nk+1; k++)
-//            {
-//              for (i = -1; i < ni+1; i++)
-//                {
-//                  std::cout << renum_p1(i,jcible,k) << " ";
-//                }
-//              std::cout << std::endl;
-//            }
-//          std::cout << std::endl;
-//          std::cout << std::endl;
-//          std::cout << "renum_m1" << std::endl;
-//          for (k = -1; k < nk+1; k++)
-//            {
-//              for (i = -1; i < ni+1; i++)
-//                {
-//                  std::cout << renum_m1(i,jcible,k) << " ";
-//                }
-//              std::cout << std::endl;
-//            }
-//          std::cout << std::endl;
-//          std::cout << std::endl;
-//          std::cout << "ponderation_shear_m1_scal_ = "<< ponderation_shear_m1_scal_ << std::endl;
-//          std::cout << "ponderation_shear_0_scal_ = "<< ponderation_shear_0_scal_ << std::endl;
-//          std::cout << "ponderation_shear_p1_scal_ = "<< ponderation_shear_p1_scal_ << std::endl;
-//        }
-//
-//      Process::barrier();
-//    }
-
-
-
-
   {
     const int n_reels = md_.valeur().get_nb_items_reels();
     voisins_.dimensionner(n_reels);
@@ -339,8 +287,8 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     voisins_virt_ = IntLists();
     coeffs_virt_ = DoubleLists();
     // pour voir la matrice lisiblement
-//    carre.imprimer_formatte(Cout);
-//    rect.imprimer_formatte(Cout);
+    //    carre.imprimer_formatte(Cout);
+    //    rect.imprimer_formatte(Cout);
   }
 
 }

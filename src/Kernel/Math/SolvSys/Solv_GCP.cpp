@@ -398,8 +398,6 @@ int Solv_GCP::resoudre_(const Matrice_Base& matrice,
                         DoubleVect& solution,
                         int nmax)
 {
-
-  //antoine
   const int n_items_reels = solution.size_reelle_ok() ? solution.size_reelle() : solution.size_totale();
   {
     const int nb_items_seq = solution.get_md_vector().valeur().nb_items_seq_tot();

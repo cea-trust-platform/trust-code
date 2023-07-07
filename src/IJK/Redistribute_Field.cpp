@@ -200,11 +200,9 @@ void Redistribute_Field::compute_send_blocs(const IJK_Splitting& input,
 }
 
 void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
-                                       IJK_Field_double& output_field, double dU_shear,
+                                       IJK_Field_double& output_field,
                                        bool add)
 {
-
-  // ducluzeau : a modifier pour le shear perio pour reconstruire velocity_ft correctement
   static Stat_Counter_Id redistribute_tot_counter_ = statistiques().new_counter(2, "redistribute");
   statistiques().begin_count(redistribute_tot_counter_);
 
@@ -261,8 +259,7 @@ void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
                 {
                   for (int i = 0; i < ni; i++)
                     {
-                      //std::cout << dU_shear << std::endl;
-                      buf[k*nj*ni + j*ni + i] = input_field(i + input_i_start, j + input_j_start, k + input_k_start) ;
+                      buf[k*nj*ni + j*ni + i] = input_field(i + input_i_start, j + input_j_start, k + input_k_start);
                     }
                 }
             }
@@ -330,7 +327,7 @@ void Redistribute_Field::redistribute_(const IJK_Field_double& input_field,
 }
 
 void Redistribute_Field::redistribute_(const IJK_Field_float& input_field,
-                                       IJK_Field_float& output_field, double dU_shear,
+                                       IJK_Field_float& output_field,
                                        bool add)
 {
   Cerr << "Redistribute_Field::redistribute_(const IJK_Field_float & input_field,...) not implemented" << finl;

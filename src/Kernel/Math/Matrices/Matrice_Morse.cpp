@@ -84,53 +84,53 @@ Sortie& Matrice_Morse::imprimer_formatte(Sortie& s, int symetrie) const
   int numerotation_fortran=(tab1_.mp_min_vect()==1);
   for (int proc=0; proc<Process::nproc(); proc++)
     {
-//      if (proc==Process::me())
-//        {
-      s << "Matrix morse on the processor " << proc << " : " << finl;
-      int n=nb_lignes();
-      Noms tab_imp;
-      tab_imp.dimensionner(nb_colonnes());
-      for(int i=0; i<n; i++)
+      if (proc==Process::me())
         {
-          for (int k=0; k<nb_colonnes(); k++)
-            tab_imp[k]="  .  ";
-          if (i<10)
-            s <<i << " :" ;
-          else
-            s <<i << ":" ;
-
-          if (symetrie)
+          s << "Matrix morse on the processor " << proc << " : " << finl;
+          int n=nb_lignes();
+          Noms tab_imp;
+          tab_imp.dimensionner(nb_colonnes());
+          for(int i=0; i<n; i++)
             {
-              for (int j=0; j<i; j++)
+              for (int k=0; k<nb_colonnes(); k++)
+                tab_imp[k]="  .  ";
+              if (i<10)
+                s <<i << " :" ;
+              else
+                s <<i << ":" ;
+
+              if (symetrie)
                 {
-                  for (int k=tab1_(j)-numerotation_fortran; k<tab1_(j+1)-numerotation_fortran; k++)
-                    if (tab2_(k)-numerotation_fortran==i)
-                      tab_imp[j] = coeff_(k);
+                  for (int j=0; j<i; j++)
+                    {
+                      for (int k=tab1_(j)-numerotation_fortran; k<tab1_(j+1)-numerotation_fortran; k++)
+                        if (tab2_(k)-numerotation_fortran==i)
+                          tab_imp[j] = coeff_(k);
+                    }
+                  int ligne=tab2_(tab1_(i)-numerotation_fortran)-numerotation_fortran;
+                  if (i!=ligne)
+                    {
+                      Cerr << "Problem detected on this Matrice_Morse_Sym." << finl;
+                      Cerr << "The diagonal of the line " << ligne << " must be stored even if it is null." << finl;
+                      exit();
+                    }
                 }
-              int ligne=tab2_(tab1_(i)-numerotation_fortran)-numerotation_fortran;
-              if (i!=ligne)
-                {
-                  Cerr << "Problem detected on this Matrice_Morse_Sym." << finl;
-                  Cerr << "The diagonal of the line " << ligne << " must be stored even if it is null." << finl;
-                  exit();
-                }
-            }
-          for (int k=tab1_(i)-numerotation_fortran; k<tab1_(i+1)-numerotation_fortran; k++)
-            if (tab2_(k)+!numerotation_fortran==0)
-              Cerr<<"Line " <<i<< " no coefficient "<<k<<finl;
-            else
-              {
-                if (coeff_(k)>=0)
-                  tab_imp[tab2_(k)-numerotation_fortran]=" ";
+              for (int k=tab1_(i)-numerotation_fortran; k<tab1_(i+1)-numerotation_fortran; k++)
+                if (tab2_(k)+!numerotation_fortran==0)
+                  Cerr<<"Line " <<i<< " no coefficient "<<k<<finl;
                 else
-                  tab_imp[tab2_(k)-numerotation_fortran]="";
-                tab_imp[tab2_(k)-numerotation_fortran] += (Nom)coeff_(k);
-              }
-          for(int k=0; k<nb_colonnes(); k++)
-            s<<tab_imp[k];
-          s<<finl;
+                  {
+                    if (coeff_(k)>=0)
+                      tab_imp[tab2_(k)-numerotation_fortran]=" ";
+                    else
+                      tab_imp[tab2_(k)-numerotation_fortran]="";
+                    tab_imp[tab2_(k)-numerotation_fortran] += (Nom)coeff_(k);
+                  }
+              for(int k=0; k<nb_colonnes(); k++)
+                s<<tab_imp[k];
+              s<<finl;
+            }
         }
-//        }
       Process::barrier();
     }
   return s;

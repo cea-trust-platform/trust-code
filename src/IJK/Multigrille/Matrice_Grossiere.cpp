@@ -17,8 +17,7 @@
 #include <Matrice_Morse_Sym.h>
 
 void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs,
-                                      IJK_Splitting splitting, double offset)
+                                      int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting, double offset)
 {
   const int ni = renum_.dimension(2) - 2;
   if (pe == Process::me())
@@ -128,9 +127,7 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
 }
 
 void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
-                                      int imax, int jmax, int kmax,
-                                      ArrOfInt& items_to_send,
-                                      IJK_Splitting splitting, double offset)
+                                      int imax, int jmax, int kmax, ArrOfInt& items_to_send, IJK_Splitting splitting, double offset)
 {
   if (pe == Process::me())
     return;

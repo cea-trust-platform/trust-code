@@ -60,15 +60,6 @@ public:
   {
     return md_;
   }
-  const MD_Vector& md_m1_vector() const
-  {
-    return md_m1_;
-  }
-  const MD_Vector& md_p1_vector() const
-  {
-    return md_p1_;
-  }
-
 
 protected:
   void ajoute_coeff(int i, int j, int k,

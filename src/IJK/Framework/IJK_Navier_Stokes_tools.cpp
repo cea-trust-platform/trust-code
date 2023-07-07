@@ -546,7 +546,6 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                          IJK_Field_double& pressure, double dt,
                          IJK_Field_double& pressure_rhs,
-                         IJK_Field_double& pressure_rhs_before_shear,
                          int check_divergence,
                          Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
@@ -563,29 +562,7 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
   // Permet de compenser l interpolation de la pression monofluide
   if (IJK_Splitting::defilement_ == 1)
     {
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) -= pressure_rhs(i,j,k);
-                }
-            }
-        }
-
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
-                }
-            }
-        }
     }
 
   double divergence_before = 0.;
@@ -624,7 +601,6 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                   IJK_Field_double& pressure, double dt,
                                   IJK_Field_double& pressure_rhs,
-                                  IJK_Field_double& pressure_rhs_before_shear,
                                   int check_divergence,
                                   Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
@@ -640,29 +616,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
   // Permet de compenser l interpolation de la pression monofluide
   if (IJK_Splitting::defilement_ == 1)
     {
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) -= pressure_rhs(i,j,k);
-                }
-            }
-        }
-
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
-                }
-            }
-        }
     }
   double divergence_before = 0.;
   if (check_divergence)
@@ -694,7 +648,6 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
                                       IJK_Field_double& pressure, double dt,
                                       IJK_Field_double& pressure_rhs,
-                                      IJK_Field_double& pressure_rhs_before_shear,
                                       int check_divergence,
                                       Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
@@ -710,29 +663,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
   // Permet de compenser l interpolation de la pression monofluide
   if (IJK_Splitting::defilement_ == 1)
     {
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) = - pressure_rhs(i,j,k);
-                }
-            }
-        }
-
       pressure.ajouter_second_membre_shear_perio(pressure_rhs);
-
-      for (int k = 0; k < pressure_rhs.nk(); k++)
-        {
-          for (int j = 0; j < pressure_rhs.nj(); j++)
-            {
-              for (int i = 0; i < pressure_rhs.ni(); i++)
-                {
-                  pressure_rhs_before_shear(i,j,k) += pressure_rhs(i,j,k);
-                }
-            }
-        }
     }
   double divergence_before = 0.;
   if (check_divergence)
@@ -1273,7 +1204,6 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
     {
       for (int j = 0; j < output.nj(); j++ )
         {
-//          bool frontiere = false;
           for (int k = 0; k < output.nk(); k++ )
             {
               Vecteur3 xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
@@ -1309,24 +1239,12 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
 
               if (xyz[2]<limitbasse)
                 {
-//            	  if (frontiere==false)
-//            		  frontiere=true;
                   x_deplacement = IJK_Splitting::shear_x_time_;
                 }
               else if (xyz[2]>limithaute)
                 {
                   x_deplacement = -IJK_Splitting::shear_x_time_;
                 }
-
-//              if(dir==2 && i == 10 && j==10)
-//                {
-//                  std::cout << "k= " << k<< std::endl;
-//                  std::cout << "xyz[2]= " << xyz[2] << std::endl;
-//                  std::cout << "limitbasse= " << limitbasse << std::endl;
-//                  std::cout << "limithaute= " << limithaute << std::endl;
-//                  std::cout << "x_deplacement= " << x_deplacement << std::endl;
-//
-//                }
 
               double istmp = i+x_deplacement/DX;
 

@@ -131,7 +131,15 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
 #ifdef DUMP_LATA_ALL_LEVELS
       copy_x_for_post.data() = x.data();
 #endif
-      norme_residu_final = norme_ijk_moins_bord(residu);
+
+      if (IJK_Splitting::defilement_ == 1)
+        {
+          norme_residu_final = norme_ijk_moins_bord(residu);
+        }
+      else
+        {
+          norme_residu_final = norme_ijk(residu);
+        }
       if (impr_)
         Cout << "level=" << grid_level << " residu(pre)=" << norme_residu_final << finl;
 
@@ -236,7 +244,14 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
           }
 #endif
 
-          norme_residu_final = norme_ijk_moins_bord(residu);
+          if (IJK_Splitting::defilement_ == 1)
+            {
+              norme_residu_final = norme_ijk_moins_bord(residu);
+            }
+          else
+            {
+              norme_residu_final = norme_ijk(residu);
+            }
           if (impr_)
             Cout << "level=" << grid_level << " residu=" << norme_residu_final << finl;
           // use threshold criteria only if pure multigrid (not gcp with mg preconditionning)
@@ -263,7 +278,15 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
       // dump_x_b_residue_in_file(x,b,residu, grid_level, global_count_dump_in_file, Nom("apres jacobi-residu"));
 #endif
 
-      norme_residu_final = norme_ijk_moins_bord(residu);
+
+      if (IJK_Splitting::defilement_ == 1)
+        {
+          norme_residu_final = norme_ijk_moins_bord(residu);
+        }
+      else
+        {
+          norme_residu_final = norme_ijk(residu);
+        }
       if (impr_)
         Cout << finl << "level=" << grid_level << " residu=" << norme_residu_final
              << " (coarse solver)" << finl;
@@ -301,7 +324,6 @@ void Multigrille_base::coarse_solver(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
   DoubleVect inco;
   DoubleVect secmem;
   const MD_Vector& md = mat.md_vector();
-
   inco.resize(md.valeur().get_nb_items_tot());
   inco.set_md_vector(md);
   secmem = inco;
@@ -323,9 +345,6 @@ void Multigrille_base::coarse_solver(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
     for (j = 0; j < nj; j++)
       for (i = 0; i < ni; i++)
         x(i,j,k) = (_TYPE_)inco[mat.renum(i,j,k)]; //!!!!!!!!!!!!!!!!!! ToDo WARNING: potentiellement conversion de double en float!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-  //x.echange_espace_virtuel(x.ghost());
 
 }
 
@@ -731,8 +750,6 @@ void Multigrille_base::resoudre_systeme_template(const Matrice_Base& a, const Do
   convert_to_ijk(b, ijk_b);
 
   solve_ijk_in_storage_template<_TYPE_>();
-
-  //ijk_x.echange_espace_virtuel(ijk_x.ghost());
 
   convert_from_ijk(ijk_x, x);
 

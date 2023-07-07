@@ -19,7 +19,6 @@
 #include <IJK_communications.h>
 #include <IJK_Splitting.h>
 
-
 template<typename _TYPE_, typename _TYPE_ARRAY_>
 void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* processor to send to */
                                                              int is, int js, int ks, /* ijk coordinates of first data to send */
@@ -30,7 +29,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::exchange_data(int pe_send_, /* pr
 {
   const IJK_Splitting& splitting = splitting_ref_.valeur();
   int ghost = 2;
-  //int last_global_k = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2) - 1;
 
   if (pe_send_ == Process::me() && pe_recv_ == Process::me())
     {
@@ -372,7 +370,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::echange_espace_virtuel(int le_gho
       double Shear_x_time = IJK_Splitting::shear_x_time_;
       offset_i = Shear_x_time/DX;
 
-      compteur_=0;
       // send left layer of real cells to right layer of virtual cells
       exchange_data(pe_imin_, 0, -le_ghost, -le_ghost, pe_imax_, nii, -le_ghost, -le_ghost, le_ghost, njj + 2*le_ghost, nkk+ 2*le_ghost); /* size of block data to send */
       // send right real cells to left virtual cells
@@ -713,10 +710,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
   if(monofluide_variable_==0)
     return;
 
-  I_sigma_kappa_ghost_zmin_.data()=0.;
-  I_sigma_kappa_ghost_zmax_.data()=0.;
-  indicatrice_ghost_zmin_.data() =0.;
-  indicatrice_ghost_zmax_.data() =0.;
+  I_sigma_kappa_ghost_zmin_.data()=-1.e7;
+  I_sigma_kappa_ghost_zmax_.data()=-1.e7;
+  indicatrice_ghost_zmin_.data() =-1.e7;
+  indicatrice_ghost_zmax_.data() =-1.e7;
   IJK_Splitting splitting_ft = courbure_ft.get_splitting();
 
 
@@ -731,14 +728,12 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
   last_global_j -= 1;
   last_global_i -= 1;
 
-  if (monofluide_variable_!=0 )
-    {
-      // on parcours sur tous le domaine ft
-      // on rempli dans les tableaux uniquement les valeurs qui satisfont les conditions
-      // I_sigma_kappa_ghost_zmin_[0] --> -ghost (derniere maille ghost)
-      // I_sigma_kappa_ghost_zmin_[ghost] --> 0 (premiere maille reelle)
-      // I_sigma_kappa_ghost_zmin_[ghost-1] --> -1 (premiere maille ghost)
-      // I_sigma_kappa_ghost_zmin_[2*ghost] --> +ghost (derniere maille reelle)
+  // on parcours sur tous le domaine ft
+  // on rempli dans les tableaux uniquement les valeurs qui satisfont les conditions
+  // I_sigma_kappa_ghost_zmin_[0] --> -ghost (derniere maille ghost)
+  // I_sigma_kappa_ghost_zmin_[ghost] --> 0 (premiere maille reelle)
+  // I_sigma_kappa_ghost_zmin_[ghost-1] --> -1 (premiere maille ghost)
+  // I_sigma_kappa_ghost_zmin_[2*ghost] --> +ghost (derniere maille reelle)
 
 //
 //					 k_reel [-ghost, 0, nk-1-ghost, nk-1, nk-1+ghost]
@@ -752,84 +747,78 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::update_I_sigma_kappa(const IJK_Fi
 //		I_sigma_kappa_ghost_zmax_[2*ghost] --> nk-1+ghost (derniere maille ghost)
 
 
-      for (int k = 0; k < indic_ft.nk() ; k++)
+  for (int k = 0; k < indic_ft.nk() ; k++)
+    {
+      const int k_reel = k + splitting_ft.get_offset_local(2) - ft_extension;
+      if (k_reel<-ghost || k_reel>last_global_k+ghost)
         {
-          const int k_reel = k + splitting_ft.get_offset_local(2) - ft_extension;
-          if (k_reel<-ghost || k_reel>last_global_k+ghost)
+          continue;
+        }
+
+      for (int j = 0; j < indic_ft.nj(); j++)
+        {
+          const int j_reel = j + splitting_ft.get_offset_local(1) - ft_extension;
+          if (j_reel<-ghost || j_reel>last_global_j+ghost)
             {
               continue;
             }
 
-          for (int j = 0; j < indic_ft.nj(); j++)
+          for (int i = 0; i < indic_ft.ni(); i++)
             {
-              const int j_reel = j + splitting_ft.get_offset_local(1) - ft_extension;
-              if (j_reel<-ghost || j_reel>last_global_j+ghost)
+              const int i_reel = i + splitting_ft.get_offset_local(0) - ft_extension;
+              if (i_reel<-ghost || i_reel>last_global_i+ghost)
                 {
                   continue;
                 }
 
-              for (int i = 0; i < indic_ft.ni(); i++)
+              if (k_reel<ghost)
                 {
-                  const int i_reel = i + splitting_ft.get_offset_local(0) - ft_extension;
-                  if (i_reel<-ghost || i_reel>last_global_i+ghost)
-                    {
-                      continue;
-                    }
-
+                  indicatrice_ghost_zmin_(i_reel,j_reel,k_reel+ghost) = indic_ft(i,j,k);
+                }
+              else if(k_reel>=last_global_k-ghost)
+                {
+                  indicatrice_ghost_zmax_(i_reel,j_reel,k_reel-last_global_k+ghost) = indic_ft(i,j,k);
+                }
+              if (monofluide_variable_==1 )
+                {
                   if (k_reel<ghost)
                     {
-                      indicatrice_ghost_zmin_(i_reel,j_reel,k_reel+ghost) = indic_ft(i,j,k);
+                      I_sigma_kappa_ghost_zmin_(i_reel,j_reel,k_reel+ghost) = std::abs(courbure_ft(i,j,k));
                     }
                   else if(k_reel>=last_global_k-ghost)
                     {
-                      indicatrice_ghost_zmax_(i_reel,j_reel,k_reel-last_global_k+ghost) = indic_ft(i,j,k);
+                      I_sigma_kappa_ghost_zmax_(i_reel,j_reel,k_reel-last_global_k+ghost) = std::abs(courbure_ft(i,j,k));
                     }
-                  if (monofluide_variable_==1 )
-                    {
-                      if (k_reel<ghost)
-                        {
-                          I_sigma_kappa_ghost_zmin_(i_reel,j_reel,k_reel+ghost) = std::abs(courbure_ft(i,j,k));
-                        }
-                      else if(k_reel>=last_global_k-ghost)
-                        {
-                          I_sigma_kappa_ghost_zmax_(i_reel,j_reel,k_reel-last_global_k+ghost) = std::abs(courbure_ft(i,j,k));
-                        }
 
-                    }
-                }
-
-            }
-        }
-
-      for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
-        {
-          for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
-            {
-              for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
-                {
-                  indicatrice_ghost_zmin_(i,j,k)=Process::mp_sum(indicatrice_ghost_zmin_(i,j,k));
-                  indicatrice_ghost_zmax_(i,j,k)=Process::mp_sum(indicatrice_ghost_zmax_(i,j,k));
-                  I_sigma_kappa_ghost_zmin_(i,j,k)=Process::mp_sum(I_sigma_kappa_ghost_zmin_(i,j,k));
-                  I_sigma_kappa_ghost_zmax_(i,j,k)=Process::mp_sum(I_sigma_kappa_ghost_zmax_(i,j,k));
                 }
             }
+
         }
-
-
-      for (int iproc = 0; iproc < Process::nproc() ; iproc++)
-        {
-          envoyer_broadcast(indicatrice_ghost_zmin_, iproc);
-          envoyer_broadcast(indicatrice_ghost_zmax_, iproc);
-          envoyer_broadcast(I_sigma_kappa_ghost_zmin_, iproc);
-          envoyer_broadcast(I_sigma_kappa_ghost_zmax_, iproc);
-        }
-
     }
-  else
+
+  for (int k = 0; k < indicatrice_ghost_zmin_.nk() ; k++)
     {
-      std::cout << "ne devrait pas être ici car variable non monofluide" << std::endl;
-      Process::exit();
+      for (int j = 0; j < indicatrice_ghost_zmin_.nj() ; j++)
+        {
+          for (int i = 0; i < indicatrice_ghost_zmin_.ni(); i++)
+            {
+              indicatrice_ghost_zmin_(i,j,k)=Process::mp_max(indicatrice_ghost_zmin_(i,j,k));
+              indicatrice_ghost_zmax_(i,j,k)=Process::mp_max(indicatrice_ghost_zmax_(i,j,k));
+              I_sigma_kappa_ghost_zmin_(i,j,k)=Process::mp_max(I_sigma_kappa_ghost_zmin_(i,j,k));
+              I_sigma_kappa_ghost_zmax_(i,j,k)=Process::mp_max(I_sigma_kappa_ghost_zmax_(i,j,k));
+            }
+        }
     }
+
+
+  for (int iproc = 0; iproc < Process::nproc() ; iproc++)
+    {
+      envoyer_broadcast(indicatrice_ghost_zmin_, iproc);
+      envoyer_broadcast(indicatrice_ghost_zmax_, iproc);
+      envoyer_broadcast(I_sigma_kappa_ghost_zmin_, iproc);
+      envoyer_broadcast(I_sigma_kappa_ghost_zmax_, iproc);
+    }
+
 }
 
 
@@ -845,8 +834,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::relever_I_sigma_kappa_ns(IJK_Fiel
   const int nj = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nj();
   const int nk = IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>::nk();
   int last_global_k = splitting.get_nb_items_global(IJK_Splitting::ELEM, 2)-1;
-//  int last_global_j = splitting.get_nb_items_global(IJK_Splitting::ELEM, 1);
-//  int last_global_i = splitting.get_nb_items_global(IJK_Splitting::ELEM, 0);
   int ghost = 2;
 
   for (int k = 0; k < nk; k++)
@@ -873,6 +860,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::relever_I_sigma_kappa_ns(IJK_Fiel
             }
         }
     }
+
 }
 
 
@@ -915,10 +903,6 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
       indicatrice_ghost_zmax_.allocate(ni_local*nproc_x, nj_local*nproc_y, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
       I_sigma_kappa_ghost_zmin_.allocate(ni_local*nproc_x, nj_local*nproc_y, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
       I_sigma_kappa_ghost_zmax_.allocate(ni_local*nproc_x, nj_local*nproc_y, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-//      indicatrice_ghost_zmin_local_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-//      indicatrice_ghost_zmax_local_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-//      I_sigma_kappa_ghost_zmin_local_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
-//      I_sigma_kappa_ghost_zmax_local_.allocate(ni_local, nj_local, 2*ghost_size, ghost_size, additional_k_layers, ncompo);
 
       for (int iproc = 0; iproc < Process::nproc() ; iproc++)
         {
