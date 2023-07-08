@@ -45,6 +45,7 @@ void instancie_src_PolyMAC_Operateurs();
 void instancie_src_PolyMAC_Operateurs_Conv_iterateur();
 void instancie_src_PolyMAC_Solveurs();
 void instancie_src_PolyMAC_Sources();
+void instancie_src_PolyMAC_Sources_PDC();
 void instancie_src_PolyMAC_Sources_Sources_It_Eval();
 void instancie_src_ThHyd_Chimie();
 void instancie_src_ThHyd_Dilatable_Common_Cond_Lim();
