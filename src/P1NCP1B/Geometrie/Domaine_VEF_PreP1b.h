@@ -66,6 +66,11 @@ public :
     assert(alphaA!=-1);
     return alphaA;
   };
+  int get_alphaRT() const
+  {
+    assert(alphaRT!=-1);
+    return alphaRT;
+  };
   int get_modif_div_face_dirichlet() const
   {
     assert(modif_div_face_dirichlet!=-1);
@@ -112,6 +117,7 @@ protected:
   int alphaE;
   int alphaS;
   int alphaA;
+  int alphaRT;
   int modif_div_face_dirichlet ;
   int cl_pression_sommet_faible; // determine si les cl de pression sont imposees de facon faible ou forte -> voir divergence et assembleur
   // Descripteur pour les tableaux p1b (selon alphaE, alphaS et alphaA)

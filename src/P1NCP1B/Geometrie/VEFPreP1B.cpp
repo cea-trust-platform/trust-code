@@ -28,7 +28,7 @@
 Implemente_instanciable_sans_constructeur(VEFPreP1B,"VEFPreP1B",VEF_discretisation);
 // XD vefprep1b vef vefprep1b -1 Finite element volume discretization (P1NC/P1-bubble element). Since the 1.5.5 version, several new discretizations are available thanks to the optional keyword Read. By default, the VEFPreP1B keyword is equivalent to the former VEFPreP1B formulation (v1.5.4 and sooner). P0P1 (if used with the strong formulation for imposed pressure boundary) is equivalent to VEFPreP1B but the convergence is slower. VEFPreP1B dis is equivalent to VEFPreP1B dis Read dis { P0 P1 Changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 0 }
 
-VEFPreP1B::VEFPreP1B() : P1Bulle_(1), alphaE_(1), alphaS_(1), alphaA_(0), modif_div_face_dirichlet_(0), cl_pression_sommet_faible_(0)
+VEFPreP1B::VEFPreP1B() : P1Bulle_(1), alphaE_(1), alphaS_(1), alphaA_(0), alphaRT_(0), modif_div_face_dirichlet_(0), cl_pression_sommet_faible_(0)
 {
   // Par defaut, P0+P1 et changement de base pour faire P0+P1->P1Bulle
 }
@@ -40,6 +40,7 @@ Sortie& VEFPreP1B::printOn(Sortie& s) const
   if (alphaE_) s<<" P0";
   if (alphaS_) s<<" P1";
   if (alphaA_) s<<" Pa";
+  if (alphaRT_) s<<" RT";
   s<<" changement_de_base_P1bulle "<<P1Bulle_;
   s<<" modif_div_face_dirichlet "<<modif_div_face_dirichlet_;
   s<<" cl_pression_sommet_faible " << cl_pression_sommet_faible_;
@@ -49,7 +50,7 @@ Sortie& VEFPreP1B::printOn(Sortie& s) const
 
 Entree& VEFPreP1B::readOn(Entree& is )
 {
-  alphaE_ = alphaS_ = alphaA_ = P1Bulle_ = 0;
+  alphaE_ = alphaS_ = alphaA_ = alphaRT_ = P1Bulle_ = 0;
   cl_pression_sommet_faible_ = 1;
   modif_div_face_dirichlet_=0;
 
@@ -58,6 +59,7 @@ Entree& VEFPreP1B::readOn(Entree& is )
   param.ajouter_flag("P0", &alphaE_); // XD_ADD_P rien Pressure nodes are added on element centres
   param.ajouter_flag("P1", &alphaS_); // XD_ADD_P rien Pressure nodes are added on vertices
   param.ajouter_flag("Pa", &alphaA_); // XD_ADD_P rien Only available in 3D, pressure nodes are added on bones
+  param.ajouter_flag("RT", &alphaRT_); // XD_ADD_P rien For P1NCP1B
   param.ajouter("modif_div_face_dirichlet",&modif_div_face_dirichlet_); // XD_ADD_P  int (into=[0,1]) This option (by default 0) is used to extend control volumes for the momentum equation.
   param.ajouter("CL_pression_sommet_faible", &cl_pression_sommet_faible_); // XD_ADD_P  int (into=[0,1]) This option is used to specify a strong formulation (value set to 0, the default) or a weak formulation (value set to 1) for an imposed pressure boundary condition. The first formulation converges quicker and is stable in general cases. The second formulation should be used if there are several outlet boundaries with Neumann condition (see Ecoulement_Neumann test case for example).
   param.lire_avec_accolades(is);

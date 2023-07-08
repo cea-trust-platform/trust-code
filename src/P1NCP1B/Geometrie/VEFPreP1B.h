@@ -50,6 +50,7 @@ public :
   int get_alphaE() const  { return alphaE_;  }
   int get_alphaS() const  { return alphaS_;  }
   int get_alphaA() const  { return alphaA_;  }
+  int get_alphaRT() const { return alphaRT_;  }
   int get_modif_div_face_dirichlet() const  { return modif_div_face_dirichlet_;  }
   int get_cl_pression_sommet_faible() const { return cl_pression_sommet_faible_; }
 
@@ -66,6 +67,7 @@ private:
   int alphaE_;
   int alphaS_;
   int alphaA_;
+  int alphaRT_;
   int modif_div_face_dirichlet_;
   int cl_pression_sommet_faible_; // determine si les cl de pression sont imposees de facon faible ou forte -> voir divergence et assembleur, zcl
 };

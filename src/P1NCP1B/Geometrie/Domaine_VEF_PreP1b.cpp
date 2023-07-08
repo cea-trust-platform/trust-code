@@ -33,7 +33,7 @@
 
 Implemente_instanciable_sans_constructeur(Domaine_VEF_PreP1b,"Domaine_VEFPreP1b",Domaine_VEF);
 
-Domaine_VEF_PreP1b::Domaine_VEF_PreP1b():P1Bulle(-1), alphaE(-1), alphaS(-1), alphaA(-1), modif_div_face_dirichlet(-1),cl_pression_sommet_faible(-1) {}
+Domaine_VEF_PreP1b::Domaine_VEF_PreP1b():P1Bulle(-1), alphaE(-1), alphaS(-1), alphaA(-1), alphaRT(-1), modif_div_face_dirichlet(-1),cl_pression_sommet_faible(-1) {}
 
 // printOn et readOn
 Sortie& Domaine_VEF_PreP1b::printOn(Sortie& s ) const
@@ -91,6 +91,7 @@ void Domaine_VEF_PreP1b::discretiser_suite(const VEFPreP1B& discr)
   alphaE = discr.get_alphaE();
   alphaS = discr.get_alphaS();
   alphaA = discr.get_alphaA();
+  alphaRT = discr.get_alphaRT();
   P1Bulle = discr.get_P1Bulle();
   modif_div_face_dirichlet= discr.get_modif_div_face_dirichlet();
   cl_pression_sommet_faible = discr.get_cl_pression_sommet_faible();
