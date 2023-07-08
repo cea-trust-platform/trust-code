@@ -16,7 +16,7 @@
 #ifndef DP_Impose_PolyMAC_Face_included
 #define DP_Impose_PolyMAC_Face_included
 
-#include <Perte_Charge_PolyMAC_P0P1NC_Face.h>
+#include <Perte_Charge_PolyMAC_Face.h>
 #include <DP_Impose.h>
 #include <TRUSTList.h>
 
@@ -26,9 +26,9 @@ class Domaine;
  *
  *
  *
- * @sa Perte_Charge_PolyMAC_P0P1NC_Face
+ * @sa Perte_Charge_PolyMAC_Face
  */
-class DP_Impose_PolyMAC_Face: public Perte_Charge_PolyMAC_P0P1NC_Face, public DP_Impose
+class DP_Impose_PolyMAC_Face: public Perte_Charge_PolyMAC_Face, public DP_Impose
 {
   Declare_instanciable(DP_Impose_PolyMAC_Face);
 

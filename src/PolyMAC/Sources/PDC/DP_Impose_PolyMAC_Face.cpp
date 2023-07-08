@@ -22,7 +22,7 @@
 #include <Milieu_base.h>
 #include <cfloat>
 
-Implemente_instanciable(DP_Impose_PolyMAC_Face, "DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0P1NC", Perte_Charge_PolyMAC_P0P1NC_Face);
+Implemente_instanciable(DP_Impose_PolyMAC_Face, "DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0P1NC", Perte_Charge_PolyMAC_Face);
 Add_synonym(DP_Impose_PolyMAC_Face, "DP_Impose_Face_PolyMAC_P0");
 
 Sortie& DP_Impose_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je(); }

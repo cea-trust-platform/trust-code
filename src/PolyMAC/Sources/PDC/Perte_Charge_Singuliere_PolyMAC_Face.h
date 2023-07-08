@@ -18,22 +18,22 @@
 
 #include <Perte_Charge_PolyMAC_Face.h>
 #include <Perte_Charge_Singuliere.h>
-
-class Domaine;
 #include <TRUSTList.h>
 
-class Perte_Charge_Singuliere_PolyMAC_Face : public Perte_Charge_PolyMAC_Face,
-  public Perte_Charge_Singuliere
+class Domaine;
+
+/*! @brief class Perte_Charge_Singuliere_PolyMAC_Face
+ *
+ * @sa Perte_Charge_PolyMAC_Face
+ */
+class Perte_Charge_Singuliere_PolyMAC_Face: public Perte_Charge_PolyMAC_Face, public Perte_Charge_Singuliere
 {
-
   Declare_instanciable(Perte_Charge_Singuliere_PolyMAC_Face);
-
 public:
-
-  DoubleTab& ajouter(DoubleTab& ) const override;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-  void remplir_num_faces(Entree& );
+  DoubleTab& ajouter(DoubleTab&) const override;
+  DoubleTab& calculer(DoubleTab&) const override;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void remplir_num_faces(Entree&);
   void mettre_a_jour(double temps) override;
 
 protected:

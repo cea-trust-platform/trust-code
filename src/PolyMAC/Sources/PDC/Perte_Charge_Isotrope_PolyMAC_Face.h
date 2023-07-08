@@ -17,44 +17,40 @@
 #define Perte_Charge_Isotrope_PolyMAC_Face_included
 
 #include <Perte_Charge_PolyMAC.h>
-#include <Parser_U.h>
-
 
 //!  Perte de charge isotrope (proportionnelle a -u )
 /**
-   du/dt = - lambda(Re,x,y,z,t) * u * ||u|| / 2 Dh
+ du/dt = - lambda(Re,x,y,z,t) * u * ||u|| / 2 Dh
 
-   Lecture des arguments :
+ Lecture des arguments :
 
-   Perte_Charge_Isotrope_PolyMAC_Face diametre_hydraulique {
-   lambda expression(Re,x,y,z,t)
-   diam_hydr champ_don
-   [sous_domaine nom]
-   }
-*/
+ Perte_Charge_Isotrope_PolyMAC_Face diametre_hydraulique {
+ lambda expression(Re,x,y,z,t)
+ diam_hydr champ_don
+ [sous_domaine nom]
+ }
+ */
 
-class Perte_Charge_Isotrope_PolyMAC_Face : public Perte_Charge_PolyMAC
+class Perte_Charge_Isotrope_PolyMAC_Face: public Perte_Charge_PolyMAC
 {
   Declare_instanciable(Perte_Charge_Isotrope_PolyMAC_Face);
-
 public:
-
-  void mettre_a_jour(double temps) override
-  {
-    diam_hydr->mettre_a_jour(temps);
-  }
+  void mettre_a_jour(double temps) override { diam_hydr->mettre_a_jour(temps); }
 
 protected:
 
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
-                           double t, double norme_u, double dh, double nu, double reynolds,
-                           double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const override;
-
-private:
-
-  mutable Parser_U lambda;
-
+  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
+                           DoubleVect& v_valeur) const override;
 };
 
-#endif
+class Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face: public Perte_Charge_Isotrope_PolyMAC_Face
+{
+  Declare_instanciable(Perte_Charge_Isotrope_PolyMAC_P0P1NC_Face);
+
+public:
+  int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { }
+};
+
+#endif /* Perte_Charge_Isotrope_PolyMAC_Face_included */

@@ -15,43 +15,30 @@
 
 #include <Perte_Charge_PolyMAC_Face.h>
 #include <Fluide_Incompressible.h>
-#include <Probleme_base.h>
+#include <Champ_Face_PolyMAC.h>
 #include <Navier_Stokes_std.h>
 #include <Domaine_PolyMAC.h>
-#include <Champ_Face_PolyMAC.h>
+#include <Probleme_base.h>
 
-Implemente_base(Perte_Charge_PolyMAC_Face,"Perte_Charge_PolyMAC_Face",Source_base);
+Implemente_base(Perte_Charge_PolyMAC_Face, "Perte_Charge_PolyMAC_Face", Source_base);
 
+Sortie& Perte_Charge_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-Sortie& Perte_Charge_PolyMAC_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je();
-}
-
-Entree& Perte_Charge_PolyMAC_Face::readOn(Entree& s )
-{
-  return s ;
-}
-
-void Perte_Charge_PolyMAC_Face::mettre_a_jour(double temps)
-{
-  ;
-}
-
+Entree& Perte_Charge_PolyMAC_Face::readOn(Entree& s) { return s; }
 
 void Perte_Charge_PolyMAC_Face::associer_pb(const Probleme_base& pb)
 {
-  Cerr << " Perte_Charge_PolyMAC_Face::associer_pb " << finl ;
+  Cerr << " Perte_Charge_PolyMAC_Face::associer_pb " << finl;
   int nb_eqn = pb.nombre_d_equations();
-  int ok=0;
-  for (int i=0; i<nb_eqn; i++)
+  int ok = 0;
+  for (int i = 0; i < nb_eqn; i++)
     {
       const Equation_base& eqn = pb.equation(i);
-      if  (sub_type(Navier_Stokes_std,eqn))
+      if (sub_type(Navier_Stokes_std, eqn))
         {
-          la_vitesse = ref_cast(Champ_Face_PolyMAC,eqn.inconnue().valeur());
-          le_fluide = ref_cast(Fluide_base,eqn.milieu());
-          associer_domaines(eqn.domaine_dis(),eqn.domaine_Cl_dis());
+          la_vitesse = ref_cast(Champ_Face_PolyMAC, eqn.inconnue().valeur());
+          le_fluide = ref_cast(Fluide_base, eqn.milieu());
+          associer_domaines(eqn.domaine_dis(), eqn.domaine_Cl_dis());
           i = nb_eqn;
           ok = 1;
         }
@@ -61,17 +48,13 @@ void Perte_Charge_PolyMAC_Face::associer_pb(const Probleme_base& pb)
     {
       Cerr << "Erreur TRUST dans Perte_Charge_PolyMAC_Face::associer_pb()" << finl;
       Cerr << "On ne trouve pas d'equation d'hydraulique dans le probleme" << finl;
-      exit();
+      Process::exit();
     }
 }
 
-void Perte_Charge_PolyMAC_Face::associer_domaines(const Domaine_dis& domaine_dis,
-                                                  const Domaine_Cl_dis& domaine_Cl_dis)
+void Perte_Charge_PolyMAC_Face::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  Cerr << " Perte_Charge_PolyMAC_Face::associer_domaines " << finl ;
+  Cerr << " Perte_Charge_PolyMAC_Face::associer_domaines " << finl;
   le_dom_PolyMAC = ref_cast(Domaine_PolyMAC, domaine_dis.valeur());
   le_dom_Cl_PolyMAC = ref_cast(Domaine_Cl_PolyMAC, domaine_Cl_dis.valeur());
 }
-
-
-

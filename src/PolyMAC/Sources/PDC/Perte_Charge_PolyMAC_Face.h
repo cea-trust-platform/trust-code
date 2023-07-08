@@ -13,48 +13,34 @@
 *
 *****************************************************************************/
 
-
 #ifndef Perte_Charge_PolyMAC_Face_included
 #define Perte_Charge_PolyMAC_Face_included
 
-#include <Source_base.h>
-#include <Terme_Source_Qdm.h>
-
 #include <Domaine_Cl_PolyMAC.h>
-class Fluide_base;
-class Champ_Inc_base;
+#include <Terme_Source_Qdm.h>
+#include <Source_base.h>
 #include <TRUST_Ref.h>
-class Domaine_Cl_PolyMAC;
+
 class Domaine_PolyMAC;
+class Champ_Inc_base;
 class Probleme_base;
+class Fluide_base;
 
-class Perte_Charge_PolyMAC_Face :  public Source_base,
-  public Terme_Source_Qdm
-
-
+class Perte_Charge_PolyMAC_Face: public Source_base, public Terme_Source_Qdm
 {
-
   Declare_base(Perte_Charge_PolyMAC_Face);
-
 public:
-
-  DoubleTab& ajouter(DoubleTab& )  const override =0;
-  DoubleTab& calculer(DoubleTab& ) const override =0;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double ) override;
+  void associer_pb(const Probleme_base&) override;
+  void mettre_a_jour(double) override { }
 
 protected:
-
   REF(Champ_Inc_base) la_vitesse;
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
   REF(Fluide_base) le_fluide;
   IntVect num_faces;
 
-  void associer_domaines(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
-
-
-
+  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis&) override;
 };
 
-#endif
+#endif /* Perte_Charge_PolyMAC_Face_included */

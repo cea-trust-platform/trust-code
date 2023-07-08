@@ -16,17 +16,13 @@
 #ifndef Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face_included
 #define Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face_included
 
-#include <Perte_Charge_PolyMAC_P0P1NC_Face.h>
-#include <Perte_Charge_Singuliere.h>
-#include <TRUSTList.h>
-
-class Domaine;
+#include <Perte_Charge_Singuliere_PolyMAC_Face.h>
 
 /*! @brief class Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face
  *
- * @sa Perte_Charge_PolyMAC_P0P1NC_Face
+ * @sa Perte_Charge_PolyMAC_Face
  */
-class Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face : public Perte_Charge_PolyMAC_P0P1NC_Face, public Perte_Charge_Singuliere
+class Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face : public Perte_Charge_Singuliere_PolyMAC_Face
 {
   Declare_instanciable(Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face);
 public:
@@ -35,11 +31,6 @@ public:
   void check_multiphase_compatibility() const override { };
   void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps) override;
-
-protected:
-  IntVect sgn;
 };
 
 #endif /* Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face_included */

@@ -15,19 +15,16 @@
 
 #include <Perte_Charge_Singuliere_PolyMAC_Face.h>
 #include <Domaine_PolyMAC.h>
+#include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Motcle.h>
 #include <Domaine.h>
-#include <Matrice_Morse.h>
 #include <Param.h>
 
-Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face,"Perte_Charge_Singuliere_Face_PolyMAC",Perte_Charge_PolyMAC_Face);
+Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_Face, "Perte_Charge_Singuliere_Face_PolyMAC", Perte_Charge_PolyMAC_Face);
 
-Sortie& Perte_Charge_Singuliere_PolyMAC_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Perte_Charge_Singuliere_PolyMAC_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 
 Entree& Perte_Charge_Singuliere_PolyMAC_Face::readOn(Entree& s)
 {
@@ -63,6 +60,8 @@ void Perte_Charge_Singuliere_PolyMAC_Face::remplir_num_faces(Entree& s)
 
 DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::ajouter(DoubleTab& resu) const
 {
+  if (has_interface_blocs()) return Source_base::ajouter(resu);
+
   const Domaine_PolyMAC& domaine_PolyMAC = le_dom_PolyMAC.valeur();
   //const DoubleVect& volumes_entrelaces = domaine_PolyMAC.volumes_entrelaces();
   const DoubleVect& p_f = equation().milieu().porosite_face();
@@ -80,12 +79,18 @@ DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::ajouter(DoubleTab& resu) const
 
 DoubleTab& Perte_Charge_Singuliere_PolyMAC_Face::calculer(DoubleTab& resu) const
 {
-  resu = 0;
+  resu = 0.;
   return ajouter(resu);
 }
 
 void Perte_Charge_Singuliere_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
+  if (has_interface_blocs())
+    {
+      Source_base::contribuer_a_avec(inco, matrice);
+      return;
+    }
+
   const Domaine_PolyMAC& domaine_PolyMAC = le_dom_PolyMAC.valeur();
   const DoubleVect& p_f = equation().milieu().porosite_face();
   const DoubleTab& vit = la_vitesse->valeurs();

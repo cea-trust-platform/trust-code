@@ -48,11 +48,7 @@ void Terme_Source_Qdm_Face_PolyMAC::associer_domaines(const Domaine_dis& domaine
 
 DoubleTab& Terme_Source_Qdm_Face_PolyMAC::ajouter(DoubleTab& resu) const
 {
-  if (has_interface_blocs())
-    {
-      ajouter_blocs({}, resu, {});
-      return resu;
-    }
+  if (has_interface_blocs()) return Source_base::ajouter(resu);
 
   const Domaine_PolyMAC& domaine_PolyMAC = le_dom_PolyMAC.valeur();
   const Domaine_Cl_PolyMAC& domaine_Cl_PolyMAC = le_dom_Cl_PolyMAC.valeur();

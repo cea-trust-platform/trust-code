@@ -16,15 +16,17 @@
 #ifndef Perte_Charge_PolyMAC_included
 #define Perte_Charge_PolyMAC_included
 
-#include <Source_base.h>
 #include <Terme_Source_Qdm.h>
-class Sous_Domaine;
-class Fluide_base;
-class Champ_Inc_base;
+#include <Source_base.h>
 #include <TRUST_Ref.h>
+#include <Parser_U.h>
+
 class Domaine_Cl_PolyMAC;
 class Domaine_PolyMAC;
-
+class Champ_Inc_base;
+class Sous_Domaine;
+class Fluide_base;
+class Param;
 
 //! Factorise les fonctionnalites de plusieurs pertes de charge en VEF, vitesse aux faces
 /**
@@ -40,16 +42,20 @@ class Domaine_PolyMAC;
 class Perte_Charge_PolyMAC : public Source_base, public Terme_Source_Qdm
 {
   Declare_base(Perte_Charge_PolyMAC);
-
 public:
   DoubleTab& ajouter(DoubleTab& ) const override; //!< Appelle perte_charge pour chaque face ou cela est necessaire
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
   DoubleTab& calculer(DoubleTab& ) const override ;
+
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override { } //rien
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+
   void associer_pb(const Probleme_base&) override;  //!< associe le_fluide et la_vitesse
   void completer() override;
 
 protected:
-
+  virtual void set_param(Param& param);
+  int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_domaines(const Domaine_dis&,const Domaine_Cl_dis&) override;   //!< associe le_dom_PolyMAC et le_dom_Cl_PolyMAC
 
   //! Appele pour chaque face par ajouter()
@@ -89,10 +95,12 @@ protected:
   REF(Domaine_Cl_PolyMAC) le_dom_Cl_PolyMAC;
 
   // Cas d'une sous-domaine
-  bool sous_domaine; //!< Le terme est-il limite a une sous-domaine ?
+  bool sous_domaine = false; //!< Le terme est-il limite a une sous-domaine ?
   Nom nom_sous_domaine; //!< Nom de la sous-domaine, initialise dans readOn()
-  REF(Sous_Domaine) la_sous_domaine; //!< Initialise dans completer()
-  int implicite_;
+  REF(Sous_Domaine) le_sous_domaine; //!< Initialise dans completer()
+  int implicite_ = 1;
+
+  mutable Parser_U lambda;
 };
 
-#endif
+#endif /* Perte_Charge_PolyMAC_included */

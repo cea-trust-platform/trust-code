@@ -17,30 +17,26 @@
 #define Perte_Charge_Directionnelle_PolyMAC_Face_included
 
 #include <Perte_Charge_PolyMAC.h>
-#include <Parser_U.h>
-
 
 //!  Perte de charge directionnelle (selon un vecteur unitaire v)
 /**
-   du/dt = - volume * lambda(Re,x,y,z,t) * u.(v / ||v||) * (v / ||v||) * ||u|| / (2 * Dh)
+ du/dt = - volume * lambda(Re,x,y,z,t) * u.(v / ||v||) * (v / ||v||) * ||u|| / (2 * Dh)
 
-   Lecture des arguments :
+ Lecture des arguments :
 
-   Perte_Charge_Directionnelle_PolyMAC_Face diametre_hydraulique {
-   lambda expression(Re,x,y,z,t)
-   diam_hydr champ_don
-   direction champ_don
-   [sous_domaine nom]
-   }
+ Perte_Charge_Directionnelle_PolyMAC_Face diametre_hydraulique {
+ lambda expression(Re,x,y,z,t)
+ diam_hydr champ_don
+ direction champ_don
+ [sous_domaine nom]
+ }
 
-*/
+ */
 
-class Perte_Charge_Directionnelle_PolyMAC_Face : public Perte_Charge_PolyMAC
+class Perte_Charge_Directionnelle_PolyMAC_Face: public Perte_Charge_PolyMAC
 {
   Declare_instanciable(Perte_Charge_Directionnelle_PolyMAC_Face);
-
 public:
-
   void mettre_a_jour(double temps) override
   {
     diam_hydr->mettre_a_jour(temps);
@@ -48,16 +44,20 @@ public:
   }
 
 protected:
-
+  void set_param(Param& titi) override;
   //! Implemente le calcul effectif de la perte de charge pour un lieu donne
-  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
-                           double t, double norme_u, double dh, double nu, double reynolds,
-                           double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const override;
+  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos, double t, double norme_u, double dh, double nu, double reynolds, double& coeff_ortho, double& coeff_long, double& u_l,
+                           DoubleVect& v_valeur) const override;
 
-  Champ_Don v;//!< Vecteur directeur de la perte de charge.
-private:
-
-  mutable Parser_U lambda; //!< Parser cree et detruit par l'objet.
+  Champ_Don v; //!< Vecteur directeur de la perte de charge.
 };
 
-#endif
+class Perte_Charge_Directionnelle_PolyMAC_P0P1NC_Face: public Perte_Charge_Directionnelle_PolyMAC_Face
+{
+  Declare_instanciable(Perte_Charge_Directionnelle_PolyMAC_P0P1NC_Face);
+public:
+  int has_interface_blocs() const override { return 1; }
+  void check_multiphase_compatibility() const override { }
+};
+
+#endif /* Perte_Charge_Directionnelle_PolyMAC_Face_included */

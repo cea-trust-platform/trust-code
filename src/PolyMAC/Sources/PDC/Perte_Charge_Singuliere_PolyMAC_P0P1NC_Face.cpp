@@ -21,57 +21,21 @@
 #include <Probleme_base.h>
 #include <Matrice_Morse.h>
 #include <Pb_Multiphase.h>
-#include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <Domaine.h>
-#include <Motcle.h>
-#include <Param.h>
 
-Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face,"Perte_Charge_Singuliere_Face_PolyMAC_P0P1NC|Perte_Charge_Singuliere_Face_PolyMAC_P0",Perte_Charge_PolyMAC_P0P1NC_Face);
+Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face, "Perte_Charge_Singuliere_Face_PolyMAC_P0P1NC|Perte_Charge_Singuliere_Face_PolyMAC_P0", Perte_Charge_PolyMAC_Face);
 
-Sortie& Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 
-Entree& Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::readOn(Entree& s)
-{
-  Perte_Charge_Singuliere::lire_donnees(s);
-  remplir_num_faces(s);
-  if (regul_) //fichier de sortie si regulation
-    {
-      bilan().resize(3); //K deb cible
-      set_fichier(Nom("K_") + identifiant_);
-      set_description(Nom("Regulation du Ksing de la surface ") + identifiant_ + "\nt K deb cible");
-    }
-  return s;
-}
+Entree& Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::readOn(Entree& s) { return Perte_Charge_Singuliere_PolyMAC_Face::readOn(s); }
 
 void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::completer()
 {
-  Perte_Charge_PolyMAC_P0P1NC_Face::completer();
+  Perte_Charge_PolyMAC_Face::completer();
   // eq_masse besoin de champ_conserve !
   if (sub_type(Pb_Multiphase, mon_equation->probleme())) ref_cast(Pb_Multiphase, mon_equation->probleme()).eq_masse.init_champ_conserve();
-}
-
-void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::remplir_num_faces(Entree& s)
-{
-  const Domaine& le_domaine = equation().probleme().domaine();
-  const Domaine_Poly_base& domaine_poly = ref_cast(Domaine_Poly_base,equation().domaine_dis().valeur());
-  int taille_bloc = domaine_poly.nb_elem();
-  num_faces.resize(taille_bloc);
-  lire_surfaces(s,le_domaine,domaine_poly,num_faces, sgn);
-  // int nfac_tot = mp_sum(num_faces.size());
-  int nfac_max = (int)mp_max(num_faces.size()); // not to count several (number of processes) times the same face
-
-  if(je_suis_maitre() && nfac_max == 0)
-    {
-      Cerr << "Error when defining the surface plane for the singular porosity :" << finl;
-      Cerr << "No mesh faces has been found for the surface plane." << finl;
-      Cerr << "Check the coordinate of the surface plane which should match mesh coordinates." << finl;
-      Process::exit();
-    }
 }
 
 void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
@@ -139,10 +103,4 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matri
                       (*mat)(N * (nf_tot + D * e + d) + n, N * f + n) -= (j ? -1 : 1) * fs(f) * (xv(f, d) - xp(e, d)) * fac * aar_f(n) * std::fabs(vit(f, n));
               }
       }
-}
-
-void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::mettre_a_jour(double temps)
-{
-  Perte_Charge_PolyMAC_P0P1NC_Face::mettre_a_jour(temps);
-  update_K(equation(), calculate_Q(equation(), num_faces, sgn), bilan());
 }
