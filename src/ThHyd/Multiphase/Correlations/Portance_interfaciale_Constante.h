@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@ class Portance_interfaciale_Constante : public Portance_interfaciale_base
 public:
   void coefficient(const input_t& input, output_t& output) const override;
 protected:
-  double Cl_;
+  double Cl_ = -123.;
   int n_l = -1; //phase liquide
 };
 

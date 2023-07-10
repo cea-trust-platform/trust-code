@@ -83,7 +83,7 @@ void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, Do
         for (d = 0; d < D; d++) //face de bord non imposee -> avec le (alpha rho) de la maille
           secmem(f, n) += pf(f) * vf(f) * (alp ? (*alp)(e, n) * rho(!cR * e, n) : 1) * nf(f, d) / fs(f) * vals(!cS * e, N * d + n);
 
-  /* en PolyMAC_P0P1NC V2 : partie aux elements */
+  /* en PolyMAC V2 : partie aux elements */
   if (sub_type(Domaine_PolyMAC_P0, domaine))
     for (e = 0; e < domaine.nb_elem_tot(); e++)
       for (d = 0; d < D; d++)

@@ -48,11 +48,11 @@ public :
   //coeff(i, j) : coefficient de la face, puis coefficient de item(i, j - 1) (element, puis autres faces) dans la formule du flux a la face
   //delta(i, j, 0/1) -> idem pour la correction non-lineaire de Le Potier
   mutable DoubleTab coeff, delta_int, delta;
-  int monolithic; //1 si on resout la thermique en monolithique
+  int monolithic = 0; //1 si on resout la thermique en monolithique
 protected :
-  int stab_; //1 si on utilise la stabilisation de Le Potier
-  mutable int coeffs_a_jour_, delta_a_jour_; //dernier temps auquel on a mis a jour les coeffs
-  double h_paroi;
+  int stab_ = 0; //1 si on utilise la stabilisation de Le Potier
+  mutable int coeffs_a_jour_ = 0, delta_a_jour_ = 0; //dernier temps auquel on a mis a jour les coeffs
+  double h_paroi = -123.;
   Champ_front T_autre_pb_;
   Nom nom_autre_pb_;
 };

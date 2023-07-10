@@ -25,7 +25,7 @@
 #include <Array_tools.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face, "Perte_Charge_Singuliere_Face_PolyMAC_P0P1NC|Perte_Charge_Singuliere_Face_PolyMAC_P0", Perte_Charge_PolyMAC_Face);
+Implemente_instanciable(Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face, "Perte_Charge_Singuliere_Face_PolyMAC_P0P1NC|Perte_Charge_Singuliere_Face_PolyMAC_P0", Perte_Charge_Singuliere_PolyMAC_Face);
 
 Sortie& Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 

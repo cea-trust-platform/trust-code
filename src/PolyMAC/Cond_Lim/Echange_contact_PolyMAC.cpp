@@ -26,9 +26,6 @@
 
 Implemente_instanciable(Echange_contact_PolyMAC,"Paroi_Echange_contact_PolyMAC",Echange_externe_impose);
 
-int meme_point2(const DoubleVect& a,const DoubleVect& b);
-
-
 Sortie& Echange_contact_PolyMAC::printOn(Sortie& s ) const
 {
   return s << que_suis_je() << "\n";
