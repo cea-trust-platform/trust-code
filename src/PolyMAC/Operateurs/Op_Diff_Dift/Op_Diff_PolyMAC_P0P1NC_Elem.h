@@ -13,29 +13,28 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Diff_Turbulent_base_included
-#define Op_Diff_Turbulent_base_included
+#ifndef Op_Diff_PolyMAC_P0P1NC_Elem_included
+#define Op_Diff_PolyMAC_P0P1NC_Elem_included
 
-#include <TRUST_Ref.h>
-#include <TRUSTVect.h>
+#include <Op_Diff_PolyMAC_P0P1NC_base.h>
+#include <Matrice_Morse.h>
 
-class Turbulence_paroi;
-class Champ_Fonc;
-
-/*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
- *
- * @sa Operateur_Diff_base
- */
-class Op_Diff_Turbulent_base
+class Op_Diff_PolyMAC_P0P1NC_Elem: public Op_Diff_PolyMAC_P0P1NC_base
 {
-public :
-  virtual ~Op_Diff_Turbulent_base() { }
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  inline const Champ_Fonc& diffusivite_turbulente() const { return la_diffusivite_turbulente.valeur(); }
-  inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
 
-private:
-  REF(Champ_Fonc) la_diffusivite_turbulente;
+  Declare_instanciable_sans_constructeur( Op_Diff_PolyMAC_P0P1NC_Elem );
+
+public:
+  Op_Diff_PolyMAC_P0P1NC_Elem();
+  void completer() override;
+  void init_op_ext() const override;
+
+  /* interface {dimensionner,ajouter}_blocs */
+  double calculer_dt_stab() const override;
+  void dimensionner_blocs_ext(int aux_only, matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+
+  void modifier_pour_Cl(Matrice_Morse& la_matrice, DoubleTab& secmem) const override { }
 };
 
-#endif /* Op_Diff_Turbulent_base_included */
+#endif /* Op_Diff_PolyMAC_P0P1NC_Elem_included */

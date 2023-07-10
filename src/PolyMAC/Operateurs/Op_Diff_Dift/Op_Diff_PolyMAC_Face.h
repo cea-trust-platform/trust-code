@@ -13,29 +13,20 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Diff_Turbulent_base_included
-#define Op_Diff_Turbulent_base_included
+#ifndef Op_Diff_PolyMAC_Face_included
+#define Op_Diff_PolyMAC_Face_included
 
-#include <TRUST_Ref.h>
-#include <TRUSTVect.h>
+#include <Op_Diff_PolyMAC_base.h>
 
-class Turbulence_paroi;
-class Champ_Fonc;
-
-/*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
- *
- * @sa Operateur_Diff_base
- */
-class Op_Diff_Turbulent_base
+class Op_Diff_PolyMAC_Face: public Op_Diff_PolyMAC_base
 {
-public :
-  virtual ~Op_Diff_Turbulent_base() { }
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  inline const Champ_Fonc& diffusivite_turbulente() const { return la_diffusivite_turbulente.valeur(); }
-  inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
-
-private:
-  REF(Champ_Fonc) la_diffusivite_turbulente;
+  Declare_instanciable( Op_Diff_PolyMAC_Face );
+public:
+  void completer() override;
+  DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { }
+  void dimensionner(Matrice_Morse& mat) const override;
 };
 
-#endif /* Op_Diff_Turbulent_base_included */
+#endif /* Op_Diff_PolyMAC_Face_included */

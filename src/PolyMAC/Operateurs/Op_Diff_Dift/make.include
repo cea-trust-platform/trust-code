@@ -1,4 +1,6 @@
 Includes = -I. -I$(TRUST_ROOT)/include/backward\
+	-I$(TRUST_ROOT)/include/EOS\
+	-I$(TRUST_ROOT)/include/CoolProp\
 	-I$(TRUST_ROOT)/src/Kernel/Champs\
 	-I$(TRUST_ROOT)/src/Kernel/Champs/Champs_Don\
 	-I$(TRUST_ROOT)/src/Kernel/Champs_dis\
@@ -9,25 +11,39 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Math/SolvSys\
 	-I$(TRUST_ROOT)/src/Kernel/Math\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
+	-I$(TRUST_ROOT)/src/Kernel/Schemas_Temps\
+	-I$(TRUST_ROOT)/src/Kernel/Solveurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/PolyMAC/Champs\
-	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Conv\
-	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Diff_Dift\
-	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Divers\
-	-I$(TRUST_ROOT)/src/PolyMAC/Sources\
+	-I$(TRUST_ROOT)/src/PolyMAC/Cond_Lim\
+	-I$(TRUST_ROOT)/src/PolyMAC/Solveurs\
 	-I$(TRUST_ROOT)/src/PolyMAC/Geometrie\
+	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Conv\
+	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Divers\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
+	-I$(TRUST_ROOT)/src/ThHyd/Incompressible\
+	-I$(TRUST_ROOT)/src/ThHyd/Solveurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Solveurs\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
+	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
+	-I$(TRUST_ROOT)/src/ThHyd/Schemas_Temps\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Correlations\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/PolyMAC\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Turbulence\
+	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces/EOS_to_TRUST\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces/CoolProp_to_TRUST\
+	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces\
 	-I$(TRUST_ROOT)/src/ThSol\
+	
 
-Lib = $(TRUST_LIB)/libsopolymac_using_it_eval
+Lib = $(TRUST_LIB)/liboppolymac_diff_dift

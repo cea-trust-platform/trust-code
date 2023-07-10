@@ -13,29 +13,40 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Diff_Turbulent_base_included
-#define Op_Diff_Turbulent_base_included
+#ifndef Op_Diff_Turbulent_PolyMAC_P0_Elem_included
+#define Op_Diff_Turbulent_PolyMAC_P0_Elem_included
 
-#include <TRUST_Ref.h>
-#include <TRUSTVect.h>
+#include <Op_Diff_PolyMAC_P0_Elem.h>
+#include <Correlation.h>
+#include <Transport_turbulent_base.h>
 
-class Turbulence_paroi;
-class Champ_Fonc;
-
-/*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
+/*! @brief : class Op_Diff_Turbulent_PolyMAC_P0_Elem
  *
- * @sa Operateur_Diff_base
+ *  Version de Op_Diff_PolyMAC_P0_Elem prenant en compte l'effet de la turbulence par le biais d'une correlation de type Transport_turbulent.
+ *  (celle-ci reposera sur la modelisation de la viscosite turbulente fournie par la correlation Viscosite_turbulente de l'operateur de diffusion de la QDM)
+ *
  */
-class Op_Diff_Turbulent_base
-{
-public :
-  virtual ~Op_Diff_Turbulent_base() { }
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  inline const Champ_Fonc& diffusivite_turbulente() const { return la_diffusivite_turbulente.valeur(); }
-  inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
 
-private:
-  REF(Champ_Fonc) la_diffusivite_turbulente;
+class Op_Diff_Turbulent_PolyMAC_P0_Elem: public Op_Diff_PolyMAC_P0_Elem
+{
+  Declare_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Elem );
+  int dimension_min_nu() const override //pour que la correlation force l'anisotrope (cf. GGDH)
+  {
+    return ref_cast(Transport_turbulent_base, corr.valeur()).dimension_min_nu();
+  }
+  void completer() override;
+  void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
+
+  void creer_champ(const Motcle& motlu) override;
+  void mettre_a_jour(double temps) override;
+  bool is_turb() const override { return true; }
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
+
+protected:
+  Correlation corr; //correlation de transport turbulent
+
+  Champ_Fonc secmem_diff_; //gradient des vitesses de chaque phase
+  Motcle nom_secmem_diff_; //leurs noms
 };
 
-#endif /* Op_Diff_Turbulent_base_included */
+#endif /* Op_Diff_PolyMAC_P0_Elem_included */

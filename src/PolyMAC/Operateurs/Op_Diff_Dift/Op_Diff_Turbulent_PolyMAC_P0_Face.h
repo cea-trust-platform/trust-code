@@ -13,29 +13,38 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Diff_Turbulent_base_included
-#define Op_Diff_Turbulent_base_included
+#ifndef Op_Diff_Turbulent_PolyMAC_P0_Face_included
+#define Op_Diff_Turbulent_PolyMAC_P0_Face_included
 
-#include <TRUST_Ref.h>
-#include <TRUSTVect.h>
+#include <Op_Diff_PolyMAC_P0_Face.h>
+#include <Correlation.h>
+#include <Champ_Fonc.h>
+#include <vector>
 
-class Turbulence_paroi;
-class Champ_Fonc;
-
-/*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
+/*! @brief : class Op_Diff_Turbulent_PolyMAC_P0_Face
  *
- * @sa Operateur_Diff_base
+ *  Operateur de diffusion de vitesse prenant en compte l'effet de la turbulence par le biais d'une correlation de type Viscosite_turbulente_base.
+ *
+ *
  */
-class Op_Diff_Turbulent_base
-{
-public :
-  virtual ~Op_Diff_Turbulent_base() { }
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  inline const Champ_Fonc& diffusivite_turbulente() const { return la_diffusivite_turbulente.valeur(); }
-  inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
 
-private:
-  REF(Champ_Fonc) la_diffusivite_turbulente;
+class Op_Diff_Turbulent_PolyMAC_P0_Face: public Op_Diff_PolyMAC_P0_Face
+{
+  Declare_instanciable( Op_Diff_Turbulent_PolyMAC_P0_Face );
+
+public:
+  void creer_champ(const Motcle& motlu) override;
+  void mettre_a_jour(double temps) override;
+  void completer() override;
+  void modifier_mu(DoubleTab&) const override; //prend en compte la diffusivite turbulente
+  inline const Correlation& correlation() const { return corr; }
+  bool is_turb() const override { return true; }
+  const Correlation* correlation_viscosite_turbulente() const override { return &corr; }
+
+protected:
+  Correlation corr; //correlation de viscosite turbulente
+  std::vector<Champ_Fonc> nu_t_post_; //flux massiques (kg/m2/s)
+  Motcles noms_nu_t_post_; //leurs noms
 };
 
-#endif /* Op_Diff_Turbulent_base_included */
+#endif /* Op_Diff_PolyMAC_P0_Face_included */

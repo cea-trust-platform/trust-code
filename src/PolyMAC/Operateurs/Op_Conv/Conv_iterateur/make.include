@@ -15,19 +15,12 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Conv\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Diff_Dift\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Divers\
-	-I$(TRUST_ROOT)/src/PolyMAC/Sources\
 	-I$(TRUST_ROOT)/src/PolyMAC/Geometrie\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Solveurs\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Sources\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Problems\
-	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Correlations\
+	-I$(TRUST_ROOT)/src/ThHyd/Modele_turbulence_base\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThSol\
+	
 
-Lib = $(TRUST_LIB)/libsopolymac_using_it_eval
+Lib = $(TRUST_LIB)/libpolymac_operateurs_conv_iterateur

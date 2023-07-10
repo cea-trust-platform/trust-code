@@ -13,29 +13,28 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Diff_Turbulent_base_included
-#define Op_Diff_Turbulent_base_included
+#ifndef Op_Diff_PolyMAC_P0_Face_included
+#define Op_Diff_PolyMAC_P0_Face_included
 
-#include <TRUST_Ref.h>
-#include <TRUSTVect.h>
+#include <Op_Diff_PolyMAC_P0_base.h>
 
-class Turbulence_paroi;
-class Champ_Fonc;
-
-/*! @brief : classe Op_Diff_Turbulent_base Classe de base pour les operateurs de diffusion pour un ecoulement turbulent.
- *
- * @sa Operateur_Diff_base
- */
-class Op_Diff_Turbulent_base
+class Op_Diff_PolyMAC_P0_Face: public Op_Diff_PolyMAC_P0_base
 {
-public :
-  virtual ~Op_Diff_Turbulent_base() { }
-  void associer_diffusivite_turbulente(const Champ_Fonc& );
-  inline const Champ_Fonc& diffusivite_turbulente() const { return la_diffusivite_turbulente.valeur(); }
-  inline bool has_diffusivite_turbulente() const { return la_diffusivite_turbulente.non_nul(); }
+  Declare_instanciable( Op_Diff_PolyMAC_P0_Face );
+public:
+  void completer() override;
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { }
+  int has_interface_blocs() const override { return 1; }
+  double calculer_dt_stab() const override;
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+  void check_multiphase_compatibility() const override { } //ok
+
+protected:
+  DoubleVect porosite_e, porosite_f;
 
 private:
-  REF(Champ_Fonc) la_diffusivite_turbulente;
+  double eps = 0.2; //suppression des modes en echiquier
 };
 
-#endif /* Op_Diff_Turbulent_base_included */
+#endif /* Op_Diff_PolyMAC_P0_Face_included */
