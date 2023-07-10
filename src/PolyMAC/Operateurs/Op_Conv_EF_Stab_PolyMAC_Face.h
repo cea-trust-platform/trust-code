@@ -21,24 +21,23 @@
 
 class Op_Conv_EF_Stab_PolyMAC_Face : public Op_Conv_PolyMAC_base
 {
-
   Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_Face ) ;
-
 public :
   void completer() override;
+
   DoubleTab& ajouter(const DoubleTab& inco, DoubleTab& resu) const override;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  void contribuer_au_second_membre(DoubleTab& ) const override;
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
+
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { }
   void dimensionner(Matrice_Morse& mat) const override;
   void set_incompressible(const int flag) override;
 
 protected :
-  double alpha; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_f;
-  DoubleVect porosite_e;
+  double alpha = 1; //alpha = 0 -> centre, alpha = 1 -> amont (par defaut, on fait l'amont)
+  DoubleVect porosite_f, porosite_e; //pour F5
+
 private :
-  IntTab equiv; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
+  IntTab equiv_; //equiv(f, i, j) = f2 si la face f1 = e_f(f_e(f, i), j) est equivalente a la face f2 de l'autre cote
 };
 
 class Op_Conv_Amont_PolyMAC_Face : public Op_Conv_EF_Stab_PolyMAC_Face

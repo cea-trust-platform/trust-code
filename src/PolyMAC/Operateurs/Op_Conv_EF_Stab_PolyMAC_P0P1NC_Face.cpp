@@ -14,79 +14,42 @@
 *****************************************************************************/
 
 #include <Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face.h>
-#include <Dirichlet_homogene.h>
 #include <Champ_Face_PolyMAC_P0P1NC.h>
+#include <Dirichlet_homogene.h>
+#include <Masse_ajoutee_base.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Pb_Multiphase.h>
 #include <Domaine_Poly_base.h>
+#include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
-
 #include <Param.h>
 #include <cmath>
-#include <Masse_ajoutee_base.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face, "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face", Op_Conv_PolyMAC_P0P1NC_base ) ;
-Implemente_instanciable( Op_Conv_Amont_PolyMAC_P0P1NC_Face, "Op_Conv_Amont_PolyMAC_P0P1NC_Face", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face ) ;
-Implemente_instanciable( Op_Conv_Centre_PolyMAC_P0P1NC_Face, "Op_Conv_Centre_PolyMAC_P0P1NC_Face", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face ) ;
+Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face, "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face", Op_Conv_EF_Stab_PolyMAC_Face );
+Implemente_instanciable( Op_Conv_Amont_PolyMAC_P0P1NC_Face, "Op_Conv_Amont_PolyMAC_P0P1NC_Face", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face );
+Implemente_instanciable( Op_Conv_Centre_PolyMAC_P0P1NC_Face, "Op_Conv_Centre_PolyMAC_P0P1NC_Face", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face );
 
 // XD Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face interprete Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face 1 Class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face
-Sortie& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::printOn( Sortie& os ) const
+
+Sortie& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Amont_PolyMAC_P0P1NC_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Centre_PolyMAC_P0P1NC_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+
+Entree& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyMAC_Face::readOn(is); }
+
+Entree& Op_Conv_Amont_PolyMAC_P0P1NC_Face::readOn(Entree& is)
 {
-  Op_Conv_PolyMAC_P0P1NC_base::printOn( os );
-  return os;
+  alpha = 1.0;
+  return Op_Conv_PolyMAC_base::readOn(is);
 }
 
-Sortie& Op_Conv_Amont_PolyMAC_P0P1NC_Face::printOn( Sortie& os ) const
+Entree& Op_Conv_Centre_PolyMAC_P0P1NC_Face::readOn(Entree& is)
 {
-  Op_Conv_PolyMAC_P0P1NC_base::printOn( os );
-  return os;
-}
-
-Sortie& Op_Conv_Centre_PolyMAC_P0P1NC_Face::printOn( Sortie& os ) const
-{
-  Op_Conv_PolyMAC_P0P1NC_base::printOn( os );
-  return os;
-}
-
-Entree& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::readOn( Entree& is )
-{
-  Op_Conv_PolyMAC_P0P1NC_base::readOn( is );
-  Param param(que_suis_je());
-  param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
-  param.lire_avec_accolades_depuis(is);
-  return is;
-}
-
-Entree& Op_Conv_Amont_PolyMAC_P0P1NC_Face::readOn( Entree& is )
-{
-  Op_Conv_PolyMAC_P0P1NC_base::readOn( is );
-  alpha = 1;
-  return is;
-}
-
-Entree& Op_Conv_Centre_PolyMAC_P0P1NC_Face::readOn( Entree& is )
-{
-  Op_Conv_PolyMAC_P0P1NC_base::readOn( is );
-  alpha = 0;
-  return is;
-}
-
-void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::completer()
-{
-  Op_Conv_PolyMAC_P0P1NC_base::completer();
-  /* au cas ou... */
-  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
-    {
-      Cerr << "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face : largeur de joint insuffisante (minimum 2)!" << finl;
-      Process::exit();
-    }
-  porosite_f.ref(equation().milieu().porosite_face());
-  porosite_e.ref(equation().milieu().porosite_elem());
+  alpha = 0.0;
+  return Op_Conv_PolyMAC_base::readOn(is);
 }
 
 double Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face::calculer_dt_stab() const

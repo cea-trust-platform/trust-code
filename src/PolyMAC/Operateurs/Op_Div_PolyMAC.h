@@ -16,42 +16,38 @@
 #ifndef Op_Div_PolyMAC_included
 #define Op_Div_PolyMAC_included
 
-#include <Operateur_Div.h>
 #include <Domaine_PolyMAC.h>
+#include <Operateur_Div.h>
 #include <TRUST_Ref.h>
+
 class Domaine_Cl_PolyMAC;
+class MAtrice_Morse;
 
 /*! @brief class Op_Div_PolyMAC
  *
- *   Cette classe represente l'operateur de divergence
- *   La discretisation est PolyMAC
+ *   Cette classe represente l'operateur de divergence La discretisation est PolyMAC
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
  *
+ * @sa Operateur_Div_base
  *
  */
-class MAtrice_Morse;
-class Op_Div_PolyMAC : public Operateur_Div_base
+class Op_Div_PolyMAC: public Operateur_Div_base
 {
-
   Declare_instanciable(Op_Div_PolyMAC);
-
 public:
 
-  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
   int impr(Sortie& os) const override;
-  void volumique(DoubleTab& ) const override;
+  void volumique(DoubleTab&) const override;
 
   void dimensionner(Matrice_Morse& matrice) const override;
-  void contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const override;
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse& matrice) const override;
 
 protected:
-
   REF(Domaine_PolyMAC) le_dom_PolyMAC;
   REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC;
-
-  DoubleVect porosite_face;
 };
 
-#endif
+#endif /* Op_Div_PolyMAC_included */

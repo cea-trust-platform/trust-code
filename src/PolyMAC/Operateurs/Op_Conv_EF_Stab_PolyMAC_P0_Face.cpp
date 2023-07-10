@@ -29,41 +29,26 @@
 #include <cmath>
 #include <Masse_ajoutee_base.h>
 
-Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_P0_Face, "Op_Conv_EF_Stab_PolyMAC_P0_Face", Op_Conv_PolyMAC_P0P1NC_base ) ;
-Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_P0_Face, "Op_Conv_Amont_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face);
-Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_P0_Face, "Op_Conv_Centre_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face);
-
-Op_Conv_Amont_PolyMAC_P0_Face::Op_Conv_Amont_PolyMAC_P0_Face() { alpha = 1.0; }
-Op_Conv_Centre_PolyMAC_P0_Face::Op_Conv_Centre_PolyMAC_P0_Face() { alpha = 0.0; }
+Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_P0_Face, "Op_Conv_EF_Stab_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face ) ;
+Implemente_instanciable(Op_Conv_Amont_PolyMAC_P0_Face, "Op_Conv_Amont_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face);
+Implemente_instanciable(Op_Conv_Centre_PolyMAC_P0_Face, "Op_Conv_Centre_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face);
 
 // XD Op_Conv_EF_Stab_PolyMAC_P0_Face interprete Op_Conv_EF_Stab_PolyMAC_P0_Face 1 Class Op_Conv_EF_Stab_PolyMAC_P0_Face
-Sortie& Op_Conv_EF_Stab_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_P0P1NC_base::printOn(os); }
-Sortie& Op_Conv_Amont_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_P0P1NC_base::printOn(os); }
-Sortie& Op_Conv_Centre_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_P0P1NC_base::printOn(os); }
-Entree& Op_Conv_Amont_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Conv_PolyMAC_P0P1NC_base::readOn(is); }
-Entree& Op_Conv_Centre_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Conv_PolyMAC_P0P1NC_base::readOn(is); }
+Sortie& Op_Conv_EF_Stab_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Amont_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Centre_PolyMAC_P0_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
 
-Entree& Op_Conv_EF_Stab_PolyMAC_P0_Face::readOn( Entree& is )
+Entree& Op_Conv_EF_Stab_PolyMAC_P0_Face::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyMAC_Face::readOn(is); }
+
+Entree& Op_Conv_Amont_PolyMAC_P0_Face::readOn(Entree& is)
 {
-  Op_Conv_PolyMAC_P0P1NC_base::readOn( is );
-  Param param(que_suis_je());
-  param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
-  param.lire_avec_accolades_depuis(is);
-  return is;
+  alpha = 1.0;
+  return Op_Conv_PolyMAC_base::readOn(is);
 }
-
-void Op_Conv_EF_Stab_PolyMAC_P0_Face::completer()
+Entree& Op_Conv_Centre_PolyMAC_P0_Face::readOn(Entree& is)
 {
-  Op_Conv_PolyMAC_P0P1NC_base::completer();
-  /* au cas ou... */
-  const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
-  if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
-    {
-      Cerr << "Op_Conv_EF_Stab_PolyMAC_P0_Face : largeur de joint insuffisante (minimum 2)!" << finl;
-      Process::exit();
-    }
-  porosite_f.ref(equation().milieu().porosite_face());
-  porosite_e.ref(equation().milieu().porosite_elem());
+  alpha = 0.0;
+  return Op_Conv_PolyMAC_base::readOn(is);
 }
 
 double Op_Conv_EF_Stab_PolyMAC_P0_Face::calculer_dt_stab() const

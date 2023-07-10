@@ -16,48 +16,26 @@
 #ifndef Op_Grad_PolyMAC_P0P1NC_Face_included
 #define Op_Grad_PolyMAC_P0P1NC_Face_included
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC_P0P1NC.h>
-#include <Operateur_Grad.h>
-#include <TRUST_Ref.h>
-
-class Champ_Face_PolyMAC_P0P1NC;
+#include <Op_Grad_PolyMAC_Face.h>
 
 /*! @brief class Op_Grad_PolyMAC_P0P1NC_Face
  *
- *   Cette classe represente l'operateur de gradient
- *   La discretisation est PolyMAC_P0P1NC
+ *   Cette classe represente l'operateur de gradient La discretisation est PolyMAC_P0P1NC
  *   On calcule le gradient d'un champ_Elem_PolyMAC_P0P1NC (la pression)
- *
  *
  * @sa Operateur_Grad_base
  */
-class Op_Grad_PolyMAC_P0P1NC_Face : public Operateur_Grad_base
+class Op_Grad_PolyMAC_P0P1NC_Face: public Op_Grad_PolyMAC_Face
 {
-
   Declare_instanciable(Op_Grad_PolyMAC_P0P1NC_Face);
-
 public:
-
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void completer() override;
 
   /* interface {dimensionner,ajouter}_blocs -> cf Equation_base.h */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
-
-  int impr(Sortie& os) const override;
-
-  void check_multiphase_compatibility() const override { }; //ok
-
-private:
-
-  REF(Domaine_PolyMAC_P0P1NC) ref_domaine;
-  REF(Domaine_Cl_PolyMAC) ref_zcl;
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
+  void check_multiphase_compatibility() const override { } //ok
 };
 
-#endif
+#endif /* Op_Grad_PolyMAC_P0P1NC_Face_included */

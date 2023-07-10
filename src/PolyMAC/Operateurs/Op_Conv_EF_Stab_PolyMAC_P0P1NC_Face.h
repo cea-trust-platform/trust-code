@@ -16,54 +16,32 @@
 #ifndef Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face_included
 #define Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face_included
 
-#include <Op_Conv_PolyMAC_P0P1NC_base.h>
-#include <Matrice_Morse.h>
+#include <Op_Conv_EF_Stab_PolyMAC_Face.h>
 
-/*! @brief : class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face
- *
- *  <Description of class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face>
- *
- *
- *
- */
-
-class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face : public Op_Conv_PolyMAC_P0P1NC_base
+class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face: public Op_Conv_EF_Stab_PolyMAC_Face
 {
 
-  Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face ) ;
+  Declare_instanciable( Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face );
 
-public :
-  void completer() override;
-  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { };
+public:
   double calculer_dt_stab() const override;
 
   /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
 
-  void check_multiphase_compatibility() const override { }; //of course
-  void set_incompressible(const int flag) override
-  {
-    incompressible_ = flag;
-  }
-
-protected :
-  double alpha = -1e8; //alpha = 0 -> centre, alpha = 1 -> amont
-  DoubleVect porosite_f, porosite_e; //pour F5
+  void check_multiphase_compatibility() const override { } //of course
 };
 
-class Op_Conv_Amont_PolyMAC_P0P1NC_Face : public Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face
+class Op_Conv_Amont_PolyMAC_P0P1NC_Face: public Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face
 {
-  Declare_instanciable( Op_Conv_Amont_PolyMAC_P0P1NC_Face ) ;
+  Declare_instanciable( Op_Conv_Amont_PolyMAC_P0P1NC_Face );
 };
 
-class Op_Conv_Centre_PolyMAC_P0P1NC_Face : public Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face
+class Op_Conv_Centre_PolyMAC_P0P1NC_Face: public Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face
 {
-  Declare_instanciable( Op_Conv_Centre_PolyMAC_P0P1NC_Face ) ;
+  Declare_instanciable( Op_Conv_Centre_PolyMAC_P0P1NC_Face );
 };
 
 #endif /* Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face_included */

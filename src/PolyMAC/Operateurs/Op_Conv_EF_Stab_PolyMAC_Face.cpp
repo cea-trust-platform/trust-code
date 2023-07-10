@@ -27,87 +27,83 @@
 #include <Param.h>
 #include <cmath>
 
-Implemente_instanciable_sans_constructeur( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base ) ;
-Implemente_instanciable( Op_Conv_Amont_PolyMAC_Face, "Op_Conv_Amont_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
-Implemente_instanciable( Op_Conv_Centre_PolyMAC_Face, "Op_Conv_Centre_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face ) ;
-
-Op_Conv_EF_Stab_PolyMAC_Face::Op_Conv_EF_Stab_PolyMAC_Face()
-{
-  alpha = 1; //par defaut, on fait de l'amont
-}
+Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_Face, "Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC", Op_Conv_PolyMAC_base );
+Implemente_instanciable( Op_Conv_Amont_PolyMAC_Face, "Op_Conv_Amont_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face );
+Implemente_instanciable( Op_Conv_Centre_PolyMAC_Face, "Op_Conv_Centre_PolyMAC_Face_PolyMAC", Op_Conv_EF_Stab_PolyMAC_Face );
 
 // XD Op_Conv_EF_Stab_PolyMAC_Face interprete Op_Conv_EF_Stab_PolyMAC_Face 1 Class Op_Conv_EF_Stab_PolyMAC_Face_PolyMAC
-Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn( Sortie& os ) const
-{
-  return Op_Conv_PolyMAC_base::printOn( os );
-}
 
-Entree& Op_Conv_EF_Stab_PolyMAC_Face::readOn( Entree& is )
+Sortie& Op_Conv_EF_Stab_PolyMAC_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Amont_PolyMAC_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+Sortie& Op_Conv_Centre_PolyMAC_Face::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
+
+Entree& Op_Conv_EF_Stab_PolyMAC_Face::readOn(Entree& is)
 {
-  Op_Conv_PolyMAC_base::readOn( is );
+  Op_Conv_PolyMAC_base::readOn(is);
   Param param(que_suis_je());
   param.ajouter("alpha", &alpha);            // XD_ADD_P double parametre ajustant la stabilisation de 0 (schema centre) a 1 (schema amont)
   param.lire_avec_accolades_depuis(is);
   return is;
 }
 
-Sortie& Op_Conv_Amont_PolyMAC_Face::printOn( Sortie& os ) const
+Entree& Op_Conv_Amont_PolyMAC_Face::readOn(Entree& is)
 {
-  Op_Conv_PolyMAC_base::printOn( os );
-  return os;
+  alpha = 1.0;
+  return Op_Conv_PolyMAC_base::readOn(is);
 }
 
-Entree& Op_Conv_Amont_PolyMAC_Face::readOn( Entree& is )
+Entree& Op_Conv_Centre_PolyMAC_Face::readOn(Entree& is)
 {
-  Op_Conv_PolyMAC_base::readOn( is );
-  alpha = 1;
-  return is;
-}
-
-Sortie& Op_Conv_Centre_PolyMAC_Face::printOn( Sortie& os ) const
-{
-  Op_Conv_PolyMAC_base::printOn( os );
-  return os;
-}
-
-Entree& Op_Conv_Centre_PolyMAC_Face::readOn( Entree& is )
-{
-  Op_Conv_PolyMAC_base::readOn( is );
-  alpha = 0;
-  return is;
+  alpha = 0.0;
+  return Op_Conv_PolyMAC_base::readOn(is);
 }
 
 void Op_Conv_EF_Stab_PolyMAC_Face::completer()
 {
   Op_Conv_PolyMAC_base::completer();
+
+  /* au cas ou... */
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
-  const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
-  const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
-  int i, j, k, e1, e2, f, f1, f2, ok;
-
   if (domaine.domaine().nb_joints() && domaine.domaine().joint(0).epaisseur() < 2)
-    Cerr << "Op_Conv_EF_Stab_PolyMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl, Process::exit();
-
-  Cerr << domaine.domaine().le_nom() << " : initialisation de la convection aux faces... ";
-
-  IntTrav ntot, nequiv;
-  domaine.creer_tableau_faces(ntot), domaine.creer_tableau_faces(nequiv);
-  equiv.resize(domaine.nb_faces_tot(), 2, e_f.dimension(1));
-  for (f = 0, equiv = -1; f < domaine.nb_faces_tot(); f++)
-    if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
-      for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
-        for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
-          {
-            for (k = 0, ok = 1; ok && k < dimension; k++) ok &= std::fabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6;
-            if (ok) equiv(f, 0, i) = f2, equiv(f, 1, j) = f1, nequiv(f)++;
-          }
-  if (mp_somme_vect(ntot)) Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
+    {
+      Cerr << "Op_Conv_EF_Stab_PolyMAC_Face : largeur de joint insuffisante (minimum 2)!" << finl;
+      Process::exit();
+    }
   porosite_f.ref(mon_equation->milieu().porosite_face());
   porosite_e.ref(mon_equation->milieu().porosite_elem());
+
+  if (equation().discretisation().is_polymac())
+    {
+      const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
+      const DoubleTab& xp = domaine.xp(), &xv = domaine.xv();
+      int i, j, k, e1, e2, f, f1, f2, ok;
+
+
+      Cerr << domaine.domaine().le_nom() << " : initialisation de la convection aux faces... ";
+
+      IntTrav ntot, nequiv;
+      domaine.creer_tableau_faces(ntot), domaine.creer_tableau_faces(nequiv);
+      equiv_.resize(domaine.nb_faces_tot(), 2, e_f.dimension(1));
+      for (f = 0, equiv_ = -1; f < domaine.nb_faces_tot(); f++)
+        if ((e1 = f_e(f, 0)) >= 0 && (e2 = f_e(f, 1)) >= 0)
+          for (i = 0; i < e_f.dimension(1) && (f1 = e_f(e1, i)) >= 0; i++)
+            for (j = 0, ntot(f)++; j < e_f.dimension(1) && (f2 = e_f(e2, j)) >= 0; j++)
+              {
+                for (k = 0, ok = 1; ok && k < dimension; k++) ok &= std::fabs((xv(f1, k) - xp(e1, k)) - (xv(f2, k) - xp(e2, k))) < 1e-6;
+                if (ok) equiv_(f, 0, i) = f2, equiv_(f, 1, j) = f1, nequiv(f)++;
+              }
+      if (mp_somme_vect(ntot)) Cerr << mp_somme_vect(nequiv) * 100. / mp_somme_vect(ntot) << "% de convection directe!" << finl;
+    }
 }
 
 void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
 {
+  if (has_interface_blocs())
+    {
+      Operateur_base::dimensionner(mat);
+      return;
+    }
+
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
@@ -125,7 +121,7 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
       for (j = 0; f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < e_f.dimension(1) && (fb = e_f(e, j)) >= 0; j++)
         {
           if (ch.fcl()(fb, 0) < 2) stencil.append_line(f, fb);
-          if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 1) < 0) //equivalence ou bord -> convection de m2
+          if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 1) < 0) //equivalence ou bord -> convection de m2
             {
               int fa[2] = { f, fc }, ea[2] = { e, f_e(fb, e == f_e(fb, 0)) };
               for (k = 0; k < 2 && ea[k] >= 0; k++)
@@ -148,6 +144,8 @@ void Op_Conv_EF_Stab_PolyMAC_Face::dimensionner(Matrice_Morse& mat) const
 // renvoie resu
 inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, DoubleTab& resu) const
 {
+  if (has_interface_blocs()) return Operateur_base::ajouter(inco, resu);
+
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
@@ -168,7 +166,7 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
             {
               eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
               double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1 : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-              if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
+              if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
                 {
                   if (eb >= 0)
                     for (fam = (eb == e ? f : fc), l = domaine.m2d(eb), idx = 0; l < domaine.m2d(eb + 1); l++, idx++)
@@ -197,6 +195,12 @@ inline DoubleTab& Op_Conv_EF_Stab_PolyMAC_Face::ajouter(const DoubleTab& inco, D
  */
 inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
+  if (has_interface_blocs())
+    {
+      Operateur_base::contribuer_a_avec(inco, matrice);
+      return;
+    }
+
   const Domaine_PolyMAC& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC& ch = ref_cast(Champ_Face_PolyMAC, equation().inconnue().valeur());
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
@@ -214,7 +218,7 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
             {
               eb = f_e(fb, k); //element amont/aval de fb (toujours l'amont si Neumann)
               double fac = (e == f_e(f, 0) ? 1 : -1) * vit(fb) * (e == f_e(fb, 0) ? 1 : -1) * fs(fb) / ve(e) * (1. + (vit(fb) * (k ? -1. : 1) >= 0 ? 1. : -1.) * alpha) / 2;
-              if ((fc = equiv(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
+              if ((fc = equiv_(fb, e != f_e(fb, 0), i)) >= 0 || f_e(fb, 0) < 0 || f_e(fb, 1) < 0) //equivalence ou bord -> on convecte m2
                 {
                   if (eb >= 0)
                     {
@@ -235,15 +239,6 @@ inline void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_a_avec(const DoubleTab& inc
           for (j = domaine.m2i(domaine.m2d(e) + i); f < domaine.nb_faces() && ch.fcl()(f, 0) < 2 && j < domaine.m2i(domaine.m2d(e) + i); j++)
             if (ch.fcl()(fb = e_f(e, domaine.m2j(j)), 0) < 2) matrice(f, fb) -= (f == f_e(e, 0) ? 1 : -1) * (fb == f_e(e, 0) ? 1 : -1) * ve(e) * div;
     }
-}
-
-/*! @brief on ajoute la contribution du second membre.
- *
- */
-void Op_Conv_EF_Stab_PolyMAC_Face::contribuer_au_second_membre(DoubleTab& resu) const
-{
-  abort();
-
 }
 
 void Op_Conv_EF_Stab_PolyMAC_Face::set_incompressible(const int flag)

@@ -18,36 +18,33 @@
 
 #include <Operateur_Conv.h>
 #include <TRUST_Ref.h>
-class Champ_base;
-class Domaine_PolyMAC;
+#include <SFichier.h>
+
 class Domaine_Cl_PolyMAC;
+class Domaine_PolyMAC;
+class Champ_base;
 
-class Op_Conv_PolyMAC_base : public Operateur_Conv_base
+class Op_Conv_PolyMAC_base: public Operateur_Conv_base
 {
-
   Declare_base(Op_Conv_PolyMAC_base);
-
 public:
 
   void completer() override;
   double calculer_dt_stab() const override;
-  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu ) const override;
+  inline DoubleTab& calculer(const DoubleTab& inco, DoubleTab& resu) const override;
 
-  //void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const;
-  //virtual Motcle get_localisation_pour_post(const Nom& option) const;
   int impr(Sortie& os) const override;
+
   void associer_domaine_cl_dis(const Domaine_Cl_dis_base&) override;
-  void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
-
-  void associer_vitesse(const Champ_base& ) override;
-
-
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer_vitesse(const Champ_base&) override;
 
 protected:
   REF(Domaine_PolyMAC) le_dom_poly_;
   REF(Domaine_Cl_PolyMAC) la_zcl_poly_;
   REF(Champ_base) vitesse_;
 
+  mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
 /*! @brief calcule la contribution de la convection, la range dans resu renvoie resu
@@ -55,12 +52,8 @@ protected:
  */
 inline DoubleTab& Op_Conv_PolyMAC_base::calculer(const DoubleTab& inco, DoubleTab& resu) const
 {
-  resu=0;
-  return ajouter(inco,resu);
+  resu = 0.;
+  return ajouter(inco, resu);
 }
-
-
-
-
 
 #endif

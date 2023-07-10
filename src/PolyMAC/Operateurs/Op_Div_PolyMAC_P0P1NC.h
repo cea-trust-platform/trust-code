@@ -16,51 +16,28 @@
 #ifndef Op_Div_PolyMAC_P0P1NC_included
 #define Op_Div_PolyMAC_P0P1NC_included
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC_P0P1NC.h>
-#include <Operateur_Div.h>
-#include <TRUST_Ref.h>
+#include <Op_Div_PolyMAC.h>
 
 /*! @brief class Op_Div_PolyMAC_P0P1NC
  *
- *   Cette classe represente l'operateur de divergence
- *   La discretisation est PolyMAC_P0P1NC
+ *   Cette classe represente l'operateur de divergence La discretisation est PolyMAC_P0P1NC
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
  *
+ * @sa Op_Div_PolyMAC
  *
- *
- * @sa Operateur_Div_base
  */
-
-class Op_Div_PolyMAC_P0P1NC : public Operateur_Div_base
+class Op_Div_PolyMAC_P0P1NC: public Op_Div_PolyMAC
 {
-
   Declare_instanciable(Op_Div_PolyMAC_P0P1NC);
-
 public:
-
-  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
-
   /* interface ajouter_blocs */
-  int has_interface_blocs() const override
-  {
-    return 1;
-  };
-  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const override;
-  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
+  int has_interface_blocs() const override { return 1; }
+  void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = { }) const override;
+  void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = { }) const override;
 
-  /* contrairement au cas usuel, ces methodes ne peuvent pas etre reimplementees a partir d'ajouter_blocs(),
-     car elles sont souvent appelees avec un tableau inco arbitraire */
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
-
-  virtual int impr(Sortie& os) const override;
-  void volumique(DoubleTab& ) const override;
-
-protected:
-
-  REF(Domaine_PolyMAC_P0P1NC) le_dom_PolyMAC_P0P1NC;
-  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0P1NC;
+  /* contrairement au cas usuel, cette methode ne peuvent pas etre reimplementee a partir d'ajouter_blocs(),
+   car elle est souvent appelees avec un tableau inco arbitraire */
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
 };
 
-#endif
+#endif /* Op_Div_PolyMAC_P0P1NC_included */

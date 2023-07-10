@@ -37,7 +37,7 @@
 #include <cfloat>
 #include <vector>
 
-Implemente_instanciable(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem|Op_Conv_EF_Stab_PolyMAC_P0_Elem", Op_Conv_PolyMAC_P0P1NC_base);
+Implemente_instanciable(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem|Op_Conv_EF_Stab_PolyMAC_P0_Elem", Op_Conv_PolyMAC_base);
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_P0P1NC_Elem, "Op_Conv_Amont_PolyMAC_P0P1NC_Elem|Op_Conv_Amont_PolyMAC_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
 Implemente_instanciable_sans_constructeur(Op_Conv_Centre_PolyMAC_P0P1NC_Elem, "Op_Conv_Centre_PolyMAC_P0P1NC_Elem|Op_Conv_Centre_PolyMAC_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
 
@@ -45,7 +45,7 @@ Op_Conv_Amont_PolyMAC_P0P1NC_Elem::Op_Conv_Amont_PolyMAC_P0P1NC_Elem() { alpha =
 Op_Conv_Centre_PolyMAC_P0P1NC_Elem::Op_Conv_Centre_PolyMAC_P0P1NC_Elem() { alpha = 0.0; }
 
 // XD Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem interprete Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem 1 Class Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem
-Sortie& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_P0P1NC_base::printOn(os); }
+Sortie& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_PolyMAC_base::printOn(os); }
 Sortie& Op_Conv_Amont_PolyMAC_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::printOn(os); }
 Sortie& Op_Conv_Centre_PolyMAC_P0P1NC_Elem::printOn(Sortie& os) const { return Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::printOn(os); }
 Entree& Op_Conv_Amont_PolyMAC_P0P1NC_Elem::readOn(Entree& is) { return Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::readOn(is); }
@@ -53,7 +53,7 @@ Entree& Op_Conv_Centre_PolyMAC_P0P1NC_Elem::readOn(Entree& is) { return Op_Conv_
 
 Entree& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::readOn( Entree& is )
 {
-  Op_Conv_PolyMAC_P0P1NC_base::readOn( is );
+  Op_Conv_PolyMAC_base::readOn( is );
   if (que_suis_je().debute_par("Op_Conv_EF_Stab")) //on n'est pas dans Op_Conv_Amont/Centre
     {
       Param param(que_suis_je());
@@ -80,7 +80,7 @@ Entree& Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::readOn( Entree& is )
 
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::preparer_calcul()
 {
-  Op_Conv_PolyMAC_P0P1NC_base::preparer_calcul();
+  Op_Conv_PolyMAC_base::preparer_calcul();
 
   /* au cas ou... */
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
@@ -209,7 +209,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
 
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::creer_champ(const Motcle& motlu)
 {
-  Op_Conv_PolyMAC_P0P1NC_base::creer_champ(motlu);
+  Op_Conv_PolyMAC_base::creer_champ(motlu);
   int i = noms_cc_phases_.rang(motlu), j = noms_vd_phases_.rang(motlu), k = noms_x_phases_.rang(motlu);
   if (i >= 0 && !cc_phases_[i].non_nul())
     {
@@ -230,7 +230,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::creer_champ(const Motcle& motlu)
 
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::mettre_a_jour(double temps)
 {
-  Op_Conv_PolyMAC_P0P1NC_base::mettre_a_jour(temps);
+  Op_Conv_PolyMAC_base::mettre_a_jour(temps);
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces();
   const Champ_Inc_base& cc = le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().champ_convecte();

@@ -16,41 +16,24 @@
 #ifndef Op_Div_PolyMAC_P0_included
 #define Op_Div_PolyMAC_P0_included
 
-#include <Domaine_Cl_PolyMAC.h>
-#include <Domaine_PolyMAC_P0.h>
-#include <Operateur_Div.h>
-#include <TRUST_Ref.h>
+#include <Op_Div_PolyMAC_P0P1NC.h>
 
 /*! @brief class Op_Div_PolyMAC_P0
  *
- *   Cette classe represente l'operateur de divergence
- *   La discretisation est PolyMAC_P0
+ *   Cette classe represente l'operateur de divergence La discretisation est PolyMAC_P0
  *   On calcule la divergence d'un champ_P1NC (la vitesse)
  *
+ * @sa Op_Div_PolyMAC_P0P1NC
  *
- * @sa Operateur_Div_base
  */
-
-class Op_Div_PolyMAC_P0 : public Operateur_Div_base
+class Op_Div_PolyMAC_P0 : public Op_Div_PolyMAC_P0P1NC
 {
-
   Declare_instanciable(Op_Div_PolyMAC_P0);
-
 public:
-
-  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
+  int has_interface_blocs() const override { return 0; }
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
-  int impr(Sortie& os) const override;
-  void volumique(DoubleTab& ) const override;
-
   void dimensionner(Matrice_Morse& matrice) const override;
   void contribuer_a_avec(const DoubleTab&,Matrice_Morse& matrice) const override;
-
-protected:
-
-  REF(Domaine_PolyMAC_P0) le_dom_PolyMAC_P0;
-  REF(Domaine_Cl_PolyMAC) la_zcl_PolyMAC_P0;
 };
 
-#endif
+#endif /* Op_Div_PolyMAC_P0_included */
