@@ -264,8 +264,8 @@ inline double write_gpu_stat_file(const Nom& msg, const Stat_Results& stat, cons
   char t[1000] = "";
   snprintf(t, 100, " %8.6f s", stat.max_time/pas_de_temps.max_count);
   char bw[100] = "";
-  if (stat.avg_quantity>0)
-    snprintf(bw, 100, " %4.1f GB/s", stat.avg_quantity/1024/1024/1024/stat.max_time);
+  if (stat.quantity>0)
+    snprintf(bw, 100, " %4.1f GB/s", stat.quantity/1024/1024/1024/stat.max_time);
   stat_file << msg << t << p << calls << bw << "\n";
   return pourcent;
 }
@@ -560,8 +560,9 @@ void print_statistics_analyse(const char * message, int mode_append)
               double ratio_gpu  = ratio_gpu_library + ratio_gpu_kernel;
               double ratio_copy = write_gpu_stat_file("Copy H2D :", gpu_copytodevice, pas_de_temps, stat_file);
               ratio_copy += write_gpu_stat_file("Copy D2H :", gpu_copyfromdevice, pas_de_temps, stat_file);
-              double time_cpu = 100 - ratio_gpu - ratio_copy; // ToDo OpenMP manque MPI,IO
-              stat_file << "GPU: " << 0.1*int(10*ratio_gpu) << "% Copy H<->D: " << 0.1*int(10*ratio_copy) << "% CPU: " << 0.1*int(10*time_cpu) << "%" << finl;
+              double ratio_comm = 100. * (comm_sendrecv.avg_time + comm_allreduce.avg_time) / pas_de_temps.max_time;
+              double ratio_cpu = 100 - ratio_gpu - ratio_copy - ratio_comm;
+              stat_file << "GPU: " << 0.1*int(10*ratio_gpu) << "% Copy H<->D: " << 0.1*int(10*ratio_copy) << "% Comm: " << 0.1*int(10*ratio_comm) << "% CPU & I/O: " << 0.1*int(10*ratio_cpu) << "%" << finl;
               if (0.1*int(10*ratio_gpu)<50)
                 {
                   Cerr << "==============================================================================================" << finl;
@@ -593,9 +594,6 @@ void print_statistics_analyse(const char * message, int mode_append)
                       << finl;
                   stat_file
                       << "Warning: One or several PETSc solvers are used and thus the communication time below are under-estimated."
-                      << finl;
-                  stat_file
-                      << "To print also the additional time spent in PETSc solvers, run the calculation with -log_summary option."
                       << finl;
                   stat_file
                       << "---------------------------------------------------------------------------------------------------------"

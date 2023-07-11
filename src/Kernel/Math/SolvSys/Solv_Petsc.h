@@ -119,6 +119,8 @@ protected :
   bool enable_ksp_view( void );
   int add_option(const Nom& option, const double& value, int cli = 0);
   int add_option(const Nom& option, const Nom& value, int cli = 0);
+  void add_amgx_option(const Nom& key, const Nom& value, const std::string& comment="");
+  void add_amgx_option(const Nom& key_value);
   void SaveObjectsToFile();
   void RestoreMatrixFromFile();
   int compute_nb_rows_petsc(int);
@@ -149,6 +151,7 @@ protected :
   Nom type_pc_;			// Preconditioner type
   Nom type_ksp_;		// KSP type
   Nom option_prefix_;		// Prefix des options CLI (permet de faire plusieurs solveurs en CLI)
+  Nom amgx_options_;
 
   int petsc_nb_cpus_;		// Number of CPUs used to solve the PETSc matrix
   int petsc_cpus_selection_;	// Selection of CPUs used to solve the PETSc matrix
