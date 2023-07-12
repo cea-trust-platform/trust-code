@@ -433,15 +433,12 @@ int Champ_Inc_base::sauvegarder(Sortie& fich) const
     }
   if (Process::je_suis_maitre())
     Cerr << "Backup of the field " << nom_ << " performed on time : " << Nom(temps_, "%e") << finl;
-
-#ifndef NDEBUG
   if (!est_egal(temps_, equation().probleme().schema_temps().temps_courant()))
     {
       Cerr.precision(12);
       Cerr << "Problem in Champ_Inc_base::sauvegarder, temps_=" << temps_ << " temps_courant()=" << equation().probleme().schema_temps().temps_courant() << finl;
       Process::exit();
     }
-#endif
   // Return the number of bytes written
   return bytes;
 }

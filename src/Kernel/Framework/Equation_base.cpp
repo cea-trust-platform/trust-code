@@ -1872,10 +1872,12 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           Cerr << "No convergence of the implicited diffusion algorithm for the equation " << que_suis_je() << " in "
                << nmax << " iterations." << finl;
           Cerr << "Residue : " << residual << " Threshold : " << seuil << finl;
-          Cerr << "The problem " << probleme().le_nom() << " has been saved." << finl;
-          probleme().sauver();
+          Cerr << "======================================================================================" << finl;
           Cerr << "The problem is post processed to help you to see where the non convergence is located." << finl;
           probleme().postraiter(1);
+          probleme().mettre_a_jour(schema_temps().temps_courant());
+          probleme().sauver();
+          Cerr << "The problem " << probleme().le_nom() << " has been saved too." << finl;
           exit();
         }
       else
