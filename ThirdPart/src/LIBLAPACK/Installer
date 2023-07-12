@@ -103,7 +103,7 @@ then
    # Bench OpenBlas:
    # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
    cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
-   if [ "$TRUST_USE_OPENMP" = 1 ]
+   if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
    then
       (cd benchmark && CFLAGS=-fopenmp make dgemm.goto && OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log)
    else

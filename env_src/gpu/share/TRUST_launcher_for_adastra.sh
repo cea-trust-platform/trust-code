@@ -263,9 +263,9 @@ export CRAY_ACC_DEBUG=2
 #export MPICH_ENV_DISPLAY=1
 #export MPICH_OFI_NIC_POLICY=NUMA
 #export FI_MR_CACHE_MAX_COUNT=0
-if [ ${ARCH} = "gpu" ]; then
-  export MPICH_GPU_SUPPORT_ENABLED=1
-fi
+#if [ ${ARCH} = "gpu" ]; then
+#  export MPICH_GPU_SUPPORT_ENABLED=1
+#fi
 
 # ROCALUTION exports
 #export ROCALUTION_LAYER=1
