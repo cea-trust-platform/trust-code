@@ -68,10 +68,13 @@ public :
   inline double xp(int num_elem,int k) const { return xp_(num_elem,k); }
   inline double xa(int num_arete,int k) const { return xa_(num_arete,k); }
 
-  inline int face_numero_bord(int num_face) const;
-  inline IntTab& face_numero_bord() { return face_numero_bord_; }
-  inline const IntTab& face_numero_bord() const { return face_numero_bord_; }
-  void remplir_face_numero_bord();
+  //inline int face_numero_bord(int num_face) const;
+  //inline IntTab& face_numero_bord() { return face_numero_bord_; }
+  //inline const IntTab& face_numero_bord() const { return face_numero_bord_; }
+  //void remplir_face_numero_bord();
+
+  inline ArrOfInt& est_face_bord() { return est_face_bord_; }
+  inline const ArrOfInt& est_face_bord() const { return est_face_bord_; }
 
   inline virtual const IntVect& orientation() const;
   inline virtual int orientation(int ) const;
@@ -116,7 +119,6 @@ public :
   inline const IntTab& elem_faces() const;
   inline ArrOfInt& faces_doubles();
   inline const ArrOfInt& faces_doubles() const;
-  inline const ArrOfInt& faces_perio() const;
   inline IntTab& face_sommets() override;
   inline const IntTab& face_sommets() const override;
   void modifier_pour_Cl(const Conds_lim&) override;
@@ -186,7 +188,7 @@ protected:
   IntTab elem_faces_;                           // connectivite element/faces
   IntTab face_sommets_;                           // sommets des faces
   DoubleTab xa_;                            // centres de gravite des aretes
-  IntTab face_numero_bord_;                     // connectivite face/numero_bord
+  //IntTab face_numero_bord_;                     // connectivite face/numero_bord
 
   // Descripteur parallele pour les tableaux aux faces (size() == nb_faces())
   MD_Vector md_vector_faces_;
@@ -197,9 +199,10 @@ protected:
 
   VECT(Front_VF) les_bords_;
 
-  IntTab num_fac_loc_;
+  IntTab num_fac_loc_;     // renvoie pour une face son numero local dans l'element
   ArrOfInt faces_perio_;   // faces periodiques (utile si on boucle de 0 a nb_faces_tot)
   ArrOfInt faces_doubles_; // faces a double contribution (faces periodiques et items communs). Utile si on boucle de 0 a nb_faces pour une reduction ensuite
+  ArrOfInt est_face_bord_; // renvoie pour une face reelle ou virtuelle: 0 si interne, 1 si face de bord non periodique, 2 si face de bord periodique
 
   // Pour chaque face virtuelle i avec nb_faces_<=i<nb_faces_tot on a :
   // face_virt_pe_num_(i-nb_faces_,0) = numero du PE qui possede la face
@@ -397,13 +400,6 @@ inline const ArrOfInt& Domaine_VF::faces_doubles() const
   return faces_doubles_;
 }
 
-/*! @brief renvoie 1 pour les faces appartenant a un bord perio
- *
- */
-inline const ArrOfInt& Domaine_VF::faces_perio() const
-{
-  return faces_perio_;
-}
 /*! @brief renvoie le numero du ieme sommet de la face num_face.
  *
  */
@@ -488,11 +484,11 @@ inline int Domaine_VF::est_une_face_virt_bord(int face) const
     return 1;
 }
 
-inline int Domaine_VF::face_numero_bord(int num_face) const
+/* inline int Domaine_VF::face_numero_bord(int num_face) const
 {
   assert(num_face < nb_faces());
   return face_numero_bord_(num_face);
-}
+} */
 
 /* produit scalaire de deux vecteurs */
 inline double Domaine_VF::dot(const double *a, const double *b, const double *ma, const double *mb) const

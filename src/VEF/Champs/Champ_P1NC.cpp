@@ -120,14 +120,14 @@ void calculer_gradientP1NC(const DoubleTab& variable, const Domaine_VEF& domaine
 
   const int * face_voisins_addr = mapToDevice(face_voisins);
   const double * face_normales_addr = mapToDevice(face_normales);
-  const int * faces_perio_addr = mapToDevice( domaine_VEF.faces_perio());
+  const int * est_face_bord_addr = mapToDevice(domaine_VEF.est_face_bord());
   const double * variable_addr = mapToDevice(variable,"variable");
   double * gradient_elem_addr = computeOnTheDevice(gradient_elem, "gradient_elem");
   start_timer();
   #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
   for (int fac=0; fac<nb_faces_tot; fac++)
     {
-      double contrib = faces_perio_addr[fac] ? 0.5 : 1;
+      double contrib = est_face_bord_addr[fac]==2 ? 0.5 : 1; // Contribution O.5 si fac periodique
       int elem1 = face_voisins_addr[fac * 2];
       int elem2 = face_voisins_addr[fac * 2 + 1];
       for (int icomp = 0; icomp < nb_comp; icomp++)

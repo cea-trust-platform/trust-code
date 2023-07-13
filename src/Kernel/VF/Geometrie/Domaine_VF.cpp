@@ -251,11 +251,12 @@ void Domaine_VF::discretiser()
 
   delete les_faces_ptr;
 
-// Fill in the table face_numero_bord
-  remplir_face_numero_bord();
+  // Fill in the table face_numero_bord
+  //remplir_face_numero_bord();
 
-  faces_perio_.resize_array(nb_faces_tot());
   faces_doubles_.resize_array(nb_faces());
+  est_face_bord_.resize_array(nb_faces_tot());
+
 
   ///////////////////////
   // On imprime des infos
@@ -498,18 +499,17 @@ void Domaine_VF::marquer_faces_double_contrib(const Conds_lim& conds_lim)
   Journal() << " Domaine_VF::marquer_faces_double_contrib" << finl;
   // marquage des faces periodiques
   ////////////////////////////////////////////////
+
+  est_face_bord_=0; // init for inner faces.
   for (auto& itr : conds_lim)
     {
       const Cond_lim_base& cl=itr.valeur();
-      if (sub_type(Periodique, cl))
+      int flag = sub_type(Periodique, cl) ? 2 : 1;
+      const Front_VF& le_bord = ref_cast(Front_VF, cl.frontiere_dis());
+      for (int ind_face = 0; ind_face < le_bord.nb_faces_tot(); ind_face++)
         {
-          const Periodique& la_cl_period = ref_cast(Periodique,cl);
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl_period.frontiere_dis());
-          for (int ind_face = 0; ind_face < le_bord.nb_faces_tot(); ind_face++)
-            {
-              int num_face = le_bord.num_face(ind_face);
-              faces_perio_[num_face]=1;
-            }
+          int num_face = le_bord.num_face(ind_face);
+          est_face_bord_[num_face]=flag;
         }
     }
   for (auto& itr : conds_lim)
@@ -628,25 +628,23 @@ void Domaine_VF::creer_tableau_faces_bord(Array_base& t, Array_base::Resize_Opti
   MD_Vector_tools::creer_tableau_distribue(md, t, opt);
 }
 
+/*
 void Domaine_VF::remplir_face_numero_bord()
 {
-  Cerr << " Domaine_VF::remplir_face_numero_bord" << finl;
+  Cerr << "Domaine_VF::remplir_face_numero_bord" << finl;
   face_numero_bord_.resize(nb_faces());
   face_numero_bord_=-1; // init for inner faces.
   Domaine& ledomaine=domaine();
-  int ndeb, nfin, num_face;
   const int nb_bords = ledomaine.nb_bords();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Bord& le_bord = ledomaine.bord(n_bord);
-      ndeb = le_bord.num_premiere_face();
-      nfin = ndeb + le_bord.nb_faces();
-      for (num_face=ndeb; num_face<nfin; num_face++)
-        {
-          face_numero_bord_[num_face] = n_bord;
-        }
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
+      for (int num_face=ndeb; num_face<nfin; num_face++)
+        face_numero_bord_[num_face] = n_bord;
     }
-}
+}*/
 
 const DoubleTab& Domaine_VF::xv_bord() const
 {
