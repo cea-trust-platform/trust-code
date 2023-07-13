@@ -67,53 +67,57 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
                                             const Domaine_Cl_VEF& domaine_Cl_VEF,
                                             const Domaine_VEF& domaine_VEF ) const
 {
-  const IntTab& elemfaces = domaine_VEF.elem_faces();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int i,j,num_face;
   int nb_faces = domaine_VEF.nb_faces();
   int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
-  double flux;
-  int n_bord, ind_face;
   int nb_bords=domaine_VEF.nb_front_Cl();
   // On dimensionne et initialise le tableau des bilans de flux:
   tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),1);
   tab_flux_bords=0.;
+
+  // Construction du tableau grad_ si necessaire
+  /*
+  if(!grad_.get_md_vector().non_nul())
+    {
+      grad_.resize(0, Objet_U::dimension);
+      domaine_VEF.domaine().creer_tableau_elements(grad_);
+    }
+  Champ_P1NC::calcul_gradient(inconnue,grad_,domaine_Cl_VEF);
+   */
+
   const int premiere_face_int=domaine_VEF.premiere_face_int();
 
+  // ToDo OpenMP Fusionner avec boucle faces interne
   // On traite les faces bord
-  for (n_bord=0; n_bord<nb_bords; n_bord++)
+  for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-      //const IntTab& elemfaces = domaine_VEF.elem_faces();
       int num1=0;
       int num2=le_bord.nb_faces_tot();
       int nb_faces_bord_reel = le_bord.nb_faces();
-
       if (sub_type(Periodique,la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique,la_cl.valeur());
-          int fac_asso;
-          for (ind_face=num1; ind_face<nb_faces_bord_reel; ind_face++)
+          for (int ind_face=num1; ind_face<nb_faces_bord_reel; ind_face++)
             {
-              num_face = le_bord.num_face(ind_face);
-              fac_asso = la_cl_perio.face_associee(ind_face);
+              int num_face = le_bord.num_face(ind_face);
+              int fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
               for (int kk=0; kk<2; kk++)
                 {
                   int elem = face_voisins(num_face,kk);
-                  for (i=0; i<nb_faces_elem; i++)
+                  for (int i=0; i<nb_faces_elem; i++)
                     {
-                      if ( ( (j= elemfaces(elem,i)) > num_face ) && (j != fac_asso) )
+                      int j = elem_faces(elem,i);
+                      if ( j > num_face  && j != fac_asso )
                         {
                           double valA = viscA(num_face,j,elem,nu(elem));
-                          resu(num_face)+=valA*inconnue(j);
-                          resu(num_face)-=valA*inconnue(num_face);
+                          double flux = valA*(inconnue(j)-inconnue(num_face));
+                          resu(num_face)+=flux;
                           if(j<nb_faces) // face reelle
-                            {
-                              resu(j)+=0.5*valA*inconnue(num_face);
-                              resu(j)-=0.5*valA*inconnue(j);
-                            }
+                            resu(j)-=+0.5*flux;
                         }
                     }
                 }
@@ -124,33 +128,27 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
         // le tau tangentiel (les lois de paroi thermiques ne calculent pas
         // d'echange turbulent a la paroi pour l'instant
         {
-          for (ind_face=num1; ind_face<num2; ind_face++)
+          for (int ind_face=num1; ind_face<num2; ind_face++)
             {
-              num_face = le_bord.num_face(ind_face);
+              int num_face = le_bord.num_face(ind_face);
               int elem = face_voisins(num_face,0);
-
-              for (i=0; i<nb_faces_elem; i++)
+              for (int i=0; i<nb_faces_elem; i++)
                 {
-                  if (( (j= elemfaces(elem,i)) > num_face ) || (ind_face>=nb_faces_bord_reel))
+                  int j = elem_faces(elem,i);
+                  if (j > num_face || num_face>=nb_faces)
                     {
                       double valA = viscA(num_face,j,elem,nu(elem));
-
-                      if (ind_face<nb_faces_bord_reel)
+                      double flux=valA*(inconnue(j)-inconnue(num_face));
+                      if (num_face<nb_faces) // face reelle
                         {
-                          flux=valA*(inconnue(j)-inconnue(num_face));
-                          // PL : c'est bien un - ici pour flux_bords. Cette valeur est ensuite
-                          // ecrasee pour les bords avec Neumann et ne sert donc que pour les bords
-                          // avec Dirichlet ou le volume de controle est nul
-                          tab_flux_bords(num_face,0)-=flux;
                           resu(num_face)+=flux;
+                          tab_flux_bords(num_face,0)-=flux;
                         }
-
                       if(j<nb_faces) // face reelle
                         {
-                          flux=valA*(inconnue(num_face)-inconnue(j));
+                          resu(j)-=flux;
                           if (j<premiere_face_int)
-                            tab_flux_bords(j,0)-=flux;
-                          resu(j)+=flux;
+                            tab_flux_bords(j,0)+=flux;
                         }
                     }
                 }
@@ -159,57 +157,90 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
     }
 
   // Faces internes :
-  for (num_face=premiere_face_int; num_face<nb_faces; num_face++)
+  const int * face_voisins_addr = mapToDevice(domaine_VEF.face_voisins());
+  const int* elem_faces_addr = mapToDevice(domaine_VEF.elem_faces());
+  const double* face_normales_addr = mapToDevice(domaine_VEF.face_normales());
+  const double* inverse_volumes_addr = mapToDevice(domaine_VEF.inverse_volumes());
+  const double* inconnue_addr = mapToDevice(inconnue, "inconnue");
+  const double* nu_addr = mapToDevice(nu, "nu");
+  double* resu_addr = computeOnTheDevice(resu, "resu");
+  start_timer();
+  #pragma omp target teams distribute parallel for if (computeOnDevice)
+  for (int num_face=premiere_face_int; num_face<nb_faces; num_face++)
     {
       for (int k=0; k<2; k++)
         {
-          int elem = face_voisins(num_face,k);
+          int elem = face_voisins_addr[2*num_face+k];
           {
-            for (i=0; i<nb_faces_elem; i++)
+            for (int i=0; i<nb_faces_elem; i++)
               {
-                j=elemfaces(elem,i);
+                int j=elem_faces_addr[elem*nb_faces_elem+i];
                 if ( j  > num_face )
                   {
-                    int el1,el2;
                     int contrib=1;
                     if(j>=nb_faces) // C'est une face virtuelle
                       {
-                        el1 = face_voisins(j,0);
-                        el2 = face_voisins(j,1);
+                        int el1 = face_voisins_addr[2*j+0];
+                        int el2 = face_voisins_addr[2*j+1];
                         if((el1==-1)||(el2==-1))
                           contrib=0;
                       }
                     if(contrib)
                       {
-                        double valA = viscA(num_face,j,elem,nu(elem));
-                        resu(num_face)+=valA*inconnue(j);
-                        resu(num_face)-=valA*inconnue(num_face);
+                        double pscal = 0;
+                        for (int dim=0; dim<dimension; dim++)
+                          pscal += face_normales_addr[num_face*dimension+dim]*face_normales_addr[j*dimension+dim];
+                        int signe = (face_voisins_addr[num_face*2] == face_voisins_addr[j*2]) || (face_voisins_addr[num_face*2+1] == face_voisins_addr[j*2+1]) ? -1 : 1;
+                        double valA = signe*(pscal*nu_addr[elem])*inverse_volumes_addr[elem];
+                        double flux = valA*(inconnue_addr[j]-inconnue_addr[num_face]);
+                        #pragma omp atomic
+                        resu_addr[num_face]+=flux;
                         if(j<nb_faces) // On traite les faces reelles
-                          {
-                            resu(j)+=valA*inconnue(num_face);
-                            resu(j)-=valA*inconnue(j);
-                          }
+                          #pragma omp atomic
+                          resu_addr[j]-=flux;
                       }
                   }
               }
           }
         }
     }
+  end_timer(Objet_U::computeOnDevice, "Face loop in Op_Diff_VEF_Face::ajouter");
+  /* ToDo OpenMP use grad as calculer_cas_vectoriel
+  for (int num_face=premiere_face_int; num_face<nb_faces; num_face++)
+  {
+    for (int k=0; k<2; k++)
+      {
+        int elem = face_voisins_addr[2*num_face+k];
+        if (elem>=0)
+          {
+            int ori = 1 - 2 * k;
+            for (int j = 0; j < dimension; j++)
+              {
+                double flux = ori * face_normales_addr[num_face * dimension + j]
+                              * nu_addr[elem] * grad_addr[elem * dimension + j];
+                #pragma omp atomic
+                resu_addr[num_face] -= flux;
+              }
+          }
+      } // Fin de la boucle sur les 2 elements comnuns a la face
+  } // Fin de la boucle sur les faces */
 
   // Neumann :
-  for (n_bord=0; n_bord<nb_bords; n_bord++)
+  copyPartialFromDevice(resu, 0, premiere_face_int, "resu on boundary");
+  copyPartialFromDevice(inconnue, 0, premiere_face_int, "inconnue on boundary");
+  start_timer();
+  for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-
+      const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+      int ndeb = le_bord.num_premiere_face();
+      int nfin = ndeb + le_bord.nb_faces();
       if (sub_type(Neumann_paroi,la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              flux=la_cl_paroi.flux_impose(face-ndeb)*domaine_VEF.surface(face);
+              double flux=la_cl_paroi.flux_impose(face-ndeb)*domaine_VEF.surface(face);
               resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
@@ -217,12 +248,9 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
       else if (sub_type(Echange_externe_impose,la_cl.valeur()))
         {
           const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             {
-              flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*domaine_VEF.surface(face);
+              double flux=la_cl_paroi.h_imp(face-ndeb)*(la_cl_paroi.T_ext(face-ndeb)-inconnue(face))*domaine_VEF.surface(face);
               resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
@@ -230,32 +258,27 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
       else if (sub_type(Echange_couplage_thermique, la_cl.valeur()))
         {
           const Echange_couplage_thermique& la_cl_paroi = ref_cast(Echange_couplage_thermique, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-
           for (int face=ndeb; face<nfin; face++)
             {
               double h=la_cl_paroi.h_imp(face-ndeb);
               double Text=la_cl_paroi.T_ext(face-ndeb);
               double phiext=la_cl_paroi.flux_exterieur_impose(face-ndeb);
-              flux=(phiext+h*(Text-inconnue(face)))*domaine_VEF.surface(face);
+              double flux=(phiext+h*(Text-inconnue(face)))*domaine_VEF.surface(face);
               resu[face] += flux;
               tab_flux_bords(face,0) = flux;
             }
-
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur())
                || sub_type(Symetrie,la_cl.valeur())
                || sub_type(Neumann_sortie_libre,la_cl.valeur()))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
           for (int face=ndeb; face<nfin; face++)
             tab_flux_bords(face,0) = 0.;
         }
     }
+  end_timer(0, "Boundary condition on resu in Op_Diff_VEF_Face::ajouter_cas_scalaire\n");
+  copyPartialToDevice(resu, 0, premiere_face_int, "resu on boundary");
+  copyPartialToDevice(inconnue, 0, premiere_face_int, "inconnue on boundary");
 }
 
 void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,

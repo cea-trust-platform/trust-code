@@ -1,0 +1,16 @@
+#####################################
+# Comparaison non regression des .out
+#####################################
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   #[ $debog = 1 ] && echo $msg
+}
+err=0
+for out in `ls $1*.out.ref 2>/dev/null`
+do
+   msg="compare_sonde $out ${out%.ref}"
+   eval $msg 1>verifie.log 2>&1
+   message $? 0
+done
+exit $err

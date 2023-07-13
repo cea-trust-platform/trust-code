@@ -292,7 +292,7 @@ void copyToDevice(_TYPE_* ptr, int size, std::string arrayName)
 #ifdef _OPENMP
   if (Objet_U::computeOnDevice)
     {
-      assert(isAllocatedOnDevice(ptr));
+      assert(isAllocatedOnDevice(ptr) || size==0);
       int bytes = sizeof(_TYPE_) * size;
       start_timer(bytes);
       statistiques().begin_count(gpu_copytodevice_counter_);
