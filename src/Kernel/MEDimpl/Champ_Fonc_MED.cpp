@@ -35,6 +35,7 @@
 using MEDCoupling::MEDCouplingField;
 using MEDCoupling::MEDCouplingFieldDouble;
 using MEDCoupling::MCAuto;
+using MEDCoupling::DataArrayIdType;
 using MEDCoupling::GetTimeAttachedOnFieldIteration;
 using MEDCoupling::GetAllFieldNamesOnMesh;
 using MEDCoupling::MEDFileFieldMultiTS;
@@ -168,51 +169,30 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
       const Domaine& le_domaine=ref_cast(Domaine, interprete().objet(nom_dom_));
 
 #ifndef NDEBUG
-      // on va verifier que l'on a le meme domaine en mode debug car lent
-      // Ce test ne peut etre fait qu'en sequentiel car en parallele, dom=domaine_complet, un_dom=domaine_local
+      // In debug, check that we really have the same domain.
+      // Only doable in sequential, since in //, dom=full_domain, un_dom=local_domain
       if (nproc()==1)
         {
+          Cerr << "Checking whether domain in the file "<<nom_fichier_med_<<" and domain "<<nom_dom_<<" are the same (coords,connectivity) ..."<<finl;
           LireMED liremed(nom_fichier_med_, nom_dom_);
           dom_med_.nommer(nom_dom_);
           liremed.associer_domaine(dom_med_);
-          liremed.lire_geom(false);  // false to *not* create sub-dom files
-
-          DoubleTab diff_som(dom_med_.les_sommets());
-          IntTab diff_elem(dom_med_.les_elems());
-          diff_som.set_md_vector(le_domaine.les_sommets().get_md_vector());
-          diff_elem.set_md_vector(le_domaine.les_elems().get_md_vector());
-          diff_som-=le_domaine.les_sommets();
-          diff_elem-=le_domaine.les_elems();
-          /*
-                    diff_som.set_md_vector(un_dom.les_sommets().get_md_vector());
-                    diff_som-=un_dom.les_sommets();
-                    diff_som.set_md_vector(MD_Vector());
-                    diff_elem.set_md_vector(un_dom.les_elems().get_md_vector());
-                    diff_elem-=un_dom.les_elems();
-                    diff_elem.set_md_vector(MD_Vector());
-          */
-          double err_som0 = max_abs_array(diff_som);
-          int err_elem0 = max_abs_array(diff_elem);
-
-          // Le domaine un_dom a peut etre ete reordonne, on refait le test en reordonnant le domaine dom .....
-          dom_med_.reordonner();
-          dom_med_.les_sommets().set_md_vector(le_domaine.les_sommets().get_md_vector());
-          dom_med_.les_sommets()-=le_domaine.les_sommets();
-          dom_med_.les_sommets().set_md_vector(MD_Vector());
-          dom_med_.les_elems().set_md_vector(le_domaine.les_elems().get_md_vector());
-          dom_med_.les_elems()-=le_domaine.les_elems();
-          dom_med_.les_elems().set_md_vector(MD_Vector());
-          double err_som = max_abs_array(dom_med_.les_sommets());
-          int err_elem = max_abs_array(dom_med_.les_elems());
-
-          if ((err_som>1e-5 || err_elem>0) && (err_som0>1e-5 || err_elem0>0))
+          liremed.retrieve_MC_objects();
+          const MEDCouplingUMesh* new_um = liremed.get_mc_mesh();
+          const MEDCouplingUMesh* root_um = le_domaine.get_mc_mesh();
+          try
             {
-              Cerr<<"Error the domain in the file "<<nom_fichier_med_<<" and domain "<<nom_dom_<<" are not the same (coords,conn)."<<finl;
-              exit();
+              DataArrayIdType *dnup1=nullptr, *dnup2=nullptr;
+              root_um->checkGeoEquivalWith(new_um, /* levOfCheck=  */ 2, Objet_U::precision_geom, dnup1, dnup2);
+              MCAuto<DataArrayIdType> dnu1(dnup1), dnu2(dnup2);
             }
-
-          // Reset:
-          dom_med_=Domaine();
+          catch(INTERP_KERNEL::Exception& e)
+            {
+              Cerr << "Comparison of the two domains failed, with the following message from MEDCoupling::checkGeoEquivalWith()" << finl;
+              Cerr << e.what() << finl;
+              Process::exit();
+            }
+          dom_med_=Domaine();  // Reset
         }
 #endif
       field_size = creer(nom_fichier_med_,le_domaine,loc_,temps_sauv_);

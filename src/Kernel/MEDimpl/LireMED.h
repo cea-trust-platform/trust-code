@@ -42,6 +42,13 @@ public :
   LireMED(const Nom& file_name, const Nom& mesh_name);
   Entree& interpreter_(Entree&) override;
   void lire_geom(bool subDom=true);
+  void retrieve_MC_objects();
+
+  inline const MEDCoupling::MEDCouplingUMesh* get_mc_mesh() const
+  {
+    // really using the cast operator of MEDCoupling, not a wild cast:
+    return (const MEDCoupling::MEDCouplingUMesh*)mcumesh_;
+  }
 
 protected:
   Nom nom_fichier_;              ///< Name of the MED file to read
@@ -63,7 +70,6 @@ protected:
 
   void interp_old_syntax(Entree& is, Nom& nom_dom_trio);
   Nom type_medcoupling_to_type_geo_trio(int type_cell, bool cell_from_boundary) const;
-  void retrieve_MC_objects();
   void prepare_som_and_elem(DoubleTab& sommets2, IntTab& les_elems2);
   void finalize_sommets(const DoubleTab& sommets2, DoubleTab& sommets) const;
   void write_sub_dom_datasets() const;
