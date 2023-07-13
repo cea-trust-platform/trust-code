@@ -1030,7 +1030,7 @@ paroi_echange_contact_correlation_vef condlim_base paroi_echange_contact_correla
   attr dt_impr floattant dt_impr 0 Printing period in name_of_data_file_time.dat files of the 1D model results.
   attr mu chaine mu 0 Dynamic viscosity of the fluid (kg.m-1.s-1) which may be a function of thetemperature T.
   attr debit floattant debit 0 Surface flow rate (kg.s-1.m-2) of the fluid into the channel.
-  attr dh floattant dh 0 Hydraulic diameter may be a function f(x) with x position along the 1D axis (xinf <= x <= xsup)
+  attr dh chaine dh 0 Hydraulic diameter may be a function f(x) with x position along the 1D axis (xinf <= x <= xsup)
   attr n entier n 0 Number of 1D cells of the 1D mesh.
   attr surface chaine surface 0 Section surface of the channel which may be function f(Dh,x) of the hydraulic diameter (Dh) and x position along the 1D axis (xinf <= x <= xsup)
   attr nu chaine nu 0 Nusselt number which may be a function of the Reynolds number (Re) and the Prandtl number (Pr).
