@@ -624,7 +624,7 @@ rm -f $MESSAGES_NUIT $REP_NUIT/nuit_*.html
 rm -f $REP_NUIT/MESSAGES_LIVRAISON* $REP_NUIT/MESSAGES_NUIT
 rm -rf $REP_NUIT/Maintenance
 rm -f $REP_NUIT/.nfs*
-mv /home/trust_trio/CR_* /home/trust_trio/tmp_CR/
+mv ~/CR_* ~/tmp_CR/
 # On cree :
 [ ! -d $REP_NUIT ] && mkdir $REP_NUIT
 [ ! -d $REP_NUIT/Maintenance ] && mkdir -p $REP_NUIT/Maintenance
@@ -999,13 +999,13 @@ fi
       then
          git remote update
          git checkout .
-         git checkout Issue5138_portage192
+         git checkout Issue5292_portage193_tmp
          git pull 1>tmp.log 2>&1
          if [ $? != 0 ]
          then
-            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5138_portage192 KO \" $TRUST_MAIL
+            cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5292_portage193_tmp KO \" $TRUST_MAIL
          else
-            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue0076_portage191 OK \" $TRUST_MAIL
+            [ "`grep 'Already up to date' tmp.log`" = "" ] && cat tmp.log | mail_ -s\"[lance_test_nuit] $Composant : git pull Issue5292_portage193_tmp OK \" $TRUST_MAIL
          fi
          cat tmp.log
          rm tmp.log 1>/dev/null 2>&1

@@ -92,7 +92,6 @@ int Perte_Charge_Circulaire_PolyMAC_Face::lire_motcle_non_standard(const Motcle&
     {
       return Perte_Charge_PolyMAC::lire_motcle_non_standard(mot,is);
     }
-  return -1;
 }
 
 ////////////////////////////////////////////////////////////////
