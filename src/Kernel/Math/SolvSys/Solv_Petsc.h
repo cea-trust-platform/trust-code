@@ -104,11 +104,13 @@ public :
 protected :
 #ifdef PETSCKSP_H
   void check_aij(const Matrice_Morse&);
-  void Create_vectors(const DoubleVect&); // Construit les vecteurs Petsc x et b
   void Create_DM(const DoubleVect& ); // Construit un DM (Distributed Mesh)
-  void Create_MatricePetsc(Mat&, int, const Matrice_Morse&); // Construit et remplit une matrice Petsc depuis la matrice_morse
   virtual void Create_objects(const Matrice_Morse&, int); // Construit differents objets PETSC dont matrice
+  virtual void Create_vectors(const DoubleVect&); // Construit les vecteurs Petsc x et b
+  virtual void Update_vectors(const DoubleVect& secmem, DoubleVect& solution); // Remplit les vecteurs Petsc x et b
+  void Create_MatricePetsc(Mat&, int, const Matrice_Morse&); // Construit et remplit une matrice Petsc depuis la matrice_morse
   virtual void Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse); // Fill the (previously allocated) PETSc matrix with mat_morse coefficients
+  virtual void Update_solution(DoubleVect& solution);
   virtual int solve(ArrOfDouble& residual); // Solve Ax=b and return residual
   virtual void finalize() {};
   virtual bool check_stencil(const Matrice_Morse&);

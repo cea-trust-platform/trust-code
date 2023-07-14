@@ -1420,39 +1420,94 @@ void sortie_maple(Sortie& s, const Matrice_Morse& M)
   s<<"]):"<<finl;
 }
 
-// Save Matrix and RHS in a .petsc file:
+// Save Matrix and RHS in a .petsc or .mtx (matrix market) file:
 void Solv_Petsc::SaveObjectsToFile()
 {
-  MatInfo Info;
-  MatGetInfo(MatricePetsc_,MAT_GLOBAL_SUM,&Info);
-  int nnz = (int)Info.nz_allocated;
-
-  Nom filename("Matrix_");
-  filename+=(Nom)nb_rows_tot_;
-  filename+="_rows_";
-  filename+=(Nom)nproc();
-  filename+="_cpus.petsc";
-
-  PetscViewer viewer;
-  Cerr << "Writing the global PETSc matrix (" << nb_rows_tot_<< " rows and " << nnz << " nnz) in the binary file " << filename << finl;
-  // To go faster with MPI IO ?
-  //PetscViewerCreate(PETSC_COMM_WORLD,&viewer);
-  //PetscViewerFileSetName(viewer,filename);
-  //PetscViewerBinarySetMPIIO(viewer);
-  // Save the matrix:
-  PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_WRITE,&viewer);
-  MatView(MatricePetsc_, viewer);
-  Cerr << "Writing also the RHS in the file " << filename << finl;
-  // Save also the RHS:
-  VecView(SecondMembrePetsc_, viewer);
-  PetscViewerDestroy(&viewer);
-
-  // ASCII output for small matrix(debugging)
-  if (nb_rows_tot_<20)
+  double start = Statistiques::get_time_now();
+  if (save_matrix_==1)
     {
-      Cerr << "The global PETSc matrix is small so we also print it:" << finl;
-      MatView(MatricePetsc_, PETSC_VIEWER_STDOUT_WORLD);
+      MatInfo Info;
+      MatGetInfo(MatricePetsc_,MAT_GLOBAL_SUM,&Info);
+      int nnz = (int)Info.nz_allocated;
+
+      Nom filename("Matrix_");
+      filename+=(Nom)nb_rows_tot_;
+      filename+="_rows_";
+      filename+=(Nom)nproc();
+      filename+="_cpus.petsc";
+
+      PetscViewer viewer;
+      Cerr << "Writing the global PETSc matrix (" << nb_rows_tot_<< " rows and " << nnz << " nnz) in the binary file " << filename << finl;
+      // To go faster with MPI IO ?
+      //PetscViewerCreate(PETSC_COMM_WORLD,&viewer);
+      //PetscViewerFileSetName(viewer,filename);
+      //PetscViewerBinarySetMPIIO(viewer);
+      // Save the matrix:
+      PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_WRITE,&viewer);
+      MatView(MatricePetsc_, viewer);
+      Cerr << "Writing also the RHS in the file " << filename << finl;
+      // Save also the RHS:
+      VecView(SecondMembrePetsc_, viewer);
+      PetscViewerDestroy(&viewer);
+
+      // ASCII output for small matrix(debugging)
+      if (nb_rows_tot_<20)
+        {
+          Cerr << "The global PETSc matrix is small so we also print it:" << finl;
+          MatView(MatricePetsc_, PETSC_VIEWER_STDOUT_WORLD);
+        }
     }
+  else if (save_matrix_==2)
+    {
+      // Format matrix market ToDo : method
+      if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
+      Nom filename(Objet_U::nom_du_cas());
+      filename += "_matrix";
+      filename += (Nom) instance;
+      filename += ".mtx";
+      SFichier mtx(filename);
+      mtx.precision(14);
+      mtx.setf(ios::scientific);
+      PetscInt rows;
+      const PetscInt *ia, *ja;
+      PetscBool done;
+      MatGetRowIJ(MatricePetsc_, 0, PETSC_FALSE, PETSC_FALSE, &rows, &ia, &ja, &done);
+      if (!done) Process::exit("Error in MatGetRowIJ");
+      PetscScalar *v;
+      MatType mat_type;
+      MatGetType(MatricePetsc_, &mat_type);
+      Nom type;
+      if (strcmp(mat_type, MATSEQAIJ) == 0)
+        {
+          type = "general";
+          MatSeqAIJGetArray(MatricePetsc_, &v);
+        }
+      else if (strcmp(mat_type, MATSEQSBAIJ) == 0)
+        {
+          type = "symmetric";
+          MatSeqSBAIJGetArray(MatricePetsc_, &v);
+        }
+      else Process::exit("Matrix type not supported.");
+      mtx << "%%MatrixMarket matrix coordinate real " << type << finl;
+      Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
+      mtx << "%%matrix" << finl;
+      mtx << rows << " " << rows << " " << ia[rows] << finl;
+      for (int row=0; row<rows; row++)
+        for (int j=ia[row]; j<ia[row+1]; j++)
+          mtx << row+1 << " " << ja[j]+1 << " " << v[j] << finl;
+      // Provisoire: sauve un vector Petsc au format ASCII pour le RHS
+      PetscViewer viewer;
+      Nom rhs_filename(Objet_U::nom_du_cas());
+      rhs_filename += "_rhs";
+      rhs_filename += (Nom) instance;
+      rhs_filename += ".petsc";
+      PetscViewerASCIIOpen(PETSC_COMM_WORLD,rhs_filename,&viewer);
+      PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
+      VecView(SecondMembrePetsc_, viewer);
+      Cerr << "Save RHS into " << rhs_filename << finl;
+      PetscViewerDestroy(&viewer);
+    }
+  if (verbose) Cout << "[Petsc] Time to write matrix: \t" << Statistiques::get_time_now() - start << finl;
 }
 
 // Read a PETSc matrix in a file and
@@ -1709,90 +1764,16 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << " unknowns per PETSc process ) " << (nouveau_stencil_ ? "New stencil." : "Same stencil.") << finl;
         }
     }
-  start = Statistiques::get_time_now();
-  // Assemblage du second membre et de la solution
   // ToDo OpenMP: passer a AmgX les pointeurs sur le device de secmem et solution
   bool solutionOnDevice = solution.isDataOnDevice();
   secmem.checkDataOnHost();
   solution.checkDataOnHost();
-  int size=ix.size_array();
-  VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
-  VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
-  VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
-  VecSetValues(SolutionPetsc_, size, ix.addr(), solution.addr(), INSERT_VALUES);
-  VecAssemblyBegin(SecondMembrePetsc_);
-  VecAssemblyEnd(SecondMembrePetsc_);
-  VecAssemblyBegin(SolutionPetsc_);
-  VecAssemblyEnd(SolutionPetsc_);
-  if (reorder_matrix_)
-    {
-      VecPermute(SecondMembrePetsc_, colperm, PETSC_FALSE);
-      VecPermute(SolutionPetsc_, colperm, PETSC_FALSE);
-    }
-  if (verbose) Cout << "[Petsc] Time to update vectors: \t" << Statistiques::get_time_now() - start << finl;
+  // Update PETSc Vec for RHS and solution
+  Update_vectors(secmem, solution);
 
-//  VecView(SecondMembrePetsc_,PETSC_VIEWER_STDOUT_WORLD);
-//  VecView(SolutionPetsc_,PETSC_VIEWER_STDOUT_WORLD);
+  // Save the matrix and the RHS if the matrix has changed...
+  if (nouvelle_matrice() && save_matrix_) SaveObjectsToFile();
 
-  // Save the matrix and the RHS
-  // if the matrix has changed...
-  if (nouvelle_matrice())
-    {
-      start = Statistiques::get_time_now();
-      if (save_matrix_==1)
-        SaveObjectsToFile();
-      else if (save_matrix_==2)
-        {
-          // Format matrix market ToDo : method
-          if (Process::nproc() > 1) Process::exit("Error, matrix market format is not available yet in parallel.");
-          Nom filename(Objet_U::nom_du_cas());
-          filename += "_matrix";
-          filename += (Nom) instance;
-          filename += ".mtx";
-          SFichier mtx(filename);
-          mtx.precision(14);
-          mtx.setf(ios::scientific);
-          PetscInt rows;
-          const PetscInt *ia, *ja;
-          PetscBool done;
-          MatGetRowIJ(MatricePetsc_, 0, PETSC_FALSE, PETSC_FALSE, &rows, &ia, &ja, &done);
-          if (!done) Process::exit("Error in MatGetRowIJ");
-          PetscScalar *v;
-          MatType mat_type;
-          MatGetType(MatricePetsc_, &mat_type);
-          Nom type;
-          if (strcmp(mat_type, MATSEQAIJ) == 0)
-            {
-              type = "general";
-              MatSeqAIJGetArray(MatricePetsc_, &v);
-            }
-          else if (strcmp(mat_type, MATSEQSBAIJ) == 0)
-            {
-              type = "symmetric";
-              MatSeqSBAIJGetArray(MatricePetsc_, &v);
-            }
-          else Process::exit("Matrix type not supported.");
-          mtx << "%%MatrixMarket matrix coordinate real " << type << finl;
-          Cerr << "Matrix (" << rows << " lines) written into file: " << filename << finl;
-          mtx << "%%matrix" << finl;
-          mtx << rows << " " << rows << " " << ia[rows] << finl;
-          for (int row=0; row<rows; row++)
-            for (int j=ia[row]; j<ia[row+1]; j++)
-              mtx << row+1 << " " << ja[j]+1 << " " << v[j] << finl;
-          // Provisoire: sauve un vector Petsc au format ASCII pour le RHS
-          PetscViewer viewer;
-          Nom rhs_filename(Objet_U::nom_du_cas());
-          rhs_filename += "_rhs";
-          rhs_filename += (Nom) instance;
-          rhs_filename += ".petsc";
-          PetscViewerASCIIOpen(PETSC_COMM_WORLD,rhs_filename,&viewer);
-          PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
-          VecView(SecondMembrePetsc_, viewer);
-          Cerr << "Save RHS into " << rhs_filename << finl;
-          PetscViewerDestroy(&viewer);
-        }
-      if (save_matrix_ && verbose) Cout << "[Petsc] Time to write matrix: \t" << Statistiques::get_time_now() - start << finl;
-    }
   //////////////////////////
   // Solve the linear system
   //////////////////////////
@@ -1807,34 +1788,9 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       double residu_relatif=(residu[0]>0?residu[nbiter]/residu[0]:residu[nbiter]);
       Cout << finl << "Final residue: " << residu[nbiter] << " ( " << residu_relatif << " )"<<finl;
     }
-  // Recuperation de la solution
-  start = Statistiques::get_time_now();
-  if (reorder_matrix_)
-    VecPermute(SolutionPetsc_, rowperm, PETSC_TRUE);
-  // ToDo un seul VecGetValues comme VecSetValues
-  if (different_partition_)
-    {
-      // TRUST and PETSc has different partition, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
-      VecScatterBegin(VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
-      VecScatterEnd  (VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
-      // Use the local vector to get the solution:
-      int colonne_locale=0;
-      for (int i=0; i<size; i++)
-        if (items_to_keep_[i])
-          {
-            VecGetValues(LocalSolutionPetsc_, 1, &colonne_locale, &solution(i));
-            colonne_locale++;
-          }
-      assert(nb_rows_==colonne_locale);
-    }
-  else
-    {
-      // TRUST and PETSc has same partition, local solution can be accessed from the global vector:
-      VecGetValues(SolutionPetsc_, size, ix.addr(), solution.addr());
-    }
+  Update_solution(solution);
   solution.echange_espace_virtuel();
   fixer_nouvelle_matrice(0);
-  if (verbose) Cout << finl << "[Petsc] Time to update solution: \t" << Statistiques::get_time_now() - start << finl;
   // Calcul et verification du vrai residu sur matrice:
   bool check_residual = controle_residu_;
 #ifndef NDEBUG
@@ -1957,6 +1913,60 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
 #endif
 
 #ifdef PETSCKSP_H
+void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
+{
+  double start = Statistiques::get_time_now();
+  // Assemblage du second membre et de la solution
+  int size=ix.size_array();
+  VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+  VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
+  VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
+  VecSetValues(SolutionPetsc_, size, ix.addr(), solution.addr(), INSERT_VALUES);
+  VecAssemblyBegin(SecondMembrePetsc_);
+  VecAssemblyEnd(SecondMembrePetsc_);
+  VecAssemblyBegin(SolutionPetsc_);
+  VecAssemblyEnd(SolutionPetsc_);
+  if (reorder_matrix_)
+    {
+      VecPermute(SecondMembrePetsc_, colperm, PETSC_FALSE);
+      VecPermute(SolutionPetsc_, colperm, PETSC_FALSE);
+    }
+  if (verbose) Cout << "[Petsc] Time to update vectors: \t" << Statistiques::get_time_now() - start << finl;
+
+//  VecView(SecondMembrePetsc_,PETSC_VIEWER_STDOUT_WORLD);
+//  VecView(SolutionPetsc_,PETSC_VIEWER_STDOUT_WORLD);
+}
+
+void Solv_Petsc::Update_solution(DoubleVect& solution)
+{
+  // Recuperation de la solution
+  double start = Statistiques::get_time_now();
+  int size=ix.size_array();
+  if (reorder_matrix_)
+    VecPermute(SolutionPetsc_, rowperm, PETSC_TRUE);
+  // ToDo un seul VecGetValues comme VecSetValues
+  if (different_partition_)
+    {
+      // TRUST and PETSc has different partition, a local vector LocalSolutionPetsc_ is gathered from the global vector SolutionPetsc_ :
+      VecScatterBegin(VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
+      VecScatterEnd  (VecScatter_, SolutionPetsc_, LocalSolutionPetsc_, INSERT_VALUES, SCATTER_FORWARD);
+      // Use the local vector to get the solution:
+      int colonne_locale=0;
+      for (int i=0; i<size; i++)
+        if (items_to_keep_[i])
+          {
+            VecGetValues(LocalSolutionPetsc_, 1, &colonne_locale, &solution(i));
+            colonne_locale++;
+          }
+      assert(nb_rows_==colonne_locale);
+    }
+  else
+    {
+      // TRUST and PETSc has same partition, local solution can be accessed from the global vector:
+      VecGetValues(SolutionPetsc_, size, ix.addr(), solution.addr());
+    }
+  if (verbose) Cout << finl << "[Petsc] Time to update solution: \t" << Statistiques::get_time_now() - start << finl;
+}
 
 void Solv_Petsc::check_aij(const Matrice_Morse& mat)
 {
