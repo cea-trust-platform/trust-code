@@ -209,7 +209,8 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
   // Calcul du residu avant resolution pour eviter des soucis:
-  double normx; // ToDo OpenMP faire sur GPU dans Solv_Petsc ?
+  /* Desormais fait sur le device dans solve.cpp (surcharge dans TRUST de AmgXWrapper::solve)
+  double normx;
   VecNorm(SolutionPetsc_, NORM_2, &normx);
   if (normx==0)
     VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));  // ||Ax-b|| = ||b||
@@ -232,10 +233,11 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
       return 0;
       //Process::exit();
     }
+    */
 
   // ToDo OpenMP ici dans le solve AmgXWrapper il y'a aussi de la copie qui est compte donc dans gpu_library_counter_
   statistiques().begin_count(gpu_library_counter_);
-  SolveurAmgX_.solve(lhs, rhs, nRowsLocal);
+  SolveurAmgX_.solve(lhs, rhs, nRowsLocal, seuil_);
   statistiques().end_count(gpu_library_counter_);
   Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_library_counter_) << finl;
   return nbiter(residu);
@@ -250,7 +252,7 @@ int Solv_AMGX::nbiter(ArrOfDouble& residu)
   if (limpr() > -1)
     {
       SolveurAmgX_.getResidual(0, residu(0));
-      SolveurAmgX_.getResidual(nbiter - 1, residu(nbiter));
+      if (nbiter>0) SolveurAmgX_.getResidual(nbiter - 1, residu(nbiter));
     }
   return nbiter;
 }

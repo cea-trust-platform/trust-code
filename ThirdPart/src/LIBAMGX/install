@@ -75,6 +75,8 @@ then
       commit=331eba32db693528749bd2c46158073079d80972
       tar xfz $TRUST_ROOT/externalpackages/AmgX/AmgXWrapper_$commit.tar.gz
    fi
+   # Hack pour acceder directement au solver AmgX via AmgXWrapper:
+   sed -i "1,$ s?private:?public:?g" AmgXWrapper/src/AmgXSolver.hpp || exit -1
    # Hack pour empecher le test des binaires qui ne marche pas cluster (un binaire PETSc compile avec CUDA plantera sur la frontale non gpu)
    sed -i "1,$ s?endif (\${\${runs}})??" AmgXWrapper/cmake-modules/FindPETSc.cmake
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
