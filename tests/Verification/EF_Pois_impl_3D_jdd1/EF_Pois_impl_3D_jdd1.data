@@ -49,10 +49,8 @@ Read sch2
     dt_sauv 1
     seuil_statio 1.e-7
     solveur implicite {
-        solveur Gen { seuil 1e-10 solv_elem BiCGStab precond ILU { type 2 filling 10 }  }
-
+        # solveur Gen { seuil 1e-10 solv_elem BiCGStab precond ILU { type 2 filling 10 }  } #
         solveur gmres { diag seuil 1e-10 impr nb_it_max 5 }
-
     }
     facsec 100
 

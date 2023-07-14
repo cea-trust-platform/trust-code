@@ -4,7 +4,6 @@ dimension 3
 Scheme_euler_explicit sch
 Read sch
 {
-    nb_pas_dt_max 2
     tinit 0.
     tmax 1000.
     dt_min 1.E-4

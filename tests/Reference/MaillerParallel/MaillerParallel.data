@@ -63,8 +63,10 @@ Read pb
         }
         convection { quick }
         diffusion { }
-        sources { boussinesq_temperature { T0 5. } }
-        sources { Canal_perio { bord PerioZ } }
+        sources { 
+            boussinesq_temperature { T0 5. } ,
+            Canal_perio { bord PerioZ } 
+        }
         initial_conditions {
             vitesse Champ_Uniforme 3 0. 0. 0.005
         }

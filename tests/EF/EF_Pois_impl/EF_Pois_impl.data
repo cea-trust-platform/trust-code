@@ -49,8 +49,8 @@ Read sch2
     solveur implicite {
         seuil_convergence_implicite 1e-2
         seuil_convergence_solveur  1e-10
-        solveur gmres { diag seuil 1e-10 }
-        solveur optimal { seuil 1e-10 }
+        # solveur gmres { diag seuil 1e-10 } #
+        # solveur optimal { seuil 1e-10 } #
         solveur Gen { seuil 1e-10 solv_elem BiCGStab precond ILU { type 2 filling 20 }  quiet }
 
     }

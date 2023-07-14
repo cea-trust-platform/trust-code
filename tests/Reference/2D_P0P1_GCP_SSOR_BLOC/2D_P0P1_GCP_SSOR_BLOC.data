@@ -79,12 +79,14 @@ Read pb
             }
         }
 
-        Sources { Source_Qdm_lambdaup { lambda 0.01 lambda_min 1.e-10 lambda_max 0.1 ubar_umprim_cible 10 } }
-
         convection { negligeable }
         diffusion  { }
 
-        Sources { Source_Qdm Champ_fonc_xyz dom 2 x*y x*x*y*y  }
+        Sources 
+        { 
+            Source_Qdm_lambdaup { lambda 0.01 lambda_min 1.e-10 lambda_max 0.1 ubar_umprim_cible 10 } ,
+            Source_Qdm Champ_fonc_xyz dom 2 x*y x*x*y*y  
+        }
         initial_conditions
         {
             vitesse Champ_fonc_xyz dom 2 1000*x -1000*y

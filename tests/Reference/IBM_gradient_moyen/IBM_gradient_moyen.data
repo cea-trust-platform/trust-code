@@ -62,7 +62,6 @@ Lire sch
     dt_start dt_calc
     dt_max 0.1
 
-    nb_pas_dt_max 1000000
     nb_pas_dt_max 1
     facsec 2.5
 }

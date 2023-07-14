@@ -46,7 +46,8 @@ Read sch
     seuil_statio 1e-4
     dt_impr 1e-10
     gnuplot_header 1
-    NB_PAS_DT_MAX 100000000
+    # NB_PAS_DT_MAX 100000000 #  # will be kept in NR test #
+    nb_pas_dt_max   100000000
     solveur implicite
     {
         solveur petsc cholesky { }

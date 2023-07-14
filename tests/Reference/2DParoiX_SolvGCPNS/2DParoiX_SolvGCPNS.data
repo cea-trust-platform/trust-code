@@ -73,7 +73,7 @@ Read pb
         dt_projection 1.e-5 1.e-16
 
         Solveur_Pression GCP_NS {
-            seuil 1.e-9 impr
+            seuil 1.e-9
             solveur1 petsc cholesky { }
             solveur0 petsc cholesky { }
             impr

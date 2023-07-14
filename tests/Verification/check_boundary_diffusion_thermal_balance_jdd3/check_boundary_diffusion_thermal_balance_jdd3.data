@@ -40,14 +40,14 @@ Scheme_euler_implicit sch
 Read sch
 {
     tinit 0
-	nb_pas_dt_max 3
+	nb_pas_dt_max 100000000
     dt_max 10
     facsec 1e30
     facsec_max 1e30
     seuil_statio 1e-4
     dt_impr 1e-10
     gnuplot_header 1
-    NB_PAS_DT_MAX 100000000
+    # NB_PAS_DT_MAX 100000000 #  # will be kept in NR test #
     solveur implicite
     {
         solveur petsc cholesky { }

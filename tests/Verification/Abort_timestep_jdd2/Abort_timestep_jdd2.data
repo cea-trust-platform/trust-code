@@ -95,7 +95,6 @@ Read sch
     tinit 0.
 	nb_pas_dt_max 3
     tmax 0.05
-    dt_min 1.e-6
     dt_min 0.01
     dt_max 0.01
     dt_impr 0.01

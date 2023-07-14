@@ -46,7 +46,6 @@ Read sch
     tinit 0
     dt_min 0.00001
     dt_sauv 100
-    seuil_statio 1.e-8
     seuil_statio 2.22222e-07
 }
 

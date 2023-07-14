@@ -37,7 +37,7 @@ Read sch
     dt_min 5e-5
     solveur implicite {
         seuil_convergence_solveur 1e-8
-        solveur optimal { seuil 1e-9 }
+        # solveur optimal { seuil 1e-9 } #
         solveur gen { seuil 1e-09   solv_elem bicgstab precond ilu { type 2 filling 10 } impr }
 
     }

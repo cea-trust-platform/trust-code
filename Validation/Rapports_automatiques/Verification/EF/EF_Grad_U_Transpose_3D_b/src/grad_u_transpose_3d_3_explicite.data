@@ -34,7 +34,6 @@ Read sch
     dt_max 5.e-3
     dt_impr 5.e-1
     dt_sauv 1
-    seuil_statio 1.e-8
     seuil_statio 1.905e-05
     dt_min 5e-5
 }
