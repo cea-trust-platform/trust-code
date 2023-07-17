@@ -21,4 +21,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VEF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libvef
+Lib = $(TRUST_LIB)/libvef_trait_part

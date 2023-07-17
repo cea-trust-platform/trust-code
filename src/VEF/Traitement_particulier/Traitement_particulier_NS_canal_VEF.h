@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,23 +13,39 @@
 *
 *****************************************************************************/
 
-#include <Traitement_particulier_NS_EC_VEF.h>
-#include <SFichier.h>
 
-Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_EC_VEF,"Traitement_particulier_NS_EC_VEF",Traitement_particulier_NS_EC);
+#ifndef Traitement_particulier_NS_canal_VEF_included
+#define Traitement_particulier_NS_canal_VEF_included
 
-/*! @brief does nothing.
+#include <Traitement_particulier_NS_canal.h>
+
+/*! @brief classe Traitement_particulier_NS_canal_VEF Cette classe permet de faire les traitements particuliers
  *
- */
-Sortie& Traitement_particulier_NS_EC_VEF::printOn(Sortie& is) const
-{
-  return is;
-}
-
-/*! @brief does nothing.
+ *      pour le calcul d'un canal plan :
+ *          * conservation du debit
+ *          * calculs de moyennes
  *
+ *
+ * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
  */
-Entree& Traitement_particulier_NS_EC_VEF::readOn(Entree& is)
+class Traitement_particulier_NS_canal_VEF : public Traitement_particulier_NS_canal
 {
-  return is;
-}
+  Declare_instanciable(Traitement_particulier_NS_canal_VEF);
+
+
+public :
+
+  Entree& lire(const Motcle& , Entree& );
+  Entree& lire(Entree& ) override;
+
+protected :
+
+  void remplir_Y(DoubleVect&, DoubleVect&, int& ) const override;
+  void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const override;
+  void calculer_moyenne_spatiale_nut(DoubleTab&) const override;
+  void calculer_moyenne_spatiale_Temp(DoubleTab&) const override;
+
+};
+
+
+#endif

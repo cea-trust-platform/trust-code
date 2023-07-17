@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,42 +13,23 @@
 *
 *****************************************************************************/
 
-#include <Traitement_particulier_NS_VEF.h>
+#include <Traitement_particulier_NS_EC_VEF.h>
+#include <SFichier.h>
 
-Implemente_instanciable(Traitement_particulier_NS_VEF,"Traitement_particulier_NS_VEF",Traitement_particulier_NS_base);
+Implemente_instanciable_sans_constructeur(Traitement_particulier_NS_EC_VEF,"Traitement_particulier_NS_EC_VEF",Traitement_particulier_NS_EC);
 
-
-/*! @brief Impression de l'equation sur un flot de sortie.
+/*! @brief does nothing.
  *
- * Simple appel a Equation_base::printOn(Sortie&).
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
  */
-Sortie& Traitement_particulier_NS_VEF::printOn(Sortie& is) const
+Sortie& Traitement_particulier_NS_EC_VEF::printOn(Sortie& is) const
 {
   return is;
 }
 
-
-/*! @brief Lit les specifications de l'equation de Navier Stokes a partir d'un flot d'entree.
+/*! @brief does nothing.
  *
- *     Simple appel a Navier_Stokes_std::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws pas de modele de turbulence speficie
  */
-Entree& Traitement_particulier_NS_VEF::readOn(Entree& is)
+Entree& Traitement_particulier_NS_EC_VEF::readOn(Entree& is)
 {
   return is;
-}
-
-Entree& Traitement_particulier_NS_VEF::lire(Entree& is)
-{
-  return is;
-}
-void Traitement_particulier_NS_VEF::associer_eqn(const Equation_base& eqn)
-{
-  Traitement_particulier_NS_base::associer_eqn(eqn);
 }

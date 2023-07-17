@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,39 +13,42 @@
 *
 *****************************************************************************/
 
+#include <Traitement_particulier_NS_VEF.h>
 
-#ifndef Traitement_particulier_NS_canal_VEF_included
-#define Traitement_particulier_NS_canal_VEF_included
+Implemente_instanciable(Traitement_particulier_NS_VEF,"Traitement_particulier_NS_VEF",Traitement_particulier_NS_base);
 
-#include <Traitement_particulier_NS_canal.h>
 
-/*! @brief classe Traitement_particulier_NS_canal_VEF Cette classe permet de faire les traitements particuliers
+/*! @brief Impression de l'equation sur un flot de sortie.
  *
- *      pour le calcul d'un canal plan :
- *          * conservation du debit
- *          * calculs de moyennes
+ * Simple appel a Equation_base::printOn(Sortie&).
  *
- *
- * @sa Navier_Stokes_Turbulent, Traitement_particulier_base,, Traitement_particulier_VEF
+ * @param (Sortie& is) un flot de sortie
+ * @return (Sortie&) le flot de sortie modifie
  */
-class Traitement_particulier_NS_canal_VEF : public Traitement_particulier_NS_canal
+Sortie& Traitement_particulier_NS_VEF::printOn(Sortie& is) const
 {
-  Declare_instanciable(Traitement_particulier_NS_canal_VEF);
+  return is;
+}
 
 
-public :
+/*! @brief Lit les specifications de l'equation de Navier Stokes a partir d'un flot d'entree.
+ *
+ *     Simple appel a Navier_Stokes_std::readOn(Entree&)
+ *
+ * @param (Entree& is) un flot d'entree
+ * @return (Entree&) le flot d'entree modifie
+ * @throws pas de modele de turbulence speficie
+ */
+Entree& Traitement_particulier_NS_VEF::readOn(Entree& is)
+{
+  return is;
+}
 
-  Entree& lire(const Motcle& , Entree& );
-  Entree& lire(Entree& ) override;
-
-protected :
-
-  void remplir_Y(DoubleVect&, DoubleVect&, int& ) const override;
-  void calculer_moyenne_spatiale_vitesse_rho_mu(DoubleTab&) const override;
-  void calculer_moyenne_spatiale_nut(DoubleTab&) const override;
-  void calculer_moyenne_spatiale_Temp(DoubleTab&) const override;
-
-};
-
-
-#endif
+Entree& Traitement_particulier_NS_VEF::lire(Entree& is)
+{
+  return is;
+}
+void Traitement_particulier_NS_VEF::associer_eqn(const Equation_base& eqn)
+{
+  Traitement_particulier_NS_base::associer_eqn(eqn);
+}
