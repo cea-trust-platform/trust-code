@@ -179,6 +179,8 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           liremed.associer_domaine(dom_med_);
           liremed.retrieve_MC_objects();
           const MEDCouplingUMesh* new_um = liremed.get_mc_mesh();
+          if (le_domaine.get_mc_mesh() == nullptr)
+            le_domaine.build_mc_mesh();
           const MEDCouplingUMesh* root_um = le_domaine.get_mc_mesh();
           try
             {
