@@ -21,7 +21,7 @@
 #include <Operateur_base.h>
 #include <TRUST_Ref.h>
 
-class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 class Domaine_VEF;
 
 class Op_Rot_VEFP1B : public Operateur_base
@@ -34,7 +34,7 @@ public:
 
   //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
   DoubleTab vecteur_normal(const int face, const int elem) const;
-  const Domaine_VEF_PreP1b& domaine_Vef() const;
+  const Domaine_VEF& domaine_Vef() const;
 
   void associer_coins(const ArrOfInt&);
 

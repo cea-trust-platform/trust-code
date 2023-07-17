@@ -29,7 +29,7 @@
  *
  * @sa Operateur_Grad_base
  */
-class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 class Domaine_Cl_VEF;
 
 class Op_Grad_VEF_P1B_Face : public Op_Grad_VEF_Face
@@ -39,7 +39,7 @@ class Op_Grad_VEF_P1B_Face : public Op_Grad_VEF_Face
 
 public:
 
-  const Domaine_VEF_PreP1b& domaine_Vef() const;
+  const Domaine_VEF& domaine_Vef() const;
   DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
   DoubleTab& modifier_grad_pour_Cl(DoubleTab& ) const;
   DoubleTab& ajouter_elem(const DoubleTab& ,  DoubleTab& ) const;
@@ -48,7 +48,7 @@ public:
   int impr(Sortie& ) const override ;
 
   static double calculer_coef_som(int elem,  const Domaine_Cl_VEF& zcl,
-                                  const Domaine_VEF_PreP1b& domaine_VEF) ;
+                                  const Domaine_VEF& domaine_VEF) ;
   void calculer_flux_bords() const override;
 
 private:

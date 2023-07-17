@@ -22,7 +22,7 @@
 #include <TRUST_Ref.h>
 #include <Domaine.h>
 
-class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 class Domaine_Cl_VEF;
 
 class Op_Curl_VEFP1B : public Operateur_base
@@ -38,7 +38,7 @@ public:
   int elements_pour_sommet(const int sommet,const int indice) const;
   int elem_som_size(const int sommet) const;
 
-  const Domaine_VEF_PreP1b& domaine_Vef() const;
+  const Domaine_VEF& domaine_Vef() const;
 
 protected:
   REF(Domaine_VEF) le_dom_vef;

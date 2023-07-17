@@ -47,9 +47,9 @@ void  Op_Rot_VEFP1B::associer_coins(const ArrOfInt& arr)
 }
 
 
-const Domaine_VEF_PreP1b& Op_Rot_VEFP1B::domaine_Vef() const
+const Domaine_VEF& Op_Rot_VEFP1B::domaine_Vef() const
 {
-  return ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF, le_dom_vef.valeur());
 }
 
 //////////////////////////////////////////////////

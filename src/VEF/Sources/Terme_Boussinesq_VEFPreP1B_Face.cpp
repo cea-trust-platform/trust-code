@@ -19,7 +19,7 @@
 #include <Periodique.h>
 #include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Synonyme_info.h>
 
 extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Domaine_Cl_VEF& zcl, const Domaine_VEF& domaine_VEF);
@@ -42,7 +42,7 @@ Entree& Terme_Boussinesq_VEFPreP1B_Face::readOn(Entree& s )
 
 DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_VEF.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_VEF.valeur());
   // Si seulement support P0 on appelle en VEF
   if (domaine_VEF.get_alphaE() && !domaine_VEF.get_alphaS() && !domaine_VEF.get_alphaA())
     return Terme_Boussinesq_VEF_Face::ajouter(resu);
@@ -134,7 +134,7 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
   ArrOfDouble a0(dimension),a0a1(dimension),a0a2(dimension),a0a3(dimension);
 
   // Extension possible des volumes de controle:
-  int modif_traitement_diri=( sub_type(Domaine_VEF_PreP1b,domaine_VEF) ? ref_cast(Domaine_VEF_PreP1b,domaine_VEF).get_modif_div_face_dirichlet() : 0);
+  int modif_traitement_diri=( sub_type(Domaine_VEF,domaine_VEF) ? ref_cast(Domaine_VEF,domaine_VEF).get_modif_div_face_dirichlet() : 0);
   modif_traitement_diri = 0; // Forcee a 0 car ne marche pas d'apres essais Ulrich&Thomas
   int nb_face_diri=0;
   ArrOfInt indice_diri(dimension+1);

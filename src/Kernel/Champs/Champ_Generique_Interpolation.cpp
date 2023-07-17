@@ -682,7 +682,8 @@ void Champ_Generique_Interpolation::discretiser_domaine()
     {
       const Probleme_base& Pb = get_ref_pb_base();
       const Discretisation_base& discr = Pb.discretisation();
-      const Nom& type_discr = discr.que_suis_je();
+      Nom type_discr = discr.que_suis_je();
+      if (type_discr == "VEFPreP1B") type_discr = "VEF";
       // on ne cree pas les faces sauf si on veut une interpolation aux faces ou si on a des polyedres
       // Nom type = sub_type(Poly_geom_base, domaine_.valeur().type_elem().valeur()) ? "Domaine_" : "NO_FACE_Domaine_";
       Nom type = "NO_FACE_Domaine_";

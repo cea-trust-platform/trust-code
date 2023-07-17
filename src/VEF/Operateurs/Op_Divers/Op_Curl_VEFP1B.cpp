@@ -21,7 +21,7 @@
 
 #include <Domaine_dis.h>
 #include <Domaine_Cl_dis.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 
 Implemente_instanciable(Op_Curl_VEFP1B,"Op_Curl_VEFPreP1B_P1NC",Operateur_base);
 
@@ -36,9 +36,9 @@ Entree& Op_Curl_VEFP1B::readOn(Entree& is)
 }
 
 
-const Domaine_VEF_PreP1b& Op_Curl_VEFP1B::domaine_Vef() const
+const Domaine_VEF& Op_Curl_VEFP1B::domaine_Vef() const
 {
-  return ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF, le_dom_vef.valeur());
 }
 
 /////////////////////////////////////

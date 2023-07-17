@@ -17,7 +17,7 @@
 #define Champ_Fonc_P1_isoP1Bulle_included
 
 #include <Champ_P1iP1B_implementation.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Champ_Fonc_base.h>
 
 /*! @brief classe Champ_Fonc_P1_isoP1Bulle
@@ -33,7 +33,7 @@ public:
   DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&, double, int distant) const override;
 
   // Methodes inlines
-  inline const Domaine_VEF_PreP1b& domaine_vef() const override { return ref_cast(Domaine_VEF_PreP1b,le_dom_VF.valeur()); }
+  inline const Domaine_VEF& domaine_vef() const override { return ref_cast(Domaine_VEF,le_dom_VF.valeur()); }
 
   inline DoubleVect& valeur_a_elem(const DoubleVect& position, DoubleVect& val, int le_poly) const override
   {

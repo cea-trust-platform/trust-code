@@ -16,7 +16,7 @@
 #include <Champ_P1iP1B_implementation.h>
 #include <Champ_implementation_P1.h>
 #include <Domaine.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
 #include <Debog.h>
 
@@ -77,7 +77,7 @@ DoubleTab& Champ_P1iP1B_implementation::valeur_aux_elems(const DoubleTab& positi
   double xs,ys,zs=0;
   // zs bien initialise en 3D
 
-  const Domaine_VEF_PreP1b& zvef = domaine_vef();
+  const Domaine_VEF& zvef = domaine_vef();
   const Domaine& domaine_geom = zvef.domaine();
   const DoubleTab& coord = domaine_geom.coord_sommets();
   const IntTab& sommet_poly = domaine_geom.les_elems();
@@ -162,7 +162,7 @@ DoubleVect& Champ_P1iP1B_implementation::valeur_aux_elems_compo(const DoubleTab&
 // Renvoie un tableau contenant les valeurs du champ aux sommets du domaine
 DoubleTab& Champ_P1iP1B_implementation::valeur_aux_sommets(const Domaine& dom, DoubleTab& val) const
 {
-  const Domaine_VEF_PreP1b& zvef = domaine_vef();
+  const Domaine_VEF& zvef = domaine_vef();
   int nb_compo_=le_champ().nb_comp();
   assert(nb_compo_ == val.line_size());
 
@@ -214,7 +214,7 @@ valeur_aux_sommets_compo(const Domaine& dom,
 
 DoubleTab& Champ_P1iP1B_implementation::remplir_coord_noeuds(DoubleTab& coord) const
 {
-  const Domaine_VEF_PreP1b& zvef=domaine_vef();
+  const Domaine_VEF& zvef=domaine_vef();
   const Domaine& le_dom=zvef.domaine();
   const Domaine& dom=le_dom;
   const DoubleTab& coord_sommets=dom.coord_sommets();
@@ -258,7 +258,7 @@ remplir_coord_noeuds_et_polys(DoubleTab& positions,
   return 1;
 }
 
-void assembler(const Domaine_VEF_PreP1b& domaine_VEF, Matrice& matrice)
+void assembler(const Domaine_VEF& domaine_VEF, Matrice& matrice)
 {
   matrice.typer("Matrice_Morse_Sym");
   Matrice_Morse_Sym& MatPoisson=ref_cast(Matrice_Morse_Sym, matrice.valeur());
@@ -308,7 +308,7 @@ void assembler(const Domaine_VEF_PreP1b& domaine_VEF, Matrice& matrice)
 
 static double coeff = 4. / 5.;
 static double coeff_inv = 1 / coeff;
-double second_membre(const Domaine_VEF_PreP1b& domaine_VEF, ArrOfDouble& Pa, DoubleVect& secmem)
+double second_membre(const Domaine_VEF& domaine_VEF, ArrOfDouble& Pa, DoubleVect& secmem)
 {
   int nb_arete_tot = domaine_VEF.domaine().nb_aretes_tot();
   const IntTab& aretes_som=domaine_VEF.domaine().aretes_som();
@@ -334,7 +334,7 @@ double second_membre(const Domaine_VEF_PreP1b& domaine_VEF, ArrOfDouble& Pa, Dou
   return norme;
 }
 
-void corriger(const Domaine_VEF_PreP1b& domaine_VEF, DoubleTab& champ_filtre_, Matrice& matrice, const int Condition_Neumann_imposee_)
+void corriger(const Domaine_VEF& domaine_VEF, DoubleTab& champ_filtre_, Matrice& matrice, const int Condition_Neumann_imposee_)
 {
   int nb_elem=domaine_VEF.nb_elem();
   int nb_som=domaine_VEF.nb_som();
@@ -448,7 +448,7 @@ void corriger(const Domaine_VEF_PreP1b& domaine_VEF, DoubleTab& champ_filtre_, M
   champ_filtre_.echange_espace_virtuel();         // Mise a jour des espaces virtuels
 }
 
-DoubleTab& Champ_P1iP1B_implementation::filtrage(const Domaine_VEF_PreP1b& zvef, const Champ_base& un_champ) const
+DoubleTab& Champ_P1iP1B_implementation::filtrage(const Domaine_VEF& zvef, const Champ_base& un_champ) const
 {
   // Filtrage si supports element et sommet presents au moins
   if (zvef.get_alphaE() && zvef.get_alphaS())
@@ -491,7 +491,7 @@ DoubleTab& Champ_P1iP1B_implementation::trace(const Frontiere_dis_base& fr, cons
 {
   assert(distant==0);
   const Front_VF& fr_vf = ref_cast(Front_VF, fr);
-  const Domaine_VEF_PreP1b& domaine_dis = domaine_vef();
+  const Domaine_VEF& domaine_dis = domaine_vef();
   const DoubleTab& cg_faces = domaine_dis.xv();
   int nb_faces_fr = fr_vf.nb_faces();
   int face, elem;

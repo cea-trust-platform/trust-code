@@ -20,7 +20,7 @@
 #include <Operateur_Diff_base.h>
 #include <Matrice_Morse.h>
 #include <Op_Diff_VEF_Face.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
 #include <TRUSTLists.h>
 #include <SolveurSys.h>
@@ -54,7 +54,7 @@ public:
   double calculer_dt_stab() const override;
 
   //Acces aux domaines
-  const Domaine_VEF_PreP1b& domaine_VEFPreP1B() const;
+  const Domaine_VEF& domaine_VEFPreP1B() const;
   const Domaine_Cl_VEF& domaine_Cl_VEFPreP1B() const;
 
   //Methodes pour l'implicite.
@@ -154,9 +154,9 @@ inline void Op_Diff_VEFP1NCP1B_Face::contribuer_au_second_membre(DoubleTab& resu
   contribue_au_second_membre(resu);
 }
 
-inline const Domaine_VEF_PreP1b& Op_Diff_VEFP1NCP1B_Face::domaine_VEFPreP1B() const
+inline const Domaine_VEF& Op_Diff_VEFP1NCP1B_Face::domaine_VEFPreP1B() const
 {
-  return ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF,le_dom_vef.valeur());
 }
 
 inline const Domaine_Cl_VEF& Op_Diff_VEFP1NCP1B_Face::domaine_Cl_VEFPreP1B() const

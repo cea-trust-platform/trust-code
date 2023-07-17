@@ -105,7 +105,7 @@ static inline int okface(int& ind_face, int& face, const Cond_lim& la_cl)
 
 inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
                             const Matrice_Bloc_Sym& matrice,
-                            const Domaine_VEF_PreP1b& domaine_VEF)
+                            const Domaine_VEF& domaine_VEF)
 {
   const Navier_Stokes_std& eqn=ref_cast(Navier_Stokes_std, ass.equation());
   const Operateur_Div& opdiv=eqn.operateur_divergence();
@@ -133,7 +133,7 @@ inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
 }
 int verifier( const Assembleur_P_VEFPreP1B& ass,
               const Matrice_Bloc_Sym& matrice,
-              const Domaine_VEF_PreP1b& domaine_VEF,
+              const Domaine_VEF& domaine_VEF,
               const DoubleTab& inverse_quantitee_entrelacee)
 {
   if (domaine_VEF.get_alphaE()+domaine_VEF.get_alphaS()+domaine_VEF.get_alphaA()!=Objet_U::dimension)
@@ -291,7 +291,7 @@ static inline void sort( ArrOfInt& sommets, ArrOfInt& faces_op1, ArrOfInt& faces
           faces_op2[j]=tmp;
         }
 }
-static inline int chercher_arete(const Domaine_VEF_PreP1b& domaine_VEF,
+static inline int chercher_arete(const Domaine_VEF& domaine_VEF,
                                  int elem, int somi, int somj,
                                  const IntTab& elem_aretes,
                                  const IntTab& aretes_som)
@@ -724,7 +724,7 @@ static void update_matriceP1P1(const Domaine_VEF& domaine_VEF,
     }
 }
 
-static void contribuer_matricePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
+static void contribuer_matricePaPa(const Domaine_VEF& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -819,7 +819,7 @@ static void contribuer_matricePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
         }
     }
 }
-static void update_matricePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
+static void update_matricePaPa(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -1217,7 +1217,7 @@ update_matrice_SymetrieP1P1(const Domaine_VEF& domaine_VEF,
 }
 
 static void
-contribuer_matrice_NeumannPaPa(const Domaine_VEF_PreP1b& domaine_VEF,
+contribuer_matrice_NeumannPaPa(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -1295,7 +1295,7 @@ contribuer_matrice_NeumannPaPa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-update_matrice_NeumannPaPa(const Domaine_VEF_PreP1b& domaine_VEF,
+update_matrice_NeumannPaPa(const Domaine_VEF& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -1374,7 +1374,7 @@ update_matrice_NeumannPaPa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-contribuer_matrice_SymetriePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
+contribuer_matrice_SymetriePaPa(const Domaine_VEF& domaine_VEF,
                                 const DoubleTab& inverse_quantitee_entrelacee,
                                 int face, int elem,
                                 ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -1454,7 +1454,7 @@ contribuer_matrice_SymetriePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-update_matrice_SymetriePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
+update_matrice_SymetriePaPa(const Domaine_VEF& domaine_VEF,
                             const DoubleTab& inverse_quantitee_entrelacee,
                             int face, int elem,
                             ArrOfInt& sommets, ArrOfInt& faces_op1,
@@ -1534,7 +1534,7 @@ update_matrice_SymetriePaPa(const Domaine_VEF_PreP1b& domaine_VEF,
     }
 }
 
-static void contribuer_matriceP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+static void contribuer_matriceP0Pa(const Domaine_VEF& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets,
@@ -1610,7 +1610,7 @@ static void contribuer_matriceP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
     }
 }
 
-static void update_matriceP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+static void update_matriceP0Pa(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets,
@@ -1686,7 +1686,7 @@ static void update_matriceP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+contribuer_matrice_NeumannP0Pa(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets,
@@ -1741,7 +1741,7 @@ contribuer_matrice_NeumannP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-update_matrice_NeumannP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+update_matrice_NeumannP0Pa(const Domaine_VEF& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets,
@@ -1795,7 +1795,7 @@ update_matrice_NeumannP0Pa(const Domaine_VEF_PreP1b& domaine_VEF,
     }
 }
 
-static void contribuer_matriceP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+static void contribuer_matriceP1Pa(const Domaine_VEF& domaine_VEF,
                                    const DoubleTab& inverse_quantitee_entrelacee,
                                    int face, int elem1, int elem2,
                                    ArrOfInt& sommets,
@@ -1864,7 +1864,7 @@ static void contribuer_matriceP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
     }
 }
 
-static void update_matriceP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+static void update_matriceP1Pa(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem1, int elem2,
                                ArrOfInt& sommets,
@@ -1934,7 +1934,7 @@ static void update_matriceP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-contribuer_matrice_NeumannP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+contribuer_matrice_NeumannP1Pa(const Domaine_VEF& domaine_VEF,
                                const DoubleTab& inverse_quantitee_entrelacee,
                                int face, int elem,
                                ArrOfInt& sommets,
@@ -2001,7 +2001,7 @@ contribuer_matrice_NeumannP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-update_matrice_NeumannP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+update_matrice_NeumannP1Pa(const Domaine_VEF& domaine_VEF,
                            const DoubleTab& inverse_quantitee_entrelacee,
                            int face, int elem,
                            ArrOfInt& sommets,
@@ -2068,7 +2068,7 @@ update_matrice_NeumannP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-contribuer_matrice_SymetrieP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+contribuer_matrice_SymetrieP1Pa(const Domaine_VEF& domaine_VEF,
                                 const DoubleTab& inverse_quantitee_entrelacee,
                                 int face, int elem,
                                 ArrOfInt& sommets,
@@ -2133,7 +2133,7 @@ contribuer_matrice_SymetrieP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
 }
 
 static void
-update_matrice_SymetrieP1Pa(const Domaine_VEF_PreP1b& domaine_VEF,
+update_matrice_SymetrieP1Pa(const Domaine_VEF& domaine_VEF,
                             const DoubleTab& inverse_quantitee_entrelacee,
                             int face, int elem,
                             ArrOfInt& sommets,
@@ -2228,7 +2228,7 @@ void assemblerP1P1(const Domaine_dis_base& z,
                    Matrice& matrice, const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2321,7 +2321,7 @@ void updateP1P1(const Domaine_dis_base& z,
                 const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   //  const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2392,7 +2392,7 @@ void modifieP1P1neumann(const Domaine_dis_base& z,
 {
 
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   //  const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2404,7 +2404,7 @@ void modifieP1P1neumann(const Domaine_dis_base& z,
   Matrice_Bloc& A=ref_cast(Matrice_Bloc, matrice.valeur());
   Matrice_Morse_Sym& ARR=ref_cast(Matrice_Morse_Sym, A.get_bloc(0,0).valeur());
   // Faces de bord :
-  assert(ref_cast(Domaine_VEF_PreP1b, z).get_cl_pression_sommet_faible()==0);
+  assert(ref_cast(Domaine_VEF, z).get_cl_pression_sommet_faible()==0);
   int nb_som_tot=z.nb_som();
   for(auto& itr : les_cl)
     {
@@ -2425,7 +2425,7 @@ void modifieP1P1neumann(const Domaine_dis_base& z,
                   int som_glob=faces(face,som);
                   if (som_glob<nb_som_tot)
                     ARR(som_glob,som_glob)=1e12;
-                  //        Cout<<ref_cast(Domaine_VEF_PreP1b, z).numero_premier_sommet()<<" ici "<<som_glob<<finl;
+                  //        Cout<<ref_cast(Domaine_VEF, z).numero_premier_sommet()<<" ici "<<som_glob<<finl;
                 }
             }
         }
@@ -2439,7 +2439,7 @@ void assemblerPaPa(const Domaine_dis_base& z,
                    const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2529,7 +2529,7 @@ void updatePaPa(const Domaine_dis_base& z,
                 const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2596,7 +2596,7 @@ void assemblerP0Pa(const Domaine_dis_base& z,
                    const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2671,7 +2671,7 @@ void updateP0Pa(const Domaine_dis_base& z,
                 const DoubleTab& inverse_quantitee_entrelacee)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
@@ -2727,7 +2727,7 @@ void assemblerP1Pa(const Domaine_dis_base& z,
                    const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2809,7 +2809,7 @@ void updateP1Pa(const Domaine_dis_base& z,
                 const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF_PreP1b& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2871,7 +2871,7 @@ void assemblerP0P1(const Domaine_dis_base& z,
                    const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -2951,7 +2951,7 @@ void updateP0P1(const Domaine_dis_base& z,
                 const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
   int dimension=Objet_U::dimension;
-  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF_PreP1b, z);
+  const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_voisins = domaine_VEF.face_voisins();

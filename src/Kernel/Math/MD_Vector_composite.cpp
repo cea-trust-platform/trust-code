@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -260,7 +260,7 @@ static void append_global_md(MD_Vector_std& dest, const MD_Vector_std& src, int 
  *    (see class DoubleTab_parts)
  *   Exemples:
  *    1) P1Bubble pressure fields have one, two or three parts with shape=1.
- *        (see Domaine_VEF_PreP1b::discretiser_suite())
+ *        (see Domaine_VEF::discretiser_suite())
  *    2) One can create a composite field containing
  *     - velocity degrees of freedom at the faces
  *     - pressure d.o.f. at the elements

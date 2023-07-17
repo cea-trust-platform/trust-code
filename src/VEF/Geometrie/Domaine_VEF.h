@@ -16,27 +16,23 @@
 #ifndef Domaine_VEF_included
 #define Domaine_VEF_included
 
-
-
 #include <Domaine_VF.h>
 #include <Elem_VEF.h>
 
+class VEF_discretisation;
 class Geometrie;
 
 /*! @brief class Domaine_VEF
  *
  *          Classe instanciable qui derive de Domaine_VF.
- *          Cette classe contient les informations geometriques que demande
- *          la methode des Volumes Elements Finis (element de Crouzeix-Raviart)
+ *          Cette classe contient les informations geometriques que demande la methode des Volumes Elements Finis (element de Crouzeix-Raviart)
  *          La classe porte un certain nombre d'informations concernant les faces
- *          Dans cet ensemble de faces on fait figurer aussi les faces du bord et
- *       des joints. Pour manipuler les faces on distingue 2 categories:
+ *          Dans cet ensemble de faces on fait figurer aussi les faces du bord et des joints. Pour manipuler les faces on distingue 2 categories:
  *            - les faces non standard qui sont sur un joint, un bord ou qui sont
  *              internes tout en appartenant a un element du bord
  *            - les faces standard qui sont les faces internes n'appartenant pas
  *              a un element du bord
- *       Cette distinction correspond au traitement des conditions aux limites:les
- *       faces standard ne "voient pas" les conditions aux limites.
+ *       Cette distinction correspond au traitement des conditions aux limites:les faces standard ne "voient pas" les conditions aux limites.
  *       L'ensemble des faces est numerote comme suit:
  *            - les faces qui sont sur un Domaine_joint apparaissent en premier
  *                    (dans l'ordre du vecteur les_joints)
@@ -44,172 +40,131 @@ class Geometrie;
  *                (dans l'ordre du vecteur les_bords)
  *                - les faces internes non standard apparaissent ensuite
  *            - les faces internes standard en dernier
- *       Finalement on trouve regroupees en premier toutes les faces non standard
- *       qui vont necessiter un traitement particulier
+ *       Finalement on trouve regroupees en premier toutes les faces non standard qui vont necessiter un traitement particulier
  *       On distingue deux types d'elements
  *            - les elements non standard : ils ont au moins une face de bord
  *            - les elements standard : ils n'ont pas de face de bord
- *       Les elements standard (resp. les elements non standard) ne sont pas ranges
- *       de maniere consecutive dans l'objet Domaine. On utilise le tableau
- *       rang_elem_non_std pour acceder de maniere selective a l'un ou
- *       l'autre des types d'elements
- *
- *
- *
+ *       Les elements standard (resp. les elements non standard) ne sont pas ranges de maniere consecutive dans l'objet Domaine. On utilise le tableau
+ *       rang_elem_non_std pour acceder de maniere selective a l'un ou l'autre des types d'elements
  */
-
-
-class Domaine_VEF : public Domaine_VF
+class Domaine_VEF: public Domaine_VF
 {
-
   Declare_instanciable(Domaine_VEF);
-
-public :
-
+public:
   void discretiser() override;
+  virtual void discretiser_suite(const VEF_discretisation&);
+  void discretiser_arete();
+
+  void construire_ok_arete();
+  int lecture_ok_arete();
+  void verifie_ok_arete(int) const;
+  void construire_renum_arete_perio(const Conds_lim&);
+
+  virtual void creer_tableau_p1bulle(Array_base&, Array_base::Resize_Options opt = Array_base::COPY_INIT) const;
+
   void swap(int, int, int);
   void reordonner(Faces&) override;
-  void modifier_pour_Cl(const Conds_lim& ) override;
+  void modifier_pour_Cl(const Conds_lim&) override;
   void typer_elem(Domaine&) override;
-
-  inline const Elem_VEF& type_elem() const;
-  inline int nb_elem_Cl() const;
-  inline int nb_faces_joint() const;
-  inline int nb_faces_std() const;
-  inline int nb_elem_std() const;
-  inline int premiere_face_std() const;
-  inline int nb_faces_non_std() const;
-  inline double carre_pas_du_maillage() const;
-  inline double carre_pas_maille(int i) const { return h_carre_(i); }
-  inline DoubleTab& facette_normales();
-  inline const DoubleTab& facette_normales() const;
-  inline IntVect& rang_elem_non_std();
-  inline const IntVect& rang_elem_non_std() const;
-  inline int oriente_normale(int face_opp, int elem2)const;
-  DoubleTab& vecteur_face_facette();
-  inline const ArrOfInt& ind_faces_virt_non_std() const;
   void calculer_volumes_entrelaces();
   void calculer_h_carre();
+  DoubleTab& vecteur_face_facette();
+
+  inline const Elem_VEF& type_elem() const { return type_elem_; }
+  inline int nb_elem_Cl() const { return nb_elem() - nb_elem_std_; }
+  inline int nb_faces_joint() const { return 0; }
+  inline int nb_faces_std() const { return nb_faces_std_; }
+  inline int nb_elem_std() const { return nb_elem_std_; }
+  inline int premiere_face_std() const { return nb_faces() - nb_faces_std_; }
+  inline int nb_faces_non_std() const { return nb_faces() - nb_faces_std_; }
+  inline double carre_pas_du_maillage() const { return h_carre; }
+  inline double carre_pas_maille(int i) const { return h_carre_(i); }
+  inline DoubleTab& facette_normales() { return facette_normales_; }
+  inline const DoubleTab& facette_normales() const { return facette_normales_; }
+  inline IntVect& rang_elem_non_std() { return rang_elem_non_std_; }
+  inline const IntVect& rang_elem_non_std() const { return rang_elem_non_std_; }
+  inline int oriente_normale(int face_opp, int elem2) const { return (face_voisins(face_opp, 0) == elem2) ? 1 : -1; }
+  inline const ArrOfInt& ind_faces_virt_non_std() const { return ind_faces_virt_non_std_; }
+
+  inline double volume_au_sommet(int som) const { return volumes_som[som]; }
+  inline const DoubleVect& volume_aux_sommets() const { return volumes_som; }
+  inline int get_P1Bulle() const { assert(P1Bulle != -1); return P1Bulle; }
+  inline int get_alphaE() const { assert(alphaE != -1); return alphaE; }
+  inline int get_alphaS() const { assert(alphaS != -1); return alphaS; }
+  inline int get_alphaA() const { assert(alphaA != -1); return alphaA; }
+  inline int get_alphaRT() const { assert(alphaRT != -1); return alphaRT; }
+  inline int get_modif_div_face_dirichlet() const { assert(modif_div_face_dirichlet != -1); return modif_div_face_dirichlet; }
+  inline int get_cl_pression_sommet_faible() const { assert(cl_pression_sommet_faible != -1); return cl_pression_sommet_faible; }
+  inline const ArrOfInt& get_renum_arete_perio() const { return renum_arete_perio; }
+  inline const IntVect& get_ok_arete() const { return ok_arete; }
+  inline const DoubleVect& get_volumes_aretes() const { return volumes_aretes; }
+
+  inline virtual const MD_Vector& md_vector_p1b() const { assert(md_vector_p1b_.non_nul()); return md_vector_p1b_; }
+
+  inline int numero_premier_element() const;
+  inline int numero_premier_sommet() const;
+  inline int numero_premiere_arete() const;
 
 private:
-
-  double h_carre= 1.e30;                         // carre du pas du maillage
+  double h_carre = 1.e30;                         // carre du pas du maillage
   DoubleVect h_carre_;                        // carre du pas d'une maille
   Elem_VEF type_elem_;                  // type de l'element de discretisation
   DoubleTab facette_normales_;          // normales aux faces des volumes entrelaces
   DoubleTab vecteur_face_facette_;                // vecteur centre face->centre facette
-  int nb_faces_std_=-10;                    // nombre de faces standard
-  int nb_elem_std_=-10;                     // nombre d'elements standard
-  IntVect rang_elem_non_std_;                 // rang_elem_non_std_= -1 si l'element est standard
-  // rang_elem_non_std_= rang de l'element dans les tableaux
-  // relatifs aux elements non standards
-
+  int nb_faces_std_ = -10;                    // nombre de faces standard
+  int nb_elem_std_ = -10;                     // nombre d'elements standard
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  void remplir_elem_faces() override;
-  Sortie& ecrit(Sortie& os) const;
-  void creer_faces_virtuelles_non_std();
+  IntVect rang_elem_non_std_;                 // rang_elem_non_std_= -1 si l'element est standard
   IntVect orientation_;
+
+
+  DoubleVect volumes_som, volumes_aretes;
+  ArrOfInt renum_arete_perio;
+  IntVect ok_arete;
+
+  int P1Bulle = -1, alphaE = -1, alphaS = -1, alphaA = -1;
+  int alphaRT = -1; // pour trio statio
+  int modif_div_face_dirichlet = -1;
+  int cl_pression_sommet_faible = -1; // determine si les cl de pression sont imposees de facon faible ou forte -> voir divergence et assembleur
+  // Descripteur pour les tableaux p1b (selon alphaE, alphaS et alphaA) (construit dans Domaine_VEF::discretiser())
+  MD_Vector md_vector_p1b_;
+
+  void remplir_elem_faces() override;
+  void creer_faces_virtuelles_non_std();
+  Sortie& ecrit(Sortie& os) const;
 };
 
-// Fonctions inline
+// Methode pour tester:
+void exemple_champ_non_homogene(const Domaine_VEF&, DoubleTab&);
 
-// Decription:
-// renvoie le type d'element utilise.
-inline const Elem_VEF& Domaine_VEF::type_elem() const
+inline int Domaine_VEF::numero_premier_element() const
 {
-  return type_elem_;
+  if (!alphaE)
+    return -1;
+  else
+    return 0;
+}
+inline int Domaine_VEF::numero_premier_sommet() const
+{
+  if (!alphaS)
+    return -1;
+  else if (!alphaE)
+    return 0;
+  else
+    return nb_elem_tot();
+}
+inline int Domaine_VEF::numero_premiere_arete() const
+{
+  if (!alphaA)
+    return -1;
+  else if (!alphaE && !alphaS)
+    return 0;
+  else if (!alphaE && alphaS)
+    return nb_som_tot();
+  else if (!alphaS && alphaE)
+    return nb_elem_tot();
+  else
+    return nb_elem_tot() + nb_som_tot();
 }
 
-// Decription:
-// renvoie le tableau des surfaces normales des facettes.
-inline DoubleTab& Domaine_VEF::facette_normales()
-{
-  return facette_normales_;
-}
-
-// Decription:
-// renvoie le tableau des surfaces normales des facettes.
-inline const DoubleTab& Domaine_VEF::facette_normales() const
-{
-  return facette_normales_;
-}
-
-// Decription:
-inline IntVect& Domaine_VEF::rang_elem_non_std()
-{
-  return rang_elem_non_std_;
-}
-
-// Decription:
-inline const IntVect& Domaine_VEF::rang_elem_non_std() const
-{
-  return rang_elem_non_std_;
-}
-
-
-// Decription:
-inline int Domaine_VEF::nb_faces_joint() const
-{
-  return 0;
-  //    return nb_faces_joint_;    A FAIRE
-}
-
-// Decription:
-inline int Domaine_VEF::nb_faces_std() const
-{
-  return nb_faces_std_;
-}
-
-// Decription:
-inline int  Domaine_VEF::nb_elem_std() const
-{
-  return nb_elem_std_;
-}
-
-// Decription:
-inline int Domaine_VEF::nb_elem_Cl() const
-{
-  return nb_elem() - nb_elem_std_;
-}
-
-// Decription:
-inline int Domaine_VEF::premiere_face_std() const
-{
-  return nb_faces() - nb_faces_std_;
-}
-
-// Decription:
-inline int Domaine_VEF::nb_faces_non_std() const
-{
-  return nb_faces() - nb_faces_std_;
-}
-
-// Decription:
-inline double Domaine_VEF::carre_pas_du_maillage() const
-{
-  return h_carre;
-}
-
-// Decription:
-inline int Domaine_VEF::oriente_normale(int face_opp, int elem2) const
-{
-  if(face_voisins(face_opp,0)==elem2)
-    return 1;
-  else return -1;
-}
-
-
-// Decription:
-// Renvoie le tableau des indices des faces virtuelles non standard
-//inline const ArrsOfInt& Domaine_VEF::faces_virt_non_std() const
-//{
-//  return faces_virt_non_std_;
-//}
-
-// Decription:
-// Renvoie le tableau des indices des faces distantes non standard
-inline const ArrOfInt& Domaine_VEF::ind_faces_virt_non_std() const
-{
-  return ind_faces_virt_non_std_;
-}
-#endif
+#endif /* Domaine_VEF_included */

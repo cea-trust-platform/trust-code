@@ -434,7 +434,8 @@ void Champ_Generique_Extraction::discretiser_domaine()
     {
       const Probleme_base& Pb = get_ref_pb_base();
       const Discretisation_base& discr = Pb.discretisation();
-      const Nom& type_discr = discr.que_suis_je();
+      Nom type_discr = discr.que_suis_je();
+      if (type_discr == "VEFPreP1B") type_discr = "VEF";
       Nom type = "NO_FACE_Domaine_";
       type += type_discr;
       le_dom_dis = Domaine_dis_cache::Build_or_get(type, domaine_.valeur());

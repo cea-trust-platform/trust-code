@@ -19,7 +19,7 @@
 #include <Check_espace_virtuel.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Neumann_sortie_libre.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Dirichlet_homogene.h>
 #include <Navier_Stokes_std.h>
 #include <MD_Vector_tools.h>
@@ -128,7 +128,7 @@ void Domaine_Cl_VEF::completer(const Domaine_dis& un_domaine_dis)
 void Domaine_Cl_VEF::remplir_volumes_entrelaces_Cl(const Domaine_VEF& le_dom_VEF)
 {
   Cerr << "On passe dans Domaine_Cl_VEF::remplir_volumes_entrelaces" << finl;
-  const Domaine_VEF_PreP1b& z = ref_cast(Domaine_VEF_PreP1b, le_dom_VEF);
+  const Domaine_VEF& z = ref_cast(Domaine_VEF, le_dom_VEF);
 
   // On etendre les volumes de controles sur les faces non standard. Uniquement en conduction pour l'instant ou en P0 seul
   if ((z.get_modif_div_face_dirichlet()) || sub_type(Conduction, equation()) || (z.get_alphaE() && !z.get_alphaS() && !z.get_alphaA()))
@@ -687,7 +687,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
   // dans le cas Navier stokes et si la condition est forte en pression aux sommets on impose la valeur aux sommets
   if (sub_type(Navier_Stokes_std, ch.valeur().equation()))
     {
-      const Domaine_VEF_PreP1b& domaine_vef = ref_cast(Domaine_VEF_PreP1b, equation().domaine_dis().valeur());
+      const Domaine_VEF& domaine_vef = ref_cast(Domaine_VEF, equation().domaine_dis().valeur());
       if ((domaine_vef.get_cl_pression_sommet_faible() == 0) && (domaine_vef.get_alphaS()))
         {
           int nps = domaine_vef.numero_premier_sommet();

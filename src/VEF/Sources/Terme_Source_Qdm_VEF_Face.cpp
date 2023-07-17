@@ -23,7 +23,7 @@
 #include <BilanQdmVEF.h>
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 
 extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Domaine_Cl_VEF& zcl, const Domaine_VEF& domaine_VEF);
 Implemente_instanciable(Terme_Source_Qdm_VEF_Face,"Source_Qdm_VEF_P1NC",Source_base);
@@ -172,8 +172,8 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   int nb_face_diri=0;
   ArrOfInt indice_diri(dimension+1);
   int modif_traitement_diri=0;
-  if (sub_type(Domaine_VEF_PreP1b,domaine_VEF))
-    modif_traitement_diri=ref_cast(Domaine_VEF_PreP1b,domaine_VEF).get_modif_div_face_dirichlet();
+  if (sub_type(Domaine_VEF,domaine_VEF))
+    modif_traitement_diri=ref_cast(Domaine_VEF,domaine_VEF).get_modif_div_face_dirichlet();
   for (int elem=0; elem<nb_elem_tot; elem++)
     {
       if (modif_traitement_diri)

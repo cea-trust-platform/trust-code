@@ -15,6 +15,7 @@
 
 #ifndef VEF_discretisation_included
 #define VEF_discretisation_included
+
 /*! @brief class VEF_discretisation (schema de base) Classe qui gere la dicretisation VEF du probleme
  *
  *     c'est ici que :
@@ -31,21 +32,16 @@
  * @sa Discret_Thyd_Turb
  */
 
-
 #include <Discret_Thyd.h>
 
-class Navier_Stokes_std;
 class Fluide_Incompressible;
+class Navier_Stokes_std;
 class Fluide_Ostwald;
 
 class VEF_discretisation : public Discret_Thyd
 {
   Declare_instanciable(VEF_discretisation);
-
 public :
-  //
-  // Methodes surchargees de Discretisation_base
-  //
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
                          const Nom& sous_type = NOM_VIDE) const override;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Champ_Fonc& champ) const override;
@@ -63,18 +59,31 @@ public :
   void h_conv(const Domaine_dis& z,const Domaine_Cl_dis&,const Champ_Inc& temperature, Champ_Fonc& ch, Motcle& nom, int temp_ref) const override;
   void taux_cisaillement(const Domaine_dis&, const Domaine_Cl_dis&,const Champ_Inc&, Champ_Fonc&) const override;
   void residu(const Domaine_dis& , const Champ_Inc&, Champ_Fonc& ) const override;
-  //void pression_residu( const Domaine_dis& z, const Domaine_Cl_dis& zcl, const Champ_Inc& ch_inco, Champ_Fonc& champ ) const;
+
   bool is_vef() const override { return true; }
 
+  inline int get_P1Bulle() const { return P1Bulle_; }
+  inline int get_alphaE() const  { return alphaE_;  }
+  inline int get_alphaS() const  { return alphaS_;  }
+  inline int get_alphaA() const  { return alphaA_;  }
+  inline int get_alphaRT() const { return alphaRT_;  }
+  inline int get_modif_div_face_dirichlet() const  { return modif_div_face_dirichlet_;  }
+  inline int get_cl_pression_sommet_faible() const { return cl_pression_sommet_faible_; }
+
 private:
-  void discretiser_champ_fonc_don(
-    const Motcle& directive, const Domaine_dis_base& z,
-    Nature_du_champ nature,
-    const Noms& nom, const Noms& unite,
-    int nb_comp, double temps,
-    Objet_U& champ) const;
+  int P1Bulle_ = 1, alphaE_ = 1, alphaS_ = 1, alphaA_ = 0, alphaRT_ = 0, modif_div_face_dirichlet_ = 0;
+  int cl_pression_sommet_faible_ = 0; // determine si les cl de pression sont imposees de facon faible ou forte -> voir divergence et assembleur, zcl
+
+  void discretiser_champ_(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
+                          const Nom& sous_type = NOM_VIDE) const;
+
+  void discretiser_champ_fonc_don(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Objet_U& champ) const;
+
+  void discretiser_champ_fonc_don_(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, double temps, Objet_U& champ) const;
 
   void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const override;
+
+  void discretiser(REF(Domaine_dis)&) const override;
 };
 
-#endif
+#endif /* VEF_discretisation_included */

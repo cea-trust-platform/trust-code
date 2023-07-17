@@ -17,7 +17,7 @@
 #include <Domaine.h>
 #include <Domaine_Cl_VEF.h>
 #include <Periodique.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Sortie_libre_pression_imposee_QC.h>
 #include <Loi_Etat_Multi_GP_QC.h>
 #include <Porosites_champ.h>
@@ -54,7 +54,7 @@ void  EDO_Pression_th_VEF::associer_domaines(const Domaine_dis& domaine, const D
  */
 void EDO_Pression_th_VEF::completer()
 {
-  if (!ref_cast(Domaine_VEF_PreP1b,le_dom.valeur()).get_alphaE())
+  if (!ref_cast(Domaine_VEF,le_dom.valeur()).get_alphaE())
     {
       Cerr << "Le modele quasi compressible ne fonctionne pas encore avec cette discretisation." << finl;
       Cerr << "En VEF, la discretisation doit avoir le support P0. Donc utiliser P1Bulle ou P0P1." << finl;

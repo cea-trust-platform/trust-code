@@ -24,7 +24,7 @@
 #include <SolveurSys.h>
 #include <TRUST_Ref.h>
 
-class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 class Champ_Uniforme;
 
 class Op_Diff_RotRot : public Operateur_Diff_base
@@ -100,7 +100,7 @@ public:
   //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
   DoubleTab vecteur_normal(const int face, const int elem) const;
 
-  const Domaine_VEF_PreP1b& domaine_Vef() const;
+  const Domaine_VEF& domaine_Vef() const;
 
 protected:
 

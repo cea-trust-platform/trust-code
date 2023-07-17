@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 
 class Frontiere_dis_base;
 class Domaine_Cl_dis_base;
-class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 
 class Champ_P1iP1B_implementation : public Champ_implementation_divers
 {
@@ -50,7 +50,7 @@ public:
 
   int remplir_coord_noeuds_et_polys(DoubleTab& positions, IntVect& polys) const override;
   int imprime_P1B(Sortie&, int) const;
-  DoubleTab& filtrage(const Domaine_VEF_PreP1b&, const Champ_base&) const;        // Methode pour filtrer le champ
+  DoubleTab& filtrage(const Domaine_VEF&, const Champ_base&) const;        // Methode pour filtrer le champ
   const DoubleTab& champ_filtre() const { return champ_filtre_; }
 
   int Condition_Neumann_imposee_;        // Drapeau pour savoir s'il y'a des CL de Neumann (influe sur le filtrage)
@@ -63,7 +63,7 @@ protected:
 
   void completer(const Domaine_Cl_dis_base& zcl);
 
-  virtual const Domaine_VEF_PreP1b& domaine_vef() const =0;
+  virtual const Domaine_VEF& domaine_vef() const =0;
   DoubleTab& trace(const Frontiere_dis_base& fr, const DoubleTab& y, DoubleTab& x, int distant) const;
 };
 

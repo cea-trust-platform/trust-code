@@ -19,7 +19,7 @@
 #include <Terme_Source_Acceleration.h>
 #include <TRUST_Ref.h>
 
-class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 class Domaine_Cl_VEF;
 
 /*! @brief Terme source d'acceleration specialise pour la discretisation VDF
@@ -41,7 +41,7 @@ protected:
 
 private:
   // References remplies par associer_champ_rho
-  REF(Domaine_VEF_PreP1b) le_dom_VEF_;
+  REF(Domaine_VEF) le_dom_VEF_;
   REF(Domaine_Cl_VEF)  le_dom_Cl_VEF_;
   // Reference remplie par associer_champ_rho() et utilisee par ajouter()
   // La reference peut rester nulle (monophasique).

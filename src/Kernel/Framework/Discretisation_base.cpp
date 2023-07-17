@@ -282,10 +282,11 @@ Sortie& Discretisation::printOn(Sortie& os) const
   return DERIV(Discretisation_base)::printOn(os);
 }
 
-void Discretisation_base::discretiser(REF(Domaine_dis)& dom_dis) const
+void Discretisation_base::discretiser(REF(Domaine_dis) &dom_dis) const
 {
-  Nom type="Domaine_";
-  type+=que_suis_je();
+  Nom type = "Domaine_", dis = que_suis_je();
+  if (dis == "VEFPreP1B") dis = "VEF";
+  type += dis;
   const Domaine& dom = le_domaine_.valeur();
   dom_dis = Domaine_dis_cache::Build_or_get(type, dom);
 }

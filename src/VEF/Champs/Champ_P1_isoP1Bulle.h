@@ -17,7 +17,7 @@
 #define Champ_P1_isoP1Bulle_included
 
 #include <Champ_P1iP1B_implementation.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Champ_Inc_base.h>
 
 class Champ_P1_isoP1Bulle: public Champ_Inc_base, public Champ_P1iP1B_implementation
@@ -37,7 +37,7 @@ public:
   Champ_base& affecter_(const Champ_base&) override;
   double norme_L2(const Domaine& dom) const;
 
-  inline const Domaine_VEF_PreP1b& domaine_vef() const override { return ref_cast(Domaine_VEF_PreP1b, le_dom_VF.valeur()); }
+  inline const Domaine_VEF& domaine_vef() const override { return ref_cast(Domaine_VEF, le_dom_VF.valeur()); }
 
   inline DoubleTab& valeur_aux_sommets(const Domaine& dom, DoubleTab& sommets) const override
   {

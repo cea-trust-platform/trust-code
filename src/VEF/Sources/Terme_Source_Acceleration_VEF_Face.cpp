@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Terme_Source_Acceleration_VEF_Face.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
 #include <Periodique.h>
 #include <Navier_Stokes_std.h>
@@ -47,7 +47,7 @@ void Terme_Source_Acceleration_VEF_Face::associer_domaines(const Domaine_dis& do
 {
   if (je_suis_maitre())
     Cerr << "Terme_Source_Acceleration_VEF_Face::associer_domaines" << finl;
-  le_dom_VEF_    = ref_cast(Domaine_VEF_PreP1b, domaine_dis.valeur());
+  le_dom_VEF_    = ref_cast(Domaine_VEF, domaine_dis.valeur());
   le_dom_Cl_VEF_ = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 

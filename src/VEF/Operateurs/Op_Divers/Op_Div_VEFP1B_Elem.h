@@ -18,7 +18,7 @@
 
 #include <Op_Div_VEF_Elem.h>
 
-class Domaine_VEF_PreP1b;
+class Domaine_VEF;
 class FMatrice_Morse;
 
 

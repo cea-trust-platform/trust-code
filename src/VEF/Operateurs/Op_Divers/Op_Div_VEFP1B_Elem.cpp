@@ -23,7 +23,7 @@
 #include <Symetrie.h>
 #include <Neumann.h>
 #include <Neumann_val_ext.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Debog.h>
 #include <Probleme_base.h>
 #include <Check_espace_virtuel.h>
@@ -73,7 +73,7 @@ static int chercher_arete(int elem, int somi, int somj,
 
 static int verifier(const Op_Div_VEFP1B_Elem& op,
                     int& init,
-                    const Domaine_VEF_PreP1b& domaine_VEF,
+                    const Domaine_VEF& domaine_VEF,
                     const DoubleTab& vit,
                     DoubleTab& div)
 {
@@ -100,7 +100,7 @@ static int verifier(const Op_Div_VEFP1B_Elem& op,
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaE());
   const Domaine& domaine = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -300,7 +300,7 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div, DoubleTab& flux_b) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaS());
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom = domaine;
@@ -480,7 +480,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& div) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaA());
   const Domaine& domaine = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -618,7 +618,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter(const DoubleTab& vitesse_face_absolue, DoubleTab& div) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,le_dom_vef.valeur());
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   // Quelques verifications:
   // L'espace virtuel de vitesse_face_absolue doit etre a jour (Le test est fait si check_enabled==1)
@@ -746,7 +746,7 @@ for(int isom=0; isom<3; isom++)
 // Divise par le volume
 void Op_Div_VEFP1B_Elem::volumique(DoubleTab& div) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,le_dom_vef.valeur());
   int n=0;
   if (domaine_VEF.get_alphaE())
     {
@@ -774,7 +774,7 @@ void Op_Div_VEFP1B_Elem::degres_liberte() const
 {
   // On annulle la divergence aux sommets sans degre de liberte
   // (sommet uniquement commun a des faces avec des CL Diriclet)
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,le_dom_vef.valeur());
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;
   const IntTab& som_elem=domaine.les_elems();

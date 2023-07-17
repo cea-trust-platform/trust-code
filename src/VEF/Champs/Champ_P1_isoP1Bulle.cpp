@@ -32,7 +32,7 @@ int Champ_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
 {
   // On ne doit pas specifier nb_ddl !
   assert(n < 0);
-  const Domaine_VEF_PreP1b& zvef = domaine_vef();
+  const Domaine_VEF& zvef = domaine_vef();
   const MD_Vector& md = zvef.md_vector_p1b();
   creer_tableau_distribue(md);
   return n;
@@ -40,7 +40,7 @@ int Champ_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
 
 double Champ_P1_isoP1Bulle::norme_L2(const Domaine& dom) const
 {
-  const Domaine_VEF_PreP1b& zvef = domaine_vef();
+  const Domaine_VEF& zvef = domaine_vef();
   const IntTab& som_elem = zvef.domaine().les_elems();
   const DoubleVect& volumes = zvef.volumes();
 
@@ -103,7 +103,7 @@ double Champ_P1_isoP1Bulle::norme_L2(const Domaine& dom) const
 Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
 {
   DoubleTab noeuds;
-  const Domaine_VEF_PreP1b& zvef = domaine_vef();
+  const Domaine_VEF& zvef = domaine_vef();
 
   remplir_coord_noeuds(noeuds);
 
@@ -115,7 +115,7 @@ Champ_base& Champ_P1_isoP1Bulle::affecter_(const Champ_base& ch)
       DoubleTab& Pk = parties_P[0];  // partie elements
       DoubleTab& Ps = parties_P[1];  // partie sommets
 
-      //const Domaine_VEF_PreP1b& zvef=domaine_vef();
+      //const Domaine_VEF& zvef=domaine_vef();
       const Domaine& le_dom = zvef.domaine();
       const Domaine& dom = le_dom;
       const DoubleTab& coord_sommets = dom.coord_sommets();
@@ -225,7 +225,7 @@ DoubleTab& Champ_P1_isoP1Bulle::trace(const Frontiere_dis_base& fr, DoubleTab& x
 double Champ_P1_isoP1Bulle::valeur_au_bord(int face) const
 {
   const DoubleTab& val = valeurs();
-  const Domaine_VEF_PreP1b& domaine_VEF = domaine_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const IntTab& som_elem = domaine_VEF.domaine().les_elems();
   int nps = domaine_VEF.numero_premier_sommet();

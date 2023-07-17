@@ -48,9 +48,9 @@ Entree& Op_Grad_VEF_P1B_Face::readOn(Entree& s)
   return s ;
 }
 
-const Domaine_VEF_PreP1b& Op_Grad_VEF_P1B_Face::domaine_Vef() const
+const Domaine_VEF& Op_Grad_VEF_P1B_Face::domaine_Vef() const
 {
-  return ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF, le_dom_vef.valeur());
 }
 
 static int chercher_arete(int elem, int somi, int somj,
@@ -78,7 +78,7 @@ static int chercher_arete(int elem, int somi, int somj,
 }
 static void verifier(const Op_Grad_VEF_P1B_Face& op,
                      int& init,
-                     const Domaine_VEF_PreP1b& domaine_VEF,
+                     const Domaine_VEF& domaine_VEF,
                      const DoubleTab& pre,
                      DoubleTab& grad)
 
@@ -212,8 +212,8 @@ static void verifier(const Op_Grad_VEF_P1B_Face& op,
 DoubleTab& Op_Grad_VEF_P1B_Face::
 modifier_grad_pour_Cl(DoubleTab& grad ) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                                   le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,
+                                            le_dom_vef.valeur());
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -282,8 +282,8 @@ modifier_grad_pour_Cl(DoubleTab& grad ) const
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& grad) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                                   le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,
+                                            le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaE());
   const Domaine& domaine = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -352,8 +352,8 @@ DoubleTab& Op_Grad_VEF_P1B_Face::
 ajouter_som(const DoubleTab& pre,
             DoubleTab& grad) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                                   le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,
+                                            le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaS());
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;
@@ -450,8 +450,8 @@ DoubleTab& Op_Grad_VEF_P1B_Face::
 ajouter_aretes(const DoubleTab& pre,
                DoubleTab& grad) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF =
-    ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF =
+    ref_cast(Domaine_VEF, le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaA());
   const Domaine& domaine = domaine_VEF.domaine();
   //const Domaine& dom=domaine;
@@ -574,7 +574,7 @@ ajouter_aretes(const DoubleTab& pre,
 }
 
 double Op_Grad_VEF_P1B_Face::calculer_coef_som(int elem,  const Domaine_Cl_VEF& zcl,
-                                               const Domaine_VEF_PreP1b& domaine_VEF)
+                                               const Domaine_VEF& domaine_VEF)
 {
   double coef_std=1./(Objet_U::dimension*(Objet_U::dimension+1));
   if (domaine_VEF.get_modif_div_face_dirichlet()==0)
@@ -658,8 +658,8 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter(const DoubleTab& pre,
   // on va faire += sur l'espace virtuel, mais sans utiliser les valeurs
   assert_invalide_items_non_calcules(grad);
   //Debog::verifier("Op_Grad_VEF_P1B_Face::ajouter pre", pre);
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b,
-                                                   le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF,
+                                            le_dom_vef.valeur());
   static int init=1;
   if(!init)
     verifier(*this, init, domaine_VEF, pre, grad);
@@ -676,7 +676,7 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter(const DoubleTab& pre,
 
 void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = domaine_Vef();
+  const Domaine_VEF& domaine_VEF = domaine_Vef();
   if (flux_bords_.size_array()==0) flux_bords_.resize(domaine_VEF.nb_faces_bord(),dimension);
   flux_bords_ = 0.;
 
@@ -751,7 +751,7 @@ int Op_Grad_VEF_P1B_Face::impr(Sortie& os) const
   const int impr_bord=(le_dom_vef->domaine().bords_a_imprimer().est_vide() ? 0:1);
   const Schema_Temps_base& sch = equation().probleme().schema_temps();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF_PreP1b& domaine_VEF = domaine_Vef();
+  const Domaine_VEF& domaine_VEF = domaine_Vef();
   DoubleTab xgr;
   if (impr_mom) xgr = domaine_VEF.calculer_xgr();
 

@@ -98,9 +98,9 @@ void Assembleur_P_VEFPreP1B::completer(const Equation_base& eqn)
   la_matrice_de_travail_.typer("Matrice_Bloc_Sym");
 }
 
-const Domaine_VEF_PreP1b& Assembleur_P_VEFPreP1B::domaine_Vef() const
+const Domaine_VEF& Assembleur_P_VEFPreP1B::domaine_Vef() const
 {
-  return ref_cast(Domaine_VEF_PreP1b, le_dom_VEF.valeur());
+  return ref_cast(Domaine_VEF, le_dom_VEF.valeur());
 }
 
 extern void assemblerP0P0(const Domaine_dis_base& z,
@@ -166,7 +166,7 @@ extern  void updateP1Pa(const Domaine_dis_base& z,
 
 extern int verifier( const Assembleur_P_VEFPreP1B& ass,
                      const Matrice_Bloc_Sym& matrice,
-                     const Domaine_VEF_PreP1b& domaine_VEF,
+                     const Domaine_VEF& domaine_VEF,
                      const DoubleTab& inverse_quantitee_entrelacee);
 
 int Assembleur_P_VEFPreP1B::assembler(Matrice& la_matrice)
@@ -229,7 +229,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
     }
   else // Assemblage de la matrice
     {
-      const Domaine_VEF_PreP1b& domaine_vef = domaine_Vef();
+      const Domaine_VEF& domaine_vef = domaine_Vef();
       Cerr << "Assemblage de la matrice de pression" << (domaine_vef.get_alphaE() ? " P0" : "")
            << (domaine_vef.get_alphaS() ? " P1" : "") << (domaine_vef.get_alphaA() ? " Pa" : "") << " en cours..." << finl;
 
@@ -402,7 +402,7 @@ int Assembleur_P_VEFPreP1B::assembler_mat(Matrice& la_matrice,const DoubleVect& 
 
 int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 {
-  const Domaine_VEF_PreP1b& le_dom = domaine_Vef();
+  const Domaine_VEF& le_dom = domaine_Vef();
 
   // Verification sur le support Pa
   if (le_dom.get_alphaA())
@@ -454,7 +454,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 
   if (get_resoudre_en_u())
     {
-      const Domaine_VEF_PreP1b& domaine_VEF =  domaine_Vef();
+      const Domaine_VEF& domaine_VEF =  domaine_Vef();
       const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
 
       const DoubleVect& porosite_face = domaine_Cl.equation().milieu().porosite_face();
@@ -539,7 +539,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem(DoubleTab& b)
 
 int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, DoubleTab& b)
 {
-  const Domaine_VEF_PreP1b& domaine_VEF =  domaine_Vef();
+  const Domaine_VEF& domaine_VEF =  domaine_Vef();
   const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
 
   const int nb_cond_lim = domaine_Cl.nb_cond_lim();
@@ -583,7 +583,7 @@ int Assembleur_P_VEFPreP1B::modifier_secmem_elem(const DoubleTab& Gpoint, Double
 
 int Assembleur_P_VEFPreP1B::modifier_secmem_som(const DoubleTab& Gpoint, DoubleTab& b)
 {
-  const Domaine_VEF_PreP1b& domaine_VEF =  domaine_Vef();
+  const Domaine_VEF& domaine_VEF =  domaine_Vef();
   const Domaine_Cl_VEF& domaine_Cl = le_dom_Cl_VEF.valeur();
   const Domaine& domaine = domaine_VEF.domaine();
 
@@ -681,7 +681,7 @@ int Assembleur_P_VEFPreP1B::modifier_solution(DoubleTab& pression)
 {
 
   //  if (!has_P_ref) exit();
-  const Domaine_VEF_PreP1b& le_dom = domaine_Vef();
+  const Domaine_VEF& le_dom = domaine_Vef();
 
   // Verification sur les aretes
   if (le_dom.get_alphaA())
@@ -817,7 +817,7 @@ void Assembleur_P_VEFPreP1B::projete_L2(DoubleTab& pression)
       Process::exit();
     }
   //Cerr << "Projection L2" << finl;
-  const Domaine_VEF_PreP1b& domaine_vef = domaine_Vef();
+  const Domaine_VEF& domaine_vef = domaine_Vef();
   const Domaine& domaine = domaine_vef.domaine();
   int nb_elem_tot=domaine.nb_elem_tot();
   int ns=domaine.nb_som_tot();
@@ -862,7 +862,7 @@ int Assembleur_P_VEFPreP1B::modifier_matrice(Matrice& la_matrice)
   int matrice_modifiee=0;
   has_P_ref=0;
   const Conds_lim& les_cl = le_dom_Cl_VEF.valeur().les_conditions_limites();
-  const Domaine_VEF_PreP1b& domaine_VEF = domaine_Vef();
+  const Domaine_VEF& domaine_VEF = domaine_Vef();
   // Recherche s'il y'a une pression de reference, et si oui la matrice n'est pas modifiee
   for(int i=0; i<les_cl.size(); i++)
     if (sub_type(Neumann_sortie_libre,les_cl[i].valeur()))

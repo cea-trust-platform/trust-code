@@ -43,7 +43,7 @@ void Op_Diff_P1NC_barprim::associer(const Domaine_dis& domaine_dis,
                                     const Domaine_Cl_dis& domaine_cl_dis,
                                     const Champ_Inc& ch_diffuse)
 {
-  const Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b,domaine_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF,domaine_dis.valeur());
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
   if (sub_type(Champ_P1NC,ch_diffuse.valeur()))
     {

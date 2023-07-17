@@ -23,7 +23,7 @@
 #include <Domaine.h>
 #include <TRUSTLists.h>
 #include <Solv_GCP.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
 #include <SSOR.h>
 
@@ -41,7 +41,7 @@ Entree& Op_Dift_VEF_P1NCP1B_Face::readOn(Entree& s)
 
 void Op_Dift_VEF_P1NCP1B_Face::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
-  const Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b, domaine_dis.valeur());
+  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
   const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_transporte.valeur());
   le_dom_vef = zvef;
@@ -72,7 +72,7 @@ double Op_Dift_VEF_P1NCP1B_Face::calculer_dt_stab() const
   double surf_max;
   double dt_stab = 1.e30;
   double coef;
-  const Domaine_VEF_PreP1b& le_dom_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
   const DoubleVect& volumes = le_dom_VEF.volumes();
   const IntTab& elem_faces = le_dom_VEF.elem_faces();
   const DoubleTab& face_normales = le_dom_VEF.face_normales();
@@ -109,7 +109,7 @@ double Op_Dift_VEF_P1NCP1B_Face::calculer_dt_stab() const
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_elem(const DoubleTab& vit, DoubleTab& grad) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, (le_dom_vef.valeur()));
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, (le_dom_vef.valeur()));
 
   const Domaine& domaine = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -139,7 +139,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_elem(const DoubleTab& vit
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit, DoubleTab& grad) const
 {
 
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, (le_dom_vef.valeur()));
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, (le_dom_vef.valeur()));
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom = domaine;
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -341,7 +341,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_som(const DoubleTab& vit,
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::corriger_div_pour_Cl(DoubleTab& div) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -402,7 +402,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::corriger_div_pour_Cl(DoubleTab& div) const
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& div) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   const Domaine& domaine = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
@@ -431,7 +431,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const D
 }
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& div) const
 {
-  const Domaine_VEF_PreP1b& domaine_VEF = ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   const Domaine& dom = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const IntTab& som_elem = dom.les_elems();
@@ -496,7 +496,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
   //  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF_PreP1b& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Domaine& dom = domaine_VEF.domaine();
   int nb_elem_tot=dom.nb_elem_tot();
   int nb_som_tot=dom.nb_som_tot();

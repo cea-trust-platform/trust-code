@@ -41,9 +41,9 @@ Entree& Op_Diff_RotRot::readOn(Entree& s)
   return s ;
 }
 
-const Domaine_VEF_PreP1b& Op_Diff_RotRot::domaine_Vef() const
+const Domaine_VEF& Op_Diff_RotRot::domaine_Vef() const
 {
-  return ref_cast(Domaine_VEF_PreP1b, le_dom_vef.valeur());
+  return ref_cast(Domaine_VEF, le_dom_vef.valeur());
 }
 
 void Op_Diff_RotRot::

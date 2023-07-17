@@ -15,7 +15,7 @@
 
 #include <EOS_Tools_VEF.h>
 #include <Domaine.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 #include <Debog.h>
 #include <Navier_Stokes_std.h>
 #include <Schema_Temps_base.h>
@@ -169,7 +169,7 @@ void EOS_Tools_VEF::secmembre_divU_Z(DoubleTab& tab_W) const
   const IntTab& elem_faces = le_dom->elem_faces();
   const DoubleVect& volumes = le_dom->volumes();
   const DoubleVect& volumes_entrelaces = le_dom->volumes_entrelaces();
-  const Domaine_VEF_PreP1b& zp1b=ref_cast(Domaine_VEF_PreP1b,le_dom.valeur());
+  const Domaine_VEF& zp1b=ref_cast(Domaine_VEF,le_dom.valeur());
   const DoubleVect& volumes_controle=zp1b.volume_aux_sommets();
 
   double rn,rnp1;

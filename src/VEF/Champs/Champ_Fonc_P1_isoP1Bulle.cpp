@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Champ_Fonc_P1_isoP1Bulle.h>
-#include <Domaine_VEF_PreP1b.h>
+#include <Domaine_VEF.h>
 
 Implemente_instanciable(Champ_Fonc_P1_isoP1Bulle,"Champ_Fonc_P1_isoP1Bulle",Champ_Fonc_base);
 
@@ -25,7 +25,7 @@ Entree& Champ_Fonc_P1_isoP1Bulle::readOn(Entree& s) { return s ; }
 int Champ_Fonc_P1_isoP1Bulle::fixer_nb_valeurs_nodales(int n)
 {
   assert(n < 0);
-  const Domaine_VEF_PreP1b& zvef = domaine_vef();
+  const Domaine_VEF& zvef = domaine_vef();
   const MD_Vector& md = zvef.md_vector_p1b();
   creer_tableau_distribue(md);
   return n;
