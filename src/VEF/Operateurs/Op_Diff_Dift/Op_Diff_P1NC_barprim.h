@@ -18,7 +18,7 @@
 
 #include <Operateur_Diff_base.h>
 #include <Domaine_VEF_PreP1b.h>
-#include <Domaine_Cl_VEFP1B.h>
+#include <Domaine_Cl_VEF.h>
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
 #include <Op_VEF_Face.h>
@@ -61,7 +61,7 @@ protected:
 
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
   REF(Domaine_VEF_PreP1b) le_dom_vef;
-  REF(Domaine_Cl_VEFP1B) la_zcl_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_Uniforme) diffusivite_;
 };
 

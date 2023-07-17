@@ -24,7 +24,7 @@
 #include <TRUSTLists.h>
 #include <Solv_GCP.h>
 #include <Domaine_VEF_PreP1b.h>
-#include <Domaine_Cl_VEFP1B.h>
+#include <Domaine_Cl_VEF.h>
 #include <SSOR.h>
 
 Implemente_instanciable(Op_Dift_VEF_P1NCP1B_Face, "Op_Dift_VEF_P1NCP1B_const_P1NC", Op_Dift_VEF_base);
@@ -42,7 +42,7 @@ Entree& Op_Dift_VEF_P1NCP1B_Face::readOn(Entree& s)
 void Op_Dift_VEF_P1NCP1B_Face::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
   const Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b, domaine_dis.valeur());
-  const Domaine_Cl_VEFP1B& zclvef = ref_cast(Domaine_Cl_VEFP1B, domaine_cl_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
   const Champ_P1NC& inco = ref_cast(Champ_P1NC, ch_transporte.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
@@ -495,7 +495,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_som(double nu, const Do
 
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
-  //  const Domaine_Cl_VEFP1B& domaine_Cl_VEF = la_zcl_vef.valeur();
+  //  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine_VEF_PreP1b& domaine_VEF = le_dom_vef.valeur();
   const Domaine& dom = domaine_VEF.domaine();
   int nb_elem_tot=dom.nb_elem_tot();

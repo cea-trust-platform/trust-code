@@ -15,7 +15,7 @@
 
 #include <VEFPreP1B.h>
 #include <Domaine_dis.h>
-#include <Domaine_Cl_VEFP1B.h>
+#include <Domaine_Cl_VEF.h>
 #include <Champ_P1_isoP1Bulle.h>
 #include <Schema_Temps_base.h>
 #include <Champ_Inc.h>
@@ -289,9 +289,9 @@ void VEFPreP1B::domaine_Cl_dis(Domaine_dis& z,
   Cerr << "discretisation des conditions limites" << finl;
   assert(z.non_nul());
   Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z.valeur());
-  zcl.typer("Domaine_Cl_VEFP1B");
+  zcl.typer("Domaine_Cl_VEF");
   assert(zcl.non_nul());
-  Domaine_Cl_VEFP1B& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEFP1B, zcl.valeur());
+  Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl.valeur());
   domaine_Cl_VEF.associer(domaine_VEF);
   Cerr << "discretisation des conditions limites OK" << finl;
 }

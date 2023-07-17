@@ -190,7 +190,7 @@ void Op_Diff_VEFP1NCP1B_Face::associer(const Domaine_dis& domaine_dis,
                                        const Champ_Inc& ch_diffuse)
 {
   const Domaine_VEF_PreP1b& zvef = ref_cast(Domaine_VEF_PreP1b,domaine_dis.valeur());
-  const Domaine_Cl_VEFP1B& zclvef = ref_cast(Domaine_Cl_VEFP1B,domaine_cl_dis.valeur());
+  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
 
   // On bloque la symetrie dans l operateur de diffusion P1NC sur vitesse (OK pour scalaire)
   for (int i = 0; i<zclvef.nb_cond_lim(); i++)

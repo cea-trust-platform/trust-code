@@ -22,7 +22,7 @@
 #include <TRUST_Ref.h>
 
 class Domaine_VEF_PreP1b;
-class Domaine_Cl_VEFP1B;
+class Domaine_Cl_VEF;
 class Mod_turb_hyd_base;
 class Champ_P1NC;
 
@@ -69,7 +69,7 @@ protected:
   DoubleTab& corriger_div_pour_Cl(DoubleTab&) const;
   REF(Mod_turb_hyd_base) le_modele_turbulence;
   REF(Domaine_VEF_PreP1b) le_dom_vef;
-  REF(Domaine_Cl_VEFP1B) la_zcl_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   SolveurSys solveur;
   int trans = -10;
   double lambda = -100.;

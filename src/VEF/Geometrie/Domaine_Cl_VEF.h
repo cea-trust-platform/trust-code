@@ -16,8 +16,6 @@
 #ifndef Domaine_Cl_VEF_included
 #define Domaine_Cl_VEF_included
 
-
-
 /*! @brief class Domaine_Cl_VEF Cette classe porte les tableaux qui servent a mettre en oeuvre
  *
  *   les condition aux limites dans la formulation VEF
@@ -33,43 +31,35 @@
  * @sa Domaine_Cl_dis_base
  */
 
-
 #include <Domaine_Cl_dis_base.h>
 
-class Champ_Inc;
 class Domaine_VEF;
+class Champ_Inc;
 
-class Domaine_Cl_VEF : public Domaine_Cl_dis_base
+class Domaine_Cl_VEF: public Domaine_Cl_dis_base
 {
-
   Declare_instanciable(Domaine_Cl_VEF);
-
-public :
-
-  void associer(const Domaine_VEF& );
-  void completer(const Domaine_dis& ) override;
-  //  void mettre_a_jour(double );
+public:
+  void associer(const Domaine_VEF&);
+  void completer(const Domaine_dis&) override;
   int initialiser(double temps) override;
   void imposer_cond_lim(Champ_Inc&, double) override;
 
-  virtual void remplir_volumes_entrelaces_Cl(const Domaine_VEF& );
-  void remplir_normales_facettes_Cl(const Domaine_VEF& );
-  void remplir_vecteur_face_facette_Cl(const Domaine_VEF& );
-  inline DoubleVect& volumes_entrelaces_Cl();
-  inline const DoubleVect& volumes_entrelaces_Cl() const;
-  inline const double& volumes_entrelaces_Cl(int ) const;
-  inline double& volumes_entrelaces_Cl(int );
+  virtual void remplir_volumes_entrelaces_Cl(const Domaine_VEF&);
+  void remplir_normales_facettes_Cl(const Domaine_VEF&);
+  void remplir_vecteur_face_facette_Cl(const Domaine_VEF&);
 
-  inline DoubleTab& normales_facettes_Cl();
-  inline const DoubleTab& normales_facettes_Cl() const;
-  inline const double& normales_facettes_Cl(int ,int ,int ) const;
-  inline double& normales_facettes_Cl(int ,int ,int );
-
-  inline DoubleTab& vecteur_face_facette_Cl();
-  inline const DoubleTab& vecteur_face_facette_Cl() const;
-
-
-  inline int type_elem_Cl(int ) const;
+  inline DoubleVect& volumes_entrelaces_Cl() { return volumes_entrelaces_Cl_; }
+  inline const DoubleVect& volumes_entrelaces_Cl() const { return volumes_entrelaces_Cl_; }
+  inline const double& volumes_entrelaces_Cl(int i) const { return volumes_entrelaces_Cl_[i]; }
+  inline double& volumes_entrelaces_Cl(int i) { return volumes_entrelaces_Cl_[i]; }
+  inline DoubleTab& normales_facettes_Cl() { return normales_facettes_Cl_; }
+  inline const DoubleTab& normales_facettes_Cl() const { return normales_facettes_Cl_; }
+  inline const double& normales_facettes_Cl(int num_poly, int num_fa7, int ncomp) const { return normales_facettes_Cl_(num_poly, num_fa7, ncomp); }
+  inline double& normales_facettes_Cl(int num_poly, int num_fa7, int ncomp) { return normales_facettes_Cl_(num_poly, num_fa7, ncomp); }
+  inline DoubleTab& vecteur_face_facette_Cl() { return vecteur_face_facette_Cl_; }
+  inline const DoubleTab& vecteur_face_facette_Cl() const { return vecteur_face_facette_Cl_; }
+  inline int type_elem_Cl(int i) const { return type_elem_Cl_[i]; }
 
   int nb_faces_sortie_libre() const;
   Domaine_VEF& domaine_VEF();
@@ -78,88 +68,12 @@ public :
   int nb_bord_periodicite() const;
 
 protected:
-
-  // Attributs:
-
   DoubleVect volumes_entrelaces_Cl_;
-  DoubleTab normales_facettes_Cl_;
-  DoubleTab vecteur_face_facette_Cl_;
+  DoubleTab normales_facettes_Cl_, vecteur_face_facette_Cl_;
   IntVect type_elem_Cl_;
   int modif_perio_fait_ = 0;
 
-  // Fonctions de creation des membres prives du domaine:
-
-  //  void remplir_volumes_entrelaces_Cl(const Domaine_VEF& );
-  //  void remplir_normales_facettes_Cl(const Domaine_VEF& );
-  void remplir_type_elem_Cl(const Domaine_VEF& );
-
+  void remplir_type_elem_Cl(const Domaine_VEF&);
 };
 
-//
-// Fonctions inline de la classe Domaine_Cl_VEF
-//
-
-
-inline DoubleVect& Domaine_Cl_VEF::volumes_entrelaces_Cl()
-{
-  return volumes_entrelaces_Cl_;
-}
-
-inline const DoubleVect& Domaine_Cl_VEF::volumes_entrelaces_Cl() const
-{
-  return volumes_entrelaces_Cl_;
-}
-
-inline const double& Domaine_Cl_VEF::volumes_entrelaces_Cl(int i) const
-{
-  return volumes_entrelaces_Cl_[i];
-}
-
-inline double& Domaine_Cl_VEF::volumes_entrelaces_Cl(int i)
-{
-  return volumes_entrelaces_Cl_[i];
-}
-
-inline DoubleTab& Domaine_Cl_VEF::normales_facettes_Cl()
-{
-  return normales_facettes_Cl_;
-}
-
-inline const  DoubleTab& Domaine_Cl_VEF::normales_facettes_Cl() const
-{
-  return normales_facettes_Cl_;
-}
-
-inline DoubleTab& Domaine_Cl_VEF::vecteur_face_facette_Cl()
-{
-  return vecteur_face_facette_Cl_;
-}
-
-inline const  DoubleTab& Domaine_Cl_VEF::vecteur_face_facette_Cl() const
-{
-  return vecteur_face_facette_Cl_;
-}
-
-
-
-
-inline const double& Domaine_Cl_VEF::normales_facettes_Cl(int num_poly,
-                                                          int num_fa7,
-                                                          int ncomp) const
-{
-  return normales_facettes_Cl_(num_poly,num_fa7,ncomp);
-}
-
-inline double& Domaine_Cl_VEF::normales_facettes_Cl(int num_poly,
-                                                    int num_fa7,
-                                                    int ncomp)
-{
-  return normales_facettes_Cl_(num_poly,num_fa7,ncomp);
-}
-
-inline int Domaine_Cl_VEF::type_elem_Cl(int i) const
-{
-  return type_elem_Cl_[i];
-}
-
-#endif
+#endif /* Domaine_Cl_VEF_included */

@@ -21,7 +21,7 @@
 #include <Matrice_Morse.h>
 #include <Op_Diff_VEF_Face.h>
 #include <Domaine_VEF_PreP1b.h>
-#include <Domaine_Cl_VEFP1B.h>
+#include <Domaine_Cl_VEF.h>
 #include <TRUSTLists.h>
 #include <SolveurSys.h>
 #include <ArrOfBit.h>
@@ -55,7 +55,7 @@ public:
 
   //Acces aux domaines
   const Domaine_VEF_PreP1b& domaine_VEFPreP1B() const;
-  const Domaine_Cl_VEFP1B& domaine_Cl_VEFPreP1B() const;
+  const Domaine_Cl_VEF& domaine_Cl_VEFPreP1B() const;
 
   //Methodes pour l'implicite.
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
@@ -159,8 +159,8 @@ inline const Domaine_VEF_PreP1b& Op_Diff_VEFP1NCP1B_Face::domaine_VEFPreP1B() co
   return ref_cast(Domaine_VEF_PreP1b,le_dom_vef.valeur());
 }
 
-inline const Domaine_Cl_VEFP1B& Op_Diff_VEFP1NCP1B_Face::domaine_Cl_VEFPreP1B() const
+inline const Domaine_Cl_VEF& Op_Diff_VEFP1NCP1B_Face::domaine_Cl_VEFPreP1B() const
 {
-  return ref_cast(Domaine_Cl_VEFP1B,la_zcl_vef.valeur());
+  return ref_cast(Domaine_Cl_VEF,la_zcl_vef.valeur());
 }
 #endif

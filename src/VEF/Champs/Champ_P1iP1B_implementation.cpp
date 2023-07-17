@@ -17,7 +17,7 @@
 #include <Champ_implementation_P1.h>
 #include <Domaine.h>
 #include <Domaine_VEF_PreP1b.h>
-#include <Domaine_Cl_VEFP1B.h>
+#include <Domaine_Cl_VEF.h>
 #include <Debog.h>
 
 #include <Matrice_Morse_Sym.h>
