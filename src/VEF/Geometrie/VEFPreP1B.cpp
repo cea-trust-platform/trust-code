@@ -86,6 +86,16 @@ Entree& VEFPreP1B::readOn(Entree& is )
         Cerr << "L'option changement_de_base_P1bulle n'est disponible qu'en P0/P1" << finl;
         Process::exit();
       }
+
+  if (alphaRT_)
+    {
+      if (alphaE_+alphaS_+alphaA_==0)
+        {
+          Cerr << "Choose P0 discretization." << finl;
+          Process::exit();
+        }
+      Cerr << "Linke's scheme, OK for steady-state pb. The pressure computed is the Bernoulli pressure P =p+|u|^2" << finl;
+    }
   return is;
 }
 
