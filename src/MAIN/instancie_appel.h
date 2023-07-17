@@ -108,5 +108,6 @@ void instancie_src_VEF_Operateurs_Op_Diff_Dift();
 void instancie_src_VEF_Operateurs_Op_Divers();
 void instancie_src_VEF_Solveurs();
 void instancie_src_VEF_Sources();
+void instancie_src_VEF_Sources_PDC();
 void instancie_src_VEF_Sources_Sources_It_Eval();
 void instancie_src_VEF_Traitement_particulier();

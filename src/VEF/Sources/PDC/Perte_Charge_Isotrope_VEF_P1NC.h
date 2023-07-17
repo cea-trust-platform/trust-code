@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,37 +13,42 @@
 *
 *****************************************************************************/
 
+#ifndef Perte_Charge_Isotrope_VEF_P1NC_included
+#define Perte_Charge_Isotrope_VEF_P1NC_included
 
-#ifndef Perte_Charge_Singuliere_VEF_Face_included
-#define Perte_Charge_Singuliere_VEF_Face_included
+#include <Perte_Charge_VEF.h>
 
-#include <Perte_Charge_VEF_Face.h>
-#include <Perte_Charge_Singuliere.h>
+//!  Perte de charge isotrope (proportionnelle a -u )
+/**
+   du/dt = - lambda(Re,x,y,z,t) * u * ||u|| / 2 Dh
 
-class Domaine;
-#include <TRUSTList.h>
+   Lecture des arguments :
 
-/*! @brief class Perte_Charge_Singuliere_VEF_Face
- *
- *
- *
- * @sa Perte_Charge_VEF_Face
- */
-class Perte_Charge_Singuliere_VEF_Face : public Perte_Charge_VEF_Face,
-  public Perte_Charge_Singuliere
+   Perte_Charge_Isotrope_VEF_P1NC diametre_hydraulique {
+   lambda expression(Re,x,y,z,t)
+   diam_hydr champ_don
+   [sous_domaine nom]
+   }
+*/
+
+class Perte_Charge_Isotrope_VEF_P1NC : public Perte_Charge_VEF
 {
-
-  Declare_instanciable(Perte_Charge_Singuliere_VEF_Face);
+  Declare_instanciable(Perte_Charge_Isotrope_VEF_P1NC);
 
 public:
 
-  DoubleTab& ajouter(DoubleTab& ) const override;
-  DoubleTab& calculer(DoubleTab& ) const override ;
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override ;
-  void remplir_num_faces(Entree& );
-  void mettre_a_jour(double temps) override;
+  void mettre_a_jour(double temps) override
+  {
+    diam_hydr->mettre_a_jour(temps);
+  }
 
 protected:
-  IntVect sgn;
+
+  //! Implemente le calcul effectif de la perte de charge pour un lieu donne
+  void coeffs_perte_charge(const DoubleVect& u, const DoubleVect& pos,
+                           double t, double norme_u, double dh, double nu, double reynolds,
+                           double& coeff_ortho, double& coeff_long, double& u_l, DoubleVect& v_valeur) const override;
+
 };
+
 #endif
