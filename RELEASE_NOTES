@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+18/07/23 (TRUST) Major change : Three PolyMAC versions are now available in TRUST: PolyMAC, PolyMAC_P0P1NC and PolyMAC_P0. The last two are compatible with Pb_Multiphase.
+18/07/23 (TRUST) Major change : Initial PolyMAC version is now hosted in TRUST. It is not useful with Pb_Multiphase but is used in several applications.
 07/07/23 (TRUST) New feature  : Read_MED|Lire_MED and Write_MED|Ecrire_MED now relies exclusively on MED groups, not on families. Option 'exclude_groups' can be used in Read_MED to avoid reading some face groups.
 07/07/23 (TRUST) Keyword      : Read_MED|Lire_MED, Write_MED|Ecrire_MED and Champ_Fonc_MED* old syntax is not supported anymore. Use the syntax with braces.
 26/06/23 (TRUST) Fix          : Fluxes are not printed into an .out file if the dedicated operator's output file is not set in the code, this avoids confusions.
