@@ -11,7 +11,6 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
-	-I$(TRUST_ROOT)/src/P1NCP1B/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
