@@ -17,13 +17,13 @@
 #define Op_Dift_Stab_VEF_Face_included
 
 #include <Operateur_Div.h>
-#include <Op_Dift_VEF_Face.h>
+#include <Op_Dift_VEF_Face_old.h>
 
 /*! @brief class Op_Dift_Stab_VEF_Face
  *
  */
 
-class Op_Dift_Stab_VEF_Face : public Op_Dift_VEF_Face
+class Op_Dift_Stab_VEF_Face : public Op_Dift_VEF_Face_old
 {
   Declare_instanciable(Op_Dift_Stab_VEF_Face);
 
@@ -105,7 +105,7 @@ inline double Op_Dift_Stab_VEF_Face::aij_extradiag(const int elem, const int fac
 inline void Op_Dift_Stab_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   if (!new_jacobian_)
-    Op_Dift_VEF_Face::contribuer_a_avec(inco,matrice);
+    Op_Dift_VEF_Face_old::contribuer_a_avec(inco,matrice);
   else
     {
       const Champ_base& inconnue = equation().inconnue().valeur();

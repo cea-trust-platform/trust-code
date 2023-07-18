@@ -13,17 +13,22 @@
 *
 *****************************************************************************/
 
-#ifndef Op_Dift_VEF_Face_Var_included
-#define Op_Dift_VEF_Face_Var_included
 
-#include <Op_Dift_VEF_Face.h>
+#ifndef Op_Dift_VEF_Face_Var_old_included
+#define Op_Dift_VEF_Face_Var_old_included
 
-class Op_Dift_VEF_Face_Var : public Op_Dift_VEF_Face
+#include <Op_Dift_VEF_Face_old.h>
+
+/*! @brief class Op_Dift_VEF_Face_Var_old
+ *
+ *
+ *
+ */
+
+class Op_Dift_VEF_Face_Var_old : public Op_Dift_VEF_Face_old
 {
-  Declare_instanciable(Op_Dift_VEF_Face_Var);
-public:
-  static constexpr bool IS_VAR = true;
-};
+  Declare_instanciable(Op_Dift_VEF_Face_Var_old);
 
-#endif /* Op_Dift_VEF_Face_Var_included */
+};
+#endif
 

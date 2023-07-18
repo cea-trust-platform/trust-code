@@ -30,7 +30,7 @@
 #include <Porosites_champ.h>
 #include <Modele_turbulence_scal_base.h>
 
-Implemente_instanciable(Op_Dift_Stab_VEF_Face,"Op_Dift_VEF_P1NC_stab",Op_Dift_VEF_Face);
+Implemente_instanciable(Op_Dift_Stab_VEF_Face,"Op_Dift_VEF_P1NC_stab",Op_Dift_VEF_Face_old);
 
 
 double my_minimum(double a,double b,double c)
@@ -1163,7 +1163,7 @@ void Op_Dift_Stab_VEF_Face::calculer_max(const DoubleTab& inconnueTab, int& dim,
 
 void Op_Dift_Stab_VEF_Face::completer()
 {
-  Op_Dift_VEF_Face::completer();
+  Op_Dift_VEF_Face_old::completer();
 
   {
     const Domaine_VEF& domaine_VEF=le_dom_vef.valeur();
@@ -1267,7 +1267,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,cons
 void Op_Dift_Stab_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte, Matrice_Morse& matrice, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
 {
   if (!new_jacobian_)
-    Op_Dift_VEF_Face::ajouter_contribution_cl(transporte,matrice,nu,nu_turb,porosite_eventuelle);
+    Op_Dift_VEF_Face_old::ajouter_contribution_cl(transporte,matrice,nu,nu_turb,porosite_eventuelle);
   else
     {
       // On traite les faces bord
@@ -1462,7 +1462,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution_cl(const DoubleTab& transporte,
 void Op_Dift_Stab_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse& matrice ) const
 {
   if (!new_jacobian_)
-    Op_Dift_VEF_Face::ajouter_contribution(transporte,matrice);
+    Op_Dift_VEF_Face_old::ajouter_contribution(transporte,matrice);
   else
     {
       modifier_matrice_pour_periodique_avant_contribuer(matrice,equation());
@@ -1566,7 +1566,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Ma
 void Op_Dift_Stab_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& transporte, Matrice_Morse& matrice) const
 {
   if (!new_jacobian_)
-    Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(transporte,matrice);
+    Op_Dift_VEF_Face_old::ajouter_contribution_multi_scalaire(transporte,matrice);
   else
     {
       modifier_matrice_pour_periodique_avant_contribuer(matrice,equation());

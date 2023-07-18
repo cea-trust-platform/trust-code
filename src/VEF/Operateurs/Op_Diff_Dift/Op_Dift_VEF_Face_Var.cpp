@@ -14,29 +14,14 @@
 *****************************************************************************/
 
 #include <Op_Dift_VEF_Face_Var.h>
-Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face_Var,"Op_Dift_VEF_var_P1NC",Op_Dift_VEF_Face);
 
+Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face_Var, "Op_Dift_VEF_var_P1NC", Op_Dift_VEF_Face);
 
-
-/*! @brief Constructeur par defaut: on supporte rho variable
- *
- */
 Op_Dift_VEF_Face_Var::Op_Dift_VEF_Face_Var()
 {
   declare_support_masse_volumique(1);
 }
-//// printOn
-//
 
-Sortie& Op_Dift_VEF_Face_Var::printOn(Sortie& s ) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Op_Dift_VEF_Face_Var::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-//// readOn
-//
-
-Entree& Op_Dift_VEF_Face_Var::readOn(Entree& s )
-{
-  return s ;
-}
+Entree& Op_Dift_VEF_Face_Var::readOn(Entree& s) { return s; }

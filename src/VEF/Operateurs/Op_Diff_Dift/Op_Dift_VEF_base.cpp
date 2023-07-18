@@ -87,7 +87,7 @@ void Op_Dift_VEF_base::completer()
     }
   else
     {
-      Cerr << "Error in Op_Dift_VEF_Face::completer() " << finl;
+      Cerr << "Error in Op_Dift_VEF_base::completer() " << finl;
       Cerr <<  que_suis_je() <<" operator is presently associated to "<<equation().que_suis_je()<<finl;
       Cerr << "instead of being associated to an equation dedicated to a turbulent flow."<<finl;
       exit();
