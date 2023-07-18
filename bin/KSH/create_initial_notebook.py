@@ -28,7 +28,8 @@ binary, version = os.environ.get("exec", "[UNKNOWN]"), os.environ.get("TRUST_VER
 origin = os.getcwd()
 path = os.path.join(origin, "build")
 
-parameters = "### TRUST parameters \n \n * Version TRUST: " + version + "\n * Binary used: " + binary + " (built on TRUST " + path + ")"
+parameters = "from trustutils import run \n \n"
+parameters += "run.TRUST_parameters(\"" + version + "\")"
 
 testCases = "from trustutils import run\n \n"
 
@@ -74,7 +75,7 @@ perf = "run.tablePerf()"
 nb['cells'] = [nbf.v4.new_markdown_cell(title),
         nbf.v4.new_markdown_cell(intro),
         nbf.v4.new_markdown_cell(description),
-        nbf.v4.new_markdown_cell(parameters),
+        nbf.v4.new_code_cell(parameters),
         nbf.v4.new_code_cell(testCases)]
 
 if args.tutorial==1:
