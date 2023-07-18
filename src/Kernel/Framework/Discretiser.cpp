@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,51 +13,19 @@
 *
 *****************************************************************************/
 
-#include <Discretiser.h>
-#include <Probleme_Couple.h>
 #include <Discretisation_base.h>
+#include <Probleme_Couple.h>
 #include <Probleme_base.h>
+#include <Discretiser.h>
 
 Implemente_instanciable(Discretiser,"Discretiser|Discretize",Interprete);
 
 int Discretiser::is_deja_appele=0;
 
+Sortie& Discretiser::printOn(Sortie& os) const { return Interprete::printOn(os); }
 
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- *     Imprime l'interprete sur un flot de sortie
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Discretiser::printOn(Sortie& os) const
-{
-  return Interprete::printOn(os);
-}
+Entree& Discretiser::readOn(Entree& is) { return Interprete::readOn(is); }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Discretiser::readOn(Entree& is)
-{
-  return Interprete::readOn(is);
-}
-
-
-/*! @brief Fonction principale de l'interprete Discretiser: discretiser un probleme avec une discretisation
- *
- *     On controle dynamiquement le type du probleme et
- *     de la discretisation que l'on a lu, on verifie
- *     que le schema en temps du probleme a ete lu et on
- *     discretise le probleme avec la discretisation.
- *
- * @throws discretisation non reconnue
- * @throws on ne sait pas discretiser car le probleme n'est pas d'un
- * sous-type reconnu (Probleme,Probleme_base,Probleme_Couple)
- */
 Entree& Discretiser::interpreter(Entree& is)
 {
 saisie :
@@ -66,42 +34,36 @@ saisie :
   Objet_U& ob1=objet(nom1);
   Objet_U& ob2=objet(nom2);
 
-  if (is_deja_appele==0)
-    is_deja_appele = 1;
+  if (is_deja_appele == 0) is_deja_appele = 1;
   else
     {
       Cerr<<"Be careful, you call several times the interpreter Discretiser"<<finl;
       Cerr<<"there is probably an error in your data set"<<finl;
-      //      exit();
+      // Process::exit();
     }
 
   if( !( sub_type(Discretisation_base, ob2) ) )
     {
       Cerr << nom2 << "is not a recognized discretization" << finl;
-      exit();
+      Process::exit();
     }
   Discretisation_base& typ=ref_cast(Discretisation_base, ob2);
   Cerr << "The chosen discretization is of type " << typ.que_suis_je() << finl;
-  if (typ.que_suis_je()=="VEF")
-    {
-      Cerr << "Since 1.6 version, the keyword VEF is obsolete." << finl;
-      Cerr << "Use keyword VEFPreP1B and P0 support to match the old VEF keyword." << finl;
-      exit();
-    }
+
   // Test on bidim_axi
   if ( dimension == 2 && !(typ.que_suis_je()=="VDF") && bidim_axi == 1 )
     {
       Cerr << "The feature 'bidim_axi' is only available for 2D calculation with VDF discretisation." << finl;
-      exit();
+      Process::exit();
     }
-  //
+
   if( sub_type(Probleme_base, ob1) )
     {
       Probleme_base& pb=ref_cast(Probleme_base,ob1);
       if(!pb.schema_temps().lu())
         {
           Cerr << "it must have read the time scheme before to discretize" << finl;
-          exit();
+          Process::exit();
         }
       Cerr << "The chosen time scheme is of type " << pb.schema_temps().que_suis_je() << finl;
       Cerr << "We treat the problem " << pb.le_nom() << " of type " << pb.que_suis_je() << finl;
@@ -114,7 +76,7 @@ saisie :
       if(!pbc.schema_temps().lu())
         {
           Cerr << "it must have read the time scheme before to discretize" << finl;
-          exit();
+          Process::exit();
         }
       Cerr << "The chosen time scheme is of type " << pbc.schema_temps().que_suis_je() << finl;
       Cerr << "We treat the problem " << pbc.le_nom() << " of type " << pbc.que_suis_je() << finl;
