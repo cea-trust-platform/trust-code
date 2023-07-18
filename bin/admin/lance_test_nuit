@@ -1122,11 +1122,9 @@ echo "###############################################"
 #	          git rebase --continue 1>>$rebase_log 2>&1
 #	          [ "`git rebase --continue 2>&1`" != "No rebase in progress?" ] && echo "  KO rebase Composants/$Composant"
                  git remote update
-                 git checkout .
 #                On test uniquement mpcube sur la verison Kernel !
 #                La branche est appele portage car elle ne bouge pas beacoup
-                 git checkout portage
-                 git pull
+                 git reset --hard origin/portage
 	         cd - 1>/dev/null 2>&1
                  echo>>$rebase_log
 	      fi
