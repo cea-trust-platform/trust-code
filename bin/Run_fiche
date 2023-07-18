@@ -263,6 +263,13 @@ do
             jy=`basename $PWD`
          fi
       fi
+      notebook=`ls *.ipynb 2>/dev/null`
+      if [ "$notebook" != "" ]
+      then
+      	echo "=========================="
+      	echo "a .ipynb file already exists"
+      	exit
+      fi
       create_basic_jupyter_notebook.sh $jy
       exit 0
    else
