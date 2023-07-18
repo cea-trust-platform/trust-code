@@ -22,7 +22,7 @@ Sortie& Champ_P0_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " 
 
 Entree& Champ_P0_VEF::readOn(Entree& s) { return s ; }
 
-const Domaine_VEF& Champ_P0_VEF::domaine_VEF() const
+const Domaine_VEF& Champ_P0_VEF::domaine_vef() const
 {
   return ref_cast(Domaine_VEF, le_dom_VF.valeur());
 }

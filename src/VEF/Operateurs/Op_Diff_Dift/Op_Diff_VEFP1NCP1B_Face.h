@@ -54,7 +54,7 @@ public:
   double calculer_dt_stab() const override;
 
   //Acces aux domaines
-  const Domaine_VEF& domaine_VEFPreP1B() const;
+  const Domaine_VEF& domaine_vef() const;
   const Domaine_Cl_VEF& domaine_Cl_VEFPreP1B() const;
 
   //Methodes pour l'implicite.
@@ -154,7 +154,7 @@ inline void Op_Diff_VEFP1NCP1B_Face::contribuer_au_second_membre(DoubleTab& resu
   contribue_au_second_membre(resu);
 }
 
-inline const Domaine_VEF& Op_Diff_VEFP1NCP1B_Face::domaine_VEFPreP1B() const
+inline const Domaine_VEF& Op_Diff_VEFP1NCP1B_Face::domaine_vef() const
 {
   return ref_cast(Domaine_VEF,le_dom_vef.valeur());
 }

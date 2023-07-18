@@ -225,7 +225,7 @@ void Op_Diff_VEFP1NCP1B_Face::completer()
 //ATTENTION : NE TIENT PAS COMPTE DE LA POROSITE 09/04/2009
 double Op_Diff_VEFP1NCP1B_Face::calculer_dt_stab() const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -311,7 +311,7 @@ double Op_Diff_VEFP1NCP1B_Face::calculer_dt_stab() const
 void Op_Diff_VEFP1NCP1B_Face::
 calculer_dt_stab_elem(const DoubleTab& nu, DoubleTab& coeffOperateur) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -390,7 +390,7 @@ calculer_dt_stab_elem(const DoubleTab& nu, DoubleTab& coeffOperateur) const
 void Op_Diff_VEFP1NCP1B_Face::
 calculer_dt_stab_som(const DoubleTab& nu_som, DoubleTab& coeffOperateur) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
 
   const int nb_faces=domaine_VEF.nb_faces();
 
@@ -421,7 +421,7 @@ calculer_dt_stab_aretes(const DoubleTab& nu, DoubleTab& coeffOperateur) const
 DoubleVect& Op_Diff_VEFP1NCP1B_Face::
 calculer_gradient_elem(const DoubleVect& inconnue) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
 
   const Domaine& domaine = domaine_VEF.domaine();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -474,7 +474,7 @@ calculer_gradient_elem(const DoubleVect& inconnue) const
 DoubleVect& Op_Diff_VEFP1NCP1B_Face::
 calculer_gradient_som(const DoubleVect& inconnue) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;
@@ -720,7 +720,7 @@ DoubleVect& Op_Diff_VEFP1NCP1B_Face::
 corriger_div_pour_Cl(const DoubleVect& inconnue,const DoubleTab& nu,
                      DoubleVect& div) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
 #ifndef NDEBUG
@@ -814,7 +814,7 @@ corriger_div_pour_Cl(const DoubleVect& inconnue,const DoubleTab& nu,
 DoubleVect& Op_Diff_VEFP1NCP1B_Face::
 calculer_divergence_elem(DoubleVect& div) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
 
   const DoubleTab& face_normales = domaine_VEF.face_normales();
 
@@ -850,7 +850,7 @@ calculer_divergence_elem(DoubleVect& div) const
 DoubleVect& Op_Diff_VEFP1NCP1B_Face::
 calculer_divergence_som(DoubleVect& div) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;
 
@@ -988,7 +988,7 @@ calculer_laplacien_som(const DoubleTab& nu_som) const
 DoubleTab& Op_Diff_VEFP1NCP1B_Face::
 ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
 
   const int nb_aretes_tot=domaine.nb_aretes_tot();
@@ -1085,7 +1085,7 @@ corriger_pour_diffusivite(const DoubleTab& nu,DoubleTab& grad) const
 
 void Op_Diff_VEFP1NCP1B_Face::initialiser()
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
 
   const DoubleTab& unknown = equation().inconnue().valeurs();
   const int size = unknown.line_size();
@@ -1114,7 +1114,7 @@ void Op_Diff_VEFP1NCP1B_Face::initialiser()
 //Fonction qui calcule le flux aux bords du domaine
 void Op_Diff_VEFP1NCP1B_Face::calculer_flux_bords_elem(const DoubleVect& inconnue) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
   const IntTab& face_voisins=domaine_VEF.face_voisins();
@@ -1212,7 +1212,7 @@ void Op_Diff_VEFP1NCP1B_Face::calculer_flux_bords_elem(const DoubleVect& inconnu
 //Fonction qui calcule le flux aux bords du domaine
 void Op_Diff_VEFP1NCP1B_Face::calculer_flux_bords_som(const DoubleVect& inconnue) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;
@@ -1504,7 +1504,7 @@ void Op_Diff_VEFP1NCP1B_Face::
 ajouter_contribution_som(const DoubleTab& inconnue,const DoubleVect& porosite_face,
                          const DoubleTab& nu_som,Matrice_Morse& matrice) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
 
   IntVect liste_som(dimension+2);//pour triangles et tetraedres
@@ -1621,7 +1621,7 @@ coeff_matrice_som(const int face,IntVect& liste_som,
                   const DoubleVect& porosite_face,const DoubleTab& nu_som,
                   const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
 
   const ArrOfInt& tab1=matrice.get_tab1();
   const ArrOfInt& tab2=matrice.get_tab2();
@@ -1758,7 +1758,7 @@ coeff_matrice_som_CL(const int face,IntVect& liste_som,
                      const DoubleVect& porosite_face,const DoubleTab& nu_som,
                      const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
 
   const ArrOfInt& tab1=matrice.get_tab1();
   const ArrOfInt& tab2=matrice.get_tab2();
@@ -1895,7 +1895,7 @@ coeff_matrice_som_symetrie(const int face,IntVect& liste_som,
                            const DoubleVect& porosite_face,const DoubleTab& nu_som,
                            const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
 
   const ArrOfInt& tab1=matrice.get_tab1();
   const ArrOfInt& tab2=matrice.get_tab2();
@@ -2036,7 +2036,7 @@ coeff_matrice_som_perio(const int face,const int faceAss, IntVect& liste_som,
                         const DoubleVect& porosite_face,const DoubleTab& nu_som,
                         const DoubleTab& coeff_perio,Matrice_Morse& matrice) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
 
   const ArrOfInt& tab1=matrice.get_tab1();
   const ArrOfInt& tab2=matrice.get_tab2();
@@ -2168,7 +2168,7 @@ coeff_matrice_som_perio(const int face,const int faceAss, IntVect& liste_som,
 void Op_Diff_VEFP1NCP1B_Face::
 ajouter_contribution(const DoubleTab& inconnue,Matrice_Morse& matrice) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
 
   //Marqueur pour tenir compte de la porosite
@@ -2216,7 +2216,7 @@ ajouter_contribution(const DoubleTab& inconnue,Matrice_Morse& matrice) const
 void Op_Diff_VEFP1NCP1B_Face::
 remplir_nu_p1(const DoubleTab& nu_elem,DoubleTab& nu_p1) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine& dom=domaine;
 
@@ -2310,7 +2310,7 @@ remplir_nu_pA(const DoubleTab& nu_elem,DoubleTab& nu_pA) const
 //de diffusion P1B
 void Op_Diff_VEFP1NCP1B_Face::liste_face(IntLists& liste,int& nnz) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;
@@ -2631,7 +2631,7 @@ gradient_som(const int face,const int som_glob,
              const int elem1, const int som_loc1,
              DoubleTab& grad) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
 
   const DoubleTab& face_normales=domaine_VEF.face_normales();
   const DoubleVect& volume_aux_sommets=domaine_VEF.volume_aux_sommets();
@@ -2714,7 +2714,7 @@ gradient_som(const int face,const int som_glob,
 void Op_Diff_VEFP1NCP1B_Face::
 gradient_som(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine& dom=domaine;
 
@@ -2829,7 +2829,7 @@ gradient_som(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 void Op_Diff_VEFP1NCP1B_Face::
 gradient_som_CL(const int face,int& nnz, IntVect& som_glob,DoubleTab& grad) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine& dom=domaine;
 
@@ -2933,7 +2933,7 @@ void Op_Diff_VEFP1NCP1B_Face::isInStencil(int face,int som_glob,
                                           int& elem0, int& som_loc0,
                                           int& elem1, int& som_loc1) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine& domaine=domaine_VEF.domaine();
   const Domaine& dom=domaine;
 
@@ -3003,7 +3003,7 @@ void Op_Diff_VEFP1NCP1B_Face::isInStencil(int face,int som_glob,
 
 void Op_Diff_VEFP1NCP1B_Face::dimensionner(Matrice_Morse& matrice) const
 {
-  const Domaine_VEF& domaine_VEF = domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
 
   const int nb_faces_tot=domaine_VEF.nb_faces_tot();
   const int nb_comp = inconnue_.valeur().valeurs().line_size();
@@ -3146,7 +3146,7 @@ void Op_Diff_VEFP1NCP1B_Face::dimensionner(Matrice_Morse& matrice) const
 //AVANT d'utiliser cette fonction
 void Op_Diff_VEFP1NCP1B_Face::isFaceOfSymetry(ArrOfBit& is_symetry,int& nnz) const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF=la_zcl_vef.valeur();
 
   const int nb_bords=domaine_VEF.nb_front_Cl();
@@ -3188,7 +3188,7 @@ void Op_Diff_VEFP1NCP1B_Face::isFaceOfSymetry(ArrOfBit& is_symetry,int& nnz) con
 
 void Op_Diff_VEFP1NCP1B_Face::test() const
 {
-  const Domaine_VEF& domaine_VEF=domaine_VEFPreP1B();
+  const Domaine_VEF& domaine_VEF=domaine_vef();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Domaine& domaine = domaine_VEF.domaine();
   const Domaine& dom=domaine;

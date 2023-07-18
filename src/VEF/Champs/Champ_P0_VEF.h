@@ -29,7 +29,7 @@ class Champ_P0_VEF: public Champ_Inc_P0_base
 {
   Declare_instanciable(Champ_P0_VEF);
 public :
-  const Domaine_VEF& domaine_VEF() const;
+  const Domaine_VEF& domaine_vef() const;
   int imprime(Sortie& , int ) const override;
 };
 

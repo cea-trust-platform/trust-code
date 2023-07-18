@@ -361,7 +361,7 @@ void Domaine_Cl_VEF::remplir_type_elem_Cl(const Domaine_VEF& le_dom_VEF)
 void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
 {
   DoubleTab& ch_tab = ch->valeurs(temps);
-  copyPartialFromDevice(ch_tab, 0, domaine_VEF().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
+  copyPartialFromDevice(ch_tab, 0, domaine_vef().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
   start_timer();
   if (sub_type(Champ_P0_VEF, ch.valeur())) { /* Don nothing */ }
   else if (sub_type(Champ_P1NC,ch.valeur()) || sub_type(Champ_Q1NC, ch.valeur()))
@@ -680,7 +680,7 @@ void Domaine_Cl_VEF::imposer_cond_lim(Champ_Inc& ch, double temps)
       exit();
     }
   end_timer(0, "Boundary condition on Champ_Inc in Domaine_Cl_VEF::imposer_cond_lim");
-  copyPartialToDevice(ch_tab, 0, domaine_VEF().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
+  copyPartialToDevice(ch_tab, 0, domaine_vef().premiere_face_int() * ch.valeur().nb_comp(), "Champ_Inc on boundary");
   ch_tab.echange_espace_virtuel();
 
   // PARTIE PRESSION
@@ -851,12 +851,12 @@ int Domaine_Cl_VEF::initialiser(double temps)
   return 1;
 }
 
-Domaine_VEF& Domaine_Cl_VEF::domaine_VEF()
+Domaine_VEF& Domaine_Cl_VEF::domaine_vef()
 {
   return ref_cast(Domaine_VEF, domaine_dis().valeur());
 }
 
-const Domaine_VEF& Domaine_Cl_VEF::domaine_VEF() const
+const Domaine_VEF& Domaine_Cl_VEF::domaine_vef() const
 {
   return ref_cast(Domaine_VEF, domaine_dis().valeur());
 }

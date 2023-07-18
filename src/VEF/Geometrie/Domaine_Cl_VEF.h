@@ -62,8 +62,8 @@ public:
   inline int type_elem_Cl(int i) const { return type_elem_Cl_[i]; }
 
   int nb_faces_sortie_libre() const;
-  Domaine_VEF& domaine_VEF();
-  const Domaine_VEF& domaine_VEF() const;
+  Domaine_VEF& domaine_vef();
+  const Domaine_VEF& domaine_vef() const;
 
   int nb_bord_periodicite() const;
 

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ void Source_WC_Chaleur_VEF::compute_interpolate_gradP(DoubleTab& UgradP_face, co
 
   const Domaine_dis_base& domaine_dis = mon_equation->inconnue().domaine_dis_base();
   const Domaine_VF& domaine = ref_cast(Domaine_VF, domaine_dis);
-  assert (domaine_dis.que_suis_je() == "Domaine_VEFPreP1b" || domaine_dis.que_suis_je() == "Domaine_VEF");
+  assert (domaine_dis.que_suis_je() == "Domaine_VEF");
 
   // grad should be zero at boundary
   correct_grad_boundary(domaine,grad_Ptot);

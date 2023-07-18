@@ -661,7 +661,7 @@ double Champ_P1NC::norme_L2_H1(const Domaine& dom) const
 
 DoubleTab& Champ_P1NC::calcul_gradient(const DoubleTab& champ, DoubleTab& gij, const Domaine_Cl_VEF& domaine_Cl_VEF)
 {
-  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_VEF();
+  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_vef();
   calculer_gradientP1NC(champ, domaine_VEF, domaine_Cl_VEF, gij);
   return gij;
 
@@ -670,7 +670,7 @@ DoubleTab& Champ_P1NC::calcul_gradient(const DoubleTab& champ, DoubleTab& gij, c
 DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleTab& tau_tan, const Domaine_Cl_VEF& domaine_Cl_VEF)
 {
 
-  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_VEF();
+  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_vef();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
 
@@ -826,7 +826,7 @@ DoubleTab& Champ_P1NC::calcul_duidxj_paroi(DoubleTab& gij, const DoubleTab& nu, 
 ////////////////////
 DoubleVect& Champ_P1NC::calcul_S_barre(const DoubleTab& la_vitesse, DoubleVect& SMA_barre, const Domaine_Cl_VEF& domaine_Cl_VEF)
 {
-  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_VEF();
+  const Domaine_VEF& domaine_VEF = domaine_Cl_VEF.domaine_vef();
   const int nb_elem = domaine_VEF.nb_elem();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot();
 
