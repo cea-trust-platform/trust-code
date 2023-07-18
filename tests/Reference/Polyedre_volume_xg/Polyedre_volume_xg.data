@@ -39,7 +39,7 @@ Read sch
     dt_max  5e-3
     dt_impr 1e-10
     dt_sauv 1
-    seuil_statio 1.e-12
+    seuil_statio -1
     solveur implicite {
         solveur petsc gmres { precond diag { } rtol 1.e-6 }
     }
