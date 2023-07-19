@@ -21,7 +21,7 @@ static Motcles motcle_obsolete;
 // Parcours du jeu de donnees pour verification des mots cles obsoletes
 void verifie(const Nom& type)
 {
-  int n=71;
+  int n=72;
   if( motcle_obsolete.size()!=n)
     {
       int i=0;
@@ -98,6 +98,7 @@ void verifie(const Nom& type)
       motcle_obsolete[i++] = "Ecrire_MEDfile";
       motcle_obsolete[i++] = "Champ_Fonc_MEDFile";
       motcle_obsolete[i++] = "seuil_statio_relatif_deconseille";
+      motcle_obsolete[i++] = "CoviMAC";
       assert(i==n);
     }
   // GF on ne constuit les noms de la nouvelle syntaxe que si necessaire
@@ -180,6 +181,7 @@ void verifie(const Nom& type)
       nouvelle_syntaxe[i++] = "1.9.2, you should use Write_MED";
       nouvelle_syntaxe[i++] = "1.9.2, you should use Champ_Fonc_MED";
       nouvelle_syntaxe[i++] = "1.9.2, you should use Residuals { relative 1 } instead.";
+      nouvelle_syntaxe[i++] = "1.9.3, you should use PolyMAC_P0 instead.";
       assert(i==n);
       Cerr << "The keyword " << motcle_obsolete[rang] << " is now obsolete," << finl;
       Cerr << "since the version " << nouvelle_syntaxe[rang] << finl << finl;
