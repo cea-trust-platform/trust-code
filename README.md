@@ -17,6 +17,8 @@ git clone https://github.com/cea-trust-platform/trust-code.git TRUST-1.9.2
 cd TRUST-1.9.2
 # Download the required external packages
 wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.2.tar
+# or:
+# curl ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-1.9.2.tar > externalpackages-1.9.2.tar
 # Unzip the downloaded external packages folder
 tar xf externalpackages-1.9.2.tar
 # Have a look at the available configuration options
@@ -62,6 +64,8 @@ cd TRUST-next
 git checkout next
 # Download the requested external packages
 wget ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-next.tar
+# or:
+# curl ftp://ftp.cea.fr/pub/TRUST/externalpackages/externalpackages-next.tar > externalpackages-next.tar
 # Unzip the downloaded packages
 tar xf externalpackages-next.tar
 # Execute the configure script with your selected options

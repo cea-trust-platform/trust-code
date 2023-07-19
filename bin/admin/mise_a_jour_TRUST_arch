@@ -376,6 +376,8 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang38" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.8/bin/clang++ -cc=/usr/lib/llvm-3.8/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang39" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.9/bin/clang++ -cc=/usr/lib/llvm-3.9/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang40" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-4.0/bin/clang++ -cc=/usr/lib/llvm-4.0/bin/clang"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel19" | grep ^$HOST"\."`" != "" ]			&& modules_to_load="gcc/6.5.0 iccifort/2019.5.281 impi/icc_2019.5.281/2019.5.281"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel21" | grep ^$HOST"\."`" != "" ]			&& modules_to_load="impi/intel-compilers_2021.4.0/2021.4.0 imkl/2021.4.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda=download" | grep ^$HOST"\."`" != "" ]		        && option_configure=$option_configure" -cuda=download"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 # Compilation en INT64
@@ -394,11 +396,14 @@ option_configure=" -disable-ccache"
 ########################
 # Lancement du configure
 ######################## 
+[ "x$modules_to_load" != "x" ] && source /etc/profile.d/modules.sh && module purge && module load $modules_to_load
 echo "--------------------------------------------------------"
 echo "Configure on $HOST at "`date '+%H:%M:%S'`
 echo "--------------------------------------------------------"
 ./configure $option_configure
 [ $? != 0 ] && echo "Error in the configure... We leave." && exit_ -1
+
+[ "x$modules_to_load" != "x" ] && sed -i '1 i source /etc/profile.d/modules.sh && module purge 1>/dev/null' env/machine.env && sed -i '2 i module load $modules_to_load 1>/dev/null 2>/dev/null' env/machine.env
 
 HOST=$HOST_tmp
 
