@@ -18,12 +18,31 @@
 
 enum class Type_Champ { SCALAIRE, VECTORIEL };
 
+#include <Domaine_Cl_dis.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <TRUST_Ref.h>
+
 template <typename DERIVED_T>
 class Op_Dift_VEF_Face_Gen
 {
 public:
   static constexpr bool IS_VAR = false;
 
+  void associer_gen(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
+  {
+    dom_vef = ref_cast(Domaine_VEF,domaine_dis.valeur());
+    zcl_vef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
+  }
+
+  template <Type_Champ _TYPE_>
+  void ajouter_contribution_bord_gen(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
+
+private:
+  REF(Domaine_VEF) dom_vef;
+  REF(Domaine_Cl_VEF) zcl_vef;
 };
+
+#include <Op_Dift_VEF_Face_Gen.tpp>
 
 #endif /* Op_Dift_VEF_Face_Gen_included */

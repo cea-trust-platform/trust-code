@@ -41,6 +41,12 @@ public:
     return (diffusivite().valeurs().nb_dim() == 1) ? (diffusivite().valeurs())(0) : (diffusivite().valeurs())(0, 0);
   }
 
+  void associer(const Domaine_dis& dd, const Domaine_Cl_dis& dcd,const Champ_Inc& ch) override
+  {
+    Op_Dift_VEF_base::associer(dd, dcd, ch);
+    Op_Dift_VEF_Face_Gen<Op_Dift_VEF_Face>::associer_gen(dd, dcd);
+  }
+
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
   DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
 
@@ -68,14 +74,12 @@ public:
       ajouter_contribution_multi_scalaire(inco, matrice);
   }
 
-  inline void contribuer_au_second_membre(DoubleTab& resu) const override
-  {
-    contribue_au_second_membre(resu);
-  }
+  void contribuer_au_second_membre(DoubleTab& resu) const override;
 
-  void contribue_au_second_membre(DoubleTab&) const;
+//  void ajouter_contribution_cl(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
+//  void ajouter_contribution_cl_multi_scalaire(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
+
   void ajouter_contribution(const DoubleTab&, Matrice_Morse&) const;
-  void ajouter_contribution_cl(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
   void ajouter_contribution_multi_scalaire(const DoubleTab&, Matrice_Morse&) const;
 
   void ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
