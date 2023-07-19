@@ -254,76 +254,69 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTa
 void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords, const DoubleTab& nu, const DoubleVect& nu_turb,
                                             const Domaine_Cl_VEF& domaine_Cl_VEF, const Domaine_VEF& domaine_VEF, int nb_comp) const
 {
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int i, j, num_face;
-  int nb_faces = domaine_VEF.nb_faces();
-  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
-  double valA, d_nu;
-  int nb_front = domaine_VEF.nb_front_Cl();
+  const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
+  const int nb_faces = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_front = domaine_VEF.nb_front_Cl();
+  int j;
 
   // modif pour imprimer les flux sur les bords
-  int size_flux_bords = domaine_VEF.nb_faces_bord();
+  const int size_flux_bords = domaine_VEF.nb_faces_bord();
   tab_flux_bords.resize(size_flux_bords, nb_comp);
   tab_flux_bords = 0.;
-
 
   // contient -1 si la face n'est pas periodique et numero face_assso sinon
   ArrOfInt marq(domaine_VEF.nb_faces_tot());
   marq = -1;
 
   const int premiere_face_int = domaine_VEF.premiere_face_int();
+
   // On traite les faces bord
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-      int num1 = 0;
-      int num2 = le_bord.nb_faces_tot();
+      int num1 = 0, num2 = le_bord.nb_faces_tot();
       int nb_faces_bord_reel = le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
         {
           const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-          int fac_asso;
           for (int ind_face = num1; ind_face < num2; ind_face++)
             {
-              fac_asso = la_cl_perio.face_associee(ind_face);
+              int fac_asso = la_cl_perio.face_associee(ind_face);
               fac_asso = le_bord.num_face(fac_asso);
-              num_face = le_bord.num_face(ind_face);
+              int num_face = le_bord.num_face(ind_face);
               marq[num_face] = fac_asso;
               for (int kk = 0; kk < 2; kk++)
                 {
                   int elem = face_voisins(num_face, kk);
-                  for (i = 0; i < nb_faces_elem; i++)
+                  for (int i = 0; i < nb_faces_elem; i++)
                     if (((j = elem_faces(elem, i)) > num_face) && (j != fac_asso))
                       for (int nc = 0; nc < nb_comp; nc++)
                         {
-                          d_nu = nu(elem, nc) + nu_turb(elem);
-                          valA = viscA(num_face, j, elem, d_nu);
-                          resu(num_face, nc) += valA * inconnue(j, nc);
-                          resu(num_face, nc) -= valA * inconnue(num_face, nc);
+                          const double d_nu = nu(elem, nc) + nu_turb(elem);
+                          const double valA = viscA(num_face, j, elem, d_nu);
+                          const double flux = valA * inconnue(j, nc) - valA * inconnue(num_face, nc);
+                          resu(num_face, nc) += flux;
                           if (j < nb_faces) // face reelle
-                            {
-                              resu(j, nc) += 0.5 * valA * inconnue(num_face, nc);
-                              resu(j, nc) -= 0.5 * valA * inconnue(j, nc);
-                            }
+                            resu(j, nc) -= 0.5 * flux;
                         }
                 }
             }
         }
-      else   // on traite une equation scalaire (pas la vitesse) on a pas a utiliser
-        // le tau tangentiel (les lois de paroi thermiques ne calculent pas
-        // d'echange turbulent a la paroi pour l'instant
+      else // CL pas periodique
         {
+          // on traite une equation scalaire (pas la vitesse) on a pas a utiliser le tau tangentiel (les lois de paroi thermiques ne calculent pas d'echange turbulent a la paroi pour l'instant
           const DoubleTab& face_normale = domaine_VEF.face_normales();
           const DoubleVect& vol = domaine_VEF.volumes();
           const Equation_base& my_eqn = domaine_Cl_VEF.equation();
           const RefObjU& modele_turbulence = my_eqn.get_modele(TURBULENCE);
+
+          // Cas Equation Convection_Diffusion_Turbulente
           if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
             {
               const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
               const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
+
               if (loiparth->use_equivalent_distance())
                 {
                   const DoubleVect& d_equiv = loiparth->equivalent_distance(n_bord);
@@ -331,19 +324,16 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab
                   // Dans d_equiv, pour les faces qui ne sont pas paroi_fixe (eg periodique, symetrie, etc...)
                   // il y a la distance geometrique grace a l'initialisation du tableau dans la loi de paroi.
 
-                  // Les lois de parois ne s'appliquent qu'aux cas ou la CL
-                  // est de type temperature imposee, car dans les autres cas
+                  // Les lois de parois ne s'appliquent qu'aux cas ou la CL est de type temperature imposee, car dans les autres cas
                   // (flux impose et adiabatique) le flux a la paroi est connu et fixe.
                   int nb_dim_pb = Objet_U::dimension;
                   const Cond_lim_base& cl_base = la_cl.valeur();
+
                   int ldp_appli = 0;
-                  if (sub_type(Scalaire_impose_paroi, cl_base))
-                    ldp_appli = 1;
+
+                  if (sub_type(Scalaire_impose_paroi, cl_base)) ldp_appli = 1;
                   else if (loiparth->get_flag_calcul_ldp_en_flux_impose())
-                    {
-                      if ((sub_type(Neumann_paroi, cl_base)) || (sub_type(Neumann_homogene, cl_base)))
-                        ldp_appli = 1;
-                    }
+                    if ((sub_type(Neumann_paroi, cl_base)) || (sub_type(Neumann_homogene, cl_base))) ldp_appli = 1;
 
                   if (ldp_appli)
                     {
@@ -356,21 +346,21 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab
                             double Tf = 0.;
                             double bon_gradient = 0.; // c'est la norme du gradient de temperature normal a la paroi calculee a l'aide de la loi de paroi.
                             le_mauvais_gradient = 0.;
-                            num_face = le_bord.num_face(ind_face);
+                            int num_face = le_bord.num_face(ind_face);
                             int elem1 = face_voisins(num_face, 0);
-                            if (elem1 == -1)
-                              elem1 = face_voisins(num_face, 1);
-                            double surface_face = domaine_VEF.face_surfaces(num_face);
-                            double surface_pond;
 
-                            for (i = 0; i < nb_faces_elem; i++)
+                            if (elem1 == -1) elem1 = face_voisins(num_face, 1);
+
+                            double surface_face = domaine_VEF.face_surfaces(num_face);
+
+                            for (int i = 0; i < nb_faces_elem; i++)
                               {
                                 if ((j = elem_faces(elem1, i)) != num_face)
                                   {
-                                    surface_pond = 0.;
+                                    double surface_pond = 0.;
                                     for (int kk = 0; kk < nb_dim_pb; kk++)
-                                      surface_pond -= (face_normale(j, kk) * domaine_VEF.oriente_normale(j, elem1) * face_normale(num_face, kk) * domaine_VEF.oriente_normale(num_face, elem1))
-                                                      / (surface_face * surface_face);
+                                      surface_pond -= (face_normale(j, kk) * domaine_VEF.oriente_normale(j, elem1) * face_normale(num_face, kk) * domaine_VEF.oriente_normale(num_face, elem1)) / (surface_face * surface_face);
+
                                     Tf += inconnue(j, nc) * surface_pond;
                                   }
 
@@ -384,22 +374,18 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab
                               mauvais_gradient += le_mauvais_gradient(kk) * face_normale(num_face, kk) / surface_face;
 
                             // inconnue(num_face) est la temperature de paroi : Tw.
-                            // On se fiche du signe de bon gradient car c'est la norme du gradient
-                            // de temperature dans l'element.
-                            // Ensuite ce sera multiplie par le vecteur normal a la face de paroi
-                            // qui lui a les bons signes.
+                            // On se fiche du signe de bon gradient car c'est la norme du gradient de temperature dans l'element.
+                            // Ensuite ce sera multiplie par le vecteur normal a la face de paroi qui lui a les bons signes.
                             bon_gradient = (Tf - inconnue(num_face, nc)) / d_equiv(ind_face) * (-domaine_VEF.oriente_normale(num_face, elem1));
 
                             double nutotal = nu(elem1, nc) + nu_turb(elem1);
-                            for (i = 0; i < nb_faces_elem; i++)
+                            for (int i = 0; i < nb_faces_elem; i++)
                               {
                                 j = elem_faces(elem1, i);
                                 double correction = 0.;
                                 for (int kk = 0; kk < nb_dim_pb; kk++)
                                   {
-                                    double resu2 = nutotal * (bon_gradient - mauvais_gradient) * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1))
-                                                   / surface_face;
-
+                                    double resu2 = nutotal * (bon_gradient - mauvais_gradient) * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1)) / surface_face;
                                     correction += resu2;
                                   }
 
@@ -407,31 +393,27 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab
 
                                 if (marq[j] != -1)
                                   resu(marq[j], nc) += correction;
-                                // la face num_face n'est pas periodique  mar(num_face)==-1
-                                // flux_bord n'est necessaire que sur les faces reelles
+
+                                // la face num_face n'est pas periodique  mar(num_face)==-1 flux_bord n'est necessaire que sur les faces reelles
                                 if (j == num_face && j < size_flux_bords)
-                                  {
-                                    //      flux_bords(j,0)+=resu1;
-                                    tab_flux_bords(j, nc) -= correction;
-                                  }
+                                  tab_flux_bords(j, nc) -= correction;
                               }
                           }
-                    }                                  // CL Temperature imposee
-                }                                  // loi de paroi
-            }                                  //Equation Convection_Diffusion_Turbulente
+                    }
+                } // loi de paroi use_equivalent_distance
+            }
+          // Fin de la correction du gradient dans la premiere maille par la loi de paroi thermique.
 
-          // Fin de la correction du gradient dans la premiere maille
-          // par la loi de paroi thermique.
           for (int ind_face = num1; ind_face < num2; ind_face++)
             {
-              num_face = le_bord.num_face(ind_face);
+              const int num_face = le_bord.num_face(ind_face);
               int elem1 = face_voisins(num_face, 0);
-              for (i = 0; i < nb_faces_elem; i++)
+              for (int i = 0; i < nb_faces_elem; i++)
                 if (((j = elem_faces(elem1, i)) > num_face) || (ind_face >= nb_faces_bord_reel))
                   for (int nc = 0; nc < nb_comp; nc++)
                     {
-                      d_nu = nu(elem1, nc) + nu_turb(elem1);
-                      valA = viscA(num_face, j, elem1, d_nu);
+                      const double d_nu = nu(elem1, nc) + nu_turb(elem1);
+                      const double valA = viscA(num_face, j, elem1, d_nu);
                       if (ind_face < nb_faces_bord_reel)
                         {
                           double flux = valA * (inconnue(j,nc) - inconnue(num_face,nc));
@@ -441,59 +423,18 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab
                       if (j < nb_faces) // face reelle
                         {
                           double flux = valA * (inconnue(num_face, nc) - inconnue(j, nc));
-                          if (j < premiere_face_int)
-                            tab_flux_bords(j, nc) -= flux;
                           resu(j, nc) += flux;
+                          if (j < premiere_face_int) tab_flux_bords(j, nc) -= flux;
                         }
                     }
             }
         }
-    }
 
-  // Faces internes :
-  for (num_face = premiere_face_int; num_face < nb_faces; num_face++)
-    for (int kk = 0; kk < 2; kk++)
-      {
-        int elem = face_voisins(num_face, kk);
-        for (i = 0; i < nb_faces_elem; i++)
-          if ((j = elem_faces(elem, i)) > num_face)
-            {
-              int el1, el2;
-              int contrib = 1;
-              if (j >= nb_faces) // C'est une face virtuelle
-                {
-                  el1 = face_voisins(j, 0);
-                  el2 = face_voisins(j, 1);
-                  if ((el1 == -1) || (el2 == -1))
-                    contrib = 0;
-                }
-              if (contrib)
-                for (int nc = 0; nc < nb_comp; nc++)
-                  {
-                    d_nu = nu(elem, nc) + nu_turb(elem);
-                    valA = viscA(num_face, j, elem, d_nu);
-                    resu(num_face, nc) += valA * inconnue(j, nc);
-                    resu(num_face, nc) -= valA * inconnue(num_face, nc);
-                    if (j < nb_faces) // On traite les faces reelles
-                      {
-                        resu(j, nc) += valA * inconnue(num_face, nc);
-                        resu(j, nc) -= valA * inconnue(j, nc);
-                      }
-                  }
-            }
-      }
-
-  // Neumann :
-  for (int n_bord = 0; n_bord < nb_front; n_bord++)
-    {
-      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-
+      // EN FINI PAR LES CLS Neumann
+      const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
       if (sub_type(Neumann_paroi, la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
           for (int face = ndeb; face < nfin; face++)
             for (int nc = 0; nc < nb_comp; nc++)
               {
@@ -504,9 +445,6 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab
       else if (sub_type(Echange_externe_impose, la_cl.valeur()))
         {
           const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
           for (int face = ndeb; face < nfin; face++)
             for (int nc = 0; nc < nb_comp; nc++)
               {
@@ -515,15 +453,37 @@ void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab
               }
         }
       else if (sub_type(Neumann_homogene,la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
-        {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          for (int face = ndeb; face < nfin; face++)
-            for (int nc = 0; nc < nb_comp; nc++)
-              tab_flux_bords(face, nc) = 0.;
-        }
+        for (int face = ndeb; face < nfin; face++)
+          for (int nc = 0; nc < nb_comp; nc++)
+            tab_flux_bords(face, nc) = 0.;
     }
+
+  // Faces internes
+  for (int num_face = premiere_face_int; num_face < nb_faces; num_face++)
+    for (int kk = 0; kk < 2; kk++)
+      {
+        int elem = face_voisins(num_face, kk);
+        for (int i = 0; i < nb_faces_elem; i++)
+          if ((j = elem_faces(elem, i)) > num_face)
+            {
+              int contrib = 1;
+              if (j >= nb_faces) // C'est une face virtuelle
+                {
+                  const int el1 = face_voisins(j, 0), el2 = face_voisins(j, 1);
+                  if ((el1 == -1) || (el2 == -1)) contrib = 0;
+                }
+              if (contrib)
+                for (int nc = 0; nc < nb_comp; nc++)
+                  {
+                    const double d_nu = nu(elem, nc) + nu_turb(elem);
+                    const double valA = viscA(num_face, j, elem, d_nu);
+                    const double flux = valA * inconnue(j, nc) - valA * inconnue(num_face, nc);
+                    resu(num_face, nc) += flux;
+                    if (j < nb_faces) // On traite les faces reelles
+                      resu(j, nc) -= flux;
+                  }
+            }
+      }
 }
 
 DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& resu) const
