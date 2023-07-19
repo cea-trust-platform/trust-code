@@ -47,41 +47,32 @@ void Op_Dift_VEF_Face::associer_diffusivite(const Champ_base& diffu)
   diffusivite_ = diffu;
 }
 
+// La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et
+//  dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
+// ou diffu2_ est la somme des 2 diffusivite laminaire et turbulente
+
+//GF : alpha_dt_stab=(alpha+alpha_t)*alpha_dt_stab/alpha
+// alpha_dt_stab=(nu+diff_nu_turb)*valeurs_diffusivite_dt/nu
 double Op_Dift_VEF_Face::calculer_dt_stab() const
 {
-  // 12/04: Premiers efforts d'optimisation du code a tenir
-  // compte lors de la factorisation des pas de temps de stabilite
+  remplir_nu(nu_); // On remplit le tableau nu contenant la diffusivite en chaque elem
 
-  // Calcul de dt_stab
-  // La diffusivite est constante par elements donc
-  // il faut calculer dt_diff pour chaque element et
-  //  dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
-  // ou diffu2_ est la somme des 2 diffusivite laminaire et turbulente
-
-  //GF
-  // alpha_dt_stab=(alpha+alpha_t)*alpha_dt_stab/alpha
-  // alpha_dt_stab=(nu+diff_nu_turb)*valeurs_diffusivite_dt/nu
-
-  // On remplit le tableau nu contenant la diffusivite en chaque elem
-  remplir_nu(nu_);
-
-  double dt_stab = 1.e30;
-  double coef;
   const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
-
-  const Domaine& le_dom = le_dom_VEF.domaine();
-
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
-  DoubleTab diffu(nu_);
+  // DoubleTab diffu(nu_);
+  DoubleTrav diffu;
+  diffu = nu_; // XXX : Elie Saikali : Attention pas pareil que DoubleTrav diffu(nu_) !!!!!!!!!
+
   if (equation().que_suis_je().debute_par("Convection_Diffusion_Temp"))
     {
       double rhocp = mon_equation->milieu().capacite_calorifique().valeurs()(0, 0) * mon_equation->milieu().masse_volumique().valeurs()(0, 0);
       diffu_turb /= rhocp;
       diffu /= rhocp;
     }
-  double alpha;
 
-  int le_dom_nb_elem = le_dom.nb_elem();
+  const int le_dom_nb_elem = le_dom_VEF.domaine().nb_elem();
+  double dt_stab = 1.e30, alpha = -123., coef = -123.;
+
   if (has_champ_masse_volumique())
     {
       const DoubleTab& rho_elem = get_champ_masse_volumique().valeurs();
@@ -90,65 +81,24 @@ double Op_Dift_VEF_Face::calculer_dt_stab() const
         {
           alpha = diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
           alpha /= rho_elem[num_elem];
-          // dt=1/(dimension/(pas*pas))/(2*alpha)
-
           coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
-
-          // dt_stab=min(dt);
-          if (coef < dt_stab)
-            dt_stab = coef;
+          if (coef < dt_stab) dt_stab = coef;
         }
     }
   else
     {
-
       const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
       const DoubleTab& valeurs_diffusivite = champ_diffusivite.valeurs();
-      double valeurs_diffusivite_dt = -1;
-      int unif_diffu_dt;
-      const Nature_du_champ nature_champ = equation().inconnue()->nature_du_champ();
-
-      if (sub_type(Champ_Uniforme, champ_diffusivite))
-        {
-          valeurs_diffusivite_dt = valeurs_diffusivite(0, 0);
-          unif_diffu_dt = 1;
-        }
-      else
-        unif_diffu_dt = 0;
-      if (nature_champ != multi_scalaire)
-        {
-          for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
-            {
-              alpha = diffu[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
-              if (unif_diffu_dt == 0)
-                valeurs_diffusivite_dt = valeurs_diffusivite(num_elem, 0);
-              alpha *= valeurs_diffusivite_dt / (diffu[num_elem] + DMINFLOAT);
-              // dt=1/(dimension/(pas*pas))/(2*alpha)
-              coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
-              assert(coef >= 0);
-              // dt_stab=min(dt);
-              if (coef < dt_stab)
-                dt_stab = coef;
-            }
-        }
-      else
-        {
-          int nb_comp = valeurs_diffusivite.line_size();
-          for (int nc = 0; nc < nb_comp; nc++)
-            {
-              for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
-                {
-                  alpha = diffu(num_elem, nc) + diffu_turb[num_elem];
-                  //if(unif_diffu_dt==0)
-                  valeurs_diffusivite_dt = valeurs_diffusivite(0, nc);
-                  alpha *= valeurs_diffusivite_dt / (diffu(num_elem, nc) + DMINFLOAT);
-                  coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
-
-                  if (coef < dt_stab)
-                    dt_stab = coef;
-                }
-            }
-        }
+      const int nb_comp = valeurs_diffusivite.line_size(), cD = (valeurs_diffusivite.dimension(0) == 1); // uniforme ou pas ?
+      for (int nc = 0; nc < nb_comp; nc++)
+        for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
+          {
+            alpha = diffu(num_elem, nc) + diffu_turb[num_elem];
+            const double valeurs_diffusivite_dt = valeurs_diffusivite(!cD * num_elem, nc);
+            alpha *= valeurs_diffusivite_dt / (diffu(num_elem, nc) + DMINFLOAT);
+            coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * (alpha + DMINFLOAT));
+            if (coef < dt_stab) dt_stab = coef;
+          }
     }
 
   dt_stab = Process::mp_min(dt_stab);
@@ -164,14 +114,12 @@ void Op_Dift_VEF_Face::calculer_pour_post(Champ& espace_stockage, const Nom& opt
 
       if (le_dom_vef.non_nul())
         {
-          // On remplit le tableau nu contenant la diffusivite en chaque elem
-          remplir_nu(nu_);
+          remplir_nu(nu_); // On remplit le tableau nu contenant la diffusivite en chaque elem
 
-          double coef;
           const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
           const Domaine& le_dom = le_dom_VEF.domaine();
           const DoubleVect& diffu_turb = diffusivite_turbulente()->valeurs();
-          double alpha;
+          double alpha = -123., coef = -123.;
 
           int le_dom_nb_elem = le_dom.nb_elem();
           if (has_champ_masse_volumique())
@@ -190,20 +138,11 @@ void Op_Dift_VEF_Face::calculer_pour_post(Champ& espace_stockage, const Nom& opt
             {
               const Champ_base& champ_diffusivite = diffusivite_pour_pas_de_temps();
               const DoubleTab& valeurs_diffusivite = champ_diffusivite.valeurs();
-              double valeurs_diffusivite_dt = -1;
-              int unif_diffu_dt;
-              if (sub_type(Champ_Uniforme, champ_diffusivite))
-                {
-                  valeurs_diffusivite_dt = valeurs_diffusivite(0, 0);
-                  unif_diffu_dt = 1;
-                }
-              else
-                unif_diffu_dt = 0;
+              const int cD = (valeurs_diffusivite.dimension(0) == 1); // uniforme ou pas ?
               for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
                 {
+                  const double valeurs_diffusivite_dt = valeurs_diffusivite(!cD * num_elem);
                   alpha = nu_[num_elem] + diffu_turb[num_elem]; // PQ : 06/03
-                  if (unif_diffu_dt == 0)
-                    valeurs_diffusivite_dt = valeurs_diffusivite(num_elem);
                   alpha *= valeurs_diffusivite_dt / nu_[num_elem];
                   coef = le_dom_VEF.carre_pas_maille(num_elem) / (2. * dimension * alpha);
                   es_valeurs(num_elem) = coef;
