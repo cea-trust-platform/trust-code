@@ -55,7 +55,8 @@ define_soumission_batch()
    fi
    [ "`id | grep cpa2202`" != "" ] && project="cpa2202"
    node=1 # --exclusive
-   mpirun="srun -l $srun_options --mpi=cray_shasta --cpu-bind=verbose,cores"
+   ram=0 # Important pour acceder a toute la RAM du noeud
+   mpirun="srun -l $srun_options --mem-bind=local --mpi=cray_shasta --cpu-bind=verbose,cores"
    sub=SLURM
 }
 

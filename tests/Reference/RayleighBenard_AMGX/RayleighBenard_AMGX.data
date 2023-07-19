@@ -1,0 +1,103 @@
+# PARALLEL OK #
+dimension 3
+Pb_thermohydraulique pb
+Domaine coarse_dom
+Domaine dom
+# BEGIN MESH #
+Mailler coarse_dom
+{
+    Pave Cavite
+    {
+        Origine 0. 0. 0.
+        Nombre_de_Noeuds 11 6 6 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
+        Longueurs 10 5 5
+    }
+    {
+        Bord bas    Y = 0.    0. <= X <= 10. 0. <= Z <= 5.
+        Bord haut   Y = 5.    0. <= X <= 10. 0. <= Z <= 5.
+        Bord paroi  X = 0.    0. <= Y <= 5.  0. <= Z <= 5.
+        Bord paroi  X = 10.   0. <= Y <= 5.  0. <= Z <= 5.
+        Bord paroi  Z = 0.    0. <= X <= 10. 0. <= Y <= 5.
+        Bord paroi  Z = 5.    0. <= X <= 10. 0. <= Y <= 5.
+    }
+}
+Tetraedriser_homogene coarse_dom
+Ecrire_fichier coarse_dom coarse_dom.geom
+Lire_fichier dom coarse_dom.geom
+Raffiner_isotrope dom
+# END MESH #
+
+# BEGIN PARTITION
+Partition coarse_dom
+{
+    Partition_tool Metis { Nb_parts 2 }
+    Larg_joint 2
+    zones_name COARSE_DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Raffiner_isotrope_parallele { name_of_initial_zones COARSE_DOM name_of_new_zones DOM }
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1B dis 
+Scheme_euler_explicit sch
+Read sch
+{
+    tinit 0.
+    dt_start dt_fixe 1.e-6
+    dt_impr 1e6
+    dt_sauv 1e6
+    nb_pas_dt_max 10 
+}
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+Read pb
+{
+    # Ra=g*beta/(nu*alpha)*(Th-Tb)*L^3 = 2000 > 1708 #
+    fluide_incompressible {
+        mu Champ_Uniforme       1 2.21799454e-04 # nu=mu/rho=2.34e-6 #
+        rho Champ_Uniforme      1 943.112976     # alpha=2.e-7 #
+        lambda Champ_Uniforme   1 0.806537897
+        Cp Champ_Uniforme       1 4238.62106
+        beta_th Champ_Uniforme  1 8.6e-4
+        gravite Champ_Uniforme  3 0 -9.81 0
+    }
+
+    Navier_Stokes_Standard
+    {
+    	# Pour les besoins des mesures de performance, fait un calcul des operateurs avant le 1er pas de temps: #
+    	methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression amgx gcp { precond c-amg { } rtol 1.e-5 impr }
+        diffusion  { }
+        convection { muscl }
+        initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }
+        boundary_conditions {
+            bas   paroi_fixe
+            haut  paroi_fixe
+            paroi paroi_fixe
+        }
+        sources { boussinesq_temperature { T0 0.5 } }
+    }
+    Convection_Diffusion_Temperature
+    {
+        diffusion { }
+        convection { muscl }
+        boundary_conditions
+        {
+            bas   paroi_temperature_imposee Champ_Front_Uniforme 1 1.
+            haut  paroi_temperature_imposee Champ_Front_Uniforme 1 0.
+            paroi paroi_adiabatique
+        }
+        initial_conditions { Temperature Champ_Uniforme 1 0.5 }
+    }
+
+    Postraitement { format lml Champs dt_post 1e9 { temperature elem } }
+}
+EcritureLectureSpecial 0
+Solve pb
+End
