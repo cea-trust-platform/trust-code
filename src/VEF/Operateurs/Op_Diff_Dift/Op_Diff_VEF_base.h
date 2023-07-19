@@ -37,18 +37,14 @@ class Sortie;
 
 class Op_Diff_VEF_base : public Operateur_Diff_base, public Op_VEF_Face
 {
-
   Declare_base(Op_Diff_VEF_base);
-
 public:
 
   int impr(Sortie& os) const override;
   void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
-  inline double viscA(int face_i, int face_j, int num_elem, double diffu) const;
-  // Anisotrope (tensor)
-  // diffusivite considered as DoubleTab (case of scalair) or ArrOfDouble (in the case multi-scalar)
-  inline double viscA(int face_i, int face_j, int num_elem, DoubleTab& diffu) const;
-  inline double viscA(int face_i, int face_j, int num_elem, ArrOfDouble& diffu_ci_cj_elem) const;
+
+  template <typename _TYPE_>
+  double viscA(int face_i, int face_j, int num_elem, const _TYPE_& diffu) const;
 
   double calculer_dt_stab() const override;
   void calculer_pour_post(Champ& espace_stockage,const Nom& option,int comp) const override;
@@ -64,71 +60,46 @@ protected:
   //DoubleVect porosite_face;
   mutable DoubleTab nu_;
 
+private:
+  template<typename _TYPE_> enable_if_t_< std::is_same<_TYPE_, double>::value , double>
+  inline diffu__(const int k, const int l, const int num_elem, const _TYPE_ &diffu) const { return diffu; }
+
+  template<typename _TYPE_> enable_if_t_< std::is_same<_TYPE_, TRUSTTab<double>>::value , double>
+  inline diffu__(const int k, const int l, const int num_elem, const _TYPE_ &diffu) const { return diffu(num_elem, k * dimension + l); }
+
+  template<typename _TYPE_> enable_if_t_< std::is_same<_TYPE_, TRUSTArray<double>>::value , double>
+  inline diffu__(const int k, const int l, const int num_elem, const _TYPE_ &diffu) const { return diffu[k * dimension + l]; }
 };
 
 // ATTENTION le diffu intervenant dans les fonctions n'est que LOCAL (on appelle d_nu apres)
 // Fonction utile viscA
 // nu <Si, Sj> / |K|
-inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, double diffu) const
+template<typename _TYPE_>
+inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, const _TYPE_ &diffu) const
 {
-  const Domaine_VEF& domaine=le_dom_vef.valeur();
-  const IntTab& face_voisins=domaine.face_voisins();
-  const DoubleTab& face_normales=domaine.face_normales();
-  const DoubleVect& inverse_volumes=domaine.inverse_volumes();
-  double pscal = face_normales(i,0)*face_normales(j,0)
-                 + face_normales(i,1)*face_normales(j,1);
-  if (Objet_U::dimension == 3)
-    pscal += face_normales(i,2)*face_normales(j,2);
+  constexpr bool is_double = std::is_same<_TYPE_, double>::value;
+  const Domaine_VEF& domaine = le_dom_vef.valeur();
+  const IntTab& face_voisins = domaine.face_voisins();
+  const DoubleTab& face_normales = domaine.face_normales();
+  const DoubleVect& inverse_volumes = domaine.inverse_volumes();
 
-  // *domaine.porosite_elem(num_elem));
-  if ( (face_voisins(i,0) == face_voisins(j,0)) ||
-       (face_voisins(i,1) == face_voisins(j,1)) )
-    return -(pscal*diffu)*inverse_volumes(num_elem);
+  double DSiSj = 0.;
+  if (is_double)
+    {
+      for (int k = 0; k < dimension; k++)
+        DSiSj += diffu__(k, k, num_elem, diffu) * face_normales(i, k) * face_normales(j, k);
+    }
   else
-    return (pscal*diffu)*inverse_volumes(num_elem);
+    {
+      for (int k = 0; k < dimension; k++)
+        for (int l = 0; l < dimension; l++)
+          DSiSj += diffu__(k, l, num_elem, diffu) * face_normales(i, k) * face_normales(j, l);
+    }
+
+  if ((face_voisins(i, 0) == face_voisins(j, 0)) || (face_voisins(i, 1) == face_voisins(j, 1)))
+    return -DSiSj * inverse_volumes(num_elem);
+  else
+    return DSiSj * inverse_volumes(num_elem);
 }
 
-// dinhvan 20/08/18 reproduction de la formule par proposition de Piere
-// case of scalair
-inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, DoubleTab& diffu) const
-{
-  const Domaine_VEF& domaine=le_dom_vef.valeur();
-  const IntTab& face_voisins=domaine.face_voisins();
-  const DoubleTab& face_normales=domaine.face_normales();
-  const DoubleVect& inverse_volumes=domaine.inverse_volumes();
-
-  double DSiSj=0;
-  for (int k=0; k<dimension; k++)
-    for (int l=0; l<dimension; l++)
-      DSiSj += diffu(num_elem,k*dimension+l)*face_normales(i,k)*face_normales(j,l); // steph
-
-  if ( (face_voisins(i,0) == face_voisins(j,0)) ||
-       (face_voisins(i,1) == face_voisins(j,1)) )
-    return -DSiSj*inverse_volumes(num_elem);
-  else
-    return DSiSj*inverse_volumes(num_elem);
-}
-
-// dinhvan 14 sept 18: tableau diffu est vu comme bidimensionnel mais pas 1D, ni 3D,
-// si scalaire de type [[value]], si tenseur de type [nb_elem x nb_comp]
-// case of multi-scalar
-inline double Op_Diff_VEF_base::viscA(int i, int j, int num_elem, ArrOfDouble& diffu_ci_cj_elem) const
-{
-  const Domaine_VEF& domaine=le_dom_vef.valeur();
-  const IntTab& face_voisins=domaine.face_voisins();
-  const DoubleTab& face_normales=domaine.face_normales();
-  const DoubleVect& inverse_volumes=domaine.inverse_volumes();
-
-  double DSiSj=0;
-  for (int k=0; k<dimension; k++)
-    for (int l=0; l<dimension; l++)
-      DSiSj += diffu_ci_cj_elem[k*dimension+l]*face_normales(i,k)*face_normales(j,l);
-
-  if ( (face_voisins(i,0) == face_voisins(j,0)) ||
-       (face_voisins(i,1) == face_voisins(j,1)) )
-    return -DSiSj*inverse_volumes(num_elem);
-  else
-    return DSiSj*inverse_volumes(num_elem);
-}
-
-#endif
+#endif /* Op_Diff_VEF_base_included */
