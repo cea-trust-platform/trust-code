@@ -159,12 +159,10 @@ void Op_Dift_VEF_Face::calculer_pour_post(Champ& espace_stockage, const Nom& opt
 void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
                                              const Domaine_VEF& domaine_VEF, int nbr_comp) const
 {
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int nb_faces = domaine_VEF.nb_faces();
-  int nb_elem = domaine_VEF.nb_elem();
-  const DoubleTab& face_normale = domaine_VEF.face_normales();
-
   assert(nbr_comp > 1);
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+  const int nb_faces = domaine_VEF.nb_faces(), nb_elem = domaine_VEF.nb_elem();
 
   // On dimensionne et initialise le tableau des bilans de flux:
   tab_flux_bords.resize(domaine_VEF.nb_faces_bord(), nbr_comp);
@@ -177,9 +175,6 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTa
       domaine_VEF.domaine().creer_tableau_elements(grad_);
     }
   grad_ = 0.;
-
-  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
-  int nb_cl = les_cl.size();
 
   Champ_P1NC::calcul_gradient(inconnue, grad_, domaine_Cl_VEF);
   if (le_modele_turbulence.valeur().utiliser_loi_paroi())
@@ -201,88 +196,59 @@ void Op_Dift_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTa
             Re(elem, i, j) *= nu_turb[elem];
     }
   else
-    {
-      for (int elem = 0; elem < nb_elem; elem++)
-        for (int i = 0; i < nbr_comp; i++)
-          for (int j = 0; j < nbr_comp; j++)
-            Re(elem, i, j) = nu_turb[elem] * (grad_(elem, i, j) + grad_(elem, j, i));
-    }
+    for (int elem = 0; elem < nb_elem; elem++)
+      for (int i = 0; i < nbr_comp; i++)
+        for (int j = 0; j < nbr_comp; j++)
+          Re(elem, i, j) = nu_turb[elem] * (grad_(elem, i, j) + grad_(elem, j, i));
+
   Re.echange_espace_virtuel();
 
-  // Calcul du terme diffusif
   // boucle sur les CL
+  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
+  const int nb_cl = les_cl.size();
   for (int n_bord = 0; n_bord < nb_cl; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-
-      int num1 = le_bord.num_premiere_face();
-      int num2 = num1 + le_bord.nb_faces();
+      const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
-        {
-          for (int num_face = num1; num_face < num2; num_face++)
+        for (int num_face = ndeb; num_face < nfin; num_face++)
+          for (int kk = 0; kk < 2; kk++)
             {
-              for (int kk = 0; kk < 2; kk++)
-                {
-                  int elem = face_voisins(num_face, kk);
-                  int ori = 1 - 2 * kk;
-
-                  for (int i = 0; i < nbr_comp; i++)
-                    for (int j = 0; j < nbr_comp; j++)
-                      resu(num_face, i) -= ori * face_normale(num_face, j) * (nu[elem] * grad_(elem, i, j) + Re(elem, i, j));
-                } // Fin de la boucle sur les elements ayant la face comnune
-            } // Fin de la boucle sur les faces
-        } // Fin du cas periodique
-      else
-        {
-          for (int num_face = num1; num_face < num2; num_face++)
-            {
-              int elem = face_voisins(num_face, 0);
-
+              const int elem = face_voisins(num_face, kk), ori = 1 - 2 * kk;
               for (int i = 0; i < nbr_comp; i++)
                 for (int j = 0; j < nbr_comp; j++)
-                  {
-                    double flux = face_normale(num_face, j) * (nu[elem] * grad_(elem, i, j) + Re(elem, i, j));
-                    resu(num_face, i) -= flux;
-                    tab_flux_bords(num_face, i) -= flux;
-                  }
-            } // Fin de la boucle sur les faces
-        }
-    } // Fin du traitement des CL
+                  resu(num_face, i) -= ori * face_normale(num_face, j) * (nu[elem] * grad_(elem, i, j) + Re(elem, i, j));
+            }
+      else // CL pas periodique
+        for (int num_face = ndeb; num_face < nfin; num_face++)
+          {
+            const int elem = face_voisins(num_face, 0);
+            for (int i = 0; i < nbr_comp; i++)
+              for (int j = 0; j < nbr_comp; j++)
+                {
+                  double flux = face_normale(num_face, j) * (nu[elem] * grad_(elem, i, j) + Re(elem, i, j));
+                  resu(num_face, i) -= flux;
+                  tab_flux_bords(num_face, i) -= flux;
+                }
 
-  /////////////////
-  // Faces internes
-  /////////////////
-  int n0 = domaine_VEF.premiere_face_int();
-  for (int num_face = n0; num_face < nb_faces; num_face++)
-    {
-      for (int kk = 0; kk < 2; kk++)
-        {
-          int elem = face_voisins(num_face, kk);
-          int ori = 1 - 2 * kk;
-
-          for (int i = 0; i < nbr_comp; i++)
-            for (int j = 0; j < nbr_comp; j++)
-              {
-                resu(num_face, i) -= ori * face_normale(num_face, j) * (nu[elem] * grad_(elem, i, j) + Re(elem, i, j));
-              }
-        } // Fin de la boucle sur les 2 elements comnuns a la face
-    } // Fin de la boucle sur les faces internes
-
-  // Symmetry condition
-  for (int n_bord = 0; n_bord < nb_cl; n_bord++)
-    {
-      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      if (sub_type(Symetrie, la_cl.valeur()))
-        {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          int ndeb = le_bord.num_premiere_face();
-          int nfin = ndeb + le_bord.nb_faces();
-          for (int face = ndeb; face < nfin; face++)
-            tab_flux_bords(face, 0) = 0.;
-        }
+            // Correction tab_flux_bords si symetrie
+            if (sub_type(Symetrie, la_cl.valeur()))
+              tab_flux_bords(num_face, 0) = 0.;
+          }
     }
+
+  // Boucle sur les faces internes
+  const int nint = domaine_VEF.premiere_face_int();
+  for (int num_face = nint; num_face < nb_faces; num_face++)
+    for (int kk = 0; kk < 2; kk++)
+      {
+        const int elem = face_voisins(num_face, kk), ori = 1 - 2 * kk;
+        for (int i = 0; i < nbr_comp; i++)
+          for (int j = 0; j < nbr_comp; j++)
+            resu(num_face, i) -= ori * face_normale(num_face, j) * (nu[elem] * grad_(elem, i, j) + Re(elem, i, j));
+      }
 }
 
 void Op_Dift_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords, const DoubleTab& nu, const DoubleVect& nu_turb,

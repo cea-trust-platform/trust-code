@@ -16,6 +16,8 @@
 #ifndef Op_Dift_VEF_Face_Gen_included
 #define Op_Dift_VEF_Face_Gen_included
 
+enum class Type_Champ { SCALAIRE, VECTORIEL };
+
 template <typename DERIVED_T>
 class Op_Dift_VEF_Face_Gen
 {
