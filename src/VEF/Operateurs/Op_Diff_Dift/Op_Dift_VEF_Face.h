@@ -78,12 +78,10 @@ public:
   void ajouter_contribution_cl(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
   void ajouter_contribution_multi_scalaire(const DoubleTab&, Matrice_Morse&) const;
 
-  void ajouter_cas_scalaire(const DoubleVect& inconnue, DoubleVect& resu, DoubleTab& flux_bords, const DoubleVect& nu, const DoubleVect& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
-                            const Domaine_VEF& domaine_VEF) const;
   void ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
                              const Domaine_VEF& domaine_VEF, int nb_comp) const;
-  void ajouter_cas_multi_scalaire(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleVect& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
-                                  const Domaine_VEF& domaine_VEF, int nb_comp) const;
+  void ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleVect& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
+                            const Domaine_VEF& domaine_VEF, int nb_comp) const;
 
 protected:
   REF(Champ_base) diffusivite_;
