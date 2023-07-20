@@ -35,8 +35,12 @@ public:
     zcl_vef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
   }
 
+  // methodes pour l'implicite
   template <Type_Champ _TYPE_>
   void ajouter_contribution_bord_gen(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
+
+  template <Type_Champ _TYPE_>
+  void ajouter_contribution_interne_gen(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 
 private:
   REF(Domaine_VEF) dom_vef;

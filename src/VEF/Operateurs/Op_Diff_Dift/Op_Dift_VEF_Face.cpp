@@ -13,24 +13,20 @@
 *
 *****************************************************************************/
 
-#include <Op_Dift_VEF_Face.h>
-#include <Champ_P1NC.h>
-#include <Periodique.h>
-#include <Scalaire_impose_paroi.h>
-#include <Neumann_paroi.h>
-#include <Echange_externe_impose.h>
-#include <Neumann_homogene.h>
-#include <Symetrie.h>
 #include <Neumann_sortie_libre.h>
-#include <Champ_Uniforme.h>
-#include <Debog.h>
-#include <TRUSTTrav.h>
-#include <Modele_turbulence_scal_base.h>
-#include <Porosites_champ.h>
-#include <Discretisation_base.h>
-#include <Champ.h>
 #include <Check_espace_virtuel.h>
+#include <Discretisation_base.h>
+#include <Op_Dift_VEF_Face.h>
+#include <Neumann_homogene.h>
+#include <Porosites_champ.h>
+#include <Champ_Uniforme.h>
+#include <Neumann_paroi.h>
 #include <Milieu_base.h>
+#include <Champ_P1NC.h>
+#include <TRUSTTrav.h>
+#include <Symetrie.h>
+#include <Debog.h>
+#include <Champ.h>
 
 Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face, "Op_Dift_VEF_P1NC", Op_Dift_VEF_base);
 
@@ -39,11 +35,6 @@ Op_Dift_VEF_Face::Op_Dift_VEF_Face() : grad_(0) { }
 Sortie& Op_Dift_VEF_Face::printOn(Sortie& s) const { return s << que_suis_je(); }
 
 Entree& Op_Dift_VEF_Face::readOn(Entree& s) { return s; }
-
-void Op_Dift_VEF_Face::associer_diffusivite(const Champ_base& diffu)
-{
-  diffusivite_ = diffu;
-}
 
 // La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et
 //  dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
@@ -525,197 +516,38 @@ DoubleTab& Op_Dift_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleTab& r
   return resu;
 }
 
-DoubleTab& Op_Dift_VEF_Face::calculer(const DoubleTab& inconnue, DoubleTab& resu) const
-{
-  resu = 0.;
-  return ajouter(inconnue, resu);
-}
-
-void Op_Dift_VEF_Face::ajouter_contribution(const DoubleTab& transporte, Matrice_Morse& matrice) const
+void Op_Dift_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
   modifier_matrice_pour_periodique_avant_contribuer(matrice, equation());
-  // On remplit le tableau nu car l'assemblage d'une
-  // matrice avec ajouter_contribution peut se faire
-  // avant le premier pas de temps
-  remplir_nu(nu_);
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int nb_faces = domaine_VEF.nb_faces();
-  const int nb_comp = transporte.line_size();
 
-  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
+  // On remplit le tableau nu car l'assemblage d'une matrice avec ajouter_contribution peut se faire avant le premier pas de temps
+  remplir_nu(nu_);
 
   const DoubleTab& nu_turb_ = diffusivite_turbulente()->valeurs();
-  const DoubleTab& face_normale = domaine_VEF.face_normales();
-  const DoubleVect& volumes = domaine_VEF.volumes();
   DoubleVect n(dimension);
 
   DoubleTab nu, nu_turb;
   int marq = phi_psi_diffuse(equation());
   const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
-  // soit on a div(phi nu grad inco)
-  // soit on a div(nu grad phi inco)
-  // cela depend si on diffuse phi_psi ou psi
+
+  // soit on a div(phi nu grad inco) OU on a div(nu grad phi inco) : cela depend si on diffuse phi_psi ou psi
   modif_par_porosite_si_flag(nu_, nu, !marq, porosite_elem);
   modif_par_porosite_si_flag(nu_turb_, nu_turb, !marq, porosite_elem);
 
   DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
-  if (!marq)
-    porosite_eventuelle = 1;
+  if (!marq) porosite_eventuelle = 1;
 
-  // On traite les conditions limites separemment car sinon
-  // methode trop longue et mauvais inlining de certaines methodes
-  // sur certaines machines (Matrice_Morse::operator() et viscA)
-  if (nb_comp > 1)
-    ajouter_contribution_bord_gen<Type_Champ::VECTORIEL>(transporte, matrice, nu, nu_turb, porosite_eventuelle);
+  if (equation().inconnue()->nature_du_champ() == vectoriel)
+    {
+      ajouter_contribution_bord_gen<Type_Champ::VECTORIEL>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+      ajouter_contribution_interne_gen<Type_Champ::VECTORIEL>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+    }
   else
-    ajouter_contribution_bord_gen<Type_Champ::SCALAIRE>(transporte, matrice, nu, nu_turb, porosite_eventuelle);
+    {
+      ajouter_contribution_bord_gen<Type_Champ::SCALAIRE>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+      ajouter_contribution_interne_gen<Type_Champ::SCALAIRE>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+    }
 
-  // On traite les faces internes
-  int numpremiereface = domaine_VEF.premiere_face_int();
-  for (int num_face = numpremiereface; num_face < nb_faces; num_face++)
-    for (int l = 0; l < 2; l++)
-      {
-        int elem = face_voisins(num_face, l);
-        double d_nu = nu(elem) + nu_turb(elem);
-        for (int i = 0; i < nb_faces_elem; i++)
-          {
-            int j = elem_faces(elem, i);
-            if (j > num_face)
-              {
-                int contrib = 1;
-                if (j >= nb_faces) // C'est une face virtuelle
-                  {
-                    int el1 = face_voisins(j, 0);
-                    int el2 = face_voisins(j, 1);
-                    if ((el1 == -1) || (el2 == -1))
-                      contrib = 0;
-                  }
-                if (contrib)
-                  {
-                    double tmp = 0;
-                    if (nb_comp > 1) // on ajoutera grad_U transpose
-                      {
-                        int orientation = 1;
-                        if ((elem == face_voisins(j, l)) || (face_voisins(num_face, 1 - l) == face_voisins(j, 1 - l)))
-                          orientation = -1;
-                        tmp = orientation * nu_turb(elem) / volumes(elem);
-                      }
-                    double valA = viscA(num_face, j, elem, d_nu);
-                    double contrib_num_face = valA * porosite_eventuelle(num_face);
-                    double contrib_j = valA * porosite_eventuelle(j);
-                    for (int nc = 0; nc < nb_comp; nc++)
-                      {
-                        int n0 = num_face * nb_comp + nc;
-                        int j0 = j * nb_comp + nc;
-                        matrice(n0, n0) += contrib_num_face;
-                        matrice(n0, j0) -= contrib_j;
-                        if (j < nb_faces) // On traite les faces reelles
-                          {
-                            matrice(j0, n0) -= contrib_num_face;
-                            matrice(j0, j0) += contrib_j;
-                          }
-                        if (nb_comp > 1) // on ajoute grad_U transpose
-                          {
-                            for (int nc2 = 0; nc2 < nb_comp; nc2++)
-                              {
-                                int n1 = num_face * nb_comp + nc2;
-                                int j1 = j * nb_comp + nc2;
-                                double coeff_s = tmp * face_normale(num_face, nc2) * face_normale(j, nc);
-                                matrice(n0, n1) += coeff_s * porosite_eventuelle(num_face);
-                                matrice(n0, j1) -= coeff_s * porosite_eventuelle(j);
-                                if (j < nb_faces) // On traite les faces reelles
-                                  {
-                                    double coeff_s2 = tmp * face_normale(num_face, nc) * face_normale(j, nc2);
-                                    matrice(j0, n1) -= coeff_s2 * porosite_eventuelle(num_face);
-                                    matrice(j0, j1) += coeff_s2 * porosite_eventuelle(j);
-                                  }
-                              }
-                          }
-                      }
-                  }
-              }
-          }
-      }
-  modifier_matrice_pour_periodique_apres_contribuer(matrice, equation());
-}
-
-void Op_Dift_VEF_Face::ajouter_contribution_multi_scalaire(const DoubleTab& transporte, Matrice_Morse& matrice) const
-{
-  modifier_matrice_pour_periodique_avant_contribuer(matrice, equation());
-  // On remplit le tableau nu car l'assemblage d'une
-  // matrice avec ajouter_contribution peut se faire
-  // avant le premier pas de temps
-  remplir_nu(nu_);
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const IntTab& face_voisins = domaine_VEF.face_voisins();
-  int nb_faces = domaine_VEF.nb_faces();
-  const int nb_comp = transporte.line_size();
-
-  int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
-
-  const DoubleTab& nu_turb_ = diffusivite_turbulente()->valeurs();
-  DoubleVect n(dimension);
-
-  DoubleTab nu, nu_turb;
-  int marq = phi_psi_diffuse(equation());
-  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
-  // soit on a div(phi nu grad inco)
-  // soit on a div(nu grad phi inco)
-  // cela depend si on diffuse phi_psi ou psi
-  modif_par_porosite_si_flag(nu_, nu, !marq, porosite_elem);
-  modif_par_porosite_si_flag(nu_turb_, nu_turb, !marq, porosite_elem);
-
-  DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
-  if (!marq)
-    porosite_eventuelle = 1;
-
-  // On traite les conditions limites separemment car sinon
-  // methode trop longue et mauvais inlining de certaines methodes
-  // sur certaines machines (Matrice_Morse::operator() et viscA)
-  ajouter_contribution_bord_gen<Type_Champ::SCALAIRE>(transporte, matrice, nu, nu_turb, porosite_eventuelle);
-
-  // On traite les faces internes
-  int rumpremiereface = domaine_VEF.premiere_face_int();
-  for (int num_face0 = rumpremiereface; num_face0 < nb_faces; num_face0++)
-    for (int l = 0; l < 2; l++)
-      {
-        int elem0 = face_voisins(num_face0, l);
-        for (int i0 = 0; i0 < nb_faces_elem; i0++)
-          {
-            int j = elem_faces(elem0, i0);
-            if (j > num_face0)
-              {
-                for (int nc = 0; nc < nb_comp; nc++)
-                  {
-                    double d_nu = nu(elem0, nc) + nu_turb(elem0);
-                    double valA = viscA(num_face0, j, elem0, d_nu);
-                    int n0 = num_face0 * nb_comp + nc;
-                    int j0 = j * nb_comp + nc;
-                    int contrib = 1;
-                    if (j >= nb_faces) // C'est une face virtuelle
-                      {
-                        int el1 = face_voisins(j, 0);
-                        int el2 = face_voisins(j, 1);
-                        if ((el1 == -1) || (el2 == -1))
-                          contrib = 0;
-                      }
-                    if (contrib)
-                      {
-                        matrice(n0, n0) += valA * porosite_eventuelle(num_face0);
-                        matrice(n0, j0) -= valA * porosite_eventuelle(j);
-                        if (j < nb_faces) // On traite les faces reelles
-                          {
-                            matrice(j0, n0) -= valA * porosite_eventuelle(num_face0);
-                            matrice(j0, j0) += valA * porosite_eventuelle(j);
-                          }
-                      }
-                  }
-              }
-          }
-      }
   modifier_matrice_pour_periodique_apres_contribuer(matrice, equation());
 }
 

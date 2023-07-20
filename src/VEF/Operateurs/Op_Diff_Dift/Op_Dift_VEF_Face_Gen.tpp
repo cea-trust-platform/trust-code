@@ -277,4 +277,91 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
     }
 }
 
+template <typename DERIVED_T> template <Type_Champ _TYPE_>
+void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_interne_gen(const DoubleTab& transporte, Matrice_Morse& matrice, const DoubleTab& nu,
+                                                                       const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
+{
+  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL);
+
+  // On traite les faces internes
+  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const int nb_faces = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
+  const int nb_comp = transporte.line_size();
+  const IntTab& face_voisins = domaine_VEF.face_voisins(), &elem_faces = domaine_VEF.elem_faces();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+
+  int rumpremiereface = domaine_VEF.premiere_face_int();
+  for (int num_face0 = rumpremiereface; num_face0 < nb_faces; num_face0++)
+    for (int l = 0; l < 2; l++)
+      {
+        int elem0 = face_voisins(num_face0, l);
+        for (int i0 = 0; i0 < nb_faces_elem; i0++)
+          {
+            int j = elem_faces(elem0, i0);
+            if (j > num_face0)
+              {
+                int contrib = 1;
+                if (j >= nb_faces) // C'est une face virtuelle
+                  {
+                    const int el1 = face_voisins(j, 0), el2 = face_voisins(j, 1);
+                    if ((el1 == -1) || (el2 == -1))
+                      contrib = 0;
+                  }
+
+                if (contrib)
+                  {
+                    double tmp = 0.;
+
+                    // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
+                    if (is_VECT)
+                      {
+                        int orientation = 1;
+                        if ((elem0 == face_voisins(j, l)) || (face_voisins(num_face0, 1 - l) == face_voisins(j, 1 - l)))
+                          orientation = -1;
+
+                        tmp = orientation * nu_turb(elem0) / volumes(elem0);
+                      }
+
+                    for (int nc = 0; nc < nb_comp; nc++)
+                      {
+                        double d_nu = nu(elem0, is_VECT ? 0 : nc) + nu_turb(elem0);
+                        double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
+                        const int n0 = num_face0 * nb_comp + nc, j0 = j * nb_comp + nc;
+
+                        double contrib_num_face = valA * porosite_eventuelle(num_face0);
+                        double contrib_j = valA * porosite_eventuelle(j);
+
+                        matrice(n0, n0) += contrib_num_face;
+                        matrice(n0, j0) -= contrib_j;
+                        if (j < nb_faces) // On traite les faces reelles
+                          {
+                            matrice(j0, n0) -= contrib_num_face;
+                            matrice(j0, j0) += contrib_j;
+                          }
+
+                        // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
+                        if (is_VECT)
+                          for (int nc2 = 0; nc2 < nb_comp; nc2++)
+                            {
+                              const int n1 = num_face0 * nb_comp + nc2, j1 = j * nb_comp + nc2;
+                              double coeff_s = tmp * face_normale(num_face0, nc2) * face_normale(j, nc);
+
+                              matrice(n0, n1) += coeff_s * porosite_eventuelle(num_face0);
+                              matrice(n0, j1) -= coeff_s * porosite_eventuelle(j);
+
+                              if (j < nb_faces) // On traite les faces reelles
+                                {
+                                  double coeff_s2 = tmp * face_normale(num_face0, nc) * face_normale(j, nc2);
+                                  matrice(j0, n1) -= coeff_s2 * porosite_eventuelle(num_face0);
+                                  matrice(j0, j1) += coeff_s2 * porosite_eventuelle(j);
+                                }
+                            }
+                      }
+                  }
+              }
+          }
+      }
+}
+
 #endif /* Op_Dift_VEF_Face_Gen_TPP_included */
