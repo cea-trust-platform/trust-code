@@ -63,7 +63,7 @@ public:
 
   void contribuer_a_avec(const DoubleTab& , Matrice_Morse& ) const override; // pour l'implicite
 
-  void contribuer_au_second_membre(DoubleTab& resu) const override; // bientot a la poubelle
+  void contribuer_au_second_membre(DoubleTab& resu) const override; // bientot a la poubelle ... reste rayonnement ...
 
 private:
   void ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,

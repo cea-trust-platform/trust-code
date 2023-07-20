@@ -27,8 +27,6 @@ template <typename DERIVED_T>
 class Op_Dift_VEF_Face_Gen
 {
 public:
-  static constexpr bool IS_VAR = false;
-
   void associer_gen(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
   {
     dom_vef = ref_cast(Domaine_VEF,domaine_dis.valeur());
