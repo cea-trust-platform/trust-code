@@ -1,4 +1,6 @@
 # PARALLEL OK #
+# lance_test 8 ecarts #
+# VALGRIND NOT #
 dimension 3
 Pb_hydraulique pb
 Domaine dom
