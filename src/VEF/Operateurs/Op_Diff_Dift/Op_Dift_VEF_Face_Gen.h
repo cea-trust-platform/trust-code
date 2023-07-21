@@ -17,6 +17,7 @@
 #define Op_Dift_VEF_Face_Gen_included
 
 enum class Type_Champ { SCALAIRE, VECTORIEL };
+enum class Type_Schema { EXPLICITE, IMPLICITE };
 
 #include <Domaine_Cl_dis.h>
 #include <Domaine_Cl_VEF.h>
@@ -33,16 +34,43 @@ public:
     zcl_vef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
   }
 
+  template <Type_Champ _TYPE_> void fill_grad_Re(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&) const;
+
+  // methodes pour l'explicite
+  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::VECTORIEL, void>
+  ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
+
+  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::VECTORIEL, void>
+  ajouter_interne_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
+
+  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::SCALAIRE, void>
+  ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
+
+  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::SCALAIRE, void>
+  ajouter_interne_gen(const DoubleTab& inco, DoubleTab& resu, DoubleTab& , const DoubleTab& nu, const DoubleTab& nu_turb) const
+  {
+    ajouter_interne_gen__<_TYPE_, Type_Schema::EXPLICITE>(inco, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);
+  }
+
   // methodes pour l'implicite
   template <Type_Champ _TYPE_>
   void ajouter_contribution_bord_gen(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 
   template <Type_Champ _TYPE_>
-  void ajouter_contribution_interne_gen(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
+  void ajouter_contribution_interne_gen(const DoubleTab& inco, Matrice_Morse& mat, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
+  {
+    ajouter_interne_gen__<_TYPE_, Type_Schema::IMPLICITE>(inco, nullptr, &mat, nu, nu_turb, porosite_eventuelle);
+  }
+
+protected:
+  mutable DoubleTab grad_, Re_;
 
 private:
   REF(Domaine_VEF) dom_vef;
   REF(Domaine_Cl_VEF) zcl_vef;
+
+  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_>
+  void ajouter_interne_gen__(const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 };
 
 #include <Op_Dift_VEF_Face_Gen.tpp>

@@ -65,15 +65,8 @@ public:
 
   void contribuer_au_second_membre(DoubleTab& resu) const override; // bientot a la poubelle ... reste rayonnement ...
 
-private:
-  void ajouter_cas_vectoriel(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
-                             const Domaine_VEF& domaine_VEF, int nb_comp) const;
-  void ajouter_cas_scalaire(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleVect& nu_turb, const Domaine_Cl_VEF& domaine_Cl_VEF,
-                            const Domaine_VEF& domaine_VEF, int nb_comp) const;
-
 protected:
   REF(Champ_base) diffusivite_;
-  mutable DoubleTab grad_;  // grad u
 };
 
 #endif /* Op_Dift_VEF_Face_included */

@@ -35,6 +35,9 @@ public:
   void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void completer() override;
 
+  const DoubleTab& get_tau_tan() const { return tau_tan_; }
+  const Mod_turb_hyd_base& get_modele_turbulence() const { return le_modele_turbulence.valeur(); }
+
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
   DoubleTab tau_tan_;
