@@ -32,11 +32,14 @@
 #include <Check_espace_virtuel.h>
 #include <Milieu_base.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face_old,"Op_Dift_VEF_P1NC_old",Op_Dift_VEF_base);
+Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face_old,"Op_Dift_VEF_P1NC_old|Op_Dift_VEF_var_P1NC_old",Op_Dift_VEF_base);
 
 //// printOn
 //
-Op_Dift_VEF_Face_old::Op_Dift_VEF_Face_old():grad_(0) { }
+Op_Dift_VEF_Face_old::Op_Dift_VEF_Face_old():grad_(0)
+{
+  declare_support_masse_volumique(1);
+}
 
 #define grad_transp(elem,i,j) grad(elem,j,i)
 

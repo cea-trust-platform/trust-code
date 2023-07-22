@@ -30,7 +30,7 @@
 #include <Porosites_champ.h>
 #include <Modele_turbulence_scal_base.h>
 
-Implemente_instanciable(Op_Dift_Stab_VEF_Face,"Op_Dift_VEF_P1NC_stab",Op_Dift_VEF_Face_old);
+Implemente_instanciable(Op_Dift_Stab_VEF_Face,"Op_Dift_VEF_P1NC_stab|Op_Dift_VEF_Var_P1NC_stab",Op_Dift_VEF_Face_old);
 
 
 double my_minimum(double a,double b,double c)

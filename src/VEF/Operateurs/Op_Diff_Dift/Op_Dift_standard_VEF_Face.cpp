@@ -23,7 +23,7 @@
 #include <TRUSTTrav.h>
 #include <Debog.h>
 
-Implemente_instanciable(Op_Dift_standard_VEF_Face,"Op_Dift_VEF_P1NC_standard",Op_Dift_VEF_Face_old);
+Implemente_instanciable(Op_Dift_standard_VEF_Face,"Op_Dift_VEF_P1NC_standard|Op_Dift_VEF_Var_P1NC_standard",Op_Dift_VEF_Face_old);
 
 Sortie& Op_Dift_standard_VEF_Face::printOn(Sortie& s ) const
 {
