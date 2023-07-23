@@ -76,8 +76,13 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   if [ "$TRUST_INT64" = "1" ]
   then
      fic_env=$TRUST_ROOT/env/make.$TRUST_ARCH_CC$OPT
-     [ "`$TRUST_Awk '/-fdefault-integer-8/ {print $0}' $fic_env`" != "" ] && export FFLAGS="${FFLAGS} -fdefault-integer-8"
-     [ "`$TRUST_Awk '/-i8/ {print $0}' $fic_env`" != "" ] && export FFLAGS="${FFLAGS} -i8"
+     if [ "`$TRUST_Awk '/-fdefault-integer-8/ {print $0}' $fic_env`" != "" ] || [ "`basename $FC`" = gfortran ]
+     then
+        export FFLAGS="${FFLAGS} -fdefault-integer-8"
+     elif [ "`$TRUST_Awk '/-i8/ {print $0}' $fic_env`" != "" ]
+     then
+        export FFLAGS="${FFLAGS} -i8"
+     fi   
      MED_INT=long
   fi
   [ `uname -s` = Darwin ] && DARWIN_FLAGS="-DCMAKE_OSX_DEPLOYMENT_TARGET=$(sw_vers -productVersion)"

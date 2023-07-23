@@ -15,4 +15,4 @@ $(AMGXWRAPPER_LIB): install makefile $(mpi)
 	./install $(AMGXWRAPPER_DIR)
 	
 clean:
-	rm -r -f $(AMGX_DIR)/../*
+	rm -r -f $(AMGX_DIR) $(AMGXWRAPPER_DIR)
