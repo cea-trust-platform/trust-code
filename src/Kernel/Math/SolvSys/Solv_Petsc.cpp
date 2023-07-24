@@ -1445,9 +1445,13 @@ void Solv_Petsc::SaveObjectsToFile()
       // Save the matrix:
       PetscViewerBinaryOpen(PETSC_COMM_WORLD,filename,FILE_MODE_WRITE,&viewer);
       MatView(MatricePetsc_, viewer);
-      Cerr << "Writing also the RHS in the file " << filename << finl;
-      // Save also the RHS:
-      VecView(SecondMembrePetsc_, viewer);
+      // Save also the RHS if on the host:
+      if (SecondMembrePetsc_!=NULL)
+        {
+          Cerr << "Writing also the RHS in the file " << filename << finl;
+          VecView(SecondMembrePetsc_, viewer);
+        }
+      else Process::exit("You can't export anymore matrix&RHS at PETSc format with AmgX solver. Switch to PETSc solver instead.");
       PetscViewerDestroy(&viewer);
 
       // ASCII output for small matrix(debugging)
@@ -1496,16 +1500,19 @@ void Solv_Petsc::SaveObjectsToFile()
         for (int j=ia[row]; j<ia[row+1]; j++)
           mtx << row+1 << " " << ja[j]+1 << " " << v[j] << finl;
       // Provisoire: sauve un vector Petsc au format ASCII pour le RHS
-      PetscViewer viewer;
-      Nom rhs_filename(Objet_U::nom_du_cas());
-      rhs_filename += "_rhs";
-      rhs_filename += (Nom) instance;
-      rhs_filename += ".petsc";
-      PetscViewerASCIIOpen(PETSC_COMM_WORLD,rhs_filename,&viewer);
-      PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
-      VecView(SecondMembrePetsc_, viewer);
-      Cerr << "Save RHS into " << rhs_filename << finl;
-      PetscViewerDestroy(&viewer);
+      if (SecondMembrePetsc_!=NULL)
+        {
+          PetscViewer viewer;
+          Nom rhs_filename(Objet_U::nom_du_cas());
+          rhs_filename += "_rhs";
+          rhs_filename += (Nom) instance;
+          rhs_filename += ".petsc";
+          PetscViewerASCIIOpen(PETSC_COMM_WORLD,rhs_filename,&viewer);
+          PetscViewerPushFormat(viewer, PETSC_VIEWER_ASCII_MATLAB);
+          VecView(SecondMembrePetsc_, viewer);
+          Cerr << "Save RHS into " << rhs_filename << finl;
+          PetscViewerDestroy(&viewer);
+        }
     }
   if (verbose) Cout << "[Petsc] Time to write matrix: \t" << Statistiques::get_time_now() - start << finl;
 }
@@ -1738,13 +1745,11 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
       // Verification stencil de la matrice
       nouveau_stencil_ = (MatricePetsc_ == NULL ? true : check_stencil(matrice_morse));
 
-      if (SecondMembrePetsc_ == NULL)
-        {
-          // Build x and b during the first matrix creation
-          Create_vectors(secmem);
-          // Creation de Champs (fields) pour pouvoir utiliser des preconditionneurs PCFIELDSPLIT
-          Create_DM(secmem);
-        }
+      // Build x and b if necessary
+      Create_vectors(secmem);
+      // Creation de Champs (fields) pour pouvoir utiliser des preconditionneurs PCFIELDSPLIT
+      Create_DM(secmem);
+
       // Construit ou update la matrice
       if (nouveau_stencil_)
         Create_objects(matrice_morse, secmem.line_size());
@@ -1764,11 +1769,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
                << " unknowns per PETSc process ) " << (nouveau_stencil_ ? "New stencil." : "Same stencil.") << finl;
         }
     }
-  // ToDo OpenMP: passer a AmgX les pointeurs sur le device de secmem et solution
-  bool solutionOnDevice = solution.isDataOnDevice();
-  secmem.checkDataOnHost();
-  solution.checkDataOnHost();
-  // Update PETSc Vec for RHS and solution
+  // Update PETSc Vec (vectors) for RHS and solution
   Update_vectors(secmem, solution);
 
   // Save the matrix and the RHS if the matrix has changed...
@@ -1815,7 +1816,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
             }
         }
     }
-  if (solutionOnDevice) mapToDevice(solution, "Provisoire solution after solve PETSc");
+  if (solution.isDataOnDevice() && !amgx_) mapToDevice(solution, "solution after solve PETSc");
   return nbiter;
 #else
   return -1;
@@ -1915,8 +1916,11 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
 #ifdef PETSCKSP_H
 void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
 {
-  double start = Statistiques::get_time_now();
   // Assemblage du second membre et de la solution
+  double start = Statistiques::get_time_now();
+  // ToDo OpenMP afficher un warning pour dire d'utiliser un solveur GPU si solution est sur le GPU
+  secmem.checkDataOnHost();
+  solution.checkDataOnHost();
   int size=ix.size_array();
   VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
   VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
@@ -2319,6 +2323,7 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
 
 void Solv_Petsc::Create_vectors(const DoubleVect& b)
 {
+  if (SecondMembrePetsc_!=NULL) return; // Deja construit
   // Build x
   VecCreate(PETSC_COMM_WORLD,&SecondMembrePetsc_);
   // Set sizes:
@@ -2367,6 +2372,7 @@ void Solv_Petsc::Create_vectors(const DoubleVect& b)
 
 void Solv_Petsc::Create_DM(const DoubleVect& b)
 {
+  if (dm_!=NULL) return; // Deja construit
   /* creation de champs Petsc si des MD_Vector_Composite sont trouves dans b, avec recursion! */
   if (sub_type(MD_Vector_composite, b.get_md_vector().valeur()))
     {

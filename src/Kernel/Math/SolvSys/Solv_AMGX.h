@@ -35,6 +35,9 @@ protected :
 #ifdef PETSCKSP_H
 #ifdef PETSC_HAVE_CUDA
   void Create_objects(const Matrice_Morse&, int blocksize) override;
+  void Create_vectors(const DoubleVect&) override;
+  void Update_vectors(const DoubleVect& secmem, DoubleVect& solution) override;
+  void Update_solution(DoubleVect& solution) override;
   void Update_matrix(Mat&, const Matrice_Morse&) override;
   bool check_stencil(const Matrice_Morse&) override;
   int solve(ArrOfDouble& residual) override;
@@ -54,9 +57,10 @@ protected :
   PetscInt nRowsLocal, nRowsGlobal, nNz;
   Mat localA = nullptr;
   const PetscInt *colIndices = nullptr, *rowOffsets = nullptr;
-  double *lhs, *rhs;
-  ArrOfDouble Solution_, SecondMembre_;
+  //double *lhs, *rhs;
   PetscScalar *values;
+  ArrOfDouble lhs_amgx_, rhs_amgx_;
+  ArrOfInt index_;
 #endif
 #endif
 };

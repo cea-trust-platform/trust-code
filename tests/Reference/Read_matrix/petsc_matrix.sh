@@ -1,1 +1,1 @@
-../PETSC_AMGX/petsc_matrix.sh
+../PETSC_C-AMG/petsc_matrix.sh

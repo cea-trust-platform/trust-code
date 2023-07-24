@@ -9,7 +9,7 @@ Mailler coarse_dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 31 31 10 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
+        Nombre_de_Noeuds 10 10 3 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
         Longueurs 10 10 3
     }
     {

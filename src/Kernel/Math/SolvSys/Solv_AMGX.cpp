@@ -18,6 +18,7 @@
 #include <ctime>
 #include <communications.h>
 #include <stat_counters.h>
+#include <Device.h>
 
 Implemente_instanciable_sans_constructeur(Solv_AMGX,"Solv_AMGX",Solv_Petsc);
 // printOn
@@ -70,9 +71,71 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize)
   petscToCSR(MatricePetsc_, SolutionPetsc_, SecondMembrePetsc_);
   Cout << "[AmgX] Time to create CSR pointers: " << Statistiques::get_time_now() - start << finl;
   statistiques().begin_count(gpu_copytodevice_counter_);
-  SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
+  // Use device pointer to enable device consolidation in AmgXWrapper:
+  double* values_device;
+  cudaMalloc((void**)&values_device, nNz * sizeof(double));
+  cudaMemcpy(values_device, values, nNz * sizeof(double), cudaMemcpyHostToDevice);
+  //SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values, nullptr);
+  SolveurAmgX_.setA(nRowsGlobal, nRowsLocal, nNz, rowOffsets, colIndices, values_device, nullptr);
+  //cudaFree(values_device);delete[] hostArray;
   statistiques().end_count(gpu_copytodevice_counter_, (int)(sizeof(int) * (nRowsLocal + nNz) + sizeof(double) * nNz));
   Cout << "[AmgX] Time to set matrix (copy+setup) on GPU: " << statistiques().last_time(gpu_copytodevice_counter_) << finl; // Attention balise lue par fiche de validation
+}
+
+void Solv_AMGX::Create_vectors(const DoubleVect& b)
+{
+  if (index_.size_array()!=0) return;
+  lhs_amgx_.resize(nb_rows_);
+  rhs_amgx_.resize(nb_rows_);
+  int size = items_to_keep_.size_array();
+  index_.resize(size);
+  int index = 0;
+  // ToDo OpenMP factoriser avec ix car index_=ix-decalage_local_global_
+  for (int i=0; i<size; i++)
+    {
+      if (items_to_keep_[i])
+        {
+          index_[i] = index;
+          index++;
+        }
+      else
+        index_[i] = -1;
+    }
+}
+
+void Solv_AMGX::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
+{
+  // Assemblage du second membre et de la solution
+  int size=solution.size_array();
+  const int* index_addr = mapToDevice(index_);
+  const double* solution_addr = mapToDevice(solution, "solution");
+  const double* secmem_addr = mapToDevice(secmem, "secmem");
+  double* lhs_amgx_addr = computeOnTheDevice(lhs_amgx_, "lhs_amgx_");
+  double* rhs_amgx_addr = computeOnTheDevice(rhs_amgx_, "rhs_amgx_");
+  start_timer();
+  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+  for (int i=0; i<size; i++)
+    if (index_addr[i]!=-1)
+      {
+        lhs_amgx_addr[index_addr[i]] = solution_addr[i];
+        rhs_amgx_addr[index_addr[i]] = secmem_addr[i];
+      }
+  end_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_vectors");
+  if (reorder_matrix_) Process::exit("Option not supported yet for AmgX.");
+}
+
+void Solv_AMGX::Update_solution(DoubleVect& solution)
+{
+  int size = index_.size_array();
+  const int* index_addr = mapToDevice(index_);
+  const double* lhs_amgx_addr = mapToDevice(lhs_amgx_, "lhs_amgx_");
+  double* solution_addr = computeOnTheDevice(solution, "solution");
+  start_timer();
+  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
+  for (int i=0; i<size; i++)
+    if (index_addr[i]!=-1)
+      solution_addr[i] = lhs_amgx_addr[index_addr[i]];
+  end_timer(Objet_U::computeOnDevice, "Solv_AMGX::Update_solution");
 }
 
 // Fonction de conversion Petsc ->CSR
@@ -113,10 +176,12 @@ PetscErrorCode Solv_AMGX::petscToCSR(Mat& A, Vec& lhs_petsc, Vec& rhs_petsc)
   CHKERRQ(ierr);
 
   // Get pointers to the raw data of local vectors
+  /*
   ierr = VecGetArray(lhs_petsc, &lhs);
   CHKERRQ(ierr);
   ierr = VecGetArray(rhs_petsc, &rhs);
   CHKERRQ(ierr);
+   */
 
   // Calculate the number of rows in nRowsGlobal
   ierr = MPI_Allreduce(&nRowsLocal, &nRowsGlobal, 1, MPI_INT, MPI_SUM, PETSC_COMM_WORLD);
@@ -208,36 +273,15 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
-  // Calcul du residu avant resolution pour eviter des soucis:
-  /* Desormais fait sur le device dans solve.cpp (surcharge dans TRUST de AmgXWrapper::solve)
-  double normx;
-  VecNorm(SolutionPetsc_, NORM_2, &normx);
-  if (normx==0)
-    VecNorm(SecondMembrePetsc_, NORM_2, &residu(0));  // ||Ax-b|| = ||b||
-  else
-    {
-      Vec ResidualPetsc_;
-      VecDuplicate(SolutionPetsc_, &ResidualPetsc_);
-      MatResidual(MatricePetsc_, SecondMembrePetsc_, SolutionPetsc_, ResidualPetsc_);
-      VecNorm(ResidualPetsc_, NORM_2, &residu(0));
-      VecDestroy(&ResidualPetsc_);
-    }
-  if (residu(0)==0) return 0;
-  else if (residu(0) < seuil_)
-    {
-      // Crash d'AmgX (non reproduit sur les cas poisson d'AmgXWrapper), peut etre a cause d'une creation differente
-      // des vecteurs PETSc (via DM) par rapport a la notre (VecCreate), si deja converge a cause d'un seuil absolu trop haut (nbiter=0)
-      // Contournement en calculant le residu avant le solve et on ne resout pas si inferieur au seuil:
-      Cerr << "[AmgX] The residual seems to small to be solved on GPU: ||Ax-b||="<<residu(0)<<"<"<<seuil_<< finl;
-      Cerr << "Please, try to use a relative tolerance, with rtol option or lower the absolute tolerance atol." << finl;
-      return 0;
-      //Process::exit();
-    }
-    */
-
-  // ToDo OpenMP ici dans le solve AmgXWrapper il y'a aussi de la copie qui est compte donc dans gpu_library_counter_
   statistiques().begin_count(gpu_library_counter_);
-  SolveurAmgX_.solve(lhs, rhs, nRowsLocal, seuil_);
+  // ToDo OpenMP ici dans le solve AmgXWrapper il y'a aussi de la copie qui est compte donc dans gpu_library_counter_
+  const double* rhs_amgx_addr = mapToDevice(rhs_amgx_);
+  double* lhs_amgx_addr = computeOnTheDevice(lhs_amgx_);
+  // Offer device pointers to AmgX if OpenMP:
+  #pragma omp target data use_device_ptr(lhs_amgx_addr, rhs_amgx_addr)
+  {
+    SolveurAmgX_.solve(lhs_amgx_addr, rhs_amgx_addr, nRowsLocal, seuil_);
+  }
   statistiques().end_count(gpu_library_counter_);
   Cout << "[AmgX] Time to solve system on GPU: " << statistiques().last_time(gpu_library_counter_) << finl;
   return nbiter(residu);
