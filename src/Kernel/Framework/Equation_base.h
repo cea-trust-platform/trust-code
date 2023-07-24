@@ -180,6 +180,10 @@ public :
                      (on utilise des valeurs predites, pas de derivees renseignees)
   */
   virtual int  has_interface_blocs() const;
+  virtual double get_time_factor() const
+  {
+    return 1.;
+  }
   virtual void dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl = {}) const;
   virtual void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const;
   virtual void assembler_blocs_avec_inertie(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {});
@@ -304,6 +308,7 @@ protected :
 
   int sys_invariant_;
   int implicite_;
+  bool has_time_factor_; // Parameter set to 1 if convection has a prefactor (eg rhoCp in energy)
   Parametre_equation parametre_equation_;
   Champ_Fonc volume_maille;
 

@@ -26,7 +26,6 @@
 #include <Domaine_VF.h>
 #include <Matrice_Morse.h>
 #include <Champ_Uniforme.h>
-#include <Matrice_Morse_Sym.h>
 #include <Statistiques.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
@@ -341,13 +340,14 @@ const Motcle& Convection_Diffusion_Temperature::domaine_application() const
 
 DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& derivee)
 {
+  has_time_factor_ = 1;
   if (!is_penalized)
     {
-      return derivee_en_temps_inco_eq_base(derivee);
+      return Equation_base::derivee_en_temps_inco(derivee);
     }
   else
     {
-      const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
+      const double rhoCp = get_time_factor();
       // Specific code if temperature equation is penalized
       derivee=inconnue().valeurs();
       //   Mise en place d'une methode de mise en place d'un domaine fantome
@@ -395,153 +395,15 @@ DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco(DoubleTab& de
     }
 }
 
-DoubleTab& Convection_Diffusion_Temperature::derivee_en_temps_inco_eq_base(DoubleTab& derivee)
+double Convection_Diffusion_Temperature::get_time_factor() const
 {
-  derivee=0;
-  DoubleTrav secmem(derivee);
-
-  const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
-
-  // secmem = sum(operators) + sources + equation specific terms
-  if (schema_temps().diffusion_implicite())
-    {
-      // Add convection operator only if equation has one
-      derivee = inconnue().valeurs();
-      if (nombre_d_operateurs()>1)
-        {
-          derivee_en_temps_conv(secmem, derivee);
-          secmem *= rhoCp;
-        }
-    }
-  else
-    {
-      // Add all explicit operators
-      for(int i=0; i<nombre_d_operateurs(); i++)
-        if(operateur(i).l_op_base().get_decal_temps()!=1)
-          {
-            DoubleTrav secmem_tmp(secmem);
-            operateur(i).ajouter(secmem_tmp);
-            if (i == 1) secmem_tmp *= rhoCp;
-            secmem += secmem_tmp;
-          }
-    }
-  les_sources.ajouter(secmem);
-
-  if (calculate_time_derivative())
-    {
-      // Store dI/dt(n) = M-1 secmem :
-      derivee_en_temps().valeurs()=secmem;
-      solveur_masse.appliquer(derivee_en_temps().valeurs());
-      schema_temps().modifier_second_membre((*this),secmem); // Change secmem for some schemes (eg: Adams_Bashforth)
-    }
-
-  corriger_derivee_expl(secmem); // Add specific term for an equation (eg: -gradP for Navier Stokes)
-
-  if (implicite_==0)
-    {
-      solveur_masse.appliquer(secmem); // M-1 * secmem
-      if (schema_temps().diffusion_implicite())
-        {
-          // Solve: (1/dt + M-1*A)*dI = M-1 * secmem
-          // where A is the diffusion
-          Equation_base::Gradient_conjugue_diff_impl(secmem, derivee);
-        }
-      else
-        {
-          derivee = secmem;
-          derivee.echange_espace_virtuel();
-        }
-      corriger_derivee_impl(derivee);  // Solve specific implicit term for an equation (eg: pressure for Navier Stokes)
-    }
-  else if (implicite_>0)
-    {
-      // TRUST support notices that this part has never been covered...
-      //implicite
-      // M dU/dt + AU* = f -BUn;
-      // U* = Un+dt dU/dt
-      // (M/dt + A) U* = f -BUn + M/dt Un
-      //
-      double dt=schema_temps().pas_de_temps();
-      for(int i=0; i<nombre_d_operateurs(); i++)
-        {
-          //boucle sur les operateurs
-          Operateur_base& op=operateur(i).l_op_base();
-          if(op.get_matrice().est_nul())
-            op.set_matrice().typer("Matrice_Morse");
-          if(op.get_decal_temps()==1)
-            {
-              //if (op.set_matrice().valeur().nb_lignes()<2)
-              {
-                Matrice_Morse& matrice=ref_cast(Matrice_Morse,op.set_matrice().valeur());
-                op.dimensionner(matrice);
-                sys_invariant_=0;
-              }
-              if(!sys_invariant_)
-                {
-                  Matrice_Morse& matrice=ref_cast(Matrice_Morse, op.set_matrice().valeur());
-                  op.contribuer_a_avec(inconnue().valeurs(), matrice);
-                  solv_masse().ajouter_masse(dt, op.set_matrice().valeur());
-
-                  if(
-                    (op.get_solveur()->que_suis_je()=="Solv_Cholesky")
-                    ||
-                    (op.get_solveur()->que_suis_je()=="Solv_GCP")
-                  )
-                    {
-                      Matrice_Morse_Sym new_mat(matrice);
-                      new_mat.set_est_definie(1);
-                      op.set_matrice()=new_mat;
-                      ref_cast_non_const(SolveurSys,op.get_solveur())->reinit();
-                    }
-                }
-            }
-        }
-      if(implicite_==1)
-        {
-          // Un seul operateur implicite.
-          // On suppose que c'est le premier (la diffusion !!)
-          Operateur_base& op=operateur(0).l_op_base();
-          Matrice_Base& matrice=op.set_matrice().valeur();
-          // DoubleTrav secmem(derivee);
-          secmem=derivee;
-          solv_masse().ajouter_masse(dt, secmem, inconnue().valeurs());
-          op.contribuer_au_second_membre(secmem );
-          op.set_solveur().resoudre_systeme(matrice,
-                                            secmem,
-                                            derivee
-                                           );
-          solv_masse().corriger_solution(derivee,inconnue().valeurs());
-
-          derivee-=inconnue().valeurs();
-          derivee/=dt;
-
-          //Sert uniquement a calculer les flux sur les bords quand la diffusion est implicitee !
-          DoubleTab resu;
-          resu=derivee;
-          operateur(0).calculer(inconnue().valeurs(), resu);
-        }
-      else
-        {
-          // plusieurs operateurs implicites ...
-          Cerr << "Must be coded ... " << finl;
-          exit();
-        }
-    }
-  else
-    {
-      Cerr << "Error in Equation_base::derivee_en_temps_inco" << finl;
-      Cerr << "implicite_ = " << implicite_ << " has not been initialized!" << finl;
-      Cerr << "May be " << que_suis_je() << "::completer() method doesn't call Equation_base::completer()" << finl;
-      Cerr << "Contact TRUST support." << finl;
-      Process::exit();
-    }
-  return derivee;
+  return milieu().capacite_calorifique().valeurs()(0, 0) * milieu().masse_volumique().valeurs()(0, 0);
 }
 
 // ajoute les contributions des operateurs et des sources
 void Convection_Diffusion_Temperature::assembler(Matrice_Morse& matrice, const DoubleTab& inco, DoubleTab& resu)
 {
-  const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
+  const double rhoCp = get_time_factor();
 
   // Test de verification de la methode contribuer_a_avec
   for (int op=0; op<nombre_d_operateurs(); op++)
@@ -634,8 +496,7 @@ void Convection_Diffusion_Temperature::assembler_blocs(matrices_t matrices, Doub
       Equation_base::assembler_blocs(matrices, secmem, semi_impl);
       return;
     }
-  const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
-
+  const double rhoCp = get_time_factor();
   /* mise a zero */
   secmem = 0;
   for (auto &&i_m : matrices) i_m.second->get_set_coeff() = 0;
@@ -731,7 +592,7 @@ void Convection_Diffusion_Temperature::set_indic_pena_globale()
 void Convection_Diffusion_Temperature::transport_ibc(DoubleTrav& secmem_conv_vr, DoubleTab& inco_conv_vr)
 {
   secmem_conv_vr = 0.;
-  const double rhoCp = le_fluide->capacite_calorifique().valeurs()(0, 0) * le_fluide->masse_volumique().valeurs()(0, 0);
+  const double rhoCp = get_time_factor();
 
   //fonction characteristique globale ibc au temps courant
   set_indic_pena_globale();

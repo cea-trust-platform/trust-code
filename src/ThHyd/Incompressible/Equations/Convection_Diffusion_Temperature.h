@@ -55,12 +55,12 @@ public :
   /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
+  double get_time_factor() const override;
   /////////////////////////////////////////////////////
 
   const Motcle& domaine_application() const override;
 
   DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
-  DoubleTab& derivee_en_temps_inco_eq_base(DoubleTab& );
   void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
   void assembler_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   /* champ convecte : rho * cp * T */

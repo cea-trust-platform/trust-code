@@ -53,6 +53,7 @@ Equation_base::Equation_base()
   ecrit_champ_xyz_bin=0;
   sys_invariant_=1;
   implicite_=-1;
+  has_time_factor_= false;
   champs_compris_.ajoute_nom_compris("volume_maille");
   Nom expr_equation_non_resolue="0";
   equation_non_resolue_.setNbVar(1);
@@ -689,6 +690,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
   derivee = 0.;
   DoubleTrav secmem(derivee);
   // secmem = sum(operators) + sources + equation specific terms
+  const double time_factor = get_time_factor();
 
   bool calcul_explicite = false;
   if (parametre_equation_.non_nul() && sub_type(Parametre_implicite, parametre_equation_.valeur()))
@@ -702,14 +704,32 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
       // Add convection operator only if equation has one
       derivee=inconnue().valeurs();
       if (nombre_d_operateurs()>1)
-        derivee_en_temps_conv(secmem, derivee);
+        {
+          derivee_en_temps_conv(secmem, derivee);
+          if (has_time_factor_)
+            {
+              secmem *= time_factor;
+            }
+        }
     }
   else
     {
       // Add all explicit operators
       for(int i=0; i<nombre_d_operateurs(); i++)
         if(operateur(i).l_op_base().get_decal_temps()!=1)
-          operateur(i).ajouter(secmem);
+          {
+            if (has_time_factor_)
+              {
+                DoubleTrav secmem_tmp(secmem);
+                operateur(i).ajouter(secmem_tmp);
+                if (i == 1) secmem_tmp *= time_factor;
+                secmem += secmem_tmp;
+              }
+            else
+              {
+                operateur(i).ajouter(secmem);
+              }
+          }
     }
   les_sources.ajouter(secmem);
   if (calculate_time_derivative())
@@ -752,7 +772,7 @@ DoubleTab& Equation_base::derivee_en_temps_inco(DoubleTab& derivee)
         {
           //boucle sur les operateurs
           Operateur_base& op=operateur(i).l_op_base();
-          if(!op.get_matrice().non_nul())
+          if(op.get_matrice().est_nul())
             op.set_matrice().typer("Matrice_Morse");
           if(op.get_decal_temps()==1)
             {
