@@ -42,6 +42,17 @@ protected :
   void beta_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
   void mu_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
   void lambda_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override;
+
+  void rho_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void dP_rho_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void dh_rho_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void T_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void dP_T_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void dh_T_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void cp_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void beta_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void mu_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
+  void lambda_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int id = 0) const override { Cerr << "Fluide_stiffened_gas::" << __func__ << " NOT CODED ! " << finl; throw; }
 };
 
 #endif /* Fluide_stiffened_gas_included */

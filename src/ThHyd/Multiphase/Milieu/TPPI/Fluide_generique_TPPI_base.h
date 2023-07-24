@@ -32,6 +32,7 @@ public :
     return { { "temperature", { tmin_ - 273.15, tmax_ - 273.15 } }, { "pression", { pmin_, pmax_ } } };
   }
 
+  // lois en T
   void rho_(const SpanD T, const SpanD P, SpanD R, int ncomp = 1, int id = 0) const override
   {
     TPPI_->tppi_get_rho_pT(P, Tk_(T), R, ncomp, id);
@@ -100,6 +101,58 @@ public :
   void compute_all_pb_multiphase_(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp = 1, int id = 0) const override
   {
     TPPI_->tppi_get_all_pb_multiphase_pT(input,inter, bord, ncomp, id);
+  }
+
+  // lois en h
+  void rho_h_(const SpanD h, const SpanD P, SpanD R, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_rho_ph(P, h, R, ncomp, id);
+  }
+
+  void dP_rho_h_(const SpanD h, const SpanD P, SpanD dP_R, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_rho_dp_ph(P, h, dP_R, ncomp, id);
+  }
+
+  void dh_rho_h_(const SpanD h, const SpanD P, SpanD dT_R, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_rho_dh_ph(P, h, dT_R, ncomp, id);
+  }
+
+  void T_(const SpanD h, const SpanD P, SpanD T, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_T_ph(P, h, T, ncomp, id);
+    Tc_(T); /* put back T in C */
+  }
+
+  void dP_T_(const SpanD h, const SpanD P, SpanD dP_T, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_T_dp_ph(P, h, dP_T, ncomp, id);
+  }
+
+  void dh_T_(const SpanD h, const SpanD P, SpanD dh_T, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_T_dh_ph(P, h, dh_T, ncomp, id);
+  }
+
+  void cp_h_(const SpanD h, const SpanD P, SpanD CP, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_cp_ph(P, h, CP, ncomp, id);
+  }
+
+  void beta_h_(const SpanD h, const SpanD P, SpanD B, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_beta_ph(P, h, B, ncomp, id);
+  }
+
+  void mu_h_(const SpanD h, const SpanD P, SpanD M, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_mu_ph(P, h, M, ncomp, id);
+  }
+
+  void lambda_h_(const SpanD h, const SpanD P, SpanD L, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_lambda_ph(P, h, L, ncomp, id);
   }
 
 protected:
