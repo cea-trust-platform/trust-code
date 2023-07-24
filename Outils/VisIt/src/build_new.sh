@@ -32,21 +32,21 @@ done
 conda=$TRUST_ROOT/exec/python
 options="--tarball $src"					# Construction de VisIt depuis les sources
 options=$options" --prefix $TRUST_ROOT/exec/VisIt"		# Repertoire installation
-options=$options" --cc $TRUST_cc_BASE"				# Compilateur C
-options=$options" --cxx $TRUST_CC_BASE"				# Compilateur C++
-options=$options" --fc $TRUST_F77_BASE" 			# Compilateur Fortran
+options=$options" --cc $TRUST_cc"				# Compilateur C
+options=$options" --cxx $TRUST_CC"				# Compilateur C++
+options=$options" --fc $TRUST_F77" 				# Compilateur Fortran
 options=$options" --makeflags -j$TRUST_NB_PROCS"		# Parallel build
 options=$options" --thirdparty-path $TRUST_TMP" 		# Pour partage par plusieurs installations TRUST des 3rd party
-#options=$options" --system-cmake --alt-cmake-dir $conda" 	# Cmake de Miniconda
-#options=$options" --system-qt --alt-qt-dir $conda" 		# Qt5 de Miniconda
+options=$options" --system-cmake --alt-cmake-dir $conda" 	# Cmake de Miniconda
+options=$options" --system-qt --alt-qt-dir $conda" 		# Qt5 de Miniconda
 options=$options" --no-sphinx"					# Disable pour eviter l'installation de Python3 et pas mal de modules...
-#[ "$vp" = "3.3.3" ] && options=$options" --system-python --alt-python-dir $conda" 	# VisIt ne supporte pas Python3 systeme
+options=$options" --system-python --alt-python-dir $conda" 	# VisIt ne supporte pas Python3 systeme
 if [ "$build_parallel" != "" ]
 then
-   export PAR_COMPILER=$TRUST_cc
-   export PAR_COMPILER_CXX=$TRUST_CC
-   export PAR_INCLUDE=-I$MPI_INCLUDE
-   export PAR_LIBS=""
+   #export PAR_COMPILER=$TRUST_cc
+   #export PAR_COMPILER_CXX=$TRUST_CC
+   #export PAR_INCLUDE=-I$MPI_INCLUDE
+   #export PAR_LIBS=""
    options=$options" --parallel"			# Construction de VisIt parallele
    options=$options" --osmesa --llvm"			# OsMesa3D en // pour faster rendering (LLVM prerequis de OsMesa3D)
    options=$options" --no-icet"				# Car icet (optimisation du rendering en //) ne compile pas
