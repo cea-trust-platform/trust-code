@@ -85,9 +85,10 @@ public:
   Equation_base& equation_energie() { return eq_energie; }
   const Equation_base& equation_energie() const { return eq_energie; }
 
-protected:
   virtual void typer_lire_correlation_hem() { /* Do nothing */}
 
+protected:
+  bool resolution_en_T_ = true;
   Noms noms_phases_;
   std::map<std::string, Correlation> correlations;
 

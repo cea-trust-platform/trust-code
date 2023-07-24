@@ -13,36 +13,23 @@
 *
 *****************************************************************************/
 
-#ifndef Discret_Thermique_included
-#define Discret_Thermique_included
+#ifndef Pb_Multiphase_Enthalpie_included
+#define Pb_Multiphase_Enthalpie_included
 
-#include <Discretisation_base.h>
+#include <Energie_Multiphase_Enthalpie.h>
+#include <Pb_Multiphase.h>
 
-class Champ_Inc;
-class Schema_Temps_base;
-class Domaine_dis;
-class Milieu_base;
-
-/*! @brief Class Discret_Thermique Cette classe est la classe de base representant une discretisation
- *
- *     spatiale appliquee aux problemes thermiques.
- *     Les methodes virtuelles pures sont a implementer dans les classes
- *     derivees pour typer et discretiser les champs portes par les
- *     equations liees a la discretisation.
- *
- * @sa Discretisation_base, Classe abstraite, Methodes abstraites, void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const, void proprietes_physiques_milieu(Domaine_dis& ,Milieu_base& ,const Champ_Inc& ) const
- */
-class Discret_Thermique : public Discretisation_base
+class Pb_Multiphase_Enthalpie : public Pb_Multiphase
 {
-  Declare_base(Discret_Thermique);
+  Declare_instanciable(Pb_Multiphase_Enthalpie);
+public:
 
-public :
+  const Equation_base& equation(int) const override ;
+  Equation_base& equation(int) override;
+  void associer_milieu_base(const Milieu_base& ) override;
+  int verifier() override;
 
-  void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&, int nb_comp = 1) const;
-  void enthalpie(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&, int nb_comp = 1) const;
-  void flux_neutronique(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Inc& ch, int nb_comp=1) const;
-  void Fluctu_Temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const ;
-  void Flux_Chaleur_Turb(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const;
+  Energie_Multiphase_Enthalpie eq_energie_enthalpie;
 };
 
-#endif
+#endif /* Pb_Multiphase_Enthalpie_included*/

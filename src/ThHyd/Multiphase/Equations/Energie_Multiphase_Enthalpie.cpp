@@ -13,36 +13,31 @@
 *
 *****************************************************************************/
 
-#ifndef Discret_Thermique_included
-#define Discret_Thermique_included
+#include <Energie_Multiphase_Enthalpie.h>
+#include <Pb_Multiphase_Enthalpie.h>
+#include <Discret_Thyd.h>
 
-#include <Discretisation_base.h>
+Implemente_instanciable(Energie_Multiphase_Enthalpie, "Energie_Multiphase_Enthalpie", Energie_Multiphase);
 
-class Champ_Inc;
-class Schema_Temps_base;
-class Domaine_dis;
-class Milieu_base;
+Sortie& Energie_Multiphase_Enthalpie::printOn(Sortie& is) const { return Energie_Multiphase::printOn(is); }
 
-/*! @brief Class Discret_Thermique Cette classe est la classe de base representant une discretisation
- *
- *     spatiale appliquee aux problemes thermiques.
- *     Les methodes virtuelles pures sont a implementer dans les classes
- *     derivees pour typer et discretiser les champs portes par les
- *     equations liees a la discretisation.
- *
- * @sa Discretisation_base, Classe abstraite, Methodes abstraites, void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const, void proprietes_physiques_milieu(Domaine_dis& ,Milieu_base& ,const Champ_Inc& ) const
- */
-class Discret_Thermique : public Discretisation_base
+Entree& Energie_Multiphase_Enthalpie::readOn(Entree& is)
 {
-  Declare_base(Discret_Thermique);
+  Energie_Multiphase::readOn(is);
+  l_inco_ch->nommer("enthalpie");
+  return is;
+}
 
-public :
-
-  void temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&, int nb_comp = 1) const;
-  void enthalpie(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&, int nb_comp = 1) const;
-  void flux_neutronique(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Inc& ch, int nb_comp=1) const;
-  void Fluctu_Temperature(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const ;
-  void Flux_Chaleur_Turb(const Schema_Temps_base&, Domaine_dis&, Champ_Inc&) const;
-};
-
-#endif
+void Energie_Multiphase_Enthalpie::discretiser()
+{
+  const Discret_Thyd& dis=ref_cast(Discret_Thyd, discretisation());
+  Cerr << "Energy-enthalpy equation discretization " << finl;
+  const Pb_Multiphase_Enthalpie& pb = ref_cast(Pb_Multiphase_Enthalpie, probleme());
+  dis.enthalpie(schema_temps(), domaine_dis(), l_inco_ch, pb.nb_phases());
+  l_inco_ch.valeur().fixer_nature_du_champ(pb.nb_phases() == 1 ? scalaire : pb.nb_phases() == dimension ? vectoriel : multi_scalaire); //pfft
+  for (int i = 0; i < pb.nb_phases(); i++)
+    l_inco_ch.valeur().fixer_nom_compo(i, Nom("enthalpie_") + pb.nom_phase(i));
+  champs_compris_.ajoute_champ(l_inco_ch);
+  Equation_base::discretiser();
+  Cerr << "Energie_Multiphase_Enthalpie::discretiser() ok" << finl;
+}
