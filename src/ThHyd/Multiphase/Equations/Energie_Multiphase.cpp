@@ -30,14 +30,10 @@
 #include <Domaine.h>
 #include <Param.h>
 #include <SETS.h>
-
 Implemente_instanciable(Energie_Multiphase, "Energie_Multiphase", Convection_Diffusion_std);
 // XD Energie_Multiphase eqn_base Energie_Multiphase -1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature
 
-Sortie& Energie_Multiphase::printOn(Sortie& is) const
-{
-  return Convection_Diffusion_std::printOn(is);
-}
+Sortie& Energie_Multiphase::printOn(Sortie& is) const { return Convection_Diffusion_std::printOn(is); }
 
 Entree& Energie_Multiphase::readOn(Entree& is)
 {

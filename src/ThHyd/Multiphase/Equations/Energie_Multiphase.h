@@ -31,11 +31,10 @@
  */
 class Energie_Multiphase : public Convection_Diffusion_std
 {
-  Declare_instanciable_sans_constructeur(Energie_Multiphase);
+  Declare_instanciable(Energie_Multiphase);
 
 public :
 
-  Energie_Multiphase();
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
 

@@ -36,8 +36,6 @@
 #include <Scalaire_impose_paroi.h>
 #include <Echange_global_impose.h>
 
-#define old_forme
-
 Implemente_instanciable(Aire_interfaciale,"Aire_interfaciale|Interfacial_area",Convection_Diffusion_std);
 
 Sortie& Aire_interfaciale::printOn(Sortie& is) const
