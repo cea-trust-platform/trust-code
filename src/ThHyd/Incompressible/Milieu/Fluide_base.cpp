@@ -469,12 +469,12 @@ Champ_base& Fluide_base::energie_interne()
 
 const Champ_base& Fluide_base::enthalpie() const
 {
-  if (h.est_nul() && e_int.est_nul()) creer_e_int();
-  return h.non_nul() ? h : e_int;
+  if (h_ou_T.est_nul() && e_int.est_nul()) creer_e_int();
+  return h_ou_T.non_nul() ? h_ou_T : e_int;
 }
 
 Champ_base& Fluide_base::enthalpie()
 {
-  if (h.est_nul() && e_int.est_nul()) creer_e_int();
-  return h.non_nul() ? h : e_int;
+  if (h_ou_T.est_nul() && e_int.est_nul()) creer_e_int();
+  return h_ou_T.non_nul() ? h_ou_T : e_int;
 }

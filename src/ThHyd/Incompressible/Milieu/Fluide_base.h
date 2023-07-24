@@ -85,7 +85,7 @@ protected :
   static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);//fonction de calcul par defaut
 
   mutable Champ e_int; //pour la creation sur demande
-  Champ h;
+  Champ h_ou_T;
   Champ_Don mu, nu, beta_co;
   double h0_ = 0, T0_ = 0;
 
