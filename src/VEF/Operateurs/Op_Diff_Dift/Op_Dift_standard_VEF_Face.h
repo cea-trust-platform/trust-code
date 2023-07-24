@@ -16,29 +16,22 @@
 #ifndef Op_Dift_standard_VEF_Face_included
 #define Op_Dift_standard_VEF_Face_included
 
-#include <Op_Dift_VEF_Face_old.h>
+#include <Op_Dift_VEF_Face.h>
 #include <Operateur_Div.h>
 
-/*! @brief class Op_Dift_standard_VEF_Face
- *
- */
-
-class Op_Dift_standard_VEF_Face : public Op_Dift_VEF_Face_old
+class Op_Dift_standard_VEF_Face: public Op_Dift_VEF_Face
 {
   Declare_instanciable(Op_Dift_standard_VEF_Face);
-
 public:
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
 
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  void calcul_divergence(DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const DoubleTab&,const Domaine_Cl_VEF&,const Domaine_VEF&,DoubleTab&,int) const;
-  void ajouter_cas_vectoriel(const DoubleTab&, DoubleTab& , DoubleTab& ,const DoubleTab& , const DoubleTab& ,const Domaine_Cl_VEF& ,const Domaine_VEF& ,const DoubleTab& ,int ) const;
+private:
+  void calcul_divergence(DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab& ) const;
+  void ajouter_cas_vectoriel(const DoubleTab&, DoubleTab&, const DoubleTab&, const DoubleTab& ) const;
 
-protected :
   REF(Champ_Inc) divergence_U;
-  int grad_Ubar = 1;
-  int nu_lu = 1, nut_lu = 1;
-  int nu_transp_lu = 1, nut_transp_lu = 1;
-  int filtrer_resu = 1;
+  int grad_Ubar = 1, nu_lu = 1, nut_lu = 1;
+  int nu_transp_lu = 1, nut_transp_lu = 1, filtrer_resu = 1;
 };
 
-#endif
+#endif /* Op_Dift_standard_VEF_Face_included */

@@ -43,4 +43,4 @@ protected:
   DoubleTab tau_tan_;
 };
 
-#endif
+#endif /* Op_Dift_VEF_base_included */
