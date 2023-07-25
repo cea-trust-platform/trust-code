@@ -1,6 +1,4 @@
 # PARALLEL OK #
-# This parallel test on 3 MPI ranks is crashing on petra with 2 GPUs when using AmgX & OpenMP #
-# See https://codev-tuleap.intra.cea.fr/plugins/tracker/?aid=217526 #
 dimension 3
 Pb_Hydraulique pb
 Domaine coarse_dom
@@ -11,7 +9,7 @@ Mailler coarse_dom
     Pave Cavite
     {
         Origine 0. 0. 0.
-        Nombre_de_Noeuds 10 10 3 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
+        Nombre_de_Noeuds 31 31 10 /* Nombre mailles sur le calcul parallele = (Nx-1)*(Ny-1)*(Nz-1)*40*8 */
         Longueurs 10 10 3
     }
     {
@@ -33,7 +31,7 @@ Raffiner_isotrope dom
 # BEGIN PARTITION
 Partition coarse_dom
 {
-    Partition_tool Metis { Nb_parts 3 }
+    Partition_tool Metis { Nb_parts 2 }
     Larg_joint 2
     zones_name COARSE_DOM
 }
@@ -62,24 +60,27 @@ Read sch
     nb_pas_dt_max 10
 }
 
+
 Associate pb dom
 Associate pb sch
+
 Discretize pb dis
 Read pb
 {
 
-    fluide_incompressible {
+   fluide_incompressible {
         mu Champ_Uniforme       1 2.21799454e-04
-        rho Champ_Uniforme      1 943.112976
-        lambda Champ_Uniforme   1 0.806537897
-        Cp Champ_Uniforme       1 4238.62106
-        beta_th Champ_Uniforme  1 8.6e-4
-    }
-
-
-    Navier_Stokes_Standard
+       rho Champ_Uniforme      1 943.112976
+       lambda Champ_Uniforme   1 0.806537897
+       Cp Champ_Uniforme       1 4238.62106
+       beta_th Champ_Uniforme  1 8.6e-4
+   }
+   
+       Navier_Stokes_Standard
     {
-        solveur_pression amgx gcp { precond sa-amg { } seuil 1.e-7 impr }
+        # Pour les besoins des mesures de performance, fait un calcul des operateurs avant le 1er pas de temps: #
+    	methode_calcul_pression_initiale avec_sources_et_operateurs
+        solveur_pression amgx gcp { precond c-amg { p:selector=PMIS } seuil 1.e-4 impr }
         convection { muscl }
         diffusion  {  }
         initial_conditions {  vitesse Champ_Uniforme 3  0. 0. 0. }
@@ -88,7 +89,6 @@ Read pb
             sortie    Frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
             paroi     paroi_fixe
         }
-        # Sources { Forchheimer { porosite 0.4 Cf 1. modele_K ErgunForchheimer { diametre 1.5e-3 } } } #
     }
 }
 EcritureLectureSpecial 0

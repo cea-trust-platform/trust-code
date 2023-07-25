@@ -1,5 +1,5 @@
 # PARALLEL OK #
-# This parallel test on 4 MPI ranks is crashing on petra with 2 GPUs #
+# This parallel test on 4 MPI ranks was crashing on petra with 2 GPUs #
 # See https://codev-tuleap.intra.cea.fr/plugins/tracker/?aid=217526 #
 dimension 3
 Pb_Hydraulique pb

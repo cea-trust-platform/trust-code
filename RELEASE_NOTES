@@ -1,3 +1,4 @@
+XX/XX/XX (TRUST) New feature  : Experimental device-device communication implemented for GPU version if Cuda-aware MPI is available. Use: TRUST_USE_GPU_AWARE_MPI=1 trust datafile NB_PROCS
 XX/XX/XX (TRUST) Fix          : When diffusive-implicited scheme diverges, backup wasn't done
 XX/XX/23 (TRUST) New options  : Default for AmgX preconditionner may be overloaded in data file. Ex: amgx gcp { precond c-amg { p:selector=PMIS p:strength_threshold=0.8 } ... }
 --------------------------------------------------------------------------------------------------

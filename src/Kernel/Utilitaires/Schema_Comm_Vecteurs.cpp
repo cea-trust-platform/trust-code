@@ -18,6 +18,7 @@
 #include <PE_Groups.h>
 #include <stat_counters.h>
 #include <sstream>
+#include <comm_incl.h>
 
 int Schema_Comm_Vecteurs::buffer_locked_;
 ArrOfDouble Schema_Comm_Vecteurs::tmp_area_double_;
@@ -214,8 +215,26 @@ void Schema_Comm_Vecteurs::begin_comm(bool bufferOnDevice)
 
 void Schema_Comm_Vecteurs::exchange(bool bufferOnDevice)
 {
-  // Copy buffer to host before MPI send
-  if (bufferOnDevice) copyFromDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_");
+  bool use_gpu_aware_mpi = (getenv("TRUST_USE_GPU_AWARE_MPI") != NULL);
+#ifndef MPIX_CUDA_AWARE_SUPPORT
+  if (use_gpu_aware_mpi) Process::exit("MPI version is detected as not GPU-Aware. You can't use TRUST_USE_GPU_AWARE_MPI=1");
+#endif
+  char * ptr = sdata_.buffer_base_;
+  // Copy buffer before MPI send
+  if (bufferOnDevice)
+    {
+      if (!use_gpu_aware_mpi)
+        copyFromDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_"); // Copy buffer to host for MPI communication
+      else
+        {
+          // Communication between devices. Use device buffer:
+          char * buffer_base = sdata_.buffer_base_;
+          #pragma omp target data use_device_ptr(buffer_base)
+          {
+            ptr = buffer_base;
+          }
+        }
+    }
 
   assert(status_ == BEGIN_COMM);
   // Verifie que tous les buffers sont pleins
@@ -229,15 +248,12 @@ void Schema_Comm_Vecteurs::exchange(bool bufferOnDevice)
   assert(nsend + nrecv <= sdata_.buf_pointers_size_);
   char ** send_bufs = sdata_.buf_pointers_;
   char ** recv_bufs = sdata_.buf_pointers_ + nsend;
-  char * ptr = sdata_.buffer_base_;
-  int i;
-  for (i = 0; i < nsend; i++)
+  for (int i = 0; i < nsend; i++)
     {
       send_bufs[i] = ptr;
       ptr += send_buf_sizes_[i];
     }
-  char * recv_ptr_base = ptr; // Pour toute a l'heure adresse de base des buffers de reception
-  for (i = 0; i < nrecv; i++)
+  for (int i = 0; i < nrecv; i++)
     {
       recv_bufs[i] = ptr;
       ptr += recv_buf_sizes_[i];
@@ -251,17 +267,19 @@ void Schema_Comm_Vecteurs::exchange(bool bufferOnDevice)
                         Comm_Group::INT);
   group.send_recv_finish();
   // Fait pointer les buffers sur les donnees recues
-  ptr = recv_ptr_base;
-  for (i = 0; i < nrecv; i++)
+  char * recv_ptr = sdata_.buffer_base_;
+  for (int i = 0; i < nsend; i++)
+    recv_ptr += send_buf_sizes_[i];
+  for (int i = 0; i < nrecv; i++)
     {
       const int pe = recv_procs_[i];
-      sdata_.buf_pointers_[pe] = ptr;
-      ptr += recv_buf_sizes_[i];
+      sdata_.buf_pointers_[pe] = recv_ptr;
+      recv_ptr += recv_buf_sizes_[i];
     }
   status_ = EXCHANGED;
 
-  // Copy buffer to device after MPI recv
-  if (bufferOnDevice) copyToDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_");
+  // Copy buffer to device after MPI recv if GPU-Aware MPI is not enabled:
+  if (bufferOnDevice && !use_gpu_aware_mpi) copyToDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_");
 }
 
 void Schema_Comm_Vecteurs::end_comm()
