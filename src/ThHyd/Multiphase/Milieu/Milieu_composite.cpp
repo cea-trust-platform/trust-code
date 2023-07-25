@@ -179,11 +179,22 @@ int Milieu_composite::initialiser(const double temps)
 {
   for (auto &itr : fluides) itr->initialiser(temps);
 
-  const Equation_base& eqn = equation("temperature");
-  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho.valeur()), &ch_e = ref_cast(Champ_Inc_base, e_int.valeur()), &ch_h = ref_cast(Champ_Inc_base, h_ou_T.valeur());
-  ch_rho.associer_eqn(eqn), ch_rho.init_champ_calcule(*this, calculer_masse_volumique);
-  ch_e.associer_eqn(eqn), ch_e.init_champ_calcule(*this, calculer_energie_interne);
-  ch_h.associer_eqn(eqn), ch_h.init_champ_calcule(*this, calculer_enthalpie);
+  const bool res_en_T = equation_.count("temperature") ? true : false;
+
+  const Equation_base& eqn = res_en_T ? equation("temperature") : equation("enthalpie");
+  Champ_Inc_base& ch_rho = ref_cast(Champ_Inc_base, rho.valeur()),
+                  &ch_e = ref_cast(Champ_Inc_base, e_int.valeur()),
+                   &ch_h_ou_T = ref_cast(Champ_Inc_base, h_ou_T.valeur());
+
+  ch_rho.associer_eqn(eqn);
+  ch_rho.init_champ_calcule(*this, calculer_masse_volumique);
+
+  ch_e.associer_eqn(eqn);
+  ch_e.init_champ_calcule(*this, calculer_energie_interne);
+
+  ch_h_ou_T.associer_eqn(eqn);
+  res_en_T ? ch_h_ou_T.init_champ_calcule(*this, calculer_enthalpie) : ch_h_ou_T.init_champ_calcule(*this, calculer_temperature_multiphase);
+
   t_init_ = temps;
 
   // XXX Elie Saikali : utile pour cas reprise !
@@ -205,14 +216,20 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   const Domaine_dis_base& domaine_dis = pb.equation(0).domaine_dis();
   const double temps = pb.schema_temps().temps_courant();
 
+  res_en_T_ = sub_type(Pb_Multiphase,pb) ? ref_cast(Pb_Multiphase,pb).resolution_en_T() : true;
+
   for (auto& itr : fluides) itr->discretiser(pb, dis);
 
   /* masse volumique, energie interne, enthalpie : champ_inc */
-  Champ_Inc rho_inc, ei_inc, h_inc;
+  Champ_Inc rho_inc, ei_inc, h_ou_T_inc;
   dis.discretiser_champ("champ_elem", domaine_dis, "masse_volumique", "kg/m^3", N, nc, temps, rho_inc);
   dis.discretiser_champ("champ_elem", domaine_dis, "energie_interne", "J/m^3", N, nc, temps, ei_inc);
-  dis.discretiser_champ("champ_elem", domaine_dis, "enthalpie", "J/m^3", N, nc, temps, h_inc);
-  rho = rho_inc, e_int = ei_inc, h_ou_T = h_inc;
+  if (res_en_T_)
+    dis.discretiser_champ("champ_elem", domaine_dis, "enthalpie", "J/m^3", N, nc, temps, h_ou_T_inc);
+  else
+    dis.discretiser_champ("champ_elem", domaine_dis, "temperature", "C", N, nc, temps, h_ou_T_inc);
+
+  rho = rho_inc, e_int = ei_inc, h_ou_T = h_ou_T_inc;
 
   /* autres champs : champ_fonc */
   dis.discretiser_champ("champ_elem", domaine_dis, "viscosite_dynamique", "kg/m/s", N, temps, mu);
@@ -361,7 +378,9 @@ void Milieu_composite::mettre_a_jour_tabs()
   DoubleTab& trm = rho_m.valeurs(), &thm = h_m.valeurs();
   trm = 0, thm = 0;
 
-  const DoubleTab& a = equation("alpha").inconnue().valeurs(), &r = rho.valeurs(), &ent = h_ou_T.valeurs();
+  const DoubleTab& a = equation("alpha").inconnue().valeurs(), &r = rho.valeurs(),
+                   &ent = res_en_T_ ? h_ou_T.valeurs() : equation("enthalpie").inconnue().valeurs();
+
   const int Nl = rho_m.valeurs().dimension_tot(0);
 
   // masse volumique
@@ -476,6 +495,36 @@ void Milieu_composite::calculer_enthalpie(const Objet_U& obj, DoubleTab& val, Do
   for (auto &&nom : noms_der)
     {
       for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : nullptr;
+      DoubleTab& der = deriv[nom];
+      for (der.resize(Ni, N), i = 0; i < Ni; i++)
+        for (n = 0; n < N; n++) der(i, n) = split[n] ? (*split[n])(i * (split[n]->dimension(0) > 1)) : 0;
+    }
+}
+
+void Milieu_composite::calculer_temperature_multiphase(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv)
+{
+  const Milieu_composite& mil = ref_cast(Milieu_composite, obj);
+  int i, Ni = val.dimension_tot(0), Nb = bval.dimension_tot(0), n, N = (int)mil.fluides.size();
+  std::vector<const DoubleTab *> split(N);
+  for (n = 0; n < N; n++) split[n] = &mil.fluides[n]->temperature_multiphase().valeurs();
+  for (i = 0; i < Ni; i++)
+    for (n = 0; n < N; n++) val(i, n) = (*split[n])(i * (split[n]->dimension(0) > 1), 0);
+
+  std::vector<DoubleTab> bsplit(N);
+  for (n = 0; n < N; n++) bsplit[n] = mil.fluides[n]->temperature_multiphase().valeur_aux_bords();
+  for (i = 0; i < Nb; i++)
+    for (n = 0; n < N; n++) bval(i, n) = bsplit[n](i * (split[n]->dimension(0) > 1), 0);
+
+  /* derivees */
+  std::vector<const tabs_t *> split_der(N);
+  for (n = 0; n < N; n++) split_der[n] = sub_type(Champ_Inc_base, mil.fluides[n]->temperature_multiphase()) ? &ref_cast(Champ_Inc_base, mil.fluides[n]->temperature_multiphase()).derivees() : NULL;
+  std::set<std::string> noms_der;
+  for (n = 0; n < N; n++)
+    if (split_der[n])
+      for (auto &&n_d : *split_der[n]) noms_der.insert(n_d.first);
+  for (auto &&nom : noms_der)
+    {
+      for (n = 0; n < N; n++) split[n] = split_der[n] && split_der[n]->count(nom) ? &split_der[n]->at(nom) : NULL;
       DoubleTab& der = deriv[nom];
       for (der.resize(Ni, N), i = 0; i < Ni; i++)
         for (n = 0; n < N; n++) der(i, n) = split[n] ? (*split[n])(i * (split[n]->dimension(0) > 1)) : 0;
