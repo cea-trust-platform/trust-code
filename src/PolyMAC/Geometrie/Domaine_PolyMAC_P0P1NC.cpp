@@ -99,7 +99,6 @@ const DoubleTab& Domaine_PolyMAC_P0P1NC::surf_elem_arete() const
           }
   return surf_elem_arete_;
 }
-
 /* "clamping" a 0 des coeffs petits dans M1/W1/M2/W2 */
 inline void clamp(DoubleTab& m)
 {
@@ -107,63 +106,6 @@ inline void clamp(DoubleTab& m)
     for (int j = 0; j < m.dimension(1); j++)
       for (int n = 0; n < m.dimension(2); n++)
         if (1e6 * std::abs(m(i, j, n)) < std::abs(m(i, i, n)) + std::abs(m(j, j, n))) m(i, j, n) = 0;
-}
-
-//matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
-//normales aux faces -> tangentes aux faces duales : (nu x_ef.v) = m2 (|f|n_ef.v)
-void Domaine_PolyMAC_P0P1NC::M2(const DoubleTab *nu, int e, DoubleTab& m2) const
-{
-  int i, j, k, f, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
-  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleTab& xe = xp(), &xf = xv(), &nf = face_normales();
-  const DoubleVect& ve = volumes();
-  for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++; //nombre de faces de e
-  double prefac, fac, beta = n_f == D + 1 ? 1. / D : D == 2 ? 1. / sqrt(2) : 1. / sqrt(3); //stabilisation : DGA sur simplexes, SUSHI sinon
-  m2.resize(n_f, n_f, N), m2 = 0;
-  DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
-  for (i = 0; i < n_f; i++)
-    for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (xf(f, d) - xe(e, d)) / ve(e);
-  for (i = 0; i < n_f; i++)
-    for (f = e_f(e, i), prefac = D * beta / std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
-      for (fac = prefac * ((j == i) - (e == f_e(f, 0) ? 1 : -1) * dot(&nf(f, 0), &v_e(j, 0))), d = 0; d < D; d++)
-        v_ef(i, j, d) = v_e(j, d) + fac * (xf(f, d) - xe(e, d));
-  //matrice!
-  for (m2 = 0, i = 0; i < n_f; i++)
-    for (j = 0; j < n_f; j++)
-      if (j < i)
-        for (n = 0; n < N; n++) m2(i, j, n) = m2(j, i, n); //sous la diagonale -> avec l'autre cote
-      else for (k = 0; k < n_f; k++)
-          for (f = e_f(e, k), fac = std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
-            m2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
-  clamp(m2);
-}
-
-//tangentes aux faces duales -> normales aux faces : nu|f|n_ef.v = w2.(x_ef.v)
-void Domaine_PolyMAC_P0P1NC::W2(const DoubleTab *nu, int e, DoubleTab& w2) const
-{
-  int i, j, k, f, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
-  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
-  const DoubleTab& xe = xp(), &xf = xv(), &nf = face_normales();
-  const DoubleVect& ve = volumes();
-  for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++; //nombre de faces de e
-  double prefac, fac, beta = n_f == D + 1 ? 1. / D : D == 2 ? 1. / sqrt(2) : 1. / sqrt(3); //stabilisation : DGA sur simplexes, SUSHI sinon
-  w2.resize(n_f, n_f, N), w2 = 0;
-  DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
-  for (i = 0; i < n_f; i++)
-    for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (e == f_e(f, 0) ? 1 : -1) * nf(f, d) / ve(e);
-  for (i = 0; i < n_f; i++)
-    for (f = e_f(e, i), prefac = D * beta * (e == f_e(f, 0) ? 1 : -1) / std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
-      for (fac = prefac * ((j == i) - dot(&xf(f, 0), &v_e(j, 0), &xe(e, 0))), d = 0; d < D; d++)
-        v_ef(i, j, d) = v_e(j, d) + fac * nf(f, d);
-  //matrice!
-  for (i = 0; i < n_f; i++)
-    for (j = 0; j < n_f; j++)
-      if (j < i)
-        for (n = 0; n < N; n++) w2(i, j, n) = w2(j, i, n); //sous-diagonale -> on copie l'autre cote
-      else for (k = 0; k < n_f; k++)
-          for (f = e_f(e, k), fac = std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
-            w2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
-  clamp(w2);
 }
 
 //normales aux aretes duales -> tangentes aux aretes : (nu|a|t_a.v)   = m1 (S_ea.v)

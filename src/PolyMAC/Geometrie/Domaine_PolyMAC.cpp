@@ -454,8 +454,63 @@ int Domaine_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int 
 
 void Domaine_PolyMAC::init_m2_new() const
 {
-  Cerr << "use_new_m2 not implemented yet!" << finl;
-  Process::exit();
+  const IntTab& e_f = elem_faces();
+  int i, j, e, n_f, ctr[3] = {0, 0, 0 }, n_tot = Process::mp_sum(nb_elem());
+  double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
+
+  if (is_init["w2"]) return;
+  m2d.set_smart_resize(1), m2i.set_smart_resize(1), m2j.set_smart_resize(1), m2c.set_smart_resize(1);
+  w2i.set_smart_resize(1), w2j.set_smart_resize(1), w2c.set_smart_resize(1);
+  Cerr << domaine().le_nom() << " : initializing w2/m2 ... ";
+
+  DoubleTab W, M;
+  W.set_smart_resize(1), M.set_smart_resize(1);
+
+  /* pour le partage entre procs */
+  DoubleTrav m2e(0, e_f.dimension(1), e_f.dimension(1)), w2e(0, e_f.dimension(1), e_f.dimension(1)), nu1(0, 1);
+  domaine().creer_tableau_elements(m2e), domaine().creer_tableau_elements(w2e), domaine().creer_tableau_elements(nu1);
+  nu1 = 1.0;
+
+
+  /* calcul sur les elements reels */
+  std::map<int, std::vector<int>> som_face; //som_face[s] : faces de l'element e touchant le sommet s
+  IntTrav nnz, nef;//par elements : nombre de coeffs non nuls, nombre de faces (lignes)
+  domaine().creer_tableau_elements(nnz), domaine().creer_tableau_elements(nef);
+  for (e = 0; e < nb_elem(); e++)
+    {
+      W2(&nu1, e, W);
+      M2(&nu1, e, M);
+
+      for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++;
+      /* matrice M2 : W2^-1 */
+      for (i = 0; i < n_f; i++)
+        for (j = i + 1; j < n_f; j++) M(i, j, 0) = M(j, i, 0);
+
+      for (i = 0; i < n_f; i++)
+        for (j = 0, nef(e)++; j < n_f; j++) w2e(e, i, j) = W(i, j, 0), nnz(e) += (std::fabs(W(i, j, 0)) > 1e-6);
+      for (i = 0; i < n_f; i++)
+        for (j = 0; j < n_f; j++) m2e(e, i, j) = M(i, j, 0);
+    }
+
+  /* echange et remplissage */
+  m2e.echange_espace_virtuel(), w2e.echange_espace_virtuel();
+  for (e = 0, m2d.append_line(0), m2i.append_line(0), w2i.append_line(0); e < nb_elem_tot(); e++, m2d.append_line(m2i.size() - 1))
+    {
+      for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++;
+      for (i = 0; i < n_f; i++, m2i.append_line(m2j.size()))
+        for (j = 0, m2j.append_line(i), m2c.append_line(m2e(e, i, i)); j < n_f; j++)
+          if (j != i && std::fabs(m2e(e, i, j)) > 1e-6) m2j.append_line(j), m2c.append_line(m2e(e, i, j));
+      for (i = 0; i < n_f; i++, w2i.append_line(w2j.size()))
+        for (j = 0, w2j.append_line(i), w2c.append_line(w2e(e, i, i)); j < n_f; j++)
+          if (j != i && std::fabs(w2e(e, i, j)) > 1e-6) w2j.append_line(j), w2c.append_line(w2e(e, i, j));
+    }
+
+  CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
+  Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "% diag " << 100. * Process::mp_sum(ctr[1]) / n_tot << "% sym "
+       << 100. * Process::mp_sum(ctr[2]) / n_tot << "% sparse lambda : " << Process::mp_min(spectre[0]) << " / "
+       << Process::mp_min(spectre[1]) << " -> " << Process::mp_max(spectre[2])
+       << " / " << Process::mp_max(spectre[3]) << " width : " << mp_somme_vect(nnz) * 1. / mp_somme_vect(nef) << finl;
+  is_init["w2"] = 1;
 }
 
 void Domaine_PolyMAC::init_m2_osqp() const
@@ -797,3 +852,71 @@ void Domaine_PolyMAC::init_virt_ef_map() const
   for (f = nb_faces(); f < nb_faces_tot(); f++) virt_ef_map[ {{ p_f(f, 0), p_f(f, 1) }}] = nb_elem_tot() + f;
   is_init["virt_ef"] = 1;
 }
+
+
+/* "clamping" a 0 des coeffs petits dans M1/W1/M2/W2 */
+inline void clamp(DoubleTab& m)
+{
+  for (int i = 0; i < m.dimension(0); i++)
+    for (int j = 0; j < m.dimension(1); j++)
+      for (int n = 0; n < m.dimension(2); n++)
+        if (1e6 * std::abs(m(i, j, n)) < std::abs(m(i, i, n)) + std::abs(m(j, j, n))) m(i, j, n) = 0;
+}
+
+//matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
+//normales aux faces -> tangentes aux faces duales : (nu x_ef.v) = m2 (|f|n_ef.v)
+void Domaine_PolyMAC::M2(const DoubleTab *nu, int e, DoubleTab& m2) const
+{
+  int i, j, k, f, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleTab& xe = xp(), &xf = xv(), &nf = face_normales();
+  const DoubleVect& ve = volumes();
+  for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++; //nombre de faces de e
+  double prefac, fac, beta = n_f == D + 1 ? 1. / D : D == 2 ? 1. / sqrt(2) : 1. / sqrt(3); //stabilisation : DGA sur simplexes, SUSHI sinon
+  m2.resize(n_f, n_f, N), m2 = 0;
+  DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
+  for (i = 0; i < n_f; i++)
+    for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (xf(f, d) - xe(e, d)) / ve(e);
+  for (i = 0; i < n_f; i++)
+    for (f = e_f(e, i), prefac = D * beta / std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
+      for (fac = prefac * ((j == i) - (e == f_e(f, 0) ? 1 : -1) * dot(&nf(f, 0), &v_e(j, 0))), d = 0; d < D; d++)
+        v_ef(i, j, d) = v_e(j, d) + fac * (xf(f, d) - xe(e, d));
+  //matrice!
+  for (m2 = 0, i = 0; i < n_f; i++)
+    for (j = 0; j < n_f; j++)
+      if (j < i)
+        for (n = 0; n < N; n++) m2(i, j, n) = m2(j, i, n); //sous la diagonale -> avec l'autre cote
+      else for (k = 0; k < n_f; k++)
+          for (f = e_f(e, k), fac = std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
+            m2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
+  clamp(m2);
+}
+
+//tangentes aux faces duales -> normales aux faces : nu|f|n_ef.v = w2.(x_ef.v)
+void Domaine_PolyMAC::W2(const DoubleTab *nu, int e, DoubleTab& w2) const
+{
+  int i, j, k, f, n, N = nu ? nu->dimension(1) : 1, e_nu = nu && nu->dimension_tot(0) == 1 ? 0 : e, n_f, d, D = dimension;
+  const IntTab& e_f = elem_faces(), &f_e = face_voisins();
+  const DoubleTab& xe = xp(), &xf = xv(), &nf = face_normales();
+  const DoubleVect& ve = volumes();
+  for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++; //nombre de faces de e
+  double prefac, fac, beta = n_f == D + 1 ? 1. / D : D == 2 ? 1. / sqrt(2) : 1. / sqrt(3); //stabilisation : DGA sur simplexes, SUSHI sinon
+  w2.resize(n_f, n_f, N), w2 = 0;
+  DoubleTrav v_e(n_f, D), v_ef(n_f, n_f, D); //interpolations du vecteur complet : non stabilisee en e, stabilisee en (e, f)
+  for (i = 0; i < n_f; i++)
+    for (f = e_f(e, i), d = 0; d < D; d++) v_e(i, d) = (e == f_e(f, 0) ? 1 : -1) * nf(f, d) / ve(e);
+  for (i = 0; i < n_f; i++)
+    for (f = e_f(e, i), prefac = D * beta * (e == f_e(f, 0) ? 1 : -1) / std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))), j = 0; j < n_f; j++)
+      for (fac = prefac * ((j == i) - dot(&xf(f, 0), &v_e(j, 0), &xe(e, 0))), d = 0; d < D; d++)
+        v_ef(i, j, d) = v_e(j, d) + fac * nf(f, d);
+  //matrice!
+  for (i = 0; i < n_f; i++)
+    for (j = 0; j < n_f; j++)
+      if (j < i)
+        for (n = 0; n < N; n++) w2(i, j, n) = w2(j, i, n); //sous-diagonale -> on copie l'autre cote
+      else for (k = 0; k < n_f; k++)
+          for (f = e_f(e, k), fac = std::abs(dot(&xf(f, 0), &nf(f, 0), &xe(e, 0))) / D, n = 0; n < N; n++)
+            w2(i, j, n) += fac * nu_dot(nu, e_nu, n, &v_ef(k, i, 0), &v_ef(k, j, 0));
+  clamp(w2);
+}
+

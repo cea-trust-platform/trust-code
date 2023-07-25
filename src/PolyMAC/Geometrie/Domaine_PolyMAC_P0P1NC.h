@@ -31,8 +31,6 @@ public :
   const DoubleTab& surf_elem_arete() const;
 
   //matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
-  void M2(const DoubleTab *nu, int e, DoubleTab& m2) const; //normales aux faces -> tangentes aux faces duales :   (nu x_ef.v)    = m2 (|f|n_ef.v)
-  void W2(const DoubleTab *nu, int e, DoubleTab& w2) const; //tangentes aux faces duales -> normales aux faces :   (nu |f|n_ef.v) = w2 (x_ef.v)
   void M1(const DoubleTab *nu, int e, DoubleTab& m1) const; //normales aux aretes duales -> tangentes aux aretes : (nu|a|t_a.v)   = m1 (S_ea.v)
   void W1(const DoubleTab *nu, int e, DoubleTab& w1, DoubleTab& v_e, DoubleTab& v_ea) const; //tangentes aux aretes -> normales aux aretes duales : (nu S_ea.v)    = w1 (|a|t_a.v)
   //possibilite pour le tenseur nu :

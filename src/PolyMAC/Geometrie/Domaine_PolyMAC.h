@@ -87,6 +87,10 @@ public :
   void init_virt_ef_map() const;
   mutable std::map<std::array<int, 2>, int> virt_ef_map;
 
+  //matrices locales par elements (operateurs de Hodge) permettant de faire des interpolations :
+  void M2(const DoubleTab *nu, int e, DoubleTab& m2) const; //normales aux faces -> tangentes aux faces duales :   (nu x_ef.v)    = m2 (|f|n_ef.v)
+  void W2(const DoubleTab *nu, int e, DoubleTab& w2) const; //tangentes aux faces duales -> normales aux faces :   (nu |f|n_ef.v) = w2 (x_ef.v)
+
 private:
 
   void remplir_elem_faces() override;
