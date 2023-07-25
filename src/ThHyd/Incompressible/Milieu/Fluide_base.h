@@ -36,192 +36,71 @@ class Champ_base;
  */
 class Fluide_base : public Milieu_base
 {
-  Declare_instanciable_sans_constructeur(Fluide_base);
-
+  Declare_instanciable(Fluide_base);
 public :
+  void set_param(Param& param) override;
+  void verifier_coherence_champs(int& err, Nom& message) override;
+  bool initTimeStep(double dt) override;
+  void mettre_a_jour(double) override;
+  int initialiser(const double temps) override;
+  void creer_champs_non_lus() override;
+  void discretiser(const Probleme_base& pb, const Discretisation_base& dis) override;
+  virtual void set_h0_T0(double h0, double T0);
+  virtual int is_incompressible() const { return 0; }
 
-  Fluide_base();
-  inline const Champ_Don& viscosite_cinematique() const;
-  inline const Champ_Don& viscosite_dynamique() const;
-  inline const Champ_Don& beta_c() const;
-  inline Champ_Don& viscosite_cinematique();
-  inline Champ_Don& viscosite_dynamique();
-  inline Champ_Don& beta_c();
+  const Champ_base& energie_interne() const;
+  Champ_base& energie_interne();
+  const Champ_base& enthalpie() const;
+  Champ_base& enthalpie();
+  const Champ_base& temperature_multiphase() const;
+  Champ_base& temperature_multiphase();
 
-  virtual const Champ_base& energie_interne() const;
-  virtual Champ_base&       energie_interne();
-  virtual const Champ_base& enthalpie() const;
-  virtual Champ_base&       enthalpie();
+  inline const Champ_Don& viscosite_cinematique() const { return nu; }
+  inline Champ_Don& viscosite_cinematique() { return nu; }
+  inline const Champ_Don& viscosite_dynamique() const { return mu; }
+  inline Champ_Don& viscosite_dynamique() { return mu; }
 
-  // Modif CHD 07/05/03 Ajout des parametres pour un fluide semi
-  // transparent on les ramene ici pour ne plus avoir a utiliser
-  // de Fluide incompressible semi transparent.
+  // Renvoie la dilatabilite du constituant, beta_co.
+  inline const Champ_Don& beta_c() const { return beta_co; }
+  inline Champ_Don& beta_c() { return beta_co; }
+
+  // Renvoie le coefficient d'absorbtion du fluide
+  inline Champ_Don& kappa() { return coeff_absorption_; }
+  inline const Champ_Don& kappa() const { return coeff_absorption_; }
+
+  // Renvoie l'indice de refraction du fluide
+  inline Champ_Don& indice() { return indice_refraction_; }
+  inline const Champ_Don& indice() const { return indice_refraction_; }
+
+  //  Renvoie la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
+  inline Champ_Don& longueur_rayo() { return longueur_rayo_; }
+  inline const Champ_Don& longeur_rayo() const { return longueur_rayo_; }
+
+  // Modif CHD 07/05/03 Ajout des parametres pour un fluide semi transparent on les ramene ici pour ne plus avoir a utiliser de Fluide incompressible semi transparent.
   int is_rayo_semi_transp() const override;
   int is_rayo_transp() const override;
   void fixer_type_rayo();
   void reset_type_rayo();
   int longueur_rayo_is_discretised();
-  inline Champ_Don& kappa();
-  inline const Champ_Don& kappa() const;
-  inline Champ_Don& indice();
-  inline const Champ_Don& indice() const;
-  inline Champ_Don& longueur_rayo();
-  inline const Champ_Don& longeur_rayo() const;
-
-  void set_param(Param& param) override;
-  void verifier_coherence_champs(int& err,Nom& message) override;
-  bool initTimeStep(double dt) override;
-  void mettre_a_jour(double ) override;
-  int initialiser(const double temps) override;
-  void creer_champs_non_lus() override;
-  void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
-  virtual void set_h0_T0(double h0, double T0);
-  virtual int is_incompressible() const { return 0; }
-
 protected :
-
   void creer_e_int() const; //creation sur demande de e_int / h
+  void creer_temperature_multiphase() const; //creation sur demande de e_int / h
+
   mutable int e_int_auto_ = 0; //1 si on a cree e_int
   static void calculer_e_int(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);//fonction de calcul par defaut
 
-  mutable Champ e_int; //pour la creation sur demande
-  Champ h_ou_T;
+  mutable Champ e_int, h_ou_T; //pour la creation sur demande
   Champ_Don mu, nu, beta_co;
   double h0_ = 0, T0_ = 0;
 
   // Parametres du fluide rayonnant semi transparent
-  Champ_Don coeff_absorption_;
-  Champ_Don indice_refraction_;
-  // Longueur caractaristique de la longueur de penetration
-  // du rayonnement dans le milieu semi transparent definie
-  // comme l = 1/(3*kappa)
+  Champ_Don coeff_absorption_, indice_refraction_;
+
+  // Longueur caractaristique de la longueur de penetration du rayonnement dans le milieu semi transparent definie comme l = 1/(3*kappa)
   Champ_Don longueur_rayo_;
 
   void creer_nu();
   virtual void calculer_nu();
 };
 
-
-/*! @brief Renvoie la viscosite dynamique, mu.
- *
- * (version const)
- *
- * @return (Champ_Don&) la viscosite dynamique, mu
- */
-inline const Champ_Don& Fluide_base::viscosite_dynamique() const
-{
-  return mu;
-}
-
-
-/*! @brief Renvoie la viscosite dynamique, mu.
- *
- * @return (Champ_Don&) la viscosite dynamique, mu
- */
-inline Champ_Don& Fluide_base::viscosite_dynamique()
-{
-  return mu;
-}
-
-
-/*! @brief Renvoie la viscosite cinematique, nu.
- *
- * (vesrion const)
- *
- * @return (Champ_Don&) la viscosite cinematique, nu
- */
-inline const Champ_Don& Fluide_base::viscosite_cinematique() const
-{
-  return nu;
-}
-
-
-/*! @brief Renvoie la viscosite cinematique, nu.
- *
- * @return (Champ_Don&) la viscosite cinematique, nu
- */
-inline Champ_Don& Fluide_base::viscosite_cinematique()
-{
-  return nu;
-}
-
-
-/*! @brief Renvoie la dilatabilite du constituant, beta_co.
- *
- * (version const)
- *
- * @return (Champ_Don&) la dilatabilite du constituant, beta_co
- */
-inline const Champ_Don& Fluide_base::beta_c() const
-{
-  return beta_co;
-}
-
-
-/*! @brief Renvoie la dilatabilite du constituant, beta_co.
- *
- * @return (Champ_Don&) la dilatabilite du constituant, beta_co
- */
-inline Champ_Don& Fluide_base::beta_c()
-{
-  return beta_co;
-}
-
-
-/*! @brief Renvoie le coefficient d'absorbtion du fluide
- *
- * @return (Champ_Don&) le coefficient d'absorbtion du fluide
- */
-inline Champ_Don& Fluide_base::kappa()
-{
-  return coeff_absorption_;
-}
-
-/*! @brief Renvoie le coefficient d'absorbtion du fluide
- *
- * @return (Champ_Don&) le coefficient d'absorbtion du fluide
- */
-inline const Champ_Don& Fluide_base::kappa() const
-{
-  return coeff_absorption_;
-}
-
-/*! @brief Renvoie l'indice de refraction du fluide
- *
- * @return (Champ_Don&) l'indice de refraction du fluide
- */
-inline Champ_Don& Fluide_base::indice()
-{
-  return indice_refraction_;
-}
-
-/*! @brief Renvoie l'indice de refraction du fluide
- *
- * @return (Champ_Don&) l'indice de refraction du fluide
- */
-inline const Champ_Don& Fluide_base::indice() const
-{
-  return indice_refraction_;
-}
-
-/*! @brief Renvoie la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
- *
- * @return (Champ_Don&) la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
- */
-inline Champ_Don& Fluide_base::longueur_rayo()
-{
-  return longueur_rayo_;
-}
-
-
-/*! @brief Renvoie la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
- *
- * @return (Champ_Don&) la longueur de penetration du rayonnement dans le fluide definie comme l = 1/(3*kappa)
- */
-inline const Champ_Don& Fluide_base::longeur_rayo() const
-{
-  return longueur_rayo_;
-}
-
-
-#endif
+#endif /* Fluide_base_included */
