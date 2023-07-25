@@ -799,7 +799,15 @@ then
        log_file="--log-file=tmp_log%p" 
     else
        # Too slow in testval:
-       more_info_but_slower="--track-origins=yes"
+       # Disable if extern library cause big jump in RAM and time:
+       if [ "`grep -i -e petsc -e 'polymac ' -e amgx $NOM.data`" = "" ]
+       then
+          more_info_but_slower="--track-origins=yes"
+       else
+          echo "=================================================================="
+          echo "Warning: --track-origins option is disabled for Valgrind analysis."
+          echo "=================================================================="
+       fi
     fi
     #  more_info_but_slower=""      # --track-origins=yes"
     # GF sinon on a des erreurs au demarrage de mpi
