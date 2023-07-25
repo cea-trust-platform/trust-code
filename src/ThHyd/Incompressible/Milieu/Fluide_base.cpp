@@ -433,17 +433,17 @@ void Fluide_base::creer_temperature_multiphase() const
   const Equation_base& eq = equation("enthalpie");
   const Champ_base& ch_h = eq.inconnue().valeur(), &ch_Cp = capacite_calorifique();
   Champ_Inc_base& ch_T = ref_cast_non_const(Champ_Inc_base, h_ou_T.valeur());
-  const DoubleTab& h = ch_h.valeurs(), &Cp = ch_Cp.valeurs();
+  const DoubleTab& h = ch_h.valeurs(), &Cp_ = ch_Cp.valeurs();
   DoubleTab& T = ch_T.valeurs(), &bT = ch_T.val_bord();;
 
   DoubleTab bh = ch_h.valeur_aux_bords(), bCp;
 
-  int i, zero = 0, Ni = h.dimension_tot(0), Nb = bh.dimension_tot(0), n, n0 = std::max(id_composite, zero), cCp = Cp.dimension_tot(0) == 1, N = id_composite >= 0 ? 1 : Cp.dimension(1);
+  int i, zero = 0, Ni = h.dimension_tot(0), Nb = bh.dimension_tot(0), n, n0 = std::max(id_composite, zero), cCp = Cp_.dimension_tot(0) == 1, N = id_composite >= 0 ? 1 : Cp_.dimension(1);
 
   // T = T0 + (h - h0) / cp
   for (i = 0; i < Ni; i++)
     for (n = 0; n < N; n++)
-      T(i, n) = T0_ + ( h(i, n0 + n) - h0_) / Cp(!cCp * i, n);
+      T(i, n) = T0_ + ( h(i, n0 + n) - h0_) / Cp_(!cCp * i, n);
 
   if (ch_Cp.a_un_domaine_dis_base())
     bCp = ch_Cp.valeur_aux_bords();

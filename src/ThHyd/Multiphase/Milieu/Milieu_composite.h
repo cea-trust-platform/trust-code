@@ -65,6 +65,7 @@ protected :
   Noms noms_phases_;
   double t_init_ = -1.;
   bool has_saturation_ = false, has_interface_ = false;
+  bool res_en_T_ = true; // par defaut resolution en T
   std::vector<std::vector<Interface_base *>> tab_interface;
   std::vector<Fluide> fluides;
   Interface sat_lu, inter_lu;
@@ -74,6 +75,7 @@ protected :
   static void calculer_masse_volumique(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   static void calculer_energie_interne(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
   static void calculer_enthalpie(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
+  static void calculer_temperature_multiphase(const Objet_U& obj, DoubleTab& val, DoubleTab& bval, tabs_t& deriv);
 };
 
 #endif /* Milieu_composite_included */
