@@ -38,6 +38,9 @@ public :
   int tppi_get_CPMLB_pb_multiphase_pT(const MSpanD , MLoiSpanD , int ncomp = 1, int id = 0) const override;
   int tppi_get_all_pb_multiphase_pT(const MSpanD , MLoiSpanD , MLoiSpanD , int ncomp = 1, int id = 0) const override;
 
+  int tppi_get_CPMLB_pb_multiphase_ph(const MSpanD , MLoiSpanD_h , int ncomp = 1, int id = 0) const override;
+  int tppi_get_all_pb_multiphase_ph(const MSpanD , MLoiSpanD_h , MLoiSpanD_h , int ncomp = 1, int id = 0) const override;
+
   // methode particuliere par application pour gagner en performance : utilisee dans F5
   int tppi_get_all_prop_loi_F5(const MSpanD , MLoiSpanD_h  , int ncomp = 1, int id = 0, bool is_liq = true) const override;
 
@@ -47,6 +50,7 @@ private:
 
 #ifdef HAS_EOS
   int tppi_get_all_properties_T_(const MSpanD , NEPTUNE::EOS_Fields& , NEPTUNE::EOS_Error_Field&  , int ncomp = 1, int id = 0) const;
+  int tppi_get_all_properties_h_(const MSpanD , NEPTUNE::EOS_Fields& , NEPTUNE::EOS_Error_Field&  , int ncomp = 1, int id = 0) const;
 #endif
 };
 
