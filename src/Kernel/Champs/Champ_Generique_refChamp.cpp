@@ -232,7 +232,7 @@ Entity Champ_Generique_refChamp::get_localisation(const int index) const
     {
       loc = NODE;
     }
-  else if ((ch.que_suis_je().debute_par("Champ_Face_PolyMAC_P0P1NC")
+  else if ((ch.que_suis_je().debute_par("Champ_Face_PolyMAC")
             || ch.valeurs().dimension(0) == ref_cast(Domaine_VF,z_dis_base).nb_faces()) && index <= 0)
     {
       loc = FACE;

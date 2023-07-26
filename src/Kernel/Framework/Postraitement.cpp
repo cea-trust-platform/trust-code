@@ -1420,10 +1420,10 @@ void Postraitement::postprocess_field_values()
       Champ espace_stockage;
       const Champ_base& champ_ecriture = champ.get_champ(espace_stockage);
       DoubleTab val_vec;
-      bool isChamp_Face_PolyMAC_P0P1NC = (champ_ecriture.que_suis_je().debute_par("Champ_Face_PolyMAC_P0P1NC") || champ_ecriture.que_suis_je()=="Champ_Face_PolyMAC_P0");
-      if (isChamp_Face_PolyMAC_P0P1NC)
+      bool isChamp_Face_PolyMAC = champ_ecriture.que_suis_je().debute_par("Champ_Face_PolyMAC");
+      if (isChamp_Face_PolyMAC)
         champ_ecriture.valeur_aux_faces(val_vec);
-      const DoubleTab& valeurs_post = isChamp_Face_PolyMAC_P0P1NC ? val_vec : champ_ecriture.valeurs();
+      const DoubleTab& valeurs_post = isChamp_Face_PolyMAC ? val_vec : champ_ecriture.valeurs();
       //Etape de recuperation des informations specifiques au champ a postraiter
 
       Entity loc = champ.get_localisation();
