@@ -113,7 +113,8 @@ using VIntdata = VTRUSTdata<int>;
 template<typename _TYPE_>
 VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
 {
-  const int size_warning = 100000000;
+  //const int size_warning = 100000000;
+  if (size<0) Process::exit("Error, trying to allocate an array with a size>2^31. Switch to TRUST int64 version.");
   assert(size >= 0);
   if (size == 0) storage = Array_base::STANDARD;
 
@@ -122,7 +123,7 @@ VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
     case Array_base::STANDARD:
       {
         d_ptr_trav_ = 0;
-        if (size>size_warning) Cerr << "Warning: Allocating an array of " << size << " " << typeid(_TYPE_).name() << finl;
+        //if (size>size_warning) Cerr << "Warning: Allocating an array of " << size << " " << typeid(_TYPE_).name() << finl;
 #ifdef _EXCEPTION_
         // Allocation de la memoire sur le tas
         try
@@ -142,18 +143,18 @@ VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
             Process::exit();
           }
 #endif
-        if (size>size_warning) Cerr << " OK" << finl;
+        //if (size>size_warning) Cerr << " OK" << finl;
         break;
       }
     case Array_base::TEMP_STORAGE:
       {
         // Allocation de la memoire sur un tas special. La memoire ne sera pas rendue au systeme mais conservee pour une reutilisation ulterieure.
         Memoire& memoire = Memoire::Instance();
-        if (size>size_warning) Cerr << "Warning: Allocating or reusing a " << typeid(_TYPE_).name() << " Trav of " << size << " elements ...";
+        //if (size>size_warning) Cerr << "Warning: Allocating or reusing a " << typeid(_TYPE_).name() << " Trav of " << size << " elements ...";
         d_ptr_trav_ = memoire.template add_trav<_TYPE_>(size);
         assert(d_ptr_trav_ != 0);
         data_ = d_ptr_trav_->ptr_();
-        if (size>size_warning) Cerr << " OK" << finl;
+        //if (size>size_warning) Cerr << " OK" << finl;
         break;
 
       }
