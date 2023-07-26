@@ -73,7 +73,7 @@ Sortie& SETS::printOn(Sortie& os ) const { return Simpler::printOn(os); }
 Entree& SETS::readOn(Entree& is )
 {
   /* valeurs par defaut des criteres de convergence */
-  crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "vitesse", 1e-2 }, { "pression", 100 }, {"k", 1e-2}, {"tau", 1e-2}, {"omega", 1e-2}, {"k_WIT", 1e-2}, {"interfacial_area", 1e2} };
+  crit_conv = { { "alpha", 1e-2 }, { "temperature", 1e-1 }, { "enthalpie", 1e4 }, { "vitesse", 1e-2 }, { "pression", 100 }, {"k", 1e-2}, {"tau", 1e-2}, {"omega", 1e-2}, {"k_WIT", 1e-2}, {"interfacial_area", 1e2} };
   Simpler::readOn(is);
   return is;
 }
@@ -274,6 +274,8 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
                      double dt,Matrice_Morse& matrice_unused,double seuil_resol,DoubleTrav& secmem_unused,int nb_ite,int& cv, int& ok)
 {
   Pb_Multiphase& pb = *(Pb_Multiphase *) &ref_cast(Pb_Multiphase, eqn.probleme());
+  const bool res_en_T = pb.resolution_en_T();
+
   int i, j, &it = iteration, n_eq = pb.nombre_d_equations();
   QDM_Multiphase& eq_qdm = ref_cast(QDM_Multiphase, eqn);
   double t = eqn.schema_temps().temps_courant(), err_a_sum = 0;
@@ -384,10 +386,13 @@ void SETS::iterer_NS(Equation_base& eqn,DoubleTab& current,DoubleTab& pression,
     {
       /* remplissage par assembler_blocs */
       //equation d'energie en premier pour pouvoir utiliser q_pi dans d'autres equations
-      eqs["temperature"]->assembler_blocs_avec_inertie(mats["temperature"], *sec["temperature"], semi_impl);
+      res_en_T ? eqs["temperature"]->assembler_blocs_avec_inertie(mats["temperature"], *sec["temperature"], semi_impl) :
+      eqs["enthalpie"]->assembler_blocs_avec_inertie(mats["enthalpie"], *sec["enthalpie"], semi_impl);
       //les autres
       for (auto &n_e : eqs)
-        if (n_e.first != "temperature") n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], *sec[n_e.first], semi_impl);
+        if (n_e.first != "temperature" && n_e.first != "enthalpie")
+          n_e.second->assembler_blocs_avec_inertie(mats[n_e.first], *sec[n_e.first], semi_impl);
+
       //equation de continuite sum_k alpha_k = 1
       eq_qdm.assembleur_pression()->assembler_continuite(mats["pression"], *sec["pression"]);
 
