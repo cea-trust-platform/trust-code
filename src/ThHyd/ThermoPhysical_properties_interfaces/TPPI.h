@@ -382,6 +382,10 @@ public:
   // methodes particulieres par application pour gagner en performance : utilisees dans Pb_Multiphase
   virtual inline int tppi_get_CPMLB_pb_multiphase_pT(const MSpanD input, MLoiSpanD prop, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
   virtual inline int tppi_get_all_pb_multiphase_pT(const MSpanD input, MLoiSpanD inter, MLoiSpanD bord, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
+
+  virtual inline int tppi_get_CPMLB_pb_multiphase_ph(const MSpanD input, MLoiSpanD_h prop, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
+  virtual inline int tppi_get_all_pb_multiphase_ph(const MSpanD input, MLoiSpanD_h inter, MLoiSpanD_h bord, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
+
   virtual inline int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD, int ncomp = 1, int id = 0) const { return not_implemented<int>(__func__); }
 
   // methodes particulieres par application pour gagner en performance : utilisees dans F5

@@ -155,6 +155,16 @@ public :
     TPPI_->tppi_get_lambda_ph(P, h, L, ncomp, id);
   }
 
+  void compute_CPMLB_pb_multiphase_h_(const MSpanD input, MLoiSpanD_h prop, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_CPMLB_pb_multiphase_ph(input, prop, ncomp, id);
+  }
+
+  void compute_all_pb_multiphase_h_(const MSpanD input, MLoiSpanD_h inter, MLoiSpanD_h bord, int ncomp = 1, int id = 0) const override
+  {
+    TPPI_->tppi_get_all_pb_multiphase_ph(input, inter, bord, ncomp, id);
+  }
+
 protected:
   std::shared_ptr<TPPI> TPPI_ = nullptr;
   Motcle model_name_, fluid_name_;
