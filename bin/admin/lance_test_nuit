@@ -115,31 +115,7 @@ check_components()
                fi
             fi
 	    #[ $MODIF_TRUST_OK = 0 ] && COMPOSANT_OK=0
-            # Verification independance des sous BALTIKs de TrioCFD
-            if [ $* = tuleap/Livraison ] && [ "$Composant" = triocfd ]
-            then
-	       MODULARITY_BALTIK_OK=1
-               # On fait le test uniquement le weekend
-	       if [ "`date '+%u'`" -gt 5 ] || ([ "`date '+%u'`" = 5 ] && [ `date '+%H'` -gt 17 ])
-	       then
-                  echo " "
-                  echo "Call to "$TRUST_ROOT"/bin/baltik/share/baltik/bin/baltik_check_project_modularity"
-                  $TRUST_ROOT/bin/baltik/share/baltik/bin/baltik_check_project_modularity 1>$Modularity_log 2>&1
-                  # on fait un grep sur ERROR
-                  if [ "`grep "ERROR" $Modularity_log`" != "" ]
-                  then
-                     cat $Modularity_log
-                     cat $Modularity_log | mail_ -s\"[lance_test_nuit] baltik_check_project_modularity KO for $Composant\" ${!BALTIK_PROJECT_LEADER} $TRUST_MAIL
-                     echo "  KO"
-	             MODULARITY_BALTIK_OK=0
-                  else
-                     echo "  OK"
-                  fi
-               else
-                 echo "No call to $TRUST_ROOT/bin/baltik/share/baltik/bin/baltik_check_project_modularity"
-               fi
-	       [ $MODULARITY_BALTIK_OK = 0 ] && COMPOSANT_OK=0
-	    fi
+            # Verification independance des sous BALTIKs de TrioCFD n'est plus necessaire suite a la fusion des sous-baltiks de triocfd
 	    DOC_PDF_OK=0
 	    if [ $* != tuleap/Kernel ]
 	    then
@@ -401,7 +377,7 @@ check_components()
                            WORKBETA=""
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.2
-                           [ "$Composant" == "module3D" ] && trustversion=1.9.1
+                           [ "$Composant" == "module3D" ] && trustversion=1.9.2
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
 		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
@@ -3813,29 +3789,34 @@ then
       for Composant in $ComposantsGit 
       do
          echo " "
-         echo "  Update $Composant BALTIK:"
-         cd $WORKDIR/tuleap/Livraison/Composants/$Composant
-         error_rcb=0
-         echo "    Call git commit --all -m Commit for a Release $release $label_pose version"
-         git commit --all -m"Commit for a Release $release $label_pose version."
-         echo "    Call git tag $label_pose"
-         git tag $label_pose
-         error_rcb=$?
-         echo "    Call git push origin TMA"
-         if [ $Composant != "flica5" ]
+         if [ "$Composant" = genepi ]
          then
-            git push --tags origin Livraison:triou/TMA
+            echo "  Update $Composant BALTIK:"
+            cd $WORKDIR/tuleap/Livraison/Composants/$Composant
+            error_rcb=0
+            echo "    Call git commit --all -m Commit for a Release $release $label_pose version"
+            git commit --all -m"Commit for a Release $release $label_pose version."
+            echo "    Call git tag $label_pose"
+            git tag $label_pose
+            error_rcb=$?
+            echo "    Call git push origin TMA"
+            if [ $Composant != "flica5" ]
+            then
+               git push --tags origin Livraison:triou/TMA
+            else
+               git push origin Livraison:triou/TMA
+            fi
+            error_rcb=$?
+            if [ $error_rcb = 0 ]
+            then  
+               # On previent l'administrateur et les project leader
+	       BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
+               cat $WORKDIR/tuleap/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See origin/triou/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
+            else
+               echo "" | mail_ -s\"[lance_test_nuit] $Composant - Tag a $release version: $label_pose KO\" $TRUST_MAIL
+            fi
          else
-            git push origin Livraison:triou/TMA
-         fi
-         error_rcb=$?
-         if [ $error_rcb = 0 ]
-         then  
-            # On previent l'administrateur et les project leader
-	    BALTIK_PROJECT_LEADER=$Composant"_PROJECT_LEADER"
-            cat $WORKDIR/tuleap/Livraison/Composants/$Composant/share/RELEASE_NOTES | mail_ -s\"[lance_test_nuit] $Composant Release version - Tag a $release version: $label_pose \(See origin/triou/TMA branch\)\" $TRUST_MAIL $TMA_PROJECT_LEADER ${!BALTIK_PROJECT_LEADER}
-         else
-            echo "" | mail_ -s\"[lance_test_nuit] $Composant - Tag a $release version: $label_pose KO\" $TRUST_MAIL
+            echo " without label on baltik $Composant"
          fi
       done
       cd $TRUST_ROOT
@@ -3924,51 +3905,7 @@ then
          mv $TRUST_ROOT/$version_arch $GRAVAGE/.
          version_arch=externalpackages-$new".tar"
          mv $TRUST_ROOT/$version_arch $GRAVAGE/.
-	 # Changement de la vue Maintenance
-	 echo " "
-	 echo "Changing the Maintenance view"
-         patch_old=patch_`echo $old`
-	 patch_new=patch_`echo $new`
-	 (
-	    cd $WORKDIR/tuleap/Maintenance/TRUST
-	    echo "from `pwd`"
-	    echo "  Call git fetch --all"
-            git fetch --all # Pour recuperer tous les tags
-            # Creation de la branche depuis le tag (example: patch_XYZ depuis vX.Y.Z)
-	    echo "  Call git checkout -b $patch_new $label"
-            git checkout -b $patch_new $label
-	    if [ $? = 0 ]
-	    then
-               # Positionnement de HEAD sur la branche (exemple: patch_XYZ)
-               #git symbolic-ref HEAD refs/heads/$patch_new
-	       git branch -D Maintenance
-	       git branch -m $patch_new Maintenance
-	       echo "  Call git symbolic-ref HEAD refs/heads/Maintenance"
-               git symbolic-ref HEAD refs/heads/Maintenance
-               # Push
-	       #echo "  Call git push origin Maintenance"
-               #git_push
-	       touch $TRUST_ROOT/.RELEASE_NOTES
-	    else
-	       echo "" | mail_ -s\"[lance_test_nuit] Error for git checkout \-b $patch_new $label in Maintenance view\" $TRUST_MAIL
-	    fi
-	    # externalpackages
-	    echo " "
-            echo "Changing the Maintenance/externalpackages view"
-	    cd externalpackages
-	    git fetch --all
-	    git checkout -b $patch_new $label
-	    if [ $? = 0 ]
-	    then
-	       #git symbolic-ref HEAD refs/heads/$patch_new
-	       git branch -D Maintenance
-	       git branch -m $patch_new Maintenance
-	       git symbolic-ref HEAD refs/heads/Maintenance
-	    else
-	       echo "" | mail_ -s\"[lance_test_nuit] Error for git checkout \-b $patch_new $label in Maintenance/externalpackages view\" $TRUST_MAIL
-	    fi
-	    cd - 1>/dev/null 2>&1
-	 )
+
 	 echo " "
 	 echo "Creation of the packages of each Baltik component"
 	 # Creation des packages de chaque composant BALTIK
@@ -3978,42 +3915,33 @@ then
 	 do
 	    cd $WORKDIR/tuleap/Livraison/Composants/$Composant
 	    echo "from `pwd`"
-	    # On pose le meme tag sur les BALTIK
-            echo "    Call git commit --all -m Commit for an official Release $label version."
-	    if [ "$Composant" = triocfd ]
+	    if [ "$Composant" = genepi ]
 	    then
-	       cp share/doc_auto/TRUST_Generic_Guide.pdf share/doc/TRUST_Generic_Guide.pdf
-	       if [ -f "share/doc_auto/TrioCFD_Reference_Manual.pdf" ]
-	       then
-	          cp share/doc_auto/TrioCFD_Reference_Manual.pdf share/doc/TrioCFD_Reference_Manual.pdf
-	       #else
-	       #   cp $TRUST_ROOT/doc/TRUST/TRUST_Reference_Manual.pdf share/doc/TRUST_Reference_Manual.pdf
-	       fi
-	       # Update the version in README.md file (displayed on github)
-	       sed -i "s/$old/$new/g" README.md
+	       # On pose le meme tag sur le BALTIK genepi, les autres on y touche pas
+               echo "    Call git commit --all -m Commit for an official Release $label version."
+               git commit --all -m"Commit for an official Release $label version."
+               echo "    Call git tag $label"
+	       git tag $label_pose
+               if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
+               then
+                  git tag "$label"b
+               else
+                  git tag $label
+               fi
+               echo "    Call git push origin TMA"
+               if [ $Composant != "flica5" ]
+               then
+                  git push --tags origin Livraison:triou/TMA
+               else
+	          git push origin Livraison:triou/TMA
+	          git push origin Livraison:triou/$label
+               fi
+	       if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
+               then
+	          git push --tags origin Livraison:master
+               fi
+	       git fetch --all
 	    fi
-            git commit --all -m"Commit for an official Release $label version."
-            echo "    Call git tag $label"
-	    git tag $label_pose
-            if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
-            then
-               git tag "$label"b
-            else
-               git tag $label
-            fi
-            echo "    Call git push origin TMA"
-            if [ $Composant != "flica5" ]
-            then
-               git push --tags origin Livraison:triou/TMA
-            else
-	       git push origin Livraison:triou/TMA
-	       git push origin Livraison:triou/$label
-            fi
-	    if [ "$Composant" = triocfd ] # || [ "$Composant" = mpcube ]
-            then
-	       git push --tags origin Livraison:master
-            fi
-	    git fetch --all
 	    # Appel du make distrib
 	    echo "    Call make distrib"
 	    make distrib_git
@@ -4026,30 +3954,6 @@ then
 	       cp -f $Composant.tar.gz $WORKDIR/archives/ARCHIVES_$Composant/$Composant-$new.tar.gz
             fi
 	    echo | mail_ -s\"[lance_test_nuit] $Composant v$new is released under $WORKDIR/archives/ARCHIVES_$Composant\" $TRUST_MAIL	 
-	    # Changement de la vue Maintenance
-            if [ -d $WORKDIR/tuleap/Maintenance/Composants/$Composant ]
-            then
-	       echo "    Call git symbolic-ref HEAD refs/heads/$patch_new"
-	       cd $WORKDIR/tuleap/Livraison/Composants/$Composant
-	       echo "from `pwd`"
-	       git fetch --all
-               if [[ "$ComposantsBeta" = *"$Composant"* ]] # Test si Composant est dans la liste des composants Beta
-               then
-	          git checkout -b $patch_new "$label"b
-               else
-	          git checkout -b $patch_new $label
-               fi
-	       if [ $? = 0 ]
-	       then
-	          #git symbolic-ref HEAD refs/heads/$patch_new
-	          git branch -D Maintenance
-	          git branch -m $patch_new Maintenance
-	          git symbolic-ref HEAD refs/heads/Maintenance
-	       else
-	          echo "" | mail_ -s\"[lance_test_nuit] Error for git checkout \-b $patch_new $label in Maintenance/Composants/$Composant view\" $TRUST_MAIL
-	       fi
-	       cd - 1>/dev/null 2>&1
-	    fi 
 	    echo " "
 	 done
 	 cd $WORKDIR/tuleap/Livraison/TRUST
