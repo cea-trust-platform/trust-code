@@ -2048,14 +2048,12 @@ double calculer_v_moyen(const IJK_Field_double& vx)
   return v_moy;
 }
 
-double calculer_rho_cp_u_moyen(const IJK_Field_double& vx,const IJK_Field_double& cp,const IJK_Field_double& rho_field )
+double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_double& cp, const IJK_Field_double& rho_field)
 {
-
   const int ni = vx.ni();
   const int nj = vx.nj();
   const int nk = vx.nk();
   double rho_cp_u_moy = 0.;
-
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)
@@ -2076,8 +2074,90 @@ double calculer_rho_cp_u_moyen(const IJK_Field_double& vx,const IJK_Field_double
   rho_cp_u_moy /= n_mailles_tot;
   return rho_cp_u_moy;
 }
-double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx, const IJK_Field_double& temperature_adimensionnelle_theta,
-                                                      const IJK_Field_double& cp, const IJK_Field_double& rho_field)
+
+/*
+ * MG : Multiple cases if cp_ or rho_cp_ are defined
+ */
+double calculer_rho_cp_u_moyen(const IJK_Field_double& vx,const IJK_Field_double& rho_cp)
+{
+  const int ni = vx.ni();
+  const int nj = vx.nj();
+  const int nk = vx.nk();
+  double rho_cp_u_moy = 0.;
+
+  for (int k = 0; k < nk; k++)
+    for (int j = 0; j < nj; j++)
+      for (int i = 0; i < ni; i++)
+        {
+          const double u = (vx(i,j,k)+vx(i+1,j,k))/2;
+          const double rho_cp_u = rho_cp(i,j,k)*u;
+          rho_cp_u_moy += rho_cp_u;
+        }
+  // somme sur tous les processeurs.
+  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
+  // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
+  // cast en double au cas ou on voudrait faire un maillage >2 milliards
+  const IJK_Splitting& splitting = vx.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  rho_cp_u_moy /= n_mailles_tot;
+  return rho_cp_u_moy;
+}
+
+double calculer_rho_cp_u_moyen(const IJK_Field_double& vx,const double& rho_cp)
+{
+  const int ni = vx.ni();
+  const int nj = vx.nj();
+  const int nk = vx.nk();
+  double rho_cp_u_moy = 0.;
+  for (int k = 0; k < nk; k++)
+    for (int j = 0; j < nj; j++)
+      for (int i = 0; i < ni; i++)
+        {
+          const double u = (vx(i,j,k)+vx(i+1,j,k))/2;
+          const double rho_cp_u = rho_cp*u;
+          rho_cp_u_moy += rho_cp_u;
+        }
+  // somme sur tous les processeurs.
+  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
+  // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
+  // cast en double au cas ou on voudrait faire un maillage >2 milliards
+  const IJK_Splitting& splitting = vx.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  rho_cp_u_moy /= n_mailles_tot;
+  return rho_cp_u_moy;
+}
+
+double calculer_rho_cp_u_moyen_inv(const IJK_Field_double& vx,const IJK_Field_double& rho_cp_inv)
+{
+  const int ni = vx.ni();
+  const int nj = vx.nj();
+  const int nk = vx.nk();
+  double rho_cp_u_moy = 0.;
+  for (int k = 0; k < nk; k++)
+    for (int j = 0; j < nj; j++)
+      for (int i = 0; i < ni; i++)
+        {
+          const double u = (vx(i,j,k)+vx(i+1,j,k))/2;
+          const double rho_cp_u = u / rho_cp_inv(i,j,k);
+          rho_cp_u_moy += rho_cp_u;
+        }
+  // somme sur tous les processeurs.
+  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
+  // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
+  // cast en double au cas ou on voudrait faire un maillage >2 milliards
+  const IJK_Splitting& splitting = vx.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  rho_cp_u_moy /= n_mailles_tot;
+  return rho_cp_u_moy;
+}
+
+double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
+																											const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& cp,
+																											const IJK_Field_double& rho_field)
 {
   const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
   const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
@@ -2099,6 +2179,119 @@ double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx
               const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
               rho_cp_u_moy += rho*c*u;
               theta_adim_moy += rho*c*u*theta_adim;
+            }
+        }
+    }
+  //somme sur les proc
+  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
+  theta_adim_moy = Process::mp_sum(theta_adim_moy);
+  //Division par le nombre de mailles
+  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  rho_cp_u_moy /= n_mailles_tot;
+  theta_adim_moy /= n_mailles_tot;
+  //valeur adimensionnelle moyenne
+  theta_adim_moy /= rho_cp_u_moy;
+  return theta_adim_moy;
+}
+
+double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
+																											const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const double& rho_cp)
+{
+  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  double theta_adim_moy = 0;
+  double rho_cp_u_moy =0;
+
+  const int nk = temperature_adimensionnelle_theta.nk();
+  const int ni = temperature_adimensionnelle_theta.ni();
+  const int nj = temperature_adimensionnelle_theta.nj();
+  for (int k = 0; k < nk; k++)
+    {
+      for (int j = 0; j < nj; j++)
+        {
+          for (int i = 0; i < ni; i++)
+            {
+              const double theta_adim = temperature_adimensionnelle_theta(i,j,k);
+              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
+              rho_cp_u_moy += rho_cp*u;
+              theta_adim_moy += rho_cp*u*theta_adim;
+            }
+        }
+    }
+  //somme sur les proc
+  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
+  theta_adim_moy = Process::mp_sum(theta_adim_moy);
+  //Division par le nombre de mailles
+  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  rho_cp_u_moy /= n_mailles_tot;
+  theta_adim_moy /= n_mailles_tot;
+  //valeur adimensionnelle moyenne
+  theta_adim_moy /= rho_cp_u_moy;
+  return theta_adim_moy;
+}
+
+double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
+																										  const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& rho_cp)
+{
+  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  double theta_adim_moy = 0;
+  double rho_cp_u_moy =0;
+
+  const int nk = temperature_adimensionnelle_theta.nk();
+  const int ni = temperature_adimensionnelle_theta.ni();
+  const int nj = temperature_adimensionnelle_theta.nj();
+  for (int k = 0; k < nk; k++)
+    {
+      for (int j = 0; j < nj; j++)
+        {
+          for (int i = 0; i < ni; i++)
+            {
+              const double theta_adim = temperature_adimensionnelle_theta(i,j,k);
+              const double rho_cp_ijk = rho_cp(i,j,k);
+              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
+              rho_cp_u_moy += rho_cp_ijk*u;
+              theta_adim_moy += rho_cp_ijk*u*theta_adim;
+            }
+        }
+    }
+  //somme sur les proc
+  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
+  theta_adim_moy = Process::mp_sum(theta_adim_moy);
+  //Division par le nombre de mailles
+  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
+  rho_cp_u_moy /= n_mailles_tot;
+  theta_adim_moy /= n_mailles_tot;
+  //valeur adimensionnelle moyenne
+  theta_adim_moy /= rho_cp_u_moy;
+  return theta_adim_moy;
+}
+
+double calculer_temperature_adimensionnelle_theta_moy_inv(const IJK_Field_double& vx,
+																													const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                          const IJK_Field_double& rho_cp_inv)
+{
+  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  double theta_adim_moy = 0;
+  double rho_cp_u_moy =0;
+
+  const int nk = temperature_adimensionnelle_theta.nk();
+  const int ni = temperature_adimensionnelle_theta.ni();
+  const int nj = temperature_adimensionnelle_theta.nj();
+  for (int k = 0; k < nk; k++)
+    {
+      for (int j = 0; j < nj; j++)
+        {
+          for (int i = 0; i < ni; i++)
+            {
+              const double theta_adim = temperature_adimensionnelle_theta(i,j,k);
+              const double rho_cp = 1/rho_cp_inv(i,j,k);
+              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
+              rho_cp_u_moy += rho_cp*u;
+              theta_adim_moy += rho_cp*u*theta_adim;
             }
         }
     }
@@ -2151,49 +2344,22 @@ double calculer_temperature_theta_moy(const IJK_Field_double& vx, const IJK_Fiel
   theta_moy /= rho_cp_u_moy;
   return theta_moy;
 }
+
 double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho_field, const int kmin, const int kmax)
 {
   const IJK_Splitting& splitting = variable.get_splitting();
   const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
   double variable_moy = 0;
   double rho_cp_moy =0;
-
-  const int ni = variable.ni();
-  const int nj = variable.nj();
   const int nk = variable.nk();
-
   if (kmin == 0)
-    {
-      // int k=0;
-      for (int j = 0; j < nj; j++)
-        for (int i = 0; i < ni; i++)
-          {
-            const double var = variable(i,j,kmin);
-            const double rho = rho_field(i,j,kmin);
-            const double c = cp(i,j,kmin);
-            rho_cp_moy += rho*c;
-            variable_moy += rho*c*var;
-          }
-    }
-
-
-  if(kmin + variable.nk() == kmax)
-    {
-      int k = nk-1;
-      for (int j = 0; j < nj; j++)
-        for (int i = 0; i < ni; i++)
-          {
-            const double var = variable(i,j,k);
-            const double rho = rho_field(i,j,k);
-            const double c = cp(i,j,k);
-            //const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
-            rho_cp_moy += rho*c;
-            variable_moy += rho*c*var;
-          }
-    }
-
-
-//somme sur les proc
+  	calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, kmin);
+  if (kmin + variable.nk() == kmax)
+		{
+			int k = nk-1;
+			calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, k);
+		}
+  //somme sur les proc
   rho_cp_moy = Process::mp_sum(rho_cp_moy);
   variable_moy = Process::mp_sum(variable_moy);
   //Division par le nombre de mailles sur les 2 plans de bords
@@ -2204,6 +2370,148 @@ double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_
   variable_moy /= rho_cp_moy;
   return variable_moy;
 }
+
+void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho, double& rho_cp_moy, double&variable_moy, int k)
+{
+	const int ni = variable.ni();
+	const int nj = variable.nj();
+	for (int j = 0; j < nj; j++)
+		for (int i = 0; i < ni; i++)
+			{
+				const double var = variable(i,j,k);
+				const double cp_ijk = cp(i,j,k);
+				const double rho_ijk = rho(i,j,k);
+				rho_cp_moy += rho_ijk * cp_ijk;
+				variable_moy += rho_ijk*cp_ijk*var;
+			}
+}
+
+/*
+ * MG : Multiple cases if cp_ or rho_cp_ are defined
+ */
+
+double calculer_variable_wall(const IJK_Field_double& variable, const double& rho_cp, const int kmin, const int kmax)
+{
+	const IJK_Splitting& splitting = variable.get_splitting();
+	const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  double variable_moy = 0;
+  double rho_cp_moy =0;
+  const int nk = variable.nk();
+  if (kmin == 0)
+  	calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
+  if (kmin + variable.nk() == kmax)
+		{
+			int k = nk-1;
+			calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
+		}
+  //somme sur les proc
+  rho_cp_moy = Process::mp_sum(rho_cp_moy);
+  variable_moy = Process::mp_sum(variable_moy);
+  //Division par le nombre de mailles sur les 2 plans de bords
+  const double n_mailles_plan_xy_tot = 2.*((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) ;
+  rho_cp_moy /= n_mailles_plan_xy_tot;
+  variable_moy /= n_mailles_plan_xy_tot;
+  //valeur adimensionnelle moyenne
+  variable_moy /= rho_cp_moy;
+  return variable_moy;
+}
+
+void calculer_rho_cp_var(const IJK_Field_double& variable, const double& rho_cp, double& rho_cp_moy, double&variable_moy, int k)
+{
+	const int ni = variable.ni();
+	const int nj = variable.nj();
+	for (int j = 0; j < nj; j++)
+		for (int i = 0; i < ni; i++)
+			{
+				const double var = variable(i,j,k);
+				rho_cp_moy += rho_cp;
+				variable_moy += rho_cp*var;
+			}
+}
+
+double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, const int kmin, const int kmax)
+{
+	const IJK_Splitting& splitting = variable.get_splitting();
+	const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  double variable_moy = 0;
+  double rho_cp_moy =0;
+  const int nk = variable.nk();
+  if (kmin == 0)
+  	calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
+  if (kmin + variable.nk() == kmax)
+		{
+			int k = nk-1;
+			calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
+		}
+  //somme sur les proc
+  rho_cp_moy = Process::mp_sum(rho_cp_moy);
+  variable_moy = Process::mp_sum(variable_moy);
+  //Division par le nombre de mailles sur les 2 plans de bords
+  const double n_mailles_plan_xy_tot = 2.*((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) ;
+  rho_cp_moy /= n_mailles_plan_xy_tot;
+  variable_moy /= n_mailles_plan_xy_tot;
+  //valeur adimensionnelle moyenne
+  variable_moy /= rho_cp_moy;
+  return variable_moy;
+}
+
+void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double&variable_moy, int k)
+{
+	const int ni = variable.ni();
+	const int nj = variable.nj();
+	for (int j = 0; j < nj; j++)
+		for (int i = 0; i < ni; i++)
+			{
+				const double var = variable(i,j,k);
+				const double rho_cp_ijk = rho_cp(i,j,k);
+				rho_cp_moy += rho_cp_ijk;
+				variable_moy += rho_cp_ijk*var;
+			}
+}
+
+double calculer_variable_wall_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv, const int kmin, const int kmax)
+{
+	const IJK_Splitting& splitting = variable.get_splitting();
+	const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  double variable_moy = 0;
+  double rho_cp_moy =0;
+  const int nk = variable.nk();
+  if (kmin == 0)
+  	calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, kmin);
+  if (kmin + variable.nk() == kmax)
+		{
+			int k = nk-1;
+			calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, k);
+		}
+  //somme sur les proc
+  rho_cp_moy = Process::mp_sum(rho_cp_moy);
+  variable_moy = Process::mp_sum(variable_moy);
+  //Division par le nombre de mailles sur les 2 plans de bords
+  const double n_mailles_plan_xy_tot = 2.*((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) ;
+  rho_cp_moy /= n_mailles_plan_xy_tot;
+  variable_moy /= n_mailles_plan_xy_tot;
+  //valeur adimensionnelle moyenne
+  variable_moy /= rho_cp_moy;
+  return variable_moy;
+}
+
+void calculer_rho_cp_var_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv, double& rho_cp_moy, double&variable_moy, int k)
+{
+	const int ni = variable.ni();
+	const int nj = variable.nj();
+	for (int j = 0; j < nj; j++)
+		for (int i = 0; i < ni; i++)
+			{
+				const double var = variable(i,j,k);
+				const double rho_cp_ijk = 1 / rho_cp_inv(i,j,k);
+				rho_cp_moy += rho_cp_ijk;
+				variable_moy += rho_cp_ijk*var;
+			}
+}
+
+/*
+ *
+ */
 
 // Add to vx, vy and vz the gradient of the pressure gradient multiplied by the constant.
 // Input and output velocity is in m/s (not the integral of the momentum on the cell).
@@ -2250,7 +2558,6 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
       bool perio_k=vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
       if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
         on_the_wall = true;
-
 
       if (k < vz.nk() && (!on_the_wall))
         {
