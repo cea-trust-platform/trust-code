@@ -78,16 +78,17 @@ public:
     return (int)correlations.count(mot.getString());
   }
 
-  Equation_base& equation_qdm() { return eq_qdm; }
-  const Equation_base& equation_qdm() const { return eq_qdm; }
-  Equation_base& equation_masse() { return eq_masse; }
-  const Equation_base& equation_masse() const { return eq_masse; }
-  Equation_base& equation_energie() { return eq_energie; }
-  const Equation_base& equation_energie() const { return eq_energie; }
-
   virtual void typer_lire_correlation_hem() { /* Do nothing */}
 
+  virtual Equation_base& equation_qdm() { return eq_qdm; }
+  virtual const Equation_base& equation_qdm() const { return eq_qdm; }
+  virtual Equation_base& equation_masse() { return eq_masse; }
+  virtual const Equation_base& equation_masse() const { return eq_masse; }
+  virtual Equation_base& equation_energie() { return eq_energie; }
+  virtual const Equation_base& equation_energie() const { return eq_energie; }
+
 protected:
+
   bool resolution_en_T_ = true;
   Noms noms_phases_;
   std::map<std::string, Correlation> correlations;

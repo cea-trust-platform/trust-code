@@ -17,7 +17,7 @@
 #include <Pb_Multiphase_Enthalpie.h>
 #include <Discret_Thyd.h>
 
-Implemente_instanciable(Energie_Multiphase_Enthalpie, "Energie_Multiphase_Enthalpie", Energie_Multiphase);
+Implemente_instanciable(Energie_Multiphase_Enthalpie, "Energie_Multiphase_Enthalpie|Energie_Multiphase_h", Energie_Multiphase);
 
 Sortie& Energie_Multiphase_Enthalpie::printOn(Sortie& is) const { return Energie_Multiphase::printOn(is); }
 
