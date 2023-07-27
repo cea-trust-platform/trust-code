@@ -27,6 +27,9 @@ Entree& Portance_interfaciale_VDF::readOn(Entree& is) {  return Source_Portance_
 void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+  const bool res_en_T = pbm.resolution_en_T();
+  if (!res_en_T) Process::exit("Portance_interfaciale_VDF::ajouter_blocs NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
+
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
   const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis().valeur());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
@@ -35,7 +38,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
   const DoubleTab& pvit = ch.passe(),
                    &alpha = pbm.equation_masse().inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
-                     &temp  = pbm.equation_energie().inconnue().passe(),
+                     &temp_ou_enth  = pbm.equation_energie().inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
 //                        &grad_v = equation().probleme().get_champ("gradient_vitesse").valeurs(), ,
@@ -82,7 +85,8 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
           {
             Interface_base& sat = milc.get_interface(k,l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            for (i = 0 ; i<nbelem_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+            for (i = 0 ; i<nbelem_tot ; i++)
+              Sigma_tab(i,ind_trav) = res_en_T ? sat.sigma(temp_ou_enth(i,k),press(i,k * (Np > 1))) : sat.sigma_h(temp_ou_enth(i,k),press(i,k * (Np > 1)));
           }
       }
 
@@ -97,7 +101,7 @@ void Portance_interfaciale_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& se
               {
                 in.alpha[n] += vf_dir(f, c)/vf(f) * alpha(e, n);
                 in.p[n]     += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
-                in.T[n]     += vf_dir(f, c)/vf(f) * temp(e, n);
+                in.T[n]     += vf_dir(f, c)/vf(f) * temp_ou_enth(e, n); // FIXME SI res_en_T
                 in.rho[n]   += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
                 in.mu[n]    += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
                 in.d_bulles[n] += (d_bulles) ? vf_dir(f, c)/vf(f) *(*d_bulles)(e,n) : 0 ;
