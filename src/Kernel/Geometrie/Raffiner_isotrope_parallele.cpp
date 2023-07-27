@@ -147,18 +147,13 @@ void mon_construire_correspondance_items_par_coordonnees(Joints& joints, const J
         ArrOfInt corresp(n);
         const double epsilon = Objet_U::precision_geom;
         int nbsomr=Scatter::Chercher_Correspondance(coord_distants, coord_locaux, corresp, epsilon);
-        if (nbsomr)
-          {
-            Cerr<<"iiiiiiiiiiii"<<finl;
-            //	    abort();
-          }
         ArrOfInt& items_communs = joint.set_joint_item(type_item).set_items_communs();
         int nb_items_communs_trouves=0;
         for (int k = 0; k < n; k++)
           if (corresp[k]>=0)
             nb_items_communs_trouves++;
-          else
-            Cerr<<items_communs[k] << " not found in joint voisin "<<PEvoisin<<finl;
+        //else
+        //  Cerr<<items_communs[k] << " not found in joint voisin "<<PEvoisin<<finl;
 
 
         ArrOfInt items_communs_sa(items_communs);
