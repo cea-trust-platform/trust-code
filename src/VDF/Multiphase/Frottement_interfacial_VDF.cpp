@@ -32,8 +32,8 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(),
                     &dh_e = equation().milieu().diametre_hydraulique_elem();
-  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
-                   &press = ref_cast(QDM_Multiphase, equation()).pression().passe(), &temp = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
+  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
+                   &press = ref_cast(QDM_Multiphase, equation()).pression().passe(), &temp = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
                     &rho = equation().milieu().masse_volumique().passe(), &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
 
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());

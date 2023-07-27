@@ -100,7 +100,7 @@ double Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::calculer_dt_stab() const
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &pe = equation().milieu().porosite_elem();
   const DoubleTab& vit = vitesse_->valeurs(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Elem_PolyMAC, equation().inconnue().valeur()).fcl();
   int i, e, f, n, N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
   DoubleTrav flux(N); //somme des flux pf * |f| * vf

@@ -162,8 +162,8 @@ void Assembleur_P_PolyMAC_P0P1NC::assembler_continuite(matrices_t matrices, Doub
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, le_dom_PolyMAC.valeur());
   const Pb_Multiphase* pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : nullptr;
   const Conds_lim& cls = le_dom_Cl_PolyMAC->les_conditions_limites();
-  const DoubleTab *alpha = pbm ? &pbm->eq_masse.inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
-                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->eq_masse.champ_conserve().passe() : nullptr, &nf = domaine.face_normales();
+  const DoubleTab *alpha = pbm ? &pbm->equation_masse().inconnue().valeurs() : nullptr, &press = equation().probleme().get_champ("pression").valeurs(),
+                   &vit = equation().inconnue().valeurs(), *alpha_rho = pbm ? &pbm->equation_masse().champ_conserve().passe() : nullptr, &nf = domaine.face_normales();
   const IntTab& fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, mon_equation->inconnue().valeur()).fcl(), &e_f = domaine.elem_faces();
   const DoubleVect& ve = domaine.volumes(), &pe = equation().milieu().porosite_elem(), &fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   int i, j, e, f, fb, n, N = vit.line_size(), m, M = press.line_size(), ne_tot = domaine.nb_elem_tot(), d, D = dimension;

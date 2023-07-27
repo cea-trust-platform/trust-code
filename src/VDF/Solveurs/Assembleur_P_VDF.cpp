@@ -793,7 +793,7 @@ void Assembleur_P_VDF::dimensionner_continuite(matrices_t matrices, int aux_only
 void Assembleur_P_VDF::assembler_continuite(matrices_t matrices, DoubleTab& secmem, int aux_only) const
 {
   if (aux_only) return;
-  const DoubleTab& alpha = ref_cast(Pb_Multiphase, le_dom_Cl_VDF->equation().probleme()).eq_masse.inconnue().valeurs();
+  const DoubleTab& alpha = ref_cast(Pb_Multiphase, le_dom_Cl_VDF->equation().probleme()).equation_masse().inconnue().valeurs();
   Matrice_Morse& mat = *matrices.at("alpha");
   const DoubleVect& ve = le_dom_VDF->volumes(), &pe = le_dom_Cl_VDF->equation().milieu().porosite_elem();
   int e, n, N = alpha.line_size();

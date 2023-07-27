@@ -67,7 +67,7 @@ void Op_Dift_Multiphase_VDF_Face::completer()
     equation().probleme().creer_champ("gradient_vitesse");
 
   // on initialise nu_t_ a 0 avec la bonne structure //
-  nu_t_ = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue()->valeurs();
+  nu_t_ = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->valeurs();
   nu_t_ = 0.;
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_FACE, Eval_Dift_Multiphase_VDF_Face>(nu_t_);
   ref_cast(Viscosite_turbulente_base, corr_.valeur()).eddy_viscosity(nu_t_); //remplissage par la correlation
@@ -98,7 +98,7 @@ double Op_Dift_Multiphase_VDF_Face::calculer_dt_stab() const
   const Domaine_VDF& domaine_VDF = iter->domaine();
   const Champ_base& champ_diffu = diffusivite_pour_pas_de_temps();
   const DoubleTab& diffu = diffusivite().valeurs() /* mu */, &rho = equation().milieu().masse_volumique().passe(), &diffu_dt = champ_diffu.valeurs() /* nu */;
-  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
+  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe();
   const int cN = (diffu_dt.dimension(0) == 1), cM = (diffu.dimension(0) == 1), cR = (rho.dimension(0) == 1);
 
   for (int elem = 0; elem < domaine_VDF.nb_elem(); elem++)

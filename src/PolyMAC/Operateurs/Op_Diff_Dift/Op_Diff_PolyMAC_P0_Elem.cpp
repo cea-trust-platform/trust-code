@@ -201,7 +201,7 @@ double Op_Diff_PolyMAC_P0_Elem::calculer_dt_stab() const
   const Champ_Elem_PolyMAC_P0& 	ch	= ref_cast(Champ_Elem_PolyMAC_P0, equation().inconnue().valeur());
   const IntTab& e_f = domaine.elem_faces(), &fcl = ch.fcl();
   const DoubleTab& nf = domaine.face_normales(),
-                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL),
+                   *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : (has_champ_masse_volumique() ? &get_champ_masse_volumique().valeurs() : NULL),
                     &diffu = diffusivite_pour_pas_de_temps().valeurs(), &lambda = diffusivite().valeurs();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &vf = domaine.volumes_entrelaces(), &ve = domaine.volumes();
   update_nu();
@@ -381,7 +381,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
         if (ref_cast(Pb_Multiphase,op_ext[i]->equation().probleme()).has_correlation("flux_parietal"))
           {
             Ts_tab[i].resize(nbelem_tot, nb_max_sat), Sigma_tab[i].resize(nbelem_tot, nb_max_sat), Lvap_tab[i].resize(nbelem_tot, nb_max_sat);
-            const DoubleTab& press = ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).eq_qdm.pression()->passe();
+            const DoubleTab& press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, op_ext[i]->equation().probleme()).equation_qdm()).pression()->passe();
             for (k = 0; k < N[i]; k++)
               for (l = k + 1; l < N[i]; l++)
                 if (milc.has_saturation(k, l))
@@ -633,9 +633,9 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                             //equations sur les correlations
                             const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, op_ext[p]->equation().probleme());
                             const Flux_parietal_base& corr = ref_cast(Flux_parietal_base, pbm.get_correlation("Flux_parietal").valeur());
-                            const DoubleTab& alpha = pbm.eq_masse.inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(), &press = pbm.eq_qdm.pression().passe(), &vit =
-                                                                                                                                                 pbm.eq_qdm.inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(), &rho =
-                                                                                                                                                     pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
+                            const DoubleTab& alpha = pbm.equation_masse().inconnue().passe(), &dh = pbm.milieu().diametre_hydraulique_elem(), &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(), &vit =
+                                                                                                      pbm.equation_qdm().inconnue().passe(), &lambda = pbm.milieu().conductivite().passe(), &mu = ref_cast(Fluide_base, pbm.milieu()).viscosite_dynamique().passe(), &rho =
+                                                                                                            pbm.milieu().masse_volumique().passe(), &Cp = pbm.milieu().capacite_calorifique().passe();
                             Flux_parietal_base::input_t in;
                             Flux_parietal_base::output_t out;
                             DoubleTrav Tf(N[p]), qpk(N[p]), dTf_qpk(N[p], N[p]), dTp_qpk(N[p]), qpi(N[p], N[p]), dTf_qpi(N[p], N[p], N[p]), dTp_qpi(N[p], N[p]), nv(N[p]), d_nuc(N[p]);

@@ -106,25 +106,25 @@ void Source_Flux_interfacial_base::completer()
 DoubleTab& Source_Flux_interfacial_base::qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::dT_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return dT_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).dT_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).dT_qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::da_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return da_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).da_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).da_qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::dp_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return dp_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.sources().dernier().valeur()).dp_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).dp_qpi();
 }
 
 void Source_Flux_interfacial_base::mettre_a_jour(double temps)
@@ -142,8 +142,8 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   const DoubleVect& pe = milc.porosite_elem(), &ve = domaine.volumes();
   const tabs_t& der_h = ref_cast(Champ_Inc_base, milc.enthalpie()).derivees();
   const Champ_base& ch_rho = milc.masse_volumique();
-  const Champ_Inc_base& ch_alpha = pbm.eq_masse.inconnue().valeur(), &ch_a_r = pbm.eq_masse.champ_conserve(),
-                        &ch_temp = pbm.eq_energie.inconnue().valeur(), &ch_p = pbm.eq_qdm.pression().valeur(),
+  const Champ_Inc_base& ch_alpha = pbm.equation_masse().inconnue().valeur(), &ch_a_r = pbm.equation_masse().champ_conserve(),
+                        &ch_temp = pbm.equation_energie().inconnue().valeur(), &ch_p = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().valeur(),
                          *pch_rho = sub_type(Champ_Inc_base, ch_rho) ? &ref_cast(Champ_Inc_base, ch_rho) : nullptr;
 
   const DoubleTab& inco = ch.valeurs(), &alpha = ch_alpha.valeurs(), &press = ch_p.valeurs(), &temp  = ch_temp.valeurs(), &temp_p  = ch_temp.passe(),
@@ -190,7 +190,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
         dst.get_set_coeff().resize(src.get_set_coeff().size()); //coeffs nuls
         mat_m[n_m.first] = &dst;
       }
-  const Masse_Multiphase& eq_m = pbm.eq_masse;
+  const Masse_Multiphase& eq_m = ref_cast(Masse_Multiphase, pbm.equation_masse());
   for (i = 0; i < eq_m.nombre_d_operateurs(); i++) /* tous les operateurs */
     eq_m.operateur(i).l_op_base().ajouter_blocs(mat_m, sec_m, semi_impl);
   for (i = 0; i < eq_m.sources().size(); i++)
@@ -215,7 +215,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
   // fill velocity at elem tab
   DoubleTab pvit_elem(0, N * D);
   domaine.domaine().creer_tableau_elements(pvit_elem);
-  const Champ_Face_base& ch_vit = ref_cast(Champ_Face_base,ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.inconnue().valeur());
+  const Champ_Face_base& ch_vit = ref_cast(Champ_Face_base,ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm().inconnue().valeur());
   ch_vit.get_elem_vector_field(pvit_elem);
 
   // remplir les tabs ...

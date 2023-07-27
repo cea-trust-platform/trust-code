@@ -91,7 +91,7 @@ void Op_Grad_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& 
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, ref_domaine.valeur());
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl();
   const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), *alp =
-                                                                      sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
+                                                                      sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleVect& fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces(), &pe = equation().milieu().porosite_elem();
   int i, j, e, eb, f, fb, ne_tot = domaine.nb_elem_tot(), n, N = secmem.line_size(), m, M = press.line_size();
 

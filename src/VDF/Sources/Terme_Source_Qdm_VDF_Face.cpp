@@ -60,7 +60,7 @@ void Terme_Source_Qdm_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& re
   const DoubleVect& volumes_entrelaces = domaine_VDF.volumes_entrelaces();
 
   // useful only if multiphase problem
-  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
+  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   const DoubleTab* rho = alp ? &equation().milieu().masse_volumique().passe() : nullptr;
 
   const int cR = alp ? ((*rho).dimension_tot(0) == 1) : 0, nb_comp = equation().inconnue().valeurs().line_size();

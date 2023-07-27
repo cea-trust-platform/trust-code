@@ -66,7 +66,7 @@ void Op_Dift_Multiphase_VDF_Elem::completer()
     equation().probleme().creer_champ("gradient_vitesse");
 
   // on initialise d_t_ a 0 avec la bonne structure //
-  d_t_ = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue()->valeurs();
+  d_t_ = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue()->valeurs();
   d_t_ = 0.;
   set_nut_impl<Type_Operateur::Op_DIFT_MULTIPHASE_ELEM, Eval_Dift_Multiphase_VDF_Elem>(d_t_);
 }
@@ -105,7 +105,7 @@ double Op_Dift_Multiphase_VDF_Elem::calculer_dt_stab() const
   const Domaine_VDF& domaine_VDF = iter->domaine();
   const IntTab& elem_faces = domaine_VDF.elem_faces();
   const DoubleTab& lambda = alpha_() /* comme mu */, &diffu = diffusivite_pour_pas_de_temps().valeurs() /* comme nu */;
-  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe();
+  const DoubleTab& alp = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe();
   const int cL = (lambda.dimension(0) == 1), cD = (diffu.dimension(0) == 1), dim = Objet_U::dimension;
 
   ArrOfInt numfa(2 * dim);

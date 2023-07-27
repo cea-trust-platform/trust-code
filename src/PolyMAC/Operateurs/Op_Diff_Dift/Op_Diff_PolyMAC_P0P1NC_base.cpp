@@ -249,7 +249,7 @@ void Op_Diff_PolyMAC_P0P1NC_base::update_nu() const
     abort();
 
   /* ponderation de nu par la porosite et par alpha (si pb_Multiphase) */
-  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : nullptr;
+  const DoubleTab *alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : nullptr;
   for (e = 0; e < domaine.nb_elem_tot(); e++)
     for (n = 0, i = 0; n < N; n++)
       for (m = 0; m < mult; m++, i++)

@@ -191,7 +191,7 @@ double Op_Conv_VDF_base::calculer_dt_stab() const
   const DoubleTab& vit_associe = vitesse().valeurs();
   const DoubleTab& vit= (vitesse_pour_pas_de_temps_.non_nul()?vitesse_pour_pas_de_temps_.valeur().valeurs(): vit_associe);
   const int N = std::min(vit.line_size(), equation().inconnue().valeurs().line_size());
-  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe() : NULL;
+  const DoubleTab* alp = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe() : NULL;
   if (!fluent_.get_md_vector().non_nul())
     {
       fluent_.resize(0, N);

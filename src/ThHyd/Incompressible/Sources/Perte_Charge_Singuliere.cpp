@@ -375,7 +375,7 @@ double Perte_Charge_Singuliere::calculate_Q(const Equation_base& eqn, const IntV
 {
   const Domaine_VF& zvf = ref_cast(Domaine_VF, eqn.domaine_dis().valeur());
   const DoubleTab& vit = eqn.inconnue().valeurs(),
-                   &fac = sub_type(Pb_Multiphase, eqn.probleme()) ? ref_cast(Pb_Multiphase, eqn.probleme()).eq_masse.champ_conserve().passe()
+                   &fac = sub_type(Pb_Multiphase, eqn.probleme()) ? ref_cast(Pb_Multiphase, eqn.probleme()).equation_masse().champ_conserve().passe()
                           : eqn.probleme().get_champ("masse_volumique").valeurs(); // get_champ pour flica5 car la masse volumique n'est pas dans le milieu...
   const DoubleVect& pf = eqn.milieu().porosite_face(), &fs = zvf.face_surfaces();
   const IntTab& f_e = zvf.face_voisins();

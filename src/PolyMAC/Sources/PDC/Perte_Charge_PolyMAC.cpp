@@ -99,7 +99,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
   const DoubleTab& xp = domaine.xp(), &xv = domaine.xv(), &vit = la_vitesse->valeurs(), &pvit = la_vitesse->passe(),
                    &nu = le_fluide->viscosite_cinematique().valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
                     &mu = le_fluide->viscosite_dynamique().valeurs(), &rho = le_fluide->masse_volumique().passe(),
-                     *alp = pbm ? &pbm->eq_masse.inconnue().passe() : nullptr;
+                     *alp = pbm ? &pbm->equation_masse().inconnue().passe() : nullptr;
 
   const DoubleVect& pe = le_fluide->porosite_elem(), &pf = le_fluide->porosite_face(), &fs = domaine.face_surfaces(), &ve = domaine.volumes();
   const Multiplicateur_diphasique_base *fmult = pbm && pbm->has_correlation("multiplicateur_diphasique") ?

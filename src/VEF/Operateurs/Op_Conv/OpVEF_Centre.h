@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef OpVEF_Centre_included
 #define OpVEF_Centre_included
 

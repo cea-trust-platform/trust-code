@@ -210,9 +210,9 @@ Equation_base& Pb_Multiphase::equation(int i)
 void Pb_Multiphase::associer_milieu_base(const Milieu_base& mil)
 {
   /* controler le type de milieu ici */
-  eq_qdm.associer_milieu_base(mil);
-  eq_energie.associer_milieu_base(mil);
-  eq_masse.associer_milieu_base(mil);
+  equation_qdm().associer_milieu_base(mil);
+  equation_energie().associer_milieu_base(mil);
+  equation_masse().associer_milieu_base(mil);
 }
 
 /*! @brief Teste la compatibilite des equations de la thermique et de l'hydraulique.
@@ -226,8 +226,8 @@ void Pb_Multiphase::associer_milieu_base(const Milieu_base& mil)
  */
 int Pb_Multiphase::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_qdm.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_energie.domaine_Cl_dis();
+  const Domaine_Cl_dis& domaine_Cl_hydr = equation_qdm().domaine_Cl_dis();
+  const Domaine_Cl_dis& domaine_Cl_th = equation_energie().domaine_Cl_dis();
   return tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
 }
 

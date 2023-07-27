@@ -32,9 +32,9 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
   const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
   const DoubleTab& pvit = ch.passe(),
-                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
-                    &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
-                     &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
+                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
+                    &press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().passe(),
+                     &temp  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                         &grad_v = equation().probleme().get_champ("gradient_vitesse").passe(),
@@ -272,11 +272,11 @@ void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
     {
       const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
       const DoubleTab& pvit = equation().inconnue().valeur().passe(),
-                       &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
+                       &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
                         &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe(),
                          &rho   = equation().milieu().masse_volumique().passe(),
-                          &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
-                           &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
+                          &press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().passe(),
+                           &temp  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
                             *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").passe() : NULL,
                              *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
       const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());

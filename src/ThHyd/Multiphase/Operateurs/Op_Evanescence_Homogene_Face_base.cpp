@@ -91,10 +91,10 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).eq_masse.inconnue().passe(),
+  const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
                    &rho = equation().milieu().masse_volumique().passe(),
-                    &temp  = ref_cast(Pb_Multiphase, equation().probleme()).eq_energie.inconnue().passe(),
-                     &press = ref_cast(Pb_Multiphase, equation().probleme()).eq_qdm.pression().passe(),
+                    &temp  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
+                     &press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().passe(),
                       &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
                        *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
                         *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
@@ -121,7 +121,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
   out.vr.resize(N, N, D), out.dvr.resize(N, N, D, N*D);
   const Vitesse_relative_base* correlation_vd = pbm.has_correlation("vitesse_relative") ? &ref_cast(Vitesse_relative_base, pbm.get_correlation("vitesse_relative").valeur()) : nullptr;
   DoubleTab gradAlpha, vort, nut;
-  const int is_turb = ref_cast(Operateur_Diff_base, pbm.eq_qdm.operateur_diff().l_op_base()).is_turb();
+  const int is_turb = ref_cast(Operateur_Diff_base, ref_cast(QDM_Multiphase, pbm.equation_qdm()).operateur_diff().l_op_base()).is_turb();
   if (correlation_vd)
     {
       in.alpha.resize(N), in.rho.resize(N), in.mu.resize(N), in.d_bulles.resize(N), in.k.resize(N), in.nut.resize(N), in.v.resize(D, N), in.sigma.resize(N*(N-1)/2), in.g.resize(D);

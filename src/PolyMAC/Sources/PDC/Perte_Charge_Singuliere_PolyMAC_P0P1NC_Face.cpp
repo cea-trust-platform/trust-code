@@ -35,7 +35,7 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::completer()
 {
   Perte_Charge_PolyMAC_Face::completer();
   // eq_masse besoin de champ_conserve !
-  if (sub_type(Pb_Multiphase, mon_equation->probleme())) ref_cast(Pb_Multiphase, mon_equation->probleme()).eq_masse.init_champ_conserve();
+  if (sub_type(Pb_Multiphase, mon_equation->probleme())) ref_cast(Pb_Multiphase, mon_equation->probleme()).equation_masse().init_champ_conserve();
 }
 
 void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_impl) const
@@ -68,7 +68,7 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matri
   const DoubleVect& pf = equation().milieu().porosite_face(), &fs = domaine.face_surfaces(), &vf = domaine.volumes_entrelaces();
   const Pb_Multiphase *pbm = sub_type(Pb_Multiphase, equation().probleme()) ? &ref_cast(Pb_Multiphase, equation().probleme()) : NULL;
   const DoubleTab& vit = la_vitesse->valeurs(), &nf = domaine.face_normales(), &vfd = domaine.volumes_entrelaces_dir(), &xv = domaine.xv(), &xp = domaine.xp(),
-                   *alpha = pbm ? &pbm->eq_masse.inconnue().passe() : NULL, *a_r = pbm ? &pbm->eq_masse.champ_conserve().passe() : NULL;
+                   *alpha = pbm ? &pbm->equation_masse().inconnue().passe() : NULL, *a_r = pbm ? &pbm->equation_masse().champ_conserve().passe() : NULL;
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   Matrice_Morse *mat = matrices.count(nom_inco) ? matrices.at(nom_inco) : NULL;

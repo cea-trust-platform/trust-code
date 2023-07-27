@@ -73,10 +73,10 @@ void Op_Evanescence_Homogene_Elem_base::ajouter_blocs(matrices_t matrices, Doubl
   const Champ_Inc_P0_base& ch = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, equation().probleme());
-  const DoubleTab& inco = ch.valeurs(), &alpha = pb.eq_masse.inconnue().valeurs(), &rho = equation().milieu().masse_volumique().valeurs(), &p = pb.eq_qdm.pression().valeurs();
+  const DoubleTab& inco = ch.valeurs(), &alpha = pb.equation_masse().inconnue().valeurs(), &rho = equation().milieu().masse_volumique().valeurs(), &p = ref_cast(QDM_Multiphase, pb.equation_qdm()).pression().valeurs();
 
-  const SETS *sch = sub_type(Schema_Implicite_base, pb.eq_qdm.schema_temps()) && sub_type(SETS, ref_cast(Schema_Implicite_base, pb.eq_qdm.schema_temps()).solveur().valeur())
-                    ? &ref_cast(SETS, ref_cast(Schema_Implicite_base, pb.eq_qdm.schema_temps()).solveur().valeur()) : NULL;
+  const SETS *sch = sub_type(Schema_Implicite_base, pb.equation_qdm().schema_temps()) && sub_type(SETS, ref_cast(Schema_Implicite_base, pb.equation_qdm().schema_temps()).solveur().valeur())
+                    ? &ref_cast(SETS, ref_cast(Schema_Implicite_base, pb.equation_qdm().schema_temps()).solveur().valeur()) : NULL;
 
   int e, i, j, k, n, N = inco.line_size(), m, M = p.line_size(), is_m = ch.le_nom() == "alpha", cR = (rho.dimension_tot(0) == 1),
                      iter = sch ? sch->iteration : 0, p_degen = is_m && sch ? sch->p_degen : 0;
