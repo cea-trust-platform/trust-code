@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -96,6 +96,12 @@ void Saturation_constant::dP_Hvs_(const SpanD P, SpanD res, int ncomp, int ind) 
 }
 
 void Saturation_constant::sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp, int ind) const
+{
+  if (sigma__ <= 0) Process::exit(que_suis_je() + ": expected positive value of the surface tension");
+  for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = sigma__;
+}
+
+void Saturation_constant::sigma_h_(const SpanD H, const SpanD P, SpanD res, int ncomp, int ind) const
 {
   if (sigma__ <= 0) Process::exit(que_suis_je() + ": expected positive value of the surface tension");
   for (int i =0; i < (int)P.size(); i++) res[i * ncomp + ind] = sigma__;

@@ -130,6 +130,12 @@ void Saturation_base::get_sigma(const SpanD T, const SpanD P, SpanD sig, int nco
   sigma_(T, P, sig, ncomp, ind);
 }
 
+void Saturation_base::get_sigma_h(const SpanD H, const SpanD P, SpanD sig, int ncomp, int ind) const
+{
+  assert((int )P.size() == (int )sig.size());
+  sigma_h_(H, P, sig, ncomp, ind);
+}
+
 void Saturation_base::compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
   assert((int )sats.size() == 7);

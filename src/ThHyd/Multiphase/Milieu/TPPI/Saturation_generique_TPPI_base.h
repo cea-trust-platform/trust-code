@@ -82,6 +82,11 @@ public:
     Tc_(T); /* put back T in C */
   }
 
+  void sigma_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override
+  {
+    TPPI_->tppi_get_sigma_ph(P, H, res, ncomp, ind);
+  }
+
   void compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int ind = 0) const override
   {
     TPPI_->tppi_get_all_flux_interfacial_pb_multiphase(P, sats, ncomp, ind);

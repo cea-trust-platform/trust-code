@@ -22,7 +22,6 @@
 class Saturation_sodium : public Saturation_base
 {
   Declare_instanciable(Saturation_sodium);
-
 private:
   void Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Tsat_Na(P,res,ncomp,ind); }
   void dP_Tsat_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DTsat_Na(P,res,ncomp,ind); }
@@ -36,6 +35,7 @@ private:
   void dP_Hvs_(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { DHVsat(P,res,ncomp,ind); /* DHsat(P) + DLvap_Na(P) */ }
 
   void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { SigmaL(T,P,res,ncomp,ind); }
+  void sigma_h_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const override { Cerr << "Saturation_sodium::" << __func__ << " NOT CODED ! " << finl; throw; }
 };
 
 #endif /* Saturation_sodium_included */
