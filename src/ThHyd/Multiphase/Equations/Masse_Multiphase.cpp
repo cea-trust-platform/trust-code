@@ -42,6 +42,8 @@ Entree& Masse_Multiphase::readOn(Entree& is)
   terme_convectif.set_fichier("Debit");
   terme_convectif.set_description((Nom)"Mass flow rate=Integral(-alpha*rho*u*ndS) [kg/s] if SI units used");
 
+  champs_compris_.ajoute_champ(l_inco_ch);
+
   // Special treatment for Pb_Multiphase_HEM
   // We enforce the presence of a source term related to the interfacial flux automatically.
   if (sub_type(Pb_Multiphase_HEM, probleme()))
