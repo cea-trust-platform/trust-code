@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -47,8 +47,8 @@ public :
 private:
   static const int nb_op;
   static const int nb_op_bis;
-  static const char keyword_op[][10];
-  static const char keyword_op_bis[][10];
+  static const char keyword_op[][16];
+  static const char keyword_op_bis[][16];
 
 public:
 

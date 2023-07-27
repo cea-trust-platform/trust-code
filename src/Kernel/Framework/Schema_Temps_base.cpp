@@ -70,7 +70,12 @@ double Schema_Temps_base::computeTimeStep(bool& is_stop) const
       dt_max_fn_.setVar(0, temps_courant());
       dt_max_ = dt_max_fn_.eval();
     }
-
+  // reevaluation de facsec_ si fonction du temps
+  if(facsec_func_)
+    {
+      facsec_fn_.setVar(0, temps_courant());
+      facsec_ = facsec_fn_.eval();
+    }
   is_stop=false;
   // Correction en premier du pas de temps
   double dt = dt_stab_;
@@ -243,7 +248,7 @@ void Schema_Temps_base::set_param(Param& param)
   param.ajouter( "dt_max",&dt_max_str_); // XD_ADD_P chaine Maximum calculation time step as function of time (1e30s by default).
   param.ajouter( "dt_sauv",&dt_sauv_); // XD_ADD_P double Save time step value (1e30s by default). Every dt_sauv, fields are saved in the .sauv file. The file contains all the information saved over time. If this instruction is not entered, results are saved only upon calculation completion. To disable the writing of the .sauv files, you must specify 0. Note that dt_sauv is in terms of physical time (not cpu time).
   param.ajouter( "dt_impr",&dt_impr_); // XD_ADD_P double Scheme parameter printing time step in time (1e30s by default). The time steps and the flux balances are printed (incorporated onto every side of processed domains) into the .out file.
-  param.ajouter( "facsec",&facsec_); // XD_ADD_P double Value assigned to the safety factor for the time step (1. by default). The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
+  param.ajouter_non_std( "facsec",(this)); // XD_ADD_P chaine Value assigned to the safety factor for the time step (1. by default). It can also be a function of time. The time step calculated is multiplied by the safety factor. The first thing to try when a calculation does not converge with an explicit time scheme is to reduce the facsec to 0.5. NL2 Warning: Some schemes needs a facsec lower than 1 (0.5 is a good start), for example Schema_Adams_Bashforth_order_3.
   param.ajouter( "seuil_statio",&seuil_statio_); // XD_ADD_P double Value of the convergence threshold (1e-12 by default). Problems using this type of time scheme converge when the derivatives dGi/dt NL1 of all the unknown transported values Gi have a combined absolute value less than this value. This is the keyword used to set the permanent rating threshold.
   param.ajouter_non_std("residuals", (this));    // XD_ADD_P residuals To specify how the residuals will be computed (default max norm, possible to choose L2-norm instead).
   param.ajouter( "diffusion_implicite",&ind_diff_impl_); // XD_ADD_P entier Keyword to make the diffusive term in the Navier-Stokes equations implicit (in this case, it should be set to 1). The stability time step is then only based on the convection time step (dt=facsec*dt_convection). Thus, in some circumstances, an important gain is achieved with respect to the time step (large diffusion with respect to convection on tightened meshes). Caution: It is however recommended that the user avoids exceeding the convection time step by selecting a too large facsec value. Start with a facsec value of 1 and then increase it gradually if you wish to accelerate calculation. In addition, for a natural convection calculation with a zero initial velocity, in the first time step, the convection time is infinite and therefore dt=facsec*dt_max.
@@ -351,8 +356,6 @@ Entree& Schema_Temps_base::readOn(Entree& is)
       dt_max_fn_.parseString();
       dt_max_ = dt_max_fn_.eval();
     }
-
-
   return is ;
 }
 
@@ -402,6 +405,8 @@ int Schema_Temps_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
     file_allocation_=0;
   else if (mot == "residuals")
     lire_residuals(is);
+  else if(mot == "facsec")
+    lire_facsec(is);
   else
     retval = -1;
 
@@ -432,6 +437,54 @@ Entree& Schema_Temps_base::lire_temps_cpu_max(Entree& is)
   Cerr << "Reading the max cpu time allowed"  << finl;
   is >> tcpumax_;
   tcpumax_*=3600; // Conversion en secondes
+  return is;
+}
+
+
+Entree& Schema_Temps_base::lire_residuals(Entree& is)
+{
+  Motcle m;
+  is >> m;
+  assert (m == "{");
+  is >> m;
+  while (m != "}")
+    {
+      Motcles residuals_mots(2);
+      residuals_mots[0]="relative";
+      residuals_mots[1]="norm";
+      int res_rang=residuals_mots.search(m);
+      switch(res_rang)
+        {
+        case 0:
+          is >> seuil_statio_relatif_deconseille_;
+          break;
+        case 1:
+          is >> norm_residu_;
+          break;
+        default :
+          {
+            Cerr<<" We do not understand "<<m <<"in Schema_Temps_base::lire_motcle_non_standard"<<finl;
+            Cerr<<" keywords understood "<<residuals_mots<<finl;
+            exit();
+          }
+        }
+      is >> m;
+    }
+  return is;
+}
+
+
+Entree& Schema_Temps_base::lire_facsec(Entree& is)
+{
+  Nom facsec_str;
+  is >> facsec_str;
+  facsec_fn_.setNbVar(1);
+  facsec_fn_.setString(facsec_str);
+  facsec_fn_.addVar("t");
+  facsec_fn_.parseString();
+  facsec_ = facsec_fn_.eval();
+  if(facsec_str.majuscule().contient("T"))
+	  facsec_func_ = true;
   return is;
 }
 
@@ -480,39 +533,9 @@ Schema_Temps_base::Schema_Temps_base()
   disable_dt_ev_ = 0;
   gnuplot_header_ = 0;
   dt_gf_ = DMAXFLOAT;
+  facsec_func_ = false;
 }
 
-Entree& Schema_Temps_base::lire_residuals(Entree& is)
-{
-  Motcle m;
-  is >> m;
-  assert (m == "{");
-  is >> m;
-  while (m != "}")
-    {
-      Motcles residuals_mots(2);
-      residuals_mots[0]="relative";
-      residuals_mots[1]="norm";
-      int res_rang=residuals_mots.search(m);
-      switch(res_rang)
-        {
-        case 0:
-          is >> seuil_statio_relatif_deconseille_;
-          break;
-        case 1:
-          is >> norm_residu_;
-          break;
-        default :
-          {
-            Cerr<<" We do not understand "<<m <<"in Schema_Temps_base::lire_motcle_non_standard"<<finl;
-            Cerr<<" keywords understood "<<residuals_mots<<finl;
-            exit();
-          }
-        }
-      is >> m;
-    }
-  return is;
-}
 
 /*! @brief Impression du numero du pas de temps, la valeur du pas de temps.
  *

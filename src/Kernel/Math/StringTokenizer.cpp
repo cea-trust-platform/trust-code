@@ -59,9 +59,9 @@ const int StringTokenizer::ENDGRP = 1001;
 // Attention a l'ordre des operateurs ci dessous : ils doivent etre positionnes dans les tableaux  keyword_op et keyword_op_bis en fonction des valeurs des constantes statiques ADD, SUB etc... definies ci-dessus
 //
 const int StringTokenizer::nb_op=16;
-const int StringTokenizer::nb_op_bis=11;
-const char StringTokenizer::keyword_op[][10] = { "ADD", "SUB", "MUL", "DIV" , "POW", "LT", "GT", "LE", "GE", "MOD", "MAX", "MIN", "AND", "OR", "EQ", "NEQ" };
-const char StringTokenizer::keyword_op_bis[][10] = { "+", "-", "*", "/", "^", "<", ">", "[", "]", "%", "$" };
+const int StringTokenizer::nb_op_bis=16;
+const char StringTokenizer::keyword_op[][16] = { "ADD", "SUB", "MUL", "DIV" , "POW", "LT", "GT", "LE", "GE", "MOD", "MAX", "MIN", "AND", "OR", "EQ", "NEQ" };
+const char StringTokenizer::keyword_op_bis[][16] = { "+", "-",   "*",    "/",   "^",  "<",  ">",  "[",  "]",   "%",   "$",   "@",   "&",  "|", "=",  "#" };
 
 
 StringTokenizer::StringTokenizer()

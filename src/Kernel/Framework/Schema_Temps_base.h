@@ -178,7 +178,8 @@ public :
   virtual Entree& lire_nb_pas_dt_max(Entree&);
   virtual Entree& lire_periode_sauvegarde_securite_en_heures(Entree&);
   virtual Entree& lire_temps_cpu_max(Entree&);
-  Entree& lire_residuals(Entree&);
+  virtual Entree& lire_residuals(Entree&);
+  virtual Entree& lire_facsec(Entree&);
 
   virtual void completer() =0;
 
@@ -295,7 +296,9 @@ protected :
   Nom dt_max_str_;                       //reglage de dt_max comme une fonction du temps
   mutable Parser_U dt_max_fn_;           //Parser_U associe
   double dt_stab_=-100.;                // Pas de temps de stabilite
-  double facsec_;
+  mutable double facsec_;
+  mutable Parser_U facsec_fn_;           // parser pour regler facsec comme une fonction du temps
+  bool facsec_func_;                      // is the facsec a function of time (true) or a constant (false)
   double seuil_statio_;
   int seuil_statio_relatif_deconseille_;                // Drapeau pour specifier si seuil_statio_ est une valeur absolue (defaut) ou relative
   Nom norm_residu_;
