@@ -88,11 +88,8 @@ protected:
 
   Noms noms_phases_;
   std::map<std::string, Correlation> correlations;
-};
 
-class Pb_HEM : public Pb_Multiphase
-{
-  Declare_instanciable(Pb_HEM);
+  virtual void typer_lire_correlation_hem() { /* Do nothing */}
 };
 
 #endif /* Pb_Multiphase_included */

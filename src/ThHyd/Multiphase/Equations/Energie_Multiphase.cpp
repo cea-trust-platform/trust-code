@@ -13,44 +13,32 @@
 *
 *****************************************************************************/
 
-#include <Energie_Multiphase.h>
-#include <Pb_Multiphase.h>
-#include <Discret_Thyd.h>
-#include <Domaine_VF.h>
-#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
-#include <Champ_Uniforme.h>
-#include <Matrice_Morse.h>
-#include <TRUSTTrav.h>
-#include <Op_Conv_negligeable.h>
-#include <Param.h>
-#include <SETS.h>
-#include <EChaine.h>
-#include <Neumann_paroi.h>
 #include <Scalaire_impose_paroi.h>
 #include <Echange_global_impose.h>
+#include <Op_Conv_negligeable.h>
+#include <Energie_Multiphase.h>
+#include <Pb_Multiphase_HEM.h>
 #include <TRUSTTab_parts.h>
+#include <Champ_Uniforme.h>
+#include <Matrice_Morse.h>
+#include <Neumann_paroi.h>
+#include <Discret_Thyd.h>
+#include <Domaine_VF.h>
+#include <TRUSTTrav.h>
+#include <EChaine.h>
+#include <Domaine.h>
+#include <Param.h>
+#include <SETS.h>
 
-#define old_forme
-
-Implemente_instanciable(Energie_Multiphase,"Energie_Multiphase",Convection_Diffusion_std);
+Implemente_instanciable(Energie_Multiphase, "Energie_Multiphase", Convection_Diffusion_std);
 // XD Energie_Multiphase eqn_base Energie_Multiphase -1 Internal energy conservation equation for a multi-phase problem where the unknown is the temperature
 
-/*! @brief Simple appel a: Convection_Diffusion_std::printOn(Sortie&)
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Energie_Multiphase::printOn(Sortie& is) const
 {
   return Convection_Diffusion_std::printOn(is);
 }
 
-/*! @brief Verifie si l'equation a une inconnue et un fluide associe et appelle Convection_Diffusion_std::readOn(Entree&).
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree& is) le flot d'entree modifie
- */
 Entree& Energie_Multiphase::readOn(Entree& is)
 {
   assert(l_inco_ch.non_nul());
@@ -64,10 +52,9 @@ Entree& Energie_Multiphase::readOn(Entree& is)
   //terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) "+unite);
   terme_diffusif.set_description((Nom)"Conduction heat transfer rate=Integral(lambda*grad(T)*ndS) [W] if SI units used");
 
-  // Special treatment for Pb_HEM
-  // We enforce the presence of a source term related to the
-  // interfacial flux automatically defined in the Pb_HEM class.
-  if (probleme().que_suis_je() == "Pb_HEM")
+  // Special treatment for Pb_Multiphase_HEM
+  // We enforce the presence of a source term related to the interfacial flux automatically.
+  if (sub_type(Pb_Multiphase_HEM, probleme()))
     {
       int check_source_FICC(0);
       for (int ii = 0; ii < sources().size(); ii++)
@@ -79,7 +66,6 @@ Entree& Energie_Multiphase::readOn(Entree& is)
           lire_sources(source_FI);
         }
     }
-  // End of Pb_HEM special treatment
 
   return is;
 }

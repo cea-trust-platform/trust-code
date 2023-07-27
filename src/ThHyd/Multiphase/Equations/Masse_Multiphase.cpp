@@ -13,35 +13,23 @@
 *
 *****************************************************************************/
 
-#include <Masse_Multiphase.h>
-#include <Pb_Multiphase.h>
-#include <Discret_Thyd.h>
-#include <Domaine_VF.h>
-#include <Domaine.h>
 #include <EcritureLectureSpecial.h>
-#include <TRUSTTrav.h>
-#include <Matrice_Morse.h>
-#include <Param.h>
-#include <Fluide_base.h>
+#include <Pb_Multiphase_HEM.h>
+#include <Masse_Multiphase.h>
 #include <Champ_Uniforme.h>
+#include <Matrice_Morse.h>
+#include <Discret_Thyd.h>
+#include <Fluide_base.h>
+#include <Domaine_VF.h>
+#include <TRUSTTrav.h>
+#include <Domaine.h>
 #include <EChaine.h>
+#include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Masse_Multiphase,"Masse_Multiphase",Convection_Diffusion_std);
+Implemente_instanciable(Masse_Multiphase, "Masse_Multiphase", Convection_Diffusion_std);
 // XD Masse_Multiphase eqn_base Masse_Multiphase -1 Mass consevation equation for a multi-phase problem where the unknown is the alpha (void fraction)
 
-Masse_Multiphase::Masse_Multiphase()
-{
-  /*  Noms& nom=champs_compris_.liste_noms_compris();
-      nom.dimensionner(1);
-      nom[0]="fraction_massique";
-  */
-}
-
-
-Sortie& Masse_Multiphase::printOn(Sortie& is) const
-{
-  return Equation_base::printOn(is);
-}
+Sortie& Masse_Multiphase::printOn(Sortie& is) const { return Equation_base::printOn(is); }
 
 Entree& Masse_Multiphase::readOn(Entree& is)
 {
@@ -56,10 +44,9 @@ Entree& Masse_Multiphase::readOn(Entree& is)
 
   champs_compris_.ajoute_champ(l_inco_ch);
 
-  // Special treatment for Pb_HEM
-  // We enforce the presence of a source term related to the
-  // interfacial flux automatically defined in the Pb_HEM class.
-  if (probleme().que_suis_je() == "Pb_HEM")
+  // Special treatment for Pb_Multiphase_HEM
+  // We enforce the presence of a source term related to the interfacial flux automatically.
+  if (sub_type(Pb_Multiphase_HEM, probleme()))
     {
       int check_source_FICC(0);
       for (int ii = 0; ii < sources().size(); ii++)
@@ -71,7 +58,6 @@ Entree& Masse_Multiphase::readOn(Entree& is)
           lire_sources(source_FI);
         }
     }
-  // End of Pb_HEM special treatment
 
   return is;
 }

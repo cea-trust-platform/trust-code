@@ -42,9 +42,6 @@ Implemente_instanciable(Pb_Multiphase, "Pb_Multiphase", Pb_Fluide_base);
 // XD Energie_cinetique_turbulente_WIT eqn_base Energie_cinetique_turbulente_WIT -1 Bubble Induced Turbulent kinetic Energy equation for a turbulent multi-phase problem (available in TrioCFD)
 // XD Taux_dissipation_turbulent eqn_base Taux_dissipation_turbulent -1 Turbulent Dissipation frequency equation for a turbulent mono/multi-phase problem (available in TrioCFD)
 
-Implemente_instanciable(Pb_HEM, "Pb_HEM", Pb_Multiphase);
-// XD Pb_HEM Pb_Multiphase Pb_HEM -1 A problem that allows the resolution of 2-phases mechanicaly and thermally coupled with 3 equations
-
 Sortie& Pb_Multiphase::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 
 Entree& Pb_Multiphase::readOn(Entree& is)
@@ -82,49 +79,7 @@ Entree& Pb_Multiphase::lire_equations(Entree& is, Motcle& mot)
   if (mot == "correlations") lire_correlations(is), already_read = false;
   else already_read = true;
 
-  // Particular treatment in cas of Homogeneous Equilibrium Mechanical
-  // calculation using the Pb_HEM class
-  // We enforce a interfacial flux correlation with constant coefficient
-  if (que_suis_je() == "Pb_HEM")
-    {
-      // enforce_interfacial_flux_correlation();
-      if (has_correlation("flux_interfacial"))
-        {
-          for (auto &&corr : correlations)
-            {
-              if (corr.second.valeur().que_suis_je() == "Flux_interfacial_Coef_Constant")
-                {
-                  Cout << "Flux_interfacial_Coef_Constant is already defined." << finl;
-                }
-              else
-                {
-                  Cerr << "An interfacial flux correlation is already defined in the data file, but from a different kind that coef_constant." << finl;
-                  Cerr << "For a Pb_HEM, the interfacial flux correlation must be of the kind coef_constant. Please either remove the line as it will be automatically added or modify the expression." << finl;
-                  Process::exit();
-                }
-            }
-        }
-      else
-        {
-          // The coefficient 1e10 is enforced. If the user wants to
-          // modify it, we invite her to add the line in the data
-          // file.
-          Cout << "Pb_HEM: we add a interfacial flux correlation with constant coefficient." << finl;
-          Nom corr_FICC ("{ flux_interfacial coef_constant { ");
-          for (int ii = 0; ii < nb_phases(); ii++)
-            {
-              corr_FICC += nom_phase(ii);
-              corr_FICC += " 1e10 ";
-            }
-          corr_FICC += "} }";
-          Cout << "Expression added: " << corr_FICC << finl;
-          Cout << "Please add this line to the data file directly if you want to modify the enforced coefficient 1e10." << finl;
-
-          EChaine corr_flux_inter_coef_const(corr_FICC);
-          lire_correlations(corr_flux_inter_coef_const);
-        }
-    }
-  // End of Pb_HEM special treatment
+  typer_lire_correlation_hem(); // enforce a interfacial flux correlation with constant coefficient si HEM
 
   Cerr << "Reading of the equations" << finl;
   for(int i = 0; i < nombre_d_equations(); i++, already_read = false)
@@ -377,8 +332,3 @@ double Pb_Multiphase::calculer_pas_de_temps() const
     }
   return dt;
 }
-
-// Pb_HEM stuffs
-Sortie& Pb_HEM::printOn(Sortie& os) const { return Pb_Multiphase::printOn(os); }
-
-Entree& Pb_HEM::readOn(Entree& is) { return Pb_Multiphase::readOn(is); }

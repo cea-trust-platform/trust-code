@@ -31,11 +31,8 @@ class Fluide_base;
  */
 class Masse_Multiphase : public Convection_Diffusion_std
 {
-  Declare_instanciable_sans_constructeur(Masse_Multiphase);
-
+  Declare_instanciable(Masse_Multiphase);
 public :
-
-  Masse_Multiphase();
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void associer_fluide(const Fluide_base& );

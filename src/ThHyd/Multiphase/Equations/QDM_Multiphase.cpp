@@ -16,10 +16,10 @@
 #include <Operateur_Diff_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
+#include <Pb_Multiphase_HEM.h>
 #include <Champ_Composite.h>
 #include <TRUSTTab_parts.h>
 #include <QDM_Multiphase.h>
-#include <Pb_Multiphase.h>
 #include <Discret_Thyd.h>
 #include <Fluide_base.h>
 #include <EChaine.h>
@@ -82,9 +82,8 @@ Entree& QDM_Multiphase::readOn(Entree& is)
   const Pb_Multiphase& pb = ref_cast(Pb_Multiphase, probleme());
   if (evanescence.est_nul() && pb.nb_phases() > 1)
     {
-      // Special treatment for Pb_HEM
-      // We enforce the evanescence to a specific value
-      if (sub_type(Pb_HEM, probleme()))
+      // Special treatment for Pb_Multiphase_HEM : We enforce the evanescence to a specific value
+      if (sub_type(Pb_Multiphase_HEM, probleme()))
         {
           EChaine eva("{ homogene { alpha_res 1 alpha_res_min 0.5 } }");
           eva >> evanescence;
