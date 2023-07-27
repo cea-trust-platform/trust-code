@@ -41,8 +41,13 @@ public:
   DoubleTab& get_sigma_tab() { return ch_sigma_->valeurs(); }
   const DoubleTab& get_sigma_tab() const { return ch_sigma_->valeurs(); }
 
+  // lois en T
   double sigma(const double T, const double P) const; // can be called if point-to-point calculation is required
   void sigma(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
+
+  // lois en h
+  double sigma_h(const double h, const double P) const; // can be called if point-to-point calculation is required
+  void   sigma_h(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
 
 protected:
   REF(Probleme_base) pb_;
@@ -50,6 +55,7 @@ protected:
   double sigma__ = -1.;
 
   virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
+  virtual void sigma_h_(const SpanD H, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
 };
 
 #endif /* Interface_base_included */
