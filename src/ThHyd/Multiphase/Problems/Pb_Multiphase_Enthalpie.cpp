@@ -15,7 +15,7 @@
 
 #include <Pb_Multiphase_Enthalpie.h>
 
-Implemente_instanciable(Pb_Multiphase_Enthalpie, "Pb_Multiphase_Enthalpie", Pb_Multiphase);
+Implemente_instanciable(Pb_Multiphase_Enthalpie, "Pb_Multiphase_Enthalpie|Pb_Multiphase_h", Pb_Multiphase);
 
 Sortie& Pb_Multiphase_Enthalpie::printOn(Sortie& os) const { return Pb_Multiphase::printOn(os); }
 
@@ -25,45 +25,16 @@ Entree& Pb_Multiphase_Enthalpie::readOn(Entree& is)
   return Pb_Multiphase::readOn(is);
 }
 
-const Equation_base& Pb_Multiphase_Enthalpie::equation(int i) const
-{
-  if      (i == 0) return eq_qdm;
-  else if (i == 1) return eq_masse;
-  else if (i == 2) return eq_energie_enthalpie;
-  else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
-  else
-    {
-      Cerr << "Pb_Multiphase_Enthalpie::equation() : Wrong equation number" << i << "!" << finl;
-      Process::exit();
-    }
-  return eq_qdm; //pour renvoyer quelque chose
-}
-
-Equation_base& Pb_Multiphase_Enthalpie::equation(int i)
-{
-  if      (i == 0) return eq_qdm;
-  else if (i == 1) return eq_masse;
-  else if (i == 2) return eq_energie_enthalpie;
-  else if (i < 3 + eq_opt.size()) return eq_opt[i - 3].valeur();
-  else
-    {
-      Cerr << "Pb_Multiphase_Enthalpie::equation() : Wrong equation number" << i << "!" << finl;
-      Process::exit();
-    }
-  return eq_qdm; //pour renvoyer quelque chose
-}
-
 void Pb_Multiphase_Enthalpie::associer_milieu_base(const Milieu_base& mil)
 {
-  /* controler le type de milieu ici */
-  eq_qdm.associer_milieu_base(mil);
+  equation_qdm().associer_milieu_base(mil);
   eq_energie_enthalpie.associer_milieu_base(mil);
-  eq_masse.associer_milieu_base(mil);
+  equation_masse().associer_milieu_base(mil);
 }
 
 int Pb_Multiphase_Enthalpie::verifier()
 {
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_qdm.domaine_Cl_dis();
+  const Domaine_Cl_dis& domaine_Cl_hydr = equation_qdm().domaine_Cl_dis();
   const Domaine_Cl_dis& domaine_Cl_th = eq_energie_enthalpie.domaine_Cl_dis();
   return tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
 }

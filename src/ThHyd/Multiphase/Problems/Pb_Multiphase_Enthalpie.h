@@ -23,12 +23,16 @@ class Pb_Multiphase_Enthalpie : public Pb_Multiphase
 {
   Declare_instanciable(Pb_Multiphase_Enthalpie);
 public:
-
-  const Equation_base& equation(int) const override ;
-  Equation_base& equation(int) override;
   void associer_milieu_base(const Milieu_base& ) override;
   int verifier() override;
 
+  const Equation_base& equation(int i) const override { return (i == 2) ? eq_energie_enthalpie : Pb_Multiphase::equation(i); }
+  Equation_base& equation(int i) override { return (i == 2) ? eq_energie_enthalpie : Pb_Multiphase::equation(i); }
+
+  Equation_base& equation_energie() override { return eq_energie_enthalpie; }
+  const Equation_base& equation_energie() const override { return eq_energie_enthalpie; }
+
+protected:
   Energie_Multiphase_Enthalpie eq_energie_enthalpie;
 };
 
