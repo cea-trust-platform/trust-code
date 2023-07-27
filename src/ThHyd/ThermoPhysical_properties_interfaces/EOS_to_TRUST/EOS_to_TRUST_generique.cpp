@@ -263,7 +263,7 @@ int EOS_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_ph(const MSpanD input, 
   assert((int )prop.size() == 4 && (int )input.size() == 2);
 
   const SpanD H = input.at("enthalpie"), P = input.at("pressure");
-  if ((int )H.size() == ncomp * (int )P.size()) Process::exit("Ah bon ? NON !");
+  if ((int )H.size() != ncomp * (int )P.size()) Process::exit("Ah bon ? NON !");
 
   const int nb_out = 4; /* 5 variables to fill */
   ArrOfInt tmp((int)P.size());
@@ -276,10 +276,16 @@ int EOS_to_TRUST_generique::tppi_get_CPMLB_pb_multiphase_ph(const MSpanD input, 
       assert((int )H.size() == ncomp * (int )itr.second.size());
       Loi_en_h prop_ = itr.first;
       SpanD span_ = itr.second;
-      flds_out[i_out++] = EOS_Field(EOS_prop_en_h[(int) prop_][0], EOS_prop_en_h[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
+      if (prop_ != Loi_en_h::BETA)
+        flds_out[i_out++] = EOS_Field(EOS_prop_en_h[(int) prop_][0], EOS_prop_en_h[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
     }
 
+  /* beta  FIXME */
+  SpanD B = prop.at(Loi_en_h::BETA);
+  for (int i = 0; i < (int) B.size(); i++) B[i] = 0.;
+
   int err_ = tppi_get_all_properties_h_(input, flds_out, ferr, ncomp, id);
+
   return err_;
 #else
   Cerr << "EOS_to_TRUST_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;
