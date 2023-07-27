@@ -455,6 +455,7 @@ int Domaine_PolyMAC::W_stabiliser(DoubleTab& W, DoubleTab& R, DoubleTab& N, int 
 void Domaine_PolyMAC::init_m2_new() const
 {
   const IntTab& e_f = elem_faces();
+  const DoubleVect& fs = face_surfaces(), &ve = volumes();
   int i, j, e, n_f, ctr[3] = {0, 0, 0 }, n_tot = Process::mp_sum(nb_elem());
   double spectre[4] = { DBL_MAX, DBL_MAX, 0, 0 }; //vp min (partie consistante, partie stab), vp max (partie consistante, partie stab)
 
@@ -467,9 +468,8 @@ void Domaine_PolyMAC::init_m2_new() const
   W.set_smart_resize(1), M.set_smart_resize(1);
 
   /* pour le partage entre procs */
-  DoubleTrav m2e(0, e_f.dimension(1), e_f.dimension(1)), w2e(0, e_f.dimension(1), e_f.dimension(1)), nu1(0, 1);
-  domaine().creer_tableau_elements(m2e), domaine().creer_tableau_elements(w2e), domaine().creer_tableau_elements(nu1);
-  nu1 = 1.0;
+  DoubleTrav m2e(0, e_f.dimension(1), e_f.dimension(1)), w2e(0, e_f.dimension(1), e_f.dimension(1));
+  domaine().creer_tableau_elements(m2e), domaine().creer_tableau_elements(w2e);
 
 
   /* calcul sur les elements reels */
@@ -478,14 +478,10 @@ void Domaine_PolyMAC::init_m2_new() const
   domaine().creer_tableau_elements(nnz), domaine().creer_tableau_elements(nef);
   for (e = 0; e < nb_elem(); e++)
     {
-      W2(&nu1, e, W);
-      M2(&nu1, e, M);
+      W2(nullptr, e, W);
+      M2(nullptr, e, M);
 
       for (n_f = 0; n_f < e_f.dimension(1) && e_f(e, n_f) >= 0; ) n_f++;
-      /* matrice M2 : W2^-1 */
-      for (i = 0; i < n_f; i++)
-        for (j = i + 1; j < n_f; j++) M(i, j, 0) = M(j, i, 0);
-
       for (i = 0; i < n_f; i++)
         for (j = 0, nef(e)++; j < n_f; j++) w2e(e, i, j) = W(i, j, 0), nnz(e) += (std::fabs(W(i, j, 0)) > 1e-6);
       for (i = 0; i < n_f; i++)
@@ -504,6 +500,22 @@ void Domaine_PolyMAC::init_m2_new() const
         for (j = 0, w2j.append_line(i), w2c.append_line(w2e(e, i, i)); j < n_f; j++)
           if (j != i && std::fabs(w2e(e, i, j)) > 1e-6) w2j.append_line(j), w2c.append_line(w2e(e, i, j));
     }
+  int f, fb;
+  for (e = 0; e < nb_elem(); e++)
+    for (i = 0; i < m2d(e + 1) - m2d(e); i++)
+      for (f = e_f(e, i), j = w2i(m2d(e) + i); j < w2i(m2d(e) + i + 1); j++)
+        {
+          fb = e_f(e, w2j(j));
+          w2c(j) /= fs(f) * fs(fb) / ve(e);
+        }
+
+  for (e = 0; e < nb_elem(); e++)
+    for (i = 0; i < m2d(e + 1) - m2d(e); i++)
+      for (f = e_f(e, i), j = m2i(m2d(e) + i); j < m2i(m2d(e) + i + 1); j++)
+        {
+          fb = e_f(e, m2j(j));
+          m2c(j) *= fs(f) * fs(fb) / ve(e);
+        }
 
   CRIMP(m2d), CRIMP(m2i), CRIMP(m2j), CRIMP(m2c), CRIMP(w2i), CRIMP(w2j), CRIMP(w2c);
   Cerr << 100. * Process::mp_sum(ctr[0]) / n_tot << "% diag " << 100. * Process::mp_sum(ctr[1]) / n_tot << "% sym "
