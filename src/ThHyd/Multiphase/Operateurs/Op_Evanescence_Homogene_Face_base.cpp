@@ -87,18 +87,20 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
 {
 
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+  const bool reso_en_T = pbm.resolution_en_T();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
   const Champ_Face_base& ch = ref_cast(Champ_Face_base, equation().inconnue().valeur());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
-  const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
-                   &rho = equation().milieu().masse_volumique().passe(),
-                    &temp  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
-                     &press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().passe(),
-                      &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
-                       *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
-                        *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
-                         *gravity = (equation().probleme().has_champ("gravite")) ? &equation().probleme().get_champ("gravite").valeurs() : nullptr ;
+  const DoubleTab& inco = ch.valeurs(), &vfd = domaine.volumes_entrelaces_dir(),
+                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
+                    &rho = equation().milieu().masse_volumique().passe(),
+                     &temp_ou_enth  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
+                      &press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().passe(),
+                       &mu = ref_cast(Milieu_composite, equation().milieu()).viscosite_dynamique().passe(),
+                        *d_bulles = (equation().probleme().has_champ("diametre_bulles")) ? &equation().probleme().get_champ("diametre_bulles").valeurs() : nullptr,
+                         *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : nullptr,
+                          *gravity = (equation().probleme().has_champ("gravite")) ? &equation().probleme().get_champ("gravite").valeurs() : nullptr ;
 
   const DoubleVect& vf = domaine.volumes_entrelaces(), &dh_e = milc.diametre_hydraulique_elem();
   int e, f, i, j, k, l, n, m, N = inco.line_size(), Nk = (k_turb) ? (*k_turb).line_size() : 0, d, D = dimension, cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), Np = press.line_size(),
@@ -180,7 +182,7 @@ void Op_Evanescence_Homogene_Face_base::ajouter_blocs(matrices_t matrices, Doubl
                         {
                           const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (m-n-1); // Et oui ! matrice triang sup !
                           Interface_base& sat = milc.get_interface(n, m);
-                          in.sigma(ind_trav) = sat.sigma(temp(e, n), press(e, n * (Np > 1)));
+                          in.sigma(ind_trav) = reso_en_T ? sat.sigma(temp_ou_enth(e, n), press(e, n * (Np > 1))) : sat.sigma_h(temp_ou_enth(e, n), press(e, n * (Np > 1)));
                         }
                   }
                 for (n = 0; n < Nk; n++) in.k(n) += vfd(f, i) / vf(f) *((k_turb) ? (*k_turb)(e, n) : -1.), in.nut(n) += vfd(f, i) / vf(f) *((is_turb) ? nut(e, n) : -1.) ;

@@ -27,6 +27,9 @@ Entree& Frottement_interfacial_VDF::readOn(Entree& is) { return Source_Frottemen
 void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+  const bool res_en_T = pbm.resolution_en_T();
+  if (!res_en_T) Process::exit("Frottement_interfacial_VDF::ajouter_blocs NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
+
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis().valeur());
@@ -34,7 +37,7 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(),
                     &dh_e = equation().milieu().diametre_hydraulique_elem();
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = pbm.equation_masse().inconnue().passe(),
-                   &press = ref_cast(QDM_Multiphase, equation()).pression().passe(), &temp = pbm.equation_energie().inconnue().passe(),
+                   &press = ref_cast(QDM_Multiphase, equation()).pression().passe(), &temp_ou_enth = pbm.equation_energie().inconnue().passe(),
                     &rho = equation().milieu().masse_volumique().passe(), &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
 
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
@@ -72,7 +75,8 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
           {
             Interface_base& sat = milc.get_interface(k,l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+            for (i = 0 ; i<ne_tot ; i++)
+              Sigma_tab(i,ind_trav) = res_en_T ? sat.sigma(temp_ou_enth(i,k),press(i,k * (Np > 1))) : sat.sigma_h(temp_ou_enth(i,k),press(i,k * (Np > 1)));
           }
       }
 
@@ -87,7 +91,7 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
               {
                 a_l(n) += vfd(f, c) / vf(f) * alpha(e, n);
                 p_l(n) += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
-                T_l(n) += vfd(f, c) / vf(f) * temp(e, n);
+                T_l(n) += vfd(f, c) / vf(f) * temp_ou_enth(e, n); // FIXME SI res_en_T
                 rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
                 mu_l(n) += vfd(f, c) / vf(f) * mu(!cM * e, n);
                 for (k = n+1; k < N; k++)

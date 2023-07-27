@@ -41,6 +41,9 @@ void Frottement_interfacial_PolyMAC_P0::dimensionner_blocs_aux(IntTrav& stencil)
 void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
+  const bool res_en_T = pbm.resolution_en_T();
+  if (!res_en_T) Process::exit("Frottement_interfacial_PolyMAC_P0::ajouter_blocs NOT YET PORTED TO ENTHALPY EQUATION ! TODO FIXME !!");
+
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, equation().domaine_dis().valeur());
@@ -49,7 +52,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
   const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(),
                    &alpha = pbm.equation_masse().inconnue().passe(),
                     &press = ref_cast(QDM_Multiphase, equation()).pression().passe(),
-                     &temp  = pbm.equation_energie().inconnue().passe(),
+                     &temp_ou_enth  = pbm.equation_energie().inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
@@ -99,7 +102,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
             {
               a_l(n)   += vfd(f, c) / vf(f) * alpha(e, n);
               p_l(n)   += vfd(f, c) / vf(f) * press(e, n * (Np > 1));
-              T_l(n)   += vfd(f, c) / vf(f) * temp(e, n);
+              T_l(n)   += vfd(f, c) / vf(f) * temp_ou_enth(e, n); // FIXME SI res_en_T
               rho_l(n) += vfd(f, c) / vf(f) * rho(!cR * e, n);
               mu_l(n)  += vfd(f, c) / vf(f) * mu(!cM * e, n);
               for (k = n+1; k < N; k++)
@@ -144,7 +147,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
         {
           a_l(n)   = alpha(e, n);
           p_l(n)   = press(e, n * (Np > 1));
-          T_l(n)   =  temp(e, n);
+          T_l(n)   =  temp_ou_enth(e, n); // FIXME SI res_en_T
           rho_l(n) =   rho(!cR * e, n);
           mu_l(n)  =    mu(!cM * e, n);
           for (k = n+1; k < N; k++)
