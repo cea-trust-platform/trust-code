@@ -23,14 +23,10 @@ class Motcle;
 class Option_PolyMAC : public Interprete
 {
   Declare_instanciable(Option_PolyMAC);
-
 public :
-
   Entree& interpreter(Entree&) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  int test_mot(const Motcle& mot) const;
   static int USE_NEW_M2;
 };
 
-
-#endif
+#endif /* Option_PolyMAC_included */
