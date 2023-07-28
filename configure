@@ -633,10 +633,12 @@ do
    elif [ "${1#-without-host_file}" != $1 ]
    then
       export TRUST_WITHOUT_HOST=1
+
    elif [ "${1#-without-conda}" != $1 ]
    then
       export TRUST_WITHOUT_CONDA=1
       export TRUST_DISABLE_JUPYTER=1
+      export TRUST_DISABLE_MPI4PY=1
 
    else
       echo "Unknown option $1."

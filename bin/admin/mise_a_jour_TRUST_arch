@@ -378,6 +378,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang40" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-4.0/bin/clang++ -cc=/usr/lib/llvm-4.0/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel19" | grep ^$HOST"\."`" != "" ]			&& modules_to_load="gcc/6.5.0 iccifort/2019.5.281 impi/icc_2019.5.281/2019.5.281"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-intel21" | grep ^$HOST"\."`" != "" ]			&& modules_to_load="impi/intel-compilers_2021.4.0/2021.4.0 imkl/2021.4.0"
+[ "`$TRUST_ROOT/bin/admin/liste_machines "\-gcc8" | grep ^$HOST"\."`" != "" ]				&& modules_to_load="gcccore/.8.3.0 gcc/8.3.0"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-cuda=download" | grep ^$HOST"\."`" != "" ]		        && option_configure=$option_configure" -cuda=download"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-force_even_unsupported" | grep ^$HOST"\."`" != "" ]		&& option_configure=$option_configure" -force_even_unsupported"
 # Compilation en INT64
@@ -929,7 +930,7 @@ do
 	       cd $TRUST_ROOT/MonoDir_mpi_opt/src
 	       export VALGRIND=1
 	       #ctest -j$TRUST_NB_PHYSICAL_CORES &> ctest_valgrind.log
-	       ctest -j2 &> ctest_valgrind.log
+	       ctest -j10 &> ctest_valgrind.log
 	       export VALGRIND=0
 	       nb_tests_tot=`grep "tests failed out of" ctest_valgrind.log  | cut -d' ' -f 9`
 	       nb_tests_ok=`grep Passed ctest_valgrind.log | wc -l`

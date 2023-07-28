@@ -1,5 +1,4 @@
 # PARALLEL OK #
-# VALGRIND NOT #
 dimension 2
 Pb_hydraulique pb
 Domaine dom
