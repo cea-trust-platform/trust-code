@@ -69,11 +69,15 @@ public :
   int reprendre(Entree& ) override;
   inline void completer(void) override { } ;
   int resolution_monolithique(const Nom& nom) const;
+  Entree& lire_facsec(Entree&) override;
+  void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_);
 
 protected:
   int nb_ite_max = 200;
   double residu_old_ = 0, facsec_max_ = DMAXFLOAT;
   int nb_ite_sans_accel_ = -1;
+  int nb_ite_sans_accel_max_ =  20000;
+  double rapport_residus_ = 1.2;
   std::vector<std::set<std::string>> resolution_monolithique_;
 };
 

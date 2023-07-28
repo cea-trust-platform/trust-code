@@ -180,6 +180,7 @@ public :
   virtual Entree& lire_temps_cpu_max(Entree&);
   virtual Entree& lire_residuals(Entree&);
   virtual Entree& lire_facsec(Entree&);
+  virtual void lire_facsec_func(Nom&);
 
   virtual void completer() =0;
 

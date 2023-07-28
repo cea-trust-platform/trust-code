@@ -22,6 +22,7 @@
 #include <LecFicDiffuse.h>
 #include <communications.h>
 #include <string>
+
 Implemente_instanciable(Schema_Euler_Implicite,"Schema_euler_implicite|Scheme_euler_implicit",Schema_Implicite_base);
 
 //     printOn()
@@ -58,22 +59,23 @@ Entree& Schema_Euler_Implicite::readOn(Entree& s)
   return s;
 }
 
-void calcul_fac_sec(double& residu_,double& residu_old,double& facsec_,const double facsec_max_,int& nb_ite_sans_accel_)
+void Schema_Euler_Implicite::calcul_fac_sec(double& residu,double& residu_old,double& facsec)
 {
-  double rap=1.2;
-  int nb_ite_sans_accel_max=10;
-  nb_ite_sans_accel_max=20000;
-
   if (residu_old==0)
     {
-      residu_old=residu_;
+      residu_old=residu;
       nb_ite_sans_accel_=0;
     }
-  else if ((residu_old>rap*residu_)||(nb_ite_sans_accel_>nb_ite_sans_accel_max))
+  else if(facsec_func_)
     {
-      facsec_*=sqrt(rap);
-      residu_old=residu_;
-      facsec_=std::min(facsec_,facsec_max_);
+      facsec_fn_.setVar(0, temps_courant());
+      facsec = facsec_fn_.eval();
+    }
+  else if ((residu_old>rapport_residus_*residu)||(nb_ite_sans_accel_>nb_ite_sans_accel_max_))
+    {
+      facsec*=sqrt(rapport_residus_);
+      residu_old=residu;
+      facsec=std::min(facsec,facsec_max_);
       nb_ite_sans_accel_=0;
     }
   nb_ite_sans_accel_++;
@@ -94,9 +96,16 @@ void Schema_Euler_Implicite::set_param(Param& param)
 {
   // XD schema_euler_implicite schema_implicite_base schema_euler_implicite -1 This is the Euler implicit scheme.
   param.ajouter("max_iter_implicite",&nb_ite_max);
-  param.ajouter("facsec_max", &facsec_max_); // XD_ADD_P floattant 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value.NL2 Warning: Some implicit schemes do not permit high facsec_max, example Schema_Adams_Moulton_order_3 needs facsec=facsec_max=1. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value beta high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
+  param.ajouter_non_std("facsec_max", (this)); // for old syntax
   param.ajouter_non_std("resolution_monolithique", (this)); // XD_ADD_P bloc_lecture Activate monolithic resolution for coupled problems. Solves together the equations corresponding to the application domains in the given order. All aplication domains of the coupled equations must be given to determine the order of resolution. If the monolithic solving is not wanted for a specific application domain, an underscore can be added as prefix. For example, resolution_monolithique { dom1 { dom2 dom3 } _dom4 } will solve in a single matrix the equations having dom1 as application domain, then the equations having dom2 or dom3 as application domain in a single matrix, then the equations having dom4 as application domain in a sequential way (not in a single matrix).
   Schema_Implicite_base::set_param(param);
+
+  // XD  facsec interprete nul 1 To parameter the safety factor for the time step during the simulation.
+  // XD attr facsec_ini flottant 1 Initial facsec taken into account at the beginning of the simulation.
+  // XD attr facsec_max floattant 1 Maximum ratio allowed between time step and stability time returned by CFL condition. The initial ratio given by facsec keyword is changed during the calculation with the implicit scheme but it couldn\'t be higher than facsec_max value.NL2 Warning: Some implicit schemes do not permit high facsec_max, example Schema_Adams_Moulton_order_3 needs facsec=facsec_max=1. NL2 Advice:NL2 The calculation may start with a facsec specified by the user and increased by the algorithm up to the facsec_max limit. But the user can also choose to specify a constant facsec (facsec_max will be set to facsec value then). Faster convergence has been seen and depends on the kind of calculation: NL2-Hydraulic only or thermal hydraulic with forced convection and low coupling between velocity and temperature (Boussinesq value beta low), facsec between 20-30NL2-Thermal hydraulic with forced convection and strong coupling between velocity and temperature (Boussinesq value beta high), facsec between 90-100 NL2-Thermohydralic with natural convection, facsec around 300NL2 -Conduction only, facsec can be set to a very high value (1e8) as if the scheme was unconditionally stableNL2These values can also be used as rule of thumb for initial facsec with a facsec_max limit higher.
+  // XD attr rapport_residus flottant 1 Ratio between the residual at time n and the residual at time n+1 above which the facsec is increased by multiplying by sqrt(rapport_residus) (1.2 by default).
+  // XD attr nb_ite_sans_accel_max int 1 Maximum number of iterations without facsec increases (20000 by default): if facsec does not increase with the previous condition (ration between 2 consecutive residuals too high), we increase it by force after nb_ite_sans_accel_max iterations.
+  // XD attr expression chaine Definition of facsec as a function of time.
 }
 
 int Schema_Euler_Implicite::lire_motcle_non_standard(const Motcle& mot, Entree& is)
@@ -127,8 +136,63 @@ int Schema_Euler_Implicite::lire_motcle_non_standard(const Motcle& mot, Entree& 
             }
         }
     }
+  else if (mot == "facsec_max")  //old syntax
+    is >> facsec_max_;
   else return Schema_Implicite_base::lire_motcle_non_standard(mot, is);
   return 1;
+}
+
+
+Entree& Schema_Euler_Implicite::lire_facsec(Entree& is)
+{
+  Motcle m;
+  is >> m;
+  if (m == "{")  // New syntax
+    {
+      Motcles facsec_mots(5);
+      facsec_mots[0]="facsec_ini";
+      facsec_mots[1]="facsec_max";
+      facsec_mots[2]="rapport_residus";
+      facsec_mots[3]="nb_ite_sans_accel_max";
+      facsec_mots[4]="expression";
+      is >> m;
+      while(m!="}")
+        {
+          int res_rang=facsec_mots.search(m);
+          switch(res_rang)
+            {
+            case 0:
+              is >> facsec_;
+              break;
+            case 1:
+              is >> facsec_max_;
+              break;
+            case 2:
+              is >> rapport_residus_;
+              break;
+            case 3:
+              is >> nb_ite_sans_accel_max_;
+              break;
+            case 4:
+              {
+                Nom facsec_str;
+                is >> facsec_str;
+                lire_facsec_func(facsec_str);
+                break;
+              }
+            default :
+              {
+                Cerr<<" We do not understand "<<m <<"in Schema_Euler_Implicite::lire_facsec"<<finl;
+                Cerr<<" keywords understood "<<facsec_mots<<finl;
+                exit();
+              }
+            }
+          is >> m;
+        }
+    }
+  else
+    lire_facsec_func(m);
+  return is;
 }
 
 bool Schema_Euler_Implicite::initTimeStep(double dt)
@@ -202,7 +266,7 @@ void Schema_Euler_Implicite::Initialiser_Champs(Probleme_base& pb)
 
 int Schema_Euler_Implicite::mettre_a_jour()
 {
-  calcul_fac_sec(residu_,residu_old_,facsec_,facsec_max_,nb_ite_sans_accel_);
+  calcul_fac_sec(residu_,residu_old_,facsec_);
   return Schema_Temps_base::mettre_a_jour();
 }
 
@@ -584,7 +648,7 @@ int Schema_Euler_Implicite::reprendre(Entree&)
         }
     }
 // GF
-  calcul_fac_sec(residu_lu,residu_old_,facsec_lu,facsec_max_,nb_ite_sans_accel_);
+  calcul_fac_sec(residu_lu,residu_old_,facsec_lu);
   envoyer_broadcast(facsec_lu, 0 /* pe source */);
   envoyer_broadcast(residu_lu, 0 /* pe source */);
   envoyer_broadcast(nb_ite_sans_accel_, 0 /* pe source */);

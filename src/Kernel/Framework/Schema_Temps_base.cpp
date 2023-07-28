@@ -273,6 +273,7 @@ void Schema_Temps_base::set_param(Param& param)
   // XD attr norm chaine(into=["L2","max"]) norm 1 allows to choose the norm we want to use (max norm by default). Possible to specify L2-norm.
   // XD attr relative chaine(into=["0","1","2"]) relative 1 This is the old keyword seuil_statio_relatif_deconseille. If it is set to 1, it will normalize the residuals with the residuals of the first 5 timesteps (default is 0). if set to 2, residual will be computed as R/(max-min).
 }
+
 /*! @brief Surcharge Objet_U::printOn(Sortie&) Imprime le schema en temps sur un flot de sortie.
  *
  *     !! Attention n'est pas symetrique de la lecture !!
@@ -478,15 +479,21 @@ Entree& Schema_Temps_base::lire_facsec(Entree& is)
 {
   Nom facsec_str;
   is >> facsec_str;
+  lire_facsec_func(facsec_str);
+  return is;
+}
+
+void Schema_Temps_base::lire_facsec_func(Nom& facsec_str)
+{
   facsec_fn_.setNbVar(1);
   facsec_fn_.setString(facsec_str);
   facsec_fn_.addVar("t");
   facsec_fn_.parseString();
   facsec_ = facsec_fn_.eval();
   if(facsec_str.majuscule().contient("T"))
-	  facsec_func_ = true;
-  return is;
+    facsec_func_ = true;
 }
+
 
 /*! @brief Constructeur par defaut d'un schema en temps.
  *
