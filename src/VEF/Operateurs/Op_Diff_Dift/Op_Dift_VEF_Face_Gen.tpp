@@ -369,11 +369,11 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
  *  METHODES POUR L'IMPLICITE
  * ***************************
  */
-template <typename DERIVED_T> template <Type_Champ _TYPE_>
+template <typename DERIVED_T> template <Type_Champ _TYPE_, bool _IS_STAB_>
 void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const DoubleTab& transporte, Matrice_Morse& matrice, const DoubleTab& nu,
                                                                     const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
 {
-  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL);
+  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_STAB = _IS_STAB_;;
 
   // On traite les faces bord
   const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
@@ -434,6 +434,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
                               {
                                 double d_nu = nu(elem0, is_VECT ? 0 : nc) + nu_turb(elem0);
                                 double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
+                                if (is_STAB && valA < 0.) valA = 0.;
+
                                 int n0 = num_face0 * nb_comp + nc;
                                 int n0perio = fac_asso * nb_comp + nc;
                                 int j0 = j * nb_comp + nc;
@@ -583,6 +585,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
                           double d_nu = nu(elem, is_VECT ? 0 : nc) + nu_turb(elem);
                           double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face, j, elem, d_nu);
                           const int n0 = num_face * nb_comp + nc, j0 = j * nb_comp + nc;
+                          if (is_STAB && valA < 0.) valA = 0.;
 
                           if (ind_face < nb_faces_bord_reel)
                             {
@@ -624,11 +627,11 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
 }
 
 // METHODES GENERIQUES
-template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_>
+template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
 void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inconnue, DoubleTab* resu /* Si explicite */, Matrice_Morse* matrice /* Si implicite */,
                                                             const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
 {
-  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE);
+  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE), is_STAB = _IS_STAB_;
 
   const Domaine_VEF& domaine_VEF = dom_vef.valeur();
   const IntTab& face_voisins = domaine_VEF.face_voisins(), &elem_faces = domaine_VEF.elem_faces();
@@ -674,6 +677,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
                         double d_nu = nu(elem0, is_VECT ? 0 : nc) + nu_turb(elem0);
                         double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
 
+                        if (is_STAB && valA < 0.) valA = 0.;
+
                         if (is_EXPLICIT)
                           {
                             assert(resu != nullptr);
@@ -703,14 +708,14 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
                               for (int nc2 = 0; nc2 < nb_comp; nc2++)
                                 {
                                   const int n1 = num_face0 * nb_comp + nc2, j1 = j * nb_comp + nc2;
-                                  double coeff_s = tmp * face_normale(num_face0, nc2) * face_normale(j, nc);
+                                  double coeff_s = is_STAB ? 0. : tmp * face_normale(num_face0, nc2) * face_normale(j, nc);
 
                                   (*matrice)(n0, n1) += coeff_s * porosite_eventuelle(num_face0);
                                   (*matrice)(n0, j1) -= coeff_s * porosite_eventuelle(j);
 
                                   if (j < nb_faces) // On traite les faces reelles
                                     {
-                                      double coeff_s2 = tmp * face_normale(num_face0, nc) * face_normale(j, nc2);
+                                      double coeff_s2 = is_STAB ? 0. : tmp * face_normale(num_face0, nc) * face_normale(j, nc2);
                                       (*matrice)(j0, n1) -= coeff_s2 * porosite_eventuelle(num_face0);
                                       (*matrice)(j0, j1) += coeff_s2 * porosite_eventuelle(j);
                                     }

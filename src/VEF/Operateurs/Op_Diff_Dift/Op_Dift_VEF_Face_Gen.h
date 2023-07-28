@@ -53,13 +53,13 @@ public:
   }
 
   // methodes pour l'implicite
-  template <Type_Champ _TYPE_>
+  template <Type_Champ _TYPE_, bool _IS_STAB_ = false>
   void ajouter_contribution_bord_gen(const DoubleTab&, Matrice_Morse&, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 
-  template <Type_Champ _TYPE_>
+  template <Type_Champ _TYPE_, bool _IS_STAB_ = false>
   void ajouter_contribution_interne_gen(const DoubleTab& inco, Matrice_Morse& mat, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
   {
-    ajouter_interne_gen__<_TYPE_, Type_Schema::IMPLICITE>(inco, nullptr, &mat, nu, nu_turb, porosite_eventuelle);
+    ajouter_interne_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_>(inco, nullptr, &mat, nu, nu_turb, porosite_eventuelle);
   }
 
 protected:
@@ -69,7 +69,7 @@ private:
   REF(Domaine_VEF) dom_vef;
   REF(Domaine_Cl_VEF) zcl_vef;
 
-  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_>
+  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
   void ajouter_interne_gen__(const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 };
 

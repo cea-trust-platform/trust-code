@@ -22,42 +22,32 @@
 class Op_Dift_Stab_VEF_Face: public Op_Dift_VEF_Face
 {
   Declare_instanciable(Op_Dift_Stab_VEF_Face);
-
 public:
-
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
-
-  void ajouter_cas_scalaire     (const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
-  void ajouter_cas_vectoriel    (const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
-
-  void ajouter_contribution               (const DoubleTab& transporte, Matrice_Morse& matrice) const;
-  void ajouter_contribution_multi_scalaire(const DoubleTab& transporte, Matrice_Morse& matrice) const;
-
-  void ajouter_contribution_cl               (const DoubleTab& transporte, Matrice_Morse& matrice, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const;
-  void ajouter_contribution_multi_scalaire_cl(const DoubleTab& transporte, Matrice_Morse& matrice, const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const;
-
-  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-
   void completer() override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override; // pour l'explicite
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override; // pour l'implicite
 
 protected:
+  void modifie_pour_Cl(const DoubleTab&, DoubleTab&) const;
+
+  void ajouter_cas_scalaire(const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
+  void ajouter_cas_vectoriel(const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
 
   void calculer_coefficients(const DoubleTab&, DoubleTab&) const;
   void calculer_coefficients_vectoriel_diag(const DoubleTab& nu, const DoubleTab& nu2, DoubleTab& Aij) const;
-  inline double aij_extradiag(const int elem, const int facei, const int facej, const int dim, const int dim2, const double nu_elem) const;
 
-  void calculer_min(const DoubleTab&, int&, DoubleTab&) const;
-  void calculer_max(const DoubleTab&, int&, DoubleTab&) const;
-  double calculer_gradients(int, const DoubleTab&) const;
+  void calculer_min_max(const DoubleTab&, int&, DoubleTab&, const bool is_max) const;
 
-  void modifie_pour_Cl(const DoubleTab&, DoubleTab&) const;
   void ajouter_operateur_centre(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   void ajouter_operateur_centre_vectoriel(const DoubleTab& Aij_diag, const DoubleTab& nu, const DoubleTab& inconnue, DoubleTab& resu2) const;
-  void ajouter_diffusion(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
-  void ajouter_diffusion_vectoriel(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const;
-  void ajouter_antidiffusion(const DoubleTab&, const DoubleTab&, DoubleTab&) const;
-  void ajouter_antidiffusion_vectoriel(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const;
 
+  void ajouter_diffusion(const DoubleTab&, const DoubleTab&, DoubleTab&, const bool ) const;
+  void ajouter_antidiffusion(const DoubleTab&, const DoubleTab&, DoubleTab&, const bool ) const;
+
+  double calculer_gradients(int, const DoubleTab&) const;
+  inline double aij_extradiag(const int elem, const int facei, const int facej, const int dim, const int dim2, const double nu_elem) const;
+
+private:
   IntTab is_dirichlet_faces_;
   REF(Champ_Inc) divergence_U;
 
@@ -74,7 +64,6 @@ inline double Op_Dift_Stab_VEF_Face::aij_extradiag(const int elem, const int fac
 
   double volume = 0., signei = 1., signej = 1., aij = 0.;
 
-  //Debut de l'algo
   assert(dim < equation().inconnue().valeurs().dimension(1));
   assert(dim2 < equation().inconnue().valeurs().dimension(1));
   assert(dim < dim2);
@@ -92,20 +81,4 @@ inline double Op_Dift_Stab_VEF_Face::aij_extradiag(const int elem, const int fac
   return aij;
 }
 
-inline void Op_Dift_Stab_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
-{
-  if (!new_jacobian_)
-    Op_Dift_VEF_Face::contribuer_a_avec(inco, matrice);
-  else
-    {
-      const Champ_base& inconnue = equation().inconnue().valeur();
-      const Nature_du_champ nature_champ = inconnue.nature_du_champ();
-
-      if (nature_champ != multi_scalaire)
-        ajouter_contribution(inco, matrice);
-      else
-        ajouter_contribution_multi_scalaire(inco, matrice);
-    }
-}
-
-#endif
+#endif /* Op_Dift_Stab_VEF_Face_included */
