@@ -29,9 +29,7 @@ define_modules_config()
    then
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
-         #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # Champ_P1NC.cpp ne compile pas car nvhpc trop recent
-         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.5 nvhpc/22.1" # Cuda 11.5 donc c-amg ne marchera pas en multi-gpu, tant pis
-         module="gnu/8.3.0 mpi/openmpi/4.0.5 nvhpc/21.3 cuda/11.2" # Cuda 11.2 mais c-amg ne marche toujours pas en multi-gpu. Pourquoi ?
+         module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # SDK recent pour bug use_device_ptr avec Nvidia (SDK<21.7)
          echo "export NVHPC_CUDA_HOME=\$CUDA_HOME;unset CUDA_HOME" >> $env # Pour desactiver des warnings a la compilation
       else
          #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
@@ -40,7 +38,7 @@ define_modules_config()
    else
       #module="intel/20.0.4 mpi/openmpi/4.0.5"
       # passage a gnu pour v1.9.2
-      module="gnu/11  mpi/openmpi/4.0.5"
+      module="gnu/11 mpi/openmpi/4.0.5"
    fi
    module="python3/3.8.10 swig/4.0.2 texlive cmake/3.22.2 "$module # cmake 3.22 important pour AmgX et Nvidia-HPC
    #

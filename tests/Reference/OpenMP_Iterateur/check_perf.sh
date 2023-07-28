@@ -3,7 +3,7 @@ check()
 {
    ref=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU.ref_$2`
    new=`awk '/Secondes/ && /pas de temps/ {print $NF}' $1.TU`
-   echo $ref $new | awk '// {if (($1-$2)/($1+$2)>0.05) {exit -1}}'
+   echo $ref $new | awk '// {if (($2-$1)/($1+$2)>0.05) {exit -1}}' # On verifie qu'on ne depasse pas +5% de la performance
    err=$?
    if [ $err != 0 ]
    then
@@ -13,7 +13,7 @@ check()
       echo "================================"
    else
       ecart=`echo $ref $new | awk '// {printf("%2.1f%\n",-($1-$2)/($1+$2)*100)}'`
-      echo "Performance is OK ($ecart) for $1 on $2: $new s < $ref s (reference)"
+      echo "Performance is OK ($ecart) $new s < $ref s (reference) for $1 on $2"
    fi
 }
 run()
