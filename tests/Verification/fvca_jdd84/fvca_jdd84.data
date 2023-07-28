@@ -23,6 +23,7 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 PolyMAC  dis
+Option_PolyMAC { use_osqp }
 
 Schema_euler_implicite sch
 Read sch
@@ -33,7 +34,7 @@ Read sch
     facsec 1e30
     seuil_statio 1e-8
     # solveur implicite { solveur petsc cholesky { cli { -mat_mumps_icntl_23 10000 } } } #
-    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 2000 } } }
+    solveur solveur_U_P { solveur petsc cholesky { cli { -mat_mumps_icntl_23 10000 } } }
 }
 
 Associate  pb dom

@@ -25,6 +25,7 @@ Scatter DOM.Zones dom
 END SCATTER #
 
 PolyMAC_P0 dis
+Option_PolyMAC { use_osqp }
 
 Schema_euler_implicite sch
 Read sch
