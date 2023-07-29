@@ -19,10 +19,6 @@
 #include <Op_Dift_VEF_Face_Gen.h>
 #include <Op_Dift_VEF_base.h>
 #include <Matrice_Morse.h>
-#include <Champ_base.h>
-#include <TRUST_Ref.h>
-
-class Champ_P1NC;
 
 /*! @brief class Op_Dift_VEF_Face
  *
@@ -31,17 +27,8 @@ class Op_Dift_VEF_Face: public Op_Dift_VEF_base, public Op_Dift_VEF_Face_Gen<Op_
 {
   Declare_instanciable(Op_Dift_VEF_Face);
 public:
-
-  void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
-  inline const Champ_base& diffusivite() const override { return diffusivite_; }
-
   double calculer_dt_stab() const override;
   void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
-
-  inline double diffusivite(int) const
-  {
-    return (diffusivite().valeurs().nb_dim() == 1) ? (diffusivite().valeurs())(0) : (diffusivite().valeurs())(0, 0);
-  }
 
   inline void dimensionner(Matrice_Morse& matrice) const override
   {
@@ -64,9 +51,6 @@ public:
   void contribuer_a_avec(const DoubleTab& , Matrice_Morse& ) const override; // pour l'implicite
 
   void contribuer_au_second_membre(DoubleTab& resu) const override; // bientot a la poubelle ... reste rayonnement ...
-
-protected:
-  REF(Champ_base) diffusivite_;
 };
 
 #endif /* Op_Dift_VEF_Face_included */

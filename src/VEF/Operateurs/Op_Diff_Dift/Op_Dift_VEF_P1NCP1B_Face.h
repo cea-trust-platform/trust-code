@@ -19,12 +19,6 @@
 #include <Matrice_Morse_Sym.h>
 #include <Op_Dift_VEF_base.h>
 #include <SolveurSys.h>
-#include <TRUST_Ref.h>
-
-class Domaine_VEF;
-class Domaine_Cl_VEF;
-class Mod_turb_hyd_base;
-class Champ_P1NC;
 
 /*! @brief class Op_Dift_VEF_P1NCP1B_Face Cette classe represente l'operateur de diffusion
  *
@@ -36,46 +30,31 @@ class Champ_P1NC;
 class Op_Dift_VEF_P1NCP1B_Face: public Op_Dift_VEF_base
 {
   Declare_instanciable(Op_Dift_VEF_P1NCP1B_Face);
-
 public:
-
   void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
-  void associer_diffusivite(const Champ_base&) override;
-  inline const Champ_base& diffusivite() const override { return diffusivite_; }
-
-  void associer_modele_turbulence(const Mod_turb_hyd_base&);
 
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
-  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
-  void verifier() const;
 
-  void contribue_au_second_membre() const;
-  void ajouter_contribution() const;
+  void contribue_au_second_membre() const { /* Do nothing */ }
+  void ajouter_contribution() const { /* Do nothing */ }
 
   double calculer_dt_stab() const override;
-  inline void remplir_nu(DoubleTab&) const override
+
+  void remplir_nu(DoubleTab&) const override
   {
-    Cerr << __FILE__ << ":" << (int) __LINE__ << finl;
-    exit();
+    Process::exit("Op_Dift_VEF_P1NCP1B_Face::remplir_nu() SHOULD NOT be called !");
   }
 
 protected:
-  REF(Champ_base) diffusivite_;
+  SolveurSys solveur;
+  Matrice_Morse_Sym masse;
+  DoubleTab savgrad;
 
   DoubleTab& calculer_gradient_elem(const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_gradient_som(const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_divergence_elem(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& calculer_divergence_som(double, const DoubleTab&, const DoubleTab&, DoubleTab&) const;
   DoubleTab& corriger_div_pour_Cl(DoubleTab&) const;
-  REF(Mod_turb_hyd_base) le_modele_turbulence;
-  REF(Domaine_VEF) le_dom_vef;
-  REF(Domaine_Cl_VEF) la_zcl_vef;
-  SolveurSys solveur;
-  int trans = -10;
-  double lambda = -100.;
-  int filtre = -10;
-  Matrice_Morse_Sym masse;
-  DoubleTab savgrad;
 };
 
-#endif
+#endif /* Op_Dift_VEF_P1NCP1B_Face_included */

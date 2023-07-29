@@ -28,6 +28,12 @@ class Op_Dift_VEF_base : public Op_Diff_VEF_base, public Op_Diff_Turbulent_base
   Declare_base(Op_Dift_VEF_base);
 
 public:
+  void associer_diffusivite(const Champ_base& diffu) override { diffusivite_ = diffu; }
+  inline const Champ_base& diffusivite() const override { return diffusivite_.valeur(); }
+  inline double diffusivite(int) const
+  {
+    return (diffusivite().valeurs().nb_dim() == 1) ? (diffusivite().valeurs())(0) : (diffusivite().valeurs())(0, 0);
+  }
 
   void calculer_borne_locale(DoubleVect& ,double ,double ) const override;
   void associer_modele_turbulence(const Mod_turb_hyd_base& );
@@ -40,6 +46,7 @@ public:
 
 protected:
   REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
+  REF(Champ_base) diffusivite_;
   DoubleTab tau_tan_;
 };
 

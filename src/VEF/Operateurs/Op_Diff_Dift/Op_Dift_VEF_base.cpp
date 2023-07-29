@@ -48,10 +48,8 @@ void Op_Dift_VEF_base::mettre_a_jour(double)
 
 void Op_Dift_VEF_base::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
 {
-  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
-  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
-  le_dom_vef = zvef;
-  la_zcl_vef = zclvef;
+  le_dom_vef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_cl_dis.valeur());
   inconnue_ = ch_transporte;
 }
 
