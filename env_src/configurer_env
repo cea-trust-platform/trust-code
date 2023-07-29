@@ -1771,6 +1771,7 @@ case $TRUST_ARCH_CC in
         CppFlags="-O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
         #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
         SYSLIBS="-L$GCC_PREFIX/snos/lib64 -lstdc++ -lgfortran -lrt" # EXTP GNU
+        SYSLIBS=$SYSLIBS" ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}" # Librairie GTL necessaire pour activer GPU-Direct
         F77Flags="-O3 -fPIC"
         F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f !
         ccFLAGS="-O3 -fPIC"

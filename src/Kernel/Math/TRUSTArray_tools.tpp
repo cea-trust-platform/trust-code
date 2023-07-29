@@ -135,7 +135,7 @@ _TYPE_ max_array(const TRUSTArray<_TYPE_>& dx)
 template <typename _TYPE_>
 static inline _TYPE_ scalar_abs(_TYPE_ x) { return std::fabs(x); }
 
-static inline int scalar_abs(int x) { return abs(x); }
+static inline int scalar_abs(int x) { return std::abs(x); }
 
 /*! @brief Retourne le max des abs(i)
  *

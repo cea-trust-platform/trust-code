@@ -8,7 +8,7 @@
  *            This project is released under MIT License.
  */
 
-
+#ifdef TRUST_USE_CUDA
 # pragma once
 
 // CUDA
@@ -611,3 +611,4 @@ class AmgXSolver
          */
         PetscErrorCode solve_real(Vec &p, Vec &b);
 };
+#endif

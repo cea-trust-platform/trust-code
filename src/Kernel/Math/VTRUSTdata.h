@@ -114,7 +114,11 @@ template<typename _TYPE_>
 VTRUSTdata<_TYPE_>::VTRUSTdata(int size, Array_base::Storage storage)
 {
   //const int size_warning = 100000000;
-  if (size<0) Process::exit("Error, trying to allocate an array with a size>2^31. Switch to TRUST int64 version.");
+  if (size<0)
+    {
+      Cerr << "Error, trying to allocate an array with a size>2^31. Switch to TRUST int64 version." << finl;
+      Process::exit();
+    }
   assert(size >= 0);
   if (size == 0) storage = Array_base::STANDARD;
 

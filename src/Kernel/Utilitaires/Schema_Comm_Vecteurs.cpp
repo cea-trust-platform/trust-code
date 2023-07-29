@@ -215,10 +215,13 @@ void Schema_Comm_Vecteurs::begin_comm(bool bufferOnDevice)
 
 void Schema_Comm_Vecteurs::exchange(bool bufferOnDevice)
 {
-  bool use_gpu_aware_mpi = (getenv("TRUST_USE_GPU_AWARE_MPI") != NULL);
-#ifndef MPIX_CUDA_AWARE_SUPPORT
-  if (use_gpu_aware_mpi) Process::exit("MPI version is detected as not GPU-Aware. You can't use TRUST_USE_GPU_AWARE_MPI=1");
+  bool use_gpu_aware_mpi = (getenv("TRUST_USE_GPU_AWARE_MPI") != NULL || getenv("MPICH_GPU_SUPPORT_ENABLED") != NULL);
+  if (use_gpu_aware_mpi)
+    {
+#if defined(TRUST_USE_CUDA) && !defined(MPIX_CUDA_AWARE_SUPPORT)
+      Process::exit("MPI version is detected as not CUDA-Aware. You can't use TRUST_USE_GPU_AWARE_MPI=1");
 #endif
+    }
   char * ptr = sdata_.buffer_base_;
   // Copy buffer before MPI send
   if (bufferOnDevice)

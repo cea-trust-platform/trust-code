@@ -622,11 +622,21 @@ fi
 # verifie si le code est compile en parallele ou non
 [ "$TRUST_DISABLE_MPI" = 1 ] && [ "$USE_MPIRUN" = 1 ] && export USE_MPIRUN=0
 
-# MPI NVidia:
-[ "$TRUST_ARCH_CC" = linux_nvc++ ] && USE_MPIRUN=1
+# MPI NVidia: on n'utilise pas ce MPI
+#[ "$TRUST_ARCH_CC" = linux_nvc++ ] && USE_MPIRUN=1
 
 # ToDo: check sur orcus
 [ ${HOST#orcus} != $HOST ] && USE_MPIRUN=1
+
+##############
+# GPU Direct #
+##############
+# OK sur adastra, performances ameliorees
+if [ $NB_PROCS -gt 1 ] && [ "$TRUST_USE_ROCM" = 1 ] && [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" != "" ]
+then
+   export MPICH_GPU_SUPPORT_ENABLED=1
+   echo "Enabling GPU support for MPI (MPICH_GPU_SUPPORT_ENABLED=1) ..."
+fi
 
 #################
 # PETSc options #
@@ -863,7 +873,7 @@ then
    trace="--trace=cuda" && [ $NB_PROCS -gt 1 ] && trace=$trace",mpi --mpi-impl=`basename $MPI_ROOT`"
    # Droit elevation disponible:
    sudo ls 1>/dev/null
-   if [ $? = 0 ] 
+   if [ $? = 0 ]
    then
       sudo sh -c 'echo 1 >/proc/sys/kernel/perf_event_paranoid'
       # metriques GPU en plus mais necessite d'etre sudo

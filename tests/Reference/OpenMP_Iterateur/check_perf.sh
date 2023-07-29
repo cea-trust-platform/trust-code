@@ -20,7 +20,8 @@ run()
 {
    gpu=$1
    np=$2
-   jdd=OpenMP_Iterateur_BENCH_AmgX && [ "$3" != "" ] && jdd=$3
+   solveur=AmgX && [ "$TRUST_USE_ROCM" = 1 ] && solveur=rocALUTION
+   jdd=OpenMP_Iterateur_BENCH_$solveur && [ "$3" != "" ] && jdd=$3
    if [ "$np" = "" ] || [ "$np" = 1 ]
    then
       trust $jdd 1>$jdd.out_err 2>&1
@@ -36,6 +37,7 @@ run()
 [ $HOST = is157091 ] && run a6000 && run 1xa6000 2
 [ $HOST = petra ]    && run a5000 && run 2xa5000 2
 [ $HOST = fedora ]   && run a3000
-[ $HOST = topaze ]   && run a100  && run 4xa100 4  && run 8xa100 8 OpenMP_Iterateur_BENCH_AmgX_10
+[ $HOST = topaze ]   && run a100   && run 4xa100 4   && run 8xa100 8 OpenMP_Iterateur_BENCH_AmgX_10
+[ $HOST = adastra ]  && run MI250X && run 4xMI250X 4 && run 8xMI250X 8 OpenMP_Iterateur_BENCH_rocALUTION_10
 [ $HOST = irene-amd-ccrt ] && run v100
 

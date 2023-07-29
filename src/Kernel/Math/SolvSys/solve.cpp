@@ -7,7 +7,7 @@
  *            This project is released under MIT License.
  */
 
-
+#ifdef TRUST_USE_CUDA
 // AmgXWrapper
 # include "AmgXSolver.hpp"
 #include <iostream>
@@ -223,3 +223,4 @@ PetscErrorCode AmgXSolver::solve(PetscScalar* p, const PetscScalar* b, const int
 
   PetscFunctionReturn(0);
 }
+#endif
