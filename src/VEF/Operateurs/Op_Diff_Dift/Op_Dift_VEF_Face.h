@@ -24,9 +24,6 @@ class Op_Dift_VEF_Face: public Op_Dift_VEF_base, public Op_Dift_VEF_Face_Gen<Op_
 {
   Declare_instanciable(Op_Dift_VEF_Face);
 public:
-  double calculer_dt_stab() const override;
-  void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
-
   void associer(const Domaine_dis& dd, const Domaine_Cl_dis& dcd,const Champ_Inc& ch) override
   {
     Op_Dift_VEF_base::associer(dd, dcd, ch); // appel a la classe mere
