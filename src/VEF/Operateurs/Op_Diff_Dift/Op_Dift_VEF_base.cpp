@@ -40,8 +40,7 @@ void Op_Dift_VEF_base::mettre_a_jour(double)
           {
             // Modif BM: on ne prend la ref que si le tableau a ete initialise, sinon ca bloque l'initialisation
             const DoubleTab& tab = le_modele_turbulence->loi_paroi().valeur().Cisaillement_paroi();
-            if (tab.size_array() > 0)
-              tau_tan_.ref(tab);
+            if (tab.size_array() > 0) tau_tan_.ref(tab);
           }
     }
 }
@@ -76,7 +75,7 @@ void Op_Dift_VEF_base::completer()
       Cerr << "Error in Op_Dift_VEF_base::completer() " << finl;
       Cerr << que_suis_je() << " operator is presently associated to " << equation().que_suis_je() << finl;
       Cerr << "instead of being associated to an equation dedicated to a turbulent flow." << finl;
-      exit();
+      Process::exit();
     }
 }
 
@@ -94,4 +93,38 @@ void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& borne_visco_turb, doubl
       if (coef > 0 && coef < borne_visco_turb(elem))
         borne_visco_turb(elem) = coef;
     }
+}
+
+// La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
+// ou diffu2_ est la somme des 2 diffusivite laminaire et turbulente
+double Op_Dift_VEF_base::calculer_dt_stab_P1NCP1B() const
+{
+  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const DoubleVect& volumes = domaine_VEF.volumes(), &diffu_turb = diffusivite_turbulente()->valeurs();
+  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), le_dom_nb_elem = domaine_VEF.domaine().nb_elem();
+
+  const double diffu = diffusivite(0);
+  double dt_stab = 1.e30, coef, diffu2_;
+
+  for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
+    {
+      double surf_max = 1.e-30;
+      for (int i = 0; i < nb_faces_elem; i++)
+        {
+          const int num_face = elem_faces(num_elem, i);
+          double surf = face_normales(num_face, 0) * face_normales(num_face, 0);
+          for (int j = 1; j < dimension; j++)
+            surf += face_normales(num_face, j) * face_normales(num_face, j);
+          surf_max = (surf > surf_max) ? surf : surf_max;
+        }
+      double vol = volumes(num_elem);
+      vol *= vol / surf_max;
+      diffu2_ = diffu + diffu_turb[num_elem];
+      coef = vol / (2. * dimension * (diffu2_ + DMINFLOAT));
+      dt_stab = (coef < dt_stab) ? coef : dt_stab;
+    }
+
+  return Process::mp_min(dt_stab);
 }

@@ -30,12 +30,10 @@ Sortie& Op_Dift_VEF_Face::printOn(Sortie& s) const { return s << que_suis_je(); 
 
 Entree& Op_Dift_VEF_Face::readOn(Entree& s) { return s; }
 
-// La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et
-//  dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
+// La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
 // ou diffu2_ est la somme des 2 diffusivite laminaire et turbulente
 
-//GF : alpha_dt_stab=(alpha+alpha_t)*alpha_dt_stab/alpha
-// alpha_dt_stab=(nu+diff_nu_turb)*valeurs_diffusivite_dt/nu
+//GF : alpha_dt_stab=(alpha+alpha_t)*alpha_dt_stab/alpha ET alpha_dt_stab=(nu+diff_nu_turb)*valeurs_diffusivite_dt/nu
 double Op_Dift_VEF_Face::calculer_dt_stab() const
 {
   remplir_nu(nu_); // On remplit le tableau nu contenant la diffusivite en chaque elem

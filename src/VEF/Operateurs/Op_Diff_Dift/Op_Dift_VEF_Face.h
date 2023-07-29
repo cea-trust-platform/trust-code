@@ -20,25 +20,12 @@
 #include <Op_Dift_VEF_base.h>
 #include <Matrice_Morse.h>
 
-/*! @brief class Op_Dift_VEF_Face
- *
- */
 class Op_Dift_VEF_Face: public Op_Dift_VEF_base, public Op_Dift_VEF_Face_Gen<Op_Dift_VEF_Face>
 {
   Declare_instanciable(Op_Dift_VEF_Face);
 public:
   double calculer_dt_stab() const override;
   void calculer_pour_post(Champ& espace_stockage, const Nom& option, int comp) const override;
-
-  inline void dimensionner(Matrice_Morse& matrice) const override
-  {
-    Op_VEF_Face::dimensionner(le_dom_vef.valeur(), la_zcl_vef.valeur(), matrice);
-  }
-
-  inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override
-  {
-    Op_VEF_Face::modifier_pour_Cl(le_dom_vef.valeur(), la_zcl_vef.valeur(), matrice, secmem);
-  }
 
   void associer(const Domaine_dis& dd, const Domaine_Cl_dis& dcd,const Champ_Inc& ch) override
   {

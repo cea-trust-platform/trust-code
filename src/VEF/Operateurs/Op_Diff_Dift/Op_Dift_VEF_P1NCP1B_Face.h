@@ -35,10 +35,7 @@ public:
 
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
 
-  void contribue_au_second_membre() const { /* Do nothing */ }
-  void ajouter_contribution() const { /* Do nothing */ }
-
-  double calculer_dt_stab() const override;
+  double calculer_dt_stab() const override { return calculer_dt_stab_P1NCP1B(); }
 
   void remplir_nu(DoubleTab&) const override
   {

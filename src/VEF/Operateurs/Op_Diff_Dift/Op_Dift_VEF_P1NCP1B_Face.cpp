@@ -45,39 +45,6 @@ void Op_Dift_VEF_P1NCP1B_Face::associer(const Domaine_dis& domaine_dis, const Do
   solveur.nommer("diffusion_solver");
 }
 
-// La diffusivite est constante par elements donc il faut calculer dt_diff pour chaque element et dt_stab=Min(dt_diff (K) = h(K)*h(K)/(2*dimension*diffu2_(K)))
-// ou diffu2_ est la somme des 2 diffusivite laminaire et turbulente
-double Op_Dift_VEF_P1NCP1B_Face::calculer_dt_stab() const
-{
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const DoubleVect& volumes = domaine_VEF.volumes(), &diffu_turb = diffusivite_turbulente()->valeurs();
-  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), le_dom_nb_elem = domaine_VEF.domaine().nb_elem();
-
-  const double diffu = diffusivite(0);
-  double dt_stab = 1.e30, coef, diffu2_;
-
-  for (int num_elem = 0; num_elem < le_dom_nb_elem; num_elem++)
-    {
-      double surf_max = 1.e-30;
-      for (int i = 0; i < nb_faces_elem; i++)
-        {
-          const int num_face = elem_faces(num_elem, i);
-          double surf = face_normales(num_face, 0) * face_normales(num_face, 0);
-          for (int j = 1; j < dimension; j++)
-            surf += face_normales(num_face, j) * face_normales(num_face, j);
-          surf_max = (surf > surf_max) ? surf : surf_max;
-        }
-      double vol = volumes(num_elem);
-      vol *= vol / surf_max;
-      diffu2_ = diffu + diffu_turb[num_elem];
-      coef = vol / (2. * dimension * (diffu2_ + DMINFLOAT));
-      dt_stab = (coef < dt_stab) ? coef : dt_stab;
-    }
-  return dt_stab;
-}
-
 DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_gradient_elem(const DoubleTab& vit, DoubleTab& grad) const
 {
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
