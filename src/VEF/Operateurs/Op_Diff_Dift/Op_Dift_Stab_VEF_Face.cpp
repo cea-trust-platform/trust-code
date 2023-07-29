@@ -30,7 +30,7 @@
 #include <Symetrie.h>
 #include <Debog.h>
 
-Implemente_instanciable(Op_Dift_Stab_VEF_Face, "Op_Dift_VEF_P1NC_stab|Op_Dift_VEF_Var_P1NC_stab", Op_Dift_VEF_Face);
+Implemente_instanciable(Op_Dift_Stab_VEF_Face, "Op_Dift_VEF_P1NC_stab|Op_Dift_VEF_Var_P1NC_stab", Op_Dift_VEF_base);
 
 double my_minimum(double a, double b, double c)
 {
@@ -714,7 +714,7 @@ void Op_Dift_Stab_VEF_Face::calculer_min_max(const DoubleTab& inconnueTab, int& 
 
 void Op_Dift_Stab_VEF_Face::completer()
 {
-  Op_Dift_VEF_Face::completer();
+  Op_Dift_VEF_base::completer();
 
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
@@ -822,36 +822,48 @@ DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleT
 
 void Op_Dift_Stab_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& matrice) const
 {
-  if (!new_jacobian_) Op_Dift_VEF_Face::contribuer_a_avec(inco, matrice);
-  else
+  modifier_matrice_pour_periodique_avant_contribuer(matrice, equation());
+  remplir_nu(nu_); // On remplit le tableau nu car l'assemblage d'une matrice avec ajouter_contribution peut se faire avant le premier pas de temps
+
+  const DoubleTab& nu_turb_ = diffusivite_turbulente()->valeurs();
+  DoubleTab nu, nu_turb;
+
+  int marq = phi_psi_diffuse(equation());
+  const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
+
+  // soit on a div(phi nu grad inco) OU on a div(nu grad phi inco) : cela depend si on diffuse phi_psi ou psi
+  modif_par_porosite_si_flag(nu_, nu, !marq, porosite_elem);
+  modif_par_porosite_si_flag(nu_turb_, nu_turb, !marq, porosite_elem);
+
+  DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
+  if (!marq) porosite_eventuelle = 1;
+
+  if (equation().inconnue()->nature_du_champ() == vectoriel)
     {
-      modifier_matrice_pour_periodique_avant_contribuer(matrice, equation());
-      remplir_nu(nu_); // On remplit le tableau nu car l'assemblage d'une matrice avec ajouter_contribution peut se faire avant le premier pas de temps
-
-      const DoubleTab& nu_turb_ = diffusivite_turbulente()->valeurs();
-      DoubleTab nu, nu_turb;
-
-      int marq = phi_psi_diffuse(equation());
-      const DoubleVect& porosite_elem = equation().milieu().porosite_elem();
-
-      // soit on a div(phi nu grad inco) OU on a div(nu grad phi inco) : cela depend si on diffuse phi_psi ou psi
-      modif_par_porosite_si_flag(nu_, nu, !marq, porosite_elem);
-      modif_par_porosite_si_flag(nu_turb_, nu_turb, !marq, porosite_elem);
-
-      DoubleVect porosite_eventuelle(equation().milieu().porosite_face());
-      if (!marq) porosite_eventuelle = 1;
-
-      if (equation().inconnue()->nature_du_champ() == vectoriel)
+      if (!new_jacobian_)
+        {
+          ajouter_contribution_bord_gen<Type_Champ::VECTORIEL>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+          ajouter_contribution_interne_gen<Type_Champ::VECTORIEL>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+        }
+      else /* _IS_STAB_ = true */
         {
           ajouter_contribution_bord_gen<Type_Champ::VECTORIEL, true /* _IS_STAB_ */>(inco, matrice, nu, nu_turb, porosite_eventuelle);
           ajouter_contribution_interne_gen<Type_Champ::VECTORIEL, true /* _IS_STAB_ */>(inco, matrice, nu, nu_turb, porosite_eventuelle);
         }
-      else
+    }
+  else
+    {
+      if (!new_jacobian_)
+        {
+          ajouter_contribution_bord_gen<Type_Champ::SCALAIRE>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+          ajouter_contribution_interne_gen<Type_Champ::SCALAIRE>(inco, matrice, nu, nu_turb, porosite_eventuelle);
+        }
+      else /* _IS_STAB_ = true */
         {
           ajouter_contribution_bord_gen<Type_Champ::SCALAIRE, true /* _IS_STAB_ */>(inco, matrice, nu, nu_turb, porosite_eventuelle);
           ajouter_contribution_interne_gen<Type_Champ::SCALAIRE, true /* _IS_STAB_ */>(inco, matrice, nu, nu_turb, porosite_eventuelle);
         }
-
-      modifier_matrice_pour_periodique_apres_contribuer(matrice, equation());
     }
+
+  modifier_matrice_pour_periodique_apres_contribuer(matrice, equation());
 }

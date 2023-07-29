@@ -16,15 +16,24 @@
 #ifndef Op_Dift_Stab_VEF_Face_included
 #define Op_Dift_Stab_VEF_Face_included
 
-#include <Op_Dift_VEF_Face.h>
+#include <Op_Dift_VEF_Face_Gen.h>
+#include <Op_Dift_VEF_base.h>
 #include <Operateur_Div.h>
 
-class Op_Dift_Stab_VEF_Face: public Op_Dift_VEF_Face
+class Op_Dift_Stab_VEF_Face: public Op_Dift_VEF_base, public Op_Dift_VEF_Face_Gen<Op_Dift_Stab_VEF_Face>
 {
   Declare_instanciable(Op_Dift_Stab_VEF_Face);
 public:
+  void associer(const Domaine_dis& dd, const Domaine_Cl_dis& dcd,const Champ_Inc& ch) override
+  {
+    Op_Dift_VEF_base::associer(dd, dcd, ch); // appel a la classe mere
+    Op_Dift_VEF_Face_Gen<Op_Dift_Stab_VEF_Face>::associer_gen(dd, dcd); // appel a la classe template
+  }
+
   void completer() override;
+
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override; // pour l'explicite
+
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override; // pour l'implicite
 
 protected:
