@@ -1860,7 +1860,9 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
       KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
     }
   // Solve
+  if (gpu_) statistiques().begin_count(gpu_library_counter_);
   KSPSolve(SolveurPetsc_, SecondMembrePetsc_, SolutionPetsc_);
+  if (gpu_) statistiques().end_count(gpu_library_counter_);
   // Analyse de la convergence par Petsc
   KSPConvergedReason Reason;
   KSPGetConvergedReason(SolveurPetsc_, &Reason);
@@ -1922,6 +1924,7 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
   secmem.checkDataOnHost();
   solution.checkDataOnHost();
   int size=ix.size_array();
+  if (gpu_) statistiques().begin_count(gpu_copytodevice_counter_);
   VecSetOption(SecondMembrePetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
   VecSetValues(SecondMembrePetsc_, size, ix.addr(), secmem.addr(), INSERT_VALUES);
   VecSetOption(SolutionPetsc_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE);
@@ -1930,6 +1933,7 @@ void Solv_Petsc::Update_vectors(const DoubleVect& secmem, DoubleVect& solution)
   VecAssemblyEnd(SecondMembrePetsc_);
   VecAssemblyBegin(SolutionPetsc_);
   VecAssemblyEnd(SolutionPetsc_);
+  if (gpu_) statistiques().end_count(gpu_copytodevice_counter_);
   if (reorder_matrix_)
     {
       VecPermute(SecondMembrePetsc_, colperm, PETSC_FALSE);
@@ -1967,7 +1971,9 @@ void Solv_Petsc::Update_solution(DoubleVect& solution)
   else
     {
       // TRUST and PETSc has same partition, local solution can be accessed from the global vector:
+      if (gpu_) statistiques().begin_count(gpu_copyfromdevice_counter_);
       VecGetValues(SolutionPetsc_, size, ix.addr(), solution.addr());
+      if (gpu_) statistiques().end_count(gpu_copyfromdevice_counter_);
     }
   if (verbose) Cout << finl << "[Petsc] Time to update solution: \t" << Statistiques::get_time_now() - start << finl;
 }

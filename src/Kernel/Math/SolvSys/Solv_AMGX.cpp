@@ -273,13 +273,12 @@ bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 // Resolution
 int Solv_AMGX::solve(ArrOfDouble& residu)
 {
-  statistiques().begin_count(gpu_library_counter_);
-  // ToDo OpenMP ici dans le solve AmgXWrapper il y'a aussi de la copie qui est compte donc dans gpu_library_counter_
   const double* rhs_amgx_addr = mapToDevice(rhs_amgx_);
   double* lhs_amgx_addr = computeOnTheDevice(lhs_amgx_);
-  // Offer device pointers to AmgX if OpenMP:
+  statistiques().begin_count(gpu_library_counter_);
   #pragma omp target data use_device_ptr(lhs_amgx_addr, rhs_amgx_addr)
   {
+    // Offer device pointers to AmgX if OpenMP:
     SolveurAmgX_.solve(lhs_amgx_addr, rhs_amgx_addr, nRowsLocal, seuil_);
   }
   statistiques().end_count(gpu_library_counter_);
