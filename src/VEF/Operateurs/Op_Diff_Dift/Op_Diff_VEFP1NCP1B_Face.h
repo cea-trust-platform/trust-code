@@ -31,12 +31,8 @@
  *
  *   La discretisation est VEF
  *   Le champ diffuse est scalaire
- *   Le champ de diffusivite est uniforme
- *
- *
  *
  */
-
 class Op_Diff_VEFP1NCP1B_Face : public Op_Diff_VEF_Face
 {
   Declare_instanciable_sans_constructeur(Op_Diff_VEFP1NCP1B_Face);
@@ -118,7 +114,7 @@ protected :
   // Fonction de test
   void test() const;
   void corriger_Cl_test(DoubleTab&) const;
-  int test_;
+  int test_ = 0;
 
   // Attributs de la classe
   mutable DoubleTab gradient_p0_;
@@ -128,13 +124,13 @@ protected :
   mutable int is_laplacian_filled_ = 0;
   mutable int is_laplacian_built_ = 0;
 
-  double convexite_;//attribut pour definir la convexite
-  double coeff_;//pour la matrice lumpee
-  int alphaE;//attribut pour calculer la partie P0 de l'operateur
-  int alphaS;//attribut pour calculer la partie P1 de l'operateur
-  int alphaA;//attribut pour calculer la partie Pa de l'operateur
-  int dim_ch_ = -1;//attribut donnant le nombre de dimension de l'inconnue
-  int decentrage_;//attribut autorisant le decentrage de l'operateur
+  double convexite_ = 1.e-3; //attribut pour definir la convexite
+  double coeff_ = 1.; //pour la matrice lumpee
+  int alphaE = 1; //attribut pour calculer la partie P0 de l'operateur
+  int alphaS = 1; //attribut pour calculer la partie P1 de l'operateur
+  int alphaA = 0; //attribut pour calculer la partie Pa de l'operateur
+  int dim_ch_ = -1; //attribut donnant le nombre de dimension de l'inconnue
+  int decentrage_ = 1; //attribut autorisant le decentrage de l'operateur
 };
 
 /* //Description: */

@@ -38,7 +38,7 @@
 #include <ArrOfBit.h>
 #include <Schema_Temps_base.h>
 
-Implemente_instanciable(Op_Diff_VEF_Face_Stab,"Op_Diff_VEFSTAB_const_P1NC",Op_Diff_VEF_Face);
+Implemente_instanciable_sans_constructeur(Op_Diff_VEF_Face_Stab,"Op_Diff_VEFSTAB_const_P1NC|Op_Diff_VEFSTAB_var_P1NC",Op_Diff_VEF_Face);
 
 double minimum(double a,double b,double c)
 {
@@ -68,6 +68,11 @@ double maximum(double a,double b)
 {
   if (a>=b) return a;
   else return b;
+}
+
+Op_Diff_VEF_Face_Stab::Op_Diff_VEF_Face_Stab()
+{
+  declare_support_masse_volumique(1);
 }
 
 Sortie& Op_Diff_VEF_Face_Stab::printOn(Sortie& s ) const

@@ -31,7 +31,12 @@
 #include <Echange_couplage_thermique.h>
 #include <Champ_front_calc_interne.h>
 
-Implemente_instanciable(Op_Diff_VEF_Face,"Op_Diff_VEF_const_P1NC",Op_Diff_VEF_base);
+Implemente_instanciable_sans_constructeur(Op_Diff_VEF_Face,"Op_Diff_VEF_const_P1NC|Op_Diff_VEF_var_P1NC",Op_Diff_VEF_base);
+
+Op_Diff_VEF_Face::Op_Diff_VEF_Face()
+{
+  declare_support_masse_volumique(1);
+}
 
 Sortie& Op_Diff_VEF_Face::printOn(Sortie& s ) const
 {

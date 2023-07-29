@@ -38,7 +38,7 @@
 using std::ofstream;
 using std::endl;
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VEFP1NCP1B_Face,"Op_Diff_VEFP1NCP1B_const_P1NC",Op_Diff_VEF_Face);
+Implemente_instanciable_sans_constructeur(Op_Diff_VEFP1NCP1B_Face,"Op_Diff_VEFP1NCP1B_const_P1NC|Op_Diff_VEFP1NCP1B_var_P1NC",Op_Diff_VEF_Face);
 
 
 static inline double maximum(const double x,
@@ -58,14 +58,7 @@ static inline double maximum(const double& x,
 */
 Op_Diff_VEFP1NCP1B_Face::Op_Diff_VEFP1NCP1B_Face()
 {
-  //Initialisation des attributs
-  convexite_=1.e-3;
-  alphaE=1;
-  alphaS=1;
-  alphaA=0;
-  test_=0;
-  coeff_=1.;//alphaE+alphaS;
-  decentrage_=1;
+  declare_support_masse_volumique(1);
 }
 
 Sortie& Op_Diff_VEFP1NCP1B_Face::printOn(Sortie& s ) const

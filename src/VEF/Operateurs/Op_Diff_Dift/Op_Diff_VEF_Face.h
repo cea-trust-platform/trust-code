@@ -28,19 +28,15 @@ class Champ_Inc;
  *
  *   La discretisation est VEF
  *   Le champ diffuse est scalaire
- *   Le champ de diffusivite est uniforme
- *
- *
  *
  */
-
 class Op_Diff_VEF_Face : public Op_Diff_VEF_base
 {
-  Declare_instanciable(Op_Diff_VEF_Face);
+  Declare_instanciable_sans_constructeur(Op_Diff_VEF_Face);
 
 public:
 
-
+  Op_Diff_VEF_Face();
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
   const Champ_base& diffusivite() const override;

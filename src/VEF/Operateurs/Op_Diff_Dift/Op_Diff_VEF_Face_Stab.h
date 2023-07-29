@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Diff_VEF_Face_Stab_included
 #define Op_Diff_VEF_Face_Stab_included
 
@@ -23,19 +22,15 @@
  *
  *   La discretisation est VEF
  *   Le champ diffuse est scalaire
- *   Le champ de diffusivite est uniforme
- *
- *
  *
  */
 
-
 class Op_Diff_VEF_Face_Stab : public Op_Diff_VEF_Face
 {
-  Declare_instanciable(Op_Diff_VEF_Face_Stab);
+  Declare_instanciable_sans_constructeur(Op_Diff_VEF_Face_Stab);
 
 public:
-
+  Op_Diff_VEF_Face_Stab();
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
   void completer() override;
 

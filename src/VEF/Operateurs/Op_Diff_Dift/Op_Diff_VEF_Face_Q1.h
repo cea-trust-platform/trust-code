@@ -23,12 +23,8 @@
  *
  *   La discretisation est VEF
  *   Le champ diffuse est scalaire
- *   Le champ de diffusivite est uniforme
- *
- *
  *
  */
-
 class Op_Diff_VEF_Face_Q1 : public Op_Diff_VEF_base
 {
   Declare_instanciable(Op_Diff_VEF_Face_Q1);
