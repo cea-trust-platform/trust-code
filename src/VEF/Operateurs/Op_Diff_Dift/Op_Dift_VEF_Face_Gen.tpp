@@ -178,34 +178,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
       int nb_faces_bord_reel = le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-          for (int ind_face = num1; ind_face < num2; ind_face++)
-            {
-              int fac_asso = la_cl_perio.face_associee(ind_face);
-              fac_asso = le_bord.num_face(fac_asso);
-              int num_face = le_bord.num_face(ind_face);
-              marq[num_face] = fac_asso;
-              for (int kk = 0; kk < 2; kk++)
-                {
-                  int elem = face_voisins(num_face, kk);
-                  for (int i = 0; i < nb_faces_elem; i++)
-                    {
-                      const int j = elem_faces(elem, i);
-                      if ((j > num_face) && (j != fac_asso))
-                        for (int nc = 0; nc < nb_comp; nc++)
-                          {
-                            const double d_nu = nu(elem, nc) + nu_turb(elem);
-                            const double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face, j, elem, d_nu);
-                            const double flux = valA * inconnue(j, nc) - valA * inconnue(num_face, nc);
-                            resu(num_face, nc) += flux;
-                            if (j < nb_faces) // face reelle
-                              resu(j, nc) -= 0.5 * flux;
-                          }
-                    }
-                }
-            }
-        }
+        ajouter_bord_perio_gen__<_TYPE_, Type_Schema::EXPLICITE, false>(la_cl, inconnue, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);
       else // CL pas periodique
         {
           // on traite une equation scalaire (pas la vitesse) on a pas a utiliser le tau tangentiel (les lois de paroi thermiques ne calculent pas d'echange turbulent a la paroi pour l'instant
@@ -392,96 +365,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
       int nb_faces_bord_reel = le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-          // on ne parcourt que la moitie des faces volontairement...
-          // GF il ne faut pas s'occuper des faces virtuelles
-          num2 = nb_faces_bord_reel / 2; // XXX : attention si ecarts car version multicompo, num2 /= 2 ....
-
-          for (int ind_face = num1; ind_face < num2; ind_face++)
-            {
-              int fac_asso = la_cl_perio.face_associee(ind_face);
-              fac_asso = le_bord.num_face(fac_asso);
-              int num_face0 = le_bord.num_face(ind_face);
-              for (int l = 0; l < 2; l++)
-                {
-                  int elem0 = face_voisins(num_face0, l);
-                  for (int i0 = 0; i0 < nb_faces_elem; i0++)
-                    {
-                      int j = elem_faces(elem0, i0);
-                      if (j > num_face0)
-                        {
-                          int orientation = 1, fac_loc = 0, ok = 1, contrib = 1;
-
-                          if ((elem0 == face_voisins(j, l)) || (face_voisins(num_face0, (l + 1) % 2) == face_voisins(j, (l + 1) % 2)))
-                            orientation = -1;
-
-                          while ((fac_loc < nb_faces_elem) && (elem_faces(elem0, fac_loc) != num_face0))
-                            fac_loc++;
-
-                          if (fac_loc == nb_faces_elem)
-                            ok = 0;
-
-                          if (j >= nb_faces) // C'est une face virtuelle
-                            {
-                              int el1 = face_voisins(j, 0), el2 = face_voisins(j, 1);
-                              if ((el1 == -1) || (el2 == -1))
-                                contrib = 0;
-                            }
-
-                          if (contrib)
-                            for (int nc = 0; nc < nb_comp; nc++)
-                              {
-                                double d_nu = nu(elem0, is_VECT ? 0 : nc) + nu_turb(elem0);
-                                double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
-                                if (is_STAB && valA < 0.) valA = 0.;
-
-                                int n0 = num_face0 * nb_comp + nc;
-                                int n0perio = fac_asso * nb_comp + nc;
-                                int j0 = j * nb_comp + nc;
-
-                                matrice(n0, n0) += valA * porosite_eventuelle(num_face0);
-                                matrice(n0, j0) -= valA * porosite_eventuelle(j);
-
-                                if (j < nb_faces) // On traite les faces reelles
-                                  {
-                                    if (ok == 1)
-                                      matrice(j0, n0) -= valA * porosite_eventuelle(num_face0);
-                                    else
-                                      matrice(j0, n0perio) -= valA * porosite_eventuelle(num_face0);
-
-                                    matrice(j0, j0) += valA * porosite_eventuelle(j);
-                                  }
-
-                                // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
-                                if (is_VECT)
-                                  for (int nc2 = 0; nc2 < nb_comp; nc2++)
-                                    {
-                                      int n1 = num_face0 * nb_comp + nc2;
-                                      int j1 = j * nb_comp + nc2;
-                                      double coeff_s = orientation * nu_turb(elem0) / volumes(elem0) * face_normale(num_face0, nc2) * face_normale(j, nc);
-                                      matrice(n0, n1) += coeff_s * porosite_eventuelle(num_face0);
-                                      matrice(n0, j1) -= coeff_s * porosite_eventuelle(j);
-
-                                      if (j < nb_faces) // On traite les faces reelles
-                                        {
-                                          double coeff_s2 = orientation * nu_turb(elem0) / volumes(elem0) * face_normale(num_face0, nc) * face_normale(j, nc2);
-
-                                          if (ok == 1)
-                                            matrice(j0, n1) -= coeff_s2 * porosite_eventuelle(num_face0);
-                                          else
-                                            matrice(j0, fac_asso * nb_comp + nc2) -= coeff_s2 * porosite_eventuelle(num_face0);
-
-                                          matrice(j0, j1) += coeff_s2 * porosite_eventuelle(j);
-                                        }
-                                    }
-                              }
-                        }
-                    }
-                }
-
-            }
-        }
+        ajouter_bord_perio_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_>(la_cl, transporte, nullptr, &matrice, nu, nu_turb, porosite_eventuelle);
       else // pas perio
         {
           // correction dans le cas dirichlet sur paroi temperature
@@ -627,6 +511,131 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
 }
 
 // METHODES GENERIQUES
+
+template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
+void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const Cond_lim& la_cl, const DoubleTab& inconnue, DoubleTab* resu /* Si explicite */, Matrice_Morse* matrice /* Si implicite */,
+                                                               const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
+{
+  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE), is_STAB = _IS_STAB_;
+
+  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_faces = domaine_VEF.nb_faces(), nb_comp = inconnue.line_size();
+
+  const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+  const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
+  int num1 = 0, num2 = le_bord.nb_faces_tot(), nb_faces_bord_reel = le_bord.nb_faces();
+
+  // on ne parcourt que la moitie des faces volontairement ... GF il ne faut pas s'occuper des faces virtuelles
+  num2 = is_EXPLICIT ? num2 : nb_faces_bord_reel / 2; // XXX : attention si ecarts car version multicompo, num2 /= 2 .... et aussi je garde l'explicite comme num2
+
+  for (int ind_face = num1; ind_face < num2; ind_face++)
+    {
+      int fac_asso = la_cl_perio.face_associee(ind_face);
+      fac_asso = le_bord.num_face(fac_asso);
+      int num_face0 = le_bord.num_face(ind_face);
+
+      for (int l = 0; l < 2; l++)
+        {
+          int elem0 = face_voisins(num_face0, l);
+          for (int i0 = 0; i0 < nb_faces_elem; i0++)
+            {
+              int j = elem_faces(elem0, i0);
+
+              if (is_EXPLICIT)
+                {
+                  assert (!is_VECT && !_IS_STAB_);
+                  if ((j > num_face0) && (j != fac_asso))
+                    for (int nc = 0; nc < nb_comp; nc++)
+                      {
+                        const double d_nu = nu(elem0, nc) + nu_turb(elem0);
+                        const double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
+                        const double flux = valA * inconnue(j, nc) - valA * inconnue(num_face0, nc);
+                        (*resu)(num_face0, nc) += flux;
+                        if (j < nb_faces) // face reelle
+                          (*resu)(j, nc) -= 0.5 * flux;
+                      }
+                }
+              else // pour l'implicite
+                {
+                  if (j > num_face0)
+                    {
+                      int orientation = 1, fac_loc = 0, ok = 1, contrib = 1;
+
+                      if ((elem0 == face_voisins(j, l)) || (face_voisins(num_face0, (l + 1) % 2) == face_voisins(j, (l + 1) % 2)))
+                        orientation = -1;
+
+                      while ((fac_loc < nb_faces_elem) && (elem_faces(elem0, fac_loc) != num_face0))
+                        fac_loc++;
+
+                      if (fac_loc == nb_faces_elem)
+                        ok = 0;
+
+                      if (j >= nb_faces) // C'est une face virtuelle
+                        {
+                          int el1 = face_voisins(j, 0), el2 = face_voisins(j, 1);
+                          if ((el1 == -1) || (el2 == -1))
+                            contrib = 0;
+                        }
+
+                      if (contrib)
+                        for (int nc = 0; nc < nb_comp; nc++)
+                          {
+                            double d_nu = nu(elem0, is_VECT ? 0 : nc) + nu_turb(elem0);
+                            double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
+                            if (is_STAB && valA < 0.)
+                              valA = 0.;
+
+                            int n0 = num_face0 * nb_comp + nc;
+                            int n0perio = fac_asso * nb_comp + nc;
+                            int j0 = j * nb_comp + nc;
+
+                            (*matrice)(n0, n0) += valA * porosite_eventuelle(num_face0);
+                            (*matrice)(n0, j0) -= valA * porosite_eventuelle(j);
+
+                            if (j < nb_faces) // On traite les faces reelles
+                              {
+                                if (ok == 1)
+                                  (*matrice)(j0, n0) -= valA * porosite_eventuelle(num_face0);
+                                else
+                                  (*matrice)(j0, n0perio) -= valA * porosite_eventuelle(num_face0);
+
+                                (*matrice)(j0, j0) += valA * porosite_eventuelle(j);
+                              }
+
+                            // XXX : On a l'equation QDM et donc on ajoute grad_U transpose
+                            if (is_VECT)
+                              for (int nc2 = 0; nc2 < nb_comp; nc2++)
+                                {
+                                  int n1 = num_face0 * nb_comp + nc2;
+                                  int j1 = j * nb_comp + nc2;
+                                  double coeff_s = orientation * nu_turb(elem0) / volumes(elem0) * face_normale(num_face0, nc2) * face_normale(j, nc);
+                                  (*matrice)(n0, n1) += coeff_s * porosite_eventuelle(num_face0);
+                                  (*matrice)(n0, j1) -= coeff_s * porosite_eventuelle(j);
+
+                                  if (j < nb_faces) // On traite les faces reelles
+                                    {
+                                      double coeff_s2 = orientation * nu_turb(elem0) / volumes(elem0) * face_normale(num_face0, nc) * face_normale(j, nc2);
+
+                                      if (ok == 1)
+                                        (*matrice)(j0, n1) -= coeff_s2 * porosite_eventuelle(num_face0);
+                                      else
+                                        (*matrice)(j0, fac_asso * nb_comp + nc2) -= coeff_s2 * porosite_eventuelle(num_face0);
+
+                                      (*matrice)(j0, j1) += coeff_s2 * porosite_eventuelle(j);
+                                    }
+                                }
+                          }
+                    }
+                }
+            }
+        }
+
+    }
+}
+
 template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
 void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inconnue, DoubleTab* resu /* Si explicite */, Matrice_Morse* matrice /* Si implicite */,
                                                             const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
