@@ -28,12 +28,6 @@ template <typename DERIVED_T>
 class Op_Dift_VEF_Face_Gen
 {
 public:
-  void associer_gen(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
-  {
-    dom_vef = ref_cast(Domaine_VEF,domaine_dis.valeur());
-    zcl_vef = ref_cast(Domaine_Cl_VEF,domaine_cl_dis.valeur());
-  }
-
   template <Type_Champ _TYPE_> void fill_grad_Re(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&) const;
 
   // methodes pour l'explicite
@@ -66,9 +60,6 @@ protected:
   mutable DoubleTab grad_, Re_;
 
 private:
-  REF(Domaine_VEF) dom_vef;
-  REF(Domaine_Cl_VEF) zcl_vef;
-
   template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
   void ajouter_bord_perio_gen__(const int , const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect& , DoubleTab* flux_bord = nullptr /* flux_bords */) const;
 

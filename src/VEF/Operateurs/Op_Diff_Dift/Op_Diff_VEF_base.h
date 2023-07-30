@@ -52,6 +52,9 @@ public:
   virtual void remplir_nu(DoubleTab&) const;
   int phi_psi_diffuse(const Equation_base& eq) const;
 
+  const Domaine_VEF& domaine_vef() const { return le_dom_vef.valeur(); }
+  const Domaine_Cl_VEF& domaine_cl_vef() const { return la_zcl_vef.valeur(); }
+
 protected:
 
   REF(Domaine_VEF) le_dom_vef;

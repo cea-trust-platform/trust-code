@@ -47,8 +47,8 @@ static double viscA_Q1(const Domaine_VEF& le_dom, int num_face, int num2, int di
 
 DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& resu) const
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();
@@ -366,8 +366,8 @@ DoubleTab& Op_Dift_VEF_Face_Q1::ajouter(const DoubleTab& inconnue, DoubleTab& re
 
 void Op_Dift_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& transporte, Matrice_Morse& matrice) const
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const DoubleVect& porosite_face = equation().milieu().porosite_face();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const IntVect& rang_elem_non_std = domaine_VEF.rang_elem_non_std();

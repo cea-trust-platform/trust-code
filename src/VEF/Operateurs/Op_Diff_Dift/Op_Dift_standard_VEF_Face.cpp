@@ -56,8 +56,8 @@ Entree& Op_Dift_standard_VEF_Face::readOn(Entree& is)
 
 void Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& vitesse, DoubleTab& resu, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const int nbr_comp = resu.line_size();
 
   // on cast grad et grad_transp pour pouvoir les modifier : on utilise plus les static car pb avec plusieurs pbs
@@ -103,8 +103,8 @@ void Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& vitesse, 
 
 void Op_Dift_standard_VEF_Face::calcul_divergence(DoubleTab& dif, const DoubleTab& grad, const DoubleTab& gradt, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
   const int nb_faces = domaine_VEF.nb_faces(), nbr_comp = dif.line_size();

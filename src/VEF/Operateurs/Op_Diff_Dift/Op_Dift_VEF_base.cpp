@@ -81,7 +81,7 @@ void Op_Dift_VEF_base::completer()
 
 void Op_Dift_VEF_base::calculer_borne_locale(DoubleVect& borne_visco_turb, double dt_conv, double dt_diff_sur_dt_conv) const
 {
-  const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& le_dom_VEF = domaine_vef();
   int nb_elem = le_dom_VEF.nb_elem();
   int flag = diffusivite().valeurs().dimension(0) > 1 ? 1 : 0;
   for (int elem = 0; elem < nb_elem; elem++)
@@ -103,7 +103,7 @@ double Op_Dift_VEF_base::calculer_dt_stab() const
 {
   remplir_nu(nu_); // On remplit le tableau nu contenant la diffusivite en chaque elem
 
-  const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& le_dom_VEF = domaine_vef();
   DoubleVect diffu_turb(diffusivite_turbulente()->valeurs());
   // DoubleTab diffu(nu_);
   DoubleTrav diffu;
@@ -162,7 +162,7 @@ void Op_Dift_VEF_base::calculer_pour_post(Champ& espace_stockage, const Nom& opt
         {
           remplir_nu(nu_); // On remplit le tableau nu contenant la diffusivite en chaque elem
 
-          const Domaine_VEF& le_dom_VEF = le_dom_vef.valeur();
+          const Domaine_VEF& le_dom_VEF = domaine_vef();
           const Domaine& le_dom = le_dom_VEF.domaine();
           const DoubleVect& diffu_turb = diffusivite_turbulente()->valeurs();
           double alpha = -123., coef = -123.;
@@ -206,7 +206,7 @@ void Op_Dift_VEF_base::calculer_pour_post(Champ& espace_stockage, const Nom& opt
 // ou diffu2_ est la somme des 2 diffusivite laminaire et turbulente
 double Op_Dift_VEF_base::calculer_dt_stab_P1NCP1B() const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleVect& volumes = domaine_VEF.volumes(), &diffu_turb = diffusivite_turbulente()->valeurs();

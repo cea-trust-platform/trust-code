@@ -111,8 +111,8 @@ void Op_Dift_VEF_Face::contribuer_a_avec(const DoubleTab& inco, Matrice_Morse& m
 // bientot a la poubelle// bientot a la poubelle
 void Op_Dift_VEF_Face::contribuer_au_second_membre(DoubleTab& resu) const
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
   const int nb_faces = domaine_VEF.nb_faces(), nb_comp = resu.line_size();

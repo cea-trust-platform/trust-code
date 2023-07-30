@@ -120,8 +120,8 @@ Entree& Op_Dift_Stab_VEF_Face::readOn(Entree& is)
 
 void Op_Dift_Stab_VEF_Face::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab& resu) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const int nb_bords = les_cl.size(), nb_comp = resu.line_size();
   const DoubleVect& inconnueVect = inconnue;
@@ -207,7 +207,7 @@ void Op_Dift_Stab_VEF_Face::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab
 
 void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const DoubleVect& inconnue = inconnueTab;
   DoubleVect& resu = resuTab;
@@ -238,7 +238,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const
 
 void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& Aij_diag, const DoubleTab& nu, const DoubleTab& inconnueTab, DoubleTab& resu2) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = resu2.line_size();
   const DoubleVect& inconnue = inconnueTab;
@@ -299,7 +299,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& 
 
 void Op_Dift_Stab_VEF_Face::ajouter_diffusion(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab, const bool is_VECT) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = resuTab.line_size();
   const DoubleVect& inconnue = inconnueTab;
@@ -353,7 +353,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_diffusion(const DoubleTab& Aij, const Double
 
 void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab, const bool is_VECT) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const DoubleTab& xv = domaine_VEF.xv();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_tot = domaine_VEF.nb_faces_tot(),
@@ -451,7 +451,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion(const DoubleTab& Aij, const Do
 
 void Op_Dift_Stab_VEF_Face::calculer_coefficients(const DoubleTab& nu, DoubleTab& Aij) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleVect& volumes = domaine_VEF.volumes();
@@ -501,7 +501,7 @@ void Op_Dift_Stab_VEF_Face::calculer_coefficients(const DoubleTab& nu, DoubleTab
 
 void Op_Dift_Stab_VEF_Face::calculer_coefficients_vectoriel_diag(const DoubleTab& nu, const DoubleTab& nu2, DoubleTab& Aij) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = equation().inconnue().valeurs().line_size();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
@@ -573,7 +573,7 @@ void Op_Dift_Stab_VEF_Face::calculer_coefficients_vectoriel_diag(const DoubleTab
 
 double Op_Dift_Stab_VEF_Face::calculer_gradients(int facei, const DoubleTab& rij) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins(), &get_num_fac_loc = domaine_VEF.get_num_fac_loc();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const DoubleVect& volumes = domaine_VEF.volumes();
@@ -618,7 +618,7 @@ double Op_Dift_Stab_VEF_Face::calculer_gradients(int facei, const DoubleTab& rij
 
 void Op_Dift_Stab_VEF_Face::calculer_min_max(const DoubleTab& inconnueTab, int& dim, DoubleTab& minima_ou_maxima, const bool is_max) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(),
             nb_faces_tot = domaine_VEF.nb_faces_tot(), nb_comp = inconnueTab.line_size();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
@@ -665,7 +665,7 @@ void Op_Dift_Stab_VEF_Face::calculer_min_max(const DoubleTab& inconnueTab, int& 
           }
       }
 
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const int nb_bords = les_cl.size();
   int num1 = 0, num2 = 0, n_bord = 0, ind_face = 0;
@@ -716,8 +716,8 @@ void Op_Dift_Stab_VEF_Face::completer()
 {
   Op_Dift_VEF_base::completer();
 
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const int nb_bord = les_cl.size(), nb_faces_tot = domaine_VEF.nb_faces_tot();
   int ind_face = -1;
@@ -742,7 +742,7 @@ void Op_Dift_Stab_VEF_Face::completer()
 
 void Op_Dift_Stab_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   DoubleTab Aij(nb_elem_tot, nb_faces_elem, nb_faces_elem), nu_total(nu);
   nu_total += nu_turb_m;
@@ -759,7 +759,7 @@ void Op_Dift_Stab_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, cons
 
 void Op_Dift_Stab_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const
 {
-  const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = domaine_vef();
   const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = resu2.line_size();
 
   DoubleTab Aij_diag(nb_elem_tot, nb_faces_elem, nb_faces_elem, nb_comp);

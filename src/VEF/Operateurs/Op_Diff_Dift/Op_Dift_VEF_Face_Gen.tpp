@@ -35,8 +35,8 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& inconnue, co
     {
       const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
 
-      const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
-      const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+      const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+      const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
       const int nbr_comp = resu.line_size(), nb_elem = domaine_VEF.nb_elem();
       assert(nbr_comp > 1);
 
@@ -90,11 +90,13 @@ template <typename DERIVED_T> template<Type_Champ _TYPE_>
 enable_if_t_<_TYPE_ == Type_Champ::VECTORIEL, void>
 Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
-  const int nbr_comp = resu.line_size();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
+  const int nbr_comp = resu.line_size();
 
   // boucle sur les CL
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -137,7 +139,7 @@ template <typename DERIVED_T> template<Type_Champ _TYPE_>
 enable_if_t_<_TYPE_ == Type_Champ::VECTORIEL, void>
 Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const Domaine_VEF& domaine_VEF = static_cast<const DERIVED_T*>(this)->domaine_vef();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
   const int nb_faces = domaine_VEF.nb_faces(), nbr_comp = resu.line_size();
@@ -158,11 +160,13 @@ template <typename DERIVED_T> template<Type_Champ _TYPE_>
 enable_if_t_<_TYPE_ == Type_Champ::SCALAIRE, void>
 Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
-  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  // On traite les faces bord
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const int nb_front = domaine_VEF.nb_front_Cl(), nb_comp = resu.line_size();
 
-  // On traite les faces bord
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
@@ -218,8 +222,10 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
                                                                     const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
 {
   // On traite les faces bord
-  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const int nb_bords = domaine_VEF.nb_front_Cl(), nb_comp = transporte.line_size();
 
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
@@ -254,16 +260,18 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
 {
   constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE), is_STAB = _IS_STAB_;
 
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const DoubleVect& volumes = domaine_VEF.volumes();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
-  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_faces = domaine_VEF.nb_faces(), nb_comp = inconnue.line_size();
 
   const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
   const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
   const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
+  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_faces = domaine_VEF.nb_faces(), nb_comp = inconnue.line_size();
   int num1 = 0, num2 = le_bord.nb_faces_tot(), nb_faces_bord_reel = le_bord.nb_faces();
 
   // on ne parcourt que la moitie des faces volontairement ... GF il ne faut pas s'occuper des faces virtuelles
@@ -290,7 +298,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
                     for (int nc = 0; nc < nb_comp; nc++)
                       {
                         const double d_nu = nu(elem0, nc) + nu_turb(elem0);
-                        const double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
+                        const double valA = z_class->viscA(num_face0, j, elem0, d_nu);
                         const double flux = valA * inconnue(j, nc) - valA * inconnue(num_face0, nc);
                         (*resu)(num_face0, nc) += flux;
                         if (j < nb_faces) // face reelle
@@ -324,7 +332,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord,
                         for (int nc = 0; nc < nb_comp; nc++)
                           {
                             double d_nu = nu(elem0, is_VECT ? 0 : nc) + nu_turb(elem0);
-                            double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
+                            double valA = z_class->viscA(num_face0, j, elem0, d_nu);
                             if (is_STAB && valA < 0.)
                               valA = 0.;
 
@@ -382,8 +390,10 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
 {
   constexpr bool is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE);
 
-  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const Front_VF& le_bord = ref_cast(Front_VF, domaine_Cl_VEF.les_conditions_limites(n_bord).frontiere_dis());
   const RefObjU& modele_turbulence = domaine_Cl_VEF.equation().get_modele(TURBULENCE);
 
@@ -391,8 +401,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const i
   const DoubleVect& volumes = domaine_VEF.volumes();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
 
-  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(),
-            nb_comp = inconnue.line_size(), size_flux_bords = domaine_VEF.nb_faces_bord();
+  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = inconnue.line_size(), size_flux_bords = domaine_VEF.nb_faces_bord();
   int num1 = 0, num2 = le_bord.nb_faces_tot();
 
   if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
@@ -544,8 +553,10 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
 {
   constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE), is_STAB = _IS_STAB_;
 
-  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const DoubleVect& volumes = domaine_VEF.volumes();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
@@ -569,7 +580,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen__(const int n_bord, const
               for (int nc = 0; nc < nb_comp; nc++)
                 {
                   const double d_nu = nu(elem, is_VECT ? 0 : nc) + nu_turb(elem);
-                  double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face, j, elem, d_nu);
+                  double valA = z_class->viscA(num_face, j, elem, d_nu);
 
                   if (is_STAB && valA < 0.) valA = 0.;
 
@@ -638,13 +649,13 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
 {
   constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE), is_STAB = _IS_STAB_;
 
-  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
   const IntTab& face_voisins = domaine_VEF.face_voisins(), &elem_faces = domaine_VEF.elem_faces();
   const DoubleVect& volumes = domaine_VEF.volumes();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
-
-  const int premiere_face_int = domaine_VEF.premiere_face_int(), nb_faces = domaine_VEF.nb_faces(),
-            nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = inconnue.line_size();
+  const int premiere_face_int = domaine_VEF.premiere_face_int(), nb_faces = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = inconnue.line_size();
 
   for (int num_face0 = premiere_face_int; num_face0 < nb_faces; num_face0++)
     for (int kk = 0; kk < 2; kk++)
@@ -680,7 +691,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen__(const DoubleTab& inc
                     for (int nc = 0; nc < nb_comp; nc++)
                       {
                         double d_nu = nu(elem0, is_VECT ? 0 : nc) + nu_turb(elem0);
-                        double valA = static_cast<const DERIVED_T*>(this)->viscA(num_face0, j, elem0, d_nu);
+                        double valA = z_class->viscA(num_face0, j, elem0, d_nu);
 
                         if (is_STAB && valA < 0.) valA = 0.;
 
