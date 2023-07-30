@@ -76,6 +76,9 @@ private:
   void ajouter_bord_scalaire_impose_gen__(const int , const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect& , DoubleTab* flux_bord = nullptr /* flux_bords */ ) const;
 
   template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
+  void ajouter_bord_gen__(const int , const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect& , DoubleTab* flux_bord = nullptr /* flux_bords */ ) const;
+
+  template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_ = false>
   void ajouter_interne_gen__(const DoubleTab&, DoubleTab* /* Si explicite */ , Matrice_Morse* /* Si implicite */, const DoubleTab&, const DoubleTab&, const DoubleVect&) const;
 };
 
