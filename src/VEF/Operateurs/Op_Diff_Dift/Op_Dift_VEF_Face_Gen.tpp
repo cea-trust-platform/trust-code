@@ -163,11 +163,8 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const int nb_faces = domaine_VEF.nb_faces(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(),
             nb_front = domaine_VEF.nb_front_Cl(), nb_comp = resu.line_size(),
-            size_flux_bords = domaine_VEF.nb_faces_bord(), premiere_face_int = domaine_VEF.premiere_face_int();
+            premiere_face_int = domaine_VEF.premiere_face_int();
 
-  // contient -1 si la face n'est pas periodique et numero face_assso sinon
-  ArrOfInt marq(domaine_VEF.nb_faces_tot());
-  marq = -1;
 
   // On traite les faces bord
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
@@ -178,106 +175,11 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
       int nb_faces_bord_reel = le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
-        ajouter_bord_perio_gen__<_TYPE_, Type_Schema::EXPLICITE, false>(la_cl, inconnue, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);
+        ajouter_bord_perio_gen__<_TYPE_, Type_Schema::EXPLICITE, false>(n_bord, inconnue, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);
       else // CL pas periodique
         {
-          // on traite une equation scalaire (pas la vitesse) on a pas a utiliser le tau tangentiel (les lois de paroi thermiques ne calculent pas d'echange turbulent a la paroi pour l'instant
-          const DoubleTab& face_normale = domaine_VEF.face_normales();
-          const DoubleVect& vol = domaine_VEF.volumes();
-          const Equation_base& my_eqn = domaine_Cl_VEF.equation();
-          const RefObjU& modele_turbulence = my_eqn.get_modele(TURBULENCE);
-
-          // Cas Equation Convection_Diffusion_Turbulente
-          if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
-            {
-              const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
-              const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
-              if (loiparth->use_equivalent_distance())
-                {
-                  const DoubleVect& d_equiv = loiparth->equivalent_distance(n_bord);
-                  // d_equiv contient la distance equivalente pour le bord
-                  // Dans d_equiv, pour les faces qui ne sont pas paroi_fixe (eg periodique, symetrie, etc...)
-                  // il y a la distance geometrique grace a l'initialisation du tableau dans la loi de paroi.
-
-                  // Les lois de parois ne s'appliquent qu'aux cas ou la CL est de type temperature imposee, car dans les autres cas
-                  // (flux impose et adiabatique) le flux a la paroi est connu et fixe.
-                  int nb_dim_pb = Objet_U::dimension;
-                  const Cond_lim_base& cl_base = la_cl.valeur();
-
-                  int ldp_appli = 0;
-
-                  if (sub_type(Scalaire_impose_paroi, cl_base)) ldp_appli = 1;
-                  else if (loiparth->get_flag_calcul_ldp_en_flux_impose())
-                    if ((sub_type(Neumann_paroi, cl_base)) || (sub_type(Neumann_homogene, cl_base))) ldp_appli = 1;
-
-                  if (ldp_appli)
-                    {
-                      DoubleVect le_mauvais_gradient(nb_dim_pb);
-                      for (int ind_face = num1; ind_face < num2; ind_face++)
-                        for (int nc = 0; nc < nb_comp; nc++)
-                          {
-                            int num_face = le_bord.num_face(ind_face);
-                            // Tf est la temperature fluide moyenne dans le premier element sans tenir compte de la temperature de paroi.
-                            double Tf = 0.;
-                            double bon_gradient = 0.; // c'est la norme du gradient de temperature normal a la paroi calculee a l'aide de la loi de paroi.
-                            le_mauvais_gradient = 0.;
-
-                            int elem1 = face_voisins(num_face, 0);
-                            if (elem1 == -1) elem1 = face_voisins(num_face, 1);
-
-                            double surface_face = domaine_VEF.face_surfaces(num_face);
-
-                            for (int i = 0; i < nb_faces_elem; i++)
-                              {
-                                const int j = elem_faces(elem1, i);
-                                if (j != num_face)
-                                  {
-                                    double surface_pond = 0.;
-                                    for (int kk = 0; kk < nb_dim_pb; kk++)
-                                      surface_pond -= (face_normale(j, kk) * domaine_VEF.oriente_normale(j, elem1) * face_normale(num_face, kk) * domaine_VEF.oriente_normale(num_face, elem1)) / (surface_face * surface_face);
-
-                                    Tf += inconnue(j, nc) * surface_pond;
-                                  }
-
-                                for (int kk = 0; kk < nb_dim_pb; kk++)
-                                  le_mauvais_gradient(kk) += inconnue(j, nc) * face_normale(j, kk) * domaine_VEF.oriente_normale(j, elem1);
-                              }
-                            le_mauvais_gradient /= vol(elem1);
-                            // mauvais_gradient = le_mauvais_gradient.n
-                            double mauvais_gradient = 0;
-                            for (int kk = 0; kk < nb_dim_pb; kk++)
-                              mauvais_gradient += le_mauvais_gradient(kk) * face_normale(num_face, kk) / surface_face;
-
-                            // inconnue(num_face) est la temperature de paroi : Tw.
-                            // On se fiche du signe de bon gradient car c'est la norme du gradient de temperature dans l'element.
-                            // Ensuite ce sera multiplie par le vecteur normal a la face de paroi qui lui a les bons signes.
-                            bon_gradient = (Tf - inconnue(num_face, nc)) / d_equiv(ind_face) * (-domaine_VEF.oriente_normale(num_face, elem1));
-
-                            double nutotal = nu(elem1, nc) + nu_turb(elem1);
-                            for (int i = 0; i < nb_faces_elem; i++)
-                              {
-                                const int j = elem_faces(elem1, i);
-                                double correction = 0.;
-                                for (int kk = 0; kk < nb_dim_pb; kk++)
-                                  {
-                                    double resu2 = nutotal * (bon_gradient - mauvais_gradient) * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1)) / surface_face;
-                                    correction += resu2;
-                                  }
-
-                                resu(j, nc) += correction;
-
-                                if (marq[j] != -1)
-                                  resu(marq[j], nc) += correction;
-
-                                // la face num_face n'est pas periodique  mar(num_face)==-1 flux_bord n'est necessaire que sur les faces reelles
-                                if (j == num_face && j < size_flux_bords)
-                                  tab_flux_bords(j, nc) -= correction;
-                              }
-                          }
-                    }
-                } // loi de paroi use_equivalent_distance
-            }
-          // Fin de la correction du gradient dans la premiere maille par la loi de paroi thermique.
+          if (sub_type(Scalaire_impose_paroi, la_cl.valeur()) || sub_type(Neumann_paroi, la_cl.valeur()) || sub_type(Neumann_homogene, la_cl.valeur())) // CL Temperature imposee
+            ajouter_bord_scalaire_impose_gen__<_TYPE_, Type_Schema::EXPLICITE, false>(n_bord, inconnue, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */, &tab_flux_bords);
 
           for (int ind_face = num1; ind_face < num2; ind_face++)
             {
@@ -365,85 +267,11 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
       int nb_faces_bord_reel = le_bord.nb_faces();
 
       if (sub_type(Periodique, la_cl.valeur()))
-        ajouter_bord_perio_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_>(la_cl, transporte, nullptr, &matrice, nu, nu_turb, porosite_eventuelle);
+        ajouter_bord_perio_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_>(n_bord, transporte, nullptr, &matrice, nu, nu_turb, porosite_eventuelle);
       else // pas perio
         {
-          // correction dans le cas dirichlet sur paroi temperature
           if (sub_type(Scalaire_impose_paroi, la_cl.valeur())) // CL Temperature imposee
-            {
-              const Equation_base& my_eqn = domaine_Cl_VEF.equation();
-              const RefObjU& modele_turbulence = my_eqn.get_modele(TURBULENCE);
-              if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
-                {
-                  const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
-                  const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
-                  if (loiparth->use_equivalent_distance())
-                    {
-                      const DoubleVect& d_equiv = loiparth->equivalent_distance(n_bord);
-                      int nb_dim_pb = Objet_U::dimension;
-
-                      DoubleVect le_mauvais_gradient(nb_dim_pb);
-                      for (int ind_face = num1; ind_face < num2; ind_face++)
-                        for (int nc = 0; nc < nb_comp; nc++)
-                          {
-                            int num_face = le_bord.num_face(ind_face);
-                            // Tf est la temperature fluide moyenne dans le premier element sans tenir compte de la temperature de paroi.
-                            double Tf = 0.;
-                            double bon_gradient = 0.; // c'est la norme du gradient de temperature normal a la paroi
-                            // calculee a l'aide de la loi de paroi.
-
-                            int elem1 = face_voisins(num_face, 0);
-                            if (elem1 == -1) elem1 = face_voisins(num_face, 1);
-
-                            // inconnue(num_face) est la temperature de paroi : Tw.
-                            // On se fiche du signe de bon gradient car c'est la norme du gradient de temperature dans l'element.
-                            // Ensuite ce sera multiplie par le vecteur normal a la face de paroi qui lui a les bons signes.
-                            bon_gradient = 1. / d_equiv(ind_face) * (-domaine_VEF.oriente_normale(num_face, elem1));
-
-                            double surface_face = domaine_VEF.face_surfaces(num_face), nutotal = nu(elem1, nc) + nu_turb(elem1);
-
-                            for (int i0 = 0; i0 < nb_faces_elem; i0++)
-                              {
-                                int j = elem_faces(elem1, i0);
-
-                                for (int ii = 0; ii < nb_faces_elem; ii++)
-                                  {
-                                    le_mauvais_gradient = 0;
-                                    int jj = elem_faces(elem1, ii);
-                                    double surface_pond = 0;
-                                    for (int kk = 0; kk < nb_dim_pb; kk++)
-                                      surface_pond -= (face_normale(jj, kk) * domaine_VEF.oriente_normale(jj, elem1) * face_normale(num_face, kk) * domaine_VEF.oriente_normale(num_face, elem1))
-                                                      / (surface_face * surface_face);
-
-                                    Tf = surface_pond;
-                                    for (int kk = 0; kk < nb_dim_pb; kk++)
-                                      le_mauvais_gradient(kk) += face_normale(jj, kk) * domaine_VEF.oriente_normale(jj, elem1);
-
-                                    le_mauvais_gradient /= volumes(elem1);
-                                    double mauvais_gradient = 0;
-
-                                    for (int kk = 0; kk < nb_dim_pb; kk++)
-                                      mauvais_gradient += le_mauvais_gradient(kk) * face_normale(num_face, kk) / surface_face;
-
-                                    double resu1 = 0, resu2 = 0;
-                                    for (int kk = 0; kk < nb_dim_pb; kk++)
-                                      {
-                                        resu1 += nutotal * mauvais_gradient * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1)) / surface_face;
-                                        resu2 += nutotal * bon_gradient * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1)) / surface_face;
-                                      }
-                                    // bon gradient_reel = bongradient*(Tf-T_face) d'ou les derivees... & mauvais gradient_reel=mauvai_gradient_j*Tj
-                                    if (jj == num_face) resu2 *= -1;
-                                    else resu2 *= Tf;
-
-                                    int j0 = j * nb_comp + nc, jj0 = jj * nb_comp + nc;
-
-                                    matrice(j0, jj0) += (resu1 - resu2) * porosite_eventuelle(jj0);
-                                  }
-                              }
-                          }
-                    }
-                }
-            }
+            ajouter_bord_scalaire_impose_gen__<_TYPE_, Type_Schema::IMPLICITE, _IS_STAB_>(n_bord, transporte, nullptr, &matrice, nu, nu_turb, porosite_eventuelle);
           else if (sub_type(Echange_externe_impose, la_cl.valeur()) && nb_comp < 2) // XXX : plus tard pour multi inco aussi ...
             {
               const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
@@ -513,17 +341,19 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_contribution_bord_gen(const Double
 // METHODES GENERIQUES
 
 template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
-void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const Cond_lim& la_cl, const DoubleTab& inconnue, DoubleTab* resu /* Si explicite */, Matrice_Morse* matrice /* Si implicite */,
-                                                               const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle) const
+void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const int n_bord, const DoubleTab& inconnue, DoubleTab* resu /* Si explicite */, Matrice_Morse* matrice /* Si implicite */,
+                                                               const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle, DoubleTab* flux_bord) const
 {
   constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL), is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE), is_STAB = _IS_STAB_;
 
   const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
   const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
   const DoubleVect& volumes = domaine_VEF.volumes();
   const DoubleTab& face_normale = domaine_VEF.face_normales();
   const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_faces = domaine_VEF.nb_faces(), nb_comp = inconnue.line_size();
 
+  const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
   const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
   const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
   int num1 = 0, num2 = le_bord.nb_faces_tot(), nb_faces_bord_reel = le_bord.nb_faces();
@@ -633,6 +463,164 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_perio_gen__(const Cond_lim& l
             }
         }
 
+    }
+}
+
+template <typename DERIVED_T> template <Type_Champ _TYPE_, Type_Schema _SCHEMA_, bool _IS_STAB_>
+void Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_scalaire_impose_gen__(const int n_bord, const DoubleTab& inconnue, DoubleTab* resu /* Si explicite */, Matrice_Morse* matrice /* Si implicite */,
+                                                                         const DoubleTab& nu, const DoubleTab& nu_turb, const DoubleVect& porosite_eventuelle, DoubleTab* tab_flux_bords) const
+{
+  constexpr bool is_EXPLICIT = (_SCHEMA_ == Type_Schema::EXPLICITE);
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = zcl_vef.valeur();
+  const Domaine_VEF& domaine_VEF = dom_vef.valeur();
+  const Front_VF& le_bord = ref_cast(Front_VF, domaine_Cl_VEF.les_conditions_limites(n_bord).frontiere_dis());
+  const RefObjU& modele_turbulence = domaine_Cl_VEF.equation().get_modele(TURBULENCE);
+
+  const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  const DoubleTab& face_normale = domaine_VEF.face_normales();
+
+  const int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(),
+            nb_comp = inconnue.line_size(), size_flux_bords = domaine_VEF.nb_faces_bord();
+  int num1 = 0, num2 = le_bord.nb_faces_tot();
+
+  if (sub_type(Modele_turbulence_scal_base, modele_turbulence.valeur()))
+    {
+      const Modele_turbulence_scal_base& mod_turb_scal = ref_cast(Modele_turbulence_scal_base, modele_turbulence.valeur());
+      const Turbulence_paroi_scal& loiparth = mod_turb_scal.loi_paroi();
+      if (loiparth->use_equivalent_distance())
+        {
+          const DoubleVect& d_equiv = loiparth->equivalent_distance(n_bord);
+          // d_equiv contient la distance equivalente pour le bord
+          // Dans d_equiv, pour les faces qui ne sont pas paroi_fixe (eg periodique, symetrie, etc...)
+          // il y a la distance geometrique grace a l'initialisation du tableau dans la loi de paroi.
+
+          // Les lois de parois ne s'appliquent qu'aux cas ou la CL est de type temperature imposee, car dans les autres cas
+          // (flux impose et adiabatique) le flux a la paroi est connu et fixe.
+          int nb_dim_pb = Objet_U::dimension;
+
+          const Cond_lim_base& cl_base = domaine_Cl_VEF.les_conditions_limites(n_bord).valeur();
+
+          int ldp_appli = 0;
+
+          if (sub_type(Scalaire_impose_paroi, cl_base))
+            ldp_appli = 1;
+          else if (loiparth->get_flag_calcul_ldp_en_flux_impose())
+            if ((sub_type(Neumann_paroi, cl_base)) || (sub_type(Neumann_homogene, cl_base)))
+              ldp_appli = 1;
+
+          if (ldp_appli)
+            {
+              DoubleVect le_mauvais_gradient(nb_dim_pb);
+              for (int ind_face = num1; ind_face < num2; ind_face++)
+                for (int nc = 0; nc < nb_comp; nc++)
+                  {
+                    int num_face = le_bord.num_face(ind_face);
+                    // Tf est la temperature fluide moyenne dans le premier element sans tenir compte de la temperature de paroi.
+                    double Tf = 0.;
+                    double bon_gradient = 0.; // c'est la norme du gradient de temperature normal a la paroi
+                    le_mauvais_gradient = 0.;
+
+                    int elem1 = face_voisins(num_face, 0);
+                    if (elem1 == -1) elem1 = face_voisins(num_face, 1);
+
+                    // inconnue(num_face) est la temperature de paroi : Tw.
+                    // On se fiche du signe de bon gradient car c'est la norme du gradient de temperature dans l'element.
+                    // Ensuite ce sera multiplie par le vecteur normal a la face de paroi qui lui a les bons signes.
+
+                    if (!is_EXPLICIT)
+                      bon_gradient = 1. / d_equiv(ind_face) * (-domaine_VEF.oriente_normale(num_face, elem1));
+
+                    double surface_face = domaine_VEF.face_surfaces(num_face),
+                           nutotal = nu(elem1, nc) + nu_turb(elem1);
+
+                    if (is_EXPLICIT)
+                      {
+                        for (int i = 0; i < nb_faces_elem; i++)
+                          {
+                            const int j = elem_faces(elem1, i);
+                            if (j != num_face)
+                              {
+                                double surface_pond = 0.;
+                                for (int kk = 0; kk < nb_dim_pb; kk++)
+                                  surface_pond -= (face_normale(j, kk) * domaine_VEF.oriente_normale(j, elem1) * face_normale(num_face, kk) * domaine_VEF.oriente_normale(num_face, elem1)) / (surface_face * surface_face);
+
+                                Tf += inconnue(j, nc) * surface_pond;
+                              }
+
+                            for (int kk = 0; kk < nb_dim_pb; kk++)
+                              le_mauvais_gradient(kk) += inconnue(j, nc) * face_normale(j, kk) * domaine_VEF.oriente_normale(j, elem1);
+                          }
+                        le_mauvais_gradient /= volumes(elem1);
+
+                        double mauvais_gradient = 0;
+                        for (int kk = 0; kk < nb_dim_pb; kk++)
+                          mauvais_gradient += le_mauvais_gradient(kk) * face_normale(num_face, kk) / surface_face;
+
+                        // inconnue(num_face) est la temperature de paroi : Tw.
+                        // On se fiche du signe de bon gradient car c'est la norme du gradient de temperature dans l'element.
+                        // Ensuite ce sera multiplie par le vecteur normal a la face de paroi qui lui a les bons signes.
+                        bon_gradient = (Tf - inconnue(num_face, nc)) / d_equiv(ind_face) * (-domaine_VEF.oriente_normale(num_face, elem1));
+
+                        for (int i = 0; i < nb_faces_elem; i++)
+                          {
+                            const int j = elem_faces(elem1, i);
+                            double correction = 0.;
+                            for (int kk = 0; kk < nb_dim_pb; kk++)
+                              {
+                                double resu2 = nutotal * (bon_gradient - mauvais_gradient) * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1)) / surface_face;
+                                correction += resu2;
+                              }
+
+                            (*resu)(j, nc) += correction;
+
+                            if (j == num_face && j < size_flux_bords)
+                              (*tab_flux_bords)(j, nc) -= correction;
+                          }
+                      }
+                    else // implicite
+                      for (int i0 = 0; i0 < nb_faces_elem; i0++)
+                        {
+                          int j = elem_faces(elem1, i0);
+                          for (int ii = 0; ii < nb_faces_elem; ii++)
+                            {
+                              le_mauvais_gradient = 0;
+                              int jj = elem_faces(elem1, ii);
+                              double surface_pond = 0;
+                              for (int kk = 0; kk < nb_dim_pb; kk++)
+                                surface_pond -= (face_normale(jj, kk) * domaine_VEF.oriente_normale(jj, elem1) * face_normale(num_face, kk) * domaine_VEF.oriente_normale(num_face, elem1)) / (surface_face * surface_face);
+
+                              Tf = surface_pond;
+                              for (int kk = 0; kk < nb_dim_pb; kk++)
+                                le_mauvais_gradient(kk) += face_normale(jj, kk) * domaine_VEF.oriente_normale(jj, elem1);
+
+                              le_mauvais_gradient /= volumes(elem1);
+                              double mauvais_gradient = 0;
+
+                              for (int kk = 0; kk < nb_dim_pb; kk++)
+                                mauvais_gradient += le_mauvais_gradient(kk) * face_normale(num_face, kk) / surface_face;
+
+                              double resu1 = 0, resu2 = 0;
+                              for (int kk = 0; kk < nb_dim_pb; kk++)
+                                {
+                                  resu1 += nutotal * mauvais_gradient * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1)) / surface_face;
+                                  resu2 += nutotal * bon_gradient * face_normale(num_face, kk) * face_normale(j, kk) * (-domaine_VEF.oriente_normale(j, elem1)) / surface_face;
+                                }
+                              // bon gradient_reel = bongradient*(Tf-T_face) d'ou les derivees... & mauvais gradient_reel=mauvai_gradient_j*Tj
+                              if (jj == num_face)
+                                resu2 *= -1;
+                              else
+                                resu2 *= Tf;
+
+                              int j0 = j * nb_comp + nc, jj0 = jj * nb_comp + nc;
+
+                              (*matrice)(j0, jj0) += (resu1 - resu2) * porosite_eventuelle(jj0);
+                            }
+                        }
+                  }
+            }
+        }
     }
 }
 
