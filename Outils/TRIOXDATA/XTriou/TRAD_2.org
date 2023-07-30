@@ -285,11 +285,10 @@ read_tgrid interprete lire_tgrid -1 Keyword to reaf Tgrid/Gambit mesh files. 2D 
   attr filename chaine filename 0 Name of file containing the mesh.
 discretisation_base objet_u discretisation_base -1 Basic class for space discretization of thermohydraulic turbulent problems.
 vdf discretisation_base vdf -1 Finite difference volume discretization.
-vef discretisation_base vef -1 Finite element volume discretization (P1NC/P0 element) NL2 Warning: it becomes an obsolete discretization.
 polymac discretisation_base polymac -1 polymac discretization (polymac discretization that is not compatible with pb_multi).
 polymac_P0P1NC discretisation_base polymac_P0P1NC -1 polymac_P0P1NC discretization (previously polymac discretization compatible with pb_multi).
 polymac_p0 discretisation_base polymac_p0 -1 polymac_p0 discretization (previously covimac discretization compatible with pb_multi).
-vefprep1b vef vefprep1b -1 Finite element volume discretization (P1NC/P1-bubble element). Since the 1.5.5 version, several new discretizations are available thanks to the optional keyword Read. By default, the VEFPreP1B keyword is equivalent to the former VEFPreP1B formulation (v1.5.4 and sooner). P0P1 (if used with the strong formulation for imposed pressure boundary) is equivalent to VEFPreP1B but the convergence is slower. VEFPreP1B dis is equivalent to VEFPreP1B dis Read dis { P0 P1 Changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 0 }
+vef discretisation_base vefprep1b -1 Finite element volume discretization (P1NC/P1-bubble element). Since the 1.5.5 version, several new discretizations are available thanks to the optional keyword Read. By default, the VEFPreP1B keyword is equivalent to the former VEFPreP1B formulation (v1.5.4 and sooner). P0P1 (if used with the strong formulation for imposed pressure boundary) is equivalent to VEFPreP1B but the convergence is slower. VEFPreP1B dis is equivalent to VEFPreP1B dis Read dis { P0 P1 Changement_de_base_P1Bulle 1 Cl_pression_sommet_faible 0 }
   attr p0 rien p0 1 Pressure nodes are added on element centres
   attr p1 rien p1 1 Pressure nodes are added on vertices
   attr pa rien pa 1 Only available in 3D, pressure nodes are added on bones
