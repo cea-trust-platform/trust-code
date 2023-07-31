@@ -16,45 +16,41 @@
 #ifndef Op_Grad_VEF_P1B_Face_included
 #define Op_Grad_VEF_P1B_Face_included
 
-#include <Op_Grad_VEF_Face.h>
 #include <Champ_P1_isoP1Bulle.h>
+#include <Operateur_Grad.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
+#include <TRUST_Ref.h>
 
 /*! @brief class Op_Grad_VEF_P1B_Face
  *
- *   Cette classe represente l'operateur de gradient
- *   La discretisation est VEF
+ *   Cette classe represente l'operateur de gradient. La discretisation est VEF
  *   On calcule le gradient d'un champ_P1B_VEF (la pression)
- *
- *
  *
  * @sa Operateur_Grad_base
  */
-class Domaine_VEF;
-class Domaine_Cl_VEF;
-
-class Op_Grad_VEF_P1B_Face : public Op_Grad_VEF_Face
+class Op_Grad_VEF_P1B_Face: public Operateur_Grad_base
 {
-
   Declare_instanciable(Op_Grad_VEF_P1B_Face);
-
 public:
+  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
+  const Domaine_VEF& domaine_vef() const;
+  int impr(Sortie&) const override;
 
-  const Domaine_VEF& domaine_Vef() const;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& modifier_grad_pour_Cl(DoubleTab& ) const;
-  DoubleTab& ajouter_elem(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& ajouter_som(const DoubleTab& ,  DoubleTab& ) const;
-  DoubleTab& ajouter_aretes(const DoubleTab& ,  DoubleTab& ) const;
-  int impr(Sortie& ) const override ;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& modifier_grad_pour_Cl(DoubleTab&) const;
+  DoubleTab& ajouter_elem(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& ajouter_som(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& ajouter_aretes(const DoubleTab&, DoubleTab&) const;
 
-  static double calculer_coef_som(int elem,  const Domaine_Cl_VEF& zcl,
-                                  const Domaine_VEF& domaine_VEF) ;
+  static double calculer_coef_som(int elem, const Domaine_Cl_VEF& zcl, const Domaine_VEF& domaine_VEF);
   void calculer_flux_bords() const override;
 
 private:
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
   mutable ArrOfDouble coeff_som_;
   mutable IntTab som_;
-
 };
 
-#endif
+#endif /* Op_Grad_VEF_P1B_Face_included */

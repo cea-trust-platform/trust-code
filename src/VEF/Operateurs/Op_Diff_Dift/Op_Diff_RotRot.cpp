@@ -13,64 +13,50 @@
 *
 *****************************************************************************/
 
-#include <Op_Diff_RotRot.h>
-#include <Domaine_Cl_VEF.h>
-
-#include <Domaine_dis.h>
-#include <Domaine_Cl_dis.h>
-#include <Matrice_Morse_Sym.h>
-
-#include <SFichier.h>
+#include <Champ_P1_isoP1Bulle.h>
 #include <LecFicDistribueBin.h>
+#include <Matrice_Morse_Sym.h>
 #include <Champ_Uniforme.h>
+#include <Op_Diff_RotRot.h>
+#include <Domaine_Cl_dis.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_dis.h>
+#include <SFichier.h>
 #include <Solv_GCP.h>
 #include <SSOR.h>
 
-Implemente_instanciable(Op_Diff_RotRot,"Op_Diff_VEF_ROTROT_const_P1NC",Operateur_Diff_base);
+Implemente_instanciable(Op_Diff_RotRot, "Op_Diff_VEF_ROTROT_const_P1NC", Operateur_Diff_base);
 
-//// Implementation de printOn et readOn
-// ATTENTION: verifier ou est implementer la fonction que_suis_je()
-Sortie& Op_Diff_RotRot::printOn(Sortie& s) const
-{
-  return s << que_suis_je() ;
-}
+Sortie& Op_Diff_RotRot::printOn(Sortie& s) const { return s << que_suis_je(); }
 
+Entree& Op_Diff_RotRot::readOn(Entree& s) { return s; }
 
-Entree& Op_Diff_RotRot::readOn(Entree& s)
-{
-  return s ;
-}
+const Domaine_VEF& Op_Diff_RotRot::domaine_vef() const { return ref_cast(Domaine_VEF, le_dom_vef.valeur()); }
 
-const Domaine_VEF& Op_Diff_RotRot::domaine_Vef() const
-{
-  return ref_cast(Domaine_VEF, le_dom_vef.valeur());
-}
-
-void Op_Diff_RotRot::
-associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis,
-         const Champ_Inc& inco)
+void Op_Diff_RotRot::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc& inco)
 {
   const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
   const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
   le_dom_vef = zvef;
   la_zcl_vef = zclvef;
 
-  curl_.associer(domaine_dis,domaine_Cl_dis,inco);
-  rot_.associer(domaine_dis,domaine_Cl_dis,inco);
+  curl_.associer(domaine_dis, domaine_Cl_dis, inco);
+  rot_.associer(domaine_dis, domaine_Cl_dis, inco);
 
   //////////////////////////////////////////////
   //On definit le champ vorticite
   vorticite_.typer("Champ_P1_isoP1Bulle");
-  Champ_P1_isoP1Bulle& vorticite =
-    ref_cast(Champ_P1_isoP1Bulle,vorticite_.valeur());
+  Champ_P1_isoP1Bulle& vorticite = ref_cast(Champ_P1_isoP1Bulle, vorticite_.valeur());
 
   vorticite.associer_domaine_dis_base(zvef);
   vorticite.nommer("vorticite");
 
-  if (dimension == 2) vorticite.fixer_nb_comp(1);
-  else vorticite.fixer_nb_comp(dimension);
+  if (dimension == 2)
+    vorticite.fixer_nb_comp(1);
+  else
+    vorticite.fixer_nb_comp(dimension);
 
-  int nb_tot = zvef.nb_elem() + zvef.nb_som() -1;
+  int nb_tot = zvef.nb_elem() + zvef.nb_som() - 1;
   vorticite.fixer_nb_valeurs_nodales(nb_tot);
 
   vorticite.fixer_unite("s-1");
@@ -86,29 +72,25 @@ associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis,
 
 }
 
-
-
-DoubleTab& Op_Diff_RotRot::
-calculer(const DoubleTab& vitesse, DoubleTab& diffusion) const
+DoubleTab& Op_Diff_RotRot::calculer(const DoubleTab& vitesse, DoubleTab& diffusion) const
 {
   diffusion = 0;
-  return ajouter(vitesse,diffusion);
+  return ajouter(vitesse, diffusion);
 }
 
 //Methode de l'operateur de diffusion sous forme
 //rotationnel de la vorticite sans const la seule qui
 //doit etre appelee.
-DoubleTab& Op_Diff_RotRot::
-ajouter(const DoubleTab& vitesse, DoubleTab& diffusion) const
+DoubleTab& Op_Diff_RotRot::ajouter(const DoubleTab& vitesse, DoubleTab& diffusion) const
 {
   Cerr << "je suis dans OpDiffRotRot" << finl;
   DoubleTab curl(matrice_vorticite_.valeur().ordre());
 
   //Marche car Champ_Inc est mutable
-  curl_.calculer(vitesse,curl);
+  curl_.calculer(vitesse, curl);
   //curl=-1*curl;
-  calculer_vorticite(vorticite_.valeurs(),curl);
-  rot_.calculer(vorticite_.valeurs(),diffusion);
+  calculer_vorticite(vorticite_.valeurs(), curl);
+  rot_.calculer(vorticite_.valeurs(), diffusion);
 
   Cerr << "je sors de OpDiffRotRot" << finl;
 
@@ -116,47 +98,44 @@ ajouter(const DoubleTab& vitesse, DoubleTab& diffusion) const
 
 }
 
-int Op_Diff_RotRot::
-calculer_vorticite(DoubleTab& solution,        const DoubleTab& curl) const
+int Op_Diff_RotRot::calculer_vorticite(DoubleTab& solution, const DoubleTab& curl) const
 {
-  const Domaine& domaine = domaine_Vef().domaine();
+  const Domaine& domaine = domaine_vef().domaine();
   //static int nb_appel2=0;
 
   // Resolution en vorticite: on ne considere que le cas
   // sequentiel pour le moment.
   // Pour le cas parallele, il faut s'inspirer de la classe N_S.cpp.
 
-  if (Process::nproc()==1)
+  if (Process::nproc() == 1)
     {
       //On considere que la matrice de vorticite est une matrice
       //morse par defaut, et on applique la methode inverse()
       //pour resoudre le systeme lineaire.
-      const Matrice_Morse_Sym& la_matrice=ref_cast(Matrice_Morse_Sym,
-                                                   matrice_vorticite_.valeur());
+      const Matrice_Morse_Sym& la_matrice = ref_cast(Matrice_Morse_Sym, matrice_vorticite_.valeur());
       //      Matrice_Morse& la_matrice = (Matrice_Morse&) matrice_vorticite_.valeur();
       DoubleTab solution_temporaire(la_matrice.ordre());
 
-      assert(solution_temporaire.size() == solution.size()-1);
+      assert(solution_temporaire.size() == solution.size() - 1);
       assert(curl.size() == solution_temporaire.size());
 
       //On resoud un systeme lineaire pour calculer la vorticite
       //La vorticite est alors stockee dans la variable solution
       //      la_matrice.inverse(curl,solution_temporaire,1e-15);
-      Solv_GCP& solv = ref_cast_non_const(Solv_GCP,solveur_.valeur());
+      Solv_GCP& solv = ref_cast_non_const(Solv_GCP, solveur_.valeur());
       solv.set_seuil(1e-17);
-      solv.resoudre_systeme(la_matrice,curl,solution_temporaire);
+      solv.resoudre_systeme(la_matrice, curl, solution_temporaire);
 
       //On recopie les valeurs de solution temoraire dans solution
       //Une case n'est pas remplie: on le fait plus tard.
-      for (int i=0; i<solution_temporaire.size(); i++)
-        solution[i]=solution_temporaire[i];
+      for (int i = 0; i < solution_temporaire.size(); i++)
+        solution[i] = solution_temporaire[i];
 
       //On remplit le dernier element de "solution"
-      int sommet = domaine.nb_som()-1;
+      int sommet = domaine.nb_som() - 1;
 
-      for (int i=0; i<curl_.elem_som_size(sommet); i++)
-        solution[sommet] +=
-          solution_temporaire[curl_.elements_pour_sommet(sommet,i)];
+      for (int i = 0; i < curl_.elem_som_size(sommet); i++)
+        solution[sommet] += solution_temporaire[curl_.elements_pour_sommet(sommet, i)];
 
       //nb_appel2++;
 
@@ -169,18 +148,17 @@ calculer_vorticite(DoubleTab& solution,        const DoubleTab& curl) const
 /* Fonctions permettant l'assemblage de la matrice */
 /* de vorticite */
 /////////////////////////////////////////////////////
-
 /* On calcule la matrice de vorticite pour le probleme triple:
-   / on considere le cas sans condition au limite pour la vorticite
-   / pour le moment, et on ne code pas la partie parallele de
-   / l'algo.
-   / REM: pour l'instant, ne fonctionne qu'en 2D
-*/
+ / on considere le cas sans condition au limite pour la vorticite
+ / pour le moment, et on ne code pas la partie parallele de
+ / l'algo.
+ / REM: pour l'instant, ne fonctionne qu'en 2D
+ */
 int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
 {
-  const Domaine& domaine = domaine_Vef().domaine();
+  const Domaine& domaine = domaine_vef().domaine();
 
-  int colonne_a_remplir_tab2,colonne_a_remplir_coeff;
+  int colonne_a_remplir_tab2, colonne_a_remplir_coeff;
   int nombre_coeff_non_nuls;
 
   Cerr << "Assemblage de la matrice de vorticite en cours..." << finl;
@@ -198,23 +176,23 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
   // Par defaut, on enleve la derniere fonction chapeau pour
   // former notre base.
   // Cf. Papier dans Latex/Vorticity
-  nombre_coeff_non_nuls = (2*dimension + 3) * domaine.nb_elem()
-                          + (domaine.nb_som()-1)* (domaine.nb_som()-1);
+  nombre_coeff_non_nuls = (2 * dimension + 3) * domaine.nb_elem() + (domaine.nb_som() - 1) * (domaine.nb_som() - 1);
   //la_matrice.dimensionner(domaine.nb_elem()+domaine.nb_som()-1,nombre_coeff_non_nuls);
-  Matrice_Morse la_matrice(domaine.nb_elem()+ domaine.nb_som()-1,nombre_coeff_non_nuls);
+  Matrice_Morse la_matrice(domaine.nb_elem() + domaine.nb_som() - 1, nombre_coeff_non_nuls);
 
   //Au cas ou la matrice existe deja dans un fichier
   Nom nomfic("Vorticite.sv");
   LecFicDistribueBin vorticite;
   int fic_vorticite_existe;
 
-  if(vorticite.ouvrir(nomfic)) fic_vorticite_existe=1;
-  else fic_vorticite_existe=0;
+  if (vorticite.ouvrir(nomfic))
+    fic_vorticite_existe = 1;
+  else
+    fic_vorticite_existe = 0;
 
-  if(fic_vorticite_existe)
+  if (fic_vorticite_existe)
     {
-      Cerr << "Relecture de la matrice de vorticite sur le fichier: "
-           << nomfic << finl;
+      Cerr << "Relecture de la matrice de vorticite sur le fichier: " << nomfic << finl;
       vorticite >> la_matrice;
       vorticite.close();
       Cerr << "Fin de la relecture de la matrice de vorticite." << finl;
@@ -252,8 +230,7 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
       //Les nb_elem premiers elements de la ligne "numero_elem"
       //a cause du FORTRAN
       la_matrice.get_set_tab2()(colonne_a_remplir_tab2) = numero_elem + 1;
-      la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
-        remplir_elem_elem_EF(numero_elem);
+      la_matrice.get_set_coeff()(colonne_a_remplir_coeff) = remplir_elem_elem_EF(numero_elem);
 
       //On incremente nb_coeff_non_nuls car on vient de remplir
       //une ligne par l'un de ces elements non nul
@@ -269,12 +246,10 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
         {
           //Si ce "sommet_pour_elem[i]" est different du numero
           //du dernier sommet alors on stocke le bon coefficient
-          if (sommets_pour_elem[i] != domaine.nb_som()-1)
+          if (sommets_pour_elem[i] != domaine.nb_som() - 1)
             {
-              la_matrice.get_set_tab2()(colonne_a_remplir_tab2) =
-                domaine.nb_elem()+sommets_pour_elem[i]+1; //pour FORTRAN
-              la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
-                remplir_elem_som_EF(numero_elem,sommets_pour_elem[i]);
+              la_matrice.get_set_tab2()(colonne_a_remplir_tab2) = domaine.nb_elem() + sommets_pour_elem[i] + 1; //pour FORTRAN
+              la_matrice.get_set_coeff()(colonne_a_remplir_coeff) = remplir_elem_som_EF(numero_elem, sommets_pour_elem[i]);
 
               //On incremente nb_coeff_non_nuls car on vient de remplir
               //une ligne avec l'un de ces elements non nul
@@ -295,28 +270,27 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
 
   // On remplit les lignes de la sous-matrice de taille
   // nb_som *( nb_elem+nb_som) :cf. structure de la matrice
-  for (int numero_som = 0; numero_som < domaine.nb_som()-1; numero_som++)
+  for (int numero_som = 0; numero_som < domaine.nb_som() - 1; numero_som++)
     {
       // On stocke les tableaux qui nous sont utiles
       // Ainsi que leur taille respective
       IntList Elem_pour_sommet = elements_pour_sommet(numero_som);
-      IntList Sommets_voisins = sommets_voisins(numero_som,Elem_pour_sommet);
+      IntList Sommets_voisins = sommets_voisins(numero_som, Elem_pour_sommet);
       Tri(Elem_pour_sommet); //liste triee
       Tri(Sommets_voisins); //liste triee
 
       //On remplit tab1
       //pour FORTRAN
-      la_matrice.get_set_tab1()(domaine.nb_elem()+numero_som) = nombre_coeff_non_nuls;
+      la_matrice.get_set_tab1()(domaine.nb_elem() + numero_som) = nombre_coeff_non_nuls;
 
       //On remplit tab2 et coeff
 
       //Les nb_elem premiers elements de la ligne "numero_som"
-      for (int i=0; i < Elem_pour_sommet.size(); i++)
+      for (int i = 0; i < Elem_pour_sommet.size(); i++)
         {
           //A cause du FORTRAN
-          la_matrice.get_set_tab2()(colonne_a_remplir_tab2) = Elem_pour_sommet[i]+1;
-          la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
-            remplir_som_elem_EF(Elem_pour_sommet[i],numero_som);
+          la_matrice.get_set_tab2()(colonne_a_remplir_tab2) = Elem_pour_sommet[i] + 1;
+          la_matrice.get_set_coeff()(colonne_a_remplir_coeff) = remplir_som_elem_EF(Elem_pour_sommet[i], numero_som);
 
           //On incremente nb_coeff_non_nuls car on vient de remplir
           //une ligne avec l'un de ces elements non nul
@@ -331,7 +305,7 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
       //colonne_* : ils sont a la bonne valeur.
 
       //Les nb_som elements de la ligne "numero_som"
-      for (int i=0; i < Sommets_voisins.size(); i++)
+      for (int i = 0; i < Sommets_voisins.size(); i++)
         {
           //On recupere le numero global du sommet_voisin
           int numero_som_global = Sommets_voisins[i];
@@ -339,13 +313,11 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
           //Et si "numero_som_global" est different du numero
           //du dernier sommet, alors on stocke le bon coefficient
 
-          if (numero_som_global != domaine.nb_som()-1)
+          if (numero_som_global != domaine.nb_som() - 1)
             {
               //A cause du FORTRAN
-              la_matrice.get_set_tab2()(colonne_a_remplir_tab2) =
-                domaine.nb_elem()+Sommets_voisins[i]+1;
-              la_matrice.get_set_coeff()(colonne_a_remplir_coeff) =
-                remplir_som_som_EF(numero_som,Sommets_voisins[i],Elem_pour_sommet);
+              la_matrice.get_set_tab2()(colonne_a_remplir_tab2) = domaine.nb_elem() + Sommets_voisins[i] + 1;
+              la_matrice.get_set_coeff()(colonne_a_remplir_coeff) = remplir_som_som_EF(numero_som, Sommets_voisins[i], Elem_pour_sommet);
 
               //On incremente nb_coeff_non_nuls car on vient de remplir
               //une ligne avec l'un de ces elements non nul
@@ -366,14 +338,13 @@ int Op_Diff_RotRot::assembler_matrice(Matrice& matrice)
   //de tab1 est tab1[domaine.nb_elem()+domaine.nb_som()+1] et vaut
   //le nombre total de coefficients non nuls +1
   //soit avec notre algorithme: nombre_coeff_non_nuls
-  la_matrice.get_set_tab1()(domaine.nb_elem()+domaine.nb_som()-1) = nombre_coeff_non_nuls;
+  la_matrice.get_set_tab1()(domaine.nb_elem() + domaine.nb_som() - 1) = nombre_coeff_non_nuls;
 
   //   if(Debog::mode_db==2) Debog::save_matrix_seq(la_matrice);
   //   else if(Debog::mode_db==3)
   //     Debog::save_and_distribute_matrix_seq(la_matrice);
 
-  Matrice_Morse_Sym& la_matrice_sym = ref_cast(Matrice_Morse_Sym,
-                                               matrice.valeur());
+  Matrice_Morse_Sym& la_matrice_sym = ref_cast(Matrice_Morse_Sym, matrice.valeur());
   la_matrice_sym = la_matrice;
 
   Cerr << "Fin de l'assemblage de la matrice de vorticite. " << finl;
@@ -387,14 +358,15 @@ IntList Op_Diff_RotRot::sommets_pour_element(int numero_elem) const
 {
   IntList resultat;
   int numero_global_sommet = 0;
-  const Domaine& domaine = domaine_Vef().domaine();
+  const Domaine& domaine = domaine_vef().domaine();
 
   // Par precaution mais normalement inutile
-  if (! resultat.est_vide() ) resultat.vide();
+  if (!resultat.est_vide())
+    resultat.vide();
 
-  for (int i=0 ; i< domaine.nb_som_elem() ; i++)
+  for (int i = 0; i < domaine.nb_som_elem(); i++)
     {
-      numero_global_sommet = domaine.sommet_elem(numero_elem,i);
+      numero_global_sommet = domaine.sommet_elem(numero_elem, i);
       resultat.add_if_not(numero_global_sommet);
     }
 
@@ -403,26 +375,26 @@ IntList Op_Diff_RotRot::sommets_pour_element(int numero_elem) const
 
 /* Pour un sommet donne "numero_sommet" retourne */
 /* la liste des elements contenant ce sommet */
-IntList
-Op_Diff_RotRot::elements_pour_sommet(int numero_sommet) const
+IntList Op_Diff_RotRot::elements_pour_sommet(int numero_sommet) const
 {
   IntList resultat;
   int numero_global_som;
-  const Domaine& domaine = domaine_Vef().domaine();
+  const Domaine& domaine = domaine_vef().domaine();
 
   // Par precaution mais normalement inutile
-  if (! resultat.est_vide() ) resultat.vide();
+  if (!resultat.est_vide())
+    resultat.vide();
 
   // Pas tres efficace mais marche quelle que soit la dimension:
   // on boucle sur les elements, on regarde pour chaque element
   // ses sommets, puis on compare ces sommets au parametre d'entree
   // et si l'un d'eux coincide avec le parametre d'entree, on stocke
   // l'element.
-  for (int numero_elem = 0 ; numero_elem < domaine.nb_elem() ; numero_elem++)
-    for (int numero_som = 0 ; numero_som < domaine.nb_som_elem() ; numero_som++)
+  for (int numero_elem = 0; numero_elem < domaine.nb_elem(); numero_elem++)
+    for (int numero_som = 0; numero_som < domaine.nb_som_elem(); numero_som++)
       {
-        numero_global_som = domaine.sommet_elem(numero_elem,numero_som);
-        if ( numero_sommet == numero_global_som )
+        numero_global_som = domaine.sommet_elem(numero_elem, numero_som);
+        if (numero_sommet == numero_global_som)
           resultat.add_if_not(numero_elem);
       }
 
@@ -435,21 +407,19 @@ Op_Diff_RotRot::elements_pour_sommet(int numero_sommet) const
 /* Parametre: la liste des elements contenant "numero_sommet" */
 /* Il suffit de chercher dans ces elements pour avoir le resultat */
 /* REM: la liste resultat contient le sommet "numero_sommet" */
-IntList Op_Diff_RotRot::
-sommets_voisins(int numero_sommet,const IntList& liste) const
+IntList Op_Diff_RotRot::sommets_voisins(int numero_sommet, const IntList& liste) const
 {
   IntList resultat;
   int numero_global_som;
-  const Domaine& domaine = domaine_Vef().domaine();
+  const Domaine& domaine = domaine_vef().domaine();
 
   //Il suffit de recuperer les sommets des elements de "liste"
   //puis de les comparer a "numero_som" et de les conserver
   //sans doublon.
-  for (int numero_elem_loc = 0 ; numero_elem_loc<liste.size(); numero_elem_loc++)
-    for (int numero_som = 0; numero_som < domaine.nb_som_elem() ; numero_som++)
+  for (int numero_elem_loc = 0; numero_elem_loc < liste.size(); numero_elem_loc++)
+    for (int numero_som = 0; numero_som < domaine.nb_som_elem(); numero_som++)
       {
-        numero_global_som =
-          domaine.sommet_elem(liste[numero_elem_loc],numero_som);
+        numero_global_som = domaine.sommet_elem(liste[numero_elem_loc], numero_som);
         resultat.add_if_not(numero_global_som); //contient "numero_sommet"
       }
 
@@ -476,7 +446,7 @@ void Op_Diff_RotRot::Tri(IntList& liste_a_trier) const
   IntList temporaire;
   int minimum;
 
-  while ( !liste_a_trier.est_vide() )
+  while (!liste_a_trier.est_vide())
     {
       minimum = liste_a_trier[0];
 
@@ -487,7 +457,7 @@ void Op_Diff_RotRot::Tri(IntList& liste_a_trier) const
       liste_a_trier.suppr(minimum);
     }
 
-  for (int i = 0 ; i < temporaire.size() ; i++)
+  for (int i = 0; i < temporaire.size(); i++)
     liste_a_trier.add_if_not(temporaire[i]);
 
 }
@@ -496,32 +466,27 @@ void Op_Diff_RotRot::Tri(IntList& liste_a_trier) const
 /* a placer dans la sous matrice de taille nb_elem * nb_elem */
 /* a la ligne "numero_elem" , colonne "numero_elem"*/
 /* Matrice EF */
-double
-Op_Diff_RotRot::remplir_elem_elem_EF(const int numero_elem) const
+double Op_Diff_RotRot::remplir_elem_elem_EF(const int numero_elem) const
 {
-  return 1.*domaine_Vef().volumes(numero_elem);
+  return 1. * domaine_vef().volumes(numero_elem);
 }
 
 /* Pour l'element "numero_elem" retourne le coefficient */
 /* a placer dans la sous matrice de taille nb_elem * nb_som */
 /* a la ligne "numero_elem" , colonne "numero_som"*/
 /* Matrice EF */
-double Op_Diff_RotRot::remplir_elem_som_EF(const int numero_elem,
-                                           const int numero_som)
-const
+double Op_Diff_RotRot::remplir_elem_som_EF(const int numero_elem, const int numero_som) const
 {
-  return (1.*domaine_Vef().volumes(numero_elem)/(dimension+1));
+  return (1. * domaine_vef().volumes(numero_elem) / (dimension + 1));
 }
 
 /* Pour le sommet "numero_som" retourne le coefficient */
 /* a placer dans la sous matrice de taille nb_som * nb_elem */
 /* a la ligne "numero_som" , colonne "numero_elem"*/
 /* Matrice EF */
-double
-Op_Diff_RotRot::remplir_som_elem_EF(const int numero_elem,
-                                    const int numero_som) const
+double Op_Diff_RotRot::remplir_som_elem_EF(const int numero_elem, const int numero_som) const
 {
-  return (1.*domaine_Vef().volumes(numero_elem)/(dimension+1));
+  return (1. * domaine_vef().volumes(numero_elem) / (dimension + 1));
 }
 
 /* Pour l'element "numero_som" retourne le coefficient */
@@ -529,10 +494,7 @@ Op_Diff_RotRot::remplir_som_elem_EF(const int numero_elem,
 /* a la ligne "numero_som" , colonne "sommet_voisin"*/
 /* "elem_voisins" est le tableau des elements contenant "numero_som" */
 /* Matrice EF */
-double
-Op_Diff_RotRot::remplir_som_som_EF(const int numero_som,
-                                   const int sommet_voisin,
-                                   const IntList& elem_voisins) const
+double Op_Diff_RotRot::remplir_som_som_EF(const int numero_som, const int sommet_voisin, const IntList& elem_voisins) const
 {
   double resultat = 0.;
   int test = 0;
@@ -541,13 +503,13 @@ Op_Diff_RotRot::remplir_som_som_EF(const int numero_som,
   //Alors on peut tout de suite retourner le resultat
   if (numero_som == sommet_voisin)
     {
-      for (int i=0; i<elem_voisins.size(); i++)
+      for (int i = 0; i < elem_voisins.size(); i++)
         {
-          resultat += domaine_Vef().volumes(elem_voisins[i]);
+          resultat += domaine_vef().volumes(elem_voisins[i]);
         }
 
       //On tient compte de la dimension dans nos calculs
-      resultat *= 2./((dimension+1)*(dimension+2));
+      resultat *= 2. / ((dimension + 1) * (dimension + 2));
 
       return resultat;
     }
@@ -555,24 +517,23 @@ Op_Diff_RotRot::remplir_som_som_EF(const int numero_som,
   //Sinon:
   //On calcule la contribution au resultat
 
-  for (int i=0; i<elem_voisins.size() ; i++)
+  for (int i = 0; i < elem_voisins.size(); i++)
     {
       if (sommets_pour_element(elem_voisins[i]).contient(sommet_voisin))
         {
-          resultat += domaine_Vef().volumes(elem_voisins[i]);
+          resultat += domaine_vef().volumes(elem_voisins[i]);
           test++;
         }
     }
 
   //On tient compte de la dimension dans laquelle on evolue
-  resultat *= 1./((dimension+1)*(dimension+2));
+  resultat *= 1. / ((dimension + 1) * (dimension + 2));
 
   //On verifier que sommet_voisin etait bien dans le voisinage de numero_voisin
   if (test == 0)
     {
       Cerr << "Erreur Op_Diff_RotRot::remplir_som_som_EF." << finl;
-      Cerr << "sommet_voisin n'est pas dans le voisinage de numero_voisin."
-           << finl;
+      Cerr << "sommet_voisin n'est pas dans le voisinage de numero_voisin." << finl;
       Cerr << "Sortie du programme." << finl;
       Process::exit();
     }
@@ -581,19 +542,16 @@ Op_Diff_RotRot::remplir_som_som_EF(const int numero_som,
 
 }
 
-
-DoubleTab
-Op_Diff_RotRot::vecteur_normal(const int face, const int elem) const
+DoubleTab Op_Diff_RotRot::vecteur_normal(const int face, const int elem) const
 {
   assert(dimension == 2);
 
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   DoubleTab le_vecteur_normal(dimension);
 
-  for (int composante = 0; composante<dimension; composante++)
+  for (int composante = 0; composante < dimension; composante++)
 
-    le_vecteur_normal(composante) = domaine_VEF.face_normales(face,composante)
-                                    * domaine_VEF.oriente_normale(face,elem);
+    le_vecteur_normal(composante) = domaine_VEF.face_normales(face, composante) * domaine_VEF.oriente_normale(face, elem);
 
   return le_vecteur_normal;
 }
@@ -611,18 +569,17 @@ int Op_Diff_RotRot::tester() const
   //     }
 
   //Test de la matrice de vorticite
-  const Matrice_Morse_Sym& la_matrice=ref_cast(Matrice_Morse_Sym,
-                                               matrice_vorticite_.valeur());
-  Solv_GCP& solv = ref_cast_non_const(Solv_GCP,solveur_.valeur());
+  const Matrice_Morse_Sym& la_matrice = ref_cast(Matrice_Morse_Sym, matrice_vorticite_.valeur());
+  Solv_GCP& solv = ref_cast_non_const(Solv_GCP, solveur_.valeur());
 
   DoubleTab resultat(la_matrice.ordre());
   DoubleTab resultat1(la_matrice.ordre());
   DoubleTab secmem(la_matrice.ordre());
   DoubleTab secmem1(la_matrice.ordre());
   secmem = 0.;
-  secmem[0]=-0.25;
-  secmem[4]=-0.0833333;
-  secmem[5]=-0.0833333;
+  secmem[0] = -0.25;
+  secmem[4] = -0.0833333;
+  secmem[5] = -0.0833333;
   secmem1 = 1e-10 + 1e-15;
 
   SFichier fic("Matrice.test");
@@ -630,15 +587,15 @@ int Op_Diff_RotRot::tester() const
 
   resultat = 0.;
   solv.set_seuil(1e-17);
-  solv.resoudre_systeme(la_matrice,secmem,resultat);
+  solv.resoudre_systeme(la_matrice, secmem, resultat);
   Cerr << "Resultat de l'inversion" << finl;
-  for (int i=0; i<8; i++)
+  for (int i = 0; i < 8; i++)
     Cerr << resultat[i] << " ; ";
   Cerr << finl;
 
-  solv.resoudre_systeme(la_matrice,secmem1,resultat);
+  solv.resoudre_systeme(la_matrice, secmem1, resultat);
   Cerr << "Resultat de l'inversion" << finl;
-  for (int i=0; i<8; i++)
+  for (int i = 0; i < 8; i++)
     Cerr << resultat[i] << " ; ";
   Cerr << finl;
 

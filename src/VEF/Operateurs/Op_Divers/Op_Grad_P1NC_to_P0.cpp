@@ -16,44 +16,21 @@
 #include <Op_Grad_P1NC_to_P0.h>
 #include <Champ_P1NC.h>
 
-Implemente_instanciable(Op_Grad_P1NC_to_P0,"Op_Grad_P1NC_to_P0",Operateur_Grad_base);
+Implemente_instanciable(Op_Grad_P1NC_to_P0, "Op_Grad_P1NC_to_P0", Operateur_Grad_base);
 
+Sortie& Op_Grad_P1NC_to_P0::printOn(Sortie& s) const { return s << que_suis_je(); }
 
-//// printOn
-//
+Entree& Op_Grad_P1NC_to_P0::readOn(Entree& s) { return s; }
 
-Sortie& Op_Grad_P1NC_to_P0::printOn(Sortie& s) const
+void Op_Grad_P1NC_to_P0::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis, const Champ_Inc&)
 {
-  return s << que_suis_je() ;
-}
-
-//// readOn
-//
-
-Entree& Op_Grad_P1NC_to_P0::readOn(Entree& s)
-{
-  return s ;
-}
-
-
-
-/*! @brief
- *
- */
-void Op_Grad_P1NC_to_P0::associer(const Domaine_dis& domaine_dis,
-                                  const Domaine_Cl_dis& domaine_Cl_dis,
-                                  const Champ_Inc&)
-{
-  const Domaine_VEF& zvef = ref_cast(Domaine_VEF, domaine_dis.valeur());
-  const Domaine_Cl_VEF& zclvef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
-  le_dom_vef = zvef;
-  la_zcl_vef = zclvef;
-
+  le_dom_vef = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  la_zcl_vef = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 DoubleTab& Op_Grad_P1NC_to_P0::ajouter(const DoubleTab& valeurs_source, DoubleTab& grad) const
 {
-  Champ_P1NC::calcul_gradient(valeurs_source,grad,la_zcl_vef.valeur());
+  Champ_P1NC::calcul_gradient(valeurs_source, grad, la_zcl_vef.valeur());
   grad.echange_espace_virtuel();
   return grad;
 }
@@ -61,6 +38,5 @@ DoubleTab& Op_Grad_P1NC_to_P0::ajouter(const DoubleTab& valeurs_source, DoubleTa
 DoubleTab& Op_Grad_P1NC_to_P0::calculer(const DoubleTab& valeurs_source, DoubleTab& grad) const
 {
   grad = 0;
-  return ajouter(valeurs_source,grad);
-
+  return ajouter(valeurs_source, grad);
 }

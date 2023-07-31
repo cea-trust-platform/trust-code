@@ -18,29 +18,30 @@
 
 #include <TRUSTTabs_forward.h>
 #include <SFichier.h>
+
+class Domaine_Cl_VEF;
+class Operateur_base;
+class Equation_base;
 class Matrice_Morse;
 class Domaine_VEF;
-class Domaine_Cl_VEF;
-class Equation_base;
 class Sortie;
-class Operateur_base;
 
 class Op_VEF_Face
 {
-public :
-  inline Op_VEF_Face():controle_modifier_flux_(0) { };
+public:
   void dimensionner(const Domaine_VEF&, const Domaine_Cl_VEF&, Matrice_Morse&) const;
-  void modifier_pour_Cl(const Domaine_VEF&, const Domaine_Cl_VEF&, Matrice_Morse&, DoubleTab&)const ;
+  void modifier_pour_Cl(const Domaine_VEF&, const Domaine_Cl_VEF&, Matrice_Morse&, DoubleTab&) const;
   int impr(Sortie&, const Operateur_base&) const;
   void modifier_flux(const Operateur_base&) const;
-  void modifier_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice, const Equation_base& ) const;
-  void modifier_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice, const Equation_base&) const ;
+  void modifier_matrice_pour_periodique_avant_contribuer(Matrice_Morse& matrice, const Equation_base&) const;
+  void modifier_matrice_pour_periodique_apres_contribuer(Matrice_Morse& matrice, const Equation_base&) const;
+
 private:
-  mutable int controle_modifier_flux_;
+  mutable int controle_modifier_flux_ = 0;
   mutable SFichier Flux, Flux_moment, Flux_sum;
 };
 
-#endif
+#endif /* Op_VEF_Face_included */
 
 
 

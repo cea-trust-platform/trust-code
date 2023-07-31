@@ -24,37 +24,31 @@
 #include <SolveurSys.h>
 #include <TRUST_Ref.h>
 
-class Domaine_VEF;
 class Champ_Uniforme;
+class Domaine_VEF;
 
-class Op_Diff_RotRot : public Operateur_Diff_base
+class Op_Diff_RotRot: public Operateur_Diff_base
 {
   Declare_instanciable(Op_Diff_RotRot);
 public:
-  ///////////////////////////////////////////////////
-  // 5 methodes a surcharger car heritees de Op_base.
-  ///////////////////////////////////////////////////
-  void associer( const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
   void associer_diffusivite(const Champ_base&) override;
   const Champ_base& diffusivite() const override;
-  DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
-  DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
 
   int tester() const;
 
-  /* Fonction permettant de calculer la vorticite */
-  /* a partir de la vitesse. */
-  int calculer_vorticite(DoubleTab&,const DoubleTab& ) const;
+  /* Fonction permettant de calculer la vorticite a partir de la vitesse. */
+  int calculer_vorticite(DoubleTab&, const DoubleTab&) const;
 
   /* Assemble la matrice de vorticite */
   int assembler_matrice(Matrice&);
 
-  /* Pour un element donne "numero_elem" retourne */
-  /* la liste des sommets appartenant a cet element */
+  /* Pour un element donne "numero_elem" retourne la liste des sommets appartenant a cet element */
   IntList sommets_pour_element(int numero_elem) const;
 
-  /* Pour un sommet donne "numero_som" retourne */
-  /* la liste des elements contenant ce sommet */
+  /* Pour un sommet donne "numero_som" retourne la liste des elements contenant ce sommet */
   IntList elements_pour_sommet(int numero_som) const;
 
   /* Pour un sommet donne "numero_som" retourne */
@@ -74,24 +68,20 @@ public:
   /* a placer dans la sous matrice de taille nb_elem * nb_som */
   /* a la ligne "numero_elem" */
   /* Matrice EF */
-  double remplir_elem_som_EF(const int numero_elem,
-                             const int numero_som) const;
+  double remplir_elem_som_EF(const int numero_elem, const int numero_som) const;
 
   /* Pour le sommet "numero_som" retourne le coefficient */
   /* a placer dans la sous matrice de taille nb_som * nb_elem */
   /* a la ligne "numero_som" */
   /* Matrice EF */
-  double remplir_som_elem_EF(const int numero_elem,
-                             const int numero_som) const;
+  double remplir_som_elem_EF(const int numero_elem, const int numero_som) const;
 
   /* Pour l'element "numero_elem" retourne le coefficient */
   /* a placer dans la sous matrice de taille nb_elem * nb_som */
   /* a la ligne "numero_som" */
   /* "IntList" est le tableau des elements qui contiennent "numero_som" */
   /* Matrice EF */
-  double remplir_som_som_EF(const int numero_som,
-                            const int sommet_voisin,
-                            const IntList&) const;
+  double remplir_som_som_EF(const int numero_som, const int sommet_voisin, const IntList&) const;
 
   /* Fonction de tri d'une IntList */
   /* Le tri s'effectue par ordre croissant */
@@ -100,7 +90,7 @@ public:
   //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
   DoubleTab vecteur_normal(const int face, const int elem) const;
 
-  const Domaine_VEF& domaine_Vef() const;
+  const Domaine_VEF& domaine_vef() const;
 
 protected:
 
@@ -117,6 +107,5 @@ protected:
   REF(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_Uniforme) diffusivite_;
 };
-
 
 #endif

@@ -13,49 +13,33 @@
 *
 *****************************************************************************/
 
-
 #ifndef Op_Grad_P1NC_to_P0_included
 #define Op_Grad_P1NC_to_P0_included
 
 #include <Operateur_Grad.h>
-#include <Domaine_VEF.h>
-#include <TRUST_Ref.h>
 #include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <TRUST_Ref.h>
 
 /*! @brief class Op_Grad_P1NC_to_P0
  *
- *   Cette classe represente un operateur de gradient
- *   La discretisation est VEF
- *   On calcule le gradient d'un champ_P1NC a une composante (temperature,concentration)
- *    et le champ de sortie est P0 (aux elements)
- *
+ *   Cette classe represente un operateur de gradient. La discretisation est VEF
+ *   On calcule le gradient d'un champ_P1NC a une composante (temperature,concentration) et le champ de sortie est P0 (aux elements)
  *
  * @sa Operateur_Grad_base
  */
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// CLASS: Op_Grad_P1NC_to_P0
-//
-//////////////////////////////////////////////////////////////////////////////
-
-class Op_Grad_P1NC_to_P0 : public Operateur_Grad_base
+class Op_Grad_P1NC_to_P0: public Operateur_Grad_base
 {
-
   Declare_instanciable(Op_Grad_P1NC_to_P0);
-
 public:
-
-  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
-  DoubleTab& ajouter(const DoubleTab& ,  DoubleTab& ) const override;
-  DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
 
 protected:
-
   REF(Domaine_VEF) le_dom_vef;
   REF(Domaine_Cl_VEF) la_zcl_vef;
-
 };
 
-#endif
+#endif /* Op_Grad_P1NC_to_P0_included */

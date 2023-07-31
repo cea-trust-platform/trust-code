@@ -17,30 +17,20 @@
 #define Op_Diff_P1NC_barprim_included
 
 #include <Operateur_Diff_base.h>
-#include <Domaine_VEF.h>
 #include <Domaine_Cl_VEF.h>
 #include <Matrice_Morse.h>
 #include <Equation_base.h>
+#include <Domaine_VEF.h>
 #include <Op_VEF_Face.h>
 #include <TRUST_Ref.h>
 
 class Champ_Uniforme;
 
-/*! @brief class Op_Diff_VEF_Face Cette classe represente l'operateur de diffusion
- *
- *   La discretisation est VEF
- *   Le champ diffuse est scalaire
- *   Le champ de diffusivite est uniforme
- *
- *
- */
-
 class Op_Diff_P1NC_barprim: public Operateur_Diff_base, public Op_VEF_Face
 {
   Declare_instanciable(Op_Diff_P1NC_barprim);
-
 public:
-
+  double calculer_dt_stab() const override;
   void associer(const Domaine_dis&, const Domaine_Cl_dis&, const Champ_Inc&) override;
   void associer_diffusivite(const Champ_base& ) override;
   void completer() override;
@@ -49,56 +39,16 @@ public:
   DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
   DoubleTab& calculer(const DoubleTab&, DoubleTab&) const override;
 
-  inline void dimensionner(Matrice_Morse&) const override;
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override;
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override;
-  inline void contribuer_au_second_membre(DoubleTab&) const override;
-  void contribue_au_second_membre(DoubleTab&) const;
-
-  double calculer_dt_stab() const override;
+  void dimensionner(Matrice_Morse&) const override { }
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { }
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override { }
+  void contribuer_au_second_membre(DoubleTab&) const override { }
 
 protected:
-
   void calculer_divergence(const DoubleTab&, const DoubleVect&, DoubleTab&) const;
   REF(Domaine_VEF) le_dom_vef;
   REF(Domaine_Cl_VEF) la_zcl_vef;
   REF(Champ_Uniforme) diffusivite_;
 };
 
-/*! @brief on dimensionne notre matrice.
- *
- */
-
-inline  void Op_Diff_P1NC_barprim::dimensionner(Matrice_Morse& matrice) const
-{
-  // Op_VEF_Face::dimensionner(le_dom_vef.valeur(), la_zcl_vef.valeur(), matrice);
-  return;
-}
-
-inline void Op_Diff_P1NC_barprim::modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const
-{
-  // Op_VEF_Face::modifier_pour_Cl(le_dom_vef.valeur(),la_zcl_vef.valeur(), matrice, secmem);
-  return;
-}
-
-
-/*! @brief on assemble la matrice.
- *
- */
-
-inline void Op_Diff_P1NC_barprim::contribuer_a_avec(const DoubleTab& inco,
-                                                    Matrice_Morse& matrice) const
-{
-  /*    ajouter_contribution(inco, matrice);    */
-}
-
-/*! @brief on ajoute la contribution du second membre.
- *
- */
-
-inline void Op_Diff_P1NC_barprim::contribuer_au_second_membre(DoubleTab& resu) const
-{
-  //contribue_au_second_membre(resu);
-}
-
-#endif
+#endif /* Op_Diff_P1NC_barprim_included */

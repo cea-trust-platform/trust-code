@@ -16,37 +16,54 @@
 #ifndef Op_Div_VEFP1B_Elem_included
 #define Op_Div_VEFP1B_Elem_included
 
-#include <Op_Div_VEF_Elem.h>
+#include <Operateur_Div.h>
+#include <Domaine_VEF.h>
+#include <TRUST_Ref.h>
 
 class Domaine_VEF;
 class FMatrice_Morse;
+class Domaine_Cl_VEF;
 
-
-class Op_Div_VEFP1B_Elem : public Op_Div_VEF_Elem
+/*! @brief class Op_Div_VEFP1B_Elem
+ *
+ *   Cette classe represente l'operateur de divergence. La discretisation est VEF
+ *   On calcule la divergence d'un champ_P1NC (la vitesse)
+ *
+ *
+ * @sa Operateur_Div_base
+ */
+class Op_Div_VEFP1B_Elem: public Operateur_Div_base
 {
-
   Declare_instanciable(Op_Div_VEFP1B_Elem);
-
-
 public:
-  DoubleTab& ajouter(const DoubleTab&, DoubleTab& ) const override;
-  DoubleTab& ajouter_elem(const DoubleTab&,DoubleTab& ) const;
-  DoubleTab& ajouter_som(const DoubleTab&, DoubleTab&, DoubleTab& ) const;
-  DoubleTab& ajouter_aretes(const DoubleTab&, DoubleTab& ) const;
   void degres_liberte() const;
-  void volumique(DoubleTab& ) const override;
+  int impr(Sortie& os) const override;
+  void volumique(DoubleTab&) const override;
+  void associer(const Domaine_dis& , const Domaine_Cl_dis&,const Champ_Inc&) override;
+
+  // Explicite
+  DoubleTab& ajouter(const DoubleTab&, DoubleTab&) const override;
+  DoubleTab& ajouter_elem(const DoubleTab&, DoubleTab&) const;
+  DoubleTab& ajouter_som(const DoubleTab&, DoubleTab&, DoubleTab&) const;
+  DoubleTab& ajouter_aretes(const DoubleTab&, DoubleTab&) const;
 
   // Implicite
-  inline void dimensionner(FMatrice_Morse& ) const {};
-  inline void dimensionner(Matrice_Morse& ) const override {};
-  inline void modifier_pour_Cl(FMatrice_Morse&, DoubleTab&) const {};
-  inline void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override {};
-  inline void contribuer_a_avec(const DoubleTab&, FMatrice_Morse&) const {};
-  inline void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override {};
-  inline void contribuer_au_second_membre(DoubleTab& ) const override {};
+  void dimensionner(FMatrice_Morse&) const { }
+  void dimensionner(Matrice_Morse&) const override { }
+  void modifier_pour_Cl(FMatrice_Morse&, DoubleTab&) const { }
+  void modifier_pour_Cl(Matrice_Morse&, DoubleTab&) const override { }
+  void contribuer_a_avec(const DoubleTab&, FMatrice_Morse&) const { }
+  void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override { }
+  void contribuer_au_second_membre(DoubleTab&) const override { }
+
 private:
+  REF(Domaine_VEF) le_dom_vef;
+  REF(Domaine_Cl_VEF) la_zcl_vef;
+
+  void volumique_P0(DoubleTab&) const;
+
   mutable IntVect nb_degres_liberte;
   mutable IntTab som_;
 };
 
-#endif
+#endif /* Op_Div_VEFP1B_Elem_included */

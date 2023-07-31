@@ -38,12 +38,10 @@ public:
   int elements_pour_sommet(const int sommet,const int indice) const;
   int elem_som_size(const int sommet) const;
 
-  const Domaine_VEF& domaine_Vef() const;
-
 protected:
   REF(Domaine_VEF) le_dom_vef;
   REF(Domaine_Cl_VEF) la_zcl_vef;
   IntLists elements_pour_sommet_;
 };
 
-#endif
+#endif /* Op_Curl_VEFP1B_included */

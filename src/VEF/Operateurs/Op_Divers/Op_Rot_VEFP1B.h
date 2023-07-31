@@ -16,13 +16,10 @@
 #ifndef Op_Rot_VEFP1B_included
 #define Op_Rot_VEFP1B_included
 
-#include <Champ_P1_isoP1Bulle.h>
-#include <Op_Grad_VEF_Face.h>
 #include <Operateur_base.h>
+#include <Domaine_Cl_VEF.h>
+#include <Domaine_VEF.h>
 #include <TRUST_Ref.h>
-
-class Domaine_VEF;
-class Domaine_VEF;
 
 class Op_Rot_VEFP1B : public Operateur_base
 {
@@ -32,9 +29,8 @@ public:
   DoubleTab& calculer( const DoubleTab&, DoubleTab&) const override;
   DoubleTab& ajouter( const DoubleTab&, DoubleTab&) const override;
 
-  //Methode pour rendre le vecteur normal a la "face" de l'element "elem"
+  // Methode pour rendre le vecteur normal a la "face" de l'element "elem"
   DoubleTab vecteur_normal(const int face, const int elem) const;
-  const Domaine_VEF& domaine_Vef() const;
 
   void associer_coins(const ArrOfInt&);
 
