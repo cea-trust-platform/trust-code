@@ -127,9 +127,6 @@ void Op_Dift_Stab_VEF_Face::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab
   const DoubleVect& inconnueVect = inconnue;
   DoubleVect& resuVect = resu;
 
-  flux_bords_.resize(domaine_VEF.nb_faces_bord(), nb_comp);
-  flux_bords_ = 0.;
-
   int num1 = 0, num2 = 0, n_bord = 0, face = 0, face_associee = 0, ind_face = 0, dim = 0;
   double surface = 0., flux = 0.;
 
@@ -786,6 +783,11 @@ DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleT
 {
   const DoubleTab& nu_turb = diffusivite_turbulente()->valeurs();
   const DoubleVect& porosite_face = equation().milieu().porosite_face(), &porosite_elem = equation().milieu().porosite_elem();
+  const int nb_comp = resu.line_size();
+
+  // On dimensionne et initialise le tableau des bilans de flux:
+  flux_bords_.resize(le_dom_vef->nb_faces_bord(), nb_comp);
+  flux_bords_ = 0.;
 
   DoubleTab resu2(resu);
   resu2 = 0.;

@@ -165,13 +165,11 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
 
   const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
   const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
-  const int nb_front = domaine_VEF.nb_front_Cl(), nb_comp = resu.line_size();
+  const int nb_front = domaine_VEF.nb_front_Cl();
 
   for (int n_bord = 0; n_bord < nb_front; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-
       if (sub_type(Periodique, la_cl.valeur()))
         ajouter_bord_perio_gen__<_TYPE_, Type_Schema::EXPLICITE, false>(n_bord, inconnue, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);
       else // CL pas periodique
@@ -182,8 +180,24 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
           // A pas oublier !
           ajouter_bord_gen__<_TYPE_, Type_Schema::EXPLICITE, false>(n_bord, inconnue, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */, &tab_flux_bords);
         }
+    }
+  modifie_pour_cl_gen<_TYPE_, false>(inconnue, resu, tab_flux_bords);
+}
 
-      // EN FINI PAR LES CLS Neumann
+template <typename DERIVED_T> template <Type_Champ _TYPE_, bool _IS_STAB_>
+void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords) const
+{
+  // On traite les faces bord
+  const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+
+  const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
+  const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
+  const int nb_front = domaine_VEF.nb_front_Cl(), nb_comp = resu.line_size();
+
+  for (int n_bord = 0; n_bord < nb_front; n_bord++)
+    {
+      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
+      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
       if (sub_type(Neumann_paroi, la_cl.valeur()))
         {

@@ -28,7 +28,12 @@ template <typename DERIVED_T>
 class Op_Dift_VEF_Face_Gen
 {
 public:
-  template <Type_Champ _TYPE_> void fill_grad_Re(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&) const;
+  template <Type_Champ _TYPE_>
+  void fill_grad_Re(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&) const;
+
+  // corrige flux bord
+  template <Type_Champ _TYPE_, bool _IS_STAB_ = false>
+  void modifie_pour_cl_gen(const DoubleTab&, DoubleTab&, DoubleTab&) const;
 
   // methodes pour l'explicite
   template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::VECTORIEL, void>
