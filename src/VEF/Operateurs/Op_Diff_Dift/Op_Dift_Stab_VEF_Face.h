@@ -31,8 +31,6 @@ public:
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const override; // pour l'implicite
 
 protected:
-  void modifie_pour_Cl(const DoubleTab&, DoubleTab&) const;
-
   void ajouter_cas_scalaire(const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
   void ajouter_cas_vectoriel(const DoubleTab& inconnue, const DoubleTab& nu, const DoubleTab& nu_turb_m, DoubleTab& resu2) const;
 

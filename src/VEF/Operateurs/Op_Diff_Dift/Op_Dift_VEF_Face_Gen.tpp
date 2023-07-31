@@ -181,14 +181,15 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
           ajouter_bord_gen__<_TYPE_, Type_Schema::EXPLICITE, false>(n_bord, inconnue, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */, &tab_flux_bords);
         }
     }
-  modifie_pour_cl_gen<_TYPE_, false>(inconnue, resu, tab_flux_bords);
+  modifie_pour_cl_gen<false>(inconnue, resu, tab_flux_bords);
 }
 
-template <typename DERIVED_T> template <Type_Champ _TYPE_, bool _IS_STAB_>
+template <typename DERIVED_T> template <bool _IS_STAB_>
 void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords) const
 {
   // On traite les faces bord
   const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
+  constexpr bool is_STAB = _IS_STAB_;
 
   const Domaine_Cl_VEF& domaine_Cl_VEF = z_class->domaine_cl_vef();
   const Domaine_VEF& domaine_VEF = z_class->domaine_vef();
@@ -199,27 +200,50 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::modifie_pour_cl_gen(const DoubleTab& incon
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
       const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
       const int ndeb = le_bord.num_premiere_face(), nfin = ndeb + le_bord.nb_faces();
+
+      if (is_STAB && sub_type(Periodique, la_cl.valeur()))
+        {
+          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
+
+          for (int ind_face = 0; ind_face < le_bord.nb_faces(); ind_face++)
+            {
+              const int face = le_bord.num_face(ind_face), face_associee = le_bord.num_face(la_cl_perio.face_associee(ind_face));
+              if (face < face_associee)
+                for (int nc = 0; nc < nb_comp; nc++)
+                  {
+                    resu(face, nc) += resu(face_associee, nc);
+                    resu(face_associee, nc) = resu(face, nc);
+                  }
+            }
+        }
+
       if (sub_type(Neumann_paroi, la_cl.valeur()))
         {
           const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
           for (int face = ndeb; face < nfin; face++)
             for (int nc = 0; nc < nb_comp; nc++)
               {
-                resu(face, nc) += la_cl_paroi.flux_impose(face - ndeb, nc) * domaine_VEF.face_surfaces(face);
-                tab_flux_bords(face, nc) = la_cl_paroi.flux_impose(face - ndeb, nc) * domaine_VEF.face_surfaces(face);
+                const double flux = la_cl_paroi.flux_impose(face - ndeb, nc) * domaine_VEF.face_surfaces(face);
+                if (is_STAB) resu(face, nc) -= flux; // XXX -= car regarde dans Op_Dift_Stab_VEF_Face::ajouter
+                else resu(face, nc) += flux;
+                tab_flux_bords(face, nc) = flux;
               }
         }
-      else if (sub_type(Echange_externe_impose, la_cl.valeur()))
+
+      if (sub_type(Echange_externe_impose, la_cl.valeur()))
         {
           const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
           for (int face = ndeb; face < nfin; face++)
             for (int nc = 0; nc < nb_comp; nc++)
               {
-                resu(face, nc) += la_cl_paroi.h_imp(face - ndeb, nc) * (la_cl_paroi.T_ext(face - ndeb, nc) - inconnue(face, nc)) * domaine_VEF.face_surfaces(face);
-                tab_flux_bords(face, nc) = la_cl_paroi.h_imp(face - ndeb, nc) * (la_cl_paroi.T_ext(face - ndeb, nc) - inconnue(face, nc)) * domaine_VEF.face_surfaces(face);
+                const double flux = la_cl_paroi.h_imp(face - ndeb, nc) * (la_cl_paroi.T_ext(face - ndeb, nc) - inconnue(face, nc)) * domaine_VEF.face_surfaces(face);
+                if (is_STAB) resu(face, nc) -= flux;
+                else resu(face, nc) += flux;
+                tab_flux_bords(face, nc) = flux;
               }
         }
-      else if (sub_type(Neumann_homogene,la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
+
+      if (sub_type(Neumann_homogene,la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
         for (int face = ndeb; face < nfin; face++)
           for (int nc = 0; nc < nb_comp; nc++)
             tab_flux_bords(face, nc) = 0.;

@@ -32,7 +32,7 @@ public:
   void fill_grad_Re(const DoubleTab&, const DoubleTab&, const DoubleTab&, const DoubleTab&) const;
 
   // corrige flux bord
-  template <Type_Champ _TYPE_, bool _IS_STAB_ = false>
+  template <bool _IS_STAB_ = false>
   void modifie_pour_cl_gen(const DoubleTab&, DoubleTab&, DoubleTab&) const;
 
   // methodes pour l'explicite

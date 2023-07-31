@@ -118,90 +118,6 @@ Entree& Op_Dift_Stab_VEF_Face::readOn(Entree& is)
   return is;
 }
 
-void Op_Dift_Stab_VEF_Face::modifie_pour_Cl(const DoubleTab& inconnue, DoubleTab& resu) const
-{
-  const Domaine_VEF& domaine_VEF = domaine_vef();
-  const Domaine_Cl_VEF& domaine_Cl_VEF = domaine_cl_vef();
-  const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
-  const int nb_bords = les_cl.size(), nb_comp = resu.line_size();
-  const DoubleVect& inconnueVect = inconnue;
-  DoubleVect& resuVect = resu;
-
-  int num1 = 0, num2 = 0, n_bord = 0, face = 0, face_associee = 0, ind_face = 0, dim = 0;
-  double surface = 0., flux = 0.;
-
-  for (n_bord = 0; n_bord < nb_bords; n_bord++)
-    {
-      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-
-      num1 = 0;
-      num2 = le_bord.nb_faces();
-
-      if (sub_type(Periodique, la_cl.valeur()))
-        {
-          const Periodique& la_cl_perio = ref_cast(Periodique, la_cl.valeur());
-
-          for (ind_face = num1; ind_face < num2; ind_face++)
-            {
-              face = le_bord.num_face(ind_face);
-              face_associee = le_bord.num_face(la_cl_perio.face_associee(ind_face));
-
-              if (face < face_associee)
-                for (dim = 0; dim < nb_comp; dim++)
-                  {
-                    resuVect[face * nb_comp + dim] += resuVect[face_associee * nb_comp + dim];
-                    resuVect[face_associee * nb_comp + dim] = resuVect[face * nb_comp + dim];
-                  }
-            }
-        }
-      if (sub_type(Neumann_paroi, la_cl.valeur()))
-        {
-          const Neumann_paroi& la_cl_paroi = ref_cast(Neumann_paroi, la_cl.valeur());
-
-          for (ind_face = num1; ind_face < num2; ind_face++)
-            {
-              face = le_bord.num_face(ind_face);
-              surface = domaine_VEF.surface(face);
-
-              for (dim = 0; dim < nb_comp; dim++)
-                {
-                  flux = la_cl_paroi.flux_impose(ind_face, dim) * surface;
-                  resuVect[face * nb_comp + dim] -= flux;
-                  flux_bords_(face, dim) = flux;
-                }
-            }
-        }
-      if (sub_type(Echange_externe_impose, la_cl.valeur()))
-        {
-          const Echange_externe_impose& la_cl_paroi = ref_cast(Echange_externe_impose, la_cl.valeur());
-
-          for (ind_face = num1; ind_face < num2; ind_face++)
-            {
-              face = le_bord.num_face(ind_face);
-              surface = domaine_VEF.surface(face);
-
-              for (dim = 0; dim < nb_comp; dim++)
-                {
-                  flux = la_cl_paroi.h_imp(ind_face, dim) * (la_cl_paroi.T_ext(ind_face, dim) - inconnueVect[face * nb_comp + dim]) * surface;
-                  resuVect[face * nb_comp + dim] -= flux;
-                  flux_bords_(face, dim) = flux;
-                }
-            }
-        }
-      if (sub_type(Neumann_homogene,la_cl.valeur()) || sub_type(Symetrie, la_cl.valeur()) || sub_type(Neumann_sortie_libre, la_cl.valeur()))
-        {
-          for (ind_face = num1; ind_face < num2; ind_face++)
-            {
-              face = le_bord.num_face(ind_face);
-
-              for (dim = 0; dim < nb_comp; dim++)
-                flux_bords_(face, dim) = 0.;
-            }
-        }
-    }
-}
-
 void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
 {
   const Domaine_VEF& domaine_VEF = domaine_vef();
@@ -815,9 +731,9 @@ DoubleTab& Op_Dift_Stab_VEF_Face::ajouter(const DoubleTab& inconnue_org, DoubleT
   else
     ajouter_cas_vectoriel(inconnue, nu, nu_turb_m, resu2);
 
-  modifie_pour_Cl(inconnue, resu2);
+  modifie_pour_cl_gen<true /* _IS_STAB_ */>(inconnue, resu2, flux_bords_);
 
-  resu -= resu2;  //-= car le laplacien est place en terme source dans l'equation
+  resu -= resu2;  // -= car le laplacien est place en terme source dans l'equation
   modifier_flux(*this);
   return resu;
 }
