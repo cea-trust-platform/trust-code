@@ -118,97 +118,188 @@ Entree& Op_Dift_Stab_VEF_Face::readOn(Entree& is)
   return is;
 }
 
-void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab) const
+/*
+ * METHODES GENERIQUES
+ */
+
+inline double aij_extradiag__(const Op_Dift_Stab_VEF_Face& z_class, const int elem, const int facei, const int facej, const int dim, const int dim2, const double nu_elem)
 {
-  const Domaine_VEF& domaine_VEF = domaine_vef();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const DoubleVect& inconnue = inconnueTab;
-  DoubleVect& resu = resuTab;
-  const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = resuTab.line_size();
-  int elem = 0, facei_loc = 0, facei = 0, facej_loc = 0, facej = 0, dim = 0;
-  double inc_i = 0., inc_j = 0., delta_ij = 0.;
+  const Domaine_VEF& domaine_VEF = z_class.domaine_vef();
+  const IntTab& face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const DoubleVect& volumes = domaine_VEF.volumes();
 
-  for (elem = 0; elem < nb_elem_tot; elem++)
-    for (facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
-      {
-        facei = elem_faces(elem, facei_loc);
-        for (facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
-          {
-            facej = elem_faces(elem, facej_loc);
-            const double aij = Aij(elem, facei_loc, facej_loc);
-            for (dim = 0; dim < nb_comp; dim++)
-              {
-                inc_i = inconnue[facei * nb_comp + dim];
-                inc_j = inconnue[facej * nb_comp + dim];
-                delta_ij = aij * (inc_j - inc_i);
+  double volume = 0., signei = 1., signej = 1., aij = 0.;
 
-                resu[facei * nb_comp + dim] += delta_ij;
-                resu[facej * nb_comp + dim] -= delta_ij;
-              }
-          }
-      }
+  assert(dim < z_class.equation().inconnue().valeurs().dimension(1));
+  assert(dim2 < z_class.equation().inconnue().valeurs().dimension(1));
+  assert(dim < dim2);
+
+  volume = 1. / volumes(elem);
+  volume *= nu_elem;
+
+  if (face_voisins(facei, 0) != elem) signei = -1.;
+  if (face_voisins(facej, 0) != elem) signej = -1.;
+
+  aij = face_normales(facei, dim2) * face_normales(facej, dim);
+  aij *= signei * signej;
+  aij *= volume;
+
+  return aij;
 }
 
-void Op_Dift_Stab_VEF_Face::ajouter_operateur_centre_vectoriel(const DoubleTab& Aij_diag, const DoubleTab& nu, const DoubleTab& inconnueTab, DoubleTab& resu2) const
+template <Type_Champ _TYPE_>
+void ajouter_operateur_centre__(const Op_Dift_Stab_VEF_Face& z_class, const DoubleTab& Aij_diag, const DoubleTab& nu, const DoubleTab& inconnue, DoubleTab& resu)
 {
-  const Domaine_VEF& domaine_VEF = domaine_vef();
-  const IntTab& elem_faces = domaine_VEF.elem_faces();
-  const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = resu2.line_size();
-  const DoubleVect& inconnue = inconnueTab;
-  DoubleVect& resu = resu2;
-  int elem = 0, facei_loc = 0, facei = 0, facej_loc = 0, facej = 0, dim = 0, dim2 = 0;
-  double inc_i = 0., inc_j = 0., delta_ij = 0., nu_elem = 0.;
+  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL);
 
-  for (elem = 0; elem < nb_elem_tot; elem++)
+  const Domaine_VEF& domaine_VEF = z_class.domaine_vef();
+  const IntTab& elem_faces = domaine_VEF.elem_faces();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = resu.line_size();
+  double nu_elem = 0., aij = 0.;
+
+  for (int elem = 0; elem < nb_elem_tot; elem++)
     {
-      nu_elem = nu(elem);
-      for (facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
+      if (is_VECT) nu_elem = nu(elem);
+
+      for (int facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
         {
-          facei = elem_faces(elem, facei_loc);
+          const int facei = elem_faces(elem, facei_loc);
 
           // Ajout de la partie diagonale : on tient compte de la symetrie de la matrice Aij_diag
-          for (facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
+          for (int facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
             {
-              facej = elem_faces(elem, facej_loc);
+              const int facej = elem_faces(elem, facej_loc);
 
-              for (dim = 0; dim < nb_comp; dim++)
+              if (!is_VECT) aij = Aij_diag(elem, facei_loc, facej_loc);
+
+              for (int nc = 0; nc < nb_comp; nc++)
                 {
-                  const double aij = Aij_diag(elem, facei_loc, facej_loc, dim);
+                  if (is_VECT) aij = Aij_diag(elem, facei_loc, facej_loc, nc);
 
-                  inc_i = inconnue[facei * nb_comp + dim];
-                  inc_j = inconnue[facej * nb_comp + dim];
-                  delta_ij = aij * (inc_j - inc_i);
-
-                  resu[facei * nb_comp + dim] += delta_ij;
-                  resu[facej * nb_comp + dim] -= delta_ij;
+                  const double delta_ij = aij * (inconnue(facej, nc) - inconnue(facei, nc));
+                  resu(facei, nc) += delta_ij;
+                  resu(facej, nc) -= delta_ij;
                 }
             }
 
           //Ajout de la partie extra-diagonale : on tient compte de la symetrie de la partie extradiagonale de la matrice du laplacien
-          for (facej_loc = 0; facej_loc < nb_faces_elem; facej_loc++)
-            if (facej_loc != facei_loc)
-              {
-                facej = elem_faces(elem, facej_loc);
+          if (is_VECT)
+            for (int facej_loc = 0; facej_loc < nb_faces_elem; facej_loc++)
+              if (facej_loc != facei_loc)
+                {
+                  const int facej = elem_faces(elem, facej_loc);
 
-                for (dim = 0; dim < nb_comp; dim++)
-                  for (dim2 = dim + 1; dim2 < nb_comp; dim2++)
-                    {
-                      const double aij = aij_extradiag(elem, facei, facej, dim, dim2, nu_elem);
+                  for (int nc = 0; nc < nb_comp; nc++)
+                    for (int nc2 = nc + 1; nc2 < nb_comp; nc2++)
+                      {
+                        aij = aij_extradiag__(z_class, elem, facei, facej, nc, nc2, nu_elem);
 
-                      inc_i = inconnue[facei * nb_comp + dim2];
-                      inc_j = inconnue[facej * nb_comp + dim2];
-                      delta_ij = aij * (inc_j - inc_i);
-                      resu[facei * nb_comp + dim] += delta_ij;
+                        double delta_ij = aij * (inconnue(facej, nc2) - inconnue(facei, nc2));
+                        resu(facei, nc) += delta_ij;
 
-                      inc_i = inconnue[facei * nb_comp + dim];
-                      inc_j = inconnue[facej * nb_comp + dim];
-                      delta_ij = aij * (inc_j - inc_i);
-                      resu[facej * nb_comp + dim2] -= delta_ij;
-                    }
-              }
+                        delta_ij = aij * (inconnue(facej, nc) - inconnue(facei, nc));
+                        resu(facej, nc2) -= delta_ij;
+                      }
+                }
         }
     }
 }
+
+template <Type_Champ _TYPE_>
+void calculer_coefficients__(const Op_Dift_Stab_VEF_Face& z_class, const DoubleTab& nu,  const DoubleTab& nu2 /* transpose */ , DoubleTab& Aij)
+{
+  constexpr bool is_VECT = (_TYPE_ == Type_Champ::VECTORIEL);
+
+  const Domaine_VEF& domaine_VEF = z_class.domaine_vef();
+  const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const DoubleVect& volumes = domaine_VEF.volumes();
+  const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(),
+            nb_comp = z_class.equation().inconnue().valeurs().line_size();
+
+  assert(Aij.dimension(0) == nb_elem_tot);
+  assert(Aij.dimension(1) == nb_faces_elem);
+  assert(Aij.dimension(2) == nb_faces_elem);
+
+  if (is_VECT)
+    {
+      assert(nb_comp == Objet_U::dimension);
+      assert(Aij.nb_dim() == 4);
+      assert(Aij.dimension(3) == nb_comp);
+    }
+  else
+    assert(Aij.nb_dim() == 3);
+
+  double nu2_elem = 0.;
+
+  for (int elem = 0; elem < nb_elem_tot; elem++)
+    {
+      double volume = 1. / volumes(elem);
+
+      double nu_elem = nu(elem);
+      nu_elem *= volume;
+
+      if (is_VECT)
+        {
+          nu2_elem = nu2(elem); // transpose
+          nu2_elem *= volume;
+        }
+
+      for (int facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
+        {
+          const int facei = elem_faces(elem, facei_loc);
+
+          int signei = 1;
+          if (face_voisins(facei, 0) != elem) signei = -1;
+
+          for (int facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
+            {
+              const int facej = elem_faces(elem, facej_loc);
+
+              int signej = 1;
+              if (face_voisins(facej, 0) != elem) signej = -1;
+
+              //Partie standard
+              double psc = 0.;
+              for (int dim = 0; dim < Objet_U::dimension; dim++)
+                psc += face_normales(facei, dim) * face_normales(facej, dim);
+
+              psc *= signei * signej;
+              psc *= nu_elem;
+
+              if (!is_VECT) // scalaire
+                {
+                  Aij(elem, facei_loc, facej_loc) = psc;
+                  Aij(elem, facej_loc, facei_loc) = psc;
+                }
+              else
+                {
+                  for (int dim = 0; dim < nb_comp; dim++)
+                    {
+                      Aij(elem, facei_loc, facej_loc, dim) = psc;
+                      Aij(elem, facej_loc, facei_loc, dim) = psc;
+                    }
+
+                  //Partie transposee
+                  for (int dim = 0; dim < nb_comp; dim++)
+                    {
+                      psc = face_normales(facei, dim) * face_normales(facej, dim);
+                      psc *= signei * signej;
+                      psc *= nu2_elem;
+
+                      Aij(elem, facei_loc, facej_loc, dim) += psc;
+                      Aij(elem, facej_loc, facei_loc, dim) += psc;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * FIN METHODES GENERIQUES
+ */
 
 void Op_Dift_Stab_VEF_Face::ajouter_diffusion(const DoubleTab& Aij, const DoubleTab& inconnueTab, DoubleTab& resuTab, const bool is_VECT) const
 {
@@ -359,128 +450,6 @@ void Op_Dift_Stab_VEF_Face::ajouter_antidiffusion(const DoubleTab& Aij, const Do
                   }
               }
           }
-    }
-}
-
-void Op_Dift_Stab_VEF_Face::calculer_coefficients(const DoubleTab& nu, DoubleTab& Aij) const
-{
-  const Domaine_VEF& domaine_VEF = domaine_vef();
-  const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const DoubleVect& volumes = domaine_VEF.volumes();
-  const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
-
-  double volume = 0., signei = 0., signej = 0., psc = 0., nu_elem = 0.;
-  int elem = 0, facei_loc = 0, facei = 0, facej_loc = 0, facej = 0, dim = 0;
-  assert(Aij.nb_dim() == 3);
-  assert(Aij.dimension(0) == nb_elem_tot);
-  assert(Aij.dimension(1) == nb_faces_elem);
-  assert(Aij.dimension(2) == nb_faces_elem);
-
-  for (elem = 0; elem < nb_elem_tot; elem++)
-    {
-      nu_elem = nu(elem);
-      volume = 1. / volumes(elem);
-      volume *= nu_elem;
-
-      for (facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
-        {
-          facei = elem_faces(elem, facei_loc);
-
-          signei = 1.;
-          if (face_voisins(facei, 0) != elem)
-            signei = -1.;
-
-          for (facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
-            {
-              facej = elem_faces(elem, facej_loc);
-
-              signej = 1.;
-              if (face_voisins(facej, 0) != elem)
-                signej = -1.;
-
-              psc = 0.;
-              for (dim = 0; dim < Objet_U::dimension; dim++)
-                psc += face_normales(facei, dim) * face_normales(facej, dim);
-              psc *= signei * signej;
-              psc *= volume;
-
-              Aij(elem, facei_loc, facej_loc) = psc;
-              Aij(elem, facej_loc, facei_loc) = psc;
-            }
-        }
-    }
-}
-
-void Op_Dift_Stab_VEF_Face::calculer_coefficients_vectoriel_diag(const DoubleTab& nu, const DoubleTab& nu2, DoubleTab& Aij) const
-{
-  const Domaine_VEF& domaine_VEF = domaine_vef();
-  const int nb_elem_tot = domaine_VEF.nb_elem_tot(), nb_faces_elem = domaine_VEF.domaine().nb_faces_elem(), nb_comp = equation().inconnue().valeurs().line_size();
-  const IntTab& elem_faces = domaine_VEF.elem_faces(), &face_voisins = domaine_VEF.face_voisins();
-  const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const DoubleVect& volumes = domaine_VEF.volumes();
-  double volume = 0., signei = 0., signej = 0., psc = 0., nu_elem = 0., nu2_elem = 0.;
-  int elem = 0, facei_loc = 0, facei = 0, facej_loc = 0, facej = 0, dim = 0;
-
-  assert(nb_comp != 0);
-  assert(nb_comp == Objet_U::dimension);
-  assert(Aij.nb_dim() == 4);
-  assert(Aij.dimension(0) == nb_elem_tot);
-  assert(Aij.dimension(1) == nb_faces_elem);
-  assert(Aij.dimension(2) == nb_faces_elem);
-  assert(Aij.dimension(3) == nb_comp);
-
-  for (elem = 0; elem < nb_elem_tot; elem++)
-    {
-      volume = 1. / volumes(elem);
-
-      nu_elem = nu(elem);
-      nu_elem *= volume;
-
-      nu2_elem = nu2(elem);
-      nu2_elem *= volume;
-
-      for (facei_loc = 0; facei_loc < nb_faces_elem; facei_loc++)
-        {
-          facei = elem_faces(elem, facei_loc);
-
-          signei = 1.;
-          if (face_voisins(facei, 0) != elem)
-            signei = -1.;
-
-          for (facej_loc = facei_loc + 1; facej_loc < nb_faces_elem; facej_loc++)
-            {
-              facej = elem_faces(elem, facej_loc);
-
-              signej = 1.;
-              if (face_voisins(facej, 0) != elem)
-                signej = -1.;
-
-              //Partie standard
-              psc = 0.;
-              for (dim = 0; dim < Objet_U::dimension; dim++)
-                psc += face_normales(facei, dim) * face_normales(facej, dim);
-              psc *= signei * signej;
-              psc *= nu_elem;
-
-              for (dim = 0; dim < nb_comp; dim++)
-                {
-                  Aij(elem, facei_loc, facej_loc, dim) = psc;
-                  Aij(elem, facej_loc, facei_loc, dim) = psc;
-                }
-
-              //Partie transposee
-              for (dim = 0; dim < nb_comp; dim++)
-                {
-                  psc = face_normales(facei, dim) * face_normales(facej, dim);
-                  psc *= signei * signej;
-                  psc *= nu2_elem;
-
-                  Aij(elem, facei_loc, facej_loc, dim) += psc;
-                  Aij(elem, facej_loc, facei_loc, dim) += psc;
-                }
-            }
-        }
     }
 }
 
@@ -660,8 +629,8 @@ void Op_Dift_Stab_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue, cons
   DoubleTab Aij(nb_elem_tot, nb_faces_elem, nb_faces_elem), nu_total(nu);
   nu_total += nu_turb_m;
 
-  calculer_coefficients(nu_total, Aij);
-  ajouter_operateur_centre(Aij, inconnue, resu2);
+  calculer_coefficients__<Type_Champ::SCALAIRE>(*this, nu_total, nu_total /* poubelle */, Aij);
+  ajouter_operateur_centre__<Type_Champ::SCALAIRE>(*this, Aij, nu, inconnue, resu2);
 
   if (!standard_)
     {
@@ -685,8 +654,8 @@ void Op_Dift_Stab_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue, con
   if (nu_transp_lu_ == 0) nu_transp_total = 0.;
   if (nut_transp_lu_) nu_transp_total += nu_turb_m;
 
-  calculer_coefficients_vectoriel_diag(nu_total, nu_transp_total, Aij_diag);
-  ajouter_operateur_centre_vectoriel(Aij_diag, nu_transp_total, inconnue, resu2);
+  calculer_coefficients__<Type_Champ::VECTORIEL>(*this, nu_total, nu_transp_total, Aij_diag);
+  ajouter_operateur_centre__<Type_Champ::VECTORIEL>(*this, Aij_diag, nu_transp_total, inconnue, resu2);
 
   if (!standard_)
     {
