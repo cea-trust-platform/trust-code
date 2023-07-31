@@ -1164,7 +1164,7 @@ then
 		    else
 			PB=0 && [ "`grep 'Arret ' $NOM2.err`" = "" ] && PB=255
 			# Verification eventuelle
-			if [ -f verifie ]
+			if [ -f verifie ] && [ "$VALGRIND" != 1 ]
 			then
 			   ./verifie $NOM2
 			   PB_CHECK=$?
@@ -1195,7 +1195,7 @@ then
 			#	PB=$?
 			#	[ ! -f $NOM2.lml ] && PB=1000
 			#fi
-			if [ -f $NOM2.lml ] && [ $PB = 0 ]
+			if [ -f $NOM2.lml ] && [ $PB = 0 ] && [ "$VALGRIND" != 1 ]
 			then
 			    # On teste la presence du FIN
 			    # Si pas present, on le rajoute et on previent
