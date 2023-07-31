@@ -494,14 +494,6 @@ printf "\t@echo \"####################################\"\n"     >> $project_make
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_ctest $type trust\n"               >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
-#printf "# obsolete check_trio_$type : Running TRUST test suite in `human_name_from_name $type` mode (IMPORTANT: prefer the use of check_trust_$type because it will disappear)\n" >>$project_makefile
-#printf "check_trio_$type : check_trust_$type\n"                                  >> $project_makefile
-#printf "\t@echo \"####################################\"\n"     >> $project_makefile
-#printf "\t@echo \"# Running TRUST test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
-#printf "\t@echo \"####################################\"\n"     >> $project_makefile
-#printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  trust \n"               >> $project_makefile
-#printf "\n" >> $project_makefile
-
 printf "# help check_full_$type : Running full test suite in `human_name_from_name $type` mode (all test of project + all test of TRUST platform)\n" >>$project_makefile
 printf "check_full_$type : $type\n"                                  >> $project_makefile
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
@@ -525,12 +517,6 @@ printf "\t@echo \"# Running last pb test suite in `human_name_from_name $type` m
 printf "\t@echo \"####################################\"\n"     >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type  last_pb \n"               >> $project_makefile
 printf "\n" >> $project_makefile
-#printf "check_deps_old_$type : $type\n"                                  >> $project_makefile
-#printf "\t@echo \"####################################\"\n"     >> $project_makefile
-#printf "\t@echo \"# Running test suite in `human_name_from_name $type` mode #\"\n"     >> $project_makefile
-#printf "\t@echo \"####################################\"\n"     >> $project_makefile
-#printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check $type $total_path  \n"               >> $project_makefile
-#printf "\n"  >> $project_makefile
 
 printf "# help $type \t\t: Compiling in `human_name_from_name $type` mode \n" >>  $project_makefile
 printf "$type : check_sources\n"  >> $project_makefile
@@ -612,7 +598,7 @@ printf "\t@echo \"# Building distrib #\"\n"                 >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_make_distrib $distrib_path\n"                     >> $project_makefile
 printf "\n"                                                     >> $project_makefile
-printf "# help distrib_git \t: Building distrib from element in git \n">>$project_makefile
+printf "# help distrib_git \t: Building distrib from files tracked in git without .git (if .git needed, you can use git bundle command) \n">>$project_makefile
 printf "distrib_git :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
 printf "\t@echo \"# Building distrib_git #\"\n"                 >> $project_makefile
@@ -643,13 +629,13 @@ printf "\t@echo \"###################################\"\n"                 >> $p
 printf "\t@env project_directory=${project_directory} $BALTIK_ROOT/bin/baltik_make_Doxyfile\n"                >> $project_makefile
 printf "\n"                                                     >> $project_makefile
 
-printf "# help check_project_modularity \t: Check project modularity \n"                           >> $project_makefile
-printf "check_project_modularity :\n"                           >> $project_makefile
-printf "\t@echo \"########################\"\n"                 >> $project_makefile
-printf "\t@echo \"# Project modularity   #\"\n"                 >> $project_makefile
-printf "\t@echo \"########################\"\n"                 >> $project_makefile
-printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check_project_modularity \n"                     >> $project_makefile
-printf "\n"    
+#printf "# help check_project_modularity \t: Check project modularity \n"                           >> $project_makefile
+#printf "check_project_modularity :\n"                           >> $project_makefile
+#printf "\t@echo \"########################\"\n"                 >> $project_makefile
+#printf "\t@echo \"# Project modularity   #\"\n"                 >> $project_makefile
+#printf "\t@echo \"########################\"\n"                 >> $project_makefile
+#printf "\t@env TRUST_ROOT_ORG=$TRUST_ROOT $BALTIK_ROOT/bin/baltik_check_project_modularity \n"                     >> $project_makefile
+#printf "\n"    
 
 printf "install :\n"                                              >> $project_makefile
 printf "\t@echo \"########################\"\n"                 >> $project_makefile
