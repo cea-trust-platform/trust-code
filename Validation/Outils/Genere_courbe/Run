@@ -189,8 +189,12 @@ if [ $run -eq 1 ]
 then
   python $DIR/src/genererCourbes.py --get_cmd_to_run=yes  -p $prm $*   > cmds
   python $DIR/scripts/get_nb_procs.py $prm  > nb_procs || exit -1
-    
-  get_version
+
+  echo "-> Binary and version used:"
+  echo " code : $exec
+ version : $TRUST_VERSION" > version_utilisee
+  egrep "code|version : " version_utilisee | awk '{print("-> "$NF)}' | head -2
+
   echo "================================================"
   echo "-> Running commands in the ./build/cmds file ..."
   echo "================================================"
@@ -273,7 +277,7 @@ fi
 if [ $run -eq 2 ]
 then
   python $DIR/src/genererCourbes.py --get_cmd_to_run=${suff}_run  -p $prm $*   > cmds_${suff}
-#  get_version
+
   echo "========================================================"
   echo "-> Running commands in the ./build/cmds_${suff} file ..."
   echo "========================================================"
