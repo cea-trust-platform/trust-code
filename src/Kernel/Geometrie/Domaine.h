@@ -223,6 +223,7 @@ public:
   inline int get_renum_som_perio(int i) const { return renum_som_perio_[i]; }
   void construire_renum_som_perio(const Conds_lim&, const Domaine_dis&) ;
   inline void set_renum_som_perio(IntTab& renum)  {    renum_som_perio_=renum;   };
+  const ArrOfInt& get_renum_som_perio() const { return renum_som_perio_; }
 
   ///
   /// Time-dependency

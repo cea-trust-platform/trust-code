@@ -20,6 +20,7 @@
 #include <Matrice.h>
 class Domaine_VEF_PreP1b;
 class Champ_P1_isoP1Bulle;
+enum class vecteur { second_membre , pression_inverse , pression };
 
 class Assembleur_P_VEFPreP1B : public Assembleur_P_VEF
 {
@@ -56,10 +57,12 @@ public :
   {
     return (beta!=0);
   };
-  void changer_base_matrice(Matrice&);                                // A->A~ (P0+P1->P1Bulle)
-  void changer_base_second_membre(DoubleVect&);                        // y->y~ (P0+P1->P1Bulle)
-  void changer_base_pression_inverse(DoubleVect&) const;         // x~->x (P1Bulle->P0+P1)
-  void changer_base_pression(DoubleVect&);                          // x->x~ (P0+P1->P1Bulle) Ne sert que pour les tests
+  void changer_base_matrice(Matrice&);              // A->A~ (P0+P1->P1Bulle)
+  void changer_base_second_membre(DoubleVect&);     // y->y~ (P0+P1->P1Bulle)
+  void changer_base_pression_inverse(DoubleVect&);  // x~->x (P1Bulle->P0+P1)
+  void changer_base_pression(DoubleVect&);          // x->x~ (P0+P1->P1Bulle) Ne sert que pour les tests
+  template <vecteur _v_>
+  void changer_base(DoubleVect& v);
 
 
   Matrice la_matrice_de_travail_;                // Matrice de travail

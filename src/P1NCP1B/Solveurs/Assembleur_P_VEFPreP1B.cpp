@@ -1175,66 +1175,59 @@ void Assembleur_P_VEFPreP1B::changer_base_matrice(Matrice& la_matrice)
 
 void Assembleur_P_VEFPreP1B::changer_base_second_membre(DoubleVect& y)
 {
-  assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   // ys~ = ys - beta * somme(yk)(s appartenant a k)
   // yk~ = alpha * yk
-  const IntTab& les_elems=domaine_Vef().domaine().les_elems();
-  const Domaine& dom=domaine_Vef().domaine();
-  int nb_elem_tot=domaine_Vef().nb_elem_tot();
-  int nb_som_elem=les_elems.dimension(1);
-  for (int k=0; k<nb_elem_tot; k++)
-    {
-      for (int som=0; som<nb_som_elem; som++)
-        {
-          int s = nb_elem_tot+dom.get_renum_som_perio(les_elems(k,som));
-          y(s) -= beta * y(k);
-        }
-      y(k) *= alpha;
-    }
+  changer_base<vecteur::second_membre>(y);
   y.echange_espace_virtuel();
 }
 
-void Assembleur_P_VEFPreP1B::changer_base_pression_inverse(DoubleVect& x) const
+void Assembleur_P_VEFPreP1B::changer_base_pression_inverse(DoubleVect& x)
 {
-  assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   // xk = alpha * xk~ - beta * somme(xs~)(s appartenant a k)
   // xs = xs~
-  const IntTab& les_elems=domaine_Vef().domaine().les_elems();
-  const Domaine& dom=domaine_Vef().domaine();
-  int nb_elem_tot=domaine_Vef().nb_elem_tot();
-  int nb_som_elem=les_elems.dimension(1);
-  for (int k=0; k<nb_elem_tot; k++)
-    {
-      double somme=0;
-      for (int som=0; som<nb_som_elem; som++)
-        {
-          int s = nb_elem_tot+dom.get_renum_som_perio(les_elems(k,som));
-          somme += x(s);
-        }
-      x(k) = alpha * x(k) - beta * somme;
-    }
+  changer_base<vecteur::pression_inverse>(x);
   assert(check_espace_virtuel_vect(x));
 }
 
 void Assembleur_P_VEFPreP1B::changer_base_pression(DoubleVect& x)
 {
+  // xk~ = xk / alpha + beta / alpha * somme(xs)(s appartenant a k)
+  // xs~ = xs
+  changer_base<vecteur::pression>(x);
+  assert(check_espace_virtuel_vect(x));
+}
+
+template<vecteur _v_>
+void Assembleur_P_VEFPreP1B::changer_base(DoubleVect& v)
+{
   assert(domaine_Vef().get_alphaE() && domaine_Vef().get_alphaS() && !domaine_Vef().get_alphaA()); // P0+P1 uniquement
   // xk~ = xk / alpha + beta / alpha * somme(xs)(s appartenant a k)
   // xs~ = xs
-  const IntTab& les_elems=domaine_Vef().domaine().les_elems();
-  const Domaine& dom=domaine_Vef().domaine();
-  int nb_elem_tot=domaine_Vef().nb_elem_tot();
-  int nb_som_elem=les_elems.dimension(1);
+  int nb_elem_tot = domaine_Vef().nb_elem_tot();
+  int nb_som_elem = domaine_Vef().domaine().les_elems().dimension(1);
+  const int* les_elems_addr = mapToDevice(domaine_Vef().domaine().les_elems());
+  const int* renum_som_perio_addr = mapToDevice(domaine_Vef().domaine().get_renum_som_perio());
+  double* v_addr = computeOnTheDevice(v);
+  start_timer();
+  #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice)
   for (int k=0; k<nb_elem_tot; k++)
     {
-      x(k) /= alpha;
+      if (_v_==vecteur::pression) v_addr[k] /= alpha;
       double somme=0;
       for (int som=0; som<nb_som_elem; som++)
         {
-          int s = nb_elem_tot+dom.get_renum_som_perio(les_elems(k,som));
-          somme += x(s);
+          int s = nb_elem_tot + renum_som_perio_addr[les_elems_addr[k*nb_som_elem+som]];
+          if (_v_==vecteur::pression)         somme += v_addr[s];
+          if (_v_==vecteur::pression_inverse) somme += v_addr[s];
+          if (_v_==vecteur::second_membre)
+            {
+              #pragma omp atomic
+              v_addr[s] -= beta * v_addr[k];
+            }
         }
-      x(k) += beta / alpha * somme;
+      if (_v_==vecteur::pression)         v_addr[k] += beta / alpha * somme;
+      if (_v_==vecteur::pression_inverse) v_addr[k] = alpha * v_addr[k] - beta * somme;
+      if (_v_==vecteur::second_membre)    v_addr[k] *= alpha;
     }
-  assert(check_espace_virtuel_vect(x));
+  end_timer(Objet_U::computeOnDevice, "Elem loop in Assembleur_P_VEFPreP1B::changer_base");
 }
