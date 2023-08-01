@@ -628,7 +628,6 @@ void Domaine_VF::creer_tableau_faces_bord(Array_base& t, Array_base::Resize_Opti
   MD_Vector_tools::creer_tableau_distribue(md, t, opt);
 }
 
-/*
 void Domaine_VF::remplir_face_numero_bord()
 {
   Cerr << "Domaine_VF::remplir_face_numero_bord" << finl;
@@ -644,7 +643,7 @@ void Domaine_VF::remplir_face_numero_bord()
       for (int num_face=ndeb; num_face<nfin; num_face++)
         face_numero_bord_[num_face] = n_bord;
     }
-}*/
+}
 
 const DoubleTab& Domaine_VF::xv_bord() const
 {

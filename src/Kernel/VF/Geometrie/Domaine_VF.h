@@ -68,10 +68,10 @@ public :
   inline double xp(int num_elem,int k) const { return xp_(num_elem,k); }
   inline double xa(int num_arete,int k) const { return xa_(num_arete,k); }
 
-  //inline int face_numero_bord(int num_face) const;
-  //inline IntTab& face_numero_bord() { return face_numero_bord_; }
-  //inline const IntTab& face_numero_bord() const { return face_numero_bord_; }
-  //void remplir_face_numero_bord();
+  inline int face_numero_bord(int num_face) const;
+  inline IntTab& face_numero_bord() { return face_numero_bord_; }
+  inline const IntTab& face_numero_bord() const { return face_numero_bord_; }
+  void remplir_face_numero_bord();
 
   inline ArrOfInt& est_face_bord() { return est_face_bord_; }
   inline const ArrOfInt& est_face_bord() const { return est_face_bord_; }
@@ -188,7 +188,7 @@ protected:
   IntTab elem_faces_;                           // connectivite element/faces
   IntTab face_sommets_;                           // sommets des faces
   DoubleTab xa_;                            // centres de gravite des aretes
-  //IntTab face_numero_bord_;                     // connectivite face/numero_bord
+  IntTab face_numero_bord_;                     // connectivite face/numero_bord
 
   // Descripteur parallele pour les tableaux aux faces (size() == nb_faces())
   MD_Vector md_vector_faces_;
@@ -484,11 +484,11 @@ inline int Domaine_VF::est_une_face_virt_bord(int face) const
     return 1;
 }
 
-/* inline int Domaine_VF::face_numero_bord(int num_face) const
+inline int Domaine_VF::face_numero_bord(int num_face) const
 {
   assert(num_face < nb_faces());
   return face_numero_bord_(num_face);
-} */
+}
 
 /* produit scalaire de deux vecteurs */
 inline double Domaine_VF::dot(const double *a, const double *b, const double *ma, const double *mb) const
