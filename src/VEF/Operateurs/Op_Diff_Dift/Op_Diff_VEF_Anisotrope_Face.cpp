@@ -29,7 +29,7 @@
 #include <Navier_Stokes_std.h>
 #include <Porosites_champ.h>
 
-Implemente_instanciable( Op_Diff_VEF_Anisotrope_Face, "Op_Diff_VEFANISOTROPE_var_P1NC", Op_Diff_VEF_base) ;
+Implemente_instanciable( Op_Diff_VEF_Anisotrope_Face, "Op_Diff_VEFANISOTROPE_P1NC", Op_Diff_VEF_base) ;
 
 Sortie& Op_Diff_VEF_Anisotrope_Face::printOn(Sortie& s ) const
 {

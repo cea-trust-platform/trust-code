@@ -13,37 +13,30 @@
 *
 *****************************************************************************/
 
-#include <Solveur_U_P.h>
-#include <Navier_Stokes_std.h>
-#include <EChaine.h>
-#include <Debog.h>
-#include <Matrice_Bloc.h>
-#include <Assembleur_base.h>
-#include <Schema_Temps_base.h>
-#include <TRUSTTrav.h>
-#include <Probleme_base.h>
-#include <Front_VF.h>
-#include <MD_Vector_std.h>
+#include <Neumann_sortie_libre.h>
 #include <MD_Vector_composite.h>
+#include <Discretisation_base.h>
+#include <Matrice_Diagonale.h>
+#include <Navier_Stokes_std.h>
+#include <Schema_Temps_base.h>
+#include <Assembleur_base.h>
 #include <MD_Vector_tools.h>
 #include <TRUSTTab_parts.h>
+#include <Probleme_base.h>
+#include <MD_Vector_std.h>
+#include <Matrice_Bloc.h>
+#include <Solveur_U_P.h>
 #include <Dirichlet.h>
-#include <Matrice_Diagonale.h>
-#include <Neumann_sortie_libre.h>
-
-
+#include <TRUSTTrav.h>
+#include <Front_VF.h>
+#include <EChaine.h>
+#include <Debog.h>
 
 Implemente_instanciable(Solveur_U_P,"Solveur_U_P",Simple);
 
-Sortie& Solveur_U_P::printOn(Sortie& os ) const
-{
-  return Simple::printOn(os);
-}
+Sortie& Solveur_U_P::printOn(Sortie& os ) const { return Simple::printOn(os); }
 
-Entree& Solveur_U_P::readOn(Entree& is )
-{
-  return Simple::readOn(is);
-}
+Entree& Solveur_U_P::readOn(Entree& is ) { return Simple::readOn(is); }
 
 //Entree : Uk-1 ; Pk-1
 //Sortie Uk ; Pk

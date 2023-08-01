@@ -21,7 +21,7 @@
 #include <Neumann_paroi.h>
 #include <Echange_externe_impose.h>
 
-Implemente_instanciable(Op_Diff_VEF_Face_Q1,"Op_Diff_VEF_const_Q1NC|Op_Diff_VEF_var_Q1NC",Op_Diff_VEF_base);
+Implemente_instanciable(Op_Diff_VEF_Face_Q1,"Op_Diff_VEF_Q1NC",Op_Diff_VEF_base);
 
 Sortie& Op_Diff_VEF_Face_Q1::printOn(Sortie& s ) const
 {

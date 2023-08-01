@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Schema_Euler_Implicite.h>
+#include <Discretisation_base.h>
 #include <Loi_Fermeture_base.h>
 #include <Milieu_composite.h>
 #include <Interprete_bloc.h>

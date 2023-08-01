@@ -19,7 +19,7 @@
 #include <Milieu_base.h>
 #include <Debog.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face, "Op_Dift_VEF_P1NC|Op_Dift_VEF_var_P1NC", Op_Dift_VEF_base);
+Implemente_instanciable_sans_constructeur(Op_Dift_VEF_Face, "Op_Dift_VEF_P1NC", Op_Dift_VEF_base);
 
 Op_Dift_VEF_Face::Op_Dift_VEF_Face()
 {

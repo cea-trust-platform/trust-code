@@ -38,7 +38,7 @@
 using std::ofstream;
 using std::endl;
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VEFP1NCP1B_Face,"Op_Diff_VEFP1NCP1B_const_P1NC|Op_Diff_VEFP1NCP1B_var_P1NC",Op_Diff_VEF_Face);
+Implemente_instanciable_sans_constructeur(Op_Diff_VEFP1NCP1B_Face,"Op_Diff_VEFP1NCP1B_P1NC",Op_Diff_VEF_Face);
 
 
 static inline double maximum(const double x,

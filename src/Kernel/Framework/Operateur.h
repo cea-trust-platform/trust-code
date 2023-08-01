@@ -16,11 +16,11 @@
 #ifndef Operateur_included
 #define Operateur_included
 
-#include <Discretisation.h>
 #include <TRUST_Ref.h>
 #include <Champ_Inc.h>
 #include <Motcle.h>
 
+class Discretisation_base;
 class Operateur_base;
 class Champ_Inc_base;
 

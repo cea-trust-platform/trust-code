@@ -50,16 +50,12 @@ class Discretisation_base : public Objet_U
 public :
 
   // MODIF ELI LAUCOIN (7/06/2007) :
-  // J'ajoute une methode virtuelle pure qui precise le mode d'assemblage des
-  // contributions au residu des operateurs et des sources.
+  // J'ajoute une methode virtuelle pure qui precise le mode d'assemblage des contributions au residu des operateurs et des sources.
   //
-  // Par defaut, dans TRUST, on passe par contribuer_a_avec, puis par ajouter.
-  // Dans les modules poreux MTMS (et EF ?), on passe plutot par contribuer_a_avec et
-  // contribuer_au_second_membre, car on n'utilise pas a priori de schema de
-  // convection (comme Quick) pour lequel la jacobienne n'est pas exacte.
+  // Par defaut, dans TRUST, on passe par contribuer_a_avec, puis par ajouter. Dans les modules poreux MTMS (et EF ?), on passe plutot par contribuer_a_avec et
+  // contribuer_au_second_membre, car on n'utilise pas a priori de schema de convection (comme Quick) pour lequel la jacobienne n'est pas exacte.
   //
-  // La valeur retournee par defaut est VIA_AJOUTER, pour ne pas perturber le
-  // comportement normal des classes de Trio-U en dehors du noyau.
+  // La valeur retournee par defaut est VIA_AJOUTER, pour ne pas perturber le comportement normal des classes de Trio-U en dehors du noyau.
   //
   enum type_calcul_du_residu { VIA_CONTRIBUER_AU_SECOND_MEMBRE = 0, VIA_AJOUTER = 1 };
   inline virtual type_calcul_du_residu codage_du_calcul_du_residu(void) const { return VIA_AJOUTER; }
@@ -71,9 +67,7 @@ public :
   virtual void discretiser(REF(Domaine_dis)&) const;
   virtual void domaine_Cl_dis(Domaine_dis&, Domaine_Cl_dis&) const = 0;
 
-  // Creation de champs scalaires ou vectoriels (essentiellement appel a la
-  // methode generale, ne pas surcharger ces methodes, elles ne sont la que
-  // par commodite)
+  // Creation de champs scalaires ou vectoriels (essentiellement appel a la methode generale, ne pas surcharger ces methodes, elles ne sont la que par commodite)
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, int nb_pas_dt, double temps, Champ_Inc& champ,
                          const Nom& sous_type=NOM_VIDE) const;
   void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, const Nom& nom, const Nom& unite, int nb_comp, double temps, Champ_Fonc& champ) const;
@@ -81,9 +75,7 @@ public :
 
   // Creation de champs generaux (eventuellement multiscalaires) :
   // * Ces methodes doivent etre surchargees.
-  // * Chaque methode comprend le motcle demande_description, qui provoque l'affichage
-  //   de l'ensembldes des directives comprises (et appelle a l'ancetre avec
-  //   le meme motcle).
+  // * Chaque methode comprend le motcle demande_description, qui provoque l'affichage de l'ensembldes des directives comprises (et appelle a l'ancetre avec le meme motcle).
   // * Si champ scalaire ou vectoriel, le premier nom et la premiere unite sont utilises
   virtual void discretiser_champ(const Motcle& directive, const Domaine_dis_base& z, Nature_du_champ nature, const Noms& nom, const Noms& unite, int nb_comp, int nb_pas_dt, double temps,
                                  Champ_Inc& champ, const Nom& sous_type=NOM_VIDE) const;
@@ -126,4 +118,6 @@ private:
   virtual void modifier_champ_tabule(const Domaine_dis_base& domaine_dis,Champ_Fonc_Tabule& ch_tab,const VECT(REF(Champ_base))& ch_inc) const ;
 };
 
-#endif
+using Discretisation = TRUST_Deriv<Discretisation_base>;
+
+#endif /* Discretisation_base_included */

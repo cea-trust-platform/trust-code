@@ -38,7 +38,7 @@
 #include <ArrOfBit.h>
 #include <Schema_Temps_base.h>
 
-Implemente_instanciable_sans_constructeur(Op_Diff_VEF_Face_Stab,"Op_Diff_VEFSTAB_const_P1NC|Op_Diff_VEFSTAB_var_P1NC",Op_Diff_VEF_Face);
+Implemente_instanciable_sans_constructeur(Op_Diff_VEF_Face_Stab,"Op_Diff_VEFSTAB_P1NC",Op_Diff_VEF_Face);
 
 double minimum(double a,double b,double c)
 {

@@ -17,8 +17,9 @@
 #ifndef Pb_MED_included
 #define Pb_MED_included
 
-#include <Probleme_base.h>
+#include <Discretisation_base.h>
 #include <Probleme_Couple.h>
+#include <Probleme_base.h>
 #include <Champs_Fonc.h>
 
 /*! @brief Classe Pb_MED Classe pour postraiter relire des fichiers med et les postraiter

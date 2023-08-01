@@ -25,7 +25,7 @@
 #include <Solv_GCP.h>
 #include <SSOR.h>
 
-Implemente_instanciable(Op_Diff_RotRot, "Op_Diff_VEF_ROTROT_const_P1NC", Operateur_Diff_base);
+Implemente_instanciable(Op_Diff_RotRot, "Op_Diff_VEF_ROTROT_P1NC", Operateur_Diff_base);
 
 Sortie& Op_Diff_RotRot::printOn(Sortie& s) const { return s << que_suis_je(); }
 

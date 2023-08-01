@@ -13,18 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Operateur.h>
+#include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
 #include <Operateur_base.h>
-#include <TRUSTTrav.h>
 #include <Probleme_base.h>
 #include <stat_counters.h>
+#include <TRUSTTrav.h>
+#include <Operateur.h>
 
-/*! @brief Ecrit le type de l'operateur sur un flot de Sortie.
- *
- * @param (Sortie& os) le flot de sortie
- * @return (Sortie& le flot de sortie modifie)
- */
 Sortie& Operateur::ecrire(Sortie& os) const
 {
   os << " { " << typ << " } " << finl;
@@ -298,7 +294,6 @@ DoubleTab& Operateur::calculer(DoubleTab& resu) const
   return ajouter(le_champ_inco.valeur().valeurs(), resu);
 }
 
-
 void Operateur::set_fichier(const Nom& nom)
 {
   l_op_base().set_fichier(nom);
@@ -313,4 +308,3 @@ void Operateur::ajouter_contribution_explicite_au_second_membre (const Champ_Inc
 {
   l_op_base().ajouter_contribution_explicite_au_second_membre (linconnue, derivee);
 }
-

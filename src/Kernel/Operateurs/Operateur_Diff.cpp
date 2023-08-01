@@ -31,10 +31,7 @@ Entree& Operateur_Diff::readOn(Entree& is)
   return Operateur::lire(is);
 }
 
-/*! @brief Type l'operateur: se type "Op_Diff_"+discretisation()+
- *
- *      ("_"ou"_Multi_inco_")+("const_"ou"var_")
- *      + inconnue().suffix
+/*! @brief Type l'operateur: se type "Op_Diff_"+discretisation() + ("_"ou"_Multi_inco_") + inconnue().suffix
  *     Associe la diffusivite a l'operateur base.
  *
  */

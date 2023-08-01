@@ -19,7 +19,6 @@
 #include <Probleme_base_interface_proto.h>
 #include <Champs_compris_interface.h>
 #include <Sortie_Fichier_base.h>
-#include <Discretisation.h>
 #include <Postraitements.h>
 #include <Sortie_Brute.h>
 #include <TRUST_Deriv.h>

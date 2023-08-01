@@ -16,7 +16,7 @@
 #include <Dirichlet_paroi_fixe.h>
 
 
-Implemente_instanciable(Op_Diff_VEF_Face_Penalise,"Op_Diff_VEFpenalise_const_P1NC",Op_Diff_VEF_Face);
+Implemente_instanciable(Op_Diff_VEF_Face_Penalise,"Op_Diff_VEFpenalise_P1NC",Op_Diff_VEF_Face);
 
 /* Implementation obligatoire de la fonction printOn() */
 Sortie& Op_Diff_VEF_Face_Penalise::

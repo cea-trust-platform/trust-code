@@ -14,12 +14,13 @@
 *****************************************************************************/
 
 #include <Op_Conv_EF_Stab_PolyMAC_Face.h>
+#include <Discretisation_base.h>
 #include <Dirichlet_homogene.h>
 #include <Champ_Face_PolyMAC.h>
-#include <Schema_Temps_base.h>
 #include <Domaine_Cl_PolyMAC.h>
-#include <Probleme_base.h>
+#include <Schema_Temps_base.h>
 #include <Domaine_PolyMAC.h>
+#include <Probleme_base.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>

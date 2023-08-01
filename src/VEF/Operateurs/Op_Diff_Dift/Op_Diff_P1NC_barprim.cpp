@@ -27,7 +27,7 @@
 #include <EFichier.h>
 #include <Domaine.h>
 
-Implemente_instanciable(Op_Diff_P1NC_barprim, "Op_Diff_VEFBARPRIM_const_P1NC", Operateur_Diff_base);
+Implemente_instanciable(Op_Diff_P1NC_barprim, "Op_Diff_VEFBARPRIM_P1NC", Operateur_Diff_base);
 
 Sortie& Op_Diff_P1NC_barprim::printOn(Sortie& s) const { return s << que_suis_je(); }
 
