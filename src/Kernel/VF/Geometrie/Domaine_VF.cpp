@@ -252,7 +252,7 @@ void Domaine_VF::discretiser()
   delete les_faces_ptr;
 
   // Fill in the table face_numero_bord
-  //remplir_face_numero_bord();
+  remplir_face_numero_bord();
 
   faces_doubles_.resize_array(nb_faces());
   est_face_bord_.resize_array(nb_faces_tot());
