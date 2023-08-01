@@ -83,6 +83,8 @@ protected:
   int sorted_ = 1;
   // Taille du buffer requis pour ce schema
   int min_buf_size_ = -1;
+  // Support GPU par MPI:
+  bool use_gpu_aware_mpi_ = false;
 
   enum Status { RESET, BEGIN_INIT, END_INIT, BEGIN_COMM, EXCHANGED };
   Status status_;

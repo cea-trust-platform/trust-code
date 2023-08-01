@@ -30,6 +30,7 @@ define_modules_config()
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # SDK recent pour bug use_device_ptr avec Nvidia (SDK<21.7)
+         module="gnu/8.3.0 cuda/11.0 nvhpc/22.7 mpi/openmpi/4.1.4" # OpenMPI 4.1.4 suite recommendation support. OK. GPU-Direct marchait deja avec 4.0.5
          echo "export NVHPC_CUDA_HOME=\$CUDA_HOME;unset CUDA_HOME" >> $env # Pour desactiver des warnings a la compilation
       else
          #module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.3" # Non, cela crashe en multi-gpu
@@ -45,7 +46,7 @@ define_modules_config()
    # Ajout pour charger l'espace disque a la place de SCRATCHDIR pas encore disponible sur topaze:
    #[ "`id | grep gch0504`" != "" ] && sw=dfldatadir/gch0504
    echo "# Module $module detected and loaded on $HOST."
-   echo "module purge 1>/dev/null" >> $env
+   echo "module purge 1>/dev/null 2>&1" >> $env
    echo "module load $module 1>/dev/null || exit -1" >> $env
    #[ "$sw" != "" ] && echo "module sw $sw 1>/dev/null" >> $env  # fait planter soumission de jobs pour utilisateur qui n'ont pas ce projet
    . $env

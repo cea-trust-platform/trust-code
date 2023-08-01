@@ -631,11 +631,18 @@ fi
 ##############
 # GPU Direct #
 ##############
-# OK sur adastra, performances ameliorees
-if [ $NB_PROCS -gt 1 ] && [ "$TRUST_USE_ROCM" = 1 ] && [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" != "" ]
+if [ $NB_PROCS -gt 1 ]
 then
-   export MPICH_GPU_SUPPORT_ENABLED=1
-   echo "Enabling GPU support for MPI (MPICH_GPU_SUPPORT_ENABLED=1) ..."
+   if [ "$TRUST_USE_ROCM" = 1 ] && [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" != "" ]
+   then
+      # OK sur adastra, performances ameliorees
+      export MPICH_GPU_SUPPORT_ENABLED=1
+      echo "Enabling GPU support for MPI (MPICH_GPU_SUPPORT_ENABLED=1) ..."
+   elif [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_GPU_AWARE_MPI" = 1 ]
+   then
+      # OK sur topaze, performances ameliorees
+      echo "Enabling CUDA support for MPI ..."
+   fi
 fi
 
 #################

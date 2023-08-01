@@ -110,6 +110,15 @@ void Schema_Comm_Vecteurs::begin_init()
   recv_procs_.resize_array(0);
   sorted_ = 1;
   status_ = BEGIN_INIT;
+  use_gpu_aware_mpi_ = (getenv("TRUST_USE_GPU_AWARE_MPI") != NULL || getenv("MPICH_GPU_SUPPORT_ENABLED") != NULL);
+  if (use_gpu_aware_mpi_)
+    {
+#if defined(TRUST_USE_CUDA) && !defined(MPIX_CUDA_AWARE_SUPPORT)
+      Process::exit("MPI version is detected as not CUDA-Aware. You can't use TRUST_USE_GPU_AWARE_MPI=1");
+#endif
+      Cerr << "[MPI] Enabling GPU capability to communicate between devices." << finl;
+      Cerr << "[MPI] Warning! Only MPI calls with device pointers will benefit. Classic MPI calls with host pointers will be slower..." << finl;
+    }
 }
 
 /*! @brief Une fois les donnees a echanger declarees avec add_send/recv_area_.
@@ -215,18 +224,11 @@ void Schema_Comm_Vecteurs::begin_comm(bool bufferOnDevice)
 
 void Schema_Comm_Vecteurs::exchange(bool bufferOnDevice)
 {
-  bool use_gpu_aware_mpi = (getenv("TRUST_USE_GPU_AWARE_MPI") != NULL || getenv("MPICH_GPU_SUPPORT_ENABLED") != NULL);
-  if (use_gpu_aware_mpi)
-    {
-#if defined(TRUST_USE_CUDA) && !defined(MPIX_CUDA_AWARE_SUPPORT)
-      Process::exit("MPI version is detected as not CUDA-Aware. You can't use TRUST_USE_GPU_AWARE_MPI=1");
-#endif
-    }
   char * ptr = sdata_.buffer_base_;
   // Copy buffer before MPI send
   if (bufferOnDevice)
     {
-      if (!use_gpu_aware_mpi)
+      if (!use_gpu_aware_mpi_)
         copyFromDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_"); // Copy buffer to host for MPI communication
       else
         {
@@ -282,7 +284,7 @@ void Schema_Comm_Vecteurs::exchange(bool bufferOnDevice)
   status_ = EXCHANGED;
 
   // Copy buffer to device after MPI recv if GPU-Aware MPI is not enabled:
-  if (bufferOnDevice && !use_gpu_aware_mpi) copyToDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_");
+  if (bufferOnDevice && !use_gpu_aware_mpi_) copyToDevice(sdata_.buffer_base_, min_buf_size_, "buffer_base_");
 }
 
 void Schema_Comm_Vecteurs::end_comm()
