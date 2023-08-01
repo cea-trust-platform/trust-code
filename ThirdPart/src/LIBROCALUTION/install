@@ -53,7 +53,7 @@ export CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BA
 export CXXFLAGS="-mno-avx512f" && [ "`$CXX $CXXFLAGS 2>&1 | grep -i unrecognized`" != "" ] && export CXXFLAGS=""
 export CXXFLAGS=$CXXFLAGS" -fPIC"
 # Shared libraries
-SL=OFF && [ "$HOST" = adastra ] && SL=ON # Probleme au link sur adastra en lib statique
+SL=OFF && [ "$TRUST_USE_ROCM" = 1 ] && SL=ON # Probleme au link avec rocm en lib statique
 
 cmake .. $BUILD_CLIENTS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION -DBUILD_SHARED_LIBS=$SL || exit -1
 

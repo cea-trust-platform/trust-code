@@ -76,6 +76,11 @@ void init_openmp()
   MPI_Get_processor_name(name, &len);
   std::string nodeName = name;
   int nDevs = omp_get_num_devices(); // Local number of devices
+  if (nDevs==0)
+    {
+      Cerr << "Error, no device detected during OpenMP initialization." << finl;
+      Process::exit();
+    }
   int devID = AmgXWrapperScheduling(rank, nRanks, nDevs);
   Cerr << "Initializing OpenMP offload on devices..."  << finl;
   cerr << "[OpenMP] Assigning local rank " << rank << " (global rank " << Process::me() << ") of node " << nodeName.c_str() << " to its device " << devID << "/" << nDevs-1 << endl;

@@ -628,6 +628,7 @@ case $arch in
 	TRUST_CC_BASE=" crayCC  FCC icpc  armclang++ "$cuda"g++      g++"
 	TRUST_F77_BASE="crayftn frt ifort armflang   "$cuda"gfortran gfortran"
 	TRUST_cc_BASE=" craycc  fc  icc   armclang   "$cuda"gcc      gcc"
+	# Support compilateur NVidia:
 	if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
 	then
 	   TRUST_CC_BASE="nvc++ "$TRUST_CC_BASE
@@ -647,6 +648,13 @@ case $arch in
 	   fi
 	   nvc++ -help 1>/dev/null 2>&1
 	   [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
+	fi
+	# Support compilateur AOMP de AMD: https://github.com/ROCm-Developer-Tools/aomp/blob/aomp-dev/docs/UBUNTUINSTALL.md
+	if [ "$TRUST_USE_ROCM" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
+	then
+	   TRUST_CC_BASE="amdclang++ "$TRUST_CC_BASE
+	   TRUST_F77_BASE="amdflang "$TRUST_F77_BASE
+	   TRUST_cc_BASE="amdclang "$TRUST_cc_BASE
 	fi
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
@@ -986,7 +994,7 @@ fi
 if [ "$TRUST_CC_BASE_EXTP" = "" ]
 then
    CC_BASE=`basename $TRUST_CC_BASE`
-   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = crayCC ]
+   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = crayCC ] || [ "$CC_BASE" = amdclang++ ]
    then
       TRUST_CC_BASE_EXTP=g++       && [ -f /usr/bin/cuda-g++ ]      && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
       TRUST_cc_BASE_EXTP=gcc       && [ -f /usr/bin/cuda-gcc ]      && TRUST_cc_BASE_EXTP=/usr/bin/cuda-gcc
@@ -1187,9 +1195,12 @@ then
    m="# PATH to ROCM";e="ROCM_PATH=\"$ROCM_PATH\" && export ROCM_PATH";ecrit $m"|"$e"|"$env;eval $e
    echo "ADD_PATH \$ROCM_PATH/bin" >> $env
    echo "ADD_LD_LIBRARY_PATH \$ROCM_PATH/lib" >> $env
+   # Detection de l'architecture de la carte AMD:
+   ROCM_ARCH=`$ROCM_PATH/bin/rocminfo 2>&1 | awk '/ gfx/ {print $2}'`
+   [ "$ROCM_ARCH" = "" ] && ROCM_ARCH=gfx90a # Adastra
    # Pour la carte du PC AMD:
    # https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
-   [ "`$ROCM_PATH/bin/rocminfo 2>&1 | grep gfx1032`" != "" ] && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
+   [ "$ROCM_ARCH" = gfx1032 ] && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
 fi
 
 #############
@@ -1766,7 +1777,7 @@ case $TRUST_ARCH_CC in
 	ShLibFlag="\$(TRUST_CC) -shared"
 #	cherche_include_systeme
 	;;
-   linux_crayCC) TRUST_SUPPORTED=1
+   linux_crayCC|linux_amdclang++) TRUST_SUPPORTED=1
    	Defines="-D_COMPILE_AVEC_CLANG"
         CppFlags="-O3 -fPIC -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-inconsistent-missing-override -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Qunused-arguments -Wno-unsequenced -Wno-unused-parameter -Wno-tautological-compare -Werror"
         #CppFlags=$CppFlags" -h list=all" # Genere un fichier listing pour OpenMP-target
@@ -2014,11 +2025,10 @@ then
    openmp="-fopenmp"
    TRUST_OPENMP_CC=`basename $TRUST_CC_BASE`
    # Compilateurs OpenMP ranges du plus teste au moins teste...
-   if [ $TRUST_OPENMP_CC = crayCC ]
+   if [ $TRUST_OPENMP_CC = crayCC ] ||  [ $TRUST_OPENMP_CC = amdclang++ ]
    then
       [ "$TRUST_USE_CUDA" = 1 ] && target=nvptx64-nvidia-cuda && march=""
-      # ToDo detecter le march automatiquement (Adastra arch differente...): Se baser sur rocm-smi et rocm-info
-      [ "$TRUST_USE_ROCM" = 1 ] && target=amdgcn-amd-amdhsa   && march="-march=gfx90a" # Device AMD Radeon MI200
+      [ "$TRUST_USE_ROCM" = 1 ] && target=amdgcn-amd-amdhsa   && march="-march=$ROCM_ARCH"
       # -fsave-loopmark est une option pour creer un .lst a la compilation mais il faut aussi le retirer pour eviter un crash du compilateur
       openmp_target="-fopenmp-targets=$target -Xopenmp-target=$target $march "
   elif [ $TRUST_OPENMP_CC = nvc++ ]
