@@ -44,6 +44,7 @@ class Schema_Comm_Vecteurs_Static_Data;
  *      end_comm();
  *
  */
+extern bool check_comm_vector;
 class Schema_Comm_Vecteurs
 {
 public:
@@ -208,13 +209,14 @@ inline ArrOfDouble& Schema_Comm_Vecteurs::get_next_area_template<double>(int pe,
   // attention a l'arithmetique de pointeurs, ajout d'une taille en octets
   sdata_.buf_pointers_[pe] += BLOCSIZE_DOUBLE(size);
   tmp_area_double_.ref_data(bufptr, size);
-  /* TrioCFD: ?
-  #ifndef NDEBUG
-    // en debug, mettre des valeurs bidon dans le tableau
-    if (status_ != EXCHANGED)
-      tmp_area_double_ = DMAXFLOAT * 0.999;
-  #endif
-  */
+  if (check_comm_vector)
+    {
+#ifndef NDEBUG
+      // en debug, mettre des valeurs bidon dans le tableau
+      if (status_ != EXCHANGED)
+        tmp_area_double_ = DMAXFLOAT * 0.999;
+#endif
+    }
   return tmp_area_double_;
 }
 

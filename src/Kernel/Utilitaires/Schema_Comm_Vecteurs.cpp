@@ -25,6 +25,7 @@ ArrOfDouble Schema_Comm_Vecteurs::tmp_area_double_;
 ArrOfFloat Schema_Comm_Vecteurs::tmp_area_float_;
 ArrOfInt Schema_Comm_Vecteurs::tmp_area_int_;
 Schema_Comm_Vecteurs_Static_Data Schema_Comm_Vecteurs::sdata_;
+bool check_comm_vector = false;
 
 Schema_Comm_Vecteurs_Static_Data::Schema_Comm_Vecteurs_Static_Data()
 {
