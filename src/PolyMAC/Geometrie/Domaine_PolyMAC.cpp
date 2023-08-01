@@ -501,7 +501,7 @@ void Domaine_PolyMAC::init_m2_new() const
           if (j != i && std::fabs(w2e(e, i, j)) > 1e-6) w2j.append_line(j), w2c.append_line(w2e(e, i, j));
     }
   int f, fb;
-  for (e = 0; e < nb_elem(); e++)
+  for (e = 0; e < nb_elem_tot(); e++)
     for (i = 0; i < m2d(e + 1) - m2d(e); i++)
       for (f = e_f(e, i), j = w2i(m2d(e) + i); j < w2i(m2d(e) + i + 1); j++)
         {
@@ -509,7 +509,7 @@ void Domaine_PolyMAC::init_m2_new() const
           w2c(j) /= fs(f) * fs(fb) / ve(e);
         }
 
-  for (e = 0; e < nb_elem(); e++)
+  for (e = 0; e < nb_elem_tot(); e++)
     for (i = 0; i < m2d(e + 1) - m2d(e); i++)
       for (f = e_f(e, i), j = m2i(m2d(e) + i); j < m2i(m2d(e) + i + 1); j++)
         {
