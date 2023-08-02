@@ -3,32 +3,34 @@
 cree_syno()
 {
     # On cherche les synonymes dans la hierarchie
-    #trust existepas 2>/dev/null 1>/dev/null
-    # Pour eviter des blocages sur machine jade:
-    #exec=$1
-    #$exec existepas 2>/dev/null 1>/dev/null
-    # on generalise
-    export exec=$1
-    USE_MPIRUN=1 trust existepas 2>/dev/null 1>/dev/null
-    listsyno=`grep "<=>" hierarchie.dump| sed "s/ <=> /%/"`
-    rm -f *dump existepas.log
-    #echo -n "synonyme={ 'end':'fin',"
-    echo -n "synonyme={ 'fin':'end',"
-    for syn in $listsyno
-      do
-      #syn2=`echo $syn|awk '{print $2}' `
-      mottrio=`echo $syn | awk -F\% '{print tolower($2) }'`
-      new=`echo $syn | awk -F\% '{print tolower($1)}'`	
-      #echo -n \"$new"\":\""$mottrio"\"",
-      echo -n \"$mottrio"\":\""$new"\"",
-    done
-    echo "}" 
+    rm -f existepas.data # Le fichier ne doit pas exister pour la generation du hierarchie.dump
+    TRUST_USE_XDATA=1 exec=$1 trust existepas 1>/dev/null 2>&1
+    if [ -f hierarchie.dump ]
+    then
+       listsyno=`grep "<=>" hierarchie.dump| sed "s/ <=> /%/"`
+       rm -f *dump existepas.log $TRUST_TMP/syno.py
+       echo -n "synonyme={ 'fin':'end'," > $TRUST_TMP/syno.py
+       for syn in $listsyno
+       do
+          #syn2=`echo $syn|awk '{print $2}' `
+          mottrio=`echo $syn | awk -F\% '{print tolower($2) }'`
+          new=`echo $syn | awk -F\% '{print tolower($1)}'`	
+          #echo -n \"$new"\":\""$mottrio"\"",
+          echo -n \"$mottrio"\":\""$new"\"", >> $TRUST_TMP/syno.py
+       done
+       echo "}" >> $TRUST_TMP/syno.py
+    else
+       echo "Pas de fichier hierarchie.dump genere !"
+    fi
 }
-exec=$*
-[ -f $exec ] && [ syno.py -nt $exec ] && exit 0
-cree_syno $exec > syno.py
-status=$?
-[ $status -ne 0 ] && echo $0 pb generation de syno_tmp && exit 2
-echo syno.py genere
+exec=$* && [ -f $exec ] && [ -f syno.py ] && [ syno.py -nt $exec ] && exit 0
+# Tentative de creation de syno.py
+# ToDo: on ne cree pas les synonymes sur les clusters, oblige a lancer un calcul en soumission:
+cree_syno $exec
+if [ -f $TRUST_TMP/syno.py ] 
+then
+   # Mise a jour eventuelle de syno.py
+   diff $TRUST_TMP/syno.py syno.py 1>/dev/null 2>&1 || cp $TRUST_TMP/syno.py syno.py
+fi
 exit 0
 

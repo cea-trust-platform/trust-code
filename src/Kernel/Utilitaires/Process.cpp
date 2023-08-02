@@ -242,13 +242,15 @@ void Process::exit(const Nom& message ,int i)
     {
       Cerr << message << finl;
       Cerr.flush();
-      /* Desactivation de hierarchie.dump Sera reactivee si demande
-      SFichier hier("hierarchie.dump");
-      hier << "\n             KEYWORDS\n";
-      Type_info::hierarchie(hier);
-      hier << "\n             SYNONYMS\n";
-      Synonyme_info::hierarchie(hier);
-       */
+      // Utile pour XData et la creation de syno.py
+      if (getenv("TRUST_USE_XDATA")!=NULL)
+        {
+          SFichier hier("hierarchie.dump");
+          hier << "\n             KEYWORDS\n";
+          Type_info::hierarchie(hier);
+          hier << "\n             SYNONYMS\n";
+          Synonyme_info::hierarchie(hier);
+        }
       if (!get_disable_stop() && Process::je_suis_maitre())
         {
           Nom nomfic( Objet_U::nom_du_cas() );
