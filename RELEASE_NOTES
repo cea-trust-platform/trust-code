@@ -1,9 +1,9 @@
-XX/XX/XX (TRUST) New feature  : Experimental device-device communication implemented for GPU version if Cuda-aware MPI is available. Use: TRUST_USE_GPU_AWARE_MPI=1 trust datafile NB_PROCS
-XX/XX/XX (TRUST) Fix          : When diffusive-implicited scheme diverges, backup wasn't done
-XX/XX/23 (TRUST) New options  : Default for AmgX preconditionner may be overloaded in data file. Ex: amgx gcp { precond c-amg { p:selector=PMIS p:strength_threshold=0.8 } ... }
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+02/08/23 (TRUST) New feature  : Experimental device-device communication implemented for GPU version if Cuda-aware MPI is available. Use: TRUST_USE_GPU_AWARE_MPI=1 trust datafile NB_PROCS
+02/08/23 (TRUST) Fix          : When diffusive-implicited scheme diverges, backup wasn't done
+02/08/23 (TRUST) New options  : Default for AmgX preconditionner may be overloaded in data file. Ex: amgx gcp { precond c-amg { p:selector=PMIS p:strength_threshold=0.8 } ... }
 18/07/23 (TRUST) New feature  : Read_MED|Lire_MED new keyword include_internal_face_groups to read a group of internal faces into a MED file. Can be used with keyword Internal_face_groups to apply Perte_Charge_Singuliere on this group of faces. See Perte_Charge_Singuliere validation sheet.
 18/07/23 (TRUST) Keyword      : Previous PolyMAC discretization (compat with Pb_Multi) has been renamed as PolyMAC_P0P1NC. 
 18/07/23 (TRUST) Major change : Three PolyMAC versions are now available in TRUST: PolyMAC, PolyMAC_P0P1NC and PolyMAC_P0. The last two are compatible with Pb_Multiphase.
