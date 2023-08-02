@@ -45,10 +45,13 @@ public :
   int tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
   int tppi_get_all_sat_loi_F5(const MSpanD input, MSatSpanD sats, int ncomp = 1, int ind = 0) const override;
 
+  int set_sigma_mano(double sigma) override { sigma_mano_ = sigma; return 1; } ;
+
 private:
   int tppi_get_single_sat_p_(SAT , const SpanD , SpanD , int , int , bool is_liq = true) const override;
   int tppi_get_single_sat_p__(SAT , const SpanD , SpanD , bool is_liq = true) const;
   int FD_derivative_p(SAT , const SpanD , SpanD , bool is_liq = true) const;
+  double sigma_mano_ = -1.;
 };
 
 #endif /* CoolProp_to_TRUST_Sat_generique_included */

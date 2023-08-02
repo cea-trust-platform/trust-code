@@ -102,7 +102,8 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p__(SAT enum_prop, cons
       if (enum_prop == SAT::HL_SAT || enum_prop == SAT::HV_SAT) res[i] = fluide->hmass();
       if (enum_prop == SAT::RHOL_SAT || enum_prop == SAT::RHOV_SAT) res[i] = fluide->rhomass();
       if (enum_prop == SAT::CPL_SAT || enum_prop == SAT::CPV_SAT) res[i] = fluide->cpmass();
-      if (enum_prop == SAT::SIGMA) res[i] = fluide->surface_tension();
+      if (enum_prop == SAT::SIGMA && sigma_mano_<=0.) res[i] = fluide->surface_tension();
+      else if (enum_prop == SAT::SIGMA && sigma_mano_>0.) res[i] = sigma_mano_;
     }
   return 0; // FIXME : on suppose que tout OK
 #else
@@ -169,11 +170,11 @@ int CoolProp_to_TRUST_Sat_generique::FD_derivative_p(SAT enum_prop, const SpanD 
 int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
-  assert((int )sats.size() == 8);
+  assert((int )sats.size() == 9);
   const int sz = (int) P.size();
 
   SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
-        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
+        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP), Sigma__ = sats.at(SAT::SIGMA);
 
 #ifndef NDEBUG
   for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
@@ -185,6 +186,8 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
         Ts__[i] = fluide->T();
         Hls__[i] = fluide->hmass();
+        if (sigma_mano_<=0.) Sigma__[i] = fluide->surface_tension();
+        else if (sigma_mano_>0.) Sigma__[i] = sigma_mano_;
 
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
         Hvs__[i] = fluide->hmass();
@@ -220,13 +223,15 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
   else /* attention stride */
     {
       VectorD Ts(sz), dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz), dPLvap;
-      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap);
+      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap), Sigma_(dPLvap);
 
       for (int i = 0; i < sz; i++)
         {
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
           Ts_[i] = fluide->T();
           Hls_[i] = fluide->hmass();
+          if (sigma_mano_<=0.) Sigma_[i] = fluide->surface_tension();
+          else if (sigma_mano_>0.) Sigma_[i] = sigma_mano_;
 
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
           Hvs_[i] = fluide->hmass();
@@ -264,6 +269,7 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
           dPHls__[i * ncomp + ind] = dPHls_[i];
           Lvap__[i * ncomp + ind] = Hvs_[i] - Hls_[i];
           dPLvap__[i * ncomp + ind] = dPHvs_[i] - dPHls_[i];
+          Sigma__[i * ncomp + ind] = Sigma_[i];
         }
     }
 

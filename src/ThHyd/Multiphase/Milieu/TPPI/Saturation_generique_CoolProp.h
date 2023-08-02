@@ -26,6 +26,7 @@ public :
 
 protected:
   Motcle phase_;
+  double sigma_mano_=-1.;
 };
 
 #endif /* Saturation_generique_CoolProp_included */
