@@ -34,6 +34,7 @@ Entree& Champ_Fonc_Interp::readOn(Entree& is)
   param.ajouter("pb_dist", &nom_pb_dist, Param::REQUIRED); // XD_ADD_P chaine Name of the distant problem.
   param.ajouter("dom_loc", &nom_dom_loc); // XD_ADD_P chaine Name of the local domain.
   param.ajouter("dom_dist", &nom_dom_dist); // XD_ADD_P chaine Name of the distant domain.
+  param.ajouter("default_value", &default_value_); // XD_ADD_P chaine Name of the distant domain.
   param.ajouter("nature", &nat, Param::REQUIRED); // XD_ADD_P chaine Nature of the field (knowledge from MEDCoupling is required; IntensiveMaximum, IntensiveConservation, ...).
   param.lire_avec_accolades_depuis(is);
 
@@ -113,6 +114,6 @@ void Champ_Fonc_Interp::mettre_a_jour(double t)
   MEDCouplingRemapper *rmp = dom_loc_->get_remapper(dom_dist_.valeur());
 
   update_fields();
-  rmp->transfer(distant_field_, local_field_, 1e30);
+  rmp->transfer(distant_field_, local_field_, default_value_);
 #endif
 }

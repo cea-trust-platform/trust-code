@@ -37,6 +37,7 @@ protected:
   REF(Probleme_base) pb_loc_, pb_dist_;
   REF(Domaine) dom_loc_, dom_dist_;
   bool is_initialized_ = false;
+  double default_value_ = DMAXFLOAT;
 
 #ifdef MEDCOUPLING_
   MEDCoupling::NatureOfField nature_;
