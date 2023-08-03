@@ -38,13 +38,16 @@ def create_dico(dirs):
     pattern="[\s]*#[\s]*include[\s]*<(?P<fi>[\S]+\.h)[\s]*>"
     expr=re.compile(pattern)
 
+    pattern2="[\s]*#[\s]*include[\s]*<(?P<fi>[\S]+\.tpp)[\s]*>"
+    expr2=re.compile(pattern2)
+
     srcs=[]
     for d in dirs:
         root=ENV+"/"+d
 
         for fi in os.listdir(root):
             fifull=os.path.join(root,fi)
-            if os.path.splitext(fi)[1] in [".cxx",".cpp",".h",".hxx"]:
+            if os.path.splitext(fi)[1] in [".cxx",".cpp",".h",".hxx",".tpp"]:
                 srcs.append((fi,fifull))
                 pass
             pass
@@ -53,16 +56,18 @@ def create_dico(dirs):
     dico={}
     dico_h={}
     dico_cpp={}
+    dico_tpp={}
     dico[".h"]=dico_h
     dico[".cpp"]=dico_cpp
+    dico[".tpp"]=dico_tpp
     for fi,fifull in srcs:
         # print fifull
         #f=open(fifull,"r")
         f=open(fifull,"r", encoding='utf-8')
 
         lines=f.readlines()
-        lines=list(filter(expr.match,lines))
-        res=[expr.match(line).group("fi") for line in lines]
+        lines1=list(filter(expr2.match,lines))
+        res=[expr2.match(line).group("fi") for line in lines1]
         for r in res:
             titi=os.path.splitext(fi)[1]
             f=fi
@@ -71,12 +76,19 @@ def create_dico(dirs):
                 dico[titi][r].append(f)
             except:
                 dico[titi][r]=[f]
-                pass
+        lines2=list(filter(expr.match,lines))
+        res2=[expr.match(line).group("fi") for line in lines2]
+        for r in res2:
+            titi=os.path.splitext(fi)[1]
+            f=fi
+            if (titi==".cpp"): f=fifull
+            try:
+                dico[titi][r].append(f)
+            except:
+                dico[titi][r]=[f]
 
+    return [dico_tpp,dico_h,dico_cpp]
 
-        pass
-
-    return [dico_h,dico_cpp]
 def create_dico_old(dirs):
     import os
     f=open('deps','w')
@@ -140,8 +152,7 @@ for fil in argv:
     if (file2[-2:]==".h"):
         files_in.append(file2)
     elif (file2[-4:]==".tpp"):
-        in_file=file2.replace(".tpp",".h")
-        files_in.append(in_file)
+        files_in.append(file2)
     else:
         files_cpp.append(file2)
         pass
@@ -163,12 +174,15 @@ while (lena):
             for f in dico[0][file2]:
                 if not f in files_in:
                     files_h.append(f)
-                    pass
-                pass
         except KeyError:
             pass
-        pass
-
+    for file2 in files_in:
+        try:
+            for f in dico[1][file2]:
+                if not f in files_in:
+                    files_h.append(f)
+        except KeyError:
+            pass
     lena=len(files_h)
     for f in files_h:    files_in.append(f)
     # print files_in
@@ -179,6 +193,21 @@ lcpp=[]
 for f in files_in :
     try :
         for cpp in dico[1][f]:
+            if not(cpp in lcpp):
+                namecpp=os.path.basename(cpp)
+                if not (namecpp in files_cpp) and (namecpp[-4:]==".cpp"):
+                    lcpp.append(cpp) # .replace(ENV,"$TRUST_ROOT"))
+                else:
+                    # print namecpp," dans l'atelier"
+                    pass
+            pass
+        pass
+    except KeyError:
+        pass
+
+for f in files_in :
+    try :
+        for cpp in dico[2][f]:
             if not(cpp in lcpp):
                 namecpp=os.path.basename(cpp)
                 if not (namecpp in files_cpp):
