@@ -16,8 +16,13 @@ define_modules_config()
    # Load modules
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      module="gcc/8.3.1 cuda/11.2 openmpi/4.0.5-cuda" # Fonctionne sur gpu_p13 et gpu_p4
-      #module=$module" opa-psm2/11.2.204nccl_patched-cuda" # Patch pour corriger un plantage lors des IO (sondes/xyz)
+      if [ "$TRUST_USE_OPENMP" = 1 ]
+      then
+         module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.0.5-cuda" # Les modules sont mieux configures sur IDRIS qu'au CCRT...
+      else
+         module="gcc/8.3.1 cuda/11.2 openmpi/4.0.5-cuda" # Fonctionne sur gpu_p13 et gpu_p4
+         #module=$module" opa-psm2/11.2.204nccl_patched-cuda" # Patch pour corriger un plantage lors des IO (sondes/xyz)
+      fi
    else
       # avec intel/intelmpi 19.0.2, les calculs bloquent
       #module="intel-compilers/19.0.2 intel-mpi/19.0.2 intel-mkl/19.0.2"
@@ -55,6 +60,10 @@ define_soumission_batch()
       queue=gpu_p13 && constraint=v100-16g # pour gpu_p3 ou constraint=v100-32g (gpu_p1)  
       #queue=gpu_p4 # Partition A100      
       [ "$gpus_per_node" = "" ] && gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible... Donc le max par defaut
+      if [ "$TRUST_USE_OPENMP" = 1 ]
+      then
+         cpus_per_task=10 # 1MPI<->1GPU
+      fi
       qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_gpu-dev && cpu=120 
       #qos=qos_gpu-t4 && cpu=6000
       [ "`id | grep aih`" != "" ] && project="aih@v100" # GENDEN

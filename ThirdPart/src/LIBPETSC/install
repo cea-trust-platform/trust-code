@@ -310,6 +310,7 @@ then
    export MPICH_FC=$OMPI_FC
    CUDAFLAGS="-O3 -ccbin $OMPI_CC"
    COPTFLAGS="-O3 -fPIC"
+   unset CPATH # Necessaire sur JeanZay
 fi
 
 ####################
@@ -677,10 +678,10 @@ do
    fi
 done
 cd $ROOT
-###########
-# Tests GPU
-###########
-if [ "$TRUST_USE_CUDA" = 1 ]
+#####################################
+# Tests GPU mais pas sur les clusters
+#####################################
+if [ "$TRUST_USE_CUDA" = 1 ] && [ "`sinfo --version 2>/dev/null`" = "" ]
 then
    $DIR/test_gpu #|| exit -1
 fi

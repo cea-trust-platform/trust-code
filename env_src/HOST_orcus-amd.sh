@@ -15,9 +15,14 @@ define_modules_config()
    gnu=1 # On continue a garder intel/intelmpi meme si aocc/hpcx plus scalable (voir avec AG)
    if [ "$TRUST_USE_CUDA" = 1 ]
    then
-      # Il est critique de mettre nvidia_hpc_sdk en premier car sinon undefined reference __pgi car dans LD_LIBRARY_PATH le lib de nvidia avant celui de gcc
-      module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.5 mais plante cuSolver (on teste sur altair)
-      module="slurm nvidia_hpc_sdk/21.2             compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.2
+      if [ "$TRUST_USE_OPENMP" = 1 ]
+      then
+         module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # ToDo test
+      else
+         # Il est critique de mettre nvidia_hpc_sdk en premier car sinon undefined reference __pgi car dans LD_LIBRARY_PATH le lib de nvidia avant celui de gcc
+         module="slurm nvidia_hpc_sdk/nvhpc-nompi/22.1 compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.5 mais plante cuSolver (on teste sur altair)
+         module="slurm nvidia_hpc_sdk/21.2             compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Cuda 11.2
+      fi
       #module=$module" cmake/3.22.0"
    elif [ $gnu = 1 ]
    then

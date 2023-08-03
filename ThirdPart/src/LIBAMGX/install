@@ -41,14 +41,9 @@ then
 
    # Compilers
    CXX=$TRUST_CC_BASE && [ "$TRUST_CC_BASE_EXTP" != "" ] && CXX=$TRUST_CC_BASE_EXTP
-   CC=$TRUST_cc_BASE  && [ "$TRUST_cc_BASE_EXTP" != "" ] && CC=$TRUST_cc_BASE_EXTP
+   CC=$TRUST_cc_BASE  && [ "$TRUST_cc_BASE_EXTP" != "" ] && CC=$TRUST_cc_BASE_EXTP && unset CPATH 
    AMGX_COMPILERS="-DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_FLAGS=-std=c++14" # See https://github.com/NVIDIA/AMGX for compilers...
-   if [ $TRUST_USE_OPENMP = 1 ]
-   then
-      AMGX_COMPILERS=$AMGX_COMPILERS" -DCMAKE_CXX_FLAGS=-fopenmp -DCMAKE_EXE_LINKER_FLAGS=-lomp"
-   else
-      AMGX_COMPILERS=$AMGX_COMPILERS" -DCMAKE_CXX_FLAGS=-fno-openmp" # Important de specifier car AmgX cherche OpenMP et cela pose des undefined reference omp au link des cas tests AmgXWrapper
-   fi
+   AMGX_COMPILERS=$AMGX_COMPILERS" -DCMAKE_CXX_FLAGS=-fno-openmp" # Important de specifier car AmgX cherche OpenMP par defaut
    # ToDo -DCUDA_ARCH="60;70;80" ou --gpu=all
    # -DCMAKE_CUDA_FLAGS=-L$CUDA_ROOT/lib64 regle le pb de (cannot find -lcudadevrt -lcudart_static) au configure pour le NVidia SDK
    # -DCUDA_TOOLKIT_ROOT_DIR=$CUDA_ROOT  changement de syntax pour cmake 3.18 -> 3.22 ?
@@ -86,19 +81,18 @@ then
    # On specifie CC et CXX:
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      #export CXX=$TRUST_CC_BASE_EXTP
-      #export CC=$TRUST_cc_BASE_EXTP
-      # Suite retour topaze:
+      export CXX=$TRUST_CC
+      export CC=$TRUST_cc
       export OMPI_CXX=$TRUST_CC_BASE_EXTP
       export OMPI_CC=$TRUST_cc_BASE_EXTP
       export MPICH_CXX=$OMPI_CXX
       export MPICH_CC=$OMPI_CC
+      unset CPATH
    else
       export CXX=$TRUST_CC
       export CC=$TRUST_cc
    fi
    CMAKE_FLAGS=" -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC"
-   [ $TRUST_USE_OPENMP = 1 ] && CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_EXE_LINKER_FLAGS=-lomp"
    CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CXX_FLAGS=-g -DCMAKE_CUDA_FLAGS=-g" # Pour debug
    # Configure and build:
    cmake $CMAKE_FLAGS -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_INSTALL_PREFIX=$AMGX_DIR/$LIB -DCMAKE_BUILD_TYPE=$BUILD -DBUILD_SHARED_LIBS=OFF .. && $TRUST_MAKE
@@ -112,10 +106,17 @@ then
    tests="poisson solveFromFiles"
    for test in $tests
    do
+      echo "Building $test test..."
       sed -i "1,$ s?# include <petsctime.h>??g" $ROOT/AmgXWrapper/example/$test/src/solve.cpp || exit -1
       mkdir -p $test && cd $test && cp $ROOT/AmgXWrapper/example/$test/README.md .
-      echo $CMAKE_FLAGS
-      cmake $CMAKE_FLAGS $ROOT/AmgXWrapper/example/$test && $TRUST_MAKE || exit -1
+      cmake $CMAKE_FLAGS $ROOT/AmgXWrapper/example/$test || exit -1
+      # On reprend les compilateurs de TRUST pour les tests (regle les pbs de link OMP)
+      if [ "$TRUST_CC_BASE_EXTP" != "" ]
+      then
+         MPICH_CXX=$TRUST_CC_BASE OMPI_CXX=$TRUST_CC_BASE $TRUST_MAKE || exit -1
+      else
+         $TRUST_MAKE || exit -1
+      fi
       cd ..
    done
    cd $ROOT && rm -r -f $LIB # On efface les sources ?

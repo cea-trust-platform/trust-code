@@ -35,7 +35,7 @@ run()
 
 # Liste des machines:
 [ $HOST = is157091 ] && run a6000 && run 1xa6000 2
-[ $HOST = petra ]    && run a5000 && run 2xa5000 2
+[ "`hostname`" = petra ] && run a5000 && run 2xa5000 2
 [ $HOST = is246827 ] && run a3000
 [ $HOST = fedora ]   && run a3000
 [ $HOST = topaze ]   && run a100   && run 4xa100 4   && run 8xa100 8 OpenMP_Iterateur_BENCH_AmgX_10

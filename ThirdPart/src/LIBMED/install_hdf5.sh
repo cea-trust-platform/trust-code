@@ -54,6 +54,7 @@ if [ "x$TRUST_USE_EXTERNAL_HDF" = "x" ]; then
      CXX=$TRUST_CC_BASE_EXTP
      CC=$TRUST_cc_BASE_EXTP
      FC=$TRUST_F77_BASE_EXTP
+     unset CPATH # Necessaire sur JeanZay
   else
      CXX=$TRUST_CC
      CC=$TRUST_cc
