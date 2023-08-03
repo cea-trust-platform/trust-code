@@ -272,7 +272,6 @@
  Dirichlet_homogene Dirichlet_homogene Dirichlet_homogene.h
  Dirichlet_loi_paroi Dirichlet_loi_paroi Dirichlet_loi_paroi.h
  Disable_TU Disable_TU Disable_TU.h
- Discretisation Discretisation Discretisation_base.h
  Discretisation_base Discretisation_base Discretisation_base.h
  Discretiser_domaine Discretiser_domaine Discretiser_domaine.h
  Discretiser|Discretize Discretiser Discretiser.h
@@ -293,7 +292,6 @@
  Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC Domaine_Cl_PolyMAC.h
  Domaine_Cl_VDF Domaine_Cl_VDF Domaine_Cl_VDF.h
  Domaine_Cl_VEF Domaine_Cl_VEF Domaine_Cl_VEF.h
- Domaine_Cl_VEFP1B Domaine_Cl_VEFP1B Domaine_Cl_VEFP1B.h
  Domaine_dis Domaine_dis Domaine_dis.h
  Domaine_dis_base Domaine_dis_base Domaine_dis_base.h
  Domaine_EF Domaine_EF Domaine_EF.h
@@ -304,7 +302,6 @@
  Domaine_Poly_base Domaine_Poly_base Domaine_Poly_base.h
  Domaine_VDF Domaine_VDF Domaine_VDF.h
  Domaine_VEF Domaine_VEF Domaine_VEF.h
- Domaine_VEFPreP1b Domaine_VEF_PreP1b Domaine_VEF_PreP1b.h
  Domaine_VF Domaine_VF Domaine_VF.h
  Domaine_VF_inst Domaine_VF_inst Domaine_VF_inst.h
  DP_Impose_Face_PolyMAC|DP_Impose_Face_PolyMAC_P0P1NC DP_Impose_PolyMAC_Face DP_Impose_PolyMAC_Face.h
@@ -738,19 +735,15 @@
  Op_Diff_VDF_Multi_inco_P0_VDF_Axi Op_Diff_VDF_Multi_inco_Elem_Axi Op_Diff_VDF_Elem_leaves.h
  Op_Diff_VDF_P0_VDF Op_Diff_VDF_Elem Op_Diff_VDF_Elem_leaves.h
  Op_Diff_VDF_P0_VDF_Axi Op_Diff_VDF_Elem_Axi Op_Diff_VDF_Elem_leaves.h
- Op_Diff_VEFANISOTROPE_var_P1NC Op_Diff_VEF_Anisotrope_Face Op_Diff_VEF_Anisotrope_Face.h
- Op_Diff_VEFBARPRIM_const_P1NC Op_Diff_P1NC_barprim Op_Diff_P1NC_barprim.h
- Op_Diff_VEFP1NCP1B_const_P1NC Op_Diff_VEFP1NCP1B_Face Op_Diff_VEFP1NCP1B_Face.h
- Op_Diff_VEFP1NCP1B_var_P1NC Op_Diff_VEFP1NCP1B_Face_Var Op_Diff_VEFP1NCP1B_Face_Var.h
- Op_Diff_VEFpenalise_const_P1NC Op_Diff_VEF_Face_Penalise Op_Diff_VEF_Face_Penalise.h
- Op_Diff_VEFSTAB_const_P1NC Op_Diff_VEF_Face_Stab Op_Diff_VEF_Face_Stab.h
- Op_Diff_VEFSTAB_var_P1NC Op_Diff_VEF_Face_Stab_Var Op_Diff_VEF_Face_Stab_Var.h
+ Op_Diff_VEFANISOTROPE_P1NC Op_Diff_VEF_Anisotrope_Face Op_Diff_VEF_Anisotrope_Face.h
+ Op_Diff_VEFBARPRIM_P1NC Op_Diff_P1NC_barprim Op_Diff_P1NC_barprim.h
+ Op_Diff_VEFP1NCP1B_P1NC Op_Diff_VEFP1NCP1B_Face Op_Diff_VEFP1NCP1B_Face.h
+ Op_Diff_VEFpenalise_P1NC Op_Diff_VEF_Face_Penalise Op_Diff_VEF_Face_Penalise.h
+ Op_Diff_VEFSTAB_P1NC Op_Diff_VEF_Face_Stab Op_Diff_VEF_Face_Stab.h
  Op_Diff_VEF_base Op_Diff_VEF_base Op_Diff_VEF_base.h
- Op_Diff_VEF_const_P1NC Op_Diff_VEF_Face Op_Diff_VEF_Face.h
- Op_Diff_VEF_const_Q1NC Op_Diff_VEF_Face_Q1 Op_Diff_VEF_Face_Q1.h
- Op_Diff_VEF_ROTROT_const_P1NC Op_Diff_RotRot Op_Diff_RotRot.h
- Op_Diff_VEF_var_P1NC Op_Diff_VEF_Face_Var Op_Diff_VEF_Face_Var.h
- Op_Diff_VEF_var_Q1NC Op_Diff_VEF_Face_Var_Q1 Op_Diff_VEF_Face_Var_Q1.h
+ Op_Diff_VEF_P1NC Op_Diff_VEF_Face Op_Diff_VEF_Face.h
+ Op_Diff_VEF_Q1NC Op_Diff_VEF_Face_Q1 Op_Diff_VEF_Face_Q1.h
+ Op_Diff_VEF_ROTROT_P1NC Op_Diff_RotRot Op_Diff_RotRot.h
  Op_Dift_EF_base Op_Dift_EF_base Op_Dift_EF_base.h
  Op_Dift_EF_Q1 Op_Dift_EF_Q1 Op_Dift_EF_Q1.h
  Op_Dift_EF_Q1_option Op_Dift_EF_Q1_option Op_Dift_EF_Q1.h
@@ -770,21 +763,17 @@
  Op_Dift_VDF_P0_VDF_Axi Op_Dift_VDF_Elem_Axi Op_Dift_VDF_Elem_leaves.h
  Op_Dift_VEF_base Op_Dift_VEF_base Op_Dift_VEF_base.h
  Op_Dift_VEF_P1NC Op_Dift_VEF_Face Op_Dift_VEF_Face.h
- Op_Dift_VEF_P1NCP1B_const_P1NC Op_Dift_VEF_P1NCP1B_Face Op_Dift_VEF_P1NCP1B_Face.h
+ Op_Dift_VEF_P1NCP1B_P1NC Op_Dift_VEF_P1NCP1B_Face Op_Dift_VEF_P1NCP1B_Face.h
  Op_Dift_VEF_P1NC_stab Op_Dift_Stab_VEF_Face Op_Dift_Stab_VEF_Face.h
  Op_Dift_VEF_P1NC_standard Op_Dift_standard_VEF_Face Op_Dift_standard_VEF_Face.h
  Op_Dift_VEF_Q1NC Op_Dift_VEF_Face_Q1 Op_Dift_VEF_Face_Q1.h
- Op_Dift_VEF_var_P1NC Op_Dift_VEF_Face_Var Op_Dift_VEF_Face_Var.h
- Op_Dift_VEF_Var_P1NC_stab Op_Dift_Stab_VEF_Face_Var Op_Dift_Stab_VEF_Face_Var.h
- Op_Dift_VEF_Var_P1NC_standard Op_Dift_standard_VEF_Face_Var Op_Dift_standard_VEF_Face_Var.h
  Op_Div_EF Op_Div_EF Op_Div_EF.h
  Op_Div_PolyMAC Op_Div_PolyMAC Op_Div_PolyMAC.h
  Op_Div_PolyMAC_P0 Op_Div_PolyMAC_P0 Op_Div_PolyMAC_P0.h
  Op_Div_PolyMAC_P0P1NC Op_Div_PolyMAC_P0P1NC Op_Div_PolyMAC_P0P1NC.h
  Op_Div_VDF_base Op_Div_VDF_base Op_Div_VDF_base.h
  Op_Div_VDF_Face Op_Div_VDF_Elem Op_Div_VDF_Elem.h
- Op_Div_VEFPreP1B_P1NC Op_Div_VEFP1B_Elem Op_Div_VEFP1B_Elem.h
- Op_Div_VEF_P1NC Op_Div_VEF_Elem Op_Div_VEF_Elem.h
+ Op_Div_VEFPreP1B_P1NC|Op_Div_VEF_P1NC Op_Div_VEFP1B_Elem Op_Div_VEFP1B_Elem.h
  Op_Ecart_type Op_Ecart_type Op_Ecart_type.h
  Op_Evanescence_Homogene_Elem_base Op_Evanescence_Homogene_Elem_base Op_Evanescence_Homogene_Elem_base.h
  Op_Evanescence_Homogene_Face_base Op_Evanescence_Homogene_Face_base Op_Evanescence_Homogene_Face_base.h
@@ -801,8 +790,7 @@
  Op_Grad_PolyMAC_P0_Face Op_Grad_PolyMAC_P0_Face Op_Grad_PolyMAC_P0_Face.h
  Op_Grad_VDF_Face Op_Grad_VDF_Face Op_Grad_VDF_Face.h
  Op_Grad_VDF_Face_base Op_Grad_VDF_Face_base Op_Grad_VDF_Face_base.h
- Op_Grad_VEFPreP1B_P1NC Op_Grad_VEF_P1B_Face Op_Grad_VEF_P1B_Face.h
- Op_Grad_VEF_P1NC Op_Grad_VEF_Face Op_Grad_VEF_Face.h
+ Op_Grad_VEFPreP1B_P1NC|Op_Grad_VEF_P1NC Op_Grad_VEF_P1B_Face Op_Grad_VEF_P1B_Face.h
  Op_Moyenne Op_Moyenne Op_Moyenne.h
  Op_Rot_VEFPreP1B_P1NC Op_Rot_VEFP1B Op_Rot_VEFP1B.h
  OrienteFacesBord OrienteFacesBord OrienteFacesBord.h
@@ -1239,9 +1227,7 @@
  Valeur_totale_sur_volume_VEF Champ_val_tot_sur_vol_VEF Champ_val_tot_sur_vol_VEF.h
  Value_Input_Int Value_Input_Int Value_Input_Int.h
  VDF VDF_discretisation VDF_discretisation.h
- VEF VEF_discretisation VEF_discretisation.h
- VEFPreP1B VEFPreP1B VEFPreP1B.h
- VEF_1D VEF_1D VEF_1D.h
+ VEFPreP1B|VEF VEF_discretisation VEF_discretisation.h
  VerifierCoin VerifierCoin VerifierCoin.h
  Verifier_Qualite_Raffinements Verifier_Qualite_Raffinements Verifier_Qualite_Raffinements.h
  Verifier_Simplexes Verifier_Simplexes Verifier_Simplexes.h
