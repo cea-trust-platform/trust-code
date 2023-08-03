@@ -37,11 +37,10 @@ linux	rsync_ssh	tache	pegasi3.intra.cea.fr	  	-all  		-GENEPI3 -TrioCFD -IJK-FT 
 linux	rsync_ssh	tache	pegasi5.intra.cea.fr				-TrioCFD -IJK-FT -SIDES -SCORPIO -TRUST_NK -FLICA5 -C3D 								-prof -force_provided_mpich -without-pdflatex 								# CentOS 7.9	pilote dm2s titania 
 linux   rsync_ssh	non	pegasi5-intel-build64.intra.cea.fr 	-all		-TrioCFD -IJK-FT   			-intel19 -build_64_bit -disable-plot2d -without-visit -without-pdflatex -force_system_mpi -disable-mpi4py  						# CentOS 7.9 
 linux	rsync_ssh	tache	pegasi6-coolprop-eos.intra.cea.fr		-all 		-FLICA5  						-force_latest_openmpi -coolprop -eos -without-visit  						# Ubuntu 20 pilote titania 
-linux	rsync_ssh	cible	is246145.intra.cea.fr		-all	 -GENEPI3 -FLICA5 -C3D   						-semi_opt -without-pdflatex   					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
+linux	rsync_ssh	cible	is246145.intra.cea.fr		-all	 -GENEPI3 -FLICA5 -C3D   						 -without-pdflatex -force_provided_openmpi    					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is246145-wopetsc.intra.cea.fr		-all	-TrioCFD -GENEPI3 -FLICA5 -C3D  					-disable-petsc -without-pdflatex					# CentOS 7.9	G+ Bat 451	bureau TMA TRUST titania
 linux	rsync_ssh	tache	is154727.intra.cea.fr		-all								-check-valgrind	-force_provided_mpich -without-pdflatex								# CentOS 7.9 titania 	Bat 451	LGLS	salle de formation
 linux	rsync_ssh	tache	is241483.intra.cea.fr		-all		-MPCube -TrioCFD -IJK-FT -SIDES -SCORPIO -GENEPI3 -TRUST_NK -FLICA5 -STT -PEMFC  			-force_latest_mpich -without-pdflatex -disable-mpi4py -without-visit   	                					# Debian 12 titania	Bat 451 LGLS	bureau Gilles
-linux	rsync_ssh	tache	is232971.intra.cea.fr				-TRUST -MPCube -PAREX+  -GENEPI3				-force_provided_openmpi  			# Fedora 26 titania 	Bat 451 LGLS	bureau Pierre LEDAC 
 linux	rsync_ssh	non	is221710.intra.cea.fr			-TRUST -MPCube -GENEPI3 				-force_provided_mpich -without-pdflatex 								# Fedora 24	Bat 454	LMEC	bureau Marc Elmo
 linux	rsync_ssh	non	is244400-c3d.intra.cea.fr	-all 			-GENEPI3 -C3D 						-for-c3d -disable-valgrind 						# Fedora 34	Bat 451 LMES titania 	
 linux	rsync_ssh	tache	is233137.intra.cea.fr		-all 		-TrioCFD -GENEPI3 -C3D -MPCube -FLICA5 -TRUST_NK -SIDES -SCORPIO   						 			  						# Ubuntu 22 pilote	Bat 451 LMSF titania 	bureau Michel

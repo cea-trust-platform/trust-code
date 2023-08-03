@@ -1108,7 +1108,7 @@ echo "###############################################"
 	      fi
 	   done
 	   cd $TRUST_ROOT
-	   git commit doc/.dico src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase TMA" --u=no 1>>$rebase_log 2>&1
+	   git commit doc/.dico Outils/TRIOXDATA/XTriou/syno.py src/MAIN/instancie_appel.h src/MAIN/instancie_appel_c.h -m"Commit in Kernel before git rebase TMA" --u=no 1>>$rebase_log 2>&1
 	   git rebase Livraison 1>>$rebase_log 2>&1
 	   rebase_error=$?
 	   if [ $rebase_error != 0 ]

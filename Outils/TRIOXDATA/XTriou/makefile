@@ -59,7 +59,7 @@ update_xd: test
 	touch update_xd
 	(cd ..; make)
 clean:
-	rm -f existepas.stop test doc.pdf doc_r.pdf triou.py *.pyc  syno.py gencl.py gencles.py gentriopy.py2 *.ver sed2 sedfile sedfile2 trace traces update_xd
+	rm -f existepas.stop test doc.pdf doc_r.pdf triou.py *.pyc  gencl.py gencles.py gentriopy.py2 *.ver sed2 sedfile sedfile2 trace traces update_xd
 	rm -f Keywords.txt TRAD_2
 	rm -rf doc_r doc menu
 	rm -rf __pycache__
