@@ -138,7 +138,9 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::operator=(const TRUSTArray& m)
 template<typename _TYPE_>
 inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
 {
+#ifdef _OPENMP
   this->checkDataOnHost();
+#endif
   assert(i >= 0 && i < size_array_);
   return data_[i];
 }
@@ -153,7 +155,9 @@ inline _TYPE_& TRUSTArray<_TYPE_>::operator[](int i)
 template<>
 inline double& TRUSTArray<double>::operator[](int i)
 {
+#ifdef _OPENMP
   this->checkDataOnHost();
+#endif
   assert(i >= 0 && i < size_array_);
   assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
   return data_[i];
@@ -163,7 +167,9 @@ inline double& TRUSTArray<double>::operator[](int i)
 template<typename _TYPE_>
 inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
 {
+#ifdef _OPENMP
   this->checkDataOnHost();
+#endif
   assert(i >= 0 && i < size_array_);
   return data_[i];
 }
@@ -172,7 +178,9 @@ inline const _TYPE_& TRUSTArray<_TYPE_>::operator[](int i) const
 template<>
 inline const double& TRUSTArray<double>::operator[](int i) const
 {
+#ifdef _OPENMP
   this->checkDataOnHost();
+#endif
   assert(i >= 0 && i < size_array_);
   assert(data_[i] > -DMAXFLOAT && data_[i] < DMAXFLOAT);
   return data_[i];

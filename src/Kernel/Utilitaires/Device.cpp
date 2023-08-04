@@ -42,9 +42,9 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
     }
   return devID;
 }
+#ifdef _OPENMP
 static double clock_start;
 static char* clock_on = NULL;
-#ifdef _OPENMP
 static bool init_openmp_ = false;
 // Set MPI processes to devices
 void init_openmp()
@@ -147,6 +147,7 @@ std::string toString(const void* adr)
 }
 
 // Timers pour OpenMP:
+#ifdef _OPENMP
 void start_timer(int bytes)
 {
   clock_on = getenv ("TRUST_CLOCK_ON");
@@ -177,6 +178,7 @@ void end_timer(int onDevice, const std::string& str, int bytes) // Return in [ms
       fflush(stdout);
     }
 }
+#endif
 
 // Allocate on device:
 template <typename _TYPE_>
