@@ -482,13 +482,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           const int * les_elems_addr = mapToDevice(les_elems);
           const double * facette_normales_addr = mapToDevice(facette_normales);
           const int * est_une_face_de_dirichlet_addr = mapToDevice(est_une_face_de_dirichlet_);
-          const double * vecteur_face_facette_addr = NULL;
-          const double * xp_addr = NULL;
-          if (getenv("TRUST_REMATERIALISATION")!=NULL)
-            xp_addr = mapToDevice(domaine_VEF.xp());
-          else
-            vecteur_face_facette_addr = mapToDevice(vecteur_face_facette);
-
+          const double * vecteur_face_facette_addr = mapToDevice(vecteur_face_facette);
           const double * xv_addr = mapToDevice(xv);
           const int *type_elem_Cl_addr = mapToDevice(type_elem_Cl_);
           const int * traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
@@ -674,25 +668,11 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                                 if (rang == -1)
                                   for (int j = 0; j < dimension; j++)
                                     {
-                                      double face_facette;
-                                      if (vecteur_face_facette_addr!=NULL)
-                                        face_facette = vecteur_face_facette_addr[((poly * nfa7 + fa7) * dimension + j) * 2 + dir];
-                                      else
-                                        {
-                                          // ToDo OpenMP bug:
-                                          double coord_centre_fa7 = xp_addr[poly * dimension + j];
-                                          for (int num_som_fa7=0; num_som_fa7<dimension-1; num_som_fa7++)
-                                            {
-                                              int isom_loc = KEL_addr[dimension * (num_som_fa7+2) + fa7];
-                                              int isom_glob = les_elems_addr[poly * nsom + isom_loc];
-                                              coord_centre_fa7 += coord_sommets_addr[isom_glob*dimension+j];
-                                            }
-                                          coord_centre_fa7 /= dimension;
-                                          int num_face = elem_faces_addr[poly*2+KEL_addr[dimension * dir + fa7]];
-                                          face_facette = coord_centre_fa7 - xv_addr[num_face * dimension + j];
-                                        }
-                                      inco_m += gradient_addr[(item_m * ncomp_ch_transporte + comp0) * dimension + j] * face_facette;
+                                      inco_m += gradient_addr[(item_m * ncomp_ch_transporte + comp0) * dimension +
+                                                              j] * vecteur_face_facette_addr[
+                                                  ((poly * nfa7 + fa7) * dimension + j) * 2 + dir];
                                     }
+
                                 else
                                   for (int j = 0; j < dimension; j++)
                                     {
