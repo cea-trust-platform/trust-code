@@ -31,8 +31,8 @@ extern std::string toString(const void* adr);
 extern void start_timer(int bytes=-1);
 extern void end_timer(int onDevice, const std::string& str, int bytes=-1);
 #else // Sinon inlining vide:
-inline void start_timer(int bytes=-1) {};
-inline void end_timer(int onDevice, const std::string& str, int bytes=-1) {};
+inline void start_timer(int bytes=-1) {}
+inline void end_timer(int onDevice, const std::string& str, int bytes=-1) {}
 #endif
 
 template <typename _TYPE_>
