@@ -150,5 +150,5 @@ void PolyMAC_P0_discretisation::residu( const Domaine_dis& z, const Champ_Inc& c
     }
 
   else
-    PolyMAC_discretisation::residu(z, ch_inco, champ);
+    PolyMAC_P0P1NC_discretisation::residu(z, ch_inco, champ);
 }
