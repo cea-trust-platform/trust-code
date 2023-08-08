@@ -23,7 +23,8 @@ using namespace CoolProp;
 void CoolProp_to_TRUST_Sat_generique::set_saturation_generique(const char *const model_name, const char *const fluid_name)
 {
 #ifdef HAS_COOLPROP
-  fluide = std::shared_ptr<AbstractState>(AbstractState::factory(std::string(model_name), std::string(fluid_name)));
+  fld_name_sat_ = std::string(fluid_name);
+  fluide = std::shared_ptr<AbstractState>(AbstractState::factory(std::string(model_name), fld_name_sat_));
 #else
   Cerr << "CoolProp_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the CoolProp library !!! " << finl;
   throw;
@@ -102,7 +103,13 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_single_sat_p__(SAT enum_prop, cons
       if (enum_prop == SAT::HL_SAT || enum_prop == SAT::HV_SAT) res[i] = fluide->hmass();
       if (enum_prop == SAT::RHOL_SAT || enum_prop == SAT::RHOV_SAT) res[i] = fluide->rhomass();
       if (enum_prop == SAT::CPL_SAT || enum_prop == SAT::CPV_SAT) res[i] = fluide->cpmass();
-      if (enum_prop == SAT::SIGMA && sigma_mano_<=0.) res[i] = fluide->surface_tension();
+      if (enum_prop == SAT::SIGMA  && sigma_mano_<=0.)
+        {
+          // soucis la avec plusieurs instance de factory abstract_state
+//          res[i] = fluide->surface_tension();
+          const int ph_ = is_liq ? 0 : 1;
+          res[i] = CoolProp::PropsSI("surface_tension", "P", P[i], "Q", ph_, fld_name_sat_);
+        }
       else if (enum_prop == SAT::SIGMA && sigma_mano_>0.) res[i] = sigma_mano_;
     }
   return 0; // FIXME : on suppose que tout OK
@@ -186,7 +193,14 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
         Ts__[i] = fluide->T();
         Hls__[i] = fluide->hmass();
-        if (sigma_mano_<=0.) Sigma__[i] = fluide->surface_tension();
+        if (sigma_mano_<=0.)
+        {
+          // soucis la avec plusieurs instance de factory abstract_state
+//          Sigma__[i] = fluide->surface_tension();
+          const int ph_ = is_liq ? 0 : 1;
+          Sigma__[i] = CoolProp::PropsSI("surface_tension", "P", P[i], "Q", ph_, fld_name_sat_);
+        }
+
         else if (sigma_mano_>0.) Sigma__[i] = sigma_mano_;
 
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
@@ -230,7 +244,13 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
           Ts_[i] = fluide->T();
           Hls_[i] = fluide->hmass();
-          if (sigma_mano_<=0.) Sigma_[i] = fluide->surface_tension();
+        if (sigma_mano_<=0.)
+        {
+          // soucis la avec plusieurs instance de factory abstract_state
+//          Sigma_[i] = fluide->surface_tension();
+          const int ph_ = is_liq ? 0 : 1;
+          Sigma_[i] = CoolProp::PropsSI("surface_tension", "P", P[i], "Q", ph_, fld_name_sat_);
+        }
           else if (sigma_mano_>0.) Sigma_[i] = sigma_mano_;
 
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units

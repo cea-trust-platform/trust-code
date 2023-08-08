@@ -52,6 +52,7 @@ private:
   int tppi_get_single_sat_p__(SAT , const SpanD , SpanD , bool is_liq = true) const;
   int FD_derivative_p(SAT , const SpanD , SpanD , bool is_liq = true) const;
   double sigma_mano_ = -1.;
+  std::string fld_name_sat_ = "NONE";
 };
 
 #endif /* CoolProp_to_TRUST_Sat_generique_included */
