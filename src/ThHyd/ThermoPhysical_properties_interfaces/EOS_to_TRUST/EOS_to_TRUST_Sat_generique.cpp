@@ -159,7 +159,7 @@ int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(cons
           SAT prop_ = itr.first;
           SpanD span_ = itr.second;
           assert(ncomp * (int )P.size() == (int )span_.size());
-          if (prop_ != SAT::LV_SAT && prop_ != SAT::LV_SAT_DP)
+          if (prop_ != SAT::LV_SAT && prop_ != SAT::LV_SAT_DP && !( prop_ == SAT::SIGMA && sigma_mano_ > 0. ))
             flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) prop_][0], EOS_prop_sat[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
         }
       err_ = (int)fluide->compute(P_fld, flds_out, ferr);
@@ -169,6 +169,7 @@ int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(cons
         {
           Lvap__[i] = Hvs__[i] - Hls__[i];
           dPLvap__[i] = dPHvs__[i] - dPHls__[i];
+          if (sigma_mano_>0) Sigma__[i] = sigma_mano_;
         }
     }
   else /* attention stride */
@@ -187,7 +188,8 @@ int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(cons
         {
           SAT prop_ = itr.first;
           SpanD span_ = itr.second;
-          flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) prop_][0], EOS_prop_sat[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
+          if (!( prop_ == SAT::SIGMA && sigma_mano_ > 0. ))
+            flds_out[i_out++] = EOS_Field(EOS_prop_sat[(int) prop_][0], EOS_prop_sat[(int) prop_][1], (int) span_.size(), (double*) span_.begin());
         }
 
       err_ = (int)fluide->compute(P_fld, flds_out, ferr);
