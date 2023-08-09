@@ -73,25 +73,29 @@ void Loi_paroi_base::completer()
 
 void Loi_paroi_base::mettre_a_jour(double temps)
 {
-  const DoubleTab& vit = pb_->get_champ("vitesse").passe();
-  const DoubleTab& nu  = ref_cast(Navier_Stokes_std, pb_->equation(0)).diffusivite_pour_pas_de_temps().passe();
-  calc_y_plus(vit, nu);
-
-  if (sub_type(QDM_Multiphase, pb_->equation(0)) && pb_->has_champ("y_plus"))
+  if (temps > tps_loc)
     {
-      Domaine_VF& domaine = ref_cast(Domaine_VF, pb_.valeur().domaine_dis().valeur());
-      const IntTab& f_e = domaine.face_voisins();
-      int nf_tot = domaine.nb_faces_tot();
-      DoubleTab& y_p = valeurs_loi_paroi_["y_plus"], &y_p_e = valeurs_loi_paroi_["y_plus_elem"];
-      for (int f = 0 ; f < nf_tot ; f ++)
-        if (Faces_a_calculer_(f,0)==1)
-          {
-            int c = (f_e(f,0)>=0) ? 0 : 1 ;
-            if (f_e(f, (c==0) ? 1 : 0 ) >= 0) Process::exit("Error in the definition of the boundary conditions for wall laws");
-            int e = f_e(f,c);
-            y_p_e(e,0) = y_p(f,0);
-          }
-      ref_cast(QDM_Multiphase, pb_->equation(0)).update_y_plus(y_p_e);
+      const DoubleTab& vit = pb_->get_champ("vitesse").passe();
+      const DoubleTab& nu  = ref_cast(Navier_Stokes_std, pb_->equation(0)).diffusivite_pour_pas_de_temps().passe();
+      calc_y_plus(vit, nu);
+
+      if (sub_type(QDM_Multiphase, pb_->equation(0)) && pb_->has_champ("y_plus"))
+        {
+          Domaine_VF& domaine = ref_cast(Domaine_VF, pb_.valeur().domaine_dis().valeur());
+          const IntTab& f_e = domaine.face_voisins();
+          int nf_tot = domaine.nb_faces_tot();
+          DoubleTab& y_p = valeurs_loi_paroi_["y_plus"], &y_p_e = valeurs_loi_paroi_["y_plus_elem"];
+          for (int f = 0 ; f < nf_tot ; f ++)
+            if (Faces_a_calculer_(f,0)==1)
+              {
+                int c = (f_e(f,0)>=0) ? 0 : 1 ;
+                if (f_e(f, (c==0) ? 1 : 0 ) >= 0) Process::exit("Error in the definition of the boundary conditions for wall laws");
+                int e = f_e(f,c);
+                y_p_e(e,0) = y_p(f,0);
+              }
+          ref_cast(QDM_Multiphase, pb_->equation(0)).update_y_plus(y_p_e);
+        }
+      tps_loc = temps;
     }
 }
 

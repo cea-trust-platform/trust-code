@@ -48,6 +48,7 @@ protected:
 
   IntTab Faces_a_calculer_;
   std::map<std::string, DoubleTab> valeurs_loi_paroi_; // contient "y_plus", "u_tau" pour toutes les faces
+  double tps_loc = -1.e8;
 };
 
 #endif
