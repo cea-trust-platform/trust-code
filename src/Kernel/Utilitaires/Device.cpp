@@ -66,13 +66,13 @@ void init_openmp()
   else
     globalWorld = MPI_COMM_WORLD;
   MPI_Comm_split_type(globalWorld, MPI_COMM_TYPE_SHARED, 0, MPI_INFO_NULL, &localWorld);
-  int rank; // Local rank
+  True_int rank; // Local rank
   MPI_Comm_rank(localWorld, &rank);
-  int nRanks; // Local number of ranks
+  True_int nRanks; // Local number of ranks
   MPI_Comm_size(localWorld, &nRanks);
   // Node name:
-  int     len;
-  char    name[MPI_MAX_PROCESSOR_NAME];
+  True_int len;
+  char name[MPI_MAX_PROCESSOR_NAME];
   MPI_Get_processor_name(name, &len);
   std::string nodeName = name;
   int nDevs = omp_get_num_devices(); // Local number of devices
