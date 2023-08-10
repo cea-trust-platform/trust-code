@@ -35,7 +35,7 @@ then
 fi
 
 # Build sans OpenMP et avec backend host si rocm pas installe:
-SUPPORT_HIP=ON && [ "$ROCM_PATH" = "" ]        && SUPPORT_HIP=OFF && echo "Warning, ROCm non installe donc pas de support GPU."
+SUPPORT_HIP=ON && [ "$TRUST_USE_ROCM" != 1 ]   && SUPPORT_HIP=OFF && echo "Warning, ROCm non installe donc pas de support GPU."
 SUPPORT_MPI=ON && [ "$TRUST_DISABLE_MPI" = 1 ] && SUPPORT_MPI=OFF
 # Optimisation possible sur GPU (page 73 de la doc rocALUTION). faster transfers over the PCI-Express and llows asynchronous data movement
 sed -i "1,$ s?#ifdef ROCALUTION_HIP_PINNED_MEMORY?#ifndef ROCALUTION_HIP_PINNED_MEMORY?g" src/base/hip/hip_allocate_free.cpp || exit -1

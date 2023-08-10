@@ -537,8 +537,9 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   bool debug = b.size_array() < 100;
   if (debug)
     {
-      Journal() << "pm.GetLocalNrow()=" << pm.GetLocalNrow() << " <> b.size_array()=" << b.size_array() << finl;
-      Journal() << "mat.GetN()=" << mat.GetN() << " mat.GetLocalN()=" << mat.GetLocalN() << " mat.GetGhostN()=" << mat.GetGhostN() << finl;
+      // PL: (int) necessaire pour int64
+      Journal() << "pm.GetLocalNrow()=" << (int)pm.GetLocalNrow() << " <> b.size_array()=" << b.size_array() << finl;
+      Journal() << "mat.GetN()=" << mat.GetN() << " mat.GetLocalN()=" << (int)mat.GetLocalN() << " mat.GetGhostN()=" << (int)mat.GetGhostN() << finl;
     }
   // Build rhs and initial solution:
   tick = rocalution_time();
@@ -832,11 +833,11 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
           first_element_dest += size;
         }
       const int *bnd = renum_items_to_send_.addr();
-      pm.SetBoundaryIndex(boundary_nnz, bnd);
+      pm.SetBoundaryIndex(boundary_nnz, (True_int*)bnd);
       int neighbors = md.pe_voisins_.size_array();
       const int *recv = md.pe_voisins_.addr();
 
-      std::vector<int> recv_offset;
+      std::vector<True_int> recv_offset;
       int offset = 0;
       recv_offset.push_back(offset);
       // items virtuels communs:
@@ -855,18 +856,18 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
             }
           recv_offset.push_back(offset);
         }
-      pm.SetReceivers(neighbors, recv, &recv_offset[0]);
+      pm.SetReceivers(neighbors, (True_int*)recv, &recv_offset[0]);
       const int *sender = md.pe_voisins_.addr();
       const int *send_offset = md.items_to_send_.get_index().addr();
-      pm.SetSenders(neighbors, sender, send_offset);
+      pm.SetSenders(neighbors, (True_int*)sender, (True_int*)send_offset);
       if (debug) pm.WriteFileASCII("pm");
     }
 
   // Fill the GlobalMatrix:
   mat.SetParallelManager(pm);
 
-  int* row_offset = new int[tab1_c.size()];
-  int* col = new int[tab2_c.size()];
+  True_int* row_offset = new True_int[tab1_c.size()];
+  True_int* col = new True_int[tab2_c.size()];
   double* val = new double[coeff_c.size()];
   std::copy(tab1_c.begin(), tab1_c.end(), row_offset);
   std::copy(tab2_c.begin(), tab2_c.end(), col);
@@ -874,8 +875,8 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   mat.SetLocalDataPtrCSR(&row_offset, &col, &val, "mat", (int)coeff_c.size());
   if (Process::nproc()>1)
     {
-      row_offset = new int[ghost_tab1_c.size()];
-      col = new int[ghost_tab2_c.size()];
+      row_offset = new True_int[ghost_tab1_c.size()];
+      col = new True_int[ghost_tab2_c.size()];
       val = new double[ghost_coeff_c.size()];
       std::copy(ghost_tab1_c.begin(), ghost_tab1_c.end(), row_offset);
       std::copy(ghost_tab2_c.begin(), ghost_tab2_c.end(), col);

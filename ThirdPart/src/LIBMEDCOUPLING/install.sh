@@ -62,13 +62,14 @@ USE_MPI=ON && [ "$TRUST_DISABLE_MPI" -eq 1 ] && USE_MPI=OFF
 # NO_CXX1 pour cygwin
 OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
 USE_PYTHON=ON # API Python
+CXX=$TRUST_CC
+CC=$TRUST_cc
 if [ "$TRUST_CC_BASE_EXTP" != "" ]
 then
-   CXX=$TRUST_CC_BASE_EXTP
-   CC=$TRUST_cc_BASE_EXTP
-else
-   CXX=$TRUST_CC
-   CC=$TRUST_cc
+   OMPI_CXX=$TRUST_CC_BASE_EXTP
+   OMPI_CC=$TRUST_cc_BASE_EXTP
+   MPICH_CXX=$OMPI_CXX
+   MPICH_CC=$OMPI_CC
 fi
 export CXXFLAGS=-Wno-narrowing
 if [[ $USE_PYTHON == ON && $(uname -s) == "Darwin" ]]
