@@ -123,7 +123,7 @@ protected :
   int add_option(const Nom& option, const Nom& value, int cli = 0);
   void add_amgx_option(const Nom& key, const Nom& value, const std::string& comment="");
   void add_amgx_option(const Nom& key_value);
-  void SaveObjectsToFile();
+  void SaveObjectsToFile(const DoubleVect& b, DoubleVect& x);
   void RestoreMatrixFromFile();
   int compute_nb_rows_petsc(int);
 

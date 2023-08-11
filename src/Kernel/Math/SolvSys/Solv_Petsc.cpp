@@ -1421,7 +1421,7 @@ void sortie_maple(Sortie& s, const Matrice_Morse& M)
 }
 
 // Save Matrix and RHS in a .petsc or .mtx (matrix market) file:
-void Solv_Petsc::SaveObjectsToFile()
+void Solv_Petsc::SaveObjectsToFile(const DoubleVect& secmem, DoubleVect& solution)
 {
   double start = Statistiques::get_time_now();
   if (save_matrix_==1)
@@ -1499,6 +1499,18 @@ void Solv_Petsc::SaveObjectsToFile()
       for (int row=0; row<rows; row++)
         for (int j=ia[row]; j<ia[row+1]; j++)
           mtx << row+1 << " " << (int)ja[j]+1 << " " << v[j] << finl;
+      // Sauve b au format matrix market
+      filename = Objet_U::nom_du_cas();
+      filename += "_rhs";
+      filename += (Nom) instance;
+      filename += ".mtx";
+      SFichier rhs_mtx(filename);
+      rhs_mtx.precision(14);
+      rhs_mtx.setf(ios::scientific);
+      rhs_mtx << "%%MatrixMarket matrix array real general" << finl;
+      rhs_mtx << secmem.size_array() << " " << secmem.line_size() << finl;
+      for (int row=0; row<rows; row++)
+        rhs_mtx << secmem(row) << finl;
       // Provisoire: sauve un vector Petsc au format ASCII pour le RHS
       if (SecondMembrePetsc_!=NULL)
         {
@@ -1773,7 +1785,7 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
   Update_vectors(secmem, solution);
 
   // Save the matrix and the RHS if the matrix has changed...
-  if (nouvelle_matrice() && save_matrix_) SaveObjectsToFile();
+  if (nouvelle_matrice() && save_matrix_) SaveObjectsToFile(secmem, solution);
 
   //////////////////////////
   // Solve the linear system
