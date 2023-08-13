@@ -1,8 +1,4 @@
 Actuellement, on utilise les versions:
-AmgX 		6dba8067c (janv 2021).
-AmgXWrapper 	331eba32d
-
-On a dans la branche ledac/amgx_update une version 2.3.0 de AmgX avec support CUDA 11.4 (mais validation a faire de cette branche)
-Peut etre que la fiche GPU est a rendre sequentielle et les cas tests de NR en // cela serait plus rapide (et moins d'écarts non deterministes?)
+Faire un PR du portage int64 dans AmgXWrapper officiel ou un fork ?
 Le probleme valgrind existe toujours
-Le crash dans cudense c'est quand la carte est trop chargee...
+

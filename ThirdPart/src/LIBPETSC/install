@@ -268,7 +268,8 @@ with_packages=""
 ################
 # GPU support? #
 ################
-if [ "$TRUST_USE_CUDA" = 1 ]
+[ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_INT64" = 1 ] && echo "WARNING, PETSc GPU support is not enabled in TRUST with int64: ToDo use a more recent PETSc version..."
+if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_INT64" != 1 ]
 then
    echo "****************************************"
    echo "TRUST_USE_CUDA=$TRUST_USE_CUDA"
@@ -597,7 +598,7 @@ do
    --with-single-library --with-shared-libraries=0 --with-make-np=$TRUST_NB_PROCS \
    --with-debugging=$debug --with-errorchecking=1 \
    --COPTFLAGS="$COPTFLAGS" --CXXOPTFLAGS="$CXXOPTFLAGS" --FOPTFLAGS="$FOPTFLAGS" \
-   --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++11 \
+   --with-fortran=yes --with-fortran-bindings=0 --with-cxx-dialect=C++14 \
    "$LIBS" \
    --with-clean=1 \
    --with-ssl=0 \

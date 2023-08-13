@@ -8,7 +8,7 @@
  *            This project is released under MIT License.
  */
 
-#ifdef TRUST_USE_CUDA
+
 # pragma once
 
 // CUDA
@@ -168,7 +168,7 @@ class AmgXSolver
             const PetscInt* rowOffsets,
             const PetscInt* colIndicesGlobal,
             const PetscScalar* values,
-            const PetscInt* partData);
+            const int* partData);
 
 
         /** \brief Re-sets up an existing AmgX matrix.
@@ -217,10 +217,11 @@ class AmgXSolver
          * \param p [in, out] The unknown array.
          * \param b [in] The RHS array.
          * \param nRows [in] The number of rows in this rank.
+         * \param tolerance [in] Convergence tolerance
          *
          * \return PetscErrorCode.
          */
-        PetscErrorCode solve(PetscScalar *p, const PetscScalar *b, const int nRows, const double seuil);
+        PetscErrorCode solve(PetscScalar *p, const PetscScalar *b, const int nRows, const double tolerance=0);
 
 
         /** \brief Get the number of iterations of the last solving.
@@ -372,7 +373,7 @@ class AmgXSolver
         PetscErrorCode consolidateMatrix(
             const PetscInt nLocalRows,
             const PetscInt nLocalNz,
-            const PetscInt *rowOffsets,
+            const int *rowOffsets,
             const PetscInt *colIndicesGlobal,
             const PetscScalar *values);
 
@@ -415,7 +416,7 @@ class AmgXSolver
         int nConsRows = 0;
 
         /** \brief The row offsets consolidated onto a single device.*/
-        PetscInt *rowOffsetsCons = nullptr;
+        int *rowOffsetsCons = nullptr;
 
         /** \brief The global column indices consolidated onto a single device.*/
         PetscInt *colIndicesGlobalCons = nullptr;
@@ -556,7 +557,7 @@ class AmgXSolver
          * \return PetscErrorCode.
          */
         PetscErrorCode getLocalMatRawData(const Mat &localA,
-                PetscInt &localN, std::vector<PetscInt> &row,
+                PetscInt &localN, std::vector<int> &row,
                 std::vector<PetscInt64> &col, std::vector<PetscScalar> &data);
 
 
@@ -582,7 +583,7 @@ class AmgXSolver
          * \return PetscErrorCode.
          */
         PetscErrorCode checkForContiguousPartitioning(
-            const IS &devIS, PetscBool &isContiguous, std::vector<PetscInt> &partOffsets);
+            const IS &devIS, PetscBool &isContiguous, std::vector<int> &partOffsets);
 
         /** \brief Get partition data required by AmgX.
          *
@@ -595,7 +596,7 @@ class AmgXSolver
          * \return PetscErrorCode.
          */
         PetscErrorCode getPartData(const IS &devIS,
-                const PetscInt &N, std::vector<PetscInt> &partData, PetscBool &usesOffsets);
+                const PetscInt &N, std::vector<int> &partData, PetscBool &usesOffsets);
 
 
         /** \brief Function that actually solves the system.
@@ -611,4 +612,3 @@ class AmgXSolver
          */
         PetscErrorCode solve_real(Vec &p, Vec &b);
 };
-#endif

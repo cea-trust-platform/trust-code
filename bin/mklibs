@@ -41,10 +41,18 @@ then
       if [ -f $petscmachineinfo ]
       then
          # CUDA trouve et qui fonctionne sur la machine (test fait dans $PETSC_ROOT/GPU)
-         # -lnvToolsExt: ajoute suite undefined reference sur cobalt
          if [ "$TRUST_USE_CUDA" = 1 ]
          then
-            PETSC=$PETSC" `awk -v LINK_CUDA=$LINK_CUDA '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) {if (index($i,"/cuda")) libs=libs" "$i;if (index($i,"-lcu")) libs=libs" "$i""LINK_CUDA;}} END {print libs" -lnvToolsExt"}' $petscmachineinfo`"
+            PETSC=$PETSC" `awk -v LINK_CUDA=$LINK_CUDA '/Using libraries/ && /cuda/ { for (i=1;i<=NF;i++) {if (index($i,"/cuda")) libs=libs" "$i;if (index($i,"-lcu")) libs=libs" "$i""LINK_CUDA;}} END {print libs}' $petscmachineinfo`"
+            # Si PETSc n'avait pas le support Cuda active, on essaie d'ajouter les librairies necessaires:
+            if [ "`echo $PETSC | grep lcuda`" = "" ]
+            then
+	       # ToDo comme dans install de AmgX et PETSc, factoriser dans configure_env la recherche de CUDA_MATH
+               PETSC=$PETSC" -L$CUDA_ROOT/lib64 -L$CUDA_ROOT/stubs -L`echo $CUDA_ROOT | sed '1,$ s?/cuda?/math_libs?g'`/lib64 -lcudart -lcublas -lcublasLt -lcufft -lcusparse -lcusolver"
+            fi   
+            # -lnvToolsExt: ajoute suite undefined reference sur cobalt:
+            PETSC=$PETSC" -lnvToolsExt"
+            # En statique:
             [ "$LINK_CUDA" = _static ] && PETSC=$PETSC" -lcublasLt_static -lculibos -lrt"
          fi
          # PETSc with X11:

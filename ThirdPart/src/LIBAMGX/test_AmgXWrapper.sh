@@ -1,4 +1,5 @@
 #!/bin/bash
+[ ! -f $TRUST_ROOT/lib/src/LIBAMGX/AmgXWrapper/example/poisson/bin/poisson ] && exit 0 
 cd $TRUST_ROOT/lib/src/LIBAMGX/AmgXWrapper/example/poisson
 # Test valgrind:
 #[ "$TRUST_WITHOUT_HOST" = 1 ] && valgrind bin/poisson -caseName valgrind -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx 2 -Ny 2 -Nz 2
@@ -16,6 +17,7 @@ exec=bin/poisson trust -gpu dummy 4 -caseName   PETSc_GAMG_$name -mode PETSc    
    # portable   GTX 1050 Ti      2.1	11.1	11.2	9.3.0   OpenMPI 4.0.3		2.07s	0.46s
    # is240831	P2000		 3.0	10.1	10.1	7.5.0	MPICH 3.2		1.72s   0.30s
    # irene	P100-PCIE-12Go	10.6	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.16s	0.11s
+   # portable   A3000           ?       11.6    11.6   10.4.0   MPICH                   1.13s   0.10s
    # irene	V100									1.02s	0.050s (1.9.1)
    # cobalt	P100-PCIE-16Go	14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		1.35s	0.08s
    # cobalt     V100 ?		14.1	10.2	10.2	7.3.0	OpenMPI 2.0.4		?	?
