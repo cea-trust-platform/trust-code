@@ -75,22 +75,21 @@ then
    # Hack pour empecher le test des binaires qui ne marche pas cluster (un binaire PETSc compile avec CUDA plantera sur la frontale non gpu)
    sed -i "1,$ s?endif (\${\${runs}})??" AmgXWrapper/cmake-modules/FindPETSc.cmake
    sed -i "1,$ s?if (\${\${runs}})??"    AmgXWrapper/cmake-modules/FindPETSc.cmake
+   # Hack pour int64:
+   cp -R patch_AmgXWrapper/* AmgXWrapper
    cd $LIB && rm -r -f build && mkdir -p build && cd build
    BUILD=RELEASE
    #BUILD=DEBUG
    # On specifie CC et CXX:
+   export CXX=$TRUST_CC
+   export CC=$TRUST_cc
    if [ "$TRUST_CC_BASE_EXTP" != "" ]
    then
-      export CXX=$TRUST_CC
-      export CC=$TRUST_cc
       export OMPI_CXX=$TRUST_CC_BASE_EXTP
       export OMPI_CC=$TRUST_cc_BASE_EXTP
       export MPICH_CXX=$OMPI_CXX
       export MPICH_CC=$OMPI_CC
       unset CPATH
-   else
-      export CXX=$TRUST_CC
-      export CC=$TRUST_cc
    fi
    CMAKE_FLAGS=" -DCMAKE_CUDA_COMPILER=$TRUST_NVCC -DCUDA_DIR=$CUDA_ROOT -DAMGX_DIR=$AMGX_DIR/AmgX -DCMAKE_CUDA_HOST_COMPILER=$CC -DCMAKE_CUDA_FLAGS=-fPIC -DCMAKE_CXX_FLAGS=-fPIC"
    CMAKE_FLAGS=$CMAKE_FLAGS" -DCMAKE_CXX_FLAGS=-g -DCMAKE_CUDA_FLAGS=-g" # Pour debug
