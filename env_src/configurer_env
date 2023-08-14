@@ -1613,36 +1613,6 @@ fi
 # If a package has not been correctly installed, we exit with an error
 [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep ' pip' $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 
-################################################
-# Checking the size of type 'long' for BUILD64 #
-################################################
-if [ "$TRUST_INT64" = "1" ]
-then
-   echo '#include <iostream>
-using namespace std;
-int main() {
-   cout<<"Size of int is "<<sizeof(int)<<" bytes"<<endl;
-   cout<<"Size of long is "<<sizeof(long)<<" bytes"<<endl;
-   return sizeof(long);
-}' > test_size_long.cpp
-   $TRUST_CC -o test_size_long.out test_size_long.cpp
-   ./test_size_long.out  1>/dev/null
-   sizeoflong=$?
-   if [ "$sizeoflong" != 8 ]
-   then
-      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : No "  | tee -a $env
-      echo "Fatal error: it seems that sizeoflong = $sizeoflong which is not 8 bytes"
-      echo "You cannot unfortunately build 64-bit indices version of TRUST."
-      # It could perhaps be possible to replace int by long long instead of long"
-      echo "Contact TRUST support at trust@cea.fr"
-      # We do not display missing packages
-      exit -1;
-   else
-      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : Yes "  | tee -a $env
-      rm test_size_long.out test_size_long.cpp
-   fi
-fi
-
 
 ########################
 # Installation de astyle
@@ -1792,6 +1762,7 @@ case $TRUST_ARCH_CC in
         SYSLIBS=$SYSLIBS" ${PE_MPICH_GTL_DIR_amd_gfx90a} ${PE_MPICH_GTL_LIBS_amd_gfx90a}" # Librairie GTL necessaire pour activer GPU-Direct
         F77Flags="-O3 -fPIC"
         F77Flags="-O1 -fPIC" # Sinon _dger_ undefined reference dans dlsode.f !
+        [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -default64"
         ccFLAGS="-O3 -fPIC"
         ShLibFlag="\$(TRUST_CC) -shared"
 	;;
@@ -1811,7 +1782,7 @@ case $TRUST_ARCH_CC in
         #CppFlags=$CppFlags" -Minfo=accel -Minfo=mp -Minfo=loop" # Info au build ou NVCOMPILER_ACC_NOTIFY ?
         #CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte bcp de choses: ToDo OpenMP
         SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
-        F77Flags="-O3 -fPIC -noswitcherror"
+        F77Flags="-O3 -fPIC -noswitcherror" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
         ccFLAGS="-O3 -fPIC -noswitcherror"
         ShLibFlag="\$(TRUST_CC) -shared"
     ;;
@@ -1923,6 +1894,49 @@ else
    echo "Error, check your $FC compiler." && exit -1
 fi
 m="# MUMPS will be used ?";e="TRUST_USE_MUMPS=\"$TRUST_USE_MUMPS\" && export TRUST_USE_MUMPS";ecrit $m"|"$e"|"$env
+
+##########################
+# Teste le support 64 bits
+##########################
+if [ "$TRUST_INT64" = "1" ]
+then
+   echo '#include <iostream>
+using namespace std;
+int main() {
+   cout<<"Size of int is "<<sizeof(int)<<" bytes"<<endl;
+   cout<<"Size of long is "<<sizeof(long)<<" bytes"<<endl;
+   return sizeof(long);
+}' > test_size_long.cpp
+   $TRUST_CC -o test_size_long.out test_size_long.cpp
+   ./test_size_long.out  1>/dev/null
+   sizeoflong=$?
+   if [ "$sizeoflong" != 8 ]
+   then
+      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : No "  | tee -a $env
+      echo "Fatal error: it seems that sizeoflong = $sizeoflong which is not 8 bytes"
+      echo "You cannot unfortunately build 64-bit indices version of TRUST."
+      # It could perhaps be possible to replace int by long long instead of long"
+      echo "Contact TRUST support at trust@cea.fr"
+      # We do not display missing packages
+      exit -1;
+   else
+      echo "# Does the TRUST_CC compiler accept a 64-bit-indices ? : Yes "  | tee -a $env
+      rm test_size_long.out test_size_long.cpp
+   fi
+   # Check Fortran flags...
+   echo '
+      program main
+      integer i
+      call EXIT(storage_size(i))
+      end' > test_integer.f
+   $TRUST_F77_BASE $F77Flags -o test_integer test_integer.f && ./test_integer
+   if [ $? != 64 ]
+   then
+      echo "Error ! F77Flags=$F77Flags is not enough to convert Fortran integer type to 64 bits integer." 
+      exit -1
+   fi  
+   rm -f test_integer.f test_integer
+fi
 
 ####################################
 # Test le support optimization AVX #

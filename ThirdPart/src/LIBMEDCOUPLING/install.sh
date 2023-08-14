@@ -64,7 +64,7 @@ OPTIONS="$OPTIONS -DNO_CXX11_SUPPORT=OFF"
 USE_PYTHON=ON # API Python
 CXX=$TRUST_CC
 CC=$TRUST_cc
-if [ "$TRUST_CC_BASE_EXTP" != "" ]
+if [ "$TRUST_CC_BASE_EXTP" != "" ] && [ "`basename $TRUST_CC_BASE`" != crayCC ] # Sur adastra GNU ici ne marche pas...
 then
    OMPI_CXX=$TRUST_CC_BASE_EXTP
    OMPI_CC=$TRUST_cc_BASE_EXTP
