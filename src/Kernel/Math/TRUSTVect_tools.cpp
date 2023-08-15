@@ -224,7 +224,11 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
           if (IS_MULT) p_resu *= x;
           if (IS_EGAL) p_resu = x;
           if (IS_NEGATE) p_resu = -p_resu;
+#if defined(INT_is_64_) && defined(__NVCOMPILER) // Bug compilateur nvc++ std::abs(long) plante...
+          if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,int>::value ? std::abs((long long)p_resu) : std::fabs(p_resu));
+#else
           if (IS_ABS) p_resu = (_TYPE_) (std::is_same<_TYPE_,int>::value ? std::abs(p_resu) : std::fabs(p_resu));
+#endif
           if (IS_RACINE_CARRE) p_resu = (_TYPE_) sqrt(p_resu);  // _TYPE_ casting just to pass 'int' instanciation of the template wo triggering -Wconversion warning
           if (IS_CARRE) p_resu *= p_resu;
 
@@ -339,8 +343,13 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
               #pragma omp target teams distribute parallel for reduction(max:min_max_val)
               for (int count = 0; count < size_bloc; count++)
                 {
+#if defined(INT_is_64_) && defined(__NVCOMPILER) // Bug compilateur nvc++ std::abs(long) plante...
+                  const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs((long long)
+                                                                                                                x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+#else
                   const _TYPE_ x = IS_MAX ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
                                      x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+#endif
                   if (x > min_max_val) min_max_val = x;
                 }
             }
@@ -361,8 +370,13 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
               #pragma omp target teams distribute parallel for reduction(min:min_max_val)
               for (int count = 0; count < size_bloc; count++)
                 {
+#if defined(INT_is_64_) && defined(__NVCOMPILER) // Bug compilateur nvc++ std::abs(long) plante...
+                  const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs((long long)
+                                                                                                                x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+#else
                   const _TYPE_ x = IS_MIN ? x_ptr[count] : std::is_same<_TYPE_, int>::value ? (_TYPE_) std::abs(
                                      x_ptr[count]) : (_TYPE_) std::fabs(x_ptr[count]);
+#endif
                   if (x < min_max_val) min_max_val = x;
                 }
             }
