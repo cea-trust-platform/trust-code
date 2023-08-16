@@ -117,8 +117,11 @@ void Schema_Comm_Vecteurs::begin_init()
 #if defined(TRUST_USE_CUDA) && !defined(MPIX_CUDA_AWARE_SUPPORT)
       Process::exit("MPI version is detected as not CUDA-Aware. You can't use TRUST_USE_GPU_AWARE_MPI=1");
 #endif
-      Cerr << "[MPI] Enabling GPU capability to communicate between devices." << finl;
-      Cerr << "[MPI] Warning! Only MPI calls with device pointers will benefit. Classic MPI calls with host pointers will be slower..." << finl;
+      if (Process::je_suis_maitre())
+        {
+          Cerr << "[MPI] Enabling GPU capability to communicate between devices." << finl;
+          Cerr << "[MPI] Warning! Only MPI calls with device pointers will benefit. Classic MPI calls with host pointers will be slower..." << finl;
+        }
     }
 }
 
