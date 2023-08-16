@@ -804,8 +804,8 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
     }
 
   // Copie de la matrice TRUST dans une matrice rocALUTION
-  int N = (int)tab1_c.size();
-  int nnz = (int)coeff_c.size();
+  int N = tab1_c.size();
+  int nnz = coeff_c.size();
   Cout << "[rocALUTION] Build a matrix with local N= " << N << " and local nnz=" << nnz << finl;
 
   pm.SetGlobalNrow(nb_rows_tot_);
@@ -818,8 +818,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
       int boundary_nnz = md.items_to_send_.get_data().size_array();
 
       // Renum items_to_send et la tri:
-      ArrOfInt renum_items_to_send_(md.items_to_send_.get_data().size_array());
-      int first_element_dest = 0;
+      std::vector<True_int> renum_items_to_send_;
       for (int pe = 0; pe < md.items_to_send_.get_nb_lists(); pe++)
         {
           ArrOfInt items_pe;
@@ -829,16 +828,16 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
             items_pe[i] = local_renum[md.items_to_send_(pe, i)];
           items_pe.array_trier_retirer_doublons();
           // Argh, pas specifie dans la doc mais il fallait que BoundaryIndex soit triee (ToDo le dire au support rocALUTIION pour la doc...)
-          renum_items_to_send_.inject_array(items_pe, size, first_element_dest, 0);
-          first_element_dest += size;
+          for (True_int i=0; i<size; i++)
+            renum_items_to_send_.push_back(items_pe[i]);
         }
-      const int *bnd = renum_items_to_send_.addr();
-      pm.SetBoundaryIndex(boundary_nnz, (True_int*)bnd);
-      int neighbors = md.pe_voisins_.size_array();
-      const int *recv = md.pe_voisins_.addr();
-
+      pm.SetBoundaryIndex(boundary_nnz, &renum_items_to_send_[0]);
+      long neighbors = md.pe_voisins_.size_array();
+      std::vector<True_int> recv;
+      for (int i=0; i<neighbors; i++)
+        recv.push_back(md.pe_voisins_[i]);
       std::vector<True_int> recv_offset;
-      int offset = 0;
+      True_int offset = 0;
       recv_offset.push_back(offset);
       // items virtuels communs:
       assert(md.items_to_recv_.get_nb_lists() == neighbors);
@@ -856,10 +855,14 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
             }
           recv_offset.push_back(offset);
         }
-      pm.SetReceivers(neighbors, (True_int*)recv, &recv_offset[0]);
-      const int *sender = md.pe_voisins_.addr();
-      const int *send_offset = md.items_to_send_.get_index().addr();
-      pm.SetSenders(neighbors, (True_int*)sender, (True_int*)send_offset);
+      pm.SetReceivers(neighbors, &recv[0], &recv_offset[0]);
+      std::vector<True_int> sender;
+      std::vector<True_int> send_offset;
+      for (int i=0; i<md.pe_voisins_.size_array(); i++)
+        sender.push_back(md.pe_voisins_[i]);
+      for (int i=0; i<md.items_to_send_.get_index().size_array(); i++)
+        send_offset.push_back(md.items_to_send_.get_index()[i]);
+      pm.SetSenders(neighbors, &sender[0], &send_offset[0]);
       if (debug) pm.WriteFileASCII("pm");
     }
 
@@ -872,7 +875,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   std::copy(tab1_c.begin(), tab1_c.end(), row_offset);
   std::copy(tab2_c.begin(), tab2_c.end(), col);
   std::copy(coeff_c.begin(), coeff_c.end(), val);
-  mat.SetLocalDataPtrCSR(&row_offset, &col, &val, "mat", (int)coeff_c.size());
+  mat.SetLocalDataPtrCSR(&row_offset, &col, &val, "mat", coeff_c.size());
   if (Process::nproc()>1)
     {
       row_offset = new True_int[ghost_tab1_c.size()];
@@ -881,13 +884,13 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
       std::copy(ghost_tab1_c.begin(), ghost_tab1_c.end(), row_offset);
       std::copy(ghost_tab2_c.begin(), ghost_tab2_c.end(), col);
       std::copy(ghost_coeff_c.begin(), ghost_coeff_c.end(), val);
-      mat.SetGhostDataPtrCSR(&row_offset, &col, &val, "ghost", (int) ghost_coeff_c.size());    // LocalMatrix ghost
+      mat.SetGhostDataPtrCSR(&row_offset, &col, &val, "ghost", ghost_coeff_c.size());    // LocalMatrix ghost
     }
   /* Cela serait plus simple en passant les std::vector mais valgrind rale lors d'un free_host a la fin lors de ~GlobalMatrix :-(
-  mat.SetLocalDataPtrCSR(reinterpret_cast<int **>(&tab1_c), reinterpret_cast<int **>(&tab2_c), reinterpret_cast<double **>(&coeff_c), "mat", (int)coeff_c.size());   // LocalMatrix
+  mat.SetLocalDataPtrCSR(reinterpret_cast<int **>(&tab1_c), reinterpret_cast<int **>(&tab2_c), reinterpret_cast<double **>(&coeff_c), "mat", coeff_c.size());   // LocalMatrix
   if (Process::nproc()>1)
     mat.SetGhostDataPtrCSR(reinterpret_cast<int **>(&ghost_tab1_c), reinterpret_cast<int **>(&ghost_tab2_c),
-                           reinterpret_cast<double **>(&ghost_coeff_c), "ghost", (int)ghost_coeff_c.size());    // LocalMatrix ghost
+                           reinterpret_cast<double **>(&ghost_coeff_c), "ghost", ghost_coeff_c.size());    // LocalMatrix ghost
   */
   mat.Sort();
 
