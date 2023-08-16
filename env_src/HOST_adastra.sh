@@ -12,7 +12,14 @@ define_modules_config()
    echo "source /etc/profile" >> $env
    #
    # Load modules
-   module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric gcc-mixed/11.2.0"
+   if [ "$TRUST_USE_ROCM" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
+   then
+      # Compilateur crayCC
+      module="craype-x86-trento craype-network-ofi PrgEnv-cray rocm craype-accel-amd-gfx90a libfabric gcc-mixed/11.2.0"
+   else
+      # Compilateur GNU
+      module="craype-x86-trento craype-network-ofi PrgEnv-cray libfabric gcc/10.3.0"   
+   fi   
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null" >> $env
