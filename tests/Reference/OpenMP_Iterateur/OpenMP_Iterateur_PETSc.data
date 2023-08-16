@@ -1,5 +1,6 @@
 # PARALLEL OK #
 dimension 3
+MultipleFiles 1
 Pb_Hydraulique pb
 Domaine coarse_dom
 Domaine dom
