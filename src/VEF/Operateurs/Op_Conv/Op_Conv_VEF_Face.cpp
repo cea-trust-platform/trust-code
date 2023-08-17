@@ -548,7 +548,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
                     // Determination du type de CL selon le rang
                     rang = rang_elem_non_std_addr[poly];
-                    int itypcl = type_elem_Cl_addr[poly];
+                    True_int itypcl = type_elem_Cl_addr[poly];
 
                     calcul_vc_tetra(face, vc, vs, vsom, vitesse_addr, itypcl, porosite_face_addr);
                     // calcul de xc (a l'intersection des 3 facettes) necessaire pour muscl3
