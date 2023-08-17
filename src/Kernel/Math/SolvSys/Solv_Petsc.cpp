@@ -461,13 +461,10 @@ void Solv_Petsc::create_solver(Entree& entree)
     }
   if (amgx_)
     {
-#ifdef PETSC_HAVE_CUDA
+#ifdef TRUST_USE_CUDA
       Cerr << "GPU capabilities of AmgX will be used." << finl;
 #else
-      Cerr << "You can not use amgx keyword cause GPU" << finl;
-      Cerr << "capabilities will not work on your workstation with AmgX." << finl;
-      Cerr << "Check if you have a NVidia video card and its driver up to date." << finl;
-      Cerr << "Check petsc.log file under $TRUST_ROOT/lib/src/LIBPETSC for more details." << finl;
+      Cerr << "You can not use amgx keyword cause TRUST version is not build with CUDA support." << finl;
       Process::exit();
 #endif
       if (solver_supported_on_gpu_by_amgx==0)

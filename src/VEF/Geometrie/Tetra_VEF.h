@@ -46,9 +46,10 @@ public:
 
 #pragma omp declare target
 inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, const double * vsom,
-                            const double* vitesse,int type_cl, const double* porosite_face)
+                            const double* vitesse,True_int type_cl, const double* porosite_face)
 {
-  int comp;
+  // Passage (justifie vue la taille) en True_int de type_cl et comp car bug nvc++ sinon
+  True_int comp;
   switch(type_cl)
     {
 
@@ -165,9 +166,10 @@ inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, cons
  *
  */
 #pragma omp declare target
-inline void calcul_xg_tetra(double * xg, const double *x, const int type_elem_Cl, int& idirichlet,int& n1,int& n2,int& n3)
+inline void calcul_xg_tetra(double * xg, const double *x, const True_int type_elem_Cl, int& idirichlet,int& n1,int& n2,int& n3)
 {
-  int dim = 3;
+  // Passage (justifie vue la taille) en True_int de type_elem_cl et comp car bug nvc++ sinon
+  True_int dim = 3;
   switch(type_elem_Cl)
     {
     case 0:  // le tetraedre n'a pas de Face de Dirichlet. Il a 6 Facettes

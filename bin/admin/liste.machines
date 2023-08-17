@@ -19,12 +19,12 @@ linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -be
 linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d -without-conda  						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-visit -without-conda   									# RedHat 8.4	CEA CCRT
-linux	rsync_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited 		-TrioCFD -IJK-FT				-cuda 		-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
+linux	rsync_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited 		-TrioCFD -IJK-FT				-cuda 	-openmp -build_64_bit -without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	topaze-build64.ccc.cea.fr		-limited	-TrioCFD -IJK-FT 				-benchmark	-without-doc -disable-plot2d -build_64_bit  -without-conda  									# RedHat 8.3	CEA CCRT
-linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		-TrioCFD -IJK-FT 				-cuda  	-openmp -without-doc -disable-plot2d -without-visit -disable-mpi4py -without-conda   									# RedHat 8.3	CEA CCRT
+linux	rsync_ssh 	tache	topaze-gpu.ccc.cea.fr		-limited 		-TrioCFD -IJK-FT 				-cuda  	-openmp -build_64_bit -without-doc -disable-plot2d -without-visit -disable-mpi4py -without-conda   									# RedHat 8.3	CEA CCRT
 linux	rsync_ssh	tache	jean-zay.idris.fr   		-limited	-TrioCFD -IJK-FT           						-benchmark -without-doc -disable-plot2d -without-visit                					# RedHat 8.1
-linux	rsync_ssh 	tache	adastra.cines.fr		-limited		-TrioCFD							-without-pdflatex
-linux	rsync_ssh 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-rocm -openmp 	-without-pdflatex
+linux	rsync_ssh 	tache	adastra.cines.fr		-limited		-TrioCFD							-build_64_bit -without-pdflatex
+linux	rsync_ssh 	tache	adastra-gpu.cines.fr		-limited		-TrioCFD					-rocm   -openmp -build_64_bit -without-pdflatex
 linux	rsync_ssh	tache	jean-zay-gpu.idris.fr   	-limited 		-TrioCFD -IJK-FT         			-cuda  		-without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	jean-zay-build64.idris.fr   -limited	-TrioCFD -IJK-FT          		 		-build_64_bit -without-doc -disable-plot2d -without-visit                					# RedHat 8.1
 linux	rsync_ssh	tache	orcus-amd-gpu.intra.cea.fr			-TrioCFD -IJK-FT  			-cuda  											# CentOS 7.6	CEA Saclay

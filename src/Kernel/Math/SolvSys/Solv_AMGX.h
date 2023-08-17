@@ -18,7 +18,7 @@
 
 #include <Solv_Petsc.h>
 
-#ifdef PETSC_HAVE_CUDA
+#ifdef TRUST_USE_CUDA
 #include <AmgXSolver.hpp>
 #include <amgx_c.h>
 #endif
@@ -33,7 +33,7 @@ public:
   };
 protected :
 #ifdef PETSCKSP_H
-#ifdef PETSC_HAVE_CUDA
+#ifdef TRUST_USE_CUDA
   void Create_objects(const Matrice_Morse&, int blocksize) override;
   void Create_vectors(const DoubleVect&) override;
   void Update_vectors(const DoubleVect& secmem, DoubleVect& solution) override;

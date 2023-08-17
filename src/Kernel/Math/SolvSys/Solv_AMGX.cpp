@@ -35,7 +35,7 @@ Entree& Solv_AMGX::readOn(Entree& is)
 }
 
 #ifdef PETSCKSP_H
-#ifdef PETSC_HAVE_CUDA
+#ifdef TRUST_USE_CUDA
 void Solv_AMGX::initialize()
 {
   if (amgx_initialized()) return;
@@ -204,7 +204,7 @@ void Solv_AMGX::Update_matrix(Mat& MatricePetsc, const Matrice_Morse& mat_morse)
 // Check and return true if new stencil
 bool Solv_AMGX::check_stencil(const Matrice_Morse& mat_morse)
 {
-  int num_devices = 0;
+  True_int num_devices = 0;
   cudaGetDeviceCount(&num_devices);
   if (num_devices>1)
     {
@@ -288,7 +288,7 @@ int Solv_AMGX::solve(ArrOfDouble& residu)
 
 int Solv_AMGX::nbiter(ArrOfDouble& residu)
 {
-  int nbiter = -1;
+  True_int nbiter = -1;
   SolveurAmgX_.getIters(nbiter);
   // Bug AmgX, seul le process 0 renvoie correctement nbiter...
   envoyer_broadcast(nbiter, 0);

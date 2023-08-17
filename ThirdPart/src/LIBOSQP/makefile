@@ -9,6 +9,7 @@ endif
 ifdef TRUST_cc_BASE_EXTP
     cc=$(TRUST_cc_BASE_EXTP)
     CC=$(TRUST_CC_BASE_EXTP)
+    CPATH="" # Vu sur JeanZay
 else
     cc=$(TRUST_cc_BASE)
     CC=$(TRUST_CC_BASE)
