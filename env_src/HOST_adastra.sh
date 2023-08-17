@@ -50,7 +50,8 @@ define_soumission_batch()
       cpus_per_task=8 # 1 GPU/MPI (OpenMP choix par default)
       noeuds=`echo "1+($NB_PROCS-1)/8" | bc`
       # Important pour les performances ! le -c dans le srun est important il semble que SBATCH -c ne marche pas...
-      srun_options="-c $cpus_per_task --gpus-per-task=1 --ntasks-per-node=8 --threads-per-core=1 --gpu-bind=verbose,closest"
+      #srun_options="-c $cpus_per_task --gpus-per-task=1 --ntasks-per-node=8 --threads-per-core=1 --gpu-bind=verbose,closest"
+      srun_options="-c $cpus_per_task --gpus-per-task=1 --ntasks-per-node=8 --threads-per-core=1 --gpu-bind=closest"
       #[ $NB_PROCS -gt 8 ] && qos=normal # 2 nodes
    else
       # Partition scalaire
@@ -63,7 +64,8 @@ define_soumission_batch()
    [ "`id | grep cpa2202`" != "" ] && project="cpa2202"
    node=1 # --exclusive
    ram=0 # Important pour acceder a toute la RAM du noeud
-   mpirun="srun -l $srun_options --mem-bind=local --mpi=cray_shasta --cpu-bind=verbose,cores"
+   #mpirun="srun -l $srun_options --mem-bind=local --mpi=cray_shasta --cpu-bind=verbose,cores"
+   mpirun="srun -l $srun_options --mem-bind=local --mpi=cray_shasta --cpu-bind=cores"
    sub=SLURM
 }
 

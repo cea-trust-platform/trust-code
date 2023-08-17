@@ -309,13 +309,14 @@ IterativeLinearSolver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::cre
 }
 #endif
 
+static double dtol_ = 1.e-12; // default tolerance
 // Lecture et creation du solveur
 void Solv_rocALUTION::create_solver(Entree& entree)
 {
 #ifdef ROCALUTION_ROCALUTION_HPP_
   // Valeurs par defaut:
-  atol_ = 1.e-12;
-  rtol_ = 1.e-12;
+  atol_ = dtol_;
+  rtol_ = dtol_;
   double div_tol = 1e3;
   bool mixed_precision = false;
   precond_verbosity_ = Verbosity::No;
@@ -698,10 +699,16 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 #endif
 
   // Check residual e=||Ax-rhs||:
-  if (res_final>atol_)
+  if (atol_>dtol_ && res_final>atol_)
     {
-      Cerr << "Solution not correct ! ||Ax-b|| = " << res_final << finl;
+      Cerr << "Solution not correct ! ||Ax-b|| = " << res_final << " > atol = " << atol_ << finl;
       Process::exit();
+    }
+  else if (rtol_>dtol_ && res_final>rtol_*res_initial)
+    {
+      Cerr << "Solution not correct ! ||Ax-b||/||Ax0-b|| = " << res_final << " > rtol = " << rtol_ << finl;
+      Process::exit();
+
     }
   if (limpr()>-1)
     {
