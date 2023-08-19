@@ -84,22 +84,10 @@ void Solv_AMGX::Create_objects(const Matrice_Morse& mat_morse, int blocksize)
 
 void Solv_AMGX::Create_vectors(const DoubleVect& b)
 {
-  if (index_.size_array()!=0) return;
-  lhs_amgx_.resize(nb_rows_);
-  rhs_amgx_.resize(nb_rows_);
-  int size = items_to_keep_.size_array();
-  index_.resize(size);
-  int index = 0;
-  // ToDo OpenMP factoriser avec ix car index_=ix-decalage_local_global_
-  for (int i=0; i<size; i++)
+  if (lhs_amgx_.size_array()==0)
     {
-      if (items_to_keep_[i])
-        {
-          index_[i] = index;
-          index++;
-        }
-      else
-        index_[i] = -1;
+      lhs_amgx_.resize(nb_rows_);
+      rhs_amgx_.resize(nb_rows_);
     }
 }
 
