@@ -482,10 +482,9 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 #ifdef ROCALUTION_ROCALUTION_HPP_
   if (write_system_) save++;
   double tick;
-  bool gpu = computeOnDevice;
-  bool hip_support = false; // ToDo OpenMP provisoire
+  bool gpu = computeOnDevice && _rocalution_available_accelerator();
   bool solutionOnDevice = x.isDataOnDevice();
-  bool keepDataOnDevice = gpu && solutionOnDevice && hip_support;
+  bool keepDataOnDevice = gpu && solutionOnDevice;
   if (!keepDataOnDevice)
     {
       b.checkDataOnHost();
@@ -550,7 +549,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
   // Build rhs and initial solution:
   tick = rocalution_time();
-  long N = pm.GetGlobalNrow();
+  auto N = pm.GetGlobalNrow();
   int size=b.size_array();
   if (rhs_host.size_array()==0)
     {
@@ -563,25 +562,13 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
       sol.Allocate("a", N);
       rhs.Allocate("rhs", N);
       e.Allocate("e", N);
-      // Les vecteurs rocALUTION sont deplaces de suite sur le device:
-      if (keepDataOnDevice)
-        {
-          if (gpu) statistiques().begin_count(gpu_copytodevice_counter_);
-          sol.MoveToAccelerator();
-          rhs.MoveToAccelerator();
-          e.MoveToAccelerator();
-          if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * (int)sizeof(double) * nb_rows_);
-        }
     }
   const double * x_addr        = keepDataOnDevice ? mapToDevice(x)               : x.addr();
   const double * b_addr        = keepDataOnDevice ? mapToDevice(b)               : b.addr();
   const int * index_addr       = keepDataOnDevice ? mapToDevice(index_)          : index_.addr();
   double * sol_host_addr       = keepDataOnDevice ? computeOnTheDevice(sol_host) : sol_host.addr();
   double * rhs_host_addr       = keepDataOnDevice ? computeOnTheDevice(rhs_host) : rhs_host.addr();
-  //const unsigned int * items_to_keep_addr = items_to_keep_;
   start_timer();
-  // ToDo OpenMP: bug de merde pourquoi cela plante en decommentant le pragma meme si on ne passe pas la ??? Bug compilateur nvc++ 23.5 ?
-  // Voir sur une autre version de nvc++ et sur continuer sur adastra...
   #pragma omp target teams distribute parallel for if (keepDataOnDevice)
   for (int i=0; i<size; i++)
     if (index_addr[i]!=-1)
@@ -593,7 +580,12 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
 
   if (keepDataOnDevice)
     {
-      // Les vecteurs sont mis a jour entre eux sur le device (optimal)
+      // Les vecteurs rocALUTION sont deplaces sur le device pour une mise a jour sur le device (optimal)
+      if (gpu) statistiques().begin_count(gpu_copytodevice_counter_);
+      sol.MoveToAccelerator();
+      rhs.MoveToAccelerator();
+      e.MoveToAccelerator();
+      if (gpu) statistiques().end_count(gpu_copytodevice_counter_, 3 * (int)sizeof(double) * nb_rows_);
       #pragma omp target data use_device_ptr(sol_host_addr, rhs_host_addr)
       {
         sol.GetInterior().CopyFromData(sol_host_addr);
@@ -824,8 +816,8 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
     }
 
   // Copie de la matrice TRUST dans une matrice rocALUTION
-  int N = tab1_c.size();
-  int nnz = coeff_c.size();
+  auto N = tab1_c.size();
+  auto nnz = coeff_c.size();
   Cout << "[rocALUTION] Build a matrix with local N= " << N << " and local nnz=" << nnz << finl;
 
   pm.SetGlobalNrow(nb_rows_tot_);
@@ -852,7 +844,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
             renum_items_to_send_.push_back(items_pe[i]);
         }
       pm.SetBoundaryIndex(boundary_nnz, &renum_items_to_send_[0]);
-      long neighbors = md.pe_voisins_.size_array();
+      int neighbors = md.pe_voisins_.size_array();
       std::vector<True_int> recv;
       for (int i=0; i<neighbors; i++)
         recv.push_back(md.pe_voisins_[i]);
