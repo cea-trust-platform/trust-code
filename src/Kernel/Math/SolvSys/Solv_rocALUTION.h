@@ -90,6 +90,7 @@ private :
   Motcle coarse_grid_solver_ = "LU";
   ArrOfDouble sol_host,rhs_host;
   GlobalVector<double> sol, rhs, e;
+  IntVect local_renum_;
 #endif
 };
 
