@@ -575,21 +575,19 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     }
   const double * x_addr        = keepDataOnDevice ? mapToDevice(x)               : x.addr();
   const double * b_addr        = keepDataOnDevice ? mapToDevice(b)               : b.addr();
-  const int * local_renum_addr = keepDataOnDevice ? mapToDevice(local_renum_)    : local_renum_.addr();
+  const int * index_addr       = keepDataOnDevice ? mapToDevice(index_)          : index_.addr();
   double * sol_host_addr       = keepDataOnDevice ? computeOnTheDevice(sol_host) : sol_host.addr();
   double * rhs_host_addr       = keepDataOnDevice ? computeOnTheDevice(rhs_host) : rhs_host.addr();
   //const unsigned int * items_to_keep_addr = items_to_keep_;
   start_timer();
   // ToDo OpenMP: bug de merde pourquoi cela plante en decommentant le pragma meme si on ne passe pas la ??? Bug compilateur nvc++ 23.5 ?
   // Voir sur une autre version de nvc++ et sur continuer sur adastra...
-#ifndef TRUST_USE_CUDA
   #pragma omp target teams distribute parallel for if (keepDataOnDevice)
-#endif
   for (int i=0; i<size; i++)
-    if (items_to_keep_[i])
+    if (index_addr[i]!=-1)
       {
-        sol_host_addr[local_renum_addr[i]] = x_addr[i];
-        rhs_host_addr[local_renum_addr[i]] = b_addr[i];
+        sol_host_addr[index_addr[i]] = x_addr[i];
+        rhs_host_addr[index_addr[i]] = b_addr[i];
       }
   end_timer(keepDataOnDevice, "Solv_rocALUTION::Update_vectors");
 
@@ -699,8 +697,8 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
   #pragma omp target teams distribute parallel for if (keepDataOnDevice)
 #endif
   for (int i=0; i<size; i++)
-    if (items_to_keep_[i])
-      xx_addr[i] = sol_host_addr[local_renum_addr[i]];
+    if (index_addr[i]!=-1)
+      xx_addr[i] = sol_host_addr[index_addr[i]];
   end_timer(keepDataOnDevice, "Solv_rocALUTION::Update_solution");
   x.echange_espace_virtuel();
   if (first_solve_) res_final = residual(a, b, x); // Securite a la premiere resolution
@@ -749,7 +747,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
   const ArrOfDouble& coeff = csr.get_coeff();
   const MD_Vector_base& mdv = renum_.get_md_vector().valeur();
   const MD_Vector_std& md = sub_type(MD_Vector_composite, mdv) ? ref_cast(MD_Vector_composite, mdv).global_md_ : ref_cast(MD_Vector_std, mdv);
-  if (local_renum_.size_array()==0)
+  if (local_renum_.size_array()==0) // ToDo OpenMP: bug a trouver sur ce tableau et son utilisation dans rocALUTION pour P1/P1Bulle
     {
       int size = items_to_keep_.size_array();
       local_renum_.resize(size);

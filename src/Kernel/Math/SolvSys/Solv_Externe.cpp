@@ -68,6 +68,20 @@ void Solv_Externe::construit_renum(const DoubleVect& b)
         }
     }
   renum_.echange_espace_virtuel();
+  // Construction de index_
+  index_.resize(size);
+  int index = 0;
+  // ToDo OpenMP factoriser avec ix car index_=ix-decalage_local_global_
+  for (int i=0; i<size; i++)
+    {
+      if (items_to_keep_[i])
+        {
+          index_[i] = index;
+          index++;
+        }
+      else
+        index_[i] = -1;
+    }
   // Construction de ix
   size=b.size_array();
   int colonne_globale=decalage_local_global_;

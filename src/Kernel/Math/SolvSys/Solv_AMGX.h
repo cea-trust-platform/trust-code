@@ -60,7 +60,6 @@ protected :
   //double *lhs, *rhs;
   PetscScalar *values;
   ArrOfDouble lhs_amgx_, rhs_amgx_;
-  ArrOfInt index_;
 #endif
 #endif
 };
