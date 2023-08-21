@@ -12,7 +12,7 @@
 // STD
 # include <cstring>
 # include <algorithm>
-
+#include <iostream>
 // AmgXSolver
 # include "AmgXSolver.hpp"
 
@@ -78,6 +78,13 @@ PetscErrorCode AmgXSolver::setA(const Mat &A)
                 1, 1, row.data(), col.data(), data.data(),
                 nullptr, dist);
         AMGX_distribution_destroy(dist);
+                
+	if (nGlobalRows<100)
+	{
+	   const std::string filename("amgx_gpu.mtx");
+	   std::cout << "Writing " << filename << " matrix file:" << std::endl;            
+           AMGX_write_system(AmgXA, AmgXRHS, AmgXP, filename.c_str());
+	}   
 
         // bind the matrix A to the solver
         ierr = MPI_Barrier(gpuWorld); CHK;
@@ -409,10 +416,14 @@ PetscErrorCode AmgXSolver::setA(
     const int* partData)
 {
     PetscFunctionBeginUser;
-
+    
+    // Convert from long to int:
+    std::vector<int> rowOffsets32;
+    for (int i=0; i<nLocalRows+1;i++)
+        rowOffsets32.push_back((int)rowOffsets[i]);
+	
     // Merge the distributed matrix for MPI processes sharing a GPU
-    consolidateMatrix(nLocalRows, nLocalNz, (int*)rowOffsets, colIndicesGlobal, values);
-
+    consolidateMatrix(nLocalRows, nLocalNz, &rowOffsets32[0], colIndicesGlobal, values);
     int ierr;
 
     // upload matrix A to AmgX
@@ -422,22 +433,39 @@ PetscErrorCode AmgXSolver::setA(
 
         if (consolidationStatus == ConsolidationStatus::None)
         {
+            if (sizeof(PetscInt)==4) // int32
             AMGX_matrix_upload_all_global_32(
                 AmgXA, nGlobalRows, nLocalRows, nLocalNz,
-                1, 1, (int*)rowOffsets, colIndicesGlobal, values,
-                nullptr, ring, ring, partData);
+                1, 1, &rowOffsets32[0], colIndicesGlobal, values,
+                nullptr, ring, ring, partData);		
+	    else
+            AMGX_matrix_upload_all_global(
+                AmgXA, nGlobalRows, nLocalRows, nLocalNz,
+                1, 1, &rowOffsets32[0], colIndicesGlobal, values,
+                nullptr, ring, ring, partData);		
         }
         else
         {
+            if (sizeof(PetscInt)==4) // int32
             AMGX_matrix_upload_all_global_32(
                 AmgXA, nGlobalRows, nConsRows, nConsNz,
-                1, 1, (int*)rowOffsetsCons, colIndicesGlobalCons, valuesCons,
+                1, 1, rowOffsetsCons, colIndicesGlobalCons, valuesCons,
                 nullptr, ring, ring, partData);
-
+	    else
+            AMGX_matrix_upload_all_global(
+                AmgXA, nGlobalRows, nConsRows, nConsNz,
+                1, 1, rowOffsetsCons, colIndicesGlobalCons, valuesCons,
+                nullptr, ring, ring, partData);
             // The rowOffsets and colIndices are no longer needed
             freeConsStructure();
         }
-
+    
+        if (nGlobalRows<100)
+	{
+	    const std::string filename("amgx_csr.mtx");
+	    std::cout << "Writing " << filename << " matrix file:" << std::endl;            
+            AMGX_write_system(AmgXA, AmgXRHS, AmgXP, filename.c_str());
+        }
         // bind the matrix A to the solver
         ierr = MPI_Barrier(gpuWorld); CHK;
         AMGX_solver_setup(solver, AmgXA);

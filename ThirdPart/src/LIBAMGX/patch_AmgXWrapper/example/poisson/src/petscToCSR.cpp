@@ -26,7 +26,7 @@
 
 // headers
 #include "petscToCSR.hpp"
-
+#include <iostream>
 #include <cstring>
 
 PetscErrorCode petscToCSR(
@@ -80,9 +80,10 @@ PetscErrorCode petscToCSR(
 
     // Calculate the number of rows in nRowsGlobal
     ierr = MPI_Allreduce(&nRowsLocal, &nRowsGlobal, 1, MPI_INT, MPI_SUM, PETSC_COMM_WORLD); CHKERRQ(ierr);
-
     // Store the number of non-zeros
     nNz = rowOffsets[nRowsLocal];
-
+    std::cout << "nRowsLocal=" << nRowsLocal << std::endl;
+    std::cout << "nRowsGlobal=" << nRowsGlobal << std::endl;
+    std::cout << "nNz=" << nNz << std::endl;
     PetscFunctionReturn(0);
 }
