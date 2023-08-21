@@ -123,6 +123,7 @@ fi
 if [ -f $TRUST_ENV/card.log ] # On ne teste que si on peut lancer des calculs GPU
 then
    # Ces tests doivent absolument marcher:
+   echo "Testing $LIB..."
    ./test_$LIB.sh >> $log || exit -1
 fi
 exit 0

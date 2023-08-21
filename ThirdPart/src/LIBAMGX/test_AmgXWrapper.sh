@@ -6,7 +6,7 @@ cd $TRUST_ROOT/lib/src/LIBAMGX/AmgXWrapper/example/poisson
 N=100 && [ "`grep P400 $TRUST_ROOT/env/card.log 2>/dev/null`" != "" ] && N=85
 name=$N"x"$N"x"$N
 exec=bin/poisson trust -gpu dummy 4 -caseName AmgX_GPU_AGG_$name -mode AmgX_GPU -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N
-#exec=bin/poisson trust -gpu dummy 4 -caseName AmgX_CSR_AGG_$name -mode AmgX_CSR -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N
+exec=bin/poisson trust -gpu dummy 1 -caseName AmgX_CSR_AGG_$name -mode AmgX_CSR -cfgFileName configs/AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N
 exec=bin/poisson trust -gpu dummy 4 -caseName   PETSc_GAMG_$name -mode PETSc    -cfgFileName configs/PETSc_SolverOptions_GAMG.info     -Nx $N -Ny $N -Nz $N
 
    # ---------------------------------------------------------------------------	  

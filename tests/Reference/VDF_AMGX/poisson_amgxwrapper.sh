@@ -6,7 +6,7 @@ export exec=$ROOT/example/poisson/bin/poisson
 configs=$ROOT/example/poisson/configs
 timings()
 {
-  awk '/setup/ {setup=$0} /Iterations / {its=$0} /Memory Usage/ {mem=$0} /averaged/ {print $0" "setup" "its" "mem}' $1
+  awk '/Memory Usage/ {mem=$0} /setup/ {setup=$0} /solve:/ || /Solve Time/ {solve=$0} /Iterations / {its=$0;print solve" "setup" "its" "mem;exit}' $1
 }
 if [ "$1" = "" ]
 then
@@ -18,17 +18,21 @@ then
    log=PETSc_GAMG_$NP"CPU_"$N"x"$N"x"$N.log
    trust dummy $NP -caseName PETSc_GAMG_$N"x"$N"x"$N -mode PETSc  -cfgFileName ./PETSc_SolverOptions_GAMG.info     -Nx $N -Ny $N -Nz $N 1>$log 2>&1
    timings $log
-   # Test GPU avec AMGX
+   # Test GPU avec AMGXWrapper
    export CUDA_VISIBLE_DEVICES=0
    echo CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES
+   for mode in AmgX_GPU AmgX_CSR
+   do
    for NGPU in 1
    do
-      echo -e "$NP CPU + $NGPU GPU ($N*$N*$N,  AmgX C-AMG): \c"
+      echo -e "$NP CPU + $NGPU GPU ($N*$N*$N,  AmgX C-AMG, mode $mode): \c"
       [ ! -f AmgX_SolverOptions_Classical.info ] && cp $configs/AmgX_SolverOptions_Classical.info .
-      log=AmgX_$NGPU"GPU_"$NP"CPU_"$N"x"$N"x"$N.log
-      trust -gpu dummy $NP -caseName AmgX_AGG_$N"x"$N"x"$N -mode AmgX_GPU -cfgFileName ./AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 1>$log 2>&1
+      #sed -i "1,$ s?HMIS?PMIS?g" AmgX_SolverOptions_Classical.info
+      log=$mode"_"$NGPU"GPU_"$NP"CPU_"$N"x"$N"x"$N.log
+      trust -gpu dummy $NP -caseName AmgX_AGG_$N"x"$N"x"$N -mode $mode -cfgFileName ./AmgX_SolverOptions_Classical.info -Nx $N -Ny $N -Nz $N 1>$log 2>&1
       [ $? != 0 ] && cat $log
       timings $log
+   done
    done
 else
    valgrind="" && [ "$VALGRIND" != "" ] && VALGRIND=1
