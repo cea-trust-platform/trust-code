@@ -114,10 +114,12 @@ void Saturation_base::get_sigma(const SpanD T, const SpanD P, SpanD sig, int nco
 
 void Saturation_base::compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
-  assert((int )sats.size() == 8);
+  assert((int )sats.size() == 9);
 
-  SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
-        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP), Sigma__ = sats.at(SAT::SIGMA);
+  SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP),
+        Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
+        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP),
+        Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP), Sigma__ = sats.at(SAT::SIGMA);
 
   assert(ncomp * (int )P.size() == (int )Ts__.size() && ncomp * (int )P.size() == (int )dPTs__.size());
   assert(ncomp * (int )P.size() == (int )Hvs__.size() && ncomp * (int )P.size() == (int )Hls__.size());
