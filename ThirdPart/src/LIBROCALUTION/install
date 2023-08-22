@@ -6,9 +6,7 @@ echo $TRUST_ROCALUTION
 
 rm -r -f rocALUTION
 
-OPTIONS=""
 #TRUST_ROCALUTION_COMMIT=develop 
-[ $HOST = adastra ] && OPTIONS="-DAMDGPU_TARGETS=gfx90a" # On essaie de suivra la branche develop sur adastra
 if [ "$TRUST_ROCALUTION_COMMIT" != "" ]
 then
    commit=$TRUST_ROCALUTION_COMMIT
@@ -47,7 +45,7 @@ sed -i "1,$ s?#ifdef ROCALUTION_HIP_PINNED_MEMORY?#ifndef ROCALUTION_HIP_PINNED_
 
 # Hack pour compiler avec rocm ancien (5.2.3) sur la branche develop recente:
 # Voir: https://github.com/ROCmSoftwarePlatform/rocALUTION/issues/180
-if [ "$HOST" = adastra ]
+if [ "$ROCM_ARCH" != "" ]
 then
    sed -i "1,$ s?nullptr,?/* nullptr, */?g" src/base/hip/hip_sparse.cpp || exit -1
 fi
@@ -67,8 +65,10 @@ export CXXFLAGS="-mno-avx512f" && [ "`$CXX $CXXFLAGS 2>&1 | grep -i unrecognized
 export CXXFLAGS=$CXXFLAGS" -fPIC"
 # Shared libraries
 SL=OFF && [ "$TRUST_USE_ROCM" = 1 ] && SL=ON # Probleme au link avec rocm en lib statique
+# Targets
+TARGETS="" && [ "$ROCM_ARCH" != "" ] && TARGETS="-DAMDGPU_TARGETS=$ROCM_ARCH"
 
-cmake .. $BUILD_CLIENTS $OPTIONS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION -DBUILD_SHARED_LIBS=$SL || exit -1
+cmake .. $BUILD_CLIENTS $TARGETS -DSUPPORT_HIP=$SUPPORT_HIP -DROCM_PATH=$ROCM_PATH -DSUPPORT_OMP=OFF -DSUPPORT_MPI=$SUPPORT_MPI -DCMAKE_INSTALL_PREFIX=$TRUST_ROCALUTION -DBUILD_SHARED_LIBS=$SL || exit -1
 
 # Bidouille pour ROCM anciens... (Attention Adastra (rocm 5.2.0) donc supprimer cette partie si necessaire):
 #if [ -f $ROCM_PATH/include/rocsparse.h ]

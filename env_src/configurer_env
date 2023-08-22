@@ -1201,6 +1201,7 @@ then
    # Pour la carte du PC AMD:
    # https://community.amd.com/t5/infinity-hub-container/radeon-rx6600xt-ubuntu-22-04-and-rocm-woes/m-p/585568
    [ "$ROCM_ARCH" = gfx1032 ] && echo "export HSA_OVERRIDE_GFX_VERSION=10.3.0 # Pour gfx1032 (pas supporte utilise le code de gfx1030)" >> $env
+   echo "export ROCM_ARCH=$ROCM_ARCH # Carte AMD" >> $env
 fi
 
 #############
