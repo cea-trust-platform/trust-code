@@ -34,7 +34,9 @@ prec:coarse_solver(c_solver)=DENSE_LU_SOLVER
 prec:dense_lu_num_rows=2
 
 prec:algorithm=CLASSICAL
-prec:selector=HMIS
+#prec:selector=HMIS
+# Much faster for setup:
+prec:selector=PMIS
 prec:interpolator=D2
 prec:strength=AHAT
 
