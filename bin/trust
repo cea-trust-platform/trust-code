@@ -866,7 +866,7 @@ elif [ "$VTUNE" = 1 ]
 then
    # -r directory is mandatory for MPI run:
    vtune_result=`pwd`/vtune_result
-   rm -r -f $vtune_result.*
+   rm -r -f $vtune_result $vtune_result.*
    exec="vtune -collect hotspots -r $vtune_result $binary"
 elif [ "$PERF" = 1 ]
 then
