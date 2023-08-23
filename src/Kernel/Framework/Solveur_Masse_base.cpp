@@ -19,6 +19,7 @@
 #include <Matrice_Morse.h>
 #include <TRUSTTrav.h>
 #include <Debog.h>
+#include <Device.h>
 
 Implemente_base_sans_constructeur(Solveur_Masse_base,"Solveur_Masse_base",Objet_U);
 
@@ -327,13 +328,19 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& 
   DoubleTrav diag(equation().inconnue().valeurs());
   diag=1.;
   appliquer(diag); // M-1
+  // Si x et y sont sur le device, on deporte l'execution sur le device:
+  bool kernelOnDevice = x.isKernelOnDevice(y) && computeOnDevice;
+  const double* diag_addr = kernelOnDevice ? mapToDevice(diag) : diag.addr();
+  const double* y_addr    = kernelOnDevice ? mapToDevice(y) : y.addr();
+  double* x_addr          = kernelOnDevice ? computeOnTheDevice(x) : x.addr();
+  start_timer();
+  #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for(int i=0; i<sz; i++)
     {
-      if (diag.addr()[i]<1.e-12)
-        {
-          x.addr()[i] = y.addr()[i];
-        }
+      if (diag_addr[i]<1.e-12)
+        x_addr[i] = y_addr[i];
     }
+  end_timer(kernelOnDevice, "Solveur_Masse_base::corriger_solution");
   return x;
 }
 
