@@ -79,39 +79,33 @@ DoubleTab& Terme_Source_Canal_perio_VEF_P1NC::ajouter(DoubleTab& resu) const
   const DoubleVect& porosite_face=equation().milieu().porosite_face();
   ArrOfDouble s;
   s = source();
+  int nb_faces = domaine_VF.nb_faces();
   if (s.size_array()==dimension)
     {
       // Case Navier Stokes, s is uniform
-      for (int num_face = 0 ; num_face<premiere_face_std; num_face++)
+      const double* s_addr = mapToDevice(s);
+      const double* volumes_entrelaces_Cl_addr = mapToDevice(volumes_entrelaces_Cl);
+      const double* volumes_entrelaces_addr = mapToDevice(volumes_entrelaces);
+      const double* porosite_face_addr = mapToDevice(porosite_face);
+      double* resu_addr = computeOnTheDevice(resu);
+      start_timer();
+      #pragma omp target teams distribute parallel for if (computeOnDevice)
+      for (int num_face = 0; num_face<nb_faces; num_face++)
         {
-          double vol = volumes_entrelaces_Cl(num_face)*porosite_face(num_face);
+          double vol = (num_face<premiere_face_std ? volumes_entrelaces_Cl_addr[num_face] : volumes_entrelaces_addr[num_face]) * porosite_face_addr[num_face];
           for (int i=0; i<dimension; i++)
-            resu(num_face,i)+= s[i]*vol;
+            resu_addr[num_face*dimension+i]+= s_addr[i]*vol;
         }
-      int nb_faces = domaine_VF.nb_faces();
-      for (int num_face = premiere_face_std; num_face<nb_faces; num_face++)
-        {
-          double vol = volumes_entrelaces(num_face)*porosite_face(num_face);
-          for (int i=0; i<dimension; i++)
-            resu(num_face,i)+= s[i]*vol;
-        }
+      end_timer(Objet_U::computeOnDevice, "Face loop in Terme_Source_Canal_perio_VEF_P1NC::ajouter");
     }
   else
     {
-      // Case Energy, s is non uniform
+      // Case Energy, s is non uniform (ToDo OpenMP mais rarement utilise)
       bilan_=0;
       const ArrOfInt& fd=domaine_VF.faces_doubles();
-      for (int num_face = 0 ; num_face<premiere_face_std; num_face++)
+      for (int num_face = 0; num_face<nb_faces; num_face++)
         {
-          double vol = volumes_entrelaces_Cl(num_face)*porosite_face(num_face);
-          double contrib = s[num_face]*vol;
-          resu(num_face)+= contrib;
-          bilan_(0)+= contrib*(1-0.5*fd[num_face]);
-        }
-      int nb_faces = domaine_VF.nb_faces();
-      for (int num_face = premiere_face_std; num_face<nb_faces; num_face++)
-        {
-          double vol = volumes_entrelaces(num_face)*porosite_face(num_face);
+          double vol = (num_face < premiere_face_std ? volumes_entrelaces_Cl(num_face) : volumes_entrelaces(num_face))*porosite_face(num_face);
           double contrib = s[num_face]*vol;
           resu(num_face)+= contrib;
           bilan_(0)+= contrib*(1-0.5*fd[num_face]);
