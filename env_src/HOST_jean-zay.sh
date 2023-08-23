@@ -19,6 +19,7 @@ define_modules_config()
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
          module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.0.5-cuda" # Les modules sont mieux configures sur IDRIS qu'au CCRT...
+	       module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.1.5" # Essai car crash au demarrage pour precedent (4.0.5-cuda -> NVHPC)
       else
          module="gcc/8.3.1 cuda/11.2 openmpi/4.0.5-cuda" # Fonctionne sur gpu_p13 et gpu_p4
          #module=$module" opa-psm2/11.2.204nccl_patched-cuda" # Patch pour corriger un plantage lors des IO (sondes/xyz)
@@ -64,7 +65,8 @@ define_soumission_batch()
       then
          cpus_per_task=10 # 1MPI<->1GPU
       fi
-      qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && qos=qos_gpu-dev && cpu=120 
+      # See http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm.html#les_qos_disponibles
+      qos=qos_gpu-t3 && cpu=1200 && [ "$prod" != 1 ] && [ $NB_PROCS -le 32 ] && qos=qos_gpu-dev && cpu=120 
       #qos=qos_gpu-t4 && cpu=6000
       [ "`id | grep aih`" != "" ] && project="aih@v100" # GENDEN
    else

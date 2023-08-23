@@ -78,13 +78,13 @@ PetscErrorCode AmgXSolver::setA(const Mat &A)
                 1, 1, row.data(), col.data(), data.data(),
                 nullptr, dist);
         AMGX_distribution_destroy(dist);
-                
-	if (nGlobalRows<100)
+               /* 
+	if (nLocalRows<100)
 	{
 	   const std::string filename("amgx_gpu.mtx");
 	   std::cout << "Writing " << filename << " matrix file:" << std::endl;            
            AMGX_write_system(AmgXA, AmgXRHS, AmgXP, filename.c_str());
-	}   
+	}   */
 
         // bind the matrix A to the solver
         ierr = MPI_Barrier(gpuWorld); CHK;
@@ -459,13 +459,13 @@ PetscErrorCode AmgXSolver::setA(
             // The rowOffsets and colIndices are no longer needed
             freeConsStructure();
         }
-    
-        if (nGlobalRows<100)
+    /*
+        if (nLocalRows<100)
 	{
 	    const std::string filename("amgx_csr.mtx");
 	    std::cout << "Writing " << filename << " matrix file:" << std::endl;            
             AMGX_write_system(AmgXA, AmgXRHS, AmgXP, filename.c_str());
-        }
+        } */
         // bind the matrix A to the solver
         ierr = MPI_Barrier(gpuWorld); CHK;
         AMGX_solver_setup(solver, AmgXA);

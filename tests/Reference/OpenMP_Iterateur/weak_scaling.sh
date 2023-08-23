@@ -1,9 +1,10 @@
 #!/bin/bash
 # Weak scaling on nodes:
 # Selon machines:
-benchs="cpu gpu"              && mpis_gpu="2 16"          && mpis_cpu="8 64"              && int=""       && jdd_gpu=AmgX             && jdd_cpu=PETSc
+benchs="gpu cpu"              && mpis_gpu="2 16"          && mpis_cpu="8 64"              && int=""       && jdd_gpu=AmgX             && jdd_cpu=PETSc
 [ "$HOST" = adastra ]         && mpis_gpu="2 16 128 1024" && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_gpu=BENCH_rocALUTION && jdd_cpu=BENCH_PETSc
-[ "$HOST" = topaze ]          && mpis_gpu="2 16 128 1024" && mpis_cpu="64 512 4096 32768" && int=""       && jdd_gpu=BENCH_AmgX       && jdd_cpu=BENCH_PETSc
+[ "$HOST" = topaze ]          && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_AmgX      
+[ "$HOST" = jean-zay ]        && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_AmgX      
 [ "$HOST" = irene-amd-ccrt ]  && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64"                             && jdd_cpu=BENCH_PETSc
 env_gpu=$local/trust/amgx_openmp$int/env_TRUST.sh
 env_cpu=$local/trust/tma$int/env_TRUST.sh         
