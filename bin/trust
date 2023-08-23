@@ -1047,7 +1047,7 @@ then
 		[ "$gpus_per_node" != "" ] && echo "#SBATCH --gres=gpu:$gpus_per_node"		>> $sub_file	# Number of GPUs per node
     # Deux options importantes for jean-zay/IDRIS sinon crashes possibles avec MPI-Cuda-Aware:
 		[ "$hintnomultithread" != "" ] && echo "#SBATCH --hint=nomultithread"		>> $sub_file
-		[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks"	>> $sub_file
+		#[ "$hintnomultithread" != "" ] && echo "#SBATCH --ntasks-per-node=$ntasks"	>> $sub_file
 		[ "$node" = 1 ] && echo "#SBATCH --exclusive"		>> $sub_file	# Exclusive use of nodes during production run	
 		[ "$ram" != "" ] && echo "#SBATCH --mem=$ram"           >> $sub_file    # Real memory required per node in MegaBytes
 		echo "##SBATCH --mail-user=email"			>> $sub_file
