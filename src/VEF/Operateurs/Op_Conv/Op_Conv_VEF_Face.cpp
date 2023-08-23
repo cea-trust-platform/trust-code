@@ -294,6 +294,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
   int ncomp_ch_transporte=(transporte_face.nb_dim() == 1?1:transporte_face.dimension(1));
 
   // Traitement particulier pour les faces de periodicite
+  DoubleTab resu_perio;
   int nb_faces_perio = 0;
   for (int n_bord=0; n_bord<nb_bord; n_bord++)
     {
@@ -304,32 +305,35 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           nb_faces_perio+=le_bord.nb_faces();
         }
     }
-
-  DoubleTab tab;
-  if (ncomp_ch_transporte == 1)
-    tab.resize(nb_faces_perio);
-  else
-    tab.resize(nb_faces_perio,ncomp_ch_transporte);
-
-  nb_faces_perio=0;
-  for (int n_bord=0; n_bord<nb_bord; n_bord++)
+  if (nb_faces_perio>0)
     {
-      const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      if (sub_type(Periodique,la_cl.valeur()))
+      if (ncomp_ch_transporte == 1)
+        resu_perio.resize(nb_faces_perio);
+      else
+        resu_perio.resize(nb_faces_perio,ncomp_ch_transporte);
+      nb_faces_perio=0;
+      // Partial copy to avoid resu back on host with periodic BC !
+      copyPartialFromDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
+      for (int n_bord=0; n_bord<nb_bord; n_bord++)
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          int num1 = le_bord.num_premiere_face();
-          int num2 = num1 + le_bord.nb_faces();
-          for (int num_face=num1; num_face<num2; num_face++)
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
+          if (sub_type(Periodique,la_cl.valeur()))
             {
-              if (ncomp_ch_transporte == 1)
-                tab(nb_faces_perio) = resu(num_face);
-              else
-                for (int comp=0; comp<ncomp_ch_transporte; comp++)
-                  tab(nb_faces_perio,comp) = resu(num_face,comp);
-              nb_faces_perio++;
+              const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+              int num1 = le_bord.num_premiere_face();
+              int num2 = num1 + le_bord.nb_faces();
+              for (int num_face=num1; num_face<num2; num_face++)
+                {
+                  if (ncomp_ch_transporte == 1)
+                    resu_perio(nb_faces_perio) = resu(num_face);
+                  else
+                    for (int comp=0; comp<ncomp_ch_transporte; comp++)
+                      resu_perio(nb_faces_perio,comp) = resu(num_face,comp);
+                  nb_faces_perio++;
+                }
             }
         }
+      copyPartialToDevice(resu, 0, premiere_face_int * ncomp_ch_transporte, "resu on boundary");
     }
 
   DoubleTab gradient; // Peut pointer vers gradient_elem ou gradient_face selon schema
@@ -357,7 +361,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               gradient_face.resize(0, ncomp_ch_transporte, dimension);     // (du/dx du/dy dv/dx dv/dy) pour une face
               domaine_VEF.creer_tableau_faces(gradient_face);
             }
-          // ToDo OpenMP copyPartial ?
+          // ToDo OpenMP copyPartial ? Pas facile car boucle sur face et gradient aux elems. Fusionner plutot boucle interne et bord...
           start_timer();
           for (int n_bord = 0; n_bord < nb_bord; n_bord++)
             {
@@ -365,6 +369,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
               const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
               int num1 = le_bord.num_premiere_face();
               int num2 = num1 + le_bord.nb_faces();
+              /*
               if (sub_type(Periodique, la_cl.valeur()))
                 {
                   for (int fac = num1; fac < num2; fac++)
@@ -380,7 +385,7 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                           }
                     }
                 }
-              else if (sub_type(Symetrie, la_cl.valeur()))
+              else */ if (sub_type(Symetrie, la_cl.valeur()))
                 {
                   for (int fac = num1; fac < num2; fac++)
                     {
@@ -416,24 +421,30 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
           // Need offload
           const int *traitement_pres_bord_addr = mapToDevice(traitement_pres_bord_);
           const int *face_voisins_addr = mapToDevice(face_voisins);
+          const int *faces_doubles_addr = mapToDevice(domaine_VEF.faces_doubles());
           const double *gradient_elem_addr = mapToDevice(gradient_elem, "gradient_elem");
           double *gradient_addr = computeOnTheDevice(gradient, "gradient");
           start_timer();
           #pragma omp target teams distribute parallel for if (computeOnDevice)
-          for (int fac = premiere_face_int; fac < nb_faces_; fac++)
+          for (int fac = 0; fac < nb_faces_; fac++)
             {
-              int elem1 = face_voisins_addr[fac * 2];
-              int elem2 = face_voisins_addr[fac * 2 + 1];
-              int limiteur = cas;
-              if (ordre == 3 && (traitement_pres_bord_addr[elem1] || traitement_pres_bord_addr[elem2])) limiteur = 1;
-              for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
-                for (int i = 0; i < dimension; i++)
-                  {
-                    double grad1 = gradient_elem_addr[(elem1 * ncomp_ch_transporte + comp0) * dimension + i];
-                    double grad2 = gradient_elem_addr[(elem2 * ncomp_ch_transporte + comp0) * dimension + i];
-                    gradient_addr[(fac * ncomp_ch_transporte + comp0) * dimension + i] = FCT_LIMITEUR(grad1, grad2,
-                                                                                                      limiteur);
-                  }
+              if (faces_doubles_addr[fac] /* face perio */ || fac>=premiere_face_int /* face interne */)
+                {
+                  int elem1 = face_voisins_addr[fac * 2];
+                  int elem2 = face_voisins_addr[fac * 2 + 1];
+                  int limiteur = cas;
+                  if (ordre == 3 && (traitement_pres_bord_addr[elem1] || traitement_pres_bord_addr[elem2]))
+                    limiteur = 1;
+                  for (int comp0 = 0; comp0 < ncomp_ch_transporte; comp0++)
+                    for (int i = 0; i < dimension; i++)
+                      {
+                        double grad1 = gradient_elem_addr[(elem1 * ncomp_ch_transporte + comp0) * dimension + i];
+                        double grad2 = gradient_elem_addr[(elem2 * ncomp_ch_transporte + comp0) * dimension + i];
+                        gradient_addr[(fac * ncomp_ch_transporte + comp0) * dimension + i] = FCT_LIMITEUR(grad1,
+                                                                                                          grad2,
+                                                                                                          limiteur);
+                      }
+                }
             } // fin du for faces
           end_timer(Objet_U::computeOnDevice, "Face loop in Op_Conv_VEF_Face::ajouter\n");
           gradient.echange_espace_virtuel(); // Pas possible de supprimer. Garder le Kernel sur le CPU n'apporte pas.
@@ -1100,8 +1111,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
 
                   if (ncomp_ch_transporte == 1)
                     {
-                      diff1 = resu(num_face)-tab(nb_faces_perio);
-                      diff2 = resu(voisine)-tab(nb_faces_perio+voisine-num_face);
+                      diff1 = resu(num_face)-resu_perio(nb_faces_perio);
+                      diff2 = resu(voisine)-resu_perio(nb_faces_perio+voisine-num_face);
                       resu(voisine)  += diff1;
                       resu(num_face) += diff2;
                       /* On ne doit pas ajouter a flux_b, c'est deja calcule au dessus
@@ -1111,8 +1122,8 @@ DoubleTab& Op_Conv_VEF_Face::ajouter(const DoubleTab& transporte,
                   else
                     for (int comp=0; comp<ncomp_ch_transporte; comp++)
                       {
-                        diff1 = resu(num_face,comp)-tab(nb_faces_perio,comp);
-                        diff2 = resu(voisine,comp)-tab(nb_faces_perio+voisine-num_face,comp);
+                        diff1 = resu(num_face,comp)-resu_perio(nb_faces_perio,comp);
+                        diff2 = resu(voisine,comp)-resu_perio(nb_faces_perio+voisine-num_face,comp);
                         resu(voisine,comp)  += diff1;
                         resu(num_face,comp) += diff2;
                         /* On ne doit pas ajouter a flux_b, c'est deja calcule au dessus
