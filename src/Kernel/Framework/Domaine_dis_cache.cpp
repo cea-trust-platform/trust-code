@@ -17,7 +17,7 @@
 #include <Domaine_dis.h>
 #include <Domaine.h>
 #include <Interprete_bloc.h>
-#include <ostream>
+#include <sstream>
 
 /*! @brief Get the unique instance of the cache.
  */

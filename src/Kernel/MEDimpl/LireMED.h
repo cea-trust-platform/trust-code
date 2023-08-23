@@ -44,11 +44,13 @@ public :
   void lire_geom(bool subDom=true);
   void retrieve_MC_objects();
 
+#ifdef MEDCOUPLING_
   inline const MEDCoupling::MEDCouplingUMesh* get_mc_mesh() const
   {
     // really using the cast operator of MEDCoupling, not a wild cast:
     return (const MEDCoupling::MEDCouplingUMesh*)mcumesh_;
   }
+#endif
 
 protected:
   Nom nom_fichier_;              ///< Name of the MED file to read

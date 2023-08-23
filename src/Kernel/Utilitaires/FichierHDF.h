@@ -70,7 +70,10 @@ public:
   // to use when a process has multiple datasets to write
 #ifdef MED_
   void create_datasets(Noms dataset_names, hsize_t length);
+#else
+  void create_datasets(Noms dataset_names, long length) { throw; }
 #endif
+
   // Method to write sortie into the specified dataset
   void fill_dataset(Nom dataset_name, Sortie_Brute& sortie);
 

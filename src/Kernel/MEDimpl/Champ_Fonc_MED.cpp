@@ -64,6 +64,7 @@ void Champ_Fonc_MED::set_param(Param& param)
 
 Entree& Champ_Fonc_MED::readOn(Entree& is)
 {
+#ifdef MEDCOUPLING_
   Nom chaine_lue;
   bool nom_decoup_lu = false;
   nom_decoup_ = "";
@@ -309,6 +310,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
   le_champ().nommer(nom_champ_);
   le_champ().corriger_unite_nom_compo();
   mettre_a_jour(temps_);
+#endif
 
   return is ;
 }

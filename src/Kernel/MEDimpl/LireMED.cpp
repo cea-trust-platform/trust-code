@@ -541,6 +541,7 @@ void LireMED::finalize_sommets(const DoubleTab& sommets2, DoubleTab& sommets) co
  */
 void LireMED::write_sub_dom_datasets() const
 {
+#ifdef MEDCOUPLING_
   unsigned nb_volume_groups = (unsigned)mfumesh_->getGroupsOnSpecifiedLev(0).size();
   if (nb_volume_groups>0 && Process::je_suis_maitre())
     {
@@ -578,6 +579,7 @@ void LireMED::write_sub_dom_datasets() const
           f_ssz << finl;
         }
     }
+#endif
 }
 
 /*! @brief Handles the boundaries found in the MED file.
@@ -586,6 +588,7 @@ void LireMED::write_sub_dom_datasets() const
  */
 void LireMED::read_boundaries(ArrOfInt& fac_grp_id, IntTab& all_faces_bords)
 {
+#ifdef MEDCOUPLING_
   constexpr bool CELL_FROM_BOUNDARY = true;
 
   // Get boundary mesh:
@@ -663,6 +666,7 @@ void LireMED::read_boundaries(ArrOfInt& fac_grp_id, IntTab& all_faces_bords)
       Cerr << "Lire_MED: Warning: no boundary detected for the mesh." << finl;
       Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
     }
+#endif
 }
 
 /*! @brief Fills in all the information relative to Joints, Raccords and Frontiere
