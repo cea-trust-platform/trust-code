@@ -28,12 +28,6 @@
 
 #include <numeric>
 
-// fonction utile pour creer un Nom d'une taille donnee
-void dimensionne_char_ptr_taille(Char_ptr& nom ,int taille_d_un_mot,int nb)
-{
-  nom.allocate(taille_d_un_mot*nb);
-}
-
 void traite_nom_fichier_med(Nom& nom_fic)
 {
   Nom nom_fic2(nom_fic);
@@ -70,37 +64,10 @@ void traite_nom_fichier_med(Nom& nom_fic)
   }
 }
 
-/*! @brief Permet de lire le nom d'un champ particulier exemple "toto toto" ou "toto\ toto"
- *
- *     si le premier mot commence par " on concatene les mots jusqu'au dernier. Si on veut 2 espaces on est oblige de mettre "a\ \ a"
- */
-void lire_nom_med(Nom& nom_champ, Entree& s)
-{
-  s>>nom_champ;
-  if (nom_champ[0]=='"')
-    {
-      nom_champ.suffix("\"");
-      nom_champ.prefix("\\");
-      Nom  suite;
-      while(nom_champ[nom_champ.longueur()-2]!='"')
-        {
-          //s.get(suite,1);
-          s >> suite;
-          nom_champ+=" ";
-          nom_champ+=suite;
-          nom_champ.prefix("\\");
-          Cerr<<nom_champ<<finl;
-        }
-      // nom_champ="champ vectoriel  1";
-      Cerr<<nom_champ<<finl;
-      nom_champ.prefix("\"");
-      Cerr<<nom_champ<<finl;
-    }
-}
-
 extern "C" int MEDimport(char*,char*);
 void test_version(Nom& nom)
 {
+#ifdef MED_
   // on regarde si le fichier est d'une version differente, si oui
   // on cree un fichier au format MED majeur courant, et on change le nom du fichier
   med_bool med_ok, hdf_ok;
@@ -181,6 +148,7 @@ void test_version(Nom& nom)
     }
   nom=nom2;
   return;
+#endif
 }
 
 void read_med_field_names(const Nom& nom_fic, Noms& noms_chps, ArrOfDouble& temps_sauv)
@@ -372,6 +340,7 @@ INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& t
  */
 void conn_trust_to_med(IntTab& les_elems, const Nom& type_elem, bool toMED)
 {
+#ifdef MED_
   int nele=les_elems.dimension(0);
   // cas face_bord vide
   if (nele==0) return;
@@ -470,5 +439,6 @@ void conn_trust_to_med(IntTab& les_elems, const Nom& type_elem, bool toMED)
         for (int n=0; n<ns; n++)
           les_elems(el,filter[n])=les_elemsn(el,n);
     }
+#endif
 }
 

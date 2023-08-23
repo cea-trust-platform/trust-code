@@ -52,7 +52,11 @@ public :
   void set_major_mode(bool majorMod) { major_mode_ = majorMod; }
   bool get_major_mode() { return major_mode_; }
 
+#ifdef MED_
   inline Nom version()  { return major_mode_ ? _MED_VERSION(MED_NUM_MAJEUR,0,0) : MED_VERSION_STR; }
+#else
+  inline Nom version()  { return "NOT INSTALLED"; }
+#endif
 
   Entree& interpreter(Entree&) override;
 

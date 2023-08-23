@@ -38,6 +38,8 @@ using namespace MEDCoupling;
 #include <Symetrie.h>
 #include <Dirichlet_loi_paroi.h>
 
+#include <set>
+
 Implemente_base(Domaine_VF,"Domaine_VF",Domaine_dis_base);
 
 Sortie& Domaine_VF::printOn(Sortie& os) const

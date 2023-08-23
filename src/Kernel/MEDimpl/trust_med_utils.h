@@ -39,9 +39,7 @@ inline void med_non_installe()
   Process::exit("This version has not been built with MED library.");
 }
 
-void lire_nom_med(Nom& nom_champ, Entree& is);
 void test_version(Nom& nom) ;
-void dimensionne_char_ptr_taille(Char_ptr& nom, int taille_d_un_mot, int nb=1);
 void traite_nom_fichier_med(Nom& nom_fic);
 void read_med_field_names(const Nom& nom_fic, Noms& noms_chps, ArrOfDouble& temps_sauv);
 void conn_trust_to_med(IntTab& les_elems2, const Nom& type_elem, bool toMED);

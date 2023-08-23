@@ -79,8 +79,10 @@ Entree& EcrMED::readOn(Entree& is)
 EcrMED::EcrMED(const Nom& file_name, const Domaine& dom):
   major_mode_(false),
   nom_fichier_(file_name),
-  dom_(dom),
-  mcumesh_(nullptr)
+  dom_(dom)
+#ifdef MEDCOUPLING_
+  ,  mcumesh_(nullptr)
+#endif
 {
 }
 
@@ -123,7 +125,11 @@ void EcrMED::ecrire_champ(const Nom& type,const Nom& nom_cha1,const DoubleTab& v
 {
   med_non_installe();
 }
-void EcrMED::ecrire_domaine(const Nom& nom_dom,int mode)
+void EcrMED::ecrire_domaine(bool m)
+{
+  med_non_installe();
+}
+void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, bool append)
 {
   med_non_installe();
 }

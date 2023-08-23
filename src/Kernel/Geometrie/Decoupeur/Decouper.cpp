@@ -20,6 +20,8 @@
 #include <SFichier.h>
 #include <Param.h>
 #include <communications.h>
+#include <vector>
+#include <set>
 
 Implemente_instanciable(Decouper,"Decouper|Partition",Interprete);
 
