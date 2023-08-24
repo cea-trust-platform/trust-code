@@ -10,6 +10,7 @@ fi
 
 archive=$1
 install_dir=$TRUST_MED_ROOT
+curr_dir=`dirname -- $( readlink -f -- "$0"; )`
 
 ###############################
 # Compilation and installation
@@ -45,6 +46,9 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   sed -i "s/extern MEDC_EXPORT const char \* const  MEDget/extern MEDC_EXPORT const char *  MEDget/g"  $(find . -name med.h.in)
   sed -i "s/const char \* const  MEDget/const char * MEDget/g"  $(find . -name MEDiterators.c)
   sed -i 's/GET_PROPERTY(_lib_lst TARGET hdf5 PROPERTY IMPORTED_LINK_INTERFACE_LIBRARIES_NOCONFIG)/SET(_lib_lst)/' $(find . -name FindMedfileHDF5.cmake)
+
+  echo "Pathcin to support hdf5 1.14 ..."
+  patch -p1 < $curr_dir/med-hdf5_1_14.patch  
 
   # fPIC is not there by default in MED autotools ...
   Wno="-Wno-error -Wno-implicit-function-declaration"
@@ -90,14 +94,15 @@ if [ "x$TRUST_USE_EXTERNAL_MED" = "x" ]; then
   echo "Setting FFLAGS=$FFLAGS and MED_INT=$MED_INT ..."
   env CC=$CC CXX=$CXX F77=$FC FC=$FC cmake ..  -DCMAKE_INSTALL_PREFIX="$actual_install_dir" -DMEDFILE_BUILD_STATIC_LIBS=ON -DMEDFILE_BUILD_SHARED_LIBS=OFF \
       -DMEDFILE_INSTALL_DOC=OFF -DMEDFILE_BUILD_PYTHON=OFF -DHDF5_ROOT_DIR=$TRUST_MED_ROOT/hdf5_install -DMEDFILE_USE_MPI=$USE_MPI -DMED_MEDINT_TYPE=$MED_INT \
-      -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS
+      -DCMAKE_SHARED_LINKER_FLAGS="$LDFLAGS" -DMEDFILE_BUILD_TESTS=OFF $DARWIN_FLAGS \
+      -DCMAKE_C_FLAGS="-DH5_USE_110_API"
 
   $TRUST_MAKE  || exit -1
   make install || exit -1
   cd ..
 
   # Clean build folder
-  (cd .. ; rm -rf med*)
+  #(cd .. ; rm -rf med*)
 else  
   if ! [ -d "$TRUST_USE_EXTERNAL_MED" ]; then
     echo "Variable TRUST_USE_EXTERNAL_MED has been defined but points to an invalid directory: $TRUST_USE_EXTERNAL_MED"

@@ -1,6 +1,6 @@
 ext_pkg=$(TRUST_ROOT)/externalpackages/MED
 mpi=$(MPI_INCLUDE)/mpi.h
-HDF5_ARCHIVE=$(ext_pkg)/hdf5-1.10.3.tar.gz
+HDF5_ARCHIVE=$(ext_pkg)/hdf5-1.14.2.tar.gz
 MED_ARCHIVE=$(ext_pkg)/med-4.1.1.tar.gz
 
 MED=$(TRUST_MED_ROOT)/lib/libmed.a
