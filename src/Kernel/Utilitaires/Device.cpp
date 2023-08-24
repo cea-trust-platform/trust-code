@@ -204,13 +204,23 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
     {
       assert(!isAllocatedOnDevice(ptr)); // Verifie que la zone n'est pas deja allouee
       clock_start = Statistiques::get_time_now();
+      int bytes = sizeof(_TYPE_) * size;
+      size_t free_bytes=0, total_bytes=0;
+      // ToDo OpenMP use hipMemGetInfo on AMD...
+#ifdef TRUST_USE_CUDA
+      cudaMemGetInfo(&free_bytes, &total_bytes);
+      if (bytes>free_bytes)
+        {
+          Cerr << "Error ! Trying to allocate " << bytes << " bytes on GPU memory whereas only " << free_bytes << " bytes are available." << finl;
+          Process::exit();
+        }
+#endif
       #pragma omp target enter data map(alloc:ptr[0:size])
       if (clock_on)
         {
           std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
           double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-          int bytes = sizeof(_TYPE_) * size;
-          printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes\n", clock.c_str(), ms, arrayName.c_str(), toString(ptr).c_str(), long(bytes));
+          printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%d/%dGB free)\n", clock.c_str(), ms, arrayName.c_str(), toString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024));
         }
     }
 #endif
