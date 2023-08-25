@@ -36,4 +36,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThSol\
 
-Lib = $(TRUST_LIB)/libmultiphasePolyMAC
+Lib = $(TRUST_LIB)/libpolymac_multiphase

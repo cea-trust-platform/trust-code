@@ -36,7 +36,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Schemas_Temps\
-	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/PolyMAC\
+	-I$(TRUST_ROOT)/src/PolyMAC/Multiphase\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
 	-I$(TRUST_ROOT)/src/ThSol
 
