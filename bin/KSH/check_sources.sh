@@ -39,7 +39,7 @@ check_dependancy()
       for module in $modules
       do
          # Le make.include appartient t'il au module ?
-         if [ "`echo $relative_path | grep /$module/ `" != "" ] && [ "`echo $relative_path | grep -e /VDF[\/] -e /VEF[\/] -e /EF[\/] -e /PolyMAC[\/]`" = "" ]
+         if [ "`echo $relative_path | grep /$module/ `" != "" ]
          then
              dependances=`grep "\-I\\\$(TRUST_ROOT)" $file | grep -e "/VDF[\/]" -e "/VEF[\/]" -e "/EF[\/]" -e "/PolyMAC[\/]"`
              [ ${#dependances} != 0 ] && mes="Error: The file $file is not possible ! You CAN NOT have a dependance of the module $module to a discretization module like VDF or VEF." && break
