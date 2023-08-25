@@ -1,7 +1,6 @@
 # Thermalhydraulic 2D : Boussinesq approximation #
 # PARALLEL OK 9 #
 # lance_test 1 ecarts #
-# OpenMP NOT #
 dimension 2
 Pb_Thermohydraulique pb
 Domaine dom

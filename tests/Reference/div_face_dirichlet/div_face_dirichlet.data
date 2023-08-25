@@ -1,6 +1,5 @@
 # Thermalhydraulic 2D : Boussinesq approximation #
 # PARALLEL OK 9 #
-# OpenMP NOT #
 # lance_test 1 ecarts #
 dimension 2
 Pb_Thermohydraulique pb

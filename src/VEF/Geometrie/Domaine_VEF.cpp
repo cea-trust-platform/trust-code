@@ -1324,6 +1324,7 @@ void Domaine_VEF::creer_faces_virtuelles_non_std()
   ind_faces_virt_non_std_ = -999;
 }
 
+// ToDo OpenMP: utiliser xv_ pour le calcul de coord_centre_num1 et faire une fonction qui calcule le centre des facette pour eviter de creer ce tableau enorme (200 octets/maille)
 DoubleTab& Domaine_VEF::vecteur_face_facette()
 {
   // On construit si de taille nul
@@ -1338,16 +1339,14 @@ DoubleTab& Domaine_VEF::vecteur_face_facette()
       const IntTab& les_Polys = domaine().les_elems();
       const DoubleTab& coord = domaine().coord_sommets();
       const DoubleTab& xg = xp();
-      //const int nb_som_facette = domaine().type_elem().nb_som_face();
-      int nb_som_facette = dimension;
-      int num1, num2;
+      int nb_som_facette=dimension;
       for (int poly = 0; poly < nb_poly_tot; poly++)
         {
           // Boucle sur les facettes du polyedre non standard:
           for (int fa7 = 0; fa7 < nfa7; fa7++)
             {
-              num1 = elem_faces(poly, KEL(0, fa7));
-              num2 = elem_faces(poly, KEL(1, fa7));
+              int num1 = elem_faces(poly, KEL(0, fa7));
+              int num2 = elem_faces(poly, KEL(1, fa7));
 
               // Calcul des rx0 et rx1 :
               for (int i = 0; i < dimension; i++)
@@ -1363,21 +1362,9 @@ DoubleTab& Domaine_VEF::vecteur_face_facette()
                   coord_centre_fa7 /= nb_som_facette;
                   // Fin calcul de la ieme coordonnee du centre de la fa7
 
-                  // Calcul de la ieme coordonnee du centre des faces num1 et num2
-                  double coord_centre_num1 = 0;
-                  double coord_centre_num2 = 0;
-                  for (int num_som_face = 0; num_som_face < nb_som_facette; num_som_face++)
-                    {
-                      int s1 = face_sommets(num1, num_som_face);
-                      int s2 = face_sommets(num2, num_som_face);
-                      coord_centre_num1 += coord(s1, i);
-                      coord_centre_num2 += coord(s2, i);
-                    }
-                  coord_centre_num1 /= nb_som_facette;
-                  coord_centre_num2 /= nb_som_facette;
                   // Fin de Calcul de la ieme coordonnee du centre des faces num1 et num2
-                  vecteur_face_facette_(poly, fa7, i, 0) = coord_centre_fa7 - coord_centre_num1;
-                  vecteur_face_facette_(poly, fa7, i, 1) = coord_centre_fa7 - coord_centre_num2;
+                  vecteur_face_facette_(poly,fa7,i,0) = coord_centre_fa7 - xv_(num1,i);
+                  vecteur_face_facette_(poly,fa7,i,1) = coord_centre_fa7 - xv_(num2,i);
                 }
               // Fin de Calcul des rx0 et rx1
             }

@@ -145,16 +145,10 @@ int find_cl_face(const Domaine& domaine, const int face)
   return -1;
 }
 
-double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Domaine_Cl_VEF& zcl, const Domaine_VEF& domaine_VEF)
+#pragma omp declare target
+double calculer_coef_som(int type_elem, int dimension, int& nb_face_diri, int* indice_diri)
 {
-
-  // prov ajouter verif par %2 ....
-  int type_elem = 0;
-  int& dimension = Objet_U::dimension;
-  int rang_elem = domaine_VEF.rang_elem_non_std()(elem);
-  if (rang_elem != -1)
-    type_elem = zcl.type_elem_Cl(rang_elem);
-  if ((0) || (type_elem == 0))
+  if (type_elem == 0)
     {
       nb_face_diri = 0;
       double coeff_som = 1. / (dimension * (dimension + 1));
@@ -194,9 +188,7 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
               indice_diri[1] = 1;
               break;
             default:
-              nb_face_diri = 10000;
-              Cerr << __FILE__ << (int) __LINE__ << " impossible " << finl;
-              Process::exit();
+              abort();
               break;
             }
         }
@@ -212,18 +204,14 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
               nb_face_diri = 1;
               indice_diri[0] = 2;
               break;
-            case 4:
-              nb_face_diri = 1;
-              indice_diri[0] = 1;
-              break;
-            case 8:
-              nb_face_diri = 1;
-              indice_diri[0] = 0;
-              break;
             case 3:
               nb_face_diri = 2;
               indice_diri[0] = 3;
               indice_diri[1] = 2;
+              break;
+            case 4:
+              nb_face_diri = 1;
+              indice_diri[0] = 1;
               break;
             case 5:
               nb_face_diri = 2;
@@ -235,6 +223,16 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
               indice_diri[0] = 1;
               indice_diri[1] = 2;
               break;
+            case 7:
+              nb_face_diri = 3;
+              indice_diri[0] = 1;
+              indice_diri[1] = 2;
+              indice_diri[2] = 3;
+              break;
+            case 8:
+              nb_face_diri = 1;
+              indice_diri[0] = 0;
+              break;
             case 9:
               nb_face_diri = 2;
               indice_diri[0] = 0;
@@ -245,22 +243,16 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
               indice_diri[0] = 0;
               indice_diri[1] = 2;
               break;
-            case 12:
-              nb_face_diri = 2;
-              indice_diri[0] = 0;
-              indice_diri[1] = 1;
-              break;
-            case 7:
-              nb_face_diri = 3;
-              indice_diri[0] = 1;
-              indice_diri[1] = 2;
-              indice_diri[2] = 3;
-              break;
             case 11:
               nb_face_diri = 3;
               indice_diri[0] = 0;
               indice_diri[1] = 2;
               indice_diri[2] = 3;
+              break;
+            case 12:
+              nb_face_diri = 2;
+              indice_diri[0] = 0;
+              indice_diri[1] = 1;
               break;
             case 13:
               nb_face_diri = 3;
@@ -275,22 +267,19 @@ double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, con
               indice_diri[2] = 2;
               break;
             default:
-              nb_face_diri = 10000;
-              Cerr << __FILE__ << (int) __LINE__ << " impossible " << finl;
-              Process::exit();
+              abort();
               break;
             }
         }
       else
         {
-          nb_face_diri = 10000;
           abort();
-          Process::exit();
         }
     }
   double coeff_som = 1. / (dimension * (dimension + 1 - nb_face_diri));
   return coeff_som;
 }
+#pragma omp end declare target
 
 DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div, DoubleTab& flux_b) const
 {
@@ -325,47 +314,56 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   int modif_traitement_diri = domaine_VEF.get_modif_div_face_dirichlet();
   if (modif_traitement_diri)
     {
-#ifdef _OPENMP
-      Process::exit("Not coded yet with OpenMP for modif_div_face_dirichlet option !");
-      // Portage sur GPU des tableaux indice_diri et coeff_som penible pour une option rarement utilisee...
-#endif
       const Domaine_Cl_VEF& zcl = ref_cast(Domaine_Cl_VEF, la_zcl_vef.valeur());
-      ArrOfDouble sigma(dimension);
-      int nb_face_diri = 0;
-      ArrOfInt indice_diri(dimension + 1);
+      const int *rang_elem_non_std_addr = mapToDevice(domaine_VEF.rang_elem_non_std());
+      const int* type_elem_Cl_addr = mapToDevice(zcl.type_elem_Cl());
+      const int *elem_faces_addr = mapToDevice(elem_faces);
+      const int *face_voisins_addr = mapToDevice(face_voisins);
+      const double *face_normales_addr = mapToDevice(face_normales);
+      const int *som_addr = mapToDevice(som_);
+      const double *vit_addr = mapToDevice(vit, "vit");
+      double *div_addr = div.addr();//computeOnTheDevice(div);
+      start_timer();
+      //#pragma omp target teams distribute parallel for if (computeOnDevice)
       for (int elem = 0; elem < nb_elem_tot; elem++)
         {
-          double coeff_som = calculer_coef_som(elem, nb_face_diri, indice_diri, zcl, domaine_VEF);
-          sigma = 0;
+          double sigma[3];
+          int indice_diri[4];
+          int nb_face_diri = 0;
+          int rang_elem = rang_elem_non_std_addr[elem];
+          int type_elem = rang_elem < 0 ? 0 : type_elem_Cl_addr[rang_elem];
+          double coeff_som = calculer_coef_som(type_elem, dimension, nb_face_diri, indice_diri);
+          for (int comp = 0; comp < dimension; comp++)
+            sigma[comp] = 0;
           for (int indice = 0; indice < nfe; indice++)
             {
-              int face = elem_faces(elem, indice);
+              int face = elem_faces_addr[elem * nfe + indice];
               for (int comp = 0; comp < dimension; comp++)
-                sigma[comp] += vit(face, comp);
+                sigma[comp] += vit_addr[face * dimension + comp];
             }
           // on retire la contribution des faces dirichlets
           for (int fdiri = 0; fdiri < nb_face_diri; fdiri++)
             {
               int indice2 = indice_diri[fdiri];
-              int face = elem_faces(elem, indice2);
+              int face = elem_faces_addr[elem * nfe + indice2];
               for (int comp = 0; comp < dimension; comp++)
-                sigma[comp] -= vit(face, comp);
+                sigma[comp] -= vit_addr[face * dimension + comp];
             }
           for (int indice = 0; indice < nfe; indice++)
             {
-              int som = nps + dom.get_renum_som_perio(som_elem(elem, indice));
-              int face = elem_faces(elem, indice);
+              int som = som_addr[elem * nfe + indice];
+              int face = elem_faces_addr[elem * nfe + indice];
               double psc = 0;
               int signe = 1;
-              if (elem != face_voisins(face, 0))
+              if (elem != face_voisins_addr[face * 2])
                 signe = -1;
               for (int comp = 0; comp < dimension; comp++)
-                {
-                  psc += sigma[comp] * face_normales(face, comp);
-                }
-              div(som) += signe * coeff_som * psc;
+                psc += sigma[comp] * face_normales_addr[face * dimension + comp];
+              #pragma omp atomic
+              div_addr[som] += signe * coeff_som * psc;
             }
         }
+      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
     }
   else
     {
