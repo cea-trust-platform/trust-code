@@ -286,7 +286,6 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   const Domaine_VEF& domaine_VEF = ref_cast(Domaine_VEF, le_dom_vef.valeur());
   assert(domaine_VEF.get_alphaS());
   const Domaine& domaine = domaine_VEF.domaine();
-  const Domaine& dom = domaine;
   const DoubleTab& face_normales = domaine_VEF.face_normales();
   const IntTab& som_elem = domaine.les_elems();
   const IntTab& elem_faces = domaine_VEF.elem_faces();
@@ -304,7 +303,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
       for (int elem = 0; elem < nb_elem_tot; elem++)
         for (int indice = 0; indice < nfe; indice++)
           {
-            int som = nps + dom.get_renum_som_perio(som_elem(elem, indice));
+            int som = nps + domaine.get_renum_som_perio(som_elem(elem, indice));
             nb_degres_liberte(som - nps)++;
             som_
             (elem, indice) = som;
@@ -312,98 +311,63 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
     }
 
   int modif_traitement_diri = domaine_VEF.get_modif_div_face_dirichlet();
-  if (modif_traitement_diri)
+  const Domaine_Cl_VEF& zcl = ref_cast(Domaine_Cl_VEF, la_zcl_vef.valeur());
+  double coeff_som = 1. / (dimension * (dimension + 1));
+  const int *rang_elem_non_std_addr = mapToDevice(domaine_VEF.rang_elem_non_std());
+  const int* type_elem_Cl_addr = mapToDevice(zcl.type_elem_Cl());
+  const int *elem_faces_addr = mapToDevice(elem_faces);
+  const int *face_voisins_addr = mapToDevice(face_voisins);
+  const double *face_normales_addr = mapToDevice(face_normales);
+  const int *som_addr = mapToDevice(som_);
+  const double *vit_addr = mapToDevice(vit, "vit");
+  double *div_addr = computeOnTheDevice(div);
+  start_timer();
+  #pragma omp target teams distribute parallel for if (computeOnDevice)
+  for (int elem = 0; elem < nb_elem_tot; elem++)
     {
-      const Domaine_Cl_VEF& zcl = ref_cast(Domaine_Cl_VEF, la_zcl_vef.valeur());
-      const int *rang_elem_non_std_addr = mapToDevice(domaine_VEF.rang_elem_non_std());
-      const int* type_elem_Cl_addr = mapToDevice(zcl.type_elem_Cl());
-      const int *elem_faces_addr = mapToDevice(elem_faces);
-      const int *face_voisins_addr = mapToDevice(face_voisins);
-      const double *face_normales_addr = mapToDevice(face_normales);
-      const int *som_addr = mapToDevice(som_);
-      const double *vit_addr = mapToDevice(vit, "vit");
-      double *div_addr = div.addr();//computeOnTheDevice(div);
-      start_timer();
-      //#pragma omp target teams distribute parallel for if (computeOnDevice)
-      for (int elem = 0; elem < nb_elem_tot; elem++)
+      double sigma[3];
+      for (int comp = 0; comp < dimension; comp++)
+        sigma[comp] = 0;
+      for (int indice = 0; indice < nfe; indice++)
         {
-          double sigma[3];
+          int face = elem_faces_addr[elem * nfe + indice];
+          for (int comp = 0; comp < dimension; comp++)
+            sigma[comp] += vit_addr[face * dimension + comp];
+        }
+
+      if (modif_traitement_diri)
+        {
           int indice_diri[4];
           int nb_face_diri = 0;
           int rang_elem = rang_elem_non_std_addr[elem];
           int type_elem = rang_elem < 0 ? 0 : type_elem_Cl_addr[rang_elem];
-          double coeff_som = calculer_coef_som(type_elem, dimension, nb_face_diri, indice_diri);
-          for (int comp = 0; comp < dimension; comp++)
-            sigma[comp] = 0;
-          for (int indice = 0; indice < nfe; indice++)
-            {
-              int face = elem_faces_addr[elem * nfe + indice];
-              for (int comp = 0; comp < dimension; comp++)
-                sigma[comp] += vit_addr[face * dimension + comp];
-            }
+          coeff_som = calculer_coef_som(type_elem, dimension, nb_face_diri, indice_diri);
           // on retire la contribution des faces dirichlets
           for (int fdiri = 0; fdiri < nb_face_diri; fdiri++)
             {
-              int indice2 = indice_diri[fdiri];
-              int face = elem_faces_addr[elem * nfe + indice2];
+              int indice = indice_diri[fdiri];
+              int face = elem_faces_addr[elem * nfe + indice];
               for (int comp = 0; comp < dimension; comp++)
                 sigma[comp] -= vit_addr[face * dimension + comp];
             }
-          for (int indice = 0; indice < nfe; indice++)
-            {
-              int som = som_addr[elem * nfe + indice];
-              int face = elem_faces_addr[elem * nfe + indice];
-              double psc = 0;
-              int signe = 1;
-              if (elem != face_voisins_addr[face * 2])
-                signe = -1;
-              for (int comp = 0; comp < dimension; comp++)
-                psc += sigma[comp] * face_normales_addr[face * dimension + comp];
-              #pragma omp atomic
-              div_addr[som] += signe * coeff_som * psc;
-            }
         }
-      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
-    }
-  else
-    {
-      const double coeff_som = 1. / (dimension * (dimension + 1));
-      const int *elem_faces_addr = mapToDevice(elem_faces);
-      const int *face_voisins_addr = mapToDevice(face_voisins);
-      const double *face_normales_addr = mapToDevice(face_normales);
-      const int *som_addr = mapToDevice(som_);
-      const double *vit_addr = mapToDevice(vit, "vit");
-      double *div_addr = computeOnTheDevice(div);
-      start_timer();
-      #pragma omp target teams distribute parallel for if (computeOnDevice)
-      for (int elem = 0; elem < nb_elem_tot; elem++)
-        {
-          double sigma[3];
-          for (int comp = 0; comp < dimension; comp++)
-            sigma[comp] = 0;
-          for (int indice = 0; indice < nfe; indice++)
-            {
-              int face = elem_faces_addr[elem * nfe + indice];
-              for (int comp = 0; comp < dimension; comp++)
-                sigma[comp] += vit_addr[face * dimension + comp];
-            }
 
-          for (int indice = 0; indice < nfe; indice++)
-            {
-              int som = som_addr[elem * nfe + indice];
-              int face = elem_faces_addr[elem * nfe + indice];
-              double psc = 0;
-              int signe = 1;
-              if (elem != face_voisins_addr[face * 2])
-                signe = -1;
-              for (int comp = 0; comp < dimension; comp++)
-                psc += sigma[comp] * face_normales_addr[face * dimension + comp];
-              #pragma omp atomic
-              div_addr[som] += signe * coeff_som * psc;
-            }
+      for (int indice = 0; indice < nfe; indice++)
+        {
+          int som = som_addr[elem * nfe + indice];
+          int face = elem_faces_addr[elem * nfe + indice];
+          double psc = 0;
+          int signe = 1;
+          if (elem != face_voisins_addr[face * 2])
+            signe = -1;
+          for (int comp = 0; comp < dimension; comp++)
+            psc += sigma[comp] * face_normales_addr[face * dimension + comp];
+          #pragma omp atomic
+          div_addr[som] += signe * coeff_som * psc;
         }
-      end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
     }
+  end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_som");
+
   // ToDo OpenMP ajout CL copyPartial (pas facile car div au sommet)
   const Domaine_Cl_VEF& domaine_Cl_VEF = la_zcl_vef.valeur();
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
@@ -436,7 +400,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
                 flux *= 1. / dimension;
                 for (int indice = 0; indice < (nfe - 1); indice++)
                   {
-                    int som = dom.get_renum_som_perio(face_sommets(face, indice));
+                    int som = domaine.get_renum_som_perio(face_sommets(face, indice));
                     div(nps + som) += flux;
                     if (libre)
                       nb_degres_liberte(som)++;
