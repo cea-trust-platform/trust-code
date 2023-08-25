@@ -26,14 +26,15 @@ Entree& Frottement_interfacial_VDF::readOn(Entree& is) { return Source_Frottemen
 
 void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
   Matrice_Morse *mat = matrices.count(ch.le_nom().getString()) ? matrices.at(ch.le_nom().getString()) : nullptr;
   const Domaine_VDF& domaine = ref_cast(Domaine_VDF, equation().domaine_dis().valeur());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces(),
                     &dh_e = equation().milieu().diametre_hydraulique_elem();
-  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
-                   &press = ref_cast(QDM_Multiphase, equation()).pression().passe(), &temp = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
+  const DoubleTab& inco = ch.valeurs(), &pvit = ch.passe(), &vfd = domaine.volumes_entrelaces_dir(), &alpha = pbm.equation_masse().inconnue().passe(),
+                   &press = ref_cast(QDM_Multiphase, equation()).pression().passe(), &temp = pbm.equation_energie().inconnue().passe(),
                     &rho = equation().milieu().masse_volumique().passe(), &mu = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
 
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());

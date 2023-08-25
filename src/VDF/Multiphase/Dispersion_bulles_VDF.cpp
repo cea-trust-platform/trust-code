@@ -38,15 +38,16 @@ Entree& Dispersion_bulles_VDF::readOn(Entree& is)
 
 void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Champ_Face_VDF& ch = ref_cast(Champ_Face_VDF, equation().inconnue().valeur());
   const Domaine_VF& domaine = ref_cast(Domaine_VF, equation().domaine_dis().valeur());
   const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& pf = equation().milieu().porosite_face(), &vf = domaine.volumes_entrelaces();
   const DoubleTab& vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleTab& pvit = ch.passe(),
-                   &alpha = ref_cast(Pb_Multiphase, equation().probleme()).equation_masse().inconnue().passe(),
-                    &press = ref_cast(QDM_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_qdm()).pression().passe(),
-                     &temp  = ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().inconnue().passe(),
+                   &alpha = pbm.equation_masse().inconnue().passe(),
+                    &press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression().passe(),
+                     &temp  = pbm.equation_energie().inconnue().passe(),
                       &rho   = equation().milieu().masse_volumique().passe(),
                        &mu    = ref_cast(Fluide_base, equation().milieu()).viscosite_dynamique().passe();
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
@@ -69,7 +70,7 @@ void Dispersion_bulles_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
 
   DoubleTab grad_f_a(nf_tot, N);
   assert ( alpha.dimension_tot(0) == ne_tot );
-  const Masse_Multiphase& eq_alp = ref_cast(Masse_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_masse());
+  const Masse_Multiphase& eq_alp = ref_cast(Masse_Multiphase, pbm.equation_masse());
   const Operateur_Grad& Op_Grad_alp = eq_alp.operateur_gradient_inconnue();
   Op_Grad_alp.calculer(alpha,grad_f_a); // compute grad(diss) at faces
 
