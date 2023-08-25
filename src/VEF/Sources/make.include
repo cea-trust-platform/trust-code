@@ -40,4 +40,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VEF/Sources/PDC\
 	
 
-Lib = $(TRUST_LIB)/libsovef
+Lib = $(TRUST_LIB)/libvef_sources

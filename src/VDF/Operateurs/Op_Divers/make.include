@@ -29,4 +29,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF\
 	
 
-Lib = $(TRUST_LIB)/libopvdf_divers
+Lib = $(TRUST_LIB)/libvdf_operateurs_divers

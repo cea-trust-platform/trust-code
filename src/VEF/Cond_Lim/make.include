@@ -20,4 +20,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VEF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libvefcl
+Lib = $(TRUST_LIB)/libvef_cond_lim

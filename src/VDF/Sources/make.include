@@ -39,4 +39,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Sources/Sources_It_Eval\
 	
 
-Lib = $(TRUST_LIB)/libsovdf
+Lib = $(TRUST_LIB)/libvdf_sources

@@ -23,4 +23,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libvdfcl
+Lib = $(TRUST_LIB)/libvdf_cond_lim

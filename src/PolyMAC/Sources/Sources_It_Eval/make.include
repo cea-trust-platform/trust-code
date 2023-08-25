@@ -30,4 +30,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Correlations\
 	-I$(TRUST_ROOT)/src/ThSol\
 
-Lib = $(TRUST_LIB)/libsopolymac_using_it_eval
+Lib = $(TRUST_LIB)/libpolymac_sources_using_it_eval

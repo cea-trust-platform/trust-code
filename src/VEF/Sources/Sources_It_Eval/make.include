@@ -37,4 +37,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VEF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libsovef_using_it_eval
+Lib = $(TRUST_LIB)/libvef_sources_using_it_eval

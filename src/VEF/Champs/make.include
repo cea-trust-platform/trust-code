@@ -29,4 +29,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VEF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libchvef
+Lib = $(TRUST_LIB)/libvef_champs

@@ -46,4 +46,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 
-Lib = $(TRUST_LIB)/liboppolymac_divers
+Lib = $(TRUST_LIB)/libpolymac_operateurs_divers

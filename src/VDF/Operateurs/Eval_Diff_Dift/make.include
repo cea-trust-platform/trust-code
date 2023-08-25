@@ -28,4 +28,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Cond_Lim\
 	
 
-Lib = $(TRUST_LIB)/libevalvdf_diff_dift
+Lib = $(TRUST_LIB)/libvdf_eval_diff_dift

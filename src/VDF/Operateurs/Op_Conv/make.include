@@ -31,4 +31,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/VDF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libopvdf_conv
+Lib = $(TRUST_LIB)/libvdf_operateurs_conv

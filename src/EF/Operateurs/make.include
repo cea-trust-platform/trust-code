@@ -23,4 +23,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 
-Lib = $(TRUST_LIB)/libopef
+Lib = $(TRUST_LIB)/libef_operateurs
