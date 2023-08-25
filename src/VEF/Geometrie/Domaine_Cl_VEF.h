@@ -60,6 +60,7 @@ public:
   inline DoubleTab& vecteur_face_facette_Cl() { return vecteur_face_facette_Cl_; }
   inline const DoubleTab& vecteur_face_facette_Cl() const { return vecteur_face_facette_Cl_; }
   inline int type_elem_Cl(int i) const { return type_elem_Cl_[i]; }
+  inline const IntVect& type_elem_Cl() const { return type_elem_Cl_; }
 
   int nb_faces_sortie_libre() const;
   Domaine_VEF& domaine_vef();

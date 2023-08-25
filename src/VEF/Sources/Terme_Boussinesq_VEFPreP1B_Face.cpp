@@ -22,7 +22,7 @@
 #include <Domaine_VEF.h>
 #include <Synonyme_info.h>
 
-extern double calculer_coef_som(int elem, int& nb_face_diri, ArrOfInt& indice_diri, const Domaine_Cl_VEF& zcl, const Domaine_VEF& domaine_VEF);
+extern double calculer_coef_som(int elem, int dimension, int& nb_face_diri, int* indice_diri);
 
 Implemente_instanciable(Terme_Boussinesq_VEFPreP1B_Face,"Boussinesq_VEFPreP1B_P1NC",Terme_Boussinesq_VEF_Face);
 Add_synonym(Terme_Boussinesq_VEFPreP1B_Face,"Boussinesq_temperature_VEFPreP1B_P1NC");
@@ -137,14 +137,16 @@ DoubleTab& Terme_Boussinesq_VEFPreP1B_Face::ajouter(DoubleTab& resu) const
   int modif_traitement_diri=( sub_type(Domaine_VEF,domaine_VEF) ? ref_cast(Domaine_VEF,domaine_VEF).get_modif_div_face_dirichlet() : 0);
   modif_traitement_diri = 0; // Forcee a 0 car ne marche pas d'apres essais Ulrich&Thomas
   int nb_face_diri=0;
-  ArrOfInt indice_diri(dimension+1);
+  int indice_diri[4];
 
   // Boucle sur les elements:
   int nb_elem_tot=domaine_VEF.nb_elem_tot();
   for (int elem=0; elem<nb_elem_tot; elem++)
     {
+      int rang_elem = domaine_VEF.rang_elem_non_std()(elem);
+      int type_elem = rang_elem < 0 ? 0 : domaine_Cl_VEF.type_elem_Cl(rang_elem);
       if (modif_traitement_diri)
-        calculer_coef_som(elem,nb_face_diri,indice_diri,domaine_Cl_VEF,domaine_VEF);
+        calculer_coef_som(type_elem, dimension,nb_face_diri,indice_diri);
 
       double volume=volumes(elem);
       for (int i=0; i<nbpts; i++)
