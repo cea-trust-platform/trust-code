@@ -11,8 +11,20 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Operateurs\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/VDF\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Cond_Lim\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Loi_Etat\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Sources\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Milieu\
+	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Sources\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
