@@ -12,7 +12,6 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Equations\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Common/Loi_Etat\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Equations\
-	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Loi_Etat\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Weakly_Compressible/Milieu\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
