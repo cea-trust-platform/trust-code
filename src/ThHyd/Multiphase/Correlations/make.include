@@ -21,4 +21,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Problems\
 	
 
-Lib = $(TRUST_LIB)/libmultiphase_correlations
+Lib = $(TRUST_LIB)/libthhyd_multiphase_correlations

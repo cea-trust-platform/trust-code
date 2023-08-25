@@ -7,4 +7,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libinterp_ibm
+Lib = $(TRUST_LIB)/libkernel_geometrie_interp_ibm

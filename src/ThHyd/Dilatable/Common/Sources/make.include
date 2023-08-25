@@ -10,4 +10,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
 	
 
-Lib = $(TRUST_LIB)/libthhyddilatable_common_sources
+Lib = $(TRUST_LIB)/libthhyd_dilatable_common_sources

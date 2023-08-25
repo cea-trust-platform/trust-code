@@ -16,4 +16,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
 	
 
-Lib = $(TRUST_LIB)/libthhydwc_equations
+Lib = $(TRUST_LIB)/libthhyd_wc_equations

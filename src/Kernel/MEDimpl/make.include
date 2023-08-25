@@ -12,4 +12,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libmedi
+Lib = $(TRUST_LIB)/libkernel_med_impl

@@ -13,4 +13,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
 	
 
-Lib = $(TRUST_LIB)/libhydturbbase
+Lib = $(TRUST_LIB)/libthhyd_turbulence_base

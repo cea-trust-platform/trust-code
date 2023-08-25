@@ -8,4 +8,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/MAIN\
 	
 
-Lib = $(TRUST_LIB)/libicoco
+Lib = $(TRUST_LIB)/libkernel_icoco

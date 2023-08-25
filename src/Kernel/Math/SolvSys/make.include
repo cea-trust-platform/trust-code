@@ -9,4 +9,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	
 
-Lib = $(TRUST_LIB)/libsolvsys
+Lib = $(TRUST_LIB)/libkernel_math_solveurs_sys

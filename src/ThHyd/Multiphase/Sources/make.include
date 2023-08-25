@@ -30,4 +30,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces\
 
 
-Lib = $(TRUST_LIB)/libmultiphase_sources
+Lib = $(TRUST_LIB)/libthhyd_multiphase_sources

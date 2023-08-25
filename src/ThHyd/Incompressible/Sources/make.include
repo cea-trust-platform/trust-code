@@ -23,4 +23,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Problems\
 	
 
-Lib = $(TRUST_LIB)/libthhydinc_sources
+Lib = $(TRUST_LIB)/libthhyd_incompressible_sources

@@ -18,4 +18,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	
 
-Lib = $(TRUST_LIB)/libnoyau
+Lib = $(TRUST_LIB)/libkernel_framework

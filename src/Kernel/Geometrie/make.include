@@ -8,4 +8,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Geometrie/Decoupeur\
 	-I$(TRUST_MED_ROOT)/include\
 
-Lib = $(TRUST_LIB)/libgeom
+Lib = $(TRUST_LIB)/libkernel_geometrie

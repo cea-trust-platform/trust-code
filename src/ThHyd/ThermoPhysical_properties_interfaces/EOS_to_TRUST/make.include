@@ -5,4 +5,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/ThermoPhysical_properties_interfaces\
 
 
-Lib = $(TRUST_LIB)/libeos2trust
+Lib = $(TRUST_LIB)/libthhyd_eos2trust

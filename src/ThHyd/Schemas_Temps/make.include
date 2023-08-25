@@ -21,4 +21,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Schemas_Temps\
 	
 
-Lib = $(TRUST_LIB)/libschtpsthyd
+Lib = $(TRUST_LIB)/libthhyd_schema_temps

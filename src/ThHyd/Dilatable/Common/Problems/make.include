@@ -24,4 +24,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Traitement_particulier\
 	
 
-Lib = $(TRUST_LIB)/libthhyddilatable_common_problems
+Lib = $(TRUST_LIB)/libthhyd_dilatable_common_problems
