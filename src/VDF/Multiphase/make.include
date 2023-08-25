@@ -28,4 +28,4 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase/Turbulence\
 	-I$(TRUST_ROOT)/src/ThHyd/Multiphase\
 
-Lib = $(TRUST_LIB)/libmultiphaseVDF
+Lib = $(TRUST_LIB)/libvdf_multiphase

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,27 +13,25 @@
 *
 *****************************************************************************/
 
-#ifndef Terme_Puissance_Thermique_QC_VDF_Elem_included
-#define Terme_Puissance_Thermique_QC_VDF_Elem_included
+#include <Terme_Puissance_Thermique_QC_VDF_Elem.h>
 
-#include <Terme_Puissance_Thermique_VDF_base.h>
-#include <Eval_Puiss_Th_QC_VDF_Elem.h>
-#include <Iterateur_Source_Elem.h>
+#include <Discretisation_base.h>
+#include <Probleme_base.h>
 
-/*! @brief class Terme_Puissance_Thermique_QC_VDF_Elem Cette classe represente un terme source de l'equation de la thermique
- *
- *  du type degagement volumique de puissance thermique
- *
- * @sa Terme_Puissance_Thermique, Terme_Source_VDF_base
- */
-class Terme_Puissance_Thermique_QC_VDF_Elem : public Terme_Puissance_Thermique_VDF_base
+Implemente_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VDF_Elem,"Puissance_Thermique_QC_VDF_P0_VDF",Terme_Puissance_Thermique_VDF_base);
+
+Sortie& Terme_Puissance_Thermique_QC_VDF_Elem::printOn(Sortie& s) const { return s << que_suis_je(); }
+Entree& Terme_Puissance_Thermique_QC_VDF_Elem::readOn(Entree& s) { return Terme_Puissance_Thermique_VDF_base::readOn(s); }
+
+void Terme_Puissance_Thermique_QC_VDF_Elem::associer_domaines(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis)
 {
-  Declare_instanciable_sans_constructeur(Terme_Puissance_Thermique_QC_VDF_Elem);
-public:
-  Terme_Puissance_Thermique_QC_VDF_Elem() : Terme_Puissance_Thermique_VDF_base(Iterateur_Source_Elem<Eval_Puiss_Th_QC_VDF_Elem>()) { }
-  void associer_domaines(const Domaine_dis&, const Domaine_Cl_dis& ) override;
-  void associer_pb(const Probleme_base& ) override;
-  void mettre_a_jour(double temps) override { Terme_Puissance_Thermique::mettre_a_jour(temps); }
-};
+  Terme_Puissance_Thermique_VDF_base::associer_domaines(domaine_dis,domaine_cl_dis);
+  Eval_Puiss_Th_QC_VDF_Elem& eval_puis = static_cast<Eval_Puiss_Th_QC_VDF_Elem&> (iter->evaluateur());
+  eval_puis.associer_domaines(domaine_dis.valeur(),domaine_cl_dis.valeur());
+}
 
-#endif /* Terme_Puissance_Thermique_QC_VDF_Elem_included */
+void Terme_Puissance_Thermique_QC_VDF_Elem::associer_pb(const Probleme_base& pb)
+{
+  Eval_Puiss_Th_QC_VDF_Elem& eval_puis = static_cast<Eval_Puiss_Th_QC_VDF_Elem&> (iter->evaluateur());
+  eval_puis.associer_puissance(la_puissance);
+}
