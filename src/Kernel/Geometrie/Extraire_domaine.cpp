@@ -42,7 +42,7 @@ Entree& Extraire_domaine::interpreter_(Entree& is)
   if (dimension==3)
     condition_elements.addVar("z");
 
-  ArrOfDouble origine,point1,point2,point3;
+  //ArrOfDouble origine,point1,point2,point3;
   // int avec_les_bords;
   Param param(que_suis_je());
   param.ajouter("domaine",&nom_dom,Param::REQUIRED);

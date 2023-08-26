@@ -106,7 +106,7 @@ void Op_EF_base::dimensionner(const Domaine_EF& le_dom,
     }
   int nb_coeff=(int)(nb_elem_tot*(nb_som_elem*(nb_som_elem)))+extra_nb_coeff;
   la_matrice.dimensionner(nb_som*nb_comp,nfin*nb_comp,0);
-  IntTab Indice(nb_coeff,2),p(1,2);
+  IntTab Indice(nb_coeff,2);//p(1,2);
   int tot=0;
   for (int elem=0; elem<nb_elem_tot; elem++)
     {
@@ -539,7 +539,7 @@ int Op_EF_base::elem_contribue(const int elem) const
   return 1;
 }
 
-void  Op_EF_base::marque_elem(const Equation_base& eqn)
+void Op_EF_base::marque_elem(const Equation_base& eqn)
 {
   try
     {
@@ -550,7 +550,7 @@ void  Op_EF_base::marque_elem(const Equation_base& eqn)
         if (marq(n)>0)
           marqueur_elem_[n]=1;
     }
-  catch  (Champs_compris_erreur& err_)
+  catch  (Champs_compris_erreur&)
     {
     }
 

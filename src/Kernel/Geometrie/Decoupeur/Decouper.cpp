@@ -371,7 +371,7 @@ void Decouper::ecrire(IntVect& elem_part, const Static_Int_Lists* som_raccord)
 int Decouper::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   int retval = 1;
-  Motcle motlu;
+  //Motcle motlu;
   if (mot=="partitionneur|partition_tool")
     {
       Cerr<<"domaine = "<<nom_domaine<<finl;

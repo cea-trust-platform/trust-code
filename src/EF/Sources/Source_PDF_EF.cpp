@@ -605,7 +605,7 @@ DoubleTab& Source_PDF_EF::ajouter_(const DoubleTab& vitesse, DoubleTab& resu, co
   ArrOfDouble tuvw(dimension);
   const DoubleTab& rotation=champ_rotation_.valeurs();
   const DoubleTab& aire=champ_aire_.valeurs();
-  Champ_Don rho_test;
+  //Champ_Don rho_test;
   //champ_rho_.valeur().affecter(equation().probleme().get_champ("masse_volumique"));
   const DoubleTab& rho_m=champ_rho_.valeurs();
   DoubleTab pond;

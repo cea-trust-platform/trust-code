@@ -448,7 +448,6 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_aretes(const DoubleTab& vit, DoubleTab& d
   int npa = domaine_VEF.numero_premiere_arete();
   int nb_elem_tot = domaine.nb_elem_tot();
   int elem, comp;
-  ArrOfDouble sigma(dimension);
 
   const IntTab& aretes_som = domaine_VEF.domaine().aretes_som();
   const IntTab& elem_aretes = domaine_VEF.domaine().elem_aretes();

@@ -45,7 +45,7 @@ void Terme_Source_Qdm_Face_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, Do
                D = dimension, calc_cl = !sub_type(Domaine_PolyMAC_P0, domaine); //en PolyMAC_P0P1NC V1, on calcule aux CL
 
   /* contributions aux faces (par chaque voisin), aux elems */
-  DoubleTrav a_f(N), rho_f(N), val_f(N), rho_m(2);
+  DoubleTrav a_f(N), rho_m(2);
   for (a_f = 1, f = 0; f < domaine.nb_faces(); f++)
     if (!fcl(f, 0)) //face interne
       {

@@ -71,7 +71,7 @@ const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle
     {
       return Convection_Diffusion_Espece_Fluide_Dilatable_base::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 // a revoir ..... a mon avis
@@ -79,7 +79,7 @@ const Champ_base& Convection_Diffusion_Espece_Multi_base::get_champ(const Motcle
     {
       return probleme().equation(0).get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   throw Champs_compris_erreur();

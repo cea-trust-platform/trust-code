@@ -195,7 +195,7 @@ void Traitement_particulier_NS_canal::preparer_calcul_particulier()
         oui_profil_Temp = 1 ;
         Nval=18;
       }
-    catch (Champs_compris_erreur& err_)
+    catch (Champs_compris_erreur&)
       {
       }
 
@@ -302,7 +302,7 @@ void Traitement_particulier_NS_canal::reprendre_stat_canal(DoubleTab& val, const
 {
   double tps,tps_deb_moy;
   int NN,Nv,Np;
-  Nom temps;
+  //Nom temps;
 
   EFichier fic(fichier);
   fic.setf(ios::scientific);

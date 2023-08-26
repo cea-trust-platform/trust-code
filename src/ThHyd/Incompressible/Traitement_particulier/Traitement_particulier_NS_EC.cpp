@@ -50,7 +50,7 @@ Entree& Traitement_particulier_NS_EC::readOn(Entree& is)
 Entree& Traitement_particulier_NS_EC::lire(Entree& is)
 {
   Motcle accouverte = "{" , accfermee = "}" ;
-  Motcle valec="Ec";
+  //Motcle valec="Ec";
   Motcle motbidon, motlu;
   periode = mon_equation->probleme().schema_temps().pas_temps_min();
   is >> motbidon ;

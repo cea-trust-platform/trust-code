@@ -281,7 +281,7 @@ void gradient_biconjugue(DoubleTab A, int n, DoubleVect b, DoubleVect& x, int& s
   DoubleVect p(n) ;
   DoubleVect p_tilda(n);
   DoubleVect q(n) ;
-  DoubleVect u(n);
+  //DoubleVect u(n);
   double r_norme, b_norme = norme_array(b);
 
   int i,j;

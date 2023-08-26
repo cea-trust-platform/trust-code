@@ -135,7 +135,7 @@ int Param::read(Entree& is, int with_acco)
 void Param::print(Sortie& s) const
 {
 
-  Motcle motlu;
+  //Motcle motlu;
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   s << accolade_ouverte << finl;

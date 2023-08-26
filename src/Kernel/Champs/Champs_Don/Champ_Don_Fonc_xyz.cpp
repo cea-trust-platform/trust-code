@@ -24,7 +24,7 @@ Sortie& Champ_Don_Fonc_xyz::printOn(Sortie& os) const { return TRUSTChamp_Don_ge
 Entree& Champ_Don_Fonc_xyz::readOn(Entree& is)
 {
   int dim;
-  Motcle motlu;
+  //Motcle motlu;
   Nom nom;
   is >> nom;
 

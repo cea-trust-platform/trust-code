@@ -194,7 +194,7 @@ Entree& Sonde::readOn(Entree& is)
 {
   assert(mon_post.non_nul());
   Motcle motlu;
-  Motcle accolade_ouverte("{");
+  //Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   int nbre_points;
 

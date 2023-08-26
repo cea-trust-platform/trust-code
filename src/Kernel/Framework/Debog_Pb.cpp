@@ -326,7 +326,7 @@ void Debog_Pb::read_geometry_data()
           {
             f >> xa_seq;
           }
-        catch (Entree_Sortie_Error& err_)
+        catch (Entree_Sortie_Error&)
           {
             avec_aretes = 0;
           }

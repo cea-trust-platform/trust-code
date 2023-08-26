@@ -142,7 +142,7 @@ Entree& Champ_Fonc_reprise::readOn(Entree& s)
   // Ouverture du fichier
   statistiques().begin_count(temporary_counter_);
   Nom ident_lu;
-  Nom type_objet_lu;
+  //Nom type_objet_lu;
 
   int mode_lec_sa= EcritureLectureSpecial::mode_lec;
   DERIV(Entree_Fichier_base) fic_rep;

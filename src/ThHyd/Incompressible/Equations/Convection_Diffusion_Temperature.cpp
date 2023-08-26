@@ -102,7 +102,7 @@ int Convection_Diffusion_Temperature::lire_motcle_non_standard(const Motcle& un_
       Nom mot, nom_equation;
       int dim;
       is >> mot;
-      Motcle motlu, accolade_fermee="}", accolade_ouverte="{";
+      Motcle accolade_fermee="}", accolade_ouverte="{";
       if (mot == accolade_ouverte)
         {
           is >> mot;
@@ -316,7 +316,7 @@ const Champ_base& Convection_Diffusion_Temperature::get_champ(const Motcle& nom)
     {
       return Convection_Diffusion_std::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 

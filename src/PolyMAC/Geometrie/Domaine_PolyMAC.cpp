@@ -473,7 +473,7 @@ void Domaine_PolyMAC::init_m2_new() const
 
 
   /* calcul sur les elements reels */
-  std::map<int, std::vector<int>> som_face; //som_face[s] : faces de l'element e touchant le sommet s
+  //std::map<int, std::vector<int>> som_face; //som_face[s] : faces de l'element e touchant le sommet s
   IntTrav nnz, nef;//par elements : nombre de coeffs non nuls, nombre de faces (lignes)
   domaine().creer_tableau_elements(nnz), domaine().creer_tableau_elements(nef);
   for (e = 0; e < nb_elem(); e++)

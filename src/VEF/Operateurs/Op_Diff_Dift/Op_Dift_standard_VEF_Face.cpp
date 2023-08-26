@@ -29,7 +29,7 @@ Sortie& Op_Dift_standard_VEF_Face::printOn(Sortie& s) const { return s << que_su
 
 Entree& Op_Dift_standard_VEF_Face::readOn(Entree& is)
 {
-  Motcle accouverte = "{", accfermee = "}", motlu;
+  Motcle accfermee = "}", motlu;
   is >> motlu;
   while (motlu != accfermee)
     {
@@ -64,8 +64,8 @@ void Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& vitesse, 
   DoubleTab& grad = ref_cast_non_const(DoubleTab, grad_);
   Debog::verifier("Op_Dift_standard_VEF_Face::ajouter_cas_vectoriel : resu 0 ", resu);
 
-  DoubleVect n(Objet_U::dimension), t(Objet_U::dimension);
-  DoubleTrav Tgrad(Objet_U::dimension, Objet_U::dimension);
+  //DoubleVect n(Objet_U::dimension), t(Objet_U::dimension);
+  //DoubleTrav Tgrad(Objet_U::dimension, Objet_U::dimension);
 
   assert(nbr_comp > 1);
 

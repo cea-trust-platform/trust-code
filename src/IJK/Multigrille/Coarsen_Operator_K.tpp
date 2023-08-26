@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,7 +25,7 @@ template<typename _TYPE_>
 void Coarsen_Operator_K::initialize_grid_data_(const Grid_Level_Data_template<_TYPE_>& fine, Grid_Level_Data_template<_TYPE_>& coarse,
                                                int additional_k_layers)
 {
-  IntTab src_dest_index;
+  //IntTab src_dest_index;
   src_dest_index_.set_smart_resize(1);
   src_dest_index_.resize(0,2);
   coarsen_coefficients_.set_smart_resize(1);

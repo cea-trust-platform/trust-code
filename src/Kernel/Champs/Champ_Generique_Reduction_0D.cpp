@@ -78,7 +78,7 @@ void Champ_Generique_Reduction_0D::set_param(Param& param)
 void Champ_Generique_Reduction_0D::completer(const Postraitement_base& post)
 {
   Champ_Gen_de_Champs_Gen::completer(post);
-  Champ source_espace_stockage;
+  //Champ source_espace_stockage;
   Motcle directive;
   directive = get_directive_pour_discr();
 
@@ -221,7 +221,7 @@ const Champ_base& Champ_Generique_Reduction_0D::get_champ(Champ& espace_stockage
   const DoubleTab& valeurs_source = valeurs_source_parts[0];   // de PolyMAC_P0P1NC (sinon : min, moyenne FAUX)
   DoubleTab&  espace_valeurs = espace_stockage->valeurs();
   const Domaine_VF& zvf = ref_cast(Domaine_VF,domaine_dis);
-  DoubleVect val_extraites(nb_comp);
+  //DoubleVect val_extraites(nb_comp);
   double val_extraite=-100.;
 
   if (nb_comp==1)

@@ -29,7 +29,7 @@ Entree& SupprimeBord::readOn(Entree& is)
 
 Entree& SupprimeBord::interpreter_(Entree& is)
 {
-  Nom nom_dom;
+  //Nom nom_dom;
   LIST(Nom) nlistbord;
   associer_domaine(is);
   Nom mot;

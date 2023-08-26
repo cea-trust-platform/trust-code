@@ -650,7 +650,7 @@ void Domaine_EF::calculer_Bij(DoubleTab& bij)
       init_gauss.Compute(dim,nbnn,npgau,xgau,frgau,dfrgau,poigau);
       ArrOfInt num(nbnn);
       interface_CALCULBIJ CALCULBIJ;
-      DoubleTab xl(dimension,nbnn),bijl(dimension,nbnn),poro;
+      DoubleTab xl(dimension,nbnn),bijl(dimension,nbnn);
       DoubleTab detj(npgau),ajm1(npgau*9),aj(npgau*9),df(npgau*nbnn*3),iphi(nbnn);
       int ip=0;
       const DoubleTab& coord=domaine().coord_sommets();

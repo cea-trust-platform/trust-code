@@ -407,14 +407,14 @@ const Champ_base& Fluide_Dilatable_base::get_champ(const Motcle& nom) const
     {
       return Fluide_base::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   try
     {
       return loi_etat_->get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   throw Champs_compris_erreur();

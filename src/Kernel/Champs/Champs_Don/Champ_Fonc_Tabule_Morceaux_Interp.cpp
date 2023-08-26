@@ -62,7 +62,7 @@ int Champ_Fonc_Tabule_Morceaux_Interp::initialiser(const double tps)
 void Champ_Fonc_Tabule_Morceaux_Interp::mettre_a_jour(double time)
 {
 
-  DoubleTab& tab = valeurs(), vide;
+  DoubleTab& tab = valeurs();
   std::vector<const DoubleTab* > pval; /* valeurs des parametres */
   std::vector<bool> is_multi; /* true si le champ correspondant est multi_composantes */
   pval.reserve(ch_param_interp.size()), is_multi.reserve(ch_param_interp.size());

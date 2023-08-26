@@ -119,7 +119,7 @@ inline int verifier_complet(const Assembleur_P_VEFPreP1B& ass,
   const Solveur_Masse& solvm=eqn.solv_masse();
   const DoubleTab& pression=eqn.pression().valeurs();
   DoubleTab tab(pression);
-  DoubleTab resu(tab), resu2(tab), erreur(tab);
+  DoubleTab resu(tab), resu2(tab);
 
   // On calcule un champ de pression quelconque
   exemple_champ_non_homogene(domaine_VEF, tab);
@@ -2391,16 +2391,16 @@ void modifieP1P1neumann(const Domaine_dis_base& z,
                         const DoubleTab& inverse_quantitee_entrelacee, const ArrOfDouble& coef_som)
 {
 
-  int dimension=Objet_U::dimension;
+  //int dimension=Objet_U::dimension;
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
   //  const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
 
   //  int nnz=nb_som;
-  ArrOfInt sommets(dimension+2);
-  ArrOfInt face_opp1(dimension+2);
-  ArrOfInt face_opp2(dimension+2);
+  //ArrOfInt sommets(dimension+2);
+  //ArrOfInt face_opp1(dimension+2);
+  //ArrOfInt face_opp2(dimension+2);
   Matrice_Bloc& A=ref_cast(Matrice_Bloc, matrice.valeur());
   Matrice_Morse_Sym& ARR=ref_cast(Matrice_Morse_Sym, A.get_bloc(0,0).valeur());
   // Faces de bord :
@@ -2810,16 +2810,16 @@ void updateP1Pa(const Domaine_dis_base& z,
 {
   int dimension=Objet_U::dimension;
   const Domaine_VEF& domaine_VEF=ref_cast(Domaine_VEF, z);
-  const Domaine& domaine=domaine_VEF.domaine();
+  //const Domaine& domaine=domaine_VEF.domaine();
   const Domaine_Cl_VEF& domaine_Cl_VEF=ref_cast(Domaine_Cl_VEF, zcl);
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nint = domaine_VEF.premiere_face_int();
   int nb_faces = domaine_VEF.nb_faces_tot();
   int elem1, elem2, face, ok;
-  int nb_som = domaine.nb_som_tot();
-  IntLists voisins(nb_som);
-  DoubleLists coeffs(nb_som);
+  //int nb_som = domaine.nb_som_tot();
+  //IntLists voisins(nb_som);
+  //DoubleLists coeffs(nb_som);
   ArrOfInt sommets(dimension+2);
   ArrOfInt face_opp1(dimension+2);
   ArrOfInt face_opp2(dimension+2);

@@ -82,7 +82,7 @@ void Op_Diff_P1NC_barprim::calculer_divergence(const DoubleTab& grad, const Doub
   int nfe = domaine.nb_faces_elem();
   int nb_elem_tot = domaine.nb_elem_tot();
   int elem, indice, face, comp, comp2;
-  ArrOfDouble sigma(dimension);
+  //ArrOfDouble sigma(dimension);
   double normale;
   for (elem = 0; elem < nb_elem_tot; elem++)
     {

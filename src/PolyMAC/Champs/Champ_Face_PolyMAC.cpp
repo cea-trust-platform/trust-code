@@ -420,7 +420,7 @@ void Champ_Face_PolyMAC::interp_gve(const DoubleTab& inco, DoubleTab& vals) cons
 
   domaine.init_m2solv();
   //vitesses aux elements, gradient de chaque composante aux faces
-  DoubleTrav ve1(0, dimension), gve(domaine.nb_faces_tot());
+  DoubleTrav ve1(0, dimension);
   domaine.domaine().creer_tableau_elements(ve1);
   interp_ve(inco, ve1);
 

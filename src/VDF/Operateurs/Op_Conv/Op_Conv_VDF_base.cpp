@@ -467,7 +467,7 @@ void Op_Conv_VDF_base::mettre_a_jour(double temps)
       if (vd_phases_.size()) balp = equation().inconnue().valeur().valeur_aux_bords();
 
       int i, e, f, d, D = dimension, n, m, N = vcc.line_size(), M = vit.line_size();
-      DoubleTrav cc_f(N); //valeur du champ convecte aux faces
+      //DoubleTrav cc_f(N); //valeur du champ convecte aux faces
 
       if (cc_phases_.size())
         for (n = 0, m = 0; n < N; n++, m += (M > 1))

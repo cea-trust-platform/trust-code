@@ -330,7 +330,7 @@ DoubleTab& Op_Dift_VEF_P1NCP1B_Face::calculer_divergence_elem(double nu, const D
   const int nfe = domaine_VEF.domaine().nb_faces_elem(), nb_elem_tot = domaine_VEF.domaine().nb_elem_tot();
 
   int elem, indice, face, compi, compj;
-  ArrOfDouble sigma(dimension);
+  //ArrOfDouble sigma(dimension);
   for (elem = 0; elem < nb_elem_tot; elem++)
     {
       double nu_tot = nu + nu_turb(elem);

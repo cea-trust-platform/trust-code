@@ -573,7 +573,7 @@ int Op_Diff_RotRot::tester() const
   Solv_GCP& solv = ref_cast_non_const(Solv_GCP, solveur_.valeur());
 
   DoubleTab resultat(la_matrice.ordre());
-  DoubleTab resultat1(la_matrice.ordre());
+  //DoubleTab resultat1(la_matrice.ordre());
   DoubleTab secmem(la_matrice.ordre());
   DoubleTab secmem1(la_matrice.ordre());
   secmem = 0.;

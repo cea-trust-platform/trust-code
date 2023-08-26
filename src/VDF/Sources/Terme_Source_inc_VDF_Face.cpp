@@ -137,7 +137,7 @@ void Terme_Source_inc_VDF_Face::ajouter_blocs(matrices_t matrices, DoubleTab& se
   DoubleTab uij_filt_1(cell_cent_vel);
   DoubleTab uij_filt_2(cell_cent_vel);
   DoubleTab uij_filt_3(cell_cent_vel);
-  DoubleTab uij_filt(nb_elem,dimension,dimension);
+  //DoubleTab uij_filt(nb_elem,dimension,dimension);
   for (element_number=0 ; element_number<nb_elem ; element_number ++)
     {
       //       Cerr << me() << " " << element_number << finl;

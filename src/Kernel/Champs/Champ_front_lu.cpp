@@ -52,7 +52,7 @@ Sortie& Champ_front_lu::printOn(Sortie& os) const
 Entree& Champ_front_lu::readOn(Entree& is)
 {
   int dim;
-  Motcle motlu;
+  //Motcle motlu;
   Nom nom;
   is >> nom;
 

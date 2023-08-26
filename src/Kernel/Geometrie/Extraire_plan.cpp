@@ -114,7 +114,7 @@ Entree& Extraire_plan::interpreter_(Entree& is)
         {
           ArrOfDouble& A=(ori==0?origine:point3);
           ArrOfDouble& D=(ori!=0?origine:point3);
-          ArrOfDouble normal2(3),prov(3),zero(3);
+          ArrOfDouble normal2(3),prov(3);
           for (int te=0; te<2; te++)
             {
               ArrOfDouble& B=(te==0?point1:point2);

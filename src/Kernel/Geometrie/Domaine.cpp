@@ -279,7 +279,7 @@ Entree& Domaine::lire_bords_a_imprimer(Entree& is)
       exit();
     }
   is >> nom_lu;
-  while (nom_lu != "}")
+  while (nom_lu != accolade_fermee)
     {
       Cerr << nom_lu << " ";
       bords_a_imprimer_.add(Nom(nom_lu));
@@ -302,7 +302,7 @@ Entree& Domaine::lire_bords_a_imprimer_sum(Entree& is)
       exit();
     }
   is >> nom_lu;
-  while (nom_lu != "}")
+  while (nom_lu != accolade_fermee)
     {
       Cerr << nom_lu << " ";
       bords_a_imprimer_sum_.add(Nom(nom_lu));
@@ -960,9 +960,10 @@ void Domaine::fill_from_list(std::list<Domaine*>& lst)
   for(auto& elem: lst)
     elem->comprimer();
 
+#ifndef NDEBUG
   Domaine& fst_dom = *lst.front();
   Nom typ_elem = fst_dom.type_elem()->que_suis_je();
-
+#endif
   for(auto& it: lst)
     {
       Domaine& dom2 = *it;
@@ -2278,7 +2279,7 @@ void Domaine::build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const
   // Then we can simply identify cells by their nodal connectivity:
   DataArrayIdType * mP;
   mc_face_mesh_->areCellsIncludedIn(faces_tmp,2, mP);
-  DAId renum(mP);
+  //DAId renum(mP);
   DAId renum2(mP->invertArrayN2O2O2N(nb_fac));
 #ifndef NDEBUG
   // All cells should be found:

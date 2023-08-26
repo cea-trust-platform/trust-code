@@ -375,8 +375,8 @@ void Op_Dift_VEF_Face_Q1::contribuer_a_avec(const DoubleTab& transporte, Matrice
   const DoubleTab& mu_turb = diffusivite_turbulente()->valeurs();
   const double mu = diffusivite(0);
 
-  DoubleVect n(dimension);
-  DoubleTrav Tgrad(dimension, dimension);
+  //DoubleVect n(dimension);
+  //DoubleTrav Tgrad(dimension, dimension);
   IntVect& tab1 = matrice.get_set_tab1(), &tab2 = matrice.get_set_tab2();
   DoubleVect& coeff = matrice.get_set_coeff();
 

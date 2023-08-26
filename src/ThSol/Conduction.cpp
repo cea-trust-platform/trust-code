@@ -68,7 +68,7 @@ void Conduction::set_param(Param& param)
 //  Modification par rapport a Conduction::lire_motcle_non_standard()!
 int Conduction::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  Motcle motlu;
+  //Motcle motlu;
   if (mot=="diffusion")
     {
       Cerr << "Reading and typing of the diffusion operator : " << finl;
@@ -265,7 +265,6 @@ const Solide& Conduction::solide() const
 void Conduction::creer_champ(const Motcle& motlu)
 {
   Equation_base::creer_champ(motlu);
-  Motcle nom_mot(motlu),temp_mot(nom_mot);
   /*  if (motlu == "temperature_paroi")
       {
         if (!temperature_paroi.non_nul())
@@ -290,7 +289,7 @@ const Champ_base& Conduction::get_champ(const Motcle& nom) const
     {
       return Equation_base::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
 
     }
@@ -300,7 +299,7 @@ const Champ_base& Conduction::get_champ(const Motcle& nom) const
       {
         return le_traitement_particulier->get_champ(nom);
       }
-    catch (Champs_compris_erreur& err_)
+    catch (Champs_compris_erreur&)
       {
 
       }

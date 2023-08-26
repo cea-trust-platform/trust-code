@@ -146,7 +146,7 @@ void convert_domain_to_Domaine(  const Domain& dom , Domaine& dom_trio)
 Entree& latatoother::interpreter(Entree& is)
 {
   Cerr<<"syntax  Latatoother::interpreter format_post_supp [nom_lata||NOM_DU_CAS] [nom_fichier_sortie||NOM_DU_CAS]   "<<finl;
-  Nom nom_dom, nom_lata,nom_fic;
+  Nom nom_lata,nom_fic;
   Nom format_post_supp;
   is >>format_post_supp>> nom_lata>>nom_fic ;
 
@@ -306,7 +306,7 @@ Entree& latatoother::interpreter(Entree& is)
                             exit();
 
                           }
-                        Nom type_elem=dom.lata_element_name(dom.elt_type_);
+                        //Nom type_elem=dom.lata_element_name(dom.elt_type_);
                         Noms unites(values.dimension(1));
                         Noms noms_post(values.dimension(1));
                         Cerr<<"Extraction "<< time<<" "<< geoms[i]<<" "<< fields[j].get_field_name()<<finl;

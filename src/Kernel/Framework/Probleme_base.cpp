@@ -123,7 +123,7 @@ Sortie& Probleme_base::printOn(Sortie& os) const
 Entree& Probleme_base::readOn(Entree& is)
 {
   Cerr << "Reading of the problem " << le_nom() << finl;
-  Motcle accolade_ouverte("{"), accolade_fermee("}"), motlu;
+  Motcle accolade_ouverte("{"), motlu;
   is >> motlu;
   if (motlu != accolade_ouverte)
     {
@@ -794,14 +794,14 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
         {
           champ = &equation(i).get_champ(un_nom);
         }
-      catch (Champs_compris_erreur& err_)
+      catch (Champs_compris_erreur&)
         {
         }
       try
         {
           champ = &equation(i).milieu().get_champ(un_nom);
         }
-      catch (Champs_compris_erreur& err_)
+      catch (Champs_compris_erreur&)
         {
         }
     }
@@ -813,7 +813,7 @@ bool Probleme_base::has_champ(const Motcle& un_nom) const
         {
           champ = &loi.get_champ(un_nom);
         }
-      catch(Champs_compris_erreur& err_)
+      catch(Champs_compris_erreur&)
         {
         }
     }
@@ -831,14 +831,14 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         {
           return equation(i).get_champ(un_nom);
         }
-      catch (Champs_compris_erreur& err_)
+      catch (Champs_compris_erreur&)
         {
         }
       try
         {
           return equation(i).milieu().get_champ(un_nom);
         }
-      catch (Champs_compris_erreur& err_)
+      catch (Champs_compris_erreur&)
         {
         }
     }
@@ -850,7 +850,7 @@ const Champ_base& Probleme_base::get_champ(const Motcle& un_nom) const
         {
           return loi.get_champ(un_nom);
         }
-      catch(Champs_compris_erreur& err_)
+      catch(Champs_compris_erreur&)
         {
         }
     }
@@ -917,7 +917,7 @@ const Champ_Generique_base& Probleme_base::get_champ_post(const Motcle& un_nom) 
             {
               return post.get_champ_post(un_nom);
             }
-          catch (Champs_compris_erreur& err_) { }
+          catch (Champs_compris_erreur&) { }
         }
     }
   Cerr<<" "<<finl;
@@ -1265,7 +1265,7 @@ void Probleme_base::lire_sauvegarde_reprise(Entree& is, Motcle& motlu)
   nom_fich += "_";
   nom_fich += le_nom();
   nom_fich += ".sauv";
-  Motcle accolade_ouverte("{"), accolade_fermee("}");
+  Motcle accolade_fermee("}");
   int resume_last_time = 0;
   while (1)
     {

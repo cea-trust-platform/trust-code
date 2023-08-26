@@ -298,7 +298,7 @@ void Source_base::ouvrir_fichier(SFichier& os,const Nom& type, const int flag) c
     {
       os.ouvrir(nomfichier);
       SFichier& fic=os;
-      Nom espace="\t\t";
+      //Nom espace="\t\t";
       fic << (Nom)"# Printing of the source term "+que_suis_je()+" of the equation "+equation().que_suis_je()+" of the problem "+equation().probleme().le_nom() << finl;
       fic << "# " << description() << finl;
       if (!gnuplot_header) fic << "#";

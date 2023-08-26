@@ -67,7 +67,7 @@ const Champ_base& Champ_Generique_Divergence::get_champ_without_evaluation(Champ
     }
   else
     {
-      const Noms nom = get_source(0).get_property("nom");
+      //const Noms nom = get_source(0).get_property("nom");
       Cerr<<"We can apply a Champ_Generique_Divergence only to the velocity field"<<finl;
       exit();
     }

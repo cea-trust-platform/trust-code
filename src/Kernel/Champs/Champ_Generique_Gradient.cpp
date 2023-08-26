@@ -101,7 +101,7 @@ const Champ_base& Champ_Generique_Gradient::get_champ_without_evaluation(Champ& 
     }
   else
     {
-      const Noms nom = get_source(0).get_property("nom");
+      //const Noms nom = get_source(0).get_property("nom");
       Cerr<<"We can apply a Champ_Generique_Gradient only to the pressure field"<<finl;
       Cerr<<"or to a field of type Champ_P1NC or Champ_P0_VDF at one component"<<finl;
       exit();

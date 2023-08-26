@@ -18,7 +18,10 @@
 
 #include <assert.h>
 #include <stdint.h>
+// Desactive -Wunused-variable pour nvc++:
+#pragma diag_suppress 177
 #include <Vc/Vc>
+#pragma diag_warning 177
 #include <cstdlib>
 #include <cmath>
 

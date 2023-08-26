@@ -113,7 +113,7 @@ int Assembleur_P_VEF::assembler_mat(Matrice& la_matrice, const DoubleVect& volum
   // On fixe les drapeaux de Assembleur_base
   set_resoudre_increment_pression(incr_pression);
   set_resoudre_en_u(resoudre_en_u);
-  DoubleTab inv_volumes_entrelaces;
+  //DoubleTab inv_volumes_entrelaces;
   const Domaine_Cl_VEF& domaine_Cl_VEF = le_dom_Cl_VEF.valeur();
   DoubleTab inverse_quantitee_entrelacee;
   calculer_inv_volume(inverse_quantitee_entrelacee, domaine_Cl_VEF, volumes_entrelaces);

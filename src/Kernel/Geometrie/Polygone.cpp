@@ -196,7 +196,7 @@ int Polygone::contient(const ArrOfDouble& pos_r, int num_poly ) const
   const Domaine& domaine=mon_dom.valeur();
   const IntTab& elem=domaine.les_elems();
   const DoubleTab& coord=domaine.coord_sommets();
-  DoubleTab pos(3,dimension);
+  //DoubleTab pos(3,dimension);
   // on decoupe le polygone en triangle ayany tous le sommet 0.
 
   int s0=elem(num_poly,0);

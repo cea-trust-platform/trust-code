@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -146,7 +146,7 @@ int Solv_GCP_NS::resoudre_systeme(const Matrice_Base& matrice,
   DoubleVect F1(X1);
   if (X1.size_totale()!=n1) erreur();
 
-  DoubleVect resu(solution);
+  //DoubleVect resu(solution);
 
   // Creation de tableaux distribues X0 et F0 sur les elements
   //DoubleVect X0;

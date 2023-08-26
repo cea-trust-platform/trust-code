@@ -469,7 +469,7 @@ DoubleTab Domaine_VF::normalized_boundaries_outward_vector(int global_face_numbe
   int neighbor_elem=neighbor_faces(global_face_number,0);
   if( neighbor_elem == -1 )
     neighbor_elem = neighbor_faces(global_face_number,1);
-  DoubleTab vector_face_elem(dimension);
+  //DoubleTab vector_face_elem(dimension);
   double inner_product=0;
   for(int i=0; i<dimension; i++)
     {

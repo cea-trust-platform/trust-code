@@ -417,7 +417,7 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn, DoubleTab& current, DoubleT
   Operateur_Grad& op_grad = eqnNS.operateur_gradient();
   Operateur_Div& op_div = eqnNS.operateur_divergence();
 
-  DoubleTrav dv(current), dP(pression); //corrections en vitesse / pression
+  DoubleTrav dv(current); //, dP(pression); //corrections en vitesse / pression
 
   /* etape de prediction : current <- v(0) ne verifiant pas div = 0 */
   DoubleTrav secmem_NS(current), v_new(current);
@@ -436,7 +436,7 @@ void Piso::iterer_NS_PolyMAC(Navier_Stokes_std& eqn, DoubleTab& current, DoubleT
       DoubleTrav sol_M(pression), secmem_M(pression);
       /* resolution en (dt * dp(i), dv(i)) */
       //second membre : divergence, NS
-      DoubleTab_parts p_sec(secmem_M), p_sol(sol_M), p_v(v_new), p_res(secmem_NS); //p_sec/sol[0] -> elements, p_sec/sol[1] -> faces
+      DoubleTab_parts p_sec(secmem_M), p_sol(sol_M); //p_sec/sol[0] -> elements, p_sec/sol[1] -> faces
       //bloc superieur : div v(i-1)
       op_div.ajouter(v_new, p_sec[0]);
       //bloc inferieur : residu de l'etape de prediction

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ inline int tokenize_string_if_double(const std::string line, std::vector<std::st
         std::stod(s);
         result.push_back(s);
       }
-    catch (std::exception& e) { return 0; }
+    catch (std::exception&) { return 0; }
   return 1;
 }
 
@@ -44,7 +44,7 @@ Entree& Champ_front_Tabule_lu::readOn(Entree& is)
   const int nb_comp_ = lire_dimension(is, que_suis_je());
 
   // read name of the column file
-  Nom column_file, nomlu;
+  Nom column_file;
   is >> column_file;
 
   // open column file

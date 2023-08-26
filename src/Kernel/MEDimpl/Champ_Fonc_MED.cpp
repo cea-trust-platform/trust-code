@@ -187,7 +187,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
             {
               DataArrayIdType *dnup1=nullptr, *dnup2=nullptr;
               root_um->checkGeoEquivalWith(new_um, /* levOfCheck=  */ 2, Objet_U::precision_geom, dnup1, dnup2);
-              MCAuto<DataArrayIdType> dnu1(dnup1), dnu2(dnup2);
+              //MCAuto<DataArrayIdType> dnu1(dnup1), dnu2(dnup2);
             }
           catch(INTERP_KERNEL::Exception& e)
             {
@@ -206,7 +206,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
         Cerr<<"INFO: You can toggle the flag 'use_existing_domain' in 'Champ_Fonc_MED' to optimize reading since it seems that the domain already exists."<<finl;
       LireMED liremed(nom_fichier_med_, nom_dom_);
       dom_med_.nommer(nom_dom_);
-      Nom nom_dom_trio_non_nomme;
+      //Nom nom_dom_trio_non_nomme;
       // Remplit dom:
       liremed.associer_domaine(dom_med_);
       liremed.lire_geom(false); // false: do not create sub-dom files

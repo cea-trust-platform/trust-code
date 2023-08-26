@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -219,7 +219,7 @@ void Corriger_frontiere_periodique::corriger_coordonnees_sommets_perio(Domaine& 
 
   if (nom_fichier_post != "??")
     {
-      Domaine dom2;
+      //Domaine dom2;
       Cerr << "Writing node displacement into file: " << nom_fichier_post << finl;
       DERIV(Format_Post_base) fichier_post;
       fichier_post.typer("FORMAT_POST_LATA");
