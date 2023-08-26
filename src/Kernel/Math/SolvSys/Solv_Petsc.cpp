@@ -1587,7 +1587,7 @@ bool Solv_Petsc::enable_ksp_view( void )
   char *option_value = strdup( empty );
   PetscBool enable; // enable this option ?
   PetscOptionsGetString( PETSC_NULL, PETSC_NULL, option, option_value, empty.longueur( ), &enable );
-  Nom actual_value( option_value );
+  //Nom actual_value( option_value );
   free( option_value );
   return enable ;
 }

@@ -34,7 +34,7 @@ void Masse_VDF_base::dimensionner_blocs(matrices_t matrices, const tabs_t& semi_
 {
   const std::string& nom_inc = equation().inconnue().le_nom().getString();
   if (!matrices.count(nom_inc)) return; //rien a faire
-  Matrice_Morse& mat = *matrices.at(nom_inc), mat2;
+  Matrice_Morse& mat = *matrices.at(nom_inc);
   const DoubleTab& champ_inconnue = equation().inconnue().valeurs();
   int size = champ_inconnue.dimension_tot(0) * champ_inconnue.line_size();
 

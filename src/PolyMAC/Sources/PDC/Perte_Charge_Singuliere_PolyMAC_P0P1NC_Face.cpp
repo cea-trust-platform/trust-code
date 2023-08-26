@@ -46,7 +46,7 @@ void Perte_Charge_Singuliere_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t 
   if (!matrices.count(nom_inco) || !sub_type(Domaine_PolyMAC_P0, domaine)) return;
   Matrice_Morse& mat = *matrices.at(nom_inco), mat2;
   int i, j, e, f, n, N = equation().inconnue().valeurs().line_size(), d, D = dimension, nf_tot = domaine.nb_faces_tot();
-  DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
+  //DoubleTrav aar_f(N); //alpha * alpha * rho a chaque face
   IntTrav stencil(0, 2);
   stencil.set_smart_resize(1);
 

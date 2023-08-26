@@ -311,7 +311,7 @@ private:
     printKernel(flag, tab, kernel_name);
     return flag;
   }
-  inline bool isKernelOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name)
+  inline bool isKernelOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name="??")
   {
     bool flag = tab.isDataOnDevice() && tab_const.isDataOnDevice();
     // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:

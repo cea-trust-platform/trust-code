@@ -215,7 +215,7 @@ void Discretisation_base::champ_fixer_membres_communs(Champ_base& ch, const Doma
 void Discretisation_base::creer_champ(Champ_Inc& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, int nb_pas_dt, double temps,
                                       const Nom& directive, const Nom& nom_discretisation)
 {
-  Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
+  //Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
   ch.typer(type);
   Champ_Inc_base& chb = ch.valeur();
   chb.fixer_nb_valeurs_temporelles(nb_pas_dt);
@@ -231,7 +231,7 @@ void Discretisation_base::creer_champ(Champ_Inc& ch, const Domaine_dis_base& z, 
 void Discretisation_base::creer_champ(Champ_Fonc& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
                                       const Nom& nom_discretisation)
 {
-  Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
+  //Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
   ch.typer(type);
   Champ_Fonc_base& chb = ch.valeur();
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);
@@ -246,7 +246,7 @@ void Discretisation_base::creer_champ(Champ_Fonc& ch, const Domaine_dis_base& z,
 void Discretisation_base::creer_champ(Champ_Don& ch, const Domaine_dis_base& z, const Nom& type, const Nom& nom, const Nom& unite, int nb_comp, int nb_ddl, double temps, const Nom& directive,
                                       const Nom& nom_discretisation)
 {
-  Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
+  //Nom nomd = nom_discretisation; // Pour contourner le probleme du "static" dans type_info::nom()
   ch.typer(type);
   Champ_Don_base& chb = ch.valeur();
   champ_fixer_membres_communs(chb, z, type, nom, unite, nb_comp, nb_ddl, temps);

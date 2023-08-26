@@ -334,12 +334,13 @@ void mon_main::dowork(const Nom& nom_du_cas)
   {
     Nom nomentree = nom_du_cas;
     nomentree+=".data";
-#ifndef NDEBUG
+    /*
+    #ifndef NDEBUG
     if (Process::je_suis_maitre())
       {
         SFichier es("convert_jdd");
       }
-#endif
+    #endif */
     // La verfication est faite maintenant dans LecFicDiffuse_JDD
     // mias je garde les lignes au cas ou
     if (0)

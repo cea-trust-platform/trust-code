@@ -272,8 +272,8 @@ void Op_Diff_VEF_Anisotrope_Face::ajouter_cas_multi_scalaire(const DoubleTab& in
   int n_bord;
   int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   double valA,flux0;
-  DoubleVect n(Objet_U::dimension);
-  DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
+  //DoubleVect n(Objet_U::dimension);
+  //DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
   // dimensionning and initializing flow balance tabulars
   tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nb_comp);

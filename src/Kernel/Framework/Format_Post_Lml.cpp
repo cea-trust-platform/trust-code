@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -482,7 +482,7 @@ int Format_Post_Lml::ecrire_champ_lml(const Domaine& domaine,const Noms& unite_,
   nom_top+=domaine.le_nom();
   int dim = domaine.les_sommets().dimension(1);
   Nom nom_post = id_du_champ;
-  Nom nom_dom= domaine.le_nom();
+  //Nom nom_dom= domaine.le_nom();
 
   if (ncomp==-1)
     {

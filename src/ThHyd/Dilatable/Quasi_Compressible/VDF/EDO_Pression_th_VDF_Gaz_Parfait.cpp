@@ -224,7 +224,7 @@ double EDO_Pression_th_VDF_Gaz_Parfait::resoudre(double Pth_n)
   //  int nb_cond_lim = le_dom->nb_front_Cl();
   int ndeb, nfin, face;
   double norm;
-  DoubleVect norme(dimension);
+  //DoubleVect norme(dimension);
   for (n_bord=0; n_bord<le_dom->nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl->les_conditions_limites(n_bord);

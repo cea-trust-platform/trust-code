@@ -131,7 +131,7 @@ DoubleTab& Navier_Stokes_Fluide_Dilatable_Proto::derivee_en_temps_inco_impl(Navi
     {
       gradient_pression = eqn.get_champ("gradient_pression");
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
       Cerr<<" l'equation ne comprend pas gradient_pression "<<finl;
       Process::exit();

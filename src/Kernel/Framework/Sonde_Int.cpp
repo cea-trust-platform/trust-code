@@ -47,7 +47,6 @@ Entree& Sonde_Int::readOn(Entree& is )
 
   Probleme_base& pb = mon_post->probleme();
   Motcle motlu;
-  Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   int nbre_points;
 
@@ -57,14 +56,11 @@ Entree& Sonde_Int::readOn(Entree& is )
   is >> motlu;
   Noms liste_noms;
   pb.get_noms_champs_postraitables(liste_noms);
-  ////if (pb.comprend_mot(motlu))
-  //if (liste_noms.contient(motlu))
   for (int i=0; i<liste_noms.size(); i++)
     {
       if (liste_noms[i]==motlu)
         {
           REF(IntVect) ref_tab;
-          ////pb.a_pour_IntVect(motlu,ref_tab);
           if (pb.a_pour_IntVect(motlu,ref_tab))
             mon_tableau = ref_tab;
           else
@@ -74,14 +70,6 @@ Entree& Sonde_Int::readOn(Entree& is )
             }
         }
     }
-  /*
-      else
-      if (!ref_tab.non_nul())
-      {
-      Cerr << "The array name " << motlu << " is not understood by the problem" << finl;
-      exit();
-      }
-  */
 
   // Lecture des caracteristiques de la sonde
 

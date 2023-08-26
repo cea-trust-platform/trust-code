@@ -176,12 +176,12 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::init()
   int nb_faces_y = domaine_VDF.nb_faces_Y();
   int Ny = nb_elems/(nb_faces_y-nb_elems);
 
-  SFichier fic_moyx("moyx.dat");
-  SFichier fic_moyy("moyy.dat");
-  SFichier fic_moyz("moyz.dat");
-  SFichier fic_ransx("ransx.dat");
-  SFichier fic_ransy("ransy.dat");
-  SFichier fic_ransz("ransz.dat");
+  //SFichier fic_moyx("moyx.dat");
+  //SFichier fic_moyy("moyy.dat");
+  //SFichier fic_moyz("moyz.dat");
+  //SFichier fic_ransx("ransx.dat");
+  //SFichier fic_ransy("ransy.dat");
+  //SFichier fic_ransz("ransz.dat");
 
   tau.resize(nb_faces);
   U_RANS.resize(nb_faces);
@@ -1070,8 +1070,8 @@ void Terme_Source_Canal_RANS_LES_VDF_Face::ajouter_blocs(matrices_t matrices, Do
   //  const DoubleTab& vitesse = mon_equation->inconnue().valeurs();
 
   double vol=0;
-  SFichier fic_f("f.dat", ios::app);
-  SFichier fic_finst("finst.dat", ios::app);
+  //SFichier fic_f("f.dat", ios::app);
+  //SFichier fic_finst("finst.dat", ios::app);
 
   //double mbf = 0.; //terme de forcage instantanne ponctuel
   //   double mbf2 = 0.; //terme de forcage moyenne

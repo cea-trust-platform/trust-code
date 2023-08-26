@@ -1514,7 +1514,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
     {
       return Equation_base::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 
@@ -1523,7 +1523,7 @@ const Champ_base& Navier_Stokes_std::get_champ(const Motcle& nom) const
       {
         return le_traitement_particulier->get_champ(nom);
       }
-    catch (Champs_compris_erreur& err_)
+    catch (Champs_compris_erreur&)
       {
       }
   throw Champs_compris_erreur();

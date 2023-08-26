@@ -134,7 +134,7 @@ const Champ_base& Champ_Generique_Extraction::get_champ(Champ& espace_stockage) 
   int nb_comp_source = source_stockage.nb_comp();
   double temps = source.get_time();
 
-  Nom type_source, type_espace_stockage, disc;
+  Nom type_espace_stockage, disc;
   int nb_comp = 0;
   int nb_ddl = 0;
 

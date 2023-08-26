@@ -1250,7 +1250,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
     {
       return champs_compris_.get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
 
     }
@@ -1259,7 +1259,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
     {
       return milieu().get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   int nb_op = nombre_d_operateurs();
@@ -1270,7 +1270,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
           {
             return operateur(i).l_op_base().get_champ(nom);
           }
-        catch (Champs_compris_erreur& err_)
+        catch (Champs_compris_erreur&)
           {
 
           }
@@ -1283,7 +1283,7 @@ const Champ_base& Equation_base::get_champ(const Motcle& nom) const
           {
             return itr->get_champ(nom);
           }
-        catch (Champs_compris_erreur& err_)
+        catch (Champs_compris_erreur&)
           {
 
           }

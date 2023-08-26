@@ -202,7 +202,7 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
 
   /* elements */
   //coefficients et plein de derivees...
-  DoubleTrav dT_phi(N), da_phi(N), dT_G(N), da_G(N), nv(N, N);
+  DoubleTrav dT_G(N), da_G(N), nv(N, N);
   Flux_interfacial_base::input_t in;
   Flux_interfacial_base::output_t out;
   DoubleTab& hi = out.hi, &dT_hi = out.dT_hi, &da_hi = out.da_hi, &dP_hi = out.dp_hi;

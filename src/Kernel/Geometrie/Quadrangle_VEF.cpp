@@ -167,7 +167,7 @@ void Quadrangle_VEF::calculer_volumes(DoubleVect& volumes) const
   const Domaine& domaine=mon_dom.valeur();
   const DoubleTab& coord = domaine.coord_sommets();
   int S0,S1,S2,S3;
-  ArrOfDouble xg(dimension);
+  //ArrOfDouble xg(dimension);
   IntTab face_sommet_global;
   face_sommet_global.resize(4,2);
   DoubleTab pos(3,dimension);
@@ -230,8 +230,8 @@ void Quadrangle_VEF::reordonner()
   IntTab& elem=domaine.les_elems();
 
   ArrOfInt S(4);
-  ArrOfInt NS(4);
-  DoubleTab co(4,2);
+  //ArrOfInt NS(4);
+  //DoubleTab co(4,2);
   int num_poly;
   const int nb_elem=domaine.nb_elem();
   for (num_poly=0; num_poly<nb_elem; num_poly++)

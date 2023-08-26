@@ -120,7 +120,7 @@ int Postraitements::lire_postraitements(Entree& is, const Motcle& motlu, const P
     {
       // Lecture d'une liste
       // Lire l'accolade
-      Nom post_which_contains_statistic("");
+      //Nom post_which_contains_statistic("");
       Motcle motlu2;
       is >> motlu2;
       if (motlu2 != "{")

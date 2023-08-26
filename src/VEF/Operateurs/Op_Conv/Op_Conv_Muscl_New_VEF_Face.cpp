@@ -66,8 +66,6 @@ Sortie& Op_Conv_Muscl_New_VEF_Face::printOn(Sortie& s ) const
 Entree& Op_Conv_Muscl_New_VEF_Face::readOn(Entree& s )
 {
   //Les mots a reconnaitre
-  Motcle motlu, accouverte = "{" , accfermee = "}" ;
-  Motcle limiteur;
   Motcles les_mots(8);
   {
     les_mots[0] = "centre";

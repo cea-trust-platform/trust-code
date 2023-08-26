@@ -399,8 +399,8 @@ void Op_Diff_VEF_Face::ajouter_cas_multi_scalaire(const DoubleTab& inconnue,
   int nb_faces_elem = domaine_VEF.domaine().nb_faces_elem();
   int n_bord;
   double flux0;
-  DoubleVect n(Objet_U::dimension);
-  DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
+  //DoubleVect n(Objet_U::dimension);
+  //DoubleTrav Tgrad(Objet_U::dimension,Objet_U::dimension);
 
   // On dimensionne et initialise le tableau des bilans de flux:
   tab_flux_bords.resize(domaine_VEF.nb_faces_bord(),nb_comp);

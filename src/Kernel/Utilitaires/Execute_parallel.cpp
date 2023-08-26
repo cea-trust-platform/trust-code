@@ -185,7 +185,11 @@ Entree& Execute_parallel::interpreter(Entree& is)
               }
             catch (TRUST_Error& err)
               {
-                assert(err.get_pe()==Process::me());
+                if (err.get_pe()!=Process::me())
+                  {
+                    Cerr << err.get_pe() << " <> " << Process::me() << " in Execute_parallel::interpreter." << finl;
+                    Process::exit();
+                  }
                 ok=0;
               }
             set_Cerr_to_journal(0);

@@ -70,7 +70,7 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
   DoubleVect& fluent_ = fluent;
 
   int nfac = domaine.nb_faces_elem();
-  int nsom = domaine.nb_som_elem();
+  //int nsom = domaine.nb_som_elem();
 
 
   // Pour le traitement de la convection on distingue les polyedres
@@ -108,9 +108,9 @@ DoubleTab& Op_Conv_Centre_EF_VEF_Face::ajouter(const DoubleTab& transporte,
   //  int k;
   double f_int;
 
-  DoubleVect vs(dimension);
-  DoubleVect vc(dimension);
-  DoubleTab vsom(nsom,dimension);
+  //DoubleVect vs(dimension);
+  //DoubleVect vc(dimension);
+  //DoubleTab vsom(nsom,dimension);
 
   // On remet a zero le tableau qui sert pour
   // le calcul du pas de temps de stabilite

@@ -40,8 +40,8 @@ Entree& Echange_contact_PolyMAC_P0P1NC::readOn(Entree& s )
 {
   if (app_domains.size() == 0) app_domains = { Motcle("Thermique"), Motcle("Neutronique"), Motcle("fraction_massique"), Motcle("indetermine") };
 
-  Nom nom_bord;
-  Motcle nom_champ;
+  //Nom nom_bord;
+  //Motcle nom_champ;
   s >> nom_autre_pb_ >> nom_bord_ >> nom_champ_ >> invh_paroi;
   invh_paroi = invh_paroi > 1e8 ? 0 : 1. / invh_paroi;
   T_ext().typer("Ch_front_var_instationnaire_dep");

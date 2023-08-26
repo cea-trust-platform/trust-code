@@ -402,7 +402,7 @@ void Scatter::read_domain_no_comm(Entree& fic)
 
   Cerr << "\tDone !\n\treading elem infos (domaines)..." << finl;
 
-  Nom accouverte="{", accfermee="}", virgule=",";
+  Nom accouverte="{", accfermee="}";
   Motcle nom;
   fic >> nom;
   Domaine domaine_read;
@@ -552,7 +552,6 @@ void Scatter::lire_domaine(Nom& nomentree, Noms& liste_bords_periodiques)
           for(int i=0; i<Process::nproc(); i++)
             {
               EFichierBin fichier_binaire_part;
-              Domaine part_dom;
               std::string tmp = nomentree_with_suffix.getPrefix(".Zones").getString();
               tmp += "_";
               tmp += std::to_string(i);

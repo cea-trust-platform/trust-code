@@ -3200,7 +3200,7 @@ void Op_Diff_VEFP1NCP1B_Face::test() const
   DoubleVect& incoV = inco;
   incoV=0.;
 
-  DoubleTab tmp(inco);
+  //DoubleTab tmp(inco);
 
   DoubleTab resu(unknown);
   DoubleVect& resuV = resu;

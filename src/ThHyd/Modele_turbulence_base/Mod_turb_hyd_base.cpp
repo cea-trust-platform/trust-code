@@ -358,7 +358,7 @@ const Champ_base& Mod_turb_hyd_base::get_champ(const Motcle& nom) const
     {
       return champs_compris_.get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 
@@ -368,7 +368,7 @@ const Champ_base& Mod_turb_hyd_base::get_champ(const Motcle& nom) const
         {
           return loipar->get_champ(nom);
         }
-      catch (Champs_compris_erreur& err_)
+      catch (Champs_compris_erreur&)
         {
         }
     }

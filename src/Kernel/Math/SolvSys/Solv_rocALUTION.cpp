@@ -286,7 +286,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           //base_amg.SetHostLevels(coarse_grids_host_); // Par defaut 0 (donc tous les levels sur GPU)
           //Cout << "[rocALUTION] Solving " << coarse_grids_host_ << " coarse grids on the host." << finl;
         }
-      catch (const std::bad_cast& error)
+      catch (const std::bad_cast&)
         {
           Cout << "Error, you can't use smoother " << coarse_grid_solver_ << " with this solver." << finl;
           //Process::exit();
@@ -1025,7 +1025,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
           mg.SetSmoother(sm);
           mg.Verbose(precond_verbosity_);
         }
-      catch (const std::bad_cast& error)
+      catch (const std::bad_cast&)
         {
           Cout << "[rocALUTION] You can't use smoother " << smoother_ << " with this solver." << finl;
           //Process::exit();

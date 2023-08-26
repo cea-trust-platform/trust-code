@@ -73,7 +73,7 @@ int Champ_Gen_de_Champs_Gen::lire_motcle_non_standard(const Motcle& mot, Entree&
       Nom virgule=",";
       Nom typ;
       is >> typ;
-      assert (typ==accouverte);
+      if (typ!=accouverte) Process::exit("We are waiting a { !");
       is >> typ;
       if(typ==accfermee)
         {
@@ -445,14 +445,14 @@ const Champ_Generique_base& Champ_Gen_de_Champs_Gen::get_champ_post(const Motcle
     {
       return Champ_Generique_base::get_champ_post(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   try
     {
       return get_source(0).get_champ_post(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 

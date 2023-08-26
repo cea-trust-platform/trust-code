@@ -420,7 +420,7 @@ void Op_Conv_Amont_old_VEF_Face::ajouter_contribution(const DoubleTab& transport
   // du type (triangle, tetraedre ...) et du nombre de faces de Dirichlet.
 
   double psc;
-  DoubleTab pscl=0;
+  //DoubleTab pscl=0;
   int poly,face_adj,fa7,i,j,k,n_bord, num_face, rang ,itypcl, num10,num20,num_som;
   const int ncomp_ch_transporte = transporte.line_size();
 
@@ -641,13 +641,13 @@ void Op_Conv_Amont_old_VEF_Face::contribue_au_second_membre(DoubleTab& resu ) co
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const Champ_Inc_base& la_vitesse=vitesse_.valeur();
   const DoubleTab& face_normales = domaine_VEF.face_normales();
-  const Domaine& domaine = domaine_VEF.domaine();
-  int nfac = domaine.nb_faces_elem();
+  //const Domaine& domaine = domaine_VEF.domaine();
+  //int nfac = domaine.nb_faces_elem();
   double psc;
   int i,n_bord, num_face;
   const int ncomp = resu.line_size();
 
-  IntVect face(nfac);
+  //IntVect face(nfac);
 
   // Traitement particulier pour les faces de periodicite
   int voisine, nb_faces_perio = 0;

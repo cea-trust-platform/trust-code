@@ -63,7 +63,7 @@ inline void Integrale_tps_Champ::associer(const Champ_Generique_base& le_ch, int
 inline void Integrale_tps_Champ::mettre_a_jour(double )
 {
   mettre_a_jour_integrale();
-  Champ espace_stockage_source;
+  //Champ espace_stockage_source;
   double le_temps = mon_champ->get_time();
   changer_temps(le_temps);
 }

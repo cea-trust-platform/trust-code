@@ -37,7 +37,7 @@ Entree& Champ_MUSIG::readOn( Entree& is )
       Process::exit();
     }
 
-  for (is >> motlu; motlu != "}"; is >> motlu)
+  for (is >> motlu; motlu != acc_fer; is >> motlu)
     {
       if (motlu != "NBPHASES")
         {

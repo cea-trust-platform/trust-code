@@ -229,9 +229,9 @@ void Domaine_Cl_VEF::remplir_normales_facettes_Cl(const Domaine_VEF& le_dom_VEF)
   IntVect num_som(nsom);
   DoubleTab x(nsom, dimension);
   DoubleVect xg(dimension);
-  DoubleVect xj0(dimension);
-  DoubleVect u(dimension);
-  DoubleVect v(dimension);
+  //DoubleVect xj0(dimension);
+  //DoubleVect u(dimension);
+  //DoubleVect v(dimension);
 
   // Calcul des valeurs des normales aux facettes modifiees par les C.L:
 

@@ -114,7 +114,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                      poly_v2 = sub_type(Domaine_PolyMAC_P0, domaine), nf_tot = domaine.nb_faces_tot();
 
   double t = equation().schema_temps().temps_courant(), v_min = 0.1, Gm, Fm, nvm, arm, C_dir, C_iso, v_dir;
-  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), C(N), nv(N), Cf(N), Cf_t(N), Fk(N), G(N), mult(N, 2);
+  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), nv(N), Cf(N), Cf_t(N), Fk(N), G(N), mult(N, 2);
 
   for (n = 0; n < N; n++)
     mult(n, 0) = 1, mult(n, 1) = 0; //valeur par defaut de mult
@@ -207,7 +207,7 @@ DoubleTab& Perte_Charge_PolyMAC::ajouter(DoubleTab& resu) const
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme, nu.valeur()), C_dh = sub_type(Champ_Uniforme, diam_hydr.valeur());
   double t = equation().schema_temps().temps_courant();
-  DoubleVect pos(dimension), ve(dimension), ved(dimension), vep(dimension), dir(dimension);
+  DoubleVect pos(dimension), ve(dimension), dir(dimension);
 
   /* contribution de chaque element ou on applique la perte de charge */
   for (i = 0; i < (pssz ? pssz->nb_elem_tot() : domaine.nb_elem_tot()); i++)
@@ -257,7 +257,7 @@ void Perte_Charge_PolyMAC::contribuer_a_avec(const DoubleTab& inco, Matrice_Mors
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins();
   int i, j, k, f, fb, r, C_nu = sub_type(Champ_Uniforme, nu.valeur()), C_dh = sub_type(Champ_Uniforme, diam_hydr.valeur());
   double t = equation().schema_temps().temps_courant();
-  DoubleVect pos(dimension), ve(dimension), vf(dimension), dir(dimension);
+  DoubleVect pos(dimension), ve(dimension), dir(dimension);
 
   for (i = 0; i < (pssz ? pssz->nb_elem_tot() : domaine.nb_elem_tot()); i++)
     {

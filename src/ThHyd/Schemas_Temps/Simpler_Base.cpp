@@ -41,7 +41,7 @@ Entree& Simpler_Base::readOn(Entree& is )
   int le_solveur_est_lu = 0;
   Motcle motlu;
   is >> motlu;
-  assert(motlu==accouverte);
+  if (motlu!=accouverte) Process::exit("We are waiting a { !");
   no_qdm_ = 0;
   is >> motlu;
   Nom le_solveur_lu_;

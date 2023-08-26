@@ -89,7 +89,7 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& n
     {
       return Navier_Stokes_std::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 
@@ -97,7 +97,7 @@ const Champ_base& Navier_Stokes_Fluide_Dilatable_base::get_champ(const Motcle& n
     {
       return milieu().get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   throw Champs_compris_erreur();

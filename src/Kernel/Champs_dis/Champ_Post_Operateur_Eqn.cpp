@@ -166,7 +166,7 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ_compo_without_evaluation(C
 {
 
   Champ_Fonc espace_stockage_fonc;
-  Champ source_espace_stockage;
+  //Champ source_espace_stockage;
 
   double temps=0.;
   Nom directive;
@@ -315,7 +315,7 @@ void Champ_Post_Operateur_Eqn::nommer_source()
 {
   if (nom_post_=="??")
     {
-      Nom nom_post_source, nom_champ_source;
+      Nom nom_post_source;
       //const Noms nom = get_source(0).get_property("nom");
       nom_post_source = "Eqn_s";
       nom_post_source += Nom(numero_source_);

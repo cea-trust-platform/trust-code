@@ -423,7 +423,7 @@ Entree& DecoupeBord::interpreter_(Entree& is)
 {
   Nom nom_dom1,nom_dom2;
   Nom nom_fichier_sortie("");
-  LIST(Nom) list_nom_dec;
+  //LIST(Nom) list_nom_dec;
   Noms nomdec;
   ArrOfInt nb_parts,nb_parts_geom;
   Param param(que_suis_je());

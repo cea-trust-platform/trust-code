@@ -84,7 +84,7 @@ void Op_Div_PolyMAC_P0P1NC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem
   const IntTab& e_f = domaine.elem_faces(), &f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
   int i, j, e, f, fb, ne_tot = domaine.nb_elem_tot(), d, D = dimension;
-  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr, matv2, matp2;
+  Matrice_Morse *matv = matrices.count("vitesse") ? matrices["vitesse"] : nullptr, *matp = matrices.count("pression") ? matrices["pression"] : nullptr; //, matv2, matp2;
 
   DoubleTrav w2; //matrice w2 aux elements (la meme que dans Op_Grad et Assembleur_P)
   w2.set_smart_resize(1);

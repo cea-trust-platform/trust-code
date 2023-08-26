@@ -62,7 +62,7 @@ int Echange_contact_PolyMAC::initialiser(double temps)
   const Domaine_PolyMAC& o_domaine = ref_cast(Domaine_PolyMAC, ch.domaine_dis());
   const IntTab& o_f_e = o_domaine.face_voisins(), &o_e_f = o_domaine.elem_faces();
   int i, j, k, l, e, f, N = ch.nb_comp(), o_n_f = o_e_f.dimension(1);
-  Nom nom_racc1=frontiere_dis().frontiere().le_nom();
+  //Nom nom_racc1=frontiere_dis().frontiere().le_nom();
 
   //tableaux lies a la stabilisation de Le Potier / Mahamane (cf. Op_Diff_PolyMAC_Elem)
   stab_ = ref_cast(Op_Diff_PolyMAC_Elem, o_eqn.operateur(0).l_op_base()).stab_;

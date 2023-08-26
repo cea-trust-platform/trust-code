@@ -24,6 +24,10 @@
 #include <Equation_base.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_VEF.h>
+#include <Operateur.h>
+#include <Operateur_base.h>
+#include <VEF_discretisation.h>
+#include <Discretisation_base.h>
 
 extern double calculer_coef_som(int rang_elem, int dimension, int& nb_face_diri, int *indice_diri);
 Implemente_instanciable(Terme_Source_Qdm_VEF_Face,"Source_Qdm_VEF_P1NC",Source_base);
@@ -83,6 +87,8 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   resu = 0.;
   const int nbpts = (dimension==2) ? 7 : 15;
 
+  const DoubleTab& face_normales = domaine_VEF.face_normales();
+  const IntTab&    face_voisins  = domaine_VEF.face_voisins();
 
   // On remplit les Poids et les coord_bary :
 
@@ -232,28 +238,79 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
       // Calcul du terme source aux points d'integration :
       la_source.valeur().valeur_aux_elems(les_positions,les_polygones,
                                           valeurs_source);
-      for(int face=0; face<=dimension; face++)
+      bool RT = sub_type(VEF_discretisation, equation().discretisation()) && (ref_cast(VEF_discretisation, equation().discretisation()).get_alphaRT() );
+      if (!RT)
         {
-          int num_face=elem_faces(elem, face);
-
-          // Calcul des Psi aux points d'integration :
-
-          for (int pt=0; pt<nbpts; pt++)
+          for(int face=0; face<=dimension; face++)
             {
-              for (int dim=0; dim<dimension; dim++)
-                valeurs_Psi(pt, dim)=1-dimension*coord_bary(pt,face);
+              int num_face=elem_faces(elem, face);
+
+              // Calcul des Psi aux points d'integration :
+
+              for (int pt=0; pt<nbpts; pt++)
+                {
+                  for (int dim=0; dim<dimension; dim++)
+                    valeurs_Psi(pt, dim)=1-dimension*coord_bary(pt,face);
+                }
+              // Integration!!
+
+              for (int pt=0; pt<nbpts; pt++)
+                {
+                  for (int dim=0; dim<dimension; dim++)
+                    {
+                      double contrib=Poids[pt]*volume
+                                     *valeurs_source(pt,dim)*valeurs_Psi(pt,dim);
+                      resu(num_face, dim)+=contrib;
+                      somme[dim]+=contrib;
+
+                      for (int fdiri=0; fdiri<nb_face_diri; fdiri++)
+                        {
+                          int indice=indice_diri[fdiri];
+                          int facel = elem_faces(elem,indice);
+
+                          if (num_face==facel)
+                            {
+                              resu(facel,dim)-=contrib;
+                              double contrib2=contrib/(dimension+1-nb_face_diri);
+                              for (int f2=0; f2<dimension+1; f2++)
+                                {
+                                  //                              Cerr<<num_face<<" "<<elem<<" la "<< f2<<" "<<fdiri<<" "<<nb_face_diri<<" dim "<< dim<<finl;
+                                  int face2=elem_faces(elem,f2);
+                                  resu(face2,dim)+=contrib2;
+                                }
+                            }
+                        }
+                    }
+                }
             }
-          // Integration!!
-
-          for (int pt=0; pt<nbpts; pt++)
+        }
+      else
+        {
+          // coordonnees des sommets locaux opposes
+          DoubleTab coord_sommets_loc(dimension+1,dimension);
+          for (int sommet=0; sommet<=dimension; sommet++)
             {
+              for (int dim=0; dim<dimension; dim++) coord_sommets_loc(sommet,dim)=coord_sommets(elem_sommets(elem,sommet),dim);
+            }
+          for(int face=0; face<=dimension; face++)
+            {
+              int num_face=elem_faces(elem, face);
+              double contrib=0;
+              for (int pt=0; pt<nbpts; pt++)
+                {
+                  double contrib_pt=0;
+                  for (int dim=0; dim<dimension; dim++) contrib_pt+=(les_positions(pt,dim)-coord_sommets_loc(face,dim))*valeurs_source(pt,dim);
+                  contrib+=contrib_pt*Poids[pt];
+                }
+              contrib/=dimension;
+              double signe=1.;
+              if(elem!=face_voisins(num_face,0))
+                signe=-1.;
               for (int dim=0; dim<dimension; dim++)
                 {
-                  double contrib=Poids[pt]*volume
-                                 *valeurs_source(pt,dim)*valeurs_Psi(pt,dim);
-                  resu(num_face, dim)+=contrib;
-                  somme[dim]+=contrib;
-
+                  double contrib_resu=signe*face_normales(num_face,dim)*contrib;
+                  resu(num_face, dim)+=contrib_resu;
+                  // Traitement CL de Dirichlet
                   for (int fdiri=0; fdiri<nb_face_diri; fdiri++)
                     {
                       int indice=indice_diri[fdiri];
@@ -261,17 +318,16 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
 
                       if (num_face==facel)
                         {
-                          resu(facel,dim)-=contrib;
-                          double contrib2=contrib/(dimension+1-nb_face_diri);
+                          resu(facel,dim)-=contrib_resu;
+                          double contrib_resu2=contrib_resu/(dimension+1-nb_face_diri);
                           for (int f2=0; f2<dimension+1; f2++)
                             {
-                              //                              Cerr<<num_face<<" "<<elem<<" la "<< f2<<" "<<fdiri<<" "<<nb_face_diri<<" dim "<< dim<<finl;
                               int face2=elem_faces(elem,f2);
-                              resu(face2,dim)+=contrib2;
+                              resu(face2,dim)+=contrib_resu2;
                             }
                         }
-                    }
 
+                    }
                 }
             }
         }

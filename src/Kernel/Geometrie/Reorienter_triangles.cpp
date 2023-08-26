@@ -36,7 +36,6 @@ Entree& Reorienter_triangles::interpreter_(Entree& is)
       Cerr << "we can not reorientate (Reorienter) triangles in dimension " << dimension <<finl;
       exit();
     }
-  Nom nom_dom, typ_domaine;
   associer_domaine(is);
   Domaine& dom=domaine();
   Scatter::uninit_sequential_domain(dom);

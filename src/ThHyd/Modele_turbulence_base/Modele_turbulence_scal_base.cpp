@@ -72,17 +72,12 @@ void  Modele_turbulence_scal_base::set_param(Param& param)
 }
 int  Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
 {
-  Motcle mot = "turbulence_paroi",accolade_ouverte="{";
+  Motcle mot = "turbulence_paroi";
   if (motlu == mot)
     {
       loipar.associer_modele(*this);
       is >> loipar;
       is >> loipar.valeur();
-      /*  is >> motlu;
-          if (motlu==accolade_ouverte)
-          {
-          }
-      */
       return 1;
     }
   else
@@ -228,7 +223,7 @@ const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) cons
     {
       return champs_compris_.get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 
@@ -238,7 +233,7 @@ const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) cons
         {
           return loipar->get_champ(nom);
         }
-      catch (Champs_compris_erreur& err_)
+      catch (Champs_compris_erreur&)
         {
         }
     }

@@ -142,9 +142,9 @@ void EOS_Tools_VDF::divu_discvit(const DoubleTab& secmem1, DoubleTab& secmem2)
 void EOS_Tools_VDF::secmembre_divU_Z(DoubleTab& tab_W) const
 {
   double dt = le_fluide().vitesse()->equation().schema_temps().pas_de_temps();
-  int elem,nb_elem = le_dom->nb_elem(),nb_faces = le_dom->nb_faces();
+  int elem,nb_elem = le_dom->nb_elem();//,nb_faces = le_dom->nb_faces();
   DoubleVect tab_dZ(nb_elem);
-  DoubleTab tab_gradZ(nb_faces);
+  //DoubleTab tab_gradZ(nb_faces);
   const DoubleTab& tab_rhonP0 = le_fluide().loi_etat()->rho_n();
   const DoubleTab& tab_rhonp1P0 = le_fluide().loi_etat()->rho_np1();
   Debog::verifier("divU tab_rhonP0",tab_rhonP0);

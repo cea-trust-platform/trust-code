@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,7 +23,7 @@ Sortie& Champ_Don_lu::printOn(Sortie& os) const { return TRUSTChamp_Don_generiqu
 Entree& Champ_Don_lu::readOn(Entree& is)
 {
   int dim;
-  Motcle motlu;
+  //Motcle motlu;
   Nom nom;
   is >> nom;
 

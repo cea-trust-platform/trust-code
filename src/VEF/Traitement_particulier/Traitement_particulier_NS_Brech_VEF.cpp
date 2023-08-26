@@ -695,7 +695,7 @@ calculer_terme_destruction_K(const Domaine_VEF& domaine_VEF,
   int nb_faces_ = domaine_VEF.nb_faces();
   int elem1,elem2,fac;
 
-  DoubleVect coef(Objet_U::dimension);
+  //DoubleVect coef(Objet_U::dimension);
   //  const IntTab& les_elem_faces = domaine_VEF.elem_faces();
 
   // Calcul du gradient de temperature :

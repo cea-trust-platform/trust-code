@@ -922,8 +922,8 @@ int Postraitement::lire_champs_stat_a_postraiter(Entree& s)
   Motcle accolade_ouverte("{");
   Motcle accolade_fermee("}");
   Motcle motlu,motlu2,motlu3,motlu4,indic_corr;
-  Motcle elem("elem");
-  Motcle som("som");
+  //Motcle elem("elem");
+  //Motcle som("som");
   indic_corr="non_correlation";
 
   s >> motlu;
@@ -2081,7 +2081,7 @@ void Postraitement::creer_champ_post_moreqn(const Motcle& type,const Motcle& opt
   const Motcle& nom_eq = mon_probleme->equation(num_eq).le_nom();
 
   Motcle type_morceau;
-  Motcle type_option;
+  //Motcle type_option;
   if (type=="operateur")
     {
       if (num_morceau==0)
@@ -2205,7 +2205,7 @@ const Champ_Generique_base& Postraitement::get_champ_post(const Motcle& nom) con
         {
           return itr->get_champ_post(nom);
         }
-      catch (Champs_compris_erreur& err_)
+      catch (Champs_compris_erreur&)
         {
         }
     }

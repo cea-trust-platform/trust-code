@@ -130,7 +130,6 @@ void ExtrudeParoi::extrude(Domaine& dom)
   IntTab& les_elems = dom.les_elems();
   int oldsz = les_elems.dimension(0);
   int nbs = dom.nb_som();
-  IntTab elem_traite(oldsz);
   int oldnbsom = dom.nb_som();
 
   Faces lesfaces;
@@ -193,7 +192,7 @@ void ExtrudeParoi::extrude(Domaine& dom)
           ArrOfInt som_elem(4); // sommet rattache a l'element frontiere
           ArrOfInt som_face(3); // sommet de la face frontiere
 
-          ArrOfDouble pt0(3),pt1(3),pt2(3),pt_ext(3);
+          ArrOfDouble pt0(3),pt1(3),pt2(3);
           ArrOfDouble normale(3),vect_int(3);
 
 

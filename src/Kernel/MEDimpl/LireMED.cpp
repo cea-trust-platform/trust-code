@@ -342,7 +342,7 @@ void LireMED::retrieve_MC_objects()
   std::string meshName = nom_mesh_.getString();
 
   // Check the mesh name is in the file:
-  const MCAuto<MEDFileMeshes> data(MEDFileMeshes::New(fileName));
+  //const MCAuto<MEDFileMeshes> data(MEDFileMeshes::New(fileName));
   std::vector< std::string > meshes_names = MEDCoupling::GetMeshNames(fileName) ;
   if (std::find(meshes_names.begin(), meshes_names.end(), meshName) == meshes_names.end())
     {

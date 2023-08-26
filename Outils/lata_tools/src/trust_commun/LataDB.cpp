@@ -208,7 +208,7 @@ entier LataDB::lata_v1_get_nb_comp(const Nom& fieldname, const Motcle& localisat
 {
   // Search component name in std_components
   entier nb_comp = latav1_component_shape(fieldname);
-  Motcle maj_field(fieldname);
+  //Motcle maj_field(fieldname);
   ordering = LataDBDataType::C_ORDERING;
   nature = LataDBField::SCALAR;
   Journal(verb_level+1) << " LataV2 known component name found : " << fieldname << endl;

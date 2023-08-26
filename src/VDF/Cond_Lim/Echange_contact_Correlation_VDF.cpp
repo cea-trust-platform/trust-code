@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -133,7 +133,6 @@ void Echange_contact_Correlation_VDF::calculer_h_mon_pb(DoubleTab& tab)
   const Milieu_base& mon_milieu = mon_eqn.milieu();
   const Domaine_VDF& ma_zvdf = ref_cast(Domaine_VDF,domaine_Cl_dis().domaine_dis().valeur());
   const Front_VF& ma_front_vf = ref_cast(Front_VF,frontiere_dis());
-  Nom nom_bord=frontiere_dis().frontiere().le_nom();
   calculer_h_solide(tab,mon_eqn,ma_zvdf,ma_front_vf,mon_milieu);
 }
 

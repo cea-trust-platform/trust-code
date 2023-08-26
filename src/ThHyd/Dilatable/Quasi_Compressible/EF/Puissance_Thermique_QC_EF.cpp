@@ -58,14 +58,14 @@ const Champ_base& Puissance_Thermique_QC_EF::get_champ(const Motcle& nom) const
     {
       return champs_compris_.get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   try
     {
       return Terme_Source_EF_base::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 

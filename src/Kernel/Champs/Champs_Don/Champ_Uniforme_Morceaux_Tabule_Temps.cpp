@@ -68,7 +68,7 @@ Entree& Champ_Uniforme_Morceaux_Tabule_Temps::readOn(Entree& is)
   motlu=nom;
   while (motlu != Motcle("}") )
     {
-      REF(Sous_Domaine) refssz=les_sous_domaines.add(le_domaine.ss_domaine(nom));
+      les_sous_domaines.add(le_domaine.ss_domaine(nom));
       is >> motlu;
       if (motlu == Motcle("{") )
         {
