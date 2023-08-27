@@ -90,7 +90,7 @@ Lire pb
         {
             solveur petsc gcp { precond block_jacobi_ilu { level 0 } rtol 1.e-13 impr }
         }
-        solveur_pression Petsc GCP { precond SSOR { omega 1.6 }  seuil 1.e-12 impr   }
+        solveur_pression Petsc GCP { precond boomeramg { }  seuil 1.e-12 impr   }
         convection { centre }
         diffusion { }
         conditions_initiales { vitesse Champ_uniforme 3 0. 0. 0. }
