@@ -1135,8 +1135,9 @@ void Solv_Petsc::create_solver(Entree& entree)
                 // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
                 // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
                 add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
-                // Voir https://mooseframework.inl.gov/application_development/hypre.html
-                if (dimension==3) Cerr << "Warning, on massive parallel calculation for best performance, consider playing with -pc_hypre_boomeramg_strong_threshold 0.7 or 0.8 or 0.9" << finl;
+                // Voir https://mooseframework.inl.gov/releases/moose/2021-05-18/application_development/hypre.html
+                //if (dimension==3) Cerr << "Warning, on massive parallel calculation for best performance, consider playing with -pc_hypre_boomeramg_strong_threshold 0.7 or 0.8 or 0.9" << finl;
+                if (dimension==3) add_option("pc_hypre_boomeramg_strong_threshold", "0.7");
                 check_not_defined(omega);
                 check_not_defined(level);
                 check_not_defined(epsilon);
