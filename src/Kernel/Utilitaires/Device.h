@@ -18,22 +18,59 @@
 
 #include <Array_base.h>
 #include <Nom.h>
+#include <stat_counters.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
 extern bool self_test();
+static bool init_openmp_ = false;
 extern void init_openmp();
 extern void init_cuda();
 extern std::string toString(const void* adr);
-// Si OpenMP implementation
+// Timers GPU avec OpenMP (renommer?)
+static bool clock_on = false;
+static double clock_start;
+inline void start_timer(int bytes=-1)
+{
 #ifdef _OPENMP
-extern void start_timer(int bytes=-1);
-extern void end_timer(int onDevice, const std::string& str, int bytes=-1);
-#else // Sinon inlining vide:
-inline void start_timer(int bytes=-1) {}
-inline void end_timer(int onDevice, const std::string& str, int bytes=-1) {}
+  if (init_openmp_)
+    {
+      if (clock_on) clock_start = Statistiques::get_time_now();
+      if (bytes == -1) statistiques().begin_count(gpu_kernel_counter_);
+    }
 #endif
+}
+inline void end_timer(int onDevice, const std::string& str, int bytes=-1) // Return in [ms]
+{
+#ifdef _OPENMP
+  if (init_openmp_)
+    {
+      if (bytes == -1) statistiques().end_count(gpu_kernel_counter_, 0, onDevice);
+      if (clock_on) // Affichage
+        {
+          std::string clock(Process::nproc() > 1 ? "[clock]#" + std::to_string(Process::me()) : "[clock]  ");
+          double ms = 1000 * (Statistiques::get_time_now() - clock_start);
+          if (bytes == -1)
+            if (onDevice)
+              printf("%s %7.3f ms [Kernel] %15s\n", clock.c_str(), ms, str.c_str());
+            else
+              printf("%s %7.3f ms [Host]   %15s\n", clock.c_str(), ms, str.c_str());
+          else
+            {
+              double mo = (double) bytes / 1024 / 1024;
+              if (ms == 0 || bytes == 0)
+                printf("%s            [Data]   %15s\n", clock.c_str(), str.c_str());
+              else
+                printf("%s %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", clock.c_str(), ms, str.c_str(),
+                       long(bytes), mo / ms);
+              //printf("%s %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", clock.c_str(), ms, str.c_str(), long(mo), mo/ms);
+            }
+          fflush(stdout);
+        }
+    }
+#endif
+}
 
 template <typename _TYPE_>
 extern _TYPE_* allocateOnDevice(TRUSTArray<_TYPE_>& tab, std::string arrayName="??");
