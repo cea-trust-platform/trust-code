@@ -22,7 +22,6 @@
 #include <string>
 #include <sstream>
 #include <comm_incl.h>
-#include <stat_counters.h>
 #include <Comm_Group_MPI.h>
 
 // Voir AmgXWrapper (src/init.cpp)
@@ -43,9 +42,6 @@ int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
   return devID;
 }
 #ifdef _OPENMP
-static double clock_start;
-static char* clock_on = NULL;
-static bool init_openmp_ = false;
 // Set MPI processes to devices
 void init_openmp()
 {
@@ -58,6 +54,7 @@ void init_openmp()
   if (var!=NULL && std::string(var)=="DISABLED")
     return;
   init_openmp_ = true;
+  if (getenv("TRUST_CLOCK_ON")!= NULL) clock_on = true;
 #ifdef MPI_
   MPI_Comm localWorld;
   MPI_Comm globalWorld;
@@ -145,40 +142,6 @@ std::string toString(const void* adr)
   ss << adr;
   return ss.str();
 }
-
-// Timers pour OpenMP:
-#ifdef _OPENMP
-void start_timer(int bytes)
-{
-  clock_on = getenv ("TRUST_CLOCK_ON");
-  if (clock_on!=NULL) clock_start = Statistiques::get_time_now();
-  if (bytes==-1) statistiques().begin_count(gpu_kernel_counter_);
-}
-void end_timer(int onDevice, const std::string& str, int bytes) // Return in [ms]
-{
-  if (bytes==-1) statistiques().end_count(gpu_kernel_counter_,0,onDevice);
-  if (clock_on!=NULL) // Affichage
-    {
-      std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
-      double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-      if (bytes==-1)
-        if (onDevice)
-          printf("%s %7.3f ms [Kernel] %15s\n", clock.c_str(), ms, str.c_str());
-        else
-          printf("%s %7.3f ms [Host]   %15s\n", clock.c_str(), ms, str.c_str());
-      else
-        {
-          double mo = (double)bytes / 1024 / 1024;
-          if (ms == 0 || bytes==0)
-            printf("%s            [Data]   %15s\n", clock.c_str(), str.c_str());
-          else
-            printf("%s %7.3f ms [Data]   %15s %6ld Bytes %5.1f Go/s\n", clock.c_str(), ms, str.c_str(), long(bytes), mo/ms);
-          //printf("%s %7.3f ms [Data]   %15s %6ld Mo %5.1f Go/s\n", clock.c_str(), ms, str.c_str(), long(mo), mo/ms);
-        }
-      fflush(stdout);
-    }
-}
-#endif
 
 // Allocate on device:
 template <typename _TYPE_>
