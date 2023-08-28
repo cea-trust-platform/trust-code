@@ -51,7 +51,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  bool kernelOnDevice = resu.isKernelOnDevice(vx, "ajoute_operation_speciale_generic(x,alpha,y") && Objet_U::computeOnDevice;
+  bool kernelOnDevice = resu.checkDataOnDevice(vx, "ajoute_operation_speciale_generic(x,alpha,y");
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (; nblocs_left; nblocs_left--)
@@ -117,7 +117,7 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
     }
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
-  bool kernelOnDevice = resu.isKernelOnDevice(vx) && Objet_U::computeOnDevice;
+  bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   start_timer();
@@ -206,7 +206,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  bool kernelOnDevice = resu.isKernelOnDevice() && Objet_U::computeOnDevice;
+  bool kernelOnDevice = resu.checkDataOnDevice();
   _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
   start_timer();
   for (; nblocs_left; nblocs_left--)
@@ -327,7 +327,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
-  bool kernelOnDevice = vx.isKernelOnDevice("local_extrema_vect_generic(x)") && Objet_U::computeOnDevice;
+  bool kernelOnDevice = vx.checkDataOnDevice("local_extrema_vect_generic(x)");
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (; nblocs_left; nblocs_left--)
     {
@@ -407,7 +407,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
       /*
       if (IS_IMAX || IS_IMIN)
         {
-          #pragma omp target parallel if (kernelOnDevice && Objet_U::computeOnDevice)
+          #pragma omp target parallel if (kernelOnDevice)
           {
             _TYPE_ local_min_max_val = min_max_val;
             _TYPE_RETURN_ local_i_min_max = -1;
@@ -490,7 +490,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return sum;
 
-  bool kernelOnDevice = vx.isKernelOnDevice("local_operations_vect_bis_generic(x)") && Objet_U::computeOnDevice;
+  bool kernelOnDevice = vx.checkDataOnDevice("local_operations_vect_bis_generic(x)");
   const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
   for (; nblocs_left; nblocs_left--)
     {

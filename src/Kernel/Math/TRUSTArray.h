@@ -202,9 +202,9 @@ public:
   inline void checkDataOnHost() { checkDataOnHost(*this); }
   inline void checkDataOnHost() const { checkDataOnHost(*this); }
   inline bool isDataOnDevice() const { return isDataOnDevice(*this); }
-  inline bool isKernelOnDevice(std::string kernel_name="??") { return isKernelOnDevice(*this, kernel_name); }
-  inline bool isKernelOnDevice(std::string kernel_name="??") const { return isKernelOnDevice(*this, kernel_name); }
-  inline bool isKernelOnDevice(const TRUSTArray& arr, std::string kernel_name="??") { return isKernelOnDevice(*this, arr, kernel_name); }
+  inline bool checkDataOnDevice(std::string kernel_name="??") { return checkDataOnDevice(*this, kernel_name); }
+  inline bool checkDataOnDevice(std::string kernel_name="??") const { return checkDataOnDevice(*this, kernel_name); }
+  inline bool checkDataOnDevice(const TRUSTArray& arr, std::string kernel_name="??") { return checkDataOnDevice(*this, arr, kernel_name); }
 
   inline virtual Span_ get_span() { return Span_(data_,size_array_); }
   inline virtual Span_ get_span_tot() { return Span_(data_,size_array_); }
@@ -284,12 +284,12 @@ private:
                   << " elements" << std::endl ;
       }
   }
-  // Fonctions isKernelOnDevice pour lancement conditionnel de kernels sur le device:
+  // Fonctions checkDataOnDevice pour lancement conditionnel de kernels sur le device:
   // -Si les tableaux passes en parametre sont sur a jour sur le device
   // -Si ce n'est pas le cas, les tableaux sont copies sur le host via checkDataOnHost
-  inline bool isKernelOnDevice(const TRUSTArray& tab, std::string kernel_name) const
+  inline bool checkDataOnDevice(const TRUSTArray& tab, std::string kernel_name) const
   {
-    bool flag = tab.isDataOnDevice();
+    bool flag = tab.isDataOnDevice() && computeOnDevice;
     if (!flag)
       checkDataOnHost(tab);
     //else
@@ -297,9 +297,9 @@ private:
     printKernel(flag, tab, kernel_name);
     return flag;
   }
-  inline bool isKernelOnDevice(TRUSTArray& tab, std::string kernel_name)
+  inline bool checkDataOnDevice(TRUSTArray& tab, std::string kernel_name)
   {
-    bool flag = tab.isDataOnDevice();
+    bool flag = tab.isDataOnDevice() && computeOnDevice;
     if (!flag)
       checkDataOnHost(tab);
     else
@@ -307,9 +307,9 @@ private:
     printKernel(flag, tab, kernel_name);
     return flag;
   }
-  inline bool isKernelOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name="??")
+  inline bool checkDataOnDevice(TRUSTArray& tab, const TRUSTArray& tab_const, std::string kernel_name="??")
   {
-    bool flag = tab.isDataOnDevice() && tab_const.isDataOnDevice();
+    bool flag = tab.isDataOnDevice() && tab_const.isDataOnDevice() && computeOnDevice;
     // Si un des deux tableaux n'est pas a jour sur le device alors l'operation se fera sur le host:
     if (!flag)
       {

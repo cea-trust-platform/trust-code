@@ -647,10 +647,10 @@ void Op_Div_VEFP1B_Elem::volumique_P0(DoubleTab& div) const
   const Domaine_VEF& domaine_VEF = le_dom_vef.valeur();
   const DoubleVect& vol = domaine_VEF.volumes();
   int nb_elem = domaine_VEF.domaine().nb_elem_tot();
-  bool kernelOnDevice = div.isKernelOnDevice(vol, "Op_Div_VEFP1B_Elem::volumique_P0(x)");
+  bool kernelOnDevice = div.checkDataOnDevice(vol, "Op_Div_VEFP1B_Elem::volumique_P0(x)");
   const double *vol_addr = kernelOnDevice ? mapToDevice(vol) : vol.addr();
   double *div_addr = kernelOnDevice ? computeOnTheDevice(div) : div.addr();
-  #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+  #pragma omp target teams distribute parallel for if (kernelOnDevice)
   for (int num_elem = 0; num_elem < nb_elem; num_elem++)
     div_addr[num_elem] /= vol_addr[num_elem];
 }
