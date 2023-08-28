@@ -370,32 +370,44 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_som(const DoubleTab& pre, DoubleTab& gr
     }
   end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_som");
 
-  copyPartialFromDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
+  bool has_sortie_libre = false;
   const Conds_lim& les_cl = domaine_Cl_VEF.les_conditions_limites();
-  const IntTab& face_sommets = domaine_VEF.face_sommets();
   int nb_bords = les_cl.size();
   for (int n_bord = 0; n_bord < nb_bords; n_bord++)
     {
       const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
-      if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
-        {
-          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
-          const Neumann_sortie_libre& sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
-          int num1 = le_bord.num_premiere_face();
-          int num2 = num1 + le_bord.nb_faces();
-          for (int face = num1; face < num2; face++)
-            {
-              const double P_imp = sortie_libre.flux_impose(face - num1);
-              for (int indice = 0; indice < (nfe - 1); indice++)
-                {
-                  int som = nps + dom.get_renum_som_perio(face_sommets(face, indice));
-                  for (int comp = 0; comp < dimension; comp++)
-                    grad(face, comp) -= 1. / dimension * face_normales(face, comp) * (pre(som) - P_imp) * porosite_face(face);
-                }
-            } //fin du if sur "Neumann_sortie_libre"
-        }
+      if (sub_type(Neumann_sortie_libre, la_cl.valeur())) has_sortie_libre = true;
     }
-  copyPartialToDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
+  if (has_sortie_libre)
+    {
+      copyPartialFromDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
+      copyPartialFromDevice(pre, nps, nps + dom.nb_som_tot(), "pressure on som");
+      const IntTab& face_sommets = domaine_VEF.face_sommets();
+      for (int n_bord = 0; n_bord < nb_bords; n_bord++)
+        {
+          const Cond_lim& la_cl = domaine_Cl_VEF.les_conditions_limites(n_bord);
+          if (sub_type(Neumann_sortie_libre, la_cl.valeur()))
+            {
+              const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+              const Neumann_sortie_libre& sortie_libre = ref_cast(Neumann_sortie_libre, la_cl.valeur());
+              int num1 = le_bord.num_premiere_face();
+              int num2 = num1 + le_bord.nb_faces();
+              for (int face = num1; face < num2; face++)
+                {
+                  const double P_imp = sortie_libre.flux_impose(face - num1);
+                  for (int indice = 0; indice < (nfe - 1); indice++)
+                    {
+                      int som = nps + dom.get_renum_som_perio(face_sommets(face, indice));
+                      for (int comp = 0; comp < dimension; comp++)
+                        grad(face, comp) -= 1. / dimension * face_normales(face, comp) * (pre(som) - P_imp) *
+                                            porosite_face(face);
+                    }
+                } //fin du if sur "Neumann_sortie_libre"
+            }
+        }
+      copyPartialToDevice(pre, nps, nps + dom.nb_som_tot(), "pressure on som");
+      copyPartialToDevice(grad, 0, premiere_face_int * dimension, "grad on boundary");
+    }
   return grad;
 }
 DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_aretes(const DoubleTab& pre, DoubleTab& grad) const
