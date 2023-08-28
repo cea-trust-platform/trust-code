@@ -74,9 +74,9 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
   // On traite les faces standard qui ne portent pas de conditions aux limites
   bool kernelOnDevice = sm.checkDataOnDevice();
-  const double * porosite_face_addr = kernelOnDevice ? mapToDevice(porosite_face) : porosite_face.addr();
-  const double * volumes_entrelaces_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces) : volumes_entrelaces.addr();
-  double * sm_addr = kernelOnDevice ? computeOnTheDevice(sm) : sm.addr();
+  const double * porosite_face_addr = mapToDevice(porosite_face, "", kernelOnDevice);
+  const double * volumes_entrelaces_addr = mapToDevice(volumes_entrelaces, "", kernelOnDevice);
+  double * sm_addr = computeOnTheDevice(sm, "", kernelOnDevice);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
   for (int face=num_std; face<nfa; face++)
@@ -144,7 +144,7 @@ DoubleTab& Masse_VEF_P1NC::appliquer_impl(DoubleTab& sm) const
     }
   copyPartialToDevice(sm, 0, domaine_VEF.premiere_face_int() * nbcomp, "sm on boundary");  // On traite les faces internes non standard
   kernelOnDevice = sm.checkDataOnDevice();
-  const double * volumes_entrelaces_Cl_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces_Cl) : volumes_entrelaces_Cl.addr();
+  const double * volumes_entrelaces_Cl_addr = mapToDevice(volumes_entrelaces_Cl, "", kernelOnDevice);
   start_timer();
   #pragma omp target teams distribute parallel for if (kernelOnDevice && computeOnDevice)
   for (int face=num_int; face<num_std; face++)

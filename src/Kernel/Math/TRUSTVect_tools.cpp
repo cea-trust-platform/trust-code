@@ -52,8 +52,8 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
     return;
 
   bool kernelOnDevice = resu.checkDataOnDevice(vx, "ajoute_operation_speciale_generic(x,alpha,y");
-  _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
-  const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
+  _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
+  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -118,8 +118,8 @@ void operator_vect_vect_generic(TRUSTVect<_TYPE_>& resu, const TRUSTVect<_TYPE_>
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
   bool kernelOnDevice = resu.checkDataOnDevice(vx);
-  _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
-  const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
+  _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
+  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
   start_timer();
   for (int nblocs_left=nblocs_left_size; nblocs_left; nblocs_left--)
     {
@@ -207,7 +207,7 @@ void operator_vect_single_generic(TRUSTVect<_TYPE_>& resu, const _TYPE_ x, Mp_ve
     return;
 
   bool kernelOnDevice = resu.checkDataOnDevice();
-  _TYPE_ *resu_base = kernelOnDevice ? computeOnTheDevice(resu) : resu.addr();
+  _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
   start_timer();
   for (; nblocs_left; nblocs_left--)
     {
@@ -328,7 +328,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
     return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
   bool kernelOnDevice = vx.checkDataOnDevice("local_extrema_vect_generic(x)");
-  const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
+  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -491,7 +491,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
     return sum;
 
   bool kernelOnDevice = vx.checkDataOnDevice("local_operations_vect_bis_generic(x)");
-  const _TYPE_ *x_base = kernelOnDevice ? mapToDevice(vx) : vx.addr();
+  const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:

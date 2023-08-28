@@ -84,7 +84,7 @@ inline TRUSTArray<_TYPE_>& TRUSTArray<_TYPE_>::inject_array(const TRUSTArray& so
     {
       _TYPE_ * addr_dest = data_ + first_element_dest;
       bool kernelOnDevice = checkDataOnDevice(*this, source);
-      const _TYPE_ * addr_source = (kernelOnDevice ? mapToDevice(source) : source.addr()) + first_element_source;
+      const _TYPE_ * addr_source = (mapToDevice(source, "", kernelOnDevice)) + first_element_source;
       if (kernelOnDevice)
         {
           start_timer();

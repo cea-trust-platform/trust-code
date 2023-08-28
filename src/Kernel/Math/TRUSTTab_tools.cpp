@@ -53,8 +53,8 @@ void local_max_abs_tab(const TRUSTTab<_T_>& tableau, TRUSTArray<_T_>& max_colonn
   for (int j = 0; j < lsize; j++) max_colonne[j] = 0;
   assert(lsize == max_colonne.size_array());
   bool kernelOnDevice = vect.checkDataOnDevice("local_max_abs_tab(x)");
-  const _T_* vect_addr = kernelOnDevice ? mapToDevice(vect) : vect.addr();
-  _T_* max_colonne_addr = kernelOnDevice ? computeOnTheDevice(max_colonne) : max_colonne.addr();
+  const _T_* vect_addr = mapToDevice(vect, "", kernelOnDevice);
+  _T_* max_colonne_addr = computeOnTheDevice(max_colonne, "", kernelOnDevice);
   for (int ibloc = 0; ibloc < nblocs; ibloc++)
     {
       const int begin_bloc = blocs[ibloc], end_bloc = blocs[ibloc+1];
