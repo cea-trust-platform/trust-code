@@ -100,6 +100,8 @@ Sortie& Domaine::printOn(Sortie& s) const
   s << mes_faces_joint_;
   s << mes_faces_raccord_;
   s << mes_bords_int_;
+  s << finl << "groupes_internes" << finl;
+  s << mes_groupes_internes_;
   s << "}" << finl;
   //
 
@@ -190,8 +192,6 @@ Entree& Domaine::readOn(Entree& s)
   s >> acc;
   assert (acc == "{");
   read_former_domaine(s);
-  s >> acc;
-  assert (acc == "}");
   check_domaine();
 
   if ( (Process::nproc()==1) && (NettoieNoeuds::NettoiePasNoeuds==0) )
@@ -214,7 +214,7 @@ Entree& Domaine::readOn(Entree& s)
  */
 void Domaine::read_former_domaine(Entree& s)
 {
-  Nom dnu;
+  Nom dnu, acc;
   Cerr << " Reading part of domain " << le_nom() << finl;
   s >> dnu; // Name of the Domaine, now unused ...
   s >> elem_;
@@ -229,6 +229,14 @@ void Domaine::read_former_domaine(Entree& s)
   mes_bords_int_.vide();
   s >> mes_bords_int_;
   mes_groupes_internes_.vide();
+  s >> acc;
+  if (acc == "groupes_internes")
+    {
+      s >> mes_groupes_internes_;
+      s >> acc;
+    }
+  if (acc != "}")
+    Process::exit( "misformatted domain file : One expected a closing bracket } to end. ");
 }
 
 /*! @brief associate the read objects to the domaine and check that the reading objects are coherent

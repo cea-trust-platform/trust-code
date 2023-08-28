@@ -411,9 +411,6 @@ void Scatter::read_domain_no_comm(Entree& fic)
       if (nom!=accouverte)
         Process::exit("Error: Scatter::read_domain_no_comm() -- One expected an opened bracket { to start.");
       domaine_read.read_former_domaine(fic);
-      fic >> nom;
-      if(nom!=accfermee)
-        Process::exit("Error: Scatter::read_domain_no_comm() -- One expected a closing bracket } to end.");
     }
   else
     Process::exit("Error: Scatter::read_domain_no_comm() -- Empty list ?! Should not happen?");

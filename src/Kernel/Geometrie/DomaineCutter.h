@@ -51,6 +51,7 @@ public:
 private:
   void construire_faces_bords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Domaine& domaine_partie) const;
   void construire_faces_raccords_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Domaine& domaine_partie) const;
+  void construire_frontieres_internes_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Domaine& domaine_partie) const;
   void construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets, const int partie, Domaine& domaine_partie) const;
   void construire_sommets_joints_ssdom(const ArrOfInt& liste_sommets, const ArrOfInt& liste_inverse_sommets, const int partie, const Static_Int_Lists *som_raccord, Domaine& domaine_partie) const;
 

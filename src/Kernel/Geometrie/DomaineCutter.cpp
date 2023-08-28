@@ -358,9 +358,9 @@ void DomaineCutter::construire_faces_raccords_ssdom(const ArrOfInt& liste_invers
     }
 }
 
-void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets,
-                                                    const int partie,
-                                                    Domaine& domaine_partie) const
+void DomaineCutter::construire_frontieres_internes_ssdom(const ArrOfInt& liste_inverse_sommets,
+                                                         const int partie,
+                                                         Domaine& domaine_partie) const
 {
   // Rappel : les bords internes sont des "frontieres" a l'interieur du domaine
   // (par exemple une plaque d'epaisseur nulle dans l'ecoulement)
@@ -383,6 +383,34 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
                                           frontiere.faces().les_sommets(),
                                           liste_inverse_sommets,
                                           front_partie.faces().les_sommets());
+      i_fr++;
+    }
+}
+
+void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets,
+                                                    const int partie,
+                                                    Domaine& domaine_partie) const
+{
+  const Domaine& domaine = ref_domaine_.valeur();
+  int i_fr = domaine.nb_bords()+domaine.nb_raccords()+domaine.nb_frontieres_internes();
+  ArrOfInt elements_voisins;
+
+  for(const auto& itr: domaine.groupes_internes())
+    {
+      const Frontiere& frontiere = itr;
+      Frontiere& front_partie =
+        domaine_partie.groupes_internes().add(Groupe_interne());
+      front_partie.nommer(frontiere.le_nom());
+      front_partie.associer_domaine(domaine_partie);
+      front_partie.faces().typer(frontiere.faces().type_face());
+      voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
+      construire_liste_faces_sous_domaine(elements_voisins,
+                                          ref_elem_part_.valeur(),
+                                          partie,
+                                          frontiere.faces().les_sommets(),
+                                          liste_inverse_sommets,
+                                          front_partie.faces().les_sommets());
+
       i_fr++;
     }
 }
@@ -1010,7 +1038,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
                                      Static_Int_Lists& voisins,const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
 {
   const Domaine& domaine = dom;
-  const int nb_front = domaine.nb_front_Cl();
+  const int nb_front = domaine.nb_front_Cl() + domaine.nb_groupes_int();
   ArrOfInt nb_faces(nb_front);
   for (int i = 0; i < nb_front; i++)
     nb_faces[i] = domaine.frontiere(i).nb_faces();
@@ -1023,15 +1051,15 @@ void calculer_elements_voisins_bords(const Domaine& dom,
     {
       int drap=0;
       const IntTab& faces = domaine.frontiere(i).les_sommets_des_faces();
+      Nom type_frontiere = domaine.frontiere(i).que_suis_je();
       const int n = nb_faces[i];
       for (int j = 0; j < n; j++)
         {
           for (int k = 0; k < nb_som_face; k++)
             une_face[k] = faces(j, k);
           find_adjacent_elements(som_elem, une_face, elems_voisins);
-
           const int n_voisins = elems_voisins.size_array();
-          if (n_voisins != 1)
+          if (n_voisins != 1 and type_frontiere != "Groupe_interne" )
             {
               if (drap==0)
                 {
@@ -1148,6 +1176,7 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
     const ArrOfInt& l_inv_som = correspondance.liste_inverse_sommets_;
     construire_faces_bords_ssdom(l_inv_som, part, sous_domain);
     construire_faces_raccords_ssdom(l_inv_som, part, sous_domain);
+    construire_frontieres_internes_ssdom(l_inv_som, part, sous_domain);
     construire_faces_internes_ssdom(l_inv_som, part, sous_domain);
     construire_sommets_joints_ssdom(l_som, l_inv_som, part, som_raccord, sous_domain);
   }
