@@ -95,7 +95,10 @@ void Op_Grad_P0_to_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, c
             }
         else if (sub_type(Neumann_paroi,la_cl.valeur())) // Cas Neumann_paroi
           for (int num_face = ndeb, num_face_cl=0; num_face < nfin; num_face++, num_face_cl++)
-            secmem(num_face, k) -= ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k); // Si bien oriente
+            {
+              if ( face_voisins(num_face,0) >= 0 ) secmem(num_face, k) -= ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k); // Si bien oriente
+              else secmem(num_face, k) += ref_cast(Neumann_paroi, la_cl.valeur()).flux_impose(num_face_cl, k); // Si oriente a envers
+            }
         else if  (! sub_type(Neumann_homogene,la_cl.valeur())) // En Neumann homogene, i.e. symetrie, la derivee a la face est nulle => on fait rien
           for (int num_face = ndeb; num_face < nfin; num_face++)
             {
