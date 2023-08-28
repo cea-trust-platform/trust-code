@@ -110,7 +110,7 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   ndeb = nfin;
   nfin = domaine_VEF.nb_faces();
 
-  bool kernelOnDevice = fluent.isKernelOnDevice() && Objet_U::computeOnDevice;
+  bool kernelOnDevice = fluent.checkDataOnDevice();
   const double* fluent_addr = kernelOnDevice ? mapToDevice(fluent) : fluent.addr();
   const double* volumes_entrelaces_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces) : volumes_entrelaces.addr();
   // ToDo bug nvc++ compiler recent bouh

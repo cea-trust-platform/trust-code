@@ -329,7 +329,7 @@ DoubleTab& Solveur_Masse_base::corriger_solution(DoubleTab& x, const DoubleTab& 
   diag=1.;
   appliquer(diag); // M-1
   // Si x et y sont sur le device, on deporte l'execution sur le device:
-  bool kernelOnDevice = x.isKernelOnDevice(y) && computeOnDevice;
+  bool kernelOnDevice = x.checkDataOnDevice(y);
   const double* diag_addr = kernelOnDevice ? mapToDevice(diag) : diag.addr();
   const double* y_addr    = kernelOnDevice ? mapToDevice(y) : y.addr();
   double* x_addr          = kernelOnDevice ? computeOnTheDevice(x) : x.addr();

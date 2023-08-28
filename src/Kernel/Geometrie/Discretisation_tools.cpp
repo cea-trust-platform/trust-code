@@ -136,7 +136,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
       int nb_faces = domaine_vf.nb_faces();
       DoubleTrav vol_tot(tabHf);
       // Lancement de ce kernel multi-discretisation et copie de donnees selon conditions (les deux tableaux doivent etre deja sur le device)
-      bool kernelOnDevice = tabHf.isKernelOnDevice(tabHe);
+      bool kernelOnDevice = tabHf.checkDataOnDevice(tabHe);
       // ToDo OpenMP : merge two loops in one parallel region
       const int* elem_faces_addr = kernelOnDevice ? mapToDevice(elem_faces) : elem_faces.addr();
       const double* volumes_addr = kernelOnDevice ? mapToDevice(volumes) : volumes.addr();
@@ -144,7 +144,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
       double* vol_tot_addr       = kernelOnDevice ? computeOnTheDevice(vol_tot) : vol_tot.addr();
       double* tabHf_addr         = kernelOnDevice ? computeOnTheDevice(tabHf) : tabHf.addr();
       start_timer();
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int ele = 0; ele < nb_elem_tot; ele++)
         for (int s = 0; s < nb_face_elem; s++)
           {
@@ -154,7 +154,7 @@ void Discretisation_tools::cells_to_faces(const Champ_base& He,  Champ_base& Hf)
             #pragma omp atomic
             vol_tot_addr[face] += volumes_addr[ele];
           }
-      #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+      #pragma omp target teams distribute parallel for if (kernelOnDevice)
       for (int face = 0; face < nb_faces; face++)
         tabHf_addr[face] /= vol_tot_addr[face];
       end_timer(kernelOnDevice, "Discretisation_tools::cells_to_faces (2 loops)");

@@ -42,7 +42,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
           assert(idx_end_of_list <= list.get_data().size_array());
           const int * items_to_process_addr;
           _TYPE_ *vect_addr;
-          bool kernelOnDevice = vect.isKernelOnDevice();
+          bool kernelOnDevice = vect.checkDataOnDevice();
           if (kernelOnDevice)
             {
               items_to_process_addr = mapToDevice(list.get_data(), "items_to_process");
@@ -65,7 +65,7 @@ void vect_items_generic(const int line_size, const ArrOfInt& voisins, const Stat
           std::stringstream message;
           message << "vect_items_generic IS_READ= " << IS_READ << " on voisin " << voisins[i_voisin] << " and loop with " << idx_end_of_list - idx << "*" << n << " items";
           start_timer();
-          #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+          #pragma omp target teams distribute parallel for if (kernelOnDevice)
           for (int item = idx; item < idx_end_of_list; item++)
             {
               // Indice de l'item geometrique a copier (ou du premier item du bloc)
@@ -136,7 +136,7 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
           assert(idx_end_of_list <= list.get_data().size_array());
           const int * items_to_process_addr;
           _TYPE_ *vect_addr;
-          bool kernelOnDevice = vect.isKernelOnDevice();
+          bool kernelOnDevice = vect.checkDataOnDevice();
           if (kernelOnDevice)
             {
               items_to_process_addr = mapToDevice(list.get_data(), "items_to_process");
@@ -170,7 +170,7 @@ void vect_blocs_generic(const int line_size, const ArrOfInt& voisins, const Stat
               std::stringstream message;
               message << "vect_blocs_generic IS_READ= " << IS_READ << " on voisin " << voisins[i_voisin] << " and loop with " << n << " items";
               start_timer();
-              #pragma omp target teams distribute parallel for if (kernelOnDevice && Objet_U::computeOnDevice)
+              #pragma omp target teams distribute parallel for if (kernelOnDevice)
               for (int j = 0; j < n; j++)
                 {
                   int ii = ii_base * line_size + j;
