@@ -83,7 +83,7 @@ void remplir_items_non_calcules_(TRUSTVect<_TYPE_>& v, _TYPE_ valeur)
       int j = 0;
       // Ne pas passer par operator[], sinon plantage si la valeur actuelle est invalide
       bool kernelOnDevice = v.checkDataOnDevice("remplir_items_non_calcules_(x)");
-      _TYPE_ *ptr = kernelOnDevice ? computeOnTheDevice(v) : v.addr();
+      _TYPE_ *ptr = computeOnTheDevice(v, "", kernelOnDevice);
       for (int i = 0; i < sz; i++)
         {
           // remplir les elements jusqu'au debut du bloc:

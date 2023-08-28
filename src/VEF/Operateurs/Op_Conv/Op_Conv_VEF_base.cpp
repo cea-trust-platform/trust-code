@@ -111,8 +111,8 @@ double Op_Conv_VEF_base::calculer_dt_stab() const
   nfin = domaine_VEF.nb_faces();
 
   bool kernelOnDevice = fluent.checkDataOnDevice();
-  const double* fluent_addr = kernelOnDevice ? mapToDevice(fluent) : fluent.addr();
-  const double* volumes_entrelaces_addr = kernelOnDevice ? mapToDevice(volumes_entrelaces) : volumes_entrelaces.addr();
+  const double* fluent_addr = mapToDevice(fluent, "", kernelOnDevice);
+  const double* volumes_entrelaces_addr = mapToDevice(volumes_entrelaces, "", kernelOnDevice);
   // ToDo bug nvc++ compiler recent bouh
   start_timer();
   if (kernelOnDevice)
