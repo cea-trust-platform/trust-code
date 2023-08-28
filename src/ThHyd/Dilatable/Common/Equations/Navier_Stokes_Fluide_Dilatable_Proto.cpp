@@ -560,9 +560,7 @@ void Navier_Stokes_Fluide_Dilatable_Proto::correct_and_compute_u_np1(Navier_Stok
   vpoint += rhoU; // rhoU(n+1)
 
   // Compute U(n+1):
-  const int n = vpoint.dimension(0), ncomp = vpoint.line_size();
-  for (int i=0 ; i<n ; i++)
-    for (int j=0 ; j< ncomp; j++) vpoint(i,j) /= tab_rho_face_np1(i);
+  tab_divide_any_shape(vpoint, tab_rho_face_np1);
 
   // Compute (U(n+1)-U(n))/dt :
   vpoint -= vit;
