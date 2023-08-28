@@ -120,7 +120,7 @@ void Champ_Fonc_Face_PolyMAC::interp_valeurs_elem(const DoubleTab& inco, DoubleT
       for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
         for (d = 0; d < D; d++)
           for (n = 0; n < N; n++)
-            val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * inco(f, n);
+            val(e, N * d + n) += fs(f) / ve(e) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * (inco.nb_dim() == 1 ? inco(f) : inco(f, n));
     }
 }
 
