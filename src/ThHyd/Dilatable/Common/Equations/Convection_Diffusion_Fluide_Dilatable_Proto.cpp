@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,6 +29,7 @@
 #include <Operateur.h>
 #include <Domaine.h>
 #include <Avanc.h>
+#include <Device.h>
 
 extern Stat_Counter_Id assemblage_sys_counter_;
 extern Stat_Counter_Id source_counter_;
@@ -123,20 +124,11 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   // Add source term (if any, but for temperatur eit is sure !!! )
   eqn.sources().ajouter(derivee);
 
-  // On divise derivee  par rho si espece ou gaz reel... sinon par rho*Cp !
-  const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
-  const int n = tab_rho.dimension(0);
-  assert (tab_rho.line_size() == 1);
-
-  if (is_thermal() && fluide_dil.type_fluide()=="Gaz_Parfait")
-    {
-      fluide_dil.update_rho_cp(sch.temps_courant());
-      const DoubleTab& rhoCp = eqn.get_champ("rho_cp_comme_T").valeurs();
-      for (int som=0 ; som<n ; som++) derivee(som) /= rhoCp(som);
-    }
-  else
-    for (int som=0 ; som<n ; som++) derivee(som) /= tab_rho(som);
-
+  // On divise derivee par rho si espece ou gaz reel... sinon par rho*Cp !
+  bool flag = is_thermal() && fluide_dil.type_fluide()=="Gaz_Parfait";
+  if (flag) fluide_dil.update_rho_cp(sch.temps_courant());
+  const DoubleTab& array = flag ? eqn.get_champ("rho_cp_comme_T").valeurs() : fluide_dil.masse_volumique().valeurs();
+  tab_divide_any_shape(derivee, array);
   derivee.echange_espace_virtuel();
 
 
@@ -152,14 +144,18 @@ DoubleTab& Convection_Diffusion_Fluide_Dilatable_Proto::derivee_en_temps_inco_sa
   const DoubleTab& inco = eqn.inconnue().valeurs();
   calculer_div_u_ou_div_rhou(convection);
 
-  for (int som=0 ; som<n ; som++) convection(som) *= (-inco(som));
+  tab_multiply_any_shape(convection, inco);
+  convection*=-1;
 
   // Add convection operator: - div( rho*u*Y ) or -div ( rho*u*T )
   eqn.operateur(1).ajouter(convection);
 
   // Divide by rho if necessary
   if (is_generic())
-    for (int som=0 ; som<n ; som++) convection(som) /= tab_rho(som);
+    {
+      const DoubleTab& tab_rho = fluide_dil.masse_volumique().valeurs();
+      tab_divide_any_shape(convection, tab_rho);
+    }
 
   /*
    * TOTAL TERM : diffusive + convective + sources
