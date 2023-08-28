@@ -23,14 +23,16 @@
 #include <omp.h>
 #endif
 
-extern bool self_test();
-static bool init_openmp_ = false;
+extern void self_test();
+extern bool init_openmp_, clock_on;
+extern int copy_before_exit, size_copy_before_exit;
+extern double clock_start;
+extern void exit_on_copy_condition(int size);
+extern void set_exit_on_copy_condition(int size);
 extern void init_openmp();
 extern void init_cuda();
 extern std::string toString(const void* adr);
 // Timers GPU avec OpenMP (renommer?)
-static bool clock_on = false;
-static double clock_start;
 inline void start_timer(int bytes=-1)
 {
 #ifdef _OPENMP

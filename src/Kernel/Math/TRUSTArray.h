@@ -250,9 +250,7 @@ private:
     if (tab.get_dataLocation()==Device)
       {
         copyFromDevice(tab, "const detected with checkDataOnHost()");
-        //Cerr << "Error! A const TRUSTArray tab is used on the host whereas its dataLocation=Device" << finl;
-        //Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
-        //Process::exit();
+        exit_on_copy_condition(tab.size_array());
       }
 #endif
   }
@@ -264,9 +262,7 @@ private:
     else if (loc==Device)
       {
         copyFromDevice(tab, "non-const detected with checkDataOnHost()");
-        //Cerr << "Error! A non-const TRUSTArray tab will be computed on the host whereas its dataLocation=Device" << finl;
-        //Cerr << "In order to copy data from device to host,add a call like: copyFromDevice(tab);" << finl;
-        //Process::exit();
+        exit_on_copy_condition(tab.size_array());
       }
     // On va modifier le tableau (non const) sur le host:
     tab.set_dataLocation(Host);

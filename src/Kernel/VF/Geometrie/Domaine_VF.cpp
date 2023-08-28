@@ -25,7 +25,7 @@
 #include <MD_Vector_base.h>
 #include <Analyse_Angle.h>
 #include <Linear_algebra_tools_impl.h>
-
+#include <Device.h>
 #include <medcoupling++.h>
 #ifdef MEDCOUPLING_
 #include <MEDCouplingMemArray.hxx>
@@ -611,6 +611,9 @@ void Domaine_VF::info_elem_som()
       Cerr<< nb_boundary_faces << " of them on boundary "<<bords(i).le_nom()<<finl;
     }
   Cerr<<"=============================================="<<finl;
+  int internal_item = std::min(nbelem, nbfaces);
+  internal_item = std::min(internal_item, nbsom);
+  set_exit_on_copy_condition(internal_item);
 }
 
 void Domaine_VF::creer_tableau_faces(Array_base& t, Array_base::Resize_Options opt) const
