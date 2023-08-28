@@ -24,6 +24,41 @@
 #include <comm_incl.h>
 #include <Comm_Group_MPI.h>
 
+bool init_openmp_ = false;
+bool clock_on = false;
+int copy_before_exit = -1, size_copy_before_exit = std::numeric_limits<int>::max();
+double clock_start;
+
+// ToDo OpenMP inliner dans Device.h:
+void exit_on_copy_condition(int size)
+{
+#ifdef _OPENMP
+#ifndef NDEBUG
+  // Le code quittera des que le nombre de copie au dela d'une certaine taille est atteint lors d'appels a checkDataOnHost
+  // Tres utile pour trouver les algorithmes TRUST a porter avec OpenMP
+  // Exemple: Une copie autorise puis on quitte:
+  // TRUST_COPY_BEFORE_EXIT=1 $exec_debug
+  if (size_copy_before_exit>0 && size>=size_copy_before_exit && statistiques().last_time(timestep_counter_)>0)
+    {
+      if (copy_before_exit == 0)
+        {
+          Cerr << "[OpenMP] An array of " << size << " items (>= " << size_copy_before_exit << " threshold) is copy from/to device." << finl;
+          Cerr << "[OpenMP] Probably from an expensive loop yet not offloaded..." << finl;
+          Process::exit();
+        }
+      copy_before_exit--;
+    }
+#endif
+#endif
+}
+void set_exit_on_copy_condition(int size)
+{
+  if (getenv("TRUST_COPY_BEFORE_EXIT")!=NULL)
+    {
+      copy_before_exit = atoi(getenv("TRUST_COPY_BEFORE_EXIT"));
+      if (size < size_copy_before_exit) size_copy_before_exit = size;
+    }
+}
 // Voir AmgXWrapper (src/init.cpp)
 int AmgXWrapperScheduling(int rank, int nRanks, int nDevs)
 {
@@ -247,9 +282,7 @@ _TYPE_* mapToDevice_(TRUSTArray<_TYPE_>& tab, DataLocation nextLocation, std::st
   if (Objet_U::computeOnDevice)
     {
       init_openmp();
-#ifndef NDEBUG
-      if (self_test()) self_test();
-#endif
+      self_test();
       DataLocation currentLocation = tab.get_dataLocation();
       tab.set_dataLocation(nextLocation); // Important de specifier le nouveau status avant la recuperation du pointeur:
       if (currentLocation==HostOnly)
@@ -320,7 +353,7 @@ void copyFromDevice(_TYPE_* ptr, int size, std::string arrayName)
       #pragma omp target update from(ptr[0:size])
       statistiques().end_count(gpu_copyfromdevice_counter_, bytes);
       std::stringstream message;
-      message << "Copy from device" << arrayName << " [" << toString(ptr) << "]";
+      message << "Copy from device" << arrayName << " [" << toString(ptr) << "] " << size << " items ";
       end_timer(Objet_U::computeOnDevice, message.str(), bytes);
       if (clock_on) printf("\n");
     }

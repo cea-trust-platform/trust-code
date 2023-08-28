@@ -22,12 +22,17 @@
 #include <comm_incl.h>
 
 // Device_test: teste intensivement les methodes de l'interface Device.h:
-static bool self_tested_ = false;
-bool self_test()
+bool self_tested_ = false;
+void self_test()
 {
-  if (!self_tested_ && Objet_U::computeOnDevice)
+  if (self_tested_)
+    return;
+  else
+    self_tested_ = true;
+#ifndef NDEBUG
+  if (Objet_U::computeOnDevice)
     {
-      self_tested_ = true;
+
       // Test mapToDevice(arr)
       // Status
       // Status before		Status after		Copy ?
@@ -68,10 +73,8 @@ bool self_test()
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
 
-#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
-#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 1);
         //assert(b[5] == a[5]); // Argh double& TRUSTArray<double>::operator[](int i) appele pour a et donc repasse sur host
@@ -97,10 +100,8 @@ bool self_test()
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
 
-#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
-#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 1);
         assert(a.get_dataLocation() == HostDevice);
@@ -126,10 +127,8 @@ bool self_test()
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
-#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
-#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 2);
         assert(a.get_dataLocation() == HostDevice);
@@ -154,10 +153,8 @@ bool self_test()
         #pragma omp target teams distribute parallel for if (Objet_U::computeOnDevice) map(tofrom:b_addr[0:b.size_array()])
         for (int i = 0; i < N; i++)
           b_addr[i] = a_addr[i];
-#ifndef NDEBUG
         const DoubleTab& const_b = b;
         const DoubleTab& const_a = a;
-#endif
         assert(const_b[5] == const_a[5]);
         assert(const_b[5] == 3);
         assert(a.get_dataLocation() == HostDevice);
@@ -182,9 +179,7 @@ bool self_test()
         //b/=2;  // TRUSTArray& operator/= (const _TYPE_ dy)
         assert(a.get_dataLocation() == HostDevice);
         assert(b.get_dataLocation() == Device);
-#ifndef NDEBUG
         const ArrOfDouble& const_b = b;
-#endif
         // Operations sur le device:
         // Retour sur le host pour verifier le resultat
         copyFromDevice(b, "b");
@@ -194,9 +189,7 @@ bool self_test()
       // Test de copyPartialFromDevice/copyPartialToDevice
       {
         ArrOfDouble a(4);
-#ifndef NDEBUG
         const ArrOfDouble& const_a = a;
-#endif
         a=0;
         mapToDevice(a, "a");
         a+=1; // Done on device
@@ -227,9 +220,7 @@ bool self_test()
         DoubleTab b(a); // b doit etre aussi alloue sur le device et la copie faite sur le device
         assert(b.get_dataLocation() == Device);
         copyFromDevice(b, "b");
-#ifndef NDEBUG
         const ArrOfDouble& const_b = b;
-#endif
         assert(const_b[0] == 1);
         assert(const_b[b.size() - 1] == 1);
       }
@@ -241,9 +232,7 @@ bool self_test()
         DoubleTab b;
         b = a; // b doit etre aussi alloue/rempli sur le device par copie de a:
         assert(b.get_dataLocation() == Device);
-#ifndef NDEBUG
         const ArrOfDouble& const_b = b;
-#endif
         copyFromDevice(b, "b");
         assert(const_b[0] == 1);
         assert(const_b[b.size() - 1] == 1);
@@ -251,10 +240,8 @@ bool self_test()
       // operator_vect_vect_generic pour DoubleTab::operator+-*/
       {
         DoubleTab a(10), b(10);
-#ifndef NDEBUG
         const ArrOfDouble& const_a = a;
         const ArrOfDouble& const_b = b;
-#endif
         a=1;
         b=10;
         mapToDevice(a,"a");
@@ -311,9 +298,7 @@ bool self_test()
         b+=1; // Operation doit etre faite sur le device (=1)
         assert(b.get_dataLocation()==Device);
         copyFromDevice(b);
-#ifndef NDEBUG
         const ArrOfDouble& const_b = b;
-#endif
         assert(const_b[0] == 1);
         assert(const_b[b.size()-1] == 1);
       }
@@ -391,7 +376,7 @@ bool self_test()
         */
       if (Process::me()==0) std::cerr << ptr_host << std::endl;
     }
-  return self_tested_;
+#endif
 }
 
 
