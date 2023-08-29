@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Problemes_Scalaires_Passifs_Turbulent_inclus
-#define Problemes_Scalaires_Passifs_Turbulent_inclus
+#ifndef Problemes_Scalaires_Passifs_Turbulent_included
+#define Problemes_Scalaires_Passifs_Turbulent_included
 
 #include <Pb_Thermohydraulique_Concentration_Turbulent.h>
 #include <Pb_Hydraulique_Concentration_Turbulent.h>
@@ -47,4 +47,4 @@ class Pb_Thermohydraulique_Concentration_Turbulent_Scalaires_Passifs : public TR
   Declare_instanciable(Pb_Thermohydraulique_Concentration_Turbulent_Scalaires_Passifs);
 };
 
-#endif /* Problemes_Scalaires_Passifs_Turbulent_inclus */
+#endif /* Problemes_Scalaires_Passifs_Turbulent_included */

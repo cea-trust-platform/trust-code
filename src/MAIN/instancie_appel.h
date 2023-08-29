@@ -77,6 +77,7 @@ void instancie_src_ThHyd_Schemas_Temps();
 void instancie_src_ThHyd_Turbulence_Equations();
 void instancie_src_ThHyd_Turbulence_Lois_Paroi();
 void instancie_src_ThHyd_Turbulence_Modeles();
+void instancie_src_ThHyd_Turbulence_Problems();
 void instancie_src_ThSol();
 void instancie_src_VDF();
 void instancie_src_VDF_Champs();
