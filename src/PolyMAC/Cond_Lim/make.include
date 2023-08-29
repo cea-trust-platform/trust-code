@@ -19,7 +19,8 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/PolyMAC/Operateurs/Op_Divers\
 	-I$(TRUST_ROOT)/src/PolyMAC/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
-	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Lois_Paroi\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Operateurs\
 	-I$(TRUST_ROOT)/src/ThSol\
 	
 

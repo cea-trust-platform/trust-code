@@ -18,7 +18,9 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Champs\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Milieu\
-	-I$(TRUST_ROOT)/src/ThHyd/Turbulence\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Lois_Paroi\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Operateurs\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Modeles\
 	-I$(TRUST_ROOT)/src/ThHyd/Dilatable/Quasi_Compressible/Milieu\
 	-I$(TRUST_ROOT)/src/VDF/Geometrie\
 	-I$(TRUST_ROOT)/src/VDF\

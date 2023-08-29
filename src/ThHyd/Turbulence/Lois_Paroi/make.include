@@ -11,6 +11,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/Kernel/Utilitaires\
 	-I$(TRUST_ROOT)/src/Kernel/VF/Geometrie\
 	-I$(TRUST_ROOT)/src/ThHyd/Incompressible/Equations\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Modeles\
 	
 
-Lib = $(TRUST_LIB)/libthhyd_turbulence
+Lib = $(TRUST_LIB)/libthhyd_turbulence_lois_paroi
