@@ -106,6 +106,8 @@ void calculer_rho_v(const IJK_Field_double& rho,
                     const FixedVector<IJK_Field_double, 3>& v,
                     FixedVector<IJK_Field_double, 3>& rho_v);
 void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_double& output, double DU_perio, int dir);
+double interpolation_for_shear_periodicity(const IJK_Field_double& output, const int send_i, const int send_j, const int send_k, const double istmp, const int real_size_i);
+
 
 void calculer_rho_harmonic_v(const IJK_Field_double& rho,
                              const FixedVector<IJK_Field_double, 3>& v,

@@ -1196,35 +1196,10 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
                   x_deplacement = -IJK_Splitting::shear_x_time_;
                 }
 
-              double istmp = i + x_deplacement / DX;
 
-              int ifloorm2 = (int) round(istmp) - 2;
-              int ifloorm1 = (int) round(istmp) - 1;
+              double istmp = i+x_deplacement/DX;
               int ifloor0 = (int) round(istmp);
-              int ifloorp1 = (int) round(istmp) + 1;
-              int ifloorp2 = (int) round(istmp) + 2;
-
-              int x[5] = { ifloorm2, ifloorm1, ifloor0, ifloorp1, ifloorp2 };
-
-              ifloorm2 = (ifloorm2 % ni + ni) % ni;
-              ifloorm1 = (ifloorm1 % ni + ni) % ni;
-              ifloor0 = (ifloor0 % ni + ni) % ni;
-              ifloorp1 = (ifloorp1 % ni + ni) % ni;
-              ifloorp2 = (ifloorp2 % ni + ni) % ni;
-
-              double y[5] = { output(ifloorm2, j, k), output(ifloorm1, j, k), output(ifloor0, j, k), output(ifloorp1, j, k), output(ifloorp2, j, k) };
-
-              double a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
-              double a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
-              double a2 = y[2] / ((x[2] - x[0]) * (x[2] - x[1]) * (x[2] - x[3]) * (x[2] - x[4]));
-              double a3 = y[3] / ((x[3] - x[0]) * (x[3] - x[1]) * (x[3] - x[2]) * (x[3] - x[4]));
-              double a4 = y[4] / ((x[4] - x[0]) * (x[4] - x[1]) * (x[4] - x[2]) * (x[4] - x[3]));
-
-              // Evaluate the interpolation polynomial at istmp
-
-              velocity_ft_tmp(i, j, k) = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4])) + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-                                         + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4])) + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
-                                         + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
+              velocity_ft_tmp(i, j, k) = interpolation_for_shear_periodicity(output, ifloor0, j, k, istmp, ni);
 
               if (xyz[2] < 0)
                 {
@@ -1241,6 +1216,84 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
   output = velocity_ft_tmp;
   return;
 }
+
+double interpolation_for_shear_periodicity(const IJK_Field_double& output, const int send_i, const int send_j, const int send_k, const double istmp, const int real_size_i)
+{
+  // renvoi la valeur interpolee pour la condition de shear-periodicity
+
+  int nb_points = IJK_Splitting::order_interpolation_poisson_solver_+1;
+  double* x = new double[nb_points];
+  double* y= new double[nb_points];
+  double* a= new double[nb_points];
+  double* res = new double[nb_points];
+  double resu = 0.;
+
+  if (nb_points==2)
+    {
+      x[0] = (double)floor(istmp);
+      x[1] = (double)floor(istmp)+1.;
+    }
+  else if(nb_points==3)
+    {
+      x[0] = (double)send_i-1;
+      x[1] = (double)send_i;
+      x[2] = (double)send_i+1;
+    }
+  else if(nb_points==5)
+    {
+      x[0] = (double)send_i-2;
+      x[1] = (double)send_i-1;
+      x[2] = (double)send_i;
+      x[3] = (double)send_i+1;
+      x[4] = (double)send_i+2;
+    }
+  else if(nb_points==7)
+    {
+      x[0] = (double)send_i-3;
+      x[1] = (double)send_i-2;
+      x[2] = (double)send_i-1;
+      x[3] = (double)send_i;
+      x[4] = (double)send_i+1;
+      x[5] = (double)send_i+2;
+      x[6] = (double)send_i+3;
+    }
+
+  for (int pt = 0; pt < nb_points ; pt++)
+    {
+      y[pt] = output(((int)x[pt] % real_size_i + real_size_i) % real_size_i, send_j, send_k);
+    }
+
+  for (int pt = 0; pt < nb_points ; pt++)
+    {
+      double denum = 1.;
+      for (int pt_autre = 0; pt_autre < nb_points ; pt_autre++)
+        {
+          if (pt_autre!=pt)
+            denum *= (x[pt] - x[pt_autre]);
+        }
+      a[pt]=y[pt]/denum;
+    }
+
+
+  for (int pt = 0; pt < nb_points ; pt++)
+    {
+      res[pt] = a[pt];
+      for (int pt_autre = 0; pt_autre < nb_points ; pt_autre++)
+        {
+          if (pt_autre!=pt)
+            res[pt] *= (istmp - x[pt_autre]);
+        }
+      resu+=res[pt];
+    }
+
+  delete[] x;
+  delete[] y;
+  delete[] a;
+  delete[] res;
+
+  return resu;
+}
+
 
 // On utilise la moyenne harmonique au lieu de la moyenne arithmetique.
 void calculer_rho_harmonic_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_double, 3>& v, FixedVector<IJK_Field_double, 3>& rho_v)

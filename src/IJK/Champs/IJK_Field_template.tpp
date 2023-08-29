@@ -626,16 +626,8 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodi
 
   if (nb_points==2)
     {
-      if(istmp >= (_TYPE_) send_i)
-        {
-          x[0] = (_TYPE_)send_i;
-          x[1] = (_TYPE_)send_i+1;
-        }
-      else
-        {
-          x[0] = (_TYPE_)send_i-1;
-          x[1] = (_TYPE_)send_i;
-        }
+      x[0] = (_TYPE_) floor(istmp);
+      x[1] = (_TYPE_) floor(istmp)+1;
     }
   else if(nb_points==3)
     {
@@ -650,6 +642,16 @@ _TYPE_ IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::interpolation_for_shear_periodi
       x[2] = (_TYPE_)send_i;
       x[3] = (_TYPE_)send_i+1;
       x[4] = (_TYPE_)send_i+2;
+    }
+  else if(nb_points==7)
+    {
+      x[0] = (_TYPE_)send_i-3;
+      x[1] = (_TYPE_)send_i-2;
+      x[2] = (_TYPE_)send_i-1;
+      x[3] = (_TYPE_)send_i;
+      x[4] = (_TYPE_)send_i+1;
+      x[5] = (_TYPE_)send_i+2;
+      x[6] = (_TYPE_)send_i+3;
     }
 
   for (int pt = 0; pt < nb_points ; pt++)
@@ -887,7 +889,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
   const int ni_local = splitting.get_nb_items_local(loc, 0);
   const int nj_local = splitting.get_nb_items_local(loc, 1);
   const int nk_local = splitting.get_nb_items_local(loc, 2);
-  order_interpolation_ = 2;
+  order_interpolation_ = IJK_Splitting::order_interpolation_poisson_solver_;
   monofluide_variable_ = type;
   IJK_Field_local_template<_TYPE_, _TYPE_ARRAY_>::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
 

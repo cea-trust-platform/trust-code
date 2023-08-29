@@ -150,18 +150,9 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
 
   if (nb_points==2)
     {
-      if(istmp >= send_i)
-        {
-          x[0] = send_i;
-          x[1] = send_i+1;
-          indice_premier_voisin_ = 0;
-        }
-      else
-        {
-          x[0] = send_i-1;
-          x[1] = send_i;
-          indice_premier_voisin_ = 1;
-        }
+      x[0] = (int) floor(istmp);
+      x[1] = (int) floor(istmp)+1;
+      indice_premier_voisin_ = 0;
     }
   else if(nb_points==3)
     {
@@ -178,6 +169,17 @@ void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const i
       x[3] = send_i+1;
       x[4] = send_i+2;
       indice_premier_voisin_ = 2;
+    }
+  else if(nb_points==7)
+    {
+      x[0] = send_i-3;
+      x[1] = send_i-2;
+      x[2] = send_i-1;
+      x[3] = send_i;
+      x[4] = send_i+1;
+      x[5] = send_i+2;
+      x[6] = send_i+3;
+      indice_premier_voisin_ = 3;
     }
 
 
