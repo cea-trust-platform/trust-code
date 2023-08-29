@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+29/08/23 (TRUST) New feature  : Add BC (paroi_frottant) for multiphase flow with the VDF discretization
 02/08/23 (TRUST) New feature  : Experimental device-device communication implemented for GPU version if Cuda-aware MPI is available. Use: TRUST_USE_GPU_AWARE_MPI=1 trust datafile NB_PROCS
 02/08/23 (TRUST) Fix          : When diffusive-implicited scheme diverges, backup wasn't done
 02/08/23 (TRUST) New options  : Default for AmgX preconditionner may be overloaded in data file. Ex: amgx gcp { precond c-amg { p:selector=PMIS p:strength_threshold=0.8 } ... }

@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.3_beta : Changes since version 1.9.2 :
 -------------------------------------------------------------
+29/08/23 (TRUST) Major change : It is no more possible to put specific discretization classes in ThHyd module ! All should be in its dedicated folder (VDF, VEF, PolyMAC, ...)
 03/08/23 (TRUST) Major change : Template implementations + SFINAE introduced for VEF diffusion operators 
 02/08/23 (TRUST) Tool change  : Update ccache (3.1.4 to 4.8.2) for faster (re)build with Nvidia compilers (nvc++, nvc, nvcc)
 18/07/23 (TRUST) Major change : Three PolyMAC versions are now available in TRUST: PolyMAC, PolyMAC_P0P1NC and PolyMAC_P0. The last two are compatible with Pb_Multiphase.
