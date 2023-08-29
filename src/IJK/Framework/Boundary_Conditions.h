@@ -44,6 +44,7 @@ protected:
   double dU_perio_;
   double t0_shear_;
   int defilement_;
+  int order_interpolation_poisson_solver_;
   int interp_monofluide_;
   int resolution_u_prime_;
 };

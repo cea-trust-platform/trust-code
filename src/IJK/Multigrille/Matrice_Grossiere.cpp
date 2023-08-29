@@ -20,57 +20,43 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
                                       int imax, int jmax, int kmax, ArrOfInt& virt_blocs, IJK_Splitting splitting, double offset)
 {
   const int ni = renum_.dimension(2) - 2;
+  const int nj = renum_.dimension(1) - 2;
+  const int nk = renum_.dimension(0) - 2;
   if (pe == Process::me())
     {
       // Frontiere periodique avec cote oppose sur meme processeur
-
-      const int nj = renum_.dimension(1) - 2;
-      const int nk = renum_.dimension(0) - 2;
       for (int k = kmin; k < kmax; k++)
         for (int j = jmin; j < jmax; j++)
           for (int i = imin; i < imax; i++)
             {
-              int ii_m1 ;
-              int ii ;
               int jj ;
               int kk ;
-              int ii_p1 ;
-
               if (offset !=0. && IJK_Splitting::defilement_==1)
                 {
                   double DX = splitting.get_grid_geometry().get_constant_delta(0);
                   double istmp = IJK_Splitting::shear_x_time_ * offset/DX;
                   int offset2 = (int) round(istmp);
-                  //int x[5] = {offset2-2, offset2-1, offset2, offset2+1, offset2+2};
-                  int x[3] = {offset2-1, offset2, offset2+1};
-
-                  double a0 = 1. / ((x[0] - x[1]) * (x[0] - x[2]) );
-                  double a1 = 1. / ((x[1] - x[0]) * (x[1] - x[2]) );
-                  double a2 = 1. / ((x[2] - x[0]) * (x[2] - x[1]) );
-
-                  ponderation_shear_m1_scal_ = a0 * ((istmp - x[1]) * (istmp - x[2]));
-                  ponderation_shear_0_scal_ = a1 * ((istmp - x[0]) * (istmp - x[2]));
-                  ponderation_shear_p1_scal_ = a2 * ((istmp - x[0]) * (istmp - x[1]));
-
-                  ii_m1 = ((i + ni + offset2 - 1) % ni + ni) % ni;
-                  ii = ((i + ni + offset2) % ni + ni) % ni;
-                  ii_p1 = ((i + ni + offset2 + 1) % ni + ni) % ni;
+                  int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
+                  interpolation_for_shear_periodicity(i , offset2, istmp, ni, ii);
                   jj = (j + nj) % nj;
                   kk = (k + nk) % nk;
-                  renum(i, j, k) = renum(ii, jj, kk);
-                  renum_m1(i, j, k) = renum(ii_m1, jj, kk);
-                  renum_p1(i, j, k) = renum(ii_p1, jj, kk);
+                  renum(i, j, k) = renum(ii[indice_premier_voisin_], jj, kk);
+                  for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
+                    {
+                      renum_shear(i,j,k,pt) = renum(ii[pt], jj, kk);
+                    }
+                  delete[] ii;
                 }
               else
                 {
-                  ii_m1 = -1;
-                  ii = (i + ni ) % ni;
-                  ii_p1 = -1;
+                  int ii = (i + ni ) % ni;
                   jj = (j + nj) % nj;
                   kk = (k + nk) % nk;
                   renum(i, j, k) = renum(ii, jj, kk);
-                  renum_m1(i, j, k) = -1;
-                  renum_p1(i, j, k) = -1;
+                  for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
+                    {
+                      renum_shear(i,j,k,pt) = -1;
+                    }
                 }
             }
 
@@ -93,30 +79,23 @@ void Matrice_Grossiere::add_virt_bloc(int pe, int& count, int imin, int jmin, in
                     double DX = splitting.get_grid_geometry().get_constant_delta(0);
                     double istmp = IJK_Splitting::shear_x_time_ * offset/DX;
                     int offset2 = (int) round(istmp);
-
-                    int x[3] = {offset2-1, offset2, offset2+1};
-
-                    double a0 = 1. / ((x[0] - x[1]) * (x[0] - x[2]) );
-                    double a1 = 1. / ((x[1] - x[0]) * (x[1] - x[2]) );
-                    double a2 = 1. / ((x[2] - x[0]) * (x[2] - x[1]) );
-
-                    ponderation_shear_m1_scal_ = a0 * ((istmp - x[1]) * (istmp - x[2]));
-                    ponderation_shear_0_scal_ = a1 * ((istmp - x[0]) * (istmp - x[2]));
-                    ponderation_shear_p1_scal_ = a2 * ((istmp - x[0]) * (istmp - x[1]));
-
-                    int ii_m1 = ((i  + offset2 - 1) % ni + ni) % ni;
-                    int ii = ((i  + offset2) % ni + ni) % ni;
-                    int ii_p1 = ((i  + offset2 + 1) % ni + ni) % ni;
-                    renum(i, j, k) = index + ii - i;
-                    renum_m1(i, j, k) = index + ii_m1 - i;
-                    renum_p1(i, j, k) = index + ii_p1 - i;
+                    int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
+                    interpolation_for_shear_periodicity(i, offset2, istmp, ni, ii);
+                    renum(i, j, k) = index + ii[indice_premier_voisin_] - i;
+                    for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
+                      {
+                        renum_shear(i,j,k,pt) = index + ii[pt] - i;
+                      }
+                    delete[] ii;
 
                   }
                 else
                   {
                     renum(i,j,k) = index;
-                    renum_m1(i, j, k) = -1;
-                    renum_p1(i, j, k) = -1;
+                    for (int pt = 0; pt < IJK_Splitting::order_interpolation_poisson_solver_+1 ; pt++)
+                      {
+                        renum_shear(i,j,k,pt) = -1;
+                      }
                   }
               }
 
@@ -143,22 +122,12 @@ void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
               double DX = splitting.get_grid_geometry().get_constant_delta(0);
               double istmp = IJK_Splitting::shear_x_time_ * offset/DX;
               int offset2 = (int) round(istmp);
-
-              int x[3] = {offset2-1, offset2, offset2+1};
-
-              double a0 = 1. / ((x[0] - x[1]) * (x[0] - x[2]) );
-              double a1 = 1. / ((x[1] - x[0]) * (x[1] - x[2]) );
-              double a2 = 1. / ((x[2] - x[0]) * (x[2] - x[1]) );
-
-              ponderation_shear_m1_scal_ = a0 * ((istmp - x[1]) * (istmp - x[2]));
-              ponderation_shear_0_scal_ = a1 * ((istmp - x[0]) * (istmp - x[2]));
-              ponderation_shear_p1_scal_ = a2 * ((istmp - x[0]) * (istmp - x[1]));
-
-              int ii = ((i  + offset2) % ni + ni) % ni;
-              int index = renum(i, j, k) + ii - i;
+              int * ii = new int[IJK_Splitting::order_interpolation_poisson_solver_+1];
+              interpolation_for_shear_periodicity(i, offset2, istmp, ni, ii);
+              int index = renum(i, j, k) + ii[indice_premier_voisin_] - i;
               assert(index >= 0);
               items_to_send.append_array(index);
-
+              delete[] ii;
             }
           else
             {
@@ -170,6 +139,83 @@ void Matrice_Grossiere::add_dist_bloc(int pe, int imin, int jmin, int kmin,
 
         }
 }
+
+void Matrice_Grossiere::interpolation_for_shear_periodicity(const int i, const int send_i /*offset2*/, const double istmp/*istmp*/,
+                                                            const int real_size_i /*ni*/, int * ii)
+{
+  // renvoi la valeur interpolee pour la condition de shear-periodicity
+  int nb_points = IJK_Splitting::order_interpolation_poisson_solver_+1;
+  int * x = new int[nb_points];
+  double* a= new double[nb_points];
+
+  if (nb_points==2)
+    {
+      if(istmp >= send_i)
+        {
+          x[0] = send_i;
+          x[1] = send_i+1;
+          indice_premier_voisin_ = 0;
+        }
+      else
+        {
+          x[0] = send_i-1;
+          x[1] = send_i;
+          indice_premier_voisin_ = 1;
+        }
+    }
+  else if(nb_points==3)
+    {
+      x[0] = send_i-1;
+      x[1] = send_i;
+      x[2] = send_i+1;
+      indice_premier_voisin_ = 1;
+    }
+  else if(nb_points==5)
+    {
+      x[0] = send_i-2;
+      x[1] = send_i-1;
+      x[2] = send_i;
+      x[3] = send_i+1;
+      x[4] = send_i+2;
+      indice_premier_voisin_ = 2;
+    }
+
+
+  for (int pt = 0; pt < nb_points ; pt++)
+    {
+      double denum = 1.;
+      for (int pt_autre = 0; pt_autre < nb_points ; pt_autre++)
+        {
+          if (pt_autre!=pt)
+            denum *= (x[pt] - x[pt_autre]);
+        }
+      a[pt]=1./denum;
+    }
+
+
+  for (int pt = 0; pt < nb_points ; pt++)
+    {
+      ponderation_shear_[pt] = a[pt];
+      for (int pt_autre = 0; pt_autre < nb_points ; pt_autre++)
+        {
+          if (pt_autre!=pt)
+            ponderation_shear_[pt] *= (istmp - x[pt_autre]);
+        }
+    }
+
+  for (int pt = 0; pt < nb_points ; pt++)
+    {
+      ii[pt] = (i + real_size_i + x[pt] % real_size_i + real_size_i) % real_size_i;
+    }
+
+  delete[] x;
+  delete[] a;
+
+  return;
+
+}
+
+
 /*! @brief ajoute deux coefficients diagonal/extra-diagonal a la matrice
  *
  */
@@ -179,42 +225,19 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
 {
   const int indice = renum(i, j, k);
   const int indice_voisin = renum(i_voisin, j_voisin, k_voisin);
-  const int indice_voisin_m1 = renum_m1(i_voisin, j_voisin, k_voisin);
-  const int indice_voisin_p1 = renum_p1(i_voisin, j_voisin, k_voisin);
 
-  double pond_0 = 0.;
-  double pond_m1 = 0.;
-  double pond_p1 = 0.;
-  bool voisin_shear;
-  if (indice_voisin_m1!=-1 || indice_voisin_p1!=-1)
-    {
-      if (shear_perio==-1)
-        {
-          pond_m1 = ponderation_shear_p1_scal_ ;
-          pond_0 = ponderation_shear_0_scal_;
-          pond_p1 = ponderation_shear_m1_scal_ ;
-        }
-      else if (shear_perio==1)
-        {
-          pond_m1 = ponderation_shear_m1_scal_;
-          pond_0 = ponderation_shear_0_scal_;
-          pond_p1 = ponderation_shear_p1_scal_;
-        }
-      else
-        {
-          std::cout << "ne doit pas etre la" << std::endl;
-          Process::exit();
-        }
-      voisin_shear = true;
-    }
-  else
-    {
-      pond_m1 = 0.;
-      pond_0 = 1.;
-      pond_p1 = 0.;
-      voisin_shear = false;
-    }
+  bool voisin_shear = false;
 
+  int nb_point = IJK_Splitting::order_interpolation_poisson_solver_+1;
+  for (int interp = 0; interp < nb_point; interp++)
+    {
+      const int indice_voisin_shear = renum_shear(i_voisin, j_voisin, k_voisin, interp);
+      if (indice_voisin_shear!=-1)
+        {
+          voisin_shear = true;
+        }
+
+    }
 
   // coefficient extra diagonal (- surface_face / distance_centres_elements)
   double x = -coeff;
@@ -225,27 +248,47 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
       if (indice_voisin < nreels)
         {
           // Element reel
-          voisins_[indice].add(indice_voisin);
-          coeffs_[indice].add(x*pond_0);
+
           if(voisin_shear)
             {
-              voisins_[indice].add(indice_voisin_m1);
-              voisins_[indice].add(indice_voisin_p1);
-              coeffs_[indice].add(x*pond_m1);
-              coeffs_[indice].add(x*pond_p1);
+              for (int interp = 0; interp < nb_point; interp++)
+                {
+                  int indice_pond = interp;
+                  if (shear_perio==-1)
+                    {
+                      indice_pond = nb_point-1-interp;
+                    }
+                  voisins_[indice].add(renum_shear(i_voisin, j_voisin, k_voisin, interp));
+                  coeffs_[indice].add(x*ponderation_shear_[indice_pond]);
+                }
+            }
+          else
+            {
+              voisins_[indice].add(indice_voisin);
+              coeffs_[indice].add(x);
             }
         }
       else
         {
           // Element virtuel
-          voisins_virt_[indice].add(indice_voisin - nreels);
-          coeffs_virt_[indice].add(x*pond_0);
+
           if(voisin_shear)
             {
-              voisins_virt_[indice].add(indice_voisin_m1 - nreels);
-              voisins_virt_[indice].add(indice_voisin_p1 - nreels);
-              coeffs_virt_[indice].add(x*pond_m1);
-              coeffs_virt_[indice].add(x*pond_p1);
+              for (int interp = 0; interp < nb_point; interp++)
+                {
+                  int indice_pond = interp;
+                  if (shear_perio==-1)
+                    {
+                      indice_pond = nb_point-1-interp;
+                    }
+                  voisins_virt_[indice].add(renum_shear(i_voisin, j_voisin, k_voisin, interp) - nreels);
+                  coeffs_virt_[indice].add(x*ponderation_shear_[indice_pond]);
+                }
+            }
+          else
+            {
+              voisins_virt_[indice].add(indice_voisin - nreels);
+              coeffs_virt_[indice].add(x);
             }
 
         }
@@ -254,3 +297,7 @@ void Matrice_Grossiere::ajoute_coeff(int i, int j, int k,
   // Contribution a la diagonale
   coeff_diag_[indice] -= x;
 }
+
+
+
+

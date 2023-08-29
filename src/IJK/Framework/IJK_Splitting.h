@@ -38,6 +38,7 @@ public:
   static double shear_x_DT_ ;
   static double Lx_for_shear_perio ;
   static int defilement_ ;
+  static int order_interpolation_poisson_solver_;
   enum Localisation { ELEM, NODES, FACES_I, FACES_J, FACES_K };
   static Localisation FacesDirToLocalisation(int dir)
   {

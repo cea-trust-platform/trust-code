@@ -32,14 +32,14 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     renum_ = -1; // init a -1
     // plusieur vecteur renum pour le cas shear periodic ou une case peut renvoyer vers plusieurs
     // + 4 autres vecteur contenant les ponderation associee pour interpolation 4th order
-    renum_m1_.resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
-    renum_p1_.resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
-    renum_m1_ = -1; // init a -1
-    renum_p1_ = -1; // init a -1
-    ponderation_shear_m1_scal_ = 0.;
-    ponderation_shear_0_scal_ = 0.;
-    ponderation_shear_p1_scal_ = 0.;
-
+    renum_shear_ = new IntTab[IJK_Splitting::order_interpolation_poisson_solver_+1];
+    ponderation_shear_ = new double[IJK_Splitting::order_interpolation_poisson_solver_+1];
+    for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
+      {
+        renum_shear_[interp].resize(nk+2, nj+2, ni+2, RESIZE_OPTIONS::NOCOPY_NOINIT);
+        renum_shear_[interp] = -1;
+        ponderation_shear_[interp] = 0.;
+      }
 
     int count = 0;
     for (k = 0; k < nk; k++)
@@ -48,8 +48,10 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
           {
             int index = count++;
             renum(i,j,k) = index;
-            renum_p1(i,j,k) = -1;
-            renum_m1(i,j,k) = -1;
+            for (int interp = 0; interp < IJK_Splitting::order_interpolation_poisson_solver_+1; interp++)
+              {
+                renum_shear_[interp](i,j,k)=-1;
+              }
           }
 
 
@@ -267,8 +269,16 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     for (i = 0; i < n_reels; i++)
       nnz_virt += coeffs_virt_[i].size();
 
+
+    // dans le cas normal
+    // on multiplie le premier coeff diagonal de la matrice par 2 (au point 0,0,0) --> condition qui definit arbitrairement une constante de pression
+    // dans le cas shear-perio --> cela cree un comportement etrange de P en 0,0,0 --> on n impose rien ? --> d un pas de temps sur lautre, la constante de P peut donc changer. Il ne faut tenir compte que de gradP.
+    // le probleme nest peut etre pas que pour les conditions shear perio
+    //if (Process::me() == 0 && IJK_Splitting::defilement_==0)
     if (Process::me() == 0)
       coeff_diag_[0] *= 2;
+    // coeff_diag_[ni*nj*(nk/2)-(nj/2)*(ni/2)] *= 2;
+
 
     mat_.dimensionner(1, 2);
     mat_.get_bloc(0,0).typer("Matrice_Morse_Sym");
@@ -290,6 +300,9 @@ void Matrice_Grossiere::build_matrix(const IJK_Field_template<_TYPE_,_TYPE_ARRAY
     //    carre.imprimer_formatte(Cout);
     //    rect.imprimer_formatte(Cout);
   }
+
+  delete[] renum_shear_;
+  delete[] ponderation_shear_;
 
 }
 

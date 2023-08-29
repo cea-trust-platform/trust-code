@@ -22,6 +22,7 @@ double IJK_Splitting::shear_x_time_=0.;
 double IJK_Splitting::shear_x_DT_=0.;
 double IJK_Splitting::Lx_for_shear_perio=0.;
 int IJK_Splitting::defilement_=0;
+int IJK_Splitting::order_interpolation_poisson_solver_=0;
 
 Boundary_Conditions::Boundary_Conditions()
 {
@@ -32,6 +33,7 @@ Boundary_Conditions::Boundary_Conditions()
   dU_perio_ = 0.;
   t0_shear_=0.;
   defilement_=0;
+  order_interpolation_poisson_solver_=0;
   interp_monofluide_=0;
   resolution_u_prime_=0;
 }
@@ -48,6 +50,7 @@ Entree& Boundary_Conditions::readOn(Entree& is)
   param.ajouter("dU_perio", &dU_perio_);
   param.ajouter("t0_shear", &t0_shear_);
   param.ajouter("defilement", &defilement_);
+  param.ajouter("order_interpolation_poisson_solver", &order_interpolation_poisson_solver_);
   param.ajouter("interp_monofluide", &interp_monofluide_);
   param.ajouter("resolution_u_prime", &resolution_u_prime_);
   param.ajouter("bctype_kmin", &bctype_kmin_, Param::REQUIRED);
@@ -65,6 +68,7 @@ Entree& Boundary_Conditions::readOn(Entree& is)
   param.lire_avec_accolades(is);
   IJK_Splitting::shear_x_time_=dU_perio_*t0_shear_;
   IJK_Splitting::defilement_=defilement_;
+  IJK_Splitting::order_interpolation_poisson_solver_=order_interpolation_poisson_solver_;
 
   return is;
 }

@@ -35,21 +35,9 @@ public:
   {
     return renum_(k+1, j+1, i+1);
   }
-  const int& renum_m2(int i, int j, int k) const
+  const int& renum_shear(int i, int j, int k, int nb) const
   {
-    return renum_m2_(k+1, j+1, i+1);
-  }
-  const int& renum_m1(int i, int j, int k) const
-  {
-    return renum_m1_(k+1, j+1, i+1);
-  }
-  const int& renum_p1(int i, int j, int k) const
-  {
-    return renum_p1_(k+1, j+1, i+1);
-  }
-  const int& renum_p2(int i, int j, int k) const
-  {
-    return renum_p2_(k+1, j+1, i+1);
+    return renum_shear_[nb](k+1, j+1, i+1);
   }
 
   const Matrice_Base& matrice() const
@@ -70,23 +58,10 @@ protected:
   {
     return renum_(k+1, j+1, i+1);
   }
-  int& renum_m2(int i, int j, int k)
+  int& renum_shear(int i, int j, int k, int nb)
   {
-    return renum_m2_(k+1, j+1, i+1);
+    return renum_shear_[nb](k+1, j+1, i+1);
   }
-  int& renum_m1(int i, int j, int k)
-  {
-    return renum_m1_(k+1, j+1, i+1);
-  }
-  int& renum_p1(int i, int j, int k)
-  {
-    return renum_p1_(k+1, j+1, i+1);
-  }
-  int& renum_p2(int i, int j, int k)
-  {
-    return renum_p2_(k+1, j+1, i+1);
-  }
-
 
 
   void add_virt_bloc(int pe, int& count, int imin, int jmin, int kmin,
@@ -96,6 +71,9 @@ protected:
                      int imax, int jmax, int kmax,
                      ArrOfInt& items_to_send,
                      IJK_Splitting splitting, double offset = 0.);
+  void interpolation_for_shear_periodicity(const int i, const int send_i /*offset2*/, const double istmp/*istmp*/,
+                                           const int real_size_i /*ni*/, int * ii);
+
 
   Matrice_Bloc mat_;
 
@@ -105,18 +83,12 @@ protected:
 
   // renum_(k+1,j+1,i+1) = indice de l'inconnue dans le vecteur inconnue de la matrice
 
-  int interpolation_order_ = 2;
+  int indice_premier_voisin_ ;
   IntTab renum_;
-  IntTab renum_m2_;
-  IntTab renum_m1_;
-  IntTab renum_p1_;
-  IntTab renum_p2_;
 
-  double ponderation_shear_m2_scal_;
-  double ponderation_shear_m1_scal_;
-  double ponderation_shear_0_scal_;
-  double ponderation_shear_p1_scal_;
-  double ponderation_shear_p2_scal_;
+  IntTab* renum_shear_ ;
+  double* ponderation_shear_;
+
 
   IntLists voisins_;
   DoubleLists coeffs_;
