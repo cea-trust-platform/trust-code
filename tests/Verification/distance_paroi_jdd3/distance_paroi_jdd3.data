@@ -1,0 +1,139 @@
+# PARALLEL OK 4 #
+
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+mailler dom
+{
+    pave Cavite_Est
+    {
+        Origine 2  -1
+        Nombre_de_Noeuds 61 61
+        Longueurs 3 3
+    }
+    {
+        Bord Est               Y = 2      2  <= X <= 5
+        Bord Est		X = 2      -1  <= Y <= 2
+        Bord Est_ext           X = 5      -1  <= Y <= 2
+
+    } ,
+    pave Cavite_Sud
+    {
+        Origine -1  -2
+        Nombre_de_Noeuds 121 6
+        Longueurs 6 1
+    }
+    {
+        Bord Sud_ext           Y = -2      -1  <= X <= 5
+        Bord Sud		Y = -1      -1  <= X <= 2
+        Bord Sud               X = 5      -2  <= Y <= -1
+    } ,
+    pave Cavite_Ouest
+    {
+        Origine -2  -2
+        Nombre_de_Noeuds 6 21
+        Longueurs 1 4
+    }
+    {
+        Bord Ouest              X = -2  -2  <= Y <= 2
+        Bord Ouest              Y = 2   -2  <= X <= -1
+        Bord Ouest              Y = -2  -2  <= X <= -1
+        Bord Ouest		 X = -1  -1  <= Y <= 1
+    } ,
+    pave Cavite_Nord
+    {
+        Origine  -1  1
+        Nombre_de_Noeuds 41 6
+        Longueurs 2 1
+    }
+    {
+        Bord Nord                     Y = 2   -1  <= X <= 1
+        Bord Nord   			Y = 1   -1  <= X <= 1
+        Bord Nord_sym 		X = 1   1  <= Y <= 2
+    }
+}
+ 
+# END MESH #
+
+
+
+# BEGIN PARTITION
+Partition dom
+{
+    /* Choose Nb_parts so to have ~ 25000 cells per processor */
+    Partition_tool metis { nb_parts 4 }
+    Larg_joint 2
+    zones_name DOM
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+PolyMAC_P0P1NC dis
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 0
+    dt_start dt_fixe 1e-3
+    solveur implicite
+    {
+        solveur petsc cli { }
+    }
+}
+
+Pb_hydraulique pb
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+    fluide_incompressible {
+        mu  Champ_Uniforme 1 3.7e-05
+        rho Champ_Uniforme 1 2
+    }
+
+    Navier_Stokes_standard
+    {
+        solveur_pression petsc cholesky { }
+        convection { negligeable }
+        diffusion  { negligeable }
+        sources    { }
+        initial_conditions { vitesse Champ_Uniforme 2 0 0 }
+        boundary_conditions
+        {
+            Est       paroi_fixe
+            Sud       paroi_fixe
+            Ouest     paroi_fixe
+            Nord      paroi_fixe
+            Est_ext   frontiere_ouverte_vitesse_imposee_sortie champ_front_uniforme 2 0 0
+            Sud_ext   frontiere_ouverte_pression_imposee champ_front_uniforme 1 1e5
+            Nord_sym  symetrie
+        }
+    }
+
+    Post_processing
+    {
+        probes
+        {
+            Nord        distance_paroi_globale  periode 1.e8 segment 40  -.975  1.5  	.975   1.5
+            Ouest       distance_paroi_globale  periode 1.e8 segment 5    -1.9   0.  	-1.1   0.
+            Sud1	 distance_paroi_globale   periode 1.e8 segment 5      0. -1.9  	 0.   -1.1
+            Sud2	 distance_paroi_globale   periode 1.e8 segment 100  .025  -1.9	4.975 -1.9
+            Est	 distance_paroi_globale   periode 1.e8 segment 60  2.025 1.975	4.975 -.975
+        }
+        format lml
+        fields dt_post 1.
+        {
+            distance_paroi_globale elem
+        }
+    }
+}
+Solve pb
+End
