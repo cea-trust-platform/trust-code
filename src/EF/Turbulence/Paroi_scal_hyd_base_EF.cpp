@@ -26,7 +26,7 @@
 #include <Probleme_base.h>
 #include <SFichier.h>
 #include <Modifier_pour_fluide_dilatable.h>
-#include <Paroi_decalee_Robin.h>
+//#include <Paroi_decalee_Robin.h>
 
 Implemente_base(Paroi_scal_hyd_base_EF,"Paroi_scal_hyd_base_EF",Turbulence_paroi_scal_base);
 
@@ -160,8 +160,8 @@ void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
     {
       const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
       if ( (sub_type(Dirichlet_paroi_fixe,la_cl.valeur())) ||
-           (sub_type(Dirichlet_paroi_defilante,la_cl.valeur())) ||
-           (sub_type(Paroi_decalee_Robin,la_cl.valeur())) )
+           (sub_type(Dirichlet_paroi_defilante,la_cl.valeur())) )
+       // || (sub_type(Paroi_decalee_Robin,la_cl.valeur())) )
         {
           const Domaine_Cl_EF& domaine_Cl_EF_th = ref_cast(Domaine_Cl_EF, eqn.probleme().equation(1).domaine_Cl_dis().valeur());
           const Cond_lim& la_cl_th = domaine_Cl_EF_th.les_conditions_limites(n_bord);
