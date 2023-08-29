@@ -116,7 +116,7 @@ Entree& Domaine_Poly_base::readOn(Entree& is)
  *   limites.
  *
  */
-void Domaine_Poly_base::reordonner(Faces& les_faces)
+void Domaine_Poly_base::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
 {
   if (Process::je_suis_maitre())
     Cerr << "Domaine_Poly_base::reordonner faces " << finl;
@@ -135,7 +135,7 @@ void Domaine_Poly_base::reordonner(Faces& les_faces)
   {
     const Domaine& dom = domaine();
     const int nb_elements = nb_elem();
-    const int nb_faces_front = domaine().nb_faces_specifiques();
+    const int nb_faces_front = domaine().nb_faces_frontiere();
     dom.creer_tableau_elements(rang_elem_non_std_);
     //    rang_elem_non_std_.resize(nb_elements);
     //    Scatter::creer_tableau_distribue(dom, Joint::ELEMENT, rang_elem_non_std_);
@@ -173,24 +173,34 @@ void Domaine_Poly_base::reordonner(Faces& les_faces)
   //  indice_face = cle % nb_faces
   const int nbfaces = les_faces.nb_faces();
   ArrOfInt sort_key(nbfaces);
+  ArrOfInt faces_non_std(nbfaces);
+  faces_non_std = 0;
   {
-    nb_faces_std_ =0;
-    const int nb_faces_front = domaine().nb_faces_specifiques();
+    nb_faces_std_ = 0;
+    const int nb_faces_front = domaine().nb_faces_frontiere();
+    const int nb_faces_specifiques = domaine().nb_faces_specifiques();
     // Attention : face_voisins_ n'est pas encore initialise, il
     // faut passer par les_faces.voisins() :
     const IntTab& facevoisins = les_faces.voisins();
     // On place en premier les faces de bord:
     int i_face;
-    for (i_face = 0; i_face < nbfaces; i_face++)
+    for (i_face = 0; i_face < nb_faces_front; i_face++)
+      // Si la face est au bord, elle doit etre placee au debut
+      // (en fait elle ne doit pas etre renumerotee)
+      sort_key[i_face] = i_face;
+
+    for (; i_face < nb_faces_specifiques; i_face++)
       {
-        int key = -1;
-        if (i_face < nb_faces_front)
-          {
-            // Si la face est au bord, elle doit etre placee au debut
-            // (en fait elle ne doit pas etre renumerotee)
-            key = i_face;
-          }
-        else
+        // Si la face est dans les groupes de faces internes, elle est placee apres les faces de bord
+        int ind_faces = indices_faces_internes[i_face-nb_faces_front];
+        sort_key[i_face] = ind_faces;
+        faces_non_std[ind_faces] = 1;
+      }
+
+    int k = nb_faces_specifiques;
+    for (i_face=nb_faces_front; i_face < nbfaces; i_face++)
+      {
+        if (faces_non_std[i_face] == 0)
           {
             const int elem0 = facevoisins(i_face, 0);
             const int elem1 = facevoisins(i_face, 1);
@@ -200,21 +210,26 @@ void Domaine_Poly_base::reordonner(Faces& les_faces)
               {
                 // Si la face est voisine d'un element non standard, elle
                 // doit etre classee juste apres les faces de bord:
-                key = i_face;
+                sort_key[k] = i_face;
               }
             else
               {
                 // Face standard : a la fin du tableau
-                key = i_face + nbfaces;
+                sort_key[k] = i_face + nbfaces;
                 nb_faces_std_++;
               }
+            k++;
           }
-        sort_key[i_face] = key;
       }
-    sort_key.ordonne_array();
+
+    assert (k == nbfaces);
+
+    ArrOfInt sort_std_elem;
+    sort_std_elem.ref_array(sort_key,nb_faces_specifiques,nbfaces-nb_faces_specifiques);
+    sort_std_elem.ordonne_array();
 
     // On transforme a nouveau la cle en numero de face:
-    for (i_face = 0; i_face < nbfaces; i_face++)
+    for (i_face = nb_faces_specifiques; i_face < nbfaces; i_face++)
       {
         const int key = sort_key[i_face] % nbfaces;
         sort_key[i_face] = key;

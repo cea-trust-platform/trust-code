@@ -151,10 +151,12 @@ void ExtrudeParoi::extrude(Domaine& dom)
 
     Faces_builder faces_builder;
     IntTab elem_faces; // Tableau dont on aura pas besoin
+    ArrOfInt indices_faces_internes; //idem
     faces_builder.creer_faces_reeles(dom,
                                      connectivite_som_elem,
                                      lesfaces,
-                                     elem_faces);
+                                     elem_faces,
+                                     indices_faces_internes);
   }
   ArrOfDouble ep_abs(epaisseur);
   IntTab& faces_voisins = lesfaces.voisins();

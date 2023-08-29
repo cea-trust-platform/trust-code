@@ -23,6 +23,7 @@ class Domaine;
 class Static_Int_Lists;
 class Faces;
 class Frontiere;
+class Groupe_interne;
 
 /*! @brief classe outil pour construire les faces d'un domaine
  * (utilisee uniquement pour creer les tableau des faces reelles)
@@ -33,7 +34,7 @@ class Faces_builder
 public:
   Faces_builder();
   void reset();
-  void creer_faces_reeles(Domaine& domaine, const Static_Int_Lists& connect_som_elem, Faces& les_faces, IntTab& elem_faces);
+  void creer_faces_reeles(Domaine& domaine, const Static_Int_Lists& connect_som_elem, Faces& les_faces, IntTab& elem_faces, ArrOfInt& indices_faces_internes);
 
   static int chercher_face_element(const IntTab& les_elements, const IntTab& faces_element_reference, const ArrOfInt& une_face, const int elem);
 
@@ -45,6 +46,7 @@ private:
   void check_erreur_faces(const char *message, const ArrOfInt& liste_faces) const;
   void creer_faces_frontiere(const int nb_voisins_attendus, Frontiere& frontiere, IntTab& faces_sommets, IntTab& faces_voisins, IntTab& elem_faces) const;
   void creer_faces_internes(IntTab& faces_sommets, IntTab& elem_faces, IntTab& faces_voisins) const;
+  void identification_faces_internes(Groupe_interne& groupe_int, const IntTab& elem_faces, const int& num_boundary_faces, const int& num_premiere_face, ArrOfInt& indices_faces) const;
 
   const IntTab& les_elements() const { return *les_elements_ptr_; }
   const Static_Int_Lists& connectivite_som_elem() const { return *connectivite_som_elem_ptr_; }

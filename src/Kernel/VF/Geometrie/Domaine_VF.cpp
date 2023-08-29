@@ -103,7 +103,7 @@ Entree& Domaine_VF::readOn(Entree& is)
 /*! @brief cette methode ne fait rien elle est surchargee par Domaine_VDF par ex.
  *
  */
-void Domaine_VF::reordonner(Faces& )
+void Domaine_VF::reordonner(Faces& , ArrOfInt& )
 {
 }
 
@@ -118,6 +118,7 @@ void Domaine_VF::discretiser()
   Domaine_dis_base::discretiser();
 
   Domaine& ledomaine=domaine();
+  ArrOfInt indices_faces_internes;
   histogramme_angle(ledomaine,Cerr);
   Faces* les_faces_ptr=creer_faces();
   Faces& les_faces= *les_faces_ptr;
@@ -140,10 +141,11 @@ void Domaine_VF::discretiser()
       faces_builder.creer_faces_reeles(domaine(),
                                        connectivite_som_elem,
                                        les_faces,
-                                       elem_faces_);
+                                       elem_faces_,
+                                       indices_faces_internes);
     }
 
-    reordonner(les_faces);
+    reordonner(les_faces, indices_faces_internes);
 
     // Les faces sont dans l'ordre definitif, on peut remplir
     // renum_items_communs des faces:

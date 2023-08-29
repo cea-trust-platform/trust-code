@@ -60,7 +60,8 @@ void Faces_builder::reset()
 void Faces_builder::creer_faces_reeles(Domaine& domaine,
                                        const Static_Int_Lists& connect_som_elem,
                                        Faces&   les_faces,
-                                       IntTab& elem_faces)
+                                       IntTab& elem_faces,
+                                       ArrOfInt& indices_faces_internes)
 {
   les_elements_ptr_ = & domaine.les_elems();
 
@@ -184,21 +185,6 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
       }
   }
 
-  // Groupes internes
-  {
-    Groupes_internes& groupes_int = domaine.groupes_internes();
-    const int n = groupes_int.size();
-    for (int i = 0; i < n; i++)
-      {
-        Frontiere& frontiere = groupes_int[i];
-        creer_faces_frontiere(2, /* deux elements voisin par face */
-                              frontiere,
-                              faces_sommets,
-                              faces_voisins,
-                              elem_faces);
-      }
-  }
-
   // Faces de joint
   {
     Joints& joints = domaine.faces_joint();
@@ -232,7 +218,29 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
                        faces_voisins);
 
   // *********************************************
+
+  // Identification des groupes de faces internes
+  {
+    Groupes_internes& groupes_int = domaine.groupes_internes();
+    const int n = groupes_int.size();
+    const int nb_faces_Cl = domaine.nb_faces_frontiere();
+    int num_premiere_face = 0;
+    indices_faces_internes.resize(groupes_int.nb_faces());
+    for (int i = 0; i < n; i++)
+      {
+        Groupe_interne& groupe_int = groupes_int[i];
+        groupe_int.fixer_num_premiere_face(nb_faces_Cl + num_premiere_face);
+        identification_faces_internes(groupe_int,
+                                      elem_faces,
+                                      nb_faces_Cl,
+                                      num_premiere_face,
+                                      indices_faces_internes);
+        num_premiere_face += groupe_int.nb_faces();
+      }
+  }
+
   // C'est fini: on verifie qu'on a bien le nombre de faces prevu
+
   if (faces_sommets.dimension(0) != nb_faces_prevision)
     {
       Cerr << "Error in Faces_builder::creer_faces_reeles:\n"
@@ -485,28 +493,20 @@ void Faces_builder::creer_faces_frontiere(const int nb_voisins_attendus,
                         if (elem < nb_elem_reels)
                           {
                             if (elem_faces(elem, i_face_elem) < 0)
-                              {
-                                elem_faces(elem, i_face_elem) = indice_face;
-                              }
+                              elem_faces(elem, i_face_elem) = indice_face;
                             else
-                              {
-                                // Erreur: cette face existe deja (dans cette frontiere ou une autre)
-                                liste_faces_erreur3.append_array(indice_face);
-                              }
+                              // Erreur: cette face existe deja (dans cette frontiere ou une autre)
+                              liste_faces_erreur3.append_array(indice_face);
                           }
                       }
                     else
-                      {
-                        // Erreur: la face n'est pas une face de l'element.
-                        liste_faces_erreur0.append_array(indice_face);
-                      }
+                      // Erreur: la face n'est pas une face de l'element.
+                      liste_faces_erreur0.append_array(indice_face);
                   }
               }
             else
-              {
-                // Erreur, on attendait pas ce nombre de voisins.
-                liste_faces_erreur1.append_array(indice_face);
-              }
+              // Erreur, on attendait pas ce nombre de voisins.
+              liste_faces_erreur1.append_array(indice_face);
             break;
           }
         default:
@@ -743,4 +743,103 @@ void Faces_builder::creer_faces_internes(IntTab& faces_sommets,
   }
 }
 
+/*! @brief Identification des groupes de faces internes du domaine
+ *
+ *   Remplissage de indices_faces_internes
+ *
+ */
+void Faces_builder::identification_faces_internes(Groupe_interne& groupe_int,
+                                                  const IntTab& elem_faces,
+                                                  const int& num_boundary_faces,
+                                                  const int& num_premiere_face,
+                                                  ArrOfInt& indices_faces) const
+{
+  const Static_Int_Lists& som_elem   = connectivite_som_elem();
+  const int   nb_sommets_par_face  = faces_element_reference(0).dimension(0) ? faces_element_reference(0).dimension(1) : 3;
+
+  const Faces&   faces_internes  = groupe_int.faces();
+  const IntTab& sommets_faces_fr = faces_internes.les_sommets();
+  const int   nb_faces         = faces_internes.nb_faces();
+
+
+  ArrOfInt       une_face(nb_sommets_par_face);
+  ArrOfInt       voisins;
+  voisins.set_smart_resize(1);
+  ArrOfInt liste_faces_erreur0;
+  liste_faces_erreur0.set_smart_resize(1);
+  ArrOfInt liste_faces_erreur1;
+  liste_faces_erreur1.set_smart_resize(1);
+  ArrOfInt liste_faces_erreur2;
+  liste_faces_erreur2.set_smart_resize(1);
+
+  int i_face;
+  for (i_face = 0; i_face < nb_faces; i_face++)
+    {
+      {
+        int nb_sommets_par_face_fr=sommets_faces_fr.dimension(1);
+        for (int i = 0; i < std::min(nb_sommets_par_face, nb_sommets_par_face_fr); i++)
+          une_face[i] = sommets_faces_fr(i_face, i);
+        for (int i = std::min(nb_sommets_par_face, nb_sommets_par_face_fr); i < nb_sommets_par_face; i++)
+          une_face[i] = -1;
+      }
+      // Quels sont les elements voisins de cette face ?
+      find_adjacent_elements(som_elem, une_face, voisins);
+      const int nb_voisins = voisins.size_array();
+
+      switch(nb_voisins)
+        {
+        case 0:
+          {
+            // Erreur: la face n'a pas de voisin
+            liste_faces_erreur0.append_array(i_face);
+            break;
+          }
+        case 1:
+          {
+            // Erreur, on attendait pas ce nombre de voisins.
+            liste_faces_erreur1.append_array(i_face);
+            break;
+          }
+        case 2:
+          {
+            const int elem = voisins[0];
+            // Quelle est la face de l'element ?
+            const int i_face_elem = chercher_face_element(une_face, elem);
+
+            if (i_face_elem >= 0)
+              {
+                // Quel est le numero de la face
+                indices_faces[num_premiere_face + i_face] = elem_faces(elem,i_face_elem);
+                if (indices_faces[num_premiere_face + i_face] < num_boundary_faces)
+                  {
+                    // Erreur: cette face existe dans un bord
+                    liste_faces_erreur2.append_array(i_face);
+                  }
+              }
+            break;
+          }
+        default:
+          // Erreur, plus de deux voisins, c'est n'importe quoi...
+          liste_faces_erreur2.append_array(i_face);
+        }
+    }
+  Nom msg;
+  msg = "Internal face group \"";
+  msg += groupe_int.le_nom();
+  msg += "\" contains faces which do not belong to any element or not virtual element.";
+  check_erreur_faces(msg, liste_faces_erreur0);
+
+  msg = "Internal face group \"";
+  msg += groupe_int.le_nom();
+  msg += "\" contains faces that belong to 1 elements.\n";
+  msg += "These faces should have 2 neighbouring elements.";
+  msg += "(Error in a Joint object: internal error in the mesh splitter or scatter ? )\n";
+  check_erreur_faces(msg, liste_faces_erreur1);
+
+
+  msg = "Internal face group \"";
+  msg += groupe_int.le_nom();
+  msg += "\" contains faces that already exist in another internal face group.\n";
+  check_erreur_faces(msg, liste_faces_erreur2);
+}
 

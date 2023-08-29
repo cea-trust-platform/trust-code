@@ -74,7 +74,7 @@ Faces* Domaine_VDF::creer_faces()
   return les_faces_vdf;
 }
 
-/*! @brief Reordonne les faces internes par orientation, on doit mettre a jour tous les tableaux qui dependent des indices de faces internes, soit:
+/*! @brief Reordonne les faces internes par orientation et en regroupant les groupes de faces internes identifies dans le fichier de donnees, on doit mettre a jour tous les tableaux qui dependent des indices de faces internes, soit:
  *
  *    - faces_sommets
  *    - faces_voisins
@@ -83,41 +83,78 @@ Faces* Domaine_VDF::creer_faces()
  *    - Domaine.faces_joint().items_communs(FACE)
  *
  */
-static void reordonner_vdf(const int nb_faces_front,
-                           Faces_VDF& faces, IntTab& elem_faces,
-                           IntVect& orientation, Joints& joints)
+
+void Domaine_VDF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
 {
+  //  Cerr << "Faces : " << les_faces << finl;
+  // Cerr << "On reordonne les faces " << finl;
+
+  // Calcul de l'orientation des faces reeles
+  Faces_VDF& les_faces_vdf=ref_cast(Faces_VDF, les_faces);
+  les_faces_vdf.calculer_orientation(orientation_, nb_faces_X_,
+                                     nb_faces_Y_, nb_faces_Z_);
+
+  Joints&      joints     = domaine().faces_joint();
+  const int nb_faces_front = domaine().nb_faces_frontiere();
+  const int nb_faces_specifiques = domaine().nb_faces_specifiques();
+
   // Construction d'un int selon lequel on va trier les faces:
   //  orientation * nb_faces + indice_face
   // Quand on trie par ordre croissant de cet int, on trie selon l'orientation
   // en preservant l'ordre initial des faces de meme orientation
-  const int nb_faces = faces.nb_faces();
+  const int nb_faces = les_faces_vdf.nb_faces();
   int i, j;
 
   ArrOfInt sort_key(nb_faces);
   // On ne trie pas les faces de bord, qui restent au debut:
+  // On selectionne les groupes de faces internes pour les disposer dans la continuite des faces frontieres
   for (i = 0; i < nb_faces_front; i++)
     sort_key[i] = i;
-  for (; i < nb_faces; i++)
+
+  ArrOfInt faces_non_std(nb_faces);
+  faces_non_std = 0;
+  for (i=nb_faces_front; i < nb_faces_specifiques; i++)
     {
-      const int ori = orientation(i);
-      sort_key[i] = ori * nb_faces + i;
+      int ind_faces = indices_faces_internes[i-nb_faces_front];
+      sort_key[i] = ind_faces;
+      faces_non_std[ind_faces] = 1;
     }
 
-  sort_key.ordonne_array();
+  int k = nb_faces_specifiques;
+  j = nb_faces_front;
+  for (i=nb_faces_front; i < nb_faces; i++)
+    {
+      const int ori = orientation(i);
+      if (faces_non_std[i] == 0)
+        {
+          sort_key[k] = ori * nb_faces + i;
+          k++;
+        }
+      else
+        {
+          orientation_[j] = ori;
+          j++;
+        }
+    }
+  assert (k == nb_faces);
+  assert (j == nb_faces_specifiques);
+
+  ArrOfInt sort_std_elem;
+  sort_std_elem.ref_array(sort_key,nb_faces_specifiques,nb_faces-nb_faces_specifiques);
+  sort_std_elem.ordonne_array();
 
   // Il suffit de revenir a l'index initial pour avoir les indices des
   // faces triees par orientation : sort_key[nouveau numero] = ancien numero
-  for (i = nb_faces_front; i < nb_faces; i++)
+  for (i = nb_faces_specifiques; i < nb_faces; i++)
     {
       const int key = sort_key[i];
-      orientation[i] = key / nb_faces;
+      orientation_[i] = key / nb_faces;
       sort_key[i]    = key % nb_faces;
     }
 
   // On reordonne les faces:
   {
-    IntTab& faces_sommets = faces.les_sommets();
+    IntTab& faces_sommets = les_faces_vdf.les_sommets();
     IntTab old_tab(faces_sommets);
     const int nb_som_faces = faces_sommets.dimension(1);
     for (i = 0; i < nb_faces; i++)
@@ -129,7 +166,7 @@ static void reordonner_vdf(const int nb_faces_front,
   }
 
   {
-    IntTab& faces_voisins = faces.voisins();
+    IntTab& faces_voisins = les_faces_vdf.voisins();
     IntTab old_tab(faces_voisins);
     for (i = 0; i < nb_faces; i++)
       {
@@ -151,8 +188,8 @@ static void reordonner_vdf(const int nb_faces_front,
   // Renumerotation de elem_faces:
   {
     // Nombre d'indices de faces dans le tableau
-    const int nb_items = elem_faces.size();
-    ArrOfInt& array = elem_faces;
+    const int nb_items = elem_faces_.size();
+    ArrOfInt& array = elem_faces_;
     for (i = 0; i < nb_items; i++)
       {
         const int old = array[i];
@@ -178,26 +215,6 @@ static void reordonner_vdf(const int nb_faces_front,
         joint.fixer_num_premiere_face(-1);
       }
   }
-}
-
-/*! @brief reordonne les faces en fonction de l'orientation calcule les centres de gravite des faces
- *
- *  calcule les surfaces
- *
- */
-void Domaine_VDF::reordonner(Faces& les_faces)
-{
-  //  Cerr << "Faces : " << les_faces << finl;
-  // Cerr << "On reordonne les faces " << finl;
-
-  // Calcul de l'orientation des faces reeles
-  Faces_VDF& les_faces_vdf=ref_cast(Faces_VDF, les_faces);
-  les_faces_vdf.calculer_orientation(orientation_, nb_faces_X_,
-                                     nb_faces_Y_, nb_faces_Z_);
-
-  Joints&      joints     = domaine().faces_joint();
-  reordonner_vdf(domaine().nb_faces_specifiques(),
-                 les_faces_vdf, elem_faces_, orientation_, joints);
 }
 
 /*! @brief appel a  Domaine_VF::discretiser() calcul des centres de gravite des elements

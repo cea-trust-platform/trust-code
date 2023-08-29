@@ -1,5 +1,5 @@
 # Perte_Charge_Singuliere MED 3D VEF #
-# PARALLEL RUNS #
+# PARALLEL OK #
 dimension 3
 Domaine dom
 

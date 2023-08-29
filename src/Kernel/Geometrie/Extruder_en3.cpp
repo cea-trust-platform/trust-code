@@ -126,10 +126,12 @@ void Extruder_en3::extruder(Domaine& dom, const IntVect& num)
 
         Faces_builder faces_builder;
         IntTab dnu; // Tableau dont on aura pas besoin
+        ArrOfInt indices_faces_internes; //idem
         faces_builder.creer_faces_reeles(dom,
                                          connectivite_som_elem,
                                          les_faces,
-                                         dnu);
+                                         dnu,
+                                         indices_faces_internes);
       }
 
       int newnbsom = oldnbsom*(NZ_+1);

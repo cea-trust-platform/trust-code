@@ -53,7 +53,7 @@ public :
 
   virtual void remplir_face_voisins_fictifs(const Domaine_Cl_dis_base& ) ;
   virtual Faces* creer_faces();
-  virtual void reordonner(Faces& );
+  virtual void reordonner(Faces& , ArrOfInt& );
   inline int nb_joints() const { return domaine().nb_joints(); }
   inline int premiere_face_int() const;
   inline int nb_faces() const;
