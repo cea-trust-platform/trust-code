@@ -14,6 +14,7 @@
 *****************************************************************************/
 
 #include <Pb_Thermohydraulique_Concentration_Turbulent.h>
+#include <Pb_Hydraulique_Melange_Binaire_Turbulent_QC.h>
 #include <Pb_Hydraulique_Concentration_Turbulent.h>
 #include <Pb_Thermohydraulique_Turbulent_QC.h>
 #include <Pb_Thermohydraulique_Turbulent.h>

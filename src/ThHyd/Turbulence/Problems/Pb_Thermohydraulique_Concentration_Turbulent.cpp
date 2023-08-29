@@ -16,9 +16,6 @@
 #include <Pb_Thermohydraulique_Concentration_Turbulent.h>
 #include <Fluide_Incompressible.h>
 #include <Constituant.h>
-#include <Verif_Cl.h>
-#include <Verif_Cl_Turb.h>
-#include <Les_mod_turb.h>
 
 Implemente_instanciable(Pb_Thermohydraulique_Concentration_Turbulent,"Pb_Thermohydraulique_Concentration_Turbulent",Pb_Fluide_base);
 
@@ -138,63 +135,3 @@ associer_milieu_base(const Milieu_base& mil)
 }
 
 
-/*! @brief Teste la compatibilite des equations de convection-diffusion et de l'hydraulique.
- *
- * Le test se fait sur les conditions
- *     aux limites discretisees de chaque equation ainsi que sur
- *     les modeles de turbulence des equations qui doivent etre
- *     de la meme famille.
- *     Appels aux fonctions de librairie hors classe:
- *       tester_compatibilite_hydr_thermique(const Domaine_Cl_dis&,const Domaine_Cl_dis&)
- *       tester_compatibilite_hydr_concentration(const Domaine_Cl_dis&,const Domaine_Cl_dis&)
- *
- * @return (int) renvoie toujours 1
- * @throws les modeles de turbulence ne sont pas de la meme
- * famille pour l'hydraulique et la thermique
- * @throws les modeles de turbulence ne sont pas de la meme
- * famille pour l'hydraulique et l'equation de concentration
- */
-int Pb_Thermohydraulique_Concentration_Turbulent::verifier()
-{
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_co = eq_concentration.domaine_Cl_dis();
-
-  // Verification de la compatibilite des conditions aux limites
-  tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
-  tester_compatibilite_hydr_concentration(domaine_Cl_hydr,domaine_Cl_co);
-  if ( sub_type(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ))
-    {
-      const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
-      const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());
-      const Domaine_Cl_dis& domaine_Cl_turb = eqn.domaine_Cl_dis();
-      tester_compatibilite_hydr_turb(domaine_Cl_hydr, domaine_Cl_turb);
-    }
-
-  // Verification de la compatibilite des modeles de turbulence
-  const Mod_turb_hyd& le_mod_turb_hyd = eq_hydraulique.modele_turbulence();
-  const Modele_turbulence_scal_base& le_mod_turb_th = ref_cast(Modele_turbulence_scal_base,eq_thermique.get_modele(TURBULENCE).valeur());
-  const Modele_turbulence_scal_base& le_mod_turb_co = ref_cast(Modele_turbulence_scal_base,eq_concentration.get_modele(TURBULENCE).valeur());
-  if ((sub_type(Mod_turb_hyd_ss_maille,le_mod_turb_hyd.valeur()))  || (sub_type(Modele_turbulence_hyd_K_Eps,le_mod_turb_hyd.valeur())))
-    {
-      if (!sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_th))
-        {
-          Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
-          Cerr << "pour l'hydraulique et la thermique" << finl;
-          exit();
-        }
-      if (!sub_type(Modele_turbulence_scal_Schmidt,le_mod_turb_co))
-        {
-          Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
-          Cerr << "pour l'hydraulique et l'equation de concentration" << finl;
-          if (sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_co))
-            {
-              Cerr << "Pour le modele de turbulence de l'equation de concentration, la syntaxe a changee:" << finl;
-              Cerr << "Utiliser le mot cle Schmidt au lieu du mot cle Prandtl." << finl;
-            }
-          exit();
-        }
-
-    }
-  return 1;
-}

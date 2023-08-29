@@ -15,13 +15,8 @@
 
 #include <Pb_Thermohydraulique_Turbulent.h>
 #include <Fluide_Incompressible.h>
-#include <Les_mod_turb.h>
-#include <Verif_Cl.h>
-#include <Verif_Cl_Turb.h>
-#include <Mod_turb_hyd_RANS.h>
 
 Implemente_instanciable(Pb_Thermohydraulique_Turbulent,"Pb_Thermohydraulique_Turbulent",Pb_Fluide_base);
-
 
 /*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
  *
@@ -123,61 +118,5 @@ void Pb_Thermohydraulique_Turbulent::associer_milieu_base(const Milieu_base& mil
 }
 
 
-/*! @brief Teste la compatibilite des equations de la thermique et de l'hydraulique.
- *
- * Les tests se font sur les conditions
- *     aux limites discretisees de chaque equation et sur les
- *     modeles de turbulences respectifs des equations
- *     de l'hydraulique et de la thermique (qui doivent etre de la meme famille).
- *     Appel la fonction de librairie hors classe:
- *       tester_compatibilite_hydr_thermique(const Domaine_Cl_dis&,const Domaine_Cl_dis&)
- *
- * @return (int) renvoie toujours 1
- * @throws modeles de turbulence de famille differente pour
- * l'hydraulique et la thermique
- */
-int Pb_Thermohydraulique_Turbulent::verifier()
-{
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_th = eq_thermique.domaine_Cl_dis();
 
-  // Verification de la compatibilite des conditions aux limites:
-  tester_compatibilite_hydr_thermique(domaine_Cl_hydr,domaine_Cl_th);
-  if ( sub_type(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ))
-    {
-      const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
-      const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());
-      const Domaine_Cl_dis& domaine_Cl_turb = eqn.domaine_Cl_dis();
-      tester_compatibilite_hydr_turb(domaine_Cl_hydr, domaine_Cl_turb);
-    }
-  /*
-    // Verification de la compatibilite des modeles de turbulence:
-    const Mod_turb_hyd& le_mod_turb_hyd = eq_hydraulique.modele_turbulence();
-    const Modele_turbulence_scal_base& le_mod_turb_th = ref_cast(Modele_turbulence_scal_base,eq_thermique.get_modele(TURBULENCE).valeur());
-
-    if (!sub_type(Modele_turbulence_hyd_K_Eps_Bas_Reynolds,le_mod_turb_hyd.valeur()))
-      {
-        if ((!sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_th))
-            && (le_mod_turb_th.que_suis_je()!="Modele_turbulence_scal_sous_maille_dyn_VDF")
-            && (le_mod_turb_th.que_suis_je()!="Modele_turbulence_scal_Dispersion_Thermique_InterAss"))
-          {
-            Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
-            Cerr << "pour l'hydraulique et la thermique" << finl;
-            exit();
-          }
-      }
-    else
-      {
-        if  ( (!sub_type(Modele_turbulence_scal_Fluctuation_Temperature,le_mod_turb_th)) &&
-              (!sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_th)) &&
-              (!sub_type(Modele_turbulence_scal_Fluctuation_Temperature_W,le_mod_turb_th)))
-          {
-            Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
-            Cerr << "pour l'hydraulique et la thermique" << finl;
-            exit();
-          }
-      }
-  */
-  return 1;
-}
 

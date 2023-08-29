@@ -14,9 +14,6 @@
 *****************************************************************************/
 
 #include <Pb_Hydraulique_Melange_Binaire_Turbulent_QC.h>
-#include <Verif_Cl.h>
-#include <Les_mod_turb.h>
-#include <Verif_Cl_Turb.h>
 
 Implemente_instanciable(Pb_Hydraulique_Melange_Binaire_Turbulent_QC,"Pb_Hydraulique_Melange_Binaire_Turbulent_QC",Pb_QC_base);
 // XD pb_hydraulique_melange_binaire_turbulent_qc Pb_base pb_hydraulique_melange_binaire_turbulent_qc -1 Resolution of a turbulent binary mixture problem for a quasi-compressible fluid with an iso-thermal condition.
@@ -44,44 +41,6 @@ const Equation_base& Pb_Hydraulique_Melange_Binaire_Turbulent_QC::equation(int i
 Equation_base& Pb_Hydraulique_Melange_Binaire_Turbulent_QC::equation(int i)
 {
   return equation_impl(i,eq_hydraulique,eq_frac_mass);
-}
-
-/*! @brief Teste la compatibilite des equations de la fraction massique et de l'hydraulique.
- *
- * Teste la compatibilite des modeles de turbulence
- *
- */
-int Pb_Hydraulique_Melange_Binaire_Turbulent_QC::verifier()
-{
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-  const Domaine_Cl_dis& domaine_Cl_fm = eq_frac_mass.domaine_Cl_dis();
-  // Verification de la compatibilite des conditions aux limites:
-  tester_compatibilite_hydr_fraction_massique(domaine_Cl_hydr,domaine_Cl_fm);
-
-  if ( sub_type(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ) )
-    {
-      const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
-      const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());
-      const Domaine_Cl_dis& domaine_Cl_turb = eqn.domaine_Cl_dis();
-      tester_compatibilite_hydr_turb(domaine_Cl_hydr, domaine_Cl_turb);
-    }
-
-  // Verification de la compatibilite des modeles de turbulence:
-  const Mod_turb_hyd& le_mod_turb_hyd = eq_hydraulique.modele_turbulence();
-  const Modele_turbulence_scal_base& le_mod_turb_th =
-    ref_cast(Modele_turbulence_scal_base,eq_frac_mass.get_modele(TURBULENCE).valeur());
-
-  if  (sub_type(Modele_turbulence_hyd_K_Eps,le_mod_turb_hyd.valeur()))
-    {
-      if (!sub_type(Modele_turbulence_scal_Prandtl,le_mod_turb_th))
-        {
-          Cerr << "Les modeles de turbulence ne sont pas de la meme famille" << finl;
-          Cerr << "pour l'hydraulique et la fraction massique" << finl;
-          Process::exit();
-        }
-    }
-
-  return 1;
 }
 
 int Pb_Hydraulique_Melange_Binaire_Turbulent_QC::expression_predefini(const Motcle& motlu, Nom& expression)

@@ -15,10 +15,6 @@
 
 #include <Pb_Hydraulique_Turbulent.h>
 #include <Fluide_Incompressible.h>
-#include <Verif_Cl.h>
-#include <Verif_Cl_Turb.h>
-#include <Les_mod_turb.h>
-#include <Mod_turb_hyd_RANS.h>
 
 
 Implemente_instanciable(Pb_Hydraulique_Turbulent,"Pb_Hydraulique_Turbulent",Pb_Fluide_base);
@@ -88,8 +84,6 @@ Equation_base& Pb_Hydraulique_Turbulent::equation(int i)
   return eq_hydraulique;
 }
 
-
-
 /*! @brief Associe le milieu au probleme.
  *
  * Le milieu doit etre de type fluide incompressible.
@@ -108,28 +102,3 @@ void Pb_Hydraulique_Turbulent::associer_milieu_base(const Milieu_base& mil)
       exit();
     }
 }
-
-/*! @brief Teste la compatibilite des equations de convection-diffusion et de l'hydraulique.
- *
- * Le test se fait sur les conditions
- *     aux limites discretisees de chaque equation.
- *     Appel la fonction de librairie hors classe:
- *       tester_compatibilite_hydr_turb(const Domaine_Cl_dis&)
- *
- * @return (int) code de retour propage
- */
-int Pb_Hydraulique_Turbulent::verifier()
-{
-  const Domaine_Cl_dis& domaine_Cl_hydr = eq_hydraulique.domaine_Cl_dis();
-
-  if ( sub_type(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur() ))
-    {
-      const Mod_turb_hyd_RANS& le_mod_RANS = ref_cast(Mod_turb_hyd_RANS, eq_hydraulique.get_modele(TURBULENCE).valeur());
-      const Transport_K_Eps_base& eqn = ref_cast(Transport_K_Eps_base, le_mod_RANS.eqn_transp_K_Eps());
-      const Domaine_Cl_dis& domaine_Cl_turb = eqn.domaine_Cl_dis();
-      tester_compatibilite_hydr_turb(domaine_Cl_hydr, domaine_Cl_turb);
-    }
-
-  return 1;
-}
-
