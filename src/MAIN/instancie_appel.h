@@ -74,6 +74,7 @@ void instancie_src_ThHyd_Multiphase_Problems();
 void instancie_src_ThHyd_Multiphase_Schemas_Temps();
 void instancie_src_ThHyd_Multiphase_Turbulence();
 void instancie_src_ThHyd_Schemas_Temps();
+void instancie_src_ThHyd_Turbulence_Equations();
 void instancie_src_ThHyd_Turbulence_Lois_Paroi();
 void instancie_src_ThHyd_Turbulence_Modeles();
 void instancie_src_ThSol();
