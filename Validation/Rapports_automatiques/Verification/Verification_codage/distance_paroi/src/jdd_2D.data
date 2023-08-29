@@ -1,4 +1,4 @@
-$type_calc
+# PARALLEL OK 4 #
 
 dimension 2
 Domaine dom
@@ -73,7 +73,7 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-$schema
+$schema dis
 
 Schema_euler_implicite sch
 Read sch
