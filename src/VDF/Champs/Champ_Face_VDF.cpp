@@ -475,7 +475,7 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
                 gij(element(k), j, i, n) += temp2 * 0.5 * 0.25;
               }
           }
-        else if (n_type == 3) /* NAVIER - NAVIER */
+        else if (n_type == 3 && Option_VDF::traitement_gradients) /* NAVIER - NAVIER */
           {
             const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
             const int i = orientation(num0), j = orientation(num2);
@@ -494,7 +494,8 @@ DoubleTab& Champ_Face_VDF::calcul_duidxj(const DoubleTab& vitesse, DoubleTab& gi
                 gij(element(k), j, i, n) += temp2 * 0.25;
               }
           }
-        else if (n_type == 5 || n_type == 6) throw;
+        else if (Option_VDF::traitement_gradients && (n_type == 5 || n_type == 6))
+          Process::exit("Issue in Champ_Face_VDF::calcul_duidxj ... This case is not yet considered. Contact the TRUST team.");
         else /* les autres aretes bords ... */
           {
             const int num0 = Qdm(num_arete, 0), num1 = Qdm(num_arete, 1), num2 = Qdm(num_arete, 2), signe = Qdm(num_arete, 3);
