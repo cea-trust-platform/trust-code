@@ -16,7 +16,7 @@
 #ifndef Paroi_negligeable_VDF_included
 #define Paroi_negligeable_VDF_included
 
-#include <Paroi_std_hyd_VDF.h>
+#include <Paroi_hyd_base_VDF.h>
 
 class Champ_Fonc_base;
 class Domaine_dis;
@@ -24,14 +24,16 @@ class Domaine_Cl_dis;
 
 
 //
-class Paroi_negligeable_VDF : public Paroi_std_hyd_VDF
+class Paroi_negligeable_VDF : public Paroi_hyd_base_VDF
 {
   Declare_instanciable_sans_constructeur(Paroi_negligeable_VDF);
 
 public:
-
+  int init_lois_paroi() override;
   int calculer_hyd(DoubleTab& ) override;
+  int calculer_hyd_BiK(DoubleTab& , DoubleTab& ) override;
   int calculer_hyd(DoubleTab& , DoubleTab& ) override;
+  virtual int calculer_scal(Champ_Fonc_base& );
   bool use_shear() const override;
 
 protected:

@@ -27,7 +27,7 @@
 //
 // printOn et readOn
 
-Implemente_instanciable_sans_constructeur(Paroi_negligeable_VDF,"negligeable_VDF",Paroi_std_hyd_VDF);
+Implemente_instanciable_sans_constructeur(Paroi_negligeable_VDF,"negligeable_VDF",Paroi_hyd_base_VDF);
 //Implemente_instanciable_sans_constructeur(Paroi_negligeable_VDF,"negligeable_VDF",//Turbulence_paroi_base);
 
 //     printOn()
@@ -53,7 +53,12 @@ Entree& Paroi_negligeable_VDF::readOn(Entree& s)
 //
 /////////////////////////////////////////////////////////////////////
 
+int Paroi_negligeable_VDF::init_lois_paroi()
+{
+  init_lois_paroi_();
 
+  return 1;
+}
 
 int Paroi_negligeable_VDF::calculer_hyd(DoubleTab& tab_k_eps)
 {
@@ -210,6 +215,10 @@ int Paroi_negligeable_VDF::calculer_hyd(DoubleTab& tab_nu_t,DoubleTab& tab_k)
   return 1;
 }
 
+int Paroi_negligeable_VDF::calculer_hyd_BiK(DoubleTab& tab_k,DoubleTab& tab_eps)
+{
+  return calculer_hyd(tab_k); // the value in argument is not used anyway
+}
 
 /*! @brief Give a boolean indicating that we don't need to use shear
  *
