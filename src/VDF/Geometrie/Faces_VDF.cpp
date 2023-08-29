@@ -95,7 +95,7 @@ void Faces_VDF::reordonner(IntVect& tab_orientation)
   int nb_faces_bord=mondomaine.nb_faces_bord();
   int nb_faces_raccord=mondomaine.nb_faces_raccord();
   int nb_faces_bords_int=mondomaine.nb_faces_bords_int();
-  int nb_faces_int=mondomaine.nb_groupes_internes();
+  int nb_faces_int=mondomaine.nb_faces_groupes_internes();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);
@@ -131,7 +131,7 @@ void Faces_VDF::reordonner_pour_debog(IntVect& tab_orientation)
   int nb_faces_bord=mondomaine.nb_faces_bord();
   int nb_faces_raccord=mondomaine.nb_faces_raccord();
   int nb_faces_bords_int=mondomaine.nb_faces_bords_int();
-  int nb_faces_int=mondomaine.nb_groupes_internes();
+  int nb_faces_int=mondomaine.nb_faces_groupes_internes();
 
   // On ne trie que les faces interieures :
   //#     derniere+=(nb_faces_bord+nb_faces_raccord);

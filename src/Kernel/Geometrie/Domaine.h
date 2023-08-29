@@ -126,9 +126,9 @@ public:
   int nb_faces_bords_int() const ;
   int nb_faces_bords_int(int ) const ;
   int nb_faces_bords_int(Type_Face type) const ;
-  int nb_groupes_internes() const ;
-  int nb_groupes_internes(int ) const ;
-  int nb_groupes_internes(Type_Face type) const ;
+  int nb_faces_groupes_internes() const ;
+  int nb_faces_groupes_internes(int ) const ;
+  int nb_faces_groupes_internes(Type_Face type) const ;
   inline int nb_faces_frontiere() const ;
   inline int nb_faces_frontiere(Type_Face type) const ;
   inline int nb_faces_specifiques() const ;
@@ -525,7 +525,7 @@ inline int Domaine::nb_faces_frontiere() const { return nb_faces_bord() + nb_fac
  * C'est la somme des nombres de  bords, de raccords, de bords internes et de groupes de faces internes
  *
  */
-inline int Domaine::nb_faces_specifiques() const { return nb_faces_bord() + nb_faces_raccord() + nb_faces_bords_int() + nb_groupes_internes(); }
+inline int Domaine::nb_faces_specifiques() const { return nb_faces_bord() + nb_faces_raccord() + nb_faces_bords_int() + nb_faces_groupes_internes(); }
 
 /*! @brief Renvoie le nombre de bords + le nombre de raccords
  *
@@ -855,7 +855,7 @@ inline int Domaine::nb_faces_specifiques(Type_Face type) const
     nb_faces_bord(type) +
     nb_faces_bords_int(type) +
     nb_faces_raccord(type) +
-    nb_groupes_internes(type);
+    nb_faces_groupes_internes(type);
 }
 
 // Decription:

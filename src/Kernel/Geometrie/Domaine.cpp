@@ -499,7 +499,7 @@ int Domaine::nb_faces_bords_int() const
  *
  * @return (int) le nombre de face internes du domaine
  */
-int Domaine::nb_groupes_internes() const
+int Domaine::nb_faces_groupes_internes() const
 {
   return mes_groupes_internes_.nb_faces();
 }
@@ -569,7 +569,7 @@ int Domaine::nb_faces_bords_int(int i) const
  * @param (int i) le numero de la liste de groupes internes dont on veut connaitre le nombre de faces
  * @return (int i) le nombre de faces de la i-ieme liste de groupes internes
  */
-int Domaine::nb_groupes_internes(int i) const
+int Domaine::nb_faces_groupes_internes(int i) const
 {
   return mes_groupes_internes_(i).nb_faces();
 }
@@ -595,7 +595,7 @@ void Domaine::renum(const IntVect& Les_Nums)
     mes_faces_raccord_(i)->renum(Les_Nums);
   for (int i = 0; i < nb_frontieres_internes(); i++)
     mes_bords_int_(i).renum(Les_Nums);
-  for (int i = 0; i < nb_groupes_internes(); i++)
+  for (int i = 0; i < nb_faces_groupes_internes(); i++)
     mes_groupes_internes_(i).renum(Les_Nums);
 }
 
@@ -1059,7 +1059,7 @@ int Domaine::nb_faces_bords_int(Type_Face type) const
  * @param (Type_Face type) un type de face
  * @return (int) le nombre de groupes internes du type specifie
  */
-int Domaine::nb_groupes_internes(Type_Face type) const
+int Domaine::nb_faces_groupes_internes(Type_Face type) const
 {
   return mes_groupes_internes_.nb_faces(type);
 }
