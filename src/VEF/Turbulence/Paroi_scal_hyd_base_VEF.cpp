@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,6 +25,7 @@
 #include <Neumann_paroi.h>
 #include <Probleme_base.h>
 #include <Domaine_VEF.h>
+#include <Domaine_Cl_VEF.h>
 #include <SFichier.h>
 #include <Modifier_pour_fluide_dilatable.h>
 //#include <Paroi_decalee_Robin.h>

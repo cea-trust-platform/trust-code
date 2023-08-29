@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -227,5 +227,11 @@ int Paroi_negligeable_VDF::calculer_hyd_BiK(DoubleTab& tab_k,DoubleTab& tab_eps)
 bool Paroi_negligeable_VDF::use_shear() const
 {
   return false;
+}
+
+
+int Paroi_negligeable_VDF::calculer_scal(Champ_Fonc_base& )
+{
+  return 1;
 }
 
