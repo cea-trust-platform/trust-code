@@ -64,7 +64,6 @@ instancie_src_ThHyd_Incompressible_Equations();
 instancie_src_ThHyd_Incompressible_Milieu();
 instancie_src_ThHyd_Incompressible_Problems();
 instancie_src_ThHyd_Incompressible_Traitement_particulier();
-instancie_src_ThHyd_Modele_turbulence_base();
 instancie_src_ThHyd_Multiphase_Correlations();
 instancie_src_ThHyd_Multiphase_Equations();
 instancie_src_ThHyd_Multiphase_Milieu();
