@@ -588,6 +588,8 @@ do
       rm -f *.evol_glob
       echo "rm iter.dat sauvegarde_tble_* tble_mesh.dat"
       rm -f iter.dat sauvegarde_tble_* tble_mesh.dat
+      echo "rm DEBOG .out faces seq"
+      rm -f DEBOG .out faces seq
       exit 0
    else
       # Unknown option
