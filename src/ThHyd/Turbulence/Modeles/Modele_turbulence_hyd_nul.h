@@ -18,7 +18,7 @@
 
 #include <Mod_turb_hyd.h>
 
-class Modele_turbulence_hyd_nul : public Mod_turb_hyd_base
+class Modele_turbulence_hyd_nul: public Mod_turb_hyd_base
 {
   Declare_instanciable(Modele_turbulence_hyd_nul);
 public:

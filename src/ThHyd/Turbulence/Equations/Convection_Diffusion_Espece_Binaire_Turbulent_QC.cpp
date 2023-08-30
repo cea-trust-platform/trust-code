@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,30 +18,23 @@
 #include <Probleme_base.h>
 #include <Param.h>
 
-Implemente_instanciable(Convection_Diffusion_Espece_Binaire_Turbulent_QC,"Convection_Diffusion_Espece_Binaire_Turbulent_QC",Convection_Diffusion_Espece_Binaire_QC);
+Implemente_instanciable(Convection_Diffusion_Espece_Binaire_Turbulent_QC, "Convection_Diffusion_Espece_Binaire_Turbulent_QC", Convection_Diffusion_Espece_Binaire_QC);
 // XD Convection_Diffusion_Espece_Binaire_Turbulent_QC convection_diffusion_espece_binaire_QC Convection_Diffusion_Espece_Binaire_Turbulent_QC -1 Species conservation equation for a binary quasi-compressible fluid as well as the associated turbulence model equations.
 // XD attr modele_turbulence modele_turbulence_scal_base modele_turbulence 1 Turbulence model for the species conservation equation.
 
-Sortie& Convection_Diffusion_Espece_Binaire_Turbulent_QC::printOn(Sortie& is) const
-{
-  return Convection_Diffusion_Espece_Binaire_QC::printOn(is);
-}
+Sortie& Convection_Diffusion_Espece_Binaire_Turbulent_QC::printOn(Sortie& is) const { return Convection_Diffusion_Espece_Binaire_QC::printOn(is); }
 
-Entree& Convection_Diffusion_Espece_Binaire_Turbulent_QC::readOn(Entree& is)
-{
-  Convection_Diffusion_Espece_Binaire_QC::readOn(is);
-  return is;
-}
+Entree& Convection_Diffusion_Espece_Binaire_Turbulent_QC::readOn(Entree& is) { return Convection_Diffusion_Espece_Binaire_QC::readOn(is); }
 
 void Convection_Diffusion_Espece_Binaire_Turbulent_QC::set_param(Param& param)
 {
   Convection_Diffusion_Espece_Binaire_QC::set_param(param);
-  param.ajouter_non_std("modele_turbulence",(this),Param::REQUIRED);
+  param.ajouter_non_std("modele_turbulence", (this), Param::REQUIRED);
 }
 
 int Convection_Diffusion_Espece_Binaire_Turbulent_QC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="diffusion")
+  if (mot == "diffusion")
     {
       Cerr << "Reading and typing of the diffusion operator : " << finl;
       terme_diffusif.associer_diffusivite(diffusivite_pour_transport());
@@ -50,16 +43,16 @@ int Convection_Diffusion_Espece_Binaire_Turbulent_QC::lire_motcle_non_standard(c
       terme_diffusif.associer_diffusivite_pour_pas_de_temps(diffusivite_pour_pas_de_temps());
       return 1;
     }
-  else if (mot=="modele_turbulence")
+  else if (mot == "modele_turbulence")
     {
-      lire_modele(is,*this);
+      lire_modele(is, *this);
       RefObjU le_modele;
       le_modele = le_modele_turbulence.valeur();
       liste_modeles_.add_if_not(le_modele);
       return 1;
     }
   else
-    return Convection_Diffusion_Espece_Binaire_QC::lire_motcle_non_standard(mot,is);
+    return Convection_Diffusion_Espece_Binaire_QC::lire_motcle_non_standard(mot, is);
 }
 
 /*! @brief Sauvegarde sur un flot de sortie, double appel a: Convection_Diffusion_Espece_Binaire_QC::sauvegarder(Sortie& );
@@ -77,7 +70,6 @@ int Convection_Diffusion_Espece_Binaire_Turbulent_QC::sauvegarder(Sortie& os) co
   return bytes;
 }
 
-
 /*! @brief Reprise a partir d'un flot d'entree, double appel a: Convection_Diffusion_Espece_Binaire_QC::reprendre(Entree& );
  *
  *       Convection_Diffusion_Turbulent::reprendre(Entree&);
@@ -92,7 +84,6 @@ int Convection_Diffusion_Espece_Binaire_Turbulent_QC::reprendre(Entree& is)
   return 1;
 }
 
-
 /*! @brief Double appel a: Convection_Diffusion_Turbulent::completer()
  *
  *      Convection_Diffusion_Espece_Binaire_QC::completer()
@@ -103,7 +94,6 @@ void Convection_Diffusion_Espece_Binaire_Turbulent_QC::completer()
   Convection_Diffusion_Turbulent::completer();
   Convection_Diffusion_Espece_Binaire_QC::completer();
 }
-
 
 /*! @brief Mise a jour en temps de l'equation, double appel a: Convection_Diffusion_Espece_Binaire_QC::mettre_a_jour(double );
  *
@@ -131,7 +121,7 @@ const Champ_base& Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_champ(co
     {
       return Convection_Diffusion_Espece_Binaire_QC::get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
   if (le_modele_turbulence.non_nul())
@@ -139,24 +129,22 @@ const Champ_base& Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_champ(co
       {
         return le_modele_turbulence->get_champ(nom);
       }
-    catch (Champs_compris_erreur)
+    catch (Champs_compris_erreur& err_)
       {
       }
   throw Champs_compris_erreur();
-
 
   REF(Champ_base) ref_champ;
   return ref_champ;
 }
 
-void Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  Convection_Diffusion_Espece_Binaire_QC::get_noms_champs_postraitables(nom,opt);
+  Convection_Diffusion_Espece_Binaire_QC::get_noms_champs_postraitables(nom, opt);
 
   if (le_modele_turbulence.non_nul())
-    le_modele_turbulence->get_noms_champs_postraitables(nom,opt);
+    le_modele_turbulence->get_noms_champs_postraitables(nom, opt);
 }
-
 
 /*! @brief Double appel a: Convection_Diffusion_Turbulent::preparer_calcul()
  *
@@ -187,13 +175,12 @@ bool Convection_Diffusion_Espece_Binaire_Turbulent_QC::initTimeStep(double dt)
 
 const RefObjU& Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_modele(Type_modele type) const
 {
-  for (const auto& itr : liste_modeles_)
+  for (const auto &itr : liste_modeles_)
     {
-      const RefObjU&  mod = itr;
+      const RefObjU& mod = itr;
       if (mod.non_nul())
-        if ((sub_type(Modele_turbulence_scal_base,mod.valeur())) && (type==TURBULENCE))
+        if ((sub_type(Modele_turbulence_scal_base, mod.valeur())) && (type == TURBULENCE))
           return mod;
     }
   return Equation_base::get_modele(type);
 }
-

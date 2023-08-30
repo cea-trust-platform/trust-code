@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,30 +16,11 @@
 #include <Pb_Hydraulique_Turbulent.h>
 #include <Fluide_Incompressible.h>
 
+Implemente_instanciable(Pb_Hydraulique_Turbulent, "Pb_Hydraulique_Turbulent", Pb_Fluide_base);
 
-Implemente_instanciable(Pb_Hydraulique_Turbulent,"Pb_Hydraulique_Turbulent",Pb_Fluide_base);
+Sortie& Pb_Hydraulique_Turbulent::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 
-
-/*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Pb_Hydraulique_Turbulent::printOn(Sortie& os) const
-{
-  return Pb_Fluide_base::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Pb_Fluide_base::readOn(Entree&) Lit le probleme a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Pb_Hydraulique_Turbulent::readOn(Entree& is)
-{
-  return Pb_Fluide_base::readOn(is);
-}
+Entree& Pb_Hydraulique_Turbulent::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }
 
 /*! @brief Renvoie le nombre d'equation, Renvoie 1 car il y a seulement 1 equation a un probleme
  *
@@ -52,16 +33,9 @@ int Pb_Hydraulique_Turbulent::nombre_d_equations() const
   return 1;
 }
 
-/*! @brief Renvoie l' equation d'hydraulique de type Navier_Stokes_Turbulent si i=0 sort (exit) sinon.
- *
- *     (version const)
- *
- * @param (int i) l'index de l'equation a renvoyer
- * @return (Equation_base&) l'equation d'hydraulique de type Navier_Stokes_Turbulent
- */
 const Equation_base& Pb_Hydraulique_Turbulent::equation(int i) const
 {
-  if ( !( i==0 ) )
+  if (!(i == 0))
     {
       Cerr << "\nError in Pb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
@@ -76,7 +50,7 @@ const Equation_base& Pb_Hydraulique_Turbulent::equation(int i) const
  */
 Equation_base& Pb_Hydraulique_Turbulent::equation(int i)
 {
-  if ( !( i==0 ) )
+  if (!(i == 0))
     {
       Cerr << "\nError in Pb_Hydraulique_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
@@ -93,7 +67,7 @@ Equation_base& Pb_Hydraulique_Turbulent::equation(int i)
  */
 void Pb_Hydraulique_Turbulent::associer_milieu_base(const Milieu_base& mil)
 {
-  if (sub_type(Fluide_Incompressible,mil))
+  if (sub_type(Fluide_Incompressible, mil))
     eq_hydraulique.associer_milieu_base(mil);
   else
     {

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,6 @@
 #include <Convection_Diffusion_Turbulent.h>
 #include <Convection_Diffusion_Temperature.h>
 
-
 /*! @brief classe Convection_Diffusion_Temperature_Turbulent Cette classe represente le cas particulier de
  *
  *      convection diffusion turbulente lorsque l'inconnue
@@ -30,32 +29,25 @@
  *
  * @sa Convection_Diffusion_Turbulent  Convection_Diffusion_Temperature
  */
-class Convection_Diffusion_Temperature_Turbulent : public Convection_Diffusion_Turbulent ,
-  public Convection_Diffusion_Temperature
+class Convection_Diffusion_Temperature_Turbulent: public Convection_Diffusion_Turbulent, public Convection_Diffusion_Temperature
 {
   Declare_instanciable(Convection_Diffusion_Temperature_Turbulent);
-
-public :
-
+public:
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   void completer() override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
   int preparer_calcul() override;
   bool initTimeStep(double dt) override;
 
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
   void imprimer(Sortie& os) const override;
   const RefObjU& get_modele(Type_modele type) const override;
-
 };
 
-#endif
+#endif /* Convection_Diffusion_Temperature_Turbulent_included */

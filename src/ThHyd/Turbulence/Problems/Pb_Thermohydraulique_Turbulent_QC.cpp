@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,7 +15,7 @@
 
 #include <Pb_Thermohydraulique_Turbulent_QC.h>
 
-Implemente_instanciable(Pb_Thermohydraulique_Turbulent_QC,"Pb_Thermohydraulique_Turbulent_QC",Pb_QC_base);
+Implemente_instanciable(Pb_Thermohydraulique_Turbulent_QC, "Pb_Thermohydraulique_Turbulent_QC", Pb_QC_base);
 
 Sortie& Pb_Thermohydraulique_Turbulent_QC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
 
@@ -31,12 +31,12 @@ int Pb_Thermohydraulique_Turbulent_QC::nombre_d_equations() const { return 2; }
  */
 const Equation_base& Pb_Thermohydraulique_Turbulent_QC::equation(int i) const
 {
-  return equation_impl(i,eq_hydraulique,eq_thermique);
+  return equation_impl(i, eq_hydraulique, eq_thermique);
 }
 
 Equation_base& Pb_Thermohydraulique_Turbulent_QC::equation(int i)
 {
-  return equation_impl(i,eq_hydraulique,eq_thermique);
+  return equation_impl(i, eq_hydraulique, eq_thermique);
 }
 
 int Pb_Thermohydraulique_Turbulent_QC::expression_predefini(const Motcle& motlu, Nom& expression)

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,8 +16,9 @@
 #ifndef Navier_Stokes_Turbulent_QC_included
 #define Navier_Stokes_Turbulent_QC_included
 
-#include <Navier_Stokes_Turbulent.h>
 #include <Navier_Stokes_Fluide_Dilatable_Proto.h>
+#include <Navier_Stokes_Turbulent.h>
+
 class Champ_Fonc;
 
 /*! @brief classe Navier_Stokes_Turbulent Cette classe represente l'equation de la dynamique pour un fluide
@@ -28,27 +29,26 @@ class Champ_Fonc;
  *
  * @sa Navier_Stokes_Turbulent Mod_turb_hyd Pb_Thermohydraulique_Turbulent_QC
  */
-class Navier_Stokes_Turbulent_QC : public Navier_Stokes_Turbulent,public Navier_Stokes_Fluide_Dilatable_Proto
+class Navier_Stokes_Turbulent_QC: public Navier_Stokes_Turbulent, public Navier_Stokes_Fluide_Dilatable_Proto
 {
   Declare_instanciable(Navier_Stokes_Turbulent_QC);
-
-public :
+public:
 
   void completer() override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
   bool initTimeStep(double dt) override;
 
   int preparer_calcul() override;
   int impr(Sortie&) const override;
   void imprimer(Sortie& os) const override;
 
-  DoubleTab& derivee_en_temps_inco(DoubleTab& ) override;
-  void assembler( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
-  void assembler_avec_inertie( Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override ;
+  DoubleTab& derivee_en_temps_inco(DoubleTab&) override;
+  void assembler(Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override;
+  void assembler_avec_inertie(Matrice_Morse& mat_morse, const DoubleTab& present, DoubleTab& secmem) override;
   inline const Champ_Inc& rho_la_vitesse() const override { return rho_la_vitesse_; }
   void discretiser() override;
   const Champ_base& get_champ(const Motcle& nom) const override;
   const Champ_Don& diffusivite_pour_transport() const override;
 };
 
-#endif
+#endif /* Navier_Stokes_Turbulent_QC_included */

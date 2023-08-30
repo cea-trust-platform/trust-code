@@ -13,16 +13,14 @@
 *
 *****************************************************************************/
 
-
 #ifndef Mod_turb_hyd_base_included
 #define Mod_turb_hyd_base_included
 
-
 #define CMU 0.09
 
-#include <Turbulence_paroi.h>
-// generalisation du modele.
 #include <Support_Champ_Masse_Volumique.h>
+#include <Turbulence_paroi.h>
+
 class Motcle;
 class Domaine_dis;
 class Domaine_Cl_dis;
@@ -44,9 +42,7 @@ class Param;
  *
  * @sa Mod_turb_hyd_ss_maille Modele_turbulence_hyd_K_Eps, Classe abstraite, Methode abstraite, void mettre_a_jour(double ), Entree& lire(const Motcle&, Entree&)
  */
-class Mod_turb_hyd_base : public Objet_U,
-  public Support_Champ_Masse_Volumique,
-  public Champs_compris_interface
+class Mod_turb_hyd_base: public Objet_U, public Support_Champ_Masse_Volumique, public Champs_compris_interface
 {
 
   Declare_base_sans_constructeur(Mod_turb_hyd_base);
@@ -56,43 +52,27 @@ public:
   inline const Champ_Fonc& viscosite_turbulente() const;
   inline Equation_base& equation();
   inline const Equation_base& equation() const;
-  inline const Turbulence_paroi& loi_paroi() const
-  {
-    return loipar;
-  };
-  inline Turbulence_paroi& loi_paroi()
-  {
-    return loipar;
-  };
-  bool utiliser_loi_paroi() const
-  {
-    return loi_paroi().non_nul() ? loipar->use_shear() : false;
-  };
-  virtual bool calcul_tenseur_Re(const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& Re) const
-  {
-    // Not coded
-    return false;
-  };
+  inline const Turbulence_paroi& loi_paroi() const { return loipar; }
+  inline Turbulence_paroi& loi_paroi() { return loipar; }
+  bool utiliser_loi_paroi() const { return loi_paroi().non_nul() ? loipar->use_shear() : false; }
+  virtual bool calcul_tenseur_Re(const DoubleTab& nu_turb, const DoubleTab& grad, DoubleTab& Re) const { return false; }
   virtual void set_param(Param& param);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   virtual int preparer_calcul();
   virtual bool initTimeStep(double dt);
-  virtual void mettre_a_jour(double ) =0;
+  virtual void mettre_a_jour(double) =0;
   virtual void discretiser();
   void discretiser_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
   void discretiser_corr_visc_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
   void discretiser_K(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const; // Utilise par les modeles de tubulence dans TrioCFD
   virtual void completer();
-  void associer_eqn(const Equation_base& );
-  virtual void associer(const Domaine_dis& , const Domaine_Cl_dis& );
-  int reprendre(Entree& ) override;
+  void associer_eqn(const Equation_base&);
+  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&);
+  int reprendre(Entree&) override;
 
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
   inline Champs_compris& champs_compris();
 
@@ -100,12 +80,11 @@ public:
   void a_faire(Sortie&) const;
   int sauvegarder(Sortie&) const override;
 
-  int limpr_ustar(double , double, double, double ) const;
+  int limpr_ustar(double, double, double, double) const;
   inline double get_Cmu() const;
-  void lire_distance_paroi( );
+  void lire_distance_paroi();
 
 protected:
-
   double LeCmu;
   Champ_Fonc la_viscosite_turbulente;
   Champ_Fonc wall_length_;
@@ -114,13 +93,12 @@ protected:
   double dt_impr_ustar;
   double dt_impr_ustar_mean_only;
   int boundaries_;
-  LIST(Nom) boundaries_list ;
+  LIST(Nom) boundaries_list;
   Nom nom_fichier_;
   void limiter_viscosite_turbulente();
 
   Champs_compris champs_compris_;
-private :
-
+private:
 
   double XNUTM;
   int calcul_borne_locale_visco_turb_;
@@ -131,12 +109,12 @@ private :
 
 inline Mod_turb_hyd_base::Mod_turb_hyd_base()
 {
-  LeCmu = CMU ;
-  dt_impr_ustar=1.e20;
-  dt_impr_ustar_mean_only=1.e20;
-  boundaries_=0;
-  nom_fichier_="";
-  XNUTM = 1.E8 ;
+  LeCmu = CMU;
+  dt_impr_ustar = 1.e20;
+  dt_impr_ustar_mean_only = 1.e20;
+  boundaries_ = 0;
+  nom_fichier_ = "";
+  XNUTM = 1.E8;
   calcul_borne_locale_visco_turb_ = 0;
   dt_diff_sur_dt_conv_ = -1;
 }
@@ -149,7 +127,6 @@ inline const Champ_Fonc& Mod_turb_hyd_base::viscosite_turbulente() const
   return la_viscosite_turbulente;
 }
 
-
 /*! @brief Renvoie l'equation associee au modele de turbulence.
  *
  * (c'est une equation du type Equation_base)
@@ -158,7 +135,7 @@ inline const Champ_Fonc& Mod_turb_hyd_base::viscosite_turbulente() const
  */
 inline Equation_base& Mod_turb_hyd_base::equation()
 {
-  if (mon_equation.non_nul()==0)
+  if (mon_equation.non_nul() == 0)
     {
       Cerr << "\nError in Mod_turb_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
@@ -168,7 +145,7 @@ inline Equation_base& Mod_turb_hyd_base::equation()
 
 inline const Equation_base& Mod_turb_hyd_base::equation() const
 {
-  if (mon_equation.non_nul()==0)
+  if (mon_equation.non_nul() == 0)
     {
       Cerr << "\nError in Mod_turb_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
@@ -185,7 +162,7 @@ inline double Mod_turb_hyd_base::get_Cmu() const
   return LeCmu;
 }
 
-inline Champs_compris&  Mod_turb_hyd_base::champs_compris()
+inline Champs_compris& Mod_turb_hyd_base::champs_compris()
 {
   return champs_compris_;
 }

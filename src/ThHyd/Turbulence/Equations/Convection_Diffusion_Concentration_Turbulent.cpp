@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,30 +17,18 @@
 #include <Constituant.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Convection_Diffusion_Concentration_Turbulent,"Convection_Diffusion_Concentration_Turbulent",Convection_Diffusion_Concentration);
+Implemente_instanciable_sans_constructeur(Convection_Diffusion_Concentration_Turbulent, "Convection_Diffusion_Concentration_Turbulent", Convection_Diffusion_Concentration);
 
-/*! @brief Simple appel a Equation_base::printOn(Sortie&)
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Convection_Diffusion_Concentration_Turbulent::printOn(Sortie& is) const
 {
   return Equation_base::printOn(is);
 }
 
-
-/*! @brief cf Convection_Diffusion_Concentration::readOn(is)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws il faut specifier un modele de turbulence
- */
 Entree& Convection_Diffusion_Concentration_Turbulent::readOn(Entree& is)
 {
   //On conserve cette initialisation ici car si on la deplace dans le constructeur
   //elle est ecrasee par Convection_Diffusion_Concentration::discretiser()
-  nb_constituants_=1;
+  nb_constituants_ = 1;
   Convection_Diffusion_Concentration::readOn(is);
   return is;
 }
@@ -48,13 +36,13 @@ Entree& Convection_Diffusion_Concentration_Turbulent::readOn(Entree& is)
 void Convection_Diffusion_Concentration_Turbulent::set_param(Param& param)
 {
   Convection_Diffusion_Concentration::set_param(param);
-  param.ajouter("constituants",&nb_constituants_);
-  param.ajouter_non_std("modele_turbulence",(this),Param::REQUIRED);
+  param.ajouter("constituants", &nb_constituants_);
+  param.ajouter_non_std("modele_turbulence", (this), Param::REQUIRED);
 }
 
 int Convection_Diffusion_Concentration_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="diffusion")
+  if (mot == "diffusion")
     {
       Cerr << "Reading and typing of the diffusion operator : " << finl;
       terme_diffusif.associer_diffusivite(diffusivite_pour_transport());
@@ -64,16 +52,16 @@ int Convection_Diffusion_Concentration_Turbulent::lire_motcle_non_standard(const
       terme_diffusif.associer_diffusivite_pour_pas_de_temps(diffusivite_pour_pas_de_temps());
       return 1;
     }
-  else if (mot=="modele_turbulence")
+  else if (mot == "modele_turbulence")
     {
-      lire_modele(is,*this);
+      lire_modele(is, *this);
       RefObjU le_modele;
       le_modele = le_modele_turbulence.valeur();
       liste_modeles_.add_if_not(le_modele);
       return 1;
     }
   else
-    return Convection_Diffusion_Concentration::lire_motcle_non_standard(mot,is);
+    return Convection_Diffusion_Concentration::lire_motcle_non_standard(mot, is);
 }
 
 /*! @brief Sauvergarde de l'equation sur un flot de sortie.
@@ -87,12 +75,11 @@ int Convection_Diffusion_Concentration_Turbulent::lire_motcle_non_standard(const
  */
 int Convection_Diffusion_Concentration_Turbulent::sauvegarder(Sortie& os) const
 {
-  int bytes=0;
+  int bytes = 0;
   bytes += Convection_Diffusion_Concentration::sauvegarder(os);
   bytes += Convection_Diffusion_Turbulent::sauvegarder(os);
   return bytes;
 }
-
 
 /*! @brief Reprise a partir d'un flot d'entree, double appel a: Convection_Diffusion_Concentration::reprendre(Entree& );
  *
@@ -108,7 +95,6 @@ int Convection_Diffusion_Concentration_Turbulent::reprendre(Entree& is)
   return 1;
 }
 
-
 /*! @brief Double appel a: Convection_Diffusion_Turbulent::completer()
  *
  *      Convection_Diffusion_Concentration::completer()
@@ -119,7 +105,6 @@ void Convection_Diffusion_Concentration_Turbulent::completer()
   Convection_Diffusion_Turbulent::completer();
   Convection_Diffusion_Concentration::completer();
 }
-
 
 /*! @brief Mise a jour en temps de l'equation, double appel a: Convection_Diffusion_Concentration::mettre_a_jour(double );
  *
@@ -148,7 +133,7 @@ const Champ_base& Convection_Diffusion_Concentration_Turbulent::get_champ(const 
     {
       return Convection_Diffusion_Concentration::get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
 
@@ -157,7 +142,7 @@ const Champ_base& Convection_Diffusion_Concentration_Turbulent::get_champ(const 
       {
         return le_modele_turbulence->get_champ(nom);
       }
-    catch (Champs_compris_erreur)
+    catch (Champs_compris_erreur& err_)
       {
       }
   throw Champs_compris_erreur();
@@ -165,11 +150,11 @@ const Champ_base& Convection_Diffusion_Concentration_Turbulent::get_champ(const 
   return ref_champ;
 }
 
-void Convection_Diffusion_Concentration_Turbulent::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Convection_Diffusion_Concentration_Turbulent::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  Convection_Diffusion_Concentration::get_noms_champs_postraitables(nom,opt);
+  Convection_Diffusion_Concentration::get_noms_champs_postraitables(nom, opt);
   if (le_modele_turbulence.non_nul())
-    le_modele_turbulence->get_noms_champs_postraitables(nom,opt);
+    le_modele_turbulence->get_noms_champs_postraitables(nom, opt);
 }
 
 /*! @brief Double appel a: Convection_Diffusion_Turbulent::preparer_calcul()
@@ -194,11 +179,11 @@ bool Convection_Diffusion_Concentration_Turbulent::initTimeStep(double dt)
 
 const RefObjU& Convection_Diffusion_Concentration_Turbulent::get_modele(Type_modele type) const
 {
-  for (const auto& itr : liste_modeles_)
+  for (const auto &itr : liste_modeles_)
     {
-      const RefObjU&  mod = itr;
+      const RefObjU& mod = itr;
       if (mod.non_nul())
-        if ((sub_type(Modele_turbulence_scal_base,mod.valeur())) && (type==TURBULENCE))
+        if ((sub_type(Modele_turbulence_scal_base, mod.valeur())) && (type == TURBULENCE))
           return mod;
     }
   return Equation_base::get_modele(type);

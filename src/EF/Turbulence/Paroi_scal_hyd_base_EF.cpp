@@ -13,66 +13,49 @@
 *
 *****************************************************************************/
 
-#include <Paroi_scal_hyd_base_EF.h>
-#include <Convection_Diffusion_std.h>
+#include <Modifier_pour_fluide_dilatable.h>
 #include <Modele_turbulence_scal_base.h>
-#include <EcrFicPartage.h>
-#include <Champ_Uniforme.h>
-#include <Fluide_base.h>
 #include <Fluide_Quasi_Compressible.h>
-#include <Dirichlet_paroi_fixe.h>
 #include <Dirichlet_paroi_defilante.h>
+#include <Convection_Diffusion_std.h>
+#include <Paroi_scal_hyd_base_EF.h>
+#include <Dirichlet_paroi_fixe.h>
+#include <Paroi_decalee_Robin.h>
+#include <Champ_Uniforme.h>
+#include <EcrFicPartage.h>
 #include <Neumann_paroi.h>
 #include <Probleme_base.h>
-#include <SFichier.h>
-#include <Modifier_pour_fluide_dilatable.h>
-#include <Domaine_EF.h>
 #include <Domaine_Cl_EF.h>
-#include <Paroi_decalee_Robin.h>
+#include <Fluide_base.h>
+#include <Domaine_EF.h>
+#include <SFichier.h>
 
-Implemente_base(Paroi_scal_hyd_base_EF,"Paroi_scal_hyd_base_EF",Turbulence_paroi_scal_base);
+Implemente_base(Paroi_scal_hyd_base_EF, "Paroi_scal_hyd_base_EF", Turbulence_paroi_scal_base);
 
-//     printOn()
-/////
+Sortie& Paroi_scal_hyd_base_EF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Sortie& Paroi_scal_hyd_base_EF::printOn(Sortie& s) const
+Entree& Paroi_scal_hyd_base_EF::readOn(Entree& s) { return s; }
+
+void Paroi_scal_hyd_base_EF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Paroi_scal_hyd_base_EF::readOn(Entree& s)
-{
-  return s ;
-}
-
-/////////////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Paroi_std_hyd_EF
-//
-/////////////////////////////////////////////////////////////////////
-void Paroi_scal_hyd_base_EF::associer(const Domaine_dis& domaine_dis,const Domaine_Cl_dis& domaine_Cl_dis)
-{
-  le_dom_EF = ref_cast(Domaine_EF,domaine_dis.valeur());
-  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF,domaine_Cl_dis.valeur());
+  le_dom_EF = ref_cast(Domaine_EF, domaine_dis.valeur());
+  le_dom_Cl_EF = ref_cast(Domaine_Cl_EF, domaine_Cl_dis.valeur());
   // On initialise tout de suite la loi de paroi
   Paroi_scal_hyd_base_EF::init_lois_paroi();
 }
 
 DoubleVect& Paroi_scal_hyd_base_EF::equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const
 {
-  int nb_boundaries=le_dom_EF->domaine().nb_front_Cl();
-  for (int n_bord=0; n_bord<nb_boundaries; n_bord++)
+  int nb_boundaries = le_dom_EF->domaine().nb_front_Cl();
+  for (int n_bord = 0; n_bord < nb_boundaries; n_bord++)
     {
       const Front_VF& fr_vf = le_dom_EF->front_VF(n_bord);
-      int nb_faces=fr_vf.nb_faces();
+      int nb_faces = fr_vf.nb_faces();
       if (fr_vf.le_nom() == nom_bord)
         {
           d_eq.resize(fr_vf.nb_faces());
-          for (int ind_face=0; ind_face<nb_faces; ind_face++)
-            d_eq(ind_face) = equivalent_distance(n_bord,ind_face);
+          for (int ind_face = 0; ind_face < nb_faces; ind_face++)
+            d_eq(ind_face) = equivalent_distance(n_bord, ind_face);
         }
     }
   return d_eq;
@@ -80,7 +63,7 @@ DoubleVect& Paroi_scal_hyd_base_EF::equivalent_distance_name(DoubleVect& d_eq, c
 
 int Paroi_scal_hyd_base_EF::init_lois_paroi()
 {
-  int nb_faces_bord_reelles=le_dom_EF->nb_faces_bord();
+  int nb_faces_bord_reelles = le_dom_EF->nb_faces_bord();
   tab_d_reel_.resize(nb_faces_bord_reelles);
 
   // Initialisations de equivalent_distance_, tab_d_reel, positions_Pf, elems_plus
@@ -92,19 +75,19 @@ int Paroi_scal_hyd_base_EF::init_lois_paroi()
 
   if (axi)
     {
-      Cerr<<"Attention, rien n'est fait en Axi pour le EF"<<finl;
+      Cerr << "Attention, rien n'est fait en Axi pour le EF" << finl;
       exit();
     }
   else
     {
-      int nb_front=domaine_EF.nb_front_Cl();
+      int nb_front = domaine_EF.nb_front_Cl();
       equivalent_distance_.dimensionner(nb_front);
-      for (int n_bord=0; n_bord<nb_front; n_bord++)
+      for (int n_bord = 0; n_bord < nb_front; n_bord++)
         {
           const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
 
-          int size=le_bord.nb_faces();
+          int size = le_bord.nb_faces();
           DoubleVect& dist_equiv = equivalent_distance_[n_bord];
           // Note B.M.: on passe ici deux fois: une fois au readOn (par Paroi_scal_hyd_base_EF::associer())
           //  et une fois par Modele_turbulence_scal_base::preparer_calcul())
@@ -113,15 +96,15 @@ int Paroi_scal_hyd_base_EF::init_lois_paroi()
             le_bord.frontiere().creer_tableau_faces(dist_equiv, Array_base::NOCOPY_NOINIT);
           //assert(dist_equiv.get_md_vector() == le_bord.frontiere().md_vector_faces());
 
-          for (int ind_face=0; ind_face<size; ind_face++)
+          for (int ind_face = 0; ind_face < size; ind_face++)
             {
               int num_face = le_bord.num_face(ind_face);
               int elem;
-              elem = face_voisins(num_face,0);
+              elem = face_voisins(num_face, 0);
               if (elem == -1)
-                elem = face_voisins(num_face,1);
+                elem = face_voisins(num_face, 1);
 
-              double distance =  volumes_maille(elem)/surfaces_face(num_face);
+              double distance = volumes_maille(elem) / surfaces_face(num_face);
 
               tab_d_reel_[num_face] = distance;
 
@@ -135,12 +118,11 @@ int Paroi_scal_hyd_base_EF::init_lois_paroi()
   return 1;
 }
 
-
 void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
 {
   const Domaine_EF& domaine_EF = le_dom_EF.valeur();
   const IntTab& face_voisins = domaine_EF.face_voisins();
-  int ndeb,nfin,elem;
+  int ndeb, nfin, elem;
   const Convection_Diffusion_std& eqn = mon_modele_turb_scal->equation();
   const Equation_base& eqn_hydr = eqn.probleme().equation(0);
   const Fluide_base& le_fluide = ref_cast(Fluide_base, eqn_hydr.milieu());
@@ -149,141 +131,158 @@ void Paroi_scal_hyd_base_EF::imprimer_nusselt(Sortie& os) const
 
   const DoubleTab& conductivite_turbulente = mon_modele_turb_scal->conductivite_turbulente().valeurs();
 
-  const IntTab& elems=domaine_EF.domaine().les_elems() ;
+  const IntTab& elems = domaine_EF.domaine().les_elems();
   int nsom = domaine_EF.nb_som_face();
   int nsom_elem = domaine_EF.domaine().nb_som_elem();
   ArrOfInt nodes_face(nsom);
   int nb_nodes_free = nsom_elem - nsom;
 
   EcrFicPartage Nusselt;
-  ouvrir_fichier_partage(Nusselt,"Nusselt");
+  ouvrir_fichier_partage(Nusselt, "Nusselt");
 
-  for (int n_bord=0; n_bord<domaine_EF.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_EF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl_EF->les_conditions_limites(n_bord);
-      if ( (sub_type(Dirichlet_paroi_fixe,la_cl.valeur())) ||
-           (sub_type(Dirichlet_paroi_defilante,la_cl.valeur()))
-           || (sub_type(Paroi_decalee_Robin,la_cl.valeur())) )
+      if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())) || (sub_type(Paroi_decalee_Robin, la_cl.valeur())))
         {
           const Domaine_Cl_EF& domaine_Cl_EF_th = ref_cast(Domaine_Cl_EF, eqn.probleme().equation(1).domaine_Cl_dis().valeur());
           const Cond_lim& la_cl_th = domaine_Cl_EF_th.les_conditions_limites(n_bord);
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
 
-          if(je_suis_maitre())
+          if (je_suis_maitre())
             {
               Nusselt << finl;
               Nusselt << "Bord " << le_bord.le_nom() << finl;
-              if ( (sub_type(Neumann_paroi,la_cl_th.valeur())))
+              if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
                 {
                   if (dimension == 2)
                     {
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt
+                          << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                          << finl;
                       Nusselt << "\tFace a\t\t\t\t|" << finl;
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt
+                          << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                          << finl;
                       Nusselt << "X\t\t| Y\t\t\t| dist. carac. (m)\t| Nusselt (local)\t| h (Conv. W/m2/K)\t| Tf cote paroi (K)\t| T face de bord (K)\t| Tparoi equiv.(K) " << finl;
-                      Nusselt << "----------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------" << finl;
+                      Nusselt
+                          << "----------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------"
+                          << finl;
                     }
                   if (dimension == 3)
                     {
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt
+                          << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                          << finl;
                       Nusselt << "\tFace a\t\t\t\t\t\t\t|" << finl;
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt
+                          << "----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                          << finl;
                       Nusselt << "X\t\t| Y\t\t\t| Z\t\t\t| dist. carac. (m)\t| Nusselt (local)\t| h (Conv. W/m2/K)\t| Tf cote paroi (K)\t| T face de bord (K)\t| Tparoi equiv.(K)" << finl;
-                      Nusselt <<        "----------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------" << finl;
+                      Nusselt
+                          << "----------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------"
+                          << finl;
                     }
                 }
               else
                 {
                   if (dimension == 2)
                     {
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                              << finl;
                       Nusselt << "\tFace a\t\t\t\t|" << finl;
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                              << finl;
                       Nusselt << "X\t\t| Y\t\t\t| dist. carac. (m)\t| Nusselt (local)\t| h (Conv. W/m2/K)\t| Tf cote paroi (K) " << finl;
                       Nusselt << "----------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------" << finl;
                     }
                   if (dimension == 3)
                     {
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                              << finl;
                       Nusselt << "\tFace a\t\t\t\t\t\t\t|" << finl;
-                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------" << finl;
+                      Nusselt << "----------------------------------------------------------------------------------------------------------------------------------------------------------------"
+                              << finl;
                       Nusselt << "X\t\t| Y\t\t\t| Z\t\t\t| dist. carac. (m)\t| Nusselt (local)\t| h (Conv. W/m2/K)\t| Tf cote paroi (K) " << finl;
-                      Nusselt <<        "----------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------" << finl;
+                      Nusselt << "----------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------|-----------------------"
+                              << finl;
                     }
                 }
             }
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
-          for (int num_face=ndeb; num_face<nfin; num_face++)
+          for (int num_face = ndeb; num_face < nfin; num_face++)
             {
-              double x=domaine_EF.xv(num_face,0);
-              double y=domaine_EF.xv(num_face,1);
-              double lambda,lambda_t;
-              elem = face_voisins(num_face,0);
+              double x = domaine_EF.xv(num_face, 0);
+              double y = domaine_EF.xv(num_face, 1);
+              double lambda, lambda_t;
+              elem = face_voisins(num_face, 0);
               if (elem == -1)
-                elem = face_voisins(num_face,1);
-              if (sub_type(Champ_Uniforme,conductivite.valeur()))
-                lambda = conductivite(0,0);
+                elem = face_voisins(num_face, 1);
+              if (sub_type(Champ_Uniforme, conductivite.valeur()))
+                lambda = conductivite(0, 0);
               else
                 {
-                  if (conductivite.nb_comp()==1)
+                  if (conductivite.nb_comp() == 1)
                     lambda = conductivite(elem);
                   else
-                    lambda = conductivite(elem,0);
+                    lambda = conductivite(elem, 0);
                 }
 
-              lambda_t=conductivite_turbulente(elem);
+              lambda_t = conductivite_turbulente(elem);
               if (dimension == 2)
                 Nusselt << x << "\t| " << y;
               if (dimension == 3)
                 {
-                  double z=domaine_EF.xv(num_face,2);
+                  double z = domaine_EF.xv(num_face, 2);
                   Nusselt << x << "\t| " << y << "\t| " << z;
                 }
 
               // temperature tparoi face CL
-              double tparoi =0.;
-              nodes_face=0;
-              for(int jsom=0; jsom<nsom; jsom++)
+              double tparoi = 0.;
+              nodes_face = 0;
+              for (int jsom = 0; jsom < nsom; jsom++)
                 {
                   int num_som = domaine_EF.face_sommets(num_face, jsom);
                   nodes_face[jsom] = num_som;
-                  tparoi+=temperature(num_som)/nsom;
+                  tparoi += temperature(num_som) / nsom;
                 }
 
               // on doit calculer Tfluide premiere maille sans prendre en compte Tparoi
-              double tfluide=0.;
-              for (int i=0; i<nsom_elem; i++)
+              double tfluide = 0.;
+              for (int i = 0; i < nsom_elem; i++)
                 {
-                  int node=elems(elem,i);
+                  int node = elems(elem, i);
                   int IOK = 1;
-                  for(int jsom=0; jsom<nsom; jsom++)
-                    if (nodes_face[jsom] == node) IOK=0;
+                  for (int jsom = 0; jsom < nsom; jsom++)
+                    if (nodes_face[jsom] == node)
+                      IOK = 0;
                   // Le noeud contribue
-                  if (IOK) tfluide += temperature(node)/nb_nodes_free;
+                  if (IOK)
+                    tfluide += temperature(node) / nb_nodes_free;
                 }
 
-              double d_equiv=equivalent_distance_[n_bord](num_face-ndeb);
+              double d_equiv = equivalent_distance_[n_bord](num_face - ndeb);
 
-              if ( (sub_type(Neumann_paroi,la_cl_th.valeur())))
+              if ((sub_type(Neumann_paroi, la_cl_th.valeur())))
                 {
                   // dans ce cas on va imprimer Tfluide (moyenne premiere maille), Tface et on Tparoi recalcule avec d_equiv
-                  const Neumann_paroi& la_cl_neum = ref_cast(Neumann_paroi,la_cl_th.valeur());
-                  double flux = la_cl_neum.flux_impose(num_face-ndeb);
-                  double tparoi_equiv = tfluide+flux/(lambda+lambda_t)*d_equiv;
-                  Nusselt << "\t| " << d_equiv << "\t| " << (lambda+lambda_t)/lambda*tab_d_reel_[num_face]/d_equiv << "\t| " << (lambda+lambda_t)/d_equiv << "\t| " << tfluide << "\t| " << tparoi << "\t| " << tparoi_equiv << finl;
+                  const Neumann_paroi& la_cl_neum = ref_cast(Neumann_paroi, la_cl_th.valeur());
+                  double flux = la_cl_neum.flux_impose(num_face - ndeb);
+                  double tparoi_equiv = tfluide + flux / (lambda + lambda_t) * d_equiv;
+                  Nusselt << "\t| " << d_equiv << "\t| " << (lambda + lambda_t) / lambda * tab_d_reel_[num_face] / d_equiv << "\t| " << (lambda + lambda_t) / d_equiv << "\t| " << tfluide << "\t| "
+                          << tparoi << "\t| " << tparoi_equiv << finl;
                 }
               else
                 {
                   // on imprime Tfluide seulement car normalement Tface=Tparoi est connu
-                  Nusselt << "\t| " << d_equiv << "\t| " << (lambda+lambda_t)/lambda*tab_d_reel_[num_face]/d_equiv << "\t| " << (lambda+lambda_t)/d_equiv << "\t| " << tfluide << finl;
+                  Nusselt << "\t| " << d_equiv << "\t| " << (lambda + lambda_t) / lambda * tab_d_reel_[num_face] / d_equiv << "\t| " << (lambda + lambda_t) / d_equiv << "\t| " << tfluide << finl;
                 }
             }
           Nusselt.syncfile();
         }
     }
-  if(je_suis_maitre())
+  if (je_suis_maitre())
     Nusselt << finl << finl;
   Nusselt.syncfile();
 }
-

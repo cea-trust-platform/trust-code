@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,28 +33,22 @@ class Operateur_Diff;
  */
 class Convection_Diffusion_Turbulent
 {
-
 public :
-
   Entree& lire_modele(Entree&, const Equation_base& );
 
   //On passe desormais par equation().get_modele(TURBULENCE) pour recuperer
   //le modele de turbulence puis le tableau des valeurs de la diffusion turbulente
-
   void completer();
   virtual bool initTimeStep(double dt);
   int preparer_calcul();
   virtual int sauvegarder(Sortie&) const;
   virtual int reprendre(Entree&);
   virtual void mettre_a_jour(double);
-  inline virtual ~Convection_Diffusion_Turbulent();
+  virtual ~Convection_Diffusion_Turbulent() {}
+
 protected:
   Entree& lire_op_diff_turbulent(Entree&, const Equation_base&, Operateur_Diff&);
   Modele_turbulence_scal le_modele_turbulence;
 };
 
-Convection_Diffusion_Turbulent::~Convection_Diffusion_Turbulent()
-{}
-
-
-#endif
+#endif /* Convection_Diffusion_Turbulent_included */

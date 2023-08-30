@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,6 +18,7 @@
 
 #include <Navier_Stokes_std.h>
 #include <Mod_turb_hyd.h>
+
 class Champ_Fonc;
 
 /*! @brief classe Navier_Stokes_Turbulent Cette classe represente l'equation de la dynamique pour un fluide
@@ -28,65 +29,36 @@ class Champ_Fonc;
  *
  * @sa Navier_Stokes_std Mod_turb_hyd Pb_Hydraulique_Turbulent, Pb_Thermohydraulique_Turbulent
  */
-class Navier_Stokes_Turbulent : public Navier_Stokes_std
+class Navier_Stokes_Turbulent: public Navier_Stokes_std
 {
   Declare_instanciable(Navier_Stokes_Turbulent);
 
-public :
-
+public:
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Champ_Fonc& viscosite_turbulente() const;
-  inline const Mod_turb_hyd& modele_turbulence() const;
+  inline const Champ_Fonc& viscosite_turbulente() const { return le_modele_turbulence.viscosite_turbulente(); }
+  inline const Mod_turb_hyd& modele_turbulence() const { return le_modele_turbulence; }
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   int preparer_calcul() override;
   bool initTimeStep(double dt) override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
   void completer() override;
   const Champ_Don& diffusivite_pour_transport() const override;
   const Champ_base& diffusivite_pour_pas_de_temps() const override;
 
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
-  void imprimer(Sortie& ) const override;
+  void imprimer(Sortie&) const override;
   const RefObjU& get_modele(Type_modele type) const override;
   void imprime_residu(SFichier&) override;
   Nom expression_residu() override;
 
 protected:
   Entree& lire_op_diff_turbulent(Entree& is);
-
   Mod_turb_hyd le_modele_turbulence;
-
-
 };
 
-
-
-/*! @brief Renvoie le champ representant la viscosite turbulente.
- *
- * @return (Champ_Fonc&) le champ representant la viscosite turbulente
- */
-inline const Champ_Fonc& Navier_Stokes_Turbulent::viscosite_turbulente() const
-{
-  return le_modele_turbulence.viscosite_turbulente();
-}
-
-
-/*! @brief Renvoie le modele de turbulence (Hydraulique) associe a l'equation.
- *
- * @return (Mod_turb_hyd&) le modele de turbulence (Hydraulique) associe a l'equation
- */
-inline const Mod_turb_hyd& Navier_Stokes_Turbulent::modele_turbulence() const
-{
-  return le_modele_turbulence;
-}
-
-
-#endif
+#endif /* Navier_Stokes_Turbulent_included */

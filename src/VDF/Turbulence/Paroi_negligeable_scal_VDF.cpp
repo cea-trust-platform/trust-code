@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,57 +14,10 @@
 *****************************************************************************/
 
 #include <Paroi_negligeable_scal_VDF.h>
-Implemente_instanciable(Paroi_negligeable_scal_VDF,"negligeable_scalaire_VDF",Paroi_scal_hyd_base_VDF);
 
+Implemente_instanciable(Paroi_negligeable_scal_VDF, "negligeable_scalaire_VDF", Paroi_scal_hyd_base_VDF);
 
-//     printOn()
-/////
-
-Sortie& Paroi_negligeable_scal_VDF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Paroi_negligeable_scal_VDF::readOn(Entree& s)
-{
-  return s ;
-}
-
-// int Paroi_negligeable_scal_VDF::init_lois_paroi()
-// {
-//   const Domaine_VDF& zvdf = le_dom_VDF.valeur();
-//   tab_d_equiv_.resize(zvdf.nb_faces_bord());
-
-//   if (axi)
-//     for (int num_face=0; num_face<zvdf.nb_faces_bord(); num_face++)
-//       tab_d_equiv_[num_face] = zvdf.dist_norm_bord_axi(num_face);
-//   else
-//     for (int num_face=0; num_face<zvdf.nb_faces_bord(); num_face++)
-//       tab_d_equiv_[num_face] = zvdf.dist_norm_bord(num_face);
-//   return 1;
-// }
-
-/////////////////////////////////////////////////////////////////////////
-//
-//    Implementation des fonctions de la classe Paroi_negligeable_scal_VDF
-//
-////////////////////////////////////////////////////////////////////////
-
-int Paroi_negligeable_scal_VDF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
-{
-  // On ne calcule rien dans le cas ou la loi de paroi est negligeable
-  return 1;
-}
-
-
-/*! @brief Give a boolean indicating that we don't use equivant distance
- *
- * @return (boolean)
- */
-bool Paroi_negligeable_scal_VDF::use_equivalent_distance() const
-{
-  return false;
-}
+Sortie& Paroi_negligeable_scal_VDF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+Entree& Paroi_negligeable_scal_VDF::readOn(Entree& s) { return s; }
+int Paroi_negligeable_scal_VDF::calculer_scal(Champ_Fonc_base& diffusivite_turb) { return 1; }
+bool Paroi_negligeable_scal_VDF::use_equivalent_distance() const { return false; }

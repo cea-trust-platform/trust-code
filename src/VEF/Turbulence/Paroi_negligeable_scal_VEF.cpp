@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,36 +15,12 @@
 
 #include <Paroi_negligeable_scal_VEF.h>
 
+Implemente_instanciable(Paroi_negligeable_scal_VEF, "negligeable_scalaire_VEF", Paroi_scal_hyd_base_VEF);
 
+Sortie& Paroi_negligeable_scal_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
 
-Implemente_instanciable(Paroi_negligeable_scal_VEF,"negligeable_scalaire_VEF",Paroi_scal_hyd_base_VEF);
+Entree& Paroi_negligeable_scal_VEF::readOn(Entree& s) { return s; }
 
-//     printOn()
-/////
+int Paroi_negligeable_scal_VEF::calculer_scal(Champ_Fonc_base& diffusivite_turb) { return 1; }
 
-Sortie& Paroi_negligeable_scal_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Paroi_negligeable_scal_VEF::readOn(Entree& s)
-{
-  return s ;
-}
-
-int Paroi_negligeable_scal_VEF::calculer_scal(Champ_Fonc_base& diffusivite_turb)
-{
-  return 1;
-}
-
-/*! @brief Give a boolean indicating that we don't use equivant distance
- *
- * @return (boolean)
- */
-bool Paroi_negligeable_scal_VEF::use_equivalent_distance() const
-{
-  return false;
-}
+bool Paroi_negligeable_scal_VEF::use_equivalent_distance() const { return false; }

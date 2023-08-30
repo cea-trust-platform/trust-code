@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,29 +19,20 @@
 #include <Paroi_hyd_base_EF.h>
 
 class Champ_Fonc_base;
-class Domaine_dis;
 class Domaine_Cl_dis;
+class Domaine_dis;
 
-/*! @brief CLASS: Paroi_negligeable_EF .
- *
- * SECTION  voir aussi
- *  Turbulence_paroi_base
- *
- */
-class Paroi_negligeable_EF : public Paroi_hyd_base_EF
+class Paroi_negligeable_EF: public Paroi_hyd_base_EF
 {
-  Declare_instanciable_sans_constructeur(Paroi_negligeable_EF);
-
+  Declare_instanciable(Paroi_negligeable_EF);
 public:
 
   int init_lois_paroi() override;
-  int calculer_hyd(DoubleTab& ) override;
-  int calculer_hyd_BiK(DoubleTab& , DoubleTab& ) override;
-  int calculer_hyd(DoubleTab& , DoubleTab& ) override;
-  virtual int calculer_scal(Champ_Fonc_base& );
+  int calculer_hyd(DoubleTab&) override;
+  int calculer_hyd_BiK(DoubleTab&, DoubleTab&) override;
+  int calculer_hyd(DoubleTab&, DoubleTab&) override;
+  virtual int calculer_scal(Champ_Fonc_base&);
   bool use_shear() const override;
-protected:
-
 };
 
-#endif
+#endif /* Paroi_negligeable_EF_included */

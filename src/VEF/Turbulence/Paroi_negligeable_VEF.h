@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,35 +19,23 @@
 #include <Paroi_hyd_base_VEF.h>
 
 class Champ_Fonc_base;
-class Domaine_dis;
 class Domaine_Cl_dis;
+class Domaine_dis;
 
-/*! @brief CLASS: Paroi_negligeable_VEF
- *
- * .SECTION  voir aussi
- *  Turbulence_paroi_base
- *
- */
-class Paroi_negligeable_VEF : public Paroi_hyd_base_VEF
+class Paroi_negligeable_VEF: public Paroi_hyd_base_VEF
 {
-
-  Declare_instanciable_sans_constructeur(Paroi_negligeable_VEF);
-
+  Declare_instanciable(Paroi_negligeable_VEF);
 public:
-
   int init_lois_paroi() override;
-  int calculer_hyd(DoubleTab& ) override;
-  int calculer_hyd_BiK(DoubleTab& , DoubleTab& ) override;
-  int calculer_hyd(DoubleTab& , DoubleTab& ) override;
-  virtual int calculer_scal(Champ_Fonc_base& );
+  int calculer_hyd(DoubleTab&) override;
+  int calculer_hyd_BiK(DoubleTab&, DoubleTab&) override;
+  int calculer_hyd(DoubleTab&, DoubleTab&) override;
+  virtual int calculer_scal(Champ_Fonc_base&);
   bool use_shear() const override;
+
 protected:
-
-  IntVect elem_paroi,elem_paroi_double;
-  // elem_paroi : recensement des elements touchant la paroi par une face de paroi!!
-  // elem_paroi_double : connectivite nb_faces_bord -> indice de elem_paroi
-  int compteur_elem_paroi;
-
+  IntVect elem_paroi, elem_paroi_double;
+  int compteur_elem_paroi = -123;
 };
 
-#endif
+#endif /* Paroi_negligeable_VEF_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,53 +13,29 @@
 *
 *****************************************************************************/
 
+#include <Dirichlet_paroi_defilante.h>
+#include <Dirichlet_paroi_fixe.h>
 #include <Paroi_hyd_base_VEF.h>
-#include <Scatter.h>
-#include <Domaine_Cl_dis.h>
-#include <EcrFicPartage.h>
 #include <Mod_turb_hyd_base.h>
 #include <Schema_Temps_base.h>
+#include <Domaine_Cl_dis.h>
+#include <communications.h>
 #include <Probleme_base.h>
+#include <EcrFicPartage.h>
 #include <Equation_base.h>
 #include <TRUSTTrav.h>
-#include <communications.h>
-#include <Dirichlet_paroi_fixe.h>
-#include <Dirichlet_paroi_defilante.h>
+#include <Scatter.h>
 
-Implemente_base_sans_constructeur(Paroi_hyd_base_VEF,"Paroi_hyd_base_VEF",Turbulence_paroi_base);
-Paroi_hyd_base_VEF::Paroi_hyd_base_VEF():flag_face_keps_imposee_(0)
+Implemente_base(Paroi_hyd_base_VEF, "Paroi_hyd_base_VEF", Turbulence_paroi_base);
+
+Sortie& Paroi_hyd_base_VEF::printOn(Sortie& s) const { return s << que_suis_je() << " " << le_nom(); }
+
+Entree& Paroi_hyd_base_VEF::readOn(Entree& s) { return Turbulence_paroi_base::readOn(s); }
+
+void Paroi_hyd_base_VEF::associer(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_Cl_dis)
 {
-  ;
-}
-
-//     printOn()
-/////
-
-Sortie& Paroi_hyd_base_VEF::printOn(Sortie& s) const
-{
-  return s << que_suis_je() << " " << le_nom();
-}
-
-//// readOn
-//
-
-Entree& Paroi_hyd_base_VEF::readOn(Entree& s)
-{
-  Turbulence_paroi_base::readOn(s);
-  return s ;
-}
-
-
-/////////////////////////////////////////////////////////////////////
-//
-//  Implementation des fonctions de la classe Paroi_hyd_base_VEF
-//
-/////////////////////////////////////////////////////////////////////
-
-void Paroi_hyd_base_VEF::associer(const Domaine_dis& domaine_dis,const Domaine_Cl_dis& domaine_Cl_dis)
-{
-  le_dom_VEF = ref_cast(Domaine_VEF,domaine_dis.valeur());
-  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF,domaine_Cl_dis.valeur());
+  le_dom_VEF = ref_cast(Domaine_VEF, domaine_dis.valeur());
+  le_dom_Cl_VEF = ref_cast(Domaine_Cl_VEF, domaine_Cl_dis.valeur());
 }
 
 void Paroi_hyd_base_VEF::init_lois_paroi_()
@@ -79,108 +55,104 @@ DoubleTab& Paroi_hyd_base_VEF::corriger_derivee_impl(DoubleTab& d) const
 {
   if (flag_face_keps_imposee_)
     {
-      int size=d.dimension_tot(0);
-      assert(size==face_keps_imposee_.size_array());
-      for (int face=0; face<size; face++)
+      int size = d.dimension_tot(0);
+      assert(size == face_keps_imposee_.size_array());
+      for (int face = 0; face < size; face++)
         {
-          if (face_keps_imposee_(face)!=-2)
+          if (face_keps_imposee_(face) != -2)
             {
-              d(face,0)=0;
-              d(face,1)=0;
+              d(face, 0) = 0;
+              d(face, 1) = 0;
             }
         }
     }
   return d;
 }
 
-
-void Paroi_hyd_base_VEF::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const
+void Paroi_hyd_base_VEF::imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
 {
   EcrFicPartage fichier;
   ouvrir_fichier_partage(fichier, nom_fichier_, "out");
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
   Nom ligne, err;
 
-  err="";
-  ligne="# Time   \tMean(u*) \tMean(d+)";
+  err = "";
+  ligne = "# Time   \tMean(u*) \tMean(d+)";
 
-  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
       const Nom& nom_bord = la_cl.frontiere_dis().le_nom();
-      if( je_suis_maitre()
-          && ( boundaries_list.contient(nom_bord) || boundaries_list.size()==0 ) )
+      if (je_suis_maitre() && (boundaries_list.contient(nom_bord) || boundaries_list.size() == 0))
         {
-          if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) )
+          if ( sub_type(Dirichlet_paroi_fixe,la_cl.valeur()) || sub_type(Dirichlet_paroi_defilante, la_cl.valeur()))
             {
-              ligne+=" \t";
-              ligne+=nom_bord;
-              ligne+="(u*)";
-              ligne+=" \t";
-              ligne+=nom_bord;
-              ligne+="(d*)";
+              ligne += " \t";
+              ligne += nom_bord;
+              ligne += "(u*)";
+              ligne += " \t";
+              ligne += nom_bord;
+              ligne += "(d*)";
             }
-          else if (boundaries_list.size()>0)
+          else if (boundaries_list.size() > 0)
             {
-              err+="The boundary named '";
-              err+=nom_bord;
-              err+="' is not of type Dirichlet_paroi_fixe or Dirichlet_paroi_defilante.\n";
-              err+="So TRUST will not write his u_star and d_plus means.\n\n";
+              err += "The boundary named '";
+              err += nom_bord;
+              err += "' is not of type Dirichlet_paroi_fixe or Dirichlet_paroi_defilante.\n";
+              err += "So TRUST will not write his u_star and d_plus means.\n\n";
             }
         }
     }
-  if(je_suis_maitre())
+  if (je_suis_maitre())
     {
       fichier << err;
-      fichier << ligne ;
+      fichier << ligne;
       fichier << finl;
     }
   fichier.syncfile();
 }
 
-
-void Paroi_hyd_base_VEF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const
+void Paroi_hyd_base_VEF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const
 {
   const Domaine_VEF& domaine_VEF = le_dom_VEF.valeur();
-  const Probleme_base& pb=mon_modele_turb_hyd->equation().probleme();
-  const Schema_Temps_base& sch=pb.schema_temps();
-  int ndeb,nfin, size0, num_bord;
-  num_bord=0;
+  const Probleme_base& pb = mon_modele_turb_hyd->equation().probleme();
+  const Schema_Temps_base& sch = pb.schema_temps();
+  int ndeb, nfin, size0, num_bord;
+  num_bord = 0;
 
-  if (boundaries_list.size()!=0)
+  if (boundaries_list.size() != 0)
     {
-      size0=boundaries_list.size();
+      size0 = boundaries_list.size();
     }
   else
     {
-      size0=domaine_VEF.nb_front_Cl();
+      size0 = domaine_VEF.nb_front_Cl();
     }
-  DoubleTrav moy_bords(size0+1,3);
-  moy_bords=0.;
+  DoubleTrav moy_bords(size0 + 1, 3);
+  moy_bords = 0.;
 
   EcrFicPartage fichier;
   ouvrir_fichier_partage(fichier, nom_fichier_, "out");
 
-  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
+  for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
-      if ( (sub_type(Dirichlet_paroi_fixe,la_cl.valeur())) ||
-           (sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) ))
+      if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
           ndeb = le_bord.num_premiere_face();
           nfin = ndeb + le_bord.nb_faces();
-          if ( boundaries_==0 || ( boundaries_==1 && boundaries_list.contient(le_bord.le_nom()) ) )
+          if (boundaries_ == 0 || (boundaries_ == 1 && boundaries_list.contient(le_bord.le_nom())))
             {
-              for (int num_face=ndeb; num_face<nfin; num_face++)
+              for (int num_face = ndeb; num_face < nfin; num_face++)
                 {
                   // Calcul des valeurs moyennes par bord (en supposant maillage regulier)
-                  moy_bords(0,0) +=tab_u_star(num_face);
-                  moy_bords(0,1) +=1;
-                  moy_bords(0,2) +=tab_d_plus(num_face);
-                  moy_bords(num_bord+1,0) +=tab_u_star(num_face);
-                  moy_bords(num_bord+1,1) +=1;
-                  moy_bords(num_bord+1,2) +=tab_d_plus(num_face);
+                  moy_bords(0, 0) += tab_u_star(num_face);
+                  moy_bords(0, 1) += 1;
+                  moy_bords(0, 2) += tab_d_plus(num_face);
+                  moy_bords(num_bord + 1, 0) += tab_u_star(num_face);
+                  moy_bords(num_bord + 1, 1) += 1;
+                  moy_bords(num_bord + 1, 2) += tab_d_plus(num_face);
                 }
               num_bord += 1;
             }
@@ -189,24 +161,23 @@ void Paroi_hyd_base_VEF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, c
   mp_sum_for_each_item(moy_bords);
 
 // affichages des lignes dans le fichier
-  if( je_suis_maitre() && moy_bords(0,1)!=0 )
+  if (je_suis_maitre() && moy_bords(0, 1) != 0)
     {
-      fichier << sch.temps_courant() << " \t" << moy_bords(0,0)/moy_bords(0,1) << " \t" << moy_bords(0,2)/moy_bords(0,1);
+      fichier << sch.temps_courant() << " \t" << moy_bords(0, 0) / moy_bords(0, 1) << " \t" << moy_bords(0, 2) / moy_bords(0, 1);
     }
 
-  num_bord=0;
-  for (int n_bord=0; n_bord<domaine_VEF.nb_front_Cl(); n_bord++)
+  num_bord = 0;
+  for (int n_bord = 0; n_bord < domaine_VEF.nb_front_Cl(); n_bord++)
     {
       const Cond_lim& la_cl = le_dom_Cl_VEF->les_conditions_limites(n_bord);
-      if ( (sub_type(Dirichlet_paroi_fixe,la_cl.valeur())) ||
-           (sub_type(Dirichlet_paroi_defilante,la_cl.valeur()) ))
+      if ((sub_type(Dirichlet_paroi_fixe, la_cl.valeur())) || (sub_type(Dirichlet_paroi_defilante, la_cl.valeur())))
         {
-          const Front_VF& le_bord = ref_cast(Front_VF,la_cl.frontiere_dis());
-          if ( boundaries_==0 || ( boundaries_==1 && boundaries_list.contient(le_bord.le_nom()) ) )
+          const Front_VF& le_bord = ref_cast(Front_VF, la_cl.frontiere_dis());
+          if (boundaries_ == 0 || (boundaries_ == 1 && boundaries_list.contient(le_bord.le_nom())))
             {
               if (je_suis_maitre())
                 {
-                  fichier << " \t" << moy_bords(num_bord+1,0)/moy_bords(num_bord+1,1) << " \t" << moy_bords(num_bord+1,2)/moy_bords(num_bord+1,1);
+                  fichier << " \t" << moy_bords(num_bord + 1, 0) / moy_bords(num_bord + 1, 1) << " \t" << moy_bords(num_bord + 1, 2) / moy_bords(num_bord + 1, 1);
                 }
               num_bord += 1;
             }
@@ -217,4 +188,3 @@ void Paroi_hyd_base_VEF::imprimer_ustar_mean_only(Sortie& os, int boundaries_, c
     fichier << finl;
   fichier.syncfile();
 }
-

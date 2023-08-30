@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,59 +13,35 @@
 *
 *****************************************************************************/
 
+#include <Modele_turbulence_hyd_nul.h>
 #include <Navier_Stokes_Turbulent.h>
 #include <Op_Diff_Turbulent_base.h>
-#include <Probleme_base.h>
-#include <Domaine.h>
-#include <Champ_Uniforme.h>
 #include <Fluide_Incompressible.h>
-#include <Avanc.h>
-#include <Modele_turbulence_hyd_nul.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
+#include <Champ_Uniforme.h>
+#include <Probleme_base.h>
 #include <Schema_Temps.h>
 #include <Discret_Thyd.h>
+#include <Domaine.h>
+#include <Avanc.h>
 #include <Param.h>
 
-Implemente_instanciable(Navier_Stokes_Turbulent,"Navier_Stokes_Turbulent",Navier_Stokes_std);
+Implemente_instanciable(Navier_Stokes_Turbulent, "Navier_Stokes_Turbulent", Navier_Stokes_std);
 
-/*! @brief Impression de l'equation sur un flot de sortie.
- *
- * Simple appel a Equation_base::printOn(Sortie&).
- *
- * @param (Sortie& is) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Navier_Stokes_Turbulent::printOn(Sortie& is) const
-{
-  return Equation_base::printOn(is);
-}
+Sortie& Navier_Stokes_Turbulent::printOn(Sortie& is) const { return Equation_base::printOn(is); }
 
-
-/*! @brief Lit les specifications de l'equation de Navier Stokes a partir d'un flot d'entree.
- *
- *     Simple appel a Navier_Stokes_std::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws pas de modele de turbulence speficie
- */
-Entree& Navier_Stokes_Turbulent::readOn(Entree& is)
-{
-  Navier_Stokes_std::readOn(is);
-  return is;
-}
+Entree& Navier_Stokes_Turbulent::readOn(Entree& is) { return Navier_Stokes_std::readOn(is); }
 
 void Navier_Stokes_Turbulent::set_param(Param& param)
 {
   Navier_Stokes_std::set_param(param);
-  //param.ajouter_non_std("solveur_pression",(this),Param::REQUIRED);
-  param.ajouter_non_std("modele_turbulence",(this),Param::REQUIRED);
+  param.ajouter_non_std("modele_turbulence", (this), Param::REQUIRED);
 }
 
 int Navier_Stokes_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="diffusion")
+  if (mot == "diffusion")
     {
       Cerr << "Reading and typing of the diffusion operator : ";
       terme_diffusif.associer_diffusivite(diffusivite_pour_transport());
@@ -79,16 +55,15 @@ int Navier_Stokes_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree&
       terme_diffusif.associer_diffusivite_pour_pas_de_temps(diffusivite_pour_pas_de_temps());
       return 1;
     }
-  else if (mot=="modele_turbulence")
+  else if (mot == "modele_turbulence")
     {
-      Cerr << "Reading and typing of the turbulence model :" ;
+      Cerr << "Reading and typing of the turbulence model :";
       le_modele_turbulence.associer_eqn(*this);
       is >> le_modele_turbulence;
       // Si on vient de lire un modele de turbulence nul et que l'operateur
       // de diffusion a deja ete lu, alors on s'est plante d'operateur,
       // stop.
-      if (sub_type(Modele_turbulence_hyd_nul, le_modele_turbulence.valeur())
-          && terme_diffusif.non_nul())
+      if (sub_type(Modele_turbulence_hyd_nul, le_modele_turbulence.valeur()) && terme_diffusif.non_nul())
         {
           Cerr << "Erreur dans Navier_Stokes_Turbulent::lire:\n"
                " Si le modele de turbulence est nul, il faut le specifier\n"
@@ -106,7 +81,7 @@ int Navier_Stokes_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree&
       return 1;
     }
   else
-    return Navier_Stokes_std::lire_motcle_non_standard(mot,is);
+    return Navier_Stokes_std::lire_motcle_non_standard(mot, is);
 }
 
 const Champ_Don& Navier_Stokes_Turbulent::diffusivite_pour_transport() const
@@ -124,46 +99,52 @@ const Champ_base& Navier_Stokes_Turbulent::diffusivite_pour_pas_de_temps() const
 //             d'enter ici.
 Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 {
-  Motcle accouverte = "{" , accfermee = "}" ;
-  Nom type="Op_Dift_";
+  Motcle accouverte = "{", accfermee = "}";
+  Nom type = "Op_Dift_";
 
-  Nom discr=discretisation().que_suis_je();
+  Nom discr = discretisation().que_suis_je();
   // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
-  if(discr=="VEFPreP1B") discr="VEF";
+  if (discr == "VEFPreP1B")
+    discr = "VEF";
 
-  type+=discr;
+  type += discr;
 
   Nom nb_inc;
-  if (terme_diffusif.diffusivite().nb_comp() == 1) nb_inc = "_";
-  else nb_inc = "_Multi_inco_";
-  type+= nb_inc ;
+  if (terme_diffusif.diffusivite().nb_comp() == 1)
+    nb_inc = "_";
+  else
+    nb_inc = "_Multi_inco_";
+  type += nb_inc;
 
-  Nom type_inco=inconnue()->que_suis_je();
-  if (type_inco == "Champ_Q1_EF") type += "Q1";
-  else type += (type_inco.suffix("Champ_"));
+  Nom type_inco = inconnue()->que_suis_je();
+  if (type_inco == "Champ_Q1_EF")
+    type += "Q1";
+  else
+    type += (type_inco.suffix("Champ_"));
 
-  if (axi) type+="_Axi";
+  if (axi)
+    type += "_Axi";
 
   Motcle motbidon;
-  is >>  motbidon;
-  if (motbidon!=accouverte)
+  is >> motbidon;
+  if (motbidon != accouverte)
     {
       Cerr << "A { was expected while reading the turbulent diffusive term" << finl;
       Process::exit();
     }
-  is >>  motbidon;
-  if (motbidon=="negligeable")
+  is >> motbidon;
+  if (motbidon == "negligeable")
     {
-      type="Op_Dift_negligeable";
+      type = "Op_Dift_negligeable";
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
       is >> motbidon;
       //on lit la fin de diffusion { }
-      if ( motbidon != accfermee)
-        Cerr << " On ne peut plus entrer d option apres negligeable "<< finl;
+      if (motbidon != accfermee)
+        Cerr << " On ne peut plus entrer d option apres negligeable " << finl;
     }
-  else if (motbidon=="tenseur_Reynolds_externe")
+  else if (motbidon == "tenseur_Reynolds_externe")
     {
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
@@ -171,54 +152,56 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
       is >> motbidon;
       //on lit la fin de diffusion { }
-      if ( motbidon != accfermee)
-        Cerr << " On ne peut plus entrer d option apres tenseur_Reynolds_externe "<< finl;
+      if (motbidon != accfermee)
+        Cerr << " On ne peut plus entrer d option apres tenseur_Reynolds_externe " << finl;
     }
-  else if (motbidon=="standard")
+  else if (motbidon == "standard")
     {
-      type+="_standard";
+      type += "_standard";
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
-      is>>terme_diffusif.valeur();
+      is >> terme_diffusif.valeur();
     }
-  else if (motbidon==accfermee)
+  else if (motbidon == accfermee)
     {
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
       Cerr << terme_diffusif.valeur().que_suis_je() << finl;
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
     }
-  else if (motbidon=="stab")
+  else if (motbidon == "stab")
     {
-      type+="_stab";
+      type += "_stab";
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
-      is>>terme_diffusif.valeur();
+      is >> terme_diffusif.valeur();
     }
-  else if (motbidon=="option")
+  else if (motbidon == "option")
     {
-      type+="option";
-      if ( discr == "EF" ) type="Op_Dift_EF_Q1_option";
+      type += "option";
+      if (discr == "EF")
+        type = "Op_Dift_EF_Q1_option";
       terme_diffusif.typer(type);
       Cerr << terme_diffusif.valeur().que_suis_je() << finl;
       terme_diffusif.l_op_base().associer_eqn(*this);
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
-      is>>terme_diffusif.valeur();
+      is >> terme_diffusif.valeur();
       is >> motbidon;
       //on lit la fin de diffusion { }
-      if ( motbidon != accfermee)
-        Cerr << " On ne peut plus entrer d option apres option "<< finl;
+      if (motbidon != accfermee)
+        Cerr << " On ne peut plus entrer d option apres option " << finl;
     }
   else
     {
       type += motbidon;
       is >> motbidon;
-      if ( motbidon != accfermee)
+      if (motbidon != accfermee)
         Cerr << " No option are now readable for the turbulent diffusive term" << finl;
 
-      if ( discr == "VEF" ) type += "_P1NC" ;
+      if (discr == "VEF")
+        type += "_P1NC";
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(*this);
       Cerr << terme_diffusif.valeur().que_suis_je() << finl;
@@ -237,7 +220,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 int Navier_Stokes_Turbulent::preparer_calcul()
 {
 
-  Turbulence_paroi& loipar=le_modele_turbulence.valeur().loi_paroi();
+  Turbulence_paroi& loipar = le_modele_turbulence.valeur().loi_paroi();
   if (loipar.non_nul())
     loipar.init_lois_paroi();
 
@@ -248,12 +231,10 @@ int Navier_Stokes_Turbulent::preparer_calcul()
 
 bool Navier_Stokes_Turbulent::initTimeStep(double dt)
 {
-  bool ok=Navier_Stokes_std::initTimeStep(dt);
+  bool ok = Navier_Stokes_std::initTimeStep(dt);
   ok = ok && le_modele_turbulence->initTimeStep(dt);
   return ok;
 }
-
-
 
 /*! @brief Sauvegarde l'equation (et son modele de turbulence) sur un flot de sortie.
  *
@@ -262,14 +243,13 @@ bool Navier_Stokes_Turbulent::initTimeStep(double dt)
  */
 int Navier_Stokes_Turbulent::sauvegarder(Sortie& os) const
 {
-  int bytes=0;
+  int bytes = 0;
   bytes += Navier_Stokes_std::sauvegarder(os);
   assert(bytes % 4 == 0);
   bytes += le_modele_turbulence.sauvegarder(os);
   assert(bytes % 4 == 0);
   return bytes;
 }
-
 
 /*! @brief Reprise de l'equation et de son modele de turbulence a partir d'un flot d'entree.
  *
@@ -283,14 +263,13 @@ int Navier_Stokes_Turbulent::reprendre(Entree& is)
   double temps = schema_temps().temps_courant();
   Nom ident_modele(le_modele_turbulence.valeur().que_suis_je());
   ident_modele += probleme().domaine().le_nom();
-  ident_modele += Nom(temps,probleme().reprise_format_temps());
+  ident_modele += Nom(temps, probleme().reprise_format_temps());
 
   avancer_fichier(is, ident_modele);
   le_modele_turbulence.reprendre(is);
 
   return 1;
 }
-
 
 /*! @brief Appels successifs a: Navier_Stokes_std::completer()
  *
@@ -302,7 +281,6 @@ void Navier_Stokes_Turbulent::completer()
   Navier_Stokes_std::completer();
   le_modele_turbulence.completer();
 }
-
 
 /*! @brief Effecttue une mise a jour en temps de l'equation.
  *
@@ -320,7 +298,7 @@ const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
     {
       return Navier_Stokes_std::get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
   if (le_modele_turbulence.non_nul())
@@ -328,7 +306,7 @@ const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
       {
         return le_modele_turbulence->get_champ(nom);
       }
-    catch (Champs_compris_erreur)
+    catch (Champs_compris_erreur& err_)
       {
       }
   throw Champs_compris_erreur();
@@ -337,11 +315,11 @@ const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
   return ref_champ;
 }
 
-void Navier_Stokes_Turbulent::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Navier_Stokes_Turbulent::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  Navier_Stokes_std::get_noms_champs_postraitables(nom,opt);
+  Navier_Stokes_std::get_noms_champs_postraitables(nom, opt);
   if (le_modele_turbulence.non_nul())
-    le_modele_turbulence->get_noms_champs_postraitables(nom,opt);
+    le_modele_turbulence->get_noms_champs_postraitables(nom, opt);
 }
 
 void Navier_Stokes_Turbulent::imprimer(Sortie& os) const
@@ -352,11 +330,11 @@ void Navier_Stokes_Turbulent::imprimer(Sortie& os) const
 
 const RefObjU& Navier_Stokes_Turbulent::get_modele(Type_modele type) const
 {
-  for (const auto& itr : liste_modeles_)
+  for (const auto &itr : liste_modeles_)
     {
-      const RefObjU&  mod = itr;
+      const RefObjU& mod = itr;
       if (mod.non_nul())
-        if ((sub_type(Mod_turb_hyd_base,mod.valeur())) && (type==TURBULENCE))
+        if ((sub_type(Mod_turb_hyd_base, mod.valeur())) && (type == TURBULENCE))
           return mod;
     }
   return Equation_base::get_modele(type);

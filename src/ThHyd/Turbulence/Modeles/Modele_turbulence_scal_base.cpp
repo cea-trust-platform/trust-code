@@ -22,17 +22,12 @@
 #include <EcritureLectureSpecial.h>
 #include <Param.h>
 
-Implemente_base_sans_constructeur(Modele_turbulence_scal_base,"Modele_turbulence_scal_base",Objet_U);
+Implemente_base(Modele_turbulence_scal_base, "Modele_turbulence_scal_base", Objet_U);
 
-Modele_turbulence_scal_base::Modele_turbulence_scal_base()
-{
-}
-
-Sortie& Modele_turbulence_scal_base::printOn(Sortie& s ) const
+Sortie& Modele_turbulence_scal_base::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
-
 
 /*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
  *
@@ -42,17 +37,17 @@ Sortie& Modele_turbulence_scal_base::printOn(Sortie& s ) const
  * @return (Entree&) le flot d'entree modifie
  * @throws accolade ouvrante attendue
  */
-Entree& Modele_turbulence_scal_base::readOn(Entree& is )
+Entree& Modele_turbulence_scal_base::readOn(Entree& is)
 {
-  Cerr<<"Reading of data for a "<<que_suis_je()<<" scalar turbulence model"<<finl;
+  Cerr << "Reading of data for a " << que_suis_je() << " scalar turbulence model" << finl;
   Param param(que_suis_je());
-  Motcle  mot = "turbulence_paroi";
+  Motcle mot = "turbulence_paroi";
   set_param(param);
   param.lire_avec_accolades_depuis(is);
   const Probleme_base& le_pb = mon_equation->probleme();
   // lp loi de paroi du modele de turbulence de l'hydraulique
   const RefObjU& modele_turbulence = le_pb.equation(0).get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+  const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
   const Turbulence_paroi& lp = mod_turb_hydr.loi_paroi();
   if (loipar.est_nul() && lp.non_nul())
     {
@@ -65,35 +60,34 @@ Entree& Modele_turbulence_scal_base::readOn(Entree& is )
   return is;
 }
 
-void  Modele_turbulence_scal_base::set_param(Param& param)
+void Modele_turbulence_scal_base::set_param(Param& param)
 {
-  param.ajouter("dt_impr_nusselt",&dt_impr_nusselt_);
-  param.ajouter_non_std("turbulence_paroi",this);
+  param.ajouter("dt_impr_nusselt", &dt_impr_nusselt_);
+  param.ajouter_non_std("turbulence_paroi", this);
 }
-int  Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
+int Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, Entree& is)
 {
-  Motcle mot = "turbulence_paroi",accolade_ouverte="{";
+  Motcle mot = "turbulence_paroi", accolade_ouverte = "{";
   if (motlu == mot)
     {
       loipar.associer_modele(*this);
       is >> loipar;
       is >> loipar.valeur();
       /*  is >> motlu;
-          if (motlu==accolade_ouverte)
-          {
-          }
-      */
+       if (motlu==accolade_ouverte)
+       {
+       }
+       */
       return 1;
     }
   else
     {
-      Cerr << mot << "n'est pas un mot compris par " << que_suis_je() << "dans lire_motcle_non_standard"<< finl;
+      Cerr << mot << "n'est pas un mot compris par " << que_suis_je() << "dans lire_motcle_non_standard" << finl;
       exit();
     }
   return -1;
 
 }
-
 
 /*! @brief Associe l'equation passe en parametre au modele de turbulence.
  *
@@ -103,20 +97,18 @@ int  Modele_turbulence_scal_base::lire_motcle_non_standard(const Motcle& motlu, 
  */
 void Modele_turbulence_scal_base::associer_eqn(const Equation_base& eqn)
 {
-  mon_equation = ref_cast(Convection_Diffusion_std,eqn);
+  mon_equation = ref_cast(Convection_Diffusion_std, eqn);
 }
-
 
 /*! @brief NE FAIT RIEN
  *
  * @param (Domaine_dis&) un domaine discretise
  * @param (Domaine_Cl_dis&) un domaine de conditions aux limites discretisees
  */
-void Modele_turbulence_scal_base::associer(const Domaine_dis& , const Domaine_Cl_dis& )
+void Modele_turbulence_scal_base::associer(const Domaine_dis&, const Domaine_Cl_dis&)
 {
   ;
 }
-
 
 /*! @brief Discretise le modele de turbulence.
  *
@@ -127,8 +119,8 @@ void Modele_turbulence_scal_base::discretiser()
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   const Discretisation_base& dis = mon_equation->discretisation();
   const Domaine_dis& z = mon_equation->domaine_dis();
-  dis.discretiser_champ("champ_elem",z.valeur(),"diffusivite_turbulente","m2/s",1, sch.temps_courant(),diffusivite_turbulente_);
-  dis.discretiser_champ("champ_elem",z.valeur(),"conductivite_turbulente","W/m/K",1, sch.temps_courant(),conductivite_turbulente_);
+  dis.discretiser_champ("champ_elem", z.valeur(), "diffusivite_turbulente", "m2/s", 1, sch.temps_courant(), diffusivite_turbulente_);
+  dis.discretiser_champ("champ_elem", z.valeur(), "conductivite_turbulente", "W/m/K", 1, sch.temps_courant(), conductivite_turbulente_);
   champs_compris_.ajoute_champ(diffusivite_turbulente_);
 }
 
@@ -159,7 +151,6 @@ int Modele_turbulence_scal_base::preparer_calcul()
   return 1;
 }
 
-
 /*! @brief NE FAIT RIEN
  *
  * @param (Sortie&) un flot de sortie
@@ -178,23 +169,20 @@ int Modele_turbulence_scal_base::sauvegarder(Sortie& os) const
  */
 void Modele_turbulence_scal_base::a_faire(Sortie& os) const
 {
-  int afaire,special;
-  EcritureLectureSpecial::is_ecriture_special(special,afaire);
+  int afaire, special;
+  EcritureLectureSpecial::is_ecriture_special(special, afaire);
 
   if (afaire)
     {
       Nom mon_ident(que_suis_je());
       mon_ident += equation().probleme().domaine().le_nom();
       double temps = equation().inconnue().temps();
-      mon_ident += Nom(temps,"%e");
+      mon_ident += Nom(temps, "%e");
       os << mon_ident << finl;
       os << que_suis_je() << finl;
       os.flush();
     }
 }
-
-
-
 
 /*! @brief NE FAIT RIEN
  *
@@ -205,9 +193,9 @@ int Modele_turbulence_scal_base::reprendre(Entree& is)
 {
   // Pour l'instant on ne lit plus dans le .sauv
   /*Nom typ ;
-    is>>typ;
-    if (!loipar.non_nul())
-    loipar.typer(typ);        */
+   is>>typ;
+   if (!loipar.non_nul())
+   loipar.typer(typ);        */
 
   if (loipar.non_nul())
     loipar->reprendre(is);
@@ -245,15 +233,15 @@ const Champ_base& Modele_turbulence_scal_base::get_champ(const Motcle& nom) cons
   throw Champs_compris_erreur();
 }
 
-void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  if (opt==DESCRIPTION)
-    Cerr<<que_suis_je()<<" : "<<champs_compris_.liste_noms_compris()<<finl;
+  if (opt == DESCRIPTION)
+    Cerr << que_suis_je() << " : " << champs_compris_.liste_noms_compris() << finl;
   else
     nom.add(champs_compris_.liste_noms_compris());
 
   if (loipar.non_nul())
-    loipar->get_noms_champs_postraitables(nom,opt);
+    loipar->get_noms_champs_postraitables(nom, opt);
 }
 
 /*! @brief Indique s'il faut imprimer ou non le Nusselt local
@@ -264,17 +252,17 @@ void Modele_turbulence_scal_base::get_noms_champs_postraitables(Noms& nom,Option
 int Modele_turbulence_scal_base::limpr_nusselt(double temps_courant, double temps_prec, double dt) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
-  if (sch.nb_pas_dt()==0)
+  if (sch.nb_pas_dt() == 0)
     return 0;
-  if (dt_impr_nusselt_<=dt || ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt()==1 || sch.stationnaire_atteint()) && dt_impr_nusselt_!=DMAXFLOAT))
+  if (dt_impr_nusselt_ <= dt || ((sch.temps_final_atteint() || sch.nb_pas_dt_max_atteint() || sch.nb_pas_dt() == 1 || sch.stationnaire_atteint()) && dt_impr_nusselt_ != DMAXFLOAT))
     return 1;
   else
     {
       // Voir Schema_Temps_base::limpr pour information sur epsilon et modf
       double i, j, epsilon = 1.e-8;
-      modf(temps_courant/dt_impr_nusselt_ + epsilon, &i);
-      modf(temps_prec/dt_impr_nusselt_ + epsilon, &j);
-      return ( i>j );
+      modf(temps_courant / dt_impr_nusselt_ + epsilon, &i);
+      modf(temps_prec / dt_impr_nusselt_ + epsilon, &j);
+      return (i > j);
     }
 }
 
@@ -286,7 +274,7 @@ void Modele_turbulence_scal_base::imprimer(Sortie& os) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   double temps_courant = sch.temps_courant();
-  double dt= sch.pas_de_temps() ;
-  if (limpr_nusselt(temps_courant,sch.temps_precedent(),dt) )
+  double dt = sch.pas_de_temps();
+  if (limpr_nusselt(temps_courant, sch.temps_precedent(), dt))
     loipar.imprimer_nusselt(os);
 }

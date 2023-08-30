@@ -29,130 +29,77 @@
  *
  * @sa Mod_turb_hyd_base MorEqn
  */
-class Mod_turb_hyd : public MorEqn , public DERIV(Mod_turb_hyd_base)
+class Mod_turb_hyd: public MorEqn, public DERIV(Mod_turb_hyd_base)
 {
   Declare_instanciable(Mod_turb_hyd);
 
 public:
 
-  inline Mod_turb_hyd& operator=(const Mod_turb_hyd_base& );
+  inline Mod_turb_hyd& operator=(const Mod_turb_hyd_base&);
   inline const Champ_Fonc& viscosite_turbulente() const;
   /*Modification pour utilisation des fonctions de la classe MorEqn*/
   inline const Turbulence_paroi& loi_paroi() const;
 
   inline int preparer_calcul();
-  inline void mettre_a_jour(double );
+  inline void mettre_a_jour(double);
   inline void discretiser();
   inline void completer();
-  inline int sauvegarder(Sortie& os) const override;
-  inline int reprendre(Entree& is) override;
-  inline void imprimer(Sortie& os) const;
+  inline int sauvegarder(Sortie &os) const override;
+  inline int reprendre(Entree &is) override;
+  inline void imprimer(Sortie &os) const;
 };
 
-
-/*! @brief Operateur d'affectation d'un Mod_turb_hyd_base dans un Mod_turb_hyd.
- *
- * @param (Mod_turb_hyd_base& x) partie droite de l'affectation
- * @return (Mod_turb_hyd&) resultat de l'affectation (*this)
- */
 inline Mod_turb_hyd& Mod_turb_hyd::operator=(const Mod_turb_hyd_base& x)
 {
   DERIV(Mod_turb_hyd_base)::operator=(x);
   return *this;
 }
 
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Renvoie la viscosite turbulente.
- *
- * @return (Champ_Fonc&) le champ representant la viscosite turbulente
- */
 inline const Champ_Fonc& Mod_turb_hyd::viscosite_turbulente() const
 {
   return valeur().viscosite_turbulente();
 }
 
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Renvoie la loi de turbulence sur la paroi
- *
- * @return (Turbulence_paroi&) la loi de turbulence sur la paroi
- */
 inline const Turbulence_paroi& Mod_turb_hyd::loi_paroi() const
 {
   return valeur().loi_paroi();
 }
 
-/*! @brief Appel a l'objet sous-jacent
- *
- */
 inline int Mod_turb_hyd::preparer_calcul()
 {
   return valeur().preparer_calcul();
 }
 
-
-/*! @brief Appel a l'objet sous-jacent.
- *
- * Effectue une mise a jour en temps
- *
- * @param (double temps) le temps de mise a jour
- */
 inline void Mod_turb_hyd::mettre_a_jour(double temps)
 {
   valeur().mettre_a_jour(temps);
 }
 
-
-/*! @brief Appel a l'objet sous-jacent Effectue une sauvegarde sur un flot de sortie
- *
- * @param (Sortie& os) un flot de sortie
- * @return (int) code de retour propage
- */
 inline int Mod_turb_hyd::sauvegarder(Sortie& os) const
 {
   return valeur().sauvegarder(os);
 }
 
-
-/*! @brief Appel a l'objet sous-jacent Effectue une reprise sur un flot d'entree
- *
- * @param (Entree& is) un flot d'entree
- * @return (int) code de retour propage
- */
 inline int Mod_turb_hyd::reprendre(Entree& is)
 {
   return valeur().reprendre(is);
 }
 
-
-/*! @brief Appel a l'objet sous-jacent Discretise le modele de turbulence
- *
- */
 inline void Mod_turb_hyd::discretiser()
 {
   valeur().discretiser();
 }
 
-
-/*! @brief Appel a l'objet sous-jacent
- *
- */
 inline void Mod_turb_hyd::completer()
 {
   valeur().completer();
   valeur().loi_paroi()->completer();
 }
 
-/*! @brief Appel a l'objet sous-jacent
- *
- */
 inline void Mod_turb_hyd::imprimer(Sortie& os) const
 {
   valeur().imprimer(os);
 }
-
 
 #endif
 

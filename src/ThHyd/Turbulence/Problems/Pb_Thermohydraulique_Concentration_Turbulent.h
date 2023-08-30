@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,13 +16,12 @@
 #ifndef Pb_Thermohydraulique_Concentration_Turbulent_included
 #define Pb_Thermohydraulique_Concentration_Turbulent_included
 
-#include <Pb_Fluide_base.h>
-#include <Navier_Stokes_Turbulent.h>
-#include <Convection_Diffusion_Temperature_Turbulent.h>
 #include <Convection_Diffusion_Concentration_Turbulent.h>
+#include <Convection_Diffusion_Temperature_Turbulent.h>
+#include <Navier_Stokes_Turbulent.h>
+#include <Pb_Fluide_base.h>
 
 class Champ_Fonc;
-
 
 /*! @brief Classe Pb_Thermohydraulique_Concentration_Turbulent Cette classe represente un probleme de thermohydraulique
  *
@@ -35,36 +34,22 @@ class Champ_Fonc;
  *
  * @sa Pb_Fluide_base
  */
-class Pb_Thermohydraulique_Concentration_Turbulent : public Pb_Fluide_base
+class Pb_Thermohydraulique_Concentration_Turbulent: public Pb_Fluide_base
 {
-
   Declare_instanciable(Pb_Thermohydraulique_Concentration_Turbulent);
-
 public:
 
   int nombre_d_equations() const override;
-  const Equation_base& equation(int) const override ;
+  const Equation_base& equation(int) const override;
   Equation_base& equation(int) override;
-  inline const Champ_Fonc& viscosite_turbulente() const;
-  void associer_milieu_base(const Milieu_base& ) override;
+  inline const Champ_Fonc& viscosite_turbulente() const { return eq_hydraulique.viscosite_turbulente(); }
+  void associer_milieu_base(const Milieu_base&) override;
   int verifier() override;
 
 protected:
-
   Navier_Stokes_Turbulent eq_hydraulique;
   Convection_Diffusion_Temperature_Turbulent eq_thermique;
   Convection_Diffusion_Concentration_Turbulent eq_concentration;
-
 };
 
-
-/*! @brief Renvoie le champ representant la viscosite turbulente.
- *
- * @return (Champ_Fonc&) le champ representant la viscosite turbulente
- */
-inline const Champ_Fonc& Pb_Thermohydraulique_Concentration_Turbulent::viscosite_turbulente() const
-{
-  return eq_hydraulique.viscosite_turbulente();
-}
-
-#endif
+#endif /* Pb_Thermohydraulique_Concentration_Turbulent_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -24,28 +24,23 @@ class Domaine_Cl_dis;
 class Domaine_Cl_EF;
 class Domaine_EF;
 
-class Paroi_scal_hyd_base_EF  : public Turbulence_paroi_scal_base
+class Paroi_scal_hyd_base_EF: public Turbulence_paroi_scal_base
 {
-
   Declare_base(Paroi_scal_hyd_base_EF);
-
 public:
-  void associer(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
   int init_lois_paroi() override;
   void imprimer_nusselt(Sortie&) const override;
 
   inline const DoubleVect& tab_d_reel() const;
   inline DoubleVect& tab_d_reel();
-  DoubleVect& equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const override ;
-protected :
+  DoubleVect& equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const override;
+protected:
   REF(Domaine_EF) le_dom_EF;
   REF(Domaine_Cl_EF) le_dom_Cl_EF;
 
   DoubleVect tab_d_reel_;   // tableau des distances (dimenssionnelles) du
   // point y+ = 1
-
 };
 
-
-#endif
-
+#endif /* Paroi_scal_hyd_base_EF_included */

@@ -37,31 +37,28 @@ class Param;
  *
  * @sa Paroi_std_hyd_VDF Paroi_std_scal_hyd_VDF, Classe abstraite, Methodes abstraites, void associer(const Domaine_dis&, const Domaine_Cl_dis&), int init_lois_paroi(), int calculer_hyd(DoubleTab& ), int calculer_hyd(DoubleTab& , DoubleTab& )
  */
-class Turbulence_paroi_base : public Champs_compris_interface, public Objet_U
+class Turbulence_paroi_base: public Champs_compris_interface, public Objet_U
 {
 
   Declare_base_sans_constructeur(Turbulence_paroi_base);
 
-public :
+public:
 
   Turbulence_paroi_base();
   virtual void set_param(Param& param);
-  inline void associer_modele(const Mod_turb_hyd_base& );
+  inline void associer_modele(const Mod_turb_hyd_base&);
   virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&)=0;
-  virtual void completer() {};
+  virtual void completer() { }
   virtual int init_lois_paroi() =0;
-  inline int calculer_hyd(Champ_Inc& );
-  inline int calculer_hyd(Champ_Fonc& , Champ_Fonc& );
-  virtual int calculer_hyd(DoubleTab& ) =0;
-  virtual int calculer_hyd(DoubleTab& , DoubleTab& ) =0;
-  virtual int calculer_hyd_BiK(DoubleTab& , DoubleTab& ) =0;
-  inline virtual DoubleTab& corriger_derivee_impl(DoubleTab& d) const
-  {
-    return d;
-  };
-  inline virtual void imprimer_ustar(Sortie& ) const ;
-  inline virtual void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const ;
-  inline virtual void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&) const;
+  inline int calculer_hyd(Champ_Inc&);
+  inline int calculer_hyd(Champ_Fonc&, Champ_Fonc&);
+  virtual int calculer_hyd(DoubleTab&) =0;
+  virtual int calculer_hyd(DoubleTab&, DoubleTab&) =0;
+  virtual int calculer_hyd_BiK(DoubleTab&, DoubleTab&) =0;
+  inline virtual DoubleTab& corriger_derivee_impl(DoubleTab& d) const { return d; }
+  inline virtual void imprimer_ustar(Sortie&) const { }
+  inline virtual void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const { }
+  inline virtual void imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom&) const { }
   // rajout pour prendre en compte Cisaillement_paroi dans la classe
   // de base
 
@@ -72,29 +69,20 @@ public :
   inline double tab_d_plus(int face) const;
 
   //OC 01/2006: ajout de la fonctionnalite sauvegarde/reprise : utile pour TBLE pour l'instant.
-  int sauvegarder(Sortie&) const override
-  {
-    return 0;
-  };
-  int reprendre(Entree& ) override
-  {
-    return 0;
-  };
+  int sauvegarder(Sortie&) const override { return 0; }
+  int reprendre(Entree&) override { return 0; }
 
-  //Methodes de l interface des champs postraitables
-  //////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
+
   // Ecriture dans un fichier separe de u_star, Cisaillement_paroi etc...
-  void ouvrir_fichier_partage(EcrFicPartage&,const Nom&) const;
+  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&) const;
   void ouvrir_fichier_partage(EcrFicPartage&, const Nom&, const Nom&) const;
   // indique si on utilise le cisaillement ou non
   virtual bool use_shear() const; // Generalement true sauf par exemple pour loi paroi_negligeable_XXX
 
 protected:
-
   REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
   DoubleTab Cisaillement_paroi_;         //valeurs des contraintes tangentielles aux
   // parois calculees localement a partir de u*
@@ -105,22 +93,9 @@ protected:
   mutable int nb_impr0_;                        // Compteur d'impression
 
 protected:
-
   Champs_compris champs_compris_;
 };
 
-
-inline void Turbulence_paroi_base::imprimer_ustar(Sortie& ) const
-{
-}
-
-inline void Turbulence_paroi_base::imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const
-{
-}
-
-inline void Turbulence_paroi_base::imprimer_premiere_ligne_ustar(int, const LIST(Nom)&, const Nom& ) const
-{
-}
 /*! @brief Associe un modele de turbulence a l'objet.
  *
  * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
@@ -129,7 +104,6 @@ inline void Turbulence_paroi_base::associer_modele(const Mod_turb_hyd_base& le_m
 {
   mon_modele_turb_hyd = le_modele;
 }
-
 
 /*! @brief Simple appel a int calculer_hyd(DoubleTab& ).
  *
@@ -141,16 +115,15 @@ inline int Turbulence_paroi_base::calculer_hyd(Champ_Inc& ch)
   return calculer_hyd(ch.valeurs());
 }
 
-
 /*! @brief Simple appel a int calculer_hyd(DoubleTab&, DoubleTab&).
  *
  * @param (Champ_Inc& ch1)
  * @param (Champ_Inc& ch2)
  * @return (int) code de retour propage
  */
-inline int Turbulence_paroi_base::calculer_hyd(Champ_Fonc& ch1,Champ_Fonc& ch2)
+inline int Turbulence_paroi_base::calculer_hyd(Champ_Fonc& ch1, Champ_Fonc& ch2)
 {
-  return calculer_hyd(ch1.valeurs(),ch2.valeurs());
+  return calculer_hyd(ch1.valeurs(), ch2.valeurs());
 }
 
 inline const DoubleTab& Turbulence_paroi_base::Cisaillement_paroi() const
@@ -182,9 +155,12 @@ inline void erreur_non_convergence()
 {
   Cerr << "TRUST stopped cause in the function calculer_u_plus of wall law." << finl;
   Cerr << "The iterative process of u* did not converge" << finl;
-  if (Process::nproc()>1) Cerr << " on the processor" << Process::me();
-  else Cerr << ".";
+  if (Process::nproc() > 1)
+    Cerr << " on the processor" << Process::me();
+  else
+    Cerr << ".";
   Cerr << finl << "The hydraulic calculation is may be diverging." << finl;
   Process::exit();
 }
+
 #endif

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,23 +18,12 @@
 
 #include <Paroi_scal_hyd_base_VEF.h>
 
-
-/*! @brief classe Paroi_negligeable_scal_VEF
- *
- *
- *
- * .SECTION  voir aussi
- *   Paroi_negligeable_VEF
- *
- */
 class Paroi_negligeable_scal_VEF : public Paroi_scal_hyd_base_VEF
 {
-
   Declare_instanciable(Paroi_negligeable_scal_VEF);
 public:
   int calculer_scal(Champ_Fonc_base&) override;
   bool use_equivalent_distance() const override;
 };
 
-#endif
-
+#endif /* Paroi_negligeable_scal_VEF_included */

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -14,14 +14,14 @@
 *****************************************************************************/
 
 #include <Convection_Diffusion_Turbulent.h>
-#include <Champ_Uniforme.h>
 #include <Operateur_Diff_base.h>
-#include <Operateur_Diff.h>
 #include <Discretisation_base.h>
-#include <Champ_Don.h>
-#include <Probleme_base.h>
-#include <Domaine.h>
 #include <Schema_Temps_base.h>
+#include <Champ_Uniforme.h>
+#include <Operateur_Diff.h>
+#include <Probleme_base.h>
+#include <Champ_Don.h>
+#include <Domaine.h>
 #include <Avanc.h>
 
 /*! @brief Associe le modele de turbulence a l'equation passee en parametre
@@ -44,17 +44,17 @@ Entree& Convection_Diffusion_Turbulent::lire_modele(Entree& is, const Equation_b
 
 Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const Equation_base& eqn, Operateur_Diff& terme_diffusif)
 {
-  Motcle accouverte = "{" , accfermee = "}" ;
-  Nom type="Op_Dift_";
+  Motcle accouverte = "{", accfermee = "}";
+  Nom type = "Op_Dift_";
 
   Motcle motbidon;
-  is >>  motbidon;
+  is >> motbidon;
   assert(motbidon == accouverte);
-  is >>  motbidon;
-  if (motbidon=="negligeable")
+  is >> motbidon;
+  if (motbidon == "negligeable")
     {
-      type+=motbidon;
-      is>>motbidon;
+      type += motbidon;
+      is >> motbidon;
 
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(eqn);
@@ -63,48 +63,57 @@ Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const
 
       assert(motbidon == accfermee);
     }
-  else if (motbidon=="stab")
+  else if (motbidon == "stab")
     {
       Nom disc = eqn.discretisation().que_suis_je();
-      if(disc=="VEFPreP1B") disc="VEF";
+      if (disc == "VEFPreP1B")
+        disc = "VEF";
 
       Nom nb_inc;
-      nb_inc ="_";
-      if ((terme_diffusif.diffusivite().nb_comp() != 1) && ((disc=="VDF"))) nb_inc = "_Multi_inco_";
+      nb_inc = "_";
+      if ((terme_diffusif.diffusivite().nb_comp() != 1) && ((disc == "VDF")))
+        nb_inc = "_Multi_inco_";
 
-      Nom type_inco=eqn.inconnue()->que_suis_je();
+      Nom type_inco = eqn.inconnue()->que_suis_je();
 
-      type+=disc;
-      type+=nb_inc ;
-      type+=(type_inco.suffix("Champ_"));
-      if (Objet_U::axi) type+="_Axi";
-      type+="_stab";
+      type += disc;
+      type += nb_inc;
+      type += (type_inco.suffix("Champ_"));
+      if (Objet_U::axi)
+        type += "_Axi";
+      type += "_stab";
 
       terme_diffusif.typer(type);
       terme_diffusif.l_op_base().associer_eqn(eqn);
       terme_diffusif->associer_diffusivite(terme_diffusif.diffusivite());
-      is>>terme_diffusif.valeur();
+      is >> terme_diffusif.valeur();
     }
   else
     {
       Nom disc = eqn.discretisation().que_suis_je();
       // les operateurs C_D_Turb_T sont communs aux discretisations VEF et VEFP1B
-      if (disc == "VEFPreP1B") disc = "VEF";
+      if (disc == "VEFPreP1B")
+        disc = "VEF";
       type += disc;
 
       Nom nb_inc;
       nb_inc = "_";
-      if ((terme_diffusif.diffusivite().nb_comp() != 1) && ((disc == "VDF"))) nb_inc = "_Multi_inco_";
+      if ((terme_diffusif.diffusivite().nb_comp() != 1) && ((disc == "VDF")))
+        nb_inc = "_Multi_inco_";
 
       type += nb_inc;
 
       Nom type_inco = eqn.inconnue()->que_suis_je();
-      if (type_inco == "Champ_Q1_EF") type += "Q1";
-      else type += (type_inco.suffix("Champ_"));
+      if (type_inco == "Champ_Q1_EF")
+        type += "Q1";
+      else
+        type += (type_inco.suffix("Champ_"));
 
-      if (Objet_U::axi) type += "_Axi";
+      if (Objet_U::axi)
+        type += "_Axi";
 
-      if (motbidon != accfermee) type += Nom("_") + motbidon, is >> motbidon;
+      if (motbidon != accfermee)
+        type += Nom("_") + motbidon, is >> motbidon;
       assert(motbidon == accfermee);
 
       terme_diffusif.typer(type);
@@ -122,14 +131,12 @@ void Convection_Diffusion_Turbulent::completer()
 {
   le_modele_turbulence.completer();
   le_modele_turbulence->loi_paroi()->completer();
-
 }
 
 bool Convection_Diffusion_Turbulent::initTimeStep(double dt)
 {
   return le_modele_turbulence->initTimeStep(dt);
 }
-
 
 /*! @brief Prepare le calcul.
  *
@@ -140,7 +147,6 @@ int Convection_Diffusion_Turbulent::preparer_calcul()
   le_modele_turbulence.preparer_calcul();
   return 1;
 }
-
 
 /*! @brief Simple appel a Modele_turbulence_scal::sauvegarder(Sortie&) sur le membre concerne.
  *
@@ -155,7 +161,6 @@ int Convection_Diffusion_Turbulent::sauvegarder(Sortie& os) const
   return le_modele_turbulence.sauvegarder(os);
 }
 
-
 /*! @brief Reprise (apres une sauvegarde) a partir d'un flot d'entree.
  *
  * @param (Entree& is) un flot d'entree
@@ -168,7 +173,6 @@ int Convection_Diffusion_Turbulent::reprendre(Entree& is)
   return 1;
 }
 
-
 /*! @brief Mise a jour en temps du modele de turbulence.
  *
  * @param (double temps) le temps de mise a jour
@@ -177,4 +181,3 @@ void Convection_Diffusion_Turbulent::mettre_a_jour(double temps)
 {
   le_modele_turbulence.mettre_a_jour(temps);
 }
-

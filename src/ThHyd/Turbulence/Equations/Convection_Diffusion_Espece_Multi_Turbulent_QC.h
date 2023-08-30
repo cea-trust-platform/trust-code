@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -23,34 +23,24 @@
  *
  * @sa Convection_Diffusion_Espece_Multi_QC Convection_Diffusion_Turbulent
  */
-class Convection_Diffusion_Espece_Multi_Turbulent_QC :
-  public Convection_Diffusion_Turbulent, public Convection_Diffusion_Espece_Multi_QC
+class Convection_Diffusion_Espece_Multi_Turbulent_QC: public Convection_Diffusion_Turbulent, public Convection_Diffusion_Espece_Multi_QC
 {
   Declare_instanciable(Convection_Diffusion_Espece_Multi_Turbulent_QC);
-
-public :
-
+public:
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  //Methodes de l interface des champs postraitables
-  /////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
   const RefObjU& get_modele(Type_modele type) const override;
 
-protected :
-
 private:
-
   void completer() override;
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
-  void mettre_a_jour(double ) override;
+  void mettre_a_jour(double) override;
   int preparer_calcul() override;
-
 };
 
-#endif
+#endif /* Convection_Diffusion_Espece_Multi_Turbulent_QC_included */

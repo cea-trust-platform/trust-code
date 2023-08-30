@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,48 +17,36 @@
 #define Paroi_hyd_base_EF_included
 
 #include <Turbulence_paroi_base.h>
-#include <Domaine_EF.h>
 #include <Domaine_Cl_EF.h>
+#include <Domaine_EF.h>
 #include <TRUST_Ref.h>
 
 class Domaine_Cl_dis;
 
-
 /*! @brief CLASS: Paroi_hyd_base_EF Classe de base des lois de paroi hydraulique en EF
  *
- * .SECTION  voir aussi
- *  Turbulence_paroi_base
  *
  */
-class Paroi_hyd_base_EF : public Turbulence_paroi_base
+class Paroi_hyd_base_EF: public Turbulence_paroi_base
 {
-
   Declare_base(Paroi_hyd_base_EF);
-
 public:
-
-  void associer(const Domaine_dis& ,const Domaine_Cl_dis& ) override;
+  void associer(const Domaine_dis&, const Domaine_Cl_dis&) override;
   void init_lois_paroi_();
   DoubleTab& corriger_derivee_impl(DoubleTab& d) const override;
-  inline const ArrOfInt& face_keps_imposee() const
-  {
-    return face_keps_imposee_ ;
-  };
-  void imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom)& boundaries_list, const Nom& nom_fichier_) const override;
-  void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom& ) const override;
-  //Methodes de l interface des champs postraitables
-  //////////////////////////////////////////////////////
+  inline const ArrOfInt& face_keps_imposee() const { return face_keps_imposee_; }
+  void imprimer_premiere_ligne_ustar(int boundaries_, const LIST(Nom) &boundaries_list, const Nom& nom_fichier_) const override;
+  void imprimer_ustar_mean_only(Sortie&, int, const LIST(Nom)&, const Nom&) const override;
+
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
 protected:
-
   REF(Domaine_EF) le_dom_EF;
   REF(Domaine_Cl_EF) le_dom_Cl_EF;
   IntVect face_keps_imposee_; // avec descripteur parallele
-  int flag_face_keps_imposee_;
+  int flag_face_keps_imposee_ = 0;
 };
 
-#endif
+#endif /* Paroi_hyd_base_EF_included */

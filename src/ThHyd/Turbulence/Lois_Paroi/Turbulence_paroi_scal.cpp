@@ -21,7 +21,7 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable(Turbulence_paroi_scal,"Turbulence_paroi_scal",DERIV(Turbulence_paroi_scal_base));
+Implemente_instanciable(Turbulence_paroi_scal, "Turbulence_paroi_scal", DERIV(Turbulence_paroi_scal_base));
 
 Sortie& Turbulence_paroi_scal::printOn(Sortie& s) const
 {
@@ -51,40 +51,40 @@ Entree& Turbulence_paroi_scal::readOn(Entree& s)
   s >> typ;
 
   const RefObjU& modele_turbulence = eqn.get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+  const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
   const Turbulence_paroi& loi = mod_turb_hydr.loi_paroi();
 
-  if (typ!="negligeable_scalaire")
-    if ((loi.valeur().que_suis_je()=="negligeable_VDF") || (loi.valeur().que_suis_je()=="negligeable_VEF"))
+  if (typ != "negligeable_scalaire")
+    if ((loi.valeur().que_suis_je() == "negligeable_VDF") || (loi.valeur().que_suis_je() == "negligeable_VEF"))
       {
-        Cerr<<"La loi de paroi de type "<<typ<<" choisie pour le scalaire n'est pas compatible avec"<<finl;
-        Cerr<<"la loi de type "<<loi.valeur().que_suis_je()<<" choisie pour l'hydraulique"<<finl;
-        Cerr<<"Utiliser le type 'negligeable_scalaire' pour le scalaire ou utiliser une loi de paroi"<<finl;
-        Cerr<<"non negligeable pour l hydraulique"<<finl;
+        Cerr << "La loi de paroi de type " << typ << " choisie pour le scalaire n'est pas compatible avec" << finl;
+        Cerr << "la loi de type " << loi.valeur().que_suis_je() << " choisie pour l'hydraulique" << finl;
+        Cerr << "Utiliser le type 'negligeable_scalaire' pour le scalaire ou utiliser une loi de paroi" << finl;
+        Cerr << "non negligeable pour l hydraulique" << finl;
         exit();
       }
-  typ+="_";
+  typ += "_";
 
-  Nom discr=eqn.discretisation().que_suis_je();
+  Nom discr = eqn.discretisation().que_suis_je();
 
   //  les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
-  if(discr=="VEFPreP1B") discr="VEF";
-  typ+=discr;
+  if (discr == "VEFPreP1B")
+    discr = "VEF";
+  typ += discr;
 
-  if (typ=="loi_analytique_scalaire_VDF")
+  if (typ == "loi_analytique_scalaire_VDF")
     {
-      Cerr<<"La loi de paroi scalaire de type loi_analytique_scalaire"<<finl;
-      Cerr<<"n est utilisable qu avec une discretisation de type VEF"<<finl;
+      Cerr << "La loi de paroi scalaire de type loi_analytique_scalaire" << finl;
+      Cerr << "n est utilisable qu avec une discretisation de type VEF" << finl;
       exit();
     }
-  Cerr<<"et typage :"<<typ<<finl;
+  Cerr << "et typage :" << typ << finl;
   DERIV(Turbulence_paroi_scal_base)::typer(typ);
   valeur().associer_modele(mon_modele_turb_scal.valeur());
-  valeur().associer(eqn.domaine_dis(),eqn.domaine_Cl_dis());
+  valeur().associer(eqn.domaine_dis(), eqn.domaine_Cl_dis());
 
   return s;
 }
-
 
 /*! @brief Associe un modele de turbulence a l'objet.
  *

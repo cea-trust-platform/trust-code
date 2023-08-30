@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2019, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,15 +13,14 @@
 *
 *****************************************************************************/
 
-#include <Navier_Stokes_Turbulent.h>
 #include <Modele_turbulence_hyd_nul.h>
+#include <Navier_Stokes_Turbulent.h>
 
 void Navier_Stokes_Turbulent::creer_champ(const Motcle& motlu)
 {
   Navier_Stokes_std::creer_champ(motlu);
 
-  if (le_modele_turbulence.non_nul())
-    le_modele_turbulence->creer_champ(motlu);
+  if (le_modele_turbulence.non_nul()) le_modele_turbulence->creer_champ(motlu);
 }
 
 void Navier_Stokes_Turbulent::imprime_residu(SFichier& fic)
@@ -31,7 +30,7 @@ void Navier_Stokes_Turbulent::imprime_residu(SFichier& fic)
 
 Nom Navier_Stokes_Turbulent::expression_residu()
 {
-  Nom tmp=Equation_base::expression_residu();
+  Nom tmp = Equation_base::expression_residu();
   return tmp;
 }
 

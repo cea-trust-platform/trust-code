@@ -40,76 +40,59 @@ class Domaine_VF;
  *
  * @sa Classe abstraite, Methodes abstraites
  */
-class Turbulence_paroi_scal_base : public Champs_compris_interface, public Objet_U
+class Turbulence_paroi_scal_base: public Champs_compris_interface, public Objet_U
 {
 
   Declare_base_sans_constructeur(Turbulence_paroi_scal_base);
 
-public :
-  Turbulence_paroi_scal_base():nb_impr_(0),calcul_ldp_en_flux_impose_(0),Prdt_sur_kappa_(2.12) { }
-  inline void associer_modele(const Modele_turbulence_scal_base& );
+public:
+  Turbulence_paroi_scal_base() : nb_impr_(0), calcul_ldp_en_flux_impose_(0), Prdt_sur_kappa_(2.12) { }
+  inline void associer_modele(const Modele_turbulence_scal_base&);
   virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&)=0;
-  virtual void completer() {};
+  virtual void completer() { }
   virtual int init_lois_paroi() =0;
-  inline int calculer_scal(Champ_Fonc& );
-  virtual int calculer_scal(Champ_Fonc_base& ) =0;
-  virtual void imprimer_nusselt(Sortie& ) const
+  inline int calculer_scal(Champ_Fonc&);
+  virtual int calculer_scal(Champ_Fonc_base&) =0;
+  virtual void imprimer_nusselt(Sortie&) const
   {
     Cerr << "imprimer_nusselt non code pour " << que_suis_je() << finl;
-  };
+  }
 
-  //Methodes de l interface des champs postraitables
-  //////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
   // Ecriture dans un fichier separe de u_star, Cisaillement_paroi etc...
-  void ouvrir_fichier_partage(EcrFicPartage&,const Nom&) const;
-  inline const int& get_flag_calcul_ldp_en_flux_impose() const
-  {
-    return calcul_ldp_en_flux_impose_;
-  };
+  void ouvrir_fichier_partage(EcrFicPartage&, const Nom&) const;
+  inline const int& get_flag_calcul_ldp_en_flux_impose() const { return calcul_ldp_en_flux_impose_; }
 
   virtual bool use_equivalent_distance() const;
   virtual DoubleVect& equivalent_distance_name(DoubleVect& d_eq, const Nom& nom_bord) const = 0;
 
-  inline const DoubleVects& equivalent_distance() const
-  {
-    return equivalent_distance_;
-  };
+  inline const DoubleVects& equivalent_distance() const { return equivalent_distance_; }
   inline const DoubleVect& equivalent_distance(int bord) const
   {
-    assert( bord < equivalent_distance_.size() );
+    assert(bord < equivalent_distance_.size());
     return equivalent_distance_[bord];
-  };
+  }
   inline double equivalent_distance(int bord, int face) const
   {
-    assert( bord < equivalent_distance_.size() );
-    assert( face < equivalent_distance_[bord].size() );
+    assert(bord < equivalent_distance_.size());
+    assert(face < equivalent_distance_[bord].size());
     return equivalent_distance_[bord](face);
-  };
+  }
 
-  inline const DoubleVects& tab_equivalent_distance() const
-  {
-    return equivalent_distance_;
-  };
-  inline int tab_equivalent_distance_size()
-  {
-    return equivalent_distance_.size();
-  };
+  inline const DoubleVects& tab_equivalent_distance() const { return equivalent_distance_; }
+  inline int tab_equivalent_distance_size() { return equivalent_distance_.size(); }
+
   inline const DoubleVect& tab_equivalent_distance(int bord) const
   {
-    assert( bord < equivalent_distance_.size() );
+    assert(bord < equivalent_distance_.size());
     return equivalent_distance_[bord];
-  };
-
+  }
 
 protected:
-
   REF(Modele_turbulence_scal_base) mon_modele_turb_scal;
-
   mutable int nb_impr_;        // Compteur d'impression
   int calcul_ldp_en_flux_impose_; // flag defenissant si on utilise la ldp en flux impose 0 par defaut
   double Prdt_sur_kappa_;         // Constante dans la loi de paroi
@@ -129,7 +112,7 @@ protected:
   // chaque tableau est dimensionne au nombre de faces de
   // bord totales (reelles+virtuelles)
 
-private :
+private:
 
   Champs_compris champs_compris_;
 
@@ -142,9 +125,9 @@ private :
 // domaine logarithmique : T+=2.12*ln(y+)+Beta
 inline double Turbulence_paroi_scal_base::T_plus(double y_plus, double Pr)
 {
-  double Gamma = (0.01*pow(Pr*y_plus,4.))/(1.+5.*pow(Pr,3.)*y_plus);
-  double Beta = pow(3.85*pow(Pr,1./3.)-1.3,2.)+Prdt_sur_kappa_*log(Pr);
-  return Pr*y_plus*exp(-Gamma) + (Prdt_sur_kappa_*log(1.+y_plus) + Beta)*exp(-1./(Gamma+1e-20));
+  double Gamma = (0.01 * pow(Pr * y_plus, 4.)) / (1. + 5. * pow(Pr, 3.) * y_plus);
+  double Beta = pow(3.85 * pow(Pr, 1. / 3.) - 1.3, 2.) + Prdt_sur_kappa_ * log(Pr);
+  return Pr * y_plus * exp(-Gamma) + (Prdt_sur_kappa_ * log(1. + y_plus) + Beta) * exp(-1. / (Gamma + 1e-20));
 }
 
 /*! @brief Associe un modele de turbulence a l'objet.

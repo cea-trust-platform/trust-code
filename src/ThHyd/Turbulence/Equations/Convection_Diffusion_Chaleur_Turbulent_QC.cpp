@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -18,7 +18,7 @@
 #include <Milieu_base.h>
 #include <Param.h>
 
-Implemente_instanciable(Convection_Diffusion_Chaleur_Turbulent_QC,"Convection_Diffusion_Chaleur_Turbulent_QC",Convection_Diffusion_Chaleur_QC);
+Implemente_instanciable(Convection_Diffusion_Chaleur_Turbulent_QC, "Convection_Diffusion_Chaleur_Turbulent_QC", Convection_Diffusion_Chaleur_QC);
 // XD convection_diffusion_chaleur_turbulent_qc convection_diffusion_chaleur_QC convection_diffusion_chaleur_turbulent_qc -1 Temperature equation for a quasi-compressible fluid as well as the associated turbulence model equations.
 // XD attr modele_turbulence modele_turbulence_scal_base modele_turbulence 1 Turbulence model for the temperature (energy) conservation equation.
 
@@ -29,19 +29,18 @@ Sortie& Convection_Diffusion_Chaleur_Turbulent_QC::printOn(Sortie& is) const
 
 Entree& Convection_Diffusion_Chaleur_Turbulent_QC::readOn(Entree& is)
 {
-  Convection_Diffusion_Chaleur_QC::readOn(is);
-  return is;
+  return Convection_Diffusion_Chaleur_QC::readOn(is);
 }
 
 void Convection_Diffusion_Chaleur_Turbulent_QC::set_param(Param& param)
 {
   Convection_Diffusion_Chaleur_QC::set_param(param);
-  param.ajouter_non_std("modele_turbulence",(this),Param::REQUIRED);
+  param.ajouter_non_std("modele_turbulence", (this), Param::REQUIRED);
 }
 
 int Convection_Diffusion_Chaleur_Turbulent_QC::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
-  if (mot=="diffusion")
+  if (mot == "diffusion")
     {
       Cerr << "Reading and typing of the diffusion operator : " << finl;
       terme_diffusif.associer_diffusivite(diffusivite_pour_transport());
@@ -49,16 +48,16 @@ int Convection_Diffusion_Chaleur_Turbulent_QC::lire_motcle_non_standard(const Mo
       terme_diffusif.associer_diffusivite_pour_pas_de_temps(diffusivite_pour_pas_de_temps());
       return 1;
     }
-  else if (mot=="modele_turbulence")
+  else if (mot == "modele_turbulence")
     {
-      lire_modele(is,*this);
+      lire_modele(is, *this);
       RefObjU le_modele;
       le_modele = le_modele_turbulence.valeur();
       liste_modeles_.add_if_not(le_modele);
       return 1;
     }
   else
-    return Convection_Diffusion_Chaleur_QC::lire_motcle_non_standard(mot,is);
+    return Convection_Diffusion_Chaleur_QC::lire_motcle_non_standard(mot, is);
 }
 
 /*! @brief Sauvegarde sur un flot de sortie, double appel a: Convection_Diffusion_Temperature::sauvegarder(Sortie& );
@@ -76,7 +75,6 @@ int Convection_Diffusion_Chaleur_Turbulent_QC::sauvegarder(Sortie& os) const
   return bytes;
 }
 
-
 /*! @brief Reprise a partir d'un flot d'entree, double appel a: Convection_Diffusion_Temperature::reprendre(Entree& );
  *
  *       Convection_Diffusion_Turbulent::reprendre(Entree&);
@@ -91,7 +89,6 @@ int Convection_Diffusion_Chaleur_Turbulent_QC::reprendre(Entree& is)
   return 1;
 }
 
-
 /*! @brief Double appel a: Convection_Diffusion_Turbulent::completer()
  *
  *      Convection_Diffusion_Temperature::completer()
@@ -102,7 +99,6 @@ void Convection_Diffusion_Chaleur_Turbulent_QC::completer()
   Convection_Diffusion_Turbulent::completer();
   Convection_Diffusion_Chaleur_QC::completer();
 }
-
 
 /*! @brief Mise a jour en temps de l'equation, double appel a: Convection_Diffusion_Temperature::mettre_a_jour(double );
  *
@@ -134,7 +130,7 @@ const Champ_base& Convection_Diffusion_Chaleur_Turbulent_QC::get_champ(const Mot
     {
       return Convection_Diffusion_Chaleur_QC::get_champ(nom);
     }
-  catch (Champs_compris_erreur)
+  catch (Champs_compris_erreur& err_)
     {
     }
   if (le_modele_turbulence.non_nul())
@@ -142,24 +138,22 @@ const Champ_base& Convection_Diffusion_Chaleur_Turbulent_QC::get_champ(const Mot
       {
         return le_modele_turbulence->get_champ(nom);
       }
-    catch (Champs_compris_erreur)
+    catch (Champs_compris_erreur& err_)
       {
       }
   throw Champs_compris_erreur();
-
 
   REF(Champ_base) ref_champ;
   return ref_champ;
 }
 
-void Convection_Diffusion_Chaleur_Turbulent_QC::get_noms_champs_postraitables(Noms& nom,Option opt) const
+void Convection_Diffusion_Chaleur_Turbulent_QC::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
-  Convection_Diffusion_Chaleur_QC::get_noms_champs_postraitables(nom,opt);
+  Convection_Diffusion_Chaleur_QC::get_noms_champs_postraitables(nom, opt);
 
   if (le_modele_turbulence.non_nul())
-    le_modele_turbulence->get_noms_champs_postraitables(nom,opt);
+    le_modele_turbulence->get_noms_champs_postraitables(nom, opt);
 }
-
 
 /*! @brief Double appel a: Convection_Diffusion_Turbulent::preparer_calcul()
  *
@@ -189,11 +183,11 @@ bool Convection_Diffusion_Chaleur_Turbulent_QC::initTimeStep(double dt)
 
 const RefObjU& Convection_Diffusion_Chaleur_Turbulent_QC::get_modele(Type_modele type) const
 {
-  for (const auto& itr : liste_modeles_)
+  for (const auto &itr : liste_modeles_)
     {
-      const RefObjU&  mod = itr;
+      const RefObjU& mod = itr;
       if (mod.non_nul())
-        if ((sub_type(Modele_turbulence_scal_base,mod.valeur())) && (type==TURBULENCE))
+        if ((sub_type(Modele_turbulence_scal_base, mod.valeur())) && (type == TURBULENCE))
           return mod;
     }
   return Equation_base::get_modele(type);

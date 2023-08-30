@@ -26,11 +26,8 @@
  */
 class Modele_turbulence_scal : public MorEqn, public DERIV(Modele_turbulence_scal_base)
 {
-
   Declare_instanciable(Modele_turbulence_scal);
-
 public:
-
   //  inline Modele_turbulence_scal(Modele_turbulence_scal_base& );
   inline Modele_turbulence_scal& operator=(const Modele_turbulence_scal_base& );
   inline int preparer_calcul();
@@ -46,24 +43,8 @@ public:
   inline int sauvegarder(Sortie& ) const override;
   inline int reprendre(Entree& ) override;
   inline void imprimer(Sortie& os) const;
-
 };
 
-
-//
-//  Fonctions inline de la classe Modele_turbulence_scal
-//
-
-/*
-inline Modele_turbulence_scal::Modele_turbulence_scal(Modele_turbulence_scal_base& x)
-  : DERIV(Modele_turbulence_scal_base)(x) {}
-
-inline Modele_turbulence_scal& Modele_turbulence_scal::operator=(const Modele_turbulence_scal_base& x)
-{
-  DERIV(Modele_turbulence_scal_base)::operator=(x);
-  return *this;
-}
-*/
 inline void Modele_turbulence_scal::completer()
 {
   valeur().completer();
@@ -109,11 +90,9 @@ inline int Modele_turbulence_scal::reprendre(Entree& is)
   return valeur().reprendre(is);
 }
 
-/*! @brief Appel a l'objet sous-jacent
- *
- */
 inline void Modele_turbulence_scal::imprimer(Sortie& os) const
 {
   valeur().imprimer(os);
 }
+
 #endif

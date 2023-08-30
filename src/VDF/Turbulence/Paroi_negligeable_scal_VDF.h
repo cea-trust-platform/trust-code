@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2015 - 2016, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,20 +13,11 @@
 *
 *****************************************************************************/
 
-
 #ifndef Paroi_negligeable_scal_VDF_included
 #define Paroi_negligeable_scal_VDF_included
 
 #include <Paroi_scal_hyd_base_VDF.h>
 
-/*! @brief classe Paroi_negligeable_scal_VDF
- *
- *
- *
- * .SECTION  voir aussi
- *   Paroi_negligeable_VDF
- *
- */
 class Paroi_negligeable_scal_VDF : public Paroi_scal_hyd_base_VDF
 {
   Declare_instanciable(Paroi_negligeable_scal_VDF);
@@ -35,10 +26,6 @@ public:
   /* virtual int init_lois_paroi(); */
   int calculer_scal(Champ_Fonc_base& ) override ;
   bool use_equivalent_distance() const override;
-
-
 };
 
-
-#endif
-
+#endif /* Paroi_negligeable_scal_VDF_included */

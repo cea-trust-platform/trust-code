@@ -17,20 +17,14 @@
 #include <Discretisation_base.h>
 #include <Equation_base.h>
 
-Implemente_instanciable(Modele_turbulence_scal,"Modele_turbulence_scal",DERIV(Modele_turbulence_scal_base));
+Implemente_instanciable(Modele_turbulence_scal, "Modele_turbulence_scal", DERIV(Modele_turbulence_scal_base));
 
-Sortie& Modele_turbulence_scal::printOn(Sortie& s ) const
+Sortie& Modele_turbulence_scal::printOn(Sortie& s) const
 {
   return s << valeur().que_suis_je() << finl;
 }
 
-/*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
- *
- * @param (Entree& s) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- * @throws Le modele sous maille n'est pas implemente en coordonnees cylindriques
- */
-Entree& Modele_turbulence_scal::readOn(Entree& s )
+Entree& Modele_turbulence_scal::readOn(Entree& s)
 {
   Motcle typ;
   s >> typ;
@@ -40,9 +34,9 @@ Entree& Modele_turbulence_scal::readOn(Entree& s )
     {
       nom1 += "_";
       Nom disc = equation().discretisation().que_suis_je();
-      if(disc=="VEFPreP1B")
-        disc="VEF";
-      nom1 +=disc;
+      if (disc == "VEFPreP1B")
+        disc = "VEF";
+      nom1 += disc;
     }
   Cerr << nom1 << finl;
   DERIV(Modele_turbulence_scal_base)::typer(nom1);
@@ -51,4 +45,3 @@ Entree& Modele_turbulence_scal::readOn(Entree& s )
   s >> valeur();
   return s;
 }
-

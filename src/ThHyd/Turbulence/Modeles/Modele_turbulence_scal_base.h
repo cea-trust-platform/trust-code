@@ -35,17 +35,13 @@ class Param;
  *
  * @sa Modele_turbulence_scal_Prandtl Modele_turb_scal_Prandtl_sous_maille, Classe abstraite, Methode abstraite, void mettre_a_jour(double ), Entree& lire(const Motcle&, Entree&)
  */
-class Modele_turbulence_scal_base : public Champs_compris_interface, public Objet_U
+class Modele_turbulence_scal_base: public Champs_compris_interface, public Objet_U
 {
-
-  Declare_base_sans_constructeur(Modele_turbulence_scal_base);
-
+  Declare_base(Modele_turbulence_scal_base);
 public:
-
-  Modele_turbulence_scal_base();
   virtual int preparer_calcul();
   virtual bool initTimeStep(double dt);
-  virtual void mettre_a_jour(double ) =0;
+  virtual void mettre_a_jour(double) =0;
   inline const Champ_Fonc& conductivite_turbulente() const { return conductivite_turbulente_; }
   inline const Champ_Fonc& diffusivite_turbulente() const { return diffusivite_turbulente_; }
   inline const Turbulence_paroi_scal& loi_paroi() const;
@@ -53,38 +49,33 @@ public:
   inline Turbulence_paroi_scal& loi_paroi();
   virtual void discretiser();
   //void discretiser_diff_turb(const Schema_Temps_base&, Domaine_dis&, Champ_Fonc&) const;
-  void associer_eqn(const Equation_base& );
+  void associer_eqn(const Equation_base&);
   virtual void completer();
-  virtual void associer(const Domaine_dis& , const Domaine_Cl_dis& );
+  virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&);
   void a_faire(Sortie&) const;
-  int sauvegarder(Sortie& ) const override;
-  int reprendre(Entree& ) override;
+  int sauvegarder(Sortie&) const override;
+  int reprendre(Entree&) override;
   inline Convection_Diffusion_std& equation();
   inline const Convection_Diffusion_std& equation() const;
 
-  //Methodes de l interface des champs postraitables
-  //////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
-  void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
+  void get_noms_champs_postraitables(Noms& nom, Option opt = NONE) const override;
 
-  int limpr_nusselt( double, double, double) const;
+  int limpr_nusselt(double, double, double) const;
   virtual void imprimer(Sortie&) const;
 
   virtual void set_param(Param&);
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-protected:
 
+protected:
   Champ_Fonc conductivite_turbulente_, diffusivite_turbulente_;
   REF(Convection_Diffusion_std) mon_equation;
   Turbulence_paroi_scal loipar;
-  double dt_impr_nusselt_=DMAXFLOAT;
+  double dt_impr_nusselt_ = DMAXFLOAT;
 
-protected :
-
+protected:
   Champs_compris champs_compris_;
-
 };
 
 /*! @brief Renvoie la loi de turbulence sur la paroi (version const)
@@ -114,23 +105,9 @@ inline Turbulence_paroi_scal& Modele_turbulence_scal_base::loi_paroi()
   return loipar;
 }
 
-//    Renvoie l'equation associee au modele de turbulence.
-//    (c'est une equation du type Convection_Diffusion_std)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Convection_Diffusion_std&
-//    Signification: l'equation associee au modele de turbulence
-//    Contraintes:
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 inline Convection_Diffusion_std& Modele_turbulence_scal_base::equation()
 {
-  if (mon_equation.non_nul()==0)
+  if (mon_equation.non_nul() == 0)
     {
       Cerr << "\nError in Modele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
       Process::exit();
@@ -138,24 +115,9 @@ inline Convection_Diffusion_std& Modele_turbulence_scal_base::equation()
   return mon_equation.valeur();
 }
 
-//    Renvoie l'equation associee au modele de turbulence.
-//    (c'est une equation du type Convection_Diffusion_std)
-//    (version const)
-// Precondition:
-// Parametre:
-//    Signification:
-//    Valeurs par defaut:
-//    Contraintes:
-//    Acces:
-// Retour: Convection_Diffusion_std&
-//    Signification: l'equation associee au modele de turbulence
-//    Contraintes: reference constante
-// Exception:
-// Effets de bord:
-// Postcondition: la methode ne modifie pas l'objet
 inline const Convection_Diffusion_std& Modele_turbulence_scal_base::equation() const
 {
-  if (mon_equation.non_nul()==0)
+  if (mon_equation.non_nul() == 0)
     {
       Cerr << "\nError in Modele_turbulence_scal_base::equation() : The equation is unknown !" << finl;
       Process::exit();

@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2021, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,14 +29,14 @@
  *
  * @sa Probleme_base Pb_QC_base Fluide_Quasi_Compressible
  */
-class Pb_Hydraulique_Melange_Binaire_Turbulent_QC : public Pb_QC_base, public Pb_Dilatable_Proto
+class Pb_Hydraulique_Melange_Binaire_Turbulent_QC: public Pb_QC_base, public Pb_Dilatable_Proto
 {
   Declare_instanciable(Pb_Hydraulique_Melange_Binaire_Turbulent_QC);
 
 public:
   int verifier() override;
   int nombre_d_equations() const override;
-  const Equation_base& equation(int) const override ;
+  const Equation_base& equation(int) const override;
   Equation_base& equation(int) override;
   int expression_predefini(const Motcle& motlu, Nom& expression) override;
   inline const Champ_Fonc& viscosite_turbulente() const { return eq_hydraulique.viscosite_turbulente(); }

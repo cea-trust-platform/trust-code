@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2017, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,29 +17,11 @@
 #include <Fluide_Incompressible.h>
 #include <Constituant.h>
 
-Implemente_instanciable(Pb_Thermohydraulique_Concentration_Turbulent,"Pb_Thermohydraulique_Concentration_Turbulent",Pb_Fluide_base);
+Implemente_instanciable(Pb_Thermohydraulique_Concentration_Turbulent, "Pb_Thermohydraulique_Concentration_Turbulent", Pb_Fluide_base);
 
+Sortie& Pb_Thermohydraulique_Concentration_Turbulent::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 
-/*! @brief Simple appel a: Pb_Fluide_base::printOn(Sortie&) Ecrit le probleme sur un flot de sortie.
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
-Sortie& Pb_Thermohydraulique_Concentration_Turbulent::printOn(Sortie& os) const
-{
-  return Pb_Fluide_base::printOn(os);
-}
-
-
-/*! @brief Simple appel a: Pb_Fluide_base::readOn(Entree&) Lit le probleme a partir d'un flot d'entree.
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
-Entree& Pb_Thermohydraulique_Concentration_Turbulent::readOn(Entree& is)
-{
-  return Pb_Fluide_base::readOn(is);
-}
+Entree& Pb_Thermohydraulique_Concentration_Turbulent::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }
 
 /*! @brief Renvoie le nombre d'equation, Renvoie 3 car il y a 2 equations a un probleme de
  *
@@ -55,19 +37,9 @@ int Pb_Thermohydraulique_Concentration_Turbulent::nombre_d_equations() const
   return 3;
 }
 
-/*! @brief Renvoie l'equation d'hydraulique de type Navier_Stokes_Turbulent si i=0 Renvoie l'equation de la thermique de type
- *
- *     Convection_Diffusion_Temperature_Turbulent si i=1
- *     Renvoie l'equation de la thermique de type
- *     Convection_Diffusion_Concentration_Turbulent si i=2
- *     (version const)
- *
- * @param (int i) l'index de l'equation a renvoyer
- * @return (Equation_base&) l'equation correspondante a l'index
- */
 const Equation_base& Pb_Thermohydraulique_Concentration_Turbulent::equation(int i) const
 {
-  if ( !( i==0 || i==1 || i==2 ) )
+  if (!(i == 0 || i == 1 || i == 2))
     {
       Cerr << "\nError in Pb_Thermohydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
@@ -91,7 +63,7 @@ const Equation_base& Pb_Thermohydraulique_Concentration_Turbulent::equation(int 
  */
 Equation_base& Pb_Thermohydraulique_Concentration_Turbulent::equation(int i)
 {
-  if ( !( i==0 || i==1 || i==2 ) )
+  if (!(i == 0 || i == 1 || i == 2))
     {
       Cerr << "\nError in Pb_Thermohydraulique_Concentration_Turbulent::equation() : Wrong number of equation !" << finl;
       Process::exit();
@@ -104,8 +76,6 @@ Equation_base& Pb_Thermohydraulique_Concentration_Turbulent::equation(int i)
     return eq_concentration;
 }
 
-
-
 /*! @brief Associe un milieu au probleme, Si le milieu est de type
  *
  *       - Fluide_Incompressible, il sera associe a l'equation de l'hydraulique
@@ -116,15 +86,14 @@ Equation_base& Pb_Thermohydraulique_Concentration_Turbulent::equation(int i)
  * @param (Milieu_base& mil) le milieu physique a associer au probleme
  * @throws mauvais type de milieu physique
  */
-void Pb_Thermohydraulique_Concentration_Turbulent::
-associer_milieu_base(const Milieu_base& mil)
+void Pb_Thermohydraulique_Concentration_Turbulent::associer_milieu_base(const Milieu_base& mil)
 {
-  if ( sub_type(Fluide_Incompressible,mil) )
+  if (sub_type(Fluide_Incompressible, mil))
     {
       eq_hydraulique.associer_milieu_base(mil);
       eq_thermique.associer_milieu_base(mil);
     }
-  else if ( sub_type(Constituant,mil) )
+  else if (sub_type(Constituant, mil))
     eq_concentration.associer_milieu_base(mil);
   else
     {
@@ -133,5 +102,3 @@ associer_milieu_base(const Milieu_base& mil)
       exit();
     }
 }
-
-

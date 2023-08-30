@@ -18,9 +18,9 @@
 #include <Mod_turb_hyd.h>
 #include <Motcle.h>
 
-Implemente_instanciable(Mod_turb_hyd,"Mod_turb_hyd",DERIV(Mod_turb_hyd_base));
+Implemente_instanciable(Mod_turb_hyd, "Mod_turb_hyd", DERIV(Mod_turb_hyd_base));
 
-Sortie& Mod_turb_hyd::printOn(Sortie& s ) const
+Sortie& Mod_turb_hyd::printOn(Sortie& s) const
 {
   return DERIV(Mod_turb_hyd_base)::printOn(s);
 }
@@ -34,17 +34,15 @@ Sortie& Mod_turb_hyd::printOn(Sortie& s ) const
  * @return (Entree&) le flot d'entree modifie
  * @throws Les modeles sous maille sont utilisables uniquement en dimension 3
  */
-Entree& Mod_turb_hyd::readOn(Entree& s )
+Entree& Mod_turb_hyd::readOn(Entree& s)
 {
   //  Cerr << " Mod_turb_hyd::readOn" << finl;
   Motcle typ;
   s >> typ;
   Motcle nom1("Modele_turbulence_hyd_");
   nom1 += typ;
-  Nom discr=equation().discretisation().que_suis_je();
-  if ( typ.debute_par("SOUS_MAILLE") || discr == "VDF_Hyper" || typ.debute_par("LONGUEUR_MELANGE") ||
-       (typ == "K_Epsilon_V2")
-     )
+  Nom discr = equation().discretisation().que_suis_je();
+  if (typ.debute_par("SOUS_MAILLE") || discr == "VDF_Hyper" || typ.debute_par("LONGUEUR_MELANGE") || (typ == "K_Epsilon_V2"))
     {
       if (dimension == 2 && discr != "VDF_Hyper")
         {
@@ -55,10 +53,10 @@ Entree& Mod_turb_hyd::readOn(Entree& s )
 
       nom1 += "_";
       // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
-      if (discr=="VEFPreP1B") discr="VEF";
-      nom1+=discr;
+      if (discr == "VEFPreP1B") discr = "VEF";
+      nom1 += discr;
     }
-  if (nom1=="MODELE_TURBULENCE_HYD_SOUS_MAILLE_LM_VEF")
+  if (nom1 == "MODELE_TURBULENCE_HYD_SOUS_MAILLE_LM_VEF")
     {
       Cerr << "Le mot cle Sous_maille_LM s'appelle desormais Longueur_Melange pour etre coherent en VDF et VEF." << finl;
       Cerr << "Changer votre jeu de donnees." << finl;
@@ -70,6 +68,3 @@ Entree& Mod_turb_hyd::readOn(Entree& s )
   s >> valeur();
   return s;
 }
-
-
-
