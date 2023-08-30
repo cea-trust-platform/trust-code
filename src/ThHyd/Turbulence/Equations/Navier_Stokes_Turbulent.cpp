@@ -47,13 +47,7 @@ int Navier_Stokes_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree&
     {
       Cerr << "Reading and typing of the diffusion operator : ";
       terme_diffusif.associer_diffusivite(diffusivite_pour_transport());
-      // Si on a lu le modele de turbulence et qu'il est nul,
-      // alors on utilise l'operateur de diffusion standard.
-      if (le_modele_turbulence.non_nul() // L'operateur a ete type (donc lu)
-          && sub_type(Modele_turbulence_hyd_nul, le_modele_turbulence.valeur()))
-        is >> terme_diffusif;
-      else
-        lire_op_diff_turbulent(is);
+      lire_op_diff_turbulent(is);
       terme_diffusif.associer_diffusivite_pour_pas_de_temps(diffusivite_pour_pas_de_temps());
       return 1;
     }
@@ -62,20 +56,6 @@ int Navier_Stokes_Turbulent::lire_motcle_non_standard(const Motcle& mot, Entree&
       Cerr << "Reading and typing of the turbulence model :";
       le_modele_turbulence.associer_eqn(*this);
       is >> le_modele_turbulence;
-      // Si on vient de lire un modele de turbulence nul et que l'operateur
-      // de diffusion a deja ete lu, alors on s'est plante d'operateur,
-      // stop.
-      if (sub_type(Modele_turbulence_hyd_nul, le_modele_turbulence.valeur()) && terme_diffusif.non_nul())
-        {
-          Cerr << "Erreur dans Navier_Stokes_Turbulent::lire:\n"
-               " Si le modele de turbulence est nul, il faut le specifier\n"
-               " en premier dans Navier_Stokes_Turbulent { ... }\n";
-
-          Cerr << "Error for the method Navier_Stokes_Turbulent::lire_motcle_non_standard:\n"
-               " For the case of a nul turbulence model, it must be specified\n"
-               " first for the data of Navier_Stokes_Turbulent { ... }\n";
-          exit();
-        }
       le_modele_turbulence.discretiser();
       RefObjU le_modele;
       le_modele = le_modele_turbulence.valeur();
@@ -97,8 +77,7 @@ const Champ_base& Navier_Stokes_Turbulent::diffusivite_pour_pas_de_temps() const
 }
 
 // Lecture et typage de l'operateur diffusion turbulente.
-// Attention : il faut avoir fait "terme_diffusif.associer_diffusivite" avant
-//             d'enter ici.
+// Attention : il faut avoir fait "terme_diffusif.associer_diffusivite" avant d'enter ici.
 Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 {
   Motcle accouverte = "{", accfermee = "}";
@@ -106,8 +85,7 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
 
   Nom discr = discretisation().que_suis_je();
   // les operateurs de diffusion sont communs aux discretisations VEF et VEFP1B
-  if (discr == "VEFPreP1B")
-    discr = "VEF";
+  if (discr == "VEFPreP1B") discr = "VEF";
 
   type += discr;
 
@@ -119,13 +97,10 @@ Entree& Navier_Stokes_Turbulent::lire_op_diff_turbulent(Entree& is)
   type += nb_inc;
 
   Nom type_inco = inconnue()->que_suis_je();
-  if (type_inco == "Champ_Q1_EF")
-    type += "Q1";
-  else
-    type += (type_inco.suffix("Champ_"));
+  if (type_inco == "Champ_Q1_EF") type += "Q1";
+  else type += (type_inco.suffix("Champ_"));
 
-  if (axi)
-    type += "_Axi";
+  if (axi) type += "_Axi";
 
   Motcle motbidon;
   is >> motbidon;
