@@ -40,39 +40,8 @@ inline int operator!=(const TRUSTVect<_TYPE_>& x, const TRUSTVect<_TYPE_>& y)
   return !(x == y);
 }
 
-// ==================================================================================================================================
-// DEBUT code pour debug
-#ifndef NDEBUG
-// INVALID_SCALAR is used to fill arrays when values are not computed (virtual space might not be computed by operators).
-// The value below probably triggers errors on parallel test cases but does not prevent from doing "useless" computations with it.
 template <typename _TYPE_>
-inline void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
-{
-  _TYPE_ invalid = (std::is_same<_TYPE_,int>::value) ? INT_MAX : (std::is_same<_TYPE_,float>::value) ? -987654.321f : -987654.321 ;
-
-  const MD_Vector& md = resu.get_md_vector();
-  const int line_size = resu.line_size();
-  if (opt == VECT_ALL_ITEMS || (!md.non_nul())) return; // no invalid values
-  assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-  const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-  const int blocs_size = items_blocs.size_array();
-  int i = 0;
-  for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
-    {
-      const int bloc_end = line_size * items_blocs[blocs_idx];
-      _TYPE_ *ptr = resu.addr() + i;
-      resu.checkDataOnHost();
-      for (; i < bloc_end; i++) *(ptr++) = invalid;
-      i = items_blocs[blocs_idx+1] * line_size;
-    }
-  const int bloc_end = resu.size_array(); // Process until end of vector
-  _TYPE_ *ptr = resu.addr() + i;
-  resu.checkDataOnHost();
-  for (; i < bloc_end; i++) *(ptr++) = invalid;
-}
-#endif /* NDEBUG */
-// FIN code pour debug
-// ==================================================================================================================================
+extern void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt);
 
 // ==================================================================================================================================
 // DEBUT code pour operation min/max/abs
