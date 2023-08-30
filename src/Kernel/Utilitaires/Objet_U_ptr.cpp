@@ -267,8 +267,8 @@ Objet_U * Objet_U_ptr::typer(const char * type)
           Cerr << "Type required : derived from " << type_base.name() << finl << finl;
           Cerr << type << " is not a recognized keyword." << finl << "Check your data set." << finl;
           Nom nompb = type;
-          if (nompb.find("TURBULENT")!=-1 )
-            Cerr << "Since TRUST V1.8.0, turbulence models are in TrioCFD and not anymore in TRUST.\nTry using TrioCFD executable or contact trust support." << finl;
+          if (nompb.find("TURBULENT") != -1 || nompb.find("TURBULENCE") != -1)
+            Cerr << finl << "*** NOTE :: Since TRUST V1.8.0, turbulence models are in TrioCFD and not anymore in TRUST.\nTry using TrioCFD executable or contact TRUST support." << finl;
           Process::exit();
         }
     }
