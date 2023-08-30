@@ -19,7 +19,7 @@
 #include <Eval_Dift_Multiphase_VDF.h>
 #include <Eval_Diff_VDF_Face_Gen.h>
 #include <Eval_Diff_VDF_Elem_Gen.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Eval_Dift_VDF.h>
 #include <TRUST_Ref.h>
 
@@ -95,13 +95,13 @@ class Eval_Dift_VDF_Face : public Eval_Diff_VDF_Face_Gen<Eval_Dift_VDF_Face>, pu
 {
 public:
   static constexpr bool IS_TURB = true, CALC_FA7_SORTIE_LIB = true, CALC_ARR_PAR_FL = false;
-  inline void associer_modele_turbulence(const Mod_turb_hyd_base& mod) { le_modele_turbulence = mod;  }
+  inline void associer_modele_turbulence(const Modele_turbulence_hyd_base& mod) { le_modele_turbulence = mod;  }
   inline bool uses_wall() const { return le_modele_turbulence.valeur().utiliser_loi_paroi(); }
   void mettre_a_jour() override;
   double tau_tan_impl(int face,int k) const;
 
 private:
-  REF(Mod_turb_hyd_base) le_modele_turbulence;
+  REF(Modele_turbulence_hyd_base) le_modele_turbulence;
   REF(Turbulence_paroi_base) loipar;
   DoubleTab tau_tan_;
 };

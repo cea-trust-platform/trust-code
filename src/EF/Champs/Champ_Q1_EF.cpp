@@ -23,7 +23,7 @@
 #include <Equation_base.h>
 #include <Fluide_base.h>
 #include <Champ_Uniforme.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Debog.h>
 
 Implemente_instanciable(Champ_Q1_EF,"Champ_Q1_EF",Champ_Inc_Q1_base);
@@ -172,9 +172,9 @@ void Champ_Q1_EF::calcul_y_plus(const Domaine_Cl_EF& domaine_Cl_EF, DoubleTab& y
   int yplus_already_computed = 0; // flag
 
   const RefObjU& modele_turbulence = eqn_hydr.get_modele(TURBULENCE);
-  if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
+  if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base, modele_turbulence.valeur()))
     {
-      const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
+      const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
       const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
       if (loipar.use_shear())
         {

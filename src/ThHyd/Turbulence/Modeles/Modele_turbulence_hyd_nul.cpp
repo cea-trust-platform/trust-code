@@ -21,7 +21,7 @@
 #include <Equation_base.h>
 #include <Domaine.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_nul, "Modele_turbulence_hyd_nul", Mod_turb_hyd_base);
+Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_nul, "Modele_turbulence_hyd_nul", Modele_turbulence_hyd_base);
 // XD modele_turbulence_hyd_nul modele_turbulence_hyd_deriv NUL 0 not_set
 
 Modele_turbulence_hyd_nul::Modele_turbulence_hyd_nul()

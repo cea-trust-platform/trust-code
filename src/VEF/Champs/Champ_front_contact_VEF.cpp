@@ -15,7 +15,7 @@
 
 #include <Champ_front_contact_VEF.h>
 #include <Probleme_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Modele_turbulence_scal_base.h>
 #include <Raccord_distant_homogene.h>
 #include <Champ_Uniforme.h>

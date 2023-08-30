@@ -16,7 +16,7 @@
 #include <Champ_P1NC_implementation.h>
 #include <Dirichlet_paroi_defilante.h>
 #include <Dirichlet_paroi_fixe.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Champ_Fonc_P1NC.h>
 #include <Equation_base.h>
 #include <distances_VEF.h>
@@ -950,9 +950,9 @@ void Champ_P1NC_implementation::filtrer_L2(DoubleTab& valeurs) const
       if (ch_inc_P1NC.equation().le_nom()!="gradient_pression")
         {
           const RefObjU& modele_turbulence = ch_inc_P1NC.equation().get_modele(TURBULENCE);
-          if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base,modele_turbulence.valeur()))
+          if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base,modele_turbulence.valeur()))
             {
-              const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+              const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
               const Turbulence_paroi& loipar = mod_turb.loi_paroi();
               DoubleTab tau_tan;
 

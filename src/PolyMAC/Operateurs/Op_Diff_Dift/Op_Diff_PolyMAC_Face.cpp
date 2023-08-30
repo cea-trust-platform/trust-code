@@ -18,7 +18,7 @@
 #include <Domaine_Cl_PolyMAC.h>
 #include <Champ_Face_PolyMAC.h>
 #include <Schema_Temps_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Domaine_PolyMAC.h>
 #include <Probleme_base.h>
 #include <Synonyme_info.h>
@@ -48,7 +48,7 @@ void Op_Diff_PolyMAC_Face::completer()
   if (que_suis_je() == "Op_Diff_PolyMAC_Face") return;
 
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
+  const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
   const Champ_Fonc& alpha_t = mod_turb.viscosite_turbulente();
   associer_diffusivite_turbulente(alpha_t);
 }

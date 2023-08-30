@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Discretisation_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Turbulence_paroi.h>
 #include <Equation_base.h>
 
@@ -72,9 +72,9 @@ Entree& Turbulence_paroi::readOn(Entree& s)
 
 /*! @brief Associe un modele de turbulence a l'objet.
  *
- * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
+ * @param (Modele_turbulence_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
  */
-void Turbulence_paroi::associer_modele(const Mod_turb_hyd_base& mod)
+void Turbulence_paroi::associer_modele(const Modele_turbulence_hyd_base& mod)
 {
   mon_modele_turb_hyd = mod;
 }

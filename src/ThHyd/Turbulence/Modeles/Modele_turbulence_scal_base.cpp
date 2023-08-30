@@ -17,7 +17,7 @@
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
 #include <Convection_Diffusion_std.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Domaine.h>
 #include <EcritureLectureSpecial.h>
 #include <Param.h>
@@ -47,7 +47,7 @@ Entree& Modele_turbulence_scal_base::readOn(Entree& is)
   const Probleme_base& le_pb = mon_equation->probleme();
   // lp loi de paroi du modele de turbulence de l'hydraulique
   const RefObjU& modele_turbulence = le_pb.equation(0).get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
+  const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
   const Turbulence_paroi& lp = mod_turb_hydr.loi_paroi();
   if (loipar.est_nul() && lp.non_nul())
     {

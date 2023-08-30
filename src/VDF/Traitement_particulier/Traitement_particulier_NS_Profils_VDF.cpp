@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,7 +19,7 @@
 #include <communications.h>
 #include <SFichier.h>
 #include <Navier_Stokes_std.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 
 Implemente_instanciable(Traitement_particulier_NS_Profils_VDF,"Traitement_particulier_NS_Profils_VDF",Traitement_particulier_NS_Profils);
 
@@ -826,7 +826,7 @@ void Traitement_particulier_NS_Profils_VDF::calculer_moyenne_spatiale_nut(Double
   const DoubleTab& xp = domaine_VDF.xp();
 
   const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+  const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
   const DoubleTab& nu_t = mod_turb.viscosite_turbulente()->valeurs();
 
   int nb_elems = domaine_VDF.domaine().nb_elem();

@@ -13,8 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Mod_turb_hyd_base_included
-#define Mod_turb_hyd_base_included
+#ifndef Modele_turbulence_hyd_base_included
+#define Modele_turbulence_hyd_base_included
 
 #define CMU 0.09
 
@@ -28,7 +28,7 @@ class Equation_base;
 class Schema_Temps_base;
 class Param;
 
-/*! @brief Classe Mod_turb_hyd_base Cette classe sert de base a la hierarchie des classes
+/*! @brief Classe Modele_turbulence_hyd_base Cette classe sert de base a la hierarchie des classes
  *
  *     qui representent un modele de turbulence pour les
  *     equations de Navier-Stokes. Il existe deja deux classes derivees
@@ -40,15 +40,14 @@ class Param;
  *      en Front-Tracking (et plus tard en qc), elle fournit le
  *      mecanisme pour recuperer rho.
  *
- * @sa Mod_turb_hyd_ss_maille Modele_turbulence_hyd_K_Eps, Classe abstraite, Methode abstraite, void mettre_a_jour(double ), Entree& lire(const Motcle&, Entree&)
  */
-class Mod_turb_hyd_base: public Objet_U, public Support_Champ_Masse_Volumique, public Champs_compris_interface
+class Modele_turbulence_hyd_base: public Objet_U, public Support_Champ_Masse_Volumique, public Champs_compris_interface
 {
 
-  Declare_base_sans_constructeur(Mod_turb_hyd_base);
+  Declare_base_sans_constructeur(Modele_turbulence_hyd_base);
 
 public:
-  inline Mod_turb_hyd_base();
+  inline Modele_turbulence_hyd_base();
   inline const Champ_Fonc& viscosite_turbulente() const;
   inline Equation_base& equation();
   inline const Equation_base& equation() const;
@@ -107,7 +106,7 @@ private:
   DoubleVect borne_visco_turb;
 };
 
-inline Mod_turb_hyd_base::Mod_turb_hyd_base()
+inline Modele_turbulence_hyd_base::Modele_turbulence_hyd_base()
 {
   LeCmu = CMU;
   dt_impr_ustar = 1.e20;
@@ -122,7 +121,7 @@ inline Mod_turb_hyd_base::Mod_turb_hyd_base()
  *
  * @return (Champ_Fonc&) le champ representant la viscosite turbulente
  */
-inline const Champ_Fonc& Mod_turb_hyd_base::viscosite_turbulente() const
+inline const Champ_Fonc& Modele_turbulence_hyd_base::viscosite_turbulente() const
 {
   return la_viscosite_turbulente;
 }
@@ -133,21 +132,21 @@ inline const Champ_Fonc& Mod_turb_hyd_base::viscosite_turbulente() const
  *
  * @return (Equation_base&) l'equation associee au modele de turbulence
  */
-inline Equation_base& Mod_turb_hyd_base::equation()
+inline Equation_base& Modele_turbulence_hyd_base::equation()
 {
   if (mon_equation.non_nul() == 0)
     {
-      Cerr << "\nError in Mod_turb_hyd_base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();
 }
 
-inline const Equation_base& Mod_turb_hyd_base::equation() const
+inline const Equation_base& Modele_turbulence_hyd_base::equation() const
 {
   if (mon_equation.non_nul() == 0)
     {
-      Cerr << "\nError in Mod_turb_hyd_base::equation() : The equation is unknown !" << finl;
+      Cerr << "\nError in Modele_turbulence_hyd_base::equation() : The equation is unknown !" << finl;
       Process::exit();
     }
   return mon_equation.valeur();
@@ -157,12 +156,12 @@ inline const Equation_base& Mod_turb_hyd_base::equation() const
  *
  * @return (la valeur Cmu)
  */
-inline double Mod_turb_hyd_base::get_Cmu() const
+inline double Modele_turbulence_hyd_base::get_Cmu() const
 {
   return LeCmu;
 }
 
-inline Champs_compris& Mod_turb_hyd_base::champs_compris()
+inline Champs_compris& Modele_turbulence_hyd_base::champs_compris()
 {
   return champs_compris_;
 }

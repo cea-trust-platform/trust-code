@@ -17,7 +17,7 @@
 #include <Convection_Diffusion_std.h>
 #include <Turbulence_paroi_scal.h>
 #include <Discretisation_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 
@@ -51,7 +51,7 @@ Entree& Turbulence_paroi_scal::readOn(Entree& s)
   s >> typ;
 
   const RefObjU& modele_turbulence = eqn.get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb_hydr = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
+  const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
   const Turbulence_paroi& loi = mod_turb_hydr.loi_paroi();
 
   if (typ != "negligeable_scalaire")
@@ -88,7 +88,7 @@ Entree& Turbulence_paroi_scal::readOn(Entree& s)
 
 /*! @brief Associe un modele de turbulence a l'objet.
  *
- * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
+ * @param (Modele_turbulence_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
  */
 void Turbulence_paroi_scal::associer_modele(const Modele_turbulence_scal_base& mod)
 {

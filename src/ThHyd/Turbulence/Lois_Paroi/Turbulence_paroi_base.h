@@ -22,10 +22,10 @@
 #include <Champ_Inc.h>
 #include <TRUST_Ref.h>
 
-class Mod_turb_hyd_base;
+class Modele_turbulence_hyd_base;
 class Probleme_base;
 class EcrFicPartage;
-class Mod_turb_hyd;
+class Modele_turbulence_hyd;
 class Domaine_Cl_dis;
 class Domaine_dis;
 class Param;
@@ -46,7 +46,7 @@ public:
 
   Turbulence_paroi_base();
   virtual void set_param(Param& param);
-  inline void associer_modele(const Mod_turb_hyd_base&);
+  inline void associer_modele(const Modele_turbulence_hyd_base&);
   virtual void associer(const Domaine_dis&, const Domaine_Cl_dis&)=0;
   virtual void completer() { }
   virtual int init_lois_paroi() =0;
@@ -83,7 +83,7 @@ public:
   virtual bool use_shear() const; // Generalement true sauf par exemple pour loi paroi_negligeable_XXX
 
 protected:
-  REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
+  REF(Modele_turbulence_hyd_base) mon_modele_turb_hyd;
   DoubleTab Cisaillement_paroi_;         //valeurs des contraintes tangentielles aux
   // parois calculees localement a partir de u*
   DoubleVect tab_u_star_;                // valeurs des u* calculees localement
@@ -98,9 +98,9 @@ protected:
 
 /*! @brief Associe un modele de turbulence a l'objet.
  *
- * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
+ * @param (Modele_turbulence_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
  */
-inline void Turbulence_paroi_base::associer_modele(const Mod_turb_hyd_base& le_modele)
+inline void Turbulence_paroi_base::associer_modele(const Modele_turbulence_hyd_base& le_modele)
 {
   mon_modele_turb_hyd = le_modele;
 }

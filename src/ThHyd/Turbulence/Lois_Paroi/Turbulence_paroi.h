@@ -41,7 +41,7 @@ public:
 
   //Turbulence_paroi(const Turbulence_paroi_base& x):DERIV(Turbulence_paroi_base)(x) {}
   // inline Turbulence_paroi& operator=(const Turbulence_paroi_base& paroi_base);
-  void associer_modele(const Mod_turb_hyd_base&);
+  void associer_modele(const Modele_turbulence_hyd_base&);
   inline int init_lois_paroi();
   inline int calculer_hyd(Champ_Inc&);
   inline int calculer_hyd_BiK(Champ_Inc&, Champ_Inc&);
@@ -57,7 +57,7 @@ public:
 
 protected:
 
-  REF(Mod_turb_hyd_base) mon_modele_turb_hyd;
+  REF(Modele_turbulence_hyd_base) mon_modele_turb_hyd;
 };
 
 inline int Turbulence_paroi::init_lois_paroi()

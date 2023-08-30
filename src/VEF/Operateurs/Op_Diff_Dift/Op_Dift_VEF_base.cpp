@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Modele_turbulence_scal.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Navier_Stokes_std.h>
 #include <Op_Dift_VEF_base.h>
 #include <Domaine_Cl_VEF.h>
@@ -26,7 +26,7 @@ Sortie& Op_Dift_VEF_base::printOn(Sortie& is) const { return Op_Diff_VEF_base::p
 
 Entree& Op_Dift_VEF_base::readOn(Entree& is) { return Op_Diff_VEF_base::readOn(is); }
 
-void Op_Dift_VEF_base::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
+void Op_Dift_VEF_base::associer_modele_turbulence(const Modele_turbulence_hyd_base& mod)
 {
   le_modele_turbulence = mod;
 }
@@ -57,9 +57,9 @@ void Op_Dift_VEF_base::completer()
   Operateur_base::completer();
 
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
+  if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base, modele_turbulence.valeur()))
     {
-      const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
+      const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
       const Champ_Fonc& viscosite_turbulente = mod_turb.viscosite_turbulente();
       associer_diffusivite_turbulente(viscosite_turbulente);
       associer_modele_turbulence(mod_turb);

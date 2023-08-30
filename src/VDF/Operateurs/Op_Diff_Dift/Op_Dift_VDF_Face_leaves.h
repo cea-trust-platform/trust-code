@@ -26,7 +26,7 @@ class Op_Dift_VDF_Face_leaves
 { };
 /// \endcond
 
-class Mod_turb_hyd_base;
+class Modele_turbulence_hyd_base;
 class Champ_Fonc;
 
 class Op_Dift_VDF_Face : public Op_Dift_VDF_Face_base, public Op_Diff_Dift_VDF<Op_Dift_VDF_Face>

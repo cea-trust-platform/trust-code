@@ -132,7 +132,7 @@ inline double Turbulence_paroi_scal_base::T_plus(double y_plus, double Pr)
 
 /*! @brief Associe un modele de turbulence a l'objet.
  *
- * @param (Mod_turb_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
+ * @param (Modele_turbulence_hyd_base& le_modele) le modele de turbulence hydraulique a associer a l'objet
  */
 inline void Turbulence_paroi_scal_base::associer_modele(const Modele_turbulence_scal_base& le_modele)
 {

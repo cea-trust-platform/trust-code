@@ -16,9 +16,9 @@
 #ifndef Modele_turbulence_hyd_nul_included
 #define Modele_turbulence_hyd_nul_included
 
-#include <Mod_turb_hyd.h>
+#include <Modele_turbulence_hyd.h>
 
-class Modele_turbulence_hyd_nul: public Mod_turb_hyd_base
+class Modele_turbulence_hyd_nul: public Modele_turbulence_hyd_base
 {
   Declare_instanciable(Modele_turbulence_hyd_nul);
 public:

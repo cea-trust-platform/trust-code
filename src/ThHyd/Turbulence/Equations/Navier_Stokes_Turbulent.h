@@ -17,7 +17,7 @@
 #define Navier_Stokes_Turbulent_included
 
 #include <Navier_Stokes_std.h>
-#include <Mod_turb_hyd.h>
+#include <Modele_turbulence_hyd.h>
 
 class Champ_Fonc;
 
@@ -25,9 +25,9 @@ class Champ_Fonc;
  *
  *      visqueux verifiant la condition d'incompressibilite div U = 0 avec
  *      modelisation de la turbulence.
- *      Un membre de type Mod_turb_hyd representera le modele de turbulence.
+ *      Un membre de type Modele_turbulence_hyd representera le modele de turbulence.
  *
- * @sa Navier_Stokes_std Mod_turb_hyd Pb_Hydraulique_Turbulent, Pb_Thermohydraulique_Turbulent
+ * @sa Navier_Stokes_std Modele_turbulence_hyd Pb_Hydraulique_Turbulent, Pb_Thermohydraulique_Turbulent
  */
 class Navier_Stokes_Turbulent: public Navier_Stokes_std
 {
@@ -37,7 +37,7 @@ public:
   void set_param(Param& titi) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
   inline const Champ_Fonc& viscosite_turbulente() const { return le_modele_turbulence.viscosite_turbulente(); }
-  inline const Mod_turb_hyd& modele_turbulence() const { return le_modele_turbulence; }
+  inline const Modele_turbulence_hyd& modele_turbulence() const { return le_modele_turbulence; }
   int sauvegarder(Sortie&) const override;
   int reprendre(Entree&) override;
   int preparer_calcul() override;
@@ -58,7 +58,7 @@ public:
 
 protected:
   Entree& lire_op_diff_turbulent(Entree& is);
-  Mod_turb_hyd le_modele_turbulence;
+  Modele_turbulence_hyd le_modele_turbulence;
 };
 
 #endif /* Navier_Stokes_Turbulent_included */

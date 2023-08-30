@@ -15,14 +15,14 @@
 
 #include <Discretisation_base.h>
 #include <Equation_base.h>
-#include <Mod_turb_hyd.h>
+#include <Modele_turbulence_hyd.h>
 #include <Motcle.h>
 
-Implemente_instanciable(Mod_turb_hyd, "Mod_turb_hyd", DERIV(Mod_turb_hyd_base));
+Implemente_instanciable(Modele_turbulence_hyd, "Modele_turbulence_hyd", DERIV(Modele_turbulence_hyd_base));
 
-Sortie& Mod_turb_hyd::printOn(Sortie& s) const
+Sortie& Modele_turbulence_hyd::printOn(Sortie& s) const
 {
-  return DERIV(Mod_turb_hyd_base)::printOn(s);
+  return DERIV(Modele_turbulence_hyd_base)::printOn(s);
 }
 
 /*! @brief Lit les specifications d'un modele de turbulence a partir d'un flot d'entree.
@@ -34,9 +34,9 @@ Sortie& Mod_turb_hyd::printOn(Sortie& s) const
  * @return (Entree&) le flot d'entree modifie
  * @throws Les modeles sous maille sont utilisables uniquement en dimension 3
  */
-Entree& Mod_turb_hyd::readOn(Entree& s)
+Entree& Modele_turbulence_hyd::readOn(Entree& s)
 {
-  //  Cerr << " Mod_turb_hyd::readOn" << finl;
+  //  Cerr << " Modele_turbulence_hyd::readOn" << finl;
   Motcle typ;
   s >> typ;
   Motcle nom1("Modele_turbulence_hyd_");
@@ -62,7 +62,7 @@ Entree& Mod_turb_hyd::readOn(Entree& s)
       Cerr << "Changer votre jeu de donnees." << finl;
       exit();
     }
-  DERIV(Mod_turb_hyd_base)::typer(nom1);
+  DERIV(Modele_turbulence_hyd_base)::typer(nom1);
   valeur().associer_eqn(equation());
   valeur().associer(equation().domaine_dis(), equation().domaine_Cl_dis());
   s >> valeur();

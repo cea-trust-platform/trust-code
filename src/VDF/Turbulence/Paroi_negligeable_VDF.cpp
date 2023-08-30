@@ -15,7 +15,7 @@
 
 #include <Paroi_negligeable_VDF.h>
 #include <Dirichlet_paroi_fixe.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Domaine_Cl_dis.h>
 #include <Champ_Face_VDF.h>
 #include <Champ_Uniforme.h>

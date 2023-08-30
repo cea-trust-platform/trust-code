@@ -35,7 +35,7 @@ Entree& Op_Dift_EF_base::readOn(Entree& is)
   return is;
 }
 
-void Op_Dift_EF_base::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
+void Op_Dift_EF_base::associer_modele_turbulence(const Modele_turbulence_hyd_base& mod)
 {
   le_modele_turbulence    = mod;
 }
@@ -62,9 +62,9 @@ void Op_Dift_EF_base::completer()
   marque_elem(equation());
 
   const RefObjU& modele_turbulence = equation().get_modele(TURBULENCE);
-  if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base,modele_turbulence.valeur()))
+  if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base,modele_turbulence.valeur()))
     {
-      const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+      const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
       const Champ_Fonc& viscosite_turbulente = mod_turb.viscosite_turbulente();
       associer_diffusivite_turbulente(viscosite_turbulente);
       associer_modele_turbulence(mod_turb);

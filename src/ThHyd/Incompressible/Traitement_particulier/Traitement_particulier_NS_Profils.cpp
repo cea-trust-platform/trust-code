@@ -16,7 +16,7 @@
 #include <Traitement_particulier_NS_Profils.h>
 #include <LecFicDistribueBin.h>
 #include <EcrFicCollecteBin.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Navier_Stokes_std.h>
 
 Implemente_base(Traitement_particulier_NS_Profils,"Traitement_particulier_NS_Profils",Traitement_particulier_NS_base);
@@ -133,8 +133,8 @@ Entree& Traitement_particulier_NS_Profils::lire(Entree& is)
                 oui_profil_nu_t = 1;
                 Cerr << "User asked for statistics on eddy-viscosity..." << finl;
                 const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
-                const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
-                if(sub_type(Mod_turb_hyd_base,mod_turb))
+                const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
+                if(sub_type(Modele_turbulence_hyd_base,mod_turb))
                   Cerr << "Statistics for eddy-viscosity : OK !" << finl;
                 else
                   {

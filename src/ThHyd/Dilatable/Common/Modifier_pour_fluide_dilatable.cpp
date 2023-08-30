@@ -15,7 +15,7 @@
 
 #include <Modifier_pour_fluide_dilatable.h>
 #include <Fluide_Dilatable_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Domaine_VF.h>
@@ -126,7 +126,7 @@ void diviser_par_rho_si_dilatable(DoubleVect& val, const Milieu_base& mil)
     }
 }
 
-void correction_nut_et_cisaillement_paroi_si_qc(Mod_turb_hyd_base& mod)
+void correction_nut_et_cisaillement_paroi_si_qc(Modele_turbulence_hyd_base& mod)
 {
   // on recgarde si on a un fluide QC
   if (sub_type(Fluide_Dilatable_base, mod.equation().probleme().milieu()))

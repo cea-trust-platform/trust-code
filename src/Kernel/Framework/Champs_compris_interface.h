@@ -30,7 +30,7 @@ enum Option { NONE, DESCRIPTION };
  *               les champs compris (postraitables) pour une classe donnee.
  *               Les classes qui heritent de cette classe sont : Probleme_base, Equation_base, Milieu_base,
  *               Operateur_base, Source_base, Traitement_particulier_NS_base, Traitement_particulier_Solide_base,
- *               Mod_turb_hyd_base, Modele_turbulence_scal_base, Loi_Etat_base, Modele_Fonc_Bas_Reynolds_Base,
+ *               Modele_turbulence_hyd_base, Modele_turbulence_scal_base, Loi_Etat_base, Modele_Fonc_Bas_Reynolds_Base,
  *               Modele_Fonc_Bas_Reynolds_Thermique_Base et l interface est propagee dans leurs classes derivees
  *
  *         Methodes de l interface

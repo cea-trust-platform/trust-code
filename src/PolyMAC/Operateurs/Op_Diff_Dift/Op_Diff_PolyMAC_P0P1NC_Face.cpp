@@ -20,7 +20,7 @@
 #include <Dirichlet_homogene.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Champ_Uniforme.h>
 #include <TRUSTTab_parts.h>
 #include <MD_Vector_base.h>

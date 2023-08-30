@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Op_Dift_VDF_Face_Axi_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 
 Implemente_base(Op_Dift_VDF_Face_Axi_base,"Op_Dift_VDF_Face_Axi_base",Op_Dift_VDF_Face_base);
 
@@ -48,7 +48,7 @@ void Op_Dift_VDF_Face_Axi_base::completer()
   Champ_Face_VDF& vitesse = ref_cast(Champ_Face_VDF,eqn_hydr.inconnue().valeur());
   vitesse.dimensionner_tenseur_Grad();
   const RefObjU& modele_turbulence = eqn_hydr.get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur());
+  const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur());
   associer_modele_turbulence(mod_turb);
 }
 
@@ -63,7 +63,7 @@ void Op_Dift_VDF_Face_Axi_base::mettre_a_jour(double )
 }
 
 // XXX E Saikali : j'ai fait comme ca sinon nu_t est pas initialiser dans le cas var
-void Op_Dift_VDF_Face_Axi_base::associer_modele_turbulence(const Mod_turb_hyd_base& mod)
+void Op_Dift_VDF_Face_Axi_base::associer_modele_turbulence(const Modele_turbulence_hyd_base& mod)
 {
   le_modele_turbulence = mod;
   associer_diffusivite_turbulente(le_modele_turbulence->viscosite_turbulente());

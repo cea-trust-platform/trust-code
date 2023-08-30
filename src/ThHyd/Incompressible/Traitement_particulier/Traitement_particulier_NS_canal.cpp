@@ -17,7 +17,7 @@
 #include <LecFicDistribue.h>
 #include <EcrFicCollecte.h>
 #include <Navier_Stokes_std.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Probleme_base.h>
 #include <Discretisation_base.h>
 #include <Domaine_VF.h>
@@ -182,7 +182,7 @@ void Traitement_particulier_NS_canal::remplir_Tab_recap(IntTab& Tab_rec) const
 void Traitement_particulier_NS_canal::preparer_calcul_particulier()
 {
   const RefObjU& modele_turbulence = mon_equation.valeur().get_modele(TURBULENCE);
-  if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base,modele_turbulence.valeur()))
+  if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base,modele_turbulence.valeur()))
     {
       oui_profil_nu_t = 1;
       Nval=13;
@@ -745,14 +745,14 @@ void Traitement_particulier_NS_canal::calcul_reynolds_tau()
         nb_cl_diri+=1;
     }
 
-  if (modele_turbulence.non_nul() && !ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi().valeur().que_suis_je().debute_par("negligeable"))
+  if (modele_turbulence.non_nul() && !ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur()).loi_paroi().valeur().que_suis_je().debute_par("negligeable"))
     {
       // PQ : 13/07/05 : prise en compte des lois de paroi pour le calcul de u_tau
       // Hypotheses :    1ere condition de Dirichlet = paroi basse
       //                 2eme condition de Dirichlet = paroi haute
       //                 maillage regulier suivant x
       const Fluide_base& fluide = ref_cast(Fluide_base,mon_equation.valeur().probleme().equation(0).milieu());
-      const Turbulence_paroi& loipar           = ref_cast(Mod_turb_hyd_base,modele_turbulence.valeur()).loi_paroi();
+      const Turbulence_paroi& loipar           = ref_cast(Modele_turbulence_hyd_base,modele_turbulence.valeur()).loi_paroi();
       DoubleTab tau_tan;
       tau_tan.ref(loipar->Cisaillement_paroi());
 

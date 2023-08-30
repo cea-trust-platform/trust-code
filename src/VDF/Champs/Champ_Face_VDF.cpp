@@ -17,7 +17,7 @@
 #include <Dirichlet_paroi_defilante.h>
 #include <Champ_Uniforme_Morceaux.h>
 #include <Dirichlet_paroi_fixe.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Champ_Uniforme.h>
 #include <Champ_Face_VDF.h>
 #include <Domaine_Cl_VDF.h>
@@ -355,9 +355,9 @@ void Champ_Face_VDF::calcul_y_plus(DoubleTab& y_plus, const Domaine_Cl_VDF& doma
   int yplus_already_computed = 0; // flag
 
   const RefObjU& modele_turbulence = eqn_hydr.get_modele(TURBULENCE);
-  if (modele_turbulence.non_nul() && sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
+  if (modele_turbulence.non_nul() && sub_type(Modele_turbulence_hyd_base, modele_turbulence.valeur()))
     {
-      const Mod_turb_hyd_base& mod_turb = ref_cast(Mod_turb_hyd_base, modele_turbulence.valeur());
+      const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
       const Turbulence_paroi_base& loipar = mod_turb.loi_paroi();
       if (loipar.use_shear())
         {

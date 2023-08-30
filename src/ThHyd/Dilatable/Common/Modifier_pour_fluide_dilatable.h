@@ -31,12 +31,12 @@
 #include <TRUSTTabs_forward.h>
 
 class Fluide_Dilatable_base;
-class Mod_turb_hyd_base;
+class Modele_turbulence_hyd_base;
 class Milieu_base;
 
 void multiplier_diviser_rho(DoubleVect& tab, const Fluide_Dilatable_base& le_fluide, int diviser = 0);
 void diviser_par_rho_si_dilatable(DoubleVect& val, const Milieu_base& mil);
 void multiplier_par_rho_si_dilatable(DoubleVect& val, const Milieu_base& mil);
-void correction_nut_et_cisaillement_paroi_si_qc(Mod_turb_hyd_base& mod);
+void correction_nut_et_cisaillement_paroi_si_qc(Modele_turbulence_hyd_base& mod);
 
 #endif /* Modifier_pour_fluide_dilatable */

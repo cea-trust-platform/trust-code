@@ -16,7 +16,7 @@
 #include <Dirichlet_paroi_defilante.h>
 #include <Dirichlet_paroi_fixe.h>
 #include <Paroi_hyd_base_VEF.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Schema_Temps_base.h>
 #include <Domaine_Cl_dis.h>
 #include <communications.h>

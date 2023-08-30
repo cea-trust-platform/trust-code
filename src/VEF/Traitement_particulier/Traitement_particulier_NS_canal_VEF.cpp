@@ -15,7 +15,7 @@
 
 #include <Traitement_particulier_NS_canal_VEF.h>
 #include <Navier_Stokes_std.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Equation_base.h>
 #include <Domaine_VEF.h>
 #include <Milieu_base.h>
@@ -189,7 +189,7 @@ void Traitement_particulier_NS_canal_VEF::calculer_moyenne_spatiale_nut(DoubleTa
   const DoubleTab& xv = domaine_VEF.xv();
   const Equation_base& N_S_Turb  = mon_equation.valeur();
   const RefObjU& modele_turbulence_hydr = N_S_Turb.get_modele(TURBULENCE);
-  const Mod_turb_hyd_base& le_modele = ref_cast(Mod_turb_hyd_base,modele_turbulence_hydr.valeur());
+  const Modele_turbulence_hyd_base& le_modele = ref_cast(Modele_turbulence_hyd_base,modele_turbulence_hydr.valeur());
   const DoubleTab& nu_t = le_modele.viscosite_turbulente().valeurs();
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   double y;

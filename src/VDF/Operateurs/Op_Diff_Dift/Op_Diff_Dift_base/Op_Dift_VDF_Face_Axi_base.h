@@ -19,7 +19,7 @@
 #include <Op_Dift_VDF_Face_base.h>
 #include <TRUST_Ref.h>
 
-class Mod_turb_hyd_base;
+class Modele_turbulence_hyd_base;
 class Champ_Face_VDF;
 
 class Op_Dift_VDF_Face_Axi_base : public Op_Dift_VDF_Face_base
@@ -29,7 +29,7 @@ public:
   double calculer_dt_stab() const override;
   void completer() override;
   void associer(const Domaine_dis& , const Domaine_Cl_dis& ,const Champ_Inc& ) override;
-  void associer_modele_turbulence(const Mod_turb_hyd_base& );
+  void associer_modele_turbulence(const Modele_turbulence_hyd_base& );
   void mettre_a_jour(double ) override;
   void contribue_au_second_membre(DoubleTab& ) const;
   DoubleTab& calculer(const DoubleTab& , DoubleTab& ) const override;
@@ -42,7 +42,7 @@ public:
   inline void modifier_pour_Cl(Matrice_Morse& matrice, DoubleTab& secmem) const override { Op_VDF_Face::modifier_pour_Cl( le_dom_vdf.valeur(), la_zcl_vdf.valeur(), matrice,  secmem); }
 
 protected:
-  REF(Mod_turb_hyd_base) le_modele_turbulence;
+  REF(Modele_turbulence_hyd_base) le_modele_turbulence;
   REF(Champ_Face_VDF) inconnue;
   REF(Domaine_VDF) le_dom_vdf;
   REF(Domaine_Cl_VDF) la_zcl_vdf;

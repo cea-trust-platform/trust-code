@@ -17,7 +17,7 @@
 #define Op_Dift_VEF_base_included
 
 #include <Op_Diff_Turbulent_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Op_Diff_VEF_base.h>
 #include <TRUST_Ref.h>
 
@@ -50,16 +50,16 @@ public:
   }
 
   void calculer_borne_locale(DoubleVect& ,double ,double ) const override;
-  void associer_modele_turbulence(const Mod_turb_hyd_base& );
+  void associer_modele_turbulence(const Modele_turbulence_hyd_base& );
   void mettre_a_jour(double temps) override;
   void associer(const Domaine_dis& , const Domaine_Cl_dis& , const Champ_Inc& ) override;
   void completer() override;
 
   const DoubleTab& get_tau_tan() const { return tau_tan_; }
-  const Mod_turb_hyd_base& get_modele_turbulence() const { return le_modele_turbulence.valeur(); }
+  const Modele_turbulence_hyd_base& get_modele_turbulence() const { return le_modele_turbulence.valeur(); }
 
 protected:
-  REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
+  REF(Modele_turbulence_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
   REF(Champ_base) diffusivite_;
   DoubleTab tau_tan_;
 

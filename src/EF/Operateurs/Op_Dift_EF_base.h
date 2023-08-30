@@ -17,7 +17,7 @@
 #define Op_Dift_EF_base_included
 
 #include <Op_Diff_Turbulent_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Op_Diff_EF_base.h>
 #include <TRUST_Ref.h>
 
@@ -29,13 +29,13 @@ class Op_Dift_EF_base : public Op_Diff_EF_base, public Op_Diff_Turbulent_base
 
 public:
 
-  void associer_modele_turbulence(const Mod_turb_hyd_base& );
+  void associer_modele_turbulence(const Modele_turbulence_hyd_base& );
   void mettre_a_jour(double temps) override;
   void completer() override;
   void calculer_borne_locale(DoubleVect& ,double ,double ) const override;
 
 protected:
-  REF(Mod_turb_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
+  REF(Modele_turbulence_hyd_base) le_modele_turbulence; // A deplacer dans Op_Diff_turb ?
   DoubleTab tau_tan_;
 };
 

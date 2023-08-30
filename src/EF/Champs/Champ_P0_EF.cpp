@@ -22,7 +22,7 @@
 #include <Equation_base.h>
 #include <Fluide_base.h>
 #include <Champ_Uniforme.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 
 Implemente_instanciable(Champ_P0_EF,"Champ_P0_EF",Champ_Inc_P0_base);
 

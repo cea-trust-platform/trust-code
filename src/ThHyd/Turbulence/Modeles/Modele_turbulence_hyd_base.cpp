@@ -18,7 +18,7 @@
 #include <Operateur_Conv_base.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <communications.h>
 #include <LecFicDiffuse.h>
 #include <EcrFicPartage.h>
@@ -30,9 +30,9 @@
 #include <Param.h>
 #include <Debog.h>
 
-Implemente_base_sans_constructeur(Mod_turb_hyd_base, "Mod_turb_hyd_base", Objet_U);
+Implemente_base_sans_constructeur(Modele_turbulence_hyd_base, "Modele_turbulence_hyd_base", Objet_U);
 
-Sortie& Mod_turb_hyd_base::printOn(Sortie& s) const
+Sortie& Modele_turbulence_hyd_base::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
@@ -51,7 +51,7 @@ Sortie& Mod_turb_hyd_base::printOn(Sortie& s) const
  * @throws accolade ouvrante attendue
  * @throws loi de paroi incompatible avec le probleme
  */
-Entree& Mod_turb_hyd_base::readOn(Entree& is)
+Entree& Modele_turbulence_hyd_base::readOn(Entree& is)
 {
   Cerr << "Reading of data for a " << que_suis_je() << " hydraulic turbulence model" << finl;
   Param param(que_suis_je());
@@ -73,7 +73,7 @@ Entree& Mod_turb_hyd_base::readOn(Entree& is)
   return is;
 }
 
-void Mod_turb_hyd_base::set_param(Param& param)
+void Modele_turbulence_hyd_base::set_param(Param& param)
 {
   param.ajouter_non_std("turbulence_paroi", (this), Param::REQUIRED);
   param.ajouter_non_std("dt_impr_ustar", (this));
@@ -84,7 +84,7 @@ void Mod_turb_hyd_base::set_param(Param& param)
   //param.ajouter_condition("not(is_read_dt_impr_ustar_mean_only_and_is_read_dt_impr_ustar)","only one of dt_impr_ustar_mean_only and dt_impr_ustar can be used");
 }
 
-int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+int Modele_turbulence_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
 {
   Motcle motlu;
   int retval = 1;
@@ -190,7 +190,7 @@ int Mod_turb_hyd_base::lire_motcle_non_standard(const Motcle& mot, Entree& is)
  *
  * @param (Equation_base& eqn) l'equation a laquelle l'objet s'associe
  */
-void Mod_turb_hyd_base::associer_eqn(const Equation_base& eqn)
+void Modele_turbulence_hyd_base::associer_eqn(const Equation_base& eqn)
 {
   mon_equation = eqn;
 }
@@ -203,7 +203,7 @@ void Mod_turb_hyd_base::associer_eqn(const Equation_base& eqn)
  * @param (Domaine_dis&) un domaine discretisee
  * @param (Domaine_Cl_dis&) un domaine de conditions aux limites discretisees
  */
-void Mod_turb_hyd_base::associer(const Domaine_dis&, const Domaine_Cl_dis&)
+void Modele_turbulence_hyd_base::associer(const Domaine_dis&, const Domaine_Cl_dis&)
 {
   ;
 }
@@ -211,7 +211,7 @@ void Mod_turb_hyd_base::associer(const Domaine_dis&, const Domaine_Cl_dis&)
 /*! @brief NE FAIT RIEN
  *
  */
-void Mod_turb_hyd_base::completer()
+void Modele_turbulence_hyd_base::completer()
 {
   ;
 }
@@ -221,7 +221,7 @@ void Mod_turb_hyd_base::completer()
  * xyz pour remplir le champs wall_length en vue d'un post-traitement de distance_paroi
  *
  */
-void Mod_turb_hyd_base::lire_distance_paroi()
+void Modele_turbulence_hyd_base::lire_distance_paroi()
 {
 
   // PQ : 25/02/04 recuperation de la distance a la paroi dans Wall_length.xyz
@@ -249,7 +249,7 @@ void Mod_turb_hyd_base::lire_distance_paroi()
 /*! @brief Discretise le modele de turbulence.
  *
  */
-void Mod_turb_hyd_base::discretiser()
+void Modele_turbulence_hyd_base::discretiser()
 {
   Cerr << "Turbulence hydraulic model discretization" << finl;
   discretiser_visc_turb(mon_equation->schema_temps(), mon_equation->domaine_dis(), la_viscosite_turbulente);
@@ -262,7 +262,7 @@ void Mod_turb_hyd_base::discretiser()
   champs_compris_.ajoute_champ(wall_length_);
 }
 
-void Mod_turb_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
+void Modele_turbulence_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
 {
   int is_dilat = equation().probleme().is_dilatable();
   if (!is_dilat)
@@ -275,14 +275,14 @@ void Mod_turb_hyd_base::discretiser_visc_turb(const Schema_Temps_base& sch, Doma
   dis.discretiser_champ("champ_elem", z.valeur(), nom, unite, 1, sch.temps_courant(), ch);
 }
 
-void Mod_turb_hyd_base::discretiser_corr_visc_turb(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
+void Modele_turbulence_hyd_base::discretiser_corr_visc_turb(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Turbulent viscosity correction field discretization" << finl;
   const Discretisation_base& dis = mon_equation->discretisation();
   dis.discretiser_champ("champ_elem", z.valeur(), "corr_visco_turb", "adimensionnel", 1, sch.temps_courant(), ch);
 }
 
-void Mod_turb_hyd_base::discretiser_K(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
+void Modele_turbulence_hyd_base::discretiser_K(const Schema_Temps_base& sch, Domaine_dis& z, Champ_Fonc& ch) const
 {
   Cerr << "Kinetic turbulent energy field discretisation" << finl;
   const Discretisation_base& dis = mon_equation->discretisation();
@@ -296,7 +296,7 @@ void Mod_turb_hyd_base::discretiser_K(const Schema_Temps_base& sch, Domaine_dis&
  *
  * @return (int) code de retour de Turbulence_paroi::init_lois_paroi()
  */
-int Mod_turb_hyd_base::preparer_calcul()
+int Modele_turbulence_hyd_base::preparer_calcul()
 {
   int res = 1;
   if (loipar.non_nul())
@@ -323,12 +323,12 @@ int Mod_turb_hyd_base::preparer_calcul()
   return res;
 }
 
-bool Mod_turb_hyd_base::initTimeStep(double dt)
+bool Modele_turbulence_hyd_base::initTimeStep(double dt)
 {
   return true;
 }
 
-void Mod_turb_hyd_base::creer_champ(const Motcle& motlu)
+void Modele_turbulence_hyd_base::creer_champ(const Motcle& motlu)
 {
   if (loipar.non_nul())
     {
@@ -336,7 +336,7 @@ void Mod_turb_hyd_base::creer_champ(const Motcle& motlu)
     }
 }
 
-const Champ_base& Mod_turb_hyd_base::get_champ(const Motcle& nom) const
+const Champ_base& Modele_turbulence_hyd_base::get_champ(const Motcle& nom) const
 {
   try
     {
@@ -358,7 +358,7 @@ const Champ_base& Mod_turb_hyd_base::get_champ(const Motcle& nom) const
     }
   throw Champs_compris_erreur();
 }
-void Mod_turb_hyd_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
+void Modele_turbulence_hyd_base::get_noms_champs_postraitables(Noms& nom, Option opt) const
 {
   if (opt == DESCRIPTION)
     Cerr << que_suis_je() << " : " << champs_compris_.liste_noms_compris() << finl;
@@ -373,7 +373,7 @@ void Mod_turb_hyd_base::get_noms_champs_postraitables(Noms& nom, Option opt) con
  *
  * @return renvoie toujours 1
  */
-void Mod_turb_hyd_base::imprimer(Sortie& os) const
+void Modele_turbulence_hyd_base::imprimer(Sortie& os) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   double temps_courant = sch.temps_courant();
@@ -384,7 +384,7 @@ void Mod_turb_hyd_base::imprimer(Sortie& os) const
     loipar.imprimer_ustar_mean_only(os, boundaries_, boundaries_list, nom_fichier_);
 }
 
-int Mod_turb_hyd_base::limpr_ustar(double temps_courant, double temps_prec, double dt, double dt_ustar) const
+int Modele_turbulence_hyd_base::limpr_ustar(double temps_courant, double temps_prec, double dt, double dt_ustar) const
 {
   const Schema_Temps_base& sch = mon_equation->schema_temps();
   if (sch.nb_pas_dt() == 0)
@@ -410,7 +410,7 @@ int Mod_turb_hyd_base::limpr_ustar(double temps_courant, double temps_prec, doub
  * @param (Sortie& os) un flot de sortie
  * @return (int) renvoie toujours 1
  */
-int Mod_turb_hyd_base::sauvegarder(Sortie& os) const
+int Modele_turbulence_hyd_base::sauvegarder(Sortie& os) const
 {
   a_faire(os);
   if (loipar.non_nul())
@@ -425,7 +425,7 @@ int Mod_turb_hyd_base::sauvegarder(Sortie& os) const
       type += nom_discr.substr_old(1, 3);
       os << type << finl;
     }
-  // Verification que l'appel a bien ete fait a Mod_turb_hyd_base::limiter_viscosite_turbulente()
+  // Verification que l'appel a bien ete fait a Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
   assert(mp_sum(borne_visco_turb.size()) != 0);
   return 0;
 }
@@ -434,7 +434,7 @@ int Mod_turb_hyd_base::sauvegarder(Sortie& os) const
  * @param (Entree&) un flot d'entree
  * @return (int) renvoie toujours 0
  */
-int Mod_turb_hyd_base::reprendre(Entree& is)
+int Modele_turbulence_hyd_base::reprendre(Entree& is)
 {
   if (loipar.non_nul())
     loipar->reprendre(is);
@@ -444,7 +444,7 @@ int Mod_turb_hyd_base::reprendre(Entree& is)
 /*! @brief Effectue l'ecriture d'une identite si cela est necessaire.
  *
  */
-void Mod_turb_hyd_base::a_faire(Sortie& os) const
+void Modele_turbulence_hyd_base::a_faire(Sortie& os) const
 {
   int afaire, special;
   EcritureLectureSpecial::is_ecriture_special(special, afaire);
@@ -461,7 +461,7 @@ void Mod_turb_hyd_base::a_faire(Sortie& os) const
     }
 }
 
-void Mod_turb_hyd_base::limiter_viscosite_turbulente()
+void Modele_turbulence_hyd_base::limiter_viscosite_turbulente()
 {
   // On initial
   int size = viscosite_turbulente().valeurs().size();
@@ -480,10 +480,10 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
   int nb_elem = equation().domaine_dis().domaine().nb_elem();
   assert(nb_elem == size);
   int compt = 0;
-  Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente.valeurs());
-  // Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente visco_turb before",visco_turb);
-  // Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente borne_visco_turb",borne_visco_turb);
-  // Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente corr_visco_turb before",corr_visco_turb);
+  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente before", la_viscosite_turbulente.valeurs());
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb before",visco_turb);
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente borne_visco_turb",borne_visco_turb);
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb before",corr_visco_turb);
   for (int elem = 0; elem < nb_elem; elem++)
     {
       if (visco_turb(elem) > borne_visco_turb(elem))
@@ -497,9 +497,9 @@ void Mod_turb_hyd_base::limiter_viscosite_turbulente()
     }
   corr_visco_turb.changer_temps(mon_equation->inconnue().temps());
   visco_turb.echange_espace_virtuel();
-  // Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente corr_visco_turb after",corr_visco_turb);
-  // Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente visco_turb after",visco_turb);
-  Debog::verifier("Mod_turb_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente.valeurs());
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente corr_visco_turb after",corr_visco_turb);
+  // Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente visco_turb after",visco_turb);
+  Debog::verifier("Modele_turbulence_hyd_base::limiter_viscosite_turbulente la_viscosite_turbulente after", la_viscosite_turbulente.valeurs());
 
   // On imprime
   int imprimer_compt = 0;

@@ -14,7 +14,7 @@
 *****************************************************************************/
 
 #include <Eval_Dift_Multiphase_VDF.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Op_Dift_VDF_base.h>
 #include <Eval_Dift_VDF.h>
 #include <Statistiques.h>
@@ -80,7 +80,7 @@ void Op_Dift_VDF_base::ajoute_terme_pour_axi_turb(matrices_t matrices, DoubleTab
                 for (int n=0; n<N; n++)
                   diffu_tot(i, n) = tab_diffusivite(!cM*i, n) + alpharho(i, n)*diffusivite_turb(i,n);
             }
-          else if (sub_type(Mod_turb_hyd_base, modele_turbulence.valeur()))
+          else if (sub_type(Modele_turbulence_hyd_base, modele_turbulence.valeur()))
             {
               const Eval_Dift_VDF& eval_dift = static_cast<const Eval_Dift_VDF&>(eval);
               const Champ_Fonc& ch_diff_turb = eval_dift.diffusivite_turbulente();

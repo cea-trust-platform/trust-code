@@ -15,7 +15,7 @@
 
 #include <Paroi_negligeable_VEF.h>
 #include <Dirichlet_paroi_fixe.h>
-#include <Mod_turb_hyd_base.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Operateur_base.h>
 #include <Champ_Uniforme.h>
 #include <distances_VEF.h>
