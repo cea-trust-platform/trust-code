@@ -287,9 +287,6 @@ const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
       {
       }
   throw Champs_compris_erreur();
-  REF(Champ_base) ref_champ;
-
-  return ref_champ;
 }
 
 void Navier_Stokes_Turbulent::get_noms_champs_postraitables(Noms& nom, Option opt) const

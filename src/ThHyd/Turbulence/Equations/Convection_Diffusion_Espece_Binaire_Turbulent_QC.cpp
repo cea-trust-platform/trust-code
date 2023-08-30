@@ -133,9 +133,6 @@ const Champ_base& Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_champ(co
       {
       }
   throw Champs_compris_erreur();
-
-  REF(Champ_base) ref_champ;
-  return ref_champ;
 }
 
 void Convection_Diffusion_Espece_Binaire_Turbulent_QC::get_noms_champs_postraitables(Noms& nom, Option opt) const
