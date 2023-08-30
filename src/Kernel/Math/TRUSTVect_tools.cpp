@@ -557,16 +557,12 @@ void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
   for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
     {
       const int bloc_end = line_size * items_blocs[blocs_idx];
-      //_TYPE_ *ptr = resu.addr() + i;
       #pragma omp target teams distribute parallel for if (kernelOnDevice)
-      //for (; i < bloc_end; i++) *(ptr++) = invalid;
       for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
       i = items_blocs[blocs_idx+1] * line_size;
     }
   const int bloc_end = resu.size_array(); // Process until end of vector
-  //_TYPE_ *ptr = resu.addr() + i;
   #pragma omp target teams distribute parallel for if (kernelOnDevice)
-  //for (; i < bloc_end; i++) *(ptr++) = invalid;
   for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
   end_timer(kernelOnDevice, "invalidate_data(x)");
 }
@@ -578,3 +574,61 @@ template void invalidate_data<float>(TRUSTVect<float>& resu, Mp_vect_options opt
 template void invalidate_data<int>(TRUSTVect<int>& resu, Mp_vect_options opt);
 #endif /* NDEBUG */
 
+template<typename _TYPE_>
+_TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt)
+{
+  _TYPE_ sum = 0;
+  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
+  const TRUSTVect<_TYPE_>& master_vect = vx;
+  const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
+  const MD_Vector& md = master_vect.get_md_vector();
+  assert(vx.line_size() == line_size && vy.line_size() == line_size);
+  assert(vx.size_totale() == vect_size_tot && vy.size_totale() == vect_size_tot); // this test is necessary if md is null
+  assert(vx.get_md_vector() == md && vy.get_md_vector() == md);
+  // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
+  int nblocs_left = 1, one_bloc[2];
+  const int *bloc_ptr;
+  if (opt != VECT_ALL_ITEMS && md.non_nul())
+    {
+      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
+      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+      assert(items_blocs.size_array() % 2 == 0);
+      nblocs_left = items_blocs.size_array() >> 1;
+      bloc_ptr = items_blocs.addr();
+    }
+  else if (vect_size_tot > 0)
+    {
+      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
+      // Compute all data, in the vector (including virtual data), build a big bloc:
+      nblocs_left = 1;
+      bloc_ptr = one_bloc;
+      one_bloc[0] = 0;
+      one_bloc[1] = vect_size_tot / line_size;
+    }
+  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
+    return sum;
+
+  bool kernelOnDevice = const_cast<TRUSTVect<_TYPE_>&>(vx).checkDataOnDevice(vy);
+  const _TYPE_ *vx_ptr = mapToDevice(vx, "", kernelOnDevice);
+  const _TYPE_ *vy_ptr = mapToDevice(vy, "", kernelOnDevice);
+  start_timer();
+  for (; nblocs_left; nblocs_left--)
+    {
+      // Get index of next bloc start:
+      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
+      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
+      // ToDo OpenMP bug nvc++ compiler recent bouh: https://forums.developer.nvidia.com/t/openmp-nvc-duplicate-name-in-reduction-clause-error-with-recent-sdk/255696/3
+      if (kernelOnDevice)
+        #pragma omp target teams distribute parallel for reduction(+:sum)
+        for (int i=begin_bloc; i<end_bloc; i++)
+          sum += vx_ptr[i] * vy_ptr[i];
+      else
+        for (int i=begin_bloc; i<end_bloc; i++)
+          sum += vx_ptr[i] * vy_ptr[i];
+    }
+  end_timer(kernelOnDevice, "local_prodscal(vx,vy)");
+  return sum;
+}
+// Explicit instanciation for templates:
+template double local_prodscal(const TRUSTVect<double>& vx, const TRUSTVect<double>& vy, Mp_vect_options opt);
+template float local_prodscal(const TRUSTVect<float>& vx, const TRUSTVect<float>& vy, Mp_vect_options opt);

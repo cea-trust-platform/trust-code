@@ -207,62 +207,8 @@ inline _TYPE_ mp_min_abs_vect(const TRUSTVect<_TYPE_>& x, Mp_vect_options opt = 
   return s;
 }
 
-template<typename _TYPE_>
-inline _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_SEQUENTIAL_ITEMS)
-{
-  vx.checkDataOnHost();
-  vy.checkDataOnHost();
-  _TYPE_ sum = 0;
-  // Master vect donne la structure de reference, les autres vecteurs doivent avoir la meme structure.
-  const TRUSTVect<_TYPE_>& master_vect = vx;
-  const int line_size = master_vect.line_size(), vect_size_tot = master_vect.size_totale();
-  const MD_Vector& md = master_vect.get_md_vector();
-  assert(vx.line_size() == line_size && vy.line_size() == line_size);
-  assert(vx.size_totale() == vect_size_tot && vy.size_totale() == vect_size_tot); // this test is necessary if md is null
-  assert(vx.get_md_vector() == md && vy.get_md_vector() == md);
-  // Determine blocs of data to process, depending on " VECT_SEQUENTIAL_ITEMS"
-  int nblocs_left = 1, one_bloc[2];
-  const int *bloc_ptr;
-  if (opt != VECT_ALL_ITEMS && md.non_nul())
-    {
-      assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
-      const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
-      assert(items_blocs.size_array() % 2 == 0);
-      nblocs_left = items_blocs.size_array() >> 1;
-      bloc_ptr = items_blocs.addr();
-    }
-  else if (vect_size_tot > 0)
-    {
-      // attention, si vect_size_tot est nul, line_size a le droit d'etre nul
-      // Compute all data, in the vector (including virtual data), build a big bloc:
-      nblocs_left = 1;
-      bloc_ptr = one_bloc;
-      one_bloc[0] = 0;
-      one_bloc[1] = vect_size_tot / line_size;
-    }
-  else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
-    return sum;
-
-  const _TYPE_ *x_base = vx.addr();
-  const _TYPE_ *y_base = vy.addr();
-  for (; nblocs_left; nblocs_left--)
-    {
-      // Get index of next bloc start:
-      const int begin_bloc = (*(bloc_ptr++)) * line_size, end_bloc = (*(bloc_ptr++)) * line_size;
-      assert(begin_bloc >= 0 && end_bloc <= vect_size_tot && end_bloc >= begin_bloc);
-      const _TYPE_ *x_ptr = x_base + begin_bloc;
-      const _TYPE_ *y_ptr = y_base + begin_bloc;
-      int count = end_bloc - begin_bloc;
-      for (; count; count--)
-        {
-          const _TYPE_ x = *x_ptr;
-          const _TYPE_ y = *(y_ptr++);
-          sum += x * y;
-          x_ptr++;
-        }
-    }
-  return sum;
-}
+template <typename _TYPE_>
+extern _TYPE_ local_prodscal(const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_SEQUENTIAL_ITEMS);
 
 enum class TYPE_OPERATION_VECT_BIS { CARRE_ , SOMME_ };
 
@@ -494,7 +440,7 @@ inline void ajoute_carre_(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect
   ajoute_carre(resu,alpha,vx,opt);
 }
 
-// ToDo OpenMP offload in .cpp
+// ToDo OpenMP offload in .cpp (mais semble pas utilise...)
 template <typename _TYPE_>
 inline void ajoute_produit_scalaire(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, const TRUSTVect<_TYPE_>& vx, const TRUSTVect<_TYPE_>& vy, Mp_vect_options opt = VECT_ALL_ITEMS)
 {
