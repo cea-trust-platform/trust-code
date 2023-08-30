@@ -22,6 +22,7 @@
 #include <Param.h>
 
 Implemente_instanciable(Navier_Stokes_Turbulent_QC, "Navier_Stokes_Turbulent_QC", Navier_Stokes_Turbulent);
+// XD navier_stokes_turbulent_qc navier_stokes_turbulent navier_stokes_turbulent_qc -1 Navier-Stokes equations under low Mach number as well as the associated turbulence model equations.
 
 Sortie& Navier_Stokes_Turbulent_QC::printOn(Sortie& is) const { return Equation_base::printOn(is); }
 

@@ -16,6 +16,10 @@
 #include <Pb_Thermohydraulique_Turbulent_QC.h>
 
 Implemente_instanciable(Pb_Thermohydraulique_Turbulent_QC, "Pb_Thermohydraulique_Turbulent_QC", Pb_QC_base);
+// XD pb_thermohydraulique_turbulent_qc Pb_base pb_thermohydraulique_turbulent_qc -1 Resolution of turbulent thermohydraulic problem under low Mach number. NL2 Warning : Available for VDF and VEF P0/P1NC discretization only.
+// XD attr fluide_quasi_compressible fluide_quasi_compressible fluide_quasi_compressible 0 The fluid medium associated with the problem.
+// XD attr navier_stokes_turbulent_qc navier_stokes_turbulent_qc navier_stokes_turbulent_qc 0 Navier-Stokes equations under low Mach number as well as the associated turbulence model equations.
+// XD attr convection_diffusion_chaleur_turbulent_qc convection_diffusion_chaleur_turbulent_qc convection_diffusion_chaleur_turbulent_qc 0 Energy equation under low Mach number as well as the associated turbulence model equations.
 
 Sortie& Pb_Thermohydraulique_Turbulent_QC::printOn(Sortie& os) const { return Probleme_base::printOn(os); }
 

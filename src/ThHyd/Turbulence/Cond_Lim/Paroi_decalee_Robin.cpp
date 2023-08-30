@@ -20,6 +20,8 @@
 #include <Param.h>
 
 Implemente_instanciable(Paroi_decalee_Robin, "Paroi_decalee_Robin", Symetrie);
+// XD paroi_decalee_robin condlim_base paroi_decalee_robin 1 This keyword is used to designate a Robin boundary condition (a.u+b.du/dn=c) associated with the Pironneau methodology for the wall laws. The value of given by the delta option is the distance between the mesh (where symmetry boundary condition is applied) and the fictious wall. This boundary condition needs the definition of the dedicated source terms (Source_Robin or Source_Robin_Scalaire) according the equations used.
+// XD attr delta floattant delta 0 not_set
 
 Sortie& Paroi_decalee_Robin::printOn(Sortie& s) const { return s << que_suis_je() << finl; }
 

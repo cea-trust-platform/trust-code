@@ -18,11 +18,10 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur(Convection_Diffusion_Concentration_Turbulent, "Convection_Diffusion_Concentration_Turbulent", Convection_Diffusion_Concentration);
+// XD convection_diffusion_concentration_turbulent convection_diffusion_concentration convection_diffusion_concentration_turbulent -1 Constituent transport equations (concentration diffusion convection) as well as the associated turbulence model equations.
+// XD attr modele_turbulence modele_turbulence_scal_base modele_turbulence 1 Turbulence model to be used in the constituent transport equations. The only model currently available is Schmidt.
 
-Sortie& Convection_Diffusion_Concentration_Turbulent::printOn(Sortie& is) const
-{
-  return Equation_base::printOn(is);
-}
+Sortie& Convection_Diffusion_Concentration_Turbulent::printOn(Sortie& is) const { return Equation_base::printOn(is); }
 
 Entree& Convection_Diffusion_Concentration_Turbulent::readOn(Entree& is)
 {

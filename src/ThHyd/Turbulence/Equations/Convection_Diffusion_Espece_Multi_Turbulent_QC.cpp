@@ -20,16 +20,13 @@
 #include <Param.h>
 
 Implemente_instanciable(Convection_Diffusion_Espece_Multi_Turbulent_QC, "Convection_Diffusion_Espece_Multi_Turbulent_QC", Convection_Diffusion_Espece_Multi_QC);
+// XD convection_diffusion_espece_multi_turbulent_qc eqn_base convection_diffusion_espece_multi_turbulent_qc -1 not_set
+// XD attr modele_turbulence modele_turbulence_scal_base modele_turbulence 1 Turbulence model to be used.
+// XD attr espece espece espece 0 not_set
 
-Sortie& Convection_Diffusion_Espece_Multi_Turbulent_QC::printOn(Sortie& is) const
-{
-  return Convection_Diffusion_Espece_Multi_QC::printOn(is);
-}
+Sortie& Convection_Diffusion_Espece_Multi_Turbulent_QC::printOn(Sortie& is) const { return Convection_Diffusion_Espece_Multi_QC::printOn(is); }
 
-Entree& Convection_Diffusion_Espece_Multi_Turbulent_QC::readOn(Entree& is)
-{
-  return Convection_Diffusion_Espece_Multi_QC::readOn(is);
-}
+Entree& Convection_Diffusion_Espece_Multi_Turbulent_QC::readOn(Entree& is) { return Convection_Diffusion_Espece_Multi_QC::readOn(is); }
 
 void Convection_Diffusion_Espece_Multi_Turbulent_QC::set_param(Param& param)
 {

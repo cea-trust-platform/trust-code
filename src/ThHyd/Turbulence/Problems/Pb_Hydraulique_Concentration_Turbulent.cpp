@@ -18,16 +18,15 @@
 #include <Constituant.h>
 
 Implemente_instanciable(Pb_Hydraulique_Concentration_Turbulent, "Pb_Hydraulique_Concentration_Turbulent", Pb_Fluide_base);
+// XD pb_hydraulique_concentration_turbulent Pb_base pb_hydraulique_concentration_turbulent -1 Resolution of Navier-Stokes/multiple constituent transport equations, with turbulence modelling.
+// XD attr fluide_incompressible fluide_incompressible fluide_incompressible 0 The fluid medium associated with the problem.
+// XD attr constituant constituant constituant 1 Constituents.
+// XD attr navier_stokes_turbulent navier_stokes_turbulent navier_stokes_turbulent 1 Navier-Stokes equations as well as the associated turbulence model equations.
+// XD attr convection_diffusion_concentration_turbulent convection_diffusion_concentration_turbulent convection_diffusion_concentration_turbulent 1 Constituent transport equations (concentration diffusion convection) as well as the associated turbulence model equations.
 
-Sortie& Pb_Hydraulique_Concentration_Turbulent::printOn(Sortie& os) const
-{
-  return Pb_Fluide_base::printOn(os);
-}
+Sortie& Pb_Hydraulique_Concentration_Turbulent::printOn(Sortie& os) const { return Pb_Fluide_base::printOn(os); }
 
-Entree& Pb_Hydraulique_Concentration_Turbulent::readOn(Entree& is)
-{
-  return Pb_Fluide_base::readOn(is);
-}
+Entree& Pb_Hydraulique_Concentration_Turbulent::readOn(Entree& is) { return Pb_Fluide_base::readOn(is); }
 
 /*! @brief Renvoie le nombre d'equation, Renvoie 2 car il y a 2 equations a un probleme
  *

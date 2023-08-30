@@ -24,15 +24,6 @@
 #include <Domaine.h>
 #include <Avanc.h>
 
-/*! @brief Associe le modele de turbulence a l'equation passee en parametre
- *
- *     Construit le modele de turbulence a partir d'un flot d'entree,
- *     et le discretise.
- *
- * @param (Entree& is) un flot d'entree
- * @param (Equation_base& eqn) l'equation auquel le modele de turbulence doit etre associe
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& Convection_Diffusion_Turbulent::lire_modele(Entree& is, const Equation_base& eqn)
 {
   Cerr << "Reading and typing of the turbulence model : " << finl;

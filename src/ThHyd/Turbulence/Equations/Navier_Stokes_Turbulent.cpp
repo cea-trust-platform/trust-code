@@ -28,6 +28,8 @@
 #include <Param.h>
 
 Implemente_instanciable(Navier_Stokes_Turbulent, "Navier_Stokes_Turbulent", Navier_Stokes_std);
+// XD navier_stokes_turbulent navier_stokes_standard navier_stokes_turbulent -1 Navier-Stokes equations as well as the associated turbulence model equations.
+// XD attr modele_turbulence modele_turbulence_hyd_deriv modele_turbulence 1 Turbulence model for Navier-Stokes equations.
 
 Sortie& Navier_Stokes_Turbulent::printOn(Sortie& is) const { return Equation_base::printOn(is); }
 
