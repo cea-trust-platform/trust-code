@@ -51,9 +51,10 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return;
 
-  bool kernelOnDevice = resu.checkDataOnDevice(vx, "ajoute_operation_speciale_generic(x,alpha,y");
+  bool kernelOnDevice = resu.checkDataOnDevice(vx);
   _TYPE_ *resu_base = computeOnTheDevice(resu, "", kernelOnDevice);
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
+  start_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -71,6 +72,7 @@ void ajoute_operation_speciale_generic(TRUSTVect<_TYPE_>& resu, _TYPE_ alpha, co
           if (IS_CARRE) p_resu += alpha * x * x;
         }
     }
+  end_timer(kernelOnDevice, "ajoute_operation_speciale_generic(x,alpha,y");
   // In debug mode, put invalid values where data has not been computed
 #ifndef NDEBUG
   invalidate_data(resu, opt);
@@ -327,8 +329,9 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 
-  bool kernelOnDevice = vx.checkDataOnDevice("local_extrema_vect_generic(x)");
+  bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
+  start_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -432,6 +435,7 @@ _TYPE_RETURN_ local_extrema_vect_generic(const TRUSTVect<_TYPE_>& vx, Mp_vect_op
           }
         } */
     }
+  end_timer(kernelOnDevice, "local_extrema_vect_generic(x)");
   return (IS_IMAX || IS_IMIN) ? i_min_max : (_TYPE_RETURN_)min_max_val;
 }
 // Explicit instanciation for templates:
@@ -490,8 +494,9 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
   else // raccourci pour les tableaux vides (evite le cas particulier line_size == 0)
     return sum;
 
-  bool kernelOnDevice = vx.checkDataOnDevice("local_operations_vect_bis_generic(x)");
+  bool kernelOnDevice = vx.checkDataOnDevice();
   const _TYPE_ *x_base = mapToDevice(vx, "", kernelOnDevice);
+  start_timer();
   for (; nblocs_left; nblocs_left--)
     {
       // Get index of next bloc start:
@@ -518,6 +523,7 @@ _TYPE_ local_operations_vect_bis_generic(const TRUSTVect<_TYPE_>& vx,Mp_vect_opt
             }
         }
     }
+  end_timer(kernelOnDevice, "local_operations_vect_bis_generic(x)");
   return sum;
 }
 // Explicit instanciation for templates:
@@ -527,4 +533,48 @@ template float local_operations_vect_bis_generic<float, TYPE_OPERATION_VECT_BIS:
 template double local_operations_vect_bis_generic<double, TYPE_OPERATION_VECT_BIS::SOMME_>(const TRUSTVect<double>& vx,Mp_vect_options opt);
 template int local_operations_vect_bis_generic<int, TYPE_OPERATION_VECT_BIS::SOMME_>(const TRUSTVect<int>& vx,Mp_vect_options opt);
 template float local_operations_vect_bis_generic<float, TYPE_OPERATION_VECT_BIS::SOMME_>(const TRUSTVect<float>& vx,Mp_vect_options opt);
+
+// ==================================================================================================================================
+// DEBUT code pour debug
+#ifndef NDEBUG
+// INVALID_SCALAR is used to fill arrays when values are not computed (virtual space might not be computed by operators).
+// The value below probably triggers errors on parallel test cases but does not prevent from doing "useless" computations with it.
+template <typename _TYPE_>
+void invalidate_data(TRUSTVect<_TYPE_>& resu, Mp_vect_options opt)
+{
+  _TYPE_ invalid = (std::is_same<_TYPE_,int>::value) ? INT_MAX : (std::is_same<_TYPE_,float>::value) ? -987654.321f : -987654.321 ;
+
+  const MD_Vector& md = resu.get_md_vector();
+  const int line_size = resu.line_size();
+  if (opt == VECT_ALL_ITEMS || (!md.non_nul())) return; // no invalid values
+  assert(opt == VECT_SEQUENTIAL_ITEMS || opt == VECT_REAL_ITEMS);
+  const TRUSTArray<int>& items_blocs = (opt == VECT_SEQUENTIAL_ITEMS) ? md.valeur().get_items_to_sum() : md.valeur().get_items_to_compute();
+  const int blocs_size = items_blocs.size_array();
+  int i = 0;
+  bool kernelOnDevice = resu.checkDataOnDevice();
+  _TYPE_ *resu_ptr = computeOnTheDevice(resu, "", kernelOnDevice);
+  start_timer();
+  for (int blocs_idx = 0; blocs_idx < blocs_size; blocs_idx += 2) // process data until beginning of next bloc, or end of array
+    {
+      const int bloc_end = line_size * items_blocs[blocs_idx];
+      //_TYPE_ *ptr = resu.addr() + i;
+      #pragma omp target teams distribute parallel for if (kernelOnDevice)
+      //for (; i < bloc_end; i++) *(ptr++) = invalid;
+      for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
+      i = items_blocs[blocs_idx+1] * line_size;
+    }
+  const int bloc_end = resu.size_array(); // Process until end of vector
+  //_TYPE_ *ptr = resu.addr() + i;
+  #pragma omp target teams distribute parallel for if (kernelOnDevice)
+  //for (; i < bloc_end; i++) *(ptr++) = invalid;
+  for (int count=i; count < bloc_end; count++) resu_ptr[count] = invalid;
+  end_timer(kernelOnDevice, "invalidate_data(x)");
+}
+// FIN code pour debug
+// ==================================================================================================================================
+// Explicit instanciation for templates:
+template void invalidate_data<double>(TRUSTVect<double>& resu, Mp_vect_options opt);
+template void invalidate_data<float>(TRUSTVect<float>& resu, Mp_vect_options opt);
+template void invalidate_data<int>(TRUSTVect<int>& resu, Mp_vect_options opt);
+#endif /* NDEBUG */
 
