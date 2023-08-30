@@ -32,6 +32,7 @@ Includes = -I. -I$(TRUST_ROOT)/include/backward\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Lois_Paroi\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Operateurs\
 	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Modeles\
+	-I$(TRUST_ROOT)/src/ThHyd/Turbulence/Cond_Lim\
 	-I$(TRUST_ROOT)/src/ThSol\
 	-I$(TRUST_ROOT)/src/VEF/Champs\
 	-I$(TRUST_ROOT)/src/VEF/Operateurs/Op_Conv\
