@@ -1,0 +1,278 @@
+# Recyclage de conditions limites avec Champ_front_calc_recycl_champ en VDF #
+
+# PARALLEL OK #
+
+dimension 3
+Domaine DOM
+Domaine THI
+
+# BEGIN MESH #
+Mailler DOM
+{
+ Pave block
+ {
+  origine  -2.e-3 -2.e-3 -4.e-3
+  longueurs 4.e-3  4.e-3  3.e-3
+  nombre_de_noeuds 27 21 17
+ }
+{
+ bord perioxx X = -2.e-3 -2.e-3 <= Y <= 2.e-3 -4.e-3 <= Z <= -1.e-3
+ bord perioxx X =  2.e-3 -2.e-3 <= Y <= 2.e-3 -4.e-3 <= Z <= -1.e-3
+ bord perioyy Y =  2.e-3 -2.e-3 <= X <= 2.e-3 -4.e-3 <= Z <= -1.e-3
+ bord perioyy Y = -2.e-3 -2.e-3 <= X <= 2.e-3 -4.e-3 <= Z <= -1.e-3
+ bord haut    Z = -1.e-3 -2.e-3 <= X <= 2.e-3 -2.e-3 <= Y <=  2.e-3
+ bord bas     Z = -4.e-3 -2.e-3 <= X <= 2.e-3 -2.e-3 <= Y <=  2.e-3
+}
+}
+
+Mailler THI
+{
+ Pave cube
+ {
+  origine  -2.e-3 -2.e-3 -1.e-3
+  longueurs 4.e-3  4.e-3  2.e-3
+  nombre_de_noeuds 23 19 13
+ }
+{
+ bord perioX X = -2.e-3 -2.e-3 <= Y <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioX X =  2.e-3 -2.e-3 <= Y <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioY Y =  2.e-3 -2.e-3 <= X <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioY Y = -2.e-3 -2.e-3 <= X <= 2.e-3 -1.e-3 <= Z <= 1.e-3
+ bord perioZ Z =  1.e-3 -2.e-3 <= X <= 2.e-3 -2.e-3 <= Y <= 2.e-3
+ bord perioZ Z = -1.e-3 -2.e-3 <= X <= 2.e-3 -2.e-3 <= Y <= 2.e-3
+}
+}
+
+Corriger_frontiere_periodique { Domaine DOM Bord perioxx }
+Corriger_frontiere_periodique { Domaine DOM Bord perioyy }
+
+Corriger_frontiere_periodique { Domaine THI Bord perioX }
+Corriger_frontiere_periodique { Domaine THI Bord perioY }
+Corriger_frontiere_periodique { Domaine THI Bord perioZ }
+
+Postraiter_domaine { domaines { DOM THI } format lata fichier DOM.lata }
+# END MESH #
+
+# BEGIN PARTITION
+Partition DOM
+{
+   Partitionneur Tranche { Tranches 2 1 1 }
+   Periodique 2 perioxx perioyy
+   Larg_joint 2
+   Nom_Zones DOM
+   nb_parts_tot 2
+}
+
+Partition THI
+{
+   Partitionneur Tranche { Tranches 1 2 1 }
+   Periodique 3 perioX perioY perioZ
+   Larg_joint 2
+   Nom_Zones THI
+   nb_parts_tot 2
+}
+
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter THI.Zones THI
+Scatter DOM.Zones DOM
+END SCATTER #
+
+Pb_Thermohydraulique_Turbulent pb_THI
+Pb_Thermohydraulique_Turbulent pb_turb
+
+VDF dis
+
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+ tinit  0.
+ tmax   40
+ facsec 1.
+ dt_min 1.e-6
+ dt_max 3.75e-4
+ dt_impr 0.02
+ dt_sauv 0.5
+ seuil_statio -1
+ nb_pas_dt_max 10
+}
+
+Associate pb_turb DOM
+Associate pb_THI THI
+
+Probleme_Couple pb_couplage
+Associate pb_couplage pb_THI
+Associate pb_couplage pb_turb
+Associate pb_couplage sch
+
+Discretize pb_couplage dis
+
+Lire pb_THI
+{
+Fluide_Incompressible
+{
+ mu Champ_Uniforme 1 65.16e-6
+ rho Champ_Uniforme 1 574.3
+ lambda Champ_Uniforme 1 0.447
+ cp Champ_Uniforme 1 10.11e3
+ beta_th Champ_Uniforme 1 0.
+}
+ Navier_Stokes_Turbulent
+ {
+  solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-10 impr }
+  convection { quick }
+  diffusion { }
+  conditions_initiales {
+   vitesse Champ_fonc_xyz THI 3
+   1.0*SIN(1/1.e-6*y)+1.5*SIN(2/1.e-6*(y+1))+1.0*SIN(3/1.e-6*(y+1))+0.5*SIN(4/1.e-6*(y+1))
+   1.5*SIN(1/1.e-6*z)+1.0*SIN(2/1.e-6*(z+1))+1.0*SIN(3/1.e-6*(z+1))+0.5*SIN(4/1.e-6*(z+1))
+   1.0*SIN(1/1.e-6*x)+1.0*SIN(2/1.e-6*(x+1))+1.5*SIN(3/1.e-6*(x+1))+0.5*SIN(4/1.e-6*(x+1))
+  }
+  boundary_conditions {
+   perioX periodique
+   perioY periodique
+   perioZ periodique
+  }
+  
+  Modele_turbulence nul 
+ }
+
+Convection_Diffusion_Temperature_Turbulent
+ {
+  diffusion { }
+  convection { quick }
+ 
+  boundary_conditions
+  {
+   perioX periodique 
+   perioY periodique 
+   perioZ periodique 
+  }
+  
+  conditions_initiales {
+   Temperature Champ_fonc_xyz THI 1 -1.75+1.*sin(x*2*3.14159/4.0e-3)
+  }
+ 
+  Modele_turbulence nul 
+ }
+
+
+Postraitements {
+ 
+ first_post
+  {    	
+     Format lata
+     Champs dt_post 1.
+     {
+      vitesse elem
+      vitesse faces 
+      temperature elem 
+     }
+  }
+  
+ second_post
+  {
+   Format lml  	
+   fichier Couplage_champ_cl_VDF_Turb_Nul
+   Champs dt_post 1
+   {
+     vitesse elem
+     temperature elem 
+   }				
+  } 
+  
+ }
+
+ Sauvegarde binaire sauvegarde_THI.sauv
+}
+
+
+Lire pb_turb
+{
+Fluide_Incompressible
+{
+ mu Champ_Uniforme 1 23.73e-6
+ rho Champ_Uniforme 1 113.6
+ lambda Champ_Uniforme 1 0.138
+ cp Champ_Uniforme 1 17.15e3
+ beta_th Champ_Uniforme 1 0.
+ gravite Champ_Uniforme 3 0 0 -9.81
+}
+ Navier_Stokes_Turbulent
+ { 
+  solveur_pression GCP { precond ssor { omega 1.5 } seuil 1e-12 impr }
+  convection { quick }
+  diffusion { }
+  conditions_initiales { vitesse champ_uniforme 3 0. 0. -0.00256 }
+ 
+  boundary_conditions
+   {
+    perioxx periodique 
+    perioyy periodique 
+    bas frontiere_ouverte_pression_imposee Champ_front_Uniforme 1 0.
+    haut Frontiere_ouverte_vitesse_imposee Champ_front_recyclage
+     {
+     pb_champ_evaluateur pb_THI vitesse 3
+     moyenne_imposee profil 3  500.*x 500.*y 10000*t
+     moyenne_recyclee surfacique
+     }
+   }
+  
+  Modele_turbulence nul 
+ }
+
+ Convection_Diffusion_Temperature_Turbulent
+ {
+  diffusion { }
+  convection { quick }
+  conditions_initiales { temperature champ_uniforme 1 -1.75 }
+  boundary_conditions {
+   perioxx periodique 
+   perioyy periodique 
+   haut Frontiere_ouverte_temperature_imposee Champ_front_recyclage
+    {
+     pb_champ_evaluateur pb_THI temperature 1
+     
+    }
+   bas frontiere_ouverte T_ext Champ_front_Uniforme 1 -1.75
+  }
+  
+  Modele_turbulence nul 
+ }
+
+
+
+Postraitements {
+ 
+ first_post
+  {    	
+     Format lata
+     Champs dt_post 1.
+     {
+      vitesse elem
+      vitesse faces 
+      temperature elem 
+     }
+  }
+  
+ second_post
+  {
+   Sondes { sonde_vx vitesse periode 3.7500e-3 point 1 0. 0. -0.004 }
+   Format lml  
+   fichier Couplage_champ_cl_VDF_Turb_Nul	
+   Champs dt_post 1
+   {
+     vitesse elem
+     temperature elem 
+   }				
+  } 
+  
+ }
+
+ Sauvegarde binaire sauvegarde_DOM.sauv
+}
+
+Solve pb_couplage
+Fin

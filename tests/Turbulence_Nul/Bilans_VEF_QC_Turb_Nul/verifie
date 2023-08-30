@@ -1,0 +1,59 @@
+message()
+{
+   [ $1 != $2 ] && echo $ECHO_OPTS "Error ($1!=$2) when checking:\n $msg" && err=1
+   [ $debog = 1 ] && echo $msg
+}
+jdd=`pwd`;jdd=`basename $jdd`
+debog=0 && [ "$1" = "-print" ] && debog=1
+err=0
+
+################################################################
+# On verifie que l'on trouve le bon flux impose sur la frontiere
+################################################################
+Diffusion_chaleur=`ls $jdd*pb_solide_Diffusion_chaleur.out`
+flux=`grep -i Paroi_flux_impose $jdd.data | $TRUST_Awk '/Bas/ {print $NF}'`
+ok=`tail -1 $Diffusion_chaleur | $TRUST_Awk -v flux=$flux '{if ($3==flux*0.01) print 1;else print 0}'`
+msg="Flux impose valide dans $Diffusion_chaleur";message $ok 1
+
+#######################################################
+# On verifie que l'on trouve la bonne puissance imposee
+#######################################################
+Puissance_Thermique=`ls $jdd*pb_solide_Puissance_Thermique.out`
+pvol=`grep -i Puissance_thermique $jdd.data | $TRUST_Awk '{if ($NF=="}") {print $(NF-1)} else { print $(NF) } }'`
+ok=`tail -1 $Puissance_Thermique | $TRUST_Awk -v pvol=$pvol '{if ($2==pvol*0.01*0.01) print 1;else print 0}'`
+msg="Puissance imposee valide dans $Puissance_Thermique";message $ok 1
+
+#####################################################################
+# On verifie que le flux sortant du solide vaut la puissance injectee
+#####################################################################
+flux_solide=`tail -1 $jdd*pb_solide_Diffusion_chaleur.out | $TRUST_Awk '{print $4}'`
+ok=`echo $flux $pvol $flux_solide | $TRUST_Awk '{bilan=$1*0.01+$2*0.01*0.01+$3;if (bilan!=0) print bilan;else print 0}'`
+msg="Flux solide->fluide valide dans `ls $jdd*pb_solide_Diffusion_chaleur.out`";message $ok 0
+flux_fluide=`tail -1 $jdd*pb_Diffusion_chaleur.out | $TRUST_Awk '{print -$5}'`
+ok=`echo $flux $pvol $flux_fluide | $TRUST_Awk '{bilan=$1*0.01+$2*0.01*0.01+$3;if (bilan!=0) print bilan;else print 0}'`
+msg="Flux fluide->solide valide dans `ls $jdd*pb_Diffusion_chaleur.out`";message $ok 0
+
+############################################################
+# On verifie que l'on a flux nul sur les parois adiabatiques
+############################################################
+Diffusion_chaleur=`ls $jdd*pb_solide_Diffusion_chaleur.out`
+ok=`tail -1 $Diffusion_chaleur | $TRUST_Awk '{if ($2*1.==0) print 1;else print 0}'`
+msg="Paroi adiabatique valide dans $Diffusion_chaleur";message $ok 1
+
+############################################################
+# On verifie que l'on a flux nul sur les frontieres symetrie
+############################################################
+Diffusion_chaleur=`ls $jdd*pb_Diffusion_chaleur.out`
+ok=`tail -1 $Diffusion_chaleur | $TRUST_Awk '{if ($3*1.==0) print 1;else print 0}'`
+msg="Condition symetrie valide dans $Diffusion_chaleur";message $ok 1
+
+##########################################################################################
+# On verifie qu'en permanent, on retrouve la puissance totale en sorties du domaine fluide
+##########################################################################################
+flux_diff=`tail -1 $jdd*pb_Diffusion_chaleur.out | $TRUST_Awk '{print $2+$4}'`
+flux_conv=`tail -1 $jdd*pb_Convection_chaleur.out | $TRUST_Awk '{print $2+$4}'`
+# La comparaison se fait a 0.1% pres car on n'a pas egalite parfaite (volumes non etendus en VEFPreP1B?)
+ok=`echo $flux $pvol $flux_diff $flux_conv | $TRUST_Awk '{total=$1*0.01+$2*0.01*0.01;err=(total+$3+$4)/total;if (err<-0.001 || err>0.001) print err;else print 0}'`
+msg="Bilan valide au regime permanent";message $ok 0
+
+exit $err
