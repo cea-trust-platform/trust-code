@@ -52,7 +52,7 @@ Entree& Modele_turbulence_scal_nul::readOn(Entree& is)
       Process::exit();
     }
   loipar.valeur().associer_modele(*this);
-  loipar.valeur().associer(mon_equation->domaine_dis(), mon_equation->domaine_Cl_dis());
+  loipar.valeur().associer(le_pb.equation(0).domaine_dis(), le_pb.equation(0).domaine_Cl_dis());
   return is;
 }
 
