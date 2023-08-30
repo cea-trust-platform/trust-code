@@ -1186,7 +1186,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                         add_amgx_option("p:interpolator","D2","Also available D1. D2 is considerably more expensive during both setup and solve phases, but convergence on difficult problems");
                         Nom strength("AHAT");
                         add_amgx_option("p:strength",strength,"Choose the strength of connection metric to use. Allowable options are AHAT and ALL");
-                        if (strength=="AHAT") add_amgx_option("p:strength_threshold","0.25","Threshold for the AHAT strength of connection algorithm. All edges with strength below this threshhold will be discarded");
+                        if (strength=="AHAT") add_amgx_option("p:strength_threshold","0.25","All edges with strength below this threshold will be discarded. Higher: faster setup, lower memory but lower convergence");
                       }
                     else // SA-AMG
                       {
