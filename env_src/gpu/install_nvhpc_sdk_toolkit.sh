@@ -27,6 +27,6 @@ then
    tar xpzf $TRUST_TMP/$installer.tar.gz && rm -f $installer.tar.gz
    echo -e "\n1\n$INSTALL/nvhpc-$SDK_VERSION\n" | $installer/install
    [ $? != 0 ] && echo "Error during NVidia HPC SDK install under $NVHPC" && exit -1
-   #rm -r -f $installer
+   rm -r -f $installer
    )
 fi
