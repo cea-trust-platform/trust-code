@@ -15,8 +15,8 @@ linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdfl
 linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex  							# Fedora 38 	Bat 454 LMEC GF
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD -IJK-FT -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
 linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-gcc8 -cuda=download -without-pdflatex -without-visit
-linux	rsync_ssh	tache	irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
-linux	rsync_ssh  	tache	irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d -without-conda  						# RedHat 7.6	CEA CCRT
+linux	rsync_ssh	tache	desactive_irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
+linux	rsync_ssh  	tache	desactive_irene-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT 						-build_64_bit -without-doc -disable-plot2d -without-conda  						# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt-build64.ccc.cea.fr	-limited	-TrioCFD -IJK-FT					-benchmark	-build_64_bit -without-doc -disable-plot2d -without-visit -without-conda   									# RedHat 8.4	CEA CCRT
 linux	rsync_ssh 	tache	irene-amd-ccrt-gpu.ccc.cea.fr	-limited 		-TrioCFD -IJK-FT				-cuda 		-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
