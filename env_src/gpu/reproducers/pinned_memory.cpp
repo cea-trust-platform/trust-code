@@ -8,11 +8,10 @@ int main() {
     {;}
     // Exemple: 1 millions mailles 100^3, CL 6xn^2, donc 60000 
     const int N = 60000; // Gain interessant sur les petits envoi de donnees:
-// [Pageable memory] Mean time taken to copy data H->D: 0.000295352 s 1.51356 GB/s
-// [Pageable memory] Mean time taken to copy data D->H: 0.000196696 s 2.27272 GB/s
-// [Pinned memory]   Mean time taken to copy data H->D: 0.000163316 s 2.73724 GB/s
-// [Pinned memory]   Mean time taken to copy data D->H: 0.000150052 s 2.9792 GB/s
-
+//[Pageable memory] Mean time taken to copy data H->D: 5.14008e-05 s 8.69704 GB/s
+//[Pageable memory] Mean time taken to copy data D->H: 5.34574e-05 s 8.36245 GB/s
+//[Pinned memory]   Mean time taken to copy data H->D: 2.40212e-05 s 18.61 GB/s
+//[Pinned memory]   Mean time taken to copy data D->H: 2.24864e-05 s 19.8802 GB/s
     const int samples = 10;
     // Initialize data on the host
     double *host_data = new double[N]();
