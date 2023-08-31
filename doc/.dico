@@ -846,7 +846,7 @@
  Pb_Conduction_Scalaires_Passifs Pb_Conduction_Scalaires_Passifs Problemes_Scalaires_Passifs.h
  Pb_Dilatable_base Pb_Dilatable_base Pb_Dilatable_base.h
  Pb_Fluide_base Pb_Fluide_base Pb_Fluide_base.h
- Pb_HEM Pb_HEM Pb_Multiphase.h
+ Pb_HEM|Pb_Multiphase_HEM Pb_Multiphase_HEM Pb_Multiphase_HEM.h
  Pb_Hydraulique Pb_Hydraulique Pb_Hydraulique.h
  Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration Pb_Hydraulique_Concentration.h
  Pb_Hydraulique_Concentration_Scalaires_Passifs Pb_Hydraulique_Concentration_Scalaires_Passifs Problemes_Scalaires_Passifs.h

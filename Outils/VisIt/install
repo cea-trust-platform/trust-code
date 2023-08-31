@@ -67,22 +67,22 @@ then
    export HTTPS="https://github.com/visit-dav/visit/releases/download"
    [ "$MPI_ROOT" != "" ] && parallel="parallel"
    # See https://visit-dav.github.io/visit-website/releases-as-tables/#latest
-   [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu16
-   [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu18
-   [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu19
+   [ "`grep 'Ubuntu 16.04' /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu16 && version=3_1_1
+   [ "`grep 'Ubuntu 18.04' /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu18 && version=3_1_1
+   [ "`grep 'Ubuntu 19'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu19 && version=3_1_1
    [ "`grep 'Ubuntu 20'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_1_2
    [ "`grep 'Ubuntu 21'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu21 && version=3_2_1
    [ "`grep 'Ubuntu 22'    /etc/issue 2>/dev/null`" != "" ]                     && os=ubuntu20 && version=3_3_3 # En attente de Ubuntu 22 officielle (see https://github.com/visit-dav/visit/discussions/18019#discussioncomment-3478214)
-   [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]          && os=debian9
+   [ "`grep 'Debian GNU/Linux 9'  /etc/issue.net 2>/dev/null`" != "" ]          && os=debian9 && version=3_1_1
    [ "`grep 'Debian GNU/Linux 10' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian10 && version=3_1_3
    [ "`grep 'Debian GNU/Linux 11' /etc/issue.net 2>/dev/null`" != "" ]          && os=debian11 && version=3_3_3
-   [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8
-   [ "`grep 'Rocky Linux release 8' /etc/centos-release 2>/dev/null`" != "" ]   && os=centos8
-   [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
-   [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27
+   [ "`grep 'CentOS Linux release 8' /etc/centos-release 2>/dev/null`" != "" ] 	&& os=centos8 && version=3_1_1
+   [ "`grep 'Rocky Linux release 8' /etc/centos-release 2>/dev/null`" != "" ]   && os=centos8 && version=3_1_1
+   [ "`grep 'Fedora release 2[6-9]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27 && version=3_1_1
+   [ "`grep 'Fedora release 3[0-4]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora27 && version=3_1_1
    [ "`grep 'Fedora release 3[6-8]' /etc/fedora-release 2>/dev/null`" != "" ] 	&& os=fedora31 && version=3_2_1
    [ "`grep 'release [7]' /etc/redhat-release 2>/dev/null`" != "" ]             && os=rhel7 && version=3_1_1     # NB: Le binaire rhel7 ne marche pas sur Redhat 8 (xml2cmake error)
-   [ "`grep 'release [8]' /etc/redhat-release 2>/dev/null`" != "" ]             && os=centos8    # NB: Le binaire centos8 marche sur Redhat 8
+   [ "`grep 'release [8]' /etc/redhat-release 2>/dev/null`" != "" ]             && os=centos8  && version=3_1_1  # NB: Le binaire centos8 marche sur Redhat 8
    [ `uname -s` = Darwin ]                                                      && os=arm64 && version=3_3_1
 
    version_visit=v`echo $version | $TRUST_Awk '{gsub("_",".",$1);print $1}'`
