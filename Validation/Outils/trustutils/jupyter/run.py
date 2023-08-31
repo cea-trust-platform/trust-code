@@ -661,7 +661,10 @@ class TRUSTSuite(object):
         """
         text = "### Test cases \n"
         for c in self.getCases():
-            text += "* " + c.dir_ + "/" + c.name_ + ".data : \n"
+            text += "* " + c.dir_ + "/" + c.dataFileName_ + ".data " 
+            if (c.nbProcs_ > 1):
+                text += "with " + str(c.nbProcs_)  + " procs"
+            text += ": \n"
         displayMD(text)
 
 def readFile(data):
