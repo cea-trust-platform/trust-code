@@ -392,26 +392,69 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
                                                     Domaine& domaine_partie) const
 {
   const Domaine& domaine = ref_domaine_.valeur();
-  int i_fr = domaine.nb_bords()+domaine.nb_raccords()+domaine.nb_frontieres_internes();
+
+  Static_Int_Lists voisins;
+  const int nb_groupe_int = domaine.nb_groupes_int();
+  ArrOfInt nb_faces(nb_groupe_int);
+  for (int i = 0; i < nb_groupe_int; i++)
+    nb_faces[i] = domaine.groupe_interne(i).nb_faces();
+  voisins.set_list_sizes(nb_faces);
+  const int nb_som_face = domaine.frontiere(0).faces().nb_som_faces();
+  ArrOfInt une_face(nb_som_face);
   ArrOfInt elements_voisins;
+  elements_voisins.set_smart_resize(1);
+  const IntVect& elem_part = ref_elem_part_.valeur();
 
-  for(const auto& itr: domaine.groupes_internes())
+  for (int grp = 0; grp < nb_groupe_int; grp++)
     {
-      const Frontiere& frontiere = itr;
-      Frontiere& front_partie =
+      const Groupe_interne& groupe_int = domaine.groupe_interne(grp);
+      Groupe_interne& groupe_partie =
         domaine_partie.groupes_internes().add(Groupe_interne());
-      front_partie.nommer(frontiere.le_nom());
-      front_partie.associer_domaine(domaine_partie);
-      front_partie.faces().typer(frontiere.faces().type_face());
-      voisins_bords_.copy_list_to_array(i_fr, elements_voisins);
-      construire_liste_faces_sous_domaine(elements_voisins,
-                                          ref_elem_part_.valeur(),
-                                          partie,
-                                          frontiere.faces().les_sommets(),
-                                          liste_inverse_sommets,
-                                          front_partie.faces().les_sommets());
+      groupe_partie.nommer(groupe_int.le_nom());
+      groupe_partie.associer_domaine(domaine_partie);
+      groupe_partie.faces().typer(groupe_int.faces().type_face());
+      const IntTab& faces_sommets = groupe_int.faces().les_sommets();
+      IntTab& faces_sommets_partie = groupe_partie.faces().les_sommets();
 
-      i_fr++;
+      ArrOfInt liste_faces;
+      liste_faces.set_smart_resize(1); // Pour faire append_array...
+
+      // Premier passage : on cherche les faces a inclure
+      const IntTab& faces = groupe_int.les_sommets_des_faces();
+      const int n = nb_faces[grp];
+      for (int j = 0; j < n; j++)
+        {
+          for (int k = 0; k < nb_som_face; k++)
+            une_face[k] = faces(j, k);
+          find_adjacent_elements(som_elem_, une_face, elements_voisins);
+          assert (elements_voisins.size_array() == 2 ); // if type_frontiere is Groupe_interne, it must have two neighbors
+
+          if (elem_part[elements_voisins[0]] == partie || elem_part[elements_voisins[1]] == partie)
+            liste_faces.append_array(j);
+
+        }
+
+      const int nb_faces_part = liste_faces.size_array();
+      faces_sommets_partie.resize(nb_faces_part, nb_som_face);
+
+      // Deuxieme passage : stockage des faces et conversion des numeros
+      //  de sommets des faces en numeros locaux dans le sous-domaine.
+      for (int i = 0; i < nb_faces_part; i++)
+        {
+          const int i_face = liste_faces[i];
+          for (int j = 0; j < nb_som_face; j++)
+            {
+              int sommet = faces_sommets(i_face, j);
+              if (sommet>-1)
+                {
+                  int new_num = liste_inverse_sommets[sommet];
+                  assert(new_num >= 0);
+                  faces_sommets_partie(i, j) = new_num;
+                }
+              else
+                faces_sommets_partie(i, j) = -1;
+            }
+        }
     }
 }
 
@@ -1038,7 +1081,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
                                      Static_Int_Lists& voisins,const IntVect& elem_part, const int permissif, Noms& bords_a_pb_)
 {
   const Domaine& domaine = dom;
-  const int nb_front = domaine.nb_front_Cl() + domaine.nb_groupes_int();
+  const int nb_front = domaine.nb_front_Cl();
   ArrOfInt nb_faces(nb_front);
   for (int i = 0; i < nb_front; i++)
     nb_faces[i] = domaine.frontiere(i).nb_faces();
@@ -1051,7 +1094,6 @@ void calculer_elements_voisins_bords(const Domaine& dom,
     {
       int drap=0;
       const IntTab& faces = domaine.frontiere(i).les_sommets_des_faces();
-      Nom type_frontiere = domaine.frontiere(i).que_suis_je();
       const int n = nb_faces[i];
       for (int j = 0; j < n; j++)
         {
@@ -1059,7 +1101,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
             une_face[k] = faces(j, k);
           find_adjacent_elements(som_elem, une_face, elems_voisins);
           const int n_voisins = elems_voisins.size_array();
-          if (n_voisins != 1 and type_frontiere != "Groupe_interne" )
+          if (n_voisins != 1 )
             {
               if (drap==0)
                 {
