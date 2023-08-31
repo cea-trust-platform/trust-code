@@ -35,6 +35,9 @@
 #include <Debog.h>
 #include <Device.h>
 
+#include <View_Types.h>   // Kokkos
+#include <TRUSTTab_kokkos.tpp>  // ABN TODO : to be merged with TRUSTTab.tpp later
+
 Implemente_instanciable(Op_Div_VEFP1B_Elem, "Op_Div_VEFPreP1B_P1NC|Op_Div_VEF_P1NC", Operateur_Div_base);
 
 Sortie& Op_Div_VEFP1B_Elem::printOn(Sortie& s) const { return s << que_suis_je() ; }
@@ -102,6 +105,8 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
   const IntTab& face_voisins = domaine_VEF.face_voisins();
   int nfe = domaine.nb_faces_elem();
   int nb_elem = domaine.nb_elem();
+
+#ifndef KOKKOS_
   const int *face_voisins_addr = mapToDevice(face_voisins);
   const double *face_normales_addr = mapToDevice(face_normales);
   const int *elem_faces_addr = mapToDevice(elem_faces);
@@ -122,6 +127,40 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
       div_addr[elem] += pscf;
     }
   end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+#else
+  // Initialisation -- will happen only once in the whole execution:
+  face_voisins.init_view();
+  face_normales.init_view();
+  elem_faces.init_view();
+  vit.init_view();
+  div.init_view();
+
+  CIntTabView face_voisins_v = face_voisins.view_ro();
+  CDoubleTabView face_normales_v = face_normales.view_ro();
+  CIntTabView elem_faces_v = elem_faces.view_ro();
+  CDoubleTabView  vit_v = vit.view_ro();
+  DoubleTabView div_v = div.view_rw(); // read-write
+  int dim = Objet_U::dimension;  // Objet_U::dimension can not be read from Kernel.
+
+  // Full kernel
+  auto kern_ajouter = KOKKOS_LAMBDA(int elem)
+  {
+    double pscf = 0;
+    for (int indice = 0; indice < nfe; indice++)
+      {
+        int face = elem_faces_v(elem, indice);
+        int signe = elem == face_voisins_v(face, 0) ? 1 : -1;
+        for (int comp = 0; comp < dim; comp++)
+          pscf += signe * vit_v(face, comp) * face_normales_v(face, comp);
+      }
+    div_v(elem, 0) += pscf;
+  };
+
+  start_timer();
+  Kokkos::parallel_for("[KOKKOS]Op_Div_VEFP1B_Elem::ajouter_elem", nb_elem, kern_ajouter);
+  div.sync_to_host();  // "checkDataOnHost()"
+  end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+#endif
   assert_invalide_items_non_calcules(div);
   return div;
 }
