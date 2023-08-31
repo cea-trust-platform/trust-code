@@ -31,6 +31,12 @@
 #include <catch_and_trace.h>
 #endif
 
+#include <kokkos++.h>
+#ifdef KOKKOS_
+#include <Kokkos_Core.hpp>
+#endif
+
+
 // Initialisation des compteurs, dans stat_counters.cpp
 extern void declare_stat_counters();
 extern void end_stat_counters();
@@ -196,10 +202,20 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
 
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
+
+#ifdef KOKKOS_
+  // Kokkos initialisation
+  int argc2 = argc;
+  Kokkos::initialize( argc2, argv );
+  Cerr << "Kokkos initialized!" << finl;
+#endif
 }
 
 void mon_main::finalize()
 {
+#ifdef KOKKOS_
+  Kokkos::finalize();
+#endif
 #ifdef MPI_
   // MPI_Group_free before MPI_Finalize
   if (sub_type(Comm_Group_MPI,groupe_trio_.valeur()))
