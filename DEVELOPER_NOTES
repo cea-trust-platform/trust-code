@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Developer notes version 1.9.3_beta : Changes since version 1.9.2 :
 -------------------------------------------------------------
+04/09/23 (TRUST) Major change : Basic turbulence classes (Pbs, equations, nul models) moved from Trio to TRUST for arch code reasons (tests for TRUST Dift operators) 
 30/08/23 (TRUST) Major change : It is no more possible to put specific discretization classes in ThHyd module ! All should be in its dedicated folder (VDF, VEF, PolyMAC, ...)
 03/08/23 (TRUST) Major change : Template implementations + SFINAE introduced for VEF diffusion operators 
 02/08/23 (TRUST) Tool change  : Update ccache (3.1.4 to 4.8.2) for faster (re)build with Nvidia compilers (nvc++, nvc, nvcc)
