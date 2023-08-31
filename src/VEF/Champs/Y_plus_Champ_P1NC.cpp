@@ -13,7 +13,9 @@
 *
 *****************************************************************************/
 
+#include <Modele_turbulence_hyd_base.h>
 #include <Y_plus_Champ_P1NC.h>
+#include <Milieu_base.h>
 #include <Champ_P1NC.h>
 
 Implemente_instanciable(Y_plus_Champ_P1NC, "Y_plus_Champ_P1NC", Champ_Fonc_P0_VEF);
@@ -36,7 +38,18 @@ void Y_plus_Champ_P1NC::associer_champ(const Champ_P1NC& un_champ)
 
 void Y_plus_Champ_P1NC::me_calculer(double tps)
 {
-  mon_champ_->calcul_y_plus(le_dom_Cl_VEF.valeur(), valeurs());
+  const Nom& nom_eq = mon_champ().equation().que_suis_je();
+  const Milieu_base& mil = mon_champ().equation().milieu(); // returns Fluide_Diphasique or Fluide_Incompressible
+
+  if (nom_eq == "Navier_Stokes_FT_Disc" && mil.que_suis_je() == "Fluide_Diphasique")
+    {
+      const RefObjU& modele_turbulence = mon_champ().equation().get_modele(TURBULENCE);
+      const Modele_turbulence_hyd_base& mod_turb = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
+      if (mod_turb.loi_paroi().que_suis_je() == "loi_standard_hydr_diphasique_VEF")
+        mon_champ_->calcul_y_plus_diphasique(le_dom_Cl_VEF.valeur(), valeurs());
+    }
+  else
+    mon_champ_->calcul_y_plus(le_dom_Cl_VEF.valeur(), valeurs());
 }
 
 const Domaine_Cl_dis_base& Y_plus_Champ_P1NC::domaine_Cl_dis_base() const
