@@ -1182,7 +1182,7 @@ void Solv_Petsc::create_solver(Entree& entree)
                     if (rang==10) // C-AMG
                       {
                         add_amgx_option("p:algorithm","CLASSICAL");
-                        add_amgx_option("p:selector","HMIS","PMIS selector seems to take less memory, and much faster setup.");
+                        add_amgx_option("p:selector","PMIS","PMIS selector seems to take less memory, and much faster setup than HMIS.");
                         add_amgx_option("p:interpolator","D2","Also available D1. D2 is considerably more expensive during both setup and solve phases, but convergence on difficult problems");
                         Nom strength("AHAT");
                         add_amgx_option("p:strength",strength,"Choose the strength of connection metric to use. Allowable options are AHAT and ALL");
