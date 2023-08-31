@@ -1,17 +1,18 @@
 #!/bin/bash
 # Weak scaling on nodes:
 # Selon machines:
+ext=$1 # Exemple: _10 pour le cas a 80 MDOF. Attention out of memory sur 2GPUs
 benchs="gpu cpu"              && mpis_gpu="2 16"          && mpis_cpu="8 64"              && int=""       && jdd_gpu=AmgX             && jdd_cpu=PETSc
-[ "$HOST" = adastra ]         && mpis_gpu="2 16 128 1024" && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_gpu=BENCH_rocALUTION && jdd_cpu=BENCH_PETSc
-[ "$HOST" = topaze ]          && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_AmgX      
-[ "$HOST" = jean-zay ]        && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_AmgX      
-[ "$HOST" = irene-amd-ccrt ]  && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64"                             && jdd_cpu=BENCH_PETSc
+[ "$HOST" = adastra ]         && mpis_gpu="2 16 128 1024" && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_gpu=BENCH_AMD        && jdd_cpu=BENCH_CPU
+[ "$HOST" = topaze ]          && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_NVIDIA
+[ "$HOST" = jean-zay ]        && benchs="gpu"             && mpis_gpu="2 16 128 512"      && int="_int64" && jdd_gpu=BENCH_NVIDIA
+[ "$HOST" = irene-amd-ccrt ]  && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64"                             && jdd_cpu=BENCH_CPU
 env_gpu=$local/trust/amgx_openmp$int/env_TRUST.sh
 env_cpu=$local/trust/tma$int/env_TRUST.sh         
-jdd_cpu=OpenMP_Iterateur_$jdd_cpu.data
-jdd_gpu=OpenMP_Iterateur_$jdd_gpu.data
+jdd_cpu=OpenMP_Iterateur_$jdd_cpu$ext.data
+jdd_gpu=OpenMP_Iterateur_$jdd_gpu$ext.data
 
-mkdir -p weak_scaling && cd weak_scaling
+mkdir -p weak_scaling$ext && cd weak_scaling$ext
 echo -e "Host     \tDOF \tConfig     \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s  \tIters    \tLoadImbalance"
 for bench in $benchs
 do

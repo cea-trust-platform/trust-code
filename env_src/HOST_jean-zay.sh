@@ -58,7 +58,8 @@ define_soumission_batch()
    if [ "$gpu" = 1 ]
    then
       # See http://www.idris.fr/jean-zay/gpu/jean-zay-gpu-exec_partition_slurm.html 
-      queue=gpu_p13 && constraint=v100-16g # pour gpu_p3 ou constraint=v100-32g (gpu_p1)  
+      queue=gpu_p13 && constraint=v100-16g # 351x4=1404 GPU
+      queue=gpu_p13 && constraint=v100-32g # 261x4=1044 GPU (Pour etre plus confort avec c-amg ?)
       #queue=gpu_p4 # Partition A100      
       [ "$gpus_per_node" = "" ] && gpus_per_node=4 # Si on ne reserve qu'1 GPU plantage memoire possible... Donc le max par defaut
       if [ "$TRUST_USE_OPENMP" = 1 ]
