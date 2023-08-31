@@ -632,7 +632,7 @@ case $arch in
 	TRUST_F77_BASE="frt ifx ifort armflang   "$cuda"gfortran gfortran"
 	TRUST_cc_BASE=" fc  icx icc   armclang   "$cuda"gcc      gcc"
 	# Support compilateur NVidia:
-	if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
+	if [ "$TRUST_USE_CUDA" = 1 ] || [ "$TRUST_USE_OPENMP" = 1 ]
 	then
 	   TRUST_CC_BASE="nvc++ "$TRUST_CC_BASE
 	   TRUST_F77_BASE="nvfortran "$TRUST_F77_BASE
@@ -651,6 +651,19 @@ case $arch in
 	   fi
 	   nvc++ -help 1>/dev/null 2>&1
 	   [ $? != 0 ] && echo "Erreur, nvc++ not installed." && exit -1
+
+	   # If Kokkos requested, put nvcc_wrapper in priority
+	   if [ "$TRUST_USE_KOKKOS" = 1 ]
+	   then
+            TRUST_CC_BASE="nvcc_wrapper "$TRUST_CC_BASE
+            TRUST_F77_BASE="gfortran "$TRUST_F77_BASE
+            TRUST_cc_BASE="gcc "$TRUST_cc_BASE
+
+            # Check already done in configure, but who knows ...
+            nvcc_wrapper --help 1>/dev/null 2>&1
+            [ $? != 0 ] && echo "Kokkos: error, nvc_wrapper not correctly installed!" && exit -1
+	   fi
+
 	fi
 	# Support compilateur cray et AOMP de AMD: https://github.com/ROCm-Developer-Tools/aomp/blob/aomp-dev/docs/UBUNTUINSTALL.md
 	if [ "$TRUST_USE_ROCM" = 1 ] && [ "$TRUST_USE_OPENMP" = 1 ]
@@ -659,6 +672,7 @@ case $arch in
 	   TRUST_F77_BASE="crayftn amdflang   "$TRUST_F77_BASE
 	   TRUST_cc_BASE="craycc   amdclang   "$TRUST_cc_BASE
 	fi
+
 	# On rajoute les autres compilateurs
 	TRUST_CC_BASE=$TRUST_CC_BASE" pgCC"
 	TRUST_F77_BASE=$TRUST_F77_BASE" pgf90 f90 pgf77 f77"
@@ -1010,7 +1024,7 @@ fi
 if [ "$TRUST_CC_BASE_EXTP" = "" ]
 then
    CC_BASE=`basename $TRUST_CC_BASE`
-   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = crayCC ] || [ "$CC_BASE" = amdclang++ ]
+   if [ "$CC_BASE" = nvc++ ] || [ "$CC_BASE" = crayCC ] || [ "$CC_BASE" = amdclang++ ] || [ "$CC_BASE" = nvcc_wrapper ] 
    then
       TRUST_CC_BASE_EXTP=g++       && [ -f /usr/bin/cuda-g++ ]      && TRUST_CC_BASE_EXTP=/usr/bin/cuda-g++
       TRUST_cc_BASE_EXTP=gcc       && [ -f /usr/bin/cuda-gcc ]      && TRUST_cc_BASE_EXTP=/usr/bin/cuda-gcc
@@ -1720,7 +1734,7 @@ SL_EXTENSION="so" && [ ${TRUST_ARCH#HPPA} != $TRUST_ARCH ] && SL_EXTENSION="sl"
 OPTIMIZE="-O3"
 TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
-  linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
+  linux_g++*|cygw*g++*|linux_cuda-g++*|linux_nvcc_wrapper*) TRUST_SUPPORTED=1
   [ "$STDCPP" = c++11 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=485 && ver<=1311) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	[ "$STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=500 && ver<=1321) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
@@ -1733,7 +1747,13 @@ case $TRUST_ARCH_CC in
 	[ "$TRUST_USE_OPENMP" = 1 ] && PTHREAD="-pthread" # Pour OpenBLAS ?
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
-	CppFlags="-O3 $FPIC $PTHREAD -std=$STDCPP -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
+#	if [ "$TRUST_USE_KOKKOS" = 1 ]; then
+#	    # Kokkos already adds '-std=c++14' - do not doit twice since nvcc_wrapper will complain
+#	    std_tmp_=""
+#	else
+	    std_tmp_="-std=$STDCPP"
+#	fi
+	CppFlags="-O3 $FPIC $PTHREAD $std_tmp_ -fno-common -Wno-long-long -Wall -Wno-unknown-pragmas -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wsign-promo -Wsynth -Wshadow -Wextra -Wno-unused-parameter -pedantic -fabi-version=0 -Wno-cpp"
 	[ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>4)}'`" = 1 ] && [ $TRUST_ARCH_CC = linux_g++ ] && CppFlags=$CppFlags" -Wshadow -Werror" # Uniquement si gcc>=5
 	CppFlags=$CppFlags" -fno-math-errno" # Operations mathematiques optimisees sans ecarts crees (vient de F5)
 	[ "$TRUST_INT64" != "1" ] && CppFlags=$CppFlags" -Wconversion"
@@ -1745,7 +1765,7 @@ case $TRUST_ARCH_CC in
         [ "`echo $TRUST_VERSION_GNU | awk -F. '{print ($1>=10)}'`" = 1 ] && F77Flags=$F77Flags" -fallow-argument-mismatch"
 	ccFLAGS="-O3 $FPIC $PTHREAD"
 	ShLibFlag="\$(TRUST_CC) -shared"
-	cherche_include_systeme
+	#cherche_include_systeme
 	;;
     linux_clang++|linux_armclang++|darwin_clang++) TRUST_SUPPORTED=1
         [ "$TRUST_ARCH_CC" = linux_armclang++ ] && ArmFlags="-armpl -ffast-math" # To add optimized machine-specific library. -ffast-math interessant sur irene-arm (*2 sur HPCG, rien sur GNU)

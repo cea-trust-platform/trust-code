@@ -46,7 +46,11 @@ def read_libs_from_makeliba():
 
 
 def add_library_for_dir(s2):
-    strout="add_library(obj_"+s2+" OBJECT  ${srcs} )\n"
+    import os
+    tgt_nam = f"obj_{s2}"
+    strout = f"add_library({tgt_nam} OBJECT  ${{srcs}} )\n"
+    if os.environ["TRUST_USE_KOKKOS"]:
+        strout += f"target_link_libraries({tgt_nam} Kokkos::kokkos )\n"
     strout += "set(listlibs ${listlibs} " +s2 +" PARENT_SCOPE    )\n"
     strout += "add_custom_target(check_sources_"+s2+"   COMMAND check_sources.sh ${CMAKE_CURRENT_SOURCE_DIR} ) #COMMENT  \"checking code validity "+s2+"\" )\n" # MAIN_DEPENDENCY ${file} DEPENDS ${file})\n"
     strout+="add_DEPENDENCIES(obj_"+s2+" check_sources_"+s2+")\n"
@@ -198,6 +202,20 @@ endif()
 
 
 ''')
+    if os.environ["TRUST_USE_KOKKOS"]:
+        out.write('''
+
+cmake_policy(SET CMP0011 NEW)
+cmake_policy(SET CMP0012 NEW)
+cmake_policy(SET CMP0074 NEW)
+list(APPEND CMAKE_PREFIX_PATH $ENV{TRUST_KOKKOS_ROOT})
+find_package(Kokkos REQUIRED)
+if(Kokkos_ENABLE_CUDA)
+  kokkos_check(OPTIONS CUDA_LAMBDA)
+endif()
+
+''')  
+
     out.write('set(listdir '+' '.join(listdirorg)+')\n')
     out.write('''
 
@@ -381,6 +399,9 @@ endif(NOT COMPIL_DYN)
    add_executable (${trio} MAIN/the_main.cpp MAIN/mon_main.cpp ${special_srcs}  )
    include_directories(Kernel/Utilitaires MAIN Kernel/Math)
    target_link_libraries(${trio} ${libtrio} ${syslib})
+   if($ENV{TRUST_USE_KOKKOS})
+     target_link_libraries(${trio} Kokkos::kokkos)
+   endif()
    install (TARGETS ${trio} DESTINATION exec)
 
 
