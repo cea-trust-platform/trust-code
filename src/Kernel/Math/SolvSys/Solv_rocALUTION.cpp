@@ -140,7 +140,7 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
   Motcle precond;
   is >> precond;
   Cerr << precond << " ";
-  // Preconditioner
+  // Preconditioner globaux paralleles:
   if (precond==(Motcle)"Jacobi" || precond==(Motcle)"diag") // OK en ~335 its
     {
       p = new Jacobi<GlobalMatrix<T>, GlobalVector<T>, T>();
@@ -158,6 +158,21 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
       pairwiseamg.InitMaxIter(1);
       precond_option(is, "");
     }
+  /* Crash bizarre en sequentiel et parallele.
+   * ToDo OpenMP travail sur les samples cg-rsamg_mpi.cpp et cg-rsamg.cpp
+  else if (precond==(Motcle)"RugeStuebenAMG|RSAMG|RS-AMG|C-AMG")  // Setup rapide sur CPU. Converge vite.
+    {
+      p = new RugeStuebenAMG<GlobalMatrix<T>, GlobalVector<T>, T>();
+      auto& rsamg = dynamic_cast<RugeStuebenAMG<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p);
+      // Base sur le sample rocALUTION/clients/samples/cg-rsamg_mpi.cpp
+      rsamg.InitMaxIter(1);
+      rsamg.SetCoarseningStrategy(CoarseningStrategy::PMIS);
+      rsamg.SetInterpolationType(InterpolationType::ExtPI); // Tres important pour une bonne convergence
+      rsamg.SetCoarsestLevel(20);
+      rsamg.SetInterpolationFF1Limit(false); // Limit operator complexity
+      //rsamg.SetStrengthThreshold(0.1); // Pas d'effet flagrant
+      precond_option(is, "");
+    } */
   else if (precond==(Motcle)"null")
     {
       p = nullptr;
@@ -212,13 +227,17 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
           uuamg.SetCouplingStrength(0.001);
           precond_option(is, "");
         }
-      else if (precond==(Motcle)"RugeStuebenAMG|RSAMG|RS-AMG|C-AMG")  // Setup rapide sur CPU. Converge vite.
+      else if (precond==(Motcle)"RugeStuebenAMG|RSAMG|RS-AMG|C-AMG")
         {
           lp = new RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T>();
           auto& rsamg = dynamic_cast<RugeStuebenAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
+          // Base sur le sample rocALUTION/clients/samples/cg-rsamg.cpp
           rsamg.InitMaxIter(1);
           rsamg.SetCoarseningStrategy(CoarseningStrategy::PMIS);
-          rsamg.SetCoarsestLevel(200);
+          rsamg.SetInterpolationType(InterpolationType::ExtPI); // Tres important pour une bonne convergence
+          rsamg.SetCoarsestLevel(20);
+          rsamg.SetInterpolationFF1Limit(false); // Limit operator complexity
+          //rsamg.SetStrengthThreshold(0.1); // Pas d'effet flagrant
           precond_option(is, "");
         }
       else if (precond == (Motcle) "SPAI")  // ??
@@ -251,21 +270,35 @@ Solver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::create_rocALUTION_
       try
         {
           auto& base_amg = dynamic_cast<BaseAMG<LocalMatrix<T>, LocalVector<T>, T> &>(*lp);
-          if (coarse_grid_solver_=="LU") // Solveur direct construit et inverse sur CPU
+          if (coarse_grid_solver_ == "LU") // Solveur direct construit et inverse sur CPU
             local_solver = new LU<LocalMatrix<T>, LocalVector<T>, T>();
-          else if (coarse_grid_solver_=="INVERSION") // Solveur direct construit et inverse sur GPU
+          else if (coarse_grid_solver_ == "INVERSION") // Solveur direct construit et inverse sur GPU
             local_solver = new Inversion<LocalMatrix<T>, LocalVector<T>, T>();
-          else if (coarse_grid_solver_!="JACOBI")
-            Process::exit("LU or JACOBI solver can be used on coarse grid.");
+          else if (coarse_grid_solver_ == "JACOBI") // Default
+            local_solver = new Jacobi<LocalMatrix<T>, LocalVector<T>, T>();
+          else
+            Process::exit("Unknown coarse grid solver.");
           local_solver->Verbose(precond_verbosity_);
           base_amg.SetManualSolver(true);
           base_amg.SetSolver(*local_solver);
-          //base_amg.SetHostLevels(0); // Par defaut 0 (donc tous les levels sur GPU)
+          Cout << "[rocALUTION] Setting " << coarse_grid_solver_ << " for coarse grid solver." << finl;
+          // Plante:
+          //base_amg.SetHostLevels(coarse_grids_host_); // Par defaut 0 (donc tous les levels sur GPU)
+          //Cout << "[rocALUTION] Solving " << coarse_grids_host_ << " coarse grids on the host." << finl;
         }
-      catch (const std::bad_cast& error) {}
+      catch (const std::bad_cast& error)
+        {
+          Cout << "Error, you can't use smoother " << coarse_grid_solver_ << " with this solver." << finl;
+          //Process::exit();
+        }
 
       // Set local preconditionner to BlockJacobi global one
       dynamic_cast<BlockJacobi<GlobalMatrix<T>, GlobalVector<T>, T> &>(*p).Set(*lp);
+    }
+  if (local_solver != nullptr)
+    {
+      local_solver->Verbose(precond_verbosity_);
+      local_solver->Print();
     }
   if (lp != nullptr) lp->Verbose(precond_verbosity_);
   if (p != nullptr) p->Verbose(precond_verbosity_);
@@ -363,6 +396,10 @@ void Solv_rocALUTION::create_solver(Entree& entree)
                 is >> smoother_;
               else if (motlu==(Motcle)"coarse_grid_solver")
                 is >> coarse_grid_solver_;
+              else if (motlu==(Motcle)"omega")
+                is >> omega_;
+              else if (motlu==(Motcle)"coarse_grids_host")
+                is >> coarse_grids_host_;
               else
                 str+=motlu+" ";
               is >> motlu;
@@ -942,7 +979,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
     {
       try
         {
-          auto& mg = dynamic_cast<SAAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*lp);
+          auto& mg = dynamic_cast<BaseAMG<LocalMatrix<double>, LocalVector<double>, double> &>(*lp);
           mg.SetOperator(mat.GetInterior());
           mg.BuildHierarchy();
           mg.SetManualSmoothers(true);
@@ -954,7 +991,7 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
           auto **gs = new Preconditioner<LocalMatrix<double>, LocalVector<double>, double> *[levels - 1];
           for (int i = 0; i < levels - 1; ++i)
             {
-              if (smoother_=="CHEBYSHEV")
+              if (smoother_ == "CHEBYSHEV")
                 {
                   Chebyshev<LocalMatrix<double>, LocalVector<double>, double> *krylov;    // GPU build/solve
                   krylov = new Chebyshev<LocalMatrix<double>, LocalVector<double>, double>;
@@ -973,22 +1010,25 @@ void Solv_rocALUTION::Create_objects(const Matrice_Morse& csr)
                     gs[i] = new MultiColoredGS<LocalMatrix<double>, LocalVector<double>, double>;    // GPU build/solve
                   else if (smoother_ == "MCSGS|SSOR")
                     gs[i] = new MultiColoredSGS<LocalMatrix<double>, LocalVector<double>, double>;    // GPU build/solve
-                  else
+                  else if (smoother_ == "JACOBI") // Defaut
                     gs[i] = new Jacobi<LocalMatrix<double>, LocalVector<double>, double>;
-                  //fp->SetRelaxation(omega);
+                  else
+                    Process::exit("Unknown smoother.");
+                  fp->SetRelaxation(omega_); // defaut 1.0: Important pour la vitesse de convergence 0.8 semble bien
+                  Cout << "[rocALUTION] Relaxation factor set to " << omega_ << finl;
                   sm[i]->SetPreconditioner(*gs[i]);
                   sm[i]->Verbose(precond_verbosity_);
                 }
             }
-          Cout << "Setting smoother on the " << levels << " levels: ";
+          Cout << "[rocALUTION] Setting smoother on the " << levels << " levels: ";
           gs[0]->Print();
           mg.SetSmoother(sm);
           mg.Verbose(precond_verbosity_);
         }
       catch (const std::bad_cast& error)
         {
-          //Cout << "precond is:" << finl;
-          //lp->Print();
+          Cout << "[rocALUTION] You can't use smoother " << smoother_ << " with this solver." << finl;
+          //Process::exit();
         };
     }
 

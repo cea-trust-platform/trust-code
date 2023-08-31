@@ -88,6 +88,8 @@ private :
   int precond_verbosity_;
   Motcle smoother_= "JACOBI";
   Motcle coarse_grid_solver_ = "LU";
+  double omega_ = 0.8;
+  int coarse_grids_host_ = 0;
   ArrOfDouble sol_host,rhs_host;
   GlobalVector<double> sol, rhs, e;
   IntVect local_renum_;

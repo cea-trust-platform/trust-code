@@ -1,3 +1,4 @@
+XX/XX/23 (TRUST) GPU          : More options for linear solver on AMD: rocALUTION cg { precond c-amg|sa-amg { [smoother jacobi|gs] [coarse_grid_solver LU|inversion|jacobi] [omega double] [coarse_grids_host int] [impr] } rtol|atol double [ impr ] }
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------

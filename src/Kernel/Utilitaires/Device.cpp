@@ -220,7 +220,7 @@ _TYPE_* allocateOnDevice(_TYPE_* ptr, int size, std::string arrayName)
         {
           std::string clock(Process::nproc()>1 ? "[clock]#"+std::to_string(Process::me()) : "[clock]  ");
           double ms = 1000 * (Statistiques::get_time_now() - clock_start);
-          printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%d/%dGB free)\n", clock.c_str(), ms, arrayName.c_str(), toString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024));
+          printf("%s %7.3f ms [Data]   Allocate %s on device [%9s] %6ld Bytes (%ld/%ldGB free)\n", clock.c_str(), ms, arrayName.c_str(), toString(ptr).c_str(), long(bytes), free_bytes/(1024*1024*1024), total_bytes/(1024*1024*1024));
         }
     }
 #endif
