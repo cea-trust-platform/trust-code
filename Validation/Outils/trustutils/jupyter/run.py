@@ -664,7 +664,7 @@ class TRUSTSuite(object):
             text += "* " + c.dir_ + "/" + c.dataFileName_ + ".data " 
             if (c.nbProcs_ > 1):
                 text += "with " + str(c.nbProcs_)  + " procs"
-            text += ": \n"
+            text += "\n"
         displayMD(text)
 
 def readFile(data):
