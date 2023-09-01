@@ -80,7 +80,7 @@ tar xf externalpackages-next.tar
 # To initialize TRUST environment
 source ./env_TRUST.sh
 
-# To initialize the TRUST python's environment (MEDCoupling, swig and ICoCo python)
+# To initialize the TRUST python's environment (MEDCoupling, swig and ICoCo python) (TRUST should be built)
 source ./env_for_python.sh
 ```
 

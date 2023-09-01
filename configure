@@ -1003,9 +1003,6 @@ then
    echo $ECHO_OPTS "# To initialize the TRUST environment, run:"
    echo $ECHO_OPTS "source ./env_TRUST.sh"
    echo
-   echo $ECHO_OPTS "# To initialize the TRUST python environment (medcoupling, swig and ICoCo python), run:"
-   echo $ECHO_OPTS "source ./env_for_python.sh"
-   echo
    echo $ECHO_OPTS "# To build TRUST as a user application (optimized mode only), run:"
    echo $ECHO_OPTS "make optim"
    echo
@@ -1017,6 +1014,9 @@ then
    echo
    echo $ECHO_OPTS "# To check TRUST in a sequential way (one test case at a time), run:"
    echo $ECHO_OPTS "make check"
+   echo
+   echo $ECHO_OPTS "# To initialize the TRUST python environment (medcoupling, swig and ICoCo python), run (TRUST should be built):"
+   echo $ECHO_OPTS "source ./env_for_python.sh"
    echo
 
 fi
