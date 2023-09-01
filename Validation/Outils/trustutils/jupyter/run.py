@@ -383,8 +383,6 @@ class TRUSTCase(object):
         opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
         if "-not_run" in opt:
             return
-        if int(self.nbProcs_) == 1:
-            return
 
         err_file = self.name_ + "_partition.err"
         out_file = self.name_ + "_partition.out"
