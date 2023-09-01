@@ -326,6 +326,20 @@ set(EXECUTABLE_OUTPUT_PATH ${TRUST_ROOT}/exec)
 
     out.write('include (${TRUST_ROOT}/env/Cmake.libs)\n')
     out.write('\n')
+    
+    # nvcc_wrapper does not want -std=c++14:
+    if os.environ["TRUST_USE_KOKKOS"]:
+        out.write('''
+cmake_policy(SET CMP0007 NEW)
+foreach(v DEBUG MINSIZEREL RELEASE PROFIL SEMI_OPT)
+    set(_tmp_flgs)
+    string(REPLACE " " ";" flags_list ${CMAKE_CXX_FLAGS_${v}})
+    list(REMOVE_ITEM flags_list "-std=c++14")
+    string(REPLACE ";" " " _tmp_flgs "${flags_list}")
+    set(CMAKE_CXX_FLAGS_${v} ${_tmp_flgs} CACHE STRING "" FORCE)
+endforeach()
+''')
+
     out.write('FOREACH (liba ${list_libs})\n')
     out.write('''        set (staticlib lib${liba}.a )
          find_library( lib${liba} NAMES ${staticlib} ${liba} PATHS ${list_path_libs} NO_DEFAULT_PATH )
