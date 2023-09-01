@@ -190,8 +190,6 @@ ENDIF(NOT VISUAL)
 
 project(TRUST)
 
-
-
 if(EXISTS ${CMAKE_SOURCE_DIR}/cmake.deps)
    include(cmake.deps)
 endif()
@@ -392,7 +390,7 @@ endif(NOT COMPIL_DYN)
  # on ne produit pas d executable en mode partiel
  IF((  "${ajout}" STREQUAL "" ) OR ($ENV{FORCE_LINK}))
    add_executable (${trio} MAIN/the_main.cpp MAIN/mon_main.cpp ${special_srcs}  )
-   include_directories(Kernel/Utilitaires MAIN Kernel/Math)
+   include_directories(Kernel/Utilitaires MAIN Kernel/Math Kernel/Framework)
    target_link_libraries(${trio} ${libtrio} ${syslib})
    if($ENV{TRUST_USE_KOKKOS})
      target_link_libraries(${trio} Kokkos::kokkos)
