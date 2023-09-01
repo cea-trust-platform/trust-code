@@ -84,8 +84,11 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int journal_master = 0;
   int journal_shared = 0;
   int helptrust = 0;
-  int ieee = 1;              // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-  //int ieee = 0;              // PolyMAC_P0P1NC ?
+  int ieee = 1;  // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
+// Crashes bizarres sur compilateurs clang++, fcc, nvc++ donc on desactive:
+#if defined(_COMPILE_AVEC_CLANG) || defined (_COMPILE_AVEC_FCC) || defined(__NVCOMPILER)
+  ieee = 0;
+#endif
   bool apply_verification = true;
   int disable_stop = 0;
   Nom data_file;
@@ -273,11 +276,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
 #ifdef linux
             // Detect all NaNs (don't add FE_UNDERFLOW cause exp(-x) with x big throws an exception)
             // Test pre 1.7.0, on active en optimise:
-#ifndef _COMPILE_AVEC_CLANG
-#ifndef _COMPILE_AVEC_FCC // Crashes bizarres 
             feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
-#endif
-#endif
 #endif
           }
       }
