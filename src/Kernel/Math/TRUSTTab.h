@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -19,6 +19,7 @@
 #include <MD_Vector_base.h>
 #include <TRUSTVect.h>
 #include <math.h>
+
 #include <View_Types.h>  // Kokkos stuff
 
 /*! @brief : Tableau a n entrees pour n<= 4.
@@ -252,12 +253,14 @@ public:
 
 #ifdef KOKKOS_
   // Kokkos view accessors:
-  inline void init_view() const;
+  inline void init_view_tab() const;
   inline ConstViewTab<_TYPE_> view_ro() const;  // Read-only
-  inline ViewTab<_TYPE_> view_wo();        // Write-only
-  inline ViewTab<_TYPE_> view_rw();        // Read-write
+  inline ViewTab<_TYPE_> view_wo();             // Write-only
+  inline ViewTab<_TYPE_> view_rw();             // Read-write
 
-  inline void sync_to_host() const;        // Synchronize back to host
+  inline void sync_to_host() const;             // Synchronize back to host
+
+  inline void modified_on_host() const;         // Mark data as being modified on host side
 #endif
 
 private:
@@ -274,7 +277,8 @@ private:
 
   // Kokkos members
 #ifdef KOKKOS_
-  mutable DualViewTab<_TYPE_> dual_view_;
+  mutable bool dual_view_init_ = false;
+  mutable DualViewTab<_TYPE_> dual_view_tab_;   // TODO : is it possible to have only one member in TRUSTVect??
 #endif
 
   inline void verifie_MAXDIM_TAB() const

@@ -26,6 +26,8 @@
 #include <limits.h>
 #include <math.h>
 
+#include <View_Types.h>  // Kokkos stuff
+
 template<typename _TYPE_>
 class TRUSTVect : public TRUSTArray<_TYPE_>
 {
@@ -186,7 +188,25 @@ public:
     TRUSTArray<_TYPE_>::reset();
   }
 
+#ifdef KOKKOS_
+  // Kokkos view accessors:
+  inline void init_view_vect() const;
+  inline ConstViewVect<_TYPE_> view_ro() const;  // Read-only
+  inline ViewVect<_TYPE_> view_wo();             // Write-only
+  inline ViewVect<_TYPE_> view_rw();             // Read-write
+
+  inline void sync_to_host() const;              // Synchronize back to host
+
+  inline void modified_on_host() const;         // Mark data as being modified on host side
+#endif
+
 protected:
+  // Kokkos members
+#ifdef KOKKOS_
+  mutable bool dual_view_init_ = false;
+  mutable DualViewVect<_TYPE_> dual_view_vect_;
+#endif
+
   inline void set_line_size_(int n);
   inline void resize_vect_(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT);
   inline void copy_(const TRUSTVect& v, Array_base::Resize_Options opt = Array_base::COPY_INIT);
