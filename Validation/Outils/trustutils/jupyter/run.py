@@ -383,6 +383,10 @@ class TRUSTCase(object):
         opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
         if "-not_run" in opt:
             return
+        if self.nbProcs_ == 1:
+            err_msg = "Not allowed to call case.partition() on case = addCase(%s,..., nbProcs=1) \n" % (self.name_)
+            err_msg += "You cannot run parallel computation on 1 proc!"
+            raise ValueError(err_msg)
 
         err_file = self.name_ + "_partition.err"
         out_file = self.name_ + "_partition.out"
@@ -464,7 +468,7 @@ class TRUSTCase(object):
                 row_arrange[4] += "-" + str(row[5])
             row = row_arrange
 
-        zeTable.addLigne([row], self.dir_ + "/" + self.name_)
+        zeTable.addLigne([row], self.dir_ + "/" + self.dataFileName_)
         os.chdir(ORIGIN_DIRECTORY)
         
         ## Save the file
