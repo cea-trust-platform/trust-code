@@ -111,7 +111,7 @@ void Schema_Comm_Vecteurs::begin_init()
   recv_procs_.resize_array(0);
   sorted_ = 1;
   status_ = BEGIN_INIT;
-  use_gpu_aware_mpi_ = (getenv("TRUST_USE_GPU_AWARE_MPI") != NULL || getenv("MPICH_GPU_SUPPORT_ENABLED") != NULL);
+  use_gpu_aware_mpi_ = getenv("TRUST_USE_GPU_AWARE_MPI") != NULL;
   if (use_gpu_aware_mpi_)
     {
 #if defined(TRUST_USE_CUDA) && !defined(MPIX_CUDA_AWARE_SUPPORT)

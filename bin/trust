@@ -1,7 +1,6 @@
 #!/bin/bash
 # Lancement de TRUST par clavier avec comme argument 
 # le nom du jeu de donnees et le nombre de processeurs
-# Possibilite de fixer des noeuds en specifiant un fichier machinefile
 # Variables d'environnements qui influencent le script: 
 # exec (fixe au chemin global de l'executable a utiliser)
 # bigmem (fixee a 1 elle permet de lancer en batch sur des noeuds a 4Go de tantale)
@@ -631,14 +630,14 @@ fi
 ##############
 # GPU Direct #
 ##############
-if [ $NB_PROCS -gt 1 ]
+if [ $NB_PROCS -gt 1 ] && [ "$TRUST_USE_GPU_AWARE_MPI" = 1 ] # On n'active pas par defaut car pas fiable encore sur plusieurs noeuds...
 then
    if [ "$TRUST_USE_ROCM" = 1 ] && [ "`ldd $binary 2>/dev/null | grep gtl_hsa`" != "" ]
    then
       # OK sur adastra, performances ameliorees
       export MPICH_GPU_SUPPORT_ENABLED=1
       echo "Enabling GPU support for MPI (MPICH_GPU_SUPPORT_ENABLED=1) ..."
-   elif [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_USE_GPU_AWARE_MPI" = 1 ]
+   elif [ "$TRUST_USE_CUDA" = 1 ]
    then
       # OK sur topaze, performances ameliorees
       echo "Enabling CUDA support for MPI ..."
@@ -1168,8 +1167,9 @@ then
    ######################
    # Commandes de calculs
    ######################
-   echo "[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary" >> $sub_file
+   [ -f ld_env.sh ] && echo "[ -f ld_env.sh ] && . ./ld_env.sh # To load an environment file if necessary" >> $sub_file
    echo "source $TRUST_ROOT/env_TRUST.sh" >> $sub_file
+   echo "export exec=$exec" >> $sub_file
    [ "${HOST#irene}" != "$HOST" ] && [ "$queue" = "knl" ] && echo "module sw feature/openmpi/net/auto" >> $sub_file
    if [ "$create_sub_file" = 1 ]
    then
@@ -1181,21 +1181,21 @@ then
    fi
    if [ $NB_PROCS = 1 ] && [ $USE_MPIRUN = 0 ]
    then
-      echo "$exec $NOM $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+      echo "\$exec $NOM $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
    else
       if [ "$mpirun" != "" ]
       then
          if [ "$sub" = "SLURM" ]
          then
-            echo "$mpirun $machinefile $exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+            echo "$mpirun \$exec $NOM \$SLURM_NTASKS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
          elif [ "$sub" = "CCC" ]
 	       then
-            echo "$mpirun $machinefile $exec $NOM \$BRIDGE_MSUB_NPROC $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+            echo "$mpirun \$exec $NOM \$BRIDGE_MSUB_NPROC $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
 	       else
-            echo "$mpirun $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+            echo "$mpirun \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
 	       fi
       else
-         echo "$TRUST_ROOT/bin/mpirun.sh -np $NB_PROCS $machinefile $exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
+         echo "$TRUST_ROOT/bin/mpirun.sh -np $NB_PROCS \$exec $NOM $NB_PROCS $PETSC_OPTIONS 1>$OUTPUT.out 2>$OUTPUT.err" >> $sub_file
       fi
    fi   
    #######
@@ -1250,7 +1250,7 @@ then
         exit 0
      fi
    fi
-   [ $err = 0 ] && rm -f $sub_file
+   #[ $err = 0 ] && rm -f $sub_file # On garde desormais la trace du fichier de soumission...
    # On envoit $OUTPUT.out et $OUTPUT.err vers les bonnes sorties afin que "trust jdd 1>jdd.out 2>jdd.err" envoie ce qu'il faut dans jdd.out et jdd.err
    # A cause de platine (permission denied), on utilise plutot les chemins pointes /proc/self/fd/1 et 2
    [ -f $OUTPUT.out ] && cat $OUTPUT.out >> "/proc/self/fd/1" #cat $OUTPUT.out > "/dev/stdout"

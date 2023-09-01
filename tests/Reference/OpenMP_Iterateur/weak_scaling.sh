@@ -2,18 +2,28 @@
 # Weak scaling on nodes:
 # Selon machines:
 ext=$1 # Exemple: _10 pour le cas a 80 MDOF. Attention out of memory sur 2GPUs
+unset TRUST_USE_GPU_AWARE_MPI
 benchs="gpu cpu"              && mpis_gpu="2 16"          && mpis_cpu="8 64"              && int=""       && jdd_gpu=AmgX             && jdd_cpu=PETSc
-[ "$HOST" = adastra ]         && mpis_gpu="2 16 128 1024" && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_gpu=BENCH_AMD        && jdd_cpu=BENCH_CPU
-[ "$HOST" = topaze ]          && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_NVIDIA
+if [ "$HOST" = adastra ]
+then
+   [ "$TRUST_USE_ROCM" = 1 ]  && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_AMD        && TRUST_USE_GPU_AWARE_MPI=On
+   [ "$TRUST_USE_ROCM" != 1 ] && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_cpu=BENCH_CPU
+fi
+if [ "$HOST" = topaze ]
+then
+   [ "$TRUST_USE_CUDA" = 1 ]  && benchs="gpu"             && mpis_gpu="2 16 128 1024"     && int="_int64" && jdd_gpu=BENCH_NVIDIA     && TRUST_USE_GPU_AWARE_MPI=On
+   [ "$TRUST_USE_CUDA" != 1 ] && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_cpu=BENCH_CPU
+fi
 [ "$HOST" = jean-zay ]        && benchs="gpu"             && mpis_gpu="2 16 128 512"      && int="_int64" && jdd_gpu=BENCH_NVIDIA
-[ "$HOST" = irene-amd-ccrt ]  && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64"                             && jdd_cpu=BENCH_CPU
+[ "$HOST" = irene-amd-ccrt ]  && benchs="cpu"             && mpis_cpu="64 512 4096 32768" && int="_int64" && jdd_cpu=BENCH_CPU
+export TRUST_USE_GPU_AWARE_MPI
 env_gpu=$local/trust/amgx_openmp$int/env_TRUST.sh
 env_cpu=$local/trust/tma$int/env_TRUST.sh         
 jdd_cpu=OpenMP_Iterateur_$jdd_cpu$ext.data
 jdd_gpu=OpenMP_Iterateur_$jdd_gpu$ext.data
 
 mkdir -p weak_scaling$ext && cd weak_scaling$ext
-echo -e "Host     \tDOF \tConfig     \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s  \tIters    \tLoadImbalance"
+echo -e "Host     \tDOF \tConfig     \tTime/dt[s]   \tWith Ax=B[s] \tWith B[s]    \tMDOF/s  \tIters    \tLoadImbalance	\tGPU Direct"
 for bench in $benchs
 do
    [ $bench = gpu ] && mpis=$mpis_gpu && source $env_gpu 1>/dev/null
@@ -57,7 +67,21 @@ do
          done
       fi   
       # Calcul
-      [ $run = 1 ] && (trust $jdd $mpi -journal=0 1>$jdd.out_err 2>&1 || (rm -f *.TU;echo "Error:See "`pwd`/$jdd.out_err))
+      if [ $run = 1 ]
+      then
+         trust $jdd $mpi -journal=0 1>$jdd.out_err 2>&1
+	 err=$?
+	 # On desactive GPU_DIRECT si active et on relance...
+	 if [ $err != 0 ] && [ "$TRUST_USE_GPU_AWARE_MPI" != "" ]
+	 then
+	    echo "Error with GPU Direct. See $jdd.out_err_GPU_DIRECT. Trying without..."
+	    mv -f $jdd.out_err $jdd.out_err_GPU_DIRECT
+	    unset TRUST_USE_GPU_AWARE_MPI
+	    trust $jdd $mpi -journal=0 1>$jdd.out_err 2>&1
+	    err=$?
+	 fi
+	 [ $err != 0 ] && rm -f *.TU && echo "Error:See "`pwd`/$jdd.out_err
+      fi	 
       # Analyse
       [ $run = 1 ] && awk '/RAM taken/ {if ($1>RAM) RAM=$1} END {print "RAM= "RAM}' $jdd.out_err >> $jdd.TU
       # Load balancing
@@ -65,7 +89,7 @@ do
       dof=`awk '/Total number of elements/ {print $NF}' $jdd.out_err | tail -1`
       its=`awk '/Iterations/ && /solveur/ {print $NF}' $jdd.TU`
       gpu="\t" && [ $bench = gpu ] && gpu="+"$mpi"GPU"
-      awk -v host=$HOST -v mpi=$mpi"MPI" -v gpu=$gpu -v dof=$dof -v lib=$load_imbalance -v its=$its '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print host" \t"dof" \t"mpi""gpu" \t"dt" \t"s" \t"b" \t"dof/dt*0.001*0.001" \t"its" \t"lib}' $jdd.TU
+      awk -v host=$HOST -v mpi=$mpi"MPI" -v gpu=$gpu -v dof=$dof -v lib=$load_imbalance -v its=$its -v direct=$TRUST_USE_GPU_AWARE_MPI '/Secondes/ && /pas de temps/ {dt=$NF} /Dont solveurs/ {s=$4;b=dt-s} END {print host" \t"dof" \t"mpi""gpu" \t"dt" \t"s" \t"b" \t"dof/dt*0.001*0.001" \t"its" \t"lib" \t"direct}' $jdd.TU
       cd - 1>/dev/null 2>&1
    done    
 done
