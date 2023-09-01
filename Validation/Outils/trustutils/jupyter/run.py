@@ -369,7 +369,8 @@ class TRUSTCase(object):
 
     def partition(self, verbose=False):
         """ 
-        Apply partitioning of specified test case with trust -partition
+        Apply partitioning of specified test case with trust -partition if nbProcs_>1 only
+        This avoids to modify trust -partition to be able to call it with 1 cpu
 
         Parameters
         ---------
@@ -381,6 +382,8 @@ class TRUSTCase(object):
         os.chdir(self._fullDir())
         opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
         if "-not_run" in opt:
+            return
+        if int(self.nbProcs_) == 1:
             return
 
         err_file = self.name_ + "_partition.err"
@@ -662,7 +665,7 @@ class TRUSTSuite(object):
         text = "### Test cases \n"
         for c in self.getCases():
             text += "* " + c.dir_ + "/" + c.dataFileName_ + ".data " 
-            if (c.nbProcs_ > 1):
+            if (int(c.nbProcs_) > 1):
                 text += "with " + str(c.nbProcs_)  + " procs"
             text += "\n"
         displayMD(text)
