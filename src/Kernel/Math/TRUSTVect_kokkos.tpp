@@ -13,104 +13,96 @@
 *
 *****************************************************************************/
 
-#ifndef TRUSTTab_kokkos_TPP_included
-#define TRUSTTab_kokkos_TPP_included
+#ifndef TRUSTVect_kokkos_TPP_included
+#define TRUSTVect_kokkos_TPP_included
 
-// TODO: this file should ultimately be moved / merged with TRUSTTab.tpp?
+// TODO: this file should ultimately be moved / merged with TRUSTVect.tpp?
 
 #ifdef KOKKOS_
 #include <View_Types.h>
 
 // Create internal DualView member, and populate it with current host data
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::init_view_tab() const
+inline void TRUSTVect<_TYPE_>::init_view_vect() const
 {
-  int dims[2] = {this->dimension_tot(0), this->dimension_tot(1)};
+  int ze_dim = this->size_array();
 
   // Do we need to re-init?
   bool is_init = dual_view_init_;
-  if(is_init && dual_view_tab_.h_view.is_allocated())
+  if(is_init && dual_view_vect_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab_.h_view.data() != this->addr() || dual_view_tab_.extent(0) != dims[0]
-        || dual_view_tab_.extent(1) != dims[1])
+    if (dual_view_vect_.h_view.data() != this->addr() || dual_view_vect_.extent(0) != ze_dim)
       is_init = false;
 
   if (is_init) return;
   dual_view_init_ = true;
 
-  assert(nb_dim() <= 2);
-
-  using t_host = typename DualViewTab<_TYPE_>::t_host;  // Host type
-  using t_dev = typename DualViewTab<_TYPE_>::t_dev;    // Device type
-  using size_type = typename DualViewTab<_TYPE_>::size_type;
+  using t_host = typename DualViewVect<_TYPE_>::t_host;  // Host type
+  using t_dev = typename DualViewVect<_TYPE_>::t_dev;    // Device type
+  using size_type = typename DualViewVect<_TYPE_>::size_type;
 
   const std::string& nom = this->le_nom().getString();
 
-  // Re-use data already allocated on host to create host-view:
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!  WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
-  //          for GPU processing, but avoids having to explicitely copying the data ...)
-  t_host host_view = t_host((_TYPE_ *)this->addr(), dims[0], dims[1]);
+  // Re-use already TRUST allocated data:
+  t_host host_view = t_host((_TYPE_ *)this->addr(), ze_dim);
   // Empty view on device - just a memory allocation:
-  t_dev device_view = t_dev(nom, dims[0], dims[1]);
+  t_dev device_view = t_dev(nom, ze_dim);
 
   // Dual view is made as an assembly of the two views:
-  dual_view_tab_ = DualViewTab<_TYPE_>(device_view, host_view);
+  dual_view_vect_ = DualViewVect<_TYPE_>(device_view, host_view);
 
   // Mark data modified on host so it will be sync-ed to device later on:
-  dual_view_tab_.template modify<host_mirror_space>();
+  dual_view_vect_.template modify<host_mirror_space>();
 }
 
 template<typename _TYPE_>
-inline ConstViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_ro() const
+inline ConstViewVect<_TYPE_> TRUSTVect<_TYPE_>::view_ro() const
 {
   // Init if necessary
-  init_view_tab();
+  init_view_vect();
   // Copy to device if needed (i.e. if modify() was called):
-  dual_view_tab_.template sync<memory_space>();
+  dual_view_vect_.template sync<memory_space>();
   // return *device* view:
-  return dual_view_tab_.template view<memory_space>();
+  return dual_view_vect_.template view<memory_space>();
 }
 
 template<typename _TYPE_>
-inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_wo()
+inline ViewVect<_TYPE_> TRUSTVect<_TYPE_>::view_wo()
 {
   // Init if necessary
-  init_view_tab();
+  init_view_vect();
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
-  dual_view_tab_.template modify<memory_space>();
+  dual_view_vect_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_tab_.template view<memory_space>();
+  return dual_view_vect_.template view<memory_space>();
 }
 
 template<typename _TYPE_>
-inline ViewTab<_TYPE_> TRUSTTab<_TYPE_>::view_rw()
+inline ViewVect<_TYPE_> TRUSTVect<_TYPE_>::view_rw()
 {
   // Init if necessary
-  init_view_tab();
+  init_view_vect();
   // Copy to device (if needed) ...
-  dual_view_tab_.template sync<memory_space>();
+  dual_view_vect_.template sync<memory_space>();
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
-  dual_view_tab_.template modify<memory_space>();
+  dual_view_vect_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_tab_.template view<memory_space>();
+  return dual_view_vect_.template view<memory_space>();
 }
 
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::sync_to_host() const
+inline void TRUSTVect<_TYPE_>::sync_to_host() const
 {
   // Copy to host (if needed) ...
-  dual_view_tab_.template sync<host_mirror_space>();
+  dual_view_vect_.template sync<host_mirror_space>();
 }
 
 template<typename _TYPE_>
-inline void TRUSTTab<_TYPE_>::modified_on_host() const
+inline void TRUSTVect<_TYPE_>::modified_on_host() const
 {
   // Mark modified on host side:
   if(dual_view_init_)
-    dual_view_tab_.template modify<host_mirror_space>();
+    dual_view_vect_.template modify<host_mirror_space>();
 }
 
 #endif // KOKKOS_

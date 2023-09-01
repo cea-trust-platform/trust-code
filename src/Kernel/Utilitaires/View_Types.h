@@ -27,27 +27,45 @@
 //  !WARNING! --> I choose 'LayoutRight' to stick to default data layout in TRUST
 //   but this is not good for GPU ... hopefully second dimension is never too big in most cases ...
 template<typename T>
+using DualViewVect = Kokkos::DualView<T *, Kokkos::LayoutRight>;
+
+template<typename T>
 using DualViewTab = Kokkos::DualView<T **, Kokkos::LayoutRight>;
 
 // The execution space (=where code is run): on the device if compiled for GPU, else CPU.
-using execution_space = DualViewTab<double>::execution_space;
+using execution_space = DualViewVect<double>::execution_space;
 
 // The memory space (=where data is stored): on the device if compiled for GPU, or on CPU otherwise:
 typedef std::conditional< \
 std::is_same<execution_space, Kokkos::DefaultExecutionSpace>::value , \
-DualViewTab<double>::memory_space, DualViewTab<double>::host_mirror_space>::type \
+DualViewVect<double>::memory_space, DualViewVect<double>::host_mirror_space>::type \
 memory_space;
 
 // Whatever the compilation type, the host memory space:
-using host_mirror_space = DualViewTab<double>::host_mirror_space;
+using host_mirror_space = DualViewVect<double>::host_mirror_space;
 
 // The actual view type that will be manipulated everywhere in the kernels (a *device* view)
 template<typename T>
-using ViewTab = Kokkos::View<T **, typename DualViewTab<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+using ViewVect = Kokkos::View<T *, typename DualViewVect<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
 // Its const version:
 template<typename T>
-using ConstViewTab = Kokkos::View<const T **, typename DualViewTab<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+using ConstViewVect = Kokkos::View<const T *, typename DualViewVect<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+
+// Same thing for tabs:
+template<typename T>
+using ViewTab = Kokkos::View<T **, typename DualViewVect<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+
+template<typename T>
+using ConstViewTab = Kokkos::View<const T **, typename DualViewVect<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+
+
+// Handy aliases:
+using IntVectView = ViewVect<int>;
+using DoubleVectView = ViewVect<double>;
+
+using CIntVectView = ConstViewVect<int>;
+using CDoubleVectView = ConstViewVect<double>;
 
 using IntTabView = ViewTab<int>;
 using DoubleTabView = ViewTab<double>;
