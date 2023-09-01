@@ -27,6 +27,14 @@ Domaine_dis_cache& Domaine_dis_cache::Get_instance()
   return instance_;
 }
 
+/*! @brief Clear the content of the cache. Useful to exit nicely making sure everything is deallocated.
+ */
+void Domaine_dis_cache::Clear()
+{
+  Domaine_dis_cache& ddc = Get_instance();
+  ddc.cache_.clear();
+}
+
 /*! @brief Get a discretized domain from the cache, building it and recording it if not
  * there yet.
  *

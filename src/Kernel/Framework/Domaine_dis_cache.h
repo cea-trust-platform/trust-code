@@ -32,6 +32,7 @@ class Domaine_dis_cache
 {
 public:
   static Domaine_dis_cache& Get_instance();
+  static void Clear();
 
   static Domaine_dis& Build_or_get(const Nom& type, const Domaine& dom);
   static Domaine_dis& Build_or_get_poly_post(const Nom& type, const Domaine& dom);
