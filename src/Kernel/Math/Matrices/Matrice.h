@@ -37,8 +37,8 @@ public:
   Matrice(const Matrice&) = default;
   Matrice& operator=( const Matrice& matrix ) ;
   Matrice& operator=( const Matrice_Base& matrix ) ;
+  void operator*=(const double& x) { valeur().scale(x); };
 };
-
 DoubleVect operator*(const Matrice&, const DoubleVect&);
 
 #endif

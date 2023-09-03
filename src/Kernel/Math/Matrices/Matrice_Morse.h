@@ -140,7 +140,6 @@ public :
 
   Matrice_Morse& operator /=(double );
   Matrice_Morse& operator *=(const DoubleVect& );
-  //Matrice_Morse& operator *=(const Matrice_Diagonale& );
   friend Matrice_Morse operator *(double, const Matrice_Morse& );
   Matrice_Morse operator -() const;
   virtual int inverse(const DoubleVect&, DoubleVect&, double ) const ;

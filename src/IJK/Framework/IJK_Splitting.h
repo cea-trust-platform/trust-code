@@ -174,9 +174,9 @@ public:
   // Convert the cell number to the ijk index :  (adapted from Maillage_FT_IJK.h)
   Int3 convert_packed_to_ijk_cell(int index) const
   {
-    const int nbmailles_euler_i = get_nb_elem_local(0); //DIRECTION_I
-    const int nbmailles_euler_j = get_nb_elem_local(1);//DIRECTION_J);
-    // const int nbmailles_euler_k = get_nb_elem_local(2);//DIRECTION_K);
+    const int nbmailles_euler_i = get_nb_elem_local(0); // DIRECTION_I
+    const int nbmailles_euler_j = get_nb_elem_local(1); // DIRECTION_J;
+    // const int nbmailles_euler_k = get_nb_elem_local(2); // DIRECTION_K;
 
     Int3 ijk;
     if (index < 0)
@@ -190,6 +190,12 @@ public:
         ijk[1] = index % nbmailles_euler_j;
         index /= nbmailles_euler_j;
         ijk[2] = index;
+        /*
+         * TODO: M.G. Effacer
+         */
+        //        Cerr << "nbmailles_euler_i" << nbmailles_euler_i << finl;
+        //        Cerr << "nbmailles_euler_j" << nbmailles_euler_j << finl;
+        //        Cerr << "index" << index << finl;
         //     assert(index < nbmailles_euler_k);
         assert(index < get_nb_elem_local(2));
       }

@@ -39,6 +39,7 @@ public :
   virtual int ordre() const =0;
   virtual int nb_lignes() const =0;
   virtual int nb_colonnes() const =0;
+
   // Methodes pour le calcul de r+=Ax codees dans les classes filles
   virtual DoubleVect& ajouter_multvect_(const DoubleVect& x, DoubleVect& r) const =0;
   virtual DoubleVect& ajouter_multvectT_(const DoubleVect& x, DoubleVect& r) const =0;

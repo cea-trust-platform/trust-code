@@ -217,6 +217,13 @@ void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting&
   v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
 }
 
+void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost)
+{
+  v[0].allocate(s, IJK_Splitting::FACES_I, ghost);
+  v[1].allocate(s, IJK_Splitting::FACES_J, ghost);
+  v[2].allocate(s, IJK_Splitting::FACES_K, ghost);
+}
+
 // Interpolate the "field" at the requested "coordinates" (array with 3 columns), and stores into "result"
 static void ijk_interpolate_implementation(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result,
                                            int skip_unknown_points, double value_for_bad_points)
@@ -2155,9 +2162,9 @@ double calculer_rho_cp_u_moyen_inv(const IJK_Field_double& vx,const IJK_Field_do
 }
 
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-																											const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
                                                       const IJK_Field_double& cp,
-																											const IJK_Field_double& rho_field)
+                                                      const IJK_Field_double& rho_field)
 {
   const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
   const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
@@ -2195,7 +2202,7 @@ double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx
 }
 
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-																											const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
                                                       const double& rho_cp)
 {
   const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
@@ -2232,7 +2239,7 @@ double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx
 }
 
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-																										  const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
                                                       const IJK_Field_double& rho_cp)
 {
   const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
@@ -2270,7 +2277,7 @@ double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx
 }
 
 double calculer_temperature_adimensionnelle_theta_moy_inv(const IJK_Field_double& vx,
-																													const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                          const IJK_Field_double& temperature_adimensionnelle_theta,
                                                           const IJK_Field_double& rho_cp_inv)
 {
   const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
@@ -2353,12 +2360,12 @@ double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_
   double rho_cp_moy =0;
   const int nk = variable.nk();
   if (kmin == 0)
-  	calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, kmin);
+    calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, kmin);
   if (kmin + variable.nk() == kmax)
-		{
-			int k = nk-1;
-			calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, k);
-		}
+    {
+      int k = nk-1;
+      calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, k);
+    }
   //somme sur les proc
   rho_cp_moy = Process::mp_sum(rho_cp_moy);
   variable_moy = Process::mp_sum(variable_moy);
@@ -2371,19 +2378,19 @@ double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_
   return variable_moy;
 }
 
-void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho, double& rho_cp_moy, double&variable_moy, int k)
+void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho, double& rho_cp_moy, double& variable_moy, int k)
 {
-	const int ni = variable.ni();
-	const int nj = variable.nj();
-	for (int j = 0; j < nj; j++)
-		for (int i = 0; i < ni; i++)
-			{
-				const double var = variable(i,j,k);
-				const double cp_ijk = cp(i,j,k);
-				const double rho_ijk = rho(i,j,k);
-				rho_cp_moy += rho_ijk * cp_ijk;
-				variable_moy += rho_ijk*cp_ijk*var;
-			}
+  const int ni = variable.ni();
+  const int nj = variable.nj();
+  for (int j = 0; j < nj; j++)
+    for (int i = 0; i < ni; i++)
+      {
+        const double var = variable(i,j,k);
+        const double cp_ijk = cp(i,j,k);
+        const double rho_ijk = rho(i,j,k);
+        rho_cp_moy += rho_ijk * cp_ijk;
+        variable_moy += rho_ijk*cp_ijk*var;
+      }
 }
 
 /*
@@ -2392,18 +2399,18 @@ void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_doubl
 
 double calculer_variable_wall(const IJK_Field_double& variable, const double& rho_cp, const int kmin, const int kmax)
 {
-	const IJK_Splitting& splitting = variable.get_splitting();
-	const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const IJK_Splitting& splitting = variable.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
   double variable_moy = 0;
   double rho_cp_moy =0;
   const int nk = variable.nk();
   if (kmin == 0)
-  	calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
+    calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
   if (kmin + variable.nk() == kmax)
-		{
-			int k = nk-1;
-			calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
-		}
+    {
+      int k = nk-1;
+      calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
+    }
   //somme sur les proc
   rho_cp_moy = Process::mp_sum(rho_cp_moy);
   variable_moy = Process::mp_sum(variable_moy);
@@ -2416,33 +2423,33 @@ double calculer_variable_wall(const IJK_Field_double& variable, const double& rh
   return variable_moy;
 }
 
-void calculer_rho_cp_var(const IJK_Field_double& variable, const double& rho_cp, double& rho_cp_moy, double&variable_moy, int k)
+void calculer_rho_cp_var(const IJK_Field_double& variable, const double& rho_cp, double& rho_cp_moy, double& variable_moy, int k)
 {
-	const int ni = variable.ni();
-	const int nj = variable.nj();
-	for (int j = 0; j < nj; j++)
-		for (int i = 0; i < ni; i++)
-			{
-				const double var = variable(i,j,k);
-				rho_cp_moy += rho_cp;
-				variable_moy += rho_cp*var;
-			}
+  const int ni = variable.ni();
+  const int nj = variable.nj();
+  for (int j = 0; j < nj; j++)
+    for (int i = 0; i < ni; i++)
+      {
+        const double var = variable(i,j,k);
+        rho_cp_moy += rho_cp;
+        variable_moy += rho_cp*var;
+      }
 }
 
 double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, const int kmin, const int kmax)
 {
-	const IJK_Splitting& splitting = variable.get_splitting();
-	const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const IJK_Splitting& splitting = variable.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
   double variable_moy = 0;
   double rho_cp_moy =0;
   const int nk = variable.nk();
   if (kmin == 0)
-  	calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
+    calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
   if (kmin + variable.nk() == kmax)
-		{
-			int k = nk-1;
-			calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
-		}
+    {
+      int k = nk-1;
+      calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
+    }
   //somme sur les proc
   rho_cp_moy = Process::mp_sum(rho_cp_moy);
   variable_moy = Process::mp_sum(variable_moy);
@@ -2455,34 +2462,34 @@ double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_
   return variable_moy;
 }
 
-void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double&variable_moy, int k)
+void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double& variable_moy, int k)
 {
-	const int ni = variable.ni();
-	const int nj = variable.nj();
-	for (int j = 0; j < nj; j++)
-		for (int i = 0; i < ni; i++)
-			{
-				const double var = variable(i,j,k);
-				const double rho_cp_ijk = rho_cp(i,j,k);
-				rho_cp_moy += rho_cp_ijk;
-				variable_moy += rho_cp_ijk*var;
-			}
+  const int ni = variable.ni();
+  const int nj = variable.nj();
+  for (int j = 0; j < nj; j++)
+    for (int i = 0; i < ni; i++)
+      {
+        const double var = variable(i,j,k);
+        const double rho_cp_ijk = rho_cp(i,j,k);
+        rho_cp_moy += rho_cp_ijk;
+        variable_moy += rho_cp_ijk*var;
+      }
 }
 
 double calculer_variable_wall_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv, const int kmin, const int kmax)
 {
-	const IJK_Splitting& splitting = variable.get_splitting();
-	const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  const IJK_Splitting& splitting = variable.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
   double variable_moy = 0;
   double rho_cp_moy =0;
   const int nk = variable.nk();
   if (kmin == 0)
-  	calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, kmin);
+    calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, kmin);
   if (kmin + variable.nk() == kmax)
-		{
-			int k = nk-1;
-			calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, k);
-		}
+    {
+      int k = nk-1;
+      calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, k);
+    }
   //somme sur les proc
   rho_cp_moy = Process::mp_sum(rho_cp_moy);
   variable_moy = Process::mp_sum(variable_moy);
@@ -2495,55 +2502,52 @@ double calculer_variable_wall_inv(const IJK_Field_double& variable, const IJK_Fi
   return variable_moy;
 }
 
-void calculer_rho_cp_var_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv, double& rho_cp_moy, double&variable_moy, int k)
+void calculer_rho_cp_var_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv, double& rho_cp_moy, double& variable_moy, int k)
 {
-	const int ni = variable.ni();
-	const int nj = variable.nj();
-	for (int j = 0; j < nj; j++)
-		for (int i = 0; i < ni; i++)
-			{
-				const double var = variable(i,j,k);
-				const double rho_cp_ijk = 1 / rho_cp_inv(i,j,k);
-				rho_cp_moy += rho_cp_ijk;
-				variable_moy += rho_cp_ijk*var;
-			}
+  const int ni = variable.ni();
+  const int nj = variable.nj();
+  for (int j = 0; j < nj; j++)
+    for (int i = 0; i < ni; i++)
+      {
+        const double var = variable(i,j,k);
+        const double rho_cp_ijk = 1 / rho_cp_inv(i,j,k);
+        rho_cp_moy += rho_cp_ijk;
+        variable_moy += rho_cp_ijk*var;
+      }
 }
 
 /*
- *
+ * Temperature gradient calculation
  */
-
-// Add to vx, vy and vz the gradient of the pressure gradient multiplied by the constant.
-// Input and output velocity is in m/s (not the integral of the momentum on the cell).
-// On the walls, don't touch velocity
 void add_gradient_temperature(const IJK_Field_double& temperature, const double constant,
-                              IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, const Boundary_Conditions_Thermique& boundary, const IJK_Field_double& lambda )
+                              IJK_Field_double& grad_T_x, IJK_Field_double& grad_T_y, IJK_Field_double& grad_T_z,
+                              const Boundary_Conditions_Thermique& boundary, const IJK_Field_double& lambda)
 {
-  const IJK_Grid_Geometry& geom = vx.get_splitting().get_grid_geometry();
-  const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
+  const IJK_Grid_Geometry& geom = grad_T_x.get_splitting().get_grid_geometry();
+  const int kmax = std::max(std::max(grad_T_x.nk(), grad_T_y.nk()), grad_T_z.nk());
   for (int k = 0; k < kmax; k++)
     {
-      // i component of velocity
-      if (k < vx.nk())
+      // i component of the temperature gradient:
+      if (k < grad_T_x.nk())
         {
-          const int jmax = vx.nj();
-          const int imax = vx.ni();
+          const int jmax = grad_T_x.nj();
+          const int imax = grad_T_x.ni();
           const double f = constant / geom.get_constant_delta(0);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vx(i,j,k) += ( temperature(i,j,k) -  temperature(i-1,j,k)) * f;
+              grad_T_x(i,j,k) += ( temperature(i,j,k) -  temperature(i-1,j,k)) * f;
         }
-      // j component:
-      if (k < vy.nk())
+      // j component of the temperature gradient:
+      if (k < grad_T_y.nk())
         {
-          const int jmax = vy.nj();
-          const int imax = vy.ni();
+          const int jmax = grad_T_y.nj();
+          const int imax = grad_T_y.ni();
           const double f = constant / geom.get_constant_delta(1);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vy(i,j,k) += ( temperature(i,j,k) -  temperature(i,j-1,k)) * f;
+              grad_T_y(i,j,k) += ( temperature(i,j,k) -  temperature(i,j-1,k)) * f;
         }
-      // k component:
+      // k component of the temperature gradient:
       bool on_the_wall = false;
       bool on_the_first_cell = false;
       bool on_the_last_cell = false;
@@ -2551,18 +2555,18 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
       int bctype_kmax = boundary.get_bctype_k_max();
 
 
-      const int k_min = vz.get_splitting().get_offset_local(DIRECTION_K);
-      const int nk_tot = vz.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
-      const int offset = vz.get_splitting().get_offset_local(DIRECTION_K);
+      const int k_min = grad_T_z.get_splitting().get_offset_local(DIRECTION_K);
+      const int nk_tot = grad_T_z.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
+      const int offset = grad_T_z.get_splitting().get_offset_local(DIRECTION_K);
       const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k=vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
+      bool perio_k=grad_T_z.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
       if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
         on_the_wall = true;
 
-      if (k < vz.nk() && (!on_the_wall))
+      if (k < grad_T_z.nk() && (!on_the_wall))
         {
-          const int jmax = vz.nj();
-          const int imax = vz.ni();
+          const int jmax = grad_T_z.nj();
+          const int imax = grad_T_z.ni();
           double f;
           if(!perio_k)
             {
@@ -2574,9 +2578,9 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
             }
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vz(i,j,k) += ( temperature(i,j,k) -  temperature(i,j,k-1)) * f;
+              grad_T_z(i,j,k) += ( temperature(i,j,k) -  temperature(i,j,k-1)) * f;
         }
-      else if (k < vz.nk() && (on_the_wall))
+      else if (k < grad_T_z.nk() && (on_the_wall))
         {
           if (k + k_min == 0)
             on_the_first_cell = true;
@@ -2585,8 +2589,8 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
 
           if(on_the_first_cell)
             {
-              const int jmax = vz.nj();
-              const int imax = vz.ni();
+              const int jmax = grad_T_z.nj();
+              const int imax = grad_T_z.ni();
               double f;
               if(bctype_kmin == 0)
                 {
@@ -2598,20 +2602,20 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
                   const double  temperature_kmin = boundary.get_temperature_kmin();
                   for (int j = 0; j < jmax; j++)
                     for (int i = 0; i < imax; i++)
-                      vz(i,j,0) +=  (temperature(i,j,0) - temperature_kmin)*f;
-                  //  vz(i,j,0) += (- (23.* temperature_kmin) + (21. * temperature(i,j,k)) + (3.* temperature(i,j,k+1)) - (1. * temperature(i,j,k+2)) ) * f * coef;
-                  // vz(i,j,0) += ( 23.*temperature_kmin - 21.*temperature(i,j,k) - 3.*temperature(i,j,k+1) + 1.*temperature(i,j,k+2)) * f *coef;
+                      grad_T_z(i,j,0) +=  (temperature(i,j,0) - temperature_kmin)*f;
+                  //  grad_T_z(i,j,0) += (- (23.* temperature_kmin) + (21. * temperature(i,j,k)) + (3.* temperature(i,j,k+1)) - (1. * temperature(i,j,k+2)) ) * f * coef;
+                  // grad_T_z(i,j,0) += ( 23.*temperature_kmin - 21.*temperature(i,j,k) - 3.*temperature(i,j,k+1) + 1.*temperature(i,j,k+2)) * f *coef;
 
                 }
 
               if(bctype_kmin == 1)
                 {
-                  const double  flux_kmin = boundary.get_flux_kmin();
+                  const double flux_kmin = boundary.get_flux_kmin();
                   for (int j = 0; j < jmax; j++)
                     for (int i = 0; i < imax; i++)
                       {
                         double l = lambda(i,j,0);
-                        vz(i,j,0) += -flux_kmin/l;
+                        grad_T_z(i,j,0) += -flux_kmin/l;
                       }
 
 
@@ -2620,8 +2624,8 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
 
           if(on_the_last_cell)
             {
-              const int jmax = vz.nj();
-              const int imax = vz.ni();
+              const int jmax = grad_T_z.nj();
+              const int imax = grad_T_z.ni();
               double f;
 
               if(bctype_kmax == 0)
@@ -2634,10 +2638,9 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
                   //const double coef = 1./48.;
                   for (int j = 0; j < jmax; j++)
                     for (int i = 0; i < imax; i++)
-                      vz(i,j,k) += (temperature_kmax -temperature(i,j,k-1))*f;
-                  //vz(i,j,k) += ( 23.*temperature_kmax - 21.*temperature(i,j,k-1) - 3.*temperature(i,j,k-2) + 1.*temperature(i,j,k-3)) * f *coef;
-                  // vz(i,j,k) += (-23.*temperature_kmax + 21.*temperature(i,j,k-1) + 3.*temperature(i,j,k-2)-1.*temperature(i,j,k+2) ) * f * coef;
-
+                      grad_T_z(i,j,k) += (temperature_kmax -temperature(i,j,k-1))*f;
+                  //grad_T_z(i,j,k) += ( 23.*temperature_kmax - 21.*temperature(i,j,k-1) - 3.*temperature(i,j,k-2) + 1.*temperature(i,j,k-3)) * f *coef;
+                  // grad_T_z(i,j,k) += (-23.*temperature_kmax + 21.*temperature(i,j,k-1) + 3.*temperature(i,j,k-2)-1.*temperature(i,j,k+2) ) * f * coef;
                 }
 
               if(bctype_kmax == 1)
@@ -2647,10 +2650,8 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
                     for (int i = 0; i < imax; i++)
                       {
                         double l = lambda(i,j,k-1);
-                        vz(i,j,k) += flux_kmax/l;
+                        grad_T_z(i,j,k) += flux_kmax/l;
                       }
-
-
                 }
             }
         }

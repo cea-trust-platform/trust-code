@@ -47,7 +47,6 @@ DoubleVect operator * (const Matrice_Base& A, const DoubleVect& vect)
   return A.multvect(vect, r);
 }
 
-
 void Matrice_Base::build_stencil( void )
 {
   Cerr << "Error in 'Matrice_Base::build_stencil( )"<<finl;

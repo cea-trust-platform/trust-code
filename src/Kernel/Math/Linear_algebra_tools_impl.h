@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -42,6 +42,19 @@ inline void Matrice33::produit(const Matrice33& m, const Vecteur3& x, Vecteur3& 
   y.v[2] = m.m[2][0] * x.v[0] + m.m[2][1] * x.v[1] + m.m[2][2] * x.v[2];
 }
 
+inline void Matrice33::produit_matriciel(const Matrice33& mat1, const Matrice33& mat2, Matrice33& res)
+{
+  res.m[0][0] = mat1.m[0][0] * mat2.m[0][0] + mat1.m[0][1] * mat2.m[1][0] + mat1.m[0][2] * mat2.m[2][0];
+  res.m[1][0] = mat1.m[1][0] * mat2.m[0][0] + mat1.m[1][1] * mat2.m[1][0] + mat1.m[1][2] * mat2.m[2][0];
+  res.m[2][0] = mat1.m[2][0] * mat2.m[0][0] + mat1.m[2][1] * mat2.m[1][0] + mat1.m[2][2] * mat2.m[2][0];
+  res.m[0][1] = mat1.m[0][0] * mat2.m[0][1] + mat1.m[0][1] * mat2.m[1][1] + mat1.m[0][2] * mat2.m[2][1];
+  res.m[1][1] = mat1.m[1][0] * mat2.m[0][1] + mat1.m[1][1] * mat2.m[1][1] + mat1.m[1][2] * mat2.m[2][1];
+  res.m[2][1] = mat1.m[2][0] * mat2.m[0][1] + mat1.m[2][1] * mat2.m[1][1] + mat1.m[2][2] * mat2.m[2][1];
+  res.m[0][2] = mat1.m[0][0] * mat2.m[0][2] + mat1.m[0][1] * mat2.m[1][2] + mat1.m[0][2] * mat2.m[2][2];
+  res.m[1][2] = mat1.m[1][0] * mat2.m[0][2] + mat1.m[1][1] * mat2.m[1][2] + mat1.m[1][2] * mat2.m[2][2];
+  res.m[2][2] = mat1.m[2][0] * mat2.m[0][2] + mat1.m[2][1] * mat2.m[1][2] + mat1.m[2][2] * mat2.m[2][2];
+}
+
 inline void Vecteur3::produit_vectoriel(const Vecteur3& x, const Vecteur3& y, Vecteur3& z)
 {
   z.v[0] = x.v[1] * y.v[2] - x.v[2] * y.v[1];
@@ -66,6 +79,22 @@ inline double Vecteur3::norme_Linfini()
   double resu = ((x > y) ? x : y);
   resu = ((resu > z) ? resu : z);
   return resu;
+}
+
+/* ! @brief calcul de la transpose
+ *
+ */
+inline void Matrice33::transpose(const Matrice33& matrice, Matrice33& matrice_transpose)
+{
+  matrice_transpose.m[0][0] = matrice.m[0][0];
+  matrice_transpose.m[1][1] = matrice.m[1][1];
+  matrice_transpose.m[2][2] = matrice.m[2][2];
+  matrice_transpose.m[0][1] = matrice.m[1][0];
+  matrice_transpose.m[0][2] = matrice.m[2][0];
+  matrice_transpose.m[1][0] = matrice.m[0][1];
+  matrice_transpose.m[1][2] = matrice.m[2][1];
+  matrice_transpose.m[2][0] = matrice.m[0][2];
+  matrice_transpose.m[2][1] = matrice.m[1][2];
 }
 
 /*! @brief calcul de l'inverse.

@@ -42,6 +42,18 @@ public:
     m[2][1] = m21;
     m[2][2] = m22;
   }
+  Matrice33(const DoubleTab& tab)
+  {
+    m[0][0] = tab(0, 0);
+    m[0][1] = tab(0, 1);
+    m[0][2] = tab(0, 2);
+    m[1][0] = tab(1, 0);
+    m[1][1] = tab(1, 1);
+    m[1][2] = tab(1, 2);
+    m[2][0] = tab(2, 0);
+    m[2][1] = tab(2, 1);
+    m[2][2] = tab(2, 2);
+  }
   double operator()(int i, int j) const
   {
     assert(i >= 0 && i < 3 && j >= 0 && j < 3);
@@ -53,8 +65,9 @@ public:
     return m[i][j];
   }
   inline double norme_Linfini();
-
   static inline void   produit(const Matrice33& m, const Vecteur3& x, Vecteur3& y);
+  static inline void produit_matriciel(const Matrice33& m1, const Matrice33& m2, Matrice33& res);
+  static inline void transpose(const Matrice33& matrice, Matrice33& matrice_transpose);
   static inline double inverse(const Matrice33& m, Matrice33& resu, int exit_on_error = 1);
 protected:
   double m[3][3];

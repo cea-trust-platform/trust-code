@@ -71,14 +71,20 @@ void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Fi
 
 void force_zero_on_walls(IJK_Field_double& vz);
 void allocate_velocity(FixedVector<IJK_Field_double, 3>& v, const IJK_Splitting& s, int ghost);
+void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s, int ghost);
+
 //void allocate_cell_vector(FixedVector<IJK_Field_double, 3> & v, const IJK_Splitting & s, int ghost);
 template<int N>
 void allocate_cell_vector(FixedVector<IJK_Field_double, N>& v, const IJK_Splitting& s, int ghost)
 {
   for (int i=0; i<N ; i++)
-    {
-      v[i].allocate(s, IJK_Splitting::ELEM, ghost);
-    }
+    v[i].allocate(s, IJK_Splitting::ELEM, ghost);
+}
+template<int N>
+void allocate_cell_vector(FixedVector<IJK_Field_int, N>& v, const IJK_Splitting& s, int ghost)
+{
+  for (int i=0; i<N ; i++)
+    v[i].allocate(s, IJK_Splitting::ELEM, ghost);
 }
 //void allocate_cell_vector_n(FixedVector<IJK_Field_double, int n> & v, const IJK_Splitting & s, int ghost);
 
@@ -152,31 +158,31 @@ double calculer_rho_cp_u_moyen_inv(const IJK_Field_double& vx, const IJK_Field_d
 
 //double compute_spatial_mean(const IJK_Field_double& vx, const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho_field, const int kmin, const int nktot, const int k);
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-																											const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
                                                       const IJK_Field_double& cp,
-																											const IJK_Field_double& rho_field);
+                                                      const IJK_Field_double& rho_field);
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-																											const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
                                                       const double& rho_cp);
 double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-																											const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
                                                       const IJK_Field_double& rho_cp);
 double calculer_temperature_adimensionnelle_theta_moy_inv(const IJK_Field_double& vx,
-																													const IJK_Field_double& temperature_adimensionnelle_theta,
-																													const IJK_Field_double& rho_cp_inv);
+                                                          const IJK_Field_double& temperature_adimensionnelle_theta,
+                                                          const IJK_Field_double& rho_cp_inv);
 
 double calculer_temperature_theta_moy(const IJK_Field_double& vx, const IJK_Field_double& temperature,
                                       const IJK_Field_double& cp, const IJK_Field_double& rho_field);
 
 double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho_field, const int kmin, const int nktot);
-void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho_field, double& rho_cp_moy, double&variable_moy, int k);
+void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho_field, double& rho_cp_moy, double& variable_moy, int k);
 // M.G: Overload methods for different thermal cases
 double calculer_variable_wall(const IJK_Field_double& variable, const double& rho_cp, const int kmin, const int nktot);
-void calculer_rho_cp_var(const IJK_Field_double& variable, const double& rho_cp, double& rho_cp_moy, double&variable_moy, int k);
+void calculer_rho_cp_var(const IJK_Field_double& variable, const double& rho_cp, double& rho_cp_moy, double& variable_moy, int k);
 double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_, const int kmin, const int nktot);
-void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double&variable_moy, int k);
+void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double& variable_moy, int k);
 double calculer_variable_wall_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv_, const IJK_Field_double& rho_field, const int kmin, const int nktot);
-void calculer_rho_cp_var_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double&variable_moy, int k);
+void calculer_rho_cp_var_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double& variable_moy, int k);
 // M.G: Overload methods for different thermal cases
 
 double calculer_tauw(const IJK_Field_double& vx, const double mu_liquide);

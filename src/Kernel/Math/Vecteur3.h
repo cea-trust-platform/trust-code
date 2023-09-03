@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,12 @@ public:
     v[0] = ptr[0];
     v[1] = ptr[1];
     v[2] = ptr[2];
+  }
+  Vecteur3(const ArrOfDouble& arr)
+  {
+    v[0] = arr[0];
+    v[1] = arr[1];
+    v[2] = arr[2];
   }
   Vecteur3& operator=(double x)
   {
