@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -102,7 +102,7 @@ void Partitionneur_Fichier_MED::construire_partition(IntVect& elem_part, int& nb
 #ifdef MEDCOUPLING_
   using namespace MEDCoupling;
 
-  MCAuto<MEDCouplingField> ffield = MEDCoupling::ReadField("Partition.med", "Thread");
+  MCAuto<MEDCouplingField> ffield = MEDCoupling::ReadField(filename_.getString(), fieldname_.getString());
   MEDCouplingFieldInt32 * field = dynamic_cast<MEDCouplingFieldInt32 *>((MEDCouplingField *)ffield);
 
   if(!field)

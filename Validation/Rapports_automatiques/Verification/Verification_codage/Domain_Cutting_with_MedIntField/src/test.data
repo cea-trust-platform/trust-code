@@ -1,15 +1,15 @@
-# PARALLEL ONLY 4 #
+# PARALLEL OK 4 #
 
 dimension 3
 Pb_hydraulique pb
 domaine dom
 
-# BEGIN MESH
+# BEGIN MESH #
 Read_MED {
     domain dom
     file mesh.med
 }
-END MESH #
+# END MESH #
 
 # BEGIN PARTITION
 Postraiter_domaine
@@ -21,16 +21,16 @@ Postraiter_domaine
 
 Partition dom
 {
-    Partition_tool Fichier_MED { file Processor.med field Thread }
+    Partition_tool Fichier_MED { file Partition.med field Thread }
     Larg_joint 2
     zones_name DOM
 }
 End
 END PARTITION #
 
-# BEGIN SCATTER #
+# BEGIN SCATTER 
 Scatter DOM.Zones dom
-# END SCATTER #
+END SCATTER #
 
 /* discretiser_domaine dom
 postraiter_domaine { domaine dom fichier dom.lata format lata } */
