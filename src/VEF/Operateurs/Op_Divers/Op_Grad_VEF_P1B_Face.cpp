@@ -318,7 +318,6 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
   DoubleTabView grad_v = grad.view_rw();
   int dim = Objet_U::dimension;
 
-  start_timer();
   auto kern_elem = KOKKOS_LAMBDA(int elem)
   {
     for(int indice=0; indice<nfe; indice++)
@@ -335,10 +334,12 @@ DoubleTab& Op_Grad_VEF_P1B_Face::ajouter_elem(const DoubleTab& pre, DoubleTab& g
       }
   };
 
+  start_timer();
   Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::ajouter_elem", nb_elem_tot, kern_elem);
-  grad.sync_to_host();
-
+  Kokkos::fence();
   end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Grad_VEF_P1B_Face::ajouter_elem");
+
+  grad.sync_to_host();
 
   return grad;
 }
@@ -728,7 +729,6 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
 //  DoubleTab flux_bords2 = flux_bords_;
   DoubleTabView flux_bords_v = flux_bords_.view_wo();
   int dim = Objet_U::dimension;
-  start_timer();
 
   auto kern_flux_bords = KOKKOS_LAMBDA(int face)
   {
@@ -749,10 +749,12 @@ void Op_Grad_VEF_P1B_Face::calculer_flux_bords() const
       flux_bords_v(face,i) = pres_tot * face_normales_v(face, i);
   };
 
+  start_timer();
   Kokkos::parallel_for("[KOKKOS] Op_Grad_VEF_P1B_Face::calculer_flux_bords", nb_faces_bord, kern_flux_bords);
-  flux_bords_.sync_to_host();
-
+  Kokkos::fence();
   end_timer(Objet_U::computeOnDevice, "Boundary face loop on flux_bords in Op_Grad_VEF_P1B_Face::calculer_flux_bords()\n");
+
+  flux_bords_.sync_to_host();
 
 //  // Comparison
 //  for (int i = 0; i < 10; i++)
