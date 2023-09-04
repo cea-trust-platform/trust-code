@@ -24,6 +24,8 @@
 #include <climits>
 #include <Device.h>
 
+#include <View_Types.h>  // Kokkos stuff
+
 /*! @brief Represente un tableau d'elements de type int/double/float.
  *
  * L'etat du tableau est caracterise par la valeur de p_ et de data_ :
@@ -210,7 +212,28 @@ public:
   inline virtual Span_ get_span_tot() { return Span_(data_,size_array_); }
   inline virtual const Span_ get_span() const { return Span_((_TYPE_*)data_, size_array_); }
   inline virtual const Span_ get_span_tot() const { return Span_((_TYPE_*)data_, size_array_); }
+
+  // Kokkos accessors
+#ifdef KOKKOS_
+  // Kokkos view accessors:
+  inline void init_view_arr() const;
+  inline ConstViewArr<_TYPE_> view_ro() const;  // Read-only
+  inline ViewArr<_TYPE_> view_wo();             // Write-only
+  inline ViewArr<_TYPE_> view_rw();             // Read-write
+
+  inline void sync_to_host() const;              // Synchronize back to host
+
+  inline void modified_on_host() const;         // Mark data as being modified on host side
+#endif
+
 protected:
+  // Kokkos members
+#ifdef KOKKOS_
+  mutable bool dual_view_init_ = false;
+  mutable DualViewArr<_TYPE_> dual_view_arr_;
+#endif
+
+
   inline void attach_array(const TRUSTArray& a, int start = 0, int size = -1);
   inline void fill_default_value(Array_base::Resize_Options opt, int first, int nb);
   inline void resize_array_(int n, Array_base::Resize_Options opt = COPY_INIT);
