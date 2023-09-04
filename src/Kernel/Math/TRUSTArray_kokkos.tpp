@@ -13,33 +13,33 @@
 *
 *****************************************************************************/
 
-#ifndef TRUSTVect_kokkos_TPP_included
-#define TRUSTVect_kokkos_TPP_included
+#ifndef TRUSTArr_kokkos_TPP_included
+#define TRUSTArr_kokkos_TPP_included
 
-// TODO: this file should ultimately be moved / merged with TRUSTVect.tpp?
+// TODO: this file should ultimately be moved / merged with TRUSTArr.tpp?
 
 #ifdef KOKKOS_
 #include <View_Types.h>
 
 // Create internal DualView member, and populate it with current host data
 template<typename _TYPE_>
-inline void TRUSTVect<_TYPE_>::init_view_vect() const
+inline void TRUSTArray<_TYPE_>::init_view_arr() const
 {
-  int ze_dim = this->size_array();
+  long ze_dim = this->size_array();
 
   // Do we need to re-init?
   bool is_init = dual_view_init_;
-  if(is_init && dual_view_vect_.h_view.is_allocated())
+  if(is_init && dual_view_arr_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_vect_.h_view.data() != this->addr() || dual_view_vect_.extent(0) != ze_dim)
+    if (dual_view_arr_.h_view.data() != this->addr() || (long)dual_view_arr_.extent(0) != ze_dim)
       is_init = false;
 
   if (is_init) return;
   dual_view_init_ = true;
 
-  using t_host = typename DualViewVect<_TYPE_>::t_host;  // Host type
-  using t_dev = typename DualViewVect<_TYPE_>::t_dev;    // Device type
-  using size_type = typename DualViewVect<_TYPE_>::size_type;
+  using t_host = typename DualViewArr<_TYPE_>::t_host;  // Host type
+  using t_dev = typename DualViewArr<_TYPE_>::t_dev;    // Device type
+  using size_type = typename DualViewArr<_TYPE_>::size_type;
 
   const std::string& nom = this->le_nom().getString();
 
@@ -49,60 +49,60 @@ inline void TRUSTVect<_TYPE_>::init_view_vect() const
   t_dev device_view = t_dev(nom, ze_dim);
 
   // Dual view is made as an assembly of the two views:
-  dual_view_vect_ = DualViewVect<_TYPE_>(device_view, host_view);
+  dual_view_arr_ = DualViewArr<_TYPE_>(device_view, host_view);
 
   // Mark data modified on host so it will be sync-ed to device later on:
-  dual_view_vect_.template modify<host_mirror_space>();
+  dual_view_arr_.template modify<host_mirror_space>();
 }
 
 template<typename _TYPE_>
-inline ConstViewVect<_TYPE_> TRUSTVect<_TYPE_>::view_ro() const
+inline ConstViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_ro() const
 {
   // Init if necessary
-  init_view_vect();
+  init_view_arr();
   // Copy to device if needed (i.e. if modify() was called):
-  dual_view_vect_.template sync<memory_space>();
+  dual_view_arr_.template sync<memory_space>();
   // return *device* view:
-  return dual_view_vect_.template view<memory_space>();
+  return dual_view_arr_.template view<memory_space>();
 }
 
 template<typename _TYPE_>
-inline ViewVect<_TYPE_> TRUSTVect<_TYPE_>::view_wo()
+inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_wo()
 {
   // Init if necessary
-  init_view_vect();
+  init_view_arr();
   // Mark the (device) data as modified, so that the next sync() (to host) will copy:
-  dual_view_vect_.template modify<memory_space>();
+  dual_view_arr_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_vect_.template view<memory_space>();
+  return dual_view_arr_.template view<memory_space>();
 }
 
 template<typename _TYPE_>
-inline ViewVect<_TYPE_> TRUSTVect<_TYPE_>::view_rw()
+inline ViewArr<_TYPE_> TRUSTArray<_TYPE_>::view_rw()
 {
   // Init if necessary
-  init_view_vect();
+  init_view_arr();
   // Copy to device (if needed) ...
-  dual_view_vect_.template sync<memory_space>();
+  dual_view_arr_.template sync<memory_space>();
   // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
-  dual_view_vect_.template modify<memory_space>();
+  dual_view_arr_.template modify<memory_space>();
   // return *device* view:
-  return dual_view_vect_.template view<memory_space>();
+  return dual_view_arr_.template view<memory_space>();
 }
 
 template<typename _TYPE_>
-inline void TRUSTVect<_TYPE_>::sync_to_host() const
+inline void TRUSTArray<_TYPE_>::sync_to_host() const
 {
   // Copy to host (if needed) ...
-  dual_view_vect_.template sync<host_mirror_space>();
+  dual_view_arr_.template sync<host_mirror_space>();
 }
 
 template<typename _TYPE_>
-inline void TRUSTVect<_TYPE_>::modified_on_host() const
+inline void TRUSTArray<_TYPE_>::modified_on_host() const
 {
   // Mark modified on host side:
   if(dual_view_init_)
-    dual_view_vect_.template modify<host_mirror_space>();
+    dual_view_arr_.template modify<host_mirror_space>();
 }
 
 #endif // KOKKOS_

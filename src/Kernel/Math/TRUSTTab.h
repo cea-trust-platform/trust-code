@@ -277,7 +277,6 @@ private:
 
   // Kokkos members
 #ifdef KOKKOS_
-  mutable bool dual_view_init_ = false;
   mutable DualViewTab<_TYPE_> dual_view_tab_;   // TODO : is it possible to have only one member in TRUSTVect??
 #endif
 

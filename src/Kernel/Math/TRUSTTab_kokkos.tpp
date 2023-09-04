@@ -25,18 +25,22 @@
 template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::init_view_tab() const
 {
-  int dims[2] = {this->dimension_tot(0), this->dimension_tot(1)};
+  // For now, force only 2 dims max:
+  long trail_dim = 1;
+  for(int d=1; d < this->nb_dim(); d++)
+    trail_dim *= this->dimension_tot(d);
+  long dims[2] = {this->dimension_tot(0), trail_dim};
 
   // Do we need to re-init?
-  bool is_init = dual_view_init_;
+  bool is_init = this->dual_view_init_;
   if(is_init && dual_view_tab_.h_view.is_allocated())
     // change of alloc or resize triggers re-init (for now - resize could be done better)
-    if (dual_view_tab_.h_view.data() != this->addr() || dual_view_tab_.extent(0) != dims[0]
-        || dual_view_tab_.extent(1) != dims[1])
+    if (dual_view_tab_.h_view.data() != this->addr() || (long)dual_view_tab_.extent(0) != dims[0]
+        || (long)dual_view_tab_.extent(1) != dims[1])
       is_init = false;
 
   if (is_init) return;
-  dual_view_init_ = true;
+  this->dual_view_init_ = true;
 
   assert(nb_dim() <= 2);
 
@@ -109,7 +113,7 @@ template<typename _TYPE_>
 inline void TRUSTTab<_TYPE_>::modified_on_host() const
 {
   // Mark modified on host side:
-  if(dual_view_init_)
+  if(this->dual_view_init_)
     dual_view_tab_.template modify<host_mirror_space>();
 }
 
