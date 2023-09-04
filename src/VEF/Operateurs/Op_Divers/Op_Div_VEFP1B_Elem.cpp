@@ -128,17 +128,12 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
     }
   end_timer(Objet_U::computeOnDevice, "Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
 #else
-  // Initialisation -- will happen only once in the whole execution:
-  face_voisins.init_view();
-  face_normales.init_view();
-  elem_faces.init_view();
-  vit.init_view();
-  div.init_view();
-
   CIntTabView face_voisins_v = face_voisins.view_ro();
   CDoubleTabView face_normales_v = face_normales.view_ro();
   CIntTabView elem_faces_v = elem_faces.view_ro();
+  vit.modified_on_host();
   CDoubleTabView  vit_v = vit.view_ro();
+  div.modified_on_host();
   DoubleTabView div_v = div.view_rw(); // read-write
   int dim = Objet_U::dimension;  // Objet_U::dimension can not be read from Kernel.
 
