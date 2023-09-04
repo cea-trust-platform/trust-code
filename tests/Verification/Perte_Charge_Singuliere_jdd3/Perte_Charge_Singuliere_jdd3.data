@@ -1,22 +1,22 @@
-# Perte_Charge_Singuliere MED 3D VEF #
-# PARALLEL OK #
+# Perte_Charge_Singuliere MED 3D VDF 
+Test the implementation with VDF internal face group 
+Partitioning create joints common to the internal face to test the correct parallelization of groups of internal faces #
+# PARALLEL OK 4 #
 dimension 3
 Domaine dom
 
 # BEGIN MESH #
 Read_MED { 
    domain dom 
-   file MeshCFD.med 
+   file mesh.med 
 	 include_internal_face_groups 1 interf
 }
-/* Second read with MEDCoupling */
-VerifierCoin dom { }
 # END MESH #
 
 # BEGIN PARTITION
 Partition dom
 {
-    Partition_tool metis { Nb_parts 4 }
+    Partition_tool fichier_MED { file Partition.med field Thread }
     Larg_joint 2
     zones_name DOM
 }
@@ -27,85 +27,78 @@ END PARTITION #
 Scatter DOM.Zones dom
 END SCATTER #
 
-VEFPreP1B dis
+VDF dis
 
-Scheme_euler_implicit sch
+Scheme_euler_explicit sch
 Read sch
 {
     tinit 0
 	nb_pas_dt_max 3
-    tmax 20.1
-    dt_min 1.e-10
+    tmax 2000.
+    dt_min 1.e-6
+    dt_start dt_calc
     dt_max 1.0
-    dt_start dt_fixe 0.001
-    dt_sauv 100000.
-    dt_impr 1.e-20
-    seuil_statio -1.
-    facsec 500.
-    solveur implicite
-    {
-        solveur gen { seuil 1e-8 impr solv_elem bicgstab precond ilu { type 2 filling 10 } }
-    }
-    no_check_disk_space
+    dt_sauv 100
+    dt_impr 0.2
+    facsec 0.5
+    seuil_statio 1.e-10
 }
 
-Pb_thermohydraulique  pb
+Pb_hydraulique pb
 Associate pb dom
 Associate pb sch
 Discretize pb dis
 
 Read pb
 {
-       
-fluide_incompressible {
-    gravite champ_uniforme 3 0 0 -9.81
-mu      Champ_Uniforme 1 .000245
-    rho     Champ_Uniforme 1 840.
-    lambda  Champ_Uniforme 1 66.
-    Cp      Champ_Uniforme 1 1270.
-    Beta_th Champ_Uniforme 1 0.000276
-}
+
+    fluide_incompressible {
+        mu Champ_Uniforme 1 1.
+        rho Champ_Uniforme 1 4
+        lambda Champ_Uniforme 1 10
+        Cp champ_Uniforme 1 1000
+        porosites_champ champ_fonc_xyz dom 1 1.-0.5*(z<1.)
+    }
 
 
-Navier_Stokes_standard
+
+    Navier_Stokes_standard
     {
-        solveur_pression Petsc Cholesky  { }
-        convection { amont }
-        diffusion {  }
-        initial_conditions { vitesse Champ_Uniforme 3 0. 0. 0. }
-        sources
-        {
-            Boussinesq_temperature { T0 470. verif_boussinesq 0 }
-            , Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Internal_Face_groups interf  } }
+        projection_initiale 1
+        solveur_pression GCP  { precond ssor { omega 1.5 } seuil 1e-8 impr }
+        convection { negligeable }
+        diffusion { negligeable }
+        sources {
+            Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Internal_Face_groups interf  } }
+        }
+        initial_conditions {
+            vitesse Champ_Uniforme 3 0. 0. 0.
         }
         boundary_conditions
         {
             Inlet    frontiere_ouverte_vitesse_imposee_sortie Champ_Front_Uniforme 3 0. 0. 1.
-            Outlet	 frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 100000.
+            Outlet	 frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
             Adiab    symetrie
         }
-    }
-    Convection_diffusion_temperature
-    {
-        convection { amont }
-        diffusion { }
-        initial_conditions { temperature Champ_Uniforme 1 550. }
-        boundary_conditions
-        {
-            Inlet    frontiere_ouverte T_ext Champ_Front_Uniforme 1 400.
-            Outlet	 frontiere_ouverte T_ext Champ_Front_Uniforme 1 550.
-            Adiab	 paroi_adiabatique
-        }
-    }
+		}
     Post_processing
     {
+        Definition_champs {
+            erreur_pression_pa Transformation {
+                methode formule expression 1 pression_pa-(z<1.)*1/4
+                source refChamp {
+                    Pb_Champ pb pression_pa nom_source pression_pa
+                }
+            }
+        }
+
         format lml
-        fields Binaire dt_post 1.
+        fields dt_post 1.
         {
-            vitesse     som
-            vitesse     elem
+            erreur_pression_pa elem
             pression_pa elem
-            temperature som
+            vitesse elem
+            porosite_volumique elem
         }
     }
 }
