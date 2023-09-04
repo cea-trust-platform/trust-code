@@ -153,8 +153,10 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_elem(const DoubleTab& vit, DoubleTab& div
 
   start_timer();
   Kokkos::parallel_for("[KOKKOS]Op_Div_VEFP1B_Elem::ajouter_elem", nb_elem, kern_ajouter);
-  div.sync_to_host();  // "checkDataOnHost()"
+  Kokkos::fence();
   end_timer(Objet_U::computeOnDevice, "[KOKKOS] Elem loop in Op_Div_VEFP1B_Elem::ajouter_elem");
+
+  div.sync_to_host();  // "checkDataOnHost()"
 #endif
   assert_invalide_items_non_calcules(div);
   return div;
