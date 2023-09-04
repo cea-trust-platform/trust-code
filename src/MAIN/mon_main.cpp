@@ -145,6 +145,12 @@ static int init_parallel_mpi(DERIV(Comm_Group) & groupe_trio)
 //////////////////////////////////////////////////////////
 void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int check_enabled, int with_petsc)
 {
+#ifdef KOKKOS_
+  // Kokkos initialisation
+  int argc2 = argc;
+  Kokkos::initialize( argc2, argv );
+  Cerr << "Kokkos initialized!" << finl;
+#endif
 #ifdef TRUST_USE_CUDA
   //init_cuda(); Desactive car crash crash sur topaze ToDo OpenMP
 #endif
@@ -203,12 +209,6 @@ void mon_main::init_parallel(const int argc, char **argv, int with_mpi, int chec
   if (Process::je_suis_maitre())
     Cerr << arguments_info;
 
-#ifdef KOKKOS_
-  // Kokkos initialisation
-  int argc2 = argc;
-  Kokkos::initialize( argc2, argv );
-  Cerr << "Kokkos initialized!" << finl;
-#endif
 }
 
 void mon_main::finalize()
@@ -216,9 +216,7 @@ void mon_main::finalize()
   // Make sure all Kokkos views are de-allocated before Kokkos finalize:
   Domaine_dis_cache::Clear();
 
-#ifdef KOKKOS_
-  Kokkos::finalize();
-#endif
+
 #ifdef MPI_
   // MPI_Group_free before MPI_Finalize
   if (sub_type(Comm_Group_MPI,groupe_trio_.valeur()))
@@ -251,6 +249,9 @@ void mon_main::finalize()
             MPI_Finalize();
         }
     }
+#endif
+#ifdef KOKKOS_
+  Kokkos::finalize();
 #endif
 }
 
