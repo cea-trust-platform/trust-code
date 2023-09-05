@@ -177,11 +177,11 @@ int CoolProp_to_TRUST_Sat_generique::FD_derivative_p(SAT enum_prop, const SpanD 
 int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
-  assert((int )sats.size() == 9);
+  assert((int )sats.size() == 8);
   const int sz = (int) P.size();
 
   SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
-        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP), Sigma__ = sats.at(SAT::SIGMA);
+        dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
 
 #ifndef NDEBUG
   for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
@@ -193,14 +193,6 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
         Ts__[i] = fluide->T();
         Hls__[i] = fluide->hmass();
-        if (sigma_mano_<=0.)
-          {
-            // soucis la avec plusieurs instance de factory abstract_state
-//          Sigma__[i] = fluide->surface_tension();
-            Sigma__[i] = CoolProp::PropsSI("surface_tension", "P", P[i], "Q", 0, fld_name_sat_);
-          }
-
-        else if (sigma_mano_>0.) Sigma__[i] = sigma_mano_;
 
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
         Hvs__[i] = fluide->hmass();
@@ -236,20 +228,13 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
   else /* attention stride */
     {
       VectorD Ts(sz), dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz), dPLvap;
-      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap), Sigma_(dPLvap);
+      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap);
 
       for (int i = 0; i < sz; i++)
         {
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
           Ts_[i] = fluide->T();
           Hls_[i] = fluide->hmass();
-          if (sigma_mano_<=0.)
-            {
-              // soucis la avec plusieurs instance de factory abstract_state
-//          Sigma_[i] = fluide->surface_tension();
-              Sigma_[i] = CoolProp::PropsSI("surface_tension", "P", P[i], "Q", 0, fld_name_sat_);
-            }
-          else if (sigma_mano_>0.) Sigma_[i] = sigma_mano_;
 
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
           Hvs_[i] = fluide->hmass();
@@ -287,7 +272,6 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
           dPHls__[i * ncomp + ind] = dPHls_[i];
           Lvap__[i * ncomp + ind] = Hvs_[i] - Hls_[i];
           dPLvap__[i * ncomp + ind] = dPHvs_[i] - dPHls_[i];
-          Sigma__[i * ncomp + ind] = Sigma_[i];
         }
     }
 

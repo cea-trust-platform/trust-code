@@ -114,12 +114,12 @@ void Saturation_base::get_sigma(const SpanD T, const SpanD P, SpanD sig, int nco
 
 void Saturation_base::compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
-  assert((int )sats.size() == 9);
+  assert((int )sats.size() == 8);
 
   SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP),
         Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
         dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP),
-        Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP), Sigma__ = sats.at(SAT::SIGMA);
+        Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
 
   assert(ncomp * (int )P.size() == (int )Ts__.size() && ncomp * (int )P.size() == (int )dPTs__.size());
   assert(ncomp * (int )P.size() == (int )Hvs__.size() && ncomp * (int )P.size() == (int )Hls__.size());
@@ -134,7 +134,6 @@ void Saturation_base::compute_all_flux_interfacial_pb_multiphase(const SpanD P, 
   dP_Hls(P, dPHls__, ncomp, ind);
   Lvap(P, Lvap__, ncomp, ind);
   dP_Lvap(P, dPLvap__, ncomp, ind);
-  sigma_(Ts__ ,P, Sigma__, ncomp, ind);
 }
 
 void Saturation_base::compute_all_flux_parietal_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const

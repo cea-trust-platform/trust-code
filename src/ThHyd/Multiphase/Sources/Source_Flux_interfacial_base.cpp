@@ -106,25 +106,25 @@ void Source_Flux_interfacial_base::completer()
 DoubleTab& Source_Flux_interfacial_base::qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Energie_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie()).sources().dernier().valeur()).qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::dT_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return dT_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).dT_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Energie_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie()).sources().dernier().valeur()).dT_qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::da_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return da_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).da_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Energie_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie()).sources().dernier().valeur()).da_qpi();
 }
 
 DoubleTab& Source_Flux_interfacial_base::dp_qpi() const
 {
   if (sub_type(Energie_Multiphase, equation())) return dp_qpi_;
-  return ref_cast(Source_Flux_interfacial_base, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie().sources().dernier().valeur()).dp_qpi();
+  return ref_cast(Source_Flux_interfacial_base, ref_cast(Energie_Multiphase, ref_cast(Pb_Multiphase, equation().probleme()).equation_energie()).sources().dernier().valeur()).dp_qpi();
 }
 
 void Source_Flux_interfacial_base::mettre_a_jour(double temps)
@@ -240,9 +240,12 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           sats_all.insert( { SAT::HL_SAT_DP, dPHls_tab.get_span() });
           sats_all.insert( { SAT::LV_SAT, Lvap_tab.get_span() });
           sats_all.insert( { SAT::LV_SAT_DP, dP_Lvap_tab.get_span() });
-          sats_all.insert( { SAT::SIGMA, Sigma_tab.get_span() });
+          // sats_all.insert( { SAT::SIGMA, Sigma_tab.get_span() }); // XXX : COCO : ARRETE D'APPELER SIGMA COMME CA CAR JE T'AVAIS DIT POURQUOI
 
           z_sat.compute_all_flux_interfacial_pb_multiphase(press.get_span() /* elem reel */, sats_all, nb_max_sat, ind_trav);
+
+          // XXX : COCO TU VEUX SIGMA TU FAIS COMME CA
+          z_sat.sigma(Ts_tab.get_span(), press.get_span(), Sigma_tab.get_span(), nb_max_sat, ind_trav);
         }
 
   for (e = 0; e < domaine.nb_elem(); e++)
