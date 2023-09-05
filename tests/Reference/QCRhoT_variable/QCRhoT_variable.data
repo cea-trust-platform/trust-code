@@ -107,6 +107,7 @@ Read pb
         {
             Cp 4305.
             rho_t ((-2.3864182E-03*T-2.2507878E-01)*T)+1.0071165E+03
+            T_min -1000  # default value, if T<-1000 computation crashes. This value added to test this keyword and should not appear in your datafile #
         }
         traitement_pth CONSTANT
         Traitement_rho_gravite standard

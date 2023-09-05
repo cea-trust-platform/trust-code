@@ -19,7 +19,7 @@
 #include <Param.h>
 
 Implemente_instanciable_sans_constructeur( Loi_Etat_rhoT_GP_QC, "Loi_Etat_rhoT_Gaz_Parfait_QC", Loi_Etat_GP_base ) ;
-// XD rhoT_gaz_parfait_QC loi_etat_gaz_parfait_base rhoT_gaz_parfait_QC -1 Class for perfect gas used with a aquasi-compressible fluid where the state equation is defined as rho = f(T).
+// XD rhoT_gaz_parfait_QC loi_etat_gaz_parfait_base rhoT_gaz_parfait_QC -1 Class for perfect gas used with a quasi-compressible fluid where the state equation is defined as rho = f(T).
 
 Loi_Etat_rhoT_GP_QC::Loi_Etat_rhoT_GP_QC() : is_exp_(false) { }
 
@@ -38,6 +38,7 @@ Entree& Loi_Etat_rhoT_GP_QC::readOn( Entree& is )
   param.ajouter("Prandtl",&Pr_); // XD_ADD_P double Prandtl number of the gas Pr=mu*Cp/lambda
   param.ajouter("rho_xyz",&rho_xyz_); // XD_ADD_P field_base Defined with a Champ_Fonc_xyz to define a constant rho with time (space dependent)
   param.ajouter("rho_t",&expression_); // XD_ADD_P chaine Expression of T used to calculate rho. This can lead to a variable rho, both in space and in time.
+  param.ajouter("T_min",&TMIN_); // XD_ADD_P double Temperature may, in some cases, locally and temporarily be very small (and negative) even though computation converges. T_min keyword allows to set a lower limit of temperature (in Kelvin, -1000 by default). WARNING: DO NOT USE THIS KEYWORD WITHOUT CHECKING CAREFULY YOUR RESULTS!  
   param.lire_avec_accolades(is);
 
   if (expression_ == "??" && rho_xyz_.est_nul())
@@ -112,9 +113,10 @@ double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T) const
 // Overload
 double Loi_Etat_rhoT_GP_QC::calculer_masse_volumique(double P, double T, int ind) const
 {
-  if (inf_ou_egal(T,-1000))
+  if (inf_ou_egal(T,TMIN_))
     {
       Cerr << finl << "Error, we find a temperature of " << T << " !" << finl;
+      Cerr << "The minium of temperature is definied to " << TMIN_ << " !" << finl;
       Cerr << "Either your calculation has diverged or you don't define" << finl;
       Cerr << "temperature in Kelvin somewhere in your data file." << finl;
       Cerr << "It is mandatory for Quasi compressible model." << finl;
