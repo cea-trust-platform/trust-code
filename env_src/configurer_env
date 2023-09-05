@@ -764,9 +764,9 @@ unset PYTHONPATH # We get a warning from Miniconda if we do not unset this varia
 model=`uname -m`
 system=`uname -s` && [ "$system" = Darwin ] && system=MacOSX
 # we don't install cmake via conda on topaze : we module load cmake 3.22 instead
-pkgs="pyqt nomkl numpy matplotlib swig `[ "${HOST#topaze}" = $HOST ] && echo cmake=3.18` scipy xorg-libsm=1.2.3 sympy libgd pandas libstdcxx-ng=9.3.0 bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`"
+pkgs="pyqt nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`"
 local_channel="-c file://$TRUST_ROOT/externalpackages/Miniconda/local_channel --override-channels"
-[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake=3.18 scipy xorg-libsm=1.2.3 sympy libgd pandas bison libstdcxx-ng=9.3.0 `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
+[ "$model" = aarch64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`" && [ -d /ccc ] && pkgs="" # Pas internet au CCRT
 [ "$model" = arm64 ] && local_channel="" && pkgs="nomkl numpy matplotlib swig cmake scipy sympy libgd pandas bison `[ "$TRUST_DISABLE_JUPYTER" != 1 ] && echo jupyter pandoc psutil`" # internet OK sous Mac
 
 if [ -d $TRUST_ROOT/exec/python/bin ] && [ -f $TRUST_ROOT/exec/python/bin/conda ]
