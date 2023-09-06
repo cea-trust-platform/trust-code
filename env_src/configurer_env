@@ -1780,8 +1780,8 @@ case $TRUST_ARCH_CC in
         Defines="-D_COMPILE_AVEC_PGCC"
         CppFlags="-O3 -fPIC -Ktrap=fp -Kieee -noswitcherror" # -Ktrap=fp evitent des soucis Arithmetic Exceptions...
         CppFlags=$CppFlags" -std=$STDCPP -Wno-long-long -Wall -Wshadow -Wextra -Wno-unused-parameter -Werror --display_error_number --diag_suppress1 --diag_suppress185" #--diag_suppress111 si on veut supprimer le warning "statement is unreachable"
+        CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte tous les objets C++ non utilises
         #CppFlags=$CppFlags" -Minfo=accel -Minfo=mp -Minfo=loop" # Info au build ou NVCOMPILER_ACC_NOTIFY ?
-        #CppFlags=$CppFlags" -Wunused-variable" # Flag qui detecte bcp de choses: ToDo OpenMP
         SYSLIBS="-lgfortran -lnvf" # Car BLAS+AMGX+PETSC compile avec GNU
         F77Flags="-O3 -fPIC -noswitcherror" && [ "$TRUST_INT64" = "1" ] && F77Flags=$F77Flags" -i8"
         ccFLAGS="-O3 -fPIC -noswitcherror"
