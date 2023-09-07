@@ -1755,11 +1755,6 @@ int Solv_Petsc::resoudre_systeme(const Matrice_Base& la_matrice, const DoubleVec
         Create_objects(matrice_morse, secmem.line_size());
       else
         Update_matrix(MatricePetsc_, matrice_morse);
-      if (type_pc_ == "shell")
-        {
-          PCShell& pcs=pc_user_.pc_shell;
-          pcs.setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
-        }
 
       /* reglage de BlockSize avec le line_size() du second membre */
       if (limpr() == 1)
@@ -1857,7 +1852,13 @@ int Solv_Petsc::solve(ArrOfDouble& residu)
           set_reuse_preconditioner(reuse_precond ? true : false);
         }
       if (reuse_preconditioner()) Cout << "Matrix has changed but reusing previous preconditioner..." << finl;
-      KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
+      if (type_pc_ == "shell" && !reuse_preconditioner())
+        {
+          PCShell& pcs=pc_user_.pc_shell;
+          pcs.setUpPC(PreconditionneurPetsc_, MatricePetsc_, SolutionPetsc_);
+        }
+      else
+        KSPSetReusePreconditioner(SolveurPetsc_, (PetscBool) reuse_preconditioner()); // Default PETSC_FALSE
     }
   // Solve
   if (gpu_) statistiques().begin_count(gpu_library_counter_);
