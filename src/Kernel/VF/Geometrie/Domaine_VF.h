@@ -54,6 +54,7 @@ public :
   virtual void remplir_face_voisins_fictifs(const Domaine_Cl_dis_base& ) ;
   virtual Faces* creer_faces();
   virtual void reordonner(Faces& , ArrOfInt& );
+  void renumeroter(Faces& , ArrOfInt& );
   inline int nb_joints() const { return domaine().nb_joints(); }
   inline int premiere_face_int() const;
   inline int nb_faces() const;
@@ -209,11 +210,17 @@ protected:
   // face_virt_pe_num_(i-nb_faces_,1) = numero local de cette face sur le PE qui le possede
   IntTab face_virt_pe_num_;
 
+
   virtual void remplir_elem_faces()=0;
 
   DoubleTab n_y_elem_ ; // vecteur normal entre le bord le plus proche et l'element
   DoubleTab n_y_faces_; // vecteur normal entre le bord le plus proche et la face
 
+  int nb_elem_std_=-10;                     // nombre d'elements standard
+  int nb_faces_std_=-10;                    // nombre de faces standard
+  IntVect rang_elem_non_std_;    // rang_elem_non_std_= -1 si l'element est standard
+  // rang_elem_non_std_= rang de l'element dans les tableaux
+  // relatifs aux elements non standards
 };
 
 // Renvoie le numero local de face a partir d'un numero de face global et de elem local (0 ou 1)

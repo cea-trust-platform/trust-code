@@ -136,11 +136,6 @@ private:
   double h_carre= 1.e30;			 // carre du pas du maillage
   DoubleVect h_carre_;			// carre du pas d'une maille
   Elem_EF type_elem_;                  // type de l'element de discretisation
-  int nb_faces_std_=-10;                    // nombre de faces standard
-  int nb_elem_std_=-10;                     // nombre d'elements standard
-  IntVect rang_elem_non_std_;		 // rang_elem_non_std_= -1 si l'element est standard
-  // rang_elem_non_std_= rang de l'element dans les tableaux
-  // relatifs aux elements non standards
 
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
   void remplir_elem_faces() override;

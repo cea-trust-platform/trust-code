@@ -114,10 +114,7 @@ private:
   Elem_VEF type_elem_;                  // type de l'element de discretisation
   DoubleTab facette_normales_;          // normales aux faces des volumes entrelaces
   DoubleTab vecteur_face_facette_;                // vecteur centre face->centre facette
-  int nb_faces_std_ = -10;                    // nombre de faces standard
-  int nb_elem_std_ = -10;                     // nombre d'elements standard
   ArrOfInt ind_faces_virt_non_std_;      // contient les indices des faces virtuelles non standard
-  IntVect rang_elem_non_std_;                 // rang_elem_non_std_= -1 si l'element est standard
   IntVect orientation_;
 
 
