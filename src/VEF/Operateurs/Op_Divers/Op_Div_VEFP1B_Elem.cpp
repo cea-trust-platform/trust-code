@@ -188,7 +188,7 @@ double calculer_coef_som(int type_elem, int dimension, int& nb_face_diri, int* i
               indice_diri[1] = 1;
               break;
             default:
-              abort();
+              //abort();
               break;
             }
         }
@@ -267,13 +267,13 @@ double calculer_coef_som(int type_elem, int dimension, int& nb_face_diri, int* i
               indice_diri[2] = 2;
               break;
             default:
-              abort();
+              //abort();
               break;
             }
         }
       else
         {
-          abort();
+          //abort();
         }
     }
   double coeff_som = 1. / (dimension * (dimension + 1 - nb_face_diri));
