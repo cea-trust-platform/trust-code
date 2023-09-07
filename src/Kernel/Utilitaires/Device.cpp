@@ -25,7 +25,7 @@
 #include <Comm_Group_MPI.h>
 
 bool init_openmp_ = false;
-bool clock_on = false;
+bool clock_on = true;
 int copy_before_exit = -1, size_copy_before_exit = std::numeric_limits<int>::max();
 double clock_start;
 
