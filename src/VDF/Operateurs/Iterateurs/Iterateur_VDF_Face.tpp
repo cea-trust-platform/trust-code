@@ -558,7 +558,7 @@ void Iterateur_VDF_Face<_TYPE_>::ajouter_blocs_fa7_elem(const int ncomp, matrice
 {
   DoubleTab& tab_flux_bords = op_base->flux_bords();
   const DoubleTab& inco = semi_impl.count(nom_ch_inco_) ? semi_impl.at(nom_ch_inco_) : le_champ_convecte_ou_inc->valeurs();
-  Type_Double flux(ncomp), aii(ncomp), ajj(ncomp), flux_c(ncomp) /* partie compressible */;
+  Type_Double flux(ncomp), aii(ncomp), ajj(ncomp);
   const int n_fc_bd = le_dom->nb_faces_bord();
 
   const DoubleTab* a_r = (!is_pb_multi || !is_conv_op_) ? nullptr : semi_impl.count("alpha_rho") ? &semi_impl.at("alpha_rho") :
