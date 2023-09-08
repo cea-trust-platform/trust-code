@@ -420,6 +420,8 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   CDoubleTabView nu_v = nu.view_ro();
   grad_.modified_on_host3();   // TODO : to be removed later
   CDoubleTabView3 grad_v = grad_.view3_ro();
+//  grad_.modified_on_host();   // TODO : to be removed later
+//  CDoubleTabView grad_v = grad_.view_ro();
   resu.modified_on_host();   // TODO : to be removed later
   DoubleTabView resu_v = resu.view_rw();
   tab_flux_bords.modified_on_host();   // TODO : to be removed later
@@ -437,38 +439,38 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
               for (int j = 0; j < nb_comp; j++)
                 {
                   double flux = ori * face_normales_v(num_face,j)
-                                * (nu_v(elem, 0) * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
+                                * (nu_v(elem, 0) * grad_v(elem, i,j)  /* + Re(elem, i, j) */ );
                   Kokkos::atomic_sub(&resu_v(num_face, i), flux);
-//                  if (num_face < nb_faces_bord)
-                  Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux);
+                  if (num_face < nb_faces_bord)
+                    Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux);
                 }
           }
       }
   };
 
-  auto kern_ajouter2 = KOKKOS_LAMBDA(int num_face)
-  {
-    for (int k=0; k<2; k++)
-      {
-        int elem = face_voisins_v(num_face, k);
-        if (elem>=0)
-          {
-            int ori = 1 - 2 * k;
-            for (int i = 0; i < nb_comp; i++)
-              for (int j = 0; j < nb_comp; j++)
-                {
-                  double flux = ori * face_normales_v(num_face,j)
-                                * (nu_v(elem, 0) * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
-                  Kokkos::atomic_sub(&resu_v(num_face, i), flux);
-                }
-          }
-      }
-  };
+//  auto kern_ajouter2 = KOKKOS_LAMBDA(int num_face)
+//  {
+//    for (int k=0; k<2; k++)
+//      {
+//        int elem = face_voisins_v(num_face, k);
+//        if (elem>=0)
+//          {
+//            int ori = 1 - 2 * k;
+//            for (int i = 0; i < nb_comp; i++)
+//              for (int j = 0; j < nb_comp; j++)
+//                {
+//                  double flux = ori * face_normales_v(num_face,j)
+//                                * (nu_v(elem, 0) * grad_v(elem, i,j)  /* + Re(elem, i, j) */ );
+//                  Kokkos::atomic_sub(&resu_v(num_face, i), flux);
+//                }
+//          }
+//      }
+//  };
 
   start_timer();
-  Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces_bord, kern_ajouter);
-  Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter 2",
-                       Kokkos::RangePolicy<>(nb_faces_bord, nb_faces), kern_ajouter2);
+  Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces, kern_ajouter);
+//  Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter 2",
+//                       Kokkos::RangePolicy<>(nb_faces_bord, nb_faces), kern_ajouter2);
   Kokkos::fence();
   end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
   resu.sync_to_host();
