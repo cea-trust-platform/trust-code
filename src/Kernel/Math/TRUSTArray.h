@@ -215,8 +215,11 @@ public:
 
   // Kokkos accessors
 #ifdef KOKKOS_
-  // Kokkos view accessors:
+protected:
   inline void init_view_arr() const;
+
+public:
+  // Kokkos view accessors:
   inline ConstViewArr<_TYPE_> view_ro() const;  // Read-only
   inline ViewArr<_TYPE_> view_wo();             // Write-only
   inline ViewArr<_TYPE_> view_rw();             // Read-write

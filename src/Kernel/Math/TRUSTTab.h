@@ -252,15 +252,27 @@ public:
   inline void resize_tab(int n, Array_base::Resize_Options opt = Array_base::COPY_INIT) override;
 
 #ifdef KOKKOS_
+protected:
+  inline void init_view_tab2() const;
+  inline void init_view_tab3() const;
+  inline void init_view_tab4() const;
+
+public:
   // Kokkos view accessors:
-  inline void init_view_tab() const;
   inline ConstViewTab<_TYPE_> view_ro() const;  // Read-only
   inline ViewTab<_TYPE_> view_wo();             // Write-only
   inline ViewTab<_TYPE_> view_rw();             // Read-write
 
   inline void sync_to_host() const;             // Synchronize back to host
-
   inline void modified_on_host() const;         // Mark data as being modified on host side
+
+  // For 3D arrays:
+  inline ConstViewTab3<_TYPE_> view3_ro() const;  // Read-only
+  inline ViewTab3<_TYPE_> view3_wo();             // Write-only
+  inline ViewTab3<_TYPE_> view3_rw();             // Read-write
+
+  inline void sync_to_host3() const;             // Synchronize back to host
+  inline void modified_on_host3() const;         // Mark data as being modified on host side
 #endif
 
 private:
@@ -277,7 +289,9 @@ private:
 
   // Kokkos members
 #ifdef KOKKOS_
-  mutable DualViewTab<_TYPE_> dual_view_tab_;   // TODO : is it possible to have only one member in TRUSTVect??
+  mutable DualViewTab<_TYPE_> dual_view_tab2_;      // For 2D case : A(i,j)
+  mutable DualViewTab3<_TYPE_> dual_view_tab3_;      // For 3D case : A(i,j,k)
+//  mutable DualViewTab4<_TYPE_> dual_view_tab4_;      // For 4D case : A(i,j,k,l)
 #endif
 
   inline void verifie_MAXDIM_TAB() const
