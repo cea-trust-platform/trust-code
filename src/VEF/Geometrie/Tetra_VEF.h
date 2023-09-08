@@ -162,11 +162,138 @@ inline void calcul_vc_tetra(const int* Face, double *vc, const double * vs, cons
 
 }
 #pragma omp end declare target
+
+#ifdef KOKKOS_
+KOKKOS_INLINE_FUNCTION void calcul_vc_tetra_views(const int* Face, double *vc, const double * vs, const double * vsom,
+                                                  CDoubleTabView vitesse_v,True_int type_cl, CDoubleArrView porosite_face_v)
+{
+  // Passage (justifie vue la taille) en True_int de type_cl et comp car bug nvc++ sinon
+  True_int comp;
+  switch(type_cl)
+    {
+
+    case 0: // le tetraedre n'a pas de Face de Dirichlet
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = 0.25*vs[comp];
+        break;
+      }
+
+    case 1: // le tetraedre a une Face de Dirichlet : KEL3
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vitesse_v(Face[3], comp) * porosite_face_v(Face[3]);
+        break;
+      }
+
+    case 2: // le tetraedre a une Face de Dirichlet : KEL2
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vitesse_v(Face[2], comp) * porosite_face_v(Face[2]);
+        break;
+      }
+
+    case 4: // le tetraedre a une Face de Dirichlet : KEL1
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vitesse_v(Face[1], comp) * porosite_face_v(Face[1]);
+        break;
+      }
+
+    case 8: // le tetraedre a une Face de Dirichlet : KEL0
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vitesse_v(Face[0], comp) * porosite_face_v(Face[0]);
+        break;
+      }
+
+    case 3: // le tetraedre a deux faces de Dirichlet : KEL3 et KEL2
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = 0.5* (vsom[comp] + vsom[3+comp]);
+        break;
+      }
+
+    case 5: // le tetraedre a deux faces de Dirichlet : KEL3 et KEL1
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = 0.5* (vsom[comp] + vsom[6+comp]);
+        break;
+      }
+
+    case 6: // le tetraedre a deux faces de Dirichlet : KEL1 et KEL2
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = 0.5* (vsom[comp] + vsom[9+comp]);
+        break;
+      }
+
+    case 9: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL3
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = 0.5* (vsom[3+comp] + vsom[6+comp]);
+        break;
+      }
+
+    case 10: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL2
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = 0.5* (vsom[3+comp] + vsom[9+comp]);
+        break;
+      }
+
+    case 12: // le tetraedre a deux faces de Dirichlet : KEL0 et KEL1
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = 0.5*(vsom[6+comp] + vsom[9+comp]);
+        break;
+      }
+
+    case 7: // le tetraedre a trois faces de Dirichlet : KEL1, KEL2 et KEL3
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vsom[comp];
+        break;
+      }
+
+    case 11: // le tetraedre a trois faces de Dirichlet : KEL0,KEL2 et KEL3
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vsom[3+comp];
+        break;
+      }
+
+    case 13: // le tetraedre a trois faces de Dirichlet : KEL0, KEL1 et KEL3
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vsom[6+comp];
+        break;
+      }
+
+    case 14: // le tetraedre a trois faces de Dirichlet : KEL0, KEL1 et KEL2
+      {
+        for (comp=0; comp<3; comp++)
+          vc[comp] = vsom[9+comp];
+        break;
+      }
+
+    } // fin du switch
+
+}
+#endif // KOKKOS_
+
+
+
 /*! @brief calcule les coord xg du centre d'un element non standard calcule aussi idirichlet=nb de faces de Dirichlet de l'element
  *
  */
+#ifdef KOKKOS_
+KOKKOS_INLINE_FUNCTION
+#else
 #pragma omp declare target
-inline void calcul_xg_tetra(double * xg, const double *x, const True_int type_elem_Cl, int& idirichlet,int& n1,int& n2,int& n3)
+inline
+#endif
+void calcul_xg_tetra(double * xg, const double *x, const True_int type_elem_Cl, int& idirichlet,int& n1,int& n2,int& n3)
 {
   // Passage (justifie vue la taille) en True_int de type_elem_cl et comp car bug nvc++ sinon
   True_int dim = 3;
