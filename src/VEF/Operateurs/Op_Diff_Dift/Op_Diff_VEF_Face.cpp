@@ -291,6 +291,43 @@ void Op_Diff_VEF_Face::ajouter_cas_scalaire(const DoubleTab& inconnue,
   copyPartialToDevice(inconnue, 0, premiere_face_int, "inconnue on boundary");
 }
 
+
+struct MyFunc
+{
+  MyFunc(int nbc, int nbfb) : nb_comp(nbc), nb_faces_bord(nbfb) {}
+  ~MyFunc() {}
+
+  const int nb_comp;
+  const int nb_faces_bord;
+  CIntTabView face_voisins_v;
+  CDoubleTabView face_normales_v;
+  CDoubleTabView nu_v;
+  CDoubleTabView grad_v;
+  DoubleTabView resu_v;
+  DoubleTabView tab_flux_bords_v;
+
+  KOKKOS_INLINE_FUNCTION void operator()(const int num_face) const
+  {
+    for (int k=0; k<2; k++)
+      {
+        int elem = face_voisins_v(num_face, k);
+        if (elem>=0)
+          {
+            int ori = 1 - 2 * k;
+            for (int i = 0; i < nb_comp; i++)
+              for (int j = 0; j < nb_comp; j++)
+                {
+                  double flux = ori * face_normales_v(num_face,j)
+                                * (nu_v(elem, 0) * grad_v(elem, i*nb_comp + j)  /* + Re(elem, i, j) */ );
+                  Kokkos::atomic_sub(&resu_v(num_face, i), flux);
+                  if (num_face < nb_faces_bord)
+                    Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux);
+                }
+          }
+      }
+  }
+};
+
 void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
                                              DoubleTab& resu, DoubleTab& tab_flux_bords,
                                              DoubleTab& nu,
@@ -436,6 +473,30 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
   resu.sync_to_host();
   tab_flux_bords.sync_to_host();
+
+
+//  // Tentative with a proper functor instead of a lambda - does not change perf ... snif.
+//  {
+//    MyFunc ze_func(nb_comp, nb_faces_bord);
+//    ze_func.face_voisins_v = domaine_VEF.face_voisins().view_ro();
+//    ze_func.face_normales_v = domaine_VEF.face_normales().view_ro();
+//    ze_func.nu_v = nu.view_ro();
+//    grad_.modified_on_host();   // TODO : to be removed later
+//    ze_func.grad_v = grad_.view_ro();
+//    resu.modified_on_host();   // TODO : to be removed later
+//    ze_func.resu_v = resu.view_rw();
+//    tab_flux_bords.modified_on_host();   // TODO : to be removed later
+//    ze_func.tab_flux_bords_v = tab_flux_bords.view_rw();
+//
+//    start_timer();
+//    Kokkos::parallel_for("[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter", nb_faces, ze_func);
+//    Kokkos::fence();
+//    end_timer(Objet_U::computeOnDevice, "[KOKKOS] Face loop in Op_Diff_VEF_Face::ajouter");
+//    resu.sync_to_host();
+//    tab_flux_bords.sync_to_host();
+//
+//  }
+
 
   // Update flux_bords on symmetry:
   const int nb_bords=domaine_VEF.nb_front_Cl();
