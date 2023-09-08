@@ -273,6 +273,15 @@ public:
 
   inline void sync_to_host3() const;             // Synchronize back to host
   inline void modified_on_host3() const;         // Mark data as being modified on host side
+
+  // For 4D arrays:
+  inline ConstViewTab4<_TYPE_> view4_ro() const;  // Read-only
+  inline ViewTab4<_TYPE_> view4_wo();             // Write-only
+  inline ViewTab4<_TYPE_> view4_rw();             // Read-write
+
+  inline void sync_to_host4() const;             // Synchronize back to host
+  inline void modified_on_host4() const;         // Mark data as being modified on host side
+
 #endif
 
 private:
@@ -291,7 +300,7 @@ private:
 #ifdef KOKKOS_
   mutable DualViewTab<_TYPE_> dual_view_tab2_;      // For 2D case : A(i,j)
   mutable DualViewTab3<_TYPE_> dual_view_tab3_;      // For 3D case : A(i,j,k)
-//  mutable DualViewTab4<_TYPE_> dual_view_tab4_;      // For 4D case : A(i,j,k,l)
+  mutable DualViewTab4<_TYPE_> dual_view_tab4_;      // For 4D case : A(i,j,k,l)
 #endif
 
   inline void verifie_MAXDIM_TAB() const
