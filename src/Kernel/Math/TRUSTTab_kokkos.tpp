@@ -122,6 +122,7 @@ inline void TRUSTTab<_TYPE_>::modified_on_host() const
     dual_view_tab2_.template modify<host_mirror_space>();
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// 3D
@@ -217,6 +218,106 @@ inline void TRUSTTab<_TYPE_>::modified_on_host3() const
   // Mark modified on host side:
   if(this->dual_view_init_)
     dual_view_tab3_.template modify<host_mirror_space>();
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 4D
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Create internal DualView member, and populate it with current host data
+template<typename _TYPE_>
+inline void TRUSTTab<_TYPE_>::init_view_tab4() const
+{
+  long dims[4] = {this->dimension_tot(0), this->dimension_tot(1), this->dimension_tot(2), this->dimension_tot(3)};
+
+  bool is_init = this->dual_view_init_;
+  if(is_init && dual_view_tab4_.h_view.is_allocated())
+    // change of alloc or resize triggers re-init (for now - resize could be done better)
+    if (dual_view_tab4_.h_view.data() != this->addr() || (long)dual_view_tab4_.extent(0) != dims[0] || (long)dual_view_tab4_.extent(1) != dims[1]
+        || (long)dual_view_tab4_.extent(2) != dims[2] || (long)dual_view_tab4_.extent(3) != dims[3])
+      is_init = false;
+
+  if (is_init) return;
+  this->dual_view_init_ = true;
+
+  if(nb_dim() != 4)
+    Process::exit("Wrong dim number in view init!");
+
+  using t_host = typename DualViewTab4<_TYPE_>::t_host;  // Host type
+  using t_dev = typename DualViewTab4<_TYPE_>::t_dev;    // Device type
+  using size_type = typename DualViewTab4<_TYPE_>::size_type;
+
+  const std::string& nom = this->le_nom().getString();
+
+  // Re-use data already allocated on host to create host-view:
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!  WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //          This heavily relies on the LayoutRight defined for the DualView (which is not optimal
+  //          for GPU processing, but avoids having to explicitely copying the data ...)
+  t_host host_view = t_host((_TYPE_ *)this->addr(), dims[0], dims[1], dims[2], dims[3]);
+  // Empty view on device - just a memory allocation:
+  t_dev device_view = t_dev(nom, dims[0], dims[1], dims[2], dims[3]);
+
+  // Dual view is made as an assembly of the two views:
+  dual_view_tab4_ = DualViewTab4<_TYPE_>(device_view, host_view);
+
+  // Mark data modified on host so it will be sync-ed to device later on:
+  dual_view_tab4_.template modify<host_mirror_space>();
+}
+
+template<typename _TYPE_>
+inline ConstViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_ro() const
+{
+  // Init if necessary
+  init_view_tab4();
+  // Copy to device if needed (i.e. if modify() was called):
+  dual_view_tab4_.template sync<memory_space>();
+  // return *device* view:
+  return dual_view_tab4_.template view<memory_space>();
+}
+
+template<typename _TYPE_>
+inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_wo()
+{
+  // Init if necessary
+  init_view_tab4();
+  // Mark the (device) data as modified, so that the next sync() (to host) will copy:
+  dual_view_tab4_.template modify<memory_space>();
+  // return *device* view:
+  return dual_view_tab4_.template view<memory_space>();
+}
+
+template<typename _TYPE_>
+inline ViewTab4<_TYPE_> TRUSTTab<_TYPE_>::view4_rw()
+{
+  // Init if necessary
+  init_view_tab4();
+  // Copy to device (if needed) ...
+  dual_view_tab4_.template sync<memory_space>();
+  // ... and mark the (device) data as modified, so that the next sync() (to host) will copy:
+  dual_view_tab4_.template modify<memory_space>();
+  // return *device* view:
+  return dual_view_tab4_.template view<memory_space>();
+}
+
+template<typename _TYPE_>
+inline void TRUSTTab<_TYPE_>::sync_to_host4() const
+{
+  // Copy to host (if needed) ...
+  dual_view_tab4_.template sync<host_mirror_space>();
+}
+
+template<typename _TYPE_>
+inline void TRUSTTab<_TYPE_>::modified_on_host4() const
+{
+  // Mark modified on host side:
+  if(this->dual_view_init_)
+    dual_view_tab4_.template modify<host_mirror_space>();
 }
 
 
