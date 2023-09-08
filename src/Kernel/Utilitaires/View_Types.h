@@ -31,6 +31,10 @@ using DualViewArr = Kokkos::DualView<T *, Kokkos::LayoutRight>;
 
 template<typename T>
 using DualViewTab = Kokkos::DualView<T **, Kokkos::LayoutRight>;
+template<typename T>
+using DualViewTab3 = Kokkos::DualView<T ***, Kokkos::LayoutRight>;
+template<typename T>
+using DualViewTab4 = Kokkos::DualView<T ****, Kokkos::LayoutRight>;
 
 // The execution space (=where code is run): on the device if compiled for GPU, else CPU.
 using execution_space = DualViewArr<double>::execution_space;
@@ -55,9 +59,17 @@ using ConstViewArr = Kokkos::View<const T *, typename DualViewArr<T>::array_layo
 // Same thing for tabs:
 template<typename T>
 using ViewTab = Kokkos::View<T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ViewTab3 = Kokkos::View<T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ViewTab4 = Kokkos::View<T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
 template<typename T>
 using ConstViewTab = Kokkos::View<const T **, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab3 = Kokkos::View<const T ***, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
+template<typename T>
+using ConstViewTab4 = Kokkos::View<const T ****, typename DualViewArr<T>::array_layout, memory_space, Kokkos::MemoryRandomAccess>;
 
 
 // Handy aliases:
@@ -69,9 +81,13 @@ using CDoubleArrView = ConstViewArr<double>;
 
 using IntTabView = ViewTab<int>;
 using DoubleTabView = ViewTab<double>;
+using DoubleTabView3 = ViewTab3<double>;
+using DoubleTabView4 = ViewTab4<double>;
 
 using CIntTabView = ConstViewTab<int>;
 using CDoubleTabView = ConstViewTab<double>;
+using CDoubleTabView3 = ConstViewTab3<double>;
+using CDoubleTabView4 = ConstViewTab4<double>;
 
 #endif // KOKKOS_
 
