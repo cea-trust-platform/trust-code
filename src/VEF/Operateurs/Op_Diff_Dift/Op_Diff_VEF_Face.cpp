@@ -418,8 +418,8 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
   CIntTabView face_voisins_v = domaine_VEF.face_voisins().view_ro();
   CDoubleTabView face_normales_v = domaine_VEF.face_normales().view_ro();
   CDoubleTabView nu_v = nu.view_ro();
-  grad_.modified_on_host();   // TODO : to be removed later
-  CDoubleTabView grad_v = grad_.view_ro();
+  grad_.modified_on_host3();   // TODO : to be removed later
+  CDoubleTabView3 grad_v = grad_.view3_ro();
   resu.modified_on_host();   // TODO : to be removed later
   DoubleTabView resu_v = resu.view_rw();
   tab_flux_bords.modified_on_host();   // TODO : to be removed later
@@ -437,7 +437,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
               for (int j = 0; j < nb_comp; j++)
                 {
                   double flux = ori * face_normales_v(num_face,j)
-                                * (nu_v(elem, 0) * grad_v(elem, i*nb_comp + j)  /* + Re(elem, i, j) */ );
+                                * (nu_v(elem, 0) * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
                   Kokkos::atomic_sub(&resu_v(num_face, i), flux);
 //                  if (num_face < nb_faces_bord)
                   Kokkos::atomic_sub(&tab_flux_bords_v(num_face, i), flux);
@@ -458,7 +458,7 @@ void Op_Diff_VEF_Face::ajouter_cas_vectoriel(const DoubleTab& inconnue,
               for (int j = 0; j < nb_comp; j++)
                 {
                   double flux = ori * face_normales_v(num_face,j)
-                                * (nu_v(elem, 0) * grad_v(elem, i*nb_comp + j)  /* + Re(elem, i, j) */ );
+                                * (nu_v(elem, 0) * grad_v(elem, i, j)  /* + Re(elem, i, j) */ );
                   Kokkos::atomic_sub(&resu_v(num_face, i), flux);
                 }
           }
