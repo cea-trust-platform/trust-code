@@ -48,8 +48,10 @@ using SpanD = tcb::span<double>;
  */
 class Fluide_reel_base: public Fluide_base
 {
-  Declare_base(Fluide_reel_base);
+  Declare_base_sans_constructeur(Fluide_reel_base);
 public :
+  Fluide_reel_base() { converter_h_T_.set_instance(*this); }
+
   bool initTimeStep(double dt) override;
   int initialiser(const double temps) override;
   int check_unknown_range() const override; //verifie que chaque inconnue "inco" est entre val_min[inco] et val_max[inco]
@@ -133,6 +135,46 @@ private:
 
   void _compute_CPMLB_pb_multiphase_(MLoiSpanD ) const;
   void _compute_all_pb_multiphase_(MLoiSpanD , MLoiSpanD ) const;
+
+public:
+  /*
+   * Elie Saikali : struct interne pour convertir les derivees en h a T (pour Pb_Multiphase).
+   *
+   * XXX : VOIR AVEC LE CAHIER D'ANTOINE SI T'ES PAS D'ACCORD (ici, au contraire d'EOS, the doc is available :-) )
+   *
+   * On cherche dX/dP|T et dX/dT|P
+   *
+   * On sait que dX = dX/dP|T dP + dX/dT|P dT = dX/dP|h dP + dX/dh|P dh
+   *
+   * Lets Go :
+   *
+   *    dX/dP|h dP + dX/dh|P dh = dX/dP|h dP + dX/dh|P {  dh/dP|T dP + dh/dT|P dT }
+   *                            = { dX/dP|h + dX/dh|P * dh/dP|T } dP + { dX/dh|P * dh/dT|P } dT
+   *                            = dX/dP|T dP + dX/dT|P dT
+   *
+   * Alors,
+   *
+   *    dX/dP|T = dX/dP|h + dX/dh|P * dh/dP|T
+   *    dX/dT|P = dX/dh|P * dh/dT|P
+   *
+   *    /         \   /             \   /         \
+   *    | dX/dP|T |   | 1  dh/dP|T  |   | dX/dP|h |
+   *    |         | = |             | * |         |
+   *    | dX/dT|P |   | 0  dh/dT|P  |   | dX/dh|P |
+   *    \         /   \             /   \         /
+   */
+
+  struct H_to_T
+  {
+    void set_instance(const Fluide_reel_base& fld) { z_fld_ = fld; }
+    void dX_dP_T(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dP);
+    void dX_dT_P(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dT);
+
+  private:
+    REF(Fluide_reel_base) z_fld_;
+  };
+
+  H_to_T converter_h_T_;
 };
 
 #endif /* Fluide_reel_base_included */

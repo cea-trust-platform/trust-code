@@ -25,7 +25,7 @@
 #include <cfloat>
 #include <cmath>
 
-Implemente_base(Fluide_reel_base, "Fluide_reel_base", Fluide_base);
+Implemente_base_sans_constructeur(Fluide_reel_base, "Fluide_reel_base", Fluide_base);
 // XD fluide_reel_base fluide_base fluide_reel_base -1 Class for real fluids.
 
 Sortie& Fluide_reel_base::printOn(Sortie& os) const { return os; }
@@ -366,4 +366,23 @@ void Fluide_reel_base::compute_all_pb_multiphase_(const MSpanD input, MLoiSpanD 
   h_(T, P, H, ncomp, id);
   dP_h_(T, P, dPH, ncomp, id);
   dT_h_(T, P, dTH, ncomp, id);
+}
+
+/*
+ * Methodes utiles pour convertir les derivees en h a T (pour Pb_Multiphase).
+ */
+void Fluide_reel_base::H_to_T::dX_dP_T(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dP)
+{
+  const SpanD dp_h = ref_cast(Champ_Inc_base, z_fld_->h.valeur()).derivees()["pression"].get_span_tot();
+  assert((int )dX_dP_h.size() == (int )dX_dh_P.size() && (int )dX_dP_h.size() == (int )dp_h.size()  && (int )dX_dP.size() == (int )dp_h.size());
+  for (int i = 0; i < (int) dX_dP_h.size(); i++)
+    dX_dP[i] = dX_dP_h[i] + dp_h[i] * dX_dh_P[i];
+}
+
+void Fluide_reel_base::H_to_T::dX_dT_P(const SpanD dX_dP_h, const SpanD dX_dh_P, SpanD dX_dT )
+{
+  const SpanD dT_h = ref_cast(Champ_Inc_base, z_fld_->h.valeur()).derivees()["temperature"].get_span_tot();
+  assert((int )dX_dP_h.size() == (int )dT_h.size() && (int )dX_dh_P.size() == (int )dT_h.size() && (int )dX_dT.size() == (int )dT_h.size() );
+  for (int i = 0; i < (int) dX_dP_h.size(); i++)
+    dX_dT[i] = dT_h[i] * dX_dh_P[i];
 }
