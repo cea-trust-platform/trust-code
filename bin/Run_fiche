@@ -311,18 +311,19 @@ then
    # Lancement d'une fiche jupyter   
    if [ ${prm%.ipynb} != $prm ]; then
       if $export_pdf; then
-          opt_jy=""
-          if [ "$not_run" != "1" ]; then
-              opt_jy="--execute"
+          opt_jy="--execute"
+          tmp_env=""
+          if [ "$not_run" = "1" ]; then
+             tmp_env="env JUPYTER_RUN_OPTIONS='-not_run' "
           fi
           pdf=$(basename $pdf)
           curr_dir=`pwd`
           pdf=$curr_dir/build/$pdf
           echo "----------------------------------------------------------------------"
           echo "Converting Jupyter notebook into PDF: build/rapport.pdf"
-          echo "  >  jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $pdf $opt_jy $prm"
+          echo "  > $tmp_env jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output $pdf $opt_jy $prm"
           echo "----------------------------------------------------------------------"
-          jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" $opt_jy $prm 2>& 1| tee -a Run.log
+          $tmp_env jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$pdf" $opt_jy $prm 2>& 1| tee -a Run.log
           error=${PIPESTATUS[0]}
           if [ "$error" != 0 ]
           then
