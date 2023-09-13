@@ -20,7 +20,8 @@
 #include <Probleme_base.h>
 
 Implemente_instanciable(Modele_turbulence_scal_nul, "Modele_turbulence_scal_nul", Modele_turbulence_scal_base);
-// XD modele_turbulence_scal_nul modele_turbulence_scal_base NUL 0 Nul scalar turbulence model (turbulent diffusivity = 0) which can be used with a turbulent problem.
+// XD modele_turbulence_scal_nul modele_turbulence_scal_base NUL -1 Nul scalar turbulence model (turbulent diffusivity = 0) which can be used with a turbulent problem.
+// XD attr turbulence_paroi suppress_param turbulence_paroi 1 del
 
 Sortie& Modele_turbulence_scal_nul::printOn(Sortie& s) const
 {
