@@ -131,7 +131,7 @@ Lire pb
 			haut     paroi_fixe
 			bas      paroi_fixe
                 }
-	 Modele_turbulence nul 
+	 modele_turbulence nul { } 
 	}
 				
         Convection_Diffusion_Chaleur_turbulent_QC
@@ -147,7 +147,7 @@ Lire pb
  		        haut paroi_temperature_imposee Champ_Front_Uniforme 1 586. 
 			bas paroi_temperature_imposee Champ_Front_Uniforme 1 293. 
 		}
-		 Modele_turbulence nul 
+		 modele_turbulence nul { } 
         }
 
 Postraitement

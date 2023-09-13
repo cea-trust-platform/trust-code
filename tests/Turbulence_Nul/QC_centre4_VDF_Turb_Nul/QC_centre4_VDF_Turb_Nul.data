@@ -95,7 +95,7 @@ Lire pb
 			haut     paroi_fixe
 			bas      paroi_fixe
                 }
-		Modele_turbulence nul 
+		modele_turbulence nul { } 
 		Traitement_particulier
                     		{
                                 Canal
@@ -121,7 +121,7 @@ Lire pb
  		        haut paroi_flux_impose Champ_Front_Uniforme 1  170.
 			bas paroi_flux_impose Champ_Front_Uniforme 1  -170.
 		}
-                Modele_turbulence nul 
+                modele_turbulence nul { } 
         }
   	Postraitements
          { 		

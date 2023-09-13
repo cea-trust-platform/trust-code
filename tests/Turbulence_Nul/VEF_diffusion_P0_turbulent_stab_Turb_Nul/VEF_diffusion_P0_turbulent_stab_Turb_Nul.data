@@ -92,7 +92,7 @@ Lire pb
 			S0	 	frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
 			S1 		frontiere_ouverte_vitesse_imposee Champ_Front_fonc_xyz 3 x y z
 		}
-		modele_turbulence nul 
+		modele_turbulence nul { } 
 	}
         Convection_Diffusion_Temperature_turbulent
         {
@@ -108,7 +108,7 @@ Lire pb
 			S1  		frontiere_ouverte_temperature_imposee Champ_Front_fonc_xyz 1 0
                 }
                 conditions_initiales { Temperature Champ_Fonc_xyz dom 1 0 }
-		modele_turbulence nul 
+		modele_turbulence nul { } 
         }
 
 	Postraitement

@@ -100,7 +100,7 @@ Fluide_Quasi_Compressible
 			haut     paroi_fixe
 			bas      paroi_fixe
                 }
-		Modele_turbulence nul 
+		modele_turbulence nul { } 
 		Traitement_particulier
                     		{
                                 Canal
@@ -127,7 +127,7 @@ Fluide_Quasi_Compressible
  		        haut 	paroi_temperature_imposee Champ_Front_Uniforme 1 313.
 			bas 	paroi_temperature_imposee Champ_Front_Uniforme 1 293.
 		}
-    	Modele_turbulence nul
+    	modele_turbulence nul { }
         }
 
         Postraitement

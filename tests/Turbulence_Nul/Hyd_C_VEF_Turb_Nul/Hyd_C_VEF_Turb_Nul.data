@@ -80,7 +80,7 @@ Constituant
 			defaut paroi_fixe
 			tube_gint_tube_dint paroi_fixe
                 }
-                modele_turbulence  nul
+                modele_turbulence nul { }
                 traitement_particulier { Ec { Ec periode 0.001 } 
                 }
        	}
@@ -98,7 +98,7 @@ Constituant
 		initial_conditions {
 			concentration Champ_Uniforme 1 0.55
 		}
-                modele_turbulence nul
+                modele_turbulence nul { }
 	}
 
 	Post_processing

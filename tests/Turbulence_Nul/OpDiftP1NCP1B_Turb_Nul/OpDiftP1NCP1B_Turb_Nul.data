@@ -72,7 +72,7 @@ Fluide_incompressible
 			Bas	Paroi_fixe
 			Haut	Paroi_fixe
 		}
-                Modele_turbulence nul
+                modele_turbulence nul { }
 	}
 
 	Convection_Diffusion_Temperature_turbulent
@@ -87,7 +87,7 @@ Fluide_incompressible
 			Haut	paroi_temperature_imposee Champ_Front_Uniforme 1 1073.
 		}
 		conditions_initiales { Temperature Champ_Uniforme 1 873. }
-		Modele_turbulence nul
+		modele_turbulence nul { }
 	}
 
 	Postraitement

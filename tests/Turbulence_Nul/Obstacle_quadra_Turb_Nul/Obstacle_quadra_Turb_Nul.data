@@ -127,7 +127,7 @@ Read pb
                         Entree frontiere_ouverte_vitesse_imposee 
                             Champ_front_Uniforme 2 1. 0.
                 }
-		 modele_turbulence nul 
+		 modele_turbulence nul { } 
         }
 
         Postraitement

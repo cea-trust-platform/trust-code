@@ -102,7 +102,7 @@ Fluide_Incompressible
 			bas      paroi_fixe
 			perioz   periodique 
 			}
-		Modele_turbulence nul
+		modele_turbulence nul { }
 		}
 
 
@@ -110,7 +110,7 @@ Fluide_Incompressible
 		{
 		diffusion { }
 		convection { amont }
-		Modele_turbulence nul 
+		modele_turbulence nul { } 
 		boundary_conditions 
 			{
 			periox periodique 

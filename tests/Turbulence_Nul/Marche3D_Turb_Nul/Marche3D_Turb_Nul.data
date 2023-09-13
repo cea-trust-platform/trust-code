@@ -80,7 +80,7 @@ Read pb
 			 SortieHaute frontiere_ouverte_pression_imposee Champ_Front_Uniforme 1 0.
 			 Entree frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 3  1. 0. 0.
 		}
-		modele_turbulence nul 
+		modele_turbulence nul { } 
 	}
 
 	Post_processing 

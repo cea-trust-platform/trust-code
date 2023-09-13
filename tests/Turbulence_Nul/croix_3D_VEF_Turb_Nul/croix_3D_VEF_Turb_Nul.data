@@ -74,7 +74,7 @@ Lire pb
    			haut 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
    			paroi 	paroi_fixe
 		}
-   		modele_turbulence nul 
+   		modele_turbulence nul { } 
 	}
 	
 	Convection_Diffusion_Temperature_Turbulent
@@ -93,7 +93,7 @@ Lire pb
    			paroi 	paroi_temperature_imposee Champ_Front_Uniforme 1 0.5
 		}
 		conditions_initiales { Temperature Champ_Uniforme 1 0. }
-		modele_turbulence nul 
+		modele_turbulence nul { } 
 	}
  	Postraitement
  	{

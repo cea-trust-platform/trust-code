@@ -77,7 +77,7 @@ Fluide_Incompressible
 		solveur_pression GCP { precond ssor { omega 1.5 } seuil 1.e-12 impr }
 		convection { muscl }
 		diffusion { }
-		modele_turbulence nul 
+		modele_turbulence nul { } 
 		sources { boussinesq_temperature { T0 5. } }
 		conditions_initiales 
                         {
@@ -102,7 +102,7 @@ Fluide_Incompressible
 			Droit Paroi_temperature_imposee Champ_Front_Uniforme 1 0
 		}
 		conditions_initiales { Temperature Champ_Uniforme 1 5. }
-                Modele_turbulence nul
+                modele_turbulence nul { }
 	}
 
 	Postraitement

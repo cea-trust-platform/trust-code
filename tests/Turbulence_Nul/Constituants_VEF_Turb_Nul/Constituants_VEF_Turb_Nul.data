@@ -90,7 +90,7 @@ Constituant
 			Bas symetrie
 			Gauche frontiere_ouverte_vitesse_imposee Champ_Front_Uniforme 2  1. 1.
 		}
-		Modele_turbulence nul 
+		modele_turbulence nul { } 
 	}
 	Convection_diffusion_Concentration_turbulent {
 		
@@ -105,7 +105,7 @@ Constituant
 		conditions_initiales {
 			concentration Champ_Uniforme 12 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 
 		}
-		Modele_turbulence nul
+		modele_turbulence nul { }
 	}
 
 	Postraitement

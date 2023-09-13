@@ -137,7 +137,7 @@ Lire pb1
 	   droite	paroi_fixe	
 	   gauche	paroi_fixe
            }
-       Modele_turbulence NUL
+       modele_turbulence nul { }
 	}
 	
    Postraitement
@@ -198,7 +198,7 @@ Fluide_Incompressible
 			p_droite	paroi_fixe
 		}
 		
-		Modele_turbulence nul 
+		modele_turbulence nul { } 
 	}
 	
 	Convection_Diffusion_Temperature_turbulent
@@ -206,7 +206,7 @@ Fluide_Incompressible
 		convection { EF_stab { volumes_etendus alpha 1.0 } }
 		diffusion { }
 		
-		Modele_turbulence nul 
+		modele_turbulence nul { } 
 		
 		boundary_conditions 
 		{
