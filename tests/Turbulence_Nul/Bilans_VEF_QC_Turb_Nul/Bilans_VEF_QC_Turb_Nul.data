@@ -100,7 +100,7 @@ Fluide_Quasi_Compressible
 }
 	Navier_Stokes_turbulent_QC
 	{
-		solveur_pression cholesky { }
+		solveur_pression petsc cholesky { }
 		convection { muscl } 
 		diffusion { }
 		conditions_initiales {
