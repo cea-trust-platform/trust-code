@@ -19,7 +19,8 @@ define_modules_config()
       if [ "$TRUST_USE_OPENMP" = 1 ]
       then
          module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.0.5-cuda" # Les modules sont mieux configures sur IDRIS qu'au CCRT...
-	       module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.1.5" # Essai car crash au demarrage pour precedent (4.0.5-cuda -> NVHPC)
+         module="gcc/8.3.1 cuda/11.2 nvidia-compilers/22.5 openmpi/4.1.5" # OK car crash au demarrage pour precedent (4.0.5-cuda -> NVHPC)
+         module="gcc/8.3.1 cuda/11.2 nvidia-compilers/23.5 openmpi/4.1.5" # Passage a 23.5 pour etre plus pres du PC de dev
       else
          module="gcc/8.3.1 cuda/11.2 openmpi/4.0.5-cuda" # Fonctionne sur gpu_p13 et gpu_p4
          #module=$module" opa-psm2/11.2.204nccl_patched-cuda" # Patch pour corriger un plantage lors des IO (sondes/xyz)
