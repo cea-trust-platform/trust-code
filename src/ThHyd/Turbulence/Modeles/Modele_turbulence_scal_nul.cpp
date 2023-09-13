@@ -20,6 +20,7 @@
 #include <Probleme_base.h>
 
 Implemente_instanciable(Modele_turbulence_scal_nul, "Modele_turbulence_scal_nul", Modele_turbulence_scal_base);
+// XD modele_turbulence_scal_nul modele_turbulence_scal_base NUL 0 Nul scalar turbulence model (turbulent diffusivity = 0) which can be used with a turbulent problem.
 
 Sortie& Modele_turbulence_scal_nul::printOn(Sortie& s) const
 {
@@ -53,6 +54,10 @@ Entree& Modele_turbulence_scal_nul::readOn(Entree& is)
     }
   loipar.valeur().associer_modele(*this);
   loipar.valeur().associer(le_pb.equation(0).domaine_dis(), le_pb.equation(0).domaine_Cl_dis());
+
+  // Pas envie de debugger XDATA ... je penalise tt le monde alors
+  Param param(que_suis_je());
+  param.lire_avec_accolades_depuis(is);
   return is;
 }
 
