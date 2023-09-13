@@ -308,6 +308,15 @@ class TRUSTCase(object):
         ### Print the coloured .data file ###
         print("".join(test))
 
+    def dumpDatasetMD(self):
+        """
+        Print out the .data file in a basic MarkDown format.
+        This will not highlight TRUST keywords.
+        """
+
+        f = open(self._fullPath(), "r").read()
+        displayMD( "```" + f + "```" )
+
     def _runScript(self, scriptName, verbose=False):
         """ Internal. Run a shell script if it exists.
         """
@@ -788,6 +797,20 @@ def dumpDataset(fiche, list_Trust_user_words=[]):
     c.dumpDataset(list_Trust_user_words)
 
 
+def dumpDatasetMD(data):
+    """
+    Print the .data file in MD format.
+
+    Parameters
+    ---------
+    datafile: str
+        relative path (to build directory) + name of datafile
+    """
+
+    c = TRUSTCase(directory=BUILD_DIRECTORY, datasetName=data)
+    c.dumpDatasetMD()
+
+
 def dumpText(fiche, list_keywords=[]):
     """ Print out the file.
 
@@ -819,17 +842,19 @@ def dumpText(fiche, list_keywords=[]):
 
     print("".join(test))
 
-def addCaseFromTemplate(datasetName, directory, d, nbProcs=1):
+def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetData=None):
     """ Add a case to run to the list of globally recorded cases.
     
     Parameters
     ----------
-    directory: str 
-        directory where the case is stored (relative to build/)
-    datasetName: str 
-        Name of the case we want to run.
-    d: dictionary
-        substitution of term (key identified with $ in datafile) by value in new data file
+    targetDirectory: str 
+        targetDirectory where the case is stored (relative to build/)
+    templateData: str
+        Name of the template datafile
+    dic: dictionary
+        substitution of term (key identified with $ in datafile) by value in a new data file
+    targetData : str
+        if provided, templateData will be copied as targetData + dictionary applied + added to TRUSTSuite()
     nbProcs : int 
         Number of processors
 
@@ -841,17 +866,21 @@ def addCaseFromTemplate(datasetName, directory, d, nbProcs=1):
     if defaultSuite_ is None:
         # When called for the first time, will copy src to build, and execute 'prepare' script if any
         defaultSuite_ = TRUSTSuite()
-    fullDir = os.path.join(BUILD_DIRECTORY, datasetName)
-    fullDir2 = os.path.join(BUILD_DIRECTORY, directory)
+
+    if targetData is None:
+        targetData = templateData
+
+    fullDir = os.path.join(BUILD_DIRECTORY, templateData)
+    fullDir2 = os.path.join(BUILD_DIRECTORY, targetDirectory)
     if not os.path.exists(fullDir2):
         os.makedirs(fullDir2, exist_ok=True)
-    pthTgt = os.path.join(BUILD_DIRECTORY, directory, datasetName)
+    pthTgt = os.path.join(BUILD_DIRECTORY, targetDirectory, targetData)
     # And copy the .data file:
     from shutil import copyfile
 
     copyfile(fullDir, pthTgt)
-    tc = addCase(directory, datasetName, nbProcs)
-    tc.substitute_template(d)
+    tc = addCase(targetDirectory, targetData, nbProcs)
+    tc.substitute_template(dic)
     return tc
 
 
