@@ -24,10 +24,12 @@ run()
    jdd=OpenMP_Iterateur_BENCH_$solveur && [ "$3" != "" ] && jdd=$3
    if [ "$np" = "" ] || [ "$np" = 1 ]
    then
+      rm -f $jdd.TU
       trust $jdd 1>$jdd.out_err 2>&1
       check $jdd $gpu
    else  
       make_PAR.data $jdd $np 1>/dev/null 2>&1
+      rm -f PAR_$jdd.TU
       trust PAR_$jdd $np 1>$PAR_jdd.out_err 2>&1
       check PAR_$jdd $gpu
    fi
@@ -40,5 +42,6 @@ run()
 [ $HOST = fedora ]   && run a3000
 [ $HOST = topaze ]   && run a100   && run 4xa100 4   && run 8xa100 8 OpenMP_Iterateur_BENCH_AmgX_10
 [ $HOST = adastra ]  && run MI250X && run 4xMI250X 4 && run 8xMI250X 8 OpenMP_Iterateur_BENCH_rocALUTION_10
+[ $HOST = jean-zay ] && run v100-32g && run 4xv100-32g 4
 [ $HOST = irene-amd-ccrt ] && run v100
 
