@@ -145,8 +145,9 @@ int find_cl_face(const Domaine& domaine, const int face)
   return -1;
 }
 
+// Passage int -> True_int car plantage au run avec nvc++ avec type long
 #pragma omp declare target
-double calculer_coef_som(int type_elem, int dimension, int& nb_face_diri, int* indice_diri)
+double calculer_coef_som(True_int type_elem, True_int dimension, True_int& nb_face_diri, True_int* indice_diri)
 {
   if (type_elem == 0)
     {
@@ -267,13 +268,17 @@ double calculer_coef_som(int type_elem, int dimension, int& nb_face_diri, int* i
               indice_diri[2] = 2;
               break;
             default:
-              //abort();
+#ifndef _OPENMP
+              abort();
+#endif
               break;
             }
         }
       else
         {
-          //abort();
+#ifndef _OPENMP
+          abort();
+#endif
         }
     }
   double coeff_som = 1. / (dimension * (dimension + 1 - nb_face_diri));
@@ -337,10 +342,10 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
 
       if (modif_traitement_diri)
         {
-          int indice_diri[4];
-          int nb_face_diri = 0;
-          int rang_elem = rang_elem_non_std_addr[elem];
-          int type_elem = rang_elem < 0 ? 0 : type_elem_Cl_addr[rang_elem];
+          True_int indice_diri[4];
+          True_int nb_face_diri = 0;
+          True_int rang_elem = (True_int)rang_elem_non_std_addr[elem];
+          True_int type_elem = rang_elem < 0 ? 0 : (True_int)type_elem_Cl_addr[rang_elem];
           coeff_som = calculer_coef_som(type_elem, dimension, nb_face_diri, indice_diri);
           // on retire la contribution des faces dirichlets
           for (int fdiri = 0; fdiri < nb_face_diri; fdiri++)

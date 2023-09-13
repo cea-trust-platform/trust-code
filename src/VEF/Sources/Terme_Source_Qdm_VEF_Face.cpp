@@ -29,7 +29,7 @@
 #include <VEF_discretisation.h>
 #include <Discretisation_base.h>
 
-extern double calculer_coef_som(int rang_elem, int dimension, int& nb_face_diri, int *indice_diri);
+extern double calculer_coef_som(True_int rang_elem, True_int dimension, True_int& nb_face_diri, True_int *indice_diri);
 Implemente_instanciable(Terme_Source_Qdm_VEF_Face,"Source_Qdm_VEF_P1NC",Source_base);
 
 
@@ -175,15 +175,15 @@ DoubleTab& Terme_Source_Qdm_VEF_Face::ajouter(DoubleTab& resu) const
   DoubleTab valeurs_source(nbpts,dimension);
   DoubleTab valeurs_Psi(nbpts,dimension);
   ArrOfDouble somme(dimension);
-  int nb_face_diri=0;
-  int indice_diri[4];
+  True_int nb_face_diri=0;
+  True_int indice_diri[4];
   int modif_traitement_diri=0;
   if (sub_type(Domaine_VEF,domaine_VEF))
     modif_traitement_diri=ref_cast(Domaine_VEF, domaine_VEF).get_modif_div_face_dirichlet();
   for (int elem=0; elem<nb_elem_tot; elem++)
     {
-      int rang_elem = domaine_VEF.rang_elem_non_std()(elem);
-      int type_elem = rang_elem < 0 ? 0 : domaine_Cl_VEF.type_elem_Cl(rang_elem);
+      True_int rang_elem = (True_int)domaine_VEF.rang_elem_non_std()(elem);
+      True_int type_elem = rang_elem < 0 ? 0 : (True_int)domaine_Cl_VEF.type_elem_Cl(rang_elem);
       if (modif_traitement_diri)
         calculer_coef_som(type_elem,dimension, nb_face_diri, indice_diri);
       volume=volumes(elem);
