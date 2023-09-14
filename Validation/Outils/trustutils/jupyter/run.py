@@ -193,7 +193,7 @@ class TRUSTCase(object):
         result = filedata.substitute(subs_dict)
         with open(path, "w") as file: file.write(result)
 
-    def copy(self, targetName, directory=None, nbProcs=1):
+    def copy(self, targetName, targetDirectory=None, nbProcs=1):
         """ 
             Copy a TRUST Case
 
@@ -206,19 +206,19 @@ class TRUSTCase(object):
             number of procs
 
         """
-        if directory is None:
-            directory = self.dir_
+        if targetDirectory is None:
+            targetDirectory = self.dir_
         # Create the directory if not there:
-        fullDir2 = os.path.join(BUILD_DIRECTORY, directory)
+        fullDir2 = os.path.join(BUILD_DIRECTORY, targetDirectory)
         if not os.path.exists(fullDir2):
             os.makedirs(fullDir2, exist_ok=True)
-        pthTgt = os.path.join(BUILD_DIRECTORY, directory, targetName)
+        pthTgt = os.path.join(BUILD_DIRECTORY, targetDirectory, targetName)
         # And copy the .data file:TRUSTSuite
         from shutil import copyfile
 
         copyfile(self._fullPath(), pthTgt)
 
-        return TRUSTCase(directory, targetName, nbProcs=nbProcs, record=False)
+        return TRUSTCase(targetDirectory, targetName, nbProcs=nbProcs, record=False)
 
     def dumpDataset(self, user_keywords=[]):
         """ 
