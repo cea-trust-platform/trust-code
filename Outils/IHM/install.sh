@@ -19,6 +19,11 @@ echo patching $file
 sed -i "s/LOG_LEVEL = 0/LOG_LEVEL = 1/g" $file
 diff $file $file.sa
 
+file=CURVEPLOT/CMakeLists.txt
+[ ! -f  $file.sa ] && cp $file $file.sa
+sed -i "s/FIND_PACKAGE(SalomePyQt5 REQUIRED)//g" $file
+diff $file $file.sa
+
 file=CONFIGURATION/cmake/FindSalomePyQt5.cmake
 echo patching $file 
 [ ! -f  $file.sa ] && cp $file $file.sa
