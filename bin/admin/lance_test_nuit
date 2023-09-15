@@ -450,8 +450,8 @@ git_push()
    repos=`git remote | grep -v irene`
    for repo in $repos
    do
-      remote_branch="triou/TMA" 
-      [ "$repo" = "github_write" ] && remote_branch="next"
+      remote_branch="triou/TMA" && Tags="--tags"
+      [ "$repo" = "github_write" ] && remote_branch="next" && Tags=""
       repo_log=$REP_NUIT"/git_"$repo"_"$git_branch"_"$HOST".log"
       echo "TRUST git push on $HOST the `date` ...">$repo_log
       echo>>$repo_log
@@ -474,9 +474,9 @@ git_push()
          then
 	    if [ "$git_branch" != "Livraison" ]
 	    then
-               git push --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo $git_branch\" $TRUST_MAIL
+               git push $Tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo $git_branch\" $TRUST_MAIL
 	    else
-               git push --tags $repo $git_branch":"$remote_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo TMA\" $TRUST_MAIL
+               git push $Tags $repo $git_branch":"$remote_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push tags $repo TMA\" $TRUST_MAIL
 	    fi
          else
             git push --force --tags $repo $git_branch 1>>$repo_log 2>&1 || cat $repo_log | mail_ -s\"[lance_test_nuit] TRUST error for git push force tags $repo $git_branch\" $TRUST_MAIL

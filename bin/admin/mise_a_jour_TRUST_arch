@@ -373,7 +373,7 @@ option_configure=" -disable-ccache"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-without-doc" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -without-doc"
 # Compilation sans GUI tools
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-disable-tools" | grep ^$HOST"\."`" != "" ] 			&& option_configure=$option_configure" -disable-gnuplot -disable-tcl_tk -disable-gmsh -disable-plot2d -without-doc -without-visit"
-# Compilateur clang
+# Compilateur clang/intel/gcc
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang" | grep ^$HOST"\."`" != "" ]				&& option_configure=$option_configure" -c++=/usr/bin/clang++ -cc=/usr/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang38" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.8/bin/clang++ -cc=/usr/lib/llvm-3.8/bin/clang"
 [ "`$TRUST_ROOT/bin/admin/liste_machines "\-clang39" | grep ^$HOST"\."`" != "" ]			&& option_configure=$option_configure" -c++=/usr/lib/llvm-3.9/bin/clang++ -cc=/usr/lib/llvm-3.9/bin/clang"
@@ -538,7 +538,9 @@ do
       ########################
       if [ ! -d $TRUST_ROOT/exec/VisIt/bin ]
       then
-         echo "VisIt=NOT"
+         msg_visit="VisIt=NOT"
+         source $TRUST_ROOT/env_TRUST.sh 1>/dev/null 2>&1; [ "$TRUST_WITHOUT_VISIT" != "1" ] && msg_visit="VisIt=KO"
+         echo $msg_visit
       elif [ ! -f $TRUST_ROOT/exec/VisIt/bin/visit ]
       then
          echo "VisIt=KO"
