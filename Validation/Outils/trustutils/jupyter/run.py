@@ -869,6 +869,9 @@ def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetDat
 
     if targetData is None:
         targetData = templateData
+    else:
+        if targetData[-5:] != ".data":
+            raise ValueError("targetData should ends with .data in addCaseFromTemplate!!!")
 
     fullDir = os.path.join(BUILD_DIRECTORY, templateData)
     fullDir2 = os.path.join(BUILD_DIRECTORY, targetDirectory)
