@@ -342,7 +342,7 @@ class TRUSTCase(object):
         scriptFl = os.path.join(BUILD_DIRECTORY, "cmds_%s.sh" % uniq_id)
 
         logName = "cmds_%s.log" % uniq_id
-        n, d = self.name_, self.dir_
+        n, d = self.dataFileName_, self.dir_
         fullD, fullL = os.path.join(BUILD_DIRECTORY, d), os.path.join(BUILD_DIRECTORY, logName)
         para = ""
         if self.nbProcs_ != 1:
@@ -378,7 +378,7 @@ class TRUSTCase(object):
 
     def partition(self, verbose=False):
         """ 
-        Apply partitioning of specified test case with trust -partition if nbProcs_>1 only
+        Apply partitioning of specified test case with trust -partition if nbProcs>1 only
         This avoids to modify trust -partition to be able to call it with 1 cpu
 
         Parameters
