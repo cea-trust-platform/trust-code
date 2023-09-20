@@ -3,7 +3,7 @@
 help()
 {
    echo "For jupyter's validation forms (new formalism since v1.9.0):"
-   echo "Usage: `basename $0` [path] [-help] [[-not_run] -export_pdf [-xpdf] [-o name_rapport.pdf]] [-exec binary_path] [-parallel_run] [-parallel_sjob] [-doc] [-create]"
+   echo "Usage: `basename $0` [-help] [[-not_run] -export_pdf [-xpdf] [-o name_rapport.pdf]] [-exec binary_path] [-parallel_run] [-parallel_sjob] [-doc] [-create]"
    echo "Script to build a PDF report file from a Jupyter validation form."
    echo "-help                          : This description."
    echo "-doc                           : Open jupyter's validation forms documentation (opens SampleFormJupyter notebook)."
@@ -12,13 +12,13 @@ help()
    echo "-parallel_run [n]              : Run/submit calculations in a parallel way on n cores (n=$TRUST_NB_PROCS by default) and generates a PDF report."
    echo "                                 Cases are run in a sequential way even though -parallel_run is used if run is called with run.runCases(preventConcurrent=True)."
    echo "-o name_report.pdf             : Change the default PDF report's name (default is rapport.pdf)"
-   echo "-parallel_sjob                 : Run/submit calculations in a parallel way using the Sserver. "
+   echo "-parallel_sjob                 : Run/submit calculations in a parallel way using the Sserver (warning: Sserver should be killed at the end). "
    echo "-exec binary_path              : Location of the TRUST binary to use (by default given by $exec)."
    echo "-create                        : Build a minimal .ipynb with data files found in the src directory."
    echo "-xpdf                          : Open the PDF report file at the end of the build."
    echo
    echo "For .prm validation forms:"
-   echo "Usage: `basename $0` [path] [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-d text|figure_number] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
+   echo "Usage: `basename $0` [path] [-help] [-not_run] [-post_run] [-parallel_run] [-parallel_sjob] [-nb_pas_dt_max N] [-visit_np np] [-dest path_build] [-o name_rapport.pdf] [-xpdf] [-remote login@machine:PATH] [-exec binary_path] [-save]"
    echo "Script to build a PDF report file from an automated validation test case (.prm file)." 
    echo "-help                          : This description."
    echo "-doc_prm                       : Open the prm file documentation."
@@ -80,6 +80,7 @@ ici=`pwd`
 export_pdf=false
 coverage=false
 parallel=false
+post_run=false
 # Changement par defaut, on utilise -np 2 si parallele et MPI non natif
 #if [ "`echo $MPI_ROOT | grep TRUST`" != "" ]
 if [ "`echo $MPI_ROOT`" != "" ] && [ "$TRUST_WITHOUT_HOST" = 0 ]
@@ -154,7 +155,10 @@ do
       then
          parallel=true
          # Lancement Server si necessaire
-         [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ps -efl | grep Sserver | grep -v grep`" = "" ] && (cd $TRUST_ROOT/bin/Sjob;./Sserver $TRUST_NB_PROCS &)         
+         [ "$TRUST_WITHOUT_HOST" = 1 ] && [ "`ps -efl | grep Sserver | grep -v grep`" = "" ] && (cd $TRUST_ROOT/bin/Sjob;./Sserver $TRUST_NB_PROCS &)
+      elif [ "$1" = -post_run ] 
+      then
+         post_run=true
       fi
       shift
    elif [ "$1" = -nb_pas_dt_max ]
@@ -311,7 +315,10 @@ then
    fi
    # Lancement d'une fiche jupyter   
    if [ ${prm%.ipynb} != $prm ]; then
-      if $export_pdf; then
+      if $post_run; then
+          echo "Error: Run_fiche does not accept -post_run for Jupyter's notebook validation forms!" 
+          exit 255
+      elif $export_pdf; then
           opt_jy="--execute"
           tmp_env=""
           if [ "$not_run" = "1" ]; then
