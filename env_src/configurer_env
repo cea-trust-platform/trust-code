@@ -778,7 +778,7 @@ then
        INSTALL_CONDA=0
    else
        # check of python version
-       PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*100+a[2]*10+a[3];print (v==379||v==376?1:0)}'`
+       PYTHON_VERSION_OK=`$TRUST_ROOT/exec/python/bin/python --version 2>&1 | awk '/Python/ {split($2,a,".");v=a[1]*1000+a[2]*100+a[3];print (v==3716||v==3706?1:0)}'`
        PYTHON_TEST_OK=1 && [ "`$TRUST_ROOT/exec/python/bin/python ./test.py 1>/dev/null 2>&1;echo $?`" != 0 ] && PYTHON_TEST_OK=0
        INSTALL_OK=1
 

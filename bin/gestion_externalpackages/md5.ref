@@ -182,7 +182,6 @@ dae2b952c7ef8591e8322284ea244e73  SALOME/xdata-9.6.0.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
 92ea7b772cc58ab8705a764c0afb1774  Vc-1.4.2.tar.gz
 0936311ccd09f1164ab2f46ca5cd8c3b  VisIt/Cython-0.29.17.tar.gz
-90a93507b8fdc88f46b9a8d7ed651c6c  VisIt/IceT-1-0-0.tar.gz
 f1f7592c51260e5080d3cd71781ea675  VisIt/Pillow-7.1.2.tar.gz
 d348d978a5387512fbc7d7d52dd3a5ef  VisIt/Python-3.7.7.tgz
 4fa5eadbc8723ba0b8d203f05376d932  VisIt/VTK-8.1.0.tar.gz
@@ -194,7 +193,6 @@ b8042f9970ea70a36da1ee1fae27c448  VisIt/mesa-17.3.9.tar.xz
 3dc21c84a295fe77eadf8f872685a7de  VisIt/numpy-1.16.6.zip
 29733ea8cbee0291aad121c69c6e51a1  VisIt/pyparsing-2.4.6.tar.gz
 9c88db1774fa7e3045af063bbde44d7d  VisIt/qwt-6.1.2.tar.bz2
-332322dee05587738a553bb0e459598a  VisIt/requests-2.22.0.tar.gz
 32b6cdce670ce462086d246bea181e9d  VisIt/setuptools-44.0.0.zip
 7f49e158e91ad31014b6187261746a3f  VisIt/visit3.3.3.tar.gz
 85adef240c5f370b308da8c938951a68  VisIt/zlib-1.2.11.tar.xz
