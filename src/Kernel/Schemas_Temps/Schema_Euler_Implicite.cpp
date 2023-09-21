@@ -448,62 +448,63 @@ int Schema_Euler_Implicite::faire_un_pas_de_temps_pb_couple(Probleme_Couple& pbc
                 }
 
               for (auto && s : resolution_monolithique_)
-                {
-                  // serach all equations of this dom app
-                  LIST(REF(Equation_base)) eqs;
-                  for(i = 0; i < pbc.nb_problemes(); i++)
-                    for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+                if (ok)
+                  {
+                    // serach all equations of this dom app
+                    LIST(REF(Equation_base)) eqs;
+                    for(i = 0; i < pbc.nb_problemes(); i++)
+                      for(int j = 0; j < ref_cast(Probleme_base,pbc.probleme(i)).nombre_d_equations(); j++)
+                        {
+                          const Probleme_base& pb = ref_cast(Probleme_base,pbc.probleme(i));
+                          const Motcle type = pb.equation(j).domaine_application();
+                          if ((s.count(type.getString()) || s.count((Nom("-") + type).getString())) && !pb.equation(j).equation_non_resolue()) eqs.add(pb.equation(j));
+                        }
+                    if (eqs.size() == 0) continue; // equations non resolues
+
+                    Cout << "RESOLUTION {";
+                    for (auto &&d : s) Cout << Nom(" ") + d;
+                    Cout << " }" << finl;
+                    Cout << "-------------------------" << finl;
+                    const bool mono = !(s.size() == 1 && Nom((*s.begin())).debute_par("-"));
+                    if (mono)
                       {
-                        const Probleme_base& pb = ref_cast(Probleme_base,pbc.probleme(i));
-                        const Motcle type = pb.equation(j).domaine_application();
-                        if ((s.count(type.getString()) || s.count((Nom("-") + type).getString())) && !pb.equation(j).equation_non_resolue()) eqs.add(pb.equation(j));
+                        Cout << "Resolution monolithique! the equations {";
+                        for (int k = 0; k < eqs.size(); k++)
+                          {
+                            Cout << " " << eqs[k]->que_suis_je();
+                            eqs[k]->probleme().updateGivenFields();
+                          }
+                        Cout << " } are solved by assembling a single matrix." << finl;
+                        bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, ok);
+                        convergence_pbc = convergence_pbc && convergence_eqs;
                       }
-                  if (eqs.size() == 0) continue; // equations non resolues
+                    else
+                      {
+                        for (int k = 0; k < eqs.size(); k++)
+                          {
+                            Equation_base& eqn = eqs[k].valeur();
+                            eqn.probleme().updateGivenFields();
 
-                  Cout << "RESOLUTION {";
-                  for (auto &&d : s) Cout << Nom(" ") + d;
-                  Cout << " }" << finl;
-                  Cout << "-------------------------" << finl;
-                  const bool mono = !(s.size() == 1 && Nom((*s.begin())).debute_par("-"));
-                  if (mono)
-                    {
-                      Cout << "Resolution monolithique! the equations {";
-                      for (int k = 0; k < eqs.size(); k++)
-                        {
-                          Cout << " " << eqs[k]->que_suis_je();
-                          eqs[k]->probleme().updateGivenFields();
-                        }
-                      Cout << " } are solved by assembling a single matrix." << finl;
-                      bool convergence_eqs = le_solveur.valeur().iterer_eqs(eqs, compteur, ok);
-                      convergence_pbc = convergence_pbc && convergence_eqs;
-                    }
-                  else
-                    {
-                      for (int k = 0; k < eqs.size(); k++)
-                        {
-                          Equation_base& eqn = eqs[k].valeur();
-                          eqn.probleme().updateGivenFields();
+                            DoubleTab& present = eqn.inconnue().valeurs();
+                            DoubleTab& futur = eqn.inconnue().futur();
+                            double temps = temps_courant_ + dt_;
 
-                          DoubleTab& present = eqn.inconnue().valeurs();
-                          DoubleTab& futur = eqn.inconnue().futur();
-                          double temps = temps_courant_ + dt_;
+                            // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
+                            eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                            Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
+                            const DoubleTab& inut=futur;
+                            bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
+                            if (!ok) break;
+                            convergence_pbc = convergence_pbc && convergence_eqn;
+                            futur = present;
+                            eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
+                            present = futur;
 
-                          // imposer_cond_lim   sert pour la pression et pour les echanges entre pbs
-                          eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-                          Cout<<"Solving " << eqn.que_suis_je() << " equation :" << finl;
-                          const DoubleTab& inut=futur;
-                          bool convergence_eqn=le_solveur.valeur().iterer_eqn(eqn, inut, present, dt_, compteur, ok);
-                          if (!ok) break;
-                          convergence_pbc = convergence_pbc && convergence_eqn;
-                          futur = present;
-                          eqn.domaine_Cl_dis()->imposer_cond_lim(eqn.inconnue(),temps_courant()+pas_de_temps());
-                          present = futur;
-
-                          eqn.inconnue().valeur().Champ_base::changer_temps(temps);
-                          Cout << finl;
-                        }
-                    }
-                }
+                            eqn.inconnue().valeur().Champ_base::changer_temps(temps);
+                            Cout << finl;
+                          }
+                      }
+                  }
             }
           else
             {
