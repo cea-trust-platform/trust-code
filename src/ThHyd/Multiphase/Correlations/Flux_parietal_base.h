@@ -72,10 +72,10 @@ public:
     int *nonlinear = NULL;     // nonlinear           -> regler a 1 si q_pk / q_pi est non-lineaire en Tp / Tf; ne pas toucher sinon
   };
   virtual void qp(const input_t& input, output_t& output) const = 0;
-
+  /* 1 si T[n] doit etre fourni a la paroi, 0 si il doit etre fourni au centre des mailles */
+  virtual int T_at_wall() const = 0;
   virtual int calculates_bubble_nucleation_diameter() const {return 0;};
   virtual int needs_saturation() const {return 0;};
-
 };
 
 #endif
