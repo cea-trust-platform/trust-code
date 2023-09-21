@@ -30,7 +30,7 @@ class Fluide_sodium_liquide: public Fluide_reel_base
 
   std::map<std::string, std::array<double, 2>> unknown_range() const override
   {
-    return { { "temperature", { 371 - 273.15, 2503.7 - 273.15 } } }; //de la temperature de solidification au pt tricritique
+    return { { "temperature", { 371 - 273.15, 1503.7 - 273.15 } } }; //de la temperature de solidification au pt tricritique
   }
 
 protected :
