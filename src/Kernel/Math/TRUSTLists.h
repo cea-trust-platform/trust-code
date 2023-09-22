@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -56,9 +56,13 @@ public :
   }
 
   // Constructeur par copie
-  TRUSTLists(const TRUSTLists& vect) : sz(vect.sz), data(new TRUSTList<_TYPE_>[vect.sz])
+  TRUSTLists(const TRUSTLists& vect) : sz(vect.sz)
   {
-    if (!data) throw_();
+    if (vect.sz)
+      {
+        data = new TRUSTList<_TYPE_>[vect.sz];
+        if (!data) throw_();
+      }
     int i = sz;
     if (i == 0) data = 0;
     else while (i--) data[i] = vect[i];
