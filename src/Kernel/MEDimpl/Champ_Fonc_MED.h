@@ -95,7 +95,7 @@ protected:
 #endif
   Champ_Fonc vrai_champ_;
   Nom nom_champ_dans_fichier_med_;
-  ArrOfInt filter;
+  std::vector<int> filter;
   ArrOfDouble temps_sauv_;
 
   virtual void set_param(Param& param);

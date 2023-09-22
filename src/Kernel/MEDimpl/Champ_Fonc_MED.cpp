@@ -239,7 +239,6 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
   /* si on est en parallele : creation du filtre */
   if (Process::nproc() > 1 && field_size != le_champ().valeurs().dimension(0))
     {
-      filter.set_smart_resize(1);
       EFichier fdec;
       fdec.ouvrir(nom_decoup_);
       // Cas ou le maillage du fichier .med suit la numerotation du maillage initial (necessite le fichier du decoupage pour retrouver la numerotation)
@@ -252,7 +251,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
               fdec >> dec;
               dec_size = dec.size_array();
               for (int i = 0; i < dec_size; i++)
-                if (dec[i] == Process::me()) filter.append_array(i);
+                if (dec[i] == Process::me()) filter.push_back(i);
             }
           else if(loc_ == "som")
             {
@@ -273,7 +272,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
               dec_size = (int)dec.size();
               for (int n=0; n < dec_size; n++)
                 for(std::set<int>::iterator it = dec[n].begin(); it!=dec[n].end(); ++it)
-                  if (*it == Process::me()) filter.append_array(n);
+                  if (*it == Process::me()) filter.push_back(n);
             }
           else
             {
@@ -292,11 +291,10 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
           int nb_item = le_champ().valeurs().dimension(0);
           int first_item = mppartial_sum(nb_item);
           for (int i=0; i<nb_item; i++)
-            filter.append_array(first_item);
+            filter.push_back(first_item);
         }
-      filter.set_smart_resize(0), filter.resize(filter.size_array());
       Cerr << "Creating a filter to access efficiently values in " << nom_fichier_med_ << finl;
-      if (filter.size_array() != le_champ().valeurs().dimension(0))
+      if ((int) filter.size() != le_champ().valeurs().dimension(0))
         {
           Cerr << "Champ_Fonc_MED on parallel domain : inconsistency between filter and domain!" << finl;
           Process::exit();
@@ -326,6 +324,13 @@ void Champ_Fonc_MED::mettre_a_jour(double t)
   else
     lire(t);
 }
+
+#ifdef MED_
+med_geometry_type type_geo_trio_to_type_med(const Nom& type);
+#ifdef MEDCOUPLING_
+INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& type, int& mesh_dimension);
+#endif
+#endif
 
 void Champ_Fonc_MED::lire(double t, int given_it)
 {
@@ -381,13 +386,18 @@ void Champ_Fonc_MED::lire(double t, int given_it)
       int iteration = time_steps_[given_it].first;
       int order = time_steps_[given_it].second;
 
-      if(filter.size_array() > 0) // Partial reading of field (only field values are loaded, not its structure!)
+      if(filter.size()) // Partial reading of field (only field values are loaded, not its structure!)
         {
 #ifdef MPI_
-          std::vector<int> distrib;
-          distrib.insert(distrib.begin(), filter.addr(), filter.addr() + filter.size_array());
-          MCAuto<MEDFileField1TS> fieldFile = MEDCoupling::ParaMEDFileField1TS::ParaNew(Comm_Group_MPI::get_trio_u_world(), MPI_INFO_NULL, fileName, fieldName, meshName, distrib, field_type, iteration, order);
-          MEDCoupling::DataArrayDouble *field_values = fieldFile->getUndergroundDataArray();
+          MEDFileUtilities::AutoFid fid(MEDCoupling::OpenMEDFileForRead(fileName));
+          int mesh_dimension = -1;
+          std::vector<std::pair<MEDCoupling::TypeOfField,INTERP_KERNEL::NormalizedCellType>> tmp= { { field_type, type_geo_trio_to_type_medcoupling(mon_dom->type_elem()->que_suis_je(), mesh_dimension) } };
+          INTERP_KERNEL::AutoCppPtr<MEDCoupling::MEDFileEntities> entities(MEDCoupling::MEDFileEntities::BuildFrom(&tmp));
+          MCAuto<MEDCoupling::MEDFileAnyTypeField1TS> fieldFile = MEDCoupling::MEDFileAnyTypeField1TS::NewAdv(fid, fieldName, iteration, order, entities, filter);
+          MCAuto<MEDCoupling::MEDFileField1TS> ret(MEDCoupling::DynamicCast<MEDCoupling::MEDFileAnyTypeField1TS, MEDCoupling::MEDFileField1TS>(fieldFile));
+          if (!ret)
+            Process::exit("MED field: wrong type!");
+          MEDCoupling::DataArrayDouble *field_values = ret->getUndergroundDataArray();
           std::copy(field_values->begin(),field_values->end(),
                     le_champ().valeurs().addr());
 #endif
@@ -419,13 +429,6 @@ void Champ_Fonc_MED::lire(double t, int given_it)
   med_non_installe();
 #endif
 }
-
-#ifdef MED_
-med_geometry_type type_geo_trio_to_type_med(const Nom& type);
-#ifdef MEDCOUPLING_
-INTERP_KERNEL::NormalizedCellType type_geo_trio_to_type_medcoupling(const Nom& type, int& mesh_dimension);
-#endif
-#endif
 
 int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcle& localisation, ArrOfDouble& temps_sauv)
 {
