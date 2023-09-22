@@ -35,12 +35,12 @@ Entree& Convection_Diffusion_Turbulent::lire_modele(Entree& is, const Equation_b
 
 Entree& Convection_Diffusion_Turbulent::lire_op_diff_turbulent(Entree& is, const Equation_base& eqn, Operateur_Diff& terme_diffusif)
 {
-  Motcle accouverte = "{", accfermee = "}";
+  Motcle accfermee = "}";
   Nom type = "Op_Dift_";
 
   Motcle motbidon;
   is >> motbidon;
-  assert(motbidon == accouverte);
+  assert(motbidon == "{");
   is >> motbidon;
   if (motbidon == "negligeable")
     {

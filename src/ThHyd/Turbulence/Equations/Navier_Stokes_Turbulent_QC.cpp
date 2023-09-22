@@ -150,7 +150,7 @@ const Champ_base& Navier_Stokes_Turbulent_QC::get_champ(const Motcle& nom) const
     {
       return Navier_Stokes_Turbulent::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 
@@ -159,7 +159,7 @@ const Champ_base& Navier_Stokes_Turbulent_QC::get_champ(const Motcle& nom) const
     {
       return milieu().get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   throw Champs_compris_erreur();

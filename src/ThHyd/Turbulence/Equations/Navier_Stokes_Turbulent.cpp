@@ -275,7 +275,7 @@ const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
     {
       return Navier_Stokes_std::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   if (le_modele_turbulence.non_nul())
@@ -283,7 +283,7 @@ const Champ_base& Navier_Stokes_Turbulent::get_champ(const Motcle& nom) const
       {
         return le_modele_turbulence->get_champ(nom);
       }
-    catch (Champs_compris_erreur& err_)
+    catch (Champs_compris_erreur&)
       {
       }
   throw Champs_compris_erreur();

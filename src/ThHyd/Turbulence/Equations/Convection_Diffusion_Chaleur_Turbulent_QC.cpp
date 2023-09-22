@@ -130,7 +130,7 @@ const Champ_base& Convection_Diffusion_Chaleur_Turbulent_QC::get_champ(const Mot
     {
       return Convection_Diffusion_Chaleur_QC::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
   if (le_modele_turbulence.non_nul())
@@ -138,7 +138,7 @@ const Champ_base& Convection_Diffusion_Chaleur_Turbulent_QC::get_champ(const Mot
       {
         return le_modele_turbulence->get_champ(nom);
       }
-    catch (Champs_compris_erreur& err_)
+    catch (Champs_compris_erreur&)
       {
       }
   throw Champs_compris_erreur();

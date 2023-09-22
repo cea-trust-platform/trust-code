@@ -84,7 +84,7 @@ const Champ_base& Convection_Diffusion_Espece_Multi_Turbulent_QC::get_champ(cons
     {
       return Convection_Diffusion_Espece_Multi_QC::get_champ(nom);
     }
-  catch (Champs_compris_erreur& err_)
+  catch (Champs_compris_erreur&)
     {
     }
 
@@ -93,7 +93,7 @@ const Champ_base& Convection_Diffusion_Espece_Multi_Turbulent_QC::get_champ(cons
       {
         return le_modele_turbulence->get_champ(nom);
       }
-    catch (Champs_compris_erreur& err_)
+    catch (Champs_compris_erreur&)
       {
       }
   throw Champs_compris_erreur();
