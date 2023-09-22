@@ -16516,6 +16516,10 @@ function apply_python_patch
         fi
     fi
 
+    # Apply patch for python if built with mpicc instead of gcc/icc
+    sed -i 's/^case "$CC" in/case `basename "$CC"` in/' configure
+    sed -i 's/^\*icc\*)/icc)/' configure
+
     return 0
 }
 
