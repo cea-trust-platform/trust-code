@@ -177,10 +177,10 @@ int CoolProp_to_TRUST_Sat_generique::FD_derivative_p(SAT enum_prop, const SpanD 
 int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
 #ifdef HAS_COOLPROP
-  assert((int )sats.size() == 8);
+  assert((int )sats.size() == 7);
   const int sz = (int) P.size();
 
-  SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
+  SpanD dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
         dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
 
 #ifndef NDEBUG
@@ -191,7 +191,6 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
     for (int i = 0; i < sz; i++)
       {
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
-        Ts__[i] = fluide->T();
         Hls__[i] = fluide->hmass();
 
         fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
@@ -227,13 +226,12 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
       }
   else /* attention stride */
     {
-      VectorD Ts(sz), dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz), dPLvap;
-      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap);
+      VectorD dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz), dPLvap;
+      SpanD dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap);
 
       for (int i = 0; i < sz; i++)
         {
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 0);  // SI units
-          Ts_[i] = fluide->T();
           Hls_[i] = fluide->hmass();
 
           fluide->update(CoolProp::PQ_INPUTS,  P[i], 1);  // SI units
@@ -264,7 +262,6 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
           dPHvs_[i] = (plus_1_ - minus_1_) / ( 2 * EPS * P[i]);
 
           // fill values
-          Ts__[i * ncomp + ind] = Ts_[i];
           dPTs__[i * ncomp + ind] = dPTs_[i];
           Hvs__[i * ncomp + ind] = Hvs_[i];
           Hls__[i * ncomp + ind] = Hls_[i];
@@ -274,9 +271,6 @@ int CoolProp_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase
           dPLvap__[i * ncomp + ind] = dPHvs_[i] - dPHls_[i];
         }
     }
-
-  // XXX : ATTENTION : need to put back T in C
-  Tc_(Ts__);
 
   return 0; // FIXME : on suppose que tout OK
 #else

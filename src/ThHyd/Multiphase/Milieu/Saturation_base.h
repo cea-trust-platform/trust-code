@@ -55,7 +55,6 @@ public:
 
   // methods particuliers par application pour gagner en performance : utilise dans Pb_Multiphase (pour le moment !)
   virtual void compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD , int ncomp = 1, int ind = 0) const;
-  virtual void compute_all_flux_parietal_pb_multiphase(const SpanD P, MSatSpanD , int ncomp = 1, int ind = 0) const;
 
   // Methods that can be called if point-to-point calculation is required
   double Tsat(const double P) const { return double_to_span<&Saturation_base::Tsat_>(P); }

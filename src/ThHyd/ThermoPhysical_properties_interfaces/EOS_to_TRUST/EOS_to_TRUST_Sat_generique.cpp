@@ -140,12 +140,12 @@ int EOS_to_TRUST_Sat_generique::tppi_get_sigma_ph(const SpanD P, const SpanD H, 
 int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int id) const
 {
 #ifdef HAS_EOS
-  assert((int )sats.size() == 8);
+  assert((int )sats.size() == 7);
 
-  SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
+  SpanD dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
         dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP), Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
 
-  const int sz = (int) P.size(), nb_out = 6; /* NOTA BENE : 6 car LV_SAT et LV_SAT_DP on recalcule apres  */
+  const int sz = (int) P.size(), nb_out = 5; /* NOTA BENE : 5 car LV_SAT et LV_SAT_DP on recalcule apres  */
   int i_out = 0, err_;
   ArrOfInt tmp(sz);
   EOS_Error_Field ferr(tmp);
@@ -176,12 +176,10 @@ int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(cons
 #ifndef NDEBUG
       for (auto &itr : sats) assert(ncomp * (int )P.size() == (int )itr.second.size());
 #endif
-      VectorD Ts(sz), dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz), dPLvap;
-      SpanD Ts_(Ts), dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap);
+      VectorD dPTs(sz), Hvs(sz), Hls(sz), dPHvs(sz), dPHls(sz), Lvap(sz), dPLvap;
+      SpanD dPTs_(dPTs), Hvs_(Hvs), Hls_(Hls), dPHvs_(dPHvs), dPHls_(dPHls), Lvap_(Lvap), dPLvap_(dPLvap);
 
-      MSatSpanD sats_loc = { { SAT::T_SAT, Ts_ }, { SAT::T_SAT_DP, dPTs_ }, { SAT::HV_SAT, Hvs_ }, { SAT::HL_SAT, Hls_ },
-        { SAT::HV_SAT_DP, dPHvs_ }, { SAT::HL_SAT_DP, dPHls_ }
-      };
+      MSatSpanD sats_loc = { { SAT::T_SAT_DP, dPTs_ }, { SAT::HV_SAT, Hvs_ }, { SAT::HL_SAT, Hls_ }, { SAT::HV_SAT_DP, dPHvs_ }, { SAT::HL_SAT_DP, dPHls_ } };
 
       for (auto &itr : sats_loc)
         {
@@ -194,7 +192,6 @@ int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(cons
 
       for (int i = 0; i < sz; i++)
         {
-          Ts__[i * ncomp + id] = Ts_[i];
           dPTs__[i * ncomp + id] = dPTs_[i];
           Hvs__[i * ncomp + id] = Hvs_[i];
           Hls__[i * ncomp + id] = Hls_[i];
@@ -205,8 +202,6 @@ int EOS_to_TRUST_Sat_generique::tppi_get_all_flux_interfacial_pb_multiphase(cons
         }
     }
 
-  // XXX : ATTENTION : need to put back T in C
-  Tc_(Ts__);
   return err_;
 #else
   Cerr << "EOS_to_TRUST_Sat_generique::" <<  __func__ << " should not be called since TRUST is not compiled with the EOS library !!! " << finl;

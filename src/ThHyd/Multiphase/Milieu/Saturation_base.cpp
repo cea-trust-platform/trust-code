@@ -132,19 +132,16 @@ void Saturation_base::get_sigma(const SpanD T, const SpanD P, SpanD sig, int nco
 
 void Saturation_base::compute_all_flux_interfacial_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
 {
-  assert((int )sats.size() == 8);
+  assert((int )sats.size() == 7);
 
-  SpanD Ts__ = sats.at(SAT::T_SAT), dPTs__ = sats.at(SAT::T_SAT_DP),
-        Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
+  SpanD dPTs__ = sats.at(SAT::T_SAT_DP), Hvs__ = sats.at(SAT::HV_SAT), Hls__ = sats.at(SAT::HL_SAT),
         dPHvs__ = sats.at(SAT::HV_SAT_DP), dPHls__ = sats.at(SAT::HL_SAT_DP),
         Lvap__ = sats.at(SAT::LV_SAT), dPLvap__ = sats.at(SAT::LV_SAT_DP);
 
-  assert(ncomp * (int )P.size() == (int )Ts__.size() && ncomp * (int )P.size() == (int )dPTs__.size());
-  assert(ncomp * (int )P.size() == (int )Hvs__.size() && ncomp * (int )P.size() == (int )Hls__.size());
+  assert(ncomp * (int )P.size() == (int )dPTs__.size() && ncomp * (int )P.size() == (int )Hvs__.size() && ncomp * (int )P.size() == (int )Hls__.size());
   assert(ncomp * (int )P.size() == (int )dPHvs__.size() && ncomp * (int )P.size() == (int )dPHls__.size());
   assert(ncomp * (int )P.size() == (int )Lvap__.size() && ncomp * (int )P.size() == (int )dPLvap__.size());
 
-  Tsat(P, Ts__, ncomp, ind);
   dP_Tsat(P, dPTs__, ncomp, ind);
   Hvs(P, Hvs__, ncomp, ind);
   Hls(P, Hls__, ncomp, ind);
@@ -152,18 +149,4 @@ void Saturation_base::compute_all_flux_interfacial_pb_multiphase(const SpanD P, 
   dP_Hls(P, dPHls__, ncomp, ind);
   Lvap(P, Lvap__, ncomp, ind);
   dP_Lvap(P, dPLvap__, ncomp, ind);
-}
-
-void Saturation_base::compute_all_flux_parietal_pb_multiphase(const SpanD P, MSatSpanD sats, int ncomp, int ind) const
-{
-  assert((int )sats.size() == 3);
-
-  SpanD Ts__ = sats.at(SAT::T_SAT), Lvap__ = sats.at(SAT::LV_SAT), Sigma__ = sats.at(SAT::SIGMA);
-
-  assert(ncomp * (int )P.size() == (int )Ts__.size() && ncomp * (int )P.size() == (int )Lvap__.size());
-  assert(ncomp * (int )P.size() == (int )Sigma__.size());
-
-  Tsat(P, Ts__, ncomp, ind);
-  Lvap(P, Lvap__, ncomp, ind);
-  sigma_(Ts__ ,P, Sigma__, ncomp, ind);
 }

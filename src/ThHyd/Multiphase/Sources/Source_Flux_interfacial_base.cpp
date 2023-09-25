@@ -230,9 +230,18 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
           assert(press.line_size() == 1);
 
-          MSatSpanD sats_all = { };
+          // recuperer Tsat et sigma ...
+          const DoubleTab& sig = z_sat.get_sigma_tab(), &tsat = z_sat.get_Tsat_tab();
 
-          sats_all.insert( { SAT::T_SAT, Ts_tab.get_span() });
+          // fill in the good case
+          for (int ii = 0; ii < nbelem; ii++)
+            {
+              Ts_tab(ii, ind_trav) = tsat(ii);
+              Sigma_tab(ii, ind_trav) = sig(ii);
+            }
+
+          // remplir les autres
+          MSatSpanD sats_all = { };
           sats_all.insert( { SAT::T_SAT_DP, dPTs_tab.get_span() });
           sats_all.insert( { SAT::HV_SAT, Hvs_tab.get_span() });
           sats_all.insert( { SAT::HL_SAT, Hls_tab.get_span() });
@@ -240,12 +249,8 @@ void Source_Flux_interfacial_base::ajouter_blocs(matrices_t matrices, DoubleTab&
           sats_all.insert( { SAT::HL_SAT_DP, dPHls_tab.get_span() });
           sats_all.insert( { SAT::LV_SAT, Lvap_tab.get_span() });
           sats_all.insert( { SAT::LV_SAT_DP, dP_Lvap_tab.get_span() });
-          // sats_all.insert( { SAT::SIGMA, Sigma_tab.get_span() }); // XXX : COCO : ARRETE D'APPELER SIGMA COMME CA CAR JE T'AVAIS DIT POURQUOI
 
           z_sat.compute_all_flux_interfacial_pb_multiphase(press.get_span() /* elem reel */, sats_all, nb_max_sat, ind_trav);
-
-          // XXX : COCO TU VEUX SIGMA TU FAIS COMME CA
-          z_sat.sigma(Ts_tab.get_span(), press.get_span(), Sigma_tab.get_span(), nb_max_sat, ind_trav);
         }
 
   for (e = 0; e < domaine.nb_elem(); e++)

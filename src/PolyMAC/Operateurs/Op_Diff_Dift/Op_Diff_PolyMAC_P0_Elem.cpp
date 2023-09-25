@@ -393,13 +393,17 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
                     // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
                     assert(press.line_size() == 1);
 
-                    MSatSpanD sats_all = { };
+                    // recuperer Tsat et sigma ...
+                    const DoubleTab& sig = z_sat.get_sigma_tab(), &tsat = z_sat.get_Tsat_tab();
 
-                    sats_all.insert( { SAT::T_SAT, Ts_tab[i].get_span_tot() });
-                    sats_all.insert( { SAT::LV_SAT, Lvap_tab[i].get_span_tot() });
-                    sats_all.insert( { SAT::SIGMA, Sigma_tab[i].get_span_tot() });
+                    // fill in the good case
+                    for (int ii = 0; ii < nbelem_tot; ii++)
+                      {
+                        Ts_tab[i](ii, ind_trav) = tsat(ii);
+                        Sigma_tab[i](ii, ind_trav) = sig(ii);
+                      }
 
-                    z_sat.compute_all_flux_parietal_pb_multiphase(press.get_span_tot() /* elem reel */, sats_all, nb_max_sat, ind_trav);
+                    z_sat.Lvap(press.get_span_tot() /* elem reel */, Lvap_tab[i].get_span_tot(), nb_max_sat, ind_trav);
                   }
           }
       }
