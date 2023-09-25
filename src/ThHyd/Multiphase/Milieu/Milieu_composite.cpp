@@ -227,6 +227,23 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &Cp, &rho_m, &h_m};
   for (auto && f: fields) champs_compris_.ajoute_champ((*f).valeur());
 
+  // on discretise le champ sigma si besoin ...
+  if ((int) tab_interface.size() > 0)
+    {
+      Cerr << "Surface tension discretization." << finl;
+      for (int k = 0; k < N; k++)
+        for (int l = k + 1; l < N; l++)
+          if (has_interface(k, l))
+            {
+              Interface_base& inter = get_interface(k, l);
+              inter.assoscier_pb(pb);
+              Champ_Don& ch_sigma = inter.get_sigma_champ();
+              Nom sig_nom = Nom("surface_tension_") + Nom(k) + Nom(l);
+              dis.discretiser_champ("temperature", domaine_dis, sig_nom, "N/m", 1, temps, ch_sigma);
+              champs_compris_.ajoute_champ(ch_sigma.valeur());
+            }
+    }
+
   // Finalement, on discretise la porosite + diametre_hydro
   Milieu_base::discretiser_porosite(pb,dis);
   Milieu_base::discretiser_diametre_hydro(pb,dis);
@@ -244,6 +261,21 @@ void Milieu_composite::mettre_a_jour(double temps)
   for (auto && f: fields) (*f).mettre_a_jour(temps);
 
   mettre_a_jour_tabs();
+
+  // MAJ sigma
+  if ((int) tab_interface.size() > 0)
+    {
+      const int N = (int)fluides.size();
+      const int nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+
+      for (int k = 0; k < N; k++)
+        for (int l = k + 1; l < N; l++)
+          if (has_interface(k, l))
+            {
+              const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+              get_interface(k, l).mettre_a_jour(temps, nb_max_sat, ind_trav);
+            }
+    }
 
   Milieu_base::mettre_a_jour_porosite(temps);
 }

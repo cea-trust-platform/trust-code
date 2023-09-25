@@ -16,8 +16,12 @@
 #ifndef Interface_base_included
 #define Interface_base_included
 
+#include <TRUST_Ref.h>
+#include <Champ_Don.h>
 #include <span.hpp>
 #include <Param.h>
+
+class Probleme_base;
 
 using VectorD = std::vector<double>;
 using ArrayD = std::array<double,1>;
@@ -27,15 +31,25 @@ class Interface_base : public Objet_U
 {
   Declare_base(Interface_base);
 public:
-
   virtual void set_param(Param& param);
+  virtual void mettre_a_jour(double , int , int );
+  void assoscier_pb(const Probleme_base& pb) { pb_ = pb; }
+
+  Champ_Don& get_sigma_champ() { return ch_sigma_; }
+  const Champ_Don& get_sigma_champ() const { return ch_sigma_; }
+
+  DoubleTab& get_sigma_tab() { return ch_sigma_->valeurs(); }
+  const DoubleTab& get_sigma_tab() const { return ch_sigma_->valeurs(); }
 
   double sigma(const double T, const double P) const; // can be called if point-to-point calculation is required
-  void   sigma(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
+  void sigma(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
 
 protected:
-  virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
+  REF(Probleme_base) pb_;
+  Champ_Don ch_sigma_;
   double sigma__ = -1.;
+
+  virtual void sigma_(const SpanD T, const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const = 0;
 };
 
 #endif /* Interface_base_included */

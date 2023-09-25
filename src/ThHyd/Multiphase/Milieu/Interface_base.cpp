@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -13,14 +13,20 @@
 *
 *****************************************************************************/
 
+#include <Discretisation_base.h>
 #include <Interface_base.h>
+#include <QDM_Multiphase.h>
+#include <Equation_base.h>
+#include <Pb_Multiphase.h>
+#include <TRUSTTrav.h>
+#include <Domaine_VF.h>
 
 Implemente_base(Interface_base, "Interface_base", Objet_U);
 // XD saturation_base objet_u saturation_base -1 Basic class for a liquid-gas interface (used in pb_multiphase)
 
 Sortie& Interface_base::printOn(Sortie& os) const { return os; }
 
-void Interface_base::set_param(Param& param) { param.ajouter("tension_superficielle", &sigma__); }
+void Interface_base::set_param(Param& param) { param.ajouter("tension_superficielle|surface_tension", &sigma__); }
 
 Entree& Interface_base::readOn(Entree& is)
 {
@@ -28,6 +34,33 @@ Entree& Interface_base::readOn(Entree& is)
   set_param(param);
   param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Interface_base::mettre_a_jour(double temps, int ncomp, int ind)
+{
+  DoubleTab& sigma_tab = ch_sigma_->valeurs();
+  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
+  const DoubleTab& press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->valeurs(),
+                   &temp = pbm.equation_energie().inconnue()->valeurs();
+
+  // XXX Elie Saikali : Cas sans saturation !
+  // pour le moment on simplifie le calcul et on prend la moyenne de T
+  // FIXME : faut faire un truc pour calculer T a l'interface comme le code dans Source_Flux_interfacial_base::ajouter_blocs
+  // T_interf = ( Tl / hl + Tg / hg ) / (1 / hl + 1 / hg )
+
+  const int N = temp.line_size();
+  DoubleTrav Ti(sigma_tab);
+  Ti = 0.;
+
+  for (int i = 0; i < Ti.dimension_tot(0); i++)
+    {
+      for (int j = 0; j < N; j++) Ti(i, 0) += temp(i, j);
+      Ti(i,0) /= N;
+    }
+
+  // call sigma
+  sigma(Ti.get_span(), press.get_span(), sigma_tab.get_span(), 1, 0);
+  sigma_tab.echange_espace_virtuel();
 }
 
 void Interface_base::sigma(const SpanD T, const SpanD P, SpanD res, int ncomp, int ind) const
