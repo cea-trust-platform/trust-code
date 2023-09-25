@@ -39,7 +39,7 @@ Entree& Saturation_base::readOn(Entree& is)
   return is;
 }
 
-void Saturation_base::mettre_a_jour(double temps, int ncomp, int ind)
+void Saturation_base::mettre_a_jour(double temps)
 {
   DoubleTab& sigma_tab = ch_sigma_->valeurs(), &Tsat_tab = ch_Tsat_->valeurs();
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());

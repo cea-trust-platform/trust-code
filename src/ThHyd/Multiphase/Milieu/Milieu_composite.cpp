@@ -227,20 +227,23 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
   std::vector<Champ_Don* > fields = {&mu, &nu, &lambda, &alpha, &Cp, &rho_m, &h_m};
   for (auto && f: fields) champs_compris_.ajoute_champ((*f).valeur());
 
-  // on discretise le champ sigma si besoin ...
+  // on discretise les champs sigma / Tsat si besoin ...
   if ((int) tab_interface.size() > 0)
     {
-      Cerr << "Surface tension discretization." << finl;
+      Cerr << "Milieu_composite::" << __func__ << " ==> Surface tension discretization ..." << finl;
+      if (has_saturation_) Cerr << "Milieu_composite::" << __func__ << " ==> Saturation temperature discretization ..." << finl;
+
       for (int k = 0; k < N; k++)
         for (int l = k + 1; l < N; l++)
           {
-            Nom phase_phase = Nom(k) + Nom(l);
+            int phase = fluides[k].le_nom().debute_par("gaz");
+            Nom espece = phase ? fluides[k].le_nom().getSuffix("gaz_") : fluides[k].le_nom().getSuffix("liquide_");
             if (has_interface(k, l)) // OK si interf/saturation
               {
                 Interface_base& inter = get_interface(k, l);
                 inter.assoscier_pb(pb);
                 Champ_Don& ch_sigma = inter.get_sigma_champ();
-                Nom sig_nom = Nom("surface_tension_") + phase_phase;
+                Nom sig_nom = Nom("surface_tension_") + espece;
                 dis.discretiser_champ("temperature", domaine_dis, sig_nom, "N/m", 1, temps, ch_sigma);
                 champs_compris_.ajoute_champ(ch_sigma.valeur());
               }
@@ -249,7 +252,7 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
               {
                 Saturation_base& sat = get_saturation(k, l);
                 Champ_Don& ch_Tsat = sat.get_Tsat_champ();
-                Nom Tsat_nom = Nom("Tsat_") + phase_phase;
+                Nom Tsat_nom = Nom("Tsat_") + espece;
                 dis.discretiser_champ("temperature", domaine_dis, Tsat_nom, "C", 1, temps, ch_Tsat);
                 champs_compris_.ajoute_champ(ch_Tsat.valeur());
               }
@@ -278,18 +281,10 @@ void Milieu_composite::mettre_a_jour(double temps)
   if ((int) tab_interface.size() > 0)
     {
       const int N = (int) fluides.size();
-      const int nb_max_sat = N * (N - 1) / 2; // oui !! suite arithmetique !!
-
       for (int k = 0; k < N; k++)
         for (int l = k + 1; l < N; l++)
-          {
-            const int ind_trav = (k * (N - 1) - (k - 1) * (k) / 2) + (l - k - 1); // Et oui ! matrice triang sup !
-            if (has_interface(k, l)) // OK si interf/saturation
-              get_interface(k, l).mettre_a_jour(temps, nb_max_sat, ind_trav);
-
-            if (has_saturation(k, l)) // OK si saturation seulement
-              get_saturation(k, l).mettre_a_jour(temps, nb_max_sat, ind_trav);
-          }
+          if (has_interface(k, l)) // OK si interf/saturation
+            get_interface(k, l).mettre_a_jour(temps);
     }
 
   Milieu_base::mettre_a_jour_porosite(temps);

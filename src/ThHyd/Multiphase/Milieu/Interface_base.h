@@ -32,7 +32,7 @@ class Interface_base : public Objet_U
   Declare_base(Interface_base);
 public:
   virtual void set_param(Param& param);
-  virtual void mettre_a_jour(double , int , int );
+  virtual void mettre_a_jour(double );
   void assoscier_pb(const Probleme_base& pb) { pb_ = pb; }
 
   Champ_Don& get_sigma_champ() { return ch_sigma_; }

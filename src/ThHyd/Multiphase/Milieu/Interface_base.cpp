@@ -18,8 +18,8 @@
 #include <QDM_Multiphase.h>
 #include <Equation_base.h>
 #include <Pb_Multiphase.h>
-#include <TRUSTTrav.h>
 #include <Domaine_VF.h>
+#include <TRUSTTrav.h>
 
 Implemente_base(Interface_base, "Interface_base", Objet_U);
 // XD saturation_base objet_u saturation_base -1 Basic class for a liquid-gas interface (used in pb_multiphase)
@@ -36,7 +36,7 @@ Entree& Interface_base::readOn(Entree& is)
   return is;
 }
 
-void Interface_base::mettre_a_jour(double temps, int ncomp, int ind)
+void Interface_base::mettre_a_jour(double temps)
 {
   DoubleTab& sigma_tab = ch_sigma_->valeurs();
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());

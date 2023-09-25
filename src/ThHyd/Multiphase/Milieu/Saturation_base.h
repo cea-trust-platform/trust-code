@@ -32,7 +32,7 @@ public:
   void set_param(Param& param) override;
   inline double get_Pref() const { return P_ref_; }
 
-  void mettre_a_jour(double , int , int ) override;
+  void mettre_a_jour(double ) override;
 
   Champ_Don& get_Tsat_champ() { return ch_Tsat_; }
   const Champ_Don& get_Tsat_champ() const { return ch_Tsat_; }
