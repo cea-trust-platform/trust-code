@@ -66,7 +66,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
 
   // Et pour les methodes span de la classe Saturation
   const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
-  DoubleTrav Sigma_tab(ne_tot,nb_max_sat);
+  DoubleTrav Ts_tab(ne_tot,nb_max_sat), Sigma_tab(ne_tot,nb_max_sat);
 
   // remplir les tabs ...
   for (k = 0; k < N; k++)
@@ -76,15 +76,9 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
           {
             Saturation_base& z_sat = milc.get_saturation(k, l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            // XXX XXX XXX
-            // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
-            // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
-            assert(press.line_size() == 1);
-            assert(temp.line_size() == N);
-            VectorD sigma_(ne_tot);
-            SpanD sigma__(sigma_);
-            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N*(N-1)/2, ind_trav);
-            for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
+            z_sat.Tsat(press.get_span(), Ts_tab.get_span(), nb_max_sat, ind_trav);
+
+            z_sat.sigma(Ts_tab.get_span(), press.get_span(), Sigma_tab.get_span(), nb_max_sat, ind_trav);
           }
         else if (milc.has_interface(k, l))
           {
