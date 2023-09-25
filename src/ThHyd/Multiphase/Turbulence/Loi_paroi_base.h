@@ -37,7 +37,7 @@ public:
   void mettre_a_jour(double temps) override;
   virtual void calc_y_plus(const DoubleTab& vit, const DoubleTab& nu_visc)=0 ;
 
-  double get_y(int f) const {return valeurs_loi_paroi_.at("y")(f,0);};
+  double get_y_plus(int f) const {return valeurs_loi_paroi_.at("y_plus")(f,0);};
   double get_utau(int f) const { return valeurs_loi_paroi_.at("u_tau")(f,0);};
   DoubleTab& get_tab(std::string str) {return valeurs_loi_paroi_[str];};
 
