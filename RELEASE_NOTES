@@ -1,8 +1,8 @@
-XX/XX/23 (TRUST) GPU          : Faster setup and less memory needed with option by default changed (HMIS->PMIS selector algorithm) for Nvidia (classical) algebric multigrid: amgx cg { precond c-amg { } ... }
-XX/XX/23 (TRUST) GPU          : More options for linear solver on AMD: rocALUTION cg { precond c-amg|sa-amg { [smoother jacobi|gs] [coarse_grid_solver LU|inversion|jacobi] [omega double] [coarse_grids_host int] [impr] } rtol|atol double [ impr ] }
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+25/09/23 (TRUST) GPU          : Faster setup and less memory needed with option by default changed (HMIS->PMIS selector algorithm) for Nvidia (classical) algebric multigrid: amgx cg { precond c-amg { } ... }
+25/09/23 (TRUST) GPU          : More options for linear solver on AMD: rocALUTION cg { precond c-amg|sa-amg { [smoother jacobi|gs] [coarse_grid_solver LU|inversion|jacobi] [omega double] [coarse_grids_host int] [impr] } rtol|atol double [ impr ] }
 28/08/23 (TRUST) GPU          : More support in VEF for temperature equation (diffusion operator, boussinesq term) and periodic flow (source term + boundary condition in operators)
 25/08/23 (TRUST) Fix          : Updated HDF5 library from 1.10.3 to 1.14.2 to fix a weird crash on a 32768 cores calculation during raffiner_isotrope_parallele operation
 25/08/23 (TRUST) GPU          : 64 bits integer build supported for Nvidia/AMD with: ./configure -cuda/-rocm -openmp -with-64-bit-indices
