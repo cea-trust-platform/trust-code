@@ -74,9 +74,9 @@ Stat_Counter_Id initialisation_calcul_counter_;
 Stat_Counter_Id IO_EcrireFicPartageMPIIO_counter_;
 Stat_Counter_Id IO_EcrireFicPartageBin_counter_;
 
-Stat_Counter_Id m1;
-Stat_Counter_Id m2;
-Stat_Counter_Id m3;
+Stat_Counter_Id m1_counter_;
+Stat_Counter_Id m2_counter_;
+Stat_Counter_Id m3_counter_;
 
 Stat_Counter_Id probleme_fluide_;
 Stat_Counter_Id probleme_combustible_;
@@ -150,9 +150,9 @@ void declare_stat_counters()
   divers_counter_ = statistiques().new_counter(1, "Divers", 0);
 
   // Marqueurs pouvant etre places n'importe ou:
-  m1 = statistiques().new_counter(1, "m1", 0);
-  m2 = statistiques().new_counter(1, "m2", 0);
-  m3 = statistiques().new_counter(1, "m3", 0);
+  m1_counter_ = statistiques().new_counter(1, "m1", 0);
+  m2_counter_ = statistiques().new_counter(1, "m2", 0);
+  m3_counter_ = statistiques().new_counter(1, "m3", 0);
 
   // Problemes
   probleme_fluide_ = statistiques().new_counter(3 /* Level */, "pb_fluide", 0 /* Group */);
@@ -358,9 +358,9 @@ void print_statistics_analyse(const char * message, int mode_append)
       statistiques().get_stats(echange_vect_counter_, echange_espace_virtuel);
       statistiques().get_stats_familly("MPI_sendrecv", comm_sendrecv);
       statistiques().get_stats_familly("MPI_allreduce", comm_allreduce);
-      statistiques().get_stats(m1, marqueur1);
-      statistiques().get_stats(m2, marqueur2);
-      statistiques().get_stats(m3, marqueur3);
+      statistiques().get_stats(m1_counter_, marqueur1);
+      statistiques().get_stats(m2_counter_, marqueur2);
+      statistiques().get_stats(m3_counter_, marqueur3);
       statistiques().get_stats(divers_counter_, divers);
       statistiques().get_stats(probleme_fluide_, pb_fluide);
       statistiques().get_stats(probleme_combustible_, pb_combustible);

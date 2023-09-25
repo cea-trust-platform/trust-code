@@ -63,9 +63,9 @@ extern Stat_Counter_Id timestep_counter_;
 extern Stat_Counter_Id interprete_scatter_counter_;
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
-extern Stat_Counter_Id m1;
-extern Stat_Counter_Id m2;
-extern Stat_Counter_Id m3;
+extern Stat_Counter_Id m1_counter_;
+extern Stat_Counter_Id m2_counter_;
+extern Stat_Counter_Id m3_counter_;
 
 extern Stat_Counter_Id probleme_fluide_;
 extern Stat_Counter_Id probleme_combustible_;
