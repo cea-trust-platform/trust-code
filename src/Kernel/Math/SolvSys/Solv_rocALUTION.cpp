@@ -581,7 +581,7 @@ int Solv_rocALUTION::resoudre_systeme(const Matrice_Base& a, const DoubleVect& b
     {
       // PL: (int) necessaire pour int64
       Journal() << "pm.GetLocalNrow()=" << (int)pm.GetLocalNrow() << " <> b.size_array()=" << b.size_array() << finl;
-      Journal() << "mat.GetN()=" << mat.GetN() << " mat.GetLocalN()=" << (int)mat.GetLocalN() << " mat.GetGhostN()=" << (int)mat.GetGhostN() << finl;
+      Journal() << "mat.GetN()=" << (int)mat.GetN() << " mat.GetLocalN()=" << (int)mat.GetLocalN() << " mat.GetGhostN()=" << (int)mat.GetGhostN() << finl;
     }
 
   // Build rhs and initial solution:

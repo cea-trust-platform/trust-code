@@ -18,10 +18,16 @@
 
 #include <assert.h>
 #include <stdint.h>
+
+#ifndef __APPLE__
 // Desactive -Wunused-variable pour nvc++:
 #pragma diag_suppress 177
 #include <Vc/Vc>
 #pragma diag_warning 177
+#else
+#include <Vc/Vc>
+#endif
+
 #include <cstdlib>
 #include <cmath>
 

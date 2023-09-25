@@ -25,8 +25,12 @@ class Nom;
 
 // Le pragma est pour desactiver le -Wunused-variable avec nvc++:
 // Macro to declare A and B synonyms:
+#ifndef __APPLE__
 #define Add_synonym(A,B) _Pragma("diag_suppress 177") \
-const Synonyme_info name2(name2(synonym_,A),__LINE__)(B,A::info_obj.name())
+  const Synonyme_info name2(name2(synonym_,A),__LINE__)(B,A::info_obj.name())
+#else
+#define Add_synonym(A,B) const Synonyme_info name2(name2(synonym_,A),__LINE__)(B,A::info_obj.name())
+#endif
 
 /*! @brief modelise une information de synonyme pour les Objet_U
  *
