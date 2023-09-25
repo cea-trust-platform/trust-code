@@ -190,6 +190,8 @@ Read pb
             masse_volumique_melange elem
             enthalpie_melange elem
             gradient_p elem
+            surface_tension_sodium elem
+            tsat_sodium elem
         }
     }
 }
