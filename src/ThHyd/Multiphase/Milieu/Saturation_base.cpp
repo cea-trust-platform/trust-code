@@ -14,6 +14,9 @@
 *****************************************************************************/
 
 #include <Saturation_base.h>
+#include <QDM_Multiphase.h>
+#include <Equation_base.h>
+#include <Pb_Multiphase.h>
 #include <TPPI_tools.h>
 
 Implemente_base(Saturation_base, "Saturation_base", Interface_base);
@@ -34,6 +37,21 @@ Entree& Saturation_base::readOn(Entree& is)
   set_param(param);
   param.lire_avec_accolades_depuis(is);
   return is;
+}
+
+void Saturation_base::mettre_a_jour(double temps, int ncomp, int ind)
+{
+  DoubleTab& sigma_tab = ch_sigma_->valeurs(), &Tsat_tab = ch_Tsat_->valeurs();
+  const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, pb_.valeur());
+  const DoubleTab& press = ref_cast(QDM_Multiphase, pbm.equation_qdm()).pression()->valeurs();
+
+  // on suppose pour le moment que le champ de pression a 1 comp.
+  assert(press.line_size() == 1);
+  Tsat(press.get_span_tot(), Tsat_tab.get_span_tot(), 1, 0);
+
+  // call sigma
+  sigma(Tsat_tab.get_span(), press.get_span(), sigma_tab.get_span(), 1, 0);
+  sigma_tab.echange_espace_virtuel();
 }
 
 void Saturation_base::Tsat(const SpanD P, SpanD res, int ncomp, int ind) const

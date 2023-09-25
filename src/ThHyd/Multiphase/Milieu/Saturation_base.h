@@ -32,6 +32,14 @@ public:
   void set_param(Param& param) override;
   inline double get_Pref() const { return P_ref_; }
 
+  void mettre_a_jour(double , int , int ) override;
+
+  Champ_Don& get_Tsat_champ() { return ch_Tsat_; }
+  const Champ_Don& get_Tsat_champ() const { return ch_Tsat_; }
+
+  DoubleTab& get_Tsat_tab() { return ch_Tsat_->valeurs(); }
+  const DoubleTab& get_Tsat_tab() const { return ch_Tsat_->valeurs(); }
+
   void Tsat(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
   void dP_Tsat(const SpanD P, SpanD res, int ncomp = 1, int ind = 0) const;
   void Psat(const SpanD T, SpanD res, int ncomp = 1, int ind = 0) const;
@@ -63,6 +71,7 @@ public:
 
 protected:
   double P_ref_ = -1, T_ref_ = -1;
+  Champ_Don ch_Tsat_;
 
 private:
   typedef void(Saturation_base::*function_span_generic)(const SpanD , SpanD , int , int ) const;

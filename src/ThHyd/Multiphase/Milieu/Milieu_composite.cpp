@@ -233,15 +233,27 @@ void Milieu_composite::discretiser(const Probleme_base& pb, const  Discretisatio
       Cerr << "Surface tension discretization." << finl;
       for (int k = 0; k < N; k++)
         for (int l = k + 1; l < N; l++)
-          if (has_interface(k, l))
-            {
-              Interface_base& inter = get_interface(k, l);
-              inter.assoscier_pb(pb);
-              Champ_Don& ch_sigma = inter.get_sigma_champ();
-              Nom sig_nom = Nom("surface_tension_") + Nom(k) + Nom(l);
-              dis.discretiser_champ("temperature", domaine_dis, sig_nom, "N/m", 1, temps, ch_sigma);
-              champs_compris_.ajoute_champ(ch_sigma.valeur());
-            }
+          {
+            Nom phase_phase = Nom(k) + Nom(l);
+            if (has_interface(k, l)) // OK si interf/saturation
+              {
+                Interface_base& inter = get_interface(k, l);
+                inter.assoscier_pb(pb);
+                Champ_Don& ch_sigma = inter.get_sigma_champ();
+                Nom sig_nom = Nom("surface_tension_") + phase_phase;
+                dis.discretiser_champ("temperature", domaine_dis, sig_nom, "N/m", 1, temps, ch_sigma);
+                champs_compris_.ajoute_champ(ch_sigma.valeur());
+              }
+
+            if (has_saturation(k, l)) // OK si saturation seulement
+              {
+                Saturation_base& sat = get_saturation(k, l);
+                Champ_Don& ch_Tsat = sat.get_Tsat_champ();
+                Nom Tsat_nom = Nom("Tsat_") + phase_phase;
+                dis.discretiser_champ("temperature", domaine_dis, Tsat_nom, "C", 1, temps, ch_Tsat);
+                champs_compris_.ajoute_champ(ch_Tsat.valeur());
+              }
+          }
     }
 
   // Finalement, on discretise la porosite + diametre_hydro
@@ -262,19 +274,22 @@ void Milieu_composite::mettre_a_jour(double temps)
 
   mettre_a_jour_tabs();
 
-  // MAJ sigma
+  // MAJ sigma & Tsat
   if ((int) tab_interface.size() > 0)
     {
-      const int N = (int)fluides.size();
-      const int nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+      const int N = (int) fluides.size();
+      const int nb_max_sat = N * (N - 1) / 2; // oui !! suite arithmetique !!
 
       for (int k = 0; k < N; k++)
         for (int l = k + 1; l < N; l++)
-          if (has_interface(k, l))
-            {
-              const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+          {
+            const int ind_trav = (k * (N - 1) - (k - 1) * (k) / 2) + (l - k - 1); // Et oui ! matrice triang sup !
+            if (has_interface(k, l)) // OK si interf/saturation
               get_interface(k, l).mettre_a_jour(temps, nb_max_sat, ind_trav);
-            }
+
+            if (has_saturation(k, l)) // OK si saturation seulement
+              get_saturation(k, l).mettre_a_jour(temps, nb_max_sat, ind_trav);
+          }
     }
 
   Milieu_base::mettre_a_jour_porosite(temps);
