@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,6 +52,7 @@ public:
     DoubleTab d_bulles;//d_bulles[n]   : diametre de bulles de la phase n
     DoubleTab nv;     // nv(k, l) : norme de ||v_k - v_l||
     int e;                // indice d'element
+    double k_WIT;     // energie cinetique turbulente induite par les bulles (composante WIT)
   };
   /* valeurs de sortie */
   struct output_t
