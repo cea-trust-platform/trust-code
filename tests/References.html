@@ -274,7 +274,9 @@
 <TR><TD><SMALL><A HREF="#OpDiffP1B_mixte_vitesse_explicite_3D">OpDiffP1B_mixte_vitesse_explicite_3D</A></TD><TD><SMALL># Hydraulique 3D VEFPreP1B #</TD></TR>
 <TR><TD><SMALL><A HREF="#OpDiffP1B_mixte_vitesse_implicite_3D">OpDiffP1B_mixte_vitesse_implicite_3D</A></TD><TD><SMALL># Hydraulique 3D VEFPreP1B #</TD></TR>
 <TR><TD><SMALL><A HREF="#OpenMP">OpenMP</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
+<TR><TD><SMALL><A HREF="#OpenMP_CanalPerio">OpenMP_CanalPerio</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
 <TR><TD><SMALL><A HREF="#OpenMP_Iterateur">OpenMP_Iterateur</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
+<TR><TD><SMALL><A HREF="#OpenMP_QC">OpenMP_QC</A></TD><TD><SMALL># PARALLEL OK #</TD></TR>
 <TR><TD><SMALL><A HREF="#Orlansky">Orlansky</A></TD><TD><SMALL># Hydraulique 2D laminaire schema Quick #</TD></TR>
 <TR><TD><SMALL><A HREF="#P0P1Pa_perio">P0P1Pa_perio</A></TD><TD><SMALL># Test de decoupage 3D #</TD></TR>
 <TR><TD><SMALL><A HREF="#P1NC_P1B">P1NC_P1B</A></TD><TD><SMALL># Hydraulique 3D VEF P1NC/P1B test cl Neumann #</TD></TR>
@@ -429,6 +431,7 @@
 <TR><TD><SMALL><A HREF="#ThHyd_3D_VEFPreP1B">ThHyd_3D_VEFPreP1B</A></TD><TD><SMALL># Thermohydraulique 3D VEFPreP1B #</TD></TR>
 <TR><TD><SMALL><A HREF="#ThHyd_Axi_3D">ThHyd_Axi_3D</A></TD><TD><SMALL># Thermo-hydraulique 3D Axi avec frontieres ouvertes #</TD></TR>
 <TR><TD><SMALL><A HREF="#ThHyd_Axi_RZ_un_teta">ThHyd_Axi_RZ_un_teta</A></TD><TD><SMALL># Thermo-hydraulique 2D Axi R,Z avec frontieres ouvertes #</TD></TR>
+<TR><TD><SMALL><A HREF="#ThHyd_Coupl_3D_VEF">ThHyd_Coupl_3D_VEF</A></TD><TD><SMALL># Thermohydraulique 3D couplage solide-fluide #</TD></TR>
 <TR><TD><SMALL><A HREF="#ThHyd_Coupl_Laminaire">ThHyd_Coupl_Laminaire</A></TD><TD><SMALL># Thermohydraulique 3D couplage solide-fluide GCFR- concept plaque avec troncon de sortie Taille maille paroi n°4 (0.4 mm) #</TD></TR>
 <TR><TD><SMALL><A HREF="#ThHyd_CrankNicholsonGmres">ThHyd_CrankNicholsonGmres</A></TD><TD><SMALL># Thermohydraulique 2D VEF Boussinesq #</TD></TR>
 <TR><TD><SMALL><A HREF="#ThHyd_CrankNicholsonIteratif">ThHyd_CrankNicholsonIteratif</A></TD><TD><SMALL># Thermohydraulique 2D VEF Boussinesq #</TD></TR>
@@ -1401,9 +1404,16 @@
 <HR><CENTER><B><A NAME=OpenMP>OpenMP</A></B></CENTER>
 <CENTER># PARALLEL OK #</CENTER>
 <CENTER><a href=../tests/Reference/OpenMP/OpenMP.data>Edit</a> OpenMP.data </CENTER>
+<HR><CENTER><B><A NAME=OpenMP_CanalPerio>OpenMP_CanalPerio</A></B></CENTER>
+<CENTER># PARALLEL OK #</CENTER>
+<CENTER><a href=../tests/Reference/OpenMP_CanalPerio/OpenMP_CanalPerio.data>Edit</a> OpenMP_CanalPerio.data </CENTER>
 <HR><CENTER><B><A NAME=OpenMP_Iterateur>OpenMP_Iterateur</A></B></CENTER>
 <CENTER># PARALLEL OK #</CENTER>
 <CENTER><a href=../tests/Reference/OpenMP_Iterateur/OpenMP_Iterateur.data>Edit</a> OpenMP_Iterateur.data </CENTER>
+<HR><CENTER><B><A NAME=OpenMP_QC>OpenMP_QC</A></B></CENTER>
+<CENTER># PARALLEL OK #</CENTER>
+<CENTER><a href=../tests/Reference/OpenMP_QC/OpenMP_QC.data>Edit</a> OpenMP_QC.data </CENTER>
+<CENTER><a href=../tests/Reference/OpenMP_QC/maillage.geom>Edit</a> maillage.geom </CENTER>
 <HR><CENTER><B><A NAME=Orlansky>Orlansky</A></B></CENTER>
 <CENTER># Hydraulique 2D laminaire schema Quick #</CENTER>
 <CENTER><a href=../tests/Reference/Orlansky/Orlansky.data>Edit</a> Orlansky.data </CENTER>
@@ -1903,6 +1913,9 @@
 <HR><CENTER><B><A NAME=ThHyd_Axi_RZ_un_teta>ThHyd_Axi_RZ_un_teta</A></B></CENTER>
 <CENTER># Thermo-hydraulique 2D Axi R,Z avec frontieres ouvertes #</CENTER>
 <CENTER><a href=../tests/Reference/ThHyd_Axi_RZ_un_teta/ThHyd_Axi_RZ_un_teta.data>Edit</a> ThHyd_Axi_RZ_un_teta.data </CENTER>
+<HR><CENTER><B><A NAME=ThHyd_Coupl_3D_VEF>ThHyd_Coupl_3D_VEF</A></B></CENTER>
+<CENTER># Thermohydraulique 3D couplage solide-fluide #</CENTER>
+<CENTER><a href=../tests/Reference/ThHyd_Coupl_3D_VEF/ThHyd_Coupl_3D_VEF.data>Edit</a> ThHyd_Coupl_3D_VEF.data </CENTER>
 <HR><CENTER><B><A NAME=ThHyd_Coupl_Laminaire>ThHyd_Coupl_Laminaire</A></B></CENTER>
 <CENTER># Thermohydraulique 3D couplage solide-fluide GCFR- concept plaque avec troncon de sortie Taille maille paroi n°4 (0.4 mm) #</CENTER>
 <CENTER><a href=../tests/Reference/ThHyd_Coupl_Laminaire/ThHyd_Coupl_Laminaire.data>Edit</a> ThHyd_Coupl_Laminaire.data </CENTER>

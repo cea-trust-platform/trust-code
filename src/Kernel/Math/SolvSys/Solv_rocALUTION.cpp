@@ -340,9 +340,10 @@ IterativeLinearSolver<GlobalMatrix<T>, GlobalVector<T>, T>* Solv_rocALUTION::cre
       return nullptr;
     }
 }
-#endif
 
 static double dtol_ = 1.e-12; // default tolerance
+#endif
+
 // Lecture et creation du solveur
 void Solv_rocALUTION::create_solver(Entree& entree)
 {
