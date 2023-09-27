@@ -69,6 +69,7 @@ b4891fa07ca4cad1c53a0d0e539482da  Miniconda/local_channel/linux-64/libdeflate-1.
 7c724a17739aceaf9d1633ff06962137  Miniconda/local_channel/linux-64/libedit-3.1.20221030-h5eee18b_0.conda
 5065620db4393fb549f30114a33897d1  Miniconda/local_channel/linux-64/libev-4.33-h7f8727e_1.conda
 8de03cd4b6ee0ddeb0571a5199db5637  Miniconda/local_channel/linux-64/libevent-2.1.12-h8f2d780_0.conda
+d645c6d2ac96843a2bfaccd2d62b3ac3  Miniconda/local_channel/linux-64/libffi-3.4.2-h7f98852_5.tar.bz2
 990e0e4d5e6349de76ca9608f71134ac  Miniconda/local_channel/linux-64/libgd-2.3.3-h6a678d5_2.conda
 7429b67ab7b1d7cb99b9d1f3ddaec6e3  Miniconda/local_channel/linux-64/libgfortran-ng-11.2.0-h00389a5_1.conda
 36a01a8c30e0cadf0d3e842c50b73f3b  Miniconda/local_channel/linux-64/libgfortran5-11.2.0-h1234567_1.conda
@@ -102,6 +103,7 @@ a04e160ec0a1117f7638590e534f16c7  Miniconda/local_channel/linux-64/mpc-1.1.0-h10
 ee98084c6e459d0126cc2e160ae2b14f  Miniconda/local_channel/linux-64/nbclient-0.5.13-py37h06a4308_0.conda
 478c55a69753d2be992c3cffebcea027  Miniconda/local_channel/linux-64/nbconvert-6.4.4-py37h06a4308_0.conda
 e1a605ccdb462125d3fa79f7ed860a86  Miniconda/local_channel/linux-64/nbformat-5.7.0-py37h06a4308_0.conda
+4acfc691e64342b9dae57cf2adc63238  Miniconda/local_channel/linux-64/ncurses-6.3-h27087fc_1.tar.bz2
 6740c7cdeab99faa7ee9360703173194  Miniconda/local_channel/linux-64/nest-asyncio-1.5.6-py37h06a4308_0.conda
 740391f874e19e5f291bf7a025a86329  Miniconda/local_channel/linux-64/nomkl-3.0-0.conda
 134886f92ce31fc13199e0e491b01d04  Miniconda/local_channel/linux-64/notebook-6.5.2-py37h06a4308_0.conda
