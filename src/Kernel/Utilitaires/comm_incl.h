@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,11 +16,7 @@
 #ifndef communications_incl_H
 #define communications_incl_H
 
-
-
 /*! @brief Methodes de communications
- *
- *
  *
  */
 
@@ -29,9 +25,15 @@
 // Portability for OpenMPI 1.10 which headers do not honour -Wshadow ... OpenMPI sucks.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
+
 #if __GNUC__ > 5
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+
+#ifdef __APPLE__
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 #include <mpi.h>
 #pragma GCC diagnostic pop
 // Extensions d'OpenMPI dont Cuda-Aware:
