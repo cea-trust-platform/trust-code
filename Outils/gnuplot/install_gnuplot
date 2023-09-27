@@ -1,4 +1,4 @@
-#!/bin/bash
+#/!/bin/bash
 gnuplot=$1
 Build=$TRUST_ROOT/exec/gnuplot/lib
 [ ! -d ${Build} ] && echo Creating ${Build} directory && mkdir -p ${Build}
@@ -9,19 +9,23 @@ for file in `ls $TRUST_ROOT/externalpackages/gnuplot/*`
 do
   ln -sf $file .
 done
-let i=0
+
 for package in $gnuplot
 do
    echo "***************************************"
    echo "Trying to install ${package%.tar.gz}..."
    echo "***************************************"
-   let i=$i+1
    gunzip -c $package > ${package%.gz}
    tar xf ${package%.gz}
    rm -f ${package%.gz}
    cd ${package%.tar.gz}
-   libgd=$TRUST_ROOT/exec/python/lib
+   libgd=$TRUST_ROOT/exec/python
+   # Hack configure (libgd from conda was found but not correctly linked to gnuplot):
+   sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib?g" ./configure || exit -1
+
+   # configure:
    ./configure --prefix=$TRUST_ROOT/exec/gnuplot --with-texdir=$TRUST_ROOT/exec/gnuplot --with-qt=no --disable-wxwidgets --without-lua --without-tutorial --with-readline=builtin --with-gd=$libgd 2>&1 || exit -1
+
    # 17-05-2019: if you update gnuplot to a new version using cmake, use cmake from conda as is the case for gmsh
    $TRUST_MAKE || exit -1
    make install || echo error on installation, but we hope that is ok
@@ -39,6 +43,8 @@ do
 done
 
 # Pour avoir la meme palette que gnuplot 4:
-echo "set colors classic # Meme palette que gnuplot 4" >> $TRUST_ROOT/exec/gnuplot/share/gnuplot/*/gnuplotrc
+gnuplotrc=`ls $TRUST_ROOT/exec/gnuplot/share/gnuplot/*/gnuplotrc 2>/dev/null`
+[ "$gnuplotrc" = "" ] && echo "Erreur, gnuplotrc not found!" && exit -1
+echo "set colors classic # Meme palette que gnuplot 4" >> $gnuplotrc
 
 exit 0
