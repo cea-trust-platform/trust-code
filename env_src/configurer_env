@@ -1585,8 +1585,6 @@ if [ "$TRUST_WITHOUT_CONDA" != "1" ]; then
    done
 fi
 
-# On desactive en zone (pb de build):
-[ "${HOST#sagittarius}" != $HOST ] && InstallPipPkgs=0
 if [ "$InstallPipPkgs" = 1 ]
 then
    for pkg in $pkgs

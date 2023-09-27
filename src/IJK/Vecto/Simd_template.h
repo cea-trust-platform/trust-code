@@ -19,7 +19,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#ifndef __APPLE__
+#ifdef __NVCOMPILER
 // Desactive -Wunused-variable pour nvc++:
 #pragma diag_suppress 177
 #include <Vc/Vc>
