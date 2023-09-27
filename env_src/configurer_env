@@ -1079,9 +1079,7 @@ m="# Path to optimized BLAS";e="TRUST_BLAS_LAPACK=\"$TRUST_BLAS_LAPACK\" && expo
 ########
 if [ "$TRUST_USE_CUDA" = 1 ]
 then
-   TRUST_USE_AMGX=1
-   e="TRUST_USE_AMGX=\"$TRUST_USE_AMGX\" && export TRUST_USE_AMGX" && m="# Use AmgX ?" && ecrit $m"|"$e"|"$env && eval $e
-   [ "$TRUST_USE_AMGX" = 1 ] && [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option to build AmgXWrapper/AmgX." && exit -1
+   [ "$TRUST_DISABLE_PETSC" = 1 ] && echo "Error, you need PETSc with -cuda option to build AmgXWrapper/AmgX." && exit -1
    #########################
    # To active CUDA support:
    #########################

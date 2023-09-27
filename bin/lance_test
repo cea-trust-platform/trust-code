@@ -879,7 +879,7 @@ then
            fi
         fi
         # Discard AmgX test case
-        if [ "$TRUST_USE_AMGX" = 0 ]
+        if [ "$TRUST_USE_CUDA" = 0 ]
         then
            if [ "`grep -I -e amgx $REP/* 2>/dev/null | grep -v hierarchie.dump`" != "" ]
            then
