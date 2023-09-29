@@ -20,7 +20,7 @@
 #include <VDF_discretisation.h>
 #include <Pb_Multiphase.h>
 
-Implemente_instanciable_sans_constructeur(Op_Dift_Multiphase_VDF_Elem,"Op_Diff_VDFTURBULENTE_P0_VDF",Op_Dift_VDF_Elem_base);
+Implemente_instanciable_sans_constructeur(Op_Dift_Multiphase_VDF_Elem,"Op_Diff_VDFTURBULENTE_P0_VDF|Op_Diff_VDFTURBULENT_P0_VDF",Op_Dift_VDF_Elem_base);
 
 Sortie& Op_Dift_Multiphase_VDF_Elem::printOn(Sortie& s ) const { return s << que_suis_je() ; }
 Entree& Op_Dift_Multiphase_VDF_Elem::readOn(Entree& is)
