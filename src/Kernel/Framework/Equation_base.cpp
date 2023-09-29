@@ -1874,9 +1874,10 @@ void Equation_base::Gradient_conjugue_diff_impl(DoubleTrav& secmem, DoubleTab& s
           Cerr << "Residue : " << residual << " Threshold : " << seuil << finl;
           Cerr << "======================================================================================" << finl;
           Cerr << "The problem is post processed to help you to see where the non convergence is located." << finl;
+          schema_temps().set_stationnaire_atteint()=0;
           probleme().postraiter(1);
           probleme().mettre_a_jour(schema_temps().temps_courant());
-          probleme().sauver();
+          probleme().finir();
           Cerr << "The problem " << probleme().le_nom() << " has been saved too." << finl;
           exit();
         }
