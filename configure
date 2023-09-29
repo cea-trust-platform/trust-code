@@ -201,7 +201,6 @@ fi
 ###################
 
 export TRUST_ROOT=`pwd`
-[ "${#TRUST_ROOT}" -ge "90" ] && echo "Error: Installation path $TRUST_ROOT is too long, you should install TRUST in a path with less than 90 characters." && exit -1
 first=1
 [ "$TRUST_ROOT" = "$TRUST_ROOT_SA" ] && [ "$TRUST_ENV" != "" ]  && first=0
 [ -f configure.log ] && first=0
@@ -655,6 +654,8 @@ do
    fi
    shift
 done
+
+[ "${#TRUST_ROOT}" -ge "90" ] && echo "Error: Installation path $TRUST_ROOT is too long, you should install TRUST in a path with less than 90 characters." && [ $TRUST_WITHOUT_CONDA == 0 ] && exit -1
 
 
 ######
