@@ -882,7 +882,9 @@ then
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
 elif [ "$TRUST_WITHOUT_CONDA" = "1" ]; # Do not install conda, use system python
 then
-    ze_python=`which python`
+    # Error medcoupling library build on Fedora30 => force python3
+    #ze_python=`which python`
+    ze_python=`which python3`
     echo "WARNING: Installing without conda - The following (automatically detected) Python will be used and is sym-linked in exec/python/bin:"
     echo "         $ze_python"
     mkdir -p $TRUST_ROOT/exec/python/bin
