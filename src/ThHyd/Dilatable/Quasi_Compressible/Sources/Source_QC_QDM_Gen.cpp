@@ -54,7 +54,7 @@ DoubleTab& Source_QC_QDM_Gen::ajouter(DoubleTab& resu) const
   resu+=trav;
   return resu;
 }
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Mise a jour en temps du terme source.
  *
@@ -78,7 +78,7 @@ void Source_QC_QDM_Gen::completer()
   source_incompressible->completer();
 }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Mise a jour en temps du terme source.
  *

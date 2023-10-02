@@ -46,6 +46,7 @@ public:
   virtual DoubleTab& ajouter(DoubleTab&) const;
   virtual DoubleTab& calculer(DoubleTab&) const;
   virtual void mettre_a_jour(double temps);
+  virtual void resetTime(double t);
   virtual void completer();
   virtual void dimensionner(Matrice_Morse&) const;
   virtual void dimensionner_bloc_vitesse(Matrice_Morse&) const;

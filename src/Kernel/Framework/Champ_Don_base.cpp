@@ -58,6 +58,15 @@ void Champ_Don_base::mettre_a_jour(double t)
   valeurs_.echange_espace_virtuel();
 }
 
+/*!
+ * See comments in Probleme_base_interface_proto::resetTime_impl()
+ * Here we update.
+ */
+void Champ_Don_base::resetTime(double time)
+{
+  mettre_a_jour(time);
+}
+
 /*! @brief NE FAIT RIEN.
  *
  * A surcharger dans les classes derivees. Provoque l'initialisation du champ si necessaire

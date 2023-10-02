@@ -35,7 +35,7 @@ Operateur_base::Operateur_base()
   col_width_ = -1;
 }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Imprime l'operateur sur un flot de sortie.
  *
@@ -48,7 +48,7 @@ Sortie& Operateur_base::printOn(Sortie& os) const
 }
 
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Lit un operateur sur un flot d'entree.
  *
@@ -61,7 +61,7 @@ Entree& Operateur_base::readOn(Entree& is)
 }
 
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Mise a jour de l'operateur
  *
@@ -76,6 +76,10 @@ void Operateur_base::abortTimeStep()
 {
 }
 
+void Operateur_base::resetTime(double)
+{
+  // hmmm ... hopefully nothing to do here??
+}
 
 /*! @brief Associe l'operateur au domaine_dis, le domaine_Cl_dis, et a l'inconnue de son equation.
  *
@@ -132,7 +136,7 @@ void Operateur_base::calculer_dt_local(DoubleTab& dt) const
        << "::calculer_dt_local(DoubleVect&)" << finl;
   exit();
 }
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Imprime l'operateur sur un flot de sortie.
  *
@@ -145,7 +149,7 @@ int Operateur_base::impr(Sortie& os) const
 }
 
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  * @param (Matrice_Morse&) une matrice au format Morse
  * @throws methode a surcharger
@@ -196,7 +200,7 @@ void Operateur_base::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tab
   Process::exit(que_suis_je() + " : ajouter_blocs() not coded!");
 }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  * @param (Matrice_Morse&) une matrice au format Morse
  * @param (DoubleTab&) un tableau de valeur (double)
@@ -233,7 +237,7 @@ DoubleTab&  Operateur_base::calculer(const DoubleTab& inco, DoubleTab& secmem) c
   return ajouter(inco, secmem);
 }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  * @param (DoubleTab&) un tableau de valeur (double)
  * @param (Matrice_Morse&) une matrice au format Morse
@@ -257,7 +261,7 @@ void Operateur_base::contribuer_bloc_vitesse(const DoubleTab& inco, Matrice_Mors
     }
 }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  * @param (DoubleTab&) un tableau de valeur (double)
  * @throws methode a surcharger

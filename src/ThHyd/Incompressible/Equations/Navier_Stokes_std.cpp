@@ -1122,6 +1122,14 @@ void Navier_Stokes_std::abortTimeStep()
   Equation_base::abortTimeStep();
 }
 
+/* @brief Override. Reset pression too !
+ */
+void Navier_Stokes_std::resetTime(double time)
+{
+  pression()->resetTime(time);
+  Equation_base::resetTime(time);
+}
+
 bool Navier_Stokes_std::initTimeStep(double dt)
 {
   P_n=pression()->valeurs();

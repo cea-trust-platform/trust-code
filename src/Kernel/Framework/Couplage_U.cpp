@@ -92,6 +92,11 @@ void Couplage_U::abortTimeStep()
     probleme(i).abortTimeStep();
 }
 
+void Couplage_U::resetTime(double t)
+{
+  for(int i=0; i<nb_problemes(); i++)
+    probleme(i).resetTime(t);
+}
 
 bool Couplage_U::iterateTimeStep(bool& converged)
 {

@@ -351,6 +351,7 @@ void Postraitement::set_param(Param& param)
   param.ajouter_non_std("Sondes_Int",(this));
   param.ajouter_non_std("Tableaux_Int",(this));
   param.ajouter_non_std("Statistiques_en_serie",(this));// XD_ADD_P stats_serie_posts Statistics between two points not fixed : on period of integration.
+  param.ajouter("suffix_for_reset", &suffix_for_reset_);
 }
 
 int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
@@ -609,10 +610,29 @@ int Postraitement::lire_motcle_non_standard(const Motcle& mot, Entree& s)
       return 1;
     }
 
-
-
   return -1;
 }
+
+/**
+ * When reseting time (see ProblemTrio::resetTime() documentation) we change the name
+ * of the postprocessing files with a new suffix (default "_AFTER_RESET") to avoid
+ * mixing up outputs.
+ */
+void Postraitement::resetTime(double time)
+{
+  const bool reprise = false, is_first_post = true;
+
+  const Domaine& dom=le_domaine.valeur();
+  const Nom& nom_du_domaine = dom.le_nom();
+  Nom name=nom_fich().prefix(format);
+  name.prefix(".");
+  Nom new_name = name + suffix_for_reset_;
+
+  format_post->modify_file_basename(new_name, reprise, time);
+  format_post->ecrire_entete(time, reprise, is_first_post);
+  format_post->preparer_post(nom_du_domaine, is_first_post, reprise, time);
+}
+
 
 /*! @brief Constructeur par defaut.
  *
@@ -635,6 +655,7 @@ Postraitement::Postraitement():
   nom_fich_(nom_du_cas()),
   format("lml"),
   option_para("SIMPLE"),
+  suffix_for_reset_("_AFTER_RESET"),
   temps_(-1.), dernier_temps(-1.)
 {
 }

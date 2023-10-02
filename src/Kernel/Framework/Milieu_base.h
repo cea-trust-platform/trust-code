@@ -84,6 +84,7 @@ public:
   virtual void mettre_a_jour(double temps);
   virtual bool initTimeStep(double dt);
   virtual void abortTimeStep();
+  virtual void resetTime(double time);
   virtual int initialiser(const double temps);
   virtual void associer_gravite(const Champ_Don_base&);
   virtual const Champ& masse_volumique() const;

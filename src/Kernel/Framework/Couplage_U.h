@@ -53,6 +53,7 @@ public:
   bool isStationary() const override;
   void setStationary(bool) override;
   void abortTimeStep() override;
+  void resetTime(double t) override;
 
   // interface IterativeUnsteadyProblem
 

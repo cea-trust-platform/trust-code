@@ -47,6 +47,7 @@ public:
   int reprendre(Entree& is) override;
   virtual void completer() = 0;
   virtual void completer_sondes() {}
+  virtual void resetTime(double t) = 0;
 
   enum Format { ASCII, BINAIRE };
   enum Type_Champ { CHAMP=0, STATISTIQUE=1 };

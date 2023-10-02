@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -271,6 +271,74 @@ void main_pilote_icoco_2(Probleme_U& pb_to_solve)
   pb.terminate();
 }
 
+/**
+ * This one is used to test resetTime()
+ */
+void main_pilote_icoco_3(Probleme_U& pb_to_solve, int nb_pas_dt_reset)
+{
+  ProblemTrio pb;
+
+  Nom pb_name=pb_to_solve.le_nom();
+  pb.initialize_pb(pb_to_solve);
+
+  bool stop=false; // Does the Problem want to stop ?
+  bool ok=true; // Is the time interval successfully solved ?
+
+  // Compute the first time step length
+  double dt=pb.computeTimeStep(stop);
+
+  int cnt = 1;
+  bool reset = false;
+  // Loop on the time steps
+  while(!stop)
+    {
+      ok=false; // Is the time interval successfully solved ?
+
+      // Loop on the time interval tries
+      while (!ok && !stop)
+        {
+          // Prepare the next time step
+          ok=pb.initTimeStep(dt);
+          if (!ok)
+            break;
+
+          // Solve the next time step
+          ok=pb.solveTimeStep();
+
+          if (!ok)   // The resolution failed, try with a new time interval.
+            {
+              pb.abortTimeStep();
+              dt=pb.computeTimeStep(stop);
+            }
+          else // The resolution was successful, validate and go to the
+            // next time step.
+            pb.validateTimeStep();
+        }
+
+      if (!ok) // Impossible to solve the next time step, the Problem
+        break; // has given up
+
+      if (cnt >= nb_pas_dt_reset && !reset)
+        {
+          Cerr << "ABOUT TO RESET TIME !!\n";
+          pb.resetTime(0);
+          Cerr << "RESET TIME DONE!!\n";
+          reset = true;
+        }
+
+      // Compute the next time step length
+      dt=pb.computeTimeStep(stop);
+
+      // Stop the resolution if the Problem is stationnary
+      if (pb.isStationary())
+        stop=true;
+
+      cnt ++;
+    }
+
+  pb.terminate();
+}
+
 
 
 /*! @brief Fonction principale de l'interprete: resoudre un probleme
@@ -347,12 +415,15 @@ Entree& Pilote_ICoCo::interpreter(Entree& is)
 {
   Param param(que_suis_je());
   Nom nom1;
+  int nb_pas_dt_reset;
   param.ajouter("pb_name",&nom1,Param::REQUIRED);
   int methode=-1;
   param.ajouter("main",&methode,Param::REQUIRED);
   param.dictionnaire("abort_time_step",0);
   param.dictionnaire("Pilote_ICoCo_1",1);
   param.dictionnaire("Pilote_ICoCo_2",2);
+  param.dictionnaire("Pilote_ICoCo_3",3);
+  param.ajouter("nb_pas_dt_reset",&nb_pas_dt_reset);
   param.lire_avec_accolades_depuis(is);
   Probleme_U& pb_to_solve=ref_cast(Probleme_U,objet(nom1));
   switch (methode)
@@ -366,9 +437,12 @@ Entree& Pilote_ICoCo::interpreter(Entree& is)
     case 2:
       main_pilote_icoco_2(pb_to_solve);
       break;
+    case 3:
+      main_pilote_icoco_3(pb_to_solve, nb_pas_dt_reset);
+      break;
     default:
       {
-        Cerr<<que_suis_je()<<" main numero "<<methode<<" not implemnted"<<finl;
+        Cerr<<que_suis_je()<<" main number "<<methode<<" not implemented"<<finl;
         exit();
       }
     }

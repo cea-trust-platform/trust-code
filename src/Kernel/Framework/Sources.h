@@ -36,6 +36,7 @@ public:
   DoubleTab& calculer(DoubleTab& ) const;
   void contribuer_jacobienne(Matrice_Bloc& matrice, int n) const;
   void mettre_a_jour(double temps);
+  void resetTime(double temps);
   void completer();
   void dimensionner(Matrice_Morse&) const;
   void contribuer_a_avec(const DoubleTab&, Matrice_Morse&) const;

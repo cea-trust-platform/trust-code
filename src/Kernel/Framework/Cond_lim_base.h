@@ -43,6 +43,7 @@ public:
   virtual void completer();
   virtual int initialiser(double temps);
   virtual void mettre_a_jour(double temps);
+  virtual void resetTime(double time);
   virtual void calculer_coeffs_echange(double temps);
   virtual void verifie_ch_init_nb_comp() const;
   virtual inline Frontiere_dis_base& frontiere_dis();

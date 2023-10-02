@@ -40,6 +40,7 @@ public:
   int fixer_nb_valeurs_nodales(int nb_noeuds) override;
   int reprendre(Entree&) override;
   int sauvegarder(Sortie&) const override;
+  void resetTime(double time) override;
 
   DoubleTab& valeurs() override;
   const DoubleTab& valeurs() const override;

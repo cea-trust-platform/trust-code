@@ -94,6 +94,15 @@ void Cond_lim_base::mettre_a_jour(double temps)
   le_champ_front.mettre_a_jour(temps);
 }
 
+/* @brief Reset current time for the boundary condition.
+ *
+ * A BC is regarded as an input, so here this is equivalent to a 'mettre_a_jour'
+ */
+void Cond_lim_base::resetTime(double time)
+{
+  mettre_a_jour(time);
+}
+
 /*! @brief Cette methode indique si cette condition aux limites doit etre mise a jour dans des sous pas de temps d'un schema en temps tel que RK
  *
  *   Par defaut elle renvoie 0 pour indiquer qu'aucune mise a jour

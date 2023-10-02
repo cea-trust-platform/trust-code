@@ -145,6 +145,20 @@ void Probleme_U::abortTimeStep()
 {
 }
 
+/*! @brief Reset the current time of the Problem to a given value.
+ *
+ * Particularly useful for the initialization of complex transients: the starting point of the transient
+ * of interest is computed first, the time is reset to 0, and then the actual transient of interest starts with proper
+ * initial conditions, and global time 0.
+ *
+ * @param[in] time the new current time.
+ * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
+ * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation)
+ */
+void Probleme_U::resetTime(double time)
+{
+}
+
 /*! @brief In the case solveTimeStep uses an iterative process, this method executes a single iteration.
  *
  *  It is thus possible to modify the given fields between iterations.

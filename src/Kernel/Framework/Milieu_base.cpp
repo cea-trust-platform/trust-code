@@ -663,14 +663,27 @@ void Milieu_base::update_rho_cp(double temps)
     }
 }
 
+bool Milieu_base::initTimeStep(double dt)
+{
+  return true;
+}
+
 void Milieu_base::abortTimeStep()
 {
   if (rho.non_nul()) rho->abortTimeStep();
 }
 
-bool Milieu_base::initTimeStep(double dt)
+void Milieu_base::resetTime(double time)
 {
-  return true;
+  if (rho.non_nul())
+    {
+      if (sub_type(Champ_Don_base, rho.valeur()))
+        rho->mettre_a_jour(time);
+      else if (sub_type(Champ_Inc_base, rho.valeur()))
+        rho->resetTime(time);
+      else
+        throw;
+    }
 }
 
 void Milieu_base::creer_alpha()

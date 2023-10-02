@@ -660,6 +660,15 @@ double Champ_Inc_base::changer_temps(const double t)
   return temps_ = t;
 }
 
+/*!
+ * See comments in Probleme_base_interface_proto::resetTime_impl().
+ * Here we force a new time value.
+ */
+void Champ_Inc_base::resetTime(double time)
+{
+  changer_temps(time);
+}
+
 /*! @brief Associe le champ a l'equation dont il represente une inconnue.
  *
  * Simple appel a MorEqn::associer_eqn(const Equation_base&)

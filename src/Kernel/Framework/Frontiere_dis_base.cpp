@@ -32,7 +32,7 @@ Sortie& Frontiere_dis_base::printOn(Sortie& os ) const
 }
 
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Lit une frontiere discretisee a partir d'un flot d'entree
  *

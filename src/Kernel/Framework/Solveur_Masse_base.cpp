@@ -28,9 +28,9 @@ Solveur_Masse_base::Solveur_Masse_base() : has_coefficient_temporel_(0), penalis
 Sortie& Solveur_Masse_base::printOn(Sortie& os) const { return os; }
 Entree& Solveur_Masse_base::readOn(Entree& is) { return is; }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
- *     Mise a jour en temps du solveur de masse.
+ * Mise a jour en temps du solveur de masse.
  *
  * @param (double) le pas de temps de mise a jour
  */
@@ -38,15 +38,25 @@ void Solveur_Masse_base::mettre_a_jour(double )
 {
 }
 
-/*! @brief NE FAIT RIEN Eventuellement a surcharger dans les classes derivees
+/*! @brief DOES NOTHING - to override in derived classes.
  *
- *     si la matrice de masse necessite un assemblage.
- *     Assemble le solveur de masse (en general la matrice de masse)
+ * Reset current time.
+ * @param (double) new current time.
+ */
+void Solveur_Masse_base::resetTime(double )
+{
+}
+
+/*! @brief DOES NOTHING
  *
+ * Eventuellement a surcharger dans les classes derivees
+ * si la matrice de masse necessite un assemblage.
+ * Assemble le solveur de masse (en general la matrice de masse)
  */
 void Solveur_Masse_base::assembler()
 {
 }
+
 /*! @brief permet de choisir le nom du coefficient temporelle que l'on veut utiliser pour appliquer
  *
  *  verifie que le champ exsite bien
@@ -73,11 +83,9 @@ void Solveur_Masse_base::set_name_of_coefficient_temporel(const Nom& name)
     }
 }
 
-/*! @brief renvoie appliquer_impl(x/coeffient_temporelle) si on a un coefficient temporelle
+/*! @brief renvoie appliquer_impl(x/coeffient_temporelle) si on a un coefficient temporel sinon renvoie appliquer_impl(x)
  *
- *  sinon renvoie appliquer_impl(x)
  *  Return M-1.x
- *
  */
 DoubleTab& Solveur_Masse_base::appliquer(DoubleTab& x) const
 {

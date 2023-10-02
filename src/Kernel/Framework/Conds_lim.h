@@ -36,6 +36,7 @@ public:
 
   inline int initialiser(double temps);
   inline void mettre_a_jour(double temps);
+  inline void resetTime(double temps);
   inline void calculer_coeffs_echange(double temps);
   void completer(const Domaine_dis&);
   inline int compatible_avec_eqn(const Equation_base&) const;
@@ -60,6 +61,11 @@ inline int Conds_lim::initialiser(double temps)
 inline void Conds_lim::mettre_a_jour(double temps)
 {
   for (auto& itr : *this) itr->mettre_a_jour(temps);
+}
+
+inline void Conds_lim::resetTime(double temps)
+{
+  for (auto& itr : *this) itr->resetTime(temps);
 }
 
 /*! @brief Calcul des coefficients d'echange pour toutes les conditions aux limites du vecteur.

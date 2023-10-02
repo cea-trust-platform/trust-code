@@ -347,6 +347,7 @@ void Champ_base::mettre_a_jour(double)
 void Champ_base::abortTimeStep()
 {
 }
+
 /*! @brief Affecter un champ dans un autre.
  *
  * Rebvoie le resultat de l'affectation.

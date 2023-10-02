@@ -50,6 +50,7 @@ public:
   int           nb_cond_lim() const;
   virtual void     mettre_a_jour(double temps);
   virtual void     mettre_a_jour_ss_pas_dt(double temps);
+  void             resetTime(double time);
   void             completer();
   int           contient_Cl(const Nom&);
   Domaine_dis&        domaine_dis();

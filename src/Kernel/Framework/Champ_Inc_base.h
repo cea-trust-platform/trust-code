@@ -62,6 +62,7 @@ public:
   int reprendre(Entree&) override;
   int sauvegarder(Sortie&) const override;
   Champ_base& affecter_compo(const Champ_base&, int compo) override;
+  void resetTime(double time) override;
 
   // Methodes viruelles pures implementees ici
   Champ_base& affecter_(const Champ_base&) override;

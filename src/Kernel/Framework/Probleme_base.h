@@ -164,6 +164,7 @@ public:
   void validateTimeStep() override { validateTimeStep_impl(*this); }
   void setStationary(bool flag) override { schema_temps().set_stationnaires_atteints(flag); }
   void abortTimeStep() override { abortTimeStep_impl(*this); }
+  void resetTime(double time) override { resetTime_impl(*this, time); }
 
   // interface IterativeUnsteadyProblem
   bool iterateTimeStep(bool& converged) override { return iterateTimeStep_impl(*this, converged); }

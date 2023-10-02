@@ -110,6 +110,13 @@ void Sources::mettre_a_jour(double temps)
   for (auto& itr : *this) itr.mettre_a_jour(temps);
 }
 
+/*! @brief Rest all sources to a given time
+ *  See ProblemeTrio::resetTime()
+ */
+void Sources::resetTime(double temps)
+{
+  for (auto& itr : *this) itr.resetTime(temps);
+}
 
 /*! @brief Appelle Source::completer() sur toutes les sources de la liste.
  *

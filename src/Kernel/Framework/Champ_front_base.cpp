@@ -27,7 +27,7 @@ Champ_front_base::Champ_front_base() { temps_defaut = -1.; }
  */
 Sortie& Champ_front_base::printOn(Sortie& s ) const { return s << que_suis_je() << " " << le_nom(); }
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  * @param (Entree& s) un flot d'entree
  * @return (Entree&) le flot d'entree

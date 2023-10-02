@@ -246,6 +246,12 @@ void Domaine_Cl_dis_base::mettre_a_jour(double temps)
   les_conditions_limites_.mettre_a_jour(temps);
 }
 
+/* @brief See ICoCo::ProblemTrio::resetTime()
+ */
+void Domaine_Cl_dis_base::resetTime(double temps)
+{
+  les_conditions_limites_.resetTime(temps);
+}
 
 /*! @brief Effectue une mise a jour pour des sous pas de temps d'un schema en temps (par exemple dans RungeKutta)
  *

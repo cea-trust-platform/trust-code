@@ -218,6 +218,14 @@ void Schema_Temps_base::abortTimeStep()
   dt_ = prob.calculer_pas_de_temps();
 }
 
+void Schema_Temps_base::resetTime(double time)
+{
+  //
+  // It happens here: -)
+  //
+  temps_courant_ = time;
+}
+
 void Schema_Temps_base::associer_pb(const Probleme_base& un_probleme)
 {
   //assert(!mon_probleme.non_nul());

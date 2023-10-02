@@ -59,6 +59,7 @@ public :
   virtual bool isStationary() const;
   virtual void setStationary(bool);
   virtual void abortTimeStep();
+  virtual void resetTime(double time);
   virtual bool iterateTimeStep(bool& converged);
   virtual void getInputFieldsNames(Noms& noms) const;
   virtual void getInputFieldTemplate(const Nom& name, ICoCo::TrioField& afield) const;

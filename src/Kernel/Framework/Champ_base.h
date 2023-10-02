@@ -70,10 +70,11 @@ public:
 
   virtual void mettre_a_jour(double);
   virtual void abortTimeStep();
-  virtual Champ_base& affecter_(const Champ_base&) =0;
+  virtual void resetTime(double time) = 0;
+  virtual Champ_base& affecter_(const Champ_base&) = 0;
   Champ_base& affecter(const Champ_base&);
   void affecter_erreur();
-  virtual Champ_base& affecter_compo(const Champ_base&, int compo) =0;
+  virtual Champ_base& affecter_compo(const Champ_base&, int compo) = 0;
   virtual int imprime(Sortie&, int) const =0;
   // methode supprime pour eviter confusion avec  trace(const Frontiere_dis_base&, DoubleTab&,,double)
   //DoubleTab& trace(const Frontiere_dis_base&, DoubleTab&,int distant) const;
@@ -101,7 +102,7 @@ public:
   virtual DoubleTab valeur_aux_bords() const;
 
   int calculer_valeurs_som_post(DoubleTab& valeurs, int nbsom, Nom& nom_post, const Domaine& dom) const;
-  int calculer_valeurs_som_compo_post(DoubleTab& valeurs, int ncomp, int nbsom, Nom& nom_post, const Domaine& dom, int appliquer_cl = 0) const;
+  int calculer_valeurs_som_compo_post(DoubleTab& valeurs, int ncomp, int nbsom, Nom& nom_post, const Domaine& dom, int appliquer_cl=0) const;
   int calculer_valeurs_elem_post(DoubleTab& valeurs, int nbelem, Nom& nom_post, const Domaine& dom) const;
   int calculer_valeurs_elem_compo_post(DoubleTab& valeurs, int ncomp, int nbelem, Nom& nom_post, const Domaine& dom) const;
   void corriger_unite_nom_compo();

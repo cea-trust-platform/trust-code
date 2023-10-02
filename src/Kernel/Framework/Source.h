@@ -36,6 +36,8 @@ public :
   DoubleTab& ajouter(DoubleTab& ) const;
   DoubleTab& calculer(DoubleTab& ) const;
   inline void mettre_a_jour(double temps);
+  inline void resetTime(double temps);
+
   void completer();
   int impr(Sortie&) const;
   void typer_direct(const Nom& );
@@ -54,4 +56,8 @@ inline void Source::mettre_a_jour(double temps)
   valeur().mettre_a_jour(temps);
 }
 
+inline void Source::resetTime(double temps)
+{
+  valeur().resetTime(temps);
+}
 #endif

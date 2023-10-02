@@ -1039,6 +1039,22 @@ void Equation_base::abortTimeStep()
   if (champ_convecte_.non_nul()) champ_convecte_->abortTimeStep();
 }
 
+/*! @brief Reset current time of the equation. Used from ICoCo.
+ * See documentation of Problem_base::resetTime()
+ */
+void Equation_base::resetTime(double time)
+{
+  if(solveur_masse.non_nul()) solveur_masse->resetTime(time);
+  les_sources.resetTime(time);
+  le_dom_Cl_dis->resetTime(time);
+  for (int i=0; i<nombre_d_operateurs(); i++)
+    operateur(i).l_op_base().resetTime(time);
+  inconnue()->resetTime(time);
+  if (champ_conserve_.non_nul()) champ_conserve_->resetTime(time);
+  if (champ_convecte_.non_nul()) champ_convecte_->resetTime(time);
+}
+
+
 /*! @brief methode virtuelle permettant de corriger l'onconnue lors d'iterations implicites par exemple K-eps doivent rester positifs
  *
  *  les fractions massqiues entre 0 et 1

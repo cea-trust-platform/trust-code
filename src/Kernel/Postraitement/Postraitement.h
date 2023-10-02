@@ -73,6 +73,7 @@ public:
   void init() override;
   void set_param(Param& param) override;
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
+  void resetTime(double t) override;
 
   //
   // Methodes specifiques :
@@ -213,6 +214,7 @@ protected:
   int sondes_demande_, champs_demande_, stat_demande_, stat_demande_definition_champs_;
   int binaire, tableaux_demande_;
   Nom nom_fich_, format, option_para;
+  Nom suffix_for_reset_; // Suffix appended to post base name when the method resetTime() was invoked - default to "_AFTER_RESET"
   double temps_, dernier_temps; // temps du precedent appel a postraiter()
   static Motcles formats_supportes;
   REF(Domaine) le_domaine;

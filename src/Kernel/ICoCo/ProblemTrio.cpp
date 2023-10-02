@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
+* Copyright (c) 2024, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -84,15 +84,14 @@ extern "C" Problem* getProblem()
  * @throws WrongContext
  */
 
-ProblemTrio::ProblemTrio()
+ProblemTrio::ProblemTrio() :
+  pb(nullptr), p(nullptr)
 {
   my_params=new Init_Params;
   (*my_params).problem_name="default_vvvvv";
   (*my_params).problem_name="pb";
   //my_params.comm=MPI_COMM_WORLD;
   (*my_params).is_mpi=0;
-  pb=NULL;
-  p=NULL;
 }
 
 
@@ -208,8 +207,11 @@ bool ProblemTrio::initialize_pb(Probleme_U& pb_to_solve)
  */
 void ProblemTrio::terminate()
 {
-  pb->postraiter(1);
-  pb->terminate();
+  if (pb)
+    {
+      pb->postraiter(1);
+      pb->terminate();
+    }
   int mode_append=1;
   if (!Objet_U::disable_TU)
     {
@@ -352,6 +354,24 @@ bool ProblemTrio::getStationaryMode() const
 void ProblemTrio::abortTimeStep()
 {
   pb->abortTimeStep();
+}
+
+/*! @brief Reset the current time of the Problem to a given value.
+ *
+ * New in version 2 of ICoCo.
+ * Particularly useful for the initialization of complex transients: the starting point of the transient
+ * of interest is computed first, the time is reset to 0, and then the actual transient of interest starts with proper
+ * initial conditions, and global time 0.
+ *
+ * Can be called outside the TIME_STEP_DEFINED context (see Problem documentation).
+ *
+ * @param[in] time the new current time.
+ * @throws ICoCo::WrongContext exception if called before initialize() or after terminate().
+ * @throws ICoCo::WrongContext exception if called inside the TIME_STEP_DEFINED context (see Problem documentation)
+ */
+void ProblemTrio::resetTime(double time)
+{
+  pb->resetTime(time);
 }
 
 /////////////////////////////////////////////

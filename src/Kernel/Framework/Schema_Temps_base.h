@@ -75,6 +75,7 @@ public :
   virtual void validateTimeStep();
   virtual bool isStationary() const;
   virtual void abortTimeStep();
+  virtual void resetTime(double time);
 
   virtual bool iterateTimeStep(bool& converged);
   int limpr() const;

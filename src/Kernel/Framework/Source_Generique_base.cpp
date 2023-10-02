@@ -21,7 +21,7 @@
 Implemente_base(Source_Generique_base,"Source_Generique_base",Source_base);
 
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Imprime la source sur un flot de sortie.
  *
@@ -34,7 +34,7 @@ Sortie& Source_Generique_base::printOn(Sortie& os) const
 }
 
 
-/*! @brief NE FAIT RIEN A surcharger dans les classes derivees.
+/*! @brief DOES NOTHING - to override in derived classes.
  *
  *     Lecture d'un terme source sur un flot d'entree.
  *

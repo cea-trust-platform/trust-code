@@ -74,6 +74,7 @@ public:
   virtual void completer();
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();
+  virtual void resetTime(double time);
   virtual int impr(Sortie& os) const;
   inline void associer_eqn(const Equation_base&);
   inline int get_decal_temps() const;

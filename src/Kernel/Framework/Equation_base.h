@@ -116,6 +116,7 @@ public :
   virtual DoubleTab& corriger_derivee_impl(DoubleTab& );
   virtual void mettre_a_jour(double temps);
   virtual void abortTimeStep();
+  virtual void resetTime(double time);
   virtual void valider_iteration();
   virtual int preparer_calcul();
   virtual bool initTimeStep(double dt);

@@ -93,6 +93,7 @@ public :
   bool initTimeStep(double dt) override;
   void mettre_a_jour(double temps) override;
   void abortTimeStep() override;
+  void resetTime(double time) override;
   int impr(Sortie& os) const override;
 
   void dimensionner_matrice_sans_mem(Matrice_Morse& matrice) override;
