@@ -13,6 +13,7 @@ Developer notes version 1.9.3_beta : Changes since version 1.9.2 :
 -------------------------------------------------------------
 Developer notes version 1.9.2 : Changes since version 1.9.1 :
 -------------------------------------------------------------
+XX/XX/23 (TRUST) configure    : Add -disable-openblas to configure to switch to old BLAS implementation Netlib
 15/05/23 (TRUST) Major change : Complete API for GPU programming in TRUST/Baltiks is available now to use together with GPU compatible TRUSTArray classes (see Device.h|cpp&TRUSTArray.h|cpp) for more infos
 15/05/23 (TRUST) Major change : VEF laminar flow may be simulated on GPU devices (NVidia/AMD) thanks to OpenMP offloading (./configure -cuda -openmp) and dedicated solvers (AmgX/rocALUTION)
 14/04/23 (TRUST) Change       : Lire_MEDFile/Read_MEDFile and Champ_Fonc_MEDFile are not supported anymore.
