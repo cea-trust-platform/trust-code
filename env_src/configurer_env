@@ -838,6 +838,15 @@ then
     # If a previous installation folder exists, we remove it.
     [ -d $TRUST_ROOT/exec/python ] && rm -rf $TRUST_ROOT/exec/python
 
+    # Detect if conda env is activated. This breaks the install of a new conda
+    if [ "x$CONDA_PREFIX" != "x" ]
+    then
+       echo "Error: TRUST cannot be installed since a conda env is already activated!"
+       echo "Please run: conda deactivate"
+       echo "then re-run configure"
+       exit -1
+    fi
+
     # Then we install miniconda and the different packages
     conda_installer=`cd $TRUST_ROOT/externalpackages/Miniconda;ls Mini*3*-$system"-"$model.sh`
     echo "Trying to install $conda_installer"

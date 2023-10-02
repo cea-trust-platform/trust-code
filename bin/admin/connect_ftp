@@ -6,7 +6,7 @@
 # Repertoire public :
 export PUBLIC=pub/TRUST/TRUST
 # Repertoire secret :
-export SECRET=incoming/y2k01/TRUST
+export SECRET=pub/TRUST
 
 if [ ${#1} = 0 ] || [ $1 != "-no_ftp" ]
 then

@@ -2318,7 +2318,7 @@ void Domaine::prepare_rmp_with(Domaine& other_domain)
   if (get_mc_mesh() == nullptr) build_mc_mesh();
   if (other_domain.get_mc_mesh() == nullptr) other_domain.build_mc_mesh();
 
-  Cerr << "Building remapper between " << le_nom() << " (" << mc_mesh_->getSpaceDimension() << "D) mesh with " << mc_mesh_->getNumberOfCells() << " cells and " << other_domain.le_nom() << " (" << other_domain.get_mc_mesh()->getSpaceDimension() << "D) mesh with " << other_domain.get_mc_mesh()->getNumberOfCells() << " cells" << finl;
+  Cerr << "Building remapper between " << le_nom() << " (" << (int)mc_mesh_->getSpaceDimension() << "D) mesh with " << (int)mc_mesh_->getNumberOfCells() << " cells and " << other_domain.le_nom() << " (" << (int)other_domain.get_mc_mesh()->getSpaceDimension() << "D) mesh with " << (int)other_domain.get_mc_mesh()->getNumberOfCells() << " cells" << finl;
   rmps[&other_domain].prepare(other_domain.get_mc_mesh(), get_mc_mesh(), "P0P0");
   Cerr << "remapper prepared with " << rmps.at(&other_domain).getNumberOfColsOfMatrix() << " columns in matrix, with max value = " << rmps.at(&other_domain).getMaxValueInCrudeMatrix() << finl;
 #else

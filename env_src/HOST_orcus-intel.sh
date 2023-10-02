@@ -66,7 +66,7 @@ define_soumission_batch()
    then
       qos=normal && cpu=2880 && node=1 # exclusive
    else
-      qos=test	 && cpu=60   && node=0 
+      qos=test	 && cpu=60   && node=1 # exclusive too
    fi
    binding="-m block:block --cpu-bind=rank" # Ameliore un peu les performances sur INTEL
    mpirun="srun $binding -n \$SLURM_NTASKS"

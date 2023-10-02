@@ -32,6 +32,10 @@ then
    then
       tests=$tests" parallel"
    fi
+   if [ "${HOST#irene}" != $HOST ] || [ "${HOST#topaze}" != $HOST ] || [ "${HOST#orcus}" != $HOST ]
+   then
+      tests=$tests" parallel" # sur CCRT, visit doit s'installer en parallel aussi car gros calculs int64
+   fi
    for test in $tests
    do
       timeout=120
@@ -45,6 +49,7 @@ then
       if [ $? != 0 ]
       then
 	 echo "VisIt has blocked on the test and has been killed after $timeout seconds. See `pwd`/visit.log" 
+	 echo "You may give a try with: export HWLOC_COMPONENTS=-pci"
 	 # test // bloque sur qq pc Ub20 (carte graphique?), contournement possible: export HWLOC_COMPONENTS=-pci
 	 # cf https://lists.mpich.org/pipermail/discuss/2020-September/006035.html
 	 exit -1
