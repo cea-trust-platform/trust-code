@@ -31,43 +31,17 @@
 Implemente_base_sans_constructeur(Schema_Temps_base,"Schema_Temps_base",Objet_U);
 // XD schema_temps_base objet_u schema_temps_base -1 Basic class for time schemes. This scheme will be associated with a problem and the equations of this problem.
 
-static SFichier dt_ev_;
 void Schema_Temps_base::initialize()
 {
   // GF je remets le calculer_pas_de_temps car des schemas en temps implicites s'en servent pour dimensionner (en particulier ovap)
   pb_base().calculer_pas_de_temps();
   // je le mets une deuxieme fois pour alternant....
   pb_base().calculer_pas_de_temps();
-  if (je_suis_maitre())
-    {
-      if (!disable_dt_ev())
-        {
-          Nom fichier(nom_du_cas()+".dt_ev");
-          struct stat f;
-          // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
-          if ((nb_pas_dt_==0) && ((stat(fichier,&f)) || !(pb_base().reprise_effectuee()==1)))
-            {
-              if (schema_impr())
-                {
-                  dt_ev_.ouvrir(fichier, ios::out);
-                  dt_ev_.setf(ios::scientific);
-                  dt_ev_ << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
-                }
-              for (int i=0; i<pb_base().nombre_d_equations(); i++)
-                dt_ev_ << pb_base().equation(i).expression_residu();
-            }
-          else
-            {
-              if (schema_impr())
-                {
-                  dt_ev_.ouvrir(fichier, ios::app);
-                  dt_ev_.setf(ios::scientific);
-                }
-            }
-        }
-      if (!disable_progress() && !progress_.is_open())
-        progress_.ouvrir(nom_du_cas()+".progress");
-    }
+
+  // Ecritures:
+  bool init = true;
+  write_dt_ev(init);
+  write_progress(init);
 
   if ((nb_pas_dt_==0) && ( ((mode_dt_start_==0) && est_egal(tinit_,0.)) || (mode_dt_start_==-1)) )
     {
@@ -86,14 +60,6 @@ void Schema_Temps_base::initialize()
     }
   dt_stab_=dt_;
   dt_failed_ = DBL_MAX;
-}
-void Schema_Temps_base::finir() const
-{
-  if (je_suis_maitre() && dt_ev_.is_open())
-    {
-      dt_ev_ << finl;
-      dt_ev_.close();
-    }
 }
 
 double Schema_Temps_base::computeTimeStep(bool& is_stop) const
@@ -207,66 +173,12 @@ void Schema_Temps_base::validateTimeStep()
   // Update the problem:
   Probleme_base& problem=pb_base();
   problem.mettre_a_jour(temps_courant_+dt_);
-  if (je_suis_maitre())
-    {
-      if (!disable_dt_ev())
-        {
-          if (schema_impr())
-            dt_ev_ << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ <<"\t " << residu_ << "\t " << dt_stab_ << "\t ";
-          for (int i=0; i<pb_base().nombre_d_equations(); i++)
-            pb_base().equation(i).imprime_residu(dt_ev_);
-        }
 
-      // Impression du temps CPU estime restant
-      if (schema_impr())
-        {
-          if ((residu_>0)&&(residu_old_slope_>0))
-            cumul_slope_+=(log(residu_)-log(residu_old_slope_))/dt_;
-          residu_old_slope_=residu_;
-        }
-      if (schema_impr()&&(nb_pas_dt()>0 && pas_de_temps()>0))
-        {
-          // On calcule le temps CPU moyen par pas de temps, inconvenient il peut varier fortement au cours du temps si divergence du calcul ou au contraire acceleration
-          // Mais Statistiques ne permet pas d'avoir le temps CPU du dernier pas de temps (last_time appele ici renverrait le temps CPU depuis le debut du pas de temps)
-          //double cpu_per_timestep           = statistiques().last_time(temps_total_execution_counter_) / nb_pas_dt();
-          double nb_pas_selon_tmax          = (temps_max()-temps_courant()) / pas_de_temps();
-          double nb_pas_selon_nb_pas_dt_max = nb_pas_dt_max() - nb_pas_dt();
-          double nb_pas_avant_fin= std::min(nb_pas_selon_tmax,nb_pas_selon_nb_pas_dt_max);
-          //double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
-          double dpercent=(1.-nb_pas_avant_fin/(nb_pas_avant_fin+ nb_pas_dt()));    // marche meme si c'est ltemps max qui limite
-          // si la pente est >0 on diverge ....
-          if ((seuil_statio_>0)&&(cumul_slope_<-1e-20) && seuil_statio_ < residu_) // dans un pb_couple on peut avoir (seuil_statio_ > residu) pour un des problemes
-            {
-              double distance= (-log(residu_+1e-20)+log(seuil_statio_))/(cumul_slope_)* nb_pas_dt();
+  // Ecritures
+  bool init=false;
+  write_dt_ev(init);
+  write_progress(init);
 
-              //Cerr<<distance<<" DDDDDD"<<finl;
-              double dpercent2=temps_courant()/(temps_courant()+distance);
-              dpercent=std::max(dpercent,dpercent2);
-            }
-          int percent=int(dpercent*100);
-
-          if (limpr() )
-            {
-              double seconds_to_finish  =  statistiques().last_time(temps_total_execution_counter_)*(1.-dpercent)/dpercent;
-              int integer_limit=(int)(pow(2.0,(double)((sizeof(True_int)*8)-1))-1);
-              if (seconds_to_finish<integer_limit)
-                {
-                  int h  = int(seconds_to_finish/3600);
-                  int mn = int((seconds_to_finish-3600*h)/60);
-                  int s  = int(seconds_to_finish-3600*h-60*mn);
-                  Cout << finl << "Estimated CPU time to finish the run (according to " << (nb_pas_selon_tmax<nb_pas_selon_nb_pas_dt_max?"tmax":"nb_pas_dt_max") << " value) : ";
-                  if (seconds_to_finish<1)
-                    Cout << seconds_to_finish << " s";
-                  else
-                    Cout << h << "h" << mn << "mn" << s << "s";
-
-                  Cout << ". Progress: "<<(percent)<< finl;
-                }
-            }
-          if (!disable_progress() && Process::je_suis_maitre())
-            progress_<< (percent)<< finl;
-        }
-    }
   // Update time scheme:
   mettre_a_jour();
   statistiques().end_count(mettre_a_jour_counter_);
@@ -555,7 +467,7 @@ Schema_Temps_base::Schema_Temps_base()
   no_conv_subiteration_diff_impl_=0;
   no_error_if_not_converged_diff_impl_=0;
   niter_max_diff_impl_ = 1000; // Above 100 iterations, diffusion implicit algorithm is may be diverging
-  schema_impr_=1;
+  schema_impr_=-1;
   file_allocation_=0; // Desactive car pose probleme sur platine sur les gros maillages
   residu_old_slope_=-1000;
   cumul_slope_=1e-20;
@@ -1040,4 +952,129 @@ void Schema_Temps_base::imprimer_temps_courant(SFichier& os) const
   os.precision(precision_temps);
   os << temps_courant();
   os.precision(precision_actuelle);
+}
+
+/*! @brief Ecriture du fichier .progress (temps CPU estime restant)
+ *
+ */
+void Schema_Temps_base::write_progress(bool init)
+{
+  if (je_suis_maitre() && !disable_progress())
+    {
+      if (init)
+        {
+          if (!progress_.is_open())
+            progress_.ouvrir(nom_du_cas() + ".progress");
+        }
+      else
+        {
+          if (schema_impr())
+            {
+              if ((residu_ > 0) && (residu_old_slope_ > 0))
+                cumul_slope_ += (log(residu_) - log(residu_old_slope_)) / dt_;
+              residu_old_slope_ = residu_;
+            }
+          if (schema_impr() && (nb_pas_dt() > 0 && pas_de_temps() > 0))
+            {
+              // On calcule le temps CPU moyen par pas de temps, inconvenient il peut varier fortement au cours du temps si divergence du calcul ou au contraire acceleration
+              // Mais Statistiques ne permet pas d'avoir le temps CPU du dernier pas de temps (last_time appele ici renverrait le temps CPU depuis le debut du pas de temps)
+              //double cpu_per_timestep           = statistiques().last_time(temps_total_execution_counter_) / nb_pas_dt();
+              double nb_pas_selon_tmax = (temps_max() - temps_courant()) / pas_de_temps();
+              double nb_pas_selon_nb_pas_dt_max = nb_pas_dt_max() - nb_pas_dt();
+              double nb_pas_avant_fin = std::min(nb_pas_selon_tmax, nb_pas_selon_nb_pas_dt_max);
+              //double seconds_to_finish  = nb_pas_avant_fin * cpu_per_timestep;
+              double dpercent = (1. - nb_pas_avant_fin /
+                                 (nb_pas_avant_fin +
+                                  nb_pas_dt()));    // marche meme si c'est ltemps max qui limite
+              // si la pente est >0 on diverge ....
+              if ((seuil_statio_ > 0) && (cumul_slope_ < -1e-20) &&
+                  seuil_statio_ <
+                  residu_) // dans un pb_couple on peut avoir (seuil_statio_ > residu) pour un des problemes
+                {
+                  double distance = (-log(residu_ + 1e-20) + log(seuil_statio_)) / (cumul_slope_) * nb_pas_dt();
+
+                  //Cerr<<distance<<" DDDDDD"<<finl;
+                  double dpercent2 = temps_courant() / (temps_courant() + distance);
+                  dpercent = std::max(dpercent, dpercent2);
+                }
+              int percent = int(dpercent * 100);
+
+              if (limpr())
+                {
+                  double seconds_to_finish =
+                    statistiques().last_time(temps_total_execution_counter_) * (1. - dpercent) / dpercent;
+                  int integer_limit = (int) (pow(2.0, (double) ((sizeof(True_int) * 8) - 1)) - 1);
+                  if (seconds_to_finish < integer_limit)
+                    {
+                      int h = int(seconds_to_finish / 3600);
+                      int mn = int((seconds_to_finish - 3600 * h) / 60);
+                      int s = int(seconds_to_finish - 3600 * h - 60 * mn);
+                      Cout << finl << "Estimated CPU time to finish the run (according to "
+                           << (nb_pas_selon_tmax < nb_pas_selon_nb_pas_dt_max ? "tmax" : "nb_pas_dt_max")
+                           << " value) : ";
+                      if (seconds_to_finish < 1)
+                        Cout << seconds_to_finish << " s";
+                      else
+                        Cout << h << "h" << mn << "mn" << s << "s";
+
+                      Cout << ". Progress: " << (percent) << finl;
+                    }
+                }
+              if (!disable_progress() && Process::je_suis_maitre())
+                progress_ << (percent) << finl;
+            }
+        }
+    }
+}
+
+/*! @brief Ecriture du fichier .dt_ev
+ *
+ */
+static SFichier dt_ev_;
+void Schema_Temps_base::write_dt_ev(bool init)
+{
+  if (je_suis_maitre() && !disable_dt_ev())
+    {
+      if (init)
+        {
+          Nom fichier(nom_du_cas() + ".dt_ev");
+          struct stat f;
+          // On initialise le fichier .dt_ev s'il n'existe pas ou si c'est un demarrage de calcul sans reprise
+          if ((nb_pas_dt_ == 0) && ((stat(fichier, &f)) || !(pb_base().reprise_effectuee() == 1)))
+            {
+              if (schema_impr())
+                {
+                  dt_ev_.ouvrir(fichier, ios::out);
+                  dt_ev_.setf(ios::scientific);
+                  dt_ev_ << "# temps\t\t dt\t\t facsec\t\t residu=max|Ri|\t dt_stab\t ";
+                }
+              for (int i = 0; i < pb_base().nombre_d_equations(); i++)
+                dt_ev_ << pb_base().equation(i).expression_residu();
+            }
+          else
+            {
+              if (schema_impr())
+                {
+                  dt_ev_.ouvrir(fichier, ios::app);
+                  dt_ev_.setf(ios::scientific);
+                }
+            }
+        }
+      else
+        {
+          if (schema_impr())
+            dt_ev_ << finl << temps_courant_ << "\t " << dt_ << "\t " << facsec_ << "\t " << residu_ << "\t " << dt_stab_ << "\t ";
+          for (int i = 0; i < pb_base().nombre_d_equations(); i++)
+            pb_base().equation(i).imprime_residu(dt_ev_);
+        }
+    }
+}
+
+void Schema_Temps_base::finir() const
+{
+  if (je_suis_maitre() && dt_ev_.is_open())
+    {
+      dt_ev_ << finl;
+      dt_ev_.close();
+    }
 }

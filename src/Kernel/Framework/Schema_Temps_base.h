@@ -264,6 +264,8 @@ public :
   {
     return disable_progress_ ;
   };
+  void write_dt_ev(bool init);
+  void write_progress(bool init);
   // Flag to disable the writing of the .dt_ev file
   inline int disable_dt_ev() const
   {
