@@ -58,6 +58,8 @@ public:
   inline void fixer_num_premiere_face(int );
   inline const ArrOfInt& get_faces_virt() const;
   inline ArrOfInt& get_faces_virt();
+  inline const ArrOfInt& get_indices_faces() const;
+  inline ArrOfInt& get_indices_faces();
   inline const double& get_aire() const { return aire_; }
   inline void set_aire(double& aire) { aire_ = aire; }
 
@@ -76,6 +78,7 @@ private :
   Faces les_faces;
   REF(Domaine) le_dom;
   ArrOfInt faces_virt;
+  ArrOfInt indices_faces;
   int num_premiere_face_ = -100;
   double aire_ = -100.;
 };
@@ -156,5 +159,14 @@ inline const ArrOfInt& Frontiere::get_faces_virt() const
 inline ArrOfInt& Frontiere::get_faces_virt()
 {
   return faces_virt;
+}
+inline const ArrOfInt& Frontiere::get_indices_faces() const
+{
+  return indices_faces;
+}
+
+inline ArrOfInt& Frontiere::get_indices_faces()
+{
+  return indices_faces;
 }
 #endif

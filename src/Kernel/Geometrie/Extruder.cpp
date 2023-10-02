@@ -110,12 +110,10 @@ void Extruder::extruder(Domaine& dom)
 
         Faces_builder faces_builder;
         IntTab elem_faces; // Tableau dont on aura pas besoin
-        ArrOfInt indices_faces_internes; //idem
         faces_builder.creer_faces_reeles(dom,
                                          connectivite_som_elem,
                                          les_faces,
-                                         elem_faces,
-                                         indices_faces_internes);
+                                         elem_faces);
       }
       const int nbfaces2D = les_faces.nb_faces();
 
@@ -460,12 +458,10 @@ void Extruder::extruder_hexa(Domaine& dom)
 
     Faces_builder faces_builder;
     IntTab elem_faces; // Tableau dont on aura pas besoin
-    ArrOfInt indices_faces_internes; //idem
     faces_builder.creer_faces_reeles(dom,
                                      connectivite_som_elem,
                                      les_faces,
-                                     elem_faces,
-                                     indices_faces_internes);
+                                     elem_faces);
   }
 
   int newnbsom = oldnbsom*(NZ+1);

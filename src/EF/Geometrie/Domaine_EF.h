@@ -67,7 +67,7 @@ public :
   void typer_elem(Domaine& domaine_geom) override;
   void discretiser() override;
   void swap(int, int, int);
-  void reordonner(Faces&, ArrOfInt&) override;
+  void reordonner(Faces&) override;
   void modifier_pour_Cl(const Conds_lim& ) override;
 
   inline const Elem_EF& type_elem() const;

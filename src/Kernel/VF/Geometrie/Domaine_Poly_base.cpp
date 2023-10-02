@@ -116,7 +116,7 @@ Entree& Domaine_Poly_base::readOn(Entree& is)
  *   limites.
  *
  */
-void Domaine_Poly_base::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
+void Domaine_Poly_base::reordonner(Faces& les_faces)
 {
   if (Process::je_suis_maitre())
     Cerr << "Domaine_Poly_base::reordonner faces " << finl;
@@ -166,7 +166,7 @@ void Domaine_Poly_base::reordonner(Faces& les_faces, ArrOfInt& indices_faces_int
       }
   }
 
-  renumeroter(les_faces, indices_faces_internes);
+  renumeroter(les_faces);
 
 }
 

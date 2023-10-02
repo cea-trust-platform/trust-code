@@ -69,7 +69,7 @@ public :
 
   void discretiser() override;
   Faces* creer_faces() override;
-  void reordonner(Faces& , ArrOfInt& ) override;
+  void reordonner(Faces&) override;
   inline int nb_faces_X() const;
   inline int nb_faces_Y() const;
   inline int nb_faces_Z() const;

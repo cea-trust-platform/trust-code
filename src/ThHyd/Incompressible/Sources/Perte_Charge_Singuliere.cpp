@@ -338,9 +338,9 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       const Groupe_interne grp_interne = le_domaine.groupe_interne(nom_surface);
       int nb_faces = grp_interne.nb_faces();
       Cerr << " Internal Face group " << nom_surface << " with " << nb_faces << " faces" << finl;
-      int numfa = grp_interne.num_premiere_face() ;
+      const ArrOfInt indice_faces = grp_interne.get_indices_faces();
       for (int k=0; k < nb_faces; k++)
-        les_faces[k] = numfa, face_tab(numfa) = 1, numfa++;
+        les_faces[k] = indice_faces[k], face_tab(indice_faces[k]) = 1;
       compteur = nb_faces;
     }
 

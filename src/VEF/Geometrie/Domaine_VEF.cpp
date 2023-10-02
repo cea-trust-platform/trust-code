@@ -153,7 +153,7 @@ void Domaine_VEF::swap(int fac1, int fac2, int nb_som_faces)
  *   limites.
  *
  */
-void Domaine_VEF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
+void Domaine_VEF::reordonner(Faces& les_faces)
 {
   if (Process::je_suis_maitre())
     Cerr << "Domaine_VEF::reordonner les_faces " << finl;
@@ -188,7 +188,7 @@ void Domaine_VEF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
     MD_Vector_tools::creer_md_vect_renum_auto(rang_elem_non_std_, md_vect_elems_non_std);
   }
 
-  renumeroter(les_faces, indices_faces_internes);
+  renumeroter(les_faces);
 }
 
 void Domaine_VEF::discretiser()

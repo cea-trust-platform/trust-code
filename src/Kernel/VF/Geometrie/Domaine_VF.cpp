@@ -103,11 +103,11 @@ Entree& Domaine_VF::readOn(Entree& is)
 /*! @brief cette methode ne fait rien elle est surchargee par Domaine_VDF par ex.
  *
  */
-void Domaine_VF::reordonner(Faces& , ArrOfInt& )
+void Domaine_VF::reordonner(Faces&)
 {
 }
 
-void Domaine_VF::renumeroter(Faces& les_faces, ArrOfInt& indices_faces_internes)
+void Domaine_VF::renumeroter(Faces& les_faces)
 {
 
   // Construction du tableau de renumerotation des faces. Ce tableau,
@@ -117,12 +117,10 @@ void Domaine_VF::renumeroter(Faces& les_faces, ArrOfInt& indices_faces_internes)
   //  indice_face = cle % nb_faces
   const int nbfaces = les_faces.nb_faces();
   ArrOfInt sort_key(nbfaces);
-  ArrOfInt faces_non_std(nbfaces);
-  faces_non_std = 0;
+
   {
     nb_faces_std_ = 0;
     const int nb_faces_front = domaine().nb_faces_frontiere();
-    const int nb_faces_specifiques = domaine().nb_faces_specifiques();
     // Attention : face_voisins_ n'est pas encore initialise, il
     // faut passer par les_faces.voisins() :
     const IntTab& facevoisins = les_faces.voisins();
@@ -133,47 +131,30 @@ void Domaine_VF::renumeroter(Faces& les_faces, ArrOfInt& indices_faces_internes)
       // (en fait elle ne doit pas etre renumerotee)
       sort_key[i_face] = i_face;
 
-    for (; i_face < nb_faces_specifiques; i_face++)
-      {
-        // Si la face est dans les groupes de faces internes, elle est placee apres les faces de bord
-        int ind_faces = indices_faces_internes[i_face-nb_faces_front];
-        sort_key[i_face] = ind_faces;
-        faces_non_std[ind_faces] = 1;
-      }
-
-    int k = nb_faces_specifiques;
     for (i_face=nb_faces_front; i_face < nbfaces; i_face++)
       {
-        if (faces_non_std[i_face] == 0)
+        const int elem0 = facevoisins(i_face, 0);
+        const int elem1 = facevoisins(i_face, 1);
+        // Ces faces ont toujours deux voisins.
+        assert(elem0 >= 0 && elem1 >= 0);
+        if (rang_elem_non_std_[elem0] >= 0 || rang_elem_non_std_[elem1] >= 0)
           {
-            const int elem0 = facevoisins(i_face, 0);
-            const int elem1 = facevoisins(i_face, 1);
-            // Ces faces ont toujours deux voisins.
-            assert(elem0 >= 0 && elem1 >= 0);
-            if (rang_elem_non_std_[elem0] >= 0 || rang_elem_non_std_[elem1] >= 0)
-              {
-                // Si la face est voisine d'un element non standard, elle
-                // doit etre classee juste apres les faces de bord:
-                sort_key[k] = i_face;
-              }
-            else
-              {
-                // Face standard : a la fin du tableau
-                sort_key[k] = i_face + nbfaces;
-                nb_faces_std_++;
-              }
-            k++;
+            // Si la face est voisine d'un element non standard, elle
+            // doit etre classee juste apres les faces de bord:
+            sort_key[i_face] = i_face;
+          }
+        else
+          {
+            // Face standard : a la fin du tableau
+            sort_key[i_face] = i_face + nbfaces;
+            nb_faces_std_++;
           }
       }
 
-    assert (k == nbfaces);
-
-    ArrOfInt sort_std_elem;
-    sort_std_elem.ref_array(sort_key,nb_faces_specifiques,nbfaces-nb_faces_specifiques);
-    sort_std_elem.ordonne_array();
+    sort_key.ordonne_array();
 
     // On transforme a nouveau la cle en numero de face:
-    for (i_face = nb_faces_specifiques; i_face < nbfaces; i_face++)
+    for (i_face = 0; i_face < nbfaces; i_face++)
       {
         const int key = sort_key[i_face] % nbfaces;
         sort_key[i_face] = key;
@@ -246,6 +227,26 @@ void Domaine_VF::renumeroter(Faces& les_faces, ArrOfInt& indices_faces_internes)
         un_joint.fixer_num_premiere_face(-1);
       }
   }
+  // Mise a jour des indices des groupes de faces internes:
+  {
+    Groupes_internes&      groupes_internes    = domaine().groupes_internes();
+    const int nb_groupes_internes = groupes_internes.size();
+    for (int i_groupe = 0; i_groupe < nb_groupes_internes; i_groupe++)
+      {
+        Groupe_interne&     groupe_interne         = groupes_internes[i_groupe];
+        ArrOfInt& indices_faces = groupe_interne.get_indices_faces();
+        const int nbfaces2    = indices_faces.size_array();
+        assert(nbfaces2 == groupe_interne.nb_faces()); // renum_items_communs rempli ?
+        for (int i = 0; i < nbfaces2; i++)
+          {
+            const int old = indices_faces[i]; // ancien indice local
+            indices_faces[i] = reverse_index[old];
+          }
+        // Les faces de joint ne sont plus consecutives dans le
+        // tableau: num_premiere_face n'a plus ne sens
+        groupe_interne.fixer_num_premiere_face(-1);
+      }
+  }
 
 }
 
@@ -260,7 +261,6 @@ void Domaine_VF::discretiser()
   Domaine_dis_base::discretiser();
 
   Domaine& ledomaine=domaine();
-  ArrOfInt indices_faces_internes;
   histogramme_angle(ledomaine,Cerr);
   Faces* les_faces_ptr=creer_faces();
   Faces& les_faces= *les_faces_ptr;
@@ -283,11 +283,10 @@ void Domaine_VF::discretiser()
       faces_builder.creer_faces_reeles(domaine(),
                                        connectivite_som_elem,
                                        les_faces,
-                                       elem_faces_,
-                                       indices_faces_internes);
+                                       elem_faces_);
     }
 
-    reordonner(les_faces, indices_faces_internes);
+    reordonner(les_faces);
 
     // Les faces sont dans l'ordre definitif, on peut remplir
     // renum_items_communs des faces:

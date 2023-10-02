@@ -226,7 +226,7 @@ void Domaine_EF::swap(int fac1, int fac2, int nb_som_faces )
  *   limites.
  *
  */
-void Domaine_EF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
+void Domaine_EF::reordonner(Faces& les_faces)
 {
   if (Process::je_suis_maitre())
     Cerr << "Domaine_EF::reordonner les_faces " << finl;
@@ -276,7 +276,7 @@ void Domaine_EF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
       }
   }
 
-  renumeroter(les_faces, indices_faces_internes);
+  renumeroter(les_faces);
 
 }
 

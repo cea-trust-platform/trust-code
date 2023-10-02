@@ -82,7 +82,7 @@ public :
   inline const DoubleVect& longueur_aretes() const { return longueur_aretes_; }
   inline const DoubleTab& ta() const { return ta_; }
 
-  void reordonner(Faces&, ArrOfInt&) override;
+  void reordonner(Faces&) override;
   void modifier_pour_Cl(const Conds_lim& ) override { }
 
   inline const Elem_poly& type_elem() const;

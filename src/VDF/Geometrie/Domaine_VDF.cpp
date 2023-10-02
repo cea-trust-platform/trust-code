@@ -84,7 +84,7 @@ Faces* Domaine_VDF::creer_faces()
  *
  */
 
-void Domaine_VDF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
+void Domaine_VDF::reordonner(Faces& les_faces)
 {
   //  Cerr << "Faces : " << les_faces << finl;
   // Cerr << "On reordonne les faces " << finl;
@@ -96,7 +96,6 @@ void Domaine_VDF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
 
   Joints&      joints     = domaine().faces_joint();
   const int nb_faces_front = domaine().nb_faces_frontiere();
-  const int nb_faces_specifiques = domaine().nb_faces_specifiques();
 
   // Construction d'un int selon lequel on va trier les faces:
   //  orientation * nb_faces + indice_face
@@ -111,41 +110,17 @@ void Domaine_VDF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
   for (i = 0; i < nb_faces_front; i++)
     sort_key[i] = i;
 
-  ArrOfInt faces_non_std(nb_faces);
-  faces_non_std = 0;
-  for (i=nb_faces_front; i < nb_faces_specifiques; i++)
-    {
-      int ind_faces = indices_faces_internes[i-nb_faces_front];
-      sort_key[i] = ind_faces;
-      faces_non_std[ind_faces] = 1;
-    }
-
-  int k = nb_faces_specifiques;
-  j = nb_faces_front;
-  for (i=nb_faces_front; i < nb_faces; i++)
+  for (; i < nb_faces; i++)
     {
       const int ori = orientation(i);
-      if (faces_non_std[i] == 0)
-        {
-          sort_key[k] = ori * nb_faces + i;
-          k++;
-        }
-      else
-        {
-          orientation_[j] = ori;
-          j++;
-        }
+      sort_key[i] = ori * nb_faces + i;
     }
-  assert (k == nb_faces);
-  assert (j == nb_faces_specifiques);
 
-  ArrOfInt sort_std_elem;
-  sort_std_elem.ref_array(sort_key,nb_faces_specifiques,nb_faces-nb_faces_specifiques);
-  sort_std_elem.ordonne_array();
+  sort_key.ordonne_array();
 
   // Il suffit de revenir a l'index initial pour avoir les indices des
   // faces triees par orientation : sort_key[nouveau numero] = ancien numero
-  for (i = nb_faces_specifiques; i < nb_faces; i++)
+  for (i = nb_faces_front; i < nb_faces; i++)
     {
       const int key = sort_key[i];
       orientation_[i] = key / nb_faces;
@@ -213,6 +188,26 @@ void Domaine_VDF::reordonner(Faces& les_faces, ArrOfInt& indices_faces_internes)
         // Les faces de joint ne sont plus consecutives dans le
         // tableau: num_premiere_face n'a plus ne sens
         joint.fixer_num_premiere_face(-1);
+      }
+  }
+  // Mise a jour des indices des groupes de faces internes:
+  {
+    Groupes_internes&      groupes_internes    = domaine().groupes_internes();
+    const int nb_groupes_internes = groupes_internes.size();
+    for (int i_groupe = 0; i_groupe < nb_groupes_internes; i_groupe++)
+      {
+        Groupe_interne&     groupe_interne         = groupes_internes[i_groupe];
+        ArrOfInt& indices_faces = groupe_interne.get_indices_faces();
+        const int nbfaces2    = indices_faces.size_array();
+        assert(nbfaces2 == groupe_interne.nb_faces()); // renum_items_communs rempli ?
+        for (i = 0; i < nbfaces2; i++)
+          {
+            const int old = indices_faces[i]; // ancien indice local
+            indices_faces[i] = reverse_index[old];
+          }
+        // Les faces de joint ne sont plus consecutives dans le
+        // tableau: num_premiere_face n'a plus ne sens
+        groupe_interne.fixer_num_premiere_face(-1);
       }
   }
 }
