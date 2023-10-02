@@ -308,6 +308,7 @@ echo " "
 echo "   -disable-petsc-optionals          Disable some PETSc optionals for Cathare (visualization features, HDF5 support,...)"
 echo "   -disable-petsc                    Disable PETSc library installation."
 echo "   -disable-openblas                 Disable OpenBLAS library installation and use Netlib BLAS instead."
+echo "   -disable-hwloc                    Disable hwloc installation."
 echo "   -disable-vc                       Disable VC installation, might be necessary for intel compilers with lower version than 17."
 echo "   -disable-mpi                      Disable MPI library detection/installation and build a non-parallel version of the application."
 echo "   -disable-mpi4py                   Disable mpi4py installation."
@@ -367,14 +368,14 @@ if [ "$1" = "-disable-optionals" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 $*
+  $0 -disable-ccache -disable-openblas -disable-petsc -disable-petsc-optionals -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-vc -disable-valgrind -disable-mpi -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-pdflatex -without-doc -disable-jupyter -disable-doxygen -disable-checks -disable-check_sources -rocalution=0 $*
   exit $?
 fi
 if [ "$1" = "-disable-tools" ]
 then
   shift
   export TRUST_ROOT=$TRUST_ROOT_SA
-  $0 -disable-ccache -disable-openblas -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -without-pdflatex -disable-checks -disable-check_sources $*
+  $0 -disable-ccache -disable-openblas -disable-hwloc -disable-gnuplot -disable-tcl_tk -disable-valgrind -disable-metis -without-visit -disable-gmsh -disable-plot2d -without-doc -without-pdflatex -disable-checks -disable-check_sources $*
   exit $?
 fi
 
@@ -383,6 +384,7 @@ do
   command=TRUST_DISABLE_$THIRD_PARTY=0
   eval $command
 done
+export TRUST_DISABLE_HWLOC=0
 export TRUST_DISABLE_PETSC_OPTIONALS=0
 export TRUST_ENABLE_PETSC_DEBUG=0
 export TRUST_DISABLE_MPIIO=0
@@ -622,6 +624,7 @@ do
       [ "$THIRD_PARTY" = "GMSH" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/Gmsh
       [ "$THIRD_PARTY" = "CCACHE" ] && REP_THIRD_PARTY=$TRUST_ROOT/env/ccache
       [ "$THIRD_PARTY" = "VALGRIND" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/valgrind
+      [ "$THIRD_PARTY" = "HWLOC" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/hwloc
       [ "$THIRD_PARTY" = "GNUPLOT" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/gnuplot
       [ "$THIRD_PARTY" = "DOXYGEN" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/doxygen
       [ "$THIRD_PARTY" = "TCL_TK" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/tcl_tk

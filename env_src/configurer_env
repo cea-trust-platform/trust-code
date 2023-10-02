@@ -2167,8 +2167,9 @@ fi
 ############
 # Topology #
 ############
-if [ "$TRUST_DISABLE_MPI" != 1 ]
+if [ "$TRUST_DISABLE_MPI" != 1 ] && [ "$TRUST_DISABLE_HWLOC" != 1 ]
 then
+   echo "Run ./configure with -disable-hwloc if hwloc install fails:"
    make_ $TRUST_ROOT/Outils/hwloc hwloc $TRUST_ROOT/exec/hwloc.log
    echo "ADD_PATH \$TRUST_ROOT/exec/hwloc/bin" >> $env
 fi
