@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,12 +17,13 @@
 #define Champ_front_Tabule_lu_included
 
 #include <Champ_front_Tabule.h>
+#include <Champ_lu_proto.h>
 
 /*! @brief : classe Champ_front_Tabule_lu Classe derivee de Champ_front_Tabule construit un Champ_front_Tabule a partir d'un fichier sonde
  *
  * @sa : Champ_front_Tabule
  */
-class Champ_front_Tabule_lu : public Champ_front_Tabule
+class Champ_front_Tabule_lu : public Champ_front_Tabule, public Champ_lu_proto
 {
   Declare_instanciable(Champ_front_Tabule_lu);
 };

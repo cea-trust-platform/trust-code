@@ -13,29 +13,17 @@
 *
 *****************************************************************************/
 
-#include <Champ_front_Tabule_lu.h>
-#include <EChaine.h>
+#ifndef Champ_lu_proto_included
+#define Champ_lu_proto_included
 
-Implemente_instanciable(Champ_front_Tabule_lu, "Champ_front_Tabule_lu", Champ_front_Tabule);
-// XD champ_front_tabule_lu champ_front_tabule champ_front_tabule_lu 0 Constant field on the boundary, tabulated from a specified column file. Lines starting with # are ignored.
-// XD attr nb_comp entier nb_comp 0 Number of field components.
-// XD attr column_file chaine column_file 0 Name of the column file.
-// XD attr bloc suppress_param bloc 0 del
+#include <Nom.h>
 
-Sortie& Champ_front_Tabule_lu::printOn(Sortie& os) const { return Champ_front_Tabule::printOn(os); }
-
-Entree& Champ_front_Tabule_lu::readOn(Entree& is)
+class Champ_lu_proto
 {
-  // read number of components
-  const int nb_comp_ = lire_dimension(is, que_suis_je());
+public:
 
-  // read name of the column file
-  Nom column_file;
-  is >> column_file;
+  virtual ~Champ_lu_proto() {};
+  Nom put_file_into_nom(int n, const Nom& col_file) const;
+};
 
-  Nom ch = Nom(nb_comp_);
-  ch += put_file_into_nom(nb_comp_, column_file);
-  EChaine chaine(ch);
-
-  return Champ_front_Tabule::readOn(chaine); // +1
-}
+#endif
