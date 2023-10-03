@@ -311,6 +311,7 @@ then
    export MPICH_FC=$OMPI_FC
    CUDAFLAGS="-O3 -ccbin $OMPI_CC"
    COPTFLAGS="-O3 -fPIC"
+   FOPTFLAGS="-O3 -fPIC"
    unset CPATH # Necessaire sur JeanZay
 fi
 
