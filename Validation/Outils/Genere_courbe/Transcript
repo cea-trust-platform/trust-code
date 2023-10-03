@@ -81,5 +81,6 @@ echo "====================================================="
 echo "-> Convert $prm in jupyter notebook..."
 echo "====================================================="
 python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p src/$prm --notebook $*
-
-mv src/$prm src/$prm-old
+err=$?
+[ $err -eq 0 ] && mv src/$prm src/$prm-old
+exit $err

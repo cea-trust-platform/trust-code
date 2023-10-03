@@ -21,8 +21,9 @@ define_modules_config()
       #module="slurm compilers/intel/2019_update3 mpi/intelmpi/2019_update3 texlive/2020"
       # La version Intel sur orcus provoque des ennuis divers (performance/plantages) avec MUMPS. Ne pas utiliser! 
       # A priori, on utilise encore Intel au CCRT (mais surement des versions plus a jour, moins buggees), mais la tendance est de petit à petit ne plus utiliser sauf exception. cf bt#195561
-      module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Calculs plus stables avec MUMPS (teste fin 2022). SegFault avec la precedente ligne parfois au bout d'un certain temps
-      module="slurm gcc/11.2.0 openmpi/gcc_11.2.0/4.1.4 texlive/2020" # passage a COS7.9, mpi/openmpi/gcc/9.1.0/3.1.4 plus supporte
+      #module="slurm compilers/gcc/9.1.0 mpi/openmpi/gcc/9.1.0/3.1.4 texlive/2020" # Calculs plus stables avec MUMPS (teste fin 2022). SegFault avec la precedente ligne parfois au bout d'un certain temps
+      # 02/10/2023 : Ajout module qt/5.14 pour VisIt
+      module="slurm gcc/11.2.0 openmpi/gcc_11.2.0/4.1.4 texlive/2020 qt5/gcc_9.3.0/5.14.2" # passage a COS7.9, mpi/openmpi/gcc/9.1.0/3.1.4 plus supporte
       
    fi
    echo "# Module $module detected and loaded on $HOST." 

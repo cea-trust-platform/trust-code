@@ -3450,6 +3450,7 @@ do
    then
       echo "No $REP_NUIT/nuit_$Composant.html report of $Composant ... we try to generate it " | tee -a tmp.log
       (cd $PROJECT_ROOT/ ; sh $TRUST_ROOT/bin/baltik/share/baltik/bin/portability/build_report.sh $Composant)
+      [ -f $nuit_log ] && cp $nuit_log $REP_NUIT/nuit_$Composant.html
    fi
    if [ -f $nuit_log ]
    then
