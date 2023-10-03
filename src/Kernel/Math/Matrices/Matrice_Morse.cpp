@@ -1026,13 +1026,15 @@ Matrice_Morse operator+(const Matrice_Morse& A , const Matrice_Morse& B )
 
 bool Matrice_Morse::has_same_morse_matrix_structure(const Matrice_Morse& A) const
 {
-  int nrow=A.nb_lignes();
-  for (int i=0; i<nrow; i++)
-    if (tab1_(i)!=A.tab1_(i))
+  int nrow = A.nb_lignes();
+  for (int i = 0; i < nrow; i++)
+    if (tab1_(i) != A.tab1_(i))
       return false;
-  int ncoeff = tab2_.size_array();
-  for (int i=0; i<ncoeff; i++)
-    if (tab2_(i)!=A.tab2_(i))
+  int ncoeff = tab2_.size_array(), ncoeff_A = A.tab2_.size_array();
+  if (ncoeff != ncoeff_A) return false;
+
+  for (int i = 0; i < ncoeff; i++)
+    if (tab2_(i) != A.tab2_(i))
       return false;
   return true;
 }
