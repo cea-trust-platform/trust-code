@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -17,6 +17,7 @@
 #define Champ_Fonc_MED_Table_Temps_included
 
 #include <Champ_Fonc_MED.h>
+#include <Champ_lu_proto.h>
 #include <Table.h>
 
 class Param;
@@ -25,7 +26,7 @@ class Param;
  *
  *  <Description of class Champ_Fonc_MED_Table_Temps>
  */
-class Champ_Fonc_MED_Table_Temps : public Champ_Fonc_MED
+class Champ_Fonc_MED_Table_Temps : public Champ_Fonc_MED, public Champ_lu_proto
 {
   Declare_instanciable( Champ_Fonc_MED_Table_Temps ) ;
 public:
@@ -40,6 +41,7 @@ protected :
 
   Table la_table;
   Champ_Fonc vrai_champ0_;
+  bool table_lue_ = false;
 };
 
 #endif /* Champ_Fonc_MED_Table_Temps_included */

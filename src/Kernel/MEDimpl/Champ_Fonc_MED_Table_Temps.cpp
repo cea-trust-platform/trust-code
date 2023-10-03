@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +15,7 @@
 
 #include <Champ_Fonc_MED_Table_Temps.h>
 #include <Lecture_Table.h>
+#include <EChaine.h>
 #include <Param.h>
 #ifdef MEDCOUPLING_
 #include <MEDLoader.hxx>
@@ -35,12 +36,18 @@ Sortie& Champ_Fonc_MED_Table_Temps::printOn(Sortie& os) const { return Champ_Fon
 void Champ_Fonc_MED_Table_Temps::set_param(Param& param)
 {
   Champ_Fonc_MED::set_param(param);
-  param.ajouter_non_std("table_temps",(this),Param::REQUIRED);
+  param.ajouter_non_std("table_temps",(this));
+  param.ajouter_non_std("table_temps_lue",(this));
 }
 
 Entree& Champ_Fonc_MED_Table_Temps::readOn(Entree& is)
 {
   Champ_Fonc_MED::readOn( is );
+  if (!table_lue_)
+    {
+      Cerr << "A table must be read using table_temps or table_temps_lue !" << finl;
+      Process::exit();
+    }
   return is;
 }
 
@@ -48,8 +55,21 @@ int Champ_Fonc_MED_Table_Temps::lire_motcle_non_standard(const Motcle& mot, Entr
 {
   if (mot == "table_temps")
     {
+      if (table_lue_) Process::exit("Champ_Fonc_MED_Table_Temps : table already read!");
       Lecture_Table lec_table;
       lec_table.lire_table(is, la_table);
+      table_lue_ = true;
+    }
+  else if (mot == "table_temps_lue")
+    {
+      if (table_lue_) Process::exit("Champ_Fonc_MED_Table_Temps : table already read!");
+      Nom ch;
+      is >> ch;
+      ch = put_file_into_nom(1, ch);
+      EChaine chaine(ch);
+      Lecture_Table lec_table;
+      lec_table.lire_table(chaine, la_table);
+      table_lue_ = true;
     }
   else
     return Champ_Fonc_MED::lire_motcle_non_standard(mot,is);
