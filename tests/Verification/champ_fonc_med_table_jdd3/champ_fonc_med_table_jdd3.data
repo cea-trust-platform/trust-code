@@ -1,0 +1,87 @@
+# PARALLEL OK 8 #
+dimension 2
+pb_conduction pbt
+Domaine mesh
+
+# BEGIN MESH #
+read_med { domain mesh mesh mesh file mesh.med }
+# END MESH #
+
+# BEGIN PARTITION
+Decouper mesh
+{
+    partitionneur metis { nb_parts 2 }
+    nb_parts_tot 2
+    Larg_joint 2
+    Nom_Zones mesh
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter mesh.Zones mesh
+END SCATTER #
+
+Scheme_euler_implicit sch
+Read sch
+{
+    tinit 0
+	nb_pas_dt_max 3
+    dt_max 0.1
+    tmax 5
+    facsec 1e30
+    facsec_max 1e30
+    seuil_statio 1e-6
+    dt_impr 1e-10
+    solveur implicite
+    {
+        solveur petsc cholesky { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+VDF dis
+
+associate pbt mesh
+
+Associate pbt sch
+Discretize pbt dis
+
+Read pbt
+{
+    solide
+    {
+        rho      champ_uniforme 1 2000.0
+        cp       champ_uniforme 1 3075.0
+        lambda   champ_uniforme 1 0.5
+    }
+
+    conduction
+    {
+        diffusion   { }
+        initial_conditions  { temperature  champ_uniforme  1  900.0 }
+        boundary_conditions
+        {
+            up     paroi_adiabatique
+            right  paroi_adiabatique
+            left  paroi_adiabatique
+            down    paroi_adiabatique
+        }
+        sources
+        {
+            puissance_thermique champ_fonc_med_table_temps { table_temps_lue power_evolution.txt use_existing_domain file power.med domain mesh field power loc elem time 0 }
+        }
+    }
+
+    Post_processing
+    {
+        format lml
+        fields dt_post 0
+        {
+            temperature      elem
+        }
+    }
+}
+
+Solve pbt
+End
