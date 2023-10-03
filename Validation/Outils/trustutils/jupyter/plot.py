@@ -618,6 +618,23 @@ class Table:  # ancien tableau
         dftmp = pd.DataFrame(ligne, columns=self.columns, index=[name])
         self.df = self.df.append(dftmp)
 
+    def setTitle(self,title):
+        """
+        
+        Method to add title to the board.
+
+        Parameters
+        --------- 
+        title : str 
+            caption to ass. 
+
+        Returns
+        ------- 
+        
+        """
+        self.df = self.df.style.set_caption(title)
+        
+
     def load(self, data, name):
         """ 
         
@@ -686,7 +703,7 @@ class Table:  # ancien tableau
     def _repr_latex_(self):
         """ This method is invoked by 'display()' when generating a PDF """
         # Note the escape=False to preserve math formulas ...
-        s= self.df.to_latex(escape=False)
+        s= self.df.to_latex()
         s = s.replace("$$", "$")
         s = s.replace("_", "\_")
         formula = re.findall(r'\$[^\$]*\$',s)

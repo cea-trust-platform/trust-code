@@ -104,7 +104,7 @@ class Write_notebook:
                 if courbe.style!="Undefined":
                     if courbe.style=="points":
                         style = ",marker='+'"
-                    if courbe.style =="linepoints":
+                    if courbe.style =="linespoints":
                         style = ",marker='-x'"
                 if (courbe.points!='Undefined'):
                     param = courbe.segment.split()
@@ -132,6 +132,8 @@ class Write_notebook:
                             xdata = colonnes[0]
                             ydata = colonnes[1]
                             code += "fig.add(%s,%s,label=r\"%s\""%(xdata,ydata,chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
+                        else:
+                            code += "fig.add(data[0],data[1],label=r\"%s\""%(chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
                         
                     else:
                         code += "\nimport numpy as np \n"
@@ -237,7 +239,6 @@ class Write_notebook:
         
         self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
 
-        nbc=tableau.nb_colonnes
         if (tableau.formule): nbc+=1
         #tableau.printFichierParametres()
 
@@ -247,7 +248,8 @@ class Write_notebook:
         code += "tab = plot.Table(columns)\n" 
         
         for ligne in tableau.listeLignes:
-            if ligne.valeurs!='Undefined':
+            from Ligne import Ligne,Lignes
+            if not isinstance(ligne,Lignes) and ligne.valeurs!='Undefined':
                 valeur_f= ligne.valeurs.split()
                 for i in range(len(valeur_f)):
                     try:
@@ -258,38 +260,49 @@ class Write_notebook:
                 code += "tab.addLigne([%s],r\"%s\")\n"%(valeur_f,chaine2Tex(ligne.legende))
         
             elif ligne.fichier!='Undefined':
-                code += "data = plot.loadText(\"%s\",transpose=False, dtype=\"str\")\n"%(ligne.fichier)
-                if ligne.derniere_ligne:
-                    code += "tab.addLigne([["
-                    for k in range(tableau.nb_colonnes):
-                        code += "data[%d],"%k 
-                    code += "]],r\"%s\")\n"%(chaine2Tex(ligne.legende))
+                code += "data = plot.loadText(\"%s\""%(ligne.fichier)
+                if not isinstance(ligne,Lignes):
+                    code+=",transpose=False, dtype=\"str\")\n"
+                else:
+                    code +=",transpose=False, dtype=\"str\", skiprows=%d)\n"%(ligne.numero_premiere_ligne-1)
 
             nb_colonnes_f=tableau.nb_colonnes
             if (ligne.nb_colonnes_fichier): nb_colonnes_f=ligne.nb_colonnes_fichier
             try:
                 if (ligne.colonnes):
-                    code += "tab.addLigne([["
                     colonnes=ligne.colonnes.split()
+                    if isinstance(ligne,Lignes):
+                        nb_ligne = ligne.numero_derniere_ligne+1-ligne.numero_premiere_ligne
+                        decal = 1
+                        num_ligne = 0
+                    else:
+                        nb_ligne = 1
+                        decal = 0
+                        num_ligne = -1
+                    for ll in range(nb_ligne):
+                        code += "tab.addLigne([["
+                        for i in range(tableau.nb_colonnes):
+                            formule=colonnes[i+decal]
 
-                    for i in range(tableau.nb_colonnes):
-                        formule=colonnes[i]
-
-                        for j in range(nb_colonnes_f):
-                            original_string="$%d"%(j+1)
-                            if tableau.nb_colonnes > 1:
-                                replacement_string="data[-1][%d]"%(j) ##TODO parametre derniere ligne, qu'est ce qui est affiche si derniere_ligne=0 ?
-                            else:
-                                replacement_string="data[%d]"%(j) ##TODO parametre derniere ligne, qu'est ce qui est affiche si derniere_ligne=0 ?
-                            formule=formule.replace(original_string, replacement_string)
+                            for j in range(nb_colonnes_f):
+                                original_string="$%d"%(j+1)
+                                replacement_string="data[%d][%d]"%(num_ligne,j) ##TODO parametre derniere ligne, qu'est ce qui est affiche si derniere_ligne=0 ?
+                                formule=formule.replace(original_string, replacement_string)
+                                pass
                             pass
+                            code+=formule +","
                         pass
-                        code+=formule +","
-                    pass
-                    code += "]],r\"%s\")\n"%(chaine2Tex(ligne.legende))
+                        if isinstance(ligne,Lignes):
+                            code += "]],data[%d][0])\n"%(ll)
+                        else:
+                            code += "]],r\"%s\")\n"%(ligne.legende)
+                        num_ligne+=1
                 pass
             except:
                 ligne.gestMsg.ecrire(GestionMessages._ERR, 'unable to read %d values in file %s.'% (nb_colonnes_f,ligne.fichier))
+        if tableau.titre != "Undefined":
+            titre = tableau.titre.replace("\"","")
+            code += "tab.setTitle(\"%s\")\n"%(titre)
 
         code += "display(tab)"
         self.nb['cells'] += [nbf.v4.new_code_cell(code)]
