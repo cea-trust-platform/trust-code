@@ -21,12 +21,14 @@ install_OpenBlas()
       CC=$TRUST_cc
       FC=$TRUST_F77
    fi  
+   # On ne construit que les libs (tests plantent parfois):
+   target="libs netlib"
    # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
    if [ `uname -s` = Darwin ]
    then
-      $TRUST_MAKE CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1
+      $TRUST_MAKE $target CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1
    else
-      $TRUST_MAKE CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
+      $TRUST_MAKE $target CC=$CC FC=$FC USE_THREAD=$TRUST_USE_OPENMP USE_OPENMP=$TRUST_USE_OPENMP NO_AVX512=1 || exit -1
    fi
 }
 install_NetLib()
