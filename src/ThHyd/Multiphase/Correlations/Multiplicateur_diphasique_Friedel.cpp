@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -46,18 +46,18 @@ Entree& Multiplicateur_diphasique_Friedel::readOn(Entree& is)
 }
 
 void Multiplicateur_diphasique_Friedel::coefficient(const double *alpha, const double *rho, const double *v, const double *f,
-                                                    const double *mu, const double Dh, const double gamma, const double *Fk,
+                                                    const double *mu, const double Dh, const double sigma, const double *Fk,
                                                     const double Fm, DoubleTab& coeff) const
 {
   int min_ = min_sensas_ || min_lottes_flinn_;
   double G = alpha[n_l] * rho[n_l] * std::fabs(v[n_l]) + alpha[n_g] * rho[n_g] * std::fabs(v[n_g]), //debit total
          x = G ? alpha[n_g] * rho[n_g] * v[n_g] / G : 0, //titre
-         E = (1 - x) * (1 - x) + x * x * (rho[n_l] * f[n_g] / rho[n_g] * f[n_l]),
+         E = (1 - x) * (1 - x) + x * x * (rho[n_l] * f[n_g] / rho[n_g] / f[n_l]),
          F = std::pow(x, 0.78) * std::pow(1 - x, 0.224),
-         H = std::pow(rho[n_l] / rho[n_g], 0.91) * std::pow(mu[n_l] / mu[n_g], 0.19) * std::pow(1 - mu[n_g] / mu[n_l], 0.7),
-         rho_m = alpha[n_l] * rho[n_l] + alpha[n_g] * rho[n_g], //masse volumlque du melange
-         Fr = G * G / (9.81 * Dh * rho_m), We = G * G * Dh / (gamma * rho_m), //Froude, Weber,
-         Phi2 = E + 3.24 * F * H * std::pow(Fr, -0.045) * std::pow(We, -0.035), //le multiplicateur!
+         H = std::pow(rho[n_l] / rho[n_g], 0.91) * std::pow(mu[n_g] / mu[n_l], 0.19) * std::pow(1 - mu[n_g] / mu[n_l], 0.7),
+         rho_m = 1.0 / (x / rho[n_g] + (1.0 - x) / rho[n_l]), //masse volumlque du melange
+         Fr = G * G / (9.81 * Dh * rho_m * rho_m), We = G * G * Dh / (sigma * rho_m), //Froude, Weber,
+         Phi2 = E + 3.24 * F * H * std::pow(Fr, -0.0454) * std::pow(We, -0.035), //le multiplicateur!
          frac_g = std::min(std::max((alpha[n_g] - alpha_min_) / (alpha_max_ - alpha_min_), 0.), 1.), frac_l = 1 - frac_g, //fraction appliquee a la vapeur
          mul = min_sensas_ ? std::min(1., 1.4429 * std::pow(alpha[n_l], 0.6492)) : 1;
   coeff = 0;
