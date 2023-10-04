@@ -76,12 +76,10 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
           {
             const Saturation_base& z_sat = milc.get_saturation(k, l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            // recuperer Tsat et sigma ...
+            // recuperer sigma ...
             const DoubleTab& sig = z_sat.get_sigma_tab();
-
             // fill in the good case
-            for (int ii = 0; ii < ne_tot; ii++)
-              Sigma_tab(ii, ind_trav) = sig(ii);
+            for (int ii = 0; ii < ne_tot; ii++) Sigma_tab(ii, ind_trav) = sig(ii);
           }
         else if (milc.has_interface(k, l))
           {

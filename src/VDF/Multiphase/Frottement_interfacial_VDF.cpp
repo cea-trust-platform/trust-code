@@ -63,15 +63,10 @@ void Frottement_interfacial_VDF::ajouter_blocs(matrices_t matrices, DoubleTab& s
           {
             Saturation_base& z_sat = milc.get_saturation(k, l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            // XXX XXX XXX
-            // Attention c'est dangereux ! on suppose pour le moment que le champ de pression a 1 comp. Par contre la taille de res est nb_max_sat*nbelem !!
-            // Aussi, on passe le Span le nbelem pour le champ de pression et pas nbelem_tot ....
-            assert(press.line_size() == 1);
-            assert(temp.line_size() == N);
-            VectorD sigma_(ne_tot);
-            SpanD sigma__(sigma_);
-            z_sat.get_sigma(temp.get_span_tot(), press.get_span_tot(), sigma__, N*(N-1)/2, ind_trav);
-            for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i, ind_trav) = sigma__[i];
+            // recuperer sigma ...
+            const DoubleTab& sig = z_sat.get_sigma_tab();
+            // fill in the good case
+            for (int ii = 0; ii < ne_tot; ii++) Sigma_tab(ii, ind_trav) = sig(ii);
           }
         else if (milc.has_interface(k, l))
           {
