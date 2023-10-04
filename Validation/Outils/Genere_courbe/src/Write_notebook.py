@@ -58,6 +58,7 @@ class Write_notebook:
         text= text.replace("cos","np.cos")
         text= text.replace("sin","np.sin")
         text= text.replace("exp","np.exp")
+        text= text.replace("log","np.log")
         return text
     def Textojupyter(self,text):
         text= text.replace("$\\bullet$","* ")
@@ -132,13 +133,19 @@ class Write_notebook:
                             colonnes = formule.split()
                             xdata = colonnes[0]
                             ydata = colonnes[1]
-                            code += "fig.add(%s,%s,label=r\"%s\""%(xdata,ydata,chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
+                            code += "fig.add(%s,%s,marker=\"x\",label=r\"%s\""%(xdata,ydata,chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
                         else:
-                            code += "fig.add(data[0],data[1],label=r\"%s\""%(chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
+                            code += "fig.add(data[0],data[1],marker=\"x\",label=r\"%s\""%(chaine2Tex(courbe.legende)) + style + ")\n" #TODO Attention ne permet pas l'existence d'espace dans la formule
                         
                     else:
                         code += "\nimport numpy as np \n"
-                        code += "x = np.linspace(0,1,100) \n" #TODO pb avec les limites
+                        rangeX = [0,1]
+                        point_number = 1000
+                        if figure.rangeX!='auto':
+                            rangeX = figure.rangeX.split()
+                        if figure.logX:
+                            point_number = 10000
+                        code += "x = np.linspace(%f,%f,%d) \n"%(float(rangeX[0]),float(rangeX[1]),point_number) 
                         fonction = self.replace_fonction(courbe.fonction)
                         code += "y = " + fonction + " \n"
                         code += "fig.add(x,y,label=r\"" + chaine2Tex(courbe.legende) + "\"" + style + ") \n" 
@@ -226,9 +233,10 @@ class Write_notebook:
 
         title = ""
         if (tableau.titre!="Undefined"):
-            title = "### "+ chaine2Tex(tableau.titre) + "\n \n "
+            title += "### "+ chaine2Tex(tableau.titre) + "\n \n "
         if (len(tableau.description)!=0): title += self.write_description(tableau.description)
 
+        self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
 
         if len(tableau.listeLignes)==0: return
 
@@ -238,8 +246,6 @@ class Write_notebook:
             self.nb['cells'] += [nbf.v4.new_code_cell(code)]
             return
         
-        self.nb['cells'] += [nbf.v4.new_markdown_cell(title)]
-
         if (tableau.formule): nbc+=1
         #tableau.printFichierParametres()
 
@@ -285,10 +291,21 @@ class Write_notebook:
                         for i in range(tableau.nb_colonnes):
                             formule=colonnes[i+decal]
 
+                            size_fichier = -1 
+                            if (ligne.fichier!="Undefined"):
+                                path = "build/%s"%(ligne.fichier)
+                                if os.path.exists(path):
+                                    with open(path, 'r') as fp:
+                                        size_fichier = len(fp.readlines())
+
                             for j in range(nb_colonnes_f):
                                 original_string="$%d"%(j+1)
-                                replacement_string="data[%d][%d]"%(num_ligne,j) ##TODO parametre derniere ligne, qu'est ce qui est affiche si derniere_ligne=0 ?
+                                if (size_fichier==1):
+                                    replacement_string="data[%d]"%(j) 
+                                else:
+                                    replacement_string="data[%d][%d]"%(num_ligne,j) 
                                 formule=formule.replace(original_string, replacement_string)
+                                formule=formule.replace("rien", "\"\"") 
                                 pass
                             pass
                             code+=formule +","
@@ -296,14 +313,14 @@ class Write_notebook:
                         if isinstance(ligne,Lignes):
                             code += "]],data[%d][0])\n"%(ll)
                         else:
-                            code += "]],r\"%s\")\n"%(ligne.legende)
+                            code += "]],r\"%s\")\n"%(chaine2Tex(ligne.legende))
                         num_ligne+=1
                 pass
             except:
                 ligne.gestMsg.ecrire(GestionMessages._ERR, 'unable to read %d values in file %s.'% (nb_colonnes_f,ligne.fichier))
         if tableau.titre != "Undefined":
             titre = tableau.titre.replace("\"","")
-            code += "tab.setTitle(\"%s\")\n"%(titre)
+            code += "tab.setTitle(\"%s\")\n"%(chaine2Tex(titre))
 
         code += "display(tab)"
         self.nb['cells'] += [nbf.v4.new_code_cell(code)]
