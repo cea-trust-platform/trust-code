@@ -29,10 +29,11 @@ import nbformat as nbf
 from Visu import dico_plots
 
 class Write_notebook:
-    def __init__(self):
+    def __init__(self, disable_parallel):
         self.nb_visu=0
         self.minifigure_avt=0
         self.nb = nbf.v4.new_notebook()
+        self.disable_parallel = disable_parallel
         pass
     def write_text_sans_nl(self,titi):
         return chaine2Tex(titi)
@@ -386,7 +387,10 @@ class Write_notebook:
             else:
                 testCases += "\")\n"
             pass
-        testCases += "run.runCases()"
+        if self.disable_parallel:
+            testCases += "run.runCases(preventConcurrent=True)"
+        else:
+            testCases += "run.runCases()"
         self.nb['cells'] += [nbf.v4.new_code_cell(testCases)]
 #
     def inclurePbDescriptionNotebook(self,maitre,pbdescription):
@@ -487,7 +491,10 @@ class Write_notebook:
                 if comment: testCases += "# " + comment +"\n"
                 pass
             testCases += "run.printCases()\n"
-            testCases += "run.runCases()"
+            if self.disable_parallel:
+                testCases += "run.runCases(preventConcurrent=True)"
+            else:
+                testCases += "run.runCases()"
             self.nb['cells'] += [nbf.v4.new_code_cell(testCases)]
             pass
         pass
@@ -574,7 +581,7 @@ class Write_notebook:
 
         if (maitre.description != []): 
             description = "### Description\n \n" + self.write_description(maitre.description)
-            self.nb['cells'] = [nbf.v4.new_markdown_cell(description)]
+            self.nb['cells'] += [nbf.v4.new_markdown_cell(description)]
 
         #parameter = "from trustutils import run\nrun.TRUST_parameters()" #TODO option parametre
        
@@ -597,4 +604,4 @@ class Write_notebook:
             pass
         pass
 
-        self.nb['cells'] = [nbf.v4.new_markdown_cell(parameter)]
+        self.nb['cells'] += [nbf.v4.new_markdown_cell(parameter)]

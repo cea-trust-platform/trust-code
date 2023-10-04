@@ -77,10 +77,17 @@ if $is_jupyter ; then
    exit -1
 fi
 
+if [ "`grep DISABLE_PARALLEL_RUN src/$prm`" != "" ];
+then
+	opt_notebook="--notebook --disable_parallel"
+else
+	opt_notebook="--notebook"
+fi
+
 echo "====================================================="
 echo "-> Convert $prm in jupyter notebook..."
 echo "====================================================="
-python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p src/$prm --notebook $*
+python $TRUST_ROOT/Validation/Outils/Genere_courbe/src/genererCourbes.py -p src/$prm $opt_notebook $*
 err=$?
 [ $err -eq 0 ] && mv src/$prm src/$prm-old
 exit $err

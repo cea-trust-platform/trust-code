@@ -52,6 +52,7 @@ def getOptions(argv, gestMsg):
     novisit = False
     noprereq = False
     notebook = False
+    disable_parallel=False
     #recuperation des options
     parser = argparse.ArgumentParser(description='Tool used to generate a validation report from TRUST simulation and reference curves.')
     parser.add_argument("-p",'--parameters' , metavar="prm File", required=True, help = "to give the path of the parameters file.")
@@ -66,6 +67,7 @@ def getOptions(argv, gestMsg):
     parser.add_argument('--no_display', action="store_false")
     parser.add_argument('--no_visit', action="store_true")
     parser.add_argument('--no_prereq', action="store_true")
+    parser.add_argument('--disable_parallel', action="store_true")
     args = parser.parse_args()
     
     if (args.compare): 
@@ -83,7 +85,7 @@ def getOptions(argv, gestMsg):
     if os.getenv("PRM_NO_VISIT"):
         novisit=True
 
-    return args.verbose, args.parameters, args.notebook, args.output, args.get_cmd_to_run,debug_figure,old_path, args.no_visit, args.no_prereq
+    return args.verbose, args.parameters, args.notebook, args.output, args.get_cmd_to_run,debug_figure,old_path, args.no_visit, args.no_prereq, args.disable_parallel
 
 class GenererCourbes(object):
     '''
@@ -182,6 +184,7 @@ TODO
         self.preRequis = []
         self.novisit = novisit
         self.noprereq = noprereq
+        self.disable_parallel = disable_parallel
         self.nvellevalid = 2
 
 
@@ -543,13 +546,13 @@ TODO
     # Methodes de generation du notebook
 
     #methode de generation du notebook jupyter
-    def genererNotebook(self,debug_figure):
+    def genererNotebook(self,debug_figure,disable_parallel):
         '''Generation du rapport de validation.'''
         
         nomFichierNotebook = 'fic.ipynb'
         
         from Write_notebook import Write_notebook
-        w=Write_notebook()
+        w=Write_notebook(disable_parallel)
         
         dico={}
         dico["nomFichierNotebook"]=os.path.basename(self.parametersFile).split('.')[0]
@@ -590,7 +593,7 @@ if __name__ == "__main__":
     # global debug_figures
     argv = sys.argv[1:]
     gestMsg = GestionMessages(verbose=10, output='log', ecran=True)
-    verbose, ficParam, notebook, sortie, get_cmd_to_run,debug_figure,old_path,novisit, noprereq= getOptions(argv, gestMsg)
+    verbose, ficParam, notebook, sortie, get_cmd_to_run,debug_figure,old_path,novisit, noprereq, disable_parallel= getOptions(argv, gestMsg)
     gestMsg.setNiveauMessage(verbose)
     #creation de l'objet de generation des courbes
     app = GenererCourbes(parametersFile=ficParam, verbose=verbose, output=gestMsg, out=sortie, novisit=novisit, noprereq=noprereq)
@@ -671,7 +674,7 @@ if __name__ == "__main__":
     if (debug_figure!=None)and(debug_figure!=-2):
         app.compile_latex=0
     if (notebook):
-        app.genererNotebook(debug_figure)
+        app.genererNotebook(debug_figure,disable_parallel)
     else:
         app.genererRapport(debug_figure)
         
