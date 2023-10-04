@@ -742,6 +742,20 @@ bloc_tube objet_lecture nul 0 Class to create a tube (3D).
   attr re floattant re 0 Exterior radius.
   attr name5 chaine(into=["hauteur"]) name5 0 Keyword to define the heigth of the tube.
   attr h floattant h 0 Heigth of the tube.
+sous_zone objet_u sous_zone 1 It is an object type describing a domain sub-set. NL2 A Sous_Zone (Sub-area) type object must be associated with a Domaine type object. The Read (Lire) interpretor is used to define the items comprising the sub-area. NL2 Caution: The Domain type object nom_domaine must have been meshed (and triangulated or tetrahedralised in VEF) prior to carrying out the Associate (Associer) nom_sous_zone nom_domaine instruction; this instruction must always be preceded by the read instruction.
+  attr restriction ref_sous_zone restriction 1 The elements of the sub-area nom_sous_zone must be included into the other sub-area named nom_sous_zone2. This keyword should be used first in the Read keyword.
+  attr rectangle bloc_origine_cotes rectangle 1 The sub-area will include all the domain elements whose centre of gravity is within the Rectangle (in dimension 2).
+  attr segment bloc_origine_cotes segment 1 not_set
+  attr boite bloc_origine_cotes box 1 The sub-area will include all the domain elements whose centre of gravity is within the Box (in dimension 3).
+  attr liste listentier liste 1 The sub-area will include n domain items, numbers No. 1 No. i No. n.
+  attr fichier chaine filename 1 The sub-area is read into the file filename.
+  attr intervalle deuxentiers intervalle 1 The sub-area will include domain items whose number is between n1 and n2 (where n1<=n2).
+  attr polynomes bloc_lecture polynomes 1 A REPRENDRE
+  attr couronne bloc_couronne couronne 1 In 2D case, to create a couronne.
+  attr tube bloc_tube tube 1 In 3D case, to create a tube.
+  attr fonction_sous_zone chaine fonction_sous_domaine 1 Keyword to build a sub-area with the the elements included into the area defined by fonction>0.
+  attr union ref_sous_zone union_with 1 The elements of the sub-area nom_sous_zone3 will be added to the sub-area nom_sous_zone. This keyword should be used last in the Read keyword.
+  ref domaine domaine
 decouper_bord_coincident interprete decouper_bord_coincident -1 In case of non-coincident meshes and a paroi_contact condition, run is stopped and two external files are automatically generated in VEF (connectivity_failed_boundary_name and connectivity_failed_pb_name.med). In 2D, the keyword Decouper_bord_coincident associated to the connectivity_failed_boundary_name file allows to generate a new coincident mesh.
   attr domain_name ref_domaine domain_name 0 Name of domain.
   attr bord chaine bord 0 connectivity_failed_boundary_name

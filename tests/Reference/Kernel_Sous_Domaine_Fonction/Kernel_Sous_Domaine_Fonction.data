@@ -42,12 +42,15 @@ Read sous_domaine_milieu
 }
 
 Sous_domaine union
-Associate union hexaedre
-Read union
-{
-    fonction_sous_zone (z>0.5)
-    union { sous_domaine_milieu }
-}
+        Associate union hexaedre
+            Read union
+        {
+            fonction_sous_zone (z>0.5)
+            union sous_domaine_milieu
+
+                }
+
+
 
 postraiter_domaine {
     domaine  hexaedre

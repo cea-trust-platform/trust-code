@@ -19,7 +19,6 @@
 #include <TRUST_List.h>
 #include <TRUSTVect.h>
 #include <TRUST_Ref.h>
-#include <set>
 
 class Domaine;
 
@@ -39,39 +38,43 @@ class Sous_Domaine : public Objet_U
 public :
 
   int lire_motcle_non_standard(const Motcle&, Entree&) override;
-  inline const Nom& le_nom() const override { return nom_; }
+  inline const Nom& le_nom() const override;
   inline int operator()(int) const;
   inline int operator[](int) const;
   inline int nb_elem_tot() const; // Returns the subdomaine number of elements (real+virtual elements in parallel)
   void associer_domaine(const Domaine&);
   int associer_(Objet_U&) override;
-  void nommer(const Nom& nom) override { nom_ = nom; }
-  inline Domaine& domaine() { return le_dom_.valeur(); }
-  inline const Domaine& domaine() const { return le_dom_.valeur(); }
+  void nommer(const Nom&) override;
+  inline Domaine& domaine()
+  {
+    return le_dom_.valeur();
+  }
+  inline const Domaine& domaine() const
+  {
+    return le_dom_.valeur();
+  }
   int add_poly(const int poly);
   int remove_poly(const int poly);
+  inline const IntVect& les_polys()
+  {
+    return les_polys_;
+  }
 protected :
 
-  std::set<int> les_polys_;
+  IntVect les_polys_;
   REF(Domaine) le_dom_;
   Nom nom_;
-
-private:
-  void check_dimension(int d, const std::string m, const std::string mm);
-  void read_polynomials(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_box(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_rectangle(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_interval(Entree& is);
-  void read_in_file(Entree& is);
-  void read_plaque(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_segment(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_couronne(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_tube(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_hexagonal_tube(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_function(const std::set<int>& les_polys_possibles_, Entree& is);
-  void read_union(Entree& is);
-  template <typename F> void get_polys_generique(const std::set<int>& les_polys_possibles_, const F& func);
 };
+
+/*! @brief Renvoie le nom du sous-domaine.
+ *
+ * @return (Nom&) le nom du sous-domaine
+ */
+inline const Nom& Sous_Domaine::le_nom() const
+{
+  return nom_;
+}
+
 
 /*! @brief Renvoie le numero du i-ieme polyedre du sous-domaine.
  *
@@ -79,7 +82,7 @@ private:
  */
 inline int Sous_Domaine::operator()(int i) const
 {
-  return *next(les_polys_.begin(), i);
+  return les_polys_[i];
 }
 
 
@@ -89,7 +92,7 @@ inline int Sous_Domaine::operator()(int i) const
  */
 inline int Sous_Domaine::operator[](int i) const
 {
-  return *next(les_polys_.begin(), i);
+  return les_polys_[i];
 }
 
 
@@ -99,7 +102,7 @@ inline int Sous_Domaine::operator[](int i) const
  */
 inline int Sous_Domaine::nb_elem_tot() const
 {
-  return (int)les_polys_.size();
+  return les_polys_.size();
 }
 
 #endif
