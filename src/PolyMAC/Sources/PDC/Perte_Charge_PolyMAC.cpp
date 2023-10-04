@@ -20,8 +20,10 @@
 #include <Domaine_PolyMAC_P0.h>
 #include <Domaine_Cl_PolyMAC.h>
 #include <Schema_Temps_base.h>
+#include <Milieu_composite.h>
 #include <Champ_Uniforme.h>
 #include <Equation_base.h>
+#include <QDM_Multiphase.h>
 #include <Pb_Multiphase.h>
 #include <Probleme_base.h>
 #include <Sous_Domaine.h>
@@ -89,6 +91,7 @@ int Perte_Charge_PolyMAC::lire_motcle_non_standard(const Motcle& mot, Entree& is
 
 void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+
   assert(has_interface_blocs());
 
   const Domaine_Poly_base& domaine = ref_cast(Domaine_Poly_base, equation().domaine_dis().valeur());
@@ -114,10 +117,28 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                      poly_v2 = sub_type(Domaine_PolyMAC_P0, domaine), nf_tot = domaine.nb_faces_tot();
 
   double t = equation().schema_temps().temps_courant(), v_min = 0.1, Gm, Fm, nvm, arm, C_dir, C_iso, v_dir;
-  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), nv(N), Cf(N), Cf_t(N), Fk(N), G(N), mult(N, 2);
+  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), nv(N), Cf(N), Cf_t(N), Fk(N), G(N), mult(N, 2), Ts_tab, Sigma_tab;
 
   for (n = 0; n < N; n++)
     mult(n, 0) = 1, mult(n, 1) = 0; //valeur par defaut de mult
+  if (fmult) //si multiplicateur -> calcul de sigma
+    {
+      const Champ_Inc_base& ch_p = ref_cast(QDM_Multiphase, pbm->equation_qdm()).pression().valeur();
+      const DoubleTab& press = ch_p.valeurs();
+      const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
+      // Et pour les methodes span de la classe Saturation
+      const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+      Ts_tab.resize(ne_tot, nb_max_sat), Sigma_tab.resize(ne_tot, nb_max_sat);
+      for (k = 0; k < N; k++)
+        for (int l = k + 1; l < N; l++)
+          if (milc.has_saturation(k, l))
+            {
+              Saturation_base& z_sat = milc.get_saturation(k, l);
+              const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
+              z_sat.Tsat(press.get_span(), Ts_tab.get_span(), nb_max_sat, ind_trav);
+              z_sat.sigma(Ts_tab.get_span(), press.get_span(), Sigma_tab.get_span(), nb_max_sat, ind_trav);
+            }
+    }
 
   /* contribution de chaque element ou on applique la perte de charge */
   for (i = 0; i < (pssz ? pssz->nb_elem_tot() : domaine.nb_elem_tot()); i++)
@@ -137,6 +158,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
           for (n = 0; n < N; n++)
             for (d = 0; d < D; d++) /* PolyMAC_P0P1NC V1 : vitesse a reconstruire */
               v(n, d) += fs(f) * pf(f) / (ve(e) * pe(e)) * (xv(f, d) - xp(e, d)) * (e == f_e(f, 0) ? 1 : -1) * pvit(f, n);
+
       /* norme de v (avec seuil), debit surfacique par phase et total */
       for (n = 0, Gm = 0; n < N; Gm += G(n), n++)
         nv(n) = std::max(v_min, sqrt(domaine.dot(&v(n, 0), &v(n, 0)))), G(n) = (alp ? (*alp)(e, n) : 1) * rho(!cR * e, n) * nv(n);
@@ -155,24 +177,23 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
             v_ph(d) = v(n, d);
           /* phase seule */
           coeffs_perte_charge(v_ph, pos, t, nv(n), dh_e, nu(!cN * e, n), Re, C_iso, C_dir, v_dir, dir);
-          Cf(n) = (C_iso + (C_dir - C_iso) * (nv(n) > 1e-8 ? std::pow(domaine.dot(&v(n, 0), &dir(0)), 2) / (nv(n) * nv(n)) : 0)) * 2 * dh_e / std::max(G(n), 1e-10);
+          Cf(n) = (C_iso + (C_dir - C_iso) * (nv(n) > 1e-8 ? std::pow(domaine.dot(&v(n, 0), &dir(0)), 2) / (nv(n) * nv(n)) : 0)) * 2 * dh_e / std::max(nv(n), 1e-10);
           /* tout le melange dans la phase */
           coeffs_perte_charge(vm, pos, t, nvm, dh_e, nu(!cN * e, n), Re_m, C_iso, C_dir, v_dir, dir);
-          Cf_t(n) = (C_iso + (C_dir - C_iso) * (nvm > 1e-8 ? std::pow(domaine.dot(&vm(0), &dir(0)), 2) / (nvm * nvm) : 0)) * 2 * dh_e / std::max(Gm, 1e-10);
-          Fk(n) = Cf(n) * G(n) * G(n) / rho(!cR * e, n); //force
+          Cf_t(n) = (C_iso + (C_dir - C_iso) * (nvm > 1e-8 ? std::pow(domaine.dot(&vm(0), &dir(0)), 2) / (nvm * nvm) : 0)) * 2 * dh_e / std::max(nvm, 1e-10);
+          Fk(n) = Cf(n) * G(n) * G(n) / rho(!cR * e, n) / 2.0 / dh_e; //force
         }
-      Fm = Cf_t(0) * Gm * Gm / rho(!cR * e, 0); //force paroi "melange" (debit total, mais proprietes physiques du liquide)
+      Fm = Cf_t(0) * Gm * Gm / rho(!cR * e, 0) / 2.0 / dh_e; //force paroi "melange" (debit total, mais proprietes physiques du liquide)
 
       /* appel du multiplicateur diphasique (si il existe) */
-      if (fmult)
-        fmult->coefficient(&(*alp)(e, 0), &rho(!cR * e, 0), &nv(0), &Cf_t(0), &mu(!cM * e, 0), dh_e, 0.24, &Fk(0), Fm, mult);
+      if (fmult) fmult->coefficient(&(*alp)(e, 0), &rho(!cR * e, 0), &nv(0), &Cf_t(0), &mu(!cM * e, 0), dh_e, Sigma_tab(e,0), &Fk(0), Fm, mult);
 
       /* contributions aux faces de e */
       for (j = 0; j < e_f.dimension(1) && (f = e_f(e, j)) >= 0; j++)
         if (f < domaine.nb_faces() && (!poly_v2 || fcl(f, 0) < 2)) /* contrib aux faces de Dirichlet en Poly V1 */
           for (n = 0; n < N; n++)
             {
-              double fac = pf(f) * vfd(f, e != f_e(f, 0)) * 0.5 / dh_e, fac_n = fac * mult(n, 0) * Cf(n) * G(n), fac_m = fac * mult(n, 1) * Cf_t(n) * Gm;
+              double fac = pf(f) * vfd(f, e != f_e(f, 0)) * 0.5 / dh_e, fac_n = fac * mult(n, 0) * Cf(n) * nv(n), fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
               for (m = 0; m < N; m++)
                 secmem(f, n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(f, m);
               if (mat)
@@ -184,7 +205,7 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
         for (d = 0, k = nf_tot + D * e; d < D; d++, k++)
           for (n = 0; n < N; n++) /* PolyMAC_P0P1NC V2: contributions aux equations aux elements */
             {
-              double fac = pe(e) * ve(e) * 0.5 / dh_e, fac_n = fac * mult(n, 0) * Cf(n) * G(n), fac_m = fac * mult(n, 1) * Cf_t(n) * Gm;
+              double fac = pe(e) * ve(e) * 0.5 / dh_e, fac_n = fac * mult(n, 0) * Cf(n) * nv(n), fac_m = fac * mult(n, 1) * Cf_t(n) * Gm / rho(!cR * e, n);
               for (m = 0; m < N; m++)
                 secmem(k, n) -= ((m == n) * fac_n + fac_m) * (alp ? (*alp)(e, m) : 1) * (pbm ? rho(!cR * e, m) : 1) * vit(k, m);
               if (mat)
