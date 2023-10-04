@@ -56,7 +56,8 @@ define_modules_config()
       # passage a gnu pour v1.9.2
       module="$romio_hints gnu/11 mpi/openmpi/4.1.4"
    fi
-   module="python3/3.8.10 swig/4.0.2 $module"
+   # 2023/10/02: libgd utile pour installer gnuplot
+   module="python3/3.8.10 swig/4.0.2 $module libgd/2.3.2"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null 2>/dev/null" >> $env

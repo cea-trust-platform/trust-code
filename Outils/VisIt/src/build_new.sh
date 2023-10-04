@@ -37,18 +37,21 @@ options=$options" --cc $TRUST_cc"				# Compilateur C
 options=$options" --cxx $TRUST_CC"				# Compilateur C++
 options=$options" --fc $TRUST_F77"				# Compilateur Fortran
 options=$options" --makeflags -j$TRUST_NB_PROCS"		# Parallel build
-options=$options" --thirdparty-path $TRUST_TMP"			# Pour partage par plusieurs installations TRUST des 3rd party
+if [ -d /ccc/work/cont002/triocfd/triou/third-party-visit3.3.3 ]
+then
+   options=$options" --thirdparty-path /ccc/work/cont002/triocfd/triou/third-party-visit3.3.3"			# Sur CCRT, on partage le meme third-party
+else
+   options=$options" --thirdparty-path $TRUST_TMP"			# Pour partage par plusieurs installations TRUST des 3rd party
+fi
 options=$options" --no-sphinx"					# Disable pour eviter l'installation de Python3 et pas mal de modules...
-options=$options" --qt"                                         #
-#if [ "$with_conda" = "1" ]
-#then
-#   options=$options" --system-cmake"				# we use system cmake de Miniconda; sauf pour topaze ou on prend cmake 3.22 module
-#   options=$options" --system-qt --alt-qt-dir $conda" 		# Qt5 de Miniconda
-#   options=$options" --system-python --alt-python-dir $conda" 	# VisIt 3.3.3 supporte Python3.7
-#else
+options=$options" --python --cmake"				# VisIt installe son python (3.7) et son qt (5.14).
+if [ "x$EBROOTQT5" != "x" ]
+then
+   options=$options" --system-qt --alt-qt-dir $EBROOTQT5 " 		# module Qt5 sur orcus 
+else
     # VisIt 3.3.3 ne s'installe pas si python>=3.8 et si qt>=5.15, on demande a visit de les installer
-    options=$options" --python --cmake --qt"				# VisIt installe son python (3.7) et son qt (5.14).
-#fi
+    options=$options" --qt"				# VisIt installe son python (3.7) et son qt (5.14).
+fi
 if [ "$build_parallel" != "" ]
 then
    #export PAR_COMPILER=$TRUST_cc

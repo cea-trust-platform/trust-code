@@ -19,7 +19,9 @@ do
    tar xf ${package%.gz}
    rm -f ${package%.gz}
    cd ${package%.tar.gz}
-   libgd=$TRUST_ROOT/exec/python
+   # For CCRT, we load libgd module since we use -without-conda configure option
+   [ "$LIBGD_ROOT" != "" ] && libgd=$LIBGD_ROOT
+   [ -d $TRUST_ROOT/exec/python/lib ] && libgd=$TRUST_ROOT/exec/python
    # Hack configure (libgd from conda was found but not correctly linked to gnuplot):
    sed -i "1,$ s?lgd ?lgd -Wl,-rpath,$libgd/lib?g" ./configure || exit -1
 

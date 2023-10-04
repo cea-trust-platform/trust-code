@@ -45,10 +45,11 @@ define_modules_config()
       # passage a redhat 8.4, openmpi 4.0.2 n'existe plus, remplace par 4.0.5
       #module="intel/20.0.0 mpi/openmpi/4.0.5"
       # passage a gnu pour v1.9.2
-      module="gnu/11 mpi/openmpi/4.0.5"
+      module="gnu/11 mpi/openmpi/4.0.5 mkl/20.0.0"
    fi
    # depuis v1.9.2, install sans conda, on prend python+swig+cmake module
-   module="python3/3.8.10 swig/4.0.2 cmake/3.22.2 $module"
+   # 2023/10/02: libgd utile pour installer gnuplot
+   module="python3/3.8.10 swig/4.0.2 cmake/3.22.2 $module libgd/2.3.2"
    #
    echo "# Module $module detected and loaded on $HOST."
    echo "module purge 1>/dev/null 2>/dev/null" >> $env
