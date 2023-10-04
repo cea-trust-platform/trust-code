@@ -33,6 +33,7 @@ public:
   bool needs_grad_alpha() const override {return needs_grad_alpha_;};
   bool needs_vort() const override {return needs_vort_;};
   void completer() override;
+  void set_param(Param& param) override;
 
 protected:
   void evaluate_C0_vg0(const input_t& input) const override;

@@ -22,14 +22,13 @@
 
 Implemente_instanciable(Vitesse_derive_Forces, "Vitesse_relative_derive_Forces", Vitesse_derive_base);
 
-Sortie& Vitesse_derive_Forces::printOn(Sortie& os) const { return os; }
+Sortie& Vitesse_derive_Forces::printOn(Sortie& os) const { return Vitesse_derive_base::printOn(os); }
+Entree& Vitesse_derive_Forces::readOn(Entree& is) { return Vitesse_derive_base::readOn(is); }
 
-Entree& Vitesse_derive_Forces::readOn(Entree& is)
+void Vitesse_derive_Forces::set_param(Param& param)
 {
-  Param param(que_suis_je());
   param.ajouter("alpha_lim", &alpha_lim_);
-  param.lire_avec_accolades_depuis(is);
-  return Vitesse_derive_base::readOn(is);
+  Vitesse_derive_base::set_param(param);
 }
 
 void Vitesse_derive_Forces::completer()

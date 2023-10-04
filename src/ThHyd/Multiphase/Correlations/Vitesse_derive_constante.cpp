@@ -17,17 +17,14 @@
 
 Implemente_instanciable(Vitesse_derive_constante, "Vitesse_relative_derive_constante", Vitesse_derive_base);
 
-Sortie& Vitesse_derive_constante::printOn(Sortie& os) const { return os; }
+Sortie& Vitesse_derive_constante::printOn(Sortie& os) const { return Vitesse_derive_base::printOn(os); }
+Entree& Vitesse_derive_constante::readOn(Entree& is) { return Vitesse_derive_base::readOn(is); }
 
-Entree& Vitesse_derive_constante::readOn(Entree& is)
+void Vitesse_derive_constante::set_param(Param& param)
 {
-  Vitesse_derive_base::readOn(is);
-
-  Param param(que_suis_je());
   param.ajouter("C0", &C0, Param::REQUIRED);
   param.ajouter("vg0_x", &vg0[0], Param::REQUIRED);
   param.ajouter("vg0_y", &vg0[1], Param::REQUIRED);
   if (dimension == 3) param.ajouter("vg0_z", &vg0[2], Param::REQUIRED);
-  param.lire_avec_accolades_depuis(is);
-  return is;
+  Vitesse_derive_base::set_param(param);
 }

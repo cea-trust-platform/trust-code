@@ -25,10 +25,18 @@ Entree& Vitesse_derive_base::readOn(Entree& is)
   return Vitesse_relative_base::readOn(is);
 }
 
+void Vitesse_derive_base::set_param(Param& param)
+{
+  param.ajouter("alpha_min", &alpha_min_);
+  Vitesse_relative_base::set_param(param);
+}
+
 void Vitesse_derive_base::vitesse_relative(const input_t& input, output_t& output) const
 {
   output.vr = 0.0;
   output.dvr= 0.0;
+
+  if (input.alpha[n_g] < alpha_min_) return;
 
   evaluate_C0_vg0(input); // No dependency in v in evaluate_C0_vg0 => No need for derivative
 

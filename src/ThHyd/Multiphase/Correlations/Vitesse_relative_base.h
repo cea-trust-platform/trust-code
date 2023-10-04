@@ -55,6 +55,7 @@ public:
   virtual void vitesse_relative(const input_t& input, output_t& output) const = 0;
   virtual bool needs_grad_alpha() const {return 0;};
   virtual bool needs_vort() const {return 0;};
+  virtual void set_param(Param& param) { /* do nothing */ }
 
 protected:
   int n_l = -1, n_g = -1; // phases traitees : liquide / gaz continu

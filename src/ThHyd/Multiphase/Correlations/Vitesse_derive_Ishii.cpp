@@ -18,16 +18,13 @@
 
 Implemente_instanciable(Vitesse_derive_Ishii, "Vitesse_relative_derive_Ishii", Vitesse_derive_base);
 
-Sortie& Vitesse_derive_Ishii::printOn(Sortie& os) const { return os; }
+Sortie& Vitesse_derive_Ishii::printOn(Sortie& os) const { return Vitesse_derive_base::printOn(os); }
+Entree& Vitesse_derive_Ishii::readOn(Entree& is) { return Vitesse_derive_base::readOn(is); }
 
-Entree& Vitesse_derive_Ishii::readOn(Entree& is)
+void Vitesse_derive_Ishii::set_param(Param& param)
 {
-  Vitesse_derive_base::readOn(is);
-
-  Param param(que_suis_je());
   param.ajouter("subcooled_boiling", &sb_, Param::REQUIRED);
-  param.lire_avec_accolades_depuis(is);
-  return is;
+  Vitesse_derive_base::set_param(param);
 }
 
 void Vitesse_derive_Ishii::evaluate_C0_vg0(const input_t& input) const

@@ -31,5 +31,9 @@ Entree& Vitesse_relative_base::readOn(Entree& is)
 
   if (n_l < 0) Process::exit(que_suis_je() + " : liquid phase not found!");
   if (n_g < 0) Process::exit(que_suis_je() + " : gas phase not found!");
+
+  Param param(que_suis_je());
+  set_param(param);
+  param.lire_avec_accolades_depuis(is);
   return is;
 }
