@@ -288,7 +288,7 @@ do
    fi
 done
 # Recherche du repertoire contenant la fiche
-[ "`basename $ici`" = src ] && cd ..
+[ "`basename $ici`" = src ] && echo "Error: Run_fiche command should not be executed in src but in" && echo "`dirname $ici`" && exit -1
 if [ "$remote" = "" ]
 then
    if [ "$rsync" = 1 ]
