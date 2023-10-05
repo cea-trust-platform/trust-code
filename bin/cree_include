@@ -55,7 +55,17 @@ fi
 if [ "$TRUST_COOLPROP_HOME_DIR" != "" ]
 then
     ln -nsf $TRUST_COOLPROP_HOME_DIR/include/* CoolProp/.
-    ln -nsf $TRUST_COOLPROP_HOME_DIR/externals/fmtlib/fmt CoolProp/.
+    if [ -d $TRUST_COOLPROP_HOME_DIR/externals/fmtlib/include/fmt ]
+    then
+       # CoolProp 6.5.0
+       ln -nsf $TRUST_COOLPROP_HOME_DIR/externals/fmtlib/include/fmt CoolProp/.
+    elif [ -d $TRUST_COOLPROP_HOME_DIR/externals/fmtlib/fmt ]
+    then
+       # CoolProp < 6.4 ?
+       ln -nsf $TRUST_COOLPROP_HOME_DIR/externals/fmtlib/fmt CoolProp/.
+    else
+      echo "fmtlib is no more a prerequis for CoolProp?"
+    fi
     echo "#define HAS_COOLPROP" > CoolProp/coolprop++.h
     echo "TRUST configured with the CoolProp library found in $TRUST_COOLPROP_HOME_DIR"
     echo "CoolProp header files added in $TRUST_ROOT/include/CoolProp !"

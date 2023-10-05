@@ -880,6 +880,9 @@ then
     cd - 1>/dev/null 2>&1
     # If a package has not been correctly installed, we exit with an error
     [ -f $TRUST_ROOT/NON_INSTALLED ] && [ "`grep Miniconda $TRUST_ROOT/NON_INSTALLED`" != "" ] &&  Display_Missing_packages && exit -1
+    # clean of the install folder
+    rm -rf $TRUST_ROOT/exec/python/pkgs
+    mkdir -p $TRUST_ROOT/exec/python/pkgs
 elif [ "$TRUST_WITHOUT_CONDA" = "1" ]; # Do not install conda, use system python
 then
     # Error medcoupling library build on Fedora30 => force python3
@@ -891,9 +894,6 @@ then
     ln -nsf $ze_python $TRUST_ROOT/exec/python/bin/python
 fi
 
-# clean of the install folder
-rm -rf $TRUST_ROOT/exec/python/pkgs
-mkdir -p $TRUST_ROOT/exec/python/pkgs
 # We touch all conda files, otherwise it will be deleted from SCRATCH of clusters (e.g. jean-zay)
 [ "${TRUST_ROOT#*scratch/}" != "$TRUST_ROOT" ] && find $TRUST_ROOT/exec/python -exec touch {} +
 # export PATH
@@ -1585,7 +1585,7 @@ fi
 if [ "$TRUST_USE_COOLPROP" != 0 ]
 then
    echo "Installing coolprop python's package ..."
-   pip install coolprop
+   $TRUST_ROOT/exec/python/bin/pip install coolprop
 fi
 
 InstallPipPkgs=0

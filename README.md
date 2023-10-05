@@ -195,7 +195,11 @@ CoolProp is an open source ([MIT License](https://github.com/CoolProp/CoolProp/b
 A pre-compiled static library of CoolProp is mandatory if a TRUST user wants to use its interface via TRUST. Here are the steps that can be followed to obtain a libcoolprop.a
 
 ```bash
-# Check out the sources for CoolProp (attention recursive !!!)
+# Get the sources archive (version 6.5.0)
+wget https://sourceforge.net/projects/coolprop/files/CoolProp/6.5.0/source/CoolProp_sources.zip
+unzip CoolProp_sources.zip
+mv source CoolProp
+# or download CoolProp (attention recursive, beta version that may have issues with TRUST !!!)
 git clone https://github.com/CoolProp/CoolProp --recursive
 # Move into the folder you just created
 cd CoolProp
