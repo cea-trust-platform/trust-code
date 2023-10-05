@@ -66,7 +66,7 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
 
   // Et pour les methodes span de la classe Saturation
   const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
-  DoubleTrav Ts_tab(ne_tot,nb_max_sat), Sigma_tab(ne_tot,nb_max_sat);
+  DoubleTrav Sigma_tab(ne_tot,nb_max_sat);
 
   // remplir les tabs ...
   for (k = 0; k < N; k++)
@@ -74,17 +74,21 @@ void Frottement_interfacial_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Doubl
       {
         if (milc.has_saturation(k, l))
           {
-            Saturation_base& z_sat = milc.get_saturation(k, l);
+            const Saturation_base& z_sat = milc.get_saturation(k, l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            z_sat.Tsat(press.get_span(), Ts_tab.get_span(), nb_max_sat, ind_trav);
+            // recuperer Tsat et sigma ...
+            const DoubleTab& sig = z_sat.get_sigma_tab();
 
-            z_sat.sigma(Ts_tab.get_span(), press.get_span(), Sigma_tab.get_span(), nb_max_sat, ind_trav);
+            // fill in the good case
+            for (int ii = 0; ii < ne_tot; ii++)
+              Sigma_tab(ii, ind_trav) = sig(ii);
           }
         else if (milc.has_interface(k, l))
           {
             Interface_base& sat = milc.get_interface(k,l);
             const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-            for (i = 0 ; i<ne_tot ; i++) Sigma_tab(i,ind_trav) = sat.sigma(temp(i,k),press(i,k * (Np > 1))) ;
+            const DoubleTab& sig = sat.get_sigma_tab();
+            for (int ii = 0; ii < ne_tot; ii++) Sigma_tab(ii, ind_trav) = sig(ii);
           }
       }
 

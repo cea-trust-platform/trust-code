@@ -117,26 +117,27 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
                      poly_v2 = sub_type(Domaine_PolyMAC_P0, domaine), nf_tot = domaine.nb_faces_tot();
 
   double t = equation().schema_temps().temps_courant(), v_min = 0.1, Gm, Fm, nvm, arm, C_dir, C_iso, v_dir;
-  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), nv(N), Cf(N), Cf_t(N), Fk(N), G(N), mult(N, 2), Ts_tab, Sigma_tab;
+  DoubleTrav pos(D), v(N, D), vm(D), v_ph(D), dir(D), nv(N), Cf(N), Cf_t(N), Fk(N), G(N), mult(N, 2), Sigma_tab;
 
   for (n = 0; n < N; n++)
     mult(n, 0) = 1, mult(n, 1) = 0; //valeur par defaut de mult
   if (fmult) //si multiplicateur -> calcul de sigma
     {
-      const Champ_Inc_base& ch_p = ref_cast(QDM_Multiphase, pbm->equation_qdm()).pression().valeur();
-      const DoubleTab& press = ch_p.valeurs();
       const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
       // Et pour les methodes span de la classe Saturation
-      const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
-      Ts_tab.resize(ne_tot, nb_max_sat), Sigma_tab.resize(ne_tot, nb_max_sat);
+      const int ne_tot = domaine.nb_elem_tot(); // oui !! suite arithmetique !!
       for (k = 0; k < N; k++)
         for (int l = k + 1; l < N; l++)
           if (milc.has_saturation(k, l))
             {
-              Saturation_base& z_sat = milc.get_saturation(k, l);
+              const Saturation_base& z_sat = milc.get_saturation(k, l);
               const int ind_trav = (k*(N-1)-(k-1)*(k)/2) + (l-k-1); // Et oui ! matrice triang sup !
-              z_sat.Tsat(press.get_span(), Ts_tab.get_span(), nb_max_sat, ind_trav);
-              z_sat.sigma(Ts_tab.get_span(), press.get_span(), Sigma_tab.get_span(), nb_max_sat, ind_trav);
+              // recuperer Tsat et sigma ...
+              const DoubleTab& sig = z_sat.get_sigma_tab();
+
+              // fill in the good case
+              for (int ii = 0; ii < ne_tot; ii++)
+                Sigma_tab(ii, ind_trav) = sig(ii);
             }
     }
 
