@@ -1116,7 +1116,10 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
   extension_champ += ".";
   extension_champ += id_du_domaine;
   extension_champ += ".";
-  extension_champ += Nom(temps_courant_);
+  char str_temps[100] = "0.0";
+  if (temps_courant_ >= 0.)
+    snprintf(str_temps, 100, "%.10f", temps_courant_);
+  extension_champ += Nom(str_temps);
 
   Nom filename_champ;
   int size_tot, nb_compo;
