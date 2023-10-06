@@ -24,9 +24,9 @@
 #include <Equation_base.h>
 #include <Milieu_base.h>
 #include <EChaine.h>
+#include <Device.h>
 #include <Param.h>
 #include <Champ.h>
-#include <Device.h>
 
 Implemente_base_sans_constructeur(Milieu_base,"Milieu_base",Objet_U);
 // XD milieu_base objet_u milieu_base -1 Basic class for medium (physics properties of medium).
@@ -41,13 +41,6 @@ Milieu_base::Milieu_base()
   deja_associe=0;
 }
 
-/*! @brief Surcharge Objet_U::printOn Imprime un mileu sur un flot de sortie.
- *
- *     Appelle Milieu_base::ecrire
- *
- * @param (Sortie& os) le flot de sortie pour l'impression
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& Milieu_base::printOn(Sortie& os) const
 {
   os << "{" << finl;
@@ -467,30 +460,12 @@ void Milieu_base::creer_champs_non_lus()
 
 void Milieu_base::warn_old_syntax()
 {
-  if (que_suis_je() != "Fluide_Diphasique")
+  if (que_suis_je() != "Fluide_Diphasique") // pour le FT pour le moment ...
     {
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << finl;
-      Cerr << "*** WARNING *** YOU ARE USING THE OLD SYNTAX IN DATA FILE " << finl;
-      Cerr << "*** WARNING *** STARTING FROM TRUST-v1.9.3 : GRAVITY SHOULD BE READ INSIDE THE MEDIUM AND NOT VIA ASSOSCIATION ... " << finl;
-      Cerr << "*** WARNING *** THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE IN FUTURE VERSIONS ... " << finl;
-      Cerr << "*** WARNING *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/) ... " << finl;
-      Cerr << "***   TIP   *** You can find, in the RELEASE_NOTES of your code, command to help you converting" << finl;
-      Cerr << "                your datafile "<< nom_du_cas() << ".data to new syntax" << finl;
-      Cerr << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << finl;
-      //  throw;
+      Cerr << "YOU ARE USING AN OLD SYNTAX IN YOUR DATA FILE AND THIS IS NO MORE SUPPORTED !" << finl;
+      Cerr << "STARTING FROM TRUST-v1.9.3 : GRAVITY SHOULD BE READ INSIDE THE MEDIUM AND NOT VIA ASSOSCIATION ... " << finl;
+      Cerr << "HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/) ... " << finl;
+      Process::exit();
     }
 }
 
@@ -508,7 +483,6 @@ int Milieu_base::associer_(Objet_U& ob)
     {
       warn_old_syntax();
       via_associer_ = true;
-      warn_old_syntax();
       associer_gravite(ref_cast(Champ_Don_base, ob));
       return 1;
     }
@@ -516,7 +490,6 @@ int Milieu_base::associer_(Objet_U& ob)
     {
       warn_old_syntax();
       via_associer_ = true;
-      warn_old_syntax();
       associer_gravite(ref_cast(Champ_Don, ob).valeur());
       return 1;
     }
@@ -537,7 +510,7 @@ void Milieu_base::associer_gravite(const Champ_Don_base& la_gravite)
     }
   g_via_associer_ = la_gravite;
 
-  if (g_via_associer() && g.non_nul())
+  if (via_associer_ && g.non_nul())
     {
       assert (g_via_associer_.non_nul());
       Cerr << "WHAT ?? Remove the associer gravity line from your jdd because it is already in the medium !!!" << finl;

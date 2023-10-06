@@ -109,11 +109,9 @@ public:
   virtual int check_unknown_range() const { return 1; }
 
   //Methodes de l interface des champs postraitables
-  //////////////////////////////////////////////////////
   void creer_champ(const Motcle& motlu) override;
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
-  /////////////////////////////////////////////////////
 
   const bool& has_hydr_diam() { return has_hydr_diam_; }
   void set_id_composite(const int i);
@@ -156,18 +154,10 @@ private:
   const bool& is_user_porosites() { return is_user_porosites_; }
   const bool& is_field_porosites() { return is_field_porosites_; }
 
-  // ***************************************************************************
-  // TODO : XXX:  TEMPORAIRE : on accepte pour le momemnt l'ancienne syntaxe,
-  // i.e. typer_lire xxxx milieu, associer, typer_lire_grav, associer xxxx , ...
-  // a voir plus tard quand ca devient absolete
-
   mutable int deja_associe;
   bool via_associer_ = false;
-  inline bool g_via_associer() { return via_associer_; }
   void warn_old_syntax();
   REF(Champ_Don_base) g_via_associer_;
-  // FIN partie TEMPORAIRE
-  // ***************************************************************************
 };
 
 #endif /* Milieu_base_included */
