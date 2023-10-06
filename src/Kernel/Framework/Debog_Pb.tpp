@@ -370,7 +370,7 @@ void Debog_Pb::verifier(const char *const msg, const TRUSTVect<_TYPE_>& arr, TRU
   debog_msg_count_++;
 }
 
-template<typename _TYPE_> enable_if_t_< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >
+template<typename _TYPE_> std::enable_if_t< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >
 Debog_Pb::verifier(const char *const msg, _TYPE_ x, _TYPE_ *ref_value)
 {
   static constexpr bool IS_DOUBLE = std::is_same<_TYPE_,double>::value;

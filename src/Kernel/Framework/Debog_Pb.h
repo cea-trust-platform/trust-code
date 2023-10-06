@@ -18,7 +18,7 @@
 
 #include <MD_Vector_composite.h>
 #include <TRUSTTabs_forward.h>
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <Interprete_bloc.h>
 #include <MD_Vector_tools.h>
 #include <TRUSTTab_parts.h>
@@ -44,7 +44,7 @@ public:
 
   static REF(Debog_Pb)& get_debog_instance() { return instance_debog_; }
 
-  template <typename _TYPE_> enable_if_t_< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >
+  template <typename _TYPE_> std::enable_if_t< (std::is_convertible<_TYPE_, double>::value) || (std::is_convertible<_TYPE_, int>::value),void >
   verifier(const char *const msg, _TYPE_, _TYPE_ *refvalue = 0);
 
   template <typename _TYPE_>

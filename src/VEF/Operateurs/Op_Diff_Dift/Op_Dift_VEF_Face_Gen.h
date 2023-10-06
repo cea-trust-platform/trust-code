@@ -36,16 +36,16 @@ public:
   void modifie_pour_cl_gen(const DoubleTab&, DoubleTab&, DoubleTab&) const;
 
   // methodes pour l'explicite
-  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::VECTORIEL, void>
+  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::VECTORIEL, void>
   ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
 
-  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::VECTORIEL, void>
+  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::VECTORIEL, void>
   ajouter_interne_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
 
-  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::SCALAIRE, void>
+  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::SCALAIRE, void>
   ajouter_bord_gen(const DoubleTab& , DoubleTab& , DoubleTab& , const DoubleTab& , const DoubleTab& ) const;
 
-  template <Type_Champ _TYPE_> enable_if_t_<_TYPE_ ==  Type_Champ::SCALAIRE, void>
+  template <Type_Champ _TYPE_> std::enable_if_t<_TYPE_ ==  Type_Champ::SCALAIRE, void>
   ajouter_interne_gen(const DoubleTab& inco, DoubleTab& resu, DoubleTab& , const DoubleTab& nu, const DoubleTab& nu_turb) const
   {
     ajouter_interne_gen__<_TYPE_, Type_Schema::EXPLICITE>(inco, &resu, nullptr, nu, nu_turb, nu_turb /* poubelle */);

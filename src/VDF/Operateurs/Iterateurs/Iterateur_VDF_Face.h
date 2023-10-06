@@ -69,15 +69,15 @@ private:
   void ajouter_blocs_aretes_bords(const int, matrices_t, DoubleTab&, const tabs_t&) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::NAVIER_PAROI, void>
+  std::enable_if_t< Arete_Type == Type_Flux_Arete::PAROI || Arete_Type == Type_Flux_Arete::NAVIER || Arete_Type == Type_Flux_Arete::NAVIER_PAROI, void>
   ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE, void>
+  std::enable_if_t< Arete_Type == Type_Flux_Arete::FLUIDE || Arete_Type == Type_Flux_Arete::PAROI_FLUIDE || Arete_Type == Type_Flux_Arete::NAVIER_FLUIDE, void>
   ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+  std::enable_if_t< Arete_Type == Type_Flux_Arete::PERIODICITE, void>
   ajouter_blocs_aretes_bords_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   /* ====== COINS ===== */
@@ -85,15 +85,15 @@ private:
   void ajouter_blocs_aretes_coins(const int, matrices_t, DoubleTab&, const tabs_t&) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, TypeAreteCoinVDF::type_arete Arete_Type_Coin, typename Type_Double>
-  enable_if_t_< Arete_Type == Type_Flux_Arete::PAROI, void>
+  std::enable_if_t< Arete_Type == Type_Flux_Arete::PAROI, void>
   ajouter_blocs_aretes_coins_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_<Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
+  std::enable_if_t<Arete_Type == Type_Flux_Arete::COIN_FLUIDE, void>
   ajouter_blocs_aretes_coins_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
+  std::enable_if_t<Arete_Type == Type_Flux_Arete::PERIODICITE, void>
   ajouter_blocs_aretes_coins_(const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   /* ====== INTERNES  & MIXTES ===== */
@@ -104,7 +104,7 @@ private:
   void ajouter_blocs_aretes_mixtes(const int, matrices_t, DoubleTab&, const tabs_t&) const;
 
   template <bool should_calc_flux, Type_Flux_Arete Arete_Type, typename Type_Double>
-  enable_if_t_< Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
+  std::enable_if_t< Arete_Type == Type_Flux_Arete::INTERNE || Arete_Type == Type_Flux_Arete::MIXTE, void>
   ajouter_blocs_aretes_generique_(const int , const int , const int , matrices_t , DoubleTab& , const tabs_t& ) const;
 
   /* ====== FA7 SORTIE LIBRE ===== */

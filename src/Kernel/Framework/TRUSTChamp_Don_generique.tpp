@@ -88,7 +88,7 @@ void TRUSTChamp_Don_generique<_TYPE_>::mettre_a_jour_positions(DoubleTab& positi
  * @param (DoubleVect& val) la valeur du champ au point specifie
  */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
@@ -99,7 +99,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val
 }
 
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val) const
 {
   IntVect le_poly(1);
@@ -114,14 +114,14 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_(const DoubleVect& x, DoubleVect& val
  * @param (int le_poly) l'element dans lequel est situe le point de calcul
  */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& x, DoubleVect& val, int ) const
 {
   return valeur_a(x,val);
 }
 
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& , DoubleVect& val, int le_poly) const
 {
   if (val.size() != nb_compo_) erreur_champ_(__func__); // DoubleVect val doesn't have the correct size
@@ -139,7 +139,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_(const DoubleVect& , DoubleVect&
  * @param (int ncomp) l'index de la composante du champ a calculer
  */
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
-enable_if_t_<T != Champ_Don_Type::TXYZ, double> /* XYZ ou LU */
+std::enable_if_t<T != Champ_Don_Type::TXYZ, double> /* XYZ ou LU */
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int le_poly, int ncomp) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
@@ -149,7 +149,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int 
 }
 
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
-enable_if_t_<T == Champ_Don_Type::TXYZ, double>
+std::enable_if_t<T == Champ_Don_Type::TXYZ, double>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int , int ncomp) const
 {
   DoubleTab positions(1, dimension);
@@ -167,7 +167,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_a_elem_compo_(const DoubleVect& x, int 
  * @param (DoubleTab& val) le tableau des valeurs du champ aux points specifies
  */
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
-enable_if_t_<T != Champ_Don_Type::LU, DoubleTab&>
+std::enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
@@ -181,7 +181,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val
 }
 
 template <Champ_Don_Type _TYPE_> template <Champ_Don_Type T>
-enable_if_t_<T == Champ_Don_Type::LU, DoubleTab&>
+std::enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val) const
 {
   IntVect les_polys(mon_domaine->nb_elem());
@@ -196,7 +196,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_(const DoubleTab& x, DoubleTab& val
  * @param (int ncomp) l'index de la composante du champ a calculer
  */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVect& val, int ncomp) const
 {
   static constexpr bool IS_XYZ = (_TYPE_ == Champ_Don_Type::XYZ);
@@ -205,7 +205,7 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVe
 }
 
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVect& val, int ncomp) const
 {
   IntVect les_polys(mon_domaine->nb_elem());
@@ -220,14 +220,14 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_compo_(const DoubleTab& x, DoubleVe
  * @param (DoubleTab& val) le tableau des valeurs du champ aux points specifies
  */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T != Champ_Don_Type::LU, DoubleTab&>
+std::enable_if_t<T != Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab& x, const IntVect&, DoubleTab& val) const
 {
   return valeur_aux(x, val);
 }
 
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T == Champ_Don_Type::LU, DoubleTab&>
+std::enable_if_t<T == Champ_Don_Type::LU, DoubleTab&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab&, const IntVect& les_polys, DoubleTab& val) const
 {
   if (val.nb_dim() > 2) erreur_champ_(__func__); // DoubleTab val don't have 2 entries
@@ -251,14 +251,14 @@ TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_(const DoubleTab&, const IntV
  * @param (int ncomp) l'index de la composante du champ a calculer
  */
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T != Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T != Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_compo_(const DoubleTab& x, const IntVect&, DoubleVect& val, int ncomp) const
 {
   return valeur_aux_compo(x, val, ncomp);
 }
 
 template <Champ_Don_Type _TYPE_> template<Champ_Don_Type T>
-enable_if_t_<T == Champ_Don_Type::LU, DoubleVect&>
+std::enable_if_t<T == Champ_Don_Type::LU, DoubleVect&>
 TRUSTChamp_Don_generique<_TYPE_>::valeur_aux_elems_compo_(const DoubleTab& , const IntVect& les_polys, DoubleVect& val, int ncomp) const
 {
   assert(val.size() == les_polys.size());

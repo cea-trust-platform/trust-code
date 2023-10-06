@@ -16,7 +16,7 @@
 #ifndef Op_Conv_VDF_included
 #define Op_Conv_VDF_included
 
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <Iterateur_VDF.h>
 #include <Op_VDF_Elem.h>
 #include <Op_VDF_Face.h>
@@ -35,7 +35,7 @@ protected:
 
   // pour les deux !
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_CONV_ELEM, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_transporte)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Elem>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Elem>::value;
@@ -44,7 +44,7 @@ protected:
   }
 
   template <Type_Operateur _TYPE_ , typename EVAL_TYPE>
-  inline enable_if_t_<_TYPE_ == Type_Operateur::Op_CONV_FACE, void>
+  inline std::enable_if_t<_TYPE_ == Type_Operateur::Op_CONV_FACE, void>
   associer_impl(const Domaine_dis& domaine_dis, const Domaine_Cl_dis& domaine_cl_dis, const Champ_Inc& ch_vit)
   {
     constexpr bool is_QUICK = std::is_same<EVAL_TYPE,Eval_Quick_VDF_Face>::value, is_CENTRE4 = std::is_same<EVAL_TYPE,Eval_Centre4_VDF_Face>::value;

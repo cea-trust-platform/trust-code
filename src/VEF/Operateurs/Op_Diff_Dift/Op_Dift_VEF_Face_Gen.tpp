@@ -87,7 +87,7 @@ void Op_Dift_VEF_Face_Gen<DERIVED_T>::fill_grad_Re(const DoubleTab& inconnue, co
  */
 
 template <typename DERIVED_T> template<Type_Champ _TYPE_>
-enable_if_t_<_TYPE_ == Type_Champ::VECTORIEL, void>
+std::enable_if_t<_TYPE_ == Type_Champ::VECTORIEL, void>
 Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
   const auto *z_class = static_cast<const DERIVED_T*>(this); // CRTP --> I love you :*
@@ -136,7 +136,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, Dou
 }
 
 template <typename DERIVED_T> template<Type_Champ _TYPE_>
-enable_if_t_<_TYPE_ == Type_Champ::VECTORIEL, void>
+std::enable_if_t<_TYPE_ == Type_Champ::VECTORIEL, void>
 Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
   const Domaine_VEF& domaine_VEF = static_cast<const DERIVED_T*>(this)->domaine_vef();
@@ -157,7 +157,7 @@ Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_interne_gen(const DoubleTab& inconnue, 
 }
 
 template <typename DERIVED_T> template<Type_Champ _TYPE_>
-enable_if_t_<_TYPE_ == Type_Champ::SCALAIRE, void>
+std::enable_if_t<_TYPE_ == Type_Champ::SCALAIRE, void>
 Op_Dift_VEF_Face_Gen<DERIVED_T>::ajouter_bord_gen(const DoubleTab& inconnue, DoubleTab& resu, DoubleTab& tab_flux_bords, const DoubleTab& nu, const DoubleTab& nu_turb) const
 {
   // On traite les faces bord

@@ -16,7 +16,7 @@
 #ifndef TRUSTVect_included
 #define TRUSTVect_included
 
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <MD_Vector_tools.h>
 #include <MD_Vector_base.h>
 #include <communications.h>
@@ -128,19 +128,19 @@ public:
   inline void racine_carree(Mp_vect_options opt = VECT_ALL_ITEMS) { racine_carree_(*this, opt); }
 
   template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
-  enable_if_t_<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
+  std::enable_if_t<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
   inline ajoute(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_ALL_ITEMS);
 
   template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
-  enable_if_t_<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
+  std::enable_if_t<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
   inline ajoute_sans_ech_esp_virt(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_REAL_ITEMS) { ajoute_alpha_v(*this, (_T_)alpha, y, opt); } // x+=alpha*y sans echange_espace_virtuel
 
   template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
-  enable_if_t_<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
+  std::enable_if_t<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
   inline ajoute_produit_scalaire(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& x, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_produit_scalaire(*this, (_T_)alpha, x, y, opt); } // z+=alpha*x*y;
 
   template<typename _T_ /* double ou float */, typename _SCALAR_TYPE_>
-  enable_if_t_<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
+  std::enable_if_t<std::is_convertible<_SCALAR_TYPE_, _T_>::value ,void>
   inline ajoute_carre(_SCALAR_TYPE_ alpha, const TRUSTVect<_T_>& y, Mp_vect_options opt = VECT_ALL_ITEMS) { ajoute_carre_(*this, (_T_)alpha, y, opt); }
 
   inline void ajoute_carre(int alpha, const TRUSTVect<int>& y, Mp_vect_options opt = VECT_ALL_ITEMS) = delete; // forbidden ... a voir si besoin

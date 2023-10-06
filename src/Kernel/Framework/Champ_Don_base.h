@@ -16,7 +16,7 @@
 #ifndef Champ_Don_base_included
 #define Champ_Don_base_included
 
-#include <TRUST_type_traits.h>
+#include <type_traits>
 #include <Champ_base.h>
 #include <TRUSTTab.h>
 

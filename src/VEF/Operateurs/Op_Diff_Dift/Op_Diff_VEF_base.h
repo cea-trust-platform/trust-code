@@ -64,13 +64,13 @@ protected:
   mutable DoubleTab nu_;
 
 private:
-  template<typename _TYPE_> enable_if_t_< std::is_same<_TYPE_, double>::value , double>
+  template<typename _TYPE_> std::enable_if_t< std::is_same<_TYPE_, double>::value , double>
   inline diffu__(const int k, const int l, const int num_elem, const _TYPE_ &diffu) const { return diffu; }
 
-  template<typename _TYPE_> enable_if_t_< std::is_same<_TYPE_, TRUSTTab<double>>::value , double>
+  template<typename _TYPE_> std::enable_if_t< std::is_same<_TYPE_, TRUSTTab<double>>::value , double>
   inline diffu__(const int k, const int l, const int num_elem, const _TYPE_ &diffu) const { return diffu(num_elem, k * dimension + l); }
 
-  template<typename _TYPE_> enable_if_t_< std::is_same<_TYPE_, TRUSTArray<double>>::value , double>
+  template<typename _TYPE_> std::enable_if_t< std::is_same<_TYPE_, TRUSTArray<double>>::value , double>
   inline diffu__(const int k, const int l, const int num_elem, const _TYPE_ &diffu) const { return diffu[k * dimension + l]; }
 };
 
