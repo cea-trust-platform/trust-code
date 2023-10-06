@@ -125,7 +125,8 @@ void Perte_Charge_PolyMAC::ajouter_blocs(matrices_t matrices, DoubleTab& secmem,
     {
       const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
       // Et pour les methodes span de la classe Saturation
-      const int ne_tot = domaine.nb_elem_tot(); // oui !! suite arithmetique !!
+      const int ne_tot = domaine.nb_elem_tot(), nb_max_sat =  N * (N-1) /2; // oui !! suite arithmetique !!
+      Sigma_tab.resize(ne_tot, nb_max_sat);
       for (k = 0; k < N; k++)
         for (int l = k + 1; l < N; l++)
           if (milc.has_saturation(k, l))
