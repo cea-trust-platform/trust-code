@@ -45,6 +45,8 @@ public:
   const Champ_base& get_champ(const Motcle& nom) const override;
   void get_noms_champs_postraitables(Noms& nom,Option opt=NONE) const override;
 
+  bool is_pb_med() override { return true ; }
+
 protected :
   Champs_Fonc champs_fonc_post;
 

@@ -132,7 +132,7 @@ Entree& Probleme_base::readOn(Entree& is)
     }
 
   /* 1 : milieu : NEW SYNTAX */
-  if (!milieu_via_associer() && !is_pb_med() && !is_pb_FT() && !is_pb_rayo())
+  if (!milieu_via_associer_ && !is_pb_med() && !is_pb_FT() && !is_pb_rayo())
     typer_lire_milieu(is);
   else assert((int)le_milieu_.size() == 0);
 
@@ -241,8 +241,7 @@ Entree& Probleme_base::lire_equations(Entree& is, Motcle& dernier_mot)
  */
 void Probleme_base::associer()
 {
-  int nb_eqn = nombre_d_equations();
-  for (int i = 0; i < nb_eqn; i++)
+  for (int i = 0; i < nombre_d_equations(); i++)
     equation(i).associer_pb_base(*this);
 }
 
@@ -250,28 +249,10 @@ void Probleme_base::warn_old_syntax()
 {
   if (!is_pb_FT() && !is_pb_rayo())
     {
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << finl;
-      Cerr << "*** WARNING *** YOU ARE USING THE OLD SYNTAX IN DATA FILE" << finl;
-      Cerr << "*** WARNING *** STARTING FROM TRUST-v1.9.3 : THE MEDIUM SHOULD BE READ INSIDE THE PROBLEM AND NOT VIA ASSOSCIATION ... " << finl;
-      Cerr << "*** WARNING *** THIS OLD SYNTAX WILL NOT BE SUPPORTED ANYMORE IN FUTURE VERSIONS... " << finl;
-      Cerr << "*** WARNING *** HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/)  ... " << finl;
-      Cerr << "***   TIP   *** You can find, in the RELEASE_NOTES of your code, command to help you converting" << finl;
-      Cerr << "                your datafile "<< nom_du_cas() << ".data to new syntax" << finl;
-      Cerr << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << finl;
-      Cerr << finl;
-      //  throw;
+      Cerr << "YOU ARE USING AN OLD SYNTAX IN YOUR DATA FILE AND THIS IS NO MORE SUPPORTED !" << finl;
+      Cerr << "STARTING FROM TRUST-v1.9.3 : THE MEDIUM SHOULD BE READ INSIDE THE PROBLEM AND NOT VIA ASSOSCIATION ... " << finl;
+      Cerr << "HAVE A LOOK TO ANY TRUST TEST CASE TO SEE HOW IT SHOULD BE DONE ($TRUST_ROOT/tests/) ... " << finl;
+      Process::exit();
     }
 }
 
@@ -303,7 +284,6 @@ int Probleme_base::associer_(Objet_U& ob)
     {
       warn_old_syntax();
       milieu_via_associer_ = true;
-      warn_old_syntax();
       if (!ref_cast(Milieu_base, ob).est_deja_associe())
         return 2;
       associer_milieu_base(ref_cast(Milieu_base, ob));
@@ -397,15 +377,9 @@ void Probleme_base::discretiser(Discretisation_base& une_discretisation)
   // Can not do this before, since the Domaine_dis is not typed yet:
   le_domaine_dis->associer_domaine(le_domaine_);
 
-  if (milieu_via_associer() || is_pb_FT())
+  if (milieu_via_associer_ || is_pb_FT())
     {
       discretiser_equations();
-      // Discretisation du milieu:
-      //   ATTENTION (BM): il faudra faire quelque chose ici car si on associe deux
-      //   milieux au probleme (fluide_incompressible + constituant), seul
-      //   le premier est discretise. Cette facon de faire n'est pas propre !
-      //   Solution probable: gros nettoyage et on met le milieu dans le probleme
-      // Elie Saikali : MERCI BENOIT !!!!
       Noms milieux_deja_discretises;
       for (int i = 0; i < nombre_d_equations(); i++)
         {

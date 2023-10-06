@@ -173,33 +173,25 @@ public:
   void getOutputFieldsNames(Noms& noms) const override { getOutputFieldsNames_impl(*this, noms); }
 
   // interface Probleme_U
-
   bool updateGivenFields() override { return updateGivenFields_impl(*this); }
   double futureTime() const override { return futureTime_impl(*this); }
 
   REF(Field_base) findInputField(const Nom& name) const override { return findInputField_impl(*this, name); }
   REF(Champ_Generique_base) findOutputField(const Nom& name) const override { return findOutputField_impl(*this, name); }
 
-  inline bool milieu_via_associer() { return milieu_via_associer_; }
+  virtual bool is_pb_med() { return false ; }
+  virtual bool is_pb_FT() { return false ; }
+  virtual bool is_pb_rayo() { return false ; }
+
   void associer_pb_couple(const Probleme_Couple& pbc) { pbc_ = pbc; }
   const Probleme_Couple& get_pb_couple() const { return pbc_; }
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
-protected :
-  // ***************************************************************************
-  // TODO : XXX:  TEMPORAIRE : on accepte pour le momemnt l'ancienne syntaxe,
-  // i.e. typer_lire xxxx milieu, associer, typer_lire_grav, associer xxxx , ...
-  // a voir plus tard quand ca devient absolete
-
+private:
   bool milieu_via_associer_ = false;
   void warn_old_syntax();
-  inline bool is_pb_med() { return (que_suis_je() == "Pb_MED" || que_suis_je() == "Pbc_MED") ? true : false ; }
-  inline bool is_pb_FT() { return (que_suis_je() == "Probleme_FT_Disc_gen") ? true : false ; }
-  inline bool is_pb_rayo() { return (que_suis_je() == "Modele_rayo_semi_transp" || que_suis_je().debute_par("Pb_Rayo")) ? true : false ; } /* Oui c'est un pb avec un nom : Modele ... */
 
-  // FIN partie TEMPORAIRE
-  // ***************************************************************************
-
+protected :
   std::vector<Milieu> le_milieu_;
   REF(Domaine_dis) le_domaine_dis;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
   Postraitements les_postraitements;
