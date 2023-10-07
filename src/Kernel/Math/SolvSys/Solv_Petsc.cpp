@@ -1131,10 +1131,11 @@ void Solv_Petsc::create_solver(Entree& entree)
               {
                 PCSetType(PreconditionneurPetsc_, PCHYPRE);
                 PCHYPRESetType(PreconditionneurPetsc_, "boomeramg"); // Classical C-AMG
+                pc_supported_on_gpu_by_petsc=1;
                 // Changement pc_hypre_boomeramg_relax_type_all pour PETSc 3.10, la matrice de
                 // preconditionnement etant seqaij, symetric-SOR/jacobi (defaut) provoque KSP_DIVERGED_INDEFINITE_PC
                 // Voir: https://lists.mcs.anl.gov/mailman/htdig/petsc-users/2012-December/015922.html
-                add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
+                if (!gpu_) add_option("pc_hypre_boomeramg_relax_type_all", "Jacobi");
                 // Voir https://mooseframework.inl.gov/releases/moose/2021-05-18/application_development/hypre.html
                 //if (dimension==3) Cerr << "Warning, on massive parallel calculation for best performance, consider playing with -pc_hypre_boomeramg_strong_threshold 0.7 or 0.8 or 0.9" << finl;
                 if (dimension==3) add_option("pc_hypre_boomeramg_strong_threshold", "0.7");
@@ -1352,6 +1353,11 @@ void Solv_Petsc::create_solver(Entree& entree)
   PCType type_pc;
   PCGetType(PreconditionneurPetsc_, &type_pc);
   type_pc_=(Nom)type_pc;
+
+  // Pas de version CPU de Hypre si PETSc active le support GPU:
+#ifdef PETSC_HAVE_CUDA
+  if (type_pc_=="hypre") gpu_ = true;
+#endif
 
 // Creation du fichier de config .amgx (NB: les objets PETSc sont crees mais ne seront pas utilises)
   if (amgx_ && Process::je_suis_maitre())
