@@ -67,6 +67,7 @@ Read pb
     QDM_Multiphase
     {
         solveur_pression petsc cli_quiet { -pc_type hypre -pc_hypre_type boomeramg }
+        solveur_pression petsc cholesky { } # Ecarts sinon seq/par sur Convection_chaleur.out #
         convection { amont }
         diffusion  { negligeable }
         initial_conditions
