@@ -32,7 +32,7 @@ class Matrice_Morse_Sym;
 class Matrice_Morse;
 
 
-enum solveur_direct_ { no, mumps, superlu_dist, petsc, umfpack, pastix, cholmod, cli };
+enum solveur_direct_ { no, mumps, superlu_dist, petsc, umfpack, pastix, cholmod, strumpack, cli };
 extern bool gmres_right_unpreconditionned;
 
 /* Struct to associate Petsc preconditionner to user-provided preconditioner */

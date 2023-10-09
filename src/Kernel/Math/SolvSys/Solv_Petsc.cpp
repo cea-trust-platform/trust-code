@@ -160,7 +160,7 @@ void Solv_Petsc::create_solver(Entree& entree)
   // mais egalement pouvoir appeler les options Petsc avec une chaine { -ksp_type cg -pc_type sor ... }
   // Les options non reconnues doivent arreter le code
   // Reprendre le formalisme de GCP { precond ssor { omega val } seuil val }
-  Motcles les_solveurs(20);
+  Motcles les_solveurs(21);
   {
     les_solveurs[0] = "CLI";
     les_solveurs[1] = "GCP";
@@ -182,6 +182,7 @@ void Solv_Petsc::create_solver(Entree& entree)
     les_solveurs[17] = "CHOLESKY_CHOLMOD";
     les_solveurs[18] = "PIPECG2";
     les_solveurs[19] = "FGMRES";
+    les_solveurs[20] = "LU_STRUMPACK";
   }
   int solver_supported_on_gpu_by_petsc=0;
   int solver_supported_on_gpu_by_amgx=0;
@@ -360,6 +361,15 @@ void Solv_Petsc::create_solver(Entree& entree)
         solveur_direct_=superlu_dist;
 #endif
         KSPSetType(SolveurPetsc_, KSPPREONLY);
+        break;
+      }
+    case 20:
+      {
+        solveur_direct_ = strumpack;
+        // ToDo add BLR option
+        KSPSetType(SolveurPetsc_, KSPPREONLY);
+        solver_supported_on_gpu_by_petsc=1;
+        if (gpu_) add_option("mat_strumpack_gpu", "1");
         break;
       }
     case 5:
@@ -545,6 +555,8 @@ void Solv_Petsc::create_solver(Entree& entree)
                   add_option("mat_pastix_verbose","2");
                 else if (solveur_direct_==cholmod)
                   add_option("mat_cholmod_print","3");
+                else if (solveur_direct_==strumpack)
+                  add_option("mat_strumpack_verbose", "1");
                 else if (solveur_direct_)
                   {
                     Cerr << "impr not coded yet for this direct solver." << finl;
@@ -2015,6 +2027,8 @@ void Solv_Petsc::check_aij(const Matrice_Morse& mat)
   if (solveur_direct_==superlu_dist) mataij_=1;
   // IDEM pour UMFPACK qui ne supporte que le format AIJ:
   if (solveur_direct_==umfpack) mataij_=1;
+  // IDEM pour UMFPACK qui ne supporte que le format AIJ:
+  if (solveur_direct_==strumpack) mataij_=1;
 
   // Dans le cas GPU, seul le format AIJ est supporte pour le moment:
   if (gpu_ || amgx_) mataij_=1;
@@ -2209,6 +2223,12 @@ void Solv_Petsc::Create_objects(const Matrice_Morse& mat, int blocksize)
       if (message_affi)
         Cout << "Cholesky from Cholmod may take several minutes, please wait...";
       PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERCHOLMOD);
+    }
+  else if (solveur_direct_ == strumpack)
+    {
+      if (message_affi)
+        Cout << "Cholesky from Strumpack may take several minutes, please wait...";
+      PCFactorSetMatSolverType(PreconditionneurPetsc_, MATSOLVERSTRUMPACK);
     }
   else if (solveur_direct_ == cli)
     {
