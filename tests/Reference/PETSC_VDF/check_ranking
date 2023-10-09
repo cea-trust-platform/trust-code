@@ -16,7 +16,7 @@ END { \
 #print its" "res" "ram_min" "ram_max; \
 if (check) print "cpu total: "cpu" (Reference sur PC $TRUST_HOST_ADMIN semi optimise avec Petsc 3.5.x): "cpu_max; \
 err=0; \
-if (check && its>its_max) {print "Nombre iterations trop eleve ("its">"its_max") sur un ou plusieurs solveurs...";err=1} \
+if (its>its_max) {print "Nombre iterations trop eleve ("its">"its_max") sur un ou plusieurs solveurs...";err=1} \
 if (res>res_max) {print "Residu final obtenu trop eleve ("res">"res_max") sur un ou plusieurs solveur...";err=1} \
 if (check && max_ram-min_ram>delta_ram_max) {print "RAM occupee trop elevee ("max_ram">"delta_ram_max+min_ram") sur un ou plusieurs solveur...";err=1} \
 if (check && cpu>cpu_max) {print "CPU trop eleve ("cpu">"cpu_max") sur un ou plusieurs solveurs...";err=1;} \
