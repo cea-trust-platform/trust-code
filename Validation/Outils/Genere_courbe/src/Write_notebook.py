@@ -264,7 +264,7 @@ class Write_notebook:
                     except:
                         valeur_f[i]=chaine2Tex(valeur_f[i])
                         #pass
-                code += "tab.addLigne([%s],r\"%s\")\n"%(valeur_f,chaine2Tex(ligne.legende))
+                code += "tab.addLine([%s],r\"%s\")\n"%(valeur_f,chaine2Tex(ligne.legende))
         
             elif ligne.fichier!='Undefined':
                 code += "data = plot.loadText(\"%s\""%(ligne.fichier)
@@ -287,7 +287,7 @@ class Write_notebook:
                         decal = 0
                         num_ligne = -1
                     for ll in range(nb_ligne):
-                        code += "tab.addLigne([["
+                        code += "tab.addLine([["
                         for i in range(tableau.nb_colonnes):
                             formule=colonnes[i+decal]
 
