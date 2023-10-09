@@ -163,7 +163,7 @@ if __name__ == "__main__":
             "__Tr__", str((TCs[name]["WR"][2] + TCs[name]["pinf"]) / (TCs[name]["WR"][0] * 8.31446261815324) -273.15 )
         )
 
-        tab.addLigne( [[TCs[name]["gamma"], TCs[name]["pinf"]] + TCs[name]["WL"] + TCs[name]["WR"] + [TCs[name]["x"]]], name)
+        tab.addLine( [[TCs[name]["gamma"], TCs[name]["pinf"]] + TCs[name]["WL"] + TCs[name]["WR"] + [TCs[name]["x"]]], name)
 
         for n in ["tmax", "gamma", "pinf", "x"]:
             filedata = filedata.replace("__{}__".format(n), str(TCs[name][n]))

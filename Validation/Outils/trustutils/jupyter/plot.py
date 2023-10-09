@@ -489,7 +489,7 @@ class Graph:
 
         r = r[(r["Time"] <= end) & (r["Time"] >= start)]
 
-        ### On plot les donn��es ###
+        ### On plot les donnees ###
         self.subplot.plot(list(r["Time"]), list(r[self.y_label]), marker, label=label, **kwargs)
 
         if not label is None:
@@ -599,7 +599,7 @@ class Table:  # ancien tableau
         """
         self.df = pd.DataFrame(columns=self.columns)
 
-    def addLigne(self, ligne, name):
+    def addLine(self, ligne, name):
         """
         
         Method to add a row to the board.
@@ -652,7 +652,7 @@ class Table:  # ancien tableau
         
         """
         path = os.path.join(BUILD_DIRECTORY, data)
-        self.addLigne([list(np.loadtxt(path, dtype=float))], name)
+        self.addLine([list(np.loadtxt(path, dtype=float))], name)
         saveFileAccumulator(data)
 
     def loadPoint(self, data, name):
@@ -676,7 +676,7 @@ class Table:  # ancien tableau
         saveFileAccumulator(data)
 
         a = tmp.getValues(tmp.getEntries()[0])[1][1]
-        self.addLigne([[a]], name)
+        self.addLine([[a]], name)
 
     def sum(self, name):
         """ 
@@ -698,7 +698,7 @@ class Table:  # ancien tableau
         row = [""] * len(self.df.columns)
         index = self.df.columns.get_loc(name)
         row[index] = total
-        self.addLigne([row], "Total")
+        self.addLine([row], "Total")
 
     def _repr_latex_(self):
         """ This method is invoked by 'display()' when generating a PDF """

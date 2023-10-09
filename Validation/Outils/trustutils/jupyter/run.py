@@ -477,7 +477,7 @@ class TRUSTCase(object):
                 row_arrange[4] += "-" + str(row[5])
             row = row_arrange
 
-        zeTable.addLigne([row], self.dir_ + "/" + self.dataFileName_)
+        zeTable.addLine([row], self.dir_ + "/" + self.dataFileName_)
         os.chdir(ORIGIN_DIRECTORY)
         
         ## Save the file
