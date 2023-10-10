@@ -33,8 +33,6 @@ public:
   inline void associer(const Domaine_VDF&);
   inline const Domaine_VDF& domaine_VDF() const;
   void calculer_orientation(IntVect&, int&, int&, int& );
-  void reordonner(IntVect& );
-  void reordonner_pour_debog(IntVect& );
 
 private :
 
@@ -43,7 +41,6 @@ private :
   //    1 pour une face d'equation y = cte
   //    2 pour une face d'equation z = cte
   REF(Domaine_VDF) le_dom_VDF;
-  void swap(int, int);
 
 };
 
