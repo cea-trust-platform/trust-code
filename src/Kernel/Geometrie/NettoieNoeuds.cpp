@@ -181,8 +181,8 @@ void NettoieNoeuds::nettoie(Domaine& dom)
             for (int j = 0; j < nb_som_face; j++)
               faces_sommets(i, j) = renum_som_old2new[old_faces_sommets(i, j)];
         }
-      // Les Groupes Internes :
-      for (auto &itr : dom.groupes_internes())
+      // Les Groupes de Faces :
+      for (auto &itr : dom.groupes_faces())
         {
           Frontiere& front = itr;
           Faces& faces = front.faces();

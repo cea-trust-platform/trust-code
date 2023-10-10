@@ -198,7 +198,7 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
       Cerr << " surface " << nom_surface << finl;
       identifiant_ = nom_surface;
     }
-  else if (method=="Internal_Face_groups")
+  else if (method=="Face_group")
     {
       /* Surface algorithm */
       algo=2;
@@ -335,10 +335,10 @@ void Perte_Charge_Singuliere::lire_surfaces(Entree& is, const Domaine& le_domain
     }
   else if (algo==2)
     {
-      const Groupe_interne grp_interne = le_domaine.groupe_interne(nom_surface);
-      int nb_faces = grp_interne.nb_faces();
-      Cerr << " Internal Face group " << nom_surface << " with " << nb_faces << " faces" << finl;
-      const ArrOfInt indice_faces = grp_interne.get_indices_faces();
+      const Groupe_Faces grp_faces = le_domaine.groupe_faces(nom_surface);
+      int nb_faces = grp_faces.nb_faces();
+      Cerr << "Face group " << nom_surface << " with " << nb_faces << " faces" << finl;
+      const ArrOfInt indice_faces = grp_faces.get_indices_faces();
       for (int k=0; k < nb_faces; k++)
         les_faces[k] = indice_faces[k], face_tab(indice_faces[k]) = 1;
       compteur = nb_faces;

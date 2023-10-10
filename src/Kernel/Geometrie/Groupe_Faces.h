@@ -13,36 +13,36 @@
 *
 *****************************************************************************/
 
-#ifndef Groupes_internes_included
-#define Groupes_internes_included
+#ifndef Groupe_Faces_included
+#define Groupe_Faces_included
 
-#include <TRUST_List.h>
-#include <Groupe_interne.h>
+#include <Frontiere.h>
 
-/*! @brief Class Groupes_internes Cette classe represente une liste d'objets de type Groupe_interne
+/*! @brief Classe Groupe_Face La classe sert a representer une selection de faces lu dans le fichier med
  *
- * @sa Groupes_interne
+ *
+ * @sa Frontiere Domaine
  */
-class Groupes_internes : public LIST(Groupe_interne)
+class Groupe_Faces : public Frontiere
 {
-  Declare_instanciable(Groupes_internes);
+  Declare_instanciable(Groupe_Faces);
 
-public :
+public:
+  inline const ArrOfInt& get_indices_faces() const;
+  inline ArrOfInt& get_indices_faces();
 
-  void associer_domaine(const Domaine&);
-  int nb_faces() const;
-  inline int nb_groupes_internes() const;
-  //JY 26/08/97
-  int nb_faces(Type_Face type) const;
+private:
+  ArrOfInt indices_faces;
+
 };
 
-/*! @brief Renvoie le nombre d'objet Groupe_interne stockes dans la liste.
- *
- * @return (int) le nombre d'objet Groupe_interne stockes dans la liste
- */
-inline int Groupes_internes::nb_groupes_internes() const
+inline const ArrOfInt& Groupe_Faces::get_indices_faces() const
 {
-  return size();
+  return indices_faces;
 }
 
-#endif /* Groupes_internes_included */
+inline ArrOfInt& Groupe_Faces::get_indices_faces()
+{
+  return indices_faces;
+}
+#endif /* Groupe_Faces_included */

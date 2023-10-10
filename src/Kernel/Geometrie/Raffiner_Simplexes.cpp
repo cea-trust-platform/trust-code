@@ -735,6 +735,7 @@ static void build_frontier(const Frontiere&         src,
   IntTab nodes_of_faces_dest(nb_faces_src*nb_faces_dest_per_face_src,nb_nodes_per_face);
   ArrOfInt nodes_of_current_face(nb_nodes_per_face);
   ArrOfInt incident_cells;
+  bool is_internal_faces = (sub_type(Groupe_Faces, src) || sub_type(Joint, src) || sub_type(Bord_Interne, src)) ;
   incident_cells.set_smart_resize(1);
 
   for (int face=0; face<nb_faces_src; ++face)
@@ -744,9 +745,9 @@ static void build_frontier(const Frontiere&         src,
           nodes_of_current_face[node_in_face] = nodes_of_faces_src(face,node_in_face);
         }
       find_adjacent_elements(cells_of_nodes_src,nodes_of_current_face,incident_cells);
-      if (incident_cells.size_array() != 1)
+      if ((incident_cells.size_array() != 1) && (!is_internal_faces))
         {
-          // Cette erreur n'en est pas une pour les "faces internes"...
+          // Cette erreur n'en est pas une pour les "bords internes, groupe_faces ou joints"...
           // si le cas se presente, faire un test en essayant d'ignorer l'erreur...
           Cerr << "Error in Raffiner_Simplexes.cpp 'build_frontier()'" << finl;
           Cerr << "  The boundary face " << face << " having nodes " << nodes_of_current_face << " has the following incident cells " << incident_cells << finl;
@@ -877,13 +878,13 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
   }
 
   {
-    const Groupes_internes& boundaries_src  = src.groupes_internes();
-    Groupes_internes&        boundaries_dest = dest.groupes_internes();
+    const Groupes_Faces& boundaries_src  = src.groupes_faces();
+    Groupes_Faces&        boundaries_dest = dest.groupes_faces();
     boundaries_dest.vide();
     const int nb_boundaries = boundaries_src.size();
     for (int boundary=0; boundary<nb_boundaries; ++boundary)
       {
-        boundaries_dest.add(Groupe_interne());
+        boundaries_dest.add(Groupe_Faces());
         const Type_Face& face_type = boundaries_src[boundary].faces().type_face();
         build_frontier(boundaries_src[boundary],
                        face_type,
@@ -924,8 +925,6 @@ void Raffiner_Simplexes::refine_domain(const Domaine& src,
 
         // creation des SOMMETS communs
         ArrOfInt& liste_sommets = joint_dest.set_joint_item(Joint::SOMMET).set_items_communs();
-        joint_dest.set_joint_item(Joint::ELEMENT).set_items_distants();
-
         liste_sommets.set_smart_resize(1);
         // On prend tous les sommets des faces de joint:
         const IntTab& som_faces = joint_dest.faces().les_sommets();

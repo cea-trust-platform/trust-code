@@ -13,8 +13,37 @@
 *
 *****************************************************************************/
 
-#include <Groupe_interne.h>
+#ifndef Groupes_Faces_included
+#define Groupes_Faces_included
 
-Implemente_instanciable(Groupe_interne, "Groupe_interne", Frontiere);
-Sortie& Groupe_interne::printOn(Sortie& s) const { return Frontiere::printOn(s); }
-Entree& Groupe_interne::readOn(Entree& s) { return Frontiere::readOn(s); }
+#include <TRUST_List.h>
+#include <Groupe_Faces.h>
+
+/*! @brief Class Groupes_Faces Cette classe represente une liste d'objets de type Groupe_Faces
+ *
+ * @sa Groupes_Faces
+ */
+class Groupes_Faces : public LIST(Groupe_Faces)
+{
+  Declare_instanciable(Groupes_Faces);
+
+public :
+
+  void associer_domaine(const Domaine&);
+  int nb_faces() const;
+  inline int nb_groupes_faces() const;
+  //JY 26/08/97
+  int nb_faces(Type_Face type) const;
+  void renumerote(ArrOfInt& reverse_index);
+};
+
+/*! @brief Renvoie le nombre d'objet Groupe_Faces stockes dans la liste.
+ *
+ * @return (int) le nombre d'objet Groupe_Faces stockes dans la liste
+ */
+inline int Groupes_Faces::nb_groupes_faces() const
+{
+  return size();
+}
+
+#endif /* Groupes_Faces_included */

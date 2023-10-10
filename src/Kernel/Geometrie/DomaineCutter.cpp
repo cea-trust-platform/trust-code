@@ -387,17 +387,17 @@ void DomaineCutter::construire_frontieres_internes_ssdom(const ArrOfInt& liste_i
     }
 }
 
-void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_inverse_sommets,
-                                                    const int partie,
-                                                    Domaine& domaine_partie) const
+void DomaineCutter::construire_groupe_faces_ssdom(const ArrOfInt& liste_inverse_sommets,
+                                                  const int partie,
+                                                  Domaine& domaine_partie) const
 {
   const Domaine& domaine = ref_domaine_.valeur();
 
   Static_Int_Lists voisins;
-  const int nb_groupe_int = domaine.nb_groupes_int();
-  ArrOfInt nb_faces(nb_groupe_int);
-  for (int i = 0; i < nb_groupe_int; i++)
-    nb_faces[i] = domaine.groupe_interne(i).nb_faces();
+  const int nb_groupe_faces = domaine.nb_groupes_faces();
+  ArrOfInt nb_faces(nb_groupe_faces);
+  for (int i = 0; i < nb_groupe_faces; i++)
+    nb_faces[i] = domaine.groupe_faces(i).nb_faces();
   voisins.set_list_sizes(nb_faces);
   const int nb_som_face = domaine.frontiere(0).faces().nb_som_faces();
   ArrOfInt une_face(nb_som_face);
@@ -405,33 +405,34 @@ void DomaineCutter::construire_faces_internes_ssdom(const ArrOfInt& liste_invers
   elements_voisins.set_smart_resize(1);
   const IntVect& elem_part = ref_elem_part_.valeur();
 
-  for (int grp = 0; grp < nb_groupe_int; grp++)
+  for (int grp = 0; grp < nb_groupe_faces; grp++)
     {
-      const Groupe_interne& groupe_int = domaine.groupe_interne(grp);
-      Groupe_interne& groupe_partie =
-        domaine_partie.groupes_internes().add(Groupe_interne());
-      groupe_partie.nommer(groupe_int.le_nom());
+      const Groupe_Faces& groupe_faces = domaine.groupe_faces(grp);
+      Groupe_Faces& groupe_partie =
+        domaine_partie.groupes_faces().add(Groupe_Faces());
+      groupe_partie.nommer(groupe_faces.le_nom());
       groupe_partie.associer_domaine(domaine_partie);
-      groupe_partie.faces().typer(groupe_int.faces().type_face());
-      const IntTab& faces_sommets = groupe_int.faces().les_sommets();
+      groupe_partie.faces().typer(groupe_faces.faces().type_face());
+      const IntTab& faces_sommets = groupe_faces.faces().les_sommets();
       IntTab& faces_sommets_partie = groupe_partie.faces().les_sommets();
 
       ArrOfInt liste_faces;
       liste_faces.set_smart_resize(1); // Pour faire append_array...
 
       // Premier passage : on cherche les faces a inclure
-      const IntTab& faces = groupe_int.les_sommets_des_faces();
+      const IntTab& faces = groupe_faces.les_sommets_des_faces();
       const int n = nb_faces[grp];
       for (int j = 0; j < n; j++)
         {
           for (int k = 0; k < nb_som_face; k++)
             une_face[k] = faces(j, k);
           find_adjacent_elements(som_elem_, une_face, elements_voisins);
-          assert (elements_voisins.size_array() == 2 ); // if type_frontiere is Groupe_interne, it must have two neighbors
 
-          if (elem_part[elements_voisins[0]] == partie || elem_part[elements_voisins[1]] == partie)
-            liste_faces.append_array(j);
+          if (elements_voisins.size_array() == 1 && elem_part[elements_voisins[0]] == partie) liste_faces.append_array(j);
 
+          if (elements_voisins.size_array() == 2)
+            if (elem_part[elements_voisins[0]] == partie || elem_part[elements_voisins[1]] == partie)
+              liste_faces.append_array(j);
         }
 
       const int nb_faces_part = liste_faces.size_array();
@@ -1101,7 +1102,7 @@ void calculer_elements_voisins_bords(const Domaine& dom,
             une_face[k] = faces(j, k);
           find_adjacent_elements(som_elem, une_face, elems_voisins);
           const int n_voisins = elems_voisins.size_array();
-          if (n_voisins != 1 )
+          if (n_voisins != 1)
             {
               if (drap==0)
                 {
@@ -1219,7 +1220,7 @@ void DomaineCutter::construire_sous_domaine(const int part, DomaineCutter_Corres
     construire_faces_bords_ssdom(l_inv_som, part, sous_domain);
     construire_faces_raccords_ssdom(l_inv_som, part, sous_domain);
     construire_frontieres_internes_ssdom(l_inv_som, part, sous_domain);
-    construire_faces_internes_ssdom(l_inv_som, part, sous_domain);
+    construire_groupe_faces_ssdom(l_inv_som, part, sous_domain);
     construire_sommets_joints_ssdom(l_som, l_inv_som, part, som_raccord, sous_domain);
   }
 

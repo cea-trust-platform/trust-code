@@ -63,6 +63,8 @@ Sortie& Pave::printOn(Sortie& s ) const
  *      ...
  *      (Joint)  nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1 PE_voisin
  *      ...
+ *	    (Groupe_Faces) nom X = X0 Y0 <= Y <= Y1 Z0 <= Z <= Z1
+ *	    ...
  *      }
  *
  * @param (Entree& is) un flot d'entree
@@ -398,7 +400,7 @@ Entree& Pave::readOn(Entree& is)
       les_mots[2]="Internes";
       les_mots[3]="Trou";
       les_mots[4]="Joint";
-      les_mots[5]="Faces_interne";
+      les_mots[5]="Groupe_Faces";
       les_mots[6]="}";
     }
     while(motlu != "}")
@@ -437,9 +439,9 @@ Entree& Pave::readOn(Entree& is)
               lire_front(is , faces );
             }
             break;
-          case 5:      // Plaques
+          case 5:      // Groupe de Faces
             {
-              Groupe_interne& faces=mes_groupes_internes_.add(Groupe_interne());
+              Groupe_Faces& faces=mes_groupes_faces_.add(Groupe_Faces());
               lire_front(is , faces );
             }
             break;

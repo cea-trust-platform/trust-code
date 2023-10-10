@@ -50,7 +50,7 @@ namespace
  */
 const Frontiere& mes_faces_fr(const Domaine& domaine, int i)
 {
-  int nb_std = domaine.nb_front_Cl() + domaine.nb_groupes_int();
+  int nb_std = domaine.nb_front_Cl() + domaine.nb_groupes_faces();
   return i<nb_std ? domaine.frontiere(i) : domaine.joint(i-nb_std);
 }
 
@@ -141,7 +141,7 @@ void EcrMED::ecrire_domaine_dis(const REF(Domaine_dis_base)& domaine_dis_base, b
 void EcrMED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_jnts) const
 {
   const Domaine& dom = dom_.valeur();
-  int nb_bords = dom.nb_front_Cl(), nb_faces_int = dom.nb_groupes_int();
+  int nb_bords = dom.nb_front_Cl(), nb_faces_int = dom.nb_groupes_faces();
 
   // [ABN] TODO handle joints properly - they could be written too
   int nb_jnts = dom.nb_joints();
@@ -159,9 +159,9 @@ void EcrMED::get_bords_infos(Noms& noms_bords_and_jnts, ArrOfInt& sz_bords_and_j
           noms_bords_and_jnts[i] = "type_raccord_";
           noms_bords_and_jnts[i] += front.le_nom();
         }
-      else if (sub_type(Groupe_interne,front))
+      else if (sub_type(Groupe_Faces,front))
         {
-          noms_bords_and_jnts[i] = "groupes_internes_";
+          noms_bords_and_jnts[i] = "groupes_faces_";
           noms_bords_and_jnts[i] += front.le_nom();
         }
       else
@@ -269,7 +269,7 @@ void EcrMED::fill_faces_and_boundaries(const REF(Domaine_dis_base)& domaine_dis_
   std::vector<const DataArrayIdType *> grps;
   std::vector<MCAuto<DataArrayIdType>> grps_mem;  // just for memory management -> will ensure proper array deletion when destroyed
 
-  int face_idx = 0, start, end, nb_bords = dom_->nb_front_Cl() + dom_->nb_groupes_int();
+  int face_idx = 0, start, end, nb_bords = dom_->nb_front_Cl() + dom_->nb_groupes_faces();
   for (int b=0; b < nb_bords; b++, face_idx=end)  // not joints
     {
       MCAuto<DataArrayIdType> g(DataArrayIdType::New());

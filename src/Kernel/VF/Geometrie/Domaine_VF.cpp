@@ -227,25 +227,10 @@ void Domaine_VF::renumeroter(Faces& les_faces)
         un_joint.fixer_num_premiere_face(-1);
       }
   }
-  // Mise a jour des indices des groupes de faces internes:
+  // Mise a jour des indices des groupes de faces:
   {
-    Groupes_internes&      groupes_internes    = domaine().groupes_internes();
-    const int nb_groupes_internes = groupes_internes.size();
-    for (int i_groupe = 0; i_groupe < nb_groupes_internes; i_groupe++)
-      {
-        Groupe_interne&     groupe_interne         = groupes_internes[i_groupe];
-        ArrOfInt& indices_faces = groupe_interne.get_indices_faces();
-        const int nbfaces2    = indices_faces.size_array();
-        assert(nbfaces2 == groupe_interne.nb_faces()); // renum_items_communs rempli ?
-        for (int i = 0; i < nbfaces2; i++)
-          {
-            const int old = indices_faces[i]; // ancien indice local
-            indices_faces[i] = reverse_index[old];
-          }
-        // Les faces de joint ne sont plus consecutives dans le
-        // tableau: num_premiere_face n'a plus ne sens
-        groupe_interne.fixer_num_premiere_face(-1);
-      }
+    Groupes_Faces&      groupes_faces    = domaine().groupes_faces();
+    groupes_faces.renumerote(reverse_index);
   }
 
 }
@@ -350,7 +335,7 @@ void Domaine_VF::discretiser()
   }
   {
     int i=0, derniere=ledomaine.nb_bords();
-    les_bords_.dimensionner(domaine().nb_front_Cl()+domaine().nb_groupes_int());
+    les_bords_.dimensionner(domaine().nb_front_Cl()+domaine().nb_groupes_faces());
     for(; i<derniere; i++)
       {
         les_bords_[i].associer_frontiere(ledomaine.bord(i));
@@ -373,11 +358,11 @@ void Domaine_VF::discretiser()
         les_bords_[i].associer_Domaine_dis(*this);
       }
     decal=derniere;
-    derniere+=domaine().nb_groupes_int();
+    derniere+=domaine().nb_groupes_faces();
     for(; i<derniere; i++)
       {
         int j=i-decal;
-        les_bords_[i].associer_frontiere(ledomaine.groupe_interne(j));
+        les_bords_[i].associer_frontiere(ledomaine.groupe_faces(j));
         les_bords_[i].associer_Domaine_dis(*this);
       }
   }

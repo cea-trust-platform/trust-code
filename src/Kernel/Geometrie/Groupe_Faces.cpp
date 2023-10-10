@@ -13,19 +13,8 @@
 *
 *****************************************************************************/
 
-#ifndef Groupe_interne_included
-#define Groupe_interne_included
+#include <Groupe_Faces.h>
 
-#include <Frontiere.h>
-
-/*! @brief Classe Groupe_interne La classe sert a representer un ensemble de faces interne
- *
- *
- * @sa Frontiere Domaine
- */
-class Groupe_interne : public Frontiere
-{
-  Declare_instanciable(Groupe_interne);
-};
-
-#endif /* Groupe_interne_included */
+Implemente_instanciable(Groupe_Faces, "Groupe_Faces", Frontiere);
+Sortie& Groupe_Faces::printOn(Sortie& s) const { return Frontiere::printOn(s); }
+Entree& Groupe_Faces::readOn(Entree& s) { return Frontiere::readOn(s); }

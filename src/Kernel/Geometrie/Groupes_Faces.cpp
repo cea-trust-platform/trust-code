@@ -13,32 +13,32 @@
 *
 *****************************************************************************/
 
-#include <Groupes_internes.h>
+#include <Groupes_Faces.h>
 
-Implemente_instanciable(Groupes_internes, "Groupes_internes", LIST(Groupe_interne));
+Implemente_instanciable(Groupes_Faces, "Groupes_Faces", LIST(Groupe_Faces));
 
-Sortie& Groupes_internes::printOn(Sortie& os) const { return LIST(Groupe_interne)::printOn(os); }
+Sortie& Groupes_Faces::printOn(Sortie& os) const { return LIST(Groupe_Faces)::printOn(os); }
 
-Entree& Groupes_internes::readOn(Entree& is) { return LIST(Groupe_interne)::readOn(is); }
+Entree& Groupes_Faces::readOn(Entree& is) { return LIST(Groupe_Faces)::readOn(is); }
 
-/*! @brief Associe un domaine a tous les objets Groupe_interne de la liste.
+/*! @brief Associe un domaine a tous les objets Groupe_Faces de la liste.
  *
- * @param (Domaine& un_domaine) le domaine a associer aux Groupe_interne de la liste
+ * @param (Domaine& un_domaine) le domaine a associer aux Groupe_Faces de la liste
  */
-void Groupes_internes::associer_domaine(const Domaine& un_domaine)
+void Groupes_Faces::associer_domaine(const Domaine& un_domaine)
 {
   for (auto& itr : *this) itr.associer_domaine(un_domaine);
 }
 
-/*! @brief Renvoie le nombre total de faces contenues dans la liste des Groupe_interne, i.
+/*! @brief Renvoie le nombre total de faces contenues dans la liste des Groupe_Faces, i.
  *
  * e. la somme de toutes
- *     les faces de tous les objet Faces_interne contenu dans
+ *     les faces de tous les objet Groupe_Faces contenu dans
  *     la liste.
  *
- * @return (int) le nombre total de faces contenues dans la liste des Groupe_interne
+ * @return (int) le nombre total de faces contenues dans la liste des Groupe_Faces
  */
-int Groupes_internes::nb_faces() const
+int Groupes_Faces::nb_faces() const
 {
   int nombre = 0;
   for (const auto &itr : *this) nombre += itr.nb_faces();
@@ -46,20 +46,37 @@ int Groupes_internes::nb_faces() const
   return nombre;
 }
 
-/*! @brief Renvoie le nombre total de faces de type specifie contenues dans la liste des Groupe_interne
+/*! @brief Renvoie le nombre total de faces de type specifie contenues dans la liste des Groupe_Faces
  *
  *     i.e. la somme de toutes les faces de type specifie
- *     de tous les objet Groupe_interne contenu dans
+ *     de tous les objet Groupe_Faces contenu dans
  *     la liste.
  *
  * @param (Type_Face type) le type des faces a compter
- * @return (int) le nombre total de faces contenues dans la liste des Groupe_interne
+ * @return (int) le nombre total de faces contenues dans la liste des Groupe_Faces
  */
-int Groupes_internes::nb_faces(Type_Face type) const
+int Groupes_Faces::nb_faces(Type_Face type) const
 {
   int nombre = 0;
   for (const auto &itr : *this)
     if (type == itr.faces().type_face()) nombre += itr.nb_faces();
 
   return nombre;
+}
+
+// Mise a jour des indices des groupes de faces avec table inversee: reverse_index[ancien_numero] = nouveau numero:
+// necessaire lorsque les numeros des faces ont été modifiés
+void Groupes_Faces::renumerote(ArrOfInt& reverse_index)
+{
+  for (auto &itr : *this)
+    {
+      ArrOfInt& indices_faces = itr.get_indices_faces();
+      const int nbfaces2    = indices_faces.size_array();
+      assert(nbfaces2 == itr.nb_faces());
+      for (int i = 0; i < nbfaces2; i++)
+        {
+          const int old = indices_faces[i]; // ancien indice local
+          indices_faces[i] = reverse_index[old];
+        }
+    }
 }

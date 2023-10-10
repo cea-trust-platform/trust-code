@@ -258,8 +258,8 @@ void Trianguler_fin::trianguler(Domaine& dom) const
           sommetsfaces.ref(nouveaux);
         }
 
-      Cerr << "Splitting of the internal faces" << finl;
-      for (auto &itr : dom.groupes_internes())
+      Cerr << "Splitting of the group of faces" << finl;
+      for (auto &itr : dom.groupes_faces())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::segment_2D);

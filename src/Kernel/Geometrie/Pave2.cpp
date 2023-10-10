@@ -45,7 +45,8 @@ void Pave::lire_front(Entree& is, Frontiere& front)
   Cerr << "Reading of the boundary " << nom_front << finl;
   front.nommer(nom_front);
   front.typer_faces(elem_.type_face());
-  int internes=sub_type(Bord_Interne, front);
+  bool internes=(sub_type(Bord_Interne, front) || sub_type(Joint, front));
+  bool groupe_faces=sub_type(Groupe_Faces, front);
   if(dimension==1)
     {
       Nom X, egal;
@@ -140,7 +141,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
       if (X=="X")
         {
           if ( (std::fabs(Origine(0) - coupe)>epsilon()) &&
-               (std::fabs(coupe - Origine(0)-Longueurs(0))>epsilon()) && (!internes))
+               (std::fabs(coupe - Origine(0)-Longueurs(0))>epsilon()) && (!internes) && (!groupe_faces))
             {
               Cerr << "X = " << coupe << " is not a boundary" << finl;
               exit();
@@ -156,7 +157,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             i=0;
           else
             i=Nx;
-          if(internes)
+          if(internes || groupe_faces)
             for(i=0; coord_noeud(i,0,0)+epsilon()<coupe; i++) {};
           jmin=0;
           for(; coord_noeud(0,jmin,1)+epsilon()<xmin; jmin++) {};
@@ -190,7 +191,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
               coupe*=deux_pi;
             }
           if ( (std::fabs(Origine(1) - coupe)>epsilon()) &&
-               (std::fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes))
+               (std::fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes) && (!groupe_faces))
             {
               Cerr << "Y = " << coupe << " is not a boundary" << finl;
               exit();
@@ -206,7 +207,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             j=0;
           else
             j=Ny;
-          if(internes)
+          if(internes || groupe_faces)
             for(j=0; coord_noeud(0,j,1)+epsilon()<coupe; j++) {};
           imin=0;
           for(; coord_noeud(imin,0,0)+epsilon()<xmin; imin++) {};
@@ -334,7 +335,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
       if (X=="X")
         {
           if ( (std::fabs(Origine(0)-coupe)>epsilon()) &&
-               (std::fabs(Origine(0)+Longueurs(0)-coupe)>epsilon()) && (!internes) )
+               (std::fabs(Origine(0)+Longueurs(0)-coupe)>epsilon()) && (!internes)  && (!groupe_faces))
             {
               Cerr << "X = " << coupe << " is not a boundary " << finl;
               exit();
@@ -350,7 +351,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             i=0;
           else
             i=Nx;
-          if(internes)
+          if(internes || groupe_faces)
             for(i=0; coord_noeud(i,0,0,0)+epsilon()<coupe; i++) {};
           jmin=kmin=0;
           for(; coord_noeud(0,jmin,0,1)+epsilon()<xmin; jmin++) {};
@@ -388,13 +389,13 @@ void Pave::lire_front(Entree& is, Frontiere& front)
               coupe*=deux_pi;
             }
           if ( (std::fabs(Origine(1) - coupe)>epsilon()) &&
-               (std::fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes)        )
+               (std::fabs(coupe - Origine(1)-Longueurs(1))>epsilon()) && (!internes)  && (!groupe_faces) )
             {
               Cerr << "Y = " << coupe << " is not a boundary " << finl;
               exit();
             }
           if ( ((std::fabs(Origine(1) - coupe)<epsilon()) ||
-                (std::fabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes)        )
+                (std::fabs(coupe - Origine(1)-Longueurs(1))<epsilon())) && (internes))
             {
               Cerr << "Y = " << coupe << " is a boundary " << finl;
               exit();
@@ -404,7 +405,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             j=0;
           else
             j=Ny;
-          if(internes)
+          if(internes || groupe_faces)
             for(j=0; coord_noeud(0,j,0,1)+epsilon()<coupe; j++) {};
           imin=kmin=0;
           for(; coord_noeud(imin,0,0,0)+epsilon()<xmin; imin++) {};
@@ -431,7 +432,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
       else
         {
           if ( (std::fabs(Origine(2)-coupe)>epsilon()) &&
-               (std::fabs(coupe-Origine(2)-Longueurs(2))>epsilon()) && (!internes))
+               (std::fabs(coupe-Origine(2)-Longueurs(2))>epsilon()) && (!internes)  && (!groupe_faces))
             {
               Cerr << "Z = " << coupe << " is not a boundary " << finl;
               exit();
@@ -447,7 +448,7 @@ void Pave::lire_front(Entree& is, Frontiere& front)
             k=0;
           else
             k=Nz;
-          if(internes)
+          if(internes || groupe_faces)
             for(k=0; coord_noeud(0,0,k,3)+epsilon()<coupe; k++) {};
           imin=jmin=0;
           for(; coord_noeud(imin,0,0,0)+epsilon()<xmin; imin++) {};

@@ -23,7 +23,7 @@ class Domaine;
 class Static_Int_Lists;
 class Faces;
 class Frontiere;
-class Groupe_interne;
+class Groupe_Faces;
 
 /*! @brief classe outil pour construire les faces d'un domaine
  * (utilisee uniquement pour creer les tableau des faces reelles)
@@ -46,7 +46,7 @@ private:
   void check_erreur_faces(const char *message, const ArrOfInt& liste_faces) const;
   void creer_faces_frontiere(const int nb_voisins_attendus, Frontiere& frontiere, IntTab& faces_sommets, IntTab& faces_voisins, IntTab& elem_faces) const;
   void creer_faces_internes(IntTab& faces_sommets, IntTab& elem_faces, IntTab& faces_voisins) const;
-  void identification_faces_internes(Groupe_interne& groupe_int, const IntTab& elem_faces) const;
+  void identification_groupe_faces(Groupe_Faces& groupe_int, const IntTab& elem_faces) const;
 
   const IntTab& les_elements() const { return *les_elements_ptr_; }
   const Static_Int_Lists& connectivite_som_elem() const { return *connectivite_som_elem_ptr_; }

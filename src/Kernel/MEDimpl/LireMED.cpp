@@ -211,7 +211,7 @@ Entree& LireMED::interpreter_(Entree& is)
       param.ajouter("mesh|maillage", &nom_mesh_);                       // XD_ADD_P chaine Name of the mesh in med file. If not specified, the first mesh will be read.
 
       param.ajouter("exclude_groups|exclure_groupes", &exclude_grps_); // XD_ADD_P listchaine List of face groups to skip in the MED file.
-      param.ajouter("include_internal_face_groups|inclure_groupes_faces_internes", &internal_face_grps_); // XD_ADD_P listchaine List of face groups to read and register in the MED file.
+      param.ajouter("include_additional_face_groups|inclure_groupes_faces_additionnels", &internal_face_grps_); // XD_ADD_P listchaine List of face groups to read and register in the MED file.
 
       EChaine is2(s);
       param.lire_avec_accolades(is2);
@@ -681,8 +681,8 @@ void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_face
   ArrOfInt nb_face_per_bord(nbord);
   Bords& faces_bord=dom.faces_bord();
   faces_bord.vide();
-  Groupes_internes& goupes_internes=dom.groupes_internes();
-  goupes_internes.vide();
+  Groupes_Faces& goupes_faces=dom.groupes_faces();
+  goupes_faces.vide();
   Raccords& faces_raccord=dom.faces_raccord();
   faces_raccord.vide();
   Joints& faces_joint=dom.faces_joint();
@@ -697,7 +697,7 @@ void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_face
       int indice_bord=ib+1;
       if (noms_bords_[ib]=="elems") continue;
       Bord bordprov_;
-      Groupe_interne facesintprov;
+      Groupe_Faces facesgrpprov;
       Raccord raccprov;
       Joint jointprov;
       bool israccord=false, isjoint=false, isfacesint=false;
@@ -719,7 +719,7 @@ void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_face
           isjoint=true;
         }
       // on recupere la frontiere  .... que ce soit un Bord,Raccord,ou Joint
-      Frontiere& bordprov = (isjoint?jointprov:(israccord?ref_cast(Frontiere,raccprov.valeur()):(isfacesint?ref_cast(Frontiere,facesintprov):ref_cast(Frontiere,bordprov_))));
+      Frontiere& bordprov = (isjoint?jointprov:(israccord?ref_cast(Frontiere,raccprov.valeur()):(isfacesint?ref_cast(Frontiere,facesgrpprov):ref_cast(Frontiere,bordprov_))));
 
       bordprov.nommer(noms_bords_[ib]);
       bordprov.typer_faces(type_face_);
@@ -770,7 +770,7 @@ void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_face
           else if (israccord)
             faces_raccord.add(raccprov);
           else if (isfacesint)
-            goupes_internes.add(facesintprov);
+            goupes_faces.add(facesgrpprov);
           else
             faces_bord.add(bordprov_);
         }
@@ -778,9 +778,9 @@ void LireMED::fill_frontieres(const ArrOfInt& fac_grp_id, const IntTab& all_face
   faces_bord.associer_domaine(dom);
   faces_raccord.associer_domaine(dom);
   faces_joint.associer_domaine(dom);
-  goupes_internes.associer_domaine(dom);
+  goupes_faces.associer_domaine(dom);
   dom.fixer_premieres_faces_frontiere();
-  int nbfr=dom.nb_front_Cl() + dom.nb_groupes_int();
+  int nbfr=dom.nb_front_Cl();
   for (int fr=0; fr<nbfr; fr++)
     {
       dom.frontiere(fr).faces().associer_domaine(dom);

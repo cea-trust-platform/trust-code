@@ -100,8 +100,11 @@ Sortie& Domaine::printOn(Sortie& s) const
   s << mes_faces_joint_;
   s << mes_faces_raccord_;
   s << mes_bords_int_;
-  s << finl << "groupes_internes" << finl;
-  s << mes_groupes_internes_;
+  if (nb_groupes_faces() !=0)
+    {
+      s << finl << "groupes_faces" << finl;
+      s << mes_groupes_faces_;
+    }
   s << "}" << finl;
   //
 
@@ -228,11 +231,11 @@ void Domaine::read_former_domaine(Entree& s)
   s >> mes_faces_raccord_;
   mes_bords_int_.vide();
   s >> mes_bords_int_;
-  mes_groupes_internes_.vide();
+  mes_groupes_faces_.vide();
   s >> acc;
-  if (acc == "groupes_internes")
+  if (acc == "groupes_faces")
     {
-      s >> mes_groupes_internes_;
+      s >> mes_groupes_faces_;
       s >> acc;
     }
   if (acc != "}")
@@ -247,7 +250,7 @@ void Domaine::check_domaine()
   // remplacer Faces::vide_0D par le bon type pour les procs qui n'ont pas de faces de bord:
   {
     int i;
-    int n = nb_front_Cl() + nb_groupes_int();
+    int n = nb_front_Cl();
     for (i = 0; i < n; i++)
       corriger_type(frontiere(i).faces(), type_elem().valeur());
   }
@@ -259,7 +262,7 @@ void Domaine::check_domaine()
   mes_faces_joint_.associer_domaine(*this);
   mes_faces_raccord_.associer_domaine(*this);
   mes_bords_int_.associer_domaine(*this);
-  mes_groupes_internes_.associer_domaine(*this);
+  mes_groupes_faces_.associer_domaine(*this);
   elem_.associer_domaine(*this);
   fixer_premieres_faces_frontiere();
 
@@ -271,7 +274,7 @@ void Domaine::check_domaine()
   check_frontiere(mes_faces_bord_, "(Bord)");
   check_frontiere(mes_faces_raccord_, "(Raccord)");
   check_frontiere(mes_bords_int_, "(Bord_Interne)");
-  check_frontiere(mes_groupes_internes_, "(Groupe_interne)");
+  check_frontiere(mes_groupes_faces_, "(Groupe_Faces)");
 }
 
 Entree& Domaine::lire_bords_a_imprimer(Entree& is)
@@ -503,13 +506,13 @@ int Domaine::nb_faces_bords_int() const
   return mes_bords_int_.nb_faces();
 }
 
-/*! @brief Renvoie le nombre de face internes du domaine.
+/*! @brief Renvoie le nombre de faces dans les Groupe_Faces du domaine.
  *
- * @return (int) le nombre de face internes du domaine
+ * @return (int) le nombre de faces dans les Groupe_Faces du domaine
  */
-int Domaine::nb_faces_groupes_internes() const
+int Domaine::nb_faces_groupes_faces() const
 {
-  return mes_groupes_internes_.nb_faces();
+  return mes_groupes_faces_.nb_faces();
 }
 
 /*! @brief Renvoie le nombre de sommets du domaine.
@@ -572,14 +575,14 @@ int Domaine::nb_faces_bords_int(int i) const
   return mes_bords_int_(i).nb_faces();
 }
 
-/*! @brief Renvoie le nombre de faces de la i-ieme liste de groupes internes
+/*! @brief Renvoie le nombre de faces de la i-ieme liste de groupes de faces
  *
- * @param (int i) le numero de la liste de groupes internes dont on veut connaitre le nombre de faces
- * @return (int i) le nombre de faces de la i-ieme liste de groupes internes
+ * @param (int i) le numero de la liste de groupes de faces dont on veut connaitre le nombre de faces
+ * @return (int i) le nombre de faces de la i-ieme liste de groupes de faces
  */
-int Domaine::nb_faces_groupes_internes(int i) const
+int Domaine::nb_faces_groupes_faces(int i) const
 {
-  return mes_groupes_internes_(i).nb_faces();
+  return mes_groupes_faces_(i).nb_faces();
 }
 
 /*! @brief Renumerotation des noeuds: Le noeud de numero k devient le noeud de numero Les_Nums[k]
@@ -603,8 +606,8 @@ void Domaine::renum(const IntVect& Les_Nums)
     mes_faces_raccord_(i)->renum(Les_Nums);
   for (int i = 0; i < nb_frontieres_internes(); i++)
     mes_bords_int_(i).renum(Les_Nums);
-  for (int i = 0; i < nb_faces_groupes_internes(); i++)
-    mes_groupes_internes_(i).renum(Les_Nums);
+  for (int i = 0; i < nb_groupes_faces(); i++)
+    mes_groupes_faces_(i).renum(Les_Nums);
 }
 
 /*! @brief Renumerotation des noeuds et des elements presents dans les items communs des joints Le noeud de numero k devient le noeud de numero Les_Nums[k]
@@ -740,8 +743,8 @@ void Domaine::correct_type_of_borders_after_merge()
   }
 
   {
-    // Les Groupes Internes :
-    auto& list = mes_groupes_internes_.get_stl_list();
+    // Les Groupes de faces:
+    auto& list = mes_groupes_faces_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
@@ -810,7 +813,7 @@ int Domaine::comprimer_joints()
   return 1;
 }
 
-/*! @brief Concatene les bords de meme nom et ceci pour: les bords, les bords periodiques, les bords internes et les groupes internes.
+/*! @brief Concatene les bords de meme nom et ceci pour: les bords, les bords periodiques, les bords internes et les groupes de faces.
  *
  */
 int Domaine::comprimer()
@@ -865,8 +868,8 @@ int Domaine::comprimer()
   }
 
   {
-    // Les Groupes Internes :
-    auto& list = mes_groupes_internes_.get_stl_list();
+    // Les Groupes de faces :
+    auto& list = mes_groupes_faces_.get_stl_list();
     for (auto it = list.begin(); it != list.end(); ++it)
       {
         Frontiere& front = *it;
@@ -944,8 +947,8 @@ void Domaine::merge_wo_vertices_with(Domaine& dom2)
   dom2.bords_int().associer_domaine(*this);
   bords_int().add(dom2.bords_int());
 
-  dom2.groupes_internes().associer_domaine(*this);
-  groupes_internes().add(dom2.groupes_internes());
+  dom2.groupes_faces().associer_domaine(*this);
+  groupes_faces().add(dom2.groupes_faces());
 
   correct_type_of_borders_after_merge();
   comprimer();
@@ -994,7 +997,7 @@ void Domaine::fill_from_list(std::list<Domaine*>& lst)
 
 /*! @brief Ecriture des noms des bords sur un flot de sortie
  *
- * Ecrit les noms des: bords, bords periodiques, raccords et groupes internes.
+ * Ecrit les noms des: bords, bords periodiques, raccords et groupes de faces.
  *
  * @param (Sortie& os) un flot de sortie
  */
@@ -1012,8 +1015,8 @@ void Domaine::ecrire_noms_bords(Sortie& os) const
   for (const auto &itr : mes_bords_int_)
     os << itr.le_nom() << finl;
 
-  // Les Groupes Internes :
-  for (const auto &itr : mes_groupes_internes_)
+  // Les Groupes de faces :
+  for (const auto &itr : mes_groupes_faces_)
     os << itr.le_nom() << finl;
 }
 
@@ -1062,14 +1065,14 @@ int Domaine::nb_faces_bords_int(Type_Face type) const
   return mes_bords_int_.nb_faces(type);
 }
 
-/*! @brief Renvoie le nombre de goupes de faces internes du type specifie
+/*! @brief Renvoie le nombre de goupes de faces du type specifie
  *
  * @param (Type_Face type) un type de face
- * @return (int) le nombre de groupes internes du type specifie
+ * @return (int) le nombre de groupes de faces du type specifie
  */
-int Domaine::nb_faces_groupes_internes(Type_Face type) const
+int Domaine::nb_faces_groupes_faces(Type_Face type) const
 {
-  return mes_groupes_internes_.nb_faces(type);
+  return mes_groupes_faces_.nb_faces(type);
 }
 
 /*! @brief Renvoie le rang de l'element contenant le point dont les coordonnees sont specifiees.
@@ -1147,7 +1150,7 @@ int Domaine::rang_frontiere(const Nom& un_nom) const
       ++i;
     }
 
-  for (const auto &itr : mes_groupes_internes_)
+  for (const auto &itr : mes_groupes_faces_)
     {
       if (itr.le_nom() == un_nom)
         return i;
@@ -1186,18 +1189,14 @@ void Domaine::fixer_premieres_faces_frontiere()
       compteur += itr->nb_faces();
       Journal() << "Le raccord " << itr->le_nom() << " commence a la face : " << itr->num_premiere_face() << finl;
     }
-  for (auto &itr : mes_groupes_internes_)
-    {
-      itr.fixer_num_premiere_face(compteur);
-      compteur += itr.nb_faces();
-      Journal() << "Le groupe de faces internes " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
-    }
   for (auto &itr : mes_faces_joint_)
     {
       itr.fixer_num_premiere_face(compteur);
       compteur += itr.nb_faces();
       Journal() << "Le joint " << itr.le_nom() << " commence a la face : " << itr.num_premiere_face() << finl;
     }
+  for (auto &itr : mes_groupes_faces_)
+    itr.fixer_num_premiere_face(-1);
 }
 
 // Construction du tableau elem_virt_pe_num_ a partir du tableau mes_elems

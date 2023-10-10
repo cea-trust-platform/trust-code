@@ -74,7 +74,7 @@ Faces* Domaine_VDF::creer_faces()
   return les_faces_vdf;
 }
 
-/*! @brief Reordonne les faces internes par orientation et en regroupant les groupes de faces internes identifies dans le fichier de donnees, on doit mettre a jour tous les tableaux qui dependent des indices de faces internes, soit:
+/*! @brief Reordonne les faces internes par orientation, on doit mettre a jour tous les tableaux qui dependent des indices de faces, soit:
  *
  *    - faces_sommets
  *    - faces_voisins
@@ -106,7 +106,6 @@ void Domaine_VDF::reordonner(Faces& les_faces)
 
   ArrOfInt sort_key(nb_faces);
   // On ne trie pas les faces de bord, qui restent au debut:
-  // On selectionne les groupes de faces internes pour les disposer dans la continuite des faces frontieres
   for (i = 0; i < nb_faces_front; i++)
     sort_key[i] = i;
 
@@ -190,26 +189,9 @@ void Domaine_VDF::reordonner(Faces& les_faces)
         joint.fixer_num_premiere_face(-1);
       }
   }
-  // Mise a jour des indices des groupes de faces internes:
-  {
-    Groupes_internes&      groupes_internes    = domaine().groupes_internes();
-    const int nb_groupes_internes = groupes_internes.size();
-    for (int i_groupe = 0; i_groupe < nb_groupes_internes; i_groupe++)
-      {
-        Groupe_interne&     groupe_interne         = groupes_internes[i_groupe];
-        ArrOfInt& indices_faces = groupe_interne.get_indices_faces();
-        const int nbfaces2    = indices_faces.size_array();
-        assert(nbfaces2 == groupe_interne.nb_faces()); // renum_items_communs rempli ?
-        for (i = 0; i < nbfaces2; i++)
-          {
-            const int old = indices_faces[i]; // ancien indice local
-            indices_faces[i] = reverse_index[old];
-          }
-        // Les faces de joint ne sont plus consecutives dans le
-        // tableau: num_premiere_face n'a plus ne sens
-        groupe_interne.fixer_num_premiere_face(-1);
-      }
-  }
+  // Mise a jour des indices des groupes de faces:
+  Groupes_Faces&      groupes_faces    = domaine().groupes_faces();
+  groupes_faces.renumerote(reverse_index);
 }
 
 /*! @brief appel a  Domaine_VF::discretiser() calcul des centres de gravite des elements

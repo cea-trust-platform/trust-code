@@ -494,8 +494,8 @@ void Tetraedriser_homogene_compact::trianguler(Domaine& domaine) const
           decoupe(domaine, les_faces, new_soms_old_elems, fait_sommet, nface);
         }
 
-      Cerr << "Splitting of the internal faces" << finl;
-      for (auto &itr : domaine.groupes_internes())
+      Cerr << "Splitting of the group of faces" << finl;
+      for (auto &itr : domaine.groupes_faces())
         {
           Faces& les_faces = itr.faces();
           les_faces.typer(Faces::triangle_3D);

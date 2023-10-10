@@ -46,7 +46,7 @@ void Faces_builder::reset()
   face_elem_.reset();
 }
 
-/*! @brief A partir de la description des elements du domaine et des frontieres (bords, raccords, faces internes et joints) :
+/*! @brief A partir de la description des elements du domaine et des frontieres (bords, raccords, groupe de faces et joints) :
  *
  *   Remplissage des structures suivantes:
  *   - pour les frontieres du domaine: fixer_num_premiere_face
@@ -216,22 +216,20 @@ void Faces_builder::creer_faces_reeles(Domaine& domaine,
                        elem_faces,
                        faces_voisins);
 
-  // *********************************************
 
-  // Identification des groupes de faces internes
+  // Identification des groupes de faces
   {
-    Groupes_internes& groupes_int = domaine.groupes_internes();
-    const int n = groupes_int.size();
+    Groupes_Faces& groupes_faces = domaine.groupes_faces();
+    const int n = groupes_faces.size();
     for (int i = 0; i < n; i++)
       {
-        Groupe_interne& groupe_int = groupes_int[i];
-        identification_faces_internes(groupe_int,
-                                      elem_faces);
+        Groupe_Faces& groupe_faces = groupes_faces[i];
+        identification_groupe_faces(groupe_faces,
+                                    elem_faces);
       }
   }
-
+  // *********************************************
   // C'est fini: on verifie qu'on a bien le nombre de faces prevu
-
   if (faces_sommets.dimension(0) != nb_faces_prevision)
     {
       Cerr << "Error in Faces_builder::creer_faces_reeles:\n"
@@ -734,21 +732,21 @@ void Faces_builder::creer_faces_internes(IntTab& faces_sommets,
   }
 }
 
-/*! @brief Identification des groupes de faces internes du domaine
+/*! @brief Identification des groupes de faces specifiees dans le domaine
  *
- *   Remplissage du tableau indices_faces d'un groupes de faces interne
+ *   Remplissage du tableau indices_faces d'un groupes de faces specifique
  *
  */
-void Faces_builder::identification_faces_internes(Groupe_interne& groupe_int,
-                                                  const IntTab& elem_faces) const
+void Faces_builder::identification_groupe_faces(Groupe_Faces& groupe_faces,
+                                                const IntTab& elem_faces) const
 {
   const Static_Int_Lists& som_elem   = connectivite_som_elem();
   const int   nb_sommets_par_face  = faces_element_reference(0).dimension(0) ? faces_element_reference(0).dimension(1) : 3;
 
-  const Faces&   faces_internes  = groupe_int.faces();
-  const IntTab& sommets_faces_fr = faces_internes.les_sommets();
-  const int   nb_faces         = faces_internes.nb_faces();
-  ArrOfInt& indices_faces = groupe_int.get_indices_faces();
+  const Faces&   faces_specifiees  = groupe_faces.faces();
+  const IntTab& sommets_faces_fr = faces_specifiees.les_sommets();
+  const int   nb_faces         = faces_specifiees.nb_faces();
+  ArrOfInt& indices_faces = groupe_faces.get_indices_faces();
   indices_faces.resize_array(nb_faces);
 
   ArrOfInt       une_face(nb_sommets_par_face);
@@ -797,14 +795,15 @@ void Faces_builder::identification_faces_internes(Groupe_interne& groupe_int,
           liste_faces_erreur1.append_array(i_face);
         }
     }
+
   Nom msg;
-  msg = "Internal face group \"";
-  msg += groupe_int.le_nom();
+  msg = "Group of Faces \"";
+  msg += groupe_faces.le_nom();
   msg += "\" contains faces which do not belong to any element or not virtual element.";
   check_erreur_faces(msg, liste_faces_erreur0);
 
-  msg = "Internal face group \"";
-  msg += groupe_int.le_nom();
+  msg = "Group of Faces \"";
+  msg += groupe_faces.le_nom();
   msg += "\" contains faces that belong to more than 2 elements.\n";
   check_erreur_faces(msg, liste_faces_erreur1);
 }
