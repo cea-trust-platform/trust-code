@@ -269,8 +269,7 @@ with_packages=""
 ################
 # GPU support? #
 ################
-[ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_INT64" = 1 ] && echo "WARNING, PETSc GPU support is not enabled in TRUST with int64: ToDo use a more recent PETSc version..."
-if [ "$TRUST_USE_CUDA" = 1 ] && [ "$TRUST_INT64" != 1 ]
+if [ "$TRUST_USE_CUDA" = 1 ]
 then
    echo "****************************************"
    echo "PETSC_HAVE_CUDA=$PETSC_HAVE_CUDA"
