@@ -47,11 +47,6 @@ cd $build_root
 [ ! -f $archive_mc ] && echo $archive_mc no such file && exit 1
 [ ! -f $archive_conf ] && echo $archive_conf no such file && exit 1
 tar zxf $archive_mc
-# On applique les patchs que sur Cygwin:
-if [ "$(uname -a | grep CYGWIN)" != "" ]
-then
-   (cd $src_dir; tar xvf $TRUST_ROOT/ThirdPart/src/LIBMEDCOUPLING/patch_mc.tar ) || exit 1
-fi
 tar zxf $archive_conf
 
 echo "@@@@@@@@@@@@ Configuring, compiling and installing ..."

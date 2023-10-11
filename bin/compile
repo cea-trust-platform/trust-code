@@ -93,8 +93,6 @@ make_tools()
 ###################
 [ "$TRUST_ROOT" = "" ] && echo "Error. TRUST_ROOT is empty. Initialize TRUST environment." && echo "BUILD_EXEC=KO" && exit -1 
 
-if [ "$(uname -a | grep CYGWIN)" = "" ] 
-then
 if [ ! -d "$TRUST_ROOT/env" ]
 then
    echo ""
@@ -104,7 +102,6 @@ then
    echo "./configure \$OPTIONS && make # where your previous configure options are OPTIONS=$opts_configure"
    echo ""
    exit -1
-fi
 fi
 
 # if trust is configured with -enable-petsc-debug option and the user needs only $exec_debug (via make debug)
