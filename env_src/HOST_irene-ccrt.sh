@@ -42,7 +42,8 @@ define_modules_config()
       # passage a redhat 8: openmpi 4.0.5 fait une erreur de segmentation lors de l'appel a PetscFinalize(). 4.1.4 ne le fait pas
       #module="intel/20.0.0 mpi/openmpi/4.1.4"
       # passage a gnu pour v1.9.2
-      module="gnu/11 mpi/openmpi/4.1.4"
+      # Ajout de mkl car regression de perf sur irene-skl 191 -> 192
+      module="gnu/11 mpi/openmpi/4.1.4 mkl/20.0.0"
    else
       # 09/02/23 : ND : ajout de gnu/7.3.0 car gcc 4.8.5 natif rhel7 ne supporte pas c++14
       #intel="intel/18.0.3.222 gnu/7.3.0" 
@@ -54,7 +55,8 @@ define_modules_config()
       # passage a redhat 8.4, anciens modules n'existent plus
       #module="$romio_hints intel/20.0.0 mpi/openmpi/4.1.4"
       # passage a gnu pour v1.9.2
-      module="$romio_hints gnu/11 mpi/openmpi/4.1.4"
+      # Ajout de mkl car regression de perf sur irene-skl 191 -> 192
+      module="$romio_hints gnu/11 mpi/openmpi/4.1.4 mkl/20.0.0"
    fi
    # 2023/10/02: libgd utile pour installer gnuplot
    module="python3/3.8.10 swig/4.0.2 $module libgd/2.3.2"
