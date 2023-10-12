@@ -88,6 +88,7 @@ Entree& Milieu_base::readOn(Entree& is)
   Param param(que_suis_je());
   set_param(param);
   param.lire_avec_accolades_depuis(is);
+  check_gravity_vector();
   creer_champs_non_lus();
   return is;
 }
@@ -444,16 +445,18 @@ void Milieu_base::preparer_calcul()
   verifier_coherence_champs(err,msg);
 }
 
-void Milieu_base::creer_champs_non_lus()
+void Milieu_base::check_gravity_vector() const
 {
-  /* je teste la gravite ici ... */
   if (g.non_nul())
     if(Objet_U::dimension != g->nb_comp())
       {
         Cerr << "The dimension is " << Objet_U::dimension << " and you create a gravity vector with " << g->nb_comp() << " components." << finl;
         Process::exit();
       }
+}
 
+void Milieu_base::creer_champs_non_lus()
+{
   if (rho.non_nul() && lambda.non_nul() && Cp.non_nul())
     creer_alpha();
 }

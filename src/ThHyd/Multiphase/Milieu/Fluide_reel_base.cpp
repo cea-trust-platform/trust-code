@@ -31,9 +31,7 @@ Implemente_base_sans_constructeur(Fluide_reel_base, "Fluide_reel_base", Fluide_b
 Sortie& Fluide_reel_base::printOn(Sortie& os) const { return os; }
 Entree& Fluide_reel_base::readOn(Entree& is)
 {
-  Param param(que_suis_je());
-  set_param(param);
-  param.lire_avec_accolades_depuis(is);
+  Fluide_base::readOn(is);
   if ((P_ref_ >= 0) != (T_ref_ >= 0))
     Process::exit(que_suis_je() + ": T_ref and P_ref must both be specified!");
   return is;

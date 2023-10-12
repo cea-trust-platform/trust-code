@@ -61,6 +61,7 @@ public :
   void preparer_calcul() override;
   void set_param(Param& param) override;
   void discretiser(const Probleme_base& pb, const  Discretisation_base& dis) override;
+  void creer_champs_non_lus() override { /* everything is done in discretiser */ }
 
   //gamme range[inco] = { min, max} : par defaut, rien a controler
   virtual std::map<std::string, std::array<double, 2>> unknown_range() const { return {}; }

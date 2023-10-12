@@ -144,6 +144,7 @@ protected:
   void mettre_a_jour_porosite(double temps);
   void fill_section_passage_face();
   int initialiser_porosite(const double temps);
+  void check_gravity_vector() const;
 
 private:
   // attribue utile pour porosites (pas porosites_champ) ... a voir si utile sinon a virer ...
