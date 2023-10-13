@@ -7,7 +7,7 @@ Domaine dom
 Read_MED { 
    domain dom 
    file MeshCFD.med 
-	 include_internal_face_groups 1 interf
+	 include_additional_face_groups 1 interf
 }
 /* Second read with MEDCoupling */
 VerifierCoin dom { }
@@ -76,7 +76,7 @@ Navier_Stokes_standard
         sources
         {
             Boussinesq_temperature { T0 470. verif_boussinesq 0 }
-            , Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Internal_Face_groups interf  } }
+            , Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Face_group interf  } }
         }
         boundary_conditions
         {

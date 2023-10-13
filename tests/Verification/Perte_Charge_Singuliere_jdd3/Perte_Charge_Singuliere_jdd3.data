@@ -9,7 +9,7 @@ Domaine dom
 Read_MED { 
    domain dom 
    file mesh.med 
-	 include_internal_face_groups 1 interf
+	 include_additional_face_groups 1 interf
 }
 # END MESH #
 
@@ -69,7 +69,7 @@ Read pb
         convection { negligeable }
         diffusion { negligeable }
         sources {
-            Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Internal_Face_groups interf  } }
+            Perte_Charge_Singuliere { dir KZ coeff 0.5 surface { Face_group interf  } }
         }
         initial_conditions {
             vitesse Champ_Uniforme 3 0. 0. 0.

@@ -1,0 +1,115 @@
+# test Groupe Face from Pave + Tetraedriser #
+# PARALLEL OK 3 #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+    Pave Cavite
+    {
+        Origine 0.  0. 0.
+        Nombre_de_Noeuds 3 3 3
+        Longueurs 1 1 1
+    }
+    {
+        Bord paroi   X = 0.   0. <= Y <= 1.    0. <= Z <= 1.
+        Bord paroi  X = 1.  0. <= Y <= 1.   0. <= Z <= 1.
+        Bord perioy   Y =  0.  0. <= X <= 1.  0. <= Z <= 1.
+        Bord perioy   Y =  1.  0. <= X <= 1.  0. <= Z <= 1.
+        Bord paroi   Z =  0.  0. <= X <= 1.  0. <= Y <= 1.
+        Bord paroi   Z =  1.  0. <= X <= 1.   0. <= Y <= 1.
+				Groupe_Faces interf   Y =  0.5  0. <= X <= 1.   0. <= Z <= 1.
+    }
+}
+Tetraedriser_homogene dom
+Transformer dom
+x+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5-y)
+y+4*x*(1-x)*y*(1-y)*z*(1-z)*(0.5+x)
+z
+Corriger_frontiere_periodique { domaine dom bord perioy }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+VEFPreP1b dis
+Read dis { P0 P1 Pa }
+
+Scheme_euler_explicit sch
+Read sch
+{
+    nb_pas_dt_max 2
+    tinit 0.
+    tmax 0.1
+    dt_min 1.e-6
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.1
+    dt_sauv 20.
+    seuil_statio 1.e-8
+    facsec 0.5
+}
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+Read pb
+{
+
+    fluide_incompressible {
+        mu Champ_Uniforme	1 1.
+        rho Champ_Uniforme	1 1.
+    }
+
+
+    Navier_Stokes_standard
+    {
+        Solveur_Pression petsc Cholesky { }
+        
+				convection { negligeable }
+        diffusion  {  }
+        
+				initial_conditions
+        {
+            vitesse Champ_uniforme 3  0.  1. 0.
+				}
+				sources { 
+            Canal_perio {  bord perioy debit_impose 1. }
+         } 
+        boundary_conditions
+        {
+            paroi paroi_fixe
+            perioy periodique
+        }
+
+    }
+
+
+    Post_processings
+    {
+        lata
+        {
+            fichier grossier
+            format MED
+            fields dt_post 2.
+            {
+                pression elem
+                pression som
+            }
+        }
+    }
+}
+Solve pb
+End

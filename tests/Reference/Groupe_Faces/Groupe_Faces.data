@@ -1,0 +1,112 @@
+# Test Read group of faces from med file and Raffiner #
+# PARALLEL OK #
+dimension 3
+Domaine dom
+
+# BEGIN MESH #
+Read_MED {
+    domain dom
+    file grossier.med
+		include_additional_face_groups 1 groupes_faces_interf
+}
+Raffiner_isotrope dom
+Corriger_frontiere_periodique { domaine dom bord perioy }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool Tranche { tranches 2 1 1 }
+    Larg_joint 2
+    zones_name DOM
+		Periodique 1 perioy
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+VEFPreP1b dis
+Read dis { P0 P1 Pa }
+
+Scheme_euler_explicit sch
+Read sch
+{
+    nb_pas_dt_max 10
+    tinit 0.
+    tmax 0.1
+    dt_min 1.e-6
+    dt_max 1.e-1
+    dt_start dt_calc
+    dt_impr 0.1
+    dt_sauv 20.
+    seuil_statio 1.e-8
+    facsec 0.5
+}
+Pb_Hydraulique pb
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+Read pb
+{
+
+    fluide_incompressible {
+        mu Champ_Uniforme	1 1.
+        rho Champ_Uniforme	1 1.
+    }
+
+
+    Navier_Stokes_standard
+    {
+        Solveur_Pression petsc Cholesky { }
+
+        convection { negligeable  }
+        diffusion  {  }
+
+        initial_conditions
+        {
+            vitesse Champ_uniforme 3  0.  1. 0.
+				}
+				sources { 
+            Canal_perio {  bord perioy debit_impose 1. }
+         } 
+        boundary_conditions
+        {
+            paroi paroi_fixe
+            perioy periodique
+        }
+    }
+
+
+    Post_processings
+    {
+        lml
+        {
+            fichier Groupe_Faces
+            format lml
+            Probes
+            {
+                sonde_vit1  vitesse periode 0.01 points 1 0.5 0.5 0.5
+                sonde_pression pression periode 0.01 segment 10 0. 0.5 0.5      1. 0.5 0.5
+            }
+            fields dt_post 2.
+            {
+                vitesse som
+            }
+        }
+        lata
+        {
+            fichier Groupe_Faces
+            format lata
+            fields dt_post 2.
+            {
+                vitesse som
+            }
+        }
+    }
+}
+Solve pb
+End
