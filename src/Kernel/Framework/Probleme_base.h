@@ -187,10 +187,6 @@ public:
   const Probleme_Couple& get_pb_couple() const { return pbc_; }
   Probleme_Couple& get_pb_couple() { return pbc_; }
 
-private:
-  bool milieu_via_associer_ = false;
-  void warn_old_syntax();
-
 protected :
   std::vector<Milieu> le_milieu_;
   REF(Domaine_dis) le_domaine_dis;   // Discretized domain. Just a REF since Domaine_dis_cache is the real owner.
@@ -199,7 +195,8 @@ protected :
   REF(Schema_Temps_base) le_schema_en_temps;
   REF(Discretisation_base) la_discretisation;
   REF(Probleme_Couple) pbc_;
-
+  bool milieu_via_associer_ = false;
+  void warn_old_syntax();
   virtual void typer_lire_milieu(Entree& is) ;
   void lire_sauvegarde_reprise(Entree& is, Motcle& motlu) ;
   mutable DERIV(Sortie_Fichier_base) ficsauv_;
