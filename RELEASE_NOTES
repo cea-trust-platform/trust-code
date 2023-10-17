@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+17/10/23 (TRUST) New option   : Add table_temps_lue option to Champ_Fonc_MED_Table_Temps keyword : Champ_Fonc_MED_Table_Temps { table_temps_lue file.txt | table_temps { ... } ... }
 06/10/23 (TRUST) Minor change : TRUST can be linked to a pre-compiled static library of CoolProp 6.5.0 version (./configure -with-coolprop=<YOUR_PATH_TO_COOLPROP_INSTALL>).
 06/10/23 (TRUST) Keyword      : Gravity is no more read and associated to a medium, syntax is obsolete. It should be read directly in the medium.
 06/10/23 (TRUST) Keyword      : Medium (Fluid, solid, constituent, ...) are read in the problem and old syntax of read and association is not supported anymore.
