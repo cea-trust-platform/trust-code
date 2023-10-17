@@ -1038,3 +1038,9 @@ def tablePerf():
     """
     global defaultSuite_
     return defaultSuite_.tablePerf()
+
+def initBuildDirectory():
+    """ triggers build directory creation and copy src stuff into it
+    """
+    global defaultSuite_ 
+    defaultSuite_ = TRUSTSuite()
