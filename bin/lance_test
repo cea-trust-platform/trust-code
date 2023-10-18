@@ -843,7 +843,7 @@ then
 	then
 	    cas=${choix#P_}
 	    [ -f $file ] && [ "`grep 'PARALLEL '$cas $file`" = "" ] && i=""
-	    [ -f $file ] && [ "`egrep 'PARTITION|DECOUPAGE' $file`" = "" ] && i="" && echo "Cas $file non decoupe... avec $exec"
+	    [ -f $file ] && [ "`grep -E 'PARTITION|DECOUPAGE' $file`" = "" ] && i="" && echo "Cas $file non decoupe... avec $exec"
 	    PAR=1
 	    export PAR
 	else
@@ -1072,7 +1072,7 @@ then
 	    ATTENTION=`$TRUST_Awk '/lance_test/ {gsub("# lance_test","ATTENTION",$0);gsub("#","possible sur ce cas selon la machine de test.",$0);print $0}' $NOM.data`
 	    if [ $PAR = 1 ]
 	    then
-		if [ "`egrep 'BEGIN PARTITION|DEBUT DECOUPAGE' $NOM.data`" = "" ]
+		if [ "`grep -E 'BEGIN PARTITION|DEBUT DECOUPAGE' $NOM.data`" = "" ]
 		then
 		    echo " File $NOM.data not ready to check parallelism !"
 		    DEC=0
