@@ -165,7 +165,7 @@ check_src()
    # Verification des cast en dur
    ##############################
    grp_cmd=
-   res=`grep -En "\(.*& *\)" *.cpp 2>/dev/null | grep -v "\:\:"| $TRUST_Awk -F\/\/ '{print $1}' | grep -v catch | grep -v Eval_ |grep -v "iter.reconstructeur()"|grep -v ":[ ]*\*"|grep -v ":/\*!"| $TRUST_Awk  '{if (NF>1) {print $0}}' ` 
+   res=`grep -En "\(.*& *\)" *.cpp 2>/dev/null | grep -v "::"| $TRUST_Awk -F\/\/ '{print $1}' | grep -v catch | grep -v Eval_ |grep -v "iter.reconstructeur()"|grep -v ":[ ]*\*"|grep -v ":/\*!"| $TRUST_Awk  '{if (NF>1) {print $0}}' ` 
    if [ "$res" != "" ]
    then
       echo $res
