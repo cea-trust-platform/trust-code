@@ -42,8 +42,16 @@ then
   source $TRUST_ROOT/Outils/lata_tools/src/tools/env.sh
 fi
 
+# Chargement de trustpy
+if [ "`echo $PYTHONPATH | grep -i trustpy`" = "" ]
+then
+  source $TRUST_ROOT/Outils/trustpy/env.sh
+fi
+
+
 if [ $ok = 1 ]; then 
    echo "env_for_python.sh successfully loaded."
 else
    echo "env_for_python.sh only partially loaded!!"
 fi
+

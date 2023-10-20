@@ -626,6 +626,7 @@ do
       [ "$THIRD_PARTY" = "DOXYGEN" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/doxygen
       [ "$THIRD_PARTY" = "TCL_TK" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/tcl_tk
       [ "$THIRD_PARTY" = "PLOT2D" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/IHM
+      [ "$THIRD_PARTY" = "TRUSTPY" ] && REP_THIRD_PARTY=$TRUST_ROOT/Outils/trustpy
       if [ ! -d $REP_THIRD_PARTY ]
       then
          echo "$1 option not available cause $REP_THIRD_PARTY is not installed."

@@ -1,0 +1,880 @@
+# template for G+ #
+# PARALLEL NOT #
+dimension 3
+domaine dom 
+domaine dom_primaire 
+domaine Case_1_Domain 
+Lire_MED { 
+   domain Case_1_Domain 
+   file domain_intersected.med 
+   exclude_groups 1 <MAILLAGE_DE_CALCUL
+}
+# DEBUT MAILLAGE #
+Lire_MED { 
+   domain dom 
+   file mod_domain.med 
+}
+Lire_MED { 
+   domain dom_primaire 
+   file primary.med 
+}
+# FIN MAILLAGE #
+# DEBUT DECOUPAGE 
+
+Decouper dom 
+  { 
+    Partitionneur metis   { nb_parts 2   } 
+    Larg_joint 1 
+    Nom_Zones DOM 
+  } 
+Decouper dom_primaire 
+  { 
+    Partitionneur tranche   { tranches 
+        1 /* on revient a la ligne pour eviter que */ 
+        1 /* make_PAR.data decoupe le primaire */ 
+        1   } 
+    nb_parts_tot 2 
+    Larg_joint 1 
+    Nom_Zones DOM_PRIMAIRE 
+  } 
+
+Fin 
+FIN DECOUPAGE #
+# DEBUT LECTURE 
+Scatter DOM.Zones dom 
+Scatter DOM_PRIMAIRE.Zones dom_primaire 
+FIN LECTURE #
+ef dis 
+schema_euler_explicite sch 
+Lire sch
+  { 
+    tinit 0.0
+	nb_pas_dt_max 3
+    tmax 5.0
+    facsec 2.5
+    dt_impr 0.5
+    seuil_statio 1e-07
+    diffusion_implicite 1
+    niter_max_diffusion_implicite 3
+    seuil_diffusion_implicite 1e-15
+    impr_diffusion_implicite 0
+    no_error_if_not_converged_diffusion_implicite 1
+    no_conv_subiteration_diffusion_implicite 1
+  }
+lire_fichier fiche-644_defined_groups.data ;
+metal metal 
+Lire metal
+  { 
+    type_metal acier_316l
+    temperature_reference 358.0
+    rugosite 0.2
+    tmlamt variable
+  }
+
+
+
+probleme_couple pbc 
+pb_melange pb 
+Associer pb dom
+Associer pbc pb
+probleme_primaire pb_primaire 
+Associer pb_primaire dom_primaire
+Associer pbc pb_primaire
+Associer pbc sch
+discretiser pbc dis
+
+Lire pb
+  { 
+  fluide_melange 
+  { 
+  gravite champ_uniforme  3 0.0 0.0 -9.80665
+    type_fluide fr114_7b_12b
+    pression_reference 939000.0
+    porosites_champ Champ_Fonc_MED { domain Case_1_Domain 
+                                     file domain_intersected.med 
+                                     field POROSITE_ELEMENT 
+                                     use_existing_domain 
+                                     last_time 
+                                     }
+  }
+    navier_stokes_melange 
+      { 
+        modelisation 
+          { 
+            prandtl 0.5
+            diffusion turbulente 
+              { 
+                longueur_melange 0.3
+              }
+            faisceau 
+              { 
+                champ_rotation Champ_Fonc_MED { domain Case_1_Domain 
+                                                file domain_intersected.med 
+                                                field RotationMatrix 
+                                                use_existing_domain 
+                                                last_time 
+                                                }
+                champ_presence Champ_Fonc_MED { domain Case_1_Domain 
+                                                file domain_intersected.med 
+                                                field BUNDLE_PRESENCE_RATE_CORRECTED 
+                                                use_existing_domain 
+                                                last_time 
+                                                }
+                dint 0.0113
+                gamma0 108.3225
+                betap0 0.2599943
+                beta0 0.6398278
+                dext 0.0133
+                pas 0.01964
+                dhy0 0.023626780473298983
+                ityper rectangulaire
+              }
+            plaques_in_file fiche-644_plaques.data
+            les_modeles_frottement_singulier 
+              {
+                standard 
+                  { 
+                    groupe_plaque bav_lateral
+                    coefficient_redressement_tangentiel 
+                      { 
+                        a1 0.0
+                        a2 1.0
+                      }
+                    multiplicateur_diphasique chilsom_utilisateur 
+                      { 
+                        b 1.5
+                      }
+                    coefficient_kn Idelcik 
+                  }
+                ,
+                standard 
+                  { 
+                    groupe_plaque NonGrouped
+                    coefficient_redressement_tangentiel 
+                      { 
+                        a1 2.0
+                        a2 2.0
+                      }
+                    multiplicateur_diphasique chilsom_utilisateur 
+                      { 
+                        b 1.5
+                      }
+                    coefficient_kn Idelcik 
+                  }
+                ,
+                standard 
+                  { 
+                    groupe_plaque bav_central
+                    coefficient_redressement_tangentiel 
+                      { 
+                        a1 0.0
+                        a2 0.0
+                      }
+                    multiplicateur_diphasique homogene 
+                    coefficient_kn Utilisateur 
+                      { 
+                        k_sur_deux 50.0
+                      }
+                  }
+                ,
+                standard 
+                  { 
+                    groupe_plaque StabilizerPlate
+                    coefficient_redressement_tangentiel 
+                      { 
+                        a1 0.0
+                        a2 0.0
+                      }
+                    multiplicateur_diphasique homogene 
+                    coefficient_kn Utilisateur 
+                      { 
+                        k_sur_deux 35.0
+                      }
+                  }
+              }
+            nom_probleme_primaire pb_primaire
+            frottement_reparti 
+              { 
+                frottement_liquide_parallele colburn 
+                frottement_liquide_transverse idelcik
+                projection module
+                multiplicateur_diphasique anisotrope 
+                  { 
+                    parallele chilsom_standard 
+                    transverse chilsom_standard 
+                  }
+              }
+            desequilibre_cinematique 
+              { 
+                vitesse_derive lellouche_zolotar_standard 
+                tenseur_distribution 
+                  { 
+                    parallele lellouche_zolotar 
+                    transverse lellouche_zolotar 
+                  }
+              }
+            echange_thermique 
+              { 
+                parallele_liquide Groeneveld 
+                ebullition_nucleee Gorenflo 
+              }
+          }
+        pression_initiale champ_uniforme  1 939000.0
+        methode_calcul_pression_initiale avec_sources
+        solveur_pression petsc cholesky  { cli { -mat_mumps_icntl_6 5 -mat_mumps_icntl_8 -2 } }
+        convection    { btd 
+              { 
+                facteur 2.5
+                btd 3.0
+              }
+          }
+        diffusion    { option    { grad_u_transpose_partout 1   } 
+          }
+        conditions_initiales    {  vitesse champ_fonc_xyz dom 3 0. 0 0.4
+          }
+        conditions_limites 
+          {
+            ENTREE_BRANCHE_CHAUDE frontiere_ouverte_vitesse_imposee champ_front_debit_ef  37.55
+            ENTREE_BRANCHE_FROIDE frontiere_ouverte_vitesse_imposee champ_front_debit_ef  28.3
+            SORTIE frontiere_ouverte_pression_imposee champ_front_uniforme  1 880000.0
+            PAROI symetrie 
+            BASE symetrie 
+          }
+        sources 
+          {
+            source_derive 
+            ,
+            source_frottement 
+            ,
+            source_pesanteur 
+          }
+      }
+    enthalpie_melange 
+      { 
+        convection    { btd 
+              { 
+                facteur 2.5
+                btd 3.0
+              }
+          }
+        diffusion    { option    { grad_u_transpose_partout 1   } 
+          }
+        conditions_initiales    {  enthalpie champ_uniforme  1 140000.0
+          }
+        conditions_limites 
+          {
+            ENTREE_BRANCHE_CHAUDE frontiere_ouverte_enthalpie_imposee champ_front_uniforme  1 119300.0
+            ENTREE_BRANCHE_FROIDE frontiere_ouverte_enthalpie_imposee champ_front_uniforme  1 118500.0
+            SORTIE frontiere_ouverte T_ext champ_front_uniforme  1 1000000000000000.0
+            PAROI symetrie 
+            BASE symetrie 
+          }
+        sources 
+          {
+            source_derive 
+            ,
+            source_scalaire champ_couplage_primaire_secondaire 
+              { 
+                nom_pb_secondaire pb
+              }
+          }
+      }
+    postraitement 
+      { 
+        definition_champs 
+          {
+            vitesse_massique_melange refchamp 
+              { 
+                pb_champ  pb rho_u
+              }
+            vmel refchamp 
+              { 
+                pb_champ  pb vitesse
+              }
+            vr refchamp 
+              { 
+                pb_champ  pb vitesse_relative_som
+              }
+            titre refchamp 
+              { 
+                pb_champ  pb titre_thermodynamique_melange_som
+              }
+            vmelx transformation 
+              { 
+                methode composante
+                numero 0
+                localisation som
+                sources_reference 
+                  {
+                    vmel
+                  }
+              }
+            vmely transformation 
+              { 
+                methode composante
+                numero 1
+                localisation som
+                sources_reference 
+                  {
+                    vmel
+                  }
+              }
+            vmelz transformation 
+              { 
+                methode composante
+                numero 2
+                localisation som
+                sources_reference 
+                  {
+                    vmel
+                  }
+              }
+            vrx transformation 
+              { 
+                methode composante
+                numero 0
+                localisation som
+                sources_reference 
+                  {
+                    vr
+                  }
+              }
+            vry transformation 
+              { 
+                methode composante
+                numero 1
+                localisation som
+                sources_reference 
+                  {
+                    vr
+                  }
+              }
+            vrz transformation 
+              { 
+                methode composante
+                numero 2
+                localisation som
+                sources_reference 
+                  {
+                    vr
+                  }
+              }
+            VITESSE_GAZ_som transformation 
+              { 
+                methode vecteur
+                expression 3 vmelx+(1-titre)*vrx vmely+(1-titre)*vry vmelz+(1-titre)*vrz
+                sources_reference 
+                  {
+                    vmelx
+                    ,
+                    vmely
+                    ,
+                    vmelz
+                    ,
+                    vrx
+                    ,
+                    vry
+                    ,
+                    vrz
+                    ,
+                    titre
+                  }
+              }
+            VITESSE_LIQUIDE_som transformation 
+              { 
+                methode vecteur
+                expression 3 vmelx+(-titre)*vrx vmely+(-titre)*vry vmelz+(-titre)*vrz
+                sources_reference 
+                  {
+                    vmelx
+                    ,
+                    vmely
+                    ,
+                    vmelz
+                    ,
+                    vrx
+                    ,
+                    vry
+                    ,
+                    vrz
+                    ,
+                    titre
+                  }
+              }
+            # Divers alias utiles #
+            puissance_volumique_primaire refchamp { pb_champ pb puissance_volumique }
+            alpha refchamp { pb_champ pb taux_de_vide_melange }
+            tp refchamp { pb_champ pb temperature_paroi }
+            temper refchamp { pb_champ pb temperature_liquide }
+            tsat refchamp { pb_champ pb temperature_saturation_melange }
+	    rhol refchamp { pb_champ pb masse_volumique_liquide }
+	    rhog refchamp { pb_champ pb masse_volumique_gaz }	
+            P refchamp { pb_champ pb pression }
+            tprim refchamp { pb_champ pb temperature_primaire_sur_secondaire }
+            gpri refchamp { pb_champ pb G_primaire_sur_secondaire }
+            # tw refchamp { pb_champ pb temperature_paroi } #
+            # Expressions analytiques #
+            GpriPlun transformation { 
+				methode formule 
+				expression 1 gpri+1.0*(gpri<0.01) 
+				sources_reference { gpri } 
+ 				localisation elem 
+            } 
+            tmlamtvar transformation { 
+				methode formule 
+				expression 1 11.8980+(1.19819*10^(-2.))*tp
+				sources_reference { tp } 
+ 				localisation elem 
+            }
+            Pcrit transformation { 
+				methode formule 
+				expression 1 3260000.0 
+ 				localisation elem 
+            }     
+            rhols transformation { 
+				methode formule 
+				expression 1 1259.8382691743318 
+ 				localisation elem 
+            } 
+            rhogs transformation { 
+				methode formule 
+				expression 1 68.453015764827668 
+ 				localisation elem 
+            } 
+            tsatref transformation { 
+				methode formule 
+				expression 1 353.81943777967609 
+                                # temperature de saturation initiale a Pref #
+ 				localisation elem 
+            } 
+            Pref transformation { 
+				methode formule 
+				expression 1 939000.0 
+ 				localisation elem 
+            }     	
+            Pr transformation { 
+				methode formule 
+				expression 1 Pref/Pcrit 
+				# 0.27607361963190186 #
+				sources_reference { Pref , Pcrit } 
+ 				localisation elem 
+            } 
+            Fp transformation { 
+				methode formule 
+				expression 1 0.7*Pr^0.2+(4.0+1.4/(1-Pr))*Pr 
+				sources_reference { Pr }
+ 				localisation elem 
+            } 
+            n transformation { 
+				methode formule 
+				expression 1 0.95-0.3*Pr^(0.3) 
+			 	# 0.69609457107308548 #
+				sources_reference { Pr } 
+ 				localisation elem 
+            }
+            delta transformation { 
+				methode formule 
+				expression 1 35
+ 				localisation elem 
+            } 
+            g transformation { 
+				methode formule 
+				expression 1 9.80665 
+ 				localisation elem 
+            }
+            q0 transformation { 
+				methode formule 
+				expression 1 20000.0 
+ 				localisation elem 
+            }
+            sigma transformation { 
+				methode formule 
+				expression 1 0.0056291773875442814
+ 				localisation elem 
+            } 
+            dB transformation { 
+				methode formule 
+				expression 1 0.0146*delta*(2*sigma/(g*(rhols-rhogs)))^(0.5) 
+				# 6.5383684267249871e-04 en utilisant le sigma et le delta du code #
+				sources_reference { delta , g , sigma , rhols , rhogs } 
+ 				localisation elem 
+            } 
+            Tl transformation { 
+				methode formule 
+				expression 1 tsatref 
+				sources_reference { tsatref } 
+ 				localisation elem 
+            }
+            lambdal transformation { 
+				methode formule 
+				expression 1 2.2449*10^(-2)+1.74*10^(-3)*(145.70-(Tl-273.16))^(0.66)
+				sources_reference { Tl } 
+ 				localisation elem 
+            }
+            B1 transformation { 
+				methode formule 
+				expression 1 (q0*dB)/(lambdal*tsatref) 
+				# 0.73808908352994973 trouve 7.38307890e-01 # 
+				sources_reference { q0 , dB , lambdal , tsatref } 
+ 				localisation elem 
+            } 
+            L transformation { 
+				methode formule 
+				expression 1 1.0134490778014419*10^5 
+ 				localisation elem 
+            } 
+            Cpl transformation { 
+				methode formule 
+				expression 1 401.180+(1.65007+(0.00151494-0.000000667853*Tl)*Tl)*Tl 
+				# 1140.3592420602381 trouve 1140.36467 #
+				sources_reference { Tl } 
+ 				localisation elem 
+            }  
+            B2 transformation { 
+				methode formule 
+				expression 1 L*(dB*rhols*Cpl/lambdal)^2 
+				# 36122525231932.617 trouve 3.61428070e+13 # 
+				sources_reference { L , dB , rhols , lambdal , Cpl } 
+ 				localisation elem 
+            } 
+            B3 transformation { 
+				methode formule 
+				expression 1 (lambdal/Cpl)^2*1.0/(sigma*rhols*dB) 
+				# 4.0272193319539983E-007 trouve 4.02510858e-07 # 
+				sources_reference { sigma , dB , rhols , lambdal , Cpl } 
+ 				localisation elem 
+            } 
+            Prl transformation { 
+				methode formule 
+				expression 1 -16.3437+(0.265343+(-0.000992932+0.00000116001*Tl)*Tl)*Tl 
+				sources_reference { Tl } 
+ 				localisation elem 
+            }
+            # fgor transformation { 
+				methode formule 
+				expression 1 0.63485147231859695 
+ 				localisation elem 
+            } #
+            fgor transformation { 
+				methode formule 
+				expression 1 (rhogs/rhols)^(0.156) 
+				# 0.63485147231859695 #
+				sources_reference { rhogs , rhols } 
+ 				localisation elem 
+            } 
+            # EGOR   = PRLALS / DB - dans PREPR.f #
+            # FGOR   = (ROGS / ROLS) ** 0.156 - dans PREPR.f #
+            # FGOR =   0.63485147231859695 #
+            # HG0    = 0.175 * EGOR * FGOR * AGOR ** 0.674 * BGOR ** 0.371 * CGOR ** 0.35 / PRPRAS ** 0.16 - dans PREPR.f #     
+            h0 transformation { 
+				methode formule 
+				expression 1 0.175*lambdal/dB*fgor*B1^(0.674)*B2^(0.371)*B3^(0.35)*Prl^(-0.16) 
+				# 3350.8958997317236 trouve 3350.62813 #
+				sources_reference { dB , fgor , lambdal , B1 , B2 , B3 , Prl } 
+ 				localisation elem 
+            } 
+            Ra transformation { 
+				methode formule 
+				expression 1 0.2000000000000000 
+ 				localisation elem 
+            } 
+            Bmet transformation { 
+				methode formule 
+				# expression 1 sqrt(16.1875202*7990.0*500.0) #
+				expression 1 sqrt(tmlamtvar*7990.0*500.0)
+				sources_reference { tmlamtvar } 
+ 				localisation elem 
+            } 
+            Fwr transformation { 
+				methode formule 
+				expression 1 (Ra/0.4)^(2./15.)
+                                # 1.0555500603232313 trouve 1.05555006e+00 #
+				sources_reference { Ra } 
+ 				localisation elem 
+            }  
+            Fwm transformation { 
+				methode formule 
+				expression 1 (Bmet/35350.0)^(0.5)
+                                # 0.47713379661812677 trouve 4.77133914e-01 #
+				sources_reference { Bmet } 
+ 				localisation elem 
+            }  
+            Fw transformation { 
+				methode formule 
+                                # expression 1 0.50363860780251613 #
+				expression 1 Fwr*Fwm
+				sources_reference { Fwr , Fwm } 
+                                # 0.50363860780251613 trouve 5.03638732e-01 #
+ 				localisation elem 
+            }  
+            Apcst transformation { 
+				methode formule 
+				expression 1 (h0/(q0^n)*Fp*Fwr)^(1/(1-n))
+				sources_reference { h0 , q0 , n , Fp , Fwr } 
+ 				localisation elem 
+            }   
+            Ap transformation { 
+				methode formule 
+				expression 1 (h0/(q0^n)*Fp*Fw)^(1/(1-n))
+				# 58.505199838005048 trouve 58.5051718 sans rugosite et effusivite #
+				# 5.0495836365802003 trouve 5.04958001e+00 #
+				sources_reference { h0 , q0 , n , Fp , Fw } 
+ 				localisation elem 
+            }   
+            bp transformation { 
+				methode formule 
+				expression 1 n/(1-n) 
+				# 2.5715054584092036 trouve 2.57150581 #
+				sources_reference { n } 
+ 				localisation elem 
+            }    
+            hen transformation { 
+				methode formule 
+				expression 1 Ap*(abs(tp-tsat))^bp 
+				sources_reference { Ap , bp , tp , tsat } 
+ 				localisation elem 
+            }    
+            q_div_gamma0 transformation { 
+				methode formule 
+				expression 1 Ap*(abs(tp-tsat))^(bp+1) 
+				sources_reference { tp , tsat , Ap , bp } 
+ 				localisation elem 
+            }   
+            # Puissance (modifier si le volume du primaire n'est pas 1.2215 m3) #
+            q_div_gamma0_c transformation { 
+				methode formule
+				expression 1 1.2215*puissance_volumique_primaire/108.3225
+				sources_reference { puissance_volumique_primaire }
+ 				localisation elem 
+            }
+            dext transformation { 
+				methode formule 
+				expression 1 0.0133
+ 				localisation elem 
+            }  
+            dint transformation { 
+				methode formule 
+				expression 1 0.0113
+ 				localisation elem 
+            }
+            relrei transformation { 
+				methode formule 
+				expression 1 0.5*dext*ln(dext/dint) 
+				sources_reference { dext , dint } 
+ 				localisation elem 
+            }         
+            dedi transformation { 
+				methode formule 
+				expression 1 dext/(dint^(0.8))
+				sources_reference { dext , dint } 
+ 				localisation elem 
+            }   
+            ftp transformation { 
+				methode formule 
+				expression 1 2.0816+(-0.0147204+(3.65751*10^(-5)-3.09543*10^(-8)*tprim)*tprim)*tprim      
+				sources_reference { tprim } 
+ 				localisation elem 
+            }
+            rthpri transformation { 
+				methode formule 
+                                expression 1 ftp*dedi/(GpriPlun^(0.8))
+                                # expression 1 ftp*dedi/644.147261904 #
+				sources_reference { ftp , dedi , GpriPlun } 
+ 				localisation elem 
+            }
+            tmrcon transformation { 
+				methode formule 
+				# expression 1 relrei/16.1875202 #
+ 				expression 1 relrei/tmlamtvar 
+				sources_reference { relrei , tmlamtvar } 
+ 				localisation elem 
+            }
+            rtencr transformation { 
+				methode formule 
+				expression 1 0.0
+ 				localisation elem 
+            }  
+            rtheq transformation { 
+				methode formule 
+				expression 1 rthpri+tmrcon+rtencr 
+				sources_reference { rthpri , tmrcon , rtencr } 
+ 				localisation elem 
+            }
+            # heq transformation { 
+				methode formule 
+				expression 1 7947.34
+ 				localisation elem 
+            } #
+            heq transformation { 
+				methode formule 
+				expression 1 1./rtheq
+				sources_reference { rtheq } 
+ 				localisation elem 
+            }
+            tw transformation { methode formule expression 1 
+				tsat+(heq*(tprim-tsat))/(heq+hen)
+				sources_reference { heq , hen , tsat , tprim } 
+ 				localisation elem
+            }
+          }
+        Sondes
+          {
+			vitesse 			vitesse 			periode 1e10 	segment 30 0.1 0.006 7.01397 0.489063 0.006 7.01397 
+			alpha				alpha				periode 1e10	position_like vitesse
+			masse_volumique_melange		masse_volumique_melange		periode 1e10	position_like vitesse
+			# Conditions #
+			titre_thermodynamique_melange	titre_thermodynamique_melange	periode 1e10	position_like vitesse
+			temperature_paroi		temperature_paroi		periode 1e10 	position_like vitesse
+			temperature_saturation_melange	temperature_saturation_melange	periode 1e10 	position_like vitesse
+			temperature_liquide 		temperature_liquide 		periode 1e10 	position_like vitesse
+                        pression 		        pression         		periode 1e10 	position_like vitesse
+			# Termes #
+			tw_c				temperature_paroi		periode 1e10 	position_like vitesse
+			q_div_gamma0_c			q_div_gamma0_c			periode 1e10 	position_like vitesse				
+			
+			# Expressions analytiques #
+			Ap			Ap			      				periode 1e10 	position_like vitesse
+			B1			B1			      				periode 1e10 	position_like vitesse
+			dB			dB			      				periode 1e10 	position_like vitesse
+			B2			B2			      				periode 1e10 	position_like vitesse
+			B3			B3			      				periode 1e10 	position_like vitesse
+			Prl			Prl			      				periode 1e10 	position_like vitesse
+			Apcst			Apcst			      				periode 1e10 	position_like vitesse
+			bp			bp			        			periode 1e10 	position_like vitesse
+			hen			hen			        			periode 1e10 	position_like vitesse
+			n				n							        periode 1e10 	position_like vitesse
+			Pr			Pr			        			periode 1e10 	position_like vitesse
+			Bmet			Bmet			        			periode 1e10 	position_like vitesse
+			Fw			Fw			        			periode 1e10 	position_like vitesse
+			Fwr			Fwr			        			periode 1e10 	position_like vitesse
+			q0			q0			        			periode 1e10 	position_like vitesse
+			h0			h0			        			periode 1e10 	position_like vitesse
+			Fwm			Fwm			        			periode 1e10 	position_like vitesse
+			ftp			ftp			        			periode 1e10 	position_like vitesse
+			gpri			gpri			        			periode 1e10 	position_like vitesse
+			GpriPlun		GpriPlun			        		periode 1e10 	position_like vitesse
+			rthpri			rthpri			        			periode 1e10 	position_like vitesse
+			Fp			Fp			        			periode 1e10 	position_like vitesse
+			tmlamtvar               tmlamtvar			        		periode 1e10 	position_like vitesse
+			tw  				tw 			periode 1e10 	position_like vitesse
+			q_div_gamma0  				q_div_gamma0 			periode 1e10 	position_like vitesse
+			tprim  		        tprim							periode 1e10 	position_like vitesse
+						
+          }
+        format lml
+        champs  binaire dt_post 10.0 
+          {
+            pression elem
+            rho_u som
+            enthalpie som
+            taux_de_vide_melange elem
+            puissance_volumique elem
+            vitesse som
+            pression_som som
+            VITESSE_LIQUIDE_som som
+            vitesse_relative_som som
+            vitesse_gaz_som som
+            MASSE_VOLUMIQUE_MELANGE_som som
+            MASSE_VOLUMIQUE_LIQUIDE_som som
+            MASSE_VOLUMIQUE_GAZ_som som
+            TITRE_THERMODYNAMIQUE_melange_som som
+            TITRE_DYNAMIQUE_melange elem
+            TEMPERATURE_PRIMAIRE_SUR_SECONDAIRE elem
+            MASSE_VOLUMIQUE_PRIMAIRE_SUR_SECONDAIRE elem
+            TEMPERATURE_GAZ_som som
+            TEMPERATURE_LIQUIDE_som som
+            ENTHALPIE_SATURATION_LIQUIDE_som som
+            CHALEUR_LATENTE_MELANGE_som som
+            POROSITE_VOLUMIQUE som
+            inverse_mu_liquide som
+            inverse_mu_gaz som
+            taux_de_vide_melange_som som
+          }
+      }
+    liste_de_postraitements 
+      {
+        bilan_global postraitement_bilan_genepi 
+          { 
+            boundary GLOBAL
+            extension global
+            periode 1.0
+            debug 0
+          }
+        ENTREE_BRANCHE_CHAUDE postraitement 
+          { 
+            domaine dom_boundaries_ENTREE_BRANCHE_CHAUDE
+            format lml
+            champs  dt_post 1e8 
+              {
+                enthalpie som
+                rho_u som
+              }
+          }
+        bilan_ENTREE_BRANCHE_CHAUDE postraitement_bilan_genepi 
+          { 
+            boundary ENTREE_BRANCHE_CHAUDE
+            extension in
+            periode 1.0
+            debug 0
+          }
+        ENTREE_BRANCHE_FROIDE postraitement 
+          { 
+            domaine dom_boundaries_ENTREE_BRANCHE_FROIDE
+            format lml
+            champs  dt_post 1e8 
+              {
+                enthalpie som
+                rho_u som
+              }
+          }
+        bilan_ENTREE_BRANCHE_FROIDE postraitement_bilan_genepi 
+          { 
+            boundary ENTREE_BRANCHE_FROIDE
+            extension in
+            periode 1.0
+            debug 0
+          }
+        bilan_SORTIE postraitement_bilan_genepi 
+          { 
+            boundary SORTIE
+            extension out
+            periode 1.0
+            debug 0
+          }
+      }
+  }
+Lire pb_primaire
+  { 
+  fluide_primaire 
+  { 
+    type_fluide eau_10b
+  }
+    T_primaire 
+      { 
+        repartition 
+          { 
+            loi variable
+            fichier_surfaces fiche-644_Surf_prim.txt
+            fichier_debits fiche-644_Debi_prim_2.txt
+          }
+        conditions_initiales    {  temperature champ_uniforme  1 359.0
+          }
+        conditions_limites 
+          {
+            ENTR frontiere_ouverte_temperature_imposee champ_front_uniforme  1 361.8
+            SORT frontiere_ouverte T_ext champ_front_uniforme  1 361.8
+          }
+      }
+    postraitement 
+      { 
+        format lml
+        champs  dt_post 20 
+          {
+            temperature som
+            vitesse_massique_primaire som
+          }
+        fichier primaire
+      }
+  }
+resoudre pbc
+fin 
