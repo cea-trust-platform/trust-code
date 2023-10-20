@@ -371,30 +371,38 @@ check_components()
 	                fi
 	                machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
                         log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-		        WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+                        BATCHMODE=" -o BatchMode=yes "
+                        SSHP=""
+                        if [ "`liste_machines ssh_pass | grep $adr`" != "" ]
+                        then
+                           SSHPASS=`awk -v adr=$adr '($2==adr) {print $6}' ~/.netrc | head -1`
+                           SSHP="sshpass -p $SSHPASS "
+                           BATCHMODE=""
+                        fi
+
+		        WORKTMP=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
                         if [ $* = tuleap/Maintenance ]
                         then
                            # Debut de partie a revoir !!!!
-		           #WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/triou/env_TRUST_\$TRUST_VERSION.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            WORKBETA=""
                            trustversion=""
                            [ "$Composant" == "flica5" ] && trustversion=1.9.2
                            [ "$Composant" == "module3D" ] && trustversion=1.9.2
                            if  [ "${machine:0:5}" = "orcus" ] || [ "${machine:0:6}" = "altair" ]
                            then
-		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:9}" = "callisto-" ] || [ "${machine:0:11}" = "irene-ccrt-" ] || [ "${machine:0:7}" = "cobalt-" ]
                            then
                               WORKBETA=""
                            elif [ "${machine:0:10}" = "irene-ccrt" ] || [ "${machine:0:6}" = "topaze" ]
                            then
-		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /ccc/cont002/home/den/triou/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif [ "${machine:0:7}" = "cezanne" ]
                            then
-		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /soft/der/sesi/TRUST/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            elif  [ "${machine:0:2}" = "is" ]
                            then
-		              WORKBETA=`ssh_ -o BatchMode=yes $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
+		              WORKBETA=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'source /home/trust_trio-public/env_TRUST-'$trustversion'.sh 1>/dev/null 2>&1; echo \$TRUST_ROOT;'`
                            fi
                            if [ "$WORKBETA" != "" ]
                            then
@@ -1759,7 +1767,14 @@ for adr in `liste_machines | grep -v is1 | grep -v is2 | grep -v cezanne`
 do 
    machine=`echo $adr | awk -F. '{print $1}' | awk -F"-gw" '{print $1}'`
    log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-   ssh_ $log@$machine -n 'echo -e "'$machine: '\c";ls ${WORKDIR:-$HOME}/$WORKBASE"'$machine'"/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
+   SSHP=""
+   if [ "`liste_machines ssh_pass | grep $adr`" != "" ]
+   then
+      SSHPASS=`awk -v adr=$adr '($2==adr) {print $6}' ~/.netrc | head -1`
+      SSHP="sshpass -p $SSHPASS "
+   fi
+
+   $SSHP ssh_ $log@$machine -n 'echo -e "'$machine: '\c";ls ${WORKDIR:-$HOME}/$WORKBASE"'$machine'"/TRUST/exec/TRUST_mpi_opt 2>/dev/null || echo' 2>/dev/null
 done >> $MESSAGES_NUIT
 echo "Older binaries (> v1.7.1) are available here: ftp://$TRUST_FTP/$PUBLIC/" >> $MESSAGES_NUIT
 echo "Older binaries (< v1.7.1) are available here: ftp://ftp.cea.fr/pub/TRUST/a87pour/" >> $MESSAGES_NUIT
@@ -1992,15 +2007,23 @@ do
 	       adr=`echo $line | awk -F"@" '{print $2}' | awk -F"_" '{print $1}'`
 	       log=`echo $line | awk -F"@" '{print $1}' | awk -F"%" '{print $2}' | awk -F"_" '{print $2}'`
 	       machine=`echo $adr | awk -F"." '{print $1}' | awk -F"-gw" '{print $1}'`
-               WORKTMP=`ssh_ -o BatchMode=yes $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
+	       BATCHMODE=" -o BatchMode=yes "
+	       SSHP=""
+	       if [ "`liste_machines ssh_pass | grep $adr`" != "" ]
+	       then
+	          SSHPASS=`awk -v adr=$adr '($2==adr) {print $6}' ~/.netrc | head -1`
+	          SSHP="sshpass -p $SSHPASS "
+	          BATCHMODE=""
+	       fi
+               WORKTMP=`$SSHP ssh_ $BATCHMODE $log@$adr -n 'if [ "\$WORKDIR" = "" ]; then echo \$HOME;else echo \$WORKDIR;fi'`
 	       echo "  Treatment of $PID on $machine"
-	       pids=$(ssh $log@$adr $WORKTMP/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
+	       pids=$($SSHP ssh $log@$adr $WORKTMP/$WORKBASE$machine/TRUST/bin/baltik/share/baltik/bin/portability/list_pid_et_fils.sh $PID)
 	       echo "    ssh $log@$adr scancel $pids"
-	       ssh $log@$adr scancel $pids
-	       ssh $log@$adr scancel $pids
+	       $SSHP ssh $log@$adr scancel $pids
+	       $SSHP ssh $log@$adr scancel $pids
 	       echo "    ssh $log@$adr kill -9 $pids   # scancel ne marche pas sur pc"
 	       #ssh $log@$adr kill -19 $pids
-	       ssh $log@$adr kill -9 $pids
+	       $SSHP ssh $log@$adr kill -9 $pids
 	      ) 
 	    done
 	    IFS=$old_IFS  # retablissement du separateur de champ par defaut
@@ -2378,7 +2401,16 @@ do
    machine=`echo $machine_ | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
    check_xdata_log=$REP_NUIT"/check_xdata_"$machine".log"
    rm -f $check_xdata_log
-   if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+   log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
+   BATCHMODE=" -o BatchMode=yes "
+   SSHP=""
+   if [ "`liste_machines ssh_pass | grep $machine`" != "" ]
+   then
+      SSHPASS=`awk -v adr=$machine_ '($2==adr) {print $6}' ~/.netrc | head -1`
+      SSHP="sshpass -p $SSHPASS "
+      BATCHMODE=""
+   fi
+   if  [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
       echo "  KO $machine machine not accessible via ssh."
       echo "  No $check_xdata_log"
@@ -2386,14 +2418,14 @@ do
       echo | mail_ -s\"[lance_test_nuit] Error when receiving XData log from $machine not accessible via ssh.\" $TRUST_MAIL
    else
       echo "  See $check_xdata_log"
-      log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
-      workdir=`ssh $machine -n 'echo $WORKDIR'`
+      
+      workdir=`$SSHP ssh $log@$machine -n 'echo $WORKDIR'`
       if  [ "${machine:0:2}" = "is" ]
       then
-         scp $log@$machine:$workdir/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
+         $SSHP scp $log@$machine:$workdir/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log 1>/dev/null 2>&1
          scp_error=$?
       else
-         scp $log@$machine:~/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
+         $SSHP scp $log@$machine:~/.tmp_TRUST_$machine/check_xdata.log $check_xdata_log
          scp_error=$?
       fi
       if [ $scp_error != 0 ]
@@ -2428,105 +2460,105 @@ echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 ##########################
 # Verification des modules
 ##########################
-echo " "
-echo "####################################"
-echo "# Verify the validation of Modules #"
-echo "####################################"
-echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
-activation_verification_modules=0 # Non actualise
-if [ $activation_verification_modules = 1 ]
-then
-   cd $TRUST_ROOT/Validation/Modules
-   # Lancement d'un cas test par module:
-   echo "Call to $TRUST_ROOT/Validation/Modules/Test.sh"
-   ./Test.sh
-   if [ $? != 0 ]
-   then
-      echo "  Error in one case per module"
-      echo " "
-      echo "Release criterion: Modules KO"
-   else 
-      echo "  Launching of one case per module OK"
-      # Recuperation de tous les cas tests par module
-      modules=`cd $TRUST_ROOT/Validation/Modules;ls */cree_liste_cas | $TRUST_Awk -F/ '{print $1}'`
-      echo " "
-      if [ "${#modules}" = 0 ]
-      then
-         ok=0
-         nb=-1
-	 echo "Zero module in $TRUST_ROOT/Validation/Modules directory"
-      else
-	 echo "Modules in $TRUST_ROOT/Validation/Modules directory:"
-         echo modules
-         ok=0
-         nb=0
-         for module in $modules
-         do
-	    echo " "
-	    echo "Verification of $TRUST_ROOT/Validation/Modules/$module"
-	    cd $TRUST_ROOT/Validation/Modules/$module
-	    rm -f $module.log
-	    machine=`liste_machines "\-verification_module_$module"`
-	    if [ "$machine" != "" ]
-	    then
-	       let nb=$nb+1
-	       hostname=`echo $machine | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
-	       module_log=$REP_NUIT"/Modules_"$module"_"$hostname".log"
-	       echo "  Receive tests of $module module from $hostname"
-	       log=`awk -v adr=$machine '($2==adr) {print $4}' ~/.netrc | head -1`
-	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/$module.log . 2>/dev/null
-	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/compare_resultat.log . 2>/dev/null
-	       # On efface les rapports precedants
-	       rm -f .tests_TRUST_*
-	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/.tests_TRUST_* . 2>/dev/null
-	       if [ ! -f $module.log ]
-	       then
-                  echo | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host no made or no recovered.\" $TRUST_MAIL 
-	       else
-	          if [ "`grep $module=OK $module.log 2>/dev/null`" != "" ]
-	          then
-        	     let ok=$ok+1
-	          else    
-		     if [ "`grep $module=KO $module.log 2>/dev/null`" != "" ]
-		     then
-        	        [ ! -f compare_resultat.log ] && ../compare_resultat .tests_TRUST_mpi_*
-        	        cat compare_resultat.log | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host KO\" $TMA_PROJECT_LEADER $TRUST_MAIL
-		     else
-		        cat .tests_TRUST_mpi_* | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host not finished\" $TRUST_MAIL
-		     fi
-	          fi
-	          # Mise a jour de la reference
-	          if [ "`grep 'On change la reference' $module.log`" != "" ]
-	          then
-        	     echo "  Update reference of $module module"
-        	     CHECKOUT res_test_ref 1>/dev/null 2>&1
-		     new_rapport=`ls -rt .tests_TRUST_* | grep -v KO | grep -v OK 2>/dev/null | tail -1`
-		     [ "$new_rapport" != "" ] && cat $new_rapport > res_test_ref
-	          fi
-	       fi
-	       # Faire une page html regroupant l'ensemble des resultats
-	    fi
-         done
-	 [ $nb -eq 0 ] && nb=-1
-      fi
-      verification_modules=0 && [ $ok -eq $nb ] && verification_modules=1
-      echo " "
-      if [ $verification_modules = 1 ]
-      then
-         echo "Release criterion: Modules OK"
-      else
-         echo "Release criterion: Modules KO"
-      fi
-      force_verification_modules=~/force_verification_modules && [ -f $force_verification_modules ] && verification_modules=1 && rm -f $force_verification_modules
-      echo "$verification_modules  Modules $ok/$nb="`echo $ECHO_OPTS "scale=3;$ok/$nb" | bc -l`" (=1.000)" >> $MESSAGES_NUIT
-      let total_criteres=$total_criteres+1
-      let criteres_remplis=$criteres_remplis+$verification_modules
-   fi
-   cd $TRUST_ROOT
-else
-   echo "NOT executed"
-fi
-echo "<--- End at "`date '+%H:%M:%S %d/%m'`
+#echo " "
+#echo "####################################"
+#echo "# Verify the validation of Modules #"
+#echo "####################################"
+#echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
+#activation_verification_modules=0 # Non actualise
+#if [ $activation_verification_modules = 1 ]
+#then
+#   cd $TRUST_ROOT/Validation/Modules
+#   # Lancement d'un cas test par module:
+#   echo "Call to $TRUST_ROOT/Validation/Modules/Test.sh"
+#   ./Test.sh
+#   if [ $? != 0 ]
+#   then
+#      echo "  Error in one case per module"
+#      echo " "
+#      echo "Release criterion: Modules KO"
+#   else 
+#      echo "  Launching of one case per module OK"
+#      # Recuperation de tous les cas tests par module
+#      modules=`cd $TRUST_ROOT/Validation/Modules;ls */cree_liste_cas | $TRUST_Awk -F/ '{print $1}'`
+#      echo " "
+#      if [ "${#modules}" = 0 ]
+#      then
+#         ok=0
+#         nb=-1
+#	 echo "Zero module in $TRUST_ROOT/Validation/Modules directory"
+#      else
+#	 echo "Modules in $TRUST_ROOT/Validation/Modules directory:"
+#         echo modules
+#         ok=0
+#         nb=0
+#         for module in $modules
+#         do
+#	    echo " "
+#	    echo "Verification of $TRUST_ROOT/Validation/Modules/$module"
+#	    cd $TRUST_ROOT/Validation/Modules/$module
+#	    rm -f $module.log
+#	    machine=`liste_machines "\-verification_module_$module"`
+#	    if [ "$machine" != "" ]
+#	    then
+#	       let nb=$nb+1
+#	       hostname=`echo $machine | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
+#	       module_log=$REP_NUIT"/Modules_"$module"_"$hostname".log"
+#	       echo "  Receive tests of $module module from $hostname"
+#	       log=`awk -v adr=$machine '($2==adr) {print $4}' ~/.netrc | head -1`
+#	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/$module.log . 2>/dev/null
+#	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/compare_resultat.log . 2>/dev/null
+#	       # On efface les rapports precedants
+#	       rm -f .tests_TRUST_*
+#	       scp $log@$machine:~/$WORKBASE$hostname/TRUST/Validation/Modules/$module/.tests_TRUST_* . 2>/dev/null
+#	       if [ ! -f $module.log ]
+#	       then
+#                  echo | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host no made or no recovered.\" $TRUST_MAIL 
+#	       else
+#	          if [ "`grep $module=OK $module.log 2>/dev/null`" != "" ]
+#	          then
+#        	     let ok=$ok+1
+#	          else    
+#		     if [ "`grep $module=KO $module.log 2>/dev/null`" != "" ]
+#		     then
+#        	        [ ! -f compare_resultat.log ] && ../compare_resultat .tests_TRUST_mpi_*
+#        	        cat compare_resultat.log | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host KO\" $TMA_PROJECT_LEADER $TRUST_MAIL
+#		     else
+#		        cat .tests_TRUST_mpi_* | mail_ -s\"[lance_test_nuit] Verification of $module module to $machine host not finished\" $TRUST_MAIL
+#		     fi
+#	          fi
+#	          # Mise a jour de la reference
+#	          if [ "`grep 'On change la reference' $module.log`" != "" ]
+#	          then
+#        	     echo "  Update reference of $module module"
+#        	     CHECKOUT res_test_ref 1>/dev/null 2>&1
+#		     new_rapport=`ls -rt .tests_TRUST_* | grep -v KO | grep -v OK 2>/dev/null | tail -1`
+#		     [ "$new_rapport" != "" ] && cat $new_rapport > res_test_ref
+#	          fi
+#	       fi
+#	       # Faire une page html regroupant l'ensemble des resultats
+#	    fi
+#         done
+#	 [ $nb -eq 0 ] && nb=-1
+#      fi
+#      verification_modules=0 && [ $ok -eq $nb ] && verification_modules=1
+#      echo " "
+#      if [ $verification_modules = 1 ]
+#      then
+#         echo "Release criterion: Modules OK"
+#      else
+#         echo "Release criterion: Modules KO"
+#      fi
+#      force_verification_modules=~/force_verification_modules && [ -f $force_verification_modules ] && verification_modules=1 && rm -f $force_verification_modules
+#      echo "$verification_modules  Modules $ok/$nb="`echo $ECHO_OPTS "scale=3;$ok/$nb" | bc -l`" (=1.000)" >> $MESSAGES_NUIT
+#      let total_criteres=$total_criteres+1
+#      let criteres_remplis=$criteres_remplis+$verification_modules
+#   fi
+#   cd $TRUST_ROOT
+#else
+#   echo "NOT executed"
+#fi
+#echo "<--- End at "`date '+%H:%M:%S %d/%m'`
 
 ##########
 # Valgrind
@@ -2556,7 +2588,16 @@ for machine_ in $machines_
 do
    machine=`echo $machine_ | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
    valgrind_log=$Build"/ANA_"$machine".log"
-   if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+   log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
+   BATCHMODE=" -o BatchMode=yes "
+   SSHP=""
+   if [ "`liste_machines ssh_pass | grep $machine`" != "" ]
+   then
+      SSHPASS=`awk -v adr=$machine_ '($2==adr) {print $6}' ~/.netrc | head -1`
+      SSHP="sshpass -p $SSHPASS "
+      BATCHMODE=""
+   fi
+   if  [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
       echo "  KO $machine machine not accessible via ssh."
       echo "  No $valgrind_log"
@@ -2565,16 +2606,13 @@ do
    else
       echo "Verification of $valgrind_log"
       log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
-      workdir=`ssh $machine -n 'echo $WORKDIR'`
-      #scp $log@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/ANA.log $valgrind_log
+      workdir=`$SSHP ssh $log@$machine -n 'echo $WORKDIR'`
       if [ "${machine:0:2}" = "is" ]
       then
-         #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/ANA.log $valgrind_log
-         scp $log@$machine:$workdir/.tmp_TRUST_$machine/ANA.log $valgrind_log 1>/dev/null 2>&1
+         $SSHP scp $log@$machine:$workdir/.tmp_TRUST_$machine/ANA.log $valgrind_log 1>/dev/null 2>&1
          scp_error=$?
-         #[ $scp_error != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/ANA.log $valgrind_log && scp_error=$?
       else
-         scp $log@$machine:~/.tmp_TRUST_$machine/ANA.log $valgrind_log
+         $SSHP scp $log@$machine:~/.tmp_TRUST_$machine/ANA.log $valgrind_log
          scp_error=$?
       fi
       if [ $scp_error != 0 ]
@@ -2588,14 +2626,11 @@ do
          echo "  valgrind not finished"
          valgrind=0
       else
-         #scp $log@$machine:~/$WORKBASE$machine/TRUST/Validation/Valgrind/casmem $Build/casmem_$machine
          if [ "${machine:0:2}" = "is" ]
          then
-            #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
-            scp $log@$machine:$workdir/.tmp_TRUST_$machine/casmem $Build/casmem_$machine 1>/dev/null 2>&1
-            #[ $? != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
+            $SSHP scp $log@$machine:$workdir/.tmp_TRUST_$machine/casmem $Build/casmem_$machine 1>/dev/null 2>&1
          else
-            scp $log@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
+            $SSHP scp $log@$machine:~/.tmp_TRUST_$machine/casmem $Build/casmem_$machine
          fi
 	 # [ ! -s $valgrind_log ] && echo "  Empty file" && valgrind=0
          cat $valgrind_log 2>/dev/null | $TRUST_Awk -F: '/ errors from /{gsub("\\.val","",$2);print $2}' > $Build/caserr_$machine
@@ -2713,43 +2748,50 @@ echo "Validation by -gcov on $machines"
 if [ "$machines" = "" ]
 then
    echo "  No coverage by gcov!!!" 
-   echo "Warning: No host -all -gcov in liste.machines! No coverage by gcov." | mail_ -s\"[lance_test_nuit] GCOV: NO coverage!!!\" $TRUST_MAIL
+   echo "Warning: No host -all -gcov in liste.machines! No coverage by gcov." | mail_ -s\"[lance_test_nuit] GCOV: NO coverage!!! \" $TRUST_MAIL
 fi
 for machine_gcov in $machines # Compilation avec -gcov et passage de tous les cas tests
 do
    hostname=`echo $machine_gcov | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'` 
    log=`awk -v adr=$machine_gcov '($2==adr) {print $4}' ~/.netrc | head -1`
    echo "  Recovery from $hostname"
-   if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine_gcov -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+   BATCHMODE=" -o BatchMode=yes "
+   SSHP=""
+   if [ "`liste_machines ssh_pass | grep $machine_gcov`" != "" ]
+   then
+      SSHPASS=`awk -v adr=$machine_gcov '($2==adr) {print $6}' ~/.netrc | head -1`
+      SSHP="sshpass -p $SSHPASS "
+      BATCHMODE=""
+   fi
+   if  [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$machine_gcov -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
       echo "    KO $machine_gcov machine not accessible via ssh." 
       echo "    No $REP_NUIT/analyse_couverture_$hostname.log"
    else
       echo "    See $REP_NUIT/analyse_couverture_$hostname.log"
-      workdir=`ssh $machine -n 'echo $WORKDIR'`
+      workdir=`$SSHP ssh $log@$machine -n 'echo $WORKDIR'`
       if  [ "${hostname:0:2}" = "is" ]
       then
-         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
-         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
-         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
-         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+         $SSHP scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
+         $SSHP scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
+         $SSHP scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
+         $SSHP scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
       else
-         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
-         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
-         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
-         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
+         $SSHP scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/analyse_couverture.log $REP_NUIT/analyse_couverture_$hostname.log
+         $SSHP scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/monana_out $REP_NUIT/monana_out_$hostname.log
+         $SSHP scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_out $REP_NUIT/gcov_out_$hostname.log
+         $SSHP scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/tests/GCDA/ana/gcov_err $REP_NUIT/gcov_err_$hostname.log
       fi
       # Copie cpp.gcov.tar.gz 
       file=cpp.gcov.tar.gz  
       #echo "    Copy $file to $TRUST_ROOT/doc/Coverage/" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
       echo "    Copy $file to $TRUST_TMP/"
       rm -f $TRUST_TMP/$file
-      #scp $log@$machine_gcov:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
       if  [ "${hostname:0:2}" = "is" ]
       then
-         scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+         $SSHP scp $log@$machine_gcov:$workdir/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
       else
-         scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+         $SSHP scp $log@$machine_gcov:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
       fi
       if [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
       then
@@ -2771,26 +2813,34 @@ echo "Validation by -prof on $machines"
 if [ "$machines" = "" ]
 then
    echo "  No coverage by prof!!!" 
-   echo "Warning: No host -all -prof in liste.machines! No coverage by prof." | mail_ -s\"[lance_test_nuit] PROFILE: NO coverage!!!\" $TRUST_MAIL
+   echo "Warning: No host -all -prof in liste.machines! No coverage by prof." | mail_ -s\"[lance_test_nuit] PROFILE: NO coverage!!! \" $TRUST_MAIL
 fi
 for machine in $machines # Compilation avec -prof et passage de tous les cas tests
 do
    cd $TRUST_ROOT/doc/Coverage
    hostname=`echo $machine | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
    log=`awk -v adr=$machine '($2==adr) {print $4}' ~/.netrc | head -1`
+   BATCHMODE=" -o BatchMode=yes "
+   SSHP=""
+   if [ "`liste_machines ssh_pass | grep $machine`" != "" ]
+   then
+      SSHPASS=`awk -v adr=$machine '($2==adr) {print $6}' ~/.netrc | head -1`
+      SSHP="sshpass -p $SSHPASS "
+      BATCHMODE=""
+   fi
    echo "  Recovery from $hostname"
-   if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+   if  [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
    then
       echo "    KO $machine machine not accessible via ssh." 
       echo "    No $REP_NUIT/make_Couverture_$hostname.log"
    else
       echo "    See $REP_NUIT/make_Couverture_$hostname.log"
-      workdir=`ssh $machine -n 'echo $WORKDIR'`
+      workdir=`$SSHP ssh $log@$machine -n 'echo $WORKDIR'`
       if [ "${hostname:0:2}" = "is" ]
       then
-         scp $log@$machine:$workdir/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+         $SSHP scp $log@$machine:$workdir/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
       else
-         scp $log@$machine:~/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
+         $SSHP scp $log@$machine:~/.tmp_TRUST_$hostname/tests/make_Couverture.log $REP_NUIT/make_Couverture_$hostname.log
       fi
       error_log=`grep "Problem with the gprof command" $REP_NUIT/make_Couverture_$hostname.log`
       [ ${#error_log} != 0 ] && cat $REP_NUIT/make_Couverture_$hostname.log | mail_ -s\"[lance_test_nuit] Problem with the gprof command on $hostname in make_Couverture\" $TRUST_MAIL
@@ -2800,12 +2850,11 @@ do
          #echo "    Copy $file to $TRUST_ROOT/doc/Coverage/" # Recuperer fichier depuis TRUST + all baltik (ici TRUST seul)
          echo "    Copy $file to $TRUST_TMP/"
          rm -f $TRUST_TMP/$file
-         #scp $log@$machine:~/$WORKBASE$hostname/TRUST/doc/Coverage/$file $TRUST_TMP/$file
          if [ "${hostname:0:2}" = "is" ]
          then
-            scp $log@$machine:$workdir/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+            $SSHP scp $log@$machine:$workdir/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
          else
-            scp $log@$machine:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
+            $SSHP scp $log@$machine:~/.tmp_TRUST_$hostname/$file $TRUST_TMP/$file
          fi
          if [ -f $TRUST_TMP/$file ] && [ "`diff $TRUST_TMP/$file $TRUST_ROOT/doc/Coverage/$file`" != "" ]
          then
@@ -2825,9 +2874,9 @@ do
             #CHECKOUT $cpu 
             if [ "${hostname:0:2}" = "is" ]
 	    then
-               scp $log@$machine:$workdir/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
+               $SSHP scp $log@$machine:$workdir/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
 	    else
-               scp $log@$machine:~/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
+               $SSHP scp $log@$machine:~/.tmp_TRUST_$hostname/tests/$cpu . #1>/dev/null 2>&1
 	    fi
             #CHECKIN $cpu
             ls -la $TRUST_ROOT"/doc/Coverage/"$cpu
@@ -3093,7 +3142,17 @@ echo "---> Begin at "`date '+%H:%M:%S %d/%m'`
 machine_=`liste_machines "\-Check_decoupage"`
 machine=`liste_machines "\-Check_decoupage" | $TRUST_Awk -F. '{print $1}' | $TRUST_Awk -F"-gw" '{print $1}'`
 echo "Validation by -Check_decoupage on $machine"
-if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
+BATCHMODE=" -o BatchMode=yes "
+SSHP=""
+if [ "`liste_machines ssh_pass | grep $machine_`" != "" ]
+then
+   SSHPASS=`awk -v adr=$machine_ '($2==adr) {print $6}' ~/.netrc | head -1`
+   SSHP="sshpass -p $SSHPASS "
+   BATCHMODE=""
+fi
+
+if  [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$machine -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
 then
    echo "  KO $machine machine not accessible via ssh." 
    echo "  No $REP_NUIT/Check_decoupage.ksh_$machine.log"
@@ -3105,15 +3164,12 @@ then
    echo "Release criterion: Parallelism KO"
 else
    echo "  See $REP_NUIT/Check_decoupage.ksh_$machine.log"
-   log=`awk -v adr=$machine_ '($2==adr) {print $4}' ~/.netrc | head -1`
    if [ "${machine:0:2}" = "is" ]
    then
-      #scp $log@$machine:$WORKDIR/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
-      workdir=`ssh $machine -n 'echo $WORKDIR'`
-      scp $log@$machine:$workdir/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log 1>/dev/null 2>&1
-      #[ $? != 0 ] && scp $log@$machine:/volatile/triou/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+      workdir=`$SSHP ssh $machine -n 'echo $WORKDIR'`
+      $SSHP scp $log@$machine:$workdir/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log 1>/dev/null 2>&1
    else
-      scp $log@$machine:~/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
+      $SSHP scp $log@$machine:~/.tmp_TRUST_$machine/Check_decoupage/Check_decoupage.ksh.log $REP_NUIT/Check_decoupage.ksh_$machine.log
    fi
    error_log=`grep "Failure on " $REP_NUIT/Check_decoupage.ksh_$machine.log`
    [ ${#error_log} != 0 ] && cat $REP_NUIT/Check_decoupage.ksh_$machine.log | mail_ -s\"[lance_test_nuit] Check_decoupage.ksh on $machine KO\" $TRUST_MAIL
