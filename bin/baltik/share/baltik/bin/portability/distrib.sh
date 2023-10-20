@@ -27,12 +27,19 @@ base=`basename $archive .tar`
 log_time=${base}_%_${machine_cible}${ext}_%_time.log
 echo Info_global date_debut `date '+%d/%m %H:%M'` >${log_time}
 
+SSHP=""
+adr=`echo $machine_cible | cut -f2 -d"@"`
+if [ "`liste_machines ssh_pass | grep $adr`" != "" ]
+then
+    SSHPASS=`awk -v adr=$adr '($2==adr) {print $6}' ~/.netrc | head -1`
+    SSHP="sshpass -p $SSHPASS "
+fi
 
-ssh -o "StrictHostKeyChecking no" ${machine_cible} 'echo `hostname`' 
+$SSHP ssh -o "StrictHostKeyChecking no" ${machine_cible} 'echo `hostname`' 
 [ $? !=  0 ] && echo ${machine_cible} inaccessible ? >> ${log_time} && echo Info_global prepare KO >> ${log_time} && exit 1
 
 # path_to_run existe
-ssh -o "StrictHostKeyChecking no" ${machine_cible} "[ ! -d ${path_to_run} ] && mkdir -p  ${path_to_run} ;[ ! -d ${path_to_run} ] && exit 2; exit 0"
+$SSHP ssh -o "StrictHostKeyChecking no" ${machine_cible} "[ ! -d ${path_to_run} ] && mkdir -p  ${path_to_run} ;[ ! -d ${path_to_run} ] && exit 2; exit 0"
       
 [ $? !=  0 ] && echo ${path_to_run} sur ${machine_cible} inaccessible ? >> ${log_time} &&  echo Info_global prepare KO >> ${log_time} && exit 2
 
@@ -52,7 +59,7 @@ ssh -o "StrictHostKeyChecking no" ${machine_cible} "[ ! -d ${path_to_run} ] && m
 
 # echo $* >  $Encours
 
-scp `dirname $0`/list_pid_et_fils.sh ${archive} ${machine_cible}:${path_to_run}/
+$SSHP scp `dirname $0`/list_pid_et_fils.sh ${archive} ${machine_cible}:${path_to_run}/
 
 for phase in prepare configure make make_check make_install
   do
@@ -73,7 +80,7 @@ for phase in prepare configure make make_check make_install
   fi
   
   #ssh -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh;${path_to_run}/englobe.sh ./$phase.sh $* 2>&1  " > ${log_phase}
-  ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; $option ./$phase.sh $* 2>&1  " > ${log_phase}
+  $SSHP ssh -o "StrictHostKeyChecking no" -n ${machine_cible} "cd ${path_to_run};$detar chmod +x $phase.sh; $option ./$phase.sh $* 2>&1  " > ${log_phase}
   status=$? && [ "`grep "./$phase.sh: No such file or directory" ${log_phase}`" != "" ] && status=-1
   echo Info date_fin_$phase `date '+%d/%m %H:%M'` >>${log_time}
   [ $status -ne 0 ] && echo Info $phase KO on $machine_cible  && tail  ${log_phase} && echo Info_global $phase KO >>  ${log_phase} && echo "Info_global date_fin `date '+%d/%m %H:%M'`" >> ${log_time} && exit 4

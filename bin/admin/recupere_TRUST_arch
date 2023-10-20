@@ -118,6 +118,14 @@ do
       version=$WORKBASE`echo $adr | awk -F'.' '{print $1}' | awk -F"-gw" '{print $1}'` # 09/2015 Modification des acces SSH au TGCC *-gw.ccc.cea.fr
       ROOT=$version/$MODULE
       log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
+      BATCHMODE=" -o BatchMode=yes "
+      SSHP=""
+      if [ "`liste_machines ssh_pass | grep $adr`" != "" ]
+      then
+         SSHPASS=`awk -v adr=$adr '($2==adr) {print $6}' ~/.netrc | head -1`
+         SSHP="sshpass -p $SSHPASS "
+         BATCHMODE=""
+      fi
       recupere_exec=0	# C'est une machine dont on recupere les binaires
       machine_cible=0	# C'est une machine sur laquelle le code doit compiler
       # Appel pour remplir recupere_exec et ftp et TRUST_ARCH
@@ -164,19 +172,19 @@ do
 	 done
          cd - 1>/dev/null 2>&1
       else
-         if  [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+         if  [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
 	 then
 	    echo "$adr not accessible..."
 	 else
             # Connection sur machine interne par ssh
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:~/$CR $REP_NUIT/. 2>/dev/null
-            ssh_ $log@$adr -n "rm ~/$CR 2>/dev/null"
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/compile_* $REP_NUIT/. 2>/dev/null
-            ssh_ $log@$adr -n "rm $ROOT/compile_* 2>/dev/null" 
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/MAKE_* $REP_NUIT/. 2>/dev/null
-            ssh_ $log@$adr -n "rm $ROOT/MAKE_* 2>/dev/null" 
-            scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/PERF_* $REP_NUIT/. 2>/dev/null
-            ssh_ $log@$adr -n "rm $ROOT/PERF_* 2>/dev/null" 
+            $SSHP scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 $BATCHMODE $log@$adr:~/$CR $REP_NUIT/. 2>/dev/null
+            $SSHP ssh_ $log@$adr -n "rm ~/$CR 2>/dev/null"
+            $SSHP scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 $BATCHMODE $log@$adr:$ROOT/compile_* $REP_NUIT/. 2>/dev/null
+            $SSHP ssh_ $log@$adr -n "rm $ROOT/compile_* 2>/dev/null" 
+            $SSHP scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 $BATCHMODE $log@$adr:$ROOT/MAKE_* $REP_NUIT/. 2>/dev/null
+            $SSHP ssh_ $log@$adr -n "rm $ROOT/MAKE_* 2>/dev/null" 
+            $SSHP scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 $BATCHMODE $log@$adr:$ROOT/PERF_* $REP_NUIT/. 2>/dev/null
+            $SSHP ssh_ $log@$adr -n "rm $ROOT/PERF_* 2>/dev/null" 
 	    # New, mise_a_jour_TRUST_arch is killed except the Week-end:
 	    if [ "`date '+%u'`" -lt 6 ]
 	    then
@@ -204,13 +212,13 @@ do
             else
                echo "  Recovery of libs and executables..."
 	       (cd $exec;rm -f *)
-	       if [ "`ssh_ -o ConnectTimeout=30 -o BatchMode=yes $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
+	       if [ "`$SSHP ssh_ -o ConnectTimeout=30 $BATCHMODE $log@$adr -n pwd 1>/dev/null 2>&1;echo $?`" != 0 ]
 	       then
 	          echo "Portage KO: $adr not accessible..."
 	       else	       
                   # Connection interne par ssh
                   log=`awk -v adr=$adr '($2==adr) {print $4}' ~/.netrc | head -1`
-                  scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 -o BatchMode=yes $log@$adr:$ROOT/exec/exec.tar.gz $exec/.   		  		  
+                  $SSHP scp -o StrictHostKeyChecking=no -o ConnectTimeout=60 $BATCHMODE $log@$adr:$ROOT/exec/exec.tar.gz $exec/.   		  		  
 	          (cd $exec;gunzip -f exec.tar.gz;tar xf exec.tar;rm -f exec.tar)
 	          # Si version beta on renomme avec la date et le numero de version
 	          if [ ${v%beta} != $v ]

@@ -1,19 +1,18 @@
 Version	Qui				Tache
-
+1.9.3   trust@cea.fr            Ajouter sur jupyter comment modifier le titre du notebook pdf. cf echanges avec Claire et Adel
 1.9.x   trust@cea.fr            faire unset TMPDIR dans le configure
 1.9.x   trust@cea.fr            Voir si on peut retirer .dico de git
 1.9.x   trust@cea.fr            empecher d'installer TRUST sur home titania
-1.9.x   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
-1.9.x   pierre.ledac@cea.fr     Supprimer OSQP dans le futur des que PolyMAC_old disparait
-1.9.x   pierre.ledac@cea.fr     Port muscl_new sur GPU avec OpenMP et optimisation du code (3 fois plus lent que muscl actuellement). Trouver nom adequat.
-1.9.x   adrien.bruneton@cea.fr  Revoir installation de mpi4py au TGCC/orcus/...
-1.9.x   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
-1.9.x   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
-1.9.x   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
-1.9.x   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
-1.9.x   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
+1.9.3   pierre.ledac@cea.fr     Modifier scripts Baltik pour qu un Baltik quelconque puisse etre deplace sans souci apres installation
+1.9.3   pierre.ledac@cea.fr     Supprimer OSQP dans le futur des que PolyMAC_old disparait
+1.9.3   pierre.ledac@cea.fr     Port muscl_new sur GPU avec OpenMP et optimisation du code (3 fois plus lent que muscl actuellement). Trouver nom adequat.
+1.9.3   adrien.bruneton@cea.fr  Try to add Champ_Uniform into Champ_implementation_P0.cpp
+1.9.3   adrien.bruneton@cea.fr  Fiabiliser l'utilisation de jenkins
+1.9.3   adrien.bruneton@cea.fr  ameliorer VerifData pour pouvoir faire l equivalent de check_jdd sur un cas test (au moins la lecture / ecriture / relecture du JDD)
+1.9.3   pierre.ledac@cea.fr     Passer les fichiers RELEASE_NOTE et DEVELOPER_NOTES en markdown licence.txt (voir si basculer aussi sur les Baltiks)
+1.9.3   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude de PE Canal_172M_PE_4913 sur un cluster
+1.9.3   trust@cea.fr            LDC: Decouper et lancer en parallele sur quelques pas de temps l etude DNS_swarm
 1.9.x   trust@cea.fr            LDC: ouvrir une DI pour actions de livraison (cf di 188127)
-1.9.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau (cf di 188129)
 1.9.x   trust@cea.fr            LDC: ouvrir une DI pour installation reseau Titania (cf di 183455)
 1.9.x   trust@cea.fr            LDC: ouvrir une DI pour installation clusters
 1.9.x   trust@cea.fr            LDC: ouvrir une DI pour mise a jour des supports de formation (si besoin) et bon de livraison des slides (cf DI182050)
