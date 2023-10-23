@@ -47,6 +47,7 @@ void usage()
   Cerr << " -journal=0..9       => select journal level (0=disable, 9=maximum verbosity)\n";
   Cerr << " -journal_master     => only master processor writes a journal (not compatible with journal_shared)\n";
   Cerr << " -journal_shared     => each processor writes in a single log file (not compatible with journal_master)\n";
+  Cerr << " -log_directory=DIR  => Writes the .log files into directory DIR\n";
   Cerr << " -disable_ieee       => Disable the detection of NaNs. The detection can also be de-activated with env variable TRUST_DISABLE_FP_EXCEPT set to non zero.\n";
   Cerr << " -no_verify          => Disable the call to verifie function (from Type_Verifie) to catch outdated keywords while reading data file.\n";
   Cerr << " -disable_stop       => Disable the writing of the .stop file.\n";
@@ -83,6 +84,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
   int verbose_level = -1;
   int journal_master = 0;
   int journal_shared = 0;
+  Nom log_directory = "";
   int helptrust = 0;
   int ieee = 1;  // 1 => use of feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW);
 // Crashes bizarres sur compilateurs clang++, fcc, nvc++ donc on desactive:
@@ -180,6 +182,23 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
               journal_master = 0;
               arguments_info += " (journal_master is thus ignored)";
             }
+          arguments_info += "\n";
+        }
+      else if (strncmp(argv[i], "-log_directory=", 15) == 0)
+        {
+          log_directory = argv[i]+15;
+          log_directory += directory_separator;
+          Nom mkdir_command("mkdir -p ");
+          mkdir_command += log_directory;
+          int return_code = system(mkdir_command);
+          if(return_code)
+            {
+              if (Process::je_suis_maitre())
+                std::cerr << "Error while creating directory:" << log_directory << std::endl;
+              Process::exit();
+            }
+          arguments_info += "-log_directory => Writes the .log files into directory ";
+          arguments_info += log_directory;
           arguments_info += "\n";
         }
       else if (strcmp(argv[i], "-disable_stop") == 0)
@@ -285,7 +304,7 @@ int main_TRUST(int argc, char** argv,mon_main*& main_process,int force_mpi)
     // .. et demarrage du journal
     // (tout ce qu'on veut faire en commun avec l'interface python doit etre
     //  mis dans mon_main)
-    main_process=new  mon_main(verbose_level, journal_master, journal_shared, apply_verification, disable_stop);
+    main_process=new  mon_main(verbose_level, journal_master, journal_shared, log_directory, apply_verification, disable_stop);
 
     main_process->init_parallel(argc, argv, with_mpi, check_enabled, with_petsc);
 

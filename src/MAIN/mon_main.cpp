@@ -37,11 +37,12 @@ extern void end_stat_counters();
 extern Stat_Counter_Id temps_total_execution_counter_;
 extern Stat_Counter_Id initialisation_calcul_counter_;
 
-mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, bool apply_verification, int disable_stop)
+mon_main::mon_main(int verbose_level, int journal_master, int journal_shared, Nom log_directory, bool apply_verification, int disable_stop)
 {
   verbose_level_ = verbose_level;
   journal_master_ = journal_master;
   journal_shared_ = journal_shared;
+  log_directory_ = log_directory;
   apply_verification_ = apply_verification;
   // Creation d'un journal temporaire qui ecrit dans Cerr
   init_journal_file(verbose_level, 0, 0 /* filename = 0 => Cerr */, 0 /* append */);
@@ -260,7 +261,7 @@ void mon_main::dowork(const Nom& nom_du_cas)
   // Initialisation du journal parallele (maintenant qu'on connait le rang
   //  du processeur et le nom du cas)
   {
-    Nom filename(nom_du_cas);
+    Nom filename = log_directory_ + nom_du_cas;
     if (Process::nproc() > 1 && !journal_shared_)
       {
         filename += "_";

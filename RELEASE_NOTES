@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+07/11/23 (TRUST) New option   : New option while launching TRUST executable -log_directory=<logs_dir>/ to save .log files into logs_dir (interesting for parallel computations)
 07/11/23 (TRUST) New feature  : Add a new interpreter "lml_to_lata" that can be used to convert lml files to single_lata format.
 07/11/23 (TRUST) New feature  : Add a new post-treatment format "single_lata" that dumps results in a single binary lata file.
 27/10/23 (TRUST) Tools        : Upgrade to MEDCoupling 9.12.0

@@ -37,7 +37,7 @@
 class mon_main
 {
 public:
-  mon_main(int verbose_level = 9, int journal_master = 0, int journal_shared = 0, bool apply_verification=true, int disable_stop = 0);
+  mon_main(int verbose_level = 9, int journal_master = 0, int journal_shared = 0, Nom log_directory = "",  bool apply_verification=true, int disable_stop = 0);
   void init_parallel(const int argc, char **argv,
                      int with_mpi, int check_enabled = 0, int with_petsc = 1);
   void finalize();
@@ -47,6 +47,7 @@ private:
   int verbose_level_;
   int journal_master_;
   int journal_shared_;
+  Nom log_directory_;
   int trio_began_mpi_;
   bool apply_verification_;
   int disable_stop_;
