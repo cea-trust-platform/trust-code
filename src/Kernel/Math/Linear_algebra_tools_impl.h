@@ -37,22 +37,19 @@ inline double Matrice33::norme_Linfini()
  */
 inline void Matrice33::produit(const Matrice33& m, const Vecteur3& x, Vecteur3& y)
 {
-  y.v[0] = m.m[0][0] * x.v[0] + m.m[0][1] * x.v[1] + m.m[0][2] * x.v[2];
-  y.v[1] = m.m[1][0] * x.v[0] + m.m[1][1] * x.v[1] + m.m[1][2] * x.v[2];
-  y.v[2] = m.m[2][0] * x.v[0] + m.m[2][1] * x.v[1] + m.m[2][2] * x.v[2];
+	y.init();
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+			y.v[i] += m.m[i][j] * x.v[j];
 }
 
 inline void Matrice33::produit_matriciel(const Matrice33& mat1, const Matrice33& mat2, Matrice33& res)
 {
-  res.m[0][0] = mat1.m[0][0] * mat2.m[0][0] + mat1.m[0][1] * mat2.m[1][0] + mat1.m[0][2] * mat2.m[2][0];
-  res.m[1][0] = mat1.m[1][0] * mat2.m[0][0] + mat1.m[1][1] * mat2.m[1][0] + mat1.m[1][2] * mat2.m[2][0];
-  res.m[2][0] = mat1.m[2][0] * mat2.m[0][0] + mat1.m[2][1] * mat2.m[1][0] + mat1.m[2][2] * mat2.m[2][0];
-  res.m[0][1] = mat1.m[0][0] * mat2.m[0][1] + mat1.m[0][1] * mat2.m[1][1] + mat1.m[0][2] * mat2.m[2][1];
-  res.m[1][1] = mat1.m[1][0] * mat2.m[0][1] + mat1.m[1][1] * mat2.m[1][1] + mat1.m[1][2] * mat2.m[2][1];
-  res.m[2][1] = mat1.m[2][0] * mat2.m[0][1] + mat1.m[2][1] * mat2.m[1][1] + mat1.m[2][2] * mat2.m[2][1];
-  res.m[0][2] = mat1.m[0][0] * mat2.m[0][2] + mat1.m[0][1] * mat2.m[1][2] + mat1.m[0][2] * mat2.m[2][2];
-  res.m[1][2] = mat1.m[1][0] * mat2.m[0][2] + mat1.m[1][1] * mat2.m[1][2] + mat1.m[1][2] * mat2.m[2][2];
-  res.m[2][2] = mat1.m[2][0] * mat2.m[0][2] + mat1.m[2][1] * mat2.m[1][2] + mat1.m[2][2] * mat2.m[2][2];
+	res.init();
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+			for (int k=0; k<3; k++)
+				res.m[i][j] += mat1.m[i][k] * mat2.m[k][j];
 }
 
 inline void Vecteur3::produit_vectoriel(const Vecteur3& x, const Vecteur3& y, Vecteur3& z)
@@ -64,7 +61,9 @@ inline void Vecteur3::produit_vectoriel(const Vecteur3& x, const Vecteur3& y, Ve
 
 inline double Vecteur3::produit_scalaire(const Vecteur3& x, const Vecteur3& y)
 {
-  double r = x.v[0] * y.v[0] + x.v[1] * y.v[1] + x.v[2] * y.v[2];
+  double r = 0.;
+  for (int i=0; i<3; i++)
+  	r += x.v[i] * y.v[i];
   return r;
 }
 
@@ -86,15 +85,9 @@ inline double Vecteur3::norme_Linfini()
  */
 inline void Matrice33::transpose(const Matrice33& matrice, Matrice33& matrice_transpose)
 {
-  matrice_transpose.m[0][0] = matrice.m[0][0];
-  matrice_transpose.m[1][1] = matrice.m[1][1];
-  matrice_transpose.m[2][2] = matrice.m[2][2];
-  matrice_transpose.m[0][1] = matrice.m[1][0];
-  matrice_transpose.m[0][2] = matrice.m[2][0];
-  matrice_transpose.m[1][0] = matrice.m[0][1];
-  matrice_transpose.m[1][2] = matrice.m[2][1];
-  matrice_transpose.m[2][0] = matrice.m[0][2];
-  matrice_transpose.m[2][1] = matrice.m[1][2];
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+		  matrice_transpose.m[i][j] = matrice.m[j][i];
 }
 
 /*! @brief calcul de l'inverse.
@@ -154,9 +147,8 @@ inline double Matrice33::inverse(const Matrice33& matrice, Matrice33& matrice_in
 inline Vecteur3 operator-(const Vecteur3& x, const Vecteur3& y)
 {
   Vecteur3 z;
-  z.v[0] = x.v[0] - y.v[0];
-  z.v[1] = x.v[1] - y.v[1];
-  z.v[2] = x.v[2] - y.v[2];
+  for (int i=0; i<3; i++)
+    z.v[i] = x.v[i] - y.v[i];
   return z;
 }
 #endif

@@ -24,9 +24,8 @@ public:
   Vecteur3() {};
   Vecteur3(const Vecteur3& w)
   {
-    v[0] = w.v[0];
-    v[1] = w.v[1];
-    v[2] = w.v[2];
+  	for (int i=0; i<3; i++)
+  		v[i] = w.v[i];
   }
   Vecteur3(double x, double y, double z)
   {
@@ -49,43 +48,38 @@ public:
     assert(tab.line_size() == 3);
     assert(i >= 0 && i < tab.dimension_tot(0));
     const double *ptr = tab.addr() + i * 3;
-    v[0] = ptr[0];
-    v[1] = ptr[1];
-    v[2] = ptr[2];
+  	for (int j=0; j<3; j++)
+  		v[j] = ptr[j];
   }
   Vecteur3(const ArrOfDouble& arr)
   {
-    v[0] = arr[0];
-    v[1] = arr[1];
-    v[2] = arr[2];
+  	assert(arr.size_array()==3);
+  	for (int i=0; i<3; i++)
+  		v[i] = arr[i];
   }
   Vecteur3& operator=(double x)
   {
-    v[0] = x;
-    v[1] = x;
-    v[2] = x;
+  	for (int i=0; i<3; i++)
+  		v[i] = x;
     return *this;
   }
   Vecteur3& operator*=(double x)
   {
-    v[0] *= x;
-    v[1] *= x;
-    v[2] *= x;
+  	for (int i=0; i<3; i++)
+  		v[i] *= x;
     return *this;
   }
   Vecteur3& operator+=(const Vecteur3& x)
   {
-    v[0] += x[0];
-    v[1] += x[1];
-    v[2] += x[2];
+  	for (int i=0; i<3; i++)
+      v[i] += x[i];
     return *this;
   }
 
   Vecteur3& operator=(const Vecteur3& w)
   {
-    v[0] = w.v[0];
-    v[1] = w.v[1];
-    v[2] = w.v[2];
+  	for (int i=0; i<3; i++)
+  		v[i] = w[i];
     return *this;
   }
   double               operator[](int i) const
@@ -105,6 +99,11 @@ public:
   friend Vecteur3 operator-(const Vecteur3&, const Vecteur3&);
 protected:
   double v[3];
+  void init()
+  {
+  	for (int i=0; i<3; i++)
+  		v[i] = 0.;
+  }
 };
 
 inline Vecteur3 operator-(const Vecteur3&, const Vecteur3&);

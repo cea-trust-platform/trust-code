@@ -44,15 +44,10 @@ public:
   }
   Matrice33(const DoubleTab& tab)
   {
-    m[0][0] = tab(0, 0);
-    m[0][1] = tab(0, 1);
-    m[0][2] = tab(0, 2);
-    m[1][0] = tab(1, 0);
-    m[1][1] = tab(1, 1);
-    m[1][2] = tab(1, 2);
-    m[2][0] = tab(2, 0);
-    m[2][1] = tab(2, 1);
-    m[2][2] = tab(2, 2);
+  	assert(tab.nb_dim()==2 && tab.dimension(0) == 3 && tab.dimension(1) == 3);
+  	for (int i=0; i<3; i++)
+  		for (int j=0; j<3; j++)
+  			m[i][j] = tab(i, j);
   }
   double operator()(int i, int j) const
   {
@@ -71,6 +66,12 @@ public:
   static inline double inverse(const Matrice33& m, Matrice33& resu, int exit_on_error = 1);
 protected:
   double m[3][3];
+  void init()
+  {
+  	for (int i=0; i<3; i++)
+  		for (int j=0; j<3; j++)
+  			m[i][j] = 0.;
+  }
 };
 
 #endif
