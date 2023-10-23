@@ -51,7 +51,7 @@ Read pb
     {
         liquide_eau	Fluide_Incompressible
         {
-            rho    Champ_Uniforme 1 10
+            rho    Champ_Uniforme 1 100
             mu     Champ_Uniforme 1 1e-3
             lambda Champ_Uniforme 1 1
             Cp     Champ_Uniforme 1 1
@@ -68,6 +68,7 @@ Read pb
 
     Correlations {
         Frottement_interfacial bulles { rayon_bulle 0.5e-3 coeff_derive 0.44 }
+	$virtual_mass
     }
 
     QDM_Multiphase
