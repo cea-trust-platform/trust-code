@@ -223,12 +223,14 @@ Eval_Conv_VDF_Face<DERIVED_T>::flux_arete(const DoubleTab& inco, const DoubleTab
           psc = 0.25 * ((dt_vitesse(fac1, k) * porosite(fac1) + dt_vitesse(fac2, k) * porosite(fac2)) * (surface(fac1) + surface(fac2)));
           if (psc > 0)
             {
-              if (a_r) psc *= (*a_r)(elem_(fac3,0),k);
+              const int elem = elem_(fac3, 0) > 0 ? elem_(fac3, 0) : elem_(fac3, 1);
+              if (a_r) psc *= (*a_r)(elem,k);
               flux[k] = -psc * inco(fac3, k);
             }
           else
             {
-              if (a_r) psc *= (*a_r)(elem_(fac4,0),k);
+              const int elem = elem_(fac4, 0) > 0 ? elem_(fac4, 0) : elem_(fac4, 1);
+              if (a_r) psc *= (*a_r)(elem,k);
               flux[k] = -psc * inco(fac4, k);
             }
         }
@@ -481,8 +483,16 @@ Eval_Conv_VDF_Face<DERIVED_T>::coeffs_arete(const DoubleTab* a_r, int fac1, int 
                                (surface(fac1) + surface(fac2)));
           if (a_r)
             {
-              if (psc > 0) psc *= (*a_r)(elem_(fac3, 0), k);
-              else psc *= (*a_r)(elem_(fac4, 0), k);
+              if (psc > 0)
+                {
+                  const int elem = elem_(fac3, 0) > 0 ? elem_(fac3, 0) : elem_(fac3, 1);
+                  psc *= (*a_r)(elem, k);
+                }
+              else
+                {
+                  const int elem = elem_(fac4, 0) > 0 ? elem_(fac4, 0) : elem_(fac4, 1);
+                  psc *= (*a_r)(elem, k);
+                }
             }
           fill_coeffs_proto<Type_Double>(k, psc, psc, aii, ajj);
         }
