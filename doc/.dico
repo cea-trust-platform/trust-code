@@ -466,8 +466,8 @@
  grad_U_Champ_P1NC grad_U_Champ_P1NC grad_U_Champ_P1NC.h
  Gravite_Multiphase Gravite_Multiphase Gravite_Multiphase.h
  Gravite_VDF_Face Terme_Gravite_VDF_Face Terme_Gravite_VDF_Face.h
- Groupes_internes Groupes_internes Groupes_internes.h
- Groupe_interne Groupe_interne Groupe_interne.h
+ Groupes_Faces Groupes_Faces Groupes_Faces.h
+ Groupe_Faces Groupe_Faces Groupe_Faces.h
  Hexaedre Hexaedre Hexaedre.h
  Hexaedre_axi Hexaedre_axi Hexaedre_axi.h
  Hexaedre_VEF Hexaedre_VEF Hexaedre_VEF.h

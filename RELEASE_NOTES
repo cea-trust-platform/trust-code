@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+23/10/23 (TRUST) New feature  : New method 'initBuildDirectory()' in Jupyter validation form Python API. It triggers build directory creation and copy src content into it.
 23/10/23 (TRUST) Minor change : An arbitrary group of faces can now be loaded (not just internal or boundary ones) => in Read_MED, option 'include_internal_face_groups' is renamed into 'include_additional_face_groups'. In Perte_Charge_Singuliere, option 'internal_face_groups' is renamed into 'face_group'.
 20/10/23 (TRUST) Fix          : Performance regression (switch from Mkl to OpenBlas) fixed for several solvers (MUMPS, GCP) on irene and topaze clusters
 20/10/23 (TRUST) New option   : Add table_temps_lue option to Champ_Fonc_MED_Table_Temps keyword : Champ_Fonc_MED_Table_Temps { table_temps_lue file.txt | table_temps { ... } ... }

@@ -30,7 +30,9 @@ using MEDCoupling::MEDFileFieldMultiTS;
 #endif
 
 Implemente_instanciable( Champ_Fonc_MED_Table_Temps, "Champ_Fonc_MED_Table_Temps", Champ_Fonc_MED );
-
+// XD Champ_Fonc_MED_Table_Temps champ_fonc_med Champ_Fonc_MED_Table_Temps -1 not_set
+// XD attr table_temps chaine table_temps 1 not_set
+// XD attr table_temps_lue chaine table_temps_lue 1 not_set
 Sortie& Champ_Fonc_MED_Table_Temps::printOn(Sortie& os) const { return Champ_Fonc_MED::printOn(os); }
 
 void Champ_Fonc_MED_Table_Temps::set_param(Param& param)

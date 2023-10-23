@@ -1,4 +1,4 @@
-# Test Read group of faces from med file and Raffiner #
+# Test Read group of faces from MED file and Raffiner_isotrope #
 # PARALLEL OK #
 dimension 3
 Domaine dom
