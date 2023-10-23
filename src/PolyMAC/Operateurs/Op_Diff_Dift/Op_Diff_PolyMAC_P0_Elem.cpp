@@ -33,11 +33,14 @@
 #include <Synonyme_info.h>
 #include <Matrix_tools.h>
 #include <EOS_to_TRUST.h>
+#include <Statistiques.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <functional>
 #include <cmath>
+
+extern Stat_Counter_Id diffusion_counter_;
 
 Implemente_instanciable_sans_constructeur(Op_Diff_PolyMAC_P0_Elem, "Op_Diff_PolyMAC_P0_Elem|Op_Diff_PolyMAC_P0_var_Elem", Op_Diff_PolyMAC_P0_base);
 Implemente_instanciable(Op_Dift_PolyMAC_P0_Elem, "Op_Dift_PolyMAC_P0_Elem_PolyMAC_P0|Op_Dift_PolyMAC_P0_var_Elem_PolyMAC_P0", Op_Diff_PolyMAC_P0_Elem);
@@ -292,6 +295,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   Cerr << "Internal error with nvc++: Internal error: read_memory_region: not all expected entries were read." << finl;
   Process::exit();
 #else
+  statistiques().begin_count(diffusion_counter_);
   init_op_ext(), update_phif();
   const std::string& nom_inco = equation().inconnue().le_nom().getString();
   int i, i_eq, i_s, il, j, k, k1, k2, kb, l, e, eb, f, fb, s, sb, sp, m, n, M, n_ext = (int) op_ext.size(), p, pb, n_e, n_ef, nc, nl, n_m, d, db, D = dimension, sgn, sgn_l, nw, un = 1, rk, infoo, it,
@@ -776,6 +780,7 @@ void Op_Diff_PolyMAC_P0_Elem::ajouter_blocs(matrices_t matrices, DoubleTab& secm
   if (pqpi)
     (*pqpi).echange_espace_virtuel();
 
+  statistiques().end_count(diffusion_counter_);
 #endif
 }
 

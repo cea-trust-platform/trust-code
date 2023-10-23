@@ -25,11 +25,14 @@
 #include <Probleme_base.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
+#include <Statistiques.h>
 #include <Array_tools.h>
 #include <Milieu_base.h>
 #include <Dirichlet.h>
 #include <TRUSTTrav.h>
 #include <cfloat>
+
+extern Stat_Counter_Id gradient_counter_;
 
 Implemente_instanciable(Op_Grad_PolyMAC_P0P1NC_Face, "Op_Grad_PolyMAC_P0P1NC_Face", Op_Grad_PolyMAC_Face);
 
@@ -88,6 +91,7 @@ void Op_Grad_PolyMAC_P0P1NC_Face::dimensionner_blocs(matrices_t matrices, const 
 
 void Op_Grad_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(gradient_counter_);
   const Domaine_PolyMAC_P0P1NC& domaine = ref_cast(Domaine_PolyMAC_P0P1NC, ref_domaine.valeur());
   const IntTab& f_e = domaine.face_voisins(), &e_f = domaine.elem_faces(), &fcl = ref_cast(Champ_Face_PolyMAC_P0P1NC, equation().inconnue().valeur()).fcl();
   const DoubleTab& vfd = domaine.volumes_entrelaces_dir(), &press = semi_impl.count("pression") ? semi_impl.at("pression") : ref_cast(Navier_Stokes_std, equation()).pression().valeurs(), *alp =
@@ -122,4 +126,5 @@ void Op_Grad_PolyMAC_P0P1NC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& 
             for (n = 0, m = 0; n < N; n++, m += (M > 1))
               (*mat)(N * f + n, M * e + m) -= coeff_e(n); /* bloc (face, elem) */
         }
+  statistiques().end_count(gradient_counter_);
 }

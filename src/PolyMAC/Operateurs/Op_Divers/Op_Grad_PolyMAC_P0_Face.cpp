@@ -23,10 +23,13 @@
 #include <Pb_Multiphase.h>
 #include <Probleme_base.h>
 #include <Matrix_tools.h>
+#include <Statistiques.h>
 #include <Array_tools.h>
 #include <Milieu_base.h>
 #include <Periodique.h>
 #include <TRUSTTrav.h>
+
+extern Stat_Counter_Id gradient_counter_;
 
 Implemente_instanciable(Op_Grad_PolyMAC_P0_Face, "Op_Grad_PolyMAC_P0_Face", Op_Grad_PolyMAC_P0P1NC_Face);
 
@@ -150,6 +153,7 @@ void Op_Grad_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, const tabs
 
 void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(gradient_counter_);
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, ref_domaine.valeur());
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Conds_lim& cls = ref_zcl->les_conditions_limites();
@@ -242,4 +246,6 @@ void Op_Grad_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secm
         if (dgb_v.count(j_c.first))
           for (auto &k_d : dgb_v.at(j_c.first))
             (*mat_v)(i_jc.first, k_d.first) += j_c.second * k_d.second;
+
+  statistiques().end_count(gradient_counter_);
 }

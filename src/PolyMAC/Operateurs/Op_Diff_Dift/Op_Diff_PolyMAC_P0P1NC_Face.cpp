@@ -27,10 +27,13 @@
 #include <Pb_Multiphase.h>
 #include <Synonyme_info.h>
 #include <Matrix_tools.h>
+#include <Statistiques.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Symetrie.h>
+
+extern Stat_Counter_Id diffusion_counter_;
 
 Implemente_instanciable( Op_Diff_PolyMAC_P0P1NC_Face, "Op_Diff_PolyMAC_P0P1NC_Face|Op_Dift_PolyMAC_P0P1NC_Face_PolyMAC_P0P1NC", Op_Diff_PolyMAC_P0P1NC_base );
 Add_synonym(Op_Diff_PolyMAC_P0P1NC_Face, "Op_Diff_PolyMAC_P0P1NC_var_Face");
@@ -167,6 +170,7 @@ void Op_Diff_PolyMAC_P0P1NC_Face::dimensionner_blocs_ext(int aux_only, matrices_
 // renvoie resu
 void Op_Diff_PolyMAC_P0P1NC_Face::ajouter_blocs_ext(int aux_only, matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(diffusion_counter_);
   const Champ_Face_PolyMAC_P0P1NC& ch = ref_cast(Champ_Face_PolyMAC_P0P1NC, le_champ_inco.non_nul() ? le_champ_inco.valeur() : equation().inconnue().valeur());
   const Conds_lim& cls = ch.domaine_Cl_dis().les_conditions_limites();
   const Domaine_PolyMAC_P0P1NC& domaine = le_dom_poly_.valeur();
@@ -296,5 +300,6 @@ void Op_Diff_PolyMAC_P0P1NC_Face::ajouter_blocs_ext(int aux_only, matrices_t mat
                     }
       }
   i++;
+  statistiques().end_count(diffusion_counter_);
 }
 

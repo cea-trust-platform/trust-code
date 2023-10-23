@@ -26,6 +26,7 @@
 #include <Option_PolyMAC_P0.h>
 #include <Pb_Multiphase.h>
 #include <Probleme_base.h>
+#include <Statistiques.h>
 #include <Matrix_tools.h>
 #include <Milieu_base.h>
 #include <Array_tools.h>
@@ -36,6 +37,8 @@
 #include <cfloat>
 #include <vector>
 #include <cmath>
+
+extern Stat_Counter_Id convection_counter_;
 
 Implemente_instanciable(Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem, "Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem|Op_Conv_EF_Stab_PolyMAC_P0_Elem", Op_Conv_PolyMAC_base);
 Implemente_instanciable_sans_constructeur(Op_Conv_Amont_PolyMAC_P0P1NC_Elem, "Op_Conv_Amont_PolyMAC_P0P1NC_Elem|Op_Conv_Amont_PolyMAC_P0_Elem", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem);
@@ -162,6 +165,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::dimensionner_blocs(matrices_t mats, co
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(convection_counter_);
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const IntTab& f_e = domaine.face_voisins(), &fcl = ref_cast(Champ_Inc_P0_base, equation().inconnue().valeur()).fcl(), &fcl_v = ref_cast(Champ_Face_base, vitesse_.valeur()).fcl();
   const DoubleVect& fs = domaine.face_surfaces(), &pf = equation().milieu().porosite_face();
@@ -210,6 +214,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::ajouter_blocs(matrices_t mats, DoubleT
                 for (n = 0, m = 0, M = std::get<2>(d_m_i); n < N; n++, m += (M > 1))
                   (*std::get<1>(d_m_i))(N * e + n, M * eb + m) += (i ? -1 : 1) * dc_flux(j, n) * (*std::get<0>(d_m_i))(eb, m);
       }
+  statistiques().end_count(convection_counter_);
 }
 
 void Op_Conv_EF_Stab_PolyMAC_P0P1NC_Elem::get_noms_champs_postraitables(Noms& nom,Option opt) const

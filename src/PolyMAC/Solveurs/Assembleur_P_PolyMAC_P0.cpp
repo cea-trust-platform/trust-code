@@ -30,11 +30,14 @@
 #include <Static_Int_Lists.h>
 #include <Operateur_Grad.h>
 #include <Pb_Multiphase.h>
+#include <Statistiques.h>
 #include <Matrix_tools.h>
 #include <Array_tools.h>
 #include <Dirichlet.h>
 #include <Debog.h>
 #include <Piso.h>
+
+extern Stat_Counter_Id assemblage_sys_counter_;
 
 Implemente_instanciable(Assembleur_P_PolyMAC_P0, "Assembleur_P_PolyMAC_P0", Assembleur_P_PolyMAC_P0P1NC);
 
@@ -46,6 +49,8 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
 {
   set_resoudre_increment_pression(incr_pression);
   set_resoudre_en_u(resoudre_en_u);
+  Cerr << "Assemblage de la matrice de pression ... ";
+  statistiques().begin_count(assemblage_sys_counter_);
   la_matrice.typer("Matrice_Morse");
   Matrice_Morse& mat = ref_cast(Matrice_Morse, la_matrice.valeur());
 
@@ -99,6 +104,7 @@ int  Assembleur_P_PolyMAC_P0::assembler_mat(Matrice& la_matrice,const DoubleVect
   const bool is_first_proc_with_real_elems = Process::me() == Process::mp_min(domaine.nb_elem() ? Process::me() : 1e8);
   if (!has_P_ref && is_first_proc_with_real_elems) mat(0, 0) *= 2;
 
+  statistiques().end_count(assemblage_sys_counter_);
   return 1;
 }
 

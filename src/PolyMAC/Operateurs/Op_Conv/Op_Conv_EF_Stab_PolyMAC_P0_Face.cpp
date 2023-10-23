@@ -23,11 +23,14 @@
 #include <Option_PolyMAC_P0.h>
 #include <Pb_Multiphase.h>
 #include <Matrix_tools.h>
+#include <Statistiques.h>
 #include <Array_tools.h>
 #include <TRUSTLists.h>
 #include <Dirichlet.h>
 #include <Param.h>
 #include <cmath>
+
+extern Stat_Counter_Id convection_counter_;
 
 Implemente_instanciable( Op_Conv_EF_Stab_PolyMAC_P0_Face, "Op_Conv_EF_Stab_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0P1NC_Face ) ;
 Implemente_instanciable(Op_Conv_Amont_PolyMAC_P0_Face, "Op_Conv_Amont_PolyMAC_P0_Face", Op_Conv_EF_Stab_PolyMAC_P0_Face);
@@ -135,6 +138,7 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::dimensionner_blocs(matrices_t matrices, co
 // renvoie resu
 void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl) const
 {
+  statistiques().begin_count(convection_counter_);
   const Domaine_Poly_base& domaine = le_dom_poly_.valeur();
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Conds_lim& cls = la_zcl_poly_.valeur().les_conditions_limites();
@@ -239,4 +243,5 @@ void Op_Conv_EF_Stab_PolyMAC_P0_Face::ajouter_blocs(matrices_t matrices, DoubleT
                       }
           }
       }
+  statistiques().end_count(convection_counter_);
 }
