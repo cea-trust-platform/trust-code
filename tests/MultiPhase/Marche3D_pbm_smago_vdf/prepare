@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp $TRUST_ROOT/tests/Turbulence/Marche3D_Turb_Null/Marche3D.geo . || exit -1
