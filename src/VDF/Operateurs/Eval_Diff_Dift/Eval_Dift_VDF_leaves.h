@@ -62,8 +62,6 @@ private:
 
 class Eval_Dift_Multiphase_VDF_Elem : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_Multiphase_VDF_Elem>, public Eval_Dift_Multiphase_VDF
 {
-public:
-  static constexpr bool IS_MODIF_DEQ = true;
 };
 
 class Eval_Dift_VDF_Multi_inco_Elem_Axi : public Eval_Diff_VDF_Elem_Gen<Eval_Dift_VDF_Multi_inco_Elem_Axi>, public Eval_Dift_VDF
