@@ -409,6 +409,14 @@ class TRUSTCase(object):
             err = getLastLines_(err_file)
 
         os.chdir(path)
+        
+        baseName = os.path.join(self.dir_, self.dataFileName_)
+        
+        saveFileAccumulator(f"{baseName}.dt_ev")
+        saveFileAccumulator(f"{baseName}.data")
+        saveFileAccumulator(f"{baseName}.out")
+        saveFileAccumulator(f"{baseName}.err")
+        saveFileAccumulator(f"{baseName}_*.son")
 
         return ok
 
@@ -505,7 +513,9 @@ class TRUSTSuite(object):
 
     def addCase(self, case):
         self.cases_.append(case)
-        baseName = "%s/%s" % (case.dir_, case.name_)
+        
+        baseName = os.path.join(case.dir_, case.name_)
+        
         saveFileAccumulator(f"{baseName}.dt_ev")
         saveFileAccumulator(f"{baseName}.data")
         saveFileAccumulator(f"{baseName}.out")

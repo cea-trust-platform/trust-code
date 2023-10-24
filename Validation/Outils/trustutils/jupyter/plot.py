@@ -46,7 +46,7 @@ def saveFileAccumulator(data):
 
     FileAccumulator.active = True
     FileAccumulator.Append(data)
-    FileAccumulator.WriteToFile("used_files", mode="a")
+    FileAccumulator.WriteToFile("used_files")
 
     os.chdir(path)
 
