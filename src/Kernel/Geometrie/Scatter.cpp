@@ -402,7 +402,7 @@ void Scatter::read_domain_no_comm(Entree& fic)
 
   Cerr << "\tDone !\n\treading elem infos (domaines)..." << finl;
 
-  Nom accouverte="{", accfermee="}";
+  Nom accouverte="{";
   Motcle nom;
   fic >> nom;
   Domaine domaine_read;
