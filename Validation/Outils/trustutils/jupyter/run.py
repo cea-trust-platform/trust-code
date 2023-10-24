@@ -390,6 +390,7 @@ class TRUSTCase(object):
         path = os.getcwd()
         os.chdir(self._fullDir())
         opt = os.environ.get("JUPYTER_RUN_OPTIONS", "")
+        self.dataFileName_ = "PAR_"+self.name_
         if "-not_run" in opt:
             return
         if self.nbProcs_ == 1:
@@ -407,7 +408,6 @@ class TRUSTCase(object):
             ok = False
             err = getLastLines_(err_file)
 
-        self.dataFileName_ = "PAR_"+self.name_
         os.chdir(path)
 
         return ok
