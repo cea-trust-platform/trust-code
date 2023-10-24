@@ -330,9 +330,7 @@ DoubleTab& Op_Div_VEFP1B_Elem::ajouter_som(const DoubleTab& vit, DoubleTab& div,
   #pragma omp target teams distribute parallel for if (computeOnDevice)
   for (int elem = 0; elem < nb_elem_tot; elem++)
     {
-      double sigma[3];
-      for (int comp = 0; comp < dimension; comp++)
-        sigma[comp] = 0;
+      double sigma[3] = {0, 0, 0};
       for (int indice = 0; indice < nfe; indice++)
         {
           int face = elem_faces_addr[elem * nfe + indice];
