@@ -73,3 +73,4 @@ linux   rsync_ssh	tache	is210376-noconda.intra.cea.fr 		-all	  -C3D  	 		   		-w
 linux   rsync_ssh	tache	is246513.intra.cea.fr 		-all	   -TrioCFD	 		   								# Ub20 mode formation titania 
 linux   ssh_pass	tache	is231762.intra.cea.fr 		-all	   -TrioCFD	 		   			-without-pdflatex					# Rocky 9.2 GA 
 linux   rsync_ssh	tache	is240284.intra.cea.fr 		-all	   -TrioCFD	 		   								# Ub 20 titania ZH 
+linux   rsync_ssh       tache   is245205.intra.cea.fr 		-all	   -TrioCFD	 		   			-without-pdflatex					# Fedora 38 GA 
