@@ -177,8 +177,8 @@ bfa3c5c61a5a91e528a1d2d1e3cae6c9  Miniconda/local_channel/noarch/send2trash-1.8.
 cda05f5f6d8509529d1a2743288d197a  Miniconda/local_channel/noarch/toml-0.10.2-pyhd3eb1b0_0.conda
 ffa649340272c3f6466ba01da254c3b0  Miniconda/local_channel/noarch/wcwidth-0.2.5-pyhd3eb1b0_0.conda
 0f88a28a15f5a3e62889bf5bdf7c9c11  SALOME/CurvePlot-9.4.0.tar.gz
-d0769396aa99d5d364389fbac6f239f9  SALOME/configuration-9.11.0.tar.gz
-a3c3ddc3c1aab0ea3426202b359204ce  SALOME/medcoupling-9.11.0.tar.gz
+1f0d704067d69ba14dd09eca80213c3f  SALOME/configuration-9.12.0.tar.gz
+d57c6bdcd2f60edcfdbe50b0502fa953  SALOME/medcoupling-9.12.0.tar.gz
 dae2b952c7ef8591e8322284ea244e73  SALOME/xdata-9.6.0.tar.gz
 7aae954eab2bedf602d8c131646173e7  SKIT/SPARSKIT2.tar.gz
 92ea7b772cc58ab8705a764c0afb1774  Vc-1.4.2.tar.gz
