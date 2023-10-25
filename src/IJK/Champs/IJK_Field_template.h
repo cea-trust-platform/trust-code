@@ -54,7 +54,7 @@ public:
     IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>(),
     localisation_(IJK_Splitting::Localisation::ELEM)
   { }
-  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0.);
+  void allocate(const IJK_Splitting&, IJK_Splitting::Localisation, int ghost_size, int additional_k_layers = 0, int nb_compo = 1, bool external_storage = false, int monofluide=0, double rov=0., double rol=0., int use_inv_rho_in_pressure_solver=0);
 
   const IJK_Splitting& get_splitting() const { return splitting_ref_.valeur(); }
 
@@ -67,12 +67,75 @@ public:
   void relever_I_sigma_kappa_ns(IJK_Field_double& field_ns);
   _TYPE_ interpolation_for_shear_periodicity(const int phase, const int send_i, const int send_j, const int send_k, const _TYPE_ istmp, const int real_size_i);
 
+
   int monofluide_variable_ = -123, order_interpolation_ = -123;
+  int use_inv_rho_in_pressure_solver_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmin_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> indicatrice_ghost_zmax_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmin_ ;
   IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_> I_sigma_kappa_ghost_zmax_ ;
+
   double rho_v_ = -123., rho_l_ = -123.;
+  const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& get_indicatrice_ghost_zmin_() const
+  {
+    return indicatrice_ghost_zmin_;
+  }
+  const IJK_Field_local_template<_TYPE_,_TYPE_ARRAY_>& get_indicatrice_ghost_zmax_() const
+  {
+    return indicatrice_ghost_zmax_;
+  }
+  void set_indicatrice_ghost_zmin_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_min)
+  {
+    for (int k = 0; k < indic_z_min.nk() ; k++)
+      {
+        for (int j = 0; j < indic_z_min.nj() ; j++)
+          {
+            for (int i = 0; i < indic_z_min.ni(); i++)
+              {
+                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)indic_z_min(i,j,k);
+              }
+          }
+      }
+  }
+  void set_indicatrice_ghost_zmax_(const IJK_Field_local_template<double,TRUSTArray<double>>& indic_z_max)
+  {
+    for (int k = 0; k < indic_z_max.nk() ; k++)
+      {
+        for (int j = 0; j < indic_z_max.nj() ; j++)
+          {
+            for (int i = 0; i < indic_z_max.ni(); i++)
+              {
+                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)indic_z_max(i,j,k);
+              }
+          }
+      }
+  }
+  void set_indicatrice_ghost_zmin_(const IJK_Field_local_template<float,TRUSTArray<float>>& indic_z_min)
+  {
+    for (int k = 0; k < indic_z_min.nk() ; k++)
+      {
+        for (int j = 0; j < indic_z_min.nj() ; j++)
+          {
+            for (int i = 0; i < indic_z_min.ni(); i++)
+              {
+                indicatrice_ghost_zmin_(i,j,k)=(_TYPE_)indic_z_min(i,j,k);
+              }
+          }
+      }
+  }
+  void set_indicatrice_ghost_zmax_(const IJK_Field_local_template<float,TRUSTArray<float>>& indic_z_max)
+  {
+    for (int k = 0; k < indic_z_max.nk() ; k++)
+      {
+        for (int j = 0; j < indic_z_max.nj() ; j++)
+          {
+            for (int i = 0; i < indic_z_max.ni(); i++)
+              {
+                indicatrice_ghost_zmax_(i,j,k)=(_TYPE_)indic_z_max(i,j,k);
+              }
+          }
+      }
+  }
 
 protected:
   REF(IJK_Splitting) splitting_ref_;

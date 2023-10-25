@@ -23,6 +23,8 @@ double IJK_Splitting::shear_x_DT_=0.;
 double IJK_Splitting::Lx_for_shear_perio=0.;
 int IJK_Splitting::defilement_=0;
 int IJK_Splitting::order_interpolation_poisson_solver_=0;
+double IJK_Splitting::rho_vap_ref_for_poisson_=0;
+double IJK_Splitting::rho_liq_ref_for_poisson_=0;
 
 Boundary_Conditions::Boundary_Conditions()
 {

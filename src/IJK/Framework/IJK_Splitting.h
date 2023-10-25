@@ -39,6 +39,8 @@ public:
   static double Lx_for_shear_perio ;
   static int defilement_ ;
   static int order_interpolation_poisson_solver_;
+  static double rho_liq_ref_for_poisson_;
+  static double rho_vap_ref_for_poisson_;
   enum Localisation { ELEM, NODES, FACES_I, FACES_J, FACES_K };
   static Localisation FacesDirToLocalisation(int dir)
   {

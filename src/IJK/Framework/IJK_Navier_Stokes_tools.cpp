@@ -542,7 +542,7 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
             {
               for (int i = 0; i < pressure_rhs.ni(); i++)
                 {
-                  pressure_rhs_before_shear(i,j,k) -= pressure_rhs(i,j,k);
+                  pressure_rhs_before_shear(i,j,k) = - pressure_rhs(i,j,k);
                 }
             }
         }
@@ -620,7 +620,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
             {
               for (int i = 0; i < pressure_rhs.ni(); i++)
                 {
-                  pressure_rhs_before_shear(i,j,k) -= pressure_rhs(i,j,k);
+                  pressure_rhs_before_shear(i,j,k) = - pressure_rhs(i,j,k);
                 }
             }
         }
