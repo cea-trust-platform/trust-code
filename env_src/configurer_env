@@ -469,6 +469,9 @@ then
       if [ -d /ccc ] || [ $HOST = callisto ] || [ $HOST = jean-zay ] # || [ ${HOST#orcus-} != $HOST ]
       then
         TRUST_NB_PROCS=8
+      elif [ "${HOST#aar}" != $HOST ] || [ "${HOST#grenx}" != $HOST ] || [ "${HOST#gutta}" != $HOST ]
+      then
+        TRUST_NB_PROCS=4
       elif [ "${HOST#summer}" != $HOST ]
       then
         TRUST_NB_PROCS=1
@@ -1712,14 +1715,14 @@ TRUST_SUPPORTED=0
 case $TRUST_ARCH_CC in
   linux_g++*|cygw*g++*|linux_cuda-g++*) TRUST_SUPPORTED=1
   [ "$STDCPP" = c++11 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=485 && ver<=1311) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
-	[ "$STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=500 && ver<=1311) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
+	[ "$STDCPP" = c++14 ] && TRUST_SUPPORTED=`echo $TRUST_VERSION_GNU | awk -F. '{ver=$1*100+$2*10+$3;if (ver>=500 && ver<=1321) print "(Supportee)";else print "(Not yet supported or not supported anymore)"}'`
 	m="# GNU compiler version";e="TRUST_VERSION_GNU=$TRUST_VERSION_GNU && export TRUST_VERSION_GNU";ecrit $m"|"$e"|"$env
 	[ "`echo $TRUST_SUPPORTED | grep -i Not`" != "" ] && TRUST_SUPPORTED=0
 	# Passage en -O2 car plantages suspects en -O3 avec egcs sur linux
 	# Options TRES severes a ajouter peut etre un jour : -W -Weffc++ -Wfloat-equal
 	# 26/03/10, passage enfin a -03
 	# 01/07/19, passage a C++ 11
-	# ??/??/??, passage a C++ 14
+	# 23/06/23, passage a C++ 14
 	[ "$TRUST_USE_OPENMP" = 1 ] && PTHREAD="-pthread" # Pour OpenBLAS ?
 	FPIC="-fPIC"
 	[ ${TRUST_ARCH} = cygwin ] && FPIC=""  # sous cygwin pas de -fPIC
