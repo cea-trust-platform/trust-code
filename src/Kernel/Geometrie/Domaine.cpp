@@ -2286,7 +2286,7 @@ void Domaine::build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const
   // Then we can simply identify cells by their nodal connectivity:
   DataArrayIdType * mP;
   mc_face_mesh_->areCellsIncludedIn(faces_tmp,2, mP);
-  DAId renum(mP); //useful to automatically free memory allocated in mP
+  // DAId renum(mP); //useful to automatically free memory allocated in mP
   DAId renum2(mP->invertArrayN2O2O2N(nb_fac));
 #ifndef NDEBUG
   // All cells should be found:
@@ -2305,6 +2305,7 @@ void Domaine::build_mc_face_mesh(const Domaine_dis_base& domaine_dis_base) const
 #ifndef NDEBUG
   mc_face_mesh_->checkConsistency();
 #endif
+  mP->decrRef();
 #endif
 }
 
