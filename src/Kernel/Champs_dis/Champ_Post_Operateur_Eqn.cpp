@@ -36,6 +36,7 @@ Champ_Post_Operateur_Eqn::Champ_Post_Operateur_Eqn()
 {
   numero_op_=-1;
   numero_source_=-1;
+  numero_masse_ = -1;
   sans_solveur_masse_=0;
   compo_=-1;
 }
@@ -45,6 +46,7 @@ void Champ_Post_Operateur_Eqn::set_param(Param& param)
   Champ_Generique_Operateur_base::set_param(param);
   param.ajouter("numero_source",&numero_source_); // XD_ADD_P entier the source to be post-processed (its number). If you have only one source term, numero_source will correspond to 0 if you want to post-process that unique source
   param.ajouter("numero_op",&numero_op_); // XD_ADD_P entier numero_op will be 0 (diffusive operator) or 1 (convective operator) or  2 (gradient operator) or 3 (divergence operator).
+  param.ajouter("numero_masse",&numero_masse_); // XD_ADD_P entier numero_masse will be 0 for the mass equation operator in Pb_multiphase.
   param.ajouter_flag("sans_solveur_masse",&sans_solveur_masse_); // XD_ADD_P rien not_set
   param.ajouter("compo",&compo_); // XD_ADD_P entier If you want to post-process only one component of a vector field, you can specify the number of the component after compo keyword. By default, it is set to -1 which means that all the components will be post-processed. This feature is not available in VDF disretization.
 }
@@ -211,8 +213,10 @@ const Champ_base& Champ_Post_Operateur_Eqn::get_champ(Champ& espace_stockage) co
         es=0;
         Operateur().ajouter(ref_eq_->operateur(numero_op_).mon_inconnue().valeurs(),es);
       }
-    else
+    else if (numero_source_!=-1)
       ref_eq_->sources()(numero_source_).calculer(es);
+    else if ((numero_masse_!=-1) && ref_eq_->has_interface_blocs())
+      es=0, ref_eq_->schema_temps().ajouter_blocs({},es,ref_eq_.valeur());
     if (!sans_solveur_masse_)
       ref_eq_->solv_masse().valeur().appliquer_impl(es); //On divise par le volume
     // Hack: car Masse_PolyMAC_P0P1NC_Face::appliquer_impl ne divise pas par le volume (matrice de masse)....
@@ -322,6 +326,8 @@ void Champ_Post_Operateur_Eqn::nommer_source()
       nom_post_source += Nom(numero_source_);
       nom_post_source += "_o" ;
       nom_post_source += Nom(numero_op_);
+      nom_post_source += "_m" ;
+      nom_post_source += Nom(numero_masse_);
       if (compo_!=-1)
         {
           Nom nume(compo_);

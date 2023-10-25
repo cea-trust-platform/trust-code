@@ -147,7 +147,11 @@ Read theProblem
                 numero_source 0
                 sources { refChamp { Pb_champ theProblem vitesse } }
             }
-            source_qdmz Transformation {
+            operateur_masse Operateur_eqn {
+                numero_masse 0
+                sources { refChamp { Pb_champ theProblem vitesse } }
+            }
+	    source_qdmz Transformation {
                 methode composante numero 2
                 localisation elem
                 sources_reference { source_qdm }
@@ -165,6 +169,7 @@ Read theProblem
             pression elem
             hydro elem
             source_qdmz elem
+	    operateur_masse elem
         }
 
     }

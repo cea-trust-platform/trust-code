@@ -62,7 +62,7 @@ public:
   const Champ_base&  get_champ_compo_without_evaluation(Champ& espace_stockage) const;
 
 protected:
-  int numero_source_,numero_op_;
+  int numero_source_,numero_op_, numero_masse_;
   REF(Equation_base) ref_eq_;
   int sans_solveur_masse_;
   Entity localisation_inco_=NODE;
