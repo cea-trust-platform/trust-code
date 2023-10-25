@@ -198,7 +198,7 @@ void Multigrille_base::solve_ijk_in_storage_template<float>()
 
   prepare_secmem(ijk_b);
   //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
-  ijk_b.echange_espace_virtuel(ijk_b.ghost());
+  //ijk_b.echange_espace_virtuel(ijk_b.ghost());
 
   double norm_residue;
   norm_residue = multigrille(ijk_x, ijk_b, ijk_residu);
@@ -219,7 +219,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
 
   prepare_secmem(ijk_b);
   //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
-  ijk_b.echange_espace_virtuel(ijk_b.ghost());
+  //ijk_b.echange_espace_virtuel(ijk_b.ghost());
 
   if (solver_precision_ == precision_double_)
     {
@@ -287,7 +287,7 @@ void Multigrille_base::solve_ijk_in_storage_template<double>()
           float_x.data() = 0.;
           prepare_secmem(float_b);
           //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
-          float_b.echange_espace_virtuel(float_b.ghost());
+          //float_b.echange_espace_virtuel(float_b.ghost());
           float_x.shift_k_origin(needed_kshift_for_jacobi(0) - float_x.k_shift());
           double single_precision_residue = multigrille(float_x, float_b, float_residue);
 

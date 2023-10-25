@@ -172,7 +172,8 @@ double Multigrille_base::multigrille_(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x
           prepare_secmem(coarse_b);
 
           // We need one less layer on b than on x to compute jacobi or residue
-          coarse_b.echange_espace_virtuel(b.ghost()-1);
+          //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
+          //coarse_b.echange_espace_virtuel(b.ghost()-1);
           // Solve for coarse_x
           coarse_x.shift_k_origin(needed_kshift - coarse_x.k_shift());
           coarse_x.data() = 0.;
@@ -338,7 +339,8 @@ void Multigrille_base::coarse_solver(IJK_Field_template<_TYPE_,_TYPE_ARRAY_>& x,
       for (i = 0; i < ni; i++)
         secmem[mat.renum(i,j,k)] = b(i,j,k);
 
-  secmem.echange_espace_virtuel();
+  //pas sur de devoir echanger espace virtuel pour le second membre dans le cas du shear_perio...
+  //secmem.echange_espace_virtuel();
   solveur_grossier_.resoudre_systeme(mat.matrice(), secmem, inco);
 
   for (k = 0; k < nk; k++)
