@@ -31,6 +31,7 @@ define_modules_config()
       then
          module="gnu/8.3.0 mpi/openmpi/4.0.5 cuda/11.0 nvhpc/22.7" # SDK recent pour bug use_device_ptr avec Nvidia (SDK<21.7)
          module="gnu/8.3.0 cuda/11.0 nvhpc/22.7 mpi/openmpi/4.1.4" # OpenMPI 4.1.4 suite recommendation support. OK. GPU-Direct marchait deja avec 4.0.5
+	 module="gnu/8.3.0 cuda/11.7 nvhpc/22.7 mpi/openmpi/4.1.4" # Passage a Cuda 11.7 OK pour AmgX 2.4.0 (qui ne compile pas avec <Cuda 11.2)
 	 # Tentative de passage a 23.7 (qui impose Cuda 11.8 sur topaze risque) pour bug long (contourne entre temps) mais pb link: 
 	 # nvlink fatal   : Input file '/ccc/scratch/cont002/den/ledacp/trust/amgx_openmp_int64/lib/TRUST_mpi_opt.a:Discretisation_tools.cpp.o' newer than toolkit (122 vs 118)
          # module="gnu/8.3.0 flavor/cuda/nvhpc-237 cuda/11.8 nvhpc/23.7 mpi/openmpi/4.1.4" # Passage a 23.7
