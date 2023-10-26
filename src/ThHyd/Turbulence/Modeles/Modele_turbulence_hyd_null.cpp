@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Modele_turbulence_hyd_nul.h>
+#include <Modele_turbulence_hyd_null.h>
 #include <EcritureLectureSpecial.h>
 #include <Discretisation_base.h>
 #include <Schema_Temps_base.h>
@@ -22,15 +22,15 @@
 #include <Domaine.h>
 #include <Param.h>
 
-Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_nul, "Modele_turbulence_hyd_nul", Modele_turbulence_hyd_base);
-// XD modele_turbulence_hyd_nul modele_turbulence_hyd_deriv NUL -1 Nul turbulence model (turbulent viscosity = 0) which can be used with a turbulent problem.
+Implemente_instanciable_sans_constructeur(Modele_turbulence_hyd_null, "Modele_turbulence_hyd_null", Modele_turbulence_hyd_base);
+// XD modele_turbulence_hyd_nul modele_turbulence_hyd_deriv null -1 Nul turbulence model (turbulent viscosity = 0) which can be used with a turbulent problem.
 
-Modele_turbulence_hyd_nul::Modele_turbulence_hyd_nul()
+Modele_turbulence_hyd_null::Modele_turbulence_hyd_null()
 {
   declare_support_masse_volumique(1);
 }
 
-Entree& Modele_turbulence_hyd_nul::readOn(Entree& is)
+Entree& Modele_turbulence_hyd_null::readOn(Entree& is)
 {
   // Creation d'une loi de paroi nulle:
   const Equation_base& eqn = equation();
@@ -41,7 +41,7 @@ Entree& Modele_turbulence_hyd_nul::readOn(Entree& is)
   else if (discr == "EF") loipar.typer("negligeable_EF");
   else
     {
-      Cerr << "Erreur dans Modele_turbulence_hyd_nul::readOn\n";
+      Cerr << "Erreur dans Modele_turbulence_hyd_null::readOn\n";
       Cerr << " la discretisation " << discr << " n'est pas prise en charge";
       Cerr << finl;
       exit();
@@ -55,12 +55,12 @@ Entree& Modele_turbulence_hyd_nul::readOn(Entree& is)
   return is;
 }
 
-Sortie& Modele_turbulence_hyd_nul::printOn(Sortie& os) const
+Sortie& Modele_turbulence_hyd_null::printOn(Sortie& os) const
 {
   return os << que_suis_je() << " " << le_nom();
 }
 
-int Modele_turbulence_hyd_nul::sauvegarder(Sortie& os) const
+int Modele_turbulence_hyd_null::sauvegarder(Sortie& os) const
 {
   // en mode ecriture special seul le maitre ecrit l'entete
   int write, special;

@@ -13,22 +13,22 @@
 *
 *****************************************************************************/
 
-#include <Modele_turbulence_scal_nul.h>
-#include <Modele_turbulence_hyd_nul.h>
+#include <Modele_turbulence_scal_null.h>
+#include <Modele_turbulence_hyd_null.h>
 #include <Convection_Diffusion_std.h>
 #include <Discretisation_base.h>
 #include <Probleme_base.h>
 
-Implemente_instanciable(Modele_turbulence_scal_nul, "Modele_turbulence_scal_nul", Modele_turbulence_scal_base);
-// XD modele_turbulence_scal_nul modele_turbulence_scal_base NUL -1 Nul scalar turbulence model (turbulent diffusivity = 0) which can be used with a turbulent problem.
+Implemente_instanciable(Modele_turbulence_scal_null, "Modele_turbulence_scal_null", Modele_turbulence_scal_base);
+// XD modele_turbulence_scal_nul modele_turbulence_scal_base null -1 Nul scalar turbulence model (turbulent diffusivity = 0) which can be used with a turbulent problem.
 // XD attr turbulence_paroi suppress_param turbulence_paroi 1 del
 
-Sortie& Modele_turbulence_scal_nul::printOn(Sortie& s) const
+Sortie& Modele_turbulence_scal_null::printOn(Sortie& s) const
 {
   return s << que_suis_je() << " " << le_nom();
 }
 
-Entree& Modele_turbulence_scal_nul::readOn(Entree& is)
+Entree& Modele_turbulence_scal_null::readOn(Entree& is)
 {
   // Creation d'une loi de paroi nulle:
   const Nom& discr = mon_equation->discretisation().que_suis_je();
@@ -36,9 +36,9 @@ Entree& Modele_turbulence_scal_nul::readOn(Entree& is)
   // lp loi de paroi du modele de turbulence de l'hydraulique
   const RefObjU& modele_turbulence = le_pb.equation(0).get_modele(TURBULENCE);
   const Modele_turbulence_hyd_base& mod_turb_hydr = ref_cast(Modele_turbulence_hyd_base, modele_turbulence.valeur());
-  if (!sub_type(Modele_turbulence_hyd_nul, mod_turb_hydr))
+  if (!sub_type(Modele_turbulence_hyd_null, mod_turb_hydr))
     {
-      Cerr << "Error in Modele_turbulence_scal_nul::readOn !!!" << finl;
+      Cerr << "Error in Modele_turbulence_scal_null::readOn !!!" << finl;
       Cerr << "You use a NUL turbulence model for the scalar equation " << mon_equation->que_suis_je() << " together with a non NUL turbulence model for " << le_pb.equation(0).que_suis_je() << finl;
       Cerr << "This is impossible !!! Replace the model " << mod_turb_hydr.que_suis_je() << " by the NUL model !!!" << finl;
       Process::exit();
@@ -50,7 +50,7 @@ Entree& Modele_turbulence_scal_nul::readOn(Entree& is)
   else if (discr == "EF") loipar.typer("negligeable_scalaire_EF");
   else
     {
-      Cerr << "Erreur dans Modele_turbulence_scal_nul::readOn : la discretisation " << discr << " n'est pas prise en charge" << finl;
+      Cerr << "Erreur dans Modele_turbulence_scal_null::readOn : la discretisation " << discr << " n'est pas prise en charge" << finl;
       Process::exit();
     }
   loipar.valeur().associer_modele(*this);

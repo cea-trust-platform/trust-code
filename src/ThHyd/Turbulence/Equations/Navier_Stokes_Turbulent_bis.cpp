@@ -13,7 +13,6 @@
 *
 *****************************************************************************/
 
-#include <Modele_turbulence_hyd_nul.h>
 #include <Navier_Stokes_Turbulent.h>
 
 void Navier_Stokes_Turbulent::creer_champ(const Motcle& motlu)

@@ -13,14 +13,14 @@
 *
 *****************************************************************************/
 
-#ifndef Modele_turbulence_hyd_nul_included
-#define Modele_turbulence_hyd_nul_included
+#ifndef Modele_turbulence_hyd_null_included
+#define Modele_turbulence_hyd_null_included
 
 #include <Modele_turbulence_hyd.h>
 
-class Modele_turbulence_hyd_nul: public Modele_turbulence_hyd_base
+class Modele_turbulence_hyd_null: public Modele_turbulence_hyd_base
 {
-  Declare_instanciable(Modele_turbulence_hyd_nul);
+  Declare_instanciable(Modele_turbulence_hyd_null);
 public:
   void mettre_a_jour(double) override { /* Do nothing */ }
   int sauvegarder(Sortie&) const override;

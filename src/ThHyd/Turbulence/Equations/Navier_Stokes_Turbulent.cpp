@@ -13,7 +13,7 @@
 *
 *****************************************************************************/
 
-#include <Modele_turbulence_hyd_nul.h>
+#include <Modele_turbulence_hyd_base.h>
 #include <Navier_Stokes_Turbulent.h>
 #include <Op_Diff_Turbulent_base.h>
 #include <Fluide_Incompressible.h>

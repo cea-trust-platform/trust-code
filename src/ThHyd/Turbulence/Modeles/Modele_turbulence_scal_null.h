@@ -13,16 +13,16 @@
 *
 *****************************************************************************/
 
-#ifndef Modele_turbulence_scal_nul_included
-#define Modele_turbulence_scal_nul_included
+#ifndef Modele_turbulence_scal_null_included
+#define Modele_turbulence_scal_null_included
 
 #include <Modele_turbulence_scal_base.h>
 
-class Modele_turbulence_scal_nul: public Modele_turbulence_scal_base
+class Modele_turbulence_scal_null: public Modele_turbulence_scal_base
 {
-  Declare_instanciable(Modele_turbulence_scal_nul);
+  Declare_instanciable(Modele_turbulence_scal_null);
 public:
   void mettre_a_jour(double) override { /* Do nothing */ }
 };
 
-#endif /* Modele_turbulence_scal_nul_included */
+#endif /* Modele_turbulence_scal_null_included */
