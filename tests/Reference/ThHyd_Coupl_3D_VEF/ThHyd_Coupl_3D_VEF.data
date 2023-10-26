@@ -170,11 +170,10 @@ Read pb2
 			}
 		convection { EF defaut_bar  }
 		diffusion { }
-	        Sources { Source_Qdm_lambdaup { lambda  2. } }
-		Sources
-			{
+	    Sources { 
+	        Source_Qdm_lambdaup { lambda  2. } ,
 			Canal_perio { bord periox }
-			}
+	    }
 		initial_conditions
 			{
 			vitesse  Champ_fonc_xyz dom 3 -3*y*y+6*y 0. 0.

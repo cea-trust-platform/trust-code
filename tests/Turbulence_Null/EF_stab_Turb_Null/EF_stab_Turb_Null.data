@@ -1,0 +1,136 @@
+# SIMULATION D UN TRANSPORT DE CRENEAU EN 2D #
+# A CHAMP DE VITESSE CONSTANT #
+# PARALLEL OK #
+dimension 2
+Domaine dom
+
+# BEGIN MESH #
+Mailler dom
+{
+Pave Cavite
+        {
+                Origine 0. 0.  
+                Nombre_de_Noeuds 91 29 
+                Longueurs 3. 1. 
+        }
+        {
+                Bord periox   X = 0.     0. <= Y <= 1. 
+                Bord periox   X = 3.     0. <= Y <= 1.  
+                Bord perioy   Y = 0.     0. <= X <= 3.   
+                Bord perioy   Y = 1.     0. <= X <= 3.   
+ 
+                }
+}
+
+Trianguler dom
+
+# END MESH #
+# BEGIN PARTITION
+Partition dom
+{
+	Partitionneur metis { Nb_parts 2 }
+	Nom_Zones DOM
+	Periodique 2 periox perioy
+        Larg_joint 2
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+
+Pb_Thermohydraulique_Turbulent pb
+VEFPreP1b dis
+
+# Schema_Euler_Explicite sch # 
+Runge_Kutta_ordre_3 sch 
+Lire sch
+	{
+	tinit 0.
+	tmax 2.
+	dt_min 1.e-8
+	dt_max 1.e-1
+	dt_impr 1.e-1
+	dt_sauv 500.
+        seuil_statio -1.e-8
+        nb_pas_dt_max 30
+	facsec 0.5
+	}
+
+
+
+
+Associate pb dom
+Associate pb sch
+Discretize pb dis
+
+Lire pb
+	{
+Fluide_Incompressible
+{
+	mu Champ_Uniforme	1 2.84e-5
+	rho Champ_Uniforme	1 0.0976
+	lambda Champ_Uniforme	1 1.e-11
+	Cp Champ_Uniforme	1 5193.
+	beta_th Champ_Uniforme	1 1.9954e-3
+	gravite Champ_Uniforme 2 0 0
+}
+	
+	Navier_Stokes_Turbulent
+		{
+		equation_non_resolue t<10000000
+		solveur_pression petsc cholesky { }
+                solveur_bar GCP
+                        {
+                        precond ssor { omega 1.5 }
+                        seuil 1e-9
+                        impr
+                        }
+
+		convection { amont }
+		diffusion { }
+		conditions_initiales
+			{
+			vitesse champ_uniforme 2 1. 0. 
+			}			
+		boundary_conditions
+			{
+			periox   periodique 
+			perioy   periodique 
+			}
+		modele_turbulence null { }
+		}
+
+
+	Convection_Diffusion_Temperature_Turbulent
+		{
+		diffusion { negligeable }
+                convection { EF_stab { } }
+		boundary_conditions 
+			{
+			periox periodique 
+			perioy periodique 
+			}
+		conditions_initiales { Temperature Champ_Fonc_xyz dom 1
+		(x>0.4)*(x<0.6)*(y>0.4)*(y<0.6) } 	
+				
+		modele_turbulence null { } 
+		}
+
+	Postraitement
+        	{       
+                Sondes
+                	{ 
+			sonde_temp2 nodes temperature periode 0.00001 segment 100 2 0.5  3. 0.5 	
+			}
+		Champs  dt_post 100.
+			{
+			temperature elem
+			}
+		} 
+       }
+
+Solve pb
+Fin

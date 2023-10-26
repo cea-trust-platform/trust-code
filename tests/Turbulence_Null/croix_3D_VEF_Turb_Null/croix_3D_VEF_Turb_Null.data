@@ -1,0 +1,116 @@
+# ThermoHydraulique 3D dans une structure en croix pour verifier les resultats sur un maillage symetrique #
+# PARALLEL OK #
+
+dimension 3
+Pb_Thermohydraulique_turbulent pb
+export domaine dom_pb1
+
+# BEGIN MESH #
+Read_file dom_pb1 croix_3D_VEF.geom
+Tetraedriser_homogene dom_pb1
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom_pb1
+{
+        Partitionneur Metis { nb_parts 3 }
+        Larg_joint 2
+        Nom_Zones DOM1
+}
+Fin
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM1.Zones dom_pb1
+END SCATTER #
+
+VEFPreP1B dis
+Runge_Kutta_ordre_3 sch
+Lire sch
+{
+	nb_pas_dt_max 10
+	tinit 0.
+	tmax 0.03
+	dt_min 1.e-9
+	dt_max 1.e-1
+	dt_impr 0.00001
+	dt_sauv 1.
+	seuil_statio 1.e-18
+}
+
+
+
+Associate pb dom_pb1
+Associate pb sch
+
+Discretize pb dis
+
+
+Lire pb
+{
+   
+   fluide_incompressible {
+     	mu Champ_Uniforme 1 1.
+    	rho Champ_Uniforme 1 1.
+    	lambda Champ_Uniforme 1 1.
+   	Cp Champ_Uniforme 1 1.
+   	beta_th Champ_Uniforme 1 1.
+   
+   }
+   
+    	Navier_Stokes_turbulent
+ 	{
+  		solveur_pression Petsc cholesky { }
+		convection { amont }
+  		diffusion { }
+  		conditions_initiales { vitesse Champ_Uniforme 3 0. 0. 0. }
+  		boundary_conditions {
+   			entree 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 1.
+   			sud 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+   			nord 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+   			gauche 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+   			droit 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+   			bas 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+   			haut 	frontiere_ouverte_pression_imposee Champ_front_uniforme 1 0.
+   			paroi 	paroi_fixe
+		}
+   		modele_turbulence null { } 
+	}
+	
+	Convection_Diffusion_Temperature_Turbulent
+	{
+		diffusion { }
+		convection { amont }
+		boundary_conditions 
+		{
+   			entree 	frontiere_ouverte_temperature_imposee Champ_front_uniforme 1 1.
+   			sud 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+   			nord 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+   			gauche 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+   			droit 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+   			bas 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+   			haut 	frontiere_ouverte T_ext Champ_Front_Uniforme 1 0.
+   			paroi 	paroi_temperature_imposee Champ_Front_Uniforme 1 0.5
+		}
+		conditions_initiales { Temperature Champ_Uniforme 1 0. }
+		modele_turbulence null { } 
+	}
+ 	Postraitement
+ 	{
+  		Sondes
+  		{
+   			sonde_vitesse vitesse periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
+			sonde_temperature temperature periode 1.e-3 points 2  0.2 0.11 0.1 0.4 0.11 0.1
+  		}
+		format lml
+  		Champs dt_post 0.001
+ 		{
+			pression elem
+   			vitesse elem
+			temperature elem
+  		}
+ 	}
+}
+Solve pb
+Fin
+ 
