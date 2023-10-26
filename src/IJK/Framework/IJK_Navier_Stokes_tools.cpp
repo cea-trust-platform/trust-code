@@ -600,8 +600,12 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& pressure_rhs,
                                   IJK_Field_double& pressure_rhs_before_shear,
                                   int check_divergence,
-                                  Multigrille_Adrien& poisson_solver, double Shear_DU)
+                                  Multigrille_Adrien& poisson_solver, double Shear_DU,
+                                  int use_unity_for_rho_in_poisson_solver)
 {
+
+
+
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
   // We need the velocity on the face at right to compute the divergence:
@@ -612,6 +616,30 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
   // terme a ajouter au second membre pour la resolution de la matrice de pression
   // uniquement dans le cas de condition shear-periodique.
   // Permet de compenser l interpolation de la pression monofluide
+  IJK_Field_double rho_inside_divP = rho;
+  IJK_Field_double rho_inside_secmem = rho;
+  if (use_unity_for_rho_in_poisson_solver)
+    {
+      rho_inside_divP.data()=1.;
+      rho_inside_divP.rho_l_=1.;
+      rho_inside_divP.rho_v_=1.;
+      rho_inside_divP.echange_espace_virtuel(rho_inside_divP.ghost());
+      for (int k = 0; k < pressure_rhs.nk(); k++)
+        for (int j = 0; j < pressure_rhs.nj(); j++)
+          for (int i = 0; i < pressure_rhs.ni(); i++)
+            {
+              pressure_rhs(i,j,k) = pressure_rhs(i,j,k) * rho_inside_secmem(i,j,k);
+            }
+      pressure_rhs.echange_espace_virtuel(pressure_rhs.ghost());
+    }
+  else
+    {
+      rho_inside_secmem.data()=1.;
+      rho_inside_secmem.rho_l_=1.;
+      rho_inside_secmem.rho_v_=1.;
+      rho_inside_secmem.echange_espace_virtuel(rho_inside_secmem.ghost());
+    }
+
   if (IJK_Splitting::defilement_ == 1)
     {
       for (int k = 0; k < pressure_rhs.nk(); k++)
@@ -643,11 +671,19 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
     {
       divergence_before = norme_ijk(pressure_rhs);
     }
-  poisson_solver.set_rho(rho);
+  poisson_solver.set_rho(rho_inside_divP);
   poisson_solver.resoudre_systeme_IJK(pressure_rhs, pressure);
   // pressure gradient requires the "left" value in all directions:
   pressure.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_LEFT_IJK*/);
-  add_gradient_times_constant_over_rho(pressure, rho, -dt, vx, vy, vz);
+  if (use_unity_for_rho_in_poisson_solver)
+    {
+      add_gradient_times_constant_over_rho(pressure, rho_inside_secmem, -dt, vx, vy, vz);
+    }
+  else
+    {
+      add_gradient_times_constant_over_rho(pressure, rho_inside_divP, -dt, vx, vy, vz);
+    }
+
   if (check_divergence)
     {
       IJK_Field rhs_after(pressure_rhs);

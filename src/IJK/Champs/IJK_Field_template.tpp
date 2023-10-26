@@ -664,6 +664,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
                 {
                   rho =2./((1./rho_minus_1)+(1./rho_0));
                 }
+              else if(use_unity_for_rho_in_poisson_solver_==1.)
+                {
+                  rho = 1.;
+                }
               else // si on utiliser une moyenne arithmetique pour 1/rho dans solver P
                 {
                   rho =(rho_minus_1+rho_0)/2.;
@@ -693,6 +697,10 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::ajouter_second_membre_shear_perio
               if (use_inv_rho_in_pressure_solver_==1.) // si on utiliser une moyenne harmonique pour 1/rho dans solver P
                 {
                   rho =2./((1./rho_nk_plus_1)+(1./rho_nk));
+                }
+              else if(use_unity_for_rho_in_poisson_solver_==1.)
+                {
+                  rho = 1.;
                 }
               else // si on utiliser une moyenne arithmetique pour 1/rho dans solver P
                 {
@@ -999,7 +1007,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::relever_I_sigma_kappa_ns(IJK_Fiel
 //   Also, components are not grouped by node but stored by layers in k. nb_compo>1 is essentially used
 //   in the multigrid solver to optimize memory accesses to the components of the matrix.
 template<typename _TYPE_, typename _TYPE_ARRAY_>
-void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& splitting, IJK_Splitting::Localisation loc, int ghost_size, int additional_k_layers, int ncompo, bool external_storage, int type, double rov, double rol, int use_inv_rho_in_pressure_solver)
+void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& splitting, IJK_Splitting::Localisation loc, int ghost_size, int additional_k_layers, int ncompo, bool external_storage, int type, double rov, double rol, int use_inv_rho_in_pressure_solver, int use_unity_for_rho_in_poisson_solver)
 {
   const int ni_local = splitting.get_nb_items_local(loc, 0);
   const int nj_local = splitting.get_nb_items_local(loc, 1);
@@ -1007,6 +1015,7 @@ void IJK_Field_template<_TYPE_, _TYPE_ARRAY_>::allocate(const IJK_Splitting& spl
   order_interpolation_ = IJK_Splitting::order_interpolation_poisson_solver_;
   monofluide_variable_ = type;
   use_inv_rho_in_pressure_solver_= use_inv_rho_in_pressure_solver;
+  use_unity_for_rho_in_poisson_solver_ = use_unity_for_rho_in_poisson_solver;
   IJK_Field_local_template<_TYPE_, _TYPE_ARRAY_>::allocate(ni_local, nj_local, nk_local, ghost_size, additional_k_layers, ncompo);
 
   // monofluide_variable_==1 est fait pour la pression

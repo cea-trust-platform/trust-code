@@ -58,7 +58,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
                                   IJK_Field_double& pressure_rhs,
                                   IJK_Field_double& pressure_rhs_before_shear,
                                   int check_divergence,
-                                  Multigrille_Adrien& poisson_solver,double Shear_DU);
+                                  Multigrille_Adrien& poisson_solver,double Shear_DU, int use_unity_for_rho_in_poisson_solver=0);
 
 void pressure_projection_with_inv_rho(const IJK_Field_double& rho,
                                       IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
