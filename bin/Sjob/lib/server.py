@@ -33,6 +33,8 @@ def main1():
     from port import PORT
     import job_manager
 
+    # A lock is needed to handle concurrency between incoming commands coming from the clients
+    # and the periodic refresh we need to handle the dead processes for example.
     zeLock = threading.Lock()
     manager = job_manager.SJobManager()
     th = threading.Thread(target=periodicRefresh)
