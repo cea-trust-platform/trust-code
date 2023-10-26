@@ -36,7 +36,7 @@ void Grid_Level_Data_template<_TYPE_>::initialize(const IJK_Splitting& splitting
   perio_k_= splitting.get_grid_geometry().get_periodic_flag(DIRECTION_K);
   ghost_size_ = ghost;
 
-  if (IJK_Splitting::rho_vap_ref_for_poisson_!=0. )
+  if (IJK_Splitting::rho_vap_ref_for_poisson_!=1. )
     {
       // shear periodicity
       //ijk_rho_.allocate(grid_splitting_, IJK_Splitting::ELEM, ghost);
