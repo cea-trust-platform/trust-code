@@ -6,6 +6,7 @@ set(LIBRARY_OUTPUT_PATH  ${CMAKE_BUILD_DIR})   # Make sure we don't pollute TRUS
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 project(ICoCo_SWIG CXX)
+
 enable_testing()
 
 set(TRUST_ROOT $ENV{TRUST_ROOT})
@@ -26,6 +27,15 @@ set(CMAKE_SKIP_RULE_DEPENDENCY 0)
 message("Utilisation de la librairie : ${libtrio_name} " )
 find_library(libTrio NAMES ${libtrio_name}.a PATHS ${TRUST_ROOT}/lib NO_DEFAULT_PATH )
 
+##
+## libbaltik_name and libBaltik for TRUST baltiks (such as triocfd)
+##
+#set(libbaltik_name _TRUSTModule${ajout}${OPT})
+#SET (project_directory $ENV{project_directory})
+
+#message("Utilisation de la librairie : ${libbaltik_name} " )
+#find_library(libBaltik NAMES ${libbaltik_name}.so PATHS ${project_directory}/build/src/exec${ajout}${OPT} NO_DEFAULT_PATH )
+
 find_package(PythonInterp 3 REQUIRED)  # Make sure to find TRUST Python first (even if not technically needed) ...
 find_package(PythonLibs 3 REQUIRED)    # ... so that TRUST Python libs are found too.
 
@@ -42,20 +52,26 @@ include_directories(
   ${MEDCOUPLING_DIR}/include
   ${PYTHON_INCLUDE_PATH})
 
-set_source_files_properties(trusticoco.i PROPERTIES CPLUSPLUS ON)
-set_source_files_properties(trusticoco.i PROPERTIES SWIG_FLAGS "-py3")
+# Configuring .i file to put TRUST version into it
+set(TRUST_VERSION $ENV{TRUST_VERSION})
+set(swig_file ${CMAKE_CURRENT_BINARY_DIR}/trusticoco.i)
+configure_file(trusticoco.i.in ${swig_file} @ONLY)
+
+set_source_files_properties(${swig_file} PROPERTIES CPLUSPLUS ON)
+set_source_files_properties(${swig_file} PROPERTIES SWIG_FLAGS "-py3")
 if(NOT $ENV{TRUST_DISABLE_MEDCOUPLING})
-  set_source_files_properties(trusticoco.i PROPERTIES COMPILE_DEFINITIONS "MEDCOUPLING")
-  #set_source_files_properties(trusticoco.i PROPERTIES COMPILE_DEFINITIONS "OLD_MEDCOUPLING")
+  set_source_files_properties(${swig_file} PROPERTIES COMPILE_DEFINITIONS "MEDCOUPLING")
+  #set_source_files_properties(${swig_file} PROPERTIES COMPILE_DEFINITIONS "OLD_MEDCOUPLING")
 endif()
 
 if(${CMAKE_VERSION} VERSION_LESS "3.8.0") 
-  swig_add_module(trusticoco python trusticoco.i)
+  swig_add_module(trusticoco python ${swig_file})
 else()
-  swig_add_library(trusticoco LANGUAGE python SOURCES trusticoco.i)
+  swig_add_library(trusticoco LANGUAGE python SOURCES ${swig_file})
 endif()
 
 swig_link_libraries(trusticoco ${libdeps} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
+#swig_link_libraries(trusticoco ${libdeps} ${libBaltik} ${libTrio} ${syslib} ${PYTHON_LIBRARIES} )
 
 ##
 ## Tests

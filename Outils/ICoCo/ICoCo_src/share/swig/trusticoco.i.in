@@ -83,6 +83,12 @@
     self->getOutputMEDDoubleField(name, *f);
     return f->getMCField();
   }
+
+  std::string getTRUSTVersion() const
+  {
+     return "@TRUST_VERSION@";
+  }
+
 }
 
 // Renaming ValueType enum into ICoCoValueType because Python wrapping discards the namespace "ICoCo"
