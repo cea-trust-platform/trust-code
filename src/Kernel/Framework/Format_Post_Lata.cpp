@@ -557,146 +557,140 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
  */
 int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_element)
 {
-#define un_seul_fichier_data // FIXME
-
   int dim = sommets.dimension(1);
   Motcle type_elem(type_element);
-  // GF Pour assuerer la lecture avec le plugin lata
-  if (type_element=="PRISME") type_elem="PRISM6" ;
 
-  int nb_som_tot;  // Nombre de sommets dans le fichier
-  int nb_elem_tot; // Nombre d'elements dans le fichier
+  // GF Pour assuerer la lecture avec le plugin lata
+  if (type_element == "PRISME") type_elem = "PRISM6";
+
+  int nb_som_tot, nb_elem_tot;  // Nombre de sommets/elements dans le fichier
 
   // Construction du nom du fichier de geometrie
-  Nom basename_geom(lata_basename_);
-  Nom extension_geom(extension_lata());
+  Nom basename_geom(lata_basename_), extension_geom(extension_lata());
 
-#ifdef un_seul_fichier_data
-  long int offset_elem = -1;
-  extension_geom += ".data";
-#else
-  extension_geom += ".";
-  extension_geom += id_domaine;
-  extension_geom += ".";
-  char str_temps[100] = "0.0";
-  if (temps_courant_ >= 0.)
-    snprintf(str_temps, 100, "%.10f", temps_courant_);
-  extension_geom += Nom(str_temps);
-#endif
+  if (un_seul_fichier_data_) extension_geom += ".data";
+  else
+    {
+      extension_geom += ".";
+      extension_geom += id_domaine;
+      extension_geom += ".";
+      char str_temps[100] = "0.0";
+      if (temps_courant_ >= 0.)
+        snprintf(str_temps, 100, "%.10f", temps_courant_);
+      extension_geom += Nom(str_temps);
+    }
 
   Nom nom_fichier_geom;
-  int decalage_sommets = 1;
-  int decalage_elements = 1;
+  int decalage_sommets = 1, decalage_elements = 1;
 
   {
-    Fichier_Lata fichier_geom(basename_geom, extension_geom,
-                              Fichier_Lata::APPEND, format_, options_para_); // FIXME
+    Fichier_Lata fichier_geom(basename_geom, extension_geom, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
 
     nom_fichier_geom = fichier_geom.get_filename();
     int nb_col;
+
     // Coordonnees des sommets
     ////nb_som_tot = write_doubletab(fichier_geom, sommets, nb_col);
     if (axi)
       {
         DoubleTab sommets2(sommets);
-        int ns=sommets2.dimension_tot(0);
-        for (int s=0; s<ns; s++)
+        int ns = sommets2.dimension_tot(0);
+        for (int s = 0; s < ns; s++)
           {
-            double r = sommets(s,0);
-            double theta = sommets(s,1);
-            sommets2(s,0) = r*cos(theta);
-            sommets2(s,1) = r*sin(theta);
+            double r = sommets(s, 0);
+            double theta = sommets(s, 1);
+            sommets2(s, 0) = r * cos(theta);
+            sommets2(s, 1) = r * sin(theta);
           }
-        nb_som_tot = write_doubletab(fichier_geom, sommets2, nb_col,options_para_);
+        nb_som_tot = write_doubletab(fichier_geom, sommets2, nb_col, options_para_);
       }
     else
-      nb_som_tot = write_doubletab(fichier_geom, sommets, nb_col,options_para_);
-#ifdef un_seul_fichier_data
-    if (fichier_geom.is_master())
-      {
-        offset_elem = fichier_geom.get_SFichier(). get_ofstream().tellp();
-        // if (fichier_geom.get_SFichier().is_bin()==0) offset_elem-=1;
-      }
-#else
-    Fichier_Lata fichier_geom_elem(basename_geom, extension_geom+Nom(".elem"),
-                                   Fichier_Lata::ERASE, format_, options_para_);
-#endif
+      nb_som_tot = write_doubletab(fichier_geom, sommets, nb_col, options_para_);
+
     assert(nb_som_tot == 0 || nb_col == dim);
 
-    // Elements
-    // Les indices de sommets, elements et autres dans le fichier lata commencent a 1 :
+    // Elements : Les indices de sommets, elements et autres dans le fichier lata commencent a 1 :
     if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
       {
-        // Tous les processeurs ecrivent dans un fichier unique, il faut
-        // renumeroter les indices pour passer en numerotation globale.
+        // Tous les processeurs ecrivent dans un fichier unique, il faut renumeroter les indices pour passer en numerotation globale.
         // Le processeur 0 numerote ses sommets de 1 a n0
-        // Le processeur 1 numerote ses sommets de n0+1 a n0+n1
-        // etc...
+        // Le processeur 1 numerote ses sommets de n0+1 a n0+n1, etc...
         // Decalage a ajouter aux indices pour avoir une numerotation globale.
         const int nbsom = sommets.dimension(0);
         decalage_sommets += mppartial_sum(nbsom);
         const int nbelem = elements.dimension(0);
         decalage_elements += mppartial_sum(nbelem);
       }
-#ifdef un_seul_fichier_data
-    nb_elem_tot = write_inttab(fichier_geom, 1 , decalage_sommets, elements, nb_col,options_para_);
-#else
-    nb_elem_tot = write_inttab(fichier_geom_elem, 1, decalage_sommets,elements, nb_col,options_para_);
-#endif
+
+
+    if (un_seul_fichier_data_)
+      {
+        if (fichier_geom.is_master())
+          offset_elem_ = fichier_geom.get_SFichier().get_ofstream().tellp();
+
+        nb_elem_tot = write_inttab(fichier_geom, 1, decalage_sommets, elements, nb_col, options_para_);
+      }
+    else
+      {
+        Fichier_Lata fichier_geom_elem(basename_geom, extension_geom + Nom(".elem"), Fichier_Lata::ERASE, format_, options_para_);
+        nb_elem_tot = write_inttab(fichier_geom_elem, 1, decalage_sommets, elements, nb_col, options_para_);
+      }
   }
+
   {
-    // Attention, il faut refermer le fichier avant d'appeler ecrire_item_int
-    // qui va ouvrir a nouveau le fichier.
-    Fichier_Lata_maitre fichier_lata(lata_basename_, extension_lata(),
-                                     Fichier_Lata::APPEND, options_para_);
+    // Attention, il faut refermer le fichier avant d'appeler ecrire_item_int qui va ouvrir a nouveau le fichier.
+    Fichier_Lata_maitre fichier_lata(lata_basename_, extension_lata(), Fichier_Lata::APPEND, options_para_);
     SFichier& sfichier = fichier_lata.get_SFichier();
 
     if (fichier_lata.is_master())
       {
         sfichier << "GEOM " << id_domaine;
+        sfichier << " type_elem=" << type_elem << finl;
+        sfichier << "CHAMP SOMMETS " << remove_path(nom_fichier_geom);
+        sfichier << " geometrie=" << id_domaine;
 
-        sfichier << " type_elem=" << type_elem<<finl;
-        sfichier << "CHAMP SOMMETS "<< remove_path(nom_fichier_geom);
-        sfichier << " geometrie="<<id_domaine;
 #ifdef INT_is_64_
         // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
         // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
 #endif
+
         sfichier << " size=" << nb_som_tot;
         sfichier << " composantes=" << dim << finl;
-        sfichier << "CHAMP ELEMENTS "<< remove_path(nom_fichier_geom);
-#ifndef un_seul_fichier_data
-        sfichier<<".elem";
-#endif
-        sfichier << " geometrie="<<id_domaine;
+        sfichier << "CHAMP ELEMENTS " << remove_path(nom_fichier_geom);
+
+        if (!un_seul_fichier_data_) sfichier << ".elem";
+
+        sfichier << " geometrie=" << id_domaine;
+
 #ifdef INT_is_64_
         // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
         // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
 #endif
-        sfichier << " size=" << nb_elem_tot<<" composantes="<<elements.dimension(1);
 
-#ifdef un_seul_fichier_data
-        sfichier<<" file_offset="<<offset_elem;
-#endif
+        sfichier << " size=" << nb_elem_tot << " composantes=" << elements.dimension(1);
+
+        if (un_seul_fichier_data_)
+          sfichier << " file_offset=" << offset_elem_;
+
         switch(sizeof(_LATA_INT_TYPE_))
           {
           case 4:
-            sfichier << " format=INT32"<<finl;;
+            sfichier << " format=INT32" << finl;
             break;
           case 8:
-            sfichier << " format=INT64"<<finl;
+            sfichier << " format=INT64" << finl;
             break;
           default:
-            Cerr << "Error in Format_Post_Lata::ecrire_entete\n"
-                 << " sizeof(int) not supported" << finl;
-            exit();
+            Cerr << "Error in Format_Post_Lata::ecrire_entete\n" << " sizeof(int) not supported" << finl;
+            Process::exit();
           }
 
       }
     fichier_lata.syncfile();
   }
+
   // En mode parallele, on ecrit en plus des fichiers contenant les donnees paralleles
   // sur les sommets, les elements et les faces...
   if (Process::nproc() > 1)
@@ -738,18 +732,20 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_pre
 {
   if (status == RESET)
     {
-      Cerr << "Error in Format_Post_Lata::ecrire_domaine\n"
-           << " status = RESET. Uninitialized object" << finl;
-      exit();
+      Cerr << "Error in Format_Post_Lata::ecrire_domaine\n" << " status = RESET. Uninitialized object" << finl;
+      Process::exit();
     }
   Motcle type_elem = domaine.type_elem().valeur().que_suis_je();
 
   ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_elem);
 
   // Si on a des frontieres domaine, on les ecrit egalement
-  const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();
-  for (int i=0; i<bords.size(); i++)
-    ecrire_domaine(bords[i].valeur(),est_le_premier_post);
+  if (!un_seul_fichier_data_)
+    {
+      const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();
+      for (int i=0; i<bords.size(); i++)
+        ecrire_domaine(bords[i].valeur(),est_le_premier_post);
+    }
   return 1; // ok tout va bien
 }
 
@@ -771,102 +767,95 @@ int Format_Post_Lata::ecrire_temps(const double temps)
 int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, const Nom& id_du_champ, const Nom& id_du_domaine,
                                    const Nom& localisation, const Nom& nature, const DoubleTab& valeurs)
 {
-#define un_seul_fichier_data // FIXME
+  Motcle id_du_champ_modifie(id_du_champ), iddomaine(id_du_domaine);
 
-  // recup de lata_v1
-  Motcle id_du_champ_modifie(id_du_champ);
-  Motcle iddomaine(id_du_domaine);
   //On utilise prefix avec un argument en majuscule
-  if ((Motcle)localisation=="SOM")
+  if ((Motcle) localisation == "SOM")
     {
       id_du_champ_modifie.prefix(id_du_domaine);
       id_du_champ_modifie.prefix(iddomaine);
-      ////id_du_champ_modifie.prefix("_som_");
       id_du_champ_modifie.prefix("_SOM_");
     }
-  else if ((Motcle)localisation=="ELEM")
+  else if ((Motcle) localisation == "ELEM")
     {
       id_du_champ_modifie.prefix(id_du_domaine);
       id_du_champ_modifie.prefix(iddomaine);
-      ////id_du_champ_modifie.prefix("_elem_");
       id_du_champ_modifie.prefix("_ELEM_");
     }
-  else if ((Motcle)localisation=="FACES")
+  else if ((Motcle) localisation == "FACES")
     {
       id_du_champ_modifie.prefix(id_du_domaine);
       id_du_champ_modifie.prefix(iddomaine);
       id_du_champ_modifie.prefix("_FACES_");
     }
-  Nom& id_champ=id_du_champ_modifie;
-  // Construction du nom du fichier
-  Nom basename_champ(lata_basename_);
-  Nom extension_champ(extension_lata());
+  Nom& id_champ = id_du_champ_modifie;
 
-#ifdef un_seul_fichier_data
-  long int offset_elem = -1;
-  extension_champ += ".data";
-#else
-  extension_champ += ".";
-  extension_champ += id_champ;
-  extension_champ += ".";
-  extension_champ += localisation;
-  extension_champ += ".";
-  extension_champ += id_du_domaine;
-  extension_champ += ".";
-  char str_temps[100] = "0.0";
-  if (temps >= 0.)
-    snprintf(str_temps, 100, "%.10f", temps);
-  extension_champ += str_temps;
-#endif
+  // Construction du nom du fichier
+  Nom basename_champ(lata_basename_), extension_champ(extension_lata());
+
+  if (un_seul_fichier_data_) extension_champ += ".data";
+  else
+    {
+      extension_champ += ".";
+      extension_champ += id_champ;
+      extension_champ += ".";
+      extension_champ += localisation;
+      extension_champ += ".";
+      extension_champ += id_du_domaine;
+      extension_champ += ".";
+      char str_temps[100] = "0.0";
+      if (temps >= 0.)
+        snprintf(str_temps, 100, "%.10f", temps);
+      extension_champ += str_temps;
+    }
 
   Nom filename_champ;
   int size_tot, nb_compo;
   {
-    Fichier_Lata fichier_champ(basename_champ, extension_champ,
-                               Fichier_Lata::APPEND, format_, options_para_); // FIXME
+    Fichier_Lata fichier_champ(basename_champ, extension_champ, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+
+    // XXX Elie Saikali : attention offset ici avant write_doubletab ! sinon decalage d'un champ !
+    if (un_seul_fichier_data_)
+      if (fichier_champ.is_master())
+        offset_elem_ = fichier_champ.get_SFichier().get_ofstream().tellp();
 
     filename_champ = fichier_champ.get_filename();
     size_tot = write_doubletab(fichier_champ, valeurs, nb_compo, options_para_);
 
-#ifdef un_seul_fichier_data
-    if (fichier_champ.is_master())
-      {
-        offset_elem = fichier_champ.get_SFichier(). get_ofstream().tellp();
-      }
-#endif
   }
 
   // Ouverture du fichier .lata en mode append.
   // Ajout de la reference au champ
-  Fichier_Lata_maitre fichier(lata_basename_, extension_lata(),
-                              Fichier_Lata::APPEND, options_para_);
+  Fichier_Lata_maitre fichier(lata_basename_, extension_lata(), Fichier_Lata::APPEND, options_para_);
   SFichier& sfichier = fichier.get_SFichier();
   if (fichier.is_master())
     {
       sfichier << "Champ " << id_champ << " ";
       sfichier << remove_path(filename_champ);
       sfichier << " geometrie=" << id_du_domaine;
+
 #ifdef INT_is_64_
       // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
       // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
       sfichier << " file_offset=6";
 #endif
+
       sfichier << " localisation=" << localisation;
       sfichier << " size=" << size_tot;
       sfichier << " nature=" << nature;
 
-      sfichier << " noms_compo="<<noms_compo[0];
-      for (int k=1; k<noms_compo.size(); k++)
-        sfichier << ","<<noms_compo[k];
+      sfichier << " noms_compo=" << noms_compo[0];
+      for (int k = 1; k < noms_compo.size(); k++)
+        sfichier << "," << noms_compo[k];
 
       sfichier << " composantes=" << nb_compo;
 
       //    sfichier << " type=REAL32" << finl;
-#ifdef un_seul_fichier_data
-      sfichier<<" file_offset="<<offset_elem <<finl;
-#else
-      sfichier <<finl;
-#endif
+
+      if (un_seul_fichier_data_)
+        sfichier << " file_offset=" << offset_elem_ << finl;
+      else
+        sfichier << finl;
     }
   fichier.syncfile();
 
