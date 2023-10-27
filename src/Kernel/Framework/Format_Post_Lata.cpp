@@ -12,197 +12,81 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
+#include <EcrFicPartageMPIIO.h>
 #include <Format_Post_Lata.h>
 #include <EcrFicPartageBin.h>
-#include <EcrFicPartageMPIIO.h>
-#include <Fichier_Lata.h>
-#include <Param.h>
 #include <communications.h>
+#include <Fichier_Lata.h>
 #include <EFichier.h>
 #include <sys/stat.h>
+#include <Param.h>
 #include <string> // Necessaire avec xlC pour std::getline
 
 Implemente_instanciable_sans_constructeur(Format_Post_Lata,"Format_Post_Lata",Format_Post_base);
 
 #define _LATA_INT_TYPE_ int
 
-/*! @brief Construit un fichier de type EcrFicPartage(Bin) ou EcrFicPrive(Bin), binaire ou pas selon le parametre "format".
- *
- *   Si parallel==MULTIPLE_FILES, le fichier est de type EcrFicPrive(Bin).
- *     Dans ce cas, chaque processeur ouvre un fichier different, dont
- *     le nom est "basename_XXXXXextension", ou XXXXX est egal a Process::me().
- *     Tous les processeurs renverront is_master() == 1.
- *   Si parallel==SINGLE_FILE est non nul, le fichier est de type EcrFicPartage(Bin).
- *     Seul le processeur maitre ouvre le fichier, le nom du fichier est
- *     "basenameextension".
- *     is_master() renverra 1 sur le maitre, 0 sur les autres processeurs.
- *
- * @param (basename) debut du nom du fichier
- * @param (extension) fin du nom du fichier
- * @param (mode_append) Si mode_append==ERASE, on ouvre en mode ecriture, si mode_append==APPEND, on ouvre en mode append.
- * @param (format) Determine si on ouvre en binaire ou pas. (valeurs possibles: Format_Post_Lata::ASCII ou Format_Post_Lata::BINAIRE)
- * @param (parallel) fichier unique partage ou plusieurs fichiers prives...
- */
-Fichier_Lata::Fichier_Lata(const char * basename, const char * extension,
-                           Mode mode_append,
-                           Format_Post_Lata::Format format,
-                           Format_Post_Lata::Options_Para parallel) :
-  filename_(""),
-  fichier_(0),
-  is_parallel_(0)
-{
-  char s[20] = "";
-
-  switch(parallel)
-    {
-    case Format_Post_Lata::SINGLE_FILE_MPIIO:
-    case Format_Post_Lata::SINGLE_FILE:
-      {
-        is_parallel_ = 1;
-        filename_ = basename;
-        filename_ += extension;
-        // Pour un calcul sequentiel, on ouvre un fichier SFichier
-        // pour ne pas bufferiser en memoire
-        if  (Process::nproc() == 1)
-          fichier_ = new SFichier;
-        else
-          {
-            if (format == Format_Post_Lata::BINAIRE && parallel == Format_Post_Lata::SINGLE_FILE_MPIIO)
-              fichier_ = new EcrFicPartageMPIIO;
-            else
-              fichier_ = new EcrFicPartage;
-          }
-        break;
-      }
-    case Format_Post_Lata::MULTIPLE_FILES:
-      {
-        is_parallel_ = 0;
-        fichier_ = new SFichier;
-        const int moi = Process::me();
-        snprintf(s, 20, "_%05d", (True_int)moi);
-        break;
-      }
-    default:
-      Cerr << "Fichier_Lata::Fichier_Lata: parallel option not supported " << (int)parallel << finl;
-      Process::exit();
-    }
-  filename_ = basename;
-  filename_ += s;
-  filename_ += extension;
-
-  switch(format)
-    {
-    case Format_Post_Lata::ASCII:
-      fichier_->set_bin(0);
-      break;
-    case Format_Post_Lata::BINAIRE:
-      fichier_->set_bin(1);
-      break;
-    default:
-      Cerr << "Fichier_Lata::Fichier_Lata: format not supported " << (int)format << finl;
-      Process::exit();
-    }
-
-
-  IOS_OPEN_MODE mode = ios::out;
-  switch(mode_append)
-    {
-    case ERASE:
-      mode = ios::out;
-      break;
-    case APPEND:
-      mode = ios::out | ios::app;
-      break;
-    default:
-      Cerr << "Fichier_Lata::Fichier_Lata: open mode not supported " << (int)mode_append << finl;
-      Process::exit();
-    }
-  //if (Process::je_suis_maitre() || parallel==Format_Post_Lata::MULTIPLE_FILES)
-  {
-    int ok = fichier_->ouvrir(filename_, mode);
-    if (!ok)
-      {
-        Cerr << "Error in Fichier_Lata::Fichier_Lata\n"
-             << " Error while opening file : " << filename_
-             << finl;
-        Process::exit();
-      }
-    fichier_->setf(ios::scientific);
-    fichier_->precision(8);
-  }
-}
-
-Fichier_Lata::~Fichier_Lata()
-{
-  if (fichier_)
-    {
-      delete fichier_;
-      fichier_ = 0;
-    }
-}
-
-SFichier& Fichier_Lata::get_SFichier()
-{
-  assert(fichier_);
-  return *fichier_;
-}
-
-/*! @brief Renvoie le nom du fichier avec le path
+/*! @brief Constructeur par defaut: format_ ASCII et options_para_ = SINGLE_FILE
  *
  */
-const Nom& Fichier_Lata::get_filename() const
+Format_Post_Lata::Format_Post_Lata()
 {
-  return filename_;
+  reset();
 }
 
-/*! @brief Si le fichier est de type partage, renvoie 1 si me() est egal au master du groupe et 0 sinon,
- *
- *   Si le fichier est prive, renvoie 1 sur tous les processeurs.
+/*! @brief Remet l'objet dans l'etat obtenu par le constructeur par defaut.
  *
  */
-int Fichier_Lata::is_master() const
+void Format_Post_Lata::reset()
 {
-  int resu = 0;
-  if (is_parallel_ == 0)
-    {
-      // Execution sequentielle, fichiers prives chaque processeur est maitre
-      resu = 1;
-    }
-  else
-    {
-      // Execution parallele : un seul maitre
-      if (Process::je_suis_maitre())
-        resu = 1;
-    }
-  return resu;
+  lata_basename_ = "??";
+  format_ = ASCII;
+  options_para_ = SINGLE_FILE;
+  status = RESET;
+  temps_courant_ = -1.;
+  deja_fait_ = 0;
+  tinit_ = -1.;
+  file_existe_ = 0;
 }
 
-/*! @brief Si le fichier est de type partage, appelle la methode syncfile(), sinon ne fait rien.
+Sortie& Format_Post_Lata::printOn(Sortie& os) const
+{
+  Process::exit("Format_Post_Lata::printOn : error");
+  return os;
+}
+
+/*! @brief Lecture des parametres du postraitement au format "jeu de donnees" Le format attendu est le suivant:
+ *
+ *   {
+ *        nom_fichier nom                       champ obligatoire
+ *      [ format   ascii|binaire ]              valeur par defaut : ascii
+ *      [ parallel single_file|multiple_files ] valeur par defaut : single_file
+ *   }
  *
  */
-void Fichier_Lata::syncfile()
+Entree& Format_Post_Lata::readOn(Entree& is)
 {
-  if (is_parallel_ && Process::nproc() > 1)
-    fichier_->syncfile();
+  assert(status == RESET);
+  Format_Post_base::readOn(is);
+  status = INITIALIZED;
+  return is;
 }
 
-Fichier_Lata_maitre::Fichier_Lata_maitre(const char * basename,
-                                         const char * extension,
-                                         Mode mode_append,
-                                         Format_Post_Lata::Options_Para parallel) :
-  Fichier_Lata(basename, extension,
-               mode_append, Format_Post_Lata::ASCII, parallel)
+void Format_Post_Lata::set_param(Param& param)
 {
-  fichier_->setf(ios::scientific);
-  // On peut changer la precision du fichier maitre a cet endroit:
-  fichier_->precision(8);
+  Cerr << "Format_Post_Lata::set_param: Not implemented." << finl;
+  Process::exit();
 }
 
-// ****************************************************************************
+int Format_Post_Lata::lire_motcle_non_standard(const Motcle& mot, Entree& is)
+{
+  Cerr << "Format_Post_Lata::lire_motcle_non_standard: Not implemented." << finl;
+  Process::exit();
+  return 0;
+}
 
-/*! @brief Renvoie l'extension conventionnelle des fichiers lata : ".
- *
- * lata"
+/*! @brief Renvoie l'extension conventionnelle des fichiers lata : ".lata"
  *
  */
 const char * Format_Post_Lata::extension_lata()
@@ -229,59 +113,7 @@ const char * Format_Post_Lata::remove_path(const char * filename)
  */
 int Format_Post_Lata::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
 {
-
   ecrire_entete_lata(lata_basename_,options_para_,format_,est_le_premier_post);
-  /*
-  // Determination du format binaire:
-  //  big endian => l'entier 32 bits "1" s'ecrit 0x00 0x00 0x00 0x01
-  //  little endian =>                           0x01 0x00 0x00 0x00
-  const unsigned int one = 1;
-  const int big_endian = (* ((unsigned char *)&one) == 0) ? 1 : 0;
-
-  // Effacement du fichier .lata et ecriture de l'entete
-  Fichier_Lata_maitre fichier(lata_basename_, extension_lata(),
-  Fichier_Lata::ERASE,
-  options_para_);
-  SFichier & sfichier = fichier.get_SFichier();
-  if (fichier.is_master()) {
-  sfichier << "LataV2.0 Trio_U Version1.4.9 06/2005" << finl;
-  sfichier << Objet_U::nom_du_cas() << finl;
-  sfichier << "Trio_U" << finl;
-
-  sfichier << "Format ";
-  switch(format_) {
-  case ASCII:
-  sfichier << "ASCII ";
-  break;
-  case BINAIRE:
-  sfichier << "BINAIRE ";
-  if (big_endian)
-  sfichier << "big_endian ";
-  else
-  sfichier << "little_endian ";
-  break;
-  default:
-  Cerr << "Error in Format_Post_Lata::ecrire_entete\n"
-  << " format not supported" << finl;
-  exit();
-  }
-  switch(sizeof(_LATA_INT_TYPE_)) {
-  case 4:
-  sfichier << "int32 ";
-  break;
-  case 8:
-  sfichier << "int64 ";
-  break;
-  default:
-  Cerr << "Error in Format_Post_Lata::ecrire_entete\n"
-  << " sizeof(int) not supported" << finl;
-  exit();
-  }
-  sfichier << "real32" << finl;
-  }
-  fichier.syncfile();
-  */
-
   return 1;
 }
 
@@ -386,16 +218,12 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
 
 /*! @brief Ecriture d'un tableau d'entiers dans le fichier fourni.
  *
- * Les valeurs ecrites sont les valeurs du tableau auquelles ont ajoute
- *   "decalage". Cette valeur est utilisee pour passer en numerotation
- *   fortran (ajouter 1), ou pour passer en numerotation globale (ajouter
- *   le nombre d'elements sur les processeurs precedents).
- *   On renvoie dans nb_colonnes la somme des dimension(i) pour i>0.
- *  Valeur de retour: somme des dimension(0) ecrits (selon que tous les
- *   processeurs ecrivent sur le meme fichier ou pas).
+ * Les valeurs ecrites sont les valeurs du tableau auquelles ont ajoute "decalage". Cette valeur est utilisee pour passer en numerotation
+ *   fortran (ajouter 1), ou pour passer en numerotation globale (ajouter le nombre d'elements sur les processeurs precedents).
  *
+ *  On renvoie dans nb_colonnes la somme des dimension(i) pour i>0.
+ *  Valeur de retour: somme des dimension(0) ecrits (selon que tous les processeurs ecrivent sur le meme fichier ou pas).
  */
-
 int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option)
 {
   assert(decalage_partiel>=decalage);
@@ -518,69 +346,6 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
       exit();
     }
   return nb_lignes_tot;
-}
-
-/*! @brief Constructeur par defaut: format_ ASCII et options_para_ = SINGLE_FILE
- *
- */
-Format_Post_Lata::Format_Post_Lata()
-{
-  reset();
-}
-
-/*! @brief Remet l'objet dans l'etat obtenu par le constructeur par defaut.
- *
- */
-void Format_Post_Lata::reset()
-{
-  lata_basename_ = "??";
-  format_ = ASCII;
-  options_para_ = SINGLE_FILE;
-  status = RESET;
-  temps_courant_ = -1.;
-  deja_fait_=0;
-  tinit_=-1.;
-  file_existe_=0;
-}
-
-/*! @brief erreur => exit
- *
- */
-Sortie& Format_Post_Lata::printOn(Sortie& os) const
-{
-  Cerr << "Format_Post_Lata::printOn : error" << finl;
-  exit();
-  return os;
-}
-
-/*! @brief Lecture des parametres du postraitement au format "jeu de donnees" Le format attendu est le suivant:
- *
- *   {
- *        nom_fichier nom                       champ obligatoire
- *      [ format   ascii|binaire ]              valeur par defaut : ascii
- *      [ parallel single_file|multiple_files ] valeur par defaut : single_file
- *   }
- *
- */
-Entree& Format_Post_Lata::readOn(Entree& is)
-{
-  assert(status == RESET);
-  Format_Post_base::readOn(is);
-  status = INITIALIZED;
-  return is;
-}
-
-void Format_Post_Lata::set_param(Param& param)
-{
-  Cerr << "Format_Post_Lata::set_param: Not implemented." << finl;
-  Process::exit();
-}
-
-int Format_Post_Lata::lire_motcle_non_standard(const Motcle& mot, Entree& is)
-{
-  Cerr << "Format_Post_Lata::lire_motcle_non_standard: Not implemented." << finl;
-  Process::exit();
-  return 0;
 }
 
 /*! @brief Initialisation de la classe avec des parametres par defaut (format ASCII, SINGLE_FILE)
@@ -1299,6 +1064,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
 
   return 1;
 }
+
 int Format_Post_Lata::ecrire_temps_lata(const double temps,double& temps_format,const Nom& base_name,Status& stat,const Options_Para& option)
 {
   assert(stat != RESET);
@@ -1335,4 +1101,3 @@ int Format_Post_Lata::finir(const int est_le_dernier_post)
     }
   return 1;
 }
-
