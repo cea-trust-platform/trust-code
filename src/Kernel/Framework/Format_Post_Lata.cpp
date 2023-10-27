@@ -568,7 +568,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   // Construction du nom du fichier de geometrie
   Nom basename_geom(lata_basename_), extension_geom(extension_lata());
 
-  if (un_seul_fichier_data_) extension_geom += ".data";
+  if (un_seul_fichier_data_) extension_geom += "_single_file";
   else
     {
       extension_geom += ".";
@@ -793,7 +793,7 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   // Construction du nom du fichier
   Nom basename_champ(lata_basename_), extension_champ(extension_lata());
 
-  if (un_seul_fichier_data_) extension_champ += ".data";
+  if (un_seul_fichier_data_) extension_champ += "_single_file";
   else
     {
       extension_champ += ".";
