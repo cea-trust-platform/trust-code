@@ -140,8 +140,11 @@ class FileAccumulator(object):
     @classmethod
     def Append(cls, file):
         if not cls.active:
-            return
-        cls.file_list.add(file)
+            return False
+        if not file in cls.file_list:
+            cls.file_list.add(file)
+            return True
+        return False
 
     @classmethod
     def AppendVisuMesh(cls, file, dom_name):

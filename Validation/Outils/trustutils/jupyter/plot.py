@@ -17,7 +17,7 @@ import os
 import re
 import math
 from trustutils.jupyter.filelist import FileAccumulator
-from trustutils.jupyter.run import BUILD_DIRECTORY
+from trustutils.jupyter.run import BUILD_DIRECTORY, saveFileAccumulator
 
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
@@ -26,30 +26,6 @@ def _repr_latex_(self):
     return "\\begin{center} \n %s \n \end{center}" % self.to_latex()
 
 pd.DataFrame._repr_latex_ = _repr_latex_ # To display pandas table as latex table into report
-
-
-def saveFileAccumulator(data):
-    """
-    Method for saving files for testing non-regression.
-        
-    Parameters
-    --------- 
-    data : str 
-        name of the file we want to save. 
-
-    Returns
-    ------- 
-    """
-
-    path = os.getcwd()
-    os.chdir(BUILD_DIRECTORY)
-
-    FileAccumulator.active = True
-    FileAccumulator.Append(data)
-    FileAccumulator.WriteToFile("used_files")
-
-    os.chdir(path)
-
 
 def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", skiprows=0):
     """
@@ -95,6 +71,35 @@ def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", 
     os.chdir(origin)
 
     return matrix
+
+def read_csv(data, comment="#", delim_whitespace=True,**kwargs):
+    """
+    Method for loading files (wrap pandas.read_csv() function).
+        
+    Parameters
+    --------- 
+    data : str 
+        name of the file we want to save. 
+    comment : char, default = "#"
+        Character indicating that the remainder of line should not be parsed.
+    delim_whitespace : bool, default = True
+        Specifies whether or not whitespace (e.g. ' ' or '\t') will be used as the sep delimiter.
+    kwargs : dictionary
+        additional properties available in pandas.read_csv() options
+
+    Returns
+    ------- 
+    pandas Dataframe
+    """
+    origin = os.getcwd()
+    os.chdir(BUILD_DIRECTORY)
+
+    df = pd.read_csv(data, comment=comment, delim_whitespace=delim_whitespace,**kwargs)
+
+    saveFileAccumulator(data)
+    os.chdir(origin)
+
+    return df
 
 
 def readFile(name):

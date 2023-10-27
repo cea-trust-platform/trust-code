@@ -83,11 +83,11 @@ def saveFile(file, field, name, iteration, active=False):
         FileAccumulator.active = True
         if field=="Mesh" or field=="Subset":
             FileAccumulator.AppendVisuMesh(file,name)
-            FileAccumulator.WriteToFile("used_files", mode="a")
+            FileAccumulator.WriteToFile("used_files")
         else:
             field, loc, dom = FileAccumulator.ParseDirectName(name)
             FileAccumulator.AppendVisuComplex(file, dom, field, loc, iteration)
-            FileAccumulator.WriteToFile("used_files", mode="a")
+            FileAccumulator.WriteToFile("used_files")
 
         os.chdir(origin)
 

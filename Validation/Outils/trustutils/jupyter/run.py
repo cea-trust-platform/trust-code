@@ -510,6 +510,17 @@ class TRUSTSuite(object):
             raise Exception("Not a coherent validation form directory: 'src' subdirectory not found.")
         # Mimick what is done in 'prepare_gen' TRUST script:
         subprocess.run("mkdir -p %s && cp -a src/* %s 2>/dev/null" % (BUILD_DIRECTORY, BUILD_DIRECTORY), shell=True)  # Note the '*' !!
+        # Add image file that can be in src file for archiving
+        import pathlib
+        os.chdir(BUILD_DIRECTORY)
+        desktop = pathlib.Path(".")
+        image_files = list(desktop.rglob("*.png"))
+        image_files.append(list(desktop.rglob("*.jpg")))
+        for image in image_files:
+            saveFileAccumulator(str(image))
+        os.chdir(ORIGIN_DIRECTORY)
+
+        
 
     def addCase(self, case):
         self.cases_.append(case)
@@ -720,8 +731,9 @@ def saveFileAccumulator(data):
     os.chdir(BUILD_DIRECTORY)
 
     FileAccumulator.active = True
-    FileAccumulator.Append(data)
-    FileAccumulator.WriteToFile("used_files", mode="a")
+    new = FileAccumulator.Append(data)
+    if new==True:
+        FileAccumulator.WriteToFile("used_files")
 
     os.chdir(path)
 
