@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -12,6 +12,7 @@
 * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 *****************************************************************************/
+
 #ifndef Format_Post_Lata_included
 #define Format_Post_Lata_included
 
@@ -20,7 +21,7 @@
 
 class Fichier_Lata;
 
-/*! @brief : Classe de postraitement des champs euleriens au format lata(version 2)
+/*! @brief : Classe de postraitement des champs euleriens au format lata
  *
  */
 
@@ -102,17 +103,19 @@ public:
   enum Options_Para { SINGLE_FILE, SINGLE_FILE_MPIIO, MULTIPLE_FILES };
   enum Status { RESET, INITIALIZED, WRITING_TIME };
 
-
   Format_Post_Lata();
   virtual int initialize_lata(const Nom& file_basename, const Format format = ASCII, const Options_Para options_para = SINGLE_FILE);
 
   static int ecrire_entete_lata(const Nom& base_name, const Options_Para& option, const Format& format, const int est_le_premier_post);
   static int ecrire_temps_lata(const double temps, double& temps_format, const Nom& base_name, Status& stat, const Options_Para& option);
 
+  void set_single_lata_flie(const bool sing_lata) override { un_seul_fichier_data_ = sing_lata; }
+
+  static const char * extension_lata();
+  static const char * remove_path(const char * filename);
+
 protected:
-
   static int write_doubletab(Fichier_Lata& fichier, const DoubleTab& tab, int& nb_colonnes, const Options_Para& option);
-
   static int write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option);
 
   int deja_fait_, file_existe_;
@@ -122,19 +125,9 @@ protected:
   Options_Para options_para_;
   Status status;
 
-
-  //Passe en public pour etre utilise dans ecrire_temps_lata
-  // L'etat actuel du fichier:
-  //  (on est dans l'etat writing_time apres le premier appel a ecrire temps)
-  ////enum Status { RESET, INITIALIZED, WRITING_TIME };
-  ////Status status;
-
   // Le temps en cours d'ecriture
   double temps_courant_;
-
-public:
-  static const char * extension_lata();
-  static const char * remove_path(const char * filename);
+  bool un_seul_fichier_data_ = false;
 };
 
-#endif
+#endif /* Format_Post_Lata_included */

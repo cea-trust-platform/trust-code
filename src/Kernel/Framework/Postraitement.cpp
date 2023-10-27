@@ -244,58 +244,70 @@ Sortie& Postraitement::printOn(Sortie& s ) const
  * @throws lecture du bloc statistique: mot clef "dt_post" attendu
  * @throws mot clef inconnu
  */
-Entree& Postraitement::readOn(Entree& s )
+Entree& Postraitement::readOn(Entree& s)
 {
   Cerr << "Reading guidelines of postprocessing" << finl;
   assert(mon_probleme.non_nul());
 
-  const Nom& le_nom_du_post =le_nom();
+  const Nom& le_nom_du_post = le_nom();
   Nom vide;
-  if ((le_nom_du_post!="neant")&&(le_nom_du_post!=vide))
+  if ((le_nom_du_post != "neant") && (le_nom_du_post != vide))
     {
-      nom_fich_+="_";
-      nom_fich_+=le_nom_du_post;
+      nom_fich_ += "_";
+      nom_fich_ += le_nom_du_post;
     }
 
   Probleme_base& le_pb = mon_probleme.valeur();
-  le_domaine=le_pb.domaine();
+  le_domaine = le_pb.domaine();
 
   Postraitement_base::readOn(s);
 
-  if (Motcle(format)=="MED") format="med";
-  if (Motcle(format)=="MEDFILE")
+  if (Motcle(format) == "MEDFILE")
     {
-      Cerr<<"The postprocessing format 'medfile' is not supported since TRUST v1.9.2! Switch to 'med'."<<finl;
-      exit();
-    }
-  if (Motcle(format)=="MED_MAJOR") format="med_major";
-  if ((Motcle(format)!="LML")
-      && (Motcle(format)!="MESHTV")
-      && (Motcle(format)!="MED")
-      && (Motcle(format)!="MED_MAJOR")
-      && (Motcle(format)!="LATA")
-      && (Motcle(format)!="LATA_V2")
-      && (Motcle(format)!="XYZ"))
-    {
-      Cerr<<"The postprocessing format " << format << " is not recognized"<<finl;
-      Cerr<<"The recognized formats are lml, meshtv, med, med_major, xyz, lata and lata_V2"<<finl;
-      exit();
-    }
-  if (Motcle(format)=="LATA_V2") format="lata";
-  // Verstion 1.9.1 - Lata_V1 is no more supported:
-  if (Motcle(format)=="LATA_V1")
-    {
-      Cerr<<"The postprocessing format 'lata_v1' is not supported anymore! Switch to 'lata' (version 2)."<<finl;
-      exit();
+      Cerr << "The postprocessing format 'medfile' is not supported since TRUST v1.9.2! Switch to 'med'." << finl;
+      Process::exit();
     }
 
-  nom_fich_+=".";
-  nom_fich_+=format;
+  if (Motcle(format) == "LATA_V1")
+    {
+      Cerr << "The postprocessing format 'lata_v1' is not supported since TRUST v1.9.1! Switch to 'lata' (version 2)." << finl;
+      Process::exit();
+    }
 
-  // Les sondes sont completees (en effet, si les sondes
-  // ont des champs statistiques, on n'a besoin d'avoir
+  bool is_supported = false, is_single_lata = false;
+  std::vector<Motcle> supported = { "LATA", "SINGLE_LATA_FILE", "LATA_V2", "MED", "MED_MAJOR", "LML", "XYZ", "MESHTV" };
+
+  for (auto &itr : supported)
+    if (Motcle(format) == itr)
+      {
+        is_supported = true;
+        break;
+      }
+
+  if (!is_supported)
+    {
+      Cerr << "The post-processing format " << Motcle(format) << " is not recognized! The recognized formats are : " << finl;
+      for (auto &itr : supported) Cerr << "   - " << itr << finl;
+      Process::exit();
+    }
+
+  if (Motcle(format) == "MED") format = "med";
+
+  if (Motcle(format) == "MED_MAJOR") format = "med_major";
+
+  if (Motcle(format) == "LATA_V2") format = "lata";
+
+  if (Motcle(format) == "SINGLE_LATA_FILE")
+    {
+      is_single_lata = true;
+      format = "lata";
+    }
+
+  nom_fich_ += ".";
+  nom_fich_ += format;
+
+  // Les sondes sont completees (en effet, si les sondes ont des champs statistiques, on n'a besoin d'avoir
   // lu le bloc statistiques ET le bloc sondes)
-
   les_sondes_.completer();
 
   //On type l objet Format_Post
@@ -303,15 +315,18 @@ Entree& Postraitement::readOn(Entree& s )
   type_format += format;
   format_post.typer_direct(type_format);
 
+  if (is_single_lata)
+    format_post->set_single_lata_flie(is_single_lata);
+
   Nom base_name(nom_fich_);
   base_name.prefix(format);
   base_name.prefix(".");
   //format_post->initialize_by_default(base_name);
-  format_post->initialize(base_name,binaire,option_para);
+  format_post->initialize(base_name, binaire, option_para);
 
   //Le test de verification a ete simplifie entre la v1.5.1 et la v1.5.2
   //On simplifie donc la methode test_coherence
-  format_post->test_coherence(champs_demande_,stat_demande_,dt_post_ch_,dt_post_stat_);
+  format_post->test_coherence(champs_demande_, stat_demande_, dt_post_ch_, dt_post_stat_);
 
   return s;
 }

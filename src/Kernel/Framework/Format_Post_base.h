@@ -139,7 +139,10 @@ public:
                                            int champ = 1, int stat = 0, double dt_ch = 1., double dt_stat = 1., int reprise = 0, int est_le_premier_post = 1, int est_le_dernier_post = 1,
                                            double t_init = 0., double temps_post = -2);
 
-
+  virtual void set_single_lata_flie(const bool )
+  {
+    Process::exit("Format_Post_base::set_single_lata_flie is only available for lata post !");
+  }
   //Actuellement on commente ces methodes car pas decrites dans l interface commune
   //aux differentes classes dans le CDC.
   /*
