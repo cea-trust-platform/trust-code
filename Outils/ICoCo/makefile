@@ -18,7 +18,7 @@ $(moduledebug): Test_ICoCo.sh makefile $(mpi) $(exec_debug)
 	./Test_ICoCo.sh  #1>LOG 2>&1
 	@echo OK
 
-$(trusticoco): ICoCo_src/share/swig/install.sh makefile ICoCo_src/share/swig/trusticoco.i ICoCo_src/share/swig/icocoexceptions.i ${TRUST_MEDCOUPLING_ROOT}/env.sh $(mpi)
+$(trusticoco): ICoCo_src/share/swig/install.sh makefile ICoCo_src/share/swig/trusticoco.i.in ICoCo_src/share/swig/icocoexceptions.i ${TRUST_MEDCOUPLING_ROOT}/env.sh $(mpi)
 	@echo Compiling ICoCo
 	(cd ICoCo_src/share/swig; ./install.sh)  #1>LOG 2>&1
 	@echo OK
