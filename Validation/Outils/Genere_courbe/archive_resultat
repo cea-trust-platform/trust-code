@@ -105,6 +105,12 @@ else  # Jupyter notebook
     mv build build_init
     mv preserve build
     curr_dir=`pwd`
+		# Adapt the jupyter-notebook to display png or jpg image files 
+		while IFS= read -r line; 
+		do   
+			VAR="`grep "\.png\|\.jpg\|\.jpeg"`"
+			sed "s|src/$VAR|build/$VAR|" -i $base_prm
+		done < "preserve/used_files"
     env JUPYTER_RUN_OPTIONS="-not_run -dest $curr_dir" jupyter-nbconvert --ExecutePreprocessor.timeout=432000 --to pdf --no-input --output "$curr_dir/old_rapport.pdf" --execute $base_prm 1>$log_file 2>&1
     status=$?
 fi

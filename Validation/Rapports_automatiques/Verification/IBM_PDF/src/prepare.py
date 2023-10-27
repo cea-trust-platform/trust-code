@@ -49,6 +49,7 @@ data = {"dir": ["IBM_element_fluide"],
         }
 with open("template_taylor_couette.data", "r") as f:
     templ = f.read()
+run.saveFileAccumulator("template_taylor_couette.data")
 for meth in ["dir", "hybrid", "multi_dir"]:
     baseName = "taylor_couette_pdf_"+meth
     os.makedirs(baseName, exist_ok=True)
@@ -76,6 +77,7 @@ data = {"dir": ["IBM_element_fluide"],
         }
 with open("template_poiseuille_tilt.data", "r") as f:
     templ = f.read()
+run.saveFileAccumulator("template_poiseuille_tilt.data")
 for meth in ["dir", "hybrid", "multi_dir"]:
     for tilt in ["11", "30", "45"]:
         baseName = "poiseuille_pdf_tilt_"+tilt+"_"+meth
@@ -99,6 +101,7 @@ data_mu = {"20": ["0.05"],
         }
 with open("template_cylinder_static.data", "r") as f:
     templ = f.read()
+run.saveFileAccumulator("template_cylinder_static.data")
 for meth in ["dir", "hybrid", "multi_dir"]:
     for rey in ["20", "100"]:
         baseName = "cylinder_pdf_static_re_"+rey+"_"+meth
@@ -124,6 +127,7 @@ data_mu = {"20": ["0.05"],
         }
 with open("template_cylinder_rotate.data", "r") as f:
     templ = f.read()
+run.saveFileAccumulator("template_cylinder_rotate.data")
 for meth in ["dir", "hybrid", "multi_dir"]:
     for rey in ["20", "100"]:
         baseName = "cylinder_pdf_rotate_re_"+rey+"_"+meth

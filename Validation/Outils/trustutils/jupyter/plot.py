@@ -22,11 +22,6 @@ from trustutils.jupyter.run import BUILD_DIRECTORY, saveFileAccumulator
 pd.set_option("display.notebook_repr_html", True)
 pd.set_option("display.max_rows", None)
 
-def _repr_latex_(self):
-    return "\\begin{center} \n %s \n \end{center}" % self.to_latex()
-
-pd.DataFrame._repr_latex_ = _repr_latex_ # To display pandas table as latex table into report
-
 def loadText(data, index_column=0, nb_column=-1, transpose=True, dtype="float", skiprows=0):
     """
     Method for loading and saving files.
@@ -709,12 +704,8 @@ class Table:  # ancien tableau
         """ This method is invoked by 'display()' when generating a PDF """
         # Note the escape=False to preserve math formulas ...
         s= self.df.to_latex()
-        s = s.replace("$$", "$")
-        s = s.replace("_", "\_")
-        formula = re.findall(r'\$[^\$]*\$',s)
-        for l in formula:
-            out = re.sub(r'(.*?)(\\_)(.*?)',r'\1_\3',l)
-            s = s.replace(l,out)
+        s = s.replace(r"\textbackslash", "")
+        s = s.replace(r"\$","$")
         s = "\\begin{center} \n %s \n \end{center}" % s
         return s
 
