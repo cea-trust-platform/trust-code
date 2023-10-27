@@ -51,6 +51,7 @@ Implemente_instanciable_sans_constructeur(SETS, "SETS", Simpler);
 // XD attr iter_min entier iter_min 1 Number of minimum iterations
 // XD attr seuil_convergence_implicite floattant seuil_convergence_implicite 1 Convergence criteria.
 // XD attr nb_corrections_max entier nb_corrections_max 1 Maximum number of corrections performed by the PISO algorithm to achieve the projection of the velocity field. The algorithm may perform less corrections then nb_corrections_max if the accuracy of the projection is sufficient. (By default nb_corrections_max is set to 21).
+// XD attr facsec_diffusion_for_sets floattant facsec_diffusion_for_sets 1 not_set
 // XD bloc_criteres_convergence bloc_lecture nul 0 Not set
 
 Implemente_instanciable_sans_constructeur(ICE, "ICE", SETS);

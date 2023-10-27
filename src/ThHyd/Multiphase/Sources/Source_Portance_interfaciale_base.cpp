@@ -19,6 +19,8 @@
 #include <Discret_Thyd.h>
 
 Implemente_base(Source_Portance_interfaciale_base, "Source_Portance_interfaciale_base", Sources_Multiphase_base);
+// XD Portance_interfaciale source_base Portance_interfaciale 1 not_set
+// XD attr beta floattant beta 1 not_set
 
 Sortie& Source_Portance_interfaciale_base::printOn(Sortie& os) const { return os; }
 

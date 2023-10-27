@@ -715,7 +715,7 @@ do
    then
       CC_PERF=$CC_PERF" "$TRUST_VERSION_GNU
    else
-      CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{if ($3=="Linux)") print $4;else print $3}'`
+      CC_PERF=$CC_PERF" "`$TRUST_CC_BASE --version 2>&1 | head -1 | $TRUST_Awk '{if ($3=="Linux)") print $4;else if ($2=="clang") print $4 ; else print $3}'`
    fi
    echo $CC_PERF >> $PERF
    # On verifie si on a obtenu un executable teste 
