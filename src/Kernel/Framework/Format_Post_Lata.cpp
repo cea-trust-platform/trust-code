@@ -792,6 +792,8 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
  */
 int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_element)
 {
+#define un_seul_fichier_data // FIXME
+
   int dim = sommets.dimension(1);
   Motcle type_elem(type_element);
   // GF Pour assuerer la lecture avec le plugin lata
@@ -803,6 +805,11 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   // Construction du nom du fichier de geometrie
   Nom basename_geom(lata_basename_);
   Nom extension_geom(extension_lata());
+
+#ifdef un_seul_fichier_data
+  long int offset_elem = -1;
+  extension_geom += ".data";
+#else
   extension_geom += ".";
   extension_geom += id_domaine;
   extension_geom += ".";
@@ -810,18 +817,15 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   if (temps_courant_ >= 0.)
     snprintf(str_temps, 100, "%.10f", temps_courant_);
   extension_geom += Nom(str_temps);
+#endif
+
   Nom nom_fichier_geom;
   int decalage_sommets = 1;
   int decalage_elements = 1;
 
-#undef un_seul_fichier_data
-
-#ifdef un_seul_fichier_data
-  long int offset_elem = -1;
-#endif
   {
     Fichier_Lata fichier_geom(basename_geom, extension_geom,
-                              Fichier_Lata::ERASE, format_, options_para_);
+                              Fichier_Lata::APPEND, format_, options_para_); // FIXME
 
     nom_fichier_geom = fichier_geom.get_filename();
     int nb_col;
@@ -1002,6 +1006,7 @@ int Format_Post_Lata::ecrire_temps(const double temps)
 int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, const Noms& noms_compo, int ncomp, double temps, const Nom& id_du_champ, const Nom& id_du_domaine,
                                    const Nom& localisation, const Nom& nature, const DoubleTab& valeurs)
 {
+#define un_seul_fichier_data // FIXME
 
   // recup de lata_v1
   Motcle id_du_champ_modifie(id_du_champ);
@@ -1031,6 +1036,11 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   // Construction du nom du fichier
   Nom basename_champ(lata_basename_);
   Nom extension_champ(extension_lata());
+
+#ifdef un_seul_fichier_data
+  long int offset_elem = -1;
+  extension_champ += ".data";
+#else
   extension_champ += ".";
   extension_champ += id_champ;
   extension_champ += ".";
@@ -1042,15 +1052,23 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   if (temps >= 0.)
     snprintf(str_temps, 100, "%.10f", temps);
   extension_champ += str_temps;
+#endif
 
   Nom filename_champ;
   int size_tot, nb_compo;
   {
     Fichier_Lata fichier_champ(basename_champ, extension_champ,
-                               Fichier_Lata::ERASE, format_, options_para_);
+                               Fichier_Lata::APPEND, format_, options_para_); // FIXME
 
     filename_champ = fichier_champ.get_filename();
     size_tot = write_doubletab(fichier_champ, valeurs, nb_compo, options_para_);
+
+#ifdef un_seul_fichier_data
+    if (fichier_champ.is_master())
+      {
+        offset_elem = fichier_champ.get_SFichier(). get_ofstream().tellp();
+      }
+#endif
   }
 
   // Ouverture du fichier .lata en mode append.
@@ -1076,9 +1094,14 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
       for (int k=1; k<noms_compo.size(); k++)
         sfichier << ","<<noms_compo[k];
 
-      sfichier << " composantes=" << nb_compo<<finl;
+      sfichier << " composantes=" << nb_compo;
 
       //    sfichier << " type=REAL32" << finl;
+#ifdef un_seul_fichier_data
+      sfichier<<" file_offset="<<offset_elem <<finl;
+#else
+      sfichier <<finl;
+#endif
     }
   fichier.syncfile();
 
