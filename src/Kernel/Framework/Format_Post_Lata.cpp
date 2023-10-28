@@ -111,19 +111,18 @@ const char * Format_Post_Lata::remove_path(const char * filename)
  * void Format_Post_Lata::ecrire_entete_lata()
  *
  */
-int Format_Post_Lata::ecrire_entete(const double temps_courant,const int reprise,const int est_le_premier_post)
+int Format_Post_Lata::ecrire_entete(const double temps_courant, const int reprise, const int est_le_premier_post)
 {
-  ecrire_entete_lata(lata_basename_,options_para_,format_,est_le_premier_post);
+  ecrire_entete_lata(lata_basename_, options_para_, format_, est_le_premier_post);
   return 1;
 }
 
-int Format_Post_Lata::completer_post(const Domaine& dom, const int is_axi, const Nature_du_champ& nature, const int nb_compo, const Noms& noms_compo, const Motcle& loc_post,
-                                     const Nom& le_nom_champ_post)
+int Format_Post_Lata::completer_post(const Domaine&, const int , const Nature_du_champ&, const int , const Noms&, const Motcle&, const Nom&)
 {
   return 1;
 }
 
-int Format_Post_Lata::preparer_post(const Nom& id_du_domaine, const int est_le_premier_post, const int reprise, const double t_init)
+int Format_Post_Lata::preparer_post(const Nom& , const int , const int , const double )
 {
   return 1;
 }
@@ -144,16 +143,15 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
 
   int nb_lignes_tot = 0;
   const int tab_size = line_size * nb_lignes;
-  int nb_octets = tab_size * (int)sizeof(float);
+  int nb_octets = tab_size * (int) sizeof(float);
   switch(option)
     {
     case Format_Post_Lata::SINGLE_FILE_MPIIO:
     case Format_Post_Lata::SINGLE_FILE:
       nb_lignes_tot = Process::mp_sum(nb_lignes);
-      // En parallele, tous les tableaux doivent avoir le meme nombre
-      // de colonnes (ou etre vides).
+      // En parallele, tous les tableaux doivent avoir le meme nombre de colonnes (ou etre vides).
       nb_colonnes = Process::mp_max(line_size);
-      nb_octets = nb_colonnes*nb_lignes_tot * (int)sizeof(float);
+      nb_octets = nb_colonnes * nb_lignes_tot * (int) sizeof(float);
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
     case Format_Post_Lata::MULTIPLE_FILES:
@@ -177,7 +175,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
       auto *tmp = new float[tab_size]; // No ArrOfFloat in TRUST
       const double *data = tab.addr();
       for (int i = 0; i < tab_size; i++)
-        tmp[i] = (float)data[i];       // downcast to float
+        tmp[i] = (float) data[i];       // downcast to float
       sfichier.put(tmp, tab_size, line_size);
       delete[] tmp;
       // Fin de bloc fortran
@@ -186,8 +184,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
     }
   else
     {
-      // On convertit le tout en float par paquet de N valeurs
-      // Buffer dont la taille est un multiple de line_size:
+      // On convertit le tout en float par paquet de N valeurs Buffer dont la taille est un multiple de line_size:
       const int N = 16384;
       int bufsize = (N / line_size + 1) * line_size;
       float *tmp = new float[bufsize];
@@ -200,7 +197,7 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
 
           // Conversion du bloc en float:
           for (int j = 0; j < j_max; j++)
-            tmp[j] = (float)data[i + j];
+            tmp[j] = (float) data[i + j];
 
           // Ecriture avec retour a la ligne a chaque ligne du tableau
           sfichier.put(tmp, j_max, line_size);
@@ -226,8 +223,8 @@ int Format_Post_Lata::write_doubletab(Fichier_Lata& fichier, const DoubleTab& ta
  */
 int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int decalage_partiel, const IntTab& tab, int& nb_colonnes, const Options_Para& option)
 {
-  assert(decalage_partiel>=decalage);
-  assert((decalage==0)||(decalage==1));
+  assert(decalage_partiel >= decalage);
+  assert((decalage == 0) || (decalage == 1));
   int nb_lignes = 0;
   int line_size = 1;
   int i;
@@ -239,7 +236,7 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
   int nb_lignes_tot = 0;
 
   const int tab_size = line_size * nb_lignes;
-  int nb_octets = tab_size * (int)sizeof(_LATA_INT_TYPE_);
+  int nb_octets = tab_size * (int) sizeof(_LATA_INT_TYPE_);
   switch(option)
     {
     case Format_Post_Lata::SINGLE_FILE_MPIIO:
@@ -247,7 +244,7 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
       nb_lignes_tot = Process::mp_sum(nb_lignes);
       // En parallele, tous les tableaux doivent avoir le meme nombre de colonnes (ou etre vides).
       nb_colonnes = Process::mp_max(line_size);
-      nb_octets = nb_colonnes*nb_lignes_tot * (int)sizeof(_LATA_INT_TYPE_);
+      nb_octets = nb_colonnes * nb_lignes_tot * (int) sizeof(_LATA_INT_TYPE_);
       assert(nb_lignes == 0 || line_size == nb_colonnes);
       break;
     case Format_Post_Lata::MULTIPLE_FILES:
@@ -340,10 +337,8 @@ int Format_Post_Lata::write_inttab(Fichier_Lata& fichier, int decalage, int deca
     }
   if (erreurs > 0)
     {
-      Cerr << "Error in Format_Post_Lata::write_inttab\n"
-           << " Some integers were truncated\n"
-           << " Recompile the code with #define _LATA_INT_TYPE_ entier" << finl;
-      exit();
+      Cerr << "Error in Format_Post_Lata::write_inttab\n" << " Some integers were truncated\n" << " Recompile the code with #define _LATA_INT_TYPE_ entier" << finl;
+      Process::exit();
     }
   return nb_lignes_tot;
 }
@@ -362,23 +357,23 @@ int Format_Post_Lata::initialize(const Nom& file_basename, const int format, con
 {
   assert(status == RESET);
   // Changement du format LATA (par defaut binaire)
-  format_=BINAIRE;
-  if (format==0)
-    format_=ASCII;
+  format_ = BINAIRE;
+  if (format == 0)
+    format_ = ASCII;
 
-  if (Motcle(option_para)=="MPI-IO")
+  if (Motcle(option_para) == "MPI-IO")
     options_para_ = SINGLE_FILE_MPIIO;
-  else if (Motcle(option_para)=="SIMPLE")
+  else if (Motcle(option_para) == "SIMPLE")
     options_para_ = SINGLE_FILE;
-  else if (Motcle(option_para)=="MULTIPLE")
+  else if (Motcle(option_para) == "MULTIPLE")
     options_para_ = MULTIPLE_FILES;
   else
     {
-      Cerr<<"The option " << option_para << " for lata format for the parallel is not correct."<<finl;
-      exit();
+      Cerr << "The option " << option_para << " for lata format for the parallel is not correct." << finl;
+      Process::exit();
     }
 
-  initialize_lata(file_basename,format_,options_para_);
+  initialize_lata(file_basename, format_, options_para_);
 
   return 1;
 }
@@ -386,15 +381,12 @@ int Format_Post_Lata::initialize(const Nom& file_basename, const int format, con
 /*! @brief Initialisation de la classe, ouverture du fichier et ecriture de l'entete.
  *
  */
-int Format_Post_Lata::initialize_lata(const Nom& file_basename,
-                                      const Format format,
-                                      const Options_Para options_para)
+int Format_Post_Lata::initialize_lata(const Nom& file_basename, const Format format, const Options_Para options_para)
 {
   assert(status == RESET);
   lata_basename_ = file_basename;
   format_ = format;
   options_para_ = options_para;
-
   status = INITIALIZED;
   return 1;
 }
@@ -404,37 +396,36 @@ int Format_Post_Lata::initialize_lata(const Nom& file_basename,
  */
 int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_faire, const double tinit)
 {
-  assert(a_faire==0||a_faire==1||a_faire==2);
+  assert(a_faire == 0 || a_faire == 1 || a_faire == 2);
 
   Nom post_file;
-  post_file=file_basename+extension_lata();
+  post_file = file_basename + extension_lata();
   // On verifie que le fichier maitre existe et a une entete correcte
-  file_existe_=0;
+  file_existe_ = 0;
   if (Process::je_suis_maitre())
     {
       struct stat f;
-      if (stat(post_file,&f)==0)
+      if (stat(post_file, &f) == 0)
         {
           EFichier tmp(post_file);
           Nom cle;
           tmp >> cle;
           if (cle.debute_par("LATA"))
             {
-              if (tinit==-1)
-                {
-                  file_existe_=1;
-                }
+              if (tinit == -1)
+                file_existe_ = 1;
               else
                 {
                   tmp >> cle;
-                  while (!tmp.eof() && cle!="TEMPS") tmp >> cle;
-                  if (cle=="TEMPS")
+                  while (!tmp.eof() && cle != "TEMPS")
+                    tmp >> cle;
+                  if (cle == "TEMPS")
                     {
                       double temps;
                       tmp >> temps;
                       // On verifie le temps du fichier de reprise
-                      if (temps<tinit)
-                        file_existe_=1;
+                      if (temps < tinit)
+                        file_existe_ = 1;
                     }
                 }
             }
@@ -442,26 +433,27 @@ int Format_Post_Lata::modify_file_basename(const Nom file_basename, const int a_
         }
     }
   // Point de synchronisation necessaire:
-  file_existe_ = (int)Process::mp_max(file_existe_);
-  if (Process::je_suis_maitre() && file_existe_ && deja_fait_==0 && a_faire)
+  file_existe_ = (int) Process::mp_max(file_existe_);
+  if (Process::je_suis_maitre() && file_existe_ && deja_fait_ == 0 && a_faire)
     {
       Nom before_restart;
-      before_restart=file_basename+".before_restart"+extension_lata();
-      rename(post_file,before_restart);
+      before_restart = file_basename + ".before_restart" + extension_lata();
+      rename(post_file, before_restart);
       Cerr << "File " << post_file << " is moved to " << before_restart << " with times<=tinit=" << tinit << finl;
-      reconstruct(post_file,before_restart,tinit);
+      reconstruct(post_file, before_restart, tinit);
     }
-  deja_fait_=1;
+  deja_fait_ = 1;
   // On attend tous les processeurs (prudence excessive?)
   Process::barrier();
   if (file_existe_)
     {
-      if (a_faire==0)
+      if (a_faire == 0)
         lata_basename_ = file_basename;
       else
         {
-          lata_basename_ = file_basename+".after_restart";
-          if (tinit==-1) finir_sans_reprise(post_file);
+          lata_basename_ = file_basename + ".after_restart";
+          if (tinit == -1)
+            finir_sans_reprise(post_file);
         }
     }
   return 1;
@@ -477,29 +469,29 @@ int Format_Post_Lata::reconstruct(const Nom post_file, const Nom before_restart,
   std::string line;
   Nom mot;
   double temps;
-  tinit_=tinit;
+  tinit_ = tinit;
   while (!LataOld.eof())
     {
-      LataOld >> mot;                                                        // je lis le premier mot de la ligne dans .before_restart.lata
-      if (mot!="FIN")                                                        // Si le mot n'est pas FIN
+      LataOld >> mot; // je lis le premier mot de la ligne dans .before_restart.lata
+      if (mot != "FIN") // Si le mot n'est pas FIN
         {
-          if (mot=="TEMPS")                                                        // Si le mot suivant est TEMPS
+          if (mot == "TEMPS") // Si le mot suivant est TEMPS
             {
               LataOld >> temps;
-              if (temps==tinit)                                                // Si le temps trouvee = tinit alors j'arrete
+              if (temps == tinit) // Si le temps trouvee = tinit alors j'arrete
                 break;
-              std::getline(LataOld.get_ifstream(), line) ;                        // je lis le reste de la ligne
-              LataNew.get_ofstream() << mot << " " << temps << line << std::endl;        // et j'ecris le tout dans le lata
+              std::getline(LataOld.get_ifstream(), line); // je lis le reste de la ligne
+              LataNew.get_ofstream() << mot << " " << temps << line << std::endl; // et j'ecris le tout dans le lata
             }
           else
             {
-              std::getline(LataOld.get_ifstream(), line) ;                        // je lis le reste de la ligne
-              LataNew.get_ofstream() << mot << line << std::endl;                        // et j'ecris le tout dans le lata
+              std::getline(LataOld.get_ifstream(), line); // je lis le reste de la ligne
+              LataNew.get_ofstream() << mot << line << std::endl; // et j'ecris le tout dans le lata
             }
         }
       else
         {
-          break;                                                                // Sinon j'arrete
+          break; // Sinon j'arrete
         }
     }
   LataNew.close();
@@ -511,11 +503,11 @@ int Format_Post_Lata::reconstruct(const Nom post_file, const Nom before_restart,
 int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
 {
   Nom post_file;
-  post_file=lata_basename_+extension_lata();
+  post_file = lata_basename_ + extension_lata();
   if (Process::je_suis_maitre())
     {
       struct stat f;
-      if (stat(post_file,&f)==0)
+      if (stat(post_file, &f) == 0)
         {
           EFichier Lata(file_basename);
           SFichier LataRep(post_file, ios::app);
@@ -526,22 +518,22 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
           double temps;
           while (!Lata.eof())
             {
-              Lata >> mot;                                                                // je lis le premier mot de la ligne dans .lata
-              if (mot=="TEMPS")                                                        // Si le mot suivant n'est pas TEMPS
+              Lata >> mot; // je lis le premier mot de la ligne dans .lata
+              if (mot == "TEMPS") // Si le mot suivant n'est pas TEMPS
                 {
                   Lata >> temps;
-                  if (temps==tinit_)                                                        // Si le temps trouvee = tinit alors
+                  if (temps == tinit_) // Si le temps trouvee = tinit alors
                     {
-                      std::getline(Lata.get_ifstream(), line) ;
-                      LataRep.get_ofstream() << mot << " " << temps << line << std::endl;        // je peux commencer a ecrire
+                      std::getline(Lata.get_ifstream(), line);
+                      LataRep.get_ofstream() << mot << " " << temps << line << std::endl; // je peux commencer a ecrire
                       break;
                     }
                 }
             }
           while (!Lata.eof())
             {
-              std::getline(Lata.get_ifstream(), line);                                // je lis le reste du .lata
-              LataRep.get_ofstream() << line << std::endl;                                        // et j'ecris le tout dans le after_restart.lata
+              std::getline(Lata.get_ifstream(), line); // je lis le reste du .lata
+              LataRep.get_ofstream() << line << std::endl; // et j'ecris le tout dans le after_restart.lata
             }
           Lata.close();
           LataRep.close();
@@ -691,8 +683,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
     fichier_lata.syncfile();
   }
 
-  // En mode parallele, on ecrit en plus des fichiers contenant les donnees paralleles
-  // sur les sommets, les elements et les faces...
+  // En mode parallele, on ecrit en plus des fichiers contenant les donnees paralleles sur les sommets, les elements et les faces...
   if (Process::nproc() > 1)
     if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
       {
@@ -821,7 +812,6 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 
     filename_champ = fichier_champ.get_filename();
     size_tot = write_doubletab(fichier_champ, valeurs, nb_compo, options_para_);
-
   }
 
   // Ouverture du fichier .lata en mode append.
@@ -862,93 +852,87 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   return 1;
 }
 
-
 /*! @brief voir Format_Post_base::ecrire_champ ATTENTION: si "reference" est non vide on ajoute 1 a toutes les
  *
- *    valeurs pour passer en numerotation fortran, et si de plus on
- *    ecrit un fichier lata unique pour tous les processeurs, on ajoute un
- *    decalage a toutes les valeurs (renumerotation des indices pour
- *    passer en numerotation globale, voir le codage de ecrire_domaine
- *    par exemple)
+ *    valeurs pour passer en numerotation fortran, et si de plus on ecrit un fichier lata unique pour tous les processeurs, on ajoute un
+ *    decalage a toutes les valeurs (renumerotation des indices pour passer en numerotation globale, voir le codage de ecrire_domaine par exemple)
  *
  */
-int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
-  const Nom&     id_item,
-  const Nom&     id_du_domaine,
-  const Nom&     id_domaine,
-  const Nom&     localisation,
-  const Nom&     reference,
-  //const IntTab & valeurs,
-  const IntVect& val,
-  const int   reference_size)
+int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domaine, const Nom& id_domaine, const Nom& localisation, const Nom& reference, const IntVect& val, const int reference_size)
 {
   // Construction du nom du fichier
-  Nom basename_champ(lata_basename_);
-  Nom extension_champ(extension_lata());
-  extension_champ += ".";
-  //extension_champ += id_champ;
-  extension_champ += id_item;
-  extension_champ += ".";
-  extension_champ += localisation;
-  extension_champ += ".";
-  extension_champ += id_du_domaine;
-  extension_champ += ".";
-  char str_temps[100] = "0.0";
-  if (temps_courant_ >= 0.)
-    snprintf(str_temps, 100, "%.10f", temps_courant_);
-  extension_champ += Nom(str_temps);
+  Nom basename_champ(lata_basename_), extension_champ(extension_lata());
+
+  if (un_seul_fichier_data_) extension_champ += "_single_file";
+  else
+    {
+      extension_champ += ".";
+      //extension_champ += id_champ;
+      extension_champ += id_item;
+      extension_champ += ".";
+      extension_champ += localisation;
+      extension_champ += ".";
+      extension_champ += id_du_domaine;
+      extension_champ += ".";
+      char str_temps[100] = "0.0";
+      if (temps_courant_ >= 0.)
+        snprintf(str_temps, 100, "%.10f", temps_courant_);
+      extension_champ += Nom(str_temps);
+    }
 
   Nom filename_champ;
   int size_tot, nb_compo;
   const IntTab& valeurs = static_cast<const IntTab&>(val);
   {
-    Fichier_Lata fichier_champ(basename_champ, extension_champ,
-                               Fichier_Lata::ERASE, format_, options_para_);
+    Fichier_Lata fichier_champ(basename_champ, extension_champ, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
+
+    if (un_seul_fichier_data_)
+      if (fichier_champ.is_master())
+        offset_elem_ = fichier_champ.get_SFichier().get_ofstream().tellp();
 
     filename_champ = fichier_champ.get_filename();
-    // On suppose que si reference est non vide, c'est un indice
-    // dans un autre tableau, donc numerotation fortran :
+    // On suppose que si reference est non vide, c'est un indice dans un autre tableau, donc numerotation fortran :
     int decal = 0;
-    int decal_partiel=0;
+    int decal_partiel = 0;
     if (reference != "")
       {
         decal = 1;
-        decal_partiel=1;
+        decal_partiel = 1;
         if (options_para_ == SINGLE_FILE || options_para_ == SINGLE_FILE_MPIIO)
           {
-            // Tous les processeurs ecrivent dans un fichier unique, il faut
-            // renumeroter les indices pour passer en numerotation globale.
+            // Tous les processeurs ecrivent dans un fichier unique, il faut renumeroter les indices pour passer en numerotation globale.
             // Decalage a ajouter aux indices pour avoir une numerotation globale.
             decal_partiel += mppartial_sum(reference_size);
           }
       }
-    ////size_tot = write_inttab(fichier_champ, decal, valeurs, nb_compo);
-    size_tot = write_inttab(fichier_champ, decal,decal_partiel, valeurs, nb_compo,options_para_);
+    size_tot = write_inttab(fichier_champ, decal, decal_partiel, valeurs, nb_compo, options_para_);
   }
+
   {
-    // Ouverture du fichier .lata en mode append.
-    // Ajout de la reference au champ
-    Fichier_Lata_maitre fichier(lata_basename_, extension_lata(),
-                                Fichier_Lata::APPEND, options_para_);
+    // Ouverture du fichier .lata en mode append. Ajout de la reference au champ
+    Fichier_Lata_maitre fichier(lata_basename_, extension_lata(), Fichier_Lata::APPEND, options_para_);
     SFichier& sfichier = fichier.get_SFichier();
     if (fichier.is_master())
       {
-        //sfichier << "Champ " << id_champ << " ";
         sfichier << "Champ " << id_item << " ";
         sfichier << remove_path(filename_champ);
         sfichier << " geometrie=" << id_du_domaine;
+
 #ifdef INT_is_64_
         // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
         // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
 #endif
-        if (localisation!="")
-          sfichier << " localisation=" << localisation;
+
+        if (localisation != "") sfichier << " localisation=" << localisation;
         sfichier << " size=" << size_tot;
         sfichier << " composantes=" << nb_compo;
-        if (reference != "")
-          sfichier << " reference=" << reference;
-        const int sz = (int)sizeof(_LATA_INT_TYPE_);
+        if (reference != "") sfichier << " reference=" << reference;
+
+        if (un_seul_fichier_data_)
+          sfichier << " file_offset=" << offset_elem_;
+
+        const int sz = (int) sizeof(_LATA_INT_TYPE_);
         switch(sz)
           {
           case 4:
@@ -958,8 +942,7 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
             sfichier << " format=int64";
             break;
           default:
-            Cerr << "Error in Format_Post_Lata::ecrire_champ_lata\n"
-                 << " Integer type not supported: size=" << sz << finl;
+            Cerr << "Error in Format_Post_Lata::ecrire_champ_lata\n" << " Integer type not supported: size=" << sz << finl;
             exit();
           }
         sfichier << finl;
@@ -985,26 +968,18 @@ int Format_Post_Lata::ecrire_item_int(//const Nom    & id_champ,
   return 1;
 }
 
-int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para& option,const Format& format,
-                                         const int est_le_premier_post)
+int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name, const Options_Para& option, const Format& format, const int est_le_premier_post)
 {
-
   if (est_le_premier_post)
     {
-
       // Determination du format binaire:
       //  big endian => l'entier 32 bits "1" s'ecrit 0x00 0x00 0x00 0x01
       //  little endian =>                           0x01 0x00 0x00 0x00
       const unsigned int one = 1;
-      const int big_endian = (* ((unsigned char *)&one) == 0) ? 1 : 0;
+      const int big_endian = (*((unsigned char*) &one) == 0) ? 1 : 0;
 
       // Effacement du fichier .lata et ecriture de l'entete
-      ////Fichier_Lata_maitre fichier(lata_basename_, extension_lata(),
-      ////                              Fichier_Lata::ERASE,
-      ////                              options_para_);
-      Fichier_Lata_maitre fichier(base_name, extension_lata(),
-                                  Fichier_Lata::ERASE,
-                                  option);
+      Fichier_Lata_maitre fichier(base_name, extension_lata(), Fichier_Lata::ERASE, option);
 
       SFichier& sfichier = fichier.get_SFichier();
       if (fichier.is_master())
@@ -1014,7 +989,6 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
           sfichier << "Trio_U verbosity=0" << finl;
 
           sfichier << "Format ";
-          ////switch(format_) {
           switch(format)
             {
             case ASCII:
@@ -1028,8 +1002,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
                 sfichier << "LITTLE_ENDIAN,";
               break;
             default:
-              Cerr << "Error in Format_Post_Lata::ecrire_entete\n"
-                   << " format not supported" << finl;
+              Cerr << "Error in Format_Post_Lata::ecrire_entete\n" << " format not supported" << finl;
               exit();
             }
           switch(sizeof(_LATA_INT_TYPE_))
@@ -1041,8 +1014,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
               sfichier << "INT64,";
               break;
             default:
-              Cerr << "Error in Format_Post_Lata::ecrire_entete\n"
-                   << " sizeof(int) not supported" << finl;
+              Cerr << "Error in Format_Post_Lata::ecrire_entete\n" << " sizeof(int) not supported" << finl;
               exit();
             }
           sfichier << "F_INDEXING,C_ORDERING,F_MARKERS_SINGLE,REAL32" << finl;
@@ -1054,7 +1026,7 @@ int Format_Post_Lata::ecrire_entete_lata(const Nom& base_name,const Options_Para
   return 1;
 }
 
-int Format_Post_Lata::ecrire_temps_lata(const double temps,double& temps_format,const Nom& base_name,Status& stat,const Options_Para& option)
+int Format_Post_Lata::ecrire_temps_lata(const double temps, double& temps_format, const Nom& base_name, Status& stat, const Options_Para& option)
 {
   assert(stat != RESET);
   // On ecrit le temps que si ce n'est pas le meme...
@@ -1062,11 +1034,9 @@ int Format_Post_Lata::ecrire_temps_lata(const double temps,double& temps_format,
     {
       temps_format = temps;
       // Ouverture du fichier .lata en mode append
-      Fichier_Lata_maitre fichier(base_name,extension_lata(), Fichier_Lata::APPEND,option);
+      Fichier_Lata_maitre fichier(base_name, extension_lata(), Fichier_Lata::APPEND, option);
       if (fichier.is_master())
-        {
-          fichier.get_SFichier() << "TEMPS " << temps << finl;
-        }
+        fichier.get_SFichier() << "TEMPS " << temps << finl;
       fichier.syncfile();
       stat = WRITING_TIME;
     }
@@ -1077,15 +1047,9 @@ int Format_Post_Lata::finir(const int est_le_dernier_post)
 {
   if (est_le_dernier_post)
     {
-      Fichier_Lata_maitre fichier(lata_basename_, extension_lata(),
-                                  Fichier_Lata::APPEND,
-                                  options_para_);
+      Fichier_Lata_maitre fichier(lata_basename_, extension_lata(), Fichier_Lata::APPEND, options_para_);
       SFichier& sfichier = fichier.get_SFichier();
-      if (fichier.is_master())
-        {
-          sfichier << "FIN" << finl;
-
-        }
+      if (fichier.is_master()) sfichier << "FIN" << finl;
       fichier.syncfile();
     }
   return 1;
