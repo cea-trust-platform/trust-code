@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -16,9 +16,6 @@
 #ifndef LataToMED_included
 #define LataToMED_included
 
-
-
-
 /*! @brief Classe LataToMED Ecr un fichier MED
  *
  *     Structure du jeu de donnee (en dimension 2) :
@@ -26,7 +23,6 @@
  *
  */
 #include <Interprete.h>
-
 
 class LataToMED : public Interprete
 {
@@ -42,4 +38,11 @@ public:
   Entree& interpreter(Entree& is) override;
 };
 
-#endif
+class LmlToLata: public Interprete
+{
+  Declare_instanciable(LmlToLata);
+public:
+  Entree& interpreter(Entree& is) override;
+};
+
+#endif /* LataToMED_included */

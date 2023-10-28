@@ -13,40 +13,52 @@
 *
 *****************************************************************************/
 
-#include <LataToMED.h>
-#include <Domaine.h>
-#include <EFichierBin.h>
-#include <EChaine.h>
-#include <PE_Groups.h>
-#include <SFichier.h>
-#include <LataFilter.h>
-#include <LmlReader.h>
 #include <Format_Post.h>
+#include <EFichierBin.h>
+#include <LataFilter.h>
+#include <LataToMED.h>
+#include <PE_Groups.h>
+#include <LmlReader.h>
+#include <SFichier.h>
+#include <Domaine.h>
+#include <EChaine.h>
 #include <list>
 
-Implemente_instanciable(LataToMED,"Lata_To_MED",Interprete);
-Implemente_instanciable(latatoother,"lata_to_other",Interprete);
+Implemente_instanciable(LataToMED, "Lata_To_MED", Interprete);
+Implemente_instanciable(latatoother, "lata_to_other", Interprete);
+Implemente_instanciable(LmlToLata, "Lml_to_lata", Interprete);
 
-
-/*! @brief Simple appel a: Interprete::printOn(Sortie&)
- *
- * @param (Sortie& os) un flot de sortie
- * @return (Sortie&) le flot de sortie modifie
- */
 Sortie& LataToMED::printOn(Sortie& os) const
 {
   return Interprete::printOn(os);
 }
 
-
-/*! @brief Simple appel a: Interprete::readOn(Entree&)
- *
- * @param (Entree& is) un flot d'entree
- * @return (Entree&) le flot d'entree modifie
- */
 Entree& LataToMED::readOn(Entree& is)
 {
   return Interprete::readOn(is);
+}
+
+Sortie& LmlToLata::printOn(Sortie& os) const
+{
+  return Interprete::printOn(os);
+}
+
+Entree& LmlToLata::readOn(Entree& is)
+{
+  return Interprete::readOn(is);
+}
+
+Entree& latatoother::readOn(Entree& is)
+{
+  Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
+  Process::exit();
+  return is;
+}
+Sortie& latatoother::printOn(Sortie& is) const
+{
+  Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
+  Process::exit();
+  return is;
 }
 
 /*! @brief Convert a Lata domain object ('Domain') into a TRUST domain object ('Domaine')
@@ -360,19 +372,6 @@ Entree& latatoother::interpreter(Entree& is)
   return is;
 }
 
-Entree& latatoother::readOn(Entree& is)
-{
-  Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
-  Process::exit();
-  return is;
-}
-Sortie& latatoother::printOn(Sortie& is) const
-{
-  Cerr<<__FILE__<<(int)__LINE__<<" not coded"<<finl;
-  Process::exit();
-  return is;
-}
-
 // XD lata_to_med interprete lata_to_med -1 To convert results file written with LATA format to MED file. Warning: Fields located on faces are not supported yet.
 // XD attr format format_lata_to_med format 1 generated file post_med.data use format (MED or LATA or LML keyword).
 // XD attr file chaine file 0 LATA file to convert to the new format.
@@ -393,6 +392,26 @@ Entree& LataToMED::interpreter(Entree& is)
     EChaine cmd(instruction);
     latatoother.interpreter(cmd);
   }
+  return is;
+}
+
+// XD lml_to_lata interprete lml_to_lata -1 To convert results file written with LML format to a single LATA file.
+// XD attr file_lml chaine file_lml 0 LML file to convert to the new format.
+// XD attr file_lata chaine file_lata 0 Name of the single LATA file.
+Entree& LmlToLata::interpreter(Entree& is)
+{
+  Cerr << "Syntax Lml_to_lata nom_lml||NOM_DU_CAS nom_fichier_sortie_lata||NOM_DU_CAS   " << finl;
+
+  Nom nom_lml, nom_lata;
+  is >> nom_lml >> nom_lata;
+
+  if (Motcle(nom_lml) == "NOM_DU_CAS") nom_lml = nom_du_cas() + ".lml";
+  if (Motcle(nom_lata) == "NOM_DU_CAS") nom_lata = nom_du_cas() + ".lata";
+
+  if (!Motcle(nom_lml).finit_par(".lml")) nom_lml += Nom(".lml");
+  if (!Motcle(nom_lata).finit_par(".lata")) nom_lata += Nom(".lata");
+
+  lml_to_lata(nom_lml, nom_lata, 0 /* binaire */, 1 /* fortran_blocs */, 0 /* pas fortran_ordering */, 1 /* fortran_indexing */);
 
   return is;
 }
