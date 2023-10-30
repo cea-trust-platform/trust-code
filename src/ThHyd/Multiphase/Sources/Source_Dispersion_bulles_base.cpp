@@ -22,8 +22,8 @@
 #include <Domaine_VF.h>
 
 Implemente_base(Source_Dispersion_bulles_base, "Source_Dispersion_bulles_base", Sources_Multiphase_base);
-// XD Dispersion_bulles source_base Dispersion_bulles 1 not_set
-// XD attr beta floattant beta 1 not_set
+// XD Dispersion_bulles source_base Dispersion_bulles 1 Base class for source terms of bubble dispersion in momentum equation.
+// XD attr beta floattant beta 1 Mutliplying factor for the output of the bubble dispersion source term.
 
 Sortie& Source_Dispersion_bulles_base::printOn(Sortie& os) const { return os; }
 
