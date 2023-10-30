@@ -11,7 +11,7 @@ linux	rsync_ssh	cible	is242981.intra.cea.fr	-all 		 					-semi_opt 								# Fed
 linux	rsync_ssh	tache	is241762-clang.intra.cea.fr			-TrioCFD -GENEPI3 -C3D                				-clang -force_provided_openmpi -without-pdflatex  					# Fedora 34	Bat 451 LMSF titania 
 linux	rsync_ssh	cible	is234634-clang.intra.cea.fr	-all 		-TrioCFD -FLICA5   					-clang 		-force_provided_openmpi -without-pdflatex  								# Fedora 36	Bat 451 LGLS titania bureau TMA TRUST
 linux	rsync_ssh	tache	is234634.intra.cea.fr	-all 		-FLICA5   					 -without-pdflatex  							# Fedora 36	Bat 451 LGLS bureau TMA TRUST
-linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex  							# Fedora 38 	Bat 454 LMEC GF
+linux	rsync_ssh	tache	is157083.intra.cea.fr	-all 		-FLICA5 -TrioCFD -GENEPI3 -STT -PEMFC -C3D -SIDES -SCORPIO   					 -without-pdflatex -disable-openblas   							# Fedora 38 	Bat 454 LMEC GF
 linux	rsync_ssh	cible	is227246.intra.cea.fr		-all     	-MPCube -TrioCFD  -GENEPI3 -SIDES -SCORPIO -STT -PEMFC -FLICA5 -C3D  -force_latest_mpich  							# Fedora 34	Bat 451 Erwan titania
 linux	rsync_ssh	tache	altair-nvidia.intra.cea.fr	-all		-TrioCFD				-gcc8 -cuda=download -without-pdflatex -without-visit
 linux	rsync_ssh	tache	desactive_irene-ccrt.ccc.cea.fr		-limited	-TrioCFD					-semi_opt -benchmark	-without-doc -disable-plot2d -without-conda  									# RedHat 7.6	CEA CCRT
@@ -67,7 +67,7 @@ linux   rsync_ssh	cible	petra.intra.cea.fr 		-all		-TrioCFD   	 		 -cuda=downloa
 linux   rsync_ssh	tache	is246524.intra.cea.fr 		-all		   	 		     -rocm -openmp -without-pdflatex    								# Ubuntu 20.04 titania avec carte GPU AMD (bureau PL)
 linux   rsync_ssh	tache	is210376-tmpnoexe.intra.cea.fr 		-all	   	 		   								# Fedora 34 titania tmp no exec
 linux   rsync_ssh	tache	is210376-noconda.intra.cea.fr 		-all	  -C3D  	 		   		-without-conda						# Fedora 34 titania tmp no exec, sans conda
-linux   rsync_ssh	tache	is246513.intra.cea.fr 		-all	   -TrioCFD	 		   								# Ub20 mode formation titania 
+linux   rsync_ssh	tache	is246513.intra.cea.fr 		-all	   -TrioCFD	 		-prof    								# Ub20 mode formation titania 
 linux   ssh_pass	tache	is231762.intra.cea.fr 		-all	   -TrioCFD	 		   			-without-pdflatex					# Rocky 9.2 GA 
 linux   rsync_ssh	tache	is240284.intra.cea.fr 		-all	   -TrioCFD	 		   								# Ub 20 titania ZH 
 linux   rsync_ssh       tache   is245205.intra.cea.fr 		-all	   -TrioCFD	 		   			-without-pdflatex -disable-openblas 					# Fedora 38 GA 
