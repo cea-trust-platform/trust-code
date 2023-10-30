@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -260,11 +260,21 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
   int compteur=-123;
   int compteur0=-123;
   int compteur_reel=0;
+  bool is_single_lata = false;
+
+  if (Motcle(format_post_) == "SINGLE_LATA_FILE")
+    {
+      is_single_lata = true;
+      format_post_ = "lata";
+    }
+
   Nom type("Format_Post_");
   type+=format_post_;
-  Format_Post  post_typer;
+  Format_Post post_typer;
   post_typer.typer_direct(type);
   Format_Post_base& post=ref_cast(Format_Post_base,post_typer.valeur());
+
+  if (is_single_lata) post.set_single_lata_flie(is_single_lata);
 
   Nom nom_2(nom_pdb);
   Nom format_post_bis(format_post_);
