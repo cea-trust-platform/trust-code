@@ -767,14 +767,25 @@ void Domaine_VF::remplir_face_numero_bord()
   face_numero_bord_.resize(nb_faces());
   face_numero_bord_=-1; // init for inner faces.
   Domaine& ledomaine=domaine();
+  int ndeb, nfin;
   const int nb_bords = ledomaine.nb_bords();
   for (int n_bord=0; n_bord<nb_bords; n_bord++)
     {
       const Bord& le_bord = ledomaine.bord(n_bord);
-      int ndeb = le_bord.num_premiere_face();
-      int nfin = ndeb + le_bord.nb_faces();
+      ndeb = le_bord.num_premiere_face();
+      nfin = ndeb + le_bord.nb_faces();
       for (int num_face=ndeb; num_face<nfin; num_face++)
         face_numero_bord_[num_face] = n_bord;
+    }
+
+  const int nb_raccords = ledomaine.nb_raccords() ;
+  for (int n_racc=0; n_racc<nb_raccords; n_racc++)
+    {
+      const Raccord& le_racc = ledomaine.raccord(n_racc);
+      ndeb = le_racc -> num_premiere_face();
+      nfin = ndeb + le_racc -> nb_faces();
+      for (int num_face=ndeb; num_face<nfin; num_face++)
+        face_numero_bord_[num_face] = n_racc + nb_bords;
     }
 }
 
