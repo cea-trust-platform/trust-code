@@ -1,0 +1,46 @@
+#!/bin/bash
+
+compare_lata ring_multiple.lata ring_single.lata --max_delta 1>verifie0.log 2>&1 || exit -1
+
+numb_diff0=`awk '$1=="Number"{print $5}' verifie0.log`
+if [[ "$numb_diff0" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : single vs multiple files !"
+fi
+
+
+compare_lata Cx_multiple_lata.lata Cx_single_lata.lata --max_delta 1>verifie1.log 2>&1 || exit -1
+
+numb_diff1=`awk '$1=="Number"{print $5}' verifie1.log`
+if [[ "$numb_diff1" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : single vs multiple files !"
+fi
+
+compare_lata Cx_multiple_lata_from_lata_to_lml.lml Cx_from_single_lata_from_lata_to_lml.lml --max_delta 1>verifie2.log 2>&1 || exit -1
+
+numb_diff2=`awk '$1=="Number"{print $5}' verifie2.log`
+if [[ "$numb_diff2" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : lml vs lml !"
+fi
+
+compare_lata Cx_from_single_lata_from_lata_to_lml.lml Cx_multiple_lata_from_lml_to_lata.lata --max_delta 1>verifie3.log 2>&1 || exit -1
+
+numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
+if [[ "$numb_diff3" -gt "0" ]]
+then
+  echo "   ===> Error in compare_lata !"
+  exit -1
+else
+  echo "   ===> All OK in compare_lata : lata_to_lml vs lml_to_lata !"
+fi

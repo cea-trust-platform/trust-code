@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cp $TRUST_ROOT/tests/Reference/Cx/cylindre.geom.gz .
+gunzip -c cylindre.geom.gz > cylindre.geom
