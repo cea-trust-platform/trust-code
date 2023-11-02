@@ -128,7 +128,7 @@ protected:
   // Le temps en cours d'ecriture
   double temps_courant_;
   bool un_seul_fichier_data_ = false;
-  long int offset_elem_ = -1; // offset utilise si single_lata_flie
+  long int offset_elem_ = -1, offset_som_ = -1; // offset utilise si single_lata_flie
 };
 
 #endif /* Format_Post_Lata_included */

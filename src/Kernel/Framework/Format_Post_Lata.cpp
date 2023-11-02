@@ -549,7 +549,7 @@ int Format_Post_Lata::finir_sans_reprise(const Nom file_basename)
  */
 int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const DoubleTab& sommets, const IntTab& elements, const Motcle& type_element)
 {
-  int dim = sommets.dimension(1);
+  const int dim = sommets.dimension(1);
   Motcle type_elem(type_element);
 
   // GF Pour assuerer la lecture avec le plugin lata
@@ -581,16 +581,18 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
     nom_fichier_geom = fichier_geom.get_filename();
     int nb_col;
 
+    if (un_seul_fichier_data_)
+      if (fichier_geom.is_master())
+        offset_som_ = fichier_geom.get_SFichier().get_ofstream().tellp();
+
     // Coordonnees des sommets
-    ////nb_som_tot = write_doubletab(fichier_geom, sommets, nb_col);
     if (axi)
       {
         DoubleTab sommets2(sommets);
         int ns = sommets2.dimension_tot(0);
         for (int s = 0; s < ns; s++)
           {
-            double r = sommets(s, 0);
-            double theta = sommets(s, 1);
+            double r = sommets(s, 0), theta = sommets(s, 1);
             sommets2(s, 0) = r * cos(theta);
             sommets2(s, 1) = r * sin(theta);
           }
@@ -613,7 +615,6 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         const int nbelem = elements.dimension(0);
         decalage_elements += mppartial_sum(nbelem);
       }
-
 
     if (un_seul_fichier_data_)
       {
@@ -638,34 +639,35 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
       {
         sfichier << "GEOM " << id_domaine;
         sfichier << " type_elem=" << type_elem << finl;
+
+        // SOMMETS support
         sfichier << "CHAMP SOMMETS " << remove_path(nom_fichier_geom);
         sfichier << " geometrie=" << id_domaine;
-
 #ifdef INT_is_64_
         // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
         // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
+        if (un_seul_fichier_data_) Process::exit("Single_lata_file option is not yet ported to 64 bits executable ! Call the 911 !");
 #endif
-
         sfichier << " size=" << nb_som_tot;
-        sfichier << " composantes=" << dim << finl;
+        sfichier << " composantes=" << dim;
+        if (un_seul_fichier_data_)
+          sfichier << " file_offset=" << offset_som_ << finl;
+        else
+          sfichier << finl;
+
+        // ELEMENTS support
         sfichier << "CHAMP ELEMENTS " << remove_path(nom_fichier_geom);
-
         if (!un_seul_fichier_data_) sfichier << ".elem";
-
         sfichier << " geometrie=" << id_domaine;
-
 #ifdef INT_is_64_
         // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
         // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
 #endif
-
         sfichier << " size=" << nb_elem_tot << " composantes=" << elements.dimension(1);
-
         if (un_seul_fichier_data_)
           sfichier << " file_offset=" << offset_elem_;
-
         switch(sizeof(_LATA_INT_TYPE_))
           {
           case 4:
@@ -713,11 +715,8 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
 /*! @brief voir Format_Post_base::ecrire_domaine On accepte l'ecriture d'un domaine dans un pas de temps, mais
  *
  *   les id_domaines doivent etre tous distincts.
- *   Ecrit le fichier "basename(_XXXXX).lata.nom_domaine", qui contient
- *   la liste des sommets et la liste des elements.
- *   Si le PE est maitre, ouvre le fichier maitre en mode APPEND et
- *   ajoute une reference a ce fichier.
- *
+ *   Ecrit le fichier "basename(_XXXXX).lata.nom_domaine", qui contient la liste des sommets et la liste des elements.
+ *   Si le PE est maitre, ouvre le fichier maitre en mode APPEND et ajoute une reference a ce fichier.
  */
 int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_premier_post)
 {
@@ -731,12 +730,10 @@ int Format_Post_Lata::ecrire_domaine(const Domaine& domaine,const int est_le_pre
   ecrire_domaine_low_level(domaine.le_nom(), domaine.les_sommets(), domaine.les_elems(), type_elem);
 
   // Si on a des frontieres domaine, on les ecrit egalement
-  if (!un_seul_fichier_data_)
-    {
-      const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();
-      for (int i=0; i<bords.size(); i++)
-        ecrire_domaine(bords[i].valeur(),est_le_premier_post);
-    }
+  const LIST(REF(Domaine)) bords= domaine.domaines_frontieres();
+  for (int i=0; i<bords.size(); i++)
+    ecrire_domaine(bords[i].valeur(),est_le_premier_post);
+
   return 1; // ok tout va bien
 }
 
@@ -833,14 +830,11 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
       sfichier << " localisation=" << localisation;
       sfichier << " size=" << size_tot;
       sfichier << " nature=" << nature;
-
       sfichier << " noms_compo=" << noms_compo[0];
       for (int k = 1; k < noms_compo.size(); k++)
         sfichier << "," << noms_compo[k];
 
       sfichier << " composantes=" << nb_compo;
-
-      //    sfichier << " type=REAL32" << finl;
 
       if (un_seul_fichier_data_)
         sfichier << " file_offset=" << offset_elem_ << finl;
