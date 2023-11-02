@@ -1,0 +1,107 @@
+#!/bin/bash
+
+# Elie Saikali
+# Simple bash script to compare TRUST results available in gz files
+# Usage : compare_lata_gz results1 results2
+# results1 et/ou results2 peuvent etre des fichiers .gz
+# le script est generique; si med ou lml => un fichier, sinon c'est un dossier avec des latas ... 
+
+ends_with() 
+{
+	[[ $1 == *$2 ]]
+}
+
+# usage : copy_and_unzip file folder
+copy_and_unzip()
+{
+	cp "$1" "$2/$1" || exit -1
+	if ends_with "$1" ".tar.gz"; then
+		(cd "$2" && tar -xzf "$1") || exit -1
+	else
+		(cd "$2" && gunzip "$1") || exit -1
+	fi
+}
+
+if [ "$#" -ne 2 ]; then
+	echo "Wrong number of arguments ! You should use the command as follows : "
+	echo " "
+    echo "     compare_lata_gz <file1> <file2>"
+    exit -1
+fi
+
+err=0
+file1="$1"
+file2="$2"
+
+# Check if both files exists
+if [ ! -f "$file1" ] || [ ! -f "$file2" ]; then
+    echo "Error : One/both files ' $file1 ' or/and ' $file2 ' is/are not found !"
+    exit -1
+fi
+
+is_file1_gz=true
+is_file2_gz=true
+
+if ! ends_with "$file1" ".gz" ; then
+    is_file1_gz=false
+fi
+
+if ! ends_with "$file2" ".gz" ; then
+    is_file2_gz=false
+fi
+
+[ "$is_file1_gz" = true ] && mkdir -p compare_lata_tmp1_
+[ "$is_file2_gz" = true ] && mkdir -p compare_lata_tmp2_
+
+if [ "$is_file1_gz" = false ] && [ "$is_file2_gz" = false ]; then
+	# cas 1 : cas classique
+	compare_lata $file1 $file2 --max_delta || exit -1
+	exit 0
+else
+	# cas 2 : pas classique
+	[ "$is_file1_gz" = true ] && copy_and_unzip $file1 compare_lata_tmp1_
+	[ "$is_file2_gz" = true ] && copy_and_unzip $file2 compare_lata_tmp2_
+
+	base_name1=$file1
+	base_name2=$file2
+	[ "$is_file1_gz" = true ] && base_name1=$(basename "$file1" .gz)
+	[ "$is_file2_gz" = true ] && base_name2=$(basename "$file2" .gz)
+
+	file1_new=$file1
+	file2_new=$file2
+	[ "$is_file1_gz" = true ] && file1_new=compare_lata_tmp1_/$base_name1
+	[ "$is_file2_gz" = true ] && file2_new=compare_lata_tmp2_/$base_name2
+
+	file1_lata=true
+	if ends_with "$base_name1" ".lml" || ends_with "$base_name1" ".med"; then
+		file1_lata=false
+   	fi
+
+   	file2_lata=true
+	if ends_with "$base_name2" ".lml" || ends_with "$base_name2" ".med"; then
+		file2_lata=false
+   	fi
+
+	if [ "$is_file1_gz" = true ] && [ "$file1_lata" = true ]; then
+		base_name1=$(basename "$file1" .tar.gz)
+		file1_new=compare_lata_tmp1_/${base_name1}/${base_name1}.lata
+	fi
+
+	if [ "$is_file2_gz" = true ] && [ "$file2_lata" = true ]; then
+		base_name2=$(basename "$file2" .tar.gz)
+		file2_new=compare_lata_tmp2_/${base_name2}/${base_name2}.lata
+	fi
+
+	# et la normalement c'est bon
+   	compare_lata $file1_new $file2_new --max_delta
+
+   	[ $? != 0 ] && err=1
+
+	[ "$is_file1_gz" = true ] && rm -rf compare_lata_tmp1_
+	[ "$is_file2_gz" = true ] && rm -rf compare_lata_tmp2_
+
+	[ "$err" != 0 ] && exit -1
+   	exit 0
+fi
+
+[ $? != 0 ] && exit -1
