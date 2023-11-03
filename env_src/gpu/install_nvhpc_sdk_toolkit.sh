@@ -9,6 +9,7 @@ SDK_VERSION=22.1 && CUDA_VERSION=11.5 && installer=nvhpc_2022_221_Linux_x86_64_c
 
 # On passe a 23.5 pour tout le monde (permet de mieux suivre la correction des bugs du compilateur)
 SDK_VERSION=23.5 && CUDA_VERSION=12.1 && installer=nvhpc_2023_235_Linux_x86_64_cuda_multi # 12.1, 11.8, 11.0
+SDK_VERSION=23.9 && CUDA_VERSION=12.1 && installer=nvhpc_2023_239_Linux_x86_64_cuda_multi # 12.2, 11.8, 11.0
 
 INSTALL=$TRUST_ROOT/env/gpu/install
 NVHPC=$INSTALL/nvhpc-$SDK_VERSION/Linux_x86_64/$SDK_VERSION/compilers
@@ -27,6 +28,12 @@ then
    tar xpzf $TRUST_TMP/$installer.tar.gz && rm -f $installer.tar.gz
    echo -e "\n1\n$INSTALL/nvhpc-$SDK_VERSION\n" | $installer/install
    [ $? != 0 ] && echo "Error during NVidia HPC SDK install under $NVHPC" && exit -1
+   # Securite: mise a jour de localrc par rapport aux compilateurs (ex: spack). Vu avec Fed38 (gcc 13.0):
+   # See https://forums.developer.nvidia.com/t/hpcsdk-22-7-installation-issues/226894/2
+   echo "Update localrc under \$NVHPC/bin ..."
+   cd $NVHPC/bin
+   ./makelocalrc -d . -x -gcc `which gcc` -gpp `which g++` -g77 `which gfortran` || exit -1
+   cd - 1>/dev/null 2>&1
    rm -r -f $installer
    )
 fi
