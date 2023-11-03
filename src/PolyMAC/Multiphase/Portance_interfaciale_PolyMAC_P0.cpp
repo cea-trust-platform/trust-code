@@ -29,7 +29,7 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
   const Pb_Multiphase& pbm = ref_cast(Pb_Multiphase, equation().probleme());
   const Champ_Face_PolyMAC_P0& ch = ref_cast(Champ_Face_PolyMAC_P0, equation().inconnue().valeur());
   const Domaine_PolyMAC_P0& domaine = ref_cast(Domaine_PolyMAC_P0, equation().domaine_dis().valeur());
-  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl(), &e_f = domaine.elem_faces();
+  const IntTab& f_e = domaine.face_voisins(), &fcl = ch.fcl();
   const DoubleTab& n_f = domaine.face_normales(), &vf_dir = domaine.volumes_entrelaces_dir();
   const DoubleVect& pe = equation().milieu().porosite_elem(), &pf = equation().milieu().porosite_face(), &ve = domaine.volumes(), &vf = domaine.volumes_entrelaces(), &fs = domaine.face_surfaces();
   const DoubleTab& pvit = ch.passe(),
@@ -44,8 +44,8 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                            *k_turb = (equation().probleme().has_champ("k")) ? &equation().probleme().get_champ("k").passe() : NULL ;
   const Milieu_composite& milc = ref_cast(Milieu_composite, equation().milieu());
 
-  int e, f, b, c, d, d2, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
-                                     cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot();
+  int e, f, c, d, d2, i, k, l, n, N = ch.valeurs().line_size(), Np = press.line_size(), D = dimension, Nk = (k_turb) ? (*k_turb).dimension(1) : 1 ,
+                                  cR = (rho.dimension_tot(0) == 1), cM = (mu.dimension_tot(0) == 1), nf_tot = domaine.nb_faces_tot();
   DoubleTrav vr_l(N,D), scal_ur(N), scal_u(N), pvit_l(N, D), vort_l( D==2 ? 1 :D), grad_l(D,D), scal_grad(D); // Requis pour corrections vort et u_l-u-g
   double fac_e, fac_f, vl_norm;
   const Portance_interfaciale_base& correlation_pi = ref_cast(Portance_interfaciale_base, correlation_.valeur());
@@ -135,23 +135,6 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
                 secmem(i+1,n_l)-= fac_e * out.Cl(n_l, k) * vr_l(k, 0) * vort(e, 0) ;
                 secmem(i+1, k )+= fac_e * out.Cl(n_l, k) * vr_l(k, 0) * vort(e, 0) ;
               } // 100% explicit
-
-          for (b = 0; b < e_f.dimension(1) && (f = e_f(e, b)) >= 0; b++)
-            if (f<domaine.nb_faces())
-              if (fcl(f, 0) < 2)
-                {
-                  c = (e == f_e(f,0)) ? 0 : 1 ;
-                  fac_f = beta_*pf(f) * vf_dir(f, c);
-                  for (k = 0; k < N; k++)
-                    if (k!= n_l) // gas phase
-                      {
-                        secmem(f, n_l) += fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * vr_l(k, 1) * vort(e, 0) ;
-                        secmem(f,  k ) -= fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * vr_l(k, 1) * vort(e, 0) ;
-                        secmem(f, n_l) -= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort(e, 0) ;
-                        secmem(f,  k ) += fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort(e, 0) ;
-                      } // 100% explicit
-
-                }
         }
 
       if (D==3)
@@ -170,95 +153,112 @@ void Portance_interfaciale_PolyMAC_P0::ajouter_blocs(matrices_t matrices, Double
 
     }
 
-  // Faces en dimension 3
-  if (D==3)
-    for (f = 0 ; f<domaine.nb_faces() ; f++)
-      if (fcl(f, 0) < 2)
-        {
-          in.alpha=0., in.T=0., in.p=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.d_bulles=0., in.nv=0.;
-          for ( c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
-            {
-              for (n = 0; n < N; n++)
-                {
-                  in.alpha[n] += vf_dir(f, c)/vf(f) * alpha(e, n);
-                  in.p[n]     += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
-                  in.T[n]     += vf_dir(f, c)/vf(f) * temp(e, n);
-                  in.rho[n]   += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
-                  in.mu[n]    += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
-                  in.d_bulles[n] += (d_bulles) ? vf_dir(f, c)/vf(f) *(*d_bulles)(e,n) : 0 ;
-                  for (k = n+1; k < N; k++)
-                    if (milc.has_interface(n,k))
-                      {
-                        const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
-                        in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
-                      }
-                  for (k = 0; k < N; k++)
-                    in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
-                }
-              for (n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
-            }
-
-          correlation_pi.coefficient(in, out);
-
-          grad_l = 0; // we fill grad_l so that grad_l(d, d2) = du_d/dx_d2 by averaging between both elements
-          for (d = 0 ; d<D ; d++)
-            for (d2 = 0 ; d2<D ; d2++)
-              for (c=0 ; c<2  && (e = f_e(f, c)) >= 0; c++)
-                grad_l(d, d2) += vf_dir(f, c)/vf(f)*grad_v(nf_tot + D*e + d2 , n_l * D + d) ;
-          //We replace the n_l components by the one calculated without interpolation to elements
-          scal_grad = 0 ; // scal_grad(d) = grad(u_d).n_f
-          for (d = 0 ; d<D ; d++)
-            for (d2 = 0 ; d2<D ; d2++)
-              scal_grad(d) += grad_l(d, d2)*n_f(f, d2)/fs(f);
-          for (d = 0 ; d<D ; d++)
-            for (d2 = 0 ; d2<D ; d2++)
-              grad_l(d, d2) += (grad_v(f ,n_l*D+d) - scal_grad(d)) * n_f(f, d2)/fs(f);
-          // We calculate the local vorticity using this local gradient
-          vort_l(0) = grad_l(2, 1) - grad_l(1, 2); // dUz/dy - dUy/dz
-          vort_l(1) = grad_l(0, 2) - grad_l(2, 0); // dUx/dz - dUz/dx
-          vort_l(2) = grad_l(1, 0) - grad_l(0, 1); // dUy/dx - dUx/dy
-
-          // We also need to calculate relative velocity at the face
-          pvit_l = 0 ;
-          for (d = 0 ; d<D ; d++)
-            for (k = 0 ; k<N ; k++)
-              for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
-                pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit(nf_tot+D*e+d, k) ;
-          scal_u = 0;
-          for (k = 0 ; k<N ; k++)
-            for (d = 0 ; d<D ; d++)
-              scal_u(k) += pvit_l(k, d)*n_f(f, d)/fs(f);
-          for (k = 0 ; k<N ; k++)
-            for (d = 0 ; d<D ; d++)
-              pvit_l(k, d) += (pvit(f, k) - scal_u(k)) * n_f(f, d)/fs(f) ; // Corect velocity at the face
-          vl_norm = 0;
-          scal_ur = 0;
-          for (d = 0 ; d < D ; d++) vl_norm += pvit_l(n_l, d)*pvit_l(n_l, d);
-          vl_norm = std::sqrt(vl_norm);
-          if (vl_norm > 1.e-6)
-            {
-              for (k = 0; k < N; k++)
-                for (d = 0 ; d < D ; d++) scal_ur(k) += pvit_l(n_l, d)/vl_norm * (pvit_l(k, d) -pvit_l(n_l, d));
-              for (k = 0; k < N; k++)
-                for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit_l(n_l, d)/vl_norm * scal_ur(k) ;
-            }
-          else for (k=0 ; k<N ; k++)
-              for (d=0 ; d<D ; d++) vr_l(k, d) = pvit_l(k, d)-pvit_l(n_l, d) ;
-
-
-          // Use local vairables for the calculation of secmem
-          fac_f = beta_*pf(f) * vf(f);
-          for (k = 0; k < N; k++)
-            if (k!= n_l) // gas phase
+  // Faces en dimension 2 et 3
+  for (f = 0 ; f<domaine.nb_faces() ; f++)
+    if (fcl(f, 0) < 2)
+      {
+        in.alpha=0., in.T=0., in.p=0., in.rho=0., in.mu=0., in.sigma=0., in.k_turb=0., in.d_bulles=0., in.nv=0.;
+        for ( c = 0; c < 2 && (e = f_e(f, c)) >= 0; c++)
+          {
+            for (n = 0; n < N; n++)
               {
-                secmem(f, n_l) += fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 1) * vort_l(2) - vr_l(k, 2) * vort_l(1)) ;
-                secmem(f,  k ) -= fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 1) * vort_l(2) - vr_l(k, 2) * vort_l(1)) ;
-                secmem(f, n_l) += fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 2) * vort_l(0) - vr_l(k, 0) * vort_l(2)) ;
-                secmem(f,  k ) -= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 2) * vort_l(0) - vr_l(k, 0) * vort_l(2)) ;
-                secmem(f, n_l) += fac_f * n_f(f, 2)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 0) * vort_l(1) - vr_l(k, 1) * vort_l(0)) ;
-                secmem(f,  k ) -= fac_f * n_f(f, 2)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 0) * vort_l(1) - vr_l(k, 1) * vort_l(0)) ;
-              } // 100% explicit
-        }
+                in.alpha[n] += vf_dir(f, c)/vf(f) * alpha(e, n);
+                in.p[n]     += vf_dir(f, c)/vf(f) * press(e, n * (Np > 1));
+                in.T[n]     += vf_dir(f, c)/vf(f) * temp(e, n);
+                in.rho[n]   += vf_dir(f, c)/vf(f) * rho(!cR * e, n);
+                in.mu[n]    += vf_dir(f, c)/vf(f) * mu(!cM * e, n);
+                in.d_bulles[n] += (d_bulles) ? vf_dir(f, c)/vf(f) *(*d_bulles)(e,n) : 0 ;
+                for (k = n+1; k < N; k++)
+                  if (milc.has_interface(n,k))
+                    {
+                      const int ind_trav = (n*(N-1)-(n-1)*(n)/2) + (k-n-1);
+                      in.sigma[ind_trav] += vf_dir(f, c) / vf(f) * Sigma_tab(e, ind_trav);
+                    }
+                for (k = 0; k < N; k++)
+                  in.nv(k, n) += vf_dir(f, c)/vf(f) * ch.v_norm(pvit, pvit, e, f, k, n, nullptr, nullptr);
+              }
+            for (n = 0; n <Nk; n++) in.k_turb[n]   += (k_turb)   ? vf_dir(f, c)/vf(f) * (*k_turb)(e,0) : 0;
+          }
+
+        correlation_pi.coefficient(in, out);
+
+        grad_l = 0; // we fill grad_l so that grad_l(d, d2) = du_d/dx_d2 by averaging between both elements
+        for (d = 0 ; d<D ; d++)
+          for (d2 = 0 ; d2<D ; d2++)
+            for (c=0 ; c<2  && (e = f_e(f, c)) >= 0; c++)
+              grad_l(d, d2) += vf_dir(f, c)/vf(f)*grad_v(nf_tot + D*e + d2 , n_l * D + d) ;
+        //We replace the n_l components by the one calculated without interpolation to elements
+        scal_grad = 0 ; // scal_grad(d) = grad(u_d).n_f
+        for (d = 0 ; d<D ; d++)
+          for (d2 = 0 ; d2<D ; d2++)
+            scal_grad(d) += grad_l(d, d2)*n_f(f, d2)/fs(f);
+        for (d = 0 ; d<D ; d++)
+          for (d2 = 0 ; d2<D ; d2++)
+            grad_l(d, d2) += (grad_v(f ,n_l*D+d) - scal_grad(d)) * n_f(f, d2)/fs(f);
+        // We calculate the local vorticity using this local gradient
+        if (D==2)
+          {
+            vort_l(0) = grad_l(1, 0) - grad_l(0, 1); // dUy/dx - dUx/dy
+          }
+        else if (D==3)
+          {
+            vort_l(0) = grad_l(2, 1) - grad_l(1, 2); // dUz/dy - dUy/dz
+            vort_l(1) = grad_l(0, 2) - grad_l(2, 0); // dUx/dz - dUz/dx
+            vort_l(2) = grad_l(1, 0) - grad_l(0, 1); // dUy/dx - dUx/dy
+          }
+        // We also need to calculate relative velocity at the face
+        pvit_l = 0 ;
+        for (d = 0 ; d<D ; d++)
+          for (k = 0 ; k<N ; k++)
+            for (c=0 ; c<2 && (e = f_e(f, c)) >= 0; c++)
+              pvit_l(k, d) += vf_dir(f, c)/vf(f)*pvit(nf_tot+D*e+d, k) ;
+        scal_u = 0;
+        for (k = 0 ; k<N ; k++)
+          for (d = 0 ; d<D ; d++)
+            scal_u(k) += pvit_l(k, d)*n_f(f, d)/fs(f);
+        for (k = 0 ; k<N ; k++)
+          for (d = 0 ; d<D ; d++)
+            pvit_l(k, d) += (pvit(f, k) - scal_u(k)) * n_f(f, d)/fs(f) ; // Corect velocity at the face
+
+        // Relative velocity parallel to the liquid flow
+        vl_norm = 0;
+        scal_ur = 0;
+        for (d = 0 ; d < D ; d++) vl_norm += pvit_l(n_l, d)*pvit_l(n_l, d);
+        vl_norm = std::sqrt(vl_norm);
+        if (vl_norm > 1.e-6)
+          {
+            for (k = 0; k < N; k++)
+              for (d = 0 ; d < D ; d++) scal_ur(k) += pvit_l(n_l, d)/vl_norm * (pvit_l(k, d) -pvit_l(n_l, d));
+            for (k = 0; k < N; k++)
+              for (d = 0 ; d < D ; d++) vr_l(k, d)  = pvit_l(n_l, d)/vl_norm * scal_ur(k) ;
+          }
+        else for (k=0 ; k<N ; k++)
+            for (d=0 ; d<D ; d++) vr_l(k, d) = pvit_l(k, d)-pvit_l(n_l, d) ;
+
+
+        // Use local vairables for the calculation of secmem ; 100% explicit
+        fac_f = beta_*pf(f) * vf(f);
+        for (k = 0; k < N; k++)
+          if (k!= n_l) // gas phase
+            {
+              if (D==2)
+                {
+                  secmem(f, n_l) += fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * vr_l(k, 1) * vort(e, 0) ;
+                  secmem(f,  k ) -= fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * vr_l(k, 1) * vort(e, 0) ;
+                  secmem(f, n_l)-= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort(e, 0) ;
+                  secmem(f,  k )+= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * vr_l(k, 0) * vort(e, 0) ;
+                }
+              else if (D==3)
+                {
+                  secmem(f, n_l) += fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 1) * vort_l(2) - vr_l(k, 2) * vort_l(1)) ;
+                  secmem(f,  k ) -= fac_f * n_f(f, 0)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 1) * vort_l(2) - vr_l(k, 2) * vort_l(1)) ;
+                  secmem(f, n_l) += fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 2) * vort_l(0) - vr_l(k, 0) * vort_l(2)) ;
+                  secmem(f,  k ) -= fac_f * n_f(f, 1)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 2) * vort_l(0) - vr_l(k, 0) * vort_l(2)) ;
+                  secmem(f, n_l) += fac_f * n_f(f, 2)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 0) * vort_l(1) - vr_l(k, 1) * vort_l(0)) ;
+                  secmem(f,  k ) -= fac_f * n_f(f, 2)/fs(f) * out.Cl(n_l, k) * (vr_l(k, 0) * vort_l(1) - vr_l(k, 1) * vort_l(0)) ;
+                }
+            }
+      }
 }
 
 void Portance_interfaciale_PolyMAC_P0::mettre_a_jour(double temps)
