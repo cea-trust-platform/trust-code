@@ -42,6 +42,6 @@ Matrice& Matrice::operator=( const Matrice_Base& matrix )
 
 DoubleVect operator * (const Matrice& A, const DoubleVect& vect)
 {
-  DoubleVect r = DoubleVect(vect.size());
+  DoubleVect r(vect.size());
   return A.valeur( ).multvect(vect, r);
 }

@@ -1,17 +1,17 @@
 /****************************************************************************
-* Copyright (c) 2023, CEA
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-* 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-* 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*****************************************************************************/
+ * Copyright (c) 2023, CEA
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *****************************************************************************/
 
 #include <IJK_Navier_Stokes_tools.h>
 #include <Parser.h>
@@ -24,18 +24,14 @@
 double compute_fractionnal_timestep_rk3(const double dt_tot, int step)
 {
   assert(step >= 0 && step < 3);
-  const double intermediate_tstep[3] = { 1./3., 5./12., 1./4. };
+  const double intermediate_tstep[3] = { 1. / 3., 5. / 12., 1. / 4. };
   return intermediate_tstep[step] * dt_tot;
 }
 
-static void extend_array(const IJK_Grid_Geometry& geom1,
-                         const int direction,
-                         const int ncells,
-                         ArrOfDouble& delta,
-                         double& origin)
+static void extend_array(const IJK_Grid_Geometry& geom1, const int direction, const int ncells, ArrOfDouble& delta, double& origin)
 {
   delta = geom1.get_delta(direction);
-  origin= geom1.get_origin(direction);
+  origin = geom1.get_origin(direction);
 
   if (geom1.get_periodic_flag(direction))
     {
@@ -45,17 +41,15 @@ static void extend_array(const IJK_Grid_Geometry& geom1,
       delta.resize_array(n + 2 * ncells);
       int i;
       // On decale les mailles vers la droite dans delta, de ncells:
-      for (i = n-1; i >= 0; i--)
-        delta[i+ncells] = delta[i];
+      for (i = n - 1; i >= 0; i--)
+        delta[i + ncells] = delta[i];
       // On duplique les mailles dont on a besoin:
       if (n < ncells)
         {
-          Cerr << "Erreur dans build_extended_splitting, direction " << direction
-               << " extension de " << ncells << " impossible car seulement "
-               << n << " mailles dans le domaine" << finl;
+          Cerr << "Erreur dans build_extended_splitting, direction " << direction << " extension de " << ncells << " impossible car seulement " << n << " mailles dans le domaine" << finl;
           Process::exit();
         }
-      for ( i = 0; i < ncells; i++)
+      for (i = 0; i < ncells; i++)
         {
           // Copie des mailles de droite a gauche:
           delta[i] = delta[i + n];
@@ -71,9 +65,7 @@ static void extend_array(const IJK_Grid_Geometry& geom1,
 // split2 : Resultat etendu contenant le domaine ou vivent les interfaces.
 // n_cells : Nombre de cellules supplementaires crees de chaque cote.
 //           (doit etre inferieur au nombre de mailles dans le domaine decoupee).
-void build_extended_splitting(const IJK_Splitting& split1,
-                              IJK_Splitting& split2,
-                              int n_cells)
+void build_extended_splitting(const IJK_Splitting& split1, IJK_Splitting& split2, int n_cells)
 {
   const IJK_Grid_Geometry& geom1 = split1.get_grid_geometry();
 
@@ -87,18 +79,11 @@ void build_extended_splitting(const IJK_Splitting& split1,
   // entre les bords opposes du domaine etendu.
   IJK_Grid_Geometry geom2;
   Nom n(geom1.le_nom());
-  geom2.nommer(n+"_EXT");
-  geom2.initialize_origin_deltas(origin_x, origin_y, origin_z,
-                                 dx, dy, dz,
-                                 geom1.get_periodic_flag(0),
-                                 geom1.get_periodic_flag(1),
-                                 geom1.get_periodic_flag(2));
+  geom2.nommer(n + "_EXT");
+  geom2.initialize_origin_deltas(origin_x, origin_y, origin_z, dx, dy, dz, geom1.get_periodic_flag(0), geom1.get_periodic_flag(1), geom1.get_periodic_flag(2));
   // Construction du decoupage parallele: on utilise les memes parametres
   // de decoupage que pour le maillage d'origine:
-  split2.initialize(geom2,
-                    split1.get_nprocessor_per_direction(DIRECTION_I),
-                    split1.get_nprocessor_per_direction(DIRECTION_J),
-                    split1.get_nprocessor_per_direction(DIRECTION_K));
+  split2.initialize(geom2, split1.get_nprocessor_per_direction(DIRECTION_I), split1.get_nprocessor_per_direction(DIRECTION_J), split1.get_nprocessor_per_direction(DIRECTION_K));
 }
 
 Probleme_base& creer_domaine_vdf(const IJK_Splitting& splitting, const Nom& nom_domaine)
@@ -114,16 +99,16 @@ Probleme_base& creer_domaine_vdf(const IJK_Splitting& splitting, const Nom& nom_
   const int nslicek = splitting.get_nprocessor_per_direction(DIRECTION_K);
   const int nslicej = splitting.get_nprocessor_per_direction(DIRECTION_J);
   const int nslicei = splitting.get_nprocessor_per_direction(DIRECTION_I);
-  const int ni = geom.get_nb_elem_tot(DIRECTION_I)+1; // number of nodes
-  const int nj = geom.get_nb_elem_tot(DIRECTION_J)+1;
-  const int nk = geom.get_nb_elem_tot(DIRECTION_K)+1;
+  const int ni = geom.get_nb_elem_tot(DIRECTION_I) + 1; // number of nodes
+  const int nj = geom.get_nb_elem_tot(DIRECTION_J) + 1;
+  const int nk = geom.get_nb_elem_tot(DIRECTION_K) + 1;
 
   char fonction_coord_x[300];
-  snprintf(fonction_coord_x,300,"%.16g+x*%.16g", x0, lx);
+  snprintf(fonction_coord_x, 300, "%.16g+x*%.16g", x0, lx);
   char fonction_coord_y[300];
-  snprintf(fonction_coord_y,300,"%.16g+y*%.16g", y0, ly);
+  snprintf(fonction_coord_y, 300, "%.16g+y*%.16g", y0, ly);
   char fonction_coord_z[300];
-  snprintf(fonction_coord_z,300,"%.16g+z*%.16g", z0, lz);
+  snprintf(fonction_coord_z, 300, "%.16g+z*%.16g", z0, lz);
 
   SChaine instructions;
   instructions << "Dimension 3 " << finl;
@@ -152,41 +137,37 @@ Probleme_base& creer_domaine_vdf(const IJK_Splitting& splitting, const Nom& nom_
     for (int j = 0; j < nslicej; j++)
       for (int i = 0; i < nslicei; i++)
         {
-          int p = splitting.get_processor_by_ijk(i,j,k);
-          map(p,0) = i;
-          map(p,1) = j;
-          map(p,2) = k;
+          int p = splitting.get_processor_by_ijk(i, j, k);
+          map(p, 0) = i;
+          map(p, 1) = j;
+          map(p, 2) = k;
         }
 
   if (min_array(map) < 0)
     {
       Cerr << "Error in creer_domaine_vdf: there are unused processors in the ijk splitting" << finl;
     }
-  Nom pb_name = Nom("pb_")+nom_domaine;
+  Nom pb_name = Nom("pb_") + nom_domaine;
   instructions << map << finl;
   instructions << "}" << finl;
-  instructions << "Probleme_FT_Disc_gen "<< pb_name << finl;
-  instructions << "Associer "<< pb_name<<" " << nom_domaine << finl;
-  instructions << "VDF dis"<<nom_domaine << finl;
-  instructions << "Schema_Euler_explicite sch"<<nom_domaine<<" Lire sch"<<nom_domaine<<" { nb_pas_dt_max 1 }" << finl;
-  instructions << "Associer "<< pb_name<<" sch"<<nom_domaine << finl;
-  instructions << "Discretiser "<< pb_name<<" dis"<< nom_domaine << finl;
+  instructions << "Probleme_FT_Disc_gen " << pb_name << finl;
+  instructions << "Associer " << pb_name << " " << nom_domaine << finl;
+  instructions << "VDF dis" << nom_domaine << finl;
+  instructions << "Schema_Euler_explicite sch" << nom_domaine << " Lire sch" << nom_domaine << " { nb_pas_dt_max 1 }" << finl;
+  instructions << "Associer " << pb_name << " sch" << nom_domaine << finl;
+  instructions << "Discretiser " << pb_name << " dis" << nom_domaine << finl;
   Cerr << "Interpretation de la chaine suivante:" << finl << instructions.get_str();
 
   EChaine is(instructions.get_str());
-  Interprete_bloc::interprete_courant().interpreter_bloc(is, Interprete_bloc::BLOC_EOF,
-                                                         0 /* flag verifie sans interpreter */);
+  Interprete_bloc::interprete_courant().interpreter_bloc(is, Interprete_bloc::BLOC_EOF, 0 /* flag verifie sans interpreter */);
 
   // Il faut construire une structure de donnees du Domaine_VF qui n'est pas construite par defaut:
-  Probleme_base& pb =  ref_cast(Probleme_base, Interprete_bloc::objet_global(pb_name));
+  Probleme_base& pb = ref_cast(Probleme_base, Interprete_bloc::objet_global(pb_name));
   Domaine& domaine = pb.domaine_dis().valeur().domaine();
   domaine.construire_elem_virt_pe_num();
 
   return pb;
 }
-
-
-
 
 // Imposer une condition limite de vitesse nulle aux parois (en zmin et zmax)
 void force_zero_on_walls(IJK_Field_double& vz)
@@ -199,14 +180,14 @@ void force_zero_on_walls(IJK_Field_double& vz)
     {
       for (int j = 0; j < nj; j++)
         for (int i = 0; i < ni; i++)
-          vz(i,j,0) = 0.;
+          vz(i, j, 0) = 0.;
     }
   if (kmin + vz.nk() == nktot)
     {
-      const int k = vz.nk()-1;
+      const int k = vz.nk() - 1;
       for (int j = 0; j < nj; j++)
         for (int i = 0; i < ni; i++)
-          vz(i,j,k) = 0.;
+          vz(i, j, k) = 0.;
     }
 }
 
@@ -225,8 +206,7 @@ void allocate_velocity(FixedVector<IJK_Field_int, 3>& v, const IJK_Splitting& s,
 }
 
 // Interpolate the "field" at the requested "coordinates" (array with 3 columns), and stores into "result"
-static void ijk_interpolate_implementation(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result,
-                                           int skip_unknown_points, double value_for_bad_points)
+static void ijk_interpolate_implementation(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result, int skip_unknown_points, double value_for_bad_points)
 {
   const int ghost = field.ghost();
   const int ni = field.ni();
@@ -240,12 +220,9 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
   const double dz = geom.get_constant_delta(DIRECTION_K);
   const IJK_Splitting::Localisation loc = field.get_localisation();
   // L'origine est sur un noeud. Donc que la premiere face en I est sur get_origin(DIRECTION_I)
-  double origin_x = geom.get_origin(DIRECTION_I)
-                    + ((loc==IJK_Splitting::FACES_J || loc==IJK_Splitting::FACES_K || loc==IJK_Splitting::ELEM) ? (dx * 0.5) : 0. ) ;
-  double origin_y = geom.get_origin(DIRECTION_J)
-                    + ((loc==IJK_Splitting::FACES_K || loc==IJK_Splitting::FACES_I || loc==IJK_Splitting::ELEM) ? (dy * 0.5) : 0. ) ;
-  double origin_z = geom.get_origin(DIRECTION_K)
-                    + ((loc==IJK_Splitting::FACES_I || loc==IJK_Splitting::FACES_J || loc==IJK_Splitting::ELEM) ? (dz * 0.5) : 0. ) ;
+  double origin_x = geom.get_origin(DIRECTION_I) + ((loc == IJK_Splitting::FACES_J || loc == IJK_Splitting::FACES_K || loc == IJK_Splitting::ELEM) ? (dx * 0.5) : 0.);
+  double origin_y = geom.get_origin(DIRECTION_J) + ((loc == IJK_Splitting::FACES_K || loc == IJK_Splitting::FACES_I || loc == IJK_Splitting::ELEM) ? (dy * 0.5) : 0.);
+  double origin_z = geom.get_origin(DIRECTION_K) + ((loc == IJK_Splitting::FACES_I || loc == IJK_Splitting::FACES_J || loc == IJK_Splitting::ELEM) ? (dz * 0.5) : 0.);
   const int nb_coords = coordinates.dimension(0);
   result.resize_array(nb_coords);
   for (int idx = 0; idx < nb_coords; idx++)
@@ -256,18 +233,16 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
       const double x2 = (x - origin_x) / dx;
       const double y2 = (y - origin_y) / dy;
       const double z2 = (z - origin_z) / dz;
-      const int index_i = (int)(floor(x2)) - splitting.get_offset_local(DIRECTION_I);
-      const int index_j = (int)(floor(y2)) - splitting.get_offset_local(DIRECTION_J);
-      const int index_k = (int)(floor(z2)) - splitting.get_offset_local(DIRECTION_K);
+      const int index_i = (int) (floor(x2)) - splitting.get_offset_local(DIRECTION_I);
+      const int index_j = (int) (floor(y2)) - splitting.get_offset_local(DIRECTION_J);
+      const int index_k = (int) (floor(z2)) - splitting.get_offset_local(DIRECTION_K);
       // Coordonnes barycentriques du points dans la cellule :
       const double xfact = x2 - floor(x2);
       const double yfact = y2 - floor(y2);
       const double zfact = z2 - floor(z2);
 
       // is point in the domain ? (ghost cells ok...)
-      bool ok = (index_i >= -ghost && index_i < ni+ghost-1)
-                && (index_j >= -ghost && index_j < nj+ghost-1)
-                && (index_k >= -ghost && index_k < nk+ghost-1);
+      bool ok = (index_i >= -ghost && index_i < ni + ghost - 1) && (index_j >= -ghost && index_j < nj + ghost - 1) && (index_k >= -ghost && index_k < nk + ghost - 1);
       if (!ok)
         {
           if (skip_unknown_points)
@@ -278,21 +253,20 @@ static void ijk_interpolate_implementation(const IJK_Field_double& field, const 
           else
             {
               // Error!
-              Cerr << "Error in ijk_interpolate_implementation: request interpolation of point "
-                   << x << " " << y << " " << z << " which is outside of the domain on processor " << Process::me() << finl;
+              Cerr << "Error in ijk_interpolate_implementation: request interpolation of point " << x << " " << y << " " << z << " which is outside of the domain on processor " << Process::me()
+                   << finl;
               Process::exit();
             }
         }
 
-      double r = (((1.-xfact) * field(index_i, index_j, index_k) + xfact * field(index_i + 1, index_j, index_k)) * (1.-yfact)
-                  + ((1.-xfact) * field(index_i, index_j+1, index_k) + xfact * field(index_i + 1, index_j+1, index_k)) * (yfact)) * (1.-zfact)
-                 + (((1.-xfact) * field(index_i, index_j, index_k+1) + xfact * field(index_i + 1, index_j, index_k+1)) * (1.-yfact)
-                    + ((1.-xfact) * field(index_i, index_j+1, index_k+1) + xfact * field(index_i + 1, index_j+1, index_k+1)) * (yfact)) * (zfact);
+      double r = (((1. - xfact) * field(index_i, index_j, index_k) + xfact * field(index_i + 1, index_j, index_k)) * (1. - yfact)
+                  + ((1. - xfact) * field(index_i, index_j + 1, index_k) + xfact * field(index_i + 1, index_j + 1, index_k)) * (yfact)) * (1. - zfact)
+                 + (((1. - xfact) * field(index_i, index_j, index_k + 1) + xfact * field(index_i + 1, index_j, index_k + 1)) * (1. - yfact)
+                    + ((1. - xfact) * field(index_i, index_j + 1, index_k + 1) + xfact * field(index_i + 1, index_j + 1, index_k + 1)) * (yfact)) * (zfact);
       result[idx] = r;
     }
 }
-void ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result,
-                                         const double value_for_bad_points)
+void ijk_interpolate_skip_unknown_points(const IJK_Field_double& field, const DoubleTab& coordinates, ArrOfDouble& result, const double value_for_bad_points)
 {
   ijk_interpolate_implementation(field, coordinates, result, 1 /* yes:skip unknown points */, value_for_bad_points);
 }
@@ -302,11 +276,9 @@ void ijk_interpolate(const IJK_Field_double& field, const DoubleTab& coordinates
   ijk_interpolate_implementation(field, coordinates, result, 0 /* skip unknown points=no */, 0.);
 }
 
-
 // Compute, for each cell, the integral on the cell of dt times the divergence of the velocity field.
 // Computed as the sum on each face of ("velocity" scalar "normal vector" times "surface of the face")
-void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz,
-                                       const double constant, IJK_Field_double& resu)
+void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz, const double constant, IJK_Field_double& resu)
 {
   const IJK_Grid_Geometry& geom = vx.get_splitting().get_grid_geometry();
   const double delta_x = geom.get_constant_delta(0);
@@ -318,7 +290,7 @@ void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Fie
   const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
   for (int k = 0; k < kmax; k++)
     {
-      const double delta_z = delta_z_all[k+offset];
+      const double delta_z = delta_z_all[k + offset];
       const double fx = delta_y * delta_z * constant;
       const double fy = delta_x * delta_z * constant;
       const double fz = delta_x * delta_y * constant;
@@ -326,10 +298,8 @@ void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Fie
         {
           for (int i = 0; i < imax; i++)
             {
-              double x = (vx(i+1,j,k) - vx(i,j,k)) * fx
-                         + (vy(i,j+1,k) - vy(i,j,k)) * fy
-                         + (vz(i,j,k+1) - vz(i,j,k)) * fz;
-              resu(i,j,k) = x;
+              double x = (vx(i + 1, j, k) - vx(i, j, k)) * fx + (vy(i, j + 1, k) - vy(i, j, k)) * fy + (vz(i, j, k + 1) - vz(i, j, k)) * fz;
+              resu(i, j, k) = x;
             }
         }
     }
@@ -337,8 +307,7 @@ void compute_divergence_times_constant(const IJK_Field_double& vx, const IJK_Fie
 
 // Compute, for each cell, the divergence of the velocity field
 // without the product with volume or a constant.
-void compute_divergence(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz,
-                        IJK_Field_double& resu)
+void compute_divergence(const IJK_Field_double& vx, const IJK_Field_double& vy, const IJK_Field_double& vz, IJK_Field_double& resu)
 {
   const IJK_Grid_Geometry& geom = vx.get_splitting().get_grid_geometry();
   const double delta_x = geom.get_constant_delta(0);
@@ -350,18 +319,16 @@ void compute_divergence(const IJK_Field_double& vx, const IJK_Field_double& vy, 
   const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
   for (int k = 0; k < kmax; k++)
     {
-      const double delta_z = delta_z_all[k+offset];
-      const double fx = 1./delta_x;
-      const double fy = 1./delta_y;
-      const double fz = 1./delta_z;
+      const double delta_z = delta_z_all[k + offset];
+      const double fx = 1. / delta_x;
+      const double fy = 1. / delta_y;
+      const double fz = 1. / delta_z;
       for (int j = 0; j < jmax; j++)
         {
           for (int i = 0; i < imax; i++)
             {
-              double x = (vx(i+1,j,k) - vx(i,j,k)) * fx
-                         + (vy(i,j+1,k) - vy(i,j,k)) * fy
-                         + (vz(i,j,k+1) - vz(i,j,k)) * fz;
-              resu(i,j,k) = x;
+              double x = (vx(i + 1, j, k) - vx(i, j, k)) * fx + (vy(i, j + 1, k) - vy(i, j, k)) * fy + (vz(i, j, k + 1) - vz(i, j, k)) * fz;
+              resu(i, j, k) = x;
             }
         }
     }
@@ -370,8 +337,7 @@ void compute_divergence(const IJK_Field_double& vx, const IJK_Field_double& vy, 
 // Add to vx, vy and vz the gradient of the pressure gradient multiplied by the constant.
 // Input and output velocity is in m/s (not the integral of the momentum on the cell).
 // On the walls, don't touch velocity
-void add_gradient_times_constant(const IJK_Field_double& pressure, const double constant,
-                                 IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
+void add_gradient_times_constant(const IJK_Field_double& pressure, const double constant, IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
 {
   const IJK_Grid_Geometry& geom = vx.get_splitting().get_grid_geometry();
   const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
@@ -385,7 +351,7 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
           const double f = constant / geom.get_constant_delta(0);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vx(i,j,k) += (pressure(i,j,k) - pressure(i-1,j,k)) * f;
+              vx(i, j, k) += (pressure(i, j, k) - pressure(i - 1, j, k)) * f;
         }
       // j component:
       if (k < vy.nk())
@@ -395,7 +361,7 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
           const double f = constant / geom.get_constant_delta(1);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vy(i,j,k) += (pressure(i,j,k) - pressure(i,j-1,k)) * f;
+              vy(i, j, k) += (pressure(i, j, k) - pressure(i, j - 1, k)) * f;
         }
       // k component:
       bool on_the_wall = false;
@@ -403,25 +369,25 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
       const int nk_tot = vz.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
       const int offset = vz.get_splitting().get_offset_local(DIRECTION_K);
       const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k=vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
-      if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
+      bool perio_k = vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
+      if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
       if (k < vz.nk() && (!on_the_wall))
         {
           const int jmax = vz.nj();
           const int imax = vz.ni();
           double f;
-          if(!perio_k)
+          if (!perio_k)
             {
-              f = constant * 2. / (delta_z_all[k-1+k_min] + delta_z_all[k+k_min]);
+              f = constant * 2. / (delta_z_all[k - 1 + k_min] + delta_z_all[k + k_min]);
             }
           else
             {
-              f = (constant /  delta_z_all[k+offset]);
+              f = (constant / delta_z_all[k + offset]);
             }
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vz(i,j,k) += (pressure(i,j,k) - pressure(i,j,k-1)) * f;
+              vz(i, j, k) += (pressure(i, j, k) - pressure(i, j, k - 1)) * f;
         }
     }
 }
@@ -429,8 +395,7 @@ void add_gradient_times_constant(const IJK_Field_double& pressure, const double 
 // Add to vx, vy and vz the gradient of the pressure gradient multiplied by the constant.
 // Input and output velocity is in m/s (not the integral of the momentum on the cell).
 // On the walls, don't touch velocity
-void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, const IJK_Field_double& rho, const double constant,
-                                          IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
+void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, const IJK_Field_double& rho, const double constant, IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
 {
   const IJK_Grid_Geometry& geom = vx.get_splitting().get_grid_geometry();
   const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
@@ -444,7 +409,7 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
           const double f = constant / geom.get_constant_delta(0) * 2.;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vx(i,j,k) += (pressure(i,j,k) - pressure(i-1,j,k)) / (rho(i,j,k) + rho(i-1,j,k)) * f;
+              vx(i, j, k) += (pressure(i, j, k) - pressure(i - 1, j, k)) / (rho(i, j, k) + rho(i - 1, j, k)) * f;
         }
       // j component:
       if (k < vy.nk())
@@ -454,7 +419,7 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
           const double f = constant / geom.get_constant_delta(1) * 2.;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vy(i,j,k) += (pressure(i,j,k) - pressure(i,j-1,k)) / (rho(i,j,k) + rho(i,j-1,k))  * f;
+              vy(i, j, k) += (pressure(i, j, k) - pressure(i, j - 1, k)) / (rho(i, j, k) + rho(i, j - 1, k)) * f;
         }
       // k component:
       bool on_the_wall = false;
@@ -462,31 +427,31 @@ void add_gradient_times_constant_over_rho(const IJK_Field_double& pressure, cons
       const int nk_tot = vz.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
       const int offset = vz.get_splitting().get_offset_local(DIRECTION_K);
       const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k=vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
+      bool perio_k = vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
 
-      if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
+      if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
       if (k < vz.nk() && (!on_the_wall))
         {
           const int jmax = vz.nj();
           const int imax = vz.ni();
           double f;
-          if(!perio_k)
+          if (!perio_k)
             {
-              f = constant * 2. / (delta_z_all[k-1+k_min] + delta_z_all[k+k_min]) * 2.;
+              f = constant * 2. / (delta_z_all[k - 1 + k_min] + delta_z_all[k + k_min]) * 2.;
             }
           else
             {
-              f = (constant /  delta_z_all[k+offset]) * 2.;
+              f = (constant / delta_z_all[k + offset]) * 2.;
             }
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vz(i,j,k) += (pressure(i,j,k) - pressure(i,j,k-1)) / (rho(i,j,k) + rho(i,j,k-1)) * f;
+              vz(i, j, k) += (pressure(i, j, k) - pressure(i, j, k - 1)) / (rho(i, j, k) + rho(i, j, k - 1)) * f;
         }
     }
 }
-void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure, const IJK_Field_double& inv_rho, const double constant,
-                                               IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz)
+void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure, const IJK_Field_double& inv_rho, const double constant, IJK_Field_double& vx, IJK_Field_double& vy,
+                                               IJK_Field_double& vz)
 {
   const IJK_Grid_Geometry& geom = vx.get_splitting().get_grid_geometry();
   const int kmax = std::max(std::max(vx.nk(), vy.nk()), vz.nk());
@@ -500,7 +465,7 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
           const double f = constant / geom.get_constant_delta(0) * 0.5;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vx(i,j,k) += (pressure(i,j,k) - pressure(i-1,j,k)) * (inv_rho(i,j,k) + inv_rho(i-1,j,k)) * f;
+              vx(i, j, k) += (pressure(i, j, k) - pressure(i - 1, j, k)) * (inv_rho(i, j, k) + inv_rho(i - 1, j, k)) * f;
         }
       // j component:
       if (k < vy.nk())
@@ -510,7 +475,7 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
           const double f = constant / geom.get_constant_delta(1) * 0.5;
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vy(i,j,k) += (pressure(i,j,k) - pressure(i,j-1,k)) * (inv_rho(i,j,k) + inv_rho(i,j-1,k))  * f;
+              vy(i, j, k) += (pressure(i, j, k) - pressure(i, j - 1, k)) * (inv_rho(i, j, k) + inv_rho(i, j - 1, k)) * f;
         }
       // k component:
       bool on_the_wall = false;
@@ -518,26 +483,26 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
       const int nk_tot = vz.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
       const int offset = vz.get_splitting().get_offset_local(DIRECTION_K);
       const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k=vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
+      bool perio_k = vz.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
 
-      if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
+      if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
       if (k < vz.nk() && (!on_the_wall))
         {
           const int jmax = vz.nj();
           const int imax = vz.ni();
           double f;
-          if(!perio_k)
+          if (!perio_k)
             {
-              f = constant * 2. / (delta_z_all[k-1+k_min] + delta_z_all[k+k_min]) * 0.5;
+              f = constant * 2. / (delta_z_all[k - 1 + k_min] + delta_z_all[k + k_min]) * 0.5;
             }
           else
             {
-              f = (constant /  delta_z_all[k+offset]) * 0.5;
+              f = (constant / delta_z_all[k + offset]) * 0.5;
             }
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              vz(i,j,k) += (pressure(i,j,k) - pressure(i,j,k-1)) * (inv_rho(i,j,k) + inv_rho(i,j,k-1)) * f;
+              vz(i, j, k) += (pressure(i, j, k) - pressure(i, j, k - 1)) * (inv_rho(i, j, k) + inv_rho(i, j, k - 1)) * f;
         }
     }
 }
@@ -550,10 +515,7 @@ void add_gradient_times_constant_times_inv_rho(const IJK_Field_double& pressure,
 //  div(gradient(pressure_)) = 1/dt * div(v_input)
 //
 // input value of pressure_ is used as an initial guess by the solver
-void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
-                         IJK_Field_double& pressure, double dt,
-                         IJK_Field_double& pressure_rhs,
-                         int check_divergence,
+void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, IJK_Field_double& pressure, double dt, IJK_Field_double& pressure_rhs, int check_divergence,
                          Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
@@ -562,7 +524,7 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
   vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
 
   // terme a ajouter au second membre pour la resolution de la matrice de pression
   // uniquement dans le cas de condition shear-periodique.
@@ -589,7 +551,7 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
-      compute_divergence_times_constant(vx, vy, vz, 1./dt, rhs_after);
+      compute_divergence_times_constant(vx, vy, vz, 1. / dt, rhs_after);
       double divergence_after = norme_ijk(rhs_after);
       Cout << "Divergence of velocity field: before solver: " << divergence_before << " after solver: " << divergence_after << finl;
     }
@@ -604,12 +566,8 @@ void pressure_projection(IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_d
 //  div(gradient(pressure_)) = 1/dt * div(v_input)
 //
 // input value of pressure_ is used as an initial guess by the solver
-void pressure_projection_with_rho(const IJK_Field_double& rho,
-                                  IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
-                                  IJK_Field_double& pressure, double dt,
-                                  IJK_Field_double& pressure_rhs,
-                                  int check_divergence,
-                                  Multigrille_Adrien& poisson_solver, double Shear_DU)
+void pressure_projection_with_rho(const IJK_Field_double& rho, IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, IJK_Field_double& pressure, double dt, IJK_Field_double& pressure_rhs,
+                                  int check_divergence, Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
@@ -617,7 +575,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
   vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
   // terme a ajouter au second membre pour la resolution de la matrice de pression
   // uniquement dans le cas de condition shear-periodique.
   // Permet de compenser l interpolation de la pression monofluide
@@ -643,7 +601,7 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
-      compute_divergence_times_constant(vx, vy, vz, 1./dt, rhs_after);
+      compute_divergence_times_constant(vx, vy, vz, 1. / dt, rhs_after);
       double divergence_after = norme_ijk(rhs_after);
       Cout << "Divergence of velocity field: before solver: " << divergence_before << " after solver: " << divergence_after << finl;
     }
@@ -651,12 +609,8 @@ void pressure_projection_with_rho(const IJK_Field_double& rho,
 }
 
 // Methode basee sur 1/rho au lieu de rho :
-void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
-                                      IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz,
-                                      IJK_Field_double& pressure, double dt,
-                                      IJK_Field_double& pressure_rhs,
-                                      int check_divergence,
-                                      Multigrille_Adrien& poisson_solver, double Shear_DU)
+void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho, IJK_Field_double& vx, IJK_Field_double& vy, IJK_Field_double& vz, IJK_Field_double& pressure, double dt,
+                                      IJK_Field_double& pressure_rhs, int check_divergence, Multigrille_Adrien& poisson_solver, double Shear_DU)
 {
   static Stat_Counter_Id projection_counter_ = statistiques().new_counter(2, "maj vitesse : projection");
   statistiques().begin_count(projection_counter_);
@@ -664,7 +618,7 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
   vx.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_I*/, Shear_DU);
   vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
   vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
-  compute_divergence_times_constant(vx, vy, vz, -1./dt, pressure_rhs);
+  compute_divergence_times_constant(vx, vy, vz, -1. / dt, pressure_rhs);
   // terme a ajouter au second membre pour la resolution de la matrice de pression
   // uniquement dans le cas de condition shear-periodique.
   // Permet de compenser l interpolation de la pression monofluide
@@ -691,13 +645,12 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
       vy.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_J*/);
       vz.echange_espace_virtuel(1 /*, IJK_Field_double::EXCHANGE_GET_AT_RIGHT_K*/);
 
-      compute_divergence_times_constant(vx, vy, vz, 1./dt, rhs_after);
+      compute_divergence_times_constant(vx, vy, vz, 1. / dt, rhs_after);
       double divergence_after = norme_ijk(rhs_after);
       Cout << "Divergence of velocity field: before solver: " << divergence_before << " after solver: " << divergence_after << finl;
     }
   statistiques().end_count(projection_counter_);
 }
-
 
 // Take the provided derivative dv and update F and the unknown v for the Runge Kutta "rk_step"
 //  (0<=rk_step<=2).
@@ -707,12 +660,11 @@ void pressure_projection_with_inv_rho(const IJK_Field_double& inv_rho,
 // v is the unknown, the derivative for the next step must be computed with the output v of the
 // this step, after the last step, v is the final value at the end of the timestep_
 // dt_tot: total timestep
-void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Field_double& v,
-                         const int step, const int k_layer, double dt_tot)
+void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Field_double& v, const int step, const int k_layer, double dt_tot)
 {
-  const double coeff_a[3] = { 0., -5./9., -153./128. };
+  const double coeff_a[3] = { 0., -5. / 9., -153. / 128. };
   // Fk[0] = 1; Fk[i+1] = Fk[i] * a[i+1] + 1
-  const double coeff_Fk[3] = { 1., 4./9., 15./32. };
+  const double coeff_Fk[3] = { 1., 4. / 9., 15. / 32. };
 
   const double facteurF = coeff_a[step];
   const double intermediate_dt = compute_fractionnal_timestep_rk3(dt_tot, step);
@@ -728,9 +680,9 @@ void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Fi
         {
           for (int i = 0; i < imax; i++)
             {
-              double x = dv(i,j,k_layer);
-              F(i,j,k_layer) = x;
-              v(i,j,k_layer) += x * delta_t_divided_by_Fk;
+              double x = dv(i, j, k_layer);
+              F(i, j, k_layer) = x;
+              v(i, j, k_layer) += x * delta_t_divided_by_Fk;
             }
         }
       break;
@@ -740,9 +692,9 @@ void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Fi
         {
           for (int i = 0; i < imax; i++)
             {
-              double x = F(i,j,k_layer) * facteurF + dv(i,j,k_layer);
-              F(i,j,k_layer) = x;
-              v(i,j,k_layer) += x * delta_t_divided_by_Fk;
+              double x = F(i, j, k_layer) * facteurF + dv(i, j, k_layer);
+              F(i, j, k_layer) = x;
+              v(i, j, k_layer) += x * delta_t_divided_by_Fk;
             }
         }
       break;
@@ -752,8 +704,8 @@ void runge_kutta3_update(const IJK_Field_double& dv, IJK_Field_double& F, IJK_Fi
         {
           for (int i = 0; i < imax; i++)
             {
-              double x = F(i,j,k_layer) * facteurF + dv(i,j,k_layer);
-              v(i,j,k_layer) += x * delta_t_divided_by_Fk;
+              double x = F(i, j, k_layer) * facteurF + dv(i, j, k_layer);
+              v(i, j, k_layer) += x * delta_t_divided_by_Fk;
             }
         }
       break;
@@ -863,32 +815,32 @@ void build_local_coords(const IJK_Field_double& f, ArrOfDouble& coord_i, ArrOfDo
   if (f.get_localisation() == IJK_Splitting::NODES || f.get_localisation() == IJK_Splitting::FACES_I)
     {
       for (int i = 0; i < ni; i++)
-        coord_i[i] = nodes_i[i+i_offset];
+        coord_i[i] = nodes_i[i + i_offset];
     }
   else
     {
       for (int i = 0; i < ni; i++)
-        coord_i[i] = (nodes_i[i+i_offset] + nodes_i[i+i_offset+1]) * 0.5;
+        coord_i[i] = (nodes_i[i + i_offset] + nodes_i[i + i_offset + 1]) * 0.5;
     }
   if (f.get_localisation() == IJK_Splitting::NODES || f.get_localisation() == IJK_Splitting::FACES_J)
     {
       for (int i = 0; i < nj; i++)
-        coord_j[i] = nodes_j[i+j_offset];
+        coord_j[i] = nodes_j[i + j_offset];
     }
   else
     {
       for (int i = 0; i < nj; i++)
-        coord_j[i] = (nodes_j[i+j_offset] + nodes_j[i+j_offset+1]) * 0.5;
+        coord_j[i] = (nodes_j[i + j_offset] + nodes_j[i + j_offset + 1]) * 0.5;
     }
   if (f.get_localisation() == IJK_Splitting::NODES || f.get_localisation() == IJK_Splitting::FACES_K)
     {
       for (int i = 0; i < nk; i++)
-        coord_k[i] = nodes_k[i+k_offset];
+        coord_k[i] = nodes_k[i + k_offset];
     }
   else
     {
       for (int i = 0; i < nk; i++)
-        coord_k[i] = (nodes_k[i+k_offset] + nodes_k[i+k_offset+1]) * 0.5;
+        coord_k[i] = (nodes_k[i + k_offset] + nodes_k[i + k_offset + 1]) * 0.5;
     }
 }
 
@@ -911,13 +863,12 @@ void set_field_data(IJK_Field_double& f, double func(double, double, double))
           for (int i = 0; i < ni; i++)
             {
               double x = coord_i[i];
-              f(i,j,k)=func(x, y, z);
+              f(i, j, k) = func(x, y, z);
             }
         }
     }
   f.echange_espace_virtuel(f.ghost());
 }
-
 
 // GAB, Vy_initial non nul en reprise
 //  field with specified string expression (must be understood by Parser class)
@@ -949,15 +900,14 @@ void compose_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y
           for (int i = 0; i < ni; i++)
             {
               double x = coord_i[i];
-              parser.setVar((int)0, x);
-              f(i,j,k) += parser.eval();
+              parser.setVar((int) 0, x);
+              f(i, j, k) += parser.eval();
             }
         }
     }
   f.echange_espace_virtuel(f.ghost());
 }
 //
-
 
 // Initialize field with specified string expression (must be understood by Parser class)
 void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z)
@@ -988,8 +938,8 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z)
           for (int i = 0; i < ni; i++)
             {
               double x = coord_i[i];
-              parser.setVar((int)0, x);
-              f(i,j,k) = parser.eval();
+              parser.setVar((int) 0, x);
+              f(i, j, k) = parser.eval();
             }
         }
     }
@@ -1026,17 +976,15 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_a
           for (int i = 0; i < ni; i++)
             {
               double x = coord_i[i];
-              parser.setVar((int)0, x);
-              f(i,j,k) = parser.eval();
+              parser.setVar((int) 0, x);
+              f(i, j, k) = parser.eval();
             }
         }
     }
   f.echange_espace_virtuel(f.ghost());
 }
 
-
-void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t,
-                    const IJK_Field_double& input_f, const double current_time)
+void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t, const IJK_Field_double& input_f, const double current_time)
 {
   ArrOfDouble coord_i, coord_j, coord_k;
   build_local_coords(f, coord_i, coord_j, coord_k);
@@ -1067,17 +1015,16 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_a
           for (int i = 0; i < ni; i++)
             {
               double x = coord_i[i];
-              parser.setVar((int)0, x);
-              parser.setVar(4, input_f(i,j,k));
-              f(i,j,k) = parser.eval();
+              parser.setVar((int) 0, x);
+              parser.setVar(4, input_f(i, j, k));
+              f(i, j, k) = parser.eval();
             }
         }
     }
   f.echange_espace_virtuel(f.ghost());
 }
 
-void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t,
-                    const IJK_Field_double& input_f1, const IJK_Field_double& input_f2, const double current_time)
+void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_and_t, const IJK_Field_double& input_f1, const IJK_Field_double& input_f2, const double current_time)
 {
   ArrOfDouble coord_i, coord_j, coord_k;
   build_local_coords(f, coord_i, coord_j, coord_k);
@@ -1109,10 +1056,10 @@ void set_field_data(IJK_Field_double& f, const Nom& parser_expression_of_x_y_z_a
           for (int i = 0; i < ni; i++)
             {
               double x = coord_i[i];
-              parser.setVar((int)0, x);
-              parser.setVar(4, input_f1(i,j,k));
-              parser.setVar(5, input_f2(i,j,k));
-              f(i,j,k) = parser.eval();
+              parser.setVar((int) 0, x);
+              parser.setVar(4, input_f1(i, j, k));
+              parser.setVar(5, input_f2(i, j, k));
+              f(i, j, k) = parser.eval();
             }
         }
     }
@@ -1136,9 +1083,9 @@ static void calculer_rho_v_DIR(DIRECTION _DIR_, const IJK_Field_double& input_rh
           double a, b, c;
           rho.get_left_center(_DIR_, i, a, b); // a et b sont les masses volumiques a gauche et a droite de la face
           v.get_center(i, c);
-          resu.put_val(i, (a+b)*c*0.5);
+          resu.put_val(i, (a + b) * c * 0.5);
         }
-      if (j < nj-1)
+      if (j < nj - 1)
         {
           rho.next_j();
           v.next_j();
@@ -1164,9 +1111,9 @@ static void calculer_rho_harmonic_v_DIR(DIRECTION _DIR_, const IJK_Field_double&
           double a, b, c;
           rho.get_left_center(_DIR_, i, a, b); // a et b sont les masses volumiques a gauche et a droite de la face
           v.get_center(i, c);
-          resu.put_val(i, 2.*a*b/(a+b)*c);
+          resu.put_val(i, 2. * a * b / (a + b) * c);
         }
-      if (j < nj-1)
+      if (j < nj - 1)
         {
           rho.next_j();
           v.next_j();
@@ -1175,10 +1122,7 @@ static void calculer_rho_harmonic_v_DIR(DIRECTION _DIR_, const IJK_Field_double&
     }
 }
 
-
-void calculer_rho_v(const IJK_Field_double& rho,
-                    const FixedVector<IJK_Field_double, 3>& v,
-                    FixedVector<IJK_Field_double, 3>& rho_v)
+void calculer_rho_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_double, 3>& v, FixedVector<IJK_Field_double, 3>& rho_v)
 {
   // Conditions aux limites plans: on suppose que v = 0 sur le plan, alors rho_v sera = 0,
   // donc il n'y a rien a faire.
@@ -1198,62 +1142,61 @@ void calculer_rho_v(const IJK_Field_double& rho,
 
 void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_double& output, double DU_perio, int dir)
 {
-  IJK_Field_double velocity_ft_tmp=output;
+  IJK_Field_double velocity_ft_tmp = output;
   IJK_Splitting splitting_ns = input.get_splitting();
   IJK_Splitting splitting_ft = output.get_splitting();
-  double Lx =  splitting_ns.get_grid_geometry().get_domain_length(0);
-  double Lz =  splitting_ns.get_grid_geometry().get_domain_length(2);
+  double Lx = splitting_ns.get_grid_geometry().get_domain_length(0);
+  double Lz = splitting_ns.get_grid_geometry().get_domain_length(2);
   int ni = input.ni();
   int nk = input.nk();
-  double DZ = Lz/nk;
-  double DX = Lx/ni ;
-  for (int i = 0; i < output.ni(); i++ )
+  double DZ = Lz / nk;
+  double DX = Lx / ni;
+  for (int i = 0; i < output.ni(); i++)
     {
-      for (int j = 0; j < output.nj(); j++ )
+      for (int j = 0; j < output.nj(); j++)
         {
-          for (int k = 0; k < output.nk(); k++ )
+          for (int k = 0; k < output.nk(); k++)
             {
-              Vecteur3 xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+              Vecteur3 xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_I);
               double limitbasse = 0.;
               double limithaute = 0.;
-              if (dir==0)
+              if (dir == 0)
                 {
-                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_I);
+                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_I);
                   limitbasse = 0.;
                   limithaute = Lz;
                 }
-              else if (dir==1)
+              else if (dir == 1)
                 {
-                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_J);
+                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_J);
                   limitbasse = 0.;
                   limithaute = Lz;
                 }
-              else if (dir==2)
+              else if (dir == 2)
                 {
-                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::FACES_K);
-                  limitbasse = -DZ/2;
-                  limithaute = Lz-DZ/2;
+                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::FACES_K);
+                  limitbasse = -DZ / 2;
+                  limithaute = Lz - DZ / 2;
                 }
               else
                 {
-                  xyz = splitting_ft.get_coords_of_dof(i,j,k,IJK_Splitting::ELEM);
+                  xyz = splitting_ft.get_coords_of_dof(i, j, k, IJK_Splitting::ELEM);
                   limitbasse = 0.;
                   limithaute = Lz;
                 }
 
               double x_deplacement = 0.;
 
-
-              if (xyz[2]<limitbasse)
+              if (xyz[2] < limitbasse)
                 {
                   x_deplacement = IJK_Splitting::shear_x_time_;
                 }
-              else if (xyz[2]>limithaute)
+              else if (xyz[2] > limithaute)
                 {
                   x_deplacement = -IJK_Splitting::shear_x_time_;
                 }
 
-              double istmp = i+x_deplacement/DX;
+              double istmp = i + x_deplacement / DX;
 
               int ifloorm2 = (int) round(istmp) - 2;
               int ifloorm1 = (int) round(istmp) - 1;
@@ -1261,7 +1204,7 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
               int ifloorp1 = (int) round(istmp) + 1;
               int ifloorp2 = (int) round(istmp) + 2;
 
-              int x[5] = {ifloorm2, ifloorm1, ifloor0, ifloorp1, ifloorp2};
+              int x[5] = { ifloorm2, ifloorm1, ifloor0, ifloorp1, ifloorp2 };
 
               ifloorm2 = (ifloorm2 % ni + ni) % ni;
               ifloorm1 = (ifloorm1 % ni + ni) % ni;
@@ -1269,13 +1212,7 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
               ifloorp1 = (ifloorp1 % ni + ni) % ni;
               ifloorp2 = (ifloorp2 % ni + ni) % ni;
 
-              double y[5] = {output(ifloorm2, j, k),
-                             output(ifloorm1, j, k),
-                             output(ifloor0, j, k),
-                             output(ifloorp1, j, k),
-                             output(ifloorp2, j, k)
-                            };
-
+              double y[5] = { output(ifloorm2, j, k), output(ifloorm1, j, k), output(ifloor0, j, k), output(ifloorp1, j, k), output(ifloorp2, j, k) };
 
               double a0 = y[0] / ((x[0] - x[1]) * (x[0] - x[2]) * (x[0] - x[3]) * (x[0] - x[4]));
               double a1 = y[1] / ((x[1] - x[0]) * (x[1] - x[2]) * (x[1] - x[3]) * (x[1] - x[4]));
@@ -1285,32 +1222,28 @@ void redistribute_with_shear_domain_ft(const IJK_Field_double& input, IJK_Field_
 
               // Evaluate the interpolation polynomial at istmp
 
-              velocity_ft_tmp(i, j, k) = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-                                         + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
-                                         + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4]))
-                                         + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
+              velocity_ft_tmp(i, j, k) = a0 * ((istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4])) + a1 * ((istmp - x[0]) * (istmp - x[2]) * (istmp - x[3]) * (istmp - x[4]))
+                                         + a2 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[3]) * (istmp - x[4])) + a3 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[4]))
                                          + a4 * ((istmp - x[0]) * (istmp - x[1]) * (istmp - x[2]) * (istmp - x[3]));
 
-              if (xyz[2]<0)
+              if (xyz[2] < 0)
                 {
-                  velocity_ft_tmp(i, j, k) -=DU_perio;
+                  velocity_ft_tmp(i, j, k) -= DU_perio;
                 }
-              else if (xyz[2]>Lz)
+              else if (xyz[2] > Lz)
                 {
-                  velocity_ft_tmp(i, j, k) +=DU_perio;
+                  velocity_ft_tmp(i, j, k) += DU_perio;
                 }
 
             }
         }
     }
-  output=velocity_ft_tmp;
+  output = velocity_ft_tmp;
   return;
 }
 
 // On utilise la moyenne harmonique au lieu de la moyenne arithmetique.
-void calculer_rho_harmonic_v(const IJK_Field_double& rho,
-                             const FixedVector<IJK_Field_double, 3>& v,
-                             FixedVector<IJK_Field_double, 3>& rho_v)
+void calculer_rho_harmonic_v(const IJK_Field_double& rho, const FixedVector<IJK_Field_double, 3>& v, FixedVector<IJK_Field_double, 3>& rho_v)
 {
   // Conditions aux limites plans: on suppose que v = 0 sur le plan, alors rho_v sera = 0,
   // donc il n'y a rien a faire.
@@ -1327,7 +1260,6 @@ void calculer_rho_harmonic_v(const IJK_Field_double& rho,
         calculer_rho_harmonic_v_DIR(DIRECTION::Z, rho, v[2], rho_v[2], k);
     }
 }
-
 
 // Calculer rho*v sur la couche k de faces dans la direction DIR
 // a partir de rho aux elements et v aux faces
@@ -1350,7 +1282,7 @@ static void mass_solver_with_rho_DIR(DIRECTION _DIR_, const IJK_Field_double& in
           resu = c / ((a + b) * facteur); // division par le produit (volume * rho_face)
           v.put_val(i, resu);
         }
-      if (j < nj-1)
+      if (j < nj - 1)
         {
           rho.next_j();
           v.next_j();
@@ -1372,13 +1304,13 @@ static void mass_solver_with_inv_rho_DIR(DIRECTION _DIR_, const IJK_Field_double
     {
       for (int i = 0; i < ni; i++)
         {
-          double a=0., b=0., c, resu;
+          double a = 0., b = 0., c, resu;
           inv_rho.get_left_center(_DIR_, i, a, b); // a et b sont les masses volumiques a gauche et a droite de la face
           v.get_center(i, c); // v
           resu = c * (a + b) * facteur; // v * inv_rho_face * volume
           v.put_val(i, resu);
         }
-      if (j < nj-1)
+      if (j < nj - 1)
         {
           inv_rho.next_j();
           v.next_j();
@@ -1395,7 +1327,7 @@ double get_channel_control_volume(IJK_Field_double& field, int local_k_layer, co
   double delta_z;
   const double delta_x = field.get_splitting().get_grid_geometry().get_constant_delta(0);
   const double delta_y = field.get_splitting().get_grid_geometry().get_constant_delta(1);
-  switch (field.get_localisation())
+  switch(field.get_localisation())
     {
     case IJK_Splitting::ELEM:
     case IJK_Splitting::FACES_I:
@@ -1403,10 +1335,10 @@ double get_channel_control_volume(IJK_Field_double& field, int local_k_layer, co
       delta_z = delta_z_local[local_k_layer];
       break;
     case IJK_Splitting::FACES_K:
-      if (! field.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K))
+      if (!field.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K))
         {
           const int global_k_index = local_k_layer + field.get_splitting().get_offset_local(DIRECTION_K);
-          const int last_global_k = field.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K)-1;
+          const int last_global_k = field.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K) - 1;
           // We have walls, are we on a wall ?
           if (global_k_index == 0)
             {
@@ -1414,17 +1346,17 @@ double get_channel_control_volume(IJK_Field_double& field, int local_k_layer, co
             }
           else if (global_k_index == last_global_k)
             {
-              delta_z = delta_z_local[local_k_layer-1] * 0.5; // size of unique neighboug cell
+              delta_z = delta_z_local[local_k_layer - 1] * 0.5; // size of unique neighboug cell
             }
           else
             {
-              delta_z = (delta_z_local[local_k_layer-1] + delta_z_local[local_k_layer]) * 0.5;
+              delta_z = (delta_z_local[local_k_layer - 1] + delta_z_local[local_k_layer]) * 0.5;
             }
         }
       else
         {
           // Periodic mesh: always the same formula:
-          delta_z = (delta_z_local[local_k_layer-1] + delta_z_local[local_k_layer]) * 0.5;
+          delta_z = (delta_z_local[local_k_layer - 1] + delta_z_local[local_k_layer]) * 0.5;
         }
       break;
     default:
@@ -1514,9 +1446,8 @@ void density_solver_with_rho(IJK_Field_double& velocity, const IJK_Field_double&
     }
 }
 
-
 // fonction moyenne en temps du champs de vitesse utilise dans le cas de bulles fixes
-void update_integral_velocity(const FixedVector<IJK_Field_double, 3>& v_instant,  FixedVector<IJK_Field_double, 3>& v_tmp, const IJK_Field_double& indic, const IJK_Field_double& indic_tmp)
+void update_integral_velocity(const FixedVector<IJK_Field_double, 3>& v_instant, FixedVector<IJK_Field_double, 3>& v_tmp, const IJK_Field_double& indic, const IJK_Field_double& indic_tmp)
 {
   const int ni = indic_tmp.ni();
   const int nj = indic_tmp.nj();
@@ -1527,15 +1458,15 @@ void update_integral_velocity(const FixedVector<IJK_Field_double, 3>& v_instant,
         {
           for (int i = 0; i < ni; i++)
             {
-              double u, v, w ;
-              u = (v_instant[0](i,j,k) + v_instant[0](i+1, j, k)) * 0.5;
-              v = (v_instant[1](i,j,k) + v_instant[1](i, j+1, k)) * 0.5;
-              w = (v_instant[2](i,j,k) + v_instant[2](i, j, k+1)) * 0.5;
-              if(indic_tmp(i,j,k)+indic(i,j,k)!=0.0 )
+              double u, v, w;
+              u = (v_instant[0](i, j, k) + v_instant[0](i + 1, j, k)) * 0.5;
+              v = (v_instant[1](i, j, k) + v_instant[1](i, j + 1, k)) * 0.5;
+              w = (v_instant[2](i, j, k) + v_instant[2](i, j, k + 1)) * 0.5;
+              if (indic_tmp(i, j, k) + indic(i, j, k) != 0.0)
                 {
-                  v_tmp[0](i,j,k) = (v_tmp[0](i,j,k)*indic_tmp(i,j,k)+u*indic(i,j,k))/(indic_tmp(i,j,k)+indic(i,j,k));
-                  v_tmp[1](i,j,k) = (v_tmp[1](i,j,k)*indic_tmp(i,j,k)+v*indic(i,j,k))/(indic_tmp(i,j,k)+indic(i,j,k));
-                  v_tmp[2](i,j,k) = (v_tmp[2](i,j,k)*indic_tmp(i,j,k)+w*indic(i,j,k))/(indic_tmp(i,j,k)+indic(i,j,k));
+                  v_tmp[0](i, j, k) = (v_tmp[0](i, j, k) * indic_tmp(i, j, k) + u * indic(i, j, k)) / (indic_tmp(i, j, k) + indic(i, j, k));
+                  v_tmp[1](i, j, k) = (v_tmp[1](i, j, k) * indic_tmp(i, j, k) + v * indic(i, j, k)) / (indic_tmp(i, j, k) + indic(i, j, k));
+                  v_tmp[2](i, j, k) = (v_tmp[2](i, j, k) * indic_tmp(i, j, k) + w * indic(i, j, k)) / (indic_tmp(i, j, k) + indic(i, j, k));
                 }
             }
         }
@@ -1547,27 +1478,24 @@ void update_integral_velocity(const FixedVector<IJK_Field_double, 3>& v_instant,
 }
 
 /*
-* Calcul le gradient de U aux cellules a partir de la vitesse aux faces
-* all components or not.
-*/
-void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
-                                  const IJK_Field_double& vitesse_j,
-                                  const IJK_Field_double& vitesse_k,
+ * Calcul le gradient de U aux cellules a partir de la vitesse aux faces
+ * all components or not.
+ */
+void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i, const IJK_Field_double& vitesse_j, const IJK_Field_double& vitesse_k,
                                   /* Et les champs en sortie */
-                                  IJK_Field_double& dudx, IJK_Field_double& dvdy, IJK_Field_double& dwdx,
-                                  IJK_Field_double& dudz, IJK_Field_double& dvdz, IJK_Field_double& dwdz,
-                                  const int compute_all,
+                                  IJK_Field_double& dudx,
+                                  IJK_Field_double& dvdy, IJK_Field_double& dwdx, IJK_Field_double& dudz, IJK_Field_double& dvdz, IJK_Field_double& dwdz, const int compute_all,
                                   /* Following will be untouched if compute_all is 0 */
-                                  IJK_Field_double& dudy, IJK_Field_double& dvdx, IJK_Field_double& dwdy,
-                                  IJK_Field_double& lambda2)
+                                  IJK_Field_double& dudy,
+                                  IJK_Field_double& dvdx, IJK_Field_double& dwdy, IJK_Field_double& lambda2)
 {
   const IJK_Splitting& splitting = vitesse_i.get_splitting();
 
   // Pour detacher de toute classe :
   const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  const double dx=geom.get_constant_delta(0);
-  const double dy=geom.get_constant_delta(1);
-  const ArrOfDouble& tab_dz=geom.get_delta(2);
+  const double dx = geom.get_constant_delta(0);
+  const double dy = geom.get_constant_delta(1);
+  const ArrOfDouble& tab_dz = geom.get_delta(2);
 
   // Nombre total de mailles en K
   const int nktot = splitting.get_nb_items_global(IJK_Splitting::ELEM, DIRECTION_K);
@@ -1579,7 +1507,7 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
   double residue = 0.;
   for (int k = 0; k < kmax; k++)
     {
-      const double dz = tab_dz[k+offset];
+      const double dz = tab_dz[k + offset];
       bool on_the_first_cell = false;
       bool on_the_last_cell = false;
       if (k + offset == 0)
@@ -1593,29 +1521,29 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
               // ******************************** //
               // derivation direction x
               // de Ux
-              dudx(i,j,k) = (vitesse_i(i+1, j, k) - vitesse_i(i,j,k))/dx;
+              dudx(i, j, k) = (vitesse_i(i + 1, j, k) - vitesse_i(i, j, k)) / dx;
 
               // de Uz !!!!!! ATTENTION on veux calculer la moyenne entre (i,j,k) et (i,j,k+1) aux mailles i-1 et i+1
-              double We_mi = ( vitesse_k(i-1,j,k) + vitesse_k(i-1,j,k+1) )*0.5;
-              double We_pi = ( vitesse_k(i+1,j,k) + vitesse_k(i+1,j,k+1) )*0.5;
-              dwdx(i,j,k) = (We_pi  - We_mi ) / (2*dx);
+              double We_mi = (vitesse_k(i - 1, j, k) + vitesse_k(i - 1, j, k + 1)) * 0.5;
+              double We_pi = (vitesse_k(i + 1, j, k) + vitesse_k(i + 1, j, k + 1)) * 0.5;
+              dwdx(i, j, k) = (We_pi - We_mi) / (2 * dx);
 
               // ******************************** //
               // derivation direction y
               // de Uy
-              dvdy(i,j,k) = (vitesse_j(i, j+1, k) - vitesse_j(i,j,k))/dy;
+              dvdy(i, j, k) = (vitesse_j(i, j + 1, k) - vitesse_j(i, j, k)) / dy;
 
               if (compute_all)
                 {
-                  double Ue_mj = ( vitesse_i(i,j-1,k) + vitesse_i(i+1,j-1,k) )*0.5;
-                  double Ue_pj = ( vitesse_i(i,j+1,k) + vitesse_i(i+1,j+1,k) )*0.5;
-                  dudy(i,j,k) = (Ue_pj - Ue_mj)/(2*dy);
-                  double Ve_mi = ( vitesse_j(i-1,j,k) + vitesse_j(i-1,j+1,k) )*0.5;
-                  double Ve_pi = ( vitesse_j(i+1,j,k) + vitesse_j(i+1,j+1,k) )*0.5;
-                  dvdx(i,j,k) = (Ve_pi  - Ve_mi ) / (2*dx);
-                  double We_mj = ( vitesse_k(i,j-1,k) + vitesse_k(i,j-1,k+1) )*0.5;
-                  double We_pj = ( vitesse_k(i,j+1,k) + vitesse_k(i,j+1,k+1) )*0.5;
-                  dwdy(i,j,k) = (We_pj - We_mj)/(2*dy);
+                  double Ue_mj = (vitesse_i(i, j - 1, k) + vitesse_i(i + 1, j - 1, k)) * 0.5;
+                  double Ue_pj = (vitesse_i(i, j + 1, k) + vitesse_i(i + 1, j + 1, k)) * 0.5;
+                  dudy(i, j, k) = (Ue_pj - Ue_mj) / (2 * dy);
+                  double Ve_mi = (vitesse_j(i - 1, j, k) + vitesse_j(i - 1, j + 1, k)) * 0.5;
+                  double Ve_pi = (vitesse_j(i + 1, j, k) + vitesse_j(i + 1, j + 1, k)) * 0.5;
+                  dvdx(i, j, k) = (Ve_pi - Ve_mi) / (2 * dx);
+                  double We_mj = (vitesse_k(i, j - 1, k) + vitesse_k(i, j - 1, k + 1)) * 0.5;
+                  double We_pj = (vitesse_k(i, j + 1, k) + vitesse_k(i, j + 1, k + 1)) * 0.5;
+                  dwdy(i, j, k) = (We_pj - We_mj) / (2 * dy);
                 }
 
               // ******************************** //
@@ -1629,231 +1557,229 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
                 {
                   // de Ux
                   double Ue_mk = 0.;
-                  double Ue_ck = ( vitesse_i(i,j,k  ) + vitesse_i(i+1,j,k  ) )*0.5;
-                  double Ue_pk = ( vitesse_i(i,j,k+1) + vitesse_i(i+1,j,k+1) )*0.5;
+                  double Ue_ck = (vitesse_i(i, j, k) + vitesse_i(i + 1, j, k)) * 0.5;
+                  double Ue_pk = (vitesse_i(i, j, k + 1) + vitesse_i(i + 1, j, k + 1)) * 0.5;
                   // Formule decentree (ordre 2) pour pas variable sur le bord gauche :
-                  dudz(i,j,k) = (- 4*Ue_mk + 3*Ue_ck +Ue_pk  ) / (3*dz);
+                  dudz(i, j, k) = (-4 * Ue_mk + 3 * Ue_ck + Ue_pk) / (3 * dz);
 
                   // de Uy
                   double Ve_mk = 0.;
-                  double Ve_ck = ( vitesse_j(i,j,k  ) + vitesse_j(i,j+1,k  ) )*0.5;
-                  double Ve_pk = ( vitesse_j(i,j,k+1) + vitesse_j(i,j+1,k+1) )*0.5;
-                  dvdz(i,j,k) = (- 4*Ve_mk + 3*Ve_ck +Ve_pk  ) / (3*dz) ;
+                  double Ve_ck = (vitesse_j(i, j, k) + vitesse_j(i, j + 1, k)) * 0.5;
+                  double Ve_pk = (vitesse_j(i, j, k + 1) + vitesse_j(i, j + 1, k + 1)) * 0.5;
+                  dvdz(i, j, k) = (-4 * Ve_mk + 3 * Ve_ck + Ve_pk) / (3 * dz);
                 }
               else if (on_the_last_cell && !(geom.get_periodic_flag(DIRECTION_K)))
                 {
                   // de Ux
-                  double Ue_mk = ( vitesse_i(i,j,k-1) + vitesse_i(i+1,j,k-1) )*0.5;
-                  double Ue_ck = ( vitesse_i(i,j,k  ) + vitesse_i(i+1,j,k  ) )*0.5;
+                  double Ue_mk = (vitesse_i(i, j, k - 1) + vitesse_i(i + 1, j, k - 1)) * 0.5;
+                  double Ue_ck = (vitesse_i(i, j, k) + vitesse_i(i + 1, j, k)) * 0.5;
                   double Ue_pk = 0.;
                   // Formule decentree (ordre 2) pour pas variable sur le bord droit :
-                  dudz(i,j,k) = (- Ue_mk - 3*Ue_ck +4*Ue_pk ) / (3*dz);
+                  dudz(i, j, k) = (-Ue_mk - 3 * Ue_ck + 4 * Ue_pk) / (3 * dz);
 
                   // de Uy
-                  double Ve_mk = ( vitesse_j(i,j,k-1) + vitesse_j(i,j+1,k-1) )*0.5;
-                  double Ve_ck = ( vitesse_j(i,j,k  ) + vitesse_j(i,j+1,k  ) )*0.5;
+                  double Ve_mk = (vitesse_j(i, j, k - 1) + vitesse_j(i, j + 1, k - 1)) * 0.5;
+                  double Ve_ck = (vitesse_j(i, j, k) + vitesse_j(i, j + 1, k)) * 0.5;
                   double Ve_pk = 0.;
-                  dvdz(i,j,k) = (- Ve_mk - 3*Ve_ck +4*Ve_pk ) / (3*dz) ;
+                  dvdz(i, j, k) = (-Ve_mk - 3 * Ve_ck + 4 * Ve_pk) / (3 * dz);
                 }
               else
                 {
                   // For any interior cell... Formule centree pour pas cste
 
                   // de Ux !!!!!! ATTENTION on veux calculer la moyenne entre (i,j,k) et (i+1,j,k) aux mailles k-1 et k+1
-                  double Ue_mk = ( vitesse_i(i,j,k-1) + vitesse_i(i+1,j,k-1) )*0.5;
-                  double Ue_pk = ( vitesse_i(i,j,k+1) + vitesse_i(i+1,j,k+1) )*0.5;
-                  dudz(i,j,k) = (Ue_pk  - Ue_mk ) / (2*dz);
+                  double Ue_mk = (vitesse_i(i, j, k - 1) + vitesse_i(i + 1, j, k - 1)) * 0.5;
+                  double Ue_pk = (vitesse_i(i, j, k + 1) + vitesse_i(i + 1, j, k + 1)) * 0.5;
+                  dudz(i, j, k) = (Ue_pk - Ue_mk) / (2 * dz);
 
                   // de Uy !!!!!! ATTENTION on veux calculer la moyenne entre (i,j,k) et (i,j+1,k) aux mailles k-1 et k+1
-                  double Ve_mk = ( vitesse_j(i,j,k-1) + vitesse_j(i,j+1,k-1) )*0.5;
-                  double Ve_pk = ( vitesse_j(i,j,k+1) + vitesse_j(i,j+1,k+1) )*0.5;
-                  dvdz(i,j,k) = (Ve_pk  - Ve_mk ) / (2*dz) ;
+                  double Ve_mk = (vitesse_j(i, j, k - 1) + vitesse_j(i, j + 1, k - 1)) * 0.5;
+                  double Ve_pk = (vitesse_j(i, j, k + 1) + vitesse_j(i, j + 1, k + 1)) * 0.5;
+                  dvdz(i, j, k) = (Ve_pk - Ve_mk) / (2 * dz);
                 }
 
               // de Uz
-              dwdz(i,j,k) = (vitesse_k(i, j, k+1) - vitesse_k(i,j,k))/dz;
+              dwdz(i, j, k) = (vitesse_k(i, j, k + 1) - vitesse_k(i, j, k)) / dz;
 
               // Calcul de lambda2 :
               if (compute_all)
                 {
                   /*
-                              const double a11=dudx(i,j,k);
-                              const double a12=dudy(i,j,k);
-                              const double a13=dudz(i,j,k);
-                              const double a21=dvdx(i,j,k);
-                              const double a22=dvdy(i,j,k);
-                              const double a23=dvdz(i,j,k);
-                              const double a31=dwdx(i,j,k);
-                              const double a32=dwdy(i,j,k);
-                              const double a33=dwdz(i,j,k);
-                  */
+                   const double a11=dudx(i,j,k);
+                   const double a12=dudy(i,j,k);
+                   const double a13=dudz(i,j,k);
+                   const double a21=dvdx(i,j,k);
+                   const double a22=dvdy(i,j,k);
+                   const double a23=dvdz(i,j,k);
+                   const double a31=dwdx(i,j,k);
+                   const double a32=dwdy(i,j,k);
+                   const double a33=dwdz(i,j,k);
+                   */
 
                   // Sij = 1/2*(aij+aji)
-                  double s11=dudx(i,j,k);
-                  double s12=(dudy(i,j,k) + dvdx(i,j,k))*0.5;
-                  double s13=(dudz(i,j,k) + dwdx(i,j,k))*0.5;
-                  double s21=s12;
-                  double s22=dvdy(i,j,k);
-                  double s23=(dvdz(i,j,k) + dwdy(i,j,k))*0.5;
-                  double s31=s13;
-                  double s32=s23;
-                  double s33=dwdz(i,j,k);
+                  double s11 = dudx(i, j, k);
+                  double s12 = (dudy(i, j, k) + dvdx(i, j, k)) * 0.5;
+                  double s13 = (dudz(i, j, k) + dwdx(i, j, k)) * 0.5;
+                  double s21 = s12;
+                  double s22 = dvdy(i, j, k);
+                  double s23 = (dvdz(i, j, k) + dwdy(i, j, k)) * 0.5;
+                  double s31 = s13;
+                  double s32 = s23;
+                  double s33 = dwdz(i, j, k);
                   squared_3x3(s11, s12, s13, s21, s22, s23, s31, s32, s33);
 
                   // Omega_ij = 1/2*(aij-aji)
-                  double o11=0.;
-                  double o12=(dudy(i,j,k) - dvdx(i,j,k))*0.5;
-                  double o13=(dudz(i,j,k) - dwdx(i,j,k))*0.5;
-                  double o21=-o12;
-                  double o22=0.;
-                  double o23=(dvdz(i,j,k) - dwdy(i,j,k))*0.5;
-                  double o31=-o13;
-                  double o32=-o23;
-                  double o33=0.;
+                  double o11 = 0.;
+                  double o12 = (dudy(i, j, k) - dvdx(i, j, k)) * 0.5;
+                  double o13 = (dudz(i, j, k) - dwdx(i, j, k)) * 0.5;
+                  double o21 = -o12;
+                  double o22 = 0.;
+                  double o23 = (dvdz(i, j, k) - dwdy(i, j, k)) * 0.5;
+                  double o31 = -o13;
+                  double o32 = -o23;
+                  double o33 = 0.;
                   squared_3x3(o11, o12, o13, o21, o22, o23, o31, o32, o33);
 
                   //
-                  const double a11=s11+o11;
-                  const double a12=s12+o12;
-                  const double a13=s13+o13;
-                  const double a21=s21+o21;
-                  const double a22=s22+o22;
-                  const double a23=s23+o23;
-                  const double a31=s31+o31;
-                  const double a32=s32+o32;
-                  const double a33=s33+o33;
-
+                  const double a11 = s11 + o11;
+                  const double a12 = s12 + o12;
+                  const double a13 = s13 + o13;
+                  const double a21 = s21 + o21;
+                  const double a22 = s22 + o22;
+                  const double a23 = s23 + o23;
+                  const double a31 = s31 + o31;
+                  const double a32 = s32 + o32;
+                  const double a33 = s33 + o33;
 
                   //double a11=1,a22=2,a33=3,a12=0,a21=0,a13=0,a31=0,a23=0,a32=0;
                   // Changement de tous les signes :
                   const double a = 1.;
-                  const double b = -(a11+a22+a33);
-                  const double c = -(a12*a21+a23*a32+a13*a31-a11*a22-a11*a33-a22*a33);
-                  const double d = -(a11*a22*a33+a12*a23*a31+a13*a32*a21-a11*a23*a32-a22*a13*a31-a33*a12*a21);
+                  const double b = -(a11 + a22 + a33);
+                  const double c = -(a12 * a21 + a23 * a32 + a13 * a31 - a11 * a22 - a11 * a33 - a22 * a33);
+                  const double d = -(a11 * a22 * a33 + a12 * a23 * a31 + a13 * a32 * a21 - a11 * a23 * a32 - a22 * a13 * a31 - a33 * a12 * a21);
 
-                  const double delta = 18*a*b*c*d-4*b*b*b*d+b*b*c*c-4*a*c*c*c-27*a*a*d*d;
-                  const double Q = (3.*c-b*b)/9.;
-                  const double R = (9.*b*c - 27.*d - 2.*b*b*b)/54.;
-                  const double D = Q*Q*Q + R*R;
-                  if ((delta<0) || (Q>0))
+                  const double delta = 18 * a * b * c * d - 4 * b * b * b * d + b * b * c * c - 4 * a * c * c * c - 27 * a * a * d * d;
+                  const double Q = (3. * c - b * b) / 9.;
+                  const double R = (9. * b * c - 27. * d - 2. * b * b * b) / 54.;
+                  const double D = Q * Q * Q + R * R;
+                  if ((delta < 0) || (Q > 0))
                     {
                       double Re_sqrtD, Im_sqrtD;
-                      double mod=0, arg=0;
-                      if (D>0)
+                      double mod = 0, arg = 0;
+                      if (D > 0)
                         {
                           Cerr << "Singularity for lambda2 at " << i << " " << j << " " << k << " D=" << D << finl;
                           // only one real value :
                           Re_sqrtD = sqrt(D);
                           Im_sqrtD = 0.;
-                          complex_to_trig(R+Re_sqrtD, Im_sqrtD, mod, arg);
+                          complex_to_trig(R + Re_sqrtD, Im_sqrtD, mod, arg);
                           // Puissance 1/3 :
-                          const double modS = pow(mod, 1./3.);
-                          const double argS = arg /3.;
-                          const double Re_S = modS*cos(argS);
-                          const double Im_S = modS*sin(argS);
+                          const double modS = pow(mod, 1. / 3.);
+                          const double argS = arg / 3.;
+                          const double Re_S = modS * cos(argS);
+                          const double Im_S = modS * sin(argS);
                           //
-                          complex_to_trig(R-Re_sqrtD, -Im_sqrtD, mod, arg);
+                          complex_to_trig(R - Re_sqrtD, -Im_sqrtD, mod, arg);
                           // Puissance 1/3 :
-                          const double modT = pow(mod, 1./3.);
-                          const double argT = arg /3.;
-                          const double Re_T = modT*cos(argT);
-                          const double Im_T = modT*sin(argT);
+                          const double modT = pow(mod, 1. / 3.);
+                          const double argT = arg / 3.;
+                          const double Re_T = modT * cos(argT);
+                          const double Im_T = modT * sin(argT);
 
-                          const double Re_B = Re_S+Re_T;
-                          const double Im_B = Im_S+Im_T;
-                          const double Re_A = Re_S-Re_T;
-                          const double Im_A = Im_S-Im_T;
-                          Cerr << "Im_B : " << Im_B << " Re_A : " << Re_A  << finl;
-                          const double z1 = -1./3.*b+Re_B;
-                          const double z2 = -1./3.*b-0.5*Re_B+1./2.*sqrt(3.)*Im_A;
-                          const double z3 = -1./3.*b-0.5*Re_B-1./2.*sqrt(3.)*Im_A;
+                          const double Re_B = Re_S + Re_T;
+                          const double Im_B = Im_S + Im_T;
+                          const double Re_A = Re_S - Re_T;
+                          const double Im_A = Im_S - Im_T;
+                          Cerr << "Im_B : " << Im_B << " Re_A : " << Re_A << finl;
+                          const double z1 = -1. / 3. * b + Re_B;
+                          const double z2 = -1. / 3. * b - 0.5 * Re_B + 1. / 2. * sqrt(3.) * Im_A;
+                          const double z3 = -1. / 3. * b - 0.5 * Re_B - 1. / 2. * sqrt(3.) * Im_A;
                           Cerr << " z1,2,3 = " << z1 << " " << z2 << " " << z3 << finl;
-                          Cerr << "Im_z1,2,3 = " << Im_B << " " << -0.5*Re_B+sqrt(3)/2.*Re_A << " " << -0.5*Re_B-sqrt(3)/2.*Re_A << finl;
-                          double x = z1+z2+z3 - std::min(z1,std::min(z2,z3)) - std::max(z1,std::max(z2,z3));
-                          lambda2(i,j,k) = x;
+                          Cerr << "Im_z1,2,3 = " << Im_B << " " << -0.5 * Re_B + sqrt(3) / 2. * Re_A << " " << -0.5 * Re_B - sqrt(3) / 2. * Re_A << finl;
+                          double x = z1 + z2 + z3 - std::min(z1, std::min(z2, z3)) - std::max(z1, std::max(z2, z3));
+                          lambda2(i, j, k) = x;
                           // Check that lambda2 is root :
                           x = z1;
-                          Cerr << "x= " << x << " results in: " << a*x*x*x + b*x*x + c*x + d << finl;
+                          Cerr << "x= " << x << " results in: " << a * x * x * x + b * x * x + c * x + d << finl;
                           x = z2;
-                          Cerr << "x= " << x << " results in: " << a*x*x*x + b*x*x + c*x + d << finl;
+                          Cerr << "x= " << x << " results in: " << a * x * x * x + b * x * x + c * x + d << finl;
                           x = z3;
-                          Cerr << "x= " << x << " results in: " << a*x*x*x + b*x*x + c*x + d << finl;
-
+                          Cerr << "x= " << x << " results in: " << a * x * x * x + b * x * x + c * x + d << finl;
 
                         }
                       else
                         {
-                          lambda2(i,j,k) = -1000.;
-                          Cerr << "Singularity for lambda2 at " << i << " " << j << " " << k << " value prescribed : -1000. " ;
+                          lambda2(i, j, k) = -1000.;
+                          Cerr << "Singularity for lambda2 at " << i << " " << j << " " << k << " value prescribed : -1000. ";
                           Cerr << "delta = " << delta << " ; Q = " << Q << finl;
-                          Cerr << "(R*sqrt(pow(fabs(Q),-3)))= " <<  (R*sqrt(pow(fabs(Q),-3))) << finl;
+                          Cerr << "(R*sqrt(pow(fabs(Q),-3)))= " << (R * sqrt(pow(fabs(Q), -3))) << finl;
                         }
                     }
                   else
                     {
                       // Cerr << "D : " << D << finl;
                       // If computation from scratch, Q=0 at t=0
-                      const double theta=acos(R*sqrt(-pow(Q-DMINFLOAT,-3)));
+                      const double theta = acos(R * sqrt(-pow(Q - DMINFLOAT, -3)));
                       //Cerr << "theta : " << theta << finl;
-                      const double z1 = 2*sqrt(-Q)*cos(theta/3.)-1./3.*b;
-                      const double z2 = 2*sqrt(-Q)*cos((theta+2*M_PI)/3.)-1./3.*b;
-                      const double z3 = 2*sqrt(-Q)*cos((theta+4*M_PI)/3.)-1./3.*b;
+                      const double z1 = 2 * sqrt(-Q) * cos(theta / 3.) - 1. / 3. * b;
+                      const double z2 = 2 * sqrt(-Q) * cos((theta + 2 * M_PI) / 3.) - 1. / 3. * b;
+                      const double z3 = 2 * sqrt(-Q) * cos((theta + 4 * M_PI) / 3.) - 1. / 3. * b;
                       //Cerr << " z1,2,3 = " << z1 << " " << z2 << " " << z3 << finl;
                       /*
-                                  double Re_sqrtD, Im_sqrtD;
-                                  if (D<0)
-                                    {
-                                      Re_sqrtD = 0.;
-                                      Im_sqrtD = sqrt(-D);
-                                    }
-                                  else
-                                    {
-                                      Re_sqrtD = sqrt(D);
-                                      Im_sqrtD = 0.;
-                                    }
-                                  double mod=0, arg=0;
-                                  complex_to_trig(R+Re_sqrtD, Im_sqrtD, mod, arg);
-                                  // Puissance 1/3 :
-                                  const double modS = pow(mod, 1./3.);
-                                  const double argS = arg /3.;
-                                  const double Re_S = modS*cos(argS);
-                                  const double Im_S = modS*sin(argS);
-                                  //
-                                  complex_to_trig(R-Re_sqrtD, -Im_sqrtD, mod, arg);
-                                  // Puissance 1/3 :
-                                  const double modT = pow(mod, 1./3.);
-                                  const double argT = arg /3.;
-                                  const double Re_T = modT*cos(argT);
-                                  const double Im_T = modT*sin(argT);
+                       double Re_sqrtD, Im_sqrtD;
+                       if (D<0)
+                       {
+                       Re_sqrtD = 0.;
+                       Im_sqrtD = sqrt(-D);
+                       }
+                       else
+                       {
+                       Re_sqrtD = sqrt(D);
+                       Im_sqrtD = 0.;
+                       }
+                       double mod=0, arg=0;
+                       complex_to_trig(R+Re_sqrtD, Im_sqrtD, mod, arg);
+                       // Puissance 1/3 :
+                       const double modS = pow(mod, 1./3.);
+                       const double argS = arg /3.;
+                       const double Re_S = modS*cos(argS);
+                       const double Im_S = modS*sin(argS);
+                       //
+                       complex_to_trig(R-Re_sqrtD, -Im_sqrtD, mod, arg);
+                       // Puissance 1/3 :
+                       const double modT = pow(mod, 1./3.);
+                       const double argT = arg /3.;
+                       const double Re_T = modT*cos(argT);
+                       const double Im_T = modT*sin(argT);
 
-                                  const double Re_B = Re_S+Re_T;
-                                  const double Im_B = Im_S+Im_T;
-                                  const double Re_A = Re_S-Re_T;
-                                  const double Im_A = Im_S-Im_T;
-                                  Cerr << "Im_B : " << Im_B << " Re_A : " << Re_A  << finl;
-                                  const double zz1 = -1./3.*b+Re_B;
-                                  const double zz2 = -1./3.*b-0.5*Re_B+1./2.*sqrt(3.)*Im_A;
-                                  const double zz3 = -1./3.*b-0.5*Re_B-1./2.*sqrt(3.)*Im_A;
-                                  Cerr << " zz1,2,3 = " << zz1 << " " << zz2 << " " << zz3 << finl;
+                       const double Re_B = Re_S+Re_T;
+                       const double Im_B = Im_S+Im_T;
+                       const double Re_A = Re_S-Re_T;
+                       const double Im_A = Im_S-Im_T;
+                       Cerr << "Im_B : " << Im_B << " Re_A : " << Re_A  << finl;
+                       const double zz1 = -1./3.*b+Re_B;
+                       const double zz2 = -1./3.*b-0.5*Re_B+1./2.*sqrt(3.)*Im_A;
+                       const double zz3 = -1./3.*b-0.5*Re_B-1./2.*sqrt(3.)*Im_A;
+                       Cerr << " zz1,2,3 = " << zz1 << " " << zz2 << " " << zz3 << finl;
 
-                                  //const double delta0 = b*b-3*a*c;
-                                  //const double delta1 = 2*b*b*b-9*a*b*c+27*a*a*d;
-                                  // Cerr << delta1*delta1-4*delta0*delta0*delta0 << " " << -27.*a*a*delta << finl;
-                                  // Apres le premier delta1, WIKI dit +- choix libre ?!
-                                  // WIKI : const double C = std::cbrt((delta1+sqrt(delta1*delta1-4*delta0*delta0*delta0))/2.);
-                                  //                      const double C = std::cbrt((delta1+sqrt(-delta1*delta1+4*delta0*delta0*delta0))/2.);
-                                  //const double C = cbrt((delta1+sqrt(-delta1*delta1+4*delta0*delta0*delta0))/2.);
-                                  //const double r = -1./(3.*a)*(b+C+delta0/C);
-                                  //
-                                  // Other roots :
-                                  //const double dprime = b*b-4*a*c-2*a*b*r-3*a*a*r*r;
-                                  // WIKI : const double r1 = (-b-r*a+sqrt(dprime))/(2.*a);
-                                  // WIKI : const double r2 = (-b-r*a-sqrt(dprime))/(2.*a);
-                                  //const double r1 = (-b-r*a+sqrt(-dprime))/(2.*a);
-                                  //const double r2 = (-b-r*a-sqrt(-dprime))/(2.*a);
-                                  // Cerr << r << " " << r1 << " " << r2 << finl;
-                                  // Sort it out :
-                      */
+                       //const double delta0 = b*b-3*a*c;
+                       //const double delta1 = 2*b*b*b-9*a*b*c+27*a*a*d;
+                       // Cerr << delta1*delta1-4*delta0*delta0*delta0 << " " << -27.*a*a*delta << finl;
+                       // Apres le premier delta1, WIKI dit +- choix libre ?!
+                       // WIKI : const double C = std::cbrt((delta1+sqrt(delta1*delta1-4*delta0*delta0*delta0))/2.);
+                       //                      const double C = std::cbrt((delta1+sqrt(-delta1*delta1+4*delta0*delta0*delta0))/2.);
+                       //const double C = cbrt((delta1+sqrt(-delta1*delta1+4*delta0*delta0*delta0))/2.);
+                       //const double r = -1./(3.*a)*(b+C+delta0/C);
+                       //
+                       // Other roots :
+                       //const double dprime = b*b-4*a*c-2*a*b*r-3*a*a*r*r;
+                       // WIKI : const double r1 = (-b-r*a+sqrt(dprime))/(2.*a);
+                       // WIKI : const double r2 = (-b-r*a-sqrt(dprime))/(2.*a);
+                       //const double r1 = (-b-r*a+sqrt(-dprime))/(2.*a);
+                       //const double r2 = (-b-r*a-sqrt(-dprime))/(2.*a);
+                       // Cerr << r << " " << r1 << " " << r2 << finl;
+                       // Sort it out :
+                       */
                       //DoubleVect roots(3);
                       //roots[0] = z1;
                       //roots[1] = z2;
@@ -1862,10 +1788,10 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
                       //trier(roots,cc); // du + grand au plus petit...
                       //Cerr << roots;
                       //Cerr << "Sorted roots : " << roots[0] << " " << roots[1] << " " << roots[2] << finl;
-                      const double x     = z1+z2+z3 - std::min(z1,std::min(z2,z3)) - std::max(z1,std::max(z2,z3));
-                      lambda2(i,j,k)	 = x;
+                      const double x = z1 + z2 + z3 - std::min(z1, std::min(z2, z3)) - std::max(z1, std::max(z2, z3));
+                      lambda2(i, j, k) = x;
                       // Check that lambda2 is root :
-                      const double rr	 = a*x*x*x + b*x*x + c*x + d ;
+                      const double rr = a * x * x * x + b * x * x + c * x + d;
                       //const double tol = 0.01;
                       //if ((rr>tol)||(rr<-tol))
                       //  {
@@ -1874,7 +1800,7 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
                       //    //Cerr << "Sorted roots : " << roots[0] << " " << roots[1] << " " << roots[2] << finl;
                       //    Cerr << "x= " << x << " results in: " << rr << finl;
                       //  }
-                      residue = std::max(residue,fabs(rr));
+                      residue = std::max(residue, fabs(rr));
                     }
                 }
             }
@@ -1893,43 +1819,39 @@ void compute_and_store_gradU_cell(const IJK_Field_double& vitesse_i,
   return;
 }
 
-
-void complex_to_trig(const double re, const double im,
-                     double& modul, double& arg)
+void complex_to_trig(const double re, const double im, double& modul, double& arg)
 {
-  modul = sqrt(re*re+im*im);
-  if (re>0)
+  modul = sqrt(re * re + im * im);
+  if (re > 0)
     {
-      arg = atan(im/re);
+      arg = atan(im / re);
     }
-  else if (re==0)
+  else if (re == 0)
     {
-      if (im>0)
-        arg = M_PI/2.;
+      if (im > 0)
+        arg = M_PI / 2.;
       else
-        arg = -M_PI/2.;
+        arg = -M_PI / 2.;
       Cerr << "watchout!" << finl;
     }
   else
     {
-      arg = M_PI + atan(im/re);
+      arg = M_PI + atan(im / re);
     }
-  return ;
+  return;
 }
 
-void squared_3x3(double& a11, double& a12, double& a13,
-                 double& a21, double& a22, double& a23,
-                 double& a31, double& a32, double& a33)
+void squared_3x3(double& a11, double& a12, double& a13, double& a21, double& a22, double& a23, double& a31, double& a32, double& a33)
 {
-  double aa11 = a11*a11 + a12*a21 + a13*a31;
-  double aa12 = a11*a12 + a12*a22 + a13*a32;
-  double aa13 = a11*a13 + a12*a23 + a13*a33;
-  double aa21 = a21*a11 + a22*a21 + a23*a31;
-  double aa22 = a21*a12 + a22*a22 + a23*a32;
-  double aa23 = a21*a13 + a22*a23 + a23*a33;
-  double aa31 = a31*a11 + a32*a21 + a33*a31;
-  double aa32 = a31*a12 + a32*a22 + a33*a32;
-  double aa33 = a31*a13 + a32*a23 + a33*a33;
+  double aa11 = a11 * a11 + a12 * a21 + a13 * a31;
+  double aa12 = a11 * a12 + a12 * a22 + a13 * a32;
+  double aa13 = a11 * a13 + a12 * a23 + a13 * a33;
+  double aa21 = a21 * a11 + a22 * a21 + a23 * a31;
+  double aa22 = a21 * a12 + a22 * a22 + a23 * a32;
+  double aa23 = a21 * a13 + a22 * a23 + a23 * a33;
+  double aa31 = a31 * a11 + a32 * a21 + a33 * a31;
+  double aa32 = a31 * a12 + a32 * a22 + a33 * a32;
+  double aa33 = a31 * a13 + a32 * a23 + a33 * a33;
 
   a11 = aa11;
   a12 = aa12;
@@ -1943,7 +1865,6 @@ void squared_3x3(double& a11, double& a12, double& a13,
 
 }
 
-
 void supprimer_chevauchement(IJK_Field_double& ind)
 {
 
@@ -1956,9 +1877,9 @@ void supprimer_chevauchement(IJK_Field_double& ind)
         {
           for (int i = 0; i < ni; i++)
             {
-              if(ind(i,j,k)!=0.0)
+              if (ind(i, j, k) != 0.0)
                 {
-                  ind(i,j,k) = 1.0;
+                  ind(i, j, k) = 1.0;
 
                 }
             }
@@ -1969,8 +1890,7 @@ void supprimer_chevauchement(IJK_Field_double& ind)
 
 }
 
-
-void update_integral_pressure(const IJK_Field_double& p_instant,  IJK_Field_double& p_tmp, const IJK_Field_double& indic, const IJK_Field_double& indic_tmp)
+void update_integral_pressure(const IJK_Field_double& p_instant, IJK_Field_double& p_tmp, const IJK_Field_double& indic, const IJK_Field_double& indic_tmp)
 {
   const int ni = p_instant.ni();
   const int nj = p_instant.nj();
@@ -1981,9 +1901,9 @@ void update_integral_pressure(const IJK_Field_double& p_instant,  IJK_Field_doub
         {
           for (int i = 0; i < ni; i++)
             {
-              if(indic_tmp(i,j,k)+indic(i,j,k)!=0.0 and indic(i,j,k)==1.0)
+              if (indic_tmp(i, j, k) + indic(i, j, k) != 0.0 and indic(i, j, k) == 1.0)
                 {
-                  p_tmp(i,j,k) = (p_tmp(i,j,k)*indic_tmp(i,j,k)+p_instant(i,j,k)*indic(i,j,k))/(indic_tmp(i,j,k)+indic(i,j,k));
+                  p_tmp(i, j, k) = (p_tmp(i, j, k) * indic_tmp(i, j, k) + p_instant(i, j, k) * indic(i, j, k)) / (indic_tmp(i, j, k) + indic(i, j, k));
 
                 }
             }
@@ -2002,7 +1922,7 @@ void update_integral_indicatrice(const IJK_Field_double& indic, const double del
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)
-        out(i,j,k) += indic(i,j,k)*deltat;
+        out(i, j, k) += indic(i, j, k) * deltat;
   return;
 }
 
@@ -2021,7 +1941,7 @@ double calculer_v_moyen(const IJK_Field_double& vx)
         {
           for (int i = 0; i < ni; i++)
             {
-              v_moy += vx(i,j,k);
+              v_moy += vx(i, j, k);
             }
         }
     }
@@ -2055,20 +1975,40 @@ double calculer_v_moyen(const IJK_Field_double& vx)
   return v_moy;
 }
 
-double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_double& cp, const IJK_Field_double& rho_field)
+double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_double& cp_rhocp_rhocpinv, const IJK_Field_double& rho_field, const double& rho_cp, const int rho_cp_case)
 {
   const int ni = vx.ni();
   const int nj = vx.nj();
   const int nk = vx.nk();
   double rho_cp_u_moy = 0.;
+  double rho = 1.;
+  double cp = 1.;
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)
         {
-          const double rho = rho_field(i,j,k);
-          const double c = cp(i,j,k);
-          const double u = (vx(i,j,k)+vx(i+1,j,k))/2;
-          const double rho_cp_u = rho*c*u;
+          switch(rho_cp_case)
+            {
+            case 0:
+              rho = rho_field(i, j, k);
+              cp = cp_rhocp_rhocpinv(i, j, k);
+              break;
+            case 1:
+              rho = cp_rhocp_rhocpinv(i, j, k);
+              break;
+            case 2:
+              rho = rho_cp;
+              break;
+            case 3:
+              rho = (1 / cp_rhocp_rhocpinv(i, j, k));
+              break;
+            default:
+              rho = rho_field(i, j, k);
+              cp = cp_rhocp_rhocpinv(i, j, k);
+              break;
+            }
+          const double u = (vx(i, j, k) + vx(i + 1, j, k)) / 2;
+          const double rho_cp_u = rho * cp * u;
           rho_cp_u_moy += rho_cp_u;
         }
   // somme sur tous les processeurs.
@@ -2082,113 +2022,48 @@ double calculer_rho_cp_u_moyen(const IJK_Field_double& vx, const IJK_Field_doubl
   return rho_cp_u_moy;
 }
 
-/*
- * MG : Multiple cases if cp_ or rho_cp_ are defined
- */
-double calculer_rho_cp_u_moyen(const IJK_Field_double& vx,const IJK_Field_double& rho_cp)
+double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx, const IJK_Field_double& temperature_adimensionnelle_theta, const IJK_Field_double& cp_rhocp_rhocpinv,
+                                                      const IJK_Field_double& rho_field, const double& rho_cp, const int rho_cp_case)
 {
-  const int ni = vx.ni();
-  const int nj = vx.nj();
-  const int nk = vx.nk();
-  double rho_cp_u_moy = 0.;
+  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
+  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
+  double theta_adim_moy = 0;
+  double rho_cp_u_moy = 0;
+  double rho = 1.;
+  double cp = 1.;
 
+  const int nk = temperature_adimensionnelle_theta.nk();
+  const int ni = temperature_adimensionnelle_theta.ni();
+  const int nj = temperature_adimensionnelle_theta.nj();
   for (int k = 0; k < nk; k++)
     for (int j = 0; j < nj; j++)
       for (int i = 0; i < ni; i++)
         {
-          const double u = (vx(i,j,k)+vx(i+1,j,k))/2;
-          const double rho_cp_u = rho_cp(i,j,k)*u;
-          rho_cp_u_moy += rho_cp_u;
-        }
-  // somme sur tous les processeurs.
-  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
-  // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
-  // cast en double au cas ou on voudrait faire un maillage >2 milliards
-  const IJK_Splitting& splitting = vx.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
-  rho_cp_u_moy /= n_mailles_tot;
-  return rho_cp_u_moy;
-}
-
-double calculer_rho_cp_u_moyen(const IJK_Field_double& vx,const double& rho_cp)
-{
-  const int ni = vx.ni();
-  const int nj = vx.nj();
-  const int nk = vx.nk();
-  double rho_cp_u_moy = 0.;
-  for (int k = 0; k < nk; k++)
-    for (int j = 0; j < nj; j++)
-      for (int i = 0; i < ni; i++)
-        {
-          const double u = (vx(i,j,k)+vx(i+1,j,k))/2;
-          const double rho_cp_u = rho_cp*u;
-          rho_cp_u_moy += rho_cp_u;
-        }
-  // somme sur tous les processeurs.
-  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
-  // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
-  // cast en double au cas ou on voudrait faire un maillage >2 milliards
-  const IJK_Splitting& splitting = vx.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
-  rho_cp_u_moy /= n_mailles_tot;
-  return rho_cp_u_moy;
-}
-
-double calculer_rho_cp_u_moyen_inv(const IJK_Field_double& vx,const IJK_Field_double& rho_cp_inv)
-{
-  const int ni = vx.ni();
-  const int nj = vx.nj();
-  const int nk = vx.nk();
-  double rho_cp_u_moy = 0.;
-  for (int k = 0; k < nk; k++)
-    for (int j = 0; j < nj; j++)
-      for (int i = 0; i < ni; i++)
-        {
-          const double u = (vx(i,j,k)+vx(i+1,j,k))/2;
-          const double rho_cp_u = u / rho_cp_inv(i,j,k);
-          rho_cp_u_moy += rho_cp_u;
-        }
-  // somme sur tous les processeurs.
-  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
-  // Maillage uniforme, il suffit donc de diviser par le nombre total de mailles:
-  // cast en double au cas ou on voudrait faire un maillage >2 milliards
-  const IJK_Splitting& splitting = vx.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
-  rho_cp_u_moy /= n_mailles_tot;
-  return rho_cp_u_moy;
-}
-
-double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
-                                                      const IJK_Field_double& cp,
-                                                      const IJK_Field_double& rho_field)
-{
-  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double theta_adim_moy = 0;
-  double rho_cp_u_moy =0;
-
-  const int nk = temperature_adimensionnelle_theta.nk();
-  const int ni = temperature_adimensionnelle_theta.ni();
-  const int nj = temperature_adimensionnelle_theta.nj();
-  for (int k = 0; k < nk; k++)
-    {
-      for (int j = 0; j < nj; j++)
-        {
-          for (int i = 0; i < ni; i++)
+          switch(rho_cp_case)
             {
-              const double theta_adim = temperature_adimensionnelle_theta(i,j,k);
-              const double rho = rho_field(i,j,k);
-              const double c = cp(i,j,k);
-              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
-              rho_cp_u_moy += rho*c*u;
-              theta_adim_moy += rho*c*u*theta_adim;
+            case 0:
+              rho = rho_field(i, j, k);
+              cp = cp_rhocp_rhocpinv(i, j, k);
+              break;
+            case 1:
+              rho = cp_rhocp_rhocpinv(i, j, k);
+              break;
+            case 2:
+              rho = rho_cp;
+              break;
+            case 3:
+              rho = (1 / cp_rhocp_rhocpinv(i, j, k));
+              break;
+            default:
+              rho = rho_field(i, j, k);
+              cp = cp_rhocp_rhocpinv(i, j, k);
+              break;
             }
+          const double theta_adim = temperature_adimensionnelle_theta(i, j, k);
+          const double u = (vx(i, j, k) + vx(i + 1, j, k)) / 2.;
+          rho_cp_u_moy += rho * cp * u;
+          theta_adim_moy += rho * cp * u * theta_adim;
         }
-    }
   //somme sur les proc
   rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
   theta_adim_moy = Process::mp_sum(theta_adim_moy);
@@ -2201,176 +2076,26 @@ double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx
   return theta_adim_moy;
 }
 
-double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
-                                                      const double& rho_cp)
-{
-  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double theta_adim_moy = 0;
-  double rho_cp_u_moy =0;
-
-  const int nk = temperature_adimensionnelle_theta.nk();
-  const int ni = temperature_adimensionnelle_theta.ni();
-  const int nj = temperature_adimensionnelle_theta.nj();
-  for (int k = 0; k < nk; k++)
-    {
-      for (int j = 0; j < nj; j++)
-        {
-          for (int i = 0; i < ni; i++)
-            {
-              const double theta_adim = temperature_adimensionnelle_theta(i,j,k);
-              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
-              rho_cp_u_moy += rho_cp*u;
-              theta_adim_moy += rho_cp*u*theta_adim;
-            }
-        }
-    }
-  //somme sur les proc
-  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
-  theta_adim_moy = Process::mp_sum(theta_adim_moy);
-  //Division par le nombre de mailles
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
-  rho_cp_u_moy /= n_mailles_tot;
-  theta_adim_moy /= n_mailles_tot;
-  //valeur adimensionnelle moyenne
-  theta_adim_moy /= rho_cp_u_moy;
-  return theta_adim_moy;
-}
-
-double calculer_temperature_adimensionnelle_theta_moy(const IJK_Field_double& vx,
-                                                      const IJK_Field_double& temperature_adimensionnelle_theta,
-                                                      const IJK_Field_double& rho_cp)
-{
-  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double theta_adim_moy = 0;
-  double rho_cp_u_moy =0;
-
-  const int nk = temperature_adimensionnelle_theta.nk();
-  const int ni = temperature_adimensionnelle_theta.ni();
-  const int nj = temperature_adimensionnelle_theta.nj();
-  for (int k = 0; k < nk; k++)
-    {
-      for (int j = 0; j < nj; j++)
-        {
-          for (int i = 0; i < ni; i++)
-            {
-              const double theta_adim = temperature_adimensionnelle_theta(i,j,k);
-              const double rho_cp_ijk = rho_cp(i,j,k);
-              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
-              rho_cp_u_moy += rho_cp_ijk*u;
-              theta_adim_moy += rho_cp_ijk*u*theta_adim;
-            }
-        }
-    }
-  //somme sur les proc
-  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
-  theta_adim_moy = Process::mp_sum(theta_adim_moy);
-  //Division par le nombre de mailles
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
-  rho_cp_u_moy /= n_mailles_tot;
-  theta_adim_moy /= n_mailles_tot;
-  //valeur adimensionnelle moyenne
-  theta_adim_moy /= rho_cp_u_moy;
-  return theta_adim_moy;
-}
-
-double calculer_temperature_adimensionnelle_theta_moy_inv(const IJK_Field_double& vx,
-                                                          const IJK_Field_double& temperature_adimensionnelle_theta,
-                                                          const IJK_Field_double& rho_cp_inv)
-{
-  const IJK_Splitting& splitting = temperature_adimensionnelle_theta.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double theta_adim_moy = 0;
-  double rho_cp_u_moy =0;
-
-  const int nk = temperature_adimensionnelle_theta.nk();
-  const int ni = temperature_adimensionnelle_theta.ni();
-  const int nj = temperature_adimensionnelle_theta.nj();
-  for (int k = 0; k < nk; k++)
-    {
-      for (int j = 0; j < nj; j++)
-        {
-          for (int i = 0; i < ni; i++)
-            {
-              const double theta_adim = temperature_adimensionnelle_theta(i,j,k);
-              const double rho_cp = 1/rho_cp_inv(i,j,k);
-              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
-              rho_cp_u_moy += rho_cp*u;
-              theta_adim_moy += rho_cp*u*theta_adim;
-            }
-        }
-    }
-  //somme sur les proc
-  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
-  theta_adim_moy = Process::mp_sum(theta_adim_moy);
-  //Division par le nombre de mailles
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
-  rho_cp_u_moy /= n_mailles_tot;
-  theta_adim_moy /= n_mailles_tot;
-  //valeur adimensionnelle moyenne
-  theta_adim_moy /= rho_cp_u_moy;
-  return theta_adim_moy;
-}
-
-double calculer_temperature_theta_moy(const IJK_Field_double& vx, const IJK_Field_double& temperature,
-                                      const IJK_Field_double& cp, const IJK_Field_double& rho_field)
-{
-  const IJK_Splitting& splitting = temperature.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double theta_moy = 0;
-  double rho_cp_u_moy =0;
-
-  const int nk = temperature.nk();
-  const int ni = temperature.ni();
-  const int nj = temperature.nj();
-  for (int k = 0; k < nk; k++)
-    {
-      for (int j = 0; j < nj; j++)
-        {
-          for (int i = 0; i < ni; i++)
-            {
-              const double theta = temperature(i,j,k);
-              const double rho = rho_field(i,j,k);
-              const double c = cp(i,j,k);
-              const double u = (vx(i,j,k)+vx(i+1,j,k))/2.;
-              rho_cp_u_moy += rho*c*u;
-              theta_moy += rho*c*u*theta;
-            }
-        }
-    }
-  //somme sur les proc
-  rho_cp_u_moy = Process::mp_sum(rho_cp_u_moy);
-  theta_moy = Process::mp_sum(theta_moy);
-  //Division par le nombre de mailles
-  const double n_mailles_tot = ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) * geom.get_nb_elem_tot(2);
-  rho_cp_u_moy /= n_mailles_tot;
-  theta_moy /= n_mailles_tot;
-  //valeur adimensionnelle moyenne
-  theta_moy /= rho_cp_u_moy;
-  return theta_moy;
-}
-
-double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho_field, const int kmin, const int kmax)
+double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& cp_rhocp_rhocpinv, const IJK_Field_double& rho_field, const double& rho_cp, const int kmin, const int kmax,
+                              const int rho_cp_case)
 {
   const IJK_Splitting& splitting = variable.get_splitting();
   const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
   double variable_moy = 0;
-  double rho_cp_moy =0;
+  double rho_cp_moy = 0.;
   const int nk = variable.nk();
   if (kmin == 0)
-    calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, kmin);
+    calculer_rho_cp_var(variable, cp_rhocp_rhocpinv, rho_field, rho_cp, rho_cp_moy, variable_moy, kmin, rho_cp_case);
   if (kmin + variable.nk() == kmax)
     {
-      int k = nk-1;
-      calculer_rho_cp_var(variable, cp, rho_field, rho_cp_moy, variable_moy, k);
+      int k = nk - 1;
+      calculer_rho_cp_var(variable, cp_rhocp_rhocpinv, rho_field, rho_cp, rho_cp_moy, variable_moy, k, rho_cp_case);
     }
   //somme sur les proc
   rho_cp_moy = Process::mp_sum(rho_cp_moy);
   variable_moy = Process::mp_sum(variable_moy);
   //Division par le nombre de mailles sur les 2 plans de bords
-  const double n_mailles_plan_xy_tot = 2.*((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) ;
+  const double n_mailles_plan_xy_tot = 2. * ((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1);
   rho_cp_moy /= n_mailles_plan_xy_tot;
   variable_moy /= n_mailles_plan_xy_tot;
   //valeur adimensionnelle moyenne
@@ -2378,149 +2103,46 @@ double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_
   return variable_moy;
 }
 
-void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& cp, const IJK_Field_double& rho, double& rho_cp_moy, double& variable_moy, int k)
+void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& cp_rhocp_rhocpinv, const IJK_Field_double& rho, const double& rho_cp, double& rho_cp_moy, double& variable_moy,
+                         int k, const int rho_cp_case)
 {
   const int ni = variable.ni();
   const int nj = variable.nj();
+  double rho_ijk = 1.;
+  double cp_ijk = 1.;
   for (int j = 0; j < nj; j++)
     for (int i = 0; i < ni; i++)
       {
-        const double var = variable(i,j,k);
-        const double cp_ijk = cp(i,j,k);
-        const double rho_ijk = rho(i,j,k);
+        switch(rho_cp_case)
+          {
+          case 0:
+            rho_ijk = rho(i, j, k);
+            cp_ijk = cp_rhocp_rhocpinv(i, j, k);
+            break;
+          case 1:
+            rho_ijk = cp_rhocp_rhocpinv(i, j, k);
+            break;
+          case 2:
+            rho_ijk = rho_cp;
+            break;
+          case 3:
+            rho_ijk = (1 / cp_rhocp_rhocpinv(i, j, k));
+            break;
+          default:
+            rho_ijk = rho(i, j, k);
+            cp_ijk = cp_rhocp_rhocpinv(i, j, k);
+            break;
+          }
+        const double var = variable(i, j, k);
         rho_cp_moy += rho_ijk * cp_ijk;
-        variable_moy += rho_ijk*cp_ijk*var;
-      }
-}
-
-/*
- * MG : Multiple cases if cp_ or rho_cp_ are defined
- */
-
-double calculer_variable_wall(const IJK_Field_double& variable, const double& rho_cp, const int kmin, const int kmax)
-{
-  const IJK_Splitting& splitting = variable.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double variable_moy = 0;
-  double rho_cp_moy =0;
-  const int nk = variable.nk();
-  if (kmin == 0)
-    calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
-  if (kmin + variable.nk() == kmax)
-    {
-      int k = nk-1;
-      calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
-    }
-  //somme sur les proc
-  rho_cp_moy = Process::mp_sum(rho_cp_moy);
-  variable_moy = Process::mp_sum(variable_moy);
-  //Division par le nombre de mailles sur les 2 plans de bords
-  const double n_mailles_plan_xy_tot = 2.*((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) ;
-  rho_cp_moy /= n_mailles_plan_xy_tot;
-  variable_moy /= n_mailles_plan_xy_tot;
-  //valeur adimensionnelle moyenne
-  variable_moy /= rho_cp_moy;
-  return variable_moy;
-}
-
-void calculer_rho_cp_var(const IJK_Field_double& variable, const double& rho_cp, double& rho_cp_moy, double& variable_moy, int k)
-{
-  const int ni = variable.ni();
-  const int nj = variable.nj();
-  for (int j = 0; j < nj; j++)
-    for (int i = 0; i < ni; i++)
-      {
-        const double var = variable(i,j,k);
-        rho_cp_moy += rho_cp;
-        variable_moy += rho_cp*var;
-      }
-}
-
-double calculer_variable_wall(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, const int kmin, const int kmax)
-{
-  const IJK_Splitting& splitting = variable.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double variable_moy = 0;
-  double rho_cp_moy =0;
-  const int nk = variable.nk();
-  if (kmin == 0)
-    calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, kmin);
-  if (kmin + variable.nk() == kmax)
-    {
-      int k = nk-1;
-      calculer_rho_cp_var(variable, rho_cp, rho_cp_moy, variable_moy, k);
-    }
-  //somme sur les proc
-  rho_cp_moy = Process::mp_sum(rho_cp_moy);
-  variable_moy = Process::mp_sum(variable_moy);
-  //Division par le nombre de mailles sur les 2 plans de bords
-  const double n_mailles_plan_xy_tot = 2.*((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) ;
-  rho_cp_moy /= n_mailles_plan_xy_tot;
-  variable_moy /= n_mailles_plan_xy_tot;
-  //valeur adimensionnelle moyenne
-  variable_moy /= rho_cp_moy;
-  return variable_moy;
-}
-
-void calculer_rho_cp_var(const IJK_Field_double& variable, const IJK_Field_double& rho_cp, double& rho_cp_moy, double& variable_moy, int k)
-{
-  const int ni = variable.ni();
-  const int nj = variable.nj();
-  for (int j = 0; j < nj; j++)
-    for (int i = 0; i < ni; i++)
-      {
-        const double var = variable(i,j,k);
-        const double rho_cp_ijk = rho_cp(i,j,k);
-        rho_cp_moy += rho_cp_ijk;
-        variable_moy += rho_cp_ijk*var;
-      }
-}
-
-double calculer_variable_wall_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv, const int kmin, const int kmax)
-{
-  const IJK_Splitting& splitting = variable.get_splitting();
-  const IJK_Grid_Geometry& geom = splitting.get_grid_geometry();
-  double variable_moy = 0;
-  double rho_cp_moy =0;
-  const int nk = variable.nk();
-  if (kmin == 0)
-    calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, kmin);
-  if (kmin + variable.nk() == kmax)
-    {
-      int k = nk-1;
-      calculer_rho_cp_var_inv(variable, rho_cp_inv, rho_cp_moy, variable_moy, k);
-    }
-  //somme sur les proc
-  rho_cp_moy = Process::mp_sum(rho_cp_moy);
-  variable_moy = Process::mp_sum(variable_moy);
-  //Division par le nombre de mailles sur les 2 plans de bords
-  const double n_mailles_plan_xy_tot = 2.*((double) geom.get_nb_elem_tot(0)) * geom.get_nb_elem_tot(1) ;
-  rho_cp_moy /= n_mailles_plan_xy_tot;
-  variable_moy /= n_mailles_plan_xy_tot;
-  //valeur adimensionnelle moyenne
-  variable_moy /= rho_cp_moy;
-  return variable_moy;
-}
-
-void calculer_rho_cp_var_inv(const IJK_Field_double& variable, const IJK_Field_double& rho_cp_inv, double& rho_cp_moy, double& variable_moy, int k)
-{
-  const int ni = variable.ni();
-  const int nj = variable.nj();
-  for (int j = 0; j < nj; j++)
-    for (int i = 0; i < ni; i++)
-      {
-        const double var = variable(i,j,k);
-        const double rho_cp_ijk = 1 / rho_cp_inv(i,j,k);
-        rho_cp_moy += rho_cp_ijk;
-        variable_moy += rho_cp_ijk*var;
+        variable_moy += rho_ijk * cp_ijk * var;
       }
 }
 
 /*
  * Temperature gradient calculation
  */
-void add_gradient_temperature(const IJK_Field_double& temperature, const double constant,
-                              IJK_Field_double& grad_T_x, IJK_Field_double& grad_T_y, IJK_Field_double& grad_T_z,
+void add_gradient_temperature(const IJK_Field_double& temperature, const double constant, IJK_Field_double& grad_T_x, IJK_Field_double& grad_T_y, IJK_Field_double& grad_T_z,
                               const Boundary_Conditions_Thermique& boundary, const IJK_Field_double& lambda)
 {
   const IJK_Grid_Geometry& geom = grad_T_x.get_splitting().get_grid_geometry();
@@ -2535,7 +2157,7 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
           const double f = constant / geom.get_constant_delta(0);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              grad_T_x(i,j,k) += ( temperature(i,j,k) -  temperature(i-1,j,k)) * f;
+              grad_T_x(i, j, k) += (temperature(i, j, k) - temperature(i - 1, j, k)) * f;
         }
       // j component of the temperature gradient:
       if (k < grad_T_y.nk())
@@ -2545,7 +2167,7 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
           const double f = constant / geom.get_constant_delta(1);
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              grad_T_y(i,j,k) += ( temperature(i,j,k) -  temperature(i,j-1,k)) * f;
+              grad_T_y(i, j, k) += (temperature(i, j, k) - temperature(i, j - 1, k)) * f;
         }
       // k component of the temperature gradient:
       bool on_the_wall = false;
@@ -2554,13 +2176,12 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
       int bctype_kmin = boundary.get_bctype_k_min();
       int bctype_kmax = boundary.get_bctype_k_max();
 
-
       const int k_min = grad_T_z.get_splitting().get_offset_local(DIRECTION_K);
       const int nk_tot = grad_T_z.get_splitting().get_nb_items_global(IJK_Splitting::FACES_K, DIRECTION_K);
       const int offset = grad_T_z.get_splitting().get_offset_local(DIRECTION_K);
       const ArrOfDouble& delta_z_all = geom.get_delta(DIRECTION_K);
-      bool perio_k=grad_T_z.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
-      if ((k + k_min == 0 || k + k_min == nk_tot-1) && (!perio_k))
+      bool perio_k = grad_T_z.get_splitting().get_grid_geometry().get_periodic_flag(DIRECTION_K);
+      if ((k + k_min == 0 || k + k_min == nk_tot - 1) && (!perio_k))
         on_the_wall = true;
 
       if (k < grad_T_z.nk() && (!on_the_wall))
@@ -2568,69 +2189,68 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
           const int jmax = grad_T_z.nj();
           const int imax = grad_T_z.ni();
           double f;
-          if(!perio_k)
+          if (!perio_k)
             {
-              f = constant * 2. / (delta_z_all[k-1+k_min] + delta_z_all[k+k_min]);
+              f = constant * 2. / (delta_z_all[k - 1 + k_min] + delta_z_all[k + k_min]);
             }
           else
             {
-              f = (constant /  delta_z_all[k+offset]);
+              f = (constant / delta_z_all[k + offset]);
             }
           for (int j = 0; j < jmax; j++)
             for (int i = 0; i < imax; i++)
-              grad_T_z(i,j,k) += ( temperature(i,j,k) -  temperature(i,j,k-1)) * f;
+              grad_T_z(i, j, k) += (temperature(i, j, k) - temperature(i, j, k - 1)) * f;
         }
       else if (k < grad_T_z.nk() && (on_the_wall))
         {
           if (k + k_min == 0)
             on_the_first_cell = true;
-          if (k + k_min == nk_tot-1)
+          if (k + k_min == nk_tot - 1)
             on_the_last_cell = true;
 
-          if(on_the_first_cell)
+          if (on_the_first_cell)
             {
               const int jmax = grad_T_z.nj();
               const int imax = grad_T_z.ni();
               double f;
-              if(bctype_kmin == 0)
+              if (bctype_kmin == 0)
                 {
-                  f = constant *  2. / delta_z_all[k+offset];
+                  f = constant * 2. / delta_z_all[k + offset];
                   // schema decentre prenant en compte le bord et les trois centres de cellules suivants
                   // pour calculer le gradient a la demi-longueur
                   //const double coef = 1./48.;
 
-                  const double  temperature_kmin = boundary.get_temperature_kmin();
+                  const double temperature_kmin = boundary.get_temperature_kmin();
                   for (int j = 0; j < jmax; j++)
                     for (int i = 0; i < imax; i++)
-                      grad_T_z(i,j,0) +=  (temperature(i,j,0) - temperature_kmin)*f;
+                      grad_T_z(i, j, 0) += (temperature(i, j, 0) - temperature_kmin) * f;
                   //  grad_T_z(i,j,0) += (- (23.* temperature_kmin) + (21. * temperature(i,j,k)) + (3.* temperature(i,j,k+1)) - (1. * temperature(i,j,k+2)) ) * f * coef;
                   // grad_T_z(i,j,0) += ( 23.*temperature_kmin - 21.*temperature(i,j,k) - 3.*temperature(i,j,k+1) + 1.*temperature(i,j,k+2)) * f *coef;
 
                 }
 
-              if(bctype_kmin == 1)
+              if (bctype_kmin == 1)
                 {
                   const double flux_kmin = boundary.get_flux_kmin();
                   for (int j = 0; j < jmax; j++)
                     for (int i = 0; i < imax; i++)
                       {
-                        double l = lambda(i,j,0);
-                        grad_T_z(i,j,0) += -flux_kmin/l;
+                        double l = lambda(i, j, 0);
+                        grad_T_z(i, j, 0) += -flux_kmin / l;
                       }
-
 
                 }
             }
 
-          if(on_the_last_cell)
+          if (on_the_last_cell)
             {
               const int jmax = grad_T_z.nj();
               const int imax = grad_T_z.ni();
               double f;
 
-              if(bctype_kmax == 0)
+              if (bctype_kmax == 0)
                 {
-                  f = constant  *  2. / delta_z_all[k-1+offset];
+                  f = constant * 2. / delta_z_all[k - 1 + offset];
 
                   Cerr << "IJK_Naviers_Stokes" << " " << "erreur_dans_le_calcul_du_gradient_de_T" << finl;
 
@@ -2638,26 +2258,24 @@ void add_gradient_temperature(const IJK_Field_double& temperature, const double 
                   //const double coef = 1./48.;
                   for (int j = 0; j < jmax; j++)
                     for (int i = 0; i < imax; i++)
-                      grad_T_z(i,j,k) += (temperature_kmax -temperature(i,j,k-1))*f;
+                      grad_T_z(i, j, k) += (temperature_kmax - temperature(i, j, k - 1)) * f;
                   //grad_T_z(i,j,k) += ( 23.*temperature_kmax - 21.*temperature(i,j,k-1) - 3.*temperature(i,j,k-2) + 1.*temperature(i,j,k-3)) * f *coef;
                   // grad_T_z(i,j,k) += (-23.*temperature_kmax + 21.*temperature(i,j,k-1) + 3.*temperature(i,j,k-2)-1.*temperature(i,j,k+2) ) * f * coef;
                 }
 
-              if(bctype_kmax == 1)
+              if (bctype_kmax == 1)
                 {
                   const double flux_kmax = boundary.get_flux_kmax();
                   for (int j = 0; j < jmax; j++)
                     for (int i = 0; i < imax; i++)
                       {
-                        double l = lambda(i,j,k-1);
-                        grad_T_z(i,j,k) += flux_kmax/l;
+                        double l = lambda(i, j, k - 1);
+                        grad_T_z(i, j, k) += flux_kmax / l;
                       }
                 }
             }
         }
 
-
     }
 }
-
 
