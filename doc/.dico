@@ -237,6 +237,8 @@
  Convection_Diffusion_Temperature_Turbulent Convection_Diffusion_Temperature_Turbulent Convection_Diffusion_Temperature_Turbulent.h
  Coriolis_QC_VDF_Face Terme_Source_Coriolis_QC_VDF_Face Terme_Source_Coriolis_VDF_Face.h
  Coriolis_VDF_Face Terme_Source_Coriolis_VDF_Face Terme_Source_Coriolis_VDF_Face.h
+ Correction_Antal_Face_PolyMAC_P0 Correction_Antal_PolyMAC_P0 Correction_Antal_PolyMAC_P0.h
+ Correction_Antal_VDF_Face Correction_Antal_VDF Correction_Antal_VDF.h
  Correlation0 Correlation Correlation.h
  Correlation_base Correlation_base Correlation_base.h
  Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF Correlation_Vec_Sca_VDF.h
@@ -283,6 +285,7 @@
  Discret_Thermique Discret_Thermique Discret_Thermique.h
  Discret_Thyd Discret_Thyd Discret_Thyd.h
  Dispersion_bulles_base Dispersion_bulles_base Dispersion_bulles_base.h
+ Dispersion_bulles_constante Dispersion_bulles_constante Dispersion_bulles_constante.h
  Dispersion_bulles_Face_PolyMAC_P0 Dispersion_bulles_PolyMAC_P0 Dispersion_bulles_PolyMAC_P0.h
  Dispersion_bulles_VDF_Face Dispersion_bulles_VDF Dispersion_bulles_VDF.h
  Distance_paroi Distanceparoi Distanceparoi.h
@@ -558,6 +561,7 @@
  Loi_Fermeture_Test Loi_Fermeture_Test Loi_Fermeture_Test.h
  Loi_horaire Loi_horaire Loi_horaire.h
  Loi_paroi_base Loi_paroi_base Loi_paroi_base.h
+ Loi_paroi_log Loi_paroi_log Loi_paroi_log.h
  Mailler Mailler Mailler.h
  MaillerParallel MaillerParallel MaillerParallel.h
  Marqueur_Lagrange_base Marqueur_Lagrange_base Marqueur_Lagrange_base.h
@@ -1237,6 +1241,8 @@
  Transformer Transformer Transformer.h
  Transport_Interfaces_base Transport_Interfaces_base Transport_Interfaces_base.h
  Transport_turbulent_base Transport_turbulent_base Transport_turbulent_base.h
+ Transport_turbulent_GGDH|Transport_turbulent_anisotrope Transport_turbulent_GGDH Transport_turbulent_GGDH.h
+ Transport_turbulent_SGDH|Transport_turbulent_isotrope Transport_turbulent_SGDH Transport_turbulent_SGDH.h
  Travail_pression_Elem_PolyMAC_P0P1NC|Travail_pression_Elem_PolyMAC_P0 Travail_pression_PolyMAC_P0P1NC Travail_pression_PolyMAC_P0P1NC.h
  travail_pression_VDF_P0_VDF Travail_pression_VDF Travail_pression_VDF.h
  Triangle Triangle Triangle.h
@@ -1265,6 +1271,7 @@
  Verifier_Simplexes Verifier_Simplexes Verifier_Simplexes.h
  VF_inst Discr_inst Discr_inst.h
  Viscosite_turbulente_base Viscosite_turbulente_base Viscosite_turbulente_base.h
+ Viscosite_turbulente_l_melange Viscosite_turbulente_l_melange Viscosite_turbulente_l_melange.h
  Viscosite_turbulente_multiple Viscosite_turbulente_multiple Viscosite_turbulente_multiple.h
  Vitesse_relative_base Vitesse_relative_base Vitesse_relative_base.h
  Vitesse_relative_derive_base Vitesse_derive_base Vitesse_derive_base.h
