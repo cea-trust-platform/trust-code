@@ -112,7 +112,7 @@ class TRUSTCase(object):
 
     _UNIQ_ID_START = -1
 
-    def __init__(self, directory, datasetName, nbProcs=1, record=False):
+    def __init__(self, directory, datasetName, nbProcs=1, execOptions="", record=False):
         """ 
         Initialisation of the class
 
@@ -127,6 +127,8 @@ class TRUSTCase(object):
             Number of processors to use to run the case.
         record : bool 
             whether to add the case to the global list of cases to run
+        execOptions : str
+            TRUST Options to add at the execution of the test case 
 
         Returns
         ------
@@ -140,6 +142,7 @@ class TRUSTCase(object):
         self.nbProcs_ = nbProcs
         self.last_run_ok_ = -255  # exit status of the last run of the case
         self.last_run_err_ = ""  # error message returned when last running the case
+        self.execOptions = execOptions
         if record:
             self._ListCases.append(self)
 
@@ -193,7 +196,7 @@ class TRUSTCase(object):
         result = filedata.substitute(subs_dict)
         with open(path, "w") as file: file.write(result)
 
-    def copy(self, targetName, targetDirectory=None, nbProcs=1):
+    def copy(self, targetName, targetDirectory=None, nbProcs=1, execOptions=""):
         """ 
             Copy a TRUST Case
 
@@ -218,7 +221,7 @@ class TRUSTCase(object):
 
         copyfile(self._fullPath(), pthTgt)
 
-        return TRUSTCase(targetDirectory, targetName, nbProcs=nbProcs, record=False)
+        return TRUSTCase(targetDirectory, targetName, nbProcs=nbProcs, execOptions=execOptions, record=False)
 
     def dumpDataset(self, user_keywords=[]):
         """ 
@@ -342,7 +345,7 @@ class TRUSTCase(object):
         scriptFl = os.path.join(BUILD_DIRECTORY, "cmds_%s.sh" % uniq_id)
 
         logName = "cmds_%s.log" % uniq_id
-        n, d = self.dataFileName_, self.dir_
+        n, d, e = self.dataFileName_, self.dir_, self.execOptions
         fullD, fullL = os.path.join(BUILD_DIRECTORY, d), os.path.join(BUILD_DIRECTORY, logName)
         para = ""
         if self.nbProcs_ != 1:
@@ -360,7 +363,7 @@ class TRUSTCase(object):
             s += "fi\n"
 
             # Running case
-            s += "  trust %s %s 1>%s.out 2>%s.err;\n" % (n, para, n, n)
+            s += "  trust %s %s %s 1>%s.out 2>%s.err;\n" % (n, para, e, n, n)
             s += "  if [ ! $? -eq 0 ]; then exit -1; fi; \n"
 
             # Running and checking post_run was OK:
@@ -442,7 +445,7 @@ class TRUSTCase(object):
         ### Run Case ###
         err_file = self.dataFileName_ + ".err"
         out_file = self.dataFileName_ + ".out"
-        cmd = "trust %s %s 2>%s 1>%s" % (self.dataFileName_, str(self.nbProcs_), err_file, out_file)
+        cmd = "trust %s %s %s 2>%s 1>%s" % (self.dataFileName_, str(self.nbProcs_), self.execOptions, err_file, out_file)
         output = subprocess.run(cmd, shell=True, executable="/bin/bash", stderr=subprocess.STDOUT)
         if verbose:
             print(cmd)
@@ -627,7 +630,7 @@ class TRUSTSuite(object):
         else:
             for case in lstC:
                 try:
-                    case.runCase()
+                    case.runCase(verbose=verbose)
                     allOK = allOK and case.last_run_ok_
                     if not allOK:
                         print(err_msg % (case.dir_, case.name_))
@@ -864,7 +867,7 @@ def dumpText(fiche, list_keywords=[]):
 
     print("".join(test))
 
-def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetData=None):
+def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetData=None, execOptions=""):
     """ Add a case to run to the list of globally recorded cases.
     
     Parameters
@@ -904,12 +907,12 @@ def addCaseFromTemplate(templateData, targetDirectory, dic, nbProcs=1, targetDat
     from shutil import copyfile
 
     copyfile(fullDir, pthTgt)
-    tc = addCase(targetDirectory, targetData, nbProcs)
+    tc = addCase(targetDirectory, targetData, nbProcs, execOptions)
     tc.substitute_template(dic)
     return tc
 
 
-def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
+def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1, execOptions=""):
     """ 
     Add a case to run to the list of globally recorded cases.
 
@@ -922,6 +925,8 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
         Name of the case we want to run.
     nbProcs : int 
         Number of processors
+    execOptions : str
+        TRUST Options to add at the execution of the test case 
 
     Returns
     -------
@@ -938,7 +943,7 @@ def addCase(directoryOrTRUSTCase, datasetName="", nbProcs=1):
     elif isinstance(directoryOrTRUSTCase, str):
         if datasetName == "":
             raise ValueError("addCase() method can either be called with a single argument (a TRUSTCase object) or with at least 2 arguments (directory and case name)")
-        tc = TRUSTCase(directoryOrTRUSTCase, datasetName, nbProcs)
+        tc = TRUSTCase(directoryOrTRUSTCase, datasetName, nbProcs,execOptions=execOptions)
         initCaseSuite()
         defaultSuite_.addCase(tc)
         return tc
