@@ -536,6 +536,7 @@
  Lire|Read Lire Lire.h
  Liste_bloc Liste_bloc Liste_bloc.h
  Liste_Champ_Generique Liste_Champ_Generique Liste_Champ_Generique.h
+ Lml_to_lata LmlToLata LataToMED.h
  Ln Ln StdFunction.h
  Loi_Etat Loi_Etat Loi_Etat.h
  Loi_Etat_base Loi_Etat_base Loi_Etat_base.h

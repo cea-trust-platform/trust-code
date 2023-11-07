@@ -844,7 +844,8 @@ bool Schema_Temps_base::corriger_dt_calcule(double& dt_calc) const
     }
   // Compute the time step dt as the minimal value between dt_max_ and stability time step (dt_stab) * security factor (facsec)
   double dt = std::min (dt_max_, dt_stab_ * facsec_);
-  Cout<<"Time step finally used to solve the next time step (taking into account facsec) : " << dt << " s." << finl;
+  if (limpr() || (nb_pas_dt_ == 0))
+    Cout<<"Time step finally used to solve the next time step (taking into account facsec) : " << dt << " s." << finl;
   if ((dt - dt_min_)/(dt+DMINFLOAT) < -1.e-6)
     {
       // Calculation stops if time step dt is less than dt_min
