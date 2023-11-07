@@ -21,22 +21,22 @@ Sortie& Bords_Internes::printOn(Sortie& os) const { return LIST(Bord_Interne)::p
 
 Entree& Bords_Internes::readOn(Entree& is) { return LIST(Bord_Interne)::readOn(is); }
 
-/*! @brief Associe un domaine a tous les objets Faces_Interne de la liste.
+/*! @brief Associe un domaine a tous les objets Bord_Interne de la liste.
  *
- * @param (Domaine& un_domaine) le domaine a associer aux Faces_Interne de la liste
+ * @param (Domaine& un_domaine) le domaine a associer aux Bord_Interne de la liste
  */
 void Bords_Internes::associer_domaine(const Domaine& un_domaine)
 {
   for (auto& itr : *this) itr.associer_domaine(un_domaine);
 }
 
-/*! @brief Renvoie le nombre total de faces contenues dans la liste des Faces_Interne, i.
+/*! @brief Renvoie le nombre total de faces contenues dans la liste des Bord_Interne, i.
  *
  * e. la somme de toutes
- *     les faces de tous les objet Faces_Interne contenu dans
+ *     les faces de tous les objet Bords_Interne contenu dans
  *     la liste.
  *
- * @return (int) le nombre total de faces contenues dans la liste des Faces_Interne
+ * @return (int) le nombre total de faces contenues dans la liste des Bord_Interne
  */
 int Bords_Internes::nb_faces() const
 {
@@ -46,14 +46,14 @@ int Bords_Internes::nb_faces() const
   return nombre;
 }
 
-/*! @brief Renvoie le nombre total de faces de type specifie contenues dans la liste des Faces_Interne
+/*! @brief Renvoie le nombre total de faces de type specifie contenues dans la liste des Bord_Interne
  *
  *     i.e. la somme de toutes les faces de type specifie
- *     de tous les objet Faces_Interne contenu dans
+ *     de tous les objet Bord_Interne contenu dans
  *     la liste.
  *
  * @param (Type_Face type) le type des faces a compter
- * @return (int) le nombre total de faces contenues dans la liste des Faces_Interne
+ * @return (int) le nombre total de faces contenues dans la liste des Bord_Interne
  */
 int Bords_Internes::nb_faces(Type_Face type) const
 {
