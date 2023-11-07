@@ -34,13 +34,14 @@ else
   echo "   ===> All OK in compare_lata : lml vs lml !"
 fi
 
-compare_lata Cx_from_single_lata_from_lata_to_lml.lml Cx_multiple_lata_from_lml_to_lata.lata --max_delta 1>verifie3.log 2>&1 || exit -1
+## deactive car en // on ecrit pas le meme chose ... donc pas de sens si on compare lml vs lata
+#compare_lata Cx_from_single_lata_from_lata_to_lml.lml Cx_multiple_lata_from_lml_to_lata.lata --max_delta 1>verifie3.log 2>&1 || exit -1
 
-numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
-if [[ "$numb_diff3" -gt "0" ]]
-then
-  echo "   ===> Error in compare_lata !"
-  exit -1
-else
-  echo "   ===> All OK in compare_lata : lata_to_lml vs lml_to_lata !"
-fi
+#numb_diff3=`awk '$1=="Number"{print $5}' verifie3.log`
+#if [[ "$numb_diff3" -gt "0" ]]
+#then
+#  echo "   ===> Error in compare_lata !"
+#  exit -1
+#else
+#  echo "   ===> All OK in compare_lata : lata_to_lml vs lml_to_lata !"
+#fi
