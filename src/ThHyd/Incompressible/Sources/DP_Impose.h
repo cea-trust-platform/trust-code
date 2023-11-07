@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright (c) 2022, CEA
+* Copyright (c) 2023, CEA
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -34,6 +34,7 @@ public :
   ~DP_Impose() override {}
   Entree& lire_donnees(Entree&);
   void mettre_a_jour(double temps);
+
 
 protected :
 

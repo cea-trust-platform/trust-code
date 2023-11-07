@@ -19,6 +19,7 @@
 #include <Equation_base.h>
 #include <Probleme_base.h>
 #include <Synonyme_info.h>
+#include <Pb_Multiphase.h>
 #include <Milieu_base.h>
 #include <cfloat>
 
@@ -40,6 +41,13 @@ Entree& DP_Impose_PolyMAC_Face::readOn(Entree& s)
   set_fichier(Nom("DP_") + identifiant_);
   set_description(Nom("DP impose sur la surface ") + identifiant_ + "\nt DP dDP/dQ Q Q0");
   return s;
+}
+
+void DP_Impose_PolyMAC_Face::completer()
+{
+  Perte_Charge_PolyMAC_Face::completer();
+  // eq_masse besoin de champ_conserve !
+  if (sub_type(Pb_Multiphase, mon_equation->probleme())) ref_cast(Pb_Multiphase, mon_equation->probleme()).equation_masse().init_champ_conserve();
 }
 
 void DP_Impose_PolyMAC_Face::remplir_num_faces(Entree& s)
@@ -80,7 +88,8 @@ void DP_Impose_PolyMAC_Face::ajouter_blocs(matrices_t matrices, DoubleTab& secme
     for (int j = 0; j < dimension; j++) xvf(i, j) = domaine_poly.xv()(num_faces(i), j);
   DP_.valeur().valeur_aux(xvf, DP);
 
-  double rho = equation().milieu().masse_volumique()(0, 0), fac_rho = equation().probleme().is_dilatable() ? 1.0 : 1.0 / rho;
+  double rho = equation().milieu().masse_volumique()(0, 0),
+         fac_rho = (equation().probleme().is_dilatable() || sub_type(Pb_Multiphase, equation().probleme())) ? 1.0 : 1.0 / rho;
 
   for (int i = 0, f; i < num_faces.size(); i++)
     if ((f = num_faces(i)) < domaine_poly.nb_faces())

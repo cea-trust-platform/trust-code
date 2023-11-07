@@ -38,6 +38,8 @@ public:
   void ajouter_blocs(matrices_t matrices, DoubleTab& secmem, const tabs_t& semi_impl = {}) const override;
   void remplir_num_faces(Entree& );
   void mettre_a_jour(double temps) override;
+  void check_multiphase_compatibility() const override { }
+  void completer() override;
 
 protected:
   IntVect sgn;
