@@ -136,7 +136,7 @@ Read pb1
     }
     Post_processing
     {
-        format single_lata_file
+        format single_lata
         fields dt_post 10.
         {
             temperature elem
@@ -216,7 +216,7 @@ Read pb2
     Post_processing
     {
 	fichier pb_fluide
-        format single_lata_file
+        format single_lata
         fields dt_post 10.
         {
             temperature elem

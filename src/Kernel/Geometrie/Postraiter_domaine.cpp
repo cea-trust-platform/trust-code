@@ -262,7 +262,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
   int compteur_reel=0;
   bool is_single_lata = false;
 
-  if (Motcle(format_post_) == "SINGLE_LATA_FILE")
+  if (Motcle(format_post_) == "SINGLE_LATA")
     {
       is_single_lata = true;
       format_post_ = "lata";
@@ -274,7 +274,7 @@ void Postraiter_domaine::ecrire(Nom& nom_pdb)
   post_typer.typer_direct(type);
   Format_Post_base& post=ref_cast(Format_Post_base,post_typer.valeur());
 
-  if (is_single_lata) post.set_single_lata_flie(is_single_lata);
+  if (is_single_lata) post.set_single_lata_option(is_single_lata);
 
   Nom nom_2(nom_pdb);
   Nom format_post_bis(format_post_);

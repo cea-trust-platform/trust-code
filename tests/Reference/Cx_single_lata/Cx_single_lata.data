@@ -55,7 +55,7 @@ Discretize pb ma_discretisation
 # We take a ring of the cylindre between z=-2 and z=-1 #
 Domaine ring
 Extraire_surface { Domaine ring Probleme pb Condition_faces (z+2)*(z+1)*(x^2+y^2-0.51)>0 avec_certains_bords 1 Cylindre }
-Postraiter_domaine { domaine ring format single_lata_file fichier ring_single }
+Postraiter_domaine { domaine ring format single_lata fichier ring_single }
 Postraiter_domaine { domaine ring format lata fichier ring_multiple }
 
 Domaine Entree
@@ -117,7 +117,7 @@ Read pb
         }
         single_lata
         {
-            format single_lata_file fichier Cx_single_lata
+            format single_lata fichier Cx_single_lata
             fields dt_post 1.
             {
                 pression_pa elem

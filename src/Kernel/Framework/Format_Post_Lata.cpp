@@ -560,7 +560,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
   // Construction du nom du fichier de geometrie
   Nom basename_geom(lata_basename_), extension_geom(extension_lata());
 
-  if (un_seul_fichier_data_) extension_geom += "_single_file";
+  if (un_seul_fichier_lata_) extension_geom += "_single";
   else
     {
       extension_geom += ".";
@@ -581,7 +581,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
     nom_fichier_geom = fichier_geom.get_filename();
     int nb_col;
 
-    if (un_seul_fichier_data_)
+    if (un_seul_fichier_lata_)
       if (fichier_geom.is_master())
         offset_som_ = fichier_geom.get_SFichier().get_ofstream().tellp();
 
@@ -616,7 +616,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         decalage_elements += mppartial_sum(nbelem);
       }
 
-    if (un_seul_fichier_data_)
+    if (un_seul_fichier_lata_)
       {
         if (fichier_geom.is_master())
           offset_elem_ = fichier_geom.get_SFichier().get_ofstream().tellp();
@@ -647,18 +647,18 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
         // This makes 6 bytes that we have to skip to get to the core of the (binary) data.
         sfichier << " file_offset=6";
-        if (un_seul_fichier_data_) Process::exit("Single_lata_file option is not yet ported to 64 bits executable ! Call the 911 !");
+        if (un_seul_fichier_lata_) Process::exit("Single_lata option is not yet ported to 64 bits executable ! Call the 911 !");
 #endif
         sfichier << " size=" << nb_som_tot;
         sfichier << " composantes=" << dim;
-        if (un_seul_fichier_data_)
+        if (un_seul_fichier_lata_)
           sfichier << " file_offset=" << offset_som_ << finl;
         else
           sfichier << finl;
 
         // ELEMENTS support
         sfichier << "CHAMP ELEMENTS " << remove_path(nom_fichier_geom);
-        if (!un_seul_fichier_data_) sfichier << ".elem";
+        if (!un_seul_fichier_lata_) sfichier << ".elem";
         sfichier << " geometrie=" << id_domaine;
 #ifdef INT_is_64_
         // The string "INT64\n" is written in clear text at the begining of each sub-file when we are 64bits.
@@ -666,7 +666,7 @@ int Format_Post_Lata::ecrire_domaine_low_level(const Nom& id_domaine, const Doub
         sfichier << " file_offset=6";
 #endif
         sfichier << " size=" << nb_elem_tot << " composantes=" << elements.dimension(1);
-        if (un_seul_fichier_data_)
+        if (un_seul_fichier_lata_)
           sfichier << " file_offset=" << offset_elem_;
         switch(sizeof(_LATA_INT_TYPE_))
           {
@@ -781,7 +781,7 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
   // Construction du nom du fichier
   Nom basename_champ(lata_basename_), extension_champ(extension_lata());
 
-  if (un_seul_fichier_data_) extension_champ += "_single_file";
+  if (un_seul_fichier_lata_) extension_champ += "_single";
   else
     {
       extension_champ += ".";
@@ -803,7 +803,7 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
     Fichier_Lata fichier_champ(basename_champ, extension_champ, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
 
     // XXX Elie Saikali : attention offset ici avant write_doubletab ! sinon decalage d'un champ !
-    if (un_seul_fichier_data_)
+    if (un_seul_fichier_lata_)
       if (fichier_champ.is_master())
         offset_elem_ = fichier_champ.get_SFichier().get_ofstream().tellp();
 
@@ -836,7 +836,7 @@ int Format_Post_Lata::ecrire_champ(const Domaine& domaine, const Noms& unite_, c
 
       sfichier << " composantes=" << nb_compo;
 
-      if (un_seul_fichier_data_)
+      if (un_seul_fichier_lata_)
         sfichier << " file_offset=" << offset_elem_ << finl;
       else
         sfichier << finl;
@@ -857,7 +857,7 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
   // Construction du nom du fichier
   Nom basename_champ(lata_basename_), extension_champ(extension_lata());
 
-  if (un_seul_fichier_data_) extension_champ += "_single_file";
+  if (un_seul_fichier_lata_) extension_champ += "_single";
   else
     {
       extension_champ += ".";
@@ -880,7 +880,7 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
   {
     Fichier_Lata fichier_champ(basename_champ, extension_champ, offset_elem_ < 0 ? Fichier_Lata::ERASE : Fichier_Lata::APPEND, format_, options_para_);
 
-    if (un_seul_fichier_data_)
+    if (un_seul_fichier_lata_)
       if (fichier_champ.is_master())
         offset_elem_ = fichier_champ.get_SFichier().get_ofstream().tellp();
 
@@ -923,7 +923,7 @@ int Format_Post_Lata::ecrire_item_int(const Nom& id_item, const Nom& id_du_domai
         sfichier << " composantes=" << nb_compo;
         if (reference != "") sfichier << " reference=" << reference;
 
-        if (un_seul_fichier_data_)
+        if (un_seul_fichier_lata_)
           sfichier << " file_offset=" << offset_elem_;
 
         const int sz = (int) sizeof(_LATA_INT_TYPE_);

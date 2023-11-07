@@ -109,7 +109,7 @@ public:
   static int ecrire_entete_lata(const Nom& base_name, const Options_Para& option, const Format& format, const int est_le_premier_post);
   static int ecrire_temps_lata(const double temps, double& temps_format, const Nom& base_name, Status& stat, const Options_Para& option);
 
-  void set_single_lata_flie(const bool sing_lata) override { un_seul_fichier_data_ = sing_lata; }
+  void set_single_lata_option(const bool sing_lata) override { un_seul_fichier_lata_ = sing_lata; }
 
   static const char * extension_lata();
   static const char * remove_path(const char * filename);
@@ -127,8 +127,8 @@ protected:
 
   // Le temps en cours d'ecriture
   double temps_courant_;
-  bool un_seul_fichier_data_ = false;
-  long int offset_elem_ = -1, offset_som_ = -1; // offset utilise si single_lata_flie
+  bool un_seul_fichier_lata_ = false;
+  long int offset_elem_ = -1, offset_som_ = -1; // offset utilise si single_lata
 };
 
 #endif /* Format_Post_Lata_included */

@@ -372,7 +372,7 @@ void lml_to_lata(const char *lmlname, const char *latafilename, entier ascii, en
   LataOptions::extract_path_basename(latafilename, dest_prefix, dest_name);
   // Nom du fichier .data a ecrire (sans le chemin)
   Nom datafile(dest_name);
-  datafile += ".lata_single_file";
+  datafile += ".lata_single";
   lata_db.set_path_prefix(dest_prefix);
   // Nom complet du fichier lml a lire
   LataDBDataType type;

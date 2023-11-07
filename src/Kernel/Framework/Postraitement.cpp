@@ -275,7 +275,7 @@ Entree& Postraitement::readOn(Entree& s)
     }
 
   bool is_supported = false, is_single_lata = false;
-  std::vector<Motcle> supported = { "LATA", "SINGLE_LATA_FILE", "LATA_V2", "MED", "MED_MAJOR", "LML", "XYZ", "MESHTV" };
+  std::vector<Motcle> supported = { "LATA", "SINGLE_LATA", "LATA_V2", "MED", "MED_MAJOR", "LML", "XYZ", "MESHTV" };
 
   for (auto &itr : supported)
     if (Motcle(format) == itr)
@@ -297,7 +297,7 @@ Entree& Postraitement::readOn(Entree& s)
 
   if (Motcle(format) == "LATA_V2") format = "lata";
 
-  if (Motcle(format) == "SINGLE_LATA_FILE")
+  if (Motcle(format) == "SINGLE_LATA")
     {
       is_single_lata = true;
       format = "lata";
@@ -316,7 +316,7 @@ Entree& Postraitement::readOn(Entree& s)
   format_post.typer_direct(type_format);
 
   if (is_single_lata)
-    format_post->set_single_lata_flie(is_single_lata);
+    format_post->set_single_lata_option(is_single_lata);
 
   Nom base_name(nom_fich_);
   base_name.prefix(format);
@@ -336,7 +336,7 @@ void Postraitement::set_param(Param& param)
 // XD postraitement postraitement_base postraitement -1 An object of post-processing (without name).
 //  attr interfaces champs_posts interfaces 1 Keyword to read all the caracteristics of the interfaces. Different kind of interfaces exist as well as different interface intitialisations.
   param.ajouter("Fichier",&nom_fich_); // XD_ADD_P chaine Name of file.
-  param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
+  param.ajouter("Format",&format); // XD_ADD_P chaine(into=["lml","lata","single_lata","lata_v2","med","med_major"]) This optional parameter specifies the format of the output file. The basename used for the output file is the basename of the data file. For the fmt parameter, choices are lml or lata. A short description of each format can be found below. The default value is lml.
   param.ajouter_non_std("Domaine",(this)); // XD_ADD_P chaine This optional parameter specifies the domain on which the data should be interpolated before it is written in the output file. The default is to write the data on the domain of the current problem (no interpolation).
   param.ajouter_non_std("Sous_domaine|Sous_zone",(this)); // XD_ADD_P chaine This optional parameter specifies the sub_domaine on which the data should be interpolated before it is written in the output file. It is only available for sequential computation.
   param.ajouter("Parallele",&option_para); // XD_ADD_P chaine(into=["simple","multiple","mpi-io"]) Select simple (single file, sequential write), multiple (several files, parallel write), or mpi-io (single file, parallel write) for LATA format
