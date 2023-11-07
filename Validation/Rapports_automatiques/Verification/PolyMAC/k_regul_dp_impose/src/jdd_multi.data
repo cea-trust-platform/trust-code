@@ -1,0 +1,142 @@
+# PARALLEL OK #
+dimension 3
+
+Pb_multiphase pb
+Domaine dom
+# BEGIN MESH #
+Read_MED {
+    domain dom
+    file mesh.med
+    mesh mesh
+}
+regroupebord dom wall { left right front back down up wall wall_dup }
+# END MESH #
+
+# BEGIN PARTITION
+Partition dom
+{
+    Partition_tool tranche { tranches 2 1 1 }
+    larg_joint 2
+    zones_name DOM
+}
+End
+END PARTITION #
+
+# BEGIN SCATTER
+Scatter DOM.Zones dom
+END SCATTER #
+
+$dis dis
+option_vdf { p_imposee_aux_faces oui }
+
+domaine surf1
+domaine surf2
+Read_MED {
+    domain surf1
+    file mesh.med
+    mesh surf1
+}
+Read_MED {
+    domain surf2
+    file mesh.med
+    mesh surf2
+}
+
+Schema_euler_implicite sch
+Read sch
+{
+    tinit 0
+    dt_max 1e-2
+    dt_impr 1e-10
+    seuil_statio 1e-8
+    solveur ice
+    {
+        criteres_convergence { alpha 1e-5 }
+        solveur petsc cli { }
+        seuil_convergence_implicite 1e30
+    }
+}
+
+Associate  pb dom
+Associate  pb sch
+Discretize pb dis
+
+Read pb
+{
+
+    Milieu_composite
+    {
+        liquide_l fluide_incompressible
+        {
+            mu  Champ_Uniforme 1 2.5
+            rho Champ_Uniforme 1 1000
+            cp Champ_Uniforme 1 1000
+            lambda Champ_Uniforme 1 1
+        }
+    }
+
+
+    QDM_Multiphase
+    {
+        solveur_pression petsc cholesky { }
+        convection { amont }
+        diffusion  { negligeable }
+        initial_conditions
+        {
+            vitesse Champ_Uniforme 3 0 0 0
+            pression Champ_Uniforme 1 1e5
+        }
+        boundary_conditions { wall symetrie }
+        sources
+        {
+            DP_Impose { dp Champ_uniforme 3 1e2 0 0 surface { surface surf2 orientation Champ_Uniforme 3 0 0 -1 } } ,
+            perte_Charge_Singuliere { dir K regul { K0 10.0 deb 5 eps 0.005*(t>0.1) } surface { Surface surf1 orientation Champ_Uniforme 3 0 0 -1 } }
+        }
+    }
+    Masse_Multiphase
+    {
+        initial_conditions
+        {
+            alpha Champ_uniforme 1 1
+        }
+        convection { amont }
+        boundary_conditions
+        {
+            wall paroi
+        }
+    }
+    Energie_Multiphase
+    {
+        diffusion { negligeable }
+        convection { amont }
+        initial_conditions
+        {
+            temperature Champ_Uniforme 1 1
+        }
+        boundary_conditions
+        {
+            wall paroi_adiabatique
+        }
+    }
+
+    Post_processing
+    {
+        probes
+        {
+            p1 grav pression_pa periode 1e-6 point 1 0.3 0.1 0.4
+            p2 grav pression_pa periode 1e-6 point 1 0.3 0.1 0.6
+        }
+
+        Format Lata
+        fields dt_post 1e5
+        {
+            pression_pa elem
+            vitesse elem
+        }
+    }
+}
+
+Solve pb
+lata_to_other lml NOM_DU_CAS NOM_DU_CAS
+End
+
