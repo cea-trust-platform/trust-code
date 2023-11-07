@@ -1,6 +1,8 @@
 --------------------------------------------------------------------------------------------------
 Release notes version 1.9.3_beta : Enhancements, modifications and corrected bugs since version 1.9.2 :
 --------------------------------------------------------------------------------------------------
+07/11/23 (TRUST) New feature  : Add a new interpreter "lml_to_lata" that can be used to convert lml files to single_lata format.
+07/11/23 (TRUST) New feature  : Add a new post-treatment format "single_lata" that dumps results in a single binary lata file.
 27/10/23 (TRUST) Tools        : Upgrade to MEDCoupling 9.12.0
 23/10/23 (TRUST) New feature  : New method 'initBuildDirectory()' in Jupyter validation form Python API. It triggers build directory creation and copy src content into it.
 23/10/23 (TRUST) Minor change : An arbitrary group of faces can now be loaded (not just internal or boundary ones) => in Read_MED, option 'include_internal_face_groups' is renamed into 'include_additional_face_groups'. In Perte_Charge_Singuliere, option 'internal_face_groups' is renamed into 'face_group'.
