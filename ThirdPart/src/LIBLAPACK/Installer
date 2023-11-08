@@ -23,6 +23,7 @@ install_OpenBlas()
    fi  
    # On ne construit que les libs (tests plantent parfois):
    target="libs netlib"
+   target="" # Il semble y avoir un soucis au build parallele (vu sur Fedora38)
    # Instructions -mavx512 fait crasher valgrind sur les machines avec instructions avx512 ... On desactive (comme dans TRUST d'ailleurs)
    if [ `uname -s` = Darwin ]
    then
@@ -96,7 +97,7 @@ for file in `ls $TRUST_ROOT/externalpackages/lapack/*`
 do
    ln -sf $file .
 done
-# Nom des versions a upgrader: Attention on garde encore 0.3.21 ailleurs car plantage possible sur haswell (PC Elie) avec seg fault dans MUMPS lors appel dgemmt_
+# Nom des versions a upgrader: Attention on garde encore 0.3.21 ailleurs car plantage possible sur haswell (PC Elie) avec seg fault dans MUMPS lors appel dgemmt_ (ToDo: semble corrige dans 0.3.24)
 version_openblas=0.3.21 && [ $HOST = adastra ] && version_openblas=0.3.23 # Necessaire pour adastra (-O noomp inconnue plante lapack)
 # On utilise Lapack 3.1.1 si le compilateur fortran n'est pas f90 (auquel cas TRUST_USE_MUMPS=0)
 version_lapack=3.4.1 && [ "$TRUST_INT64" != "1" ] && [ "$TRUST_USE_MUMPS" != 1 ] && version_lapack=3.1.1
@@ -109,12 +110,16 @@ then
    # Bench OpenBlas:
    # Bizarre pour bench, besoin de copier la libairie sous un nom legerement different:
    cp $lib `echo $lib | sed '1,$ s?-r?p-r?'` 2>/dev/null
+   cd benchmark
    if [ "$TRUST_USE_OPENMP" = 1 ] && [ "$HOST" != adastra ] # Blocage du test sur adastra et surement sur d'autres machines...
    then
-      (cd benchmark && CFLAGS=-fopenmp make dgemm.goto && OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log)
+      CFLAGS=-fopenmp make dgemm.goto || exit -1
+      OMP_NUM_THREADS= ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
    else
-      (cd benchmark && make dgemm.goto && ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log)
+      make dgemm.goto || exit -1
+      ./dgemm.goto 2>&1 | tee ../../dgemm_openblas_$version_openblas.log
    fi
+   cd - 1>/dev/null 2>&1
    # On copie la librairie si elle existe sinon on sort
    if [ -f $lib ]
    then
