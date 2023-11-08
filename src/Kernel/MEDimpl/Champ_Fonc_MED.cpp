@@ -55,6 +55,7 @@ void Champ_Fonc_MED::set_param(Param& param)
   param.ajouter_flag("use_existing_domain", &use_existing_domain_); // XD_ADD_P flag whether to optimize the field loading by indicating that the field is supported by the same mesh that was initially loaded as the domain
   param.ajouter_flag("last_time", &last_time_only_);                // XD_ADD_P flag to use the last time of the MED file instead of the specified time. Mutually exclusive with 'time' parameter.
   param.ajouter("decoup", &nom_decoup_, Param::OPTIONAL);           // XD_ADD_P chaine specify a partition file.
+  param.ajouter("mesh", &nom_maillage_, Param::OPTIONAL);           // XD_ADD_P chaine Name of the mesh supporting the field. This is the name of the mesh in the MED file, and if this mesh was also used to create the TRUST domain, loading can be optimized with option 'use_existing_domain'.
   param.ajouter("domain", &nom_dom_, Param::REQUIRED);              // XD_ADD_P chaine Name of the domain supporting the field. This is the name of the mesh in the MED file, and if this mesh was also used to create the TRUST domain, loading can be optimized with option 'use_existing_domain'.
   param.ajouter("file", &nom_fichier_med_, Param::REQUIRED);        // XD_ADD_P chaine Name of the .med file.
   param.ajouter("field", &nom_champ_, Param::REQUIRED);             // XD_ADD_P chaine Name of field to load.
@@ -175,7 +176,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
       if (nproc()==1)
         {
           Cerr << "Checking whether domain in the file "<<nom_fichier_med_<<" and domain "<<nom_dom_<<" are the same (coords,connectivity) ..."<<finl;
-          LireMED liremed(nom_fichier_med_, nom_dom_);
+          LireMED liremed(nom_fichier_med_, nom_maillage_ == "??" ? nom_dom_ : nom_maillage_);
           dom_med_.nommer(nom_dom_);
           liremed.associer_domaine(dom_med_);
           liremed.retrieve_MC_objects();
@@ -204,7 +205,7 @@ Entree& Champ_Fonc_MED::readOn(Entree& is)
     {
       if (domain_exist && !use_existing_domain_)
         Cerr<<"INFO: You can toggle the flag 'use_existing_domain' in 'Champ_Fonc_MED' to optimize reading since it seems that the domain already exists."<<finl;
-      LireMED liremed(nom_fichier_med_, nom_dom_);
+      LireMED liremed(nom_fichier_med_, nom_maillage_ == "??" ? nom_dom_ : nom_maillage_);
       dom_med_.nommer(nom_dom_);
       //Nom nom_dom_trio_non_nomme;
       // Remplit dom:
@@ -464,7 +465,7 @@ int Champ_Fonc_MED::creer(const Nom& nom_fic, const Domaine& un_dom, const Motcl
           exit();
         }
     }
-  std::string meshName = mon_dom->le_nom().getString();
+  std::string meshName = nom_maillage_ == "??" ? mon_dom->le_nom().getString() : nom_maillage_.getString();
   std::string fileName = nom_fic.getString();
   // Try to guess the field name in the MED file:
   Noms fieldNamesGuess;

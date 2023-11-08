@@ -72,7 +72,7 @@ public :
 protected:
   // Parameters read in the dataset:
   Nom nom_fichier_med_;
-  Nom nom_champ_, nom_decoup_, nom_dom_;
+  Nom nom_champ_, nom_decoup_, nom_dom_, nom_maillage_;
   Motcle loc_;
   int use_existing_domain_=0;
   double temps_=0.0;
