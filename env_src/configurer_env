@@ -2245,6 +2245,8 @@ LINK_MALIB = $LINK_MALIB" > $tmp
    # On remplace -O par -g
    O=`echo $CppFlags | awk '{print $1}'`
    CppFlags="-g -O0"${CppFlags#$O}
+   ### Sur gcc >= 11, -g utilise dwarf5 qui empeche addr2line des versions < 2.35.2 de binutils de convertir les adresses des binaires en numero ligne du code source
+   [[ $(echo $TRUST_VERSION_GNU | cut -d '.' -f 1) -ge 11 ]] && CppFlags=${CppFlags/-g /-gdwarf-4 }
    O=`echo $F77Flags | awk '{print $1}'`
    F77Flags="-g"${F77Flags#$O}
    # 16/03/2010: Ajout de -fbounds-check en debug sur gfortran
